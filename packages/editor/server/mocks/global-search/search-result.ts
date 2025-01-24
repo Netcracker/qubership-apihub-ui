@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { SearchResultsDto } from '../../../src/entities/global-search'
+import type { SearchResultsDto } from './types'
 
 export const RECENTLY_VISITED_PACKAGES: SearchResultsDto = {
   packages: [

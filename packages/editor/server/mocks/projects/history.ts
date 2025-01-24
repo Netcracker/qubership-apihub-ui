@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ProjectFileHistoryDto } from '../../../src/entities/project-file-history'
+import type { ProjectFileHistoryDto } from './types'
 
 export const FILE_HISTORY: ProjectFileHistoryDto = {
   changes: [

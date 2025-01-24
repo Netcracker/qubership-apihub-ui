@@ -19,19 +19,11 @@ import type { WithWebsocketMethod } from 'express-ws'
 import fs from 'fs'
 import path from 'path'
 import type { Server } from 'ws'
-import {
-  ADDED_CHANGE_TYPE,
-  NONE_CHANGE_TYPE,
-  UPDATED_CHANGE_TYPE,
-} from '../../../src/entities/branches'
-import {
-  ADD_OPERATION,
-  PATCH_OPERATION,
-} from '../../../src/entities/operations'
 import { SUPERUSER } from '../../mocks/auth/users'
 import { BRANCH_CONFIG, BRANCH_CONFLICTS, BRANCHES, LAST_FILE_CHANGE_STATUSES } from '../../mocks/projects/branches'
 import { GIT_FILES } from '../../mocks/projects/git-files'
 import { FILE_HISTORY } from '../../mocks/projects/history'
+import { ADD_OPERATION, PATCH_OPERATION } from '../../mocks/projects/operations'
 import { PROJECTS, PUBLISHED_PROJECT_IDS } from '../../mocks/projects/projects'
 import {
   MARKDOWN_SPEC,
@@ -41,11 +33,14 @@ import {
 } from '../../mocks/projects/published-specs'
 import {
   ADDED_CHANGE_STATUS,
+  ADDED_CHANGE_TYPE,
   DELETED_CHANGE_STATUS,
   EXCLUDED_CHANGE_STATUS,
   MODIFIED_CHANGE_STATUS,
   MOVED_CHANGE_STATUS,
+  NONE_CHANGE_TYPE,
   UNMODIFIED_CHANGE_STATUS,
+  UPDATED_CHANGE_TYPE,
 } from '../../mocks/projects/types'
 import { PUBLISHED_VERSION_CONTENTS } from '../../mocks/projects/version-contents'
 import { VERSIONS } from '../../mocks/projects/versions'

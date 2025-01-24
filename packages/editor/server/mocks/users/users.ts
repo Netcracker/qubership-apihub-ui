@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import type { Writeable } from '../../types'
-
-export type Key = Readonly<string>
-export type Url = Readonly<string>
+import type { Key, Url, Writeable } from '../../types'
 
 export type Users = Readonly<{
   users: User[]
