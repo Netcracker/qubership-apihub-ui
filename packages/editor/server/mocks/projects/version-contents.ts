@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ProjectVersionContentDto } from '../../../src/entities'
+import type { ProjectVersionContentDto } from '../../../src/entities/version-contents'
 import { generateRandomDigit } from '../../utils'
 
 const SUMMARY = {

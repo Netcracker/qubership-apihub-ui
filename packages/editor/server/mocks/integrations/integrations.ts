@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import type { IntegrationBranchesDto, IntegrationRepositoriesDto } from '../../../src/entities'
+import type { IntegrationBranchesDto } from '../../../src/entities/integration-branches'
+import type { IntegrationRepositoriesDto } from '../../../src/entities/integration-repository'
 
 export const REPOSITORIES: IntegrationRepositoriesDto = {
   repositories: [

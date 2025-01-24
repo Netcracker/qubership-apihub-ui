@@ -15,7 +15,31 @@
  */
 
 import type { Writeable } from '../../types'
-import type { UsersDto } from '@netcracker/qubership-apihub-ui-shared'
+
+export type Key = Readonly<string>
+export type Url = Readonly<string>
+
+export type Users = Readonly<{
+  users: User[]
+}>
+
+export type UsersDto = Readonly<{
+  users: UserDto[]
+}>
+
+export type User = Readonly<{
+  key: Key
+  name: string
+  email?: string
+  avatarUrl: Url
+}>
+
+export type UserDto = Readonly<{
+  id: Key
+  name: string
+  email?: string
+  avatarUrl: Url
+}>
 
 export const USERS_LIST: Writeable<UsersDto> = {
   users: [{

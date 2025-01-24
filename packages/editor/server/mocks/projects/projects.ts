@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ProjectsDto } from '../../../src/entities'
+import type { ProjectsDto } from '../../../src/entities/projects'
 import type { Writeable } from '../../types'
 
 export const PROJECTS: Writeable<ProjectsDto> = {

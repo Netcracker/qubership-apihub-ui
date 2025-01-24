@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { BranchConfigDto, BranchConflictsDto, BranchesDto } from '../../../src/entities'
+import type { BranchConfigDto, BranchConflictsDto, BranchesDto } from '../../../src/entities/branches'
 import type { Writeable } from '../../types'
 import type { ChangeStatus } from './types'
 
