@@ -6,6 +6,7 @@
     "packages/*"
   ],
   "scripts": {
+    "update-qs-deps": "npm ls --json | jq -r \".dependencies | keys[]\" | grep '@netcracker' | xargs --no-run-if-empty npm update",
     "build": "npx lerna run build",
     "lint": "eslint . --ext .ts,.tsx,.json --ignore-path .gitignore --max-warnings 0 --report-unused-disable-directives",
     "format": "npm run lint --fix",
