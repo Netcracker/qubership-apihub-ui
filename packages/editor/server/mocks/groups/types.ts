@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 
-import type { WebSocket } from 'ws'
-import type { IClientState } from './routers/websockets/websockets'
+import type { Key } from '../../types'
 
-export type Writeable<T> = {
-  -readonly [P in keyof T]: T[P]
-}
+export type GroupDto = Readonly<{
+  groupId: Key
+  alias: Key
+  name: string
+  parentId?: Key
+  description?: string
+  isFavorite: boolean
+  lastVersion?: string
+}>
 
-export type DeepWriteable<T> = {
-  -readonly [P in keyof T]: DeepWriteable<T[P]>
-}
-
-export type Socket = {
-  id?: string
-  state?: IClientState
-} & WebSocket
-
-export type Key = Readonly<string>
-export type FileKey = Key
-export type VersionKey = Key
-
-export type Url = Readonly<string>
+export type GroupsDto = Readonly<{
+  groups: ReadonlyArray<GroupDto>
+}>
