@@ -22,19 +22,24 @@ import { useNavigation } from '../../../NavigationProvider'
 import { useBackwardLocation } from '../../useBackwardLocation'
 import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
 import { SPECIAL_VERSION_KEY } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
-import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
-import type { PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { CreateDashboardVersionButton } from '@apihub/routes/root/PortalPage/DashboardPage/CreateDashboardVersionButton'
+import type { ButtonGroupProps, ButtonProps } from '@mui/material'
+import { Box, Button, MenuItem, Typography } from '@mui/material'
+import { MultiButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MultiButton'
+import { useEventBus } from '@apihub/routes/EventBusProvider'
+import type { SxProps } from '@mui/system'
 
 export type CreateVersionButtonProps = {
   disabled: boolean
-  kind?: PackageKind
+  variant?: ButtonGroupProps['variant']
+  primaryButtonProps?: ButtonProps
+  sx?: SxProps
 }
 
-export const CreateVersionButton: FC<CreateVersionButtonProps> = memo(({
+export const CreateDashboardVersionButton: FC<CreateVersionButtonProps> = memo(({
   disabled,
-  kind,
+  variant = 'contained',
+  primaryButtonProps,
+  sx,
 }) => {
   const location = useBackwardLocation()
   const backwardLocation = useBackwardLocationContext()
@@ -49,25 +54,42 @@ export const CreateVersionButton: FC<CreateVersionButtonProps> = memo(({
     [backwardLocation, location, navigateToVersion, packageId, setBackwardLocation],
   )
 
-  if (kind === DASHBOARD_KIND) {
-    return (
-      <CreateDashboardVersionButton
-        disabled={disabled}
-        sx={{ ml: 'auto' }}
-      />
-    )
-  }
+  const { showPublishPackageVersionDialog } = useEventBus()
 
   return (
-    <ButtonWithHint
-      variant="contained"
-      disabled={disabled}
+    <MultiButton
+      sx={sx}
+      buttonGroupProps={{
+        sx: { marginLeft: 'auto', minWidth: 'max-content' },
+        variant: variant,
+        disabled: disabled,
+      }}
+      arrowButtonProps={{
+        sx: { p: 0, width: '32px', '&.MuiButtonGroup-grouped': { minWidth: '32px' } },
+      }}
       disableHint={!disabled}
       hint="You do not have permission to create the version"
-      onClick={handleClick}
-      title="Create Version"
-      testId="CreateVersionButton"
-      tooltipMaxWidth="unset"
+      primary={
+        <Button
+          variant={variant}
+          onClick={handleClick}
+          data-testid="CreateVersionButton"
+          {...primaryButtonProps}
+        >
+          Create Version
+        </Button>
+      }
+      secondary={
+        <Box>
+          <MenuItem onClick={handleClick}>
+            <Typography component="span" variant="body2">Manually&nbsp;</Typography>
+            <Typography component="span" variant="body2" color="#626D82">(default)</Typography>
+          </MenuItem>
+          <MenuItem onClick={showPublishPackageVersionDialog}>
+            Import from CSV
+          </MenuItem>
+        </Box>
+      }
     />
   )
 })

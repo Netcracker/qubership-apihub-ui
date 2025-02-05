@@ -18,17 +18,12 @@ import type { FC } from 'react'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { usePackage } from '../../usePackage'
-import { usePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
 import { useParams } from 'react-router-dom'
-import { useFiles } from '../FilesProvider'
-import { usePublishPackageVersion } from '../usePublishPackageVersion'
-import { useDashboardReferences } from './DashboardReferencesProvider'
-import { filesRecordToArray } from '../PackagePage/files'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { SHOW_PUBLISH_PACKAGE_VERSION_DIALOG } from '@apihub/routes/EventBusProvider'
 import { SPECIAL_VERSION_KEY } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
-import { DASHBOARD_KIND, PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { type Package, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { getSplittedVersionKey, getVersionLabelsMap } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
@@ -43,18 +38,21 @@ import {
   usePreviousVersionOptions,
   VersionDialogForm,
 } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
-import { takeIf } from '@netcracker/qubership-apihub-ui-shared/utils/objects'
+import { useDashboardVersionFromCSVPublicationStatuses } from '@apihub/routes/root/PortalPage/usePublicationStatus'
+import { usePublishDashboardVersionFromCSV } from '@apihub/routes/root/PortalPage/usePublishDashboardVersionFromCSV'
+import { usePackages } from '@apihub/routes/root/usePackages'
+import { usePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
 
-export const PublishPackageVersionDialog: FC = memo(() => {
+export const PublishDashboardVersionFromCSVDialog: FC = memo(() => {
   return (
     <PopupDelegate
       type={SHOW_PUBLISH_PACKAGE_VERSION_DIALOG}
-      render={props => <PublishPackageVersionPopup {...props}/>}
+      render={props => <PublishDashboardVersionFromCSVPopup {...props} open/>}
     />
   )
 })
 
-const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }) => {
+const PublishDashboardVersionFromCSVPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }) => {
   const { versionId } = useParams()
   const [packageObj, isPackageLoading] = usePackage()
   const packagePermissions = useMemo(() => packageObj?.permissions ?? [], [packageObj])
@@ -62,12 +60,8 @@ const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
 
   const [versionsFilter, setVersionsFilter] = useState('')
   const [versions, areVersionsLoading] = usePackageVersions({ textFilter: versionsFilter })
-  const { filesWithLabels } = useFiles()
+  const [targetVersion, setTargetVersion] = useState<Key>('')
   const isEditingVersion = !!versionId && versionId !== SPECIAL_VERSION_KEY
-
-  const packageKind = packageObj?.kind
-  const isDashboard = packageKind === DASHBOARD_KIND
-  const isPackage = packageKind === PACKAGE_KIND
 
   const currentVersion = useMemo(
     () => (isEditingVersion ? versions.find(({ key }) => key === versionId) : null),
@@ -77,6 +71,13 @@ const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
   const onVersionsFilter = useCallback((value: Key) => setVersionsFilter(value), [setVersionsFilter])
   const versionLabelsMap = useMemo(() => getVersionLabelsMap(versions), [versions])
   const getVersionLabels = useCallback((version: Key) => versionLabelsMap[version] ?? [], [versionLabelsMap])
+
+  const [workspacesFilter, setWorkspacesFilter] = useState('')
+  const [workspaces, areWorkspacesLoading] = usePackages({
+    kind: WORKSPACE_KIND,
+    textFilter: workspacesFilter,
+  })
+  const onWorkspacesFilter = useCallback((value: Key) => setWorkspacesFilter(value), [setWorkspacesFilter])
 
   const defaultValues = useMemo(() => {
     const { status, versionLabels, previousVersion } = currentVersion ?? {}
@@ -93,40 +94,50 @@ const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
 
   const { handleSubmit, control, setValue, formState } = useForm<VersionFormData>({ defaultValues })
 
-  const [publishPackage, isPublishLoading, isPublishSuccess] = usePublishPackageVersion()
+  const { publishId, publish, isPublishStarting, isPublishStartedSuccessfully } = usePublishDashboardVersionFromCSV()
+  const [isPublishing, isPublished, isPublishError] = useDashboardVersionFromCSVPublicationStatuses(packageObj?.key ?? '', publishId ?? '', targetVersion)
+  const isPublishInProgress =
+    isPublishStarting ||
+    isPublishStartedSuccessfully && !isPublished && !isPublishError ||
+    isPublishing
 
-  useEffect(() => {isPublishSuccess && setOpen(false)}, [setOpen, isPublishSuccess])
+  useEffect(() => { isPublishStartedSuccessfully && isPublished && setOpen(false) }, [isPublishStartedSuccessfully, isPublished, setOpen])
 
-  const dashboardRefs = useDashboardReferences()
+  const onPublish = useCallback(async ({
+    version,
+    status,
+    labels,
+    previousVersion,
+    workspace,
+    file,
+  }: PublishInfo): Promise<void> => {
+    setTargetVersion(version)
 
-  const onPublish = useCallback(async (data: PublishInfo): Promise<void> => {
-    const previousVersion = replaceEmptyPreviousVersion(data.previousVersion)
-
-    publishPackage({
-      version: data.version,
-      status: data.status,
-      labels: data.labels,
-      previousVersion: previousVersion,
-      ...takeIf({
-        files: Object.entries(filesWithLabels)?.map(([key, { labels }]) => ({
-          fileId: key,
-          labels: labels,
-          publish: true,
-        })),
-        sources: filesRecordToArray(filesWithLabels),
-      }, isPackage),
-      refs: isDashboard ? dashboardRefs.map(ref => ref.packageReference) : [],
+    publish({
+      packageKey: packageObj!.key,
+      value: {
+        versionLabels: labels,
+        csvFile: file!,
+        servicesWorkspaceId: workspace!.key,
+        version: version,
+        status: status,
+        previousVersion: replaceEmptyPreviousVersion(previousVersion),
+      },
     })
-  }, [dashboardRefs, filesWithLabels, isDashboard, isPackage, publishPackage])
+  }, [packageObj, publish])
 
   return (
     <VersionDialogForm
       open={open}
+      title="Publish Dashboard Version"
       setOpen={setOpen}
       onSubmit={handleSubmit(onPublish)}
       control={control}
       setValue={setValue}
       formState={formState}
+      workspaces={workspaces}
+      onWorkspacesFilter={onWorkspacesFilter}
+      areWorkspacesLoading={areWorkspacesLoading}
       versions={Object.keys(versionLabelsMap)}
       onVersionsFilter={onVersionsFilter}
       areVersionsLoading={areVersionsLoading}
@@ -134,7 +145,8 @@ const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
       getVersionLabels={getVersionLabels}
       packagePermissions={packagePermissions}
       releaseVersionPattern={releaseVersionPattern}
-      isPublishing={isPublishLoading}
+      isPublishing={isPublishInProgress}
+      hideCSVRelatedFields={false}
       hideDescriptorField
       hideCopyPackageFields
       hideDescriptorVersionField
@@ -148,5 +160,7 @@ type PublishInfo = Readonly<{
   version: Key
   status: VersionStatus
   labels: string[]
+  file?: File
   previousVersion: Key
+  workspace?: Package | null
 }>
