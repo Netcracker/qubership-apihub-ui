@@ -24,6 +24,7 @@ type NotificationProps = {
 }
 
 export const NOTIFICATION_HEIGHT = 40
+export const EDITOR_DEPRECATED = 40
 
 export const MaintenanceNotification: FC<NotificationProps> = memo<NotificationProps>(({ value }) => {
   return (

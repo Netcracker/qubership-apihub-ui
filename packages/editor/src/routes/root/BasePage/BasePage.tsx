@@ -26,6 +26,7 @@ import { SystemInfoPopup, useSystemInfo } from '@netcracker/qubership-apihub-ui-
 import { Notification, useShowErrorNotification } from './Notification'
 import { cutViewPortStyleCalculator } from '@netcracker/qubership-apihub-ui-shared/utils/themes'
 import {
+  EDITOR_DEPRECATED,
   MaintenanceNotification,
   NOTIFICATION_HEIGHT,
 } from '@netcracker/qubership-apihub-ui-shared/components/MaintenanceNotification'
@@ -39,7 +40,7 @@ export const BasePage: FC = memo(() => {
 
   const viewPortStyleCalculator = useCallback(
     (theme: Theme): SystemStyleObject<Theme> => {
-      return cutViewPortStyleCalculator(theme, systemNotification ? NOTIFICATION_HEIGHT : 0)
+      return cutViewPortStyleCalculator(theme, systemNotification ? NOTIFICATION_HEIGHT + EDITOR_DEPRECATED : EDITOR_DEPRECATED)
     },
     [systemNotification],
   )
@@ -74,8 +75,10 @@ export const BasePage: FC = memo(() => {
         </Box>
         <Notification />
         {systemNotification && (
-          <MaintenanceNotification value={systemNotification} />
+          <MaintenanceNotification value={systemNotification}/>
         )}
+        <MaintenanceNotification
+          value={'API Editor will be deprecated in upcoming releases. A VS Code plugin will replace it, enabling you to publish your API documents directly to Portal.'}/>
       </Box>
     </MainPageProvider>
   )
