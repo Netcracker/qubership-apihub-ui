@@ -10,7 +10,7 @@ import { VitePluginFonts } from 'vite-plugin-fonts'
 import { visualizer as bundleVisualizer } from 'rollup-plugin-visualizer'
 import inject from '@rollup/plugin-inject'
 
-const proxyServer = ''
+const proxyServer = 'https://apihub-api-hub-dev-fe.k8s-apps3.k8s.sdntest.netcracker.com/'
 const devServer = 'http://localhost:3003'
 const userView = ''
 
