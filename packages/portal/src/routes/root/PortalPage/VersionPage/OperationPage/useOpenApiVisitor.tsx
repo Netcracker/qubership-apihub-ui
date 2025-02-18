@@ -99,14 +99,27 @@ export function useOpenApiVisitor(operationData: object | undefined): OpenApiDat
             const sharedSchema =
               (normalizedSpec[OPEN_API_PROPERTY_COMPONENTS] as OpenAPIV3.ComponentsObject)
                 ?.[OPEN_API_PROPERTY_SCHEMAS]?.[schemaObjectName] as OpenAPIV3.SchemaObject
-            activeDataCollection.push(existingData = {
-              title: sharedSchema?.[JSON_SCHEMA_PROPERTY_TITLE] ?? title,
+
+            const commonData = {
               scopeDeclarationPath: scopeDeclarationPathStack.at(-1)!,
               declarationPath: [OPEN_API_PROPERTY_COMPONENTS, OPEN_API_PROPERTY_SCHEMAS, schemaObjectName],
-              schemaObject: sharedSchema,
               schemaObjectName: schemaObjectName,
-              schemaTolerantHashWithTitle: schemaHashWithTitle(sharedSchema),
               derivedSchemas: [],
+            }
+
+            if (!sharedSchema) {
+              return activeDataCollection.push({
+                ...commonData,
+                title: schemaObjectName,
+                error: 'Not a components schema',
+              })
+            }
+            
+            activeDataCollection.push(existingData = {
+              ...commonData,
+              title: sharedSchema?.[JSON_SCHEMA_PROPERTY_TITLE] ?? title,
+              schemaObject: sharedSchema,
+              schemaTolerantHashWithTitle: schemaHashWithTitle(sharedSchema),
             })
           }
           if (!existingData.derivedSchemas.includes(value)) {
