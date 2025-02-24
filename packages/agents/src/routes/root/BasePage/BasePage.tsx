@@ -52,7 +52,7 @@ export const BasePage: FC = memo(() => {
         title="APIHUB"
         links={[
           { name: 'Portal', pathname: '/portal', testId: 'PortalHeaderButton' },
-          { name: 'API Editor', pathname: '/editor', testId: 'EditorHeaderButton' },
+          // { name: 'API Editor', pathname: '/editor', testId: 'EditorHeaderButton' },
           { name: 'Agent', pathname: '/agents', active: true, testId: 'AgentHeaderButton' },
         ]}
         action={
