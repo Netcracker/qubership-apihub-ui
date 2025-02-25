@@ -69,7 +69,7 @@ export const BasePage: FC = memo(() => {
           links={[
             { name: 'Portal', pathname: '/portal', active: true, testId: 'PortalHeaderButton' },
             // { name: 'API Editor', pathname: '/editor', testId: 'EditorHeaderButton' },
-            { name: 'Agent', pathname: '/agents', testId: 'AgentHeaderButton' },
+            // { name: 'Agent', pathname: '/agents', testId: 'AgentHeaderButton' },
           ]}
           action={<>
             <SearchButton />
