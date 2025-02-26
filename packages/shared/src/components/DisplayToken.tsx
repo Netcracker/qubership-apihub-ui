@@ -41,13 +41,12 @@ export const DisplayToken: FC<DisplayTokenProps> = memo(({
   showSuccessNotification,
 }) => {
   const [, copyToClipboard] = useCopyToClipboard()
-  const showNotification = showSuccessNotification
 
   const handleCopyToClipboard = useCallback((event: React.MouseEvent) => {
     event.stopPropagation()
     copyToClipboard(generatedApiKey ?? '')
-    showNotification({ message: 'Access token copied' })
-  }, [copyToClipboard, showNotification, generatedApiKey])
+    showSuccessNotification({ message: 'Access token copied' })
+  }, [copyToClipboard, showSuccessNotification, generatedApiKey])
 
   return (
     <Box>
