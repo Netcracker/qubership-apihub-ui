@@ -43,6 +43,7 @@ export const DisplayToken: FC<DisplayTokenProps> = memo(({
   const [, copyToClipboard] = useCopyToClipboard()
 
   const handleCopyToClipboard = useCallback((event: React.MouseEvent) => {
+    // prevents the Notification from closing by avoiding the Snackbar's "clickaway" event handling
     event.stopPropagation()
     copyToClipboard(generatedApiKey ?? '')
     showSuccessNotification({ message: 'Access token copied' })
@@ -60,6 +61,7 @@ export const DisplayToken: FC<DisplayTokenProps> = memo(({
             sx={{
               cursor: 'pointer',
               '&:hover': { color: '#0068FF' },
+              '&:active': { color: '#003AB8' },
             }}
             onClick={handleCopyToClipboard}
             data-testid="CopyIcon"
