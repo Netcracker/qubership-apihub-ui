@@ -56,7 +56,6 @@ export const ConfirmationDialog: FC<ConfirmationDialogProps> = memo<Confirmation
       <DialogContent>
         <DialogContentText
           variant="body2"
-          sx={{ color: 'black' }}
           data-testid="ConfirmationDialogContent"
         >
           {message}

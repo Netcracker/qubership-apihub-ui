@@ -315,6 +315,14 @@ export function createComponents(): Components {
           minWidth: 440,
           paddingBottom: 0,
           lineHeight: 2.5,
+          color: 'black',
+        },
+      },
+    },
+    MuiDialogContentText: {
+      styleOverrides: {
+        root: {
+          color: 'black',
         },
       },
     },

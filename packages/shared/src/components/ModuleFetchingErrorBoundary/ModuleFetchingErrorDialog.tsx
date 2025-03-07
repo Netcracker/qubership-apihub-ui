@@ -33,8 +33,7 @@ export const ModuleFetchingErrorPopup: FC<PropsWithChildren> = () => (
     <DialogContent>
       <DialogContentText
         variant="body2"
-        sx={{ color: 'black' }}
-        data-testid="ConfirmationDialogContent"
+        data-testid="ModuleFetchingErrorDialogContent"
       >
         Please reload the page to get the latest version;
         otherwise, APIHUB UI may not function correctly
