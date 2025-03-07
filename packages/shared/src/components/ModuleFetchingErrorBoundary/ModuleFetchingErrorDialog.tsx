@@ -28,11 +28,11 @@ export const ModuleFetchingErrorPopup: FC<PropsWithChildren> = () => (
     }}
   >
     <DialogTitle textAlign='center'>
-      APIHUB is out of date
+      APIHUB UI is out of date
     </DialogTitle>
     <DialogContent>
       <Typography variant='body2' textAlign='center'>
-        The version of APIHUB is out of date.
+        The version of APIHUB UI is out of date.
         Please reload the page to get the latest version;
         otherwise, APIHUB may not function correctly
       </Typography>
