@@ -15,7 +15,7 @@
  */
 
 import { Autorenew } from '@mui/icons-material'
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography } from '@mui/material'
 import type { FC, PropsWithChildren } from 'react'
 
 export const ModuleFetchingErrorPopup: FC<PropsWithChildren> = () => (
@@ -27,24 +27,22 @@ export const ModuleFetchingErrorPopup: FC<PropsWithChildren> = () => (
       },
     }}
   >
-    <DialogTitle textAlign='center'>
+    <DialogTitle sx={{ fontSize: 15, fontWeight: 600, color: 'black' }}>
       APIHUB UI is out of date
     </DialogTitle>
     <DialogContent>
-      <Typography variant='body2' textAlign='center'>
-        The version of APIHUB UI is out of date.
+      <DialogContentText
+        variant="body2"
+        sx={{ color: 'black' }}
+        data-testid="ConfirmationDialogContent"
+      >
         Please reload the page to get the latest version;
-        otherwise, APIHUB may not function correctly
-      </Typography>
+        otherwise, APIHUB UI may not function correctly
+      </DialogContentText>
     </DialogContent>
-    <DialogActions
-      sx={{
-        display: 'flex',
-        justifyContent: 'center',
-      }}
-    >
+    <DialogActions>
       <Button
-        variant='outlined'
+        variant='contained'
         startIcon={<Autorenew />}
         onClick={() => { location.reload() }}
       >
