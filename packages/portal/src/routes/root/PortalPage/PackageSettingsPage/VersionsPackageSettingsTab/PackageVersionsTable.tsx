@@ -49,7 +49,7 @@ export const PackageVersionsTable: FC<PackageVersionsTableProps> = memo<PackageV
     onDelete, onEdit, searchValue,
   } = props
 
-  const [versions, isLoading, fetchNextPage, isNextPageFetching, hasNextPage] = usePackageVersions({
+  const { versions, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } = usePackageVersions({
     packageKey: packageKey,
     status: status,
     textFilter: searchValue,
@@ -60,7 +60,7 @@ export const PackageVersionsTable: FC<PackageVersionsTableProps> = memo<PackageV
   ), [versions])
 
   const ref = useRef<HTMLDivElement>(null)
-  useIntersectionObserver(ref, isNextPageFetching, hasNextPage, fetchNextPage)
+  useIntersectionObserver(ref, isFetchingNextPage, hasNextPage, fetchNextPage)
 
   return (
     <Placeholder

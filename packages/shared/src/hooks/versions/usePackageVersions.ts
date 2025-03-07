@@ -28,7 +28,7 @@ import type {
   PackageVersionsDto,
   PagedPackageVersions,
 } from '../../entities/versions'
-import type { HasNextPage, InvalidateQuery, IsFetchingNextPage, IsLoading } from '../../utils/aliases'
+import type { HasNextPage, InvalidateQuery, IsFetchingNextPage, IsInitialLoading, IsLoading } from '../../utils/aliases'
 import { optionalSearchParams } from '../../utils/search-params'
 import { API_V2, API_V3, requestJson, requestVoid } from '../../utils/requests'
 import { getPackageRedirectDetails } from '../../utils/redirects'
@@ -84,7 +84,14 @@ export function usePackageVersions(options?: Partial<{
   limit: number
   page: number
   enabled: boolean
-}>): [PackageVersions, IsLoading, FetchNextVersionsList, IsFetchingNextPage, HasNextPage] {
+}>): {
+  versions: PackageVersions
+  isLoading: IsLoading
+  isInitialLoading: IsInitialLoading
+  fetchNextPage: FetchNextVersionsList
+  isFetchingNextPage: IsFetchingNextPage
+  hasNextPage: HasNextPage
+} {
   const { packageId } = useParams()
 
   const { status, textFilter, limit = 100, page = 1, enabled = true, sortBy, sortOrder } = options ?? {}
@@ -94,6 +101,7 @@ export function usePackageVersions(options?: Partial<{
   const {
     data,
     isLoading,
+    isInitialLoading,
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
@@ -113,13 +121,14 @@ export function usePackageVersions(options?: Partial<{
 
   const versions = useMemo(() => (data?.pages.flat() ?? []), [data?.pages])
 
-  return [
+  return {
     versions,
     isLoading,
+    isInitialLoading,
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
-  ]
+  }
 }
 
 export async function getPackageVersionsList(
@@ -205,8 +214,8 @@ export async function editPackageVersion(
 }
 
 export function usePackageVersionKeys(): [VersionKey[], IsLoading] {
-  const [data, isLoading] = usePackageVersions()
-  const versions = handleVersionsRevision(data)
+  const {versions: versionsData, isLoading} = usePackageVersions()
+  const versions = handleVersionsRevision(versionsData)
   return useMemo(
     () => [versions.map(({ key }) => key), isLoading],
     [isLoading, versions],
