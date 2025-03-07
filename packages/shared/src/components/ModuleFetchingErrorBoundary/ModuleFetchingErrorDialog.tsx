@@ -27,7 +27,7 @@ export const ModuleFetchingErrorPopup: FC<PropsWithChildren> = () => (
       },
     }}
   >
-    <DialogTitle sx={{ fontSize: 15, fontWeight: 600, color: 'black' }}>
+    <DialogTitle>
       APIHUB UI is out of date
     </DialogTitle>
     <DialogContent>

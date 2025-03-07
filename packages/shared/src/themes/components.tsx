@@ -321,7 +321,9 @@ export function createComponents(): Components {
     MuiDialogTitle: {
       styleOverrides: {
         root: {
+          fontSize: 15,
           fontWeight: 600,
+          color: 'black',
         },
       },
     },
