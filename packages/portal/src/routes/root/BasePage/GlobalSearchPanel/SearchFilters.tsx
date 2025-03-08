@@ -171,7 +171,7 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
     setPackagesFilter(value), DEFAULT_DEBOUNCE), [])
 
   const [versionsFilter, setVersionsFilter] = useState('')
-  const { versions: packageVersions, isInitialLoading } = usePackageVersions({
+  const { versions: packageVersions, areVersionsInitiallyLoading } = usePackageVersions({
     packageKey: packageKey,
     enabled: enabledFilters && !!packageKey,
     textFilter: versionsFilter,
@@ -519,10 +519,10 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
           render={({ field }) => <Autocomplete
             forcePopupIcon={false}
             value={field.value ?? null}
-            options={packageKey ? handledVersions?.map(version => version.key) : []}
+            options={handledVersions?.map(version => version.key)}
             isOptionEqualToValue={(option, value) => option === value}
             filterOptions={disableAutocompleteSearch}
-            loading={isInitialLoading}
+            loading={areVersionsInitiallyLoading}
             renderInput={(params) => <TextField {...field} {...params} label="Package version"/>}
             onInputChange={onVersionInputChange}
             onChange={(_, version) => setValue('version', version ?? '')}
@@ -689,7 +689,7 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
         </Button>
       </Box>
     </>
-  ), [activeTab, apiSearchMode, apiType, apiTypeFormMap, control, errors.apiType, formatPublicationDate, groups, handledVersions, isWorkspacesLoading, isGroupsLoading, isPackagesLoading, isInitialLoading, packageKey, packages, reset, setValue, workspaceKey, workspaces, onGroupInputChange, onPackageInputChange, onWorkspaceInputChange, onVersionInputChange])
+  ), [activeTab, apiSearchMode, apiType, apiTypeFormMap, control, errors.apiType, formatPublicationDate, groups, handledVersions, isWorkspacesLoading, isGroupsLoading, isPackagesLoading, areVersionsInitiallyLoading, packages, reset, setValue, workspaceKey, workspaces, onGroupInputChange, onPackageInputChange, onWorkspaceInputChange, onVersionInputChange])
 })
 
 function ScopesAutocomplete<T extends Key>({

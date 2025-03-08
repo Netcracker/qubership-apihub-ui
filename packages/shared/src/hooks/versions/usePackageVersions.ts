@@ -86,8 +86,8 @@ export function usePackageVersions(options?: Partial<{
   enabled: boolean
 }>): {
   versions: PackageVersions
-  isLoading: IsLoading
-  isInitialLoading: IsInitialLoading
+  areVersionsLoading: IsLoading
+  areVersionsInitiallyLoading: IsInitialLoading
   fetchNextPage: FetchNextVersionsList
   isFetchingNextPage: IsFetchingNextPage
   hasNextPage: HasNextPage
@@ -100,8 +100,8 @@ export function usePackageVersions(options?: Partial<{
 
   const {
     data,
-    isLoading,
-    isInitialLoading,
+    isLoading: areVersionsLoading,
+    isInitialLoading: areVersionsInitiallyLoading,
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
@@ -123,8 +123,8 @@ export function usePackageVersions(options?: Partial<{
 
   return {
     versions,
-    isLoading,
-    isInitialLoading,
+    areVersionsLoading,
+    areVersionsInitiallyLoading,
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
@@ -214,11 +214,11 @@ export async function editPackageVersion(
 }
 
 export function usePackageVersionKeys(): [VersionKey[], IsLoading] {
-  const {versions: versionsData, isLoading} = usePackageVersions()
+  const {versions: versionsData, areVersionsLoading} = usePackageVersions()
   const versions = handleVersionsRevision(versionsData)
   return useMemo(
-    () => [versions.map(({ key }) => key), isLoading],
-    [isLoading, versions],
+    () => [versions.map(({ key }) => key), areVersionsLoading],
+    [areVersionsLoading, versions],
   )
 }
 

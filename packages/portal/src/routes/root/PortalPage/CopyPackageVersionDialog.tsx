@@ -74,7 +74,7 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const [targetVersion, setTargetVersion] = useState<Key>('')
 
   const [versionsFilter, setVersionsFilter] = useState('')
-  const { versions: versionsWithRevisions, isLoading: areVersionsLoading } = usePackageVersions({
+  const { versions: versionsWithRevisions, areVersionsLoading } = usePackageVersions({
     packageKey: targetPackage?.key,
     enabled: !!targetPackage,
     textFilter: versionsFilter,

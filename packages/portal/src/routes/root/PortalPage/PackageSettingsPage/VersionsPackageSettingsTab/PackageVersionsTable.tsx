@@ -49,7 +49,7 @@ export const PackageVersionsTable: FC<PackageVersionsTableProps> = memo<PackageV
     onDelete, onEdit, searchValue,
   } = props
 
-  const { versions, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } = usePackageVersions({
+  const { versions, areVersionsLoading, fetchNextPage, isFetchingNextPage, hasNextPage } = usePackageVersions({
     packageKey: packageKey,
     status: status,
     textFilter: searchValue,
@@ -64,7 +64,7 @@ export const PackageVersionsTable: FC<PackageVersionsTableProps> = memo<PackageV
 
   return (
     <Placeholder
-      invisible={isNotEmpty(filteredVersions) || isLoading}
+      invisible={isNotEmpty(filteredVersions) || areVersionsLoading}
       area={NAVIGATION_PLACEHOLDER_AREA}
       message={searchValue ? NO_SEARCH_RESULTS : 'No versions to display'}
     >
@@ -79,7 +79,7 @@ export const PackageVersionsTable: FC<PackageVersionsTableProps> = memo<PackageV
         />}
         hasNextPage={hasNextPage}
         refObject={ref}
-        isLoading={isLoading}
+        isLoading={areVersionsLoading}
       />
     </Placeholder>
   )

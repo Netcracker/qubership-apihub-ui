@@ -61,7 +61,7 @@ const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
   const releaseVersionPattern = useMemo(() => packageObj?.releaseVersionPattern, [packageObj])
 
   const [versionsFilter, setVersionsFilter] = useState('')
-  const { versions, isLoading: areVersionsLoading } = usePackageVersions({ textFilter: versionsFilter })
+  const { versions, areVersionsLoading } = usePackageVersions({ textFilter: versionsFilter })
   const { filesWithLabels } = useFiles()
   const isEditingVersion = !!versionId && versionId !== SPECIAL_VERSION_KEY
 
