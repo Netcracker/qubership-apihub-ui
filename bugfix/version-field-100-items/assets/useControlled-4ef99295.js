@@ -1,2 +1,0 @@
-import{r as u,e as i}from"./index-37ba2b57.js";let l=0;function m(t){const[e,n]=u.useState(t),s=t||e;return u.useEffect(()=>{e==null&&(l+=1,n(`mui-${l}`))},[e]),s}const o=i["useId".toString()];function S(t){if(o!==void 0){const e=o();return t??e}return m(t)}function p({controlled:t,default:e,name:n,state:s="value"}){const{current:a}=u.useRef(t!==void 0),[c,f]=u.useState(e),r=a?t:c,d=u.useCallback(I=>{a||f(I)},[]);return[r,d]}export{S as a,p as u};
-//# sourceMappingURL=useControlled-4ef99295.js.map
