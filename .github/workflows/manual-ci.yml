@@ -30,22 +30,22 @@ on:
           description: "Flag for make the job green even if there are failed tests"
           type: boolean
           default: true
-      backend-image-tag:
-          description: "Branch to clone"
+      apihub-backend-image-tag:
+          description: "Qubership APIHUB Backend image tag"
           type: string
           default: "dev"
-      task-consumer-image-tag:
-          description: "Branch to clone"
+      apihub-build-task-consumer-image-tag:
+          description: "Qubership APIHUB Build Task Consumer image tag"
           type: string
           default: "dev"
-      ui-image-tag:
-          description: "Branch to clone"
+      apihub-ui-image-tag:
+          description: "Qubership APIHUB UIimage tag"
           type: string
           default: "dev"
 
 jobs:
   call-e2e-ci-workflow:
-    uses: netcracker/qubership-apihub-ci/.github/workflows/e2e-ci.yml@e2e
+    uses: netcracker/qubership-apihub-ci/.github/workflows/docker-compose-run-and-test-ci.yml@main
     with:
       compose-repository-branch: ${{ github.event.inputs.compose-repository-branch }}
       postman-collections-run: ${{ github.event.inputs.postman-collections-run }}
@@ -54,9 +54,9 @@ jobs:
       playwright-repository-branch: ${{ github.event.inputs.playwright-repository-branch }}
       playwright-tests-run: ${{ github.event.inputs.playwright-tests-run }}
       fail-because-of-tests: ${{ github.event.inputs.fail-because-of-tests }}
-      backend-image-tag: ${{ github.event.inputs.backend-image-tag }}
-      task-consumer-image-tag: ${{ github.event.inputs.task-consumer-image-tag }}
-      ui-image-tag: ${{ github.event.inputs.ui-image-tag }}
+      apihub-backend-image-tag: ${{ github.event.inputs.apihub-backend-image-tag }}
+      apihub-build-task-consumer-image-tag: ${{ github.event.inputs.apihub-build-task-consumer-image-tag }}
+      apihub-ui-image-tag: ${{ github.event.inputs.apihub-ui-image-tag }}
     secrets:
       APIHUB_ACCESS_TOKEN: ${{ secrets.APIHUB_ACCESS_TOKEN }}
       APIHUB_ADMIN_EMAIL: ${{ secrets.APIHUB_ADMIN_EMAIL }}
