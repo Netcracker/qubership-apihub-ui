@@ -11,7 +11,8 @@ on:
     tags:
       - '**'
   delete:
-  pull_request:    
+  pull_request:
+    types: [opened, reopened, synchronize]
 
 jobs:
   call-frontend-ci-workflow:
