@@ -31,7 +31,7 @@ jobs:
     secrets:
       NPMRC: ${{ secrets.NPMRC }}
   call-docker-compose-run-and-test-ci-workflow:
-    uses: netcracker/qubership-apihub-ci/.github/workflows/docker-compose-run-and-test-ci.yml@feature/e2e-test
+    uses: netcracker/qubership-apihub-ci/.github/workflows/.github/workflows/docker-compose-run-and-test-ci.yml@feature/e2e-tests
     needs: call-docker-ci-workflow
     if: github.event_name == 'pull_request'
     with:
