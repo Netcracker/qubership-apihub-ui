@@ -27,7 +27,7 @@ jobs:
   call-docker-ci-workflow:
     needs: call-frontend-ci-workflow
     if: (github.event_name == 'push') || (github.event_name == 'pull_request')
-    uses: netcracker/qubership-apihub-ci/.github/workflows/docker-ci.yml@main
+    uses: netcracker/qubership-apihub-ci/.github/workflows/docker-ci.yml@feature/e2e-tests
     with:
       name: qubership-apihub-ui
       file: Dockerfile
