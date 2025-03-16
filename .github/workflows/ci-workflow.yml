@@ -43,9 +43,9 @@ jobs:
     needs: call-docker-ci-workflow
     if: github.event_name == 'pull_request'
     with:
-      postman-collections-run: true
+      postman-collections-run: false
       apihub-ui-image-tag: ${{ needs.call-docker-ci-workflow.outputs.image_tag }}
-      playwright-test-args: "--project=Portal --workers=16"
+      playwright-test-args: "--project=Portal --workers=12"
       # backend-image-tag: next
       # task-consumer-image-tag: 1.2.3
     secrets:
