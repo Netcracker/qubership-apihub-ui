@@ -16,6 +16,7 @@
     "dev:agents": "npx lerna run dev:backend,dev:frontend --stream --scope=@netcracker/qubership-apihub-ui-agents",
     "dev:editor": "npx lerna run dev:backend,dev:frontend --stream --scope=@netcracker/qubership-apihub-ui-editor",
     "dev:portal": "npx lerna run dev:backend,dev:frontend --stream --scope=@netcracker/qubership-apihub-ui-portal",
+    "screenshot-test:ci": "npm run --workspace=@netcracker/qubership-apihub-ui-shared screenshot-test:ci",
     "feature-start": "feature-start --featureName",
     "feature-finish": "feature-finish",
     "release-start": "release-start",

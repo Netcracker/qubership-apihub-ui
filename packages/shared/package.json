@@ -11,13 +11,13 @@
   "scripts": {
     "lint": "eslint . --ext .ts,.tsx,.json --ignore-path ../../.gitignore --max-warnings 0 --report-unused-disable-directives",
     "format": "npm run lint --fix",
-    "storybook": "storybook dev -p 6006",
+    "storybook": "storybook dev -p 9009",
     "build:showcase": "storybook build -o ../../dist-showcase --disable-telemetry",
-    "integration-test:develop": "npm run build:showcase && start-server-and-test integration-test:server http://localhost:6006 integration-test:run-local",
-    "integration-test:ci": "npm run build:showcase && start-server-and-test integration-test:server http://localhost:6006 integration-test:run-ci",
-    "integration-test:server": "ws -p 6006 -d dist-showcase --spa index.html --static.maxage 3600",
-    "integration-test:run-local": "jest -w 3 -c .jest/integration/it-test-docker.jest.config.js",
-    "integration-test:run-ci": "jest -w 8 -c .jest/integration/it-test.jest.config.js"
+    "screenshot-test:server": "npm run build:showcase && ws -p 9009 -d ../../dist-showcase --spa index.html --static.maxage 3600",
+    "screenshot-test": "npx playwright test -c src/it/playwright --project=chromium",
+    "screenshot-test:ci": "start-server-and-test screenshot-test:server http://localhost:9009 screenshot-test",
+    "screenshot-test:docker": "start-server-and-test screenshot-test:server http://localhost:9009 \"bash ./src/it/playwright/run-docker-test.sh\"",
+    "screenshot-test:regenerate-snapshots": "start-server-and-test screenshot-test:server http://localhost:9009 \"bash ./src/it/playwright/run-docker-test.sh --update-snapshots\""
   },
   "peerDependencies": {
     "@emotion/react": "11.10.6",
@@ -29,6 +29,8 @@
     "jszip": "3.10.1"
   },
   "devDependencies": {
+    "@playwright/test": "1.51.0",
+    "@types/node": "22.13.10",
     "vite-plugin-dts": "1.7.1"
   }
 }
