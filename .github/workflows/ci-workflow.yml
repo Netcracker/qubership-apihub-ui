@@ -45,7 +45,7 @@ jobs:
     with:
       postman-collections-run: false
       apihub-ui-image-tag: ${{ needs.call-docker-ci-workflow.outputs.image_tag }}
-      playwright-test-args: "--project=Portal --workers=5"
+      playwright-test-args: "--project=Portal --workers=8"
       # backend-image-tag: next
       # task-consumer-image-tag: 1.2.3
     secrets:
