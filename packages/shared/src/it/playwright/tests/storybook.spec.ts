@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { getPreloadedStoryIds } from '../helpers/stories'
+import { loadStoryIds } from '../helpers/stories'
 
 const skippedStories = [
   'security-reports-table--infinity-data-story',
@@ -8,8 +8,8 @@ const skippedStories = [
 ]
 const testHost = process.env.CI ? 'localhost' : 'host.docker.internal'
 
-// Load the story IDs before defining tests (this will be done only once)
-const storyIds = await getPreloadedStoryIds()
+// Load the story IDs before defining tests
+const storyIds = await loadStoryIds()
 
 // Skip all tests if no story IDs are found
 test.skip(storyIds.length === 0, 'There are no stories to test')
