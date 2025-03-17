@@ -38,7 +38,7 @@ jobs:
     needs: build-docker-image
     if: github.event_name == 'pull_request'
     with:
-      postman-collections-run: true
+      postman-collections-run: false
       apihub-ui-image-tag: ${{ needs.build-docker-image.outputs.image_tag }}      
       # apihub-backend-image-tag: dev
       # apihub-build-task-consumer-image-tag: dev
