@@ -41,6 +41,81 @@ export type RequestJsonExtraOptions = {
   ignoreNotFound?: boolean
 }
 
+const HTTP_PREFIX = 'http://'
+const HTTPS_PREFIX = 'https://'
+
+function validateUrl(input: URL): boolean {
+  const allowedHosts = [
+    'apihub.netcracker.com',
+  ]
+
+  if (!allowedHosts.includes(input.hostname)) {
+    return false
+  }
+
+  const { searchParams } = input
+  let foundSuspiciousUrl = false
+  searchParams.forEach(value => {
+    if (foundSuspiciousUrl) { return }
+    const decodedValue = decodeURIComponent(value)
+    foundSuspiciousUrl ||= decodedValue.startsWith(HTTP_PREFIX) || decodedValue.startsWith(HTTPS_PREFIX)
+  })
+  return !foundSuspiciousUrl
+}
+
+function validateRequest(
+  input: RequestInfo | URL,
+  basePath?: string,
+): boolean {
+  // no absolute base paths 
+  if (basePath?.startsWith(HTTP_PREFIX) || basePath?.startsWith(HTTPS_PREFIX)) {
+    return false
+  }
+
+  // else if there is no base path OR base path is relative, we have to check "input"
+
+  // if it is already instance of URL, validate it
+  if (input instanceof URL) {
+    return validateUrl(input)
+  }
+
+  if (typeof input === 'string') {
+    // if "input" is absolute path, transform it to URL and validate as URL instance
+    if (input.startsWith(HTTP_PREFIX) || input.startsWith(HTTPS_PREFIX)) {
+      const url = new URL(input)
+      return validateUrl(url)
+    }
+
+    // else if "input" is relative path, check it deeply
+    const splittedInput = input.split('?')
+    if (splittedInput.length > 1) { // there are search params
+      const [, encodedUriComponent] = splittedInput
+      const uriComponent = decodeURIComponent(encodedUriComponent)
+      // some search param is URL
+      if (uriComponent.includes(HTTP_PREFIX) || uriComponent.includes(HTTPS_PREFIX)) {
+        return false
+      }
+    } else { // there are no search params OR everything is encoded
+      const decodedUri = decodeURI(input)
+      // some search param is URL
+      if (decodedUri.lastIndexOf(HTTP_PREFIX) > 0 || decodedUri.lastIndexOf(HTTPS_PREFIX) > 0) {
+        return false
+      }
+    }
+
+    return true
+  }
+
+  // if input is instance of Request
+  // TODO 18.03.25 // This is unused part of API. May we remove it?
+  if (input.url?.startsWith(HTTP_PREFIX) || input.url?.startsWith(HTTPS_PREFIX)) {
+    const url = new URL(input.url)
+    return validateUrl(url)
+  }
+
+  return true
+}
+
 export async function requestJson<T extends object | null>(
   input: RequestInfo | URL,
   init?: RequestInit,
@@ -50,6 +125,12 @@ export async function requestJson<T extends object | null>(
   const { basePath = '', customErrorHandler, customRedirectHandler, ignoreNotFound = false } = options
 
   const authorization = (init?.headers as Record<string, string>)?.authorization ?? getAuthorization()
+
+  // validate request data to prevent substitutions
+  if (!validateRequest(input, basePath)) {
+    console.error('Invalid request. Input:', input, 'Base path:', basePath)
+    return null as T
+  }
 
   const response = await fetch(`${basePath}${input}`, {
     headers: {
