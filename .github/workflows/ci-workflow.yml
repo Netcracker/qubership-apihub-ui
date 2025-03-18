@@ -1,4 +1,4 @@
-name: build & test, build Docker image, run E2E tests 
+name: build & unit test, build Docker image, run E2E tests 
 
 on:
   push:
@@ -18,11 +18,11 @@ on:
 
 jobs:  
   build-and-unit-test:
-    uses: netcracker/qubership-apihub-ci/.github/workflows/frontend-ci.yaml@feature/e2e-tests
+    uses: netcracker/qubership-apihub-ci/.github/workflows/frontend-ci.yaml@main
   build-docker-image:
     needs: build-and-unit-test
     if: (github.event_name == 'push') || (github.event_name == 'pull_request')
-    uses: netcracker/qubership-apihub-ci/.github/workflows/docker-ci.yml@feature/e2e-tests
+    uses: netcracker/qubership-apihub-ci/.github/workflows/docker-ci.yml@main
     with:
       name: qubership-apihub-ui
       file: Dockerfile
@@ -34,7 +34,7 @@ jobs:
     secrets:
       NPMRC: ${{ secrets.NPMRC }}
   run-e2e-tests:
-    uses: netcracker/qubership-apihub-ci/.github/workflows/docker-compose-run-and-test-ci.yml@feature/e2e-tests
+    uses: netcracker/qubership-apihub-ci/.github/workflows/docker-compose-run-and-test-ci.yml@main
     needs: build-docker-image
     if: github.event_name == 'pull_request'
     with:
