@@ -61,6 +61,15 @@ export const CHANGE_SEVERITY_NAME_MAP: Record<ChangeSeverity, string> = {
   [ANNOTATION_CHANGE_SEVERITY]: 'Annotation',
 }
 
+export const CHANGE_SEVERITY_TOOLTIP_TITLE_MAP: Record<ChangeSeverity, string> = {
+  [BREAKING_CHANGE_SEVERITY]: 'Breaking Changes',
+  [SEMI_BREAKING_CHANGE_SEVERITY]: 'Changes Requiring Attention',
+  [DEPRECATED_CHANGE_SEVERITY]: 'Deprecated Changes',
+  [NON_BREAKING_CHANGE_SEVERITY]: 'Non-breaking Changes',
+  [UNCLASSIFIED_CHANGE_SEVERITY]: 'Unclassified Changes',
+  [ANNOTATION_CHANGE_SEVERITY]: 'Annotation Changes',
+}
+
 export const CHANGE_SEVERITY_DESCRIPTION_MAP: Record<ChangeSeverity, { text: string; options?: string[] }> = {
   [BREAKING_CHANGE_SEVERITY]: { text: 'Breaking change is a change that breaks backward compatibility with the previous version of API. For example, deleting an operation, adding a required parameter or changing type of a parameter are breaking changes.' },
   [SEMI_BREAKING_CHANGE_SEVERITY]: {
