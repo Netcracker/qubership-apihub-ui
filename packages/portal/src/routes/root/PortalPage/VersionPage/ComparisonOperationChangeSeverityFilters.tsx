@@ -20,7 +20,10 @@ import { useComparedOperationsPair } from './ComparedOperationsContext'
 import { DEFAULT_CHANGE_SEVERITY_MAP } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
 import { ChangeSeverityFilters } from '@netcracker/qubership-apihub-ui-shared/components/ChangeSeverityFilters'
 import { useSemiBreakingChanges } from '@apihub/routes/root/PortalPage/VersionPage/useSemiBreakingChanges'
-import { getApiDiffResult, handleSemiBreakingChanges } from '@netcracker/qubership-apihub-ui-shared/utils/api-diff-result'
+import {
+  getApiDiffResult,
+  handleSemiBreakingChanges,
+} from '@netcracker/qubership-apihub-ui-shared/utils/api-diff-result'
 import { GLOBAL_DIFF_META_KEY } from '@netcracker/qubership-apihub-ui-shared/utils/api-diffs'
 import { BREAKING_CHANGE_TYPE } from '@netcracker/qubership-apihub-api-processor'
 import type { Diff } from '@netcracker/qubership-apihub-api-diff'

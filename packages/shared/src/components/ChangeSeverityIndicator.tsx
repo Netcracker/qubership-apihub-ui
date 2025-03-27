@@ -30,6 +30,8 @@ export const ChangeSeverityIndicator: FC<ChangeSeverityIndicatorProps> = memo<Ch
   severity,
   sx,
 }) => {
+  debugger
+  console.log('ChangeSeverityIndicator------>', severity, sx)
   return <Box
     sx={{
       position: 'absolute',
@@ -48,6 +50,6 @@ export const ChangeSeverityIndicator: FC<ChangeSeverityIndicatorProps> = memo<Ch
       ...sx,
     }}
     data-testid="ChangeSeverityIndicator">
-    {CHANGE_SEVERITY_NAME_MAP[severity].toLocaleLowerCase()}
+    {CHANGE_SEVERITY_NAME_MAP[severity]?.toLocaleLowerCase()}
   </Box>
 })

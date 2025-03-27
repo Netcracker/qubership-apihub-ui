@@ -24,14 +24,22 @@ import {
   NON_BREAKING_CHANGE_SEVERITY,
   REMOVE_ACTION_TYPE,
   REPLACE_ACTION_TYPE,
-  SEMI_BREAKING_CHANGE_SEVERITY,
+  RISKY_CHANGE_SEVERITY,
   UNCLASSIFIED_CHANGE_SEVERITY,
 } from './change-severities'
-import type { ApiAudience, ApiKind, Operation, OperationWithDifference, PackageRef, PackagesRefs, Tags } from './operations'
+import type {
+  ApiAudience,
+  ApiKind,
+  Operation,
+  OperationWithDifference,
+  PackageRef,
+  PackagesRefs,
+  Tags,
+} from './operations'
 import { ALL_API_KIND, toPackageRef } from './operations'
 import type { GraphQlOperationType } from './graphql-operation-types'
 import type { Key } from './keys'
-import { API_AUDIENCE_EXTERNAL } from '@netcracker/qubership-apihub-api-processor'
+import { API_AUDIENCE_EXTERNAL, replacePropertyInChangesSummary } from '@netcracker/qubership-apihub-api-processor'
 
 export type VersionChangesDto = Partial<Readonly<{
   previousVersion: Key
@@ -118,6 +126,7 @@ export const toDiffVersionChanges = (dto: VersionChangesDto): DifferentVersionCh
 export const toOperationChangeData = (dto: OperationChangeDataDto, packagesRefs?: PackagesRefs): OperationChangeData => {
   return {
     ...dto,
+    changeSummary: replacePropertyInChangesSummary(dto.changeSummary),
     operationKey: dto.operationId,
     title: dto.currentOperation?.title ?? dto.previousOperation?.title ?? '',
     apiKind: dto.currentOperation?.apiKind ?? dto.previousOperation?.apiKind ?? ALL_API_KIND,
@@ -133,6 +142,7 @@ export const toOperationChangeData = (dto: OperationChangeDataDto, packagesRefs?
 export const toDiffOperationChangeData = (dto: OperationChangeDataDto): OperationWithDifferenceChangeData => {
   return {
     ...dto,
+    changeSummary: replacePropertyInChangesSummary(dto.changeSummary),
     operationKey: dto.operationId,
     action: calculateAction(dto.currentOperation?.dataHash, dto.previousOperation?.dataHash),
     tags: dto.tags,
@@ -153,7 +163,7 @@ export const EMPTY_CHANGES = {
 
 export const EMPTY_CHANGE_SUMMARY: ChangesSummary = {
   [BREAKING_CHANGE_SEVERITY]: 0,
-  [SEMI_BREAKING_CHANGE_SEVERITY]: 0,
+  [RISKY_CHANGE_SEVERITY]: 0,
   [DEPRECATED_CHANGE_SEVERITY]: 0,
   [NON_BREAKING_CHANGE_SEVERITY]: 0,
   [ANNOTATION_CHANGE_SEVERITY]: 0,

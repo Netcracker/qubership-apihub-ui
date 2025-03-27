@@ -27,6 +27,9 @@ import { ALL_API_KIND, API_AUDIENCE_ALL } from '@netcracker/qubership-apihub-ui-
 import { API_V3 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
 import type { ChangeSeverity } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
+import {
+  replaceStringDiffTypeForDTO,
+} from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget/api/getOperationChangelog'
 
 export function useDownloadChangesAsExcel(): [DownloadChangesAsExcelFunction, IsLoading] {
   const showErrorNotification = useShowErrorNotification()
@@ -68,7 +71,7 @@ export const downloadChangesAsExcel = async (
     apiKind: { value: apiKind !== ALL_API_KIND ? apiKind : undefined },
     apiAudience: { value: apiAudience },
     tag: { value: tag },
-    severity: { value: severityFilter },
+    severity: { value: replaceStringDiffTypeForDTO(severityFilter) },
     group: { value: group },
     emptyGroup: { value: emptyGroup },
     refPackageId: { value: refPackageId },
@@ -76,6 +79,7 @@ export const downloadChangesAsExcel = async (
     previousVersion: { value: previousVersion },
     previousVersionPackageId: { value: previousVersionPackageId },
   })
+  console.log('Обратная конвертация для работы фильтра')
 
   const pathPattern = '/packages/:packageId/versions/:versionId/:apiType/export/changes'
   const response = await portalRequestBlob(

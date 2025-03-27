@@ -27,6 +27,7 @@ import { API_V3, requestJson } from '../../../utils/requests'
 import { getPackageRedirectDetails } from '../../../utils/redirects'
 import type { VersionChangesDto } from '../../../entities/version-changelog'
 import type { ApiType } from '../../../entities/api-types'
+import { replaceStringDiffTypeForDTO } from './getOperationChangelog'
 
 export type VersionChangelogOptions = Partial<{
   packageKey: Key
@@ -88,11 +89,13 @@ export async function getVersionChangelog(
     apiAudience: { value: apiAudience },
     apiType: { value: apiType },
     group: { value: group },
-    severity: { value: severityFilters },
+    severity: { value: replaceStringDiffTypeForDTO(severityFilters) }, //тута
     emptyGroup: { value: emptyGroup },
     page: { value: page },
     limit: { value: limit },
   })
+
+  console.log('getVersionChangelog', queryParams, 'REST')
 
   const pathPattern = '/packages/:packageId/versions/:versionId/:apiType/changes'
   return await requestJson(

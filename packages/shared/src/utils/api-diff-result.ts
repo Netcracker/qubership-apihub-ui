@@ -15,13 +15,13 @@
  */
 
 import type { CompareResult, Diff } from '@netcracker/qubership-apihub-api-diff'
+import { risky } from '@netcracker/qubership-apihub-api-diff'
 import { apiDiff, COMPARE_MODE_OPERATION } from '@netcracker/qubership-apihub-api-diff'
 import { isNotEmpty } from './arrays'
 import {
   calculateChangeId,
   calculateDiffId,
   removeComponents,
-  SEMI_BREAKING_CHANGE_TYPE,
 } from '@netcracker/qubership-apihub-api-processor'
 import { NORMALIZE_OPTIONS } from './normalize'
 import { isObject } from 'lodash-es'
@@ -133,10 +133,10 @@ export function handleSemiBreakingChanges(semiBreakingChanges: OperationChange[]
 
     const semiBreakingChangesAdaptedForComparisonMap = createDiffMap(semiBreakingChangesAdaptedForComparison, calculateChangeId)
     const apiDiffMap = createDiffMap(diffResult.diffs, calculateDiffId)
-
+debugger
     for (const [key, value] of apiDiffMap.entries()) {
       if (semiBreakingChangesAdaptedForComparisonMap.has(key)) {
-        (value as Diff).type = SEMI_BREAKING_CHANGE_TYPE
+        (value as Diff).type = risky
       }
     }
   }

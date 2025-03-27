@@ -29,6 +29,7 @@ import { portalRequestJson } from '@apihub/utils/requests'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
 import { API_V3, DEFAULT_REFETCH_INTERVAL } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { toApiTypeMap } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { convertDtoFieldOperationTypes } from '@netcracker/qubership-apihub-api-processor'
 
 export const PACKAGE_VERSION_CONTENT_QUERY_KEY = 'package-version-content-query-key'
 
@@ -175,6 +176,8 @@ export function getCurrentPackageVersionContent(
 }
 
 function toPackageVersionContent(value: PackageVersionContentDto): PackageVersionContent {
+  value.operationTypes = value?.operationTypes ? convertDtoFieldOperationTypes(value.operationTypes) : value.operationTypes
+
   return {
     ...value,
     packageKey: value.packageId,

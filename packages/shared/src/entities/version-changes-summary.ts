@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import type { OperationType } from '@netcracker/qubership-apihub-api-processor'
+import type {
+  DiffTypeDto,
+  OperationType,
+} from '@netcracker/qubership-apihub-api-processor'
+import { convertDtoFieldOperationTypes} from '@netcracker/qubership-apihub-api-processor'
+
 import type { PackageRef, PackagesRefs } from './operations'
 import { toPackageRef } from './operations'
 import { EMPTY_CHANGE_SUMMARY } from './version-changelog'
@@ -33,7 +38,7 @@ export type DashboardComparisonSummaryDto = Readonly<{
 export type RefComparisonSummaryDto = Readonly<{
   packageRef?: string
   previousPackageRef?: string
-  operationTypes: ReadonlyArray<OperationType>
+  operationTypes: ReadonlyArray<OperationType<DiffTypeDto>>
   noContent?: boolean
 }>
 
@@ -55,7 +60,7 @@ export type RefComparisonSummary = Readonly<{
 export type DashboardComparisonSummary = ReadonlyArray<RefComparisonSummary>
 
 export type PackageComparisonSummaryDto = Readonly<{
-  operationTypes: ReadonlyArray<OperationType>
+  operationTypes: ReadonlyArray<OperationType<DiffTypeDto>>
   noContent?: boolean
 }>
 
@@ -75,19 +80,67 @@ function isDashboardSummaryDto(value: VersionChangesSummaryDto): value is Dashbo
   return !!(value as DashboardComparisonSummaryDto)?.refs
 }
 
+// export function replaceSemiBreakingWithRisky(obj) {
+//   if (obj.hasOwnProperty('semi-breaking')) {
+//     obj[risky] = obj['semi-breaking']
+//     delete obj['semi-breaking']
+//     return obj
+//   } else {
+//     return obj
+//   }
+// }
+// export function replacePropertyInChangesSummary1<
+//   T extends string | number | symbol = DiffTypeDto,
+//   J extends string | number | symbol = DiffType>
+// (obj: ChangeSummary<T>,
+//   {
+//     origin,
+//     override,
+//   }: any = {
+//     origin: SEMI_BREAKING_CHANGE_TYPE,
+//     override: risky,
+//   }): ChangeSummary<J> {
+//   if (Object.prototype.hasOwnProperty.call(obj, origin)) {
+//     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//     // @ts-ignore
+//     obj[override] = obj[origin]
+//     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//     // @ts-ignore
+//     delete obj[origin]
+//     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//     // @ts-ignore
+//     return obj
+//   } else {
+//     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//     // @ts-ignore
+//     return obj
+//   }
+//
+// }
+//
+// export function convertDtoFieldOperationTypes1(operationTypes: ReadonlyArray<OperationType<DiffTypeDto>>): ReadonlyArray<OperationType> {
+//   return operationTypes?.map((type) => {
+//     return {
+//       ...type,
+//       changesSummary: replacePropertyInChangesSummary1(type.changesSummary),
+//       numberOfImpactedOperations: replacePropertyInChangesSummary1(type.numberOfImpactedOperations),
+//     }
+//   })
+// }
+
 export function toVersionChangesSummary(value: VersionChangesSummaryDto): VersionChangesSummary {
   if (isDashboardSummaryDto(value)) {
     return value.refs.map((ref) => {
       const changedPackage = toPackageRef(ref.packageRef, value.packages)
       const originalPackage = toPackageRef(ref.previousPackageRef, value.packages)
       return {
+        operationTypes: convertDtoFieldOperationTypes(ref.operationTypes),
         refKey: changedPackage?.refId || originalPackage?.refId,
         name: changedPackage?.name ?? originalPackage?.name ?? UNDEFINED_NAME,
         version: changedPackage?.version,
         previousVersion: originalPackage?.version,
         status: changedPackage?.status as VersionStatus,
         previousStatus: originalPackage?.status as VersionStatus,
-        operationTypes: ref.operationTypes,
         parentPackages: changedPackage?.parentPackages ?? originalPackage?.parentPackages ?? [],
         packageRef: changedPackage,
         previousPackageRef: originalPackage,
@@ -96,7 +149,10 @@ export function toVersionChangesSummary(value: VersionChangesSummaryDto): Versio
       }
     })
   } else {
-    return value
+    return {
+      ...value,
+      operationTypes: convertDtoFieldOperationTypes(value.operationTypes),
+    }
   }
 }
 

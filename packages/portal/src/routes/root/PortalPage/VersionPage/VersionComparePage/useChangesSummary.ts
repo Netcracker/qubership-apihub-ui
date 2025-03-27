@@ -54,6 +54,7 @@ export function useChangesSummary(options: {
       getChangesSummary(packageKey, fullVersion, previousVersionPackageKey, fullPreviousVersion, signal),
     select: toVersionChangesSummary,
   })
+  console.log('useChangesSummary', data)
 
   return [data, isLoading, isFetching, error]
 }
@@ -74,6 +75,7 @@ export async function getChangesSummary(
   })
 
   const pathPattern = '/packages/:packageId/versions/:versionId/changes/summary'
+  console.log('getChangesSummary-->', 'REST')
   return await portalRequestJson<VersionChangesSummaryDto>(
     `${generatePath(pathPattern, { packageId, versionId })}?${queryParams}`,
     { method: 'get' },

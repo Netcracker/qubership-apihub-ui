@@ -36,6 +36,7 @@ import { NotFoundError } from './requests'
 export async function packageVersionResolver(authorization: string): Promise<VersionResolver> {
   return async (packageId, version, includeOperations = false) => {
     const versionConfig = await getPackageVersionContent(packageId, version, includeOperations, authorization)
+    console.log('packageVersionResolver----->', versionConfig)
     if (!versionConfig) {
       return null
     }
