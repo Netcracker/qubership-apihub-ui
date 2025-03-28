@@ -43,7 +43,7 @@ export type CommonLoginPageComponentProps = {
   isLoading: boolean
   isError: boolean
 }
-
+//
 export const CommonLoginPageComponent: FC<CommonLoginPageComponentProps> = memo(({
   applicationName,
   onLogin,

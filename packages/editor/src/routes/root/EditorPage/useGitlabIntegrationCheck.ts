@@ -16,16 +16,18 @@
 
 import { useAuthorization } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
 import { getTokenPayload } from '@netcracker/qubership-apihub-ui-shared/entities/token-payload'
+import { useUserInfo } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useUserInfo'
 
 export function useGitlabIntegrationCheck(): boolean {
-  const [authorization] = useAuthorization()
+  const [userInfo] = useUserInfo()
 
-  if (!authorization) {
+  if (!userInfo) {
     return false
   }
 
   try {
-    return getTokenPayload(authorization.token).extensions.gitIntegration
+    return true // TODO 28.03.25 // Fix it or get rid of it
+    // return getTokenPayload(userInfo.token).extensions.gitIntegration
   } catch (e) {/*do nothing*/}
 
   return false

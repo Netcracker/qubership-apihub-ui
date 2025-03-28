@@ -15,5 +15,5 @@
  */
 
 // eslint-disable-next-line filenames/no-index
-export type { AuthorizationOptions, Credentials, LoginUser } from './useAuthorization'
-export { DEFAULT_AUTHORIZATION_DEBOUNCE, useAuthorization } from './useAuthorization'
+export type { AuthorizationOptions, Credentials, LoginUser } from './useUserInfo'
+export { DEFAULT_AUTHORIZATION_DEBOUNCE, useAuthorization } from './useUserInfo'

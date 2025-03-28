@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, StrictMode, useState } from 'react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { CssBaseline, ThemeProvider } from '@mui/material'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { RouterProvider } from 'react-router-dom'
-import { useLocation } from 'react-use'
-import { isTokenExpired } from '@netcracker/qubership-apihub-ui-shared/entities/token-payload'
-import { getToken } from '@netcracker/qubership-apihub-ui-shared/utils/storages'
-import { useAuthorization } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
-import { theme } from '@netcracker/qubership-apihub-ui-shared/themes/theme'
 import { ErrorHandler } from '@apihub/components/ErrorHandler'
 import { EventBusProvider } from '@apihub/routes/EventBusProvider'
 import { router } from '@apihub/routes/Router'
-import { AuthPage } from '@netcracker/qubership-apihub-ui-shared/pages/AuthPage'
+import { CssBaseline, ThemeProvider } from '@mui/material'
+import { useSystemInfo } from '@netcracker/qubership-apihub-ui-shared/features/system-info'
+import { useSystemConfiguration } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useSystemConfiguration'
+import { theme } from '@netcracker/qubership-apihub-ui-shared/themes/theme'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import type { FC } from 'react'
+import { memo, StrictMode, useEffect, useState } from 'react'
+import { RouterProvider } from 'react-router-dom'
+import { useLocation } from 'react-use'
 
 const client = new QueryClient({
   defaultOptions: {
@@ -42,8 +40,18 @@ const client = new QueryClient({
 })
 
 export const App: FC = memo(() => {
-  const [auth, setAuth] = useState<boolean>(!isTokenExpired(getToken()))
-  useAuthorization({ setLogin: setAuth })
+  const [auth, setAuth] = useState<boolean>(false)
+
+  // first, load config
+  const [systemConfiguration] = useSystemConfiguration()
+  // second, try to access protected API
+  const systemInfo = useSystemInfo(!!systemConfiguration)
+
+  // when protected API is fetched, set auth === true
+  useEffect(() => {
+    setAuth(!!systemInfo)
+  }, [systemInfo])
+
   const location = useLocation()
   const isLoginPage = location.pathname?.startsWith('/login') // This is done for new routing approach, refactor it
 
@@ -54,7 +62,11 @@ export const App: FC = memo(() => {
           <CssBaseline/>
           <ErrorHandler>
             <EventBusProvider>
-              {auth || isLoginPage ? <RouterProvider router={router}/> : <AuthPage/>}
+              {auth || isLoginPage ? <RouterProvider router={router}/> : (
+                <div style={{ padding: 20, fontSize: 14 }}>
+                  Please, wait...
+                </div>
+              )}
             </EventBusProvider>
           </ErrorHandler>
         </ThemeProvider>

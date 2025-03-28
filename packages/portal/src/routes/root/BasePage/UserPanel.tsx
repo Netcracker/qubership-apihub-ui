@@ -20,13 +20,13 @@ import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDown
 import { Avatar, IconButton, MenuItem } from '@mui/material'
 import { MenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
 import { UserAvatar } from '@netcracker/qubership-apihub-ui-shared/components/Users/UserAvatar'
-import { useAuthorization } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
+import { useUserInfo } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useUserInfo'
 import type { FC } from 'react'
 import { memo } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 export const UserPanel: FC = memo(() => {
-  const [authorization, , removeAuthorization] = useAuthorization()
+  const [userInfo, removeUserInfo] = useUserInfo()
   const navigate = useNavigate()
   const setBackwardLocation = useSetBackwardLocationContext()
 
@@ -34,9 +34,9 @@ export const UserPanel: FC = memo(() => {
     <>
       <IconButton data-testid="AppUserAvatar" size="large" color="inherit">
         {
-          authorization?.user.avatarUrl
-            ? <Avatar src={authorization.user.avatarUrl}/>
-            : <UserAvatar size="medium" name={authorization?.user.name ?? ''}/>
+          userInfo?.avatarUrl
+            ? <Avatar src={userInfo.avatarUrl} />
+            : <UserAvatar size="medium" name={userInfo?.name ?? ''} />
         }
       </IconButton>
 
@@ -44,8 +44,8 @@ export const UserPanel: FC = memo(() => {
         sx={{ p: 0 }}
         variant="text"
         color="inherit"
-        title={authorization?.user.name ?? ''}
-        icon={<KeyboardArrowDownOutlinedIcon/>}
+        title={userInfo?.name ?? ''}
+        icon={<KeyboardArrowDownOutlinedIcon />}
         data-testid="UserMenuButton"
       >
         <MenuItem
@@ -64,7 +64,7 @@ export const UserPanel: FC = memo(() => {
         <MenuItem
           data-testid="LogoutMenuItem"
           onClick={() => {
-            removeAuthorization()
+            removeUserInfo()
             location.replace(`${location.origin}/login?redirectUri=${encodeURIComponent(location.href)}`)
           }}
         >

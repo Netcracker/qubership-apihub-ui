@@ -22,7 +22,7 @@ import type { Authorization, AuthorizationDto } from '../../../types/authorizati
 import { requestJson } from '../../../utils/requests'
 import { toUser } from '../../../types/user'
 import type { IsError, IsLoading } from '../../../utils/aliases'
-
+//
 export function useLoginUser(): [LoginUser, IsLoading, IsError] {
   const [, setAuthorization] = useAuthorization()
   const redirectUri = useSearchParam('redirectUri')

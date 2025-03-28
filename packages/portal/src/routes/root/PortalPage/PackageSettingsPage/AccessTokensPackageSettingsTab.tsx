@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import React, { memo, useCallback, useMemo, useState } from 'react'
-import type { PackageSettingsTabProps } from './package-settings'
-import { useParams } from 'react-router-dom'
+import { useShowSuccessNotification } from '@apihub/routes/root/BasePage/Notification'
+import { useUsers } from '@apihub/routes/root/useUsers'
+import { Box } from '@mui/material'
+import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
+import { GenerateTokenForm } from '@netcracker/qubership-apihub-ui-shared/components/GenerateTokenForm'
+import { TokensTable } from '@netcracker/qubership-apihub-ui-shared/components/TokensTable'
 import { ACCESS_TOKEN_MANAGEMENT_PERMISSION } from '@netcracker/qubership-apihub-ui-shared/entities/package-permissions'
-import { useAuthorization } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
+import { useUserInfo } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useUserInfo'
 import {
   useAvailablePackageRoles,
   useDeleteApiKey,
   useGenerateApiKey,
   useTokens,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/tokens/useTokens'
-import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
-import { GenerateTokenForm } from '@netcracker/qubership-apihub-ui-shared/components/GenerateTokenForm'
-import { TokensTable } from '@netcracker/qubership-apihub-ui-shared/components/TokensTable'
-import { Box } from '@mui/material'
-import { useUsers } from '@apihub/routes/root/useUsers'
 import type { GenerateApiKeyValue } from '@netcracker/qubership-apihub-ui-shared/types/tokens'
-import { useShowSuccessNotification } from '@apihub/routes/root/BasePage/Notification'
+import type { FC } from 'react'
+import { memo, useCallback, useMemo, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import type { PackageSettingsTabProps } from './package-settings'
 
 export const AccessTokensPackageSettingsTab: FC<PackageSettingsTabProps> = memo<PackageSettingsTabProps>(({ packageObject }) => {
   const hasTokenManagementPermission = useMemo(
@@ -41,9 +41,9 @@ export const AccessTokensPackageSettingsTab: FC<PackageSettingsTabProps> = memo<
   )
 
   const { packageId: packageKey = '' } = useParams()
-  const [authorization] = useAuthorization()
+  const [userInfo] = useUserInfo()
 
-  const [availableRoles, isLoadingRoles] = useAvailablePackageRoles(packageKey, authorization?.user.key ?? '')
+  const [availableRoles, isLoadingRoles] = useAvailablePackageRoles(packageKey, userInfo?.key ?? '')
 
   const [tokensList, isTokensLoading] = useTokens(packageKey!)
   const [deleteAPIKey] = useDeleteApiKey()
@@ -78,7 +78,7 @@ export const AccessTokensPackageSettingsTab: FC<PackageSettingsTabProps> = memo<
             <GenerateTokenForm
               roles={availableRolesForPackage}
               users={usersData?.users}
-              defaultUser={authorization?.user}
+              defaultUser={userInfo}
               setUserSearch={handleSetUserSearch}
               generatedApiKey={generatedApiKey}
               disabled={!hasTokenManagementPermission}

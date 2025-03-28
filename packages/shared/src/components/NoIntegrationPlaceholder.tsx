@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo } from 'react'
-import { CONTENT_PLACEHOLDER_AREA, Placeholder } from './Placeholder'
 import { Button, Typography } from '@mui/material'
 import Box from '@mui/material/Box'
-import { useAuthorization } from '../hooks/authorization'
+import type { FC } from 'react'
+import { memo } from 'react'
+import { useUserInfo } from '../hooks/authorization/useUserInfo'
 import { redirectToGitlab } from '../utils/redirects'
+import { CONTENT_PLACEHOLDER_AREA, Placeholder } from './Placeholder'
 
 export const NoIntegrationPlaceholder: FC = memo(() => {
-  const [, , removeAuth] = useAuthorization()
+  const [, removeUserInfo] = useUserInfo()
 
   return (
     <Placeholder
@@ -35,8 +35,9 @@ export const NoIntegrationPlaceholder: FC = memo(() => {
             size="medium"
             variant="contained"
             onClick={() => {
+              // TODO 28.03.25 // Fix it or get rid of it
               redirectToGitlab()
-              removeAuth()
+              removeUserInfo()
             }}
             style={{
               background: '#00BB5B',

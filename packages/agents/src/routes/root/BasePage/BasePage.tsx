@@ -14,25 +14,23 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useCallback } from 'react'
-import { Outlet } from 'react-router-dom'
 import { Box } from '@mui/material'
-import { UserPanel } from './UserPanel'
-import { useSystemInfo } from '../useSystemInfo'
 import type { Theme } from '@mui/material/styles'
 import type { SystemStyleObject } from '@mui/system/styleFunctionSx/styleFunctionSx'
-import { ErrorNotificationHandler, SuccessNotificationHandler } from './NotificationHandler'
-import { useAuthorization } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
-import { cutViewPortStyleCalculator } from '@netcracker/qubership-apihub-ui-shared/utils/themes'
-import { LogoIcon } from '@netcracker/qubership-apihub-ui-shared/icons/LogoIcon'
 import { AppHeader } from '@netcracker/qubership-apihub-ui-shared/components/AppHeader'
 import { MaintenanceNotification } from '@netcracker/qubership-apihub-ui-shared/components/MaintenanceNotification'
 import { SystemInfoPopup } from '@netcracker/qubership-apihub-ui-shared/features/system-info'
+import { LogoIcon } from '@netcracker/qubership-apihub-ui-shared/icons/LogoIcon'
+import { cutViewPortStyleCalculator } from '@netcracker/qubership-apihub-ui-shared/utils/themes'
+import type { FC } from 'react'
+import { memo, useCallback } from 'react'
+import { Outlet } from 'react-router-dom'
 import * as packageJson from '../../../../package.json'
+import { useSystemInfo } from '../useSystemInfo'
+import { ErrorNotificationHandler, SuccessNotificationHandler } from './NotificationHandler'
+import { UserPanel } from './UserPanel'
 
 export const BasePage: FC = memo(() => {
-  useAuthorization()
   const { notification: systemNotification } = useSystemInfo()
 
   const viewPortStyleCalculator = useCallback(
