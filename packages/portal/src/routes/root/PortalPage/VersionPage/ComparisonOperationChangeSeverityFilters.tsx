@@ -19,10 +19,10 @@ import { memo, useEffect, useMemo, useState } from 'react'
 import { useComparedOperationsPair } from './ComparedOperationsContext'
 import { DEFAULT_CHANGE_SEVERITY_MAP } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
 import { ChangeSeverityFilters } from '@netcracker/qubership-apihub-ui-shared/components/ChangeSeverityFilters'
-import { useSemiBreakingChanges } from '@apihub/routes/root/PortalPage/VersionPage/useSemiBreakingChanges'
+import { useRiskyChanges } from '@apihub/routes/root/PortalPage/VersionPage/useRiskyChanges'
 import {
   getApiDiffResult,
-  handleSemiBreakingChanges,
+  handleRiskyChanges,
 } from '@netcracker/qubership-apihub-ui-shared/utils/api-diff-result'
 import { GLOBAL_DIFF_META_KEY } from '@netcracker/qubership-apihub-ui-shared/utils/api-diffs'
 import { BREAKING_CHANGE_TYPE } from '@netcracker/qubership-apihub-api-processor'
@@ -63,30 +63,30 @@ export const ComparisonOperationChangeSeverityFilters: FC<ComparisonOperationCha
       setApiDiffLoading: setApiDiffLoading,
     }), [changedOperation?.data, originOperation?.data])
 
-  const [semiBreakingChanges, isSemiBreakingChangesLoading, isSuccess] = useSemiBreakingChanges({
+  const [riskyChanges, isRiskyChangesLoading, isSuccess] = useRiskyChanges({
     operationKey: changedOperation?.operationKey ?? originOperation?.operationKey,
     comparisonMode: true,
-    needToCheckSemiBreaking: !apiDiffLoading && apiDiffResult?.diffs.some(diff => diff.type === BREAKING_CHANGE_TYPE),
+    needToCheckRisky: !apiDiffLoading && apiDiffResult?.diffs.some(diff => diff.type === BREAKING_CHANGE_TYPE),
     isChangelogAvailable: isChangelogAvailable,
   })
 
   useEffect(() => {
-    setIsApiDiffResultLoadingContext(apiDiffLoading || isSemiBreakingChangesLoading)
-  }, [apiDiffLoading, isSemiBreakingChangesLoading, setIsApiDiffResultLoadingContext])
+    setIsApiDiffResultLoadingContext(apiDiffLoading || isRiskyChangesLoading)
+  }, [apiDiffLoading, isRiskyChangesLoading, setIsApiDiffResultLoadingContext])
 
   useEffect(() => {
-    if (isOperationsLoading || apiDiffLoading || isSemiBreakingChangesLoading) {
+    if (isOperationsLoading || apiDiffLoading || isRiskyChangesLoading) {
       return
     }
-    if (isSuccess && isNotEmpty(semiBreakingChanges) && apiDiffResult) {
-      const apiDiffResultWithSemiBraking = handleSemiBreakingChanges(semiBreakingChanges, apiDiffResult)
+    if (isSuccess && isNotEmpty(riskyChanges) && apiDiffResult) {
+      const apiDiffResultWithSemiBraking = handleRiskyChanges(riskyChanges, apiDiffResult)
       setApiDiffResultContext(apiDiffResultWithSemiBraking)
       setChanges(apiDiffResultWithSemiBraking?.diffs.reduce(changesSummaryReducer, { ...DEFAULT_CHANGE_SEVERITY_MAP }))
     } else {
       setApiDiffResultContext(apiDiffResult)
       setChanges(apiDiffResult?.diffs.reduce(changesSummaryReducer, { ...DEFAULT_CHANGE_SEVERITY_MAP }))
     }
-  }, [apiDiffLoading, apiDiffResult, isOperationsLoading, isSemiBreakingChangesLoading, isSuccess, semiBreakingChanges, setApiDiffResultContext, setChanges])
+  }, [apiDiffLoading, apiDiffResult, isOperationsLoading, isRiskyChangesLoading, isSuccess, riskyChanges, setApiDiffResultContext, setChanges])
 
   //todo return after resolve
   /*const [filters, setFilters] = useSeverityFiltersSearchParam()
@@ -95,7 +95,7 @@ export const ComparisonOperationChangeSeverityFilters: FC<ComparisonOperationCha
     setFilters(selectedFilters.toString())
   }, [setFilters])*/
 
-  if (isOperationsLoading || isApiDiffResultLoading || isSemiBreakingChangesLoading) {
+  if (isOperationsLoading || isApiDiffResultLoading || isRiskyChangesLoading) {
     return null
   }
 

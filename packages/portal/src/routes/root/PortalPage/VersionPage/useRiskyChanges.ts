@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import type { DiffTypeDto, OperationsApiType } from '@netcracker/qubership-apihub-api-processor'
-import { SEMI_BREAKING_CHANGE_TYPE } from '@netcracker/qubership-apihub-api-processor'
+import type { OperationsApiType } from '@netcracker/qubership-apihub-api-processor'
 import { useMemo } from 'react'
 import { useOperationChangelog } from './useOperationChangelog'
 import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
@@ -27,11 +26,11 @@ import {
 import type { OperationChange } from '@netcracker/qubership-apihub-ui-shared/entities/operation-changelog'
 import { risky } from '@netcracker/qubership-apihub-api-diff'
 
-export function useSemiBreakingChanges(options: UseSemiBreakingChangesOptions): [OperationChange[], IsLoading, IsSuccess] {
+export function useRiskyChanges(options: UseRiskyChangesOptions): [OperationChange[], IsLoading, IsSuccess] {
   const {
     operationKey,
     comparisonMode,
-    needToCheckSemiBreaking,
+    needToCheckRisky,
     isChangelogAvailable = false,
   } = options
 
@@ -50,8 +49,8 @@ export function useSemiBreakingChanges(options: UseSemiBreakingChangesOptions): 
     apiType: apiType,
     previousVersion: originVersionKey,
     previousVersionPackageId: originPackageKey,
-    severity: [SEMI_BREAKING_CHANGE_TYPE],
-    enable: comparisonMode && needToCheckSemiBreaking && !!originPackageKey && !!originVersionKey && isChangelogAvailable,
+    severity: [risky],
+    enable: comparisonMode && needToCheckRisky && !!originPackageKey && !!originVersionKey && isChangelogAvailable,
   })
 
   // TODO: Remove filter after "Filter for operation changes works incorrect"
@@ -66,7 +65,7 @@ export function useSemiBreakingChanges(options: UseSemiBreakingChangesOptions): 
   ], [filteredChanges, isChangesLoading, isSuccess])
 }
 
-export type UseSemiBreakingChangesOptions = Partial<{
+export type UseRiskyChangesOptions = Partial<{
   changedPackageKey: Key
   changedVersionKey: VersionKey
   originPackageKey: Key
@@ -76,5 +75,5 @@ export type UseSemiBreakingChangesOptions = Partial<{
   previousVersion: VersionKey
   previousVersionPackageId: Key
   comparisonMode?: boolean
-  needToCheckSemiBreaking?: boolean
+  needToCheckRisky?: boolean
 }> & ChangelogAvailable

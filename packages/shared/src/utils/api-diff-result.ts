@@ -122,20 +122,20 @@ function getCopyWithEmptyPath(template: unknown): unknown {
   return template
 }
 
-export function handleSemiBreakingChanges(semiBreakingChanges: OperationChange[] | undefined, diffResult: CompareResult): CompareResult {
-  if (semiBreakingChanges && isNotEmpty(semiBreakingChanges)) {
+export function handleRiskyChanges(riskyChanges: OperationChange[] | undefined, diffResult: CompareResult): CompareResult {
+  if (riskyChanges && isNotEmpty(riskyChanges)) {
 
-    // turn semi-breaking changes into breaking to get matching results with diffResult.diffs
-    const semiBreakingChangesAdaptedForComparison = semiBreakingChanges.map((change) => ({
+    // turn risky changes into breaking to get matching results with diffResult.diffs
+    const riskyChangesAdaptedForComparison = riskyChanges.map((change) => ({
       ...change,
       severity: BREAKING_CHANGE_SEVERITY as ChangeSeverity,
     }))
 
-    const semiBreakingChangesAdaptedForComparisonMap = createDiffMap(semiBreakingChangesAdaptedForComparison, calculateChangeId)
+    const riskyChangesAdaptedForComparisonMap = createDiffMap(riskyChangesAdaptedForComparison, calculateChangeId)
     const apiDiffMap = createDiffMap(diffResult.diffs, calculateDiffId)
 
     for (const [key, value] of apiDiffMap.entries()) {
-      if (semiBreakingChangesAdaptedForComparisonMap.has(key)) {
+      if (riskyChangesAdaptedForComparisonMap.has(key)) {
         (value as Diff).type = risky
       }
     }
