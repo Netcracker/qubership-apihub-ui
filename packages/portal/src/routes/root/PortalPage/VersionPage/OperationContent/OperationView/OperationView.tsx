@@ -141,7 +141,6 @@ export const OperationView: FC<OperationViewProps> = memo<OperationViewProps>(pr
 
   useSetupOperationView(resolvedOperationViewElement, props)
 
-debugger
   return (
     <Suspense fallback={<LoadingIndicator />}>
       <Box lineHeight={1.5} height="100%" pt={1} sx={{ position: 'relative', overflowY: 'auto' }} data-testid="DocView">

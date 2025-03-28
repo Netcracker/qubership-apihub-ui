@@ -22,10 +22,11 @@ import { getFullVersion } from '../../../utils/versions'
 import { optionalSearchParams } from '../../../utils/search-params'
 import { API_V2, requestJson } from '../../../utils/requests'
 import { getPackageRedirectDetails } from '../../../utils/redirects'
-import { ChangeSeverity, RISKY_CHANGE_SEVERITY } from '../../../entities/change-severities'
+import { RISKY_CHANGE_SEVERITY } from '../../../entities/change-severities'
 import type { ApiType } from '../../../entities/api-types'
-import { Diff, risky } from '@netcracker/qubership-apihub-api-diff'
-import { DiffTypeDto, SEMI_BREAKING_CHANGE_TYPE } from '@netcracker/qubership-apihub-api-processor'
+import type { DiffType } from '@netcracker/qubership-apihub-api-diff'
+import type { DiffTypeDto} from '@netcracker/qubership-apihub-api-processor'
+import { SEMI_BREAKING_CHANGE_TYPE } from '@netcracker/qubership-apihub-api-processor'
 
 export type UseOperationChangelogOptions = {
   packageKey: Key
@@ -34,7 +35,7 @@ export type UseOperationChangelogOptions = {
   apiType?: ApiType
   previousVersion?: VersionKey
   previousVersionPackageId?: Key
-  severity?: ChangeSeverity<DiffTypeDto>[]
+  severity?: DiffType[]
   enable?: boolean
 }
 
@@ -52,12 +53,12 @@ export async function getOperationChangeLog(
     severity,
   } = options
 
-  console.log('getOperationChangeLog', options, 'REST')
   const packageId = encodeURIComponent(packageKey)
   const fullVersion = await getFullVersion({ packageKey, versionKey }, signal)
   const versionId = encodeURIComponent(fullVersion.version)
   const operationId = encodeURIComponent(operationKey)
   const severityDto = replaceStringDiffTypeForDTO(severity)
+
   const queryParams = optionalSearchParams({
     previousVersion: { value: previousVersion },
     previousVersionPackageId: { value: previousVersionPackageId },
@@ -75,6 +76,6 @@ export async function getOperationChangeLog(
   )
 }
 
-export function replaceStringDiffTypeForDTO(diff: Diff[] | undefined): Diff<DiffTypeDto>[] | undefined {
-  return diff?.map(diffValue => { return diffValue === RISKY_CHANGE_SEVERITY ? SEMI_BREAKING_CHANGE_TYPE : diffValue }) as Diff<DiffTypeDto>[]
+export function replaceStringDiffTypeForDTO(diff: DiffType[] | undefined): DiffTypeDto[] | undefined {
+  return diff?.map(diffValue => { return diffValue === RISKY_CHANGE_SEVERITY ? SEMI_BREAKING_CHANGE_TYPE : diffValue })
 }

@@ -133,7 +133,7 @@ export function handleSemiBreakingChanges(semiBreakingChanges: OperationChange[]
 
     const semiBreakingChangesAdaptedForComparisonMap = createDiffMap(semiBreakingChangesAdaptedForComparison, calculateChangeId)
     const apiDiffMap = createDiffMap(diffResult.diffs, calculateDiffId)
-debugger
+
     for (const [key, value] of apiDiffMap.entries()) {
       if (semiBreakingChangesAdaptedForComparisonMap.has(key)) {
         (value as Diff).type = risky

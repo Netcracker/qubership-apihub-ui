@@ -30,8 +30,7 @@ export const ChangeSeverityIndicator: FC<ChangeSeverityIndicatorProps> = memo<Ch
   severity,
   sx,
 }) => {
-  debugger
-  console.log('ChangeSeverityIndicator------>', severity, sx)
+
   return <Box
     sx={{
       position: 'absolute',

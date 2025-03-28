@@ -21,7 +21,8 @@ import {
   deprecated,
   nonBreaking,
   unclassified,
-  risky} from '@netcracker/qubership-apihub-api-diff'
+  risky,
+} from '@netcracker/qubership-apihub-api-diff'
 import type {
   DiffType,
 } from '@netcracker/qubership-apihub-api-diff'
@@ -46,9 +47,7 @@ export const DEPRECATED_CHANGE_SEVERITY = 'deprecated'
 export const ANNOTATION_CHANGE_SEVERITY = 'annotation'
 export const UNCLASSIFIED_CHANGE_SEVERITY = 'unclassified'
 
-export type ChangesSummary = ChangesSummaryDto
-
-export type ChangesSummaryDto = ChangeSummary
+export type ChangesSummary<T extends string | number | symbol = DiffType> = ChangeSummary<T>
 
 export type ChangeSeverity<T = DiffType> = T
 

@@ -93,6 +93,6 @@ function calculateDashboardChangesSummary(
     .flatMap(({ operationTypes }) => operationTypes
       .filter(type => type.apiType === apiType)
       .map(type => type.numberOfImpactedOperations ?? EMPTY_CHANGE_SUMMARY))
-  debugger
+
   return calculateTotalChangeSummary(refChangesSummaries)
 }

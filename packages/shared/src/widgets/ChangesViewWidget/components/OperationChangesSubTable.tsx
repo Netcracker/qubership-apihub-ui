@@ -43,7 +43,7 @@ export const OperationChangesSubTable: FC<OperationChangesSubTableProps> = memo<
     isLoading,
   },
 ) => {
-debugger
+
   const columns: ColumnDef<OperationChange>[] = useMemo(() => {
     const result: ColumnDef<OperationChange>[] = [
       {

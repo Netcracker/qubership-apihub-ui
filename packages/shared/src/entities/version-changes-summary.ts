@@ -18,7 +18,7 @@ import type {
   DiffTypeDto,
   OperationType,
 } from '@netcracker/qubership-apihub-api-processor'
-import { convertDtoFieldOperationTypes} from '@netcracker/qubership-apihub-api-processor'
+import { convertDtoFieldOperationTypes } from '@netcracker/qubership-apihub-api-processor'
 
 import type { PackageRef, PackagesRefs } from './operations'
 import { toPackageRef } from './operations'
@@ -26,8 +26,9 @@ import { EMPTY_CHANGE_SUMMARY } from './version-changelog'
 import type { VersionStatus } from './version-status'
 import type { Key } from './keys'
 import { hasNoChangesInSummary } from '../utils/change-severities'
+import type { DiffType } from '@netcracker/qubership-apihub-api-diff'
 
-export type VersionChangesSummaryDto = PackageComparisonSummaryDto | DashboardComparisonSummaryDto
+export type VersionChangesSummaryDto = PackageComparisonSummary<DiffTypeDto> | DashboardComparisonSummaryDto
 export type VersionChangesSummary = PackageComparisonSummary | DashboardComparisonSummary
 
 export type DashboardComparisonSummaryDto = Readonly<{
@@ -59,12 +60,10 @@ export type RefComparisonSummary = Readonly<{
 
 export type DashboardComparisonSummary = ReadonlyArray<RefComparisonSummary>
 
-export type PackageComparisonSummaryDto = Readonly<{
-  operationTypes: ReadonlyArray<OperationType<DiffTypeDto>>
+export type PackageComparisonSummary<T extends string | number | symbol = DiffType> = Readonly<{
+  operationTypes: ReadonlyArray<OperationType<T>>
   noContent?: boolean
 }>
-
-export type PackageComparisonSummary = PackageComparisonSummaryDto
 
 const UNDEFINED_NAME = 'UNDEFINED NAME'
 
@@ -79,54 +78,6 @@ export function isDashboardComparisonSummary(value: VersionChangesSummary): valu
 function isDashboardSummaryDto(value: VersionChangesSummaryDto): value is DashboardComparisonSummaryDto {
   return !!(value as DashboardComparisonSummaryDto)?.refs
 }
-
-// export function replaceSemiBreakingWithRisky(obj) {
-//   if (obj.hasOwnProperty('semi-breaking')) {
-//     obj[risky] = obj['semi-breaking']
-//     delete obj['semi-breaking']
-//     return obj
-//   } else {
-//     return obj
-//   }
-// }
-// export function replacePropertyInChangesSummary1<
-//   T extends string | number | symbol = DiffTypeDto,
-//   J extends string | number | symbol = DiffType>
-// (obj: ChangeSummary<T>,
-//   {
-//     origin,
-//     override,
-//   }: any = {
-//     origin: SEMI_BREAKING_CHANGE_TYPE,
-//     override: risky,
-//   }): ChangeSummary<J> {
-//   if (Object.prototype.hasOwnProperty.call(obj, origin)) {
-//     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//     // @ts-ignore
-//     obj[override] = obj[origin]
-//     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//     // @ts-ignore
-//     delete obj[origin]
-//     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//     // @ts-ignore
-//     return obj
-//   } else {
-//     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//     // @ts-ignore
-//     return obj
-//   }
-//
-// }
-//
-// export function convertDtoFieldOperationTypes1(operationTypes: ReadonlyArray<OperationType<DiffTypeDto>>): ReadonlyArray<OperationType> {
-//   return operationTypes?.map((type) => {
-//     return {
-//       ...type,
-//       changesSummary: replacePropertyInChangesSummary1(type.changesSummary),
-//       numberOfImpactedOperations: replacePropertyInChangesSummary1(type.numberOfImpactedOperations),
-//     }
-//   })
-// }
 
 export function toVersionChangesSummary(value: VersionChangesSummaryDto): VersionChangesSummary {
   if (isDashboardSummaryDto(value)) {

@@ -15,7 +15,7 @@
  */
 
 import type { MethodType } from './method-types'
-import type { ActionType, ChangesSummary, ChangesSummaryDto } from './change-severities'
+import type { ActionType, ChangesSummary } from './change-severities'
 import {
   ADD_ACTION_TYPE,
   ANNOTATION_CHANGE_SEVERITY,
@@ -39,7 +39,12 @@ import type {
 import { ALL_API_KIND, toPackageRef } from './operations'
 import type { GraphQlOperationType } from './graphql-operation-types'
 import type { Key } from './keys'
-import { API_AUDIENCE_EXTERNAL, replacePropertyInChangesSummary } from '@netcracker/qubership-apihub-api-processor'
+import type {
+  DiffTypeDto} from '@netcracker/qubership-apihub-api-processor'
+import {
+  API_AUDIENCE_EXTERNAL,
+  replacePropertyInChangesSummary,
+} from '@netcracker/qubership-apihub-api-processor'
 
 export type VersionChangesDto = Partial<Readonly<{
   previousVersion: Key
@@ -75,7 +80,7 @@ export type OperationInfoFromDifferentVersions = Readonly<{
 
 type OperationChangeDataCommonDto = Readonly<{
   operationId: Key
-  changeSummary: ChangesSummaryDto
+  changeSummary: ChangesSummary<DiffTypeDto>
   currentOperation?: OperationInfoFromDifferentVersions
   previousOperation?: OperationInfoFromDifferentVersions
   tags?: Tags
