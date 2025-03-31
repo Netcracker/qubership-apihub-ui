@@ -27,7 +27,6 @@ import { useOtMonaco } from './useOtMonaco'
 import { WSMonacoEditor } from './ws-monaco'
 import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import type { SpecItemUri } from '@netcracker/qubership-apihub-ui-shared/utils/specifications'
-import { useAuthorization } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
 import type { DocumentSnapshotEventData } from '@apihub/entities/ws-file-events'
 import type { FileProblem } from '@apihub/entities/file-problems'
 import {

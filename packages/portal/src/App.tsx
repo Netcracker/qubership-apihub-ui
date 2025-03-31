@@ -18,15 +18,14 @@ import { ErrorHandler } from '@apihub/components/ErrorHandler'
 import { EventBusProvider } from '@apihub/routes/EventBusProvider'
 import { router } from '@apihub/routes/Router'
 import { CssBaseline, ThemeProvider } from '@mui/material'
-import { useSystemInfo } from '@netcracker/qubership-apihub-ui-shared/features/system-info'
-import { useSystemConfiguration } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useSystemConfiguration'
+import { AppPlaceholder } from '@netcracker/qubership-apihub-ui-shared/components/AppPlaceholder'
+import { useInitializeAuth } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
 import { theme } from '@netcracker/qubership-apihub-ui-shared/themes/theme'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import type { FC } from 'react'
-import { memo, StrictMode, useEffect, useState } from 'react'
+import { memo, StrictMode } from 'react'
 import { RouterProvider } from 'react-router-dom'
-import { useLocation } from 'react-use'
 
 const client = new QueryClient({
   defaultOptions: {
@@ -40,37 +39,22 @@ const client = new QueryClient({
 })
 
 export const App: FC = memo(() => {
-  const [auth, setAuth] = useState<boolean>(false)
-
-  // first, load config
-  const [systemConfiguration] = useSystemConfiguration()
-  // second, try to access protected API
-  const systemInfo = useSystemInfo(!!systemConfiguration)
-
-  // when protected API is fetched, set auth === true
-  useEffect(() => {
-    setAuth(!!systemInfo)
-  }, [systemInfo])
-
-  const location = useLocation()
-  const isLoginPage = location.pathname?.startsWith('/login') // This is done for new routing approach, refactor it
+  const [auth, isLoginPage] = useInitializeAuth()
 
   return (
     <StrictMode>
       <QueryClientProvider client={client}>
         <ThemeProvider theme={theme}>
-          <CssBaseline/>
+          <CssBaseline />
           <ErrorHandler>
             <EventBusProvider>
-              {auth || isLoginPage ? <RouterProvider router={router}/> : (
-                <div style={{ padding: 20, fontSize: 14 }}>
-                  Please, wait...
-                </div>
-              )}
+              {auth || isLoginPage
+                ? <RouterProvider router={router} />
+                : <AppPlaceholder />}
             </EventBusProvider>
           </ErrorHandler>
         </ThemeProvider>
-        <ReactQueryDevtools initialIsOpen={false}/>
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </StrictMode>
   )

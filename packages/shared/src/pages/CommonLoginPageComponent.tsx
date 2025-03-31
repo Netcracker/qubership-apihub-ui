@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useEffect, useState } from 'react'
-import { useSearchParam } from 'react-use'
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined'
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
+import { LoadingButton } from '@mui/lab'
 import {
   Alert,
   Box,
@@ -28,13 +28,12 @@ import {
   OutlinedInput,
   Typography,
 } from '@mui/material'
-import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined'
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
-import { LoadingButton } from '@mui/lab'
+import type { FC } from 'react'
+import { memo, useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { useSearchParam } from 'react-use'
+import { useUserInfo, type Credentials } from '../hooks/authorization'
 import { useSystemConfiguration } from '../hooks/authorization/useSystemConfiguration'
-import type { Credentials } from '../hooks/authorization'
-import { useAuthorization } from '../hooks/authorization'
 import { redirectToSaml } from '../utils/redirects'
 
 export type CommonLoginPageComponentProps = {
@@ -43,25 +42,24 @@ export type CommonLoginPageComponentProps = {
   isLoading: boolean
   isError: boolean
 }
-//
+
 export const CommonLoginPageComponent: FC<CommonLoginPageComponentProps> = memo(({
   applicationName,
   onLogin,
   isLoading,
   isError,
 }) => {
-  const userView = useSearchParam('userView')
   const redirectUri = useSearchParam('redirectUri')
 
   const [passwordVisible, setPasswordVisible] = useState(false)
-  const [authorization] = useAuthorization({ cookie: userView })
+  const [userInfo] = useUserInfo()
   const [ssoIntegration] = useSystemConfiguration()
 
   useEffect(() => {
-    if (authorization) {
+    if (userInfo) {
       location.replace(redirectUri ?? location.origin)
     }
-  }, [authorization, redirectUri])
+  }, [userInfo, redirectUri])
 
   const { control, handleSubmit } = useForm({
     defaultValues: {

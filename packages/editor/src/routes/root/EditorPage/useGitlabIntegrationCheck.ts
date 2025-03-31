@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { useAuthorization } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
 import { getTokenPayload } from '@netcracker/qubership-apihub-ui-shared/entities/token-payload'
 import { useUserInfo } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useUserInfo'
 

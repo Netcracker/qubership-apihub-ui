@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import { CssBaseline, ThemeProvider } from '@mui/material'
+import { AppPlaceholder } from '@netcracker/qubership-apihub-ui-shared/components/AppPlaceholder'
+import { useInitializeAuth } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
+import { theme } from '@netcracker/qubership-apihub-ui-shared/themes/theme'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import type { FC } from 'react'
 import { memo, StrictMode } from 'react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { CssBaseline, ThemeProvider } from '@mui/material'
 import { Router } from './routes/Router'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { theme } from '@netcracker/qubership-apihub-ui-shared/themes/theme'
 
 const client = new QueryClient({
   defaultOptions: {
@@ -33,14 +35,20 @@ const client = new QueryClient({
 })
 
 export const App: FC = memo(() => {
+  const [auth, isLoginPage] = useInitializeAuth()
+
   return (
     <StrictMode>
       <QueryClientProvider client={client}>
         <ThemeProvider theme={theme}>
-          <CssBaseline/>
-          <Router/>
+          {auth || isLoginPage
+            ? <>
+              <CssBaseline />
+              <Router />
+            </>
+            : <AppPlaceholder />}
         </ThemeProvider>
-        <ReactQueryDevtools initialIsOpen={false}/>
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </StrictMode>
   )

@@ -15,11 +15,10 @@
  */
 
 import { AUTHORIZATION_LOCAL_STORAGE_KEY } from './constants'
-import { getAuthorization } from './storages'
-import { redirectToSaml } from './redirects'
 import type { ErrorMessage } from './packages-builder'
-import type { Key } from './types'
+import { redirectToSaml } from './redirects'
 import { HttpError } from './responses'
+import type { Key } from './types'
 
 export const API_V1 = '/api/v1'
 export const API_V2 = '/api/v2'
@@ -49,14 +48,10 @@ export async function requestJson<T extends object | null>(
 ): Promise<T> {
   const { basePath = '', customErrorHandler, customRedirectHandler, ignoreNotFound = false } = options
 
-  const authorization = (init?.headers as Record<string, string>)?.authorization ?? getAuthorization()
-
   const response = await fetch(`${basePath}${input}`, {
-    headers: {
-      authorization: authorization,
-    },
     ...init,
     signal: signal,
+    credentials: 'include',
   })
   if (!response.ok) {
     handleAuthentication(response)
@@ -82,13 +77,10 @@ export async function requestText(
   options: RequestTextExtraOptions = {},
 ): Promise<string> {
   const { basePath = '', customErrorHandler, customRedirectHandler } = options
-  const authorization = (init?.headers as Record<string, string>)?.authorization ?? getAuthorization()
 
   const response = await fetch(`${basePath ?? ''}${input}`, {
-    headers: {
-      authorization: authorization,
-    },
     ...init,
+    credentials: 'include',
   })
   if (!response.ok) {
     handleAuthentication(response)
@@ -113,13 +105,10 @@ export async function requestBlob(
   options: RequestBlobExtraOptions = {},
 ): Promise<Response> {
   const { basePath = '', customErrorHandler, customRedirectHandler } = options
-  const authorization = (init?.headers as Record<string, string>)?.authorization ?? getAuthorization()
 
   const response = await fetch(`${basePath ?? ''}${input}`, {
-    headers: {
-      authorization: authorization,
-    },
     ...init,
+    credentials: 'include',
   })
 
   if (!response.ok) {
@@ -150,13 +139,9 @@ export async function requestVoid(
 ): Promise<void> {
   const { basePath = '', ignoreNotFound = false, customErrorHandler, customRedirectHandler } = options
 
-  const authorization = (init?.headers as Record<string, string>)?.authorization ?? getAuthorization()
-
   const response = await fetch(`${basePath}${input}`, {
-    headers: {
-      authorization: authorization,
-    },
     ...init,
+    credentials: 'include',
   })
   if (!response.ok) {
     handleAuthentication(response)

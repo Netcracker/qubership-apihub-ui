@@ -17,20 +17,19 @@
 import { useSearchParam } from 'react-use'
 import { useMutation } from '@tanstack/react-query'
 import type { Credentials, LoginUser } from '../../../hooks/authorization'
-import { useAuthorization } from '../../../hooks/authorization'
 import type { Authorization, AuthorizationDto } from '../../../types/authorization'
 import { requestJson } from '../../../utils/requests'
 import { toUser } from '../../../types/user'
 import type { IsError, IsLoading } from '../../../utils/aliases'
-//
+
 export function useLoginUser(): [LoginUser, IsLoading, IsError] {
-  const [, setAuthorization] = useAuthorization()
   const redirectUri = useSearchParam('redirectUri')
 
   const { mutate, isLoading, isError } = useMutation<AuthorizationDto, Error, Credentials>({
     mutationFn: credentials => loginUser(credentials),
     onSuccess: authorization => {
-      setAuthorization(toAuthorization(authorization))
+      // TODO 31.03.25 // Remove log
+      console.log('Authorization:', authorization)
       location.replace(redirectUri ?? location.origin)
     },
     onError: () => {
