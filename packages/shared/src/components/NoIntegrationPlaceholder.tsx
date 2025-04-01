@@ -18,13 +18,10 @@ import { Button, Typography } from '@mui/material'
 import Box from '@mui/material/Box'
 import type { FC } from 'react'
 import { memo } from 'react'
-import { useUserInfo } from '../hooks/authorization/useUserInfo'
 import { redirectToGitlab } from '../utils/redirects'
 import { CONTENT_PLACEHOLDER_AREA, Placeholder } from './Placeholder'
 
 export const NoIntegrationPlaceholder: FC = memo(() => {
-  const [, removeUserInfo] = useUserInfo()
-
   return (
     <Placeholder
       invisible={false}
@@ -37,7 +34,6 @@ export const NoIntegrationPlaceholder: FC = memo(() => {
             onClick={() => {
               // TODO 28.03.25 // Fix it or get rid of it
               redirectToGitlab()
-              removeUserInfo()
             }}
             style={{
               background: '#00BB5B',

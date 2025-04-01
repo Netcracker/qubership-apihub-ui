@@ -26,7 +26,7 @@ import { memo } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 export const UserPanel: FC = memo(() => {
-  const [userInfo, removeUserInfo] = useUserInfo()
+  const [userInfo] = useUserInfo()
   const navigate = useNavigate()
   const setBackwardLocation = useSetBackwardLocationContext()
 
@@ -64,7 +64,7 @@ export const UserPanel: FC = memo(() => {
         <MenuItem
           data-testid="LogoutMenuItem"
           onClick={() => {
-            removeUserInfo()
+            // TODO 01.04.2025 // Send logout request
             location.replace(`${location.origin}/login?redirectUri=${encodeURIComponent(location.href)}`)
           }}
         >

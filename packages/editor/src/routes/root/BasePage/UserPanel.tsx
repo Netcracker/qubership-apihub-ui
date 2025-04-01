@@ -23,7 +23,7 @@ import type { FC } from 'react'
 import { memo } from 'react'
 
 export const UserPanel: FC = memo(() => {
-  const [userInfo, removeUserInfo] = useUserInfo()
+  const [userInfo] = useUserInfo()
 
   return (
     <>
@@ -46,7 +46,7 @@ export const UserPanel: FC = memo(() => {
         <MenuItem
           data-testid="LogoutMenuItem"
           onClick={() => {
-            removeUserInfo()
+            // TODO 01.04.2025 // Send logout request
             location.replace(`${location.origin}/login?redirectUri=${encodeURIComponent(location.href)}`)
           }}
         >
