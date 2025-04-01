@@ -20,8 +20,9 @@ import type { FC } from 'react'
 import { memo } from 'react'
 import { MenuButton } from '../../../components/Buttons/MenuButton'
 import { UserAvatar } from '../../../components/Users/UserAvatar'
-import { useUser } from '../../../hooks/authorization/useUser'
 import { useLogoutUser } from '../../../hooks/authorization'
+import { useUser } from '../../../hooks/authorization/useUser'
+import { redirectTo } from '../../../utils/redirects'
 
 export const UserPanel: FC = memo(() => {
   const [user] = useUser()
@@ -49,7 +50,7 @@ export const UserPanel: FC = memo(() => {
           data-testid="LogoutMenuItem"
           onClick={() => {
             logout()
-            location.replace(`${location.origin}/login?redirectUri=${encodeURIComponent(location.href)}`)
+            redirectTo('/login', new URLSearchParams({ noAuth: 'true', redirectUri: location.href }))
           }}
         >
           Logout

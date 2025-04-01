@@ -30,9 +30,10 @@ export type LoginPageComponentProps = {
 }
 
 export const LoginPage: FC<LoginPageComponentProps> = memo(({ applicationName }) => {
+  const noAuth = useSearchParam('noAuth')
   const redirectUri = useSearchParam('redirectUri')
 
-  const [user] = useUser()
+  const [user] = useUser(noAuth !== 'true')
   const [systemConfiguration] = useSystemConfiguration()
 
   const authKinds = systemConfiguration?.authKinds ?? []

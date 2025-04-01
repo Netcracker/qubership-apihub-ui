@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { format } from './strings'
+import type { PathMatch } from 'react-router'
+import { matchPath } from 'react-router-dom'
 import type { FetchRedirectDetails } from './requests'
 import { API_BASE_PATH_PATTERN, FETCH_REDIRECT_TYPE_PACKAGE } from './requests'
-import { matchPath } from 'react-router-dom'
-import type { PathMatch } from 'react-router'
+import { format } from './strings'
 
 export function redirectToSaml(): void {
   redirectTo('/api/v2/auth/saml')
@@ -29,13 +29,16 @@ export function redirectToGitlab(): void {
 }
 
 export function redirectToLogin(): void {
-  redirectTo('/login')
+  redirectTo('/login', new URLSearchParams({ noAuth: 'true' }))
 }
 
-export function redirectTo(path: string, redirectUri?: string): void {
+export function redirectTo(path: string, searchParams: URLSearchParams = new URLSearchParams()): void {
+  const redirectUri = searchParams.get('redirectUri') ?? location.href
+  searchParams.set('redirectUri', redirectUri)
+
   const url = format(
-    '{}{}?redirectUri={}',
-    location.origin, path, encodeURIComponent(redirectUri ?? location.href),
+    `{}{}?${searchParams}`,
+    location.origin, path,
   );
 
   (() => {

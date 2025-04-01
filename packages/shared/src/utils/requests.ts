@@ -157,17 +157,19 @@ export async function requestVoid(
 
 function handleAuthentication(response: Response): void {
   if (response.status === 401 && !location.pathname.startsWith('/login')) {
-    const systemConfiguration: SystemConfiguration = JSON.parse(
-      sessionStorage.getItem(SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION) ?? '',
-    ) as SystemConfiguration
+    const systemConfigurationFromStorage = sessionStorage.getItem(SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION)
+    const systemConfiguration: SystemConfiguration | null =
+      systemConfigurationFromStorage
+        ? JSON.parse(systemConfigurationFromStorage) as SystemConfiguration
+        : null
 
-    if (systemConfiguration) {
-      const { defaultAuthKind } = systemConfiguration
-      if (isLocalAuthKind(defaultAuthKind)) {
-        redirectToLogin()
-      } else if (defaultAuthKind.url) {
-        redirectTo(defaultAuthKind.url)
-      }
+    if (!systemConfiguration) { return }
+
+    const { defaultAuthKind } = systemConfiguration
+    if (isLocalAuthKind(defaultAuthKind)) {
+      redirectToLogin()
+    } else if (defaultAuthKind.url) {
+      redirectTo(defaultAuthKind.url)
     }
   }
 }

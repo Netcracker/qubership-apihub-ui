@@ -22,15 +22,16 @@ import { MenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Bu
 import { UserAvatar } from '@netcracker/qubership-apihub-ui-shared/components/Users/UserAvatar'
 import { useLogoutUser } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
 import { useUser } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useUser'
+import { redirectTo } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
 import type { FC } from 'react'
 import { memo } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 export const UserPanel: FC = memo(() => {
-  const [user] = useUser()
   const navigate = useNavigate()
   const setBackwardLocation = useSetBackwardLocationContext()
 
+  const [user] = useUser()
   const [logout] = useLogoutUser()
 
   return (
@@ -68,7 +69,7 @@ export const UserPanel: FC = memo(() => {
           data-testid="LogoutMenuItem"
           onClick={() => {
             logout()
-            location.replace(`${location.origin}/login?redirectUri=${encodeURIComponent(location.href)}`)
+            redirectTo('/login', new URLSearchParams({ noAuth: 'true', redirectUri: location.href }))
           }}
         >
           Logout
