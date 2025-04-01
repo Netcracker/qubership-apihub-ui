@@ -14,28 +14,32 @@
  * limitations under the License.
  */
 
-import { safeParse } from '@stoplight/json'
+import { useQuery } from '@tanstack/react-query'
 import type { Dispatch, SetStateAction } from 'react'
-import { useCookie } from 'react-use'
-import type { User } from '../../types/user'
+import type { User, UserDto } from '../../types/user'
 import { toUser } from '../../types/user'
-import { USER_INFO_COOKIE_KEY } from '../../utils/constants'
+import type { IsLoading } from '../../utils/aliases'
+import { API_V1, requestJson } from '../../utils/requests'
 
 export const DEFAULT_AUTHORIZATION_DEBOUNCE = 1500
 
 export type AuthorizationOptions = { cookie?: string | null; setLogin?: Dispatch<SetStateAction<boolean>> }
 
-export function useUserInfo(): [User | undefined, RemoveCookieUserInfo] {
-  const [cookieUserInfo, , removeCookieUserInfo] = useCookie(USER_INFO_COOKIE_KEY)
-  const user: User = toUser(safeParse(window.atob(cookieUserInfo ?? '')))
-  return [user, removeCookieUserInfo]
+export function useUserInfo(): [User | undefined, IsLoading, Error | null] {
+  const { data, isLoading, error } = useQuery<UserDto, Error, User>({
+    queryKey: ['user-info'],
+    queryFn: getUserInfo,
+    select: toUser,
+    enabled: true,
+  })
+
+  return [data, isLoading, error]
 }
 
-type RemoveCookieUserInfo = () => void
-
-export type LoginUser = (credentials: Credentials) => void
-
-export type Credentials = Readonly<{
-  username: string
-  password: string
-}>
+async function getUserInfo(): Promise<UserDto> {
+  return requestJson<UserDto>(
+    '/user/info',
+    { method: 'GET' },
+    { basePath: API_V1 },
+  )
+}

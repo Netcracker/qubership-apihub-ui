@@ -16,7 +16,6 @@
 
 import { useSearchParam } from 'react-use'
 import { useMutation } from '@tanstack/react-query'
-import type { Credentials, LoginUser } from '../../../hooks/authorization'
 import type { Authorization, AuthorizationDto } from '../../../types/authorization'
 import { requestJson } from '../../../utils/requests'
 import { toUser } from '../../../types/user'
@@ -58,3 +57,10 @@ function toAuthorization(value: AuthorizationDto): Authorization {
     user: toUser(value.user),
   }
 }
+
+type LoginUser = (credentials: Credentials) => void
+
+type Credentials = Readonly<{
+  username: string
+  password: string
+}>
