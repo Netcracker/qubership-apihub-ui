@@ -15,19 +15,16 @@
  */
 
 import { useQuery } from '@tanstack/react-query'
-import type { Dispatch, SetStateAction } from 'react'
 import type { User, UserDto } from '../../types/user'
 import { toUser } from '../../types/user'
 import type { IsLoading } from '../../utils/aliases'
 import { API_V1, requestJson } from '../../utils/requests'
 
-export const DEFAULT_AUTHORIZATION_DEBOUNCE = 1500
-
-export type AuthorizationOptions = { cookie?: string | null; setLogin?: Dispatch<SetStateAction<boolean>> }
+const QUERY_KEY_USER_INFO = 'user-info-query-key'
 
 export function useUserInfo(): [User | undefined, IsLoading, Error | null] {
   const { data, isLoading, error } = useQuery<UserDto, Error, User>({
-    queryKey: ['user-info'],
+    queryKey: [QUERY_KEY_USER_INFO],
     queryFn: getUserInfo,
     select: toUser,
     enabled: true,

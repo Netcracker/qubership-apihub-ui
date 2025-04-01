@@ -26,9 +26,7 @@ export function useLoginUser(): [LoginUser, IsLoading, IsError] {
 
   const { mutate, isLoading, isError } = useMutation<AuthorizationDto, Error, Credentials>({
     mutationFn: credentials => loginUser(credentials),
-    onSuccess: authorization => {
-      // TODO 31.03.25 // Remove log
-      console.log('Authorization:', authorization)
+    onSuccess: () => {
       location.replace(redirectUri ?? location.origin)
     },
     onError: () => {
