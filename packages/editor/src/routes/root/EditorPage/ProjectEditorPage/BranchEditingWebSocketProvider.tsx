@@ -61,7 +61,7 @@ import {
   MOVED_CHANGE_STATUS,
   UNMODIFIED_CHANGE_STATUS,
 } from '@netcracker/qubership-apihub-ui-shared/entities/change-statuses'
-import { useUserInfo } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useUserInfo'
+import { useUser } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useUser'
 import { toUser } from '@netcracker/qubership-apihub-ui-shared/types/user'
 import {
   DEFAULT_RECONNECT_INTERVAL,
@@ -87,7 +87,7 @@ export const BranchEditingWebSocketProvider: FC<PropsWithChildren> = memo<PropsW
   const { projectId } = useParams()
   const [branch] = useBranchSearchParam()
   const { host, protocol } = useLocation()
-  const [userInfo] = useUserInfo()
+  const [user] = useUser()
 
   const [connectedUsersData, setConnectedUsersData] = useState<UserConnectedEventData[]>([])
 
@@ -117,7 +117,7 @@ export const BranchEditingWebSocketProvider: FC<PropsWithChildren> = memo<PropsW
       const eventData = JSON.parse(data)
       const { userId } = eventData
       const username = userId ? connectedUsers.find(({ key }) => key === userId)?.name : ''
-      const isNotCurrentUser = userInfo?.key !== userId
+      const isNotCurrentUser = user?.key !== userId
 
       if (isUserConnectedEventData(eventData)) {
         setConnectedUsersData(prevState => [...prevState, eventData])
@@ -192,7 +192,7 @@ export const BranchEditingWebSocketProvider: FC<PropsWithChildren> = memo<PropsW
         getBranchConflicts()
       }
     }
-  }, [connectedUsers, userInfo?.key, updateEditorsInBranchConfig, showNotification, getBranchConflicts, updateBranchConfig, updateChangeTypeInBranchConfig, updateFilesInBranchConfig, updateBranchCache, updateExistingFileInBranchCache, updateRefsInBranchConfig, branch])
+  }, [connectedUsers, user?.key, updateEditorsInBranchConfig, showNotification, getBranchConflicts, updateBranchConfig, updateChangeTypeInBranchConfig, updateFilesInBranchConfig, updateBranchCache, updateExistingFileInBranchCache, updateRefsInBranchConfig, branch])
 
   const openWebsocket = useCallback(
     () => {

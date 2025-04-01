@@ -20,7 +20,7 @@ import { MenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Bu
 import { NoIntegrationPlaceholder } from '@netcracker/qubership-apihub-ui-shared/components/NoIntegrationPlaceholder'
 import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
 import { useSystemInfo } from '@netcracker/qubership-apihub-ui-shared/features/system-info'
-import { useUserInfo } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useUserInfo'
+import { useUser } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useUser'
 import type { FC } from 'react'
 import { memo, useMemo } from 'react'
 import { useEventBus } from '../../EventBusProvider'
@@ -33,20 +33,20 @@ import { GroupsAndProjectsTree } from './GroupsAndProjectsTree'
 import { useIsFavoriteMainViewMode, useIsTableMainViewMode, useIsTreeMainViewMode } from './useMainPageMode'
 
 export const MainPage: FC = memo(() => {
-  const [userInfo] = useUserInfo()
+  const [user] = useUser()
   const { showCreateProjectDialog, showCreateGroupDialog } = useEventBus()
   const isTreeMainPageMode = useIsTreeMainViewMode()
   const isTableMainPageMode = useIsTableMainViewMode()
   const isFavoriteMainPageMode = useIsFavoriteMainViewMode()
   const { productionMode } = useSystemInfo()
   const groupCreationAvailable = useMemo(
-    () => (productionMode && (userInfo?.key === 'user001' || userInfo?.key === 'user002')) || !productionMode,
-    [userInfo?.key, productionMode],
+    () => (productionMode && (user?.key === 'user001' || user?.key === 'user002')) || !productionMode,
+    [user?.key, productionMode],
   )
 
   const isIntegratedWithGitlab = useGitlabIntegrationCheck()
 
-  if (userInfo && !isIntegratedWithGitlab) {
+  if (user && !isIntegratedWithGitlab) {
     return <NoIntegrationPlaceholder />
   }
 

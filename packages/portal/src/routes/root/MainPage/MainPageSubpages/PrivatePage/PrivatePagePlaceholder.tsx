@@ -16,15 +16,15 @@
 
 import { Button, Typography } from '@mui/material'
 import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
-import { useUserInfo } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useUserInfo'
+import { useUser } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useUser'
 import type { FC } from 'react'
 import { memo, useCallback } from 'react'
 import { MainPageCard } from '../../MainPageCard'
 import { useCreatePersonalPackage } from './usePrivateWorkspace'
 
 export const PrivatePagePlaceholder: FC = memo(() => {
-  const [userInfo] = useUserInfo()
-  const userId = userInfo?.key
+  const [user] = useUser()
+  const userId = user?.key
 
   const [createPrivatePackage] = useCreatePersonalPackage()
 

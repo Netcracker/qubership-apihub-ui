@@ -20,7 +20,7 @@ import { Box } from '@mui/material'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import { GenerateTokenForm } from '@netcracker/qubership-apihub-ui-shared/components/GenerateTokenForm'
 import { TokensTable } from '@netcracker/qubership-apihub-ui-shared/components/TokensTable'
-import { useUserInfo } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useUserInfo'
+import { useUser } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useUser'
 import {
   useDeleteApiKey,
   useGenerateApiKey,
@@ -37,7 +37,7 @@ export const SystemTokensTab: FC = memo(() => {
   const [generatedApiKey, generateApiKey, isLoading] = useGenerateApiKey()
   const { data: roles, isLoading: isRolesLoading } = useRoles()
 
-  const [userInfo] = useUserInfo()
+  const [user] = useUser()
   const [userSearch, setUserSearch] = useState<string>('')
   const [usersData, isUsersDataLoading] = useUsers(userSearch)
 
@@ -61,7 +61,7 @@ export const SystemTokensTab: FC = memo(() => {
           <Box>
             <GenerateTokenForm
               roles={availableRoles}
-              defaultUser={userInfo}
+              defaultUser={user}
               users={usersData?.users}
               setUserSearch={handleSetUserSearch}
               generatedApiKey={generatedApiKey}

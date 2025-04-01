@@ -19,7 +19,7 @@ import { isEmpty } from 'lodash-es'
 import type { FC } from 'react'
 import { memo, useEffect } from 'react'
 import { useSearchParam } from 'react-use'
-import { useUserInfo } from '../../../hooks/authorization'
+import { useUser } from '../../../hooks/authorization'
 import { useSystemConfiguration } from '../../../hooks/authorization/useSystemConfiguration'
 import { AuthMethod, isSsoAuthKind } from '../../../types/system-configuration'
 import { LocalAuthForm } from './LocalAuthForm'
@@ -32,7 +32,7 @@ export type LoginPageComponentProps = {
 export const LoginPage: FC<LoginPageComponentProps> = memo(({ applicationName }) => {
   const redirectUri = useSearchParam('redirectUri')
 
-  const [userInfo] = useUserInfo()
+  const [user] = useUser()
   const [systemConfiguration] = useSystemConfiguration()
 
   const authKinds = systemConfiguration?.authKinds ?? []
@@ -46,10 +46,10 @@ export const LoginPage: FC<LoginPageComponentProps> = memo(({ applicationName })
   )
 
   useEffect(() => {
-    if (userInfo) {
+    if (user) {
       location.replace(redirectUri ?? location.origin)
     }
-  }, [userInfo, redirectUri])
+  }, [user, redirectUri])
 
   return (
     <>

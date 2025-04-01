@@ -17,7 +17,7 @@
 import type { BuildConfigFile, BuildConfigRef, VersionStatus } from '@netcracker/qubership-apihub-api-processor'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { PackageReference } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
-import { useUserInfo } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useUserInfo'
+import { useUser } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useUser'
 import { useAsyncInvalidatePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
 import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import type { PublishDetails } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
@@ -34,7 +34,7 @@ import { PackageVersionBuilder } from './package-version-builder'
 
 export function usePublishPackageVersion(): [PublishPackageVersion, IsLoading, IsSuccess] {
   const { packageId } = useParams()
-  const [userInfo] = useUserInfo()
+  const [user] = useUser()
   const { navigateToVersion } = useNavigation()
 
   const invalidateVersionContent = useAsyncInvalidateVersionContent()
@@ -45,7 +45,7 @@ export function usePublishPackageVersion(): [PublishPackageVersion, IsLoading, I
   const { mutate, isLoading, isSuccess } = useMutation<PublishDetails, Error, Options>({
     mutationFn: options => {
       return PackageVersionBuilder.publishPackage(
-        toPublishOptions(packageId!, options, userInfo!.key),
+        toPublishOptions(packageId!, options, user!.key),
         getAuthorization(),
       )
     },

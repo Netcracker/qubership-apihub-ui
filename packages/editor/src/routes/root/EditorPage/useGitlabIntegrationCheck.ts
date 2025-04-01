@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-import { getTokenPayload } from '@netcracker/qubership-apihub-ui-shared/entities/token-payload'
-import { useUserInfo } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useUserInfo'
+import { useUser } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useUser'
 
 export function useGitlabIntegrationCheck(): boolean {
-  const [userInfo] = useUserInfo()
+  const [user] = useUser()
 
-  if (!userInfo) {
+  if (!user) {
     return false
   }
 
   try {
     return true // TODO 28.03.25 // Fix it or get rid of it
-    // return getTokenPayload(userInfo.token).extensions.gitIntegration
+    // return getTokenPayload(user.token).extensions.gitIntegration
   } catch (e) {/*do nothing*/}
 
   return false

@@ -20,18 +20,20 @@ import type { FC } from 'react'
 import { memo } from 'react'
 import { MenuButton } from '../../../components/Buttons/MenuButton'
 import { UserAvatar } from '../../../components/Users/UserAvatar'
-import { useUserInfo } from '../../../hooks/authorization/useUserInfo'
+import { useUser } from '../../../hooks/authorization/useUser'
+import { useLogoutUser } from '../../../hooks/authorization'
 
 export const UserPanel: FC = memo(() => {
-  const [userInfo, removeUserInfo] = useUserInfo()
+  const [user] = useUser()
+  const [logout] = useLogoutUser()
 
   return (
     <>
       <IconButton data-testid="AppUserAvatar" size="large" color="inherit">
         {
-          userInfo?.avatarUrl
-            ? <Avatar src={userInfo.avatarUrl} />
-            : <UserAvatar size="medium" name={userInfo?.name ?? ''} />
+          user?.avatarUrl
+            ? <Avatar src={user.avatarUrl} />
+            : <UserAvatar size="medium" name={user?.name ?? ''} />
         }
       </IconButton>
 
@@ -39,14 +41,14 @@ export const UserPanel: FC = memo(() => {
         sx={{ p: 0 }}
         variant="text"
         color="inherit"
-        title={userInfo?.name ?? ''}
+        title={user?.name ?? ''}
         icon={<KeyboardArrowDownOutlinedIcon />}
         data-testid="UserMenuButton"
       >
         <MenuItem
           data-testid="LogoutMenuItem"
           onClick={() => {
-            removeUserInfo()
+            logout()
             location.replace(`${location.origin}/login?redirectUri=${encodeURIComponent(location.href)}`)
           }}
         >

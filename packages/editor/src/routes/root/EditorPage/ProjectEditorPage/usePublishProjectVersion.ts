@@ -28,7 +28,7 @@ import type { PublishDetails, PublishOptions } from '@apihub/entities/publish-de
 import { COMPLETE_PUBLISH_STATUS, ERROR_PUBLISH_STATUS } from '@apihub/entities/publish-details'
 import type { FileSourceMap, VersionStatus } from '@netcracker/qubership-apihub-api-processor'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { useUserInfo } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useUserInfo'
+import { useUser } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useUser'
 import { useInvalidatePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
 import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { getAuthorization } from '@netcracker/qubership-apihub-ui-shared/utils/storages'
@@ -45,7 +45,7 @@ export function usePublishProjectVersion(): [PublishProjectVersion, IsLoading, I
   const queryClient = useQueryClient()
   const [sources] = useAllBranchFiles()
   const [project] = useProject(projectId)
-  const [userInfo] = useUserInfo()
+  const [user] = useUser()
 
   const invalidateFileHistory = useInvalidateFileHistory()
   const invalidateProjectVersions = useInvalidatePackageVersions()
@@ -57,7 +57,7 @@ export function usePublishProjectVersion(): [PublishProjectVersion, IsLoading, I
       const config = queryClient.getQueryData([BRANCH_CONFIG_QUERY_KEY, projectId, branchName!]) as BranchConfig
 
       return PackageVersionBuilder.publishPackage(
-        toPublishOptions(project!, branchName!, options, config?.files ?? [], sources, userInfo!.key),
+        toPublishOptions(project!, branchName!, options, config?.files ?? [], sources, user!.key),
         getAuthorization(),
       )
     },

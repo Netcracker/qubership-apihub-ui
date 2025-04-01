@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { useSearchParam } from 'react-use'
 import { useMutation } from '@tanstack/react-query'
-import type { Authorization, AuthorizationDto } from '../../../types/authorization'
-import { requestJson } from '../../../utils/requests'
-import { toUser } from '../../../types/user'
+import { useSearchParam } from 'react-use'
+import type { AuthorizationDto } from '../../../types/authorization'
 import type { IsError, IsLoading } from '../../../utils/aliases'
+import { API_V2, requestJson } from '../../../utils/requests'
 
 export function useLoginUser(): [LoginUser, IsLoading, IsError] {
   const redirectUri = useSearchParam('redirectUri')
@@ -42,18 +41,10 @@ async function loginUser(
 ): Promise<AuthorizationDto> {
   const basic = window.btoa(`${username}:${password}`)
 
-  return await requestJson<AuthorizationDto>('/api/v2/auth/local', {
+  return await requestJson<AuthorizationDto>('/auth/local', {
     method: 'post',
     headers: { authorization: `Basic ${basic}` },
-  })
-}
-
-function toAuthorization(value: AuthorizationDto): Authorization {
-  return {
-    token: value.token,
-    renewToken: value.renewToken,
-    user: toUser(value.user),
-  }
+  }, { basePath: API_V2 })
 }
 
 type LoginUser = (credentials: Credentials) => void

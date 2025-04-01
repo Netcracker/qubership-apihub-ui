@@ -21,7 +21,7 @@ import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/Body
 import { GenerateTokenForm } from '@netcracker/qubership-apihub-ui-shared/components/GenerateTokenForm'
 import { TokensTable } from '@netcracker/qubership-apihub-ui-shared/components/TokensTable'
 import { ACCESS_TOKEN_MANAGEMENT_PERMISSION } from '@netcracker/qubership-apihub-ui-shared/entities/package-permissions'
-import { useUserInfo } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useUserInfo'
+import { useUser } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useUser'
 import {
   useAvailablePackageRoles,
   useDeleteApiKey,
@@ -41,9 +41,9 @@ export const AccessTokensPackageSettingsTab: FC<PackageSettingsTabProps> = memo<
   )
 
   const { packageId: packageKey = '' } = useParams()
-  const [userInfo] = useUserInfo()
+  const [user] = useUser()
 
-  const [availableRoles, isLoadingRoles] = useAvailablePackageRoles(packageKey, userInfo?.key ?? '')
+  const [availableRoles, isLoadingRoles] = useAvailablePackageRoles(packageKey, user?.key ?? '')
 
   const [tokensList, isTokensLoading] = useTokens(packageKey!)
   const [deleteAPIKey] = useDeleteApiKey()
@@ -78,7 +78,7 @@ export const AccessTokensPackageSettingsTab: FC<PackageSettingsTabProps> = memo<
             <GenerateTokenForm
               roles={availableRolesForPackage}
               users={usersData?.users}
-              defaultUser={userInfo}
+              defaultUser={user}
               setUserSearch={handleSetUserSearch}
               generatedApiKey={generatedApiKey}
               disabled={!hasTokenManagementPermission}

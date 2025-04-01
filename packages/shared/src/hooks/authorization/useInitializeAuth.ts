@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-use'
 import { useSystemConfiguration } from './useSystemConfiguration'
-import { useUserInfo } from './useUserInfo'
+import { useUser } from './useUser'
 import { SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION } from '../../utils/constants'
 
 type IsAuthenticated = boolean
@@ -22,12 +22,12 @@ export function useInitializeAuth(): [IsAuthenticated, IsLoginPage] {
   }, [systemConfiguration])
 
   // second, try to access protected API
-  const userInfo = useUserInfo(!!systemConfiguration)
+  const user = useUser(!!systemConfiguration)
 
   // when protected API is fetched, set auth === true
   useEffect(() => {
-    setAuth(!!userInfo)
-  }, [userInfo])
+    setAuth(!!user)
+  }, [user])
 
   const location = useLocation()
   const isLoginPage = location.pathname?.startsWith('/login') ?? false // This is done for new routing approach, refactor it

@@ -34,7 +34,7 @@ import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/compone
 import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
 import { AddUserDialog } from '@netcracker/qubership-apihub-ui-shared/components/Users/AddUserDialog'
 import { USER_ACCESS_MANAGEMENT_PERMISSION } from '@netcracker/qubership-apihub-ui-shared/entities/package-permissions'
-import { useUserInfo } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useUserInfo'
+import { useUser } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useUser'
 import { useAvailablePackageRoles } from '@netcracker/qubership-apihub-ui-shared/hooks/tokens/useTokens'
 import { usePermissions } from '@netcracker/qubership-apihub-ui-shared/hooks/user-roles/usePermissions'
 import { useRoles } from '@netcracker/qubership-apihub-ui-shared/hooks/user-roles/useRoles'
@@ -58,8 +58,8 @@ export const UserPackageAccessControlSettingsTab: FC<PackageSettingsTabProps> = 
     setSearchValue(value)
   }, [])
 
-  const [userInfo] = useUserInfo()
-  const [availablePackageRoles, isRolesPackageLoading] = useAvailablePackageRoles(packageObject.key, userInfo?.key ?? '')
+  const [user] = useUser()
+  const [availablePackageRoles, isRolesPackageLoading] = useAvailablePackageRoles(packageObject.key, user?.key ?? '')
   const [packageMembers, isPackageMembersLoading] = usePackageMembers(packageObject.key)
 
   const isLoading = useMemo(() => isRolesPackageLoading && isPackageMembersLoading, [isRolesPackageLoading, isPackageMembersLoading])

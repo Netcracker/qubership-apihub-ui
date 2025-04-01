@@ -21,7 +21,7 @@ import { PackageDialogForm } from '@netcracker/qubership-apihub-ui-shared/compon
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { GROUP_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { useUserInfo } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useUserInfo'
+import { useUser } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useUser'
 import { toTitleCase } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
 import type { FC } from 'react'
 import { memo, useEffect, useState } from 'react'
@@ -55,8 +55,8 @@ const CreatePackagePopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, de
   })
 
   const isPrivatePage = useIsPrivateMainPage()
-  const [userInfo] = useUserInfo()
-  const userId = userInfo?.key
+  const [user] = useUser()
+  const userId = user?.key
 
   const optionRefererPage = isPrivatePage ? userId : WORKSPACES_PAGE_REFERER
 
