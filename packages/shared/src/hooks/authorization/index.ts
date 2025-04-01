@@ -15,5 +15,5 @@
  */
 // eslint-disable-next-line filenames/no-index
 export { useInitializeAuth } from './useInitializeAuth'
-export { useLogoutUser } from './useLogout'
+export { useLogoutUser } from './useLogoutUser'
 export { useUser } from './useUser'
