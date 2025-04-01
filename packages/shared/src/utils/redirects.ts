@@ -28,7 +28,7 @@ export function redirectToGitlab(): void {
   redirectTo('/login/gitlab')
 }
 
-function redirectTo(path: string, redirectUri?: string): void {
+export function redirectTo(path: string, redirectUri?: string): void {
   const url = format(
     '{}{}?redirectUri={}',
     location.origin, path, encodeURIComponent(redirectUri ?? location.href),

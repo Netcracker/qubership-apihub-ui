@@ -43,5 +43,7 @@ export function toSystemConfiguration(value: SystemConfigurationDto): SystemConf
     ssoIntegrationEnabled: value.ssoIntegrationEnabled,
     autoRedirect: value.autoRedirect,
     defaultWorkspaceId: value.defaultWorkspaceId,
+    // TODO 31.03.25 // Auth kinds will be available here
+    authKinds: [],
   }
 }

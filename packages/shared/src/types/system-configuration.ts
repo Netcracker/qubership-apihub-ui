@@ -14,10 +14,25 @@
  * limitations under the License.
  */
 
+export enum AuthMethod {
+  LOCAL_AUTH_METHOD = 'local',
+  SSO_AUTH_METHOD = 'sso'
+}
+
+export type AuthKind = Readonly<{
+  type: AuthMethod
+  displayName: string
+  url: string
+  imageUrl?: string
+}>
+
+export type SsoAuthKind = Omit<AuthKind, 'type'> & { type: typeof AuthMethod.SSO_AUTH_METHOD }
+
 export type SystemConfiguration = Readonly<{
   ssoIntegrationEnabled: boolean
   autoRedirect: boolean
   defaultWorkspaceId: string
+  authKinds: ReadonlyArray<AuthKind>
 }>
 
 export type SystemConfigurationDto = SystemConfiguration
