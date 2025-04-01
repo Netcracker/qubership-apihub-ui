@@ -18,6 +18,5 @@ export const DEFAULT_DEBOUNCE = 500
 
 export const DEFAULT_NUMBER_SKELETON_ROWS = 5
 
-export const AUTHORIZATION_COOKIE_KEY = 'userView'
-export const USER_INFO_COOKIE_KEY = 'userInfo'
 export const AUTHORIZATION_LOCAL_STORAGE_KEY = 'authorization'
+export const SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION = 'systemConfiguration'

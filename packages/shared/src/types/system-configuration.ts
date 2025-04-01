@@ -22,10 +22,11 @@ export enum AuthMethod {
 export type AuthKind = Readonly<{
   type: AuthMethod
   displayName: string
-  url: string
-  imageUrl?: string
+  url?: string
+  image?: string
 }>
 
+export type LocalAuthKind = Omit<AuthKind, 'type'> & { type: typeof AuthMethod.LOCAL_AUTH_METHOD }
 export type SsoAuthKind = Omit<AuthKind, 'type'> & { type: typeof AuthMethod.SSO_AUTH_METHOD }
 
 export type SystemConfiguration = Readonly<{
@@ -33,6 +34,15 @@ export type SystemConfiguration = Readonly<{
   autoRedirect: boolean
   defaultWorkspaceId: string
   authKinds: ReadonlyArray<AuthKind>
+  defaultAuthKind: AuthKind
 }>
 
 export type SystemConfigurationDto = SystemConfiguration
+
+export function isLocalAuthKind(kind: AuthKind): kind is LocalAuthKind {
+  return kind.type === AuthMethod.LOCAL_AUTH_METHOD
+}
+
+export function isSsoAuthKind(authKind: AuthKind): authKind is SsoAuthKind {
+  return authKind.type === AuthMethod.SSO_AUTH_METHOD
+}

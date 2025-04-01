@@ -24,12 +24,12 @@ export const SsoAuthControls: FC<SsoAuthControlsProps> = memo(({ kinds }) => {
                 width={24}
                 height={24}
                 sx={{
-                  backgroundImage: kind.imageUrl,
+                  backgroundImage: kind.image,
                   backgroundSize: '24px 24px',
                 }}
               />
             }
-            onClick={() => redirectTo(kind.url)}
+            onClick={() => kind.url && redirectTo(kind.url)}
           >
             {kind.displayName}
           </Button>

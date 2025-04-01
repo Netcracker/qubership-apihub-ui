@@ -28,6 +28,10 @@ export function redirectToGitlab(): void {
   redirectTo('/login/gitlab')
 }
 
+export function redirectToLogin(): void {
+  redirectTo('/login')
+}
+
 export function redirectTo(path: string, redirectUri?: string): void {
   const url = format(
     '{}{}?redirectUri={}',

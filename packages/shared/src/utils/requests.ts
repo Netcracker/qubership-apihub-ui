@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import { AUTHORIZATION_LOCAL_STORAGE_KEY } from './constants'
+import type { SystemConfiguration } from '../types/system-configuration'
+import { isLocalAuthKind } from '../types/system-configuration'
+import { SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION } from './constants'
 import type { ErrorMessage } from './packages-builder'
-import { redirectToSaml } from './redirects'
+import { redirectTo, redirectToLogin } from './redirects'
 import { HttpError } from './responses'
 import type { Key } from './types'
 
@@ -155,8 +157,18 @@ export async function requestVoid(
 
 function handleAuthentication(response: Response): void {
   if (response.status === 401 && !location.pathname.startsWith('/login')) {
-    localStorage.removeItem(AUTHORIZATION_LOCAL_STORAGE_KEY)
-    redirectToSaml()
+    const systemConfiguration: SystemConfiguration = JSON.parse(
+      sessionStorage.getItem(SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION) ?? '',
+    ) as SystemConfiguration
+
+    if (systemConfiguration) {
+      const { defaultAuthKind } = systemConfiguration
+      if (isLocalAuthKind(defaultAuthKind)) {
+        redirectToLogin()
+      } else if (defaultAuthKind.url) {
+        redirectTo(defaultAuthKind.url)
+      }
+    }
   }
 }
 

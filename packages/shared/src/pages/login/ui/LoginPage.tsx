@@ -21,17 +21,12 @@ import { memo, useEffect } from 'react'
 import { useSearchParam } from 'react-use'
 import { useUserInfo } from '../../../hooks/authorization'
 import { useSystemConfiguration } from '../../../hooks/authorization/useSystemConfiguration'
-import type { AuthKind, SsoAuthKind } from '../../../types/system-configuration'
-import { AuthMethod } from '../../../types/system-configuration'
+import { AuthMethod, isSsoAuthKind } from '../../../types/system-configuration'
 import { LocalAuthForm } from './LocalAuthForm'
 import { SsoAuthControls } from './SsoAuthControls'
 
 export type LoginPageComponentProps = {
   applicationName: string
-}
-
-function isSsoAuthKind(authKind: AuthKind): authKind is SsoAuthKind {
-  return authKind.type === AuthMethod.SSO_AUTH_METHOD
 }
 
 export const LoginPage: FC<LoginPageComponentProps> = memo(({ applicationName }) => {
@@ -42,10 +37,10 @@ export const LoginPage: FC<LoginPageComponentProps> = memo(({ applicationName })
 
   const authKinds = systemConfiguration?.authKinds ?? []
   const ssoAuthKinds = authKinds.filter(isSsoAuthKind)
-  const localUsersEnabled = authKinds.some(kind => kind.type === AuthMethod.LOCAL_AUTH_METHOD)
-  const ssoEnabled = !isEmpty(ssoAuthKinds)
+  const localAuthEnabled = authKinds.some(kind => kind.type === AuthMethod.LOCAL_AUTH_METHOD)
+  const ssoAuthEnabled = !isEmpty(ssoAuthKinds)
   const ssoAuthControls = (
-    ssoEnabled
+    ssoAuthEnabled
       ? <SsoAuthControls kinds={ssoAuthKinds} />
       : null
   )
@@ -79,9 +74,9 @@ export const LoginPage: FC<LoginPageComponentProps> = memo(({ applicationName })
             <Typography component="h1" variant="h1" data-testid="ApihubLoginHeaderTypography">
               Log in to {applicationName}
             </Typography>
-            {localUsersEnabled ? (
+            {localAuthEnabled ? (
               <LocalAuthForm
-                ssoEnabled={ssoEnabled}
+                ssoEnabled={ssoAuthEnabled}
                 additionalControls={ssoAuthControls}
               />
             ) : ssoAuthControls}

@@ -22,12 +22,12 @@ import { API_V1, requestJson } from '../../utils/requests'
 
 const QUERY_KEY_USER_INFO = 'user-info-query-key'
 
-export function useUserInfo(): [User | undefined, IsLoading, Error | null] {
+export function useUserInfo(enabled: boolean = true): [User | undefined, IsLoading, Error | null] {
   const { data, isLoading, error } = useQuery<UserDto, Error, User>({
     queryKey: [QUERY_KEY_USER_INFO],
     queryFn: getUserInfo,
     select: toUser,
-    enabled: true,
+    enabled: enabled,
   })
 
   return [data, isLoading, error]

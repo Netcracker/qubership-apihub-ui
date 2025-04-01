@@ -17,7 +17,7 @@
 import { useQuery } from '@tanstack/react-query'
 import type { IsLoading } from '../../utils/aliases'
 import { requestJson } from '../../utils/requests'
-import type { SystemConfiguration, SystemConfigurationDto } from '../../types/system-configuration'
+import { AuthMethod, type SystemConfiguration, type SystemConfigurationDto } from '../../types/system-configuration'
 
 const SYSTEM_CONGIGURATION_QUERY_KEY = 'system-configuration-query-key'
 
@@ -43,7 +43,11 @@ export function toSystemConfiguration(value: SystemConfigurationDto): SystemConf
     ssoIntegrationEnabled: value.ssoIntegrationEnabled,
     autoRedirect: value.autoRedirect,
     defaultWorkspaceId: value.defaultWorkspaceId,
-    // TODO 31.03.25 // Auth kinds will be available here
+    // TODO 31.03.25 // Real auth kinds will be available here
     authKinds: [],
+    defaultAuthKind: {
+      type: AuthMethod.LOCAL_AUTH_METHOD,
+      displayName: 'Log In',
+    },
   }
 }
