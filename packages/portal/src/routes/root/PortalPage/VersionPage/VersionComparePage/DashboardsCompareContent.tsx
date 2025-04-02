@@ -170,8 +170,6 @@ export const DashboardsCompareContent: FC = memo(() => {
                 const path = parentPackages.join(' / ')
                 const currentAction = calculateAction(version, previousVersion)
                 const severity = getMajorSeverity(changeSummary)
-                console.log('changeSummary----------->', changeSummary)
-                console.log('severity----------->', severity)
                 const comparingSearchParams = optionalSearchParams({
                   [PACKAGE_SEARCH_PARAM]: { value: changedPackageKey === originPackageKey ? '' : originPackageKey! },
                   [VERSION_SEARCH_PARAM]: { value: originVersionKey! },

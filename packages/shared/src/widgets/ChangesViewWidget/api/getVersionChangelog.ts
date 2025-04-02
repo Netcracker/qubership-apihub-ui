@@ -96,8 +96,6 @@ export async function getVersionChangelog(
     limit: { value: limit },
   })
 
-  console.log('getVersionChangelog', queryParams, 'REST')
-
   const pathPattern = '/packages/:packageId/versions/:versionId/:apiType/changes'
   return await requestJson(
     `${generatePath(pathPattern, { packageId, versionId, apiType })}?${queryParams}`,
