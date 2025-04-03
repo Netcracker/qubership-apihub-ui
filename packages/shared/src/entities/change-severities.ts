@@ -62,7 +62,7 @@ export const CHANGE_SEVERITY_COLOR_MAP: Record<ChangeSeverity, string> = {
 
 export const CHANGE_SEVERITY_NAME_MAP: Record<ChangeSeverity, string> = {
   [breaking]: 'Breaking',
-  [risky]: 'Changes Requiring Attention',
+  [risky]: 'Requires Attention',
   [deprecated]: 'Deprecated',
   [nonBreaking]: 'Non-breaking',
   [unclassified]: 'Unclassified',
