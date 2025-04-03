@@ -1199,7 +1199,7 @@ If both **method** and **path** columns are specified in the CSV file, the syste
 - **Group Type**: Set to manual.
 
 ### Report Generation:
-When the dashboard version is successfully published, an Excel report will be generated. This report will contain:
+The generated Excel report will contain:
 - The original data from the uploaded CSV file.
 - An additional column that provides a status or error message for each row, explaining any issues that were encountered.  
 
