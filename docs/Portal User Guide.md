@@ -1203,7 +1203,7 @@ The generated Excel report will contain:
 - The original data from the uploaded CSV file.
 - An additional column that provides a status or error message for each row, explaining any issues that were encountered.  
 
-Below is a list of potential error messages that may appear in the report, along with an explanation of when each error will occur:  
+Below is a list of potential error messages or status updates that may appear in the report, along with explanations of when each error or status occurs:  
 - **empty service name**: This error occurs when a row is missing the serviceName field in the CSV file. The service name is mandatory for identifying the relevant package.  
 - **empty service version**: This error appears if the serviceVersion field is missing for a service that has a serviceName. Both fields are required for identifying the correct version of the service.  
 - **empty method**: This error occurs when the method field is missing (e.g, GET, POST, PATCH, DELETE), but a valid path is provided for the API operation.  
