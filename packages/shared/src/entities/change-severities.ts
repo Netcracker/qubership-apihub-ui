@@ -40,12 +40,12 @@ export type ActionType =
   | typeof REPLACE_ACTION_TYPE
   | typeof RENAME_ACTION_TYPE
 
-export const BREAKING_CHANGE_SEVERITY = 'breaking'
-export const NON_BREAKING_CHANGE_SEVERITY = 'non-breaking'
-export const RISKY_CHANGE_SEVERITY = 'risky'
-export const DEPRECATED_CHANGE_SEVERITY = 'deprecated'
-export const ANNOTATION_CHANGE_SEVERITY = 'annotation'
-export const UNCLASSIFIED_CHANGE_SEVERITY = 'unclassified'
+export const BREAKING_CHANGE_SEVERITY = breaking
+export const NON_BREAKING_CHANGE_SEVERITY = nonBreaking
+export const RISKY_CHANGE_SEVERITY = risky
+export const DEPRECATED_CHANGE_SEVERITY = deprecated
+export const ANNOTATION_CHANGE_SEVERITY = annotation
+export const UNCLASSIFIED_CHANGE_SEVERITY = unclassified
 
 export type ChangesSummary<T extends string | number | symbol = DiffType> = ChangeSummary<T>
 
