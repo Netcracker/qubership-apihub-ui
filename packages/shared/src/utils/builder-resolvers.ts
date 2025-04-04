@@ -34,8 +34,8 @@ import type {
 import { NotFoundError } from './requests'
 
 export async function packageVersionResolver(authorization: string): Promise<VersionResolver> {
-  return async (packageId, version, includeOperations = false) => {
-    const versionConfig = await getPackageVersionContent(packageId, version, includeOperations, authorization)
+  return async (packageId, version, includeOperations = false, includeSummary = false) => {
+    const versionConfig = await getPackageVersionContent(packageId, version, includeOperations, includeSummary, authorization)
     if (!versionConfig) {
       return null
     }
@@ -59,14 +59,21 @@ export async function versionReferencesResolver(authorization: string): Promise<
 }
 
 export async function versionOperationsResolver(authorization: string): Promise<VersionOperationsResolver> {
-  return async (apiType, version, packageId, operations, includeData) => {
-    const fetchedOperations = await fetchOperations(apiType, packageId, version, operations, includeData, authorization)
-
-    if (!fetchedOperations) {
+  return async (apiType, version, packageId, operationsIds, includeData, operationsCount) => {
+    try {
+      const limit = 1000
+      if (operationsCount) {
+        const fetchTasks = Array.from({ length: Math.ceil(operationsCount / limit) }, (_, index) =>
+          fetchOperations(apiType, packageId, version, [], false, authorization, index, limit))
+        const operationsDtos = await Promise.all(fetchTasks)
+        return { operations: operationsDtos.flatMap(({ operations }) => operations.map(toVersionOperation)) }
+      }
+      const operationsDto = await fetchOperations(apiType, packageId, version, operationsIds, includeData, authorization)
+      return { operations: operationsDto.operations.map(toVersionOperation) }
+    } catch (error) {
+      console.error(error)
       return { operations: [] }
     }
-
-    return { operations: fetchedOperations.operations.map(toVersionOperation) }
   }
 }
 
