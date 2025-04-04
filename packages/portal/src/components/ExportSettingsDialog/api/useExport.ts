@@ -4,19 +4,19 @@ import { IsLoading } from "@netcracker/qubership-apihub-ui-shared/utils/aliases"
 import { API_V1, requestJson } from "@netcracker/qubership-apihub-ui-shared/utils/requests"
 import { useQuery } from "@tanstack/react-query"
 
-enum ExportedEntityKind {
+export enum ExportedEntityKind {
   VERSION = 'version',
   REST_DOCUMENT = 'restDocument',
   REST_OPERATIONS_GROUP = 'restOperationsGroup'
 }
 
-enum ExportedFileFormat {
+export enum ExportedFileFormat {
   HTML = 'html',
   YAML = 'yaml',
   JSON = 'json'
 }
 
-enum ExportedEntityTransformation {
+export enum ExportedEntityTransformation {
   REDUCED_SOURCE_SPECIFICATIONS = 'reducedSourceSpecifications',
   MERGED_SPECIFICATION = 'mergedSpecification'
 }

@@ -2,16 +2,16 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/
 import { PopupProps } from "@netcracker/qubership-apihub-ui-shared/components/PopupDelegate"
 import { FC } from "react"
 import { useForm } from "react-hook-form"
+import { ExportedEntityKind } from "../api/useExport"
 import { EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE, ExportSettingsFormData } from "../entities/export-settings-form"
-import { ExportSettingsPlace } from "../entities/export-settings-place"
 import { ExportSettingsForm } from "./ExportSettingsForm"
 
 type ExportSettingsPopupProps = PopupProps & {
-  place: ExportSettingsPlace
+  exportedEntity: ExportedEntityKind
 }
 
-export const ExportSettingsPopup: FC<ExportSettingsPopupProps> = ({ open, setOpen, place }) => {
-  const fields = EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE[place]
+export const ExportSettingsPopup: FC<ExportSettingsPopupProps> = ({ open, setOpen, exportedEntity }) => {
+  const fields = EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE[exportedEntity]
 
   const { control, handleSubmit } = useForm<ExportSettingsFormData>({
     defaultValues: fields.reduce((acc, field) => {
