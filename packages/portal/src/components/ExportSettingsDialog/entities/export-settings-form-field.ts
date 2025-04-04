@@ -1,9 +1,10 @@
 import { ExportedEntityTransformation, ExportedFileFormat } from "../api/useExport"
+import { ExportConfig } from "../api/useExportConfig"
 
 export type ExportSettingsFormFieldOption<L extends string = string, V extends string = string> = Readonly<{
   label: L
   value: V
-  tooltip?: string
+  tooltip?: string | ((...args: unknown[]) => string | undefined)
 }>
 
 export enum ExportSettingsFormFieldKind {
@@ -54,7 +55,13 @@ const FIELD_OPTION_OAS_EXTENSIONS_PRESERVE: ExportSettingsFormFieldOption = {
 };
 const FIELD_OPTION_OAS_EXTENSIONS_REMOVE: ExportSettingsFormFieldOption = {
   label: 'Remove OAS extensions',
-  value: ExportSettingsFormFieldOptionOasExtensions.REMOVE
+  value: ExportSettingsFormFieldOptionOasExtensions.REMOVE,
+  tooltip: (exportConfig: unknown) => {
+    const allowedOasExtensions = (exportConfig as ExportConfig).allowedOasExtensions ?? []
+    return allowedOasExtensions.length === 0
+      ? 'All extensions will be removed from the specifications because no allowed list of extensions is defined for the package.'
+      : `All extensions will be removed from the specifications except for the following: ${allowedOasExtensions.map(extension => extension.oasExtension).join(', ')}.`
+  }
 };
 
 export const FIELD_OPTION_LIST_SPECIFICATION_TYPE: ReadonlyArray<ExportSettingsFormFieldOption> = [

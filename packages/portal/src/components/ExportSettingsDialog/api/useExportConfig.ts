@@ -20,7 +20,7 @@ type OasExtension = Omit<OasExtensionDto, 'packageId'> & Partial<{
   packageKey: PackageKey
 }>
 
-type ExportConfig = {
+export type ExportConfig = {
   allowedOasExtensions?: OasExtension[]
 }
 

@@ -9,6 +9,7 @@ import { EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE, ExportSettingsFormData } from "..
 import { ExportSettingsFormFieldKind, ExportSettingsFormFieldOptionOasExtensions } from "../entities/export-settings-form-field"
 import { useLocalExportSettings } from "../storage/useLocalExportSettings"
 import { ExportSettingsForm } from "./ExportSettingsForm"
+import { useExportConfig } from "../api/useExportConfig"
 
 export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) => {
   const {
@@ -25,6 +26,8 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
     () => fields.reduce((acc, field) => ({ ...acc, [field.kind]: field.defaultValue }), {}),
     [fields]
   )
+
+  const [exportConfig = {}, isLoadingExportConfig] = useExportConfig(packageId)
 
   // Initialize state used for request data export
   const [requestDataExport, setRequestDataExport] = useState<IRequestDataExport | undefined>(undefined)
@@ -82,6 +85,7 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
       <DialogContent>
         <ExportSettingsForm
           fields={fields}
+          exportConfig={exportConfig}
           control={control}
           setCachedFormField={setCachedFormField}
         />
