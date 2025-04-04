@@ -21,7 +21,7 @@ export enum ExportedEntityTransformation {
   MERGED_SPECIFICATION = 'mergedSpecification'
 }
 
-interface IRequestDataExport {
+export interface IRequestDataExport {
   exportedEntity: ExportedEntityKind
   packageId: PackageKey
   version: VersionKey
@@ -39,7 +39,7 @@ class CommonRequestDataExport implements IRequestDataExport {
   ) { }
 }
 
-class RequestDataExportVersion extends CommonRequestDataExport {
+export class RequestDataExportVersion extends CommonRequestDataExport {
   constructor(
     packageId: PackageKey,
     version: VersionKey,
@@ -49,7 +49,7 @@ class RequestDataExportVersion extends CommonRequestDataExport {
   }
 }
 
-class RequestDataExportRestDocument extends CommonRequestDataExport {
+export class RequestDataExportRestDocument extends CommonRequestDataExport {
   constructor(
     public readonly documentId: Key,
     packageId: PackageKey,
@@ -61,7 +61,7 @@ class RequestDataExportRestDocument extends CommonRequestDataExport {
   }
 }
 
-class RequestDataExportRestOperationsGroup extends CommonRequestDataExport {
+export class RequestDataExportRestOperationsGroup extends CommonRequestDataExport {
   constructor(
     public readonly groupName: string,
     public readonly operationsSpecTransformation: ExportedEntityTransformation,
@@ -85,16 +85,17 @@ type ExportDto = Partial<{
 
 type Export = ExportDto
 
-export function useExport(requestData: RequestDataExport): [ExportDto | undefined, IsLoading, Error | null] {
+export function useExport(requestData?: IRequestDataExport): [Export | undefined, IsLoading, Error | null] {
   const { data, isLoading, error } = useQuery<Export, Error | null, ExportDto>({
     queryKey: ['export', requestData],
-    queryFn: () => startExport(requestData),
+    queryFn: () => startExport(requestData!),
+    enabled: !!requestData,
   })
 
   return [data, isLoading, error]
 }
 
-function startExport(requestData: RequestDataExport): Promise<ExportDto> {
+function startExport(requestData: IRequestDataExport): Promise<ExportDto> {
   return requestJson<ExportDto>(
     '/export',
     {

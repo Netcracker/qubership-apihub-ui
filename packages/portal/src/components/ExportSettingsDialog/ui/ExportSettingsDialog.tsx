@@ -1,21 +1,14 @@
 import { PopupDelegate } from "@netcracker/qubership-apihub-ui-shared/components/PopupDelegate"
 import { FC } from "react"
-import { ExportedEntityKind } from "../api/useExport"
 import { ExportSettingsPopup } from "./ExportSettingsPopup"
 
-const POPUP_TYPE_EXPORT_SETTINGS_DIALOG = "popup-export-settings-dialog"
+export const SHOW_EXPORT_SETTINGS_DIALOG = "show-export-settings-dialog"
 
-type ExportSettingsDialogProps = {
-  exportedEntity: ExportedEntityKind
-}
-
-export const ExportSettingsDialog: FC<ExportSettingsDialogProps> = ({ exportedEntity }) => {
+export const ExportSettingsDialog: FC = () => {
   return (
     <PopupDelegate
-      type={POPUP_TYPE_EXPORT_SETTINGS_DIALOG}
-      render={({ open, setOpen }) => (
-        <ExportSettingsPopup open={open} setOpen={setOpen} exportedEntity={exportedEntity} />
-      )}
+      type={SHOW_EXPORT_SETTINGS_DIALOG}
+      render={props => <ExportSettingsPopup {...props} />}
     />
   )
 }

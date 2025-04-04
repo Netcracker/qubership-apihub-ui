@@ -14,40 +14,42 @@
  * limitations under the License.
  */
 
-import type { FC, PropsWithChildren } from 'react'
-import { createContext, memo, useContext, useState } from 'react'
-import { createEventBus, slot } from 'ts-event-bus'
-import type { Path } from '@remix-run/router'
+import { ExportedEntityKind } from '@apihub/components/ExportSettingsDialog/api/useExport'
+import { SHOW_EXPORT_SETTINGS_DIALOG } from '@apihub/components/ExportSettingsDialog/ui/ExportSettingsDialog'
+import type { SearchCriteria } from '@apihub/entities/global-search'
+import { SHOW_ADD_SYSTEM_ADMINISTRATOR_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/AddSystemAdministratorDialog'
+import type { ShowDeleteRoleDetail } from '@netcracker/qubership-apihub-ui-shared/components/DeleteRoleDialog'
+import { SHOW_DELETE_ROLE_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/DeleteRoleDialog'
+import type { ShowEditRoleDetail } from '@netcracker/qubership-apihub-ui-shared/components/EditRoleDialog'
+import { SHOW_EDIT_ROLE_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/EditRoleDialog'
+import type { ShowEmptyPackageDetail } from '@netcracker/qubership-apihub-ui-shared/components/EmptyPackageDialog'
+import { SHOW_EMPTY_PACKAGE_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/EmptyPackageDialog'
+import type { ShowDeleteFileDetail } from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/DeleteFileDialog'
+import { SHOW_DELETE_FILE_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/DeleteFileDialog'
+import type {
+  ShowEditFileLabelsDetail,
+} from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/EditFileLabelsDialog'
+import { SHOW_EDIT_FILE_LABELS_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/EditFileLabelsDialog'
 import type {
   SpecificationDialogDetail,
 } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/SpecificationDialog'
 import {
   SHOW_SPECIFICATION_DIALOG,
 } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/SpecificationDialog'
-import type { SearchCriteria } from '@apihub/entities/global-search'
-import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import type { PackagePermissions } from '@netcracker/qubership-apihub-ui-shared/entities/package-permissions'
-import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { Key, PackageKey, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { OperationGroup } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
 import type { ApiAudience, ApiKind, OperationData, OperationsGroupedByTag } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import type { PackagePermissions } from '@netcracker/qubership-apihub-ui-shared/entities/package-permissions'
+import type { PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import type { Spec } from '@netcracker/qubership-apihub-ui-shared/entities/specs'
-import type { ShowDeleteRoleDetail } from '@netcracker/qubership-apihub-ui-shared/components/DeleteRoleDialog'
-import { SHOW_DELETE_ROLE_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/DeleteRoleDialog'
-import type { ShowEditRoleDetail } from '@netcracker/qubership-apihub-ui-shared/components/EditRoleDialog'
-import { SHOW_EDIT_ROLE_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/EditRoleDialog'
-import type { ShowDeleteFileDetail } from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/DeleteFileDialog'
-import { SHOW_DELETE_FILE_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/DeleteFileDialog'
 import type { PackageReference } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
-import { SHOW_ADD_SYSTEM_ADMINISTRATOR_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/AddSystemAdministratorDialog'
-import type {
-  ShowEditFileLabelsDetail,
-} from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/EditFileLabelsDialog'
-import { SHOW_EDIT_FILE_LABELS_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/EditFileLabelsDialog'
-import type { ShowEmptyPackageDetail } from '@netcracker/qubership-apihub-ui-shared/components/EmptyPackageDialog'
-import { SHOW_EMPTY_PACKAGE_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/EmptyPackageDialog'
+import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 import { SHOW_ADD_USER_DIALOG, SHOW_USER_ROLES_DIALOG } from '@netcracker/qubership-apihub-ui-shared/types/dialogs'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { Path } from '@remix-run/router'
+import type { FC, PropsWithChildren } from 'react'
+import { createContext, memo, useContext, useState } from 'react'
+import { createEventBus, slot } from 'ts-event-bus'
 
 // base
 export const SHOW_SUCCESS_NOTIFICATION = 'show-success-notification'
@@ -163,6 +165,14 @@ export type ShowEditPackagePrefixDetail = {
   packageKey?: string
 }
 
+export type ExportSettingsPopupDetail = {
+  exportedEntity: ExportedEntityKind
+  packageId: PackageKey
+  version: VersionKey
+  documentId?: Key
+  groupName?: string
+}
+
 type EventBus = {
   // base
   showSuccessNotification: (detail: NotificationDetail) => void
@@ -211,6 +221,8 @@ type EventBus = {
   onApiAudienceSelected: (value?: ApiAudience) => void
   onTagSelected: (value?: string) => void
   onOperationMoved: (value: OperationsMovementDetails) => void
+  // Feature "Export Settings Dialog"
+  showExportSettingsDialog: (value: ExportSettingsPopupDetail) => void
 }
 
 function eventBusProvider(): EventBus {
@@ -263,6 +275,8 @@ function eventBusProvider(): EventBus {
       onApiAudienceSelected: slot<ApiAudience>(),
       onTagSelected: slot<string>(),
       onOperationMoved: slot<OperationsMovementDetails>(),
+      // Feature "Export Settings Dialog"
+      showExportSettingsDialog: slot<ExportSettingsPopupDetail>(),
     },
   })
 
@@ -380,6 +394,9 @@ function eventBusProvider(): EventBus {
   })
   eventBus.onOperationMoved.on((detail: OperationsMovementDetails) => {
     dispatchEvent(new CustomEvent(OPERATION_MOVED, { detail }))
+  })
+  eventBus.showExportSettingsDialog.on((detail: ExportSettingsPopupDetail) => {
+    dispatchEvent(new CustomEvent(SHOW_EXPORT_SETTINGS_DIALOG, { detail }))
   })
   eventBus.showEditPackagePrefixDialog.on((detail: ShowEditPackagePrefixDetail) => {
     dispatchEvent(new CustomEvent(SHOW_EDIT_PACKAGE_PREFIX_DIALOG, { detail }))

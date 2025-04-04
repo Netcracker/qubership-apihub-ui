@@ -1,8 +1,8 @@
 import { ExportedEntityTransformation, ExportedFileFormat } from "../api/useExport"
 
-export type ExportSettingsFormFieldOption = Readonly<{
-  label: string
-  value: string
+export type ExportSettingsFormFieldOption<L extends string = string, V extends string = string> = Readonly<{
+  label: L
+  value: V
   tooltip?: string
 }>
 
@@ -32,25 +32,29 @@ const FIELD_OPTION_SPECIFICATION_TYPE_COMBINED: ExportSettingsFormFieldOption = 
   label: 'Combined specification',
   value: ExportedEntityTransformation.MERGED_SPECIFICATION
 };
-const FIELD_OPTION_FILE_FORMAT_OAS_JSON: ExportSettingsFormFieldOption = {
+const FIELD_OPTION_FILE_FORMAT_OAS_JSON: ExportSettingsFormFieldOption<string, ExportedFileFormat> = {
   label: 'JSON',
   value: ExportedFileFormat.JSON
 };
-const FIELD_OPTION_FILE_FORMAT_OAS_YAML: ExportSettingsFormFieldOption = {
+const FIELD_OPTION_FILE_FORMAT_OAS_YAML: ExportSettingsFormFieldOption<string, ExportedFileFormat> = {
   label: 'YAML',
   value: ExportedFileFormat.YAML
 };
-const FIELD_OPTION_FILE_FORMAT_OAS_INTERACTIVE_HTML: ExportSettingsFormFieldOption = {
+const FIELD_OPTION_FILE_FORMAT_OAS_INTERACTIVE_HTML: ExportSettingsFormFieldOption<string, ExportedFileFormat> = {
   label: 'Interactive HTML',
   value: ExportedFileFormat.HTML
 };
+export enum ExportSettingsFormFieldOptionOasExtensions {
+  PRESERVE = 'preserve',
+  REMOVE = 'remove'
+}
 const FIELD_OPTION_OAS_EXTENSIONS_PRESERVE: ExportSettingsFormFieldOption = {
   label: 'Preserve all OAS extensions',
-  value: 'preserve'
+  value: ExportSettingsFormFieldOptionOasExtensions.PRESERVE
 };
 const FIELD_OPTION_OAS_EXTENSIONS_REMOVE: ExportSettingsFormFieldOption = {
   label: 'Remove OAS extensions',
-  value: 'remove'
+  value: ExportSettingsFormFieldOptionOasExtensions.REMOVE
 };
 
 export const FIELD_OPTION_LIST_SPECIFICATION_TYPE: ReadonlyArray<ExportSettingsFormFieldOption> = [
