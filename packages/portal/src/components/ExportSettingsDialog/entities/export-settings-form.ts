@@ -57,7 +57,9 @@ export const EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE: Record<ExportedEntityKind, Ex
   ],
 }
 
-export type ExportSettingsFormData = Record<
-  ExportSettingsFormFieldKind,
-  ExportSettingsFormFieldOption['value']
+export type ExportSettingsFormData = Partial<
+  Record<
+    ExportSettingsFormFieldKind,
+    ExportSettingsFormFieldOption['value']
+  >
 >

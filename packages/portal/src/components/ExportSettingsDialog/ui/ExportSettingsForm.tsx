@@ -1,15 +1,16 @@
 import { Box, FormControlLabel, Radio, RadioGroup, Typography } from "@mui/material"
-import { FC } from "react"
+import { FC, memo } from "react"
 import { Control, Controller } from "react-hook-form"
 import { ExportSettingsFormData } from "../entities/export-settings-form"
-import { ExportSettingsFormField } from "../entities/export-settings-form-field"
+import { ExportSettingsFormField, ExportSettingsFormFieldKind } from "../entities/export-settings-form-field"
 
 interface ExportSettingsFormProps {
   fields: ExportSettingsFormField[]
   control: Control<ExportSettingsFormData>
+  setCachedFormField: (field: ExportSettingsFormFieldKind, value: string) => void
 }
 
-export const ExportSettingsForm: FC<ExportSettingsFormProps> = ({ fields, control }) => {
+export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo( ({ fields, control, setCachedFormField }) => {
   return (
     <Box component="form" display="flex" flexDirection="column" gap={2}>
       {fields.map(field => <>
@@ -18,8 +19,13 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = ({ fields, contro
           key={field.kind}
           name={field.kind}
           control={control}
-          render={({ field: { value, onChange } }) => (
-            <RadioGroup value={value} onChange={onChange}>
+          render={({ field: { value } }) => (
+            <RadioGroup
+              value={value}
+              onChange={(_, value) => {
+                setCachedFormField(field.kind, value)
+              }}
+            >
               {field.options.map(option => (
                 <FormControlLabel
                   key={option.value}
@@ -35,4 +41,4 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = ({ fields, contro
       </>)}
     </Box>
   )
-}
+})
