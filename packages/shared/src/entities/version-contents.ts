@@ -24,7 +24,7 @@ import type { ApiType } from './api-types'
 import type { ApiAudienceTransition, DiffTypeDto } from '@netcracker/qubership-apihub-api-processor'
 import type { DiffType } from '@netcracker/qubership-apihub-api-diff'
 
-export type NumberOfImpactedOperations = ChangesSummary<DiffTypeDto>
+export type NumberOfImpactedOperations = ChangesSummary
 
 export type PackageVersionContent = Readonly<{
   key: Key

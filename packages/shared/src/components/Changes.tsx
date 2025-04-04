@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { FC, useMemo } from 'react'
-import { memo } from 'react'
+import type { FC} from 'react'
+import { memo, useMemo } from 'react'
 import Box from '@mui/material/Box'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
@@ -24,9 +24,8 @@ import type { ChangesTooltipCategory } from './ChangesTooltip'
 import { ChangesTooltip } from './ChangesTooltip'
 import type { ChangeSeverity, ChangesSummary } from '../entities/change-severities'
 import { CHANGE_SEVERITY_COLOR_MAP, CHANGE_SEVERITY_NAME_MAP } from '../entities/change-severities'
-import type { OperationChange, OperationChanges } from '../entities/operation-changelog'
-import { severityOrder, sortChanges } from '../utils/api-changes'
-import { DiffType } from '@netcracker/qubership-apihub-api-diff'
+import { severityOrder } from '../utils/api-changes'
+import type { DiffType } from '@netcracker/qubership-apihub-api-diff'
 
 export type ChangesProps = {
   value: ChangesSummary | undefined
