@@ -37,7 +37,7 @@ export type OperationDto = RestOperationDto | GraphQlOperationDto
 export type OperationMetadataDto = Readonly<{
   operationId: Key
   title: string
-  apiType?: ApiType
+  apiType: ApiType
   apiKind: ApiKind
   apiAudience: ApiAudience
   data?: object

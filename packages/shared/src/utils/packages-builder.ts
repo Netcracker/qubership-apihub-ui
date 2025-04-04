@@ -311,7 +311,7 @@ export function toVersionOperation(value: OperationDto): ResolvedOperation {
     deprecated: value.deprecated ?? false,
     title: value.title,
     metadata: metadata,
-    apiType: API_TYPE_REST,
+    apiType: value.apiType,
   }
 }
 
