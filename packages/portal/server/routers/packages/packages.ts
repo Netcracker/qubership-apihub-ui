@@ -445,11 +445,9 @@ export function getChangesSummary(router: Router): void {
     const packageDto = PACKAGES.packages.find(packageDto => packageDto.packageId === packageKey)
     if (packageDto?.kind === 'dashboard') {
       res.status(200).json(getDashboardChangesSummary([
-        //??
         generateVersionChanges(packageKey, previousVersion as string, versionKey),
       ]))
     } else {
-      //??
       res.status(200).json(getPackageChangesSummary(PACKAGE1_CHANGES))
     }
   })

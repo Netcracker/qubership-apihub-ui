@@ -82,7 +82,6 @@ type GroupCompareContentProps = {
 export const GroupCompareContent: FC<GroupCompareContentProps> = memo(({ groupChanges, breadcrumbsData }) => {
   const { group } = useParams()
   const previousGroup = useSearchParam(GROUP_SEARCH_PARAM)
-  console.log('GroupCompareContent----------->', groupChanges)
 
   const { showCompareRestGroupsDialog } = useEventBus()
   const [selectedTag] = useTagSearchFilter()

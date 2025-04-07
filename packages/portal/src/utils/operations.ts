@@ -55,7 +55,7 @@ export function handleOperationTags(tags: readonly string[] | undefined): Set<st
 }
 
 export function isFullyAddedOrRemovedOperationChange(change: OperationChanges): boolean {
-  if (change.diffs && change.diffs[0]) {
+  if (change.diffs?.[0]) {
     if (change.diffs[0].action === DiffAction.remove) {
       return isOperationChange(change.diffs[0].beforeDeclarationPaths)
     }
