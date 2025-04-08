@@ -19,7 +19,7 @@ import type { MethodType } from './method-types'
 import type { PackageKind } from './packages'
 import type { VersionStatus } from './version-status'
 import type { GraphQlOperationType } from './graphql-operation-types'
-import type { OperationChangeData, OperationInfoFromDifferentVersions } from './version-changelog'
+import type { OperationChangeData, OperationWithDifferenceChangeData } from './version-changelog'
 import type { FetchNextPageOptions, InfiniteQueryObserverResult } from '@tanstack/react-query'
 import type { Key, VersionKey } from './keys'
 import type { ApiType } from './api-types'
@@ -79,7 +79,6 @@ export type OperationsGroupedByTag<T extends Operation = OperationData> = {
   [tag: string]: T[]
 }
 
-export type OperationWithDifference = RestOperationWithDifference | GraphQlOperationWithDifference
 export type Operation = RestOperation | GraphQlOperation
 export type Operations = ReadonlyArray<Operation>
 export type OperationsData = ReadonlyArray<OperationData>
@@ -94,12 +93,6 @@ type OperationCommon = Readonly<{
   packageRef?: PackageRef
   tags?: Readonly<Tags>
   customTags?: CustomTags
-}>
-
-type OperationWithDifferenceCommon = Readonly<{
-  operationKey: Key
-  currentOperation?: OperationInfoFromDifferentVersions
-  previousOperation?: OperationInfoFromDifferentVersions
 }>
 
 export type JSONValue =
@@ -119,16 +112,6 @@ export type RestOperation = OperationCommon & Readonly<{
 }>
 
 export type GraphQlOperation = OperationCommon & Readonly<{
-  method: string
-  type: GraphQlOperationType
-}>
-
-export type RestOperationWithDifference = OperationWithDifferenceCommon & Readonly<{
-  method: MethodType
-  path: string
-}>
-
-export type GraphQlOperationWithDifference = OperationWithDifferenceCommon & Readonly<{
   method: string
   type: GraphQlOperationType
 }>
@@ -263,7 +246,7 @@ export function toPackageRef(packageRef: string | undefined, packages?: Packages
   } : undefined
 }
 
-export function isRestOperation(operation: Operation | OperationWithDifference): operation is RestOperation {
+export function isRestOperation(operation: Operation | OperationWithDifferenceChangeData): operation is RestOperation {
   const asRestOperation = (operation as RestOperation)
   return asRestOperation.path !== undefined
 }
@@ -273,7 +256,7 @@ export function isRestOperationDto(operation: OperationDto): operation is RestOp
   return asRestOperation.path !== undefined
 }
 
-export function isGraphQlOperation(operation: Operation | OperationWithDifference): operation is GraphQlOperation {
+export function isGraphQlOperation(operation: Operation | OperationWithDifferenceChangeData): operation is GraphQlOperation {
   const asGraphQlOperation = (operation as GraphQlOperation)
   return asGraphQlOperation.type !== undefined
 }

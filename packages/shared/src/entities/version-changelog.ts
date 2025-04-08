@@ -27,7 +27,7 @@ import {
   SEMI_BREAKING_CHANGE_SEVERITY,
   UNCLASSIFIED_CHANGE_SEVERITY,
 } from './change-severities'
-import type { ApiAudience, ApiKind, Operation, OperationWithDifference, PackageRef, PackagesRefs, Tags } from './operations'
+import type { ApiAudience, ApiKind, Operation, PackageRef, PackagesRefs, Tags } from './operations'
 import { ALL_API_KIND, toPackageRef } from './operations'
 import type { GraphQlOperationType } from './graphql-operation-types'
 import type { Key } from './keys'
@@ -91,11 +91,6 @@ export type OperationChangeData = Operation & Readonly<{
   previousDataHash?: string
 }>
 
-export type OperationWithDifferenceChangeData = OperationWithDifference & Readonly<{
-  changeSummary: ChangesSummary
-  action: ActionType
-}>
-
 export const toVersionChanges = (dto: VersionChangesDto): VersionChanges => {
   return {
     previousVersion: dto?.previousVersion,
@@ -131,7 +126,6 @@ export const toOperationChangeData = (dto: OperationChangeDataDto, packagesRefs?
 export const toDiffOperationChangeData = (dto: OperationChangeDataDto): OperationWithDifferenceChangeData => {
   return {
     ...dto,
-    operationKey: dto.operationId,
     action: calculateAction(dto.currentOperation?.dataHash, dto.previousOperation?.dataHash),
   }
 }
@@ -156,3 +150,19 @@ export const EMPTY_CHANGE_SUMMARY: ChangesSummary = {
   [ANNOTATION_CHANGE_SEVERITY]: 0,
   [UNCLASSIFIED_CHANGE_SEVERITY]: 0,
 }
+
+type OperationWithDifferenceChangeDataCommon = Readonly<{
+  changeSummary: ChangesSummary
+  action: ActionType
+  currentOperation?: OperationInfoFromDifferentVersions
+  previousOperation?: OperationInfoFromDifferentVersions
+}>
+export type RestOperationWithDifferenceChangeData = OperationWithDifferenceChangeDataCommon & Readonly<{
+  method: MethodType
+  path: string
+}>
+export type GraphQlOperationWithDifferenceChangeData = OperationWithDifferenceChangeDataCommon & Readonly<{
+  method: string
+  type: GraphQlOperationType
+}>
+export type OperationWithDifferenceChangeData = RestOperationWithDifferenceChangeData | GraphQlOperationWithDifferenceChangeData
