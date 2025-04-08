@@ -60,7 +60,7 @@ export type RefComparisonSummary = Readonly<{
 
 export type DashboardComparisonSummary = ReadonlyArray<RefComparisonSummary>
 
-export type PackageComparisonSummary<T extends string | number | symbol = DiffType> = Readonly<{
+export type PackageComparisonSummary<T extends DiffType | DiffTypeDto = DiffType> = Readonly<{
   operationTypes: ReadonlyArray<OperationType<T>>
   noContent?: boolean
 }>
