@@ -100,8 +100,6 @@ type OperationWithDifferenceCommon = Readonly<{
   operationKey: Key
   currentOperation?: OperationInfoFromDifferentVersions
   previousOperation?: OperationInfoFromDifferentVersions
-  tags?: Readonly<Tags>
-  customTags?: CustomTags
 }>
 
 export type JSONValue =

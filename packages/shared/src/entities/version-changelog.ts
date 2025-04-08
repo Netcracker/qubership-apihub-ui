@@ -70,7 +70,6 @@ type OperationChangeDataCommonDto = Readonly<{
   changeSummary: ChangesSummaryDto
   currentOperation?: OperationInfoFromDifferentVersions
   previousOperation?: OperationInfoFromDifferentVersions
-  tags?: Tags
 }>
 
 export type RestOperationChangeDto = OperationChangeDataCommonDto & Readonly<{
@@ -126,7 +125,6 @@ export const toOperationChangeData = (dto: OperationChangeDataDto, packagesRefs?
     packageRef: toPackageRef(dto.currentOperation?.packageRef ?? dto.previousOperation?.packageRef, packagesRefs),
     previousPackageRef: toPackageRef(dto.previousOperation?.packageRef, packagesRefs),
     action: calculateAction(dto.currentOperation?.dataHash, dto.previousOperation?.dataHash),
-    tags: dto.tags,
   }
 }
 
@@ -135,7 +133,6 @@ export const toDiffOperationChangeData = (dto: OperationChangeDataDto): Operatio
     ...dto,
     operationKey: dto.operationId,
     action: calculateAction(dto.currentOperation?.dataHash, dto.previousOperation?.dataHash),
-    tags: dto.tags,
   }
 }
 
