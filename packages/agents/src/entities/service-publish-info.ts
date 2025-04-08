@@ -52,7 +52,7 @@ export function toServicePublishInfo(value: ServicePublishInfoDto): ServicePubli
     apiTypes: value.apiTypes,
     packageKey: value.packageId,
     previousVersionPackageKey: value.previousVersionPackageId,
-    changeSummary: replacePropertyInChangesSummary(value.changes as ChangesSummary<DiffTypeDto>),
+    changeSummary: value.changes && replacePropertyInChangesSummary(value.changes),
     viewChangesUrl: value.viewChangesUrl,
     viewSnapshotUrl: value.viewSnapshotUrl,
     viewBaselineUrl: value.viewBaselineUrl,

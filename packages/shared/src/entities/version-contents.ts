@@ -57,7 +57,7 @@ export type PackageVersionContentDto = Readonly<{
   revisionsCount?: number
 }>
 
-export type OperationTypeSummary<T extends string | number | symbol = DiffType> = Readonly<{
+export type OperationTypeSummary<T extends DiffType | DiffTypeDto = DiffType> = Readonly<{
   apiType: ApiType
   changesSummary: ChangesSummary<T>
   numberOfImpactedOperations: NumberOfImpactedOperations
