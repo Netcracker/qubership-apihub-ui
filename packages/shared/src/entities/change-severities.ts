@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ChangeSummary } from '@netcracker/qubership-apihub-api-processor'
+import type { ChangeSummary, DiffTypeDto } from '@netcracker/qubership-apihub-api-processor'
 import {
   annotation,
   breaking,
@@ -47,7 +47,7 @@ export const DEPRECATED_CHANGE_SEVERITY = deprecated
 export const ANNOTATION_CHANGE_SEVERITY = annotation
 export const UNCLASSIFIED_CHANGE_SEVERITY = unclassified
 
-export type ChangesSummary<T extends string | number | symbol = DiffType> = ChangeSummary<T>
+export type ChangesSummary<T extends DiffType | DiffTypeDto = DiffType> = ChangeSummary<T>
 
 export type ChangeSeverity<T = DiffType> = T
 

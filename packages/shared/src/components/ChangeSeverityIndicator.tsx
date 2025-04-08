@@ -18,7 +18,7 @@ import type { FC } from 'react'
 import { memo } from 'react'
 import { Box } from '@mui/material'
 import type { SxProps } from '@mui/system'
-import type{ ChangeSeverity } from '../entities/change-severities'
+import type { ChangeSeverity } from '../entities/change-severities'
 import { CHANGE_SEVERITY_COLOR_MAP, CHANGE_SEVERITY_NAME_MAP } from '../entities/change-severities'
 
 export type ChangeSeverityIndicatorProps = {
@@ -31,7 +31,7 @@ export const ChangeSeverityIndicator: FC<ChangeSeverityIndicatorProps> = memo<Ch
   sx,
 }) => {
 
-  return <Box
+  return CHANGE_SEVERITY_NAME_MAP[severity] ? <Box
     sx={{
       position: 'absolute',
       backgroundColor: CHANGE_SEVERITY_COLOR_MAP[severity],
@@ -50,5 +50,5 @@ export const ChangeSeverityIndicator: FC<ChangeSeverityIndicatorProps> = memo<Ch
     }}
     data-testid="ChangeSeverityIndicator">
     {CHANGE_SEVERITY_NAME_MAP[severity]?.toLocaleLowerCase()}
-  </Box>
+  </Box> : null
 })
