@@ -34,8 +34,8 @@ import type {
 import { NotFoundError } from './requests'
 
 export async function packageVersionResolver(authorization: string): Promise<VersionResolver> {
-  return async (packageId, version, includeOperations = false, includeSummary = false) => {
-    const versionConfig = await getPackageVersionContent(packageId, version, includeOperations, includeSummary, authorization)
+  return async (packageId, version, includeOperations = false) => {
+    const versionConfig = await getPackageVersionContent(packageId, version, includeOperations, authorization)
     if (!versionConfig) {
       return null
     }
@@ -59,20 +59,33 @@ export async function versionReferencesResolver(authorization: string): Promise<
 }
 
 export async function versionOperationsResolver(authorization: string): Promise<VersionOperationsResolver> {
-  return async (apiType, version, packageId, operationsIds, includeData, operationsCount) => {
+  return async (apiType, version, packageId, operationsIds, includeData) => {
+    const EMPTY_OPERATIONS = { operations: [] }
+    const limit = includeData ? 100 : 1000
+    const result = []
+    let page = 0
+    let operationsCount = 0
+
     try {
-      const limit = 1000
-      if (operationsCount) {
-        const fetchTasks = Array.from({ length: Math.ceil(operationsCount / limit) }, (_, index) =>
-          fetchOperations(apiType, packageId, version, [], false, authorization, index, limit))
-        const operationsDtos = await Promise.all(fetchTasks)
-        return { operations: operationsDtos.flatMap(({ operations }) => operations.map(toVersionOperation)) }
+      while (page === 0 || operationsCount === limit) {
+        const { operations } = await fetchOperations(
+          apiType,
+          packageId,
+          version,
+          operationsIds,
+          includeData,
+          authorization,
+          page,
+          limit,
+        ) ?? EMPTY_OPERATIONS
+        page += 1
+        result.push(...operations)
+        operationsCount = operations.length
       }
-      const operationsDto = await fetchOperations(apiType, packageId, version, operationsIds, includeData, authorization)
-      return { operations: operationsDto.operations.map(toVersionOperation) }
+      return { operations: result.map(toVersionOperation) }
     } catch (error) {
       console.error(error)
-      return { operations: [] }
+      return EMPTY_OPERATIONS
     }
   }
 }

@@ -38,13 +38,11 @@ export async function getPackageVersionContent(
   packageKey: Key,
   versionKey: Key,
   includeOperations: boolean = false,
-  includeSummary: boolean = false,
   authorization: string,
 ): Promise<ResolvedVersionDto | null> {
   try {
     const queryParams = optionalSearchParams({
       includeOperations: { value: includeOperations },
-      includeSummary: { value: includeSummary },
     })
 
     const packageId = encodeURIComponent(packageKey)
