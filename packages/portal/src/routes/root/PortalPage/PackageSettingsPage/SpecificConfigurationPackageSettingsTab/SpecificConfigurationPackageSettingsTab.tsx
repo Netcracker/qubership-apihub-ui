@@ -27,7 +27,7 @@ import { transformStringValue } from '@netcracker/qubership-apihub-ui-shared/uti
 import { GROUP_TYPE_REST_PATH_PREFIX } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
 import { SettingsEditableParameter } from '@netcracker/qubership-apihub-ui-shared/components/SettingsEditableParameter'
 import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import { InfoIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoIcon'
 
 export const SpecificConfigurationPackageSettingsTab: FC<PackageSettingsTabProps> = memo<PackageSettingsTabProps>(({ packageObject }) => {
   const { showEditPackagePrefixDialog } = useEventBus()
@@ -65,7 +65,7 @@ export const SpecificConfigurationPackageSettingsTab: FC<PackageSettingsTabProps
                 placement="right"
               >
                 <Box height={20}>
-                  <InfoOutlinedIcon sx={{ color: '#626D82' }} fontSize="small" data-testid="InfoIcon"/>
+                  <InfoIcon/>
                 </Box>
               </Tooltip>
             </Box>

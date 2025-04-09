@@ -87,7 +87,7 @@ function LabellessAutocompleteComponent<T>({
         {...props}
       />
 
-      {/* Placeholder box that reserves space for helper text. Only shows the text when input exists. */}
+      {/* Placeholder box that reserves space for helper text */}
       {(reserveHelperTextSpace || helperText) && (
         <Box sx={HELPER_TEXT_BOX_SX}>
           {

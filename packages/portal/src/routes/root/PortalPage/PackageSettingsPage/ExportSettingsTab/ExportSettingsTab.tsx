@@ -1,4 +1,4 @@
-import { Box, Skeleton } from '@mui/material'
+import { Box } from '@mui/material'
 import type { FC } from 'react'
 import React, { memo, useCallback } from 'react'
 import type { PackageSettingsTabProps } from '../package-settings'
@@ -47,10 +47,7 @@ export const ExportSettingsTab: FC<PackageSettingsTabProps> = memo<PackageSettin
                 isLoading={isOasExtensionsLoading}
                 data-testid="ListOfOasExtensionsSettingsParameter"
               >
-                {isOasExtensionsLoading
-                  ? <OasExtensionsListSkeleton/>
-                  : <OasExtensionsList extensions={oasExtensions}/>
-                }
+                <OasExtensionsList extensions={oasExtensions}/>
               </SettingsEditableParameter>
             </Box>
           </Box>
@@ -62,13 +59,3 @@ export const ExportSettingsTab: FC<PackageSettingsTabProps> = memo<PackageSettin
 })
 
 ExportSettingsTab.displayName = 'ExportSettingsTab'
-
-const OasExtensionsListSkeleton: FC = () => {
-  return (
-    <Box display="flex" flexWrap="wrap" gap={1} width="100%">
-      {[...Array(4)].map((_, index) => (
-        <Skeleton key={index} variant="rectangular" width={80} height={20}/>
-      ))}
-    </Box>
-  )
-}
