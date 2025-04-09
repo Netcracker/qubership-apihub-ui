@@ -100,10 +100,7 @@ export function toVersionChangesSummary(value: VersionChangesSummaryDto): Versio
       }
     })
   } else {
-    return {
-      ...value,
-      operationTypes: convertDtoFieldOperationTypes(value?.operationTypes),
-    }
+    return value ? { ...value, operationTypes: convertDtoFieldOperationTypes(value?.operationTypes) } : value
   }
 }
 
