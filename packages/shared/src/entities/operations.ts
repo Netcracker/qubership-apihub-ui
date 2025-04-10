@@ -79,21 +79,9 @@ export type OperationsGroupedByTag<T extends Operation = OperationData> = {
   [tag: string]: T[]
 }
 
-export type Operation = RestOperation | GraphQlOperation
 export type Operations = ReadonlyArray<Operation>
 export type OperationsData = ReadonlyArray<OperationData>
 export type PagedOperations = ReadonlyArray<OperationsData>
-
-type OperationCommon = Readonly<{
-  operationKey: Key
-  title: string
-  apiKind: ApiKind
-  apiAudience: ApiAudience
-  dataHash?: string
-  packageRef?: PackageRef
-  tags?: Readonly<Tags>
-  customTags?: CustomTags
-}>
 
 export type JSONValue =
   | null
@@ -106,21 +94,31 @@ export type JSONValue =
 
 export type CustomTags = { [key: string]: object }
 
-export type RestOperation = OperationCommon & Readonly<{
-  method: MethodType
-  path: string
-}>
+export interface Operation {
+  readonly operationKey: Key
+  readonly title: string
+  readonly apiKind: ApiKind
+  readonly apiAudience: ApiAudience
+  readonly dataHash?: string
+  readonly packageRef?: PackageRef
+  readonly tags?: Readonly<Tags>
+  readonly customTags?: CustomTags
+}
+export interface RestOperation extends Operation {
+  readonly method: MethodType
+  readonly path: string
+}
 
-export type GraphQlOperation = OperationCommon & Readonly<{
-  method: string
-  type: GraphQlOperationType
-}>
+export interface GraphQlOperation extends Operation {
+  readonly method: string
+  readonly type: GraphQlOperationType
+}
 
-export type OperationData = Operation & Readonly<{
+export interface OperationData extends Operation {
   apiType?: ApiType
   data?: object
   deprecated: boolean
-}>
+}
 
 export type PackagesRefs = {
   [rawRefId: string]: PackageRefDto
@@ -205,7 +203,8 @@ export const API_AUDIENCES: Record<ApiAudience, string> = {
   [API_AUDIENCE_ALL]: 'All',
 }
 
-export type Tags = readonly string[]
+export type Tag = string
+export type Tags = readonly Tag[]
 
 export type OperationTags = Readonly<Tags>
 export type OperationTagsDto = Readonly<{
@@ -246,7 +245,7 @@ export function toPackageRef(packageRef: string | undefined, packages?: Packages
   } : undefined
 }
 
-export function isRestOperation(operation: Operation | OperationWithDifferenceChangeData): operation is RestOperation {
+export function isRestOperation(operation: Operation): operation is RestOperation {
   const asRestOperation = (operation as RestOperation)
   return asRestOperation.path !== undefined
 }
@@ -256,7 +255,7 @@ export function isRestOperationDto(operation: OperationDto): operation is RestOp
   return asRestOperation.path !== undefined
 }
 
-export function isGraphQlOperation(operation: Operation | OperationWithDifferenceChangeData): operation is GraphQlOperation {
+export function isGraphQlOperation(operation: Operation): operation is GraphQlOperation {
   const asGraphQlOperation = (operation as GraphQlOperation)
   return asGraphQlOperation.type !== undefined
 }

@@ -29,7 +29,7 @@ import {
 import type { GraphQlOperationType } from './graphql-operation-types'
 import type { Key } from './keys'
 import type { MethodType } from './method-types'
-import type { ApiAudience, ApiKind, PackageRef, PackagesRefs } from './operations'
+import type { ApiAudience, ApiKind, GraphQlOperation, Operation, PackageRef, PackagesRefs, RestOperation } from './operations'
 import { toPackageRef } from './operations'
 
 export type VersionChangesDto = Partial<Readonly<{
@@ -105,31 +105,31 @@ export interface GraphQlOperationInfoFromDifferentVersions extends OperationInfo
 export interface OperationChangeData {
   readonly changeSummary: ChangesSummary
   readonly action: ActionType // Optional, but always calculated
-  readonly currentOperation?: OperationInfoFromDifferentVersions
-  readonly previousOperation?: OperationInfoFromDifferentVersions
+  readonly currentOperation?: Operation
+  readonly previousOperation?: Operation
 }
 export interface RestOperationChangeData extends OperationChangeData {
-  readonly currentOperation: RestOperationInfoFromDifferentVersions
-  readonly previousOperation: RestOperationInfoFromDifferentVersions
+  readonly currentOperation: RestOperation
+  readonly previousOperation: RestOperation
 }
 export interface GraphQlOperationChangeData extends OperationChangeData {
-  readonly currentOperation: GraphQlOperationInfoFromDifferentVersions
-  readonly previousOperation: GraphQlOperationInfoFromDifferentVersions
+  readonly currentOperation: GraphQlOperation
+  readonly previousOperation: GraphQlOperation
 }
 
 export interface OperationWithDifferenceChangeData {
   changeSummary: ChangesSummary
   action: ActionType
-  currentOperation?: OperationInfoFromDifferentVersions
-  previousOperation?: OperationInfoFromDifferentVersions
+  currentOperation?: Operation
+  previousOperation?: Operation
 }
 export interface RestOperationWithDifferenceChangeData extends OperationWithDifferenceChangeData {
-  currentOperation: RestOperationInfoFromDifferentVersions
-  previousOperation: RestOperationInfoFromDifferentVersions
+  currentOperation: RestOperation
+  previousOperation: RestOperation
 }
 export interface GraphQlOperationWithDifferenceChangeData extends OperationWithDifferenceChangeData {
-  currentOperation: GraphQlOperationInfoFromDifferentVersions
-  previousOperation: GraphQlOperationInfoFromDifferentVersions
+  currentOperation: GraphQlOperation
+  previousOperation: GraphQlOperation
 }
 
 export const toVersionChanges = (dto: VersionChangesDto): VersionChanges => {

@@ -14,43 +14,27 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useEffect, useMemo } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import { ComparisonToolbar } from '../ComparisonToolbar'
-import { CompareOperationPathsDialog } from '../CompareOperationPathsDialog'
-import { OperationsSidebarOnComparison } from './OperationsSidebarOnComparison'
-import { useVersionSearchParam } from '../../../useVersionSearchParam'
-import { SelectedOperationTagsProvider } from '../SelectedOperationTagsProvider'
-import { usePackageSearchParam } from '../../../usePackageSearchParam'
-import { useOperation } from '../useOperation'
-import { useCompareVersions } from '../../useCompareVersions'
-import { useChangesSummaryContext } from '../ChangesSummaryProvider'
-import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
-import { useDocumentSearchParam } from '../useDocumentSearchParam'
-import { useIsPackageFromDashboard } from '../../useIsPackageFromDashboard'
-import { ComparedOperationsContext } from '../ComparedOperationsContext'
-import { BreadcrumbsDataContext } from '../ComparedPackagesBreadcrumbsProvider'
-import { VersionsComparisonGlobalParamsContext } from '../VersionsComparisonGlobalParams'
-import { VERSION_SWAPPER_HEIGHT } from '../shared-styles'
-import { useTextSearchParam } from '../../../useTextSearchParam'
+import { Key } from '@apihub/entities/keys'
+import { OperationContent } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationContent'
 import {
-  usePagedVersionChangelog,
-} from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget/api/useCommonPagedVersionChangelog'
-import { ShouldAutoExpandTagsProvider, useSetShouldAutoExpandTagsContext } from '../ShouldAutoExpandTagsProvider'
-import { useNavigateToOperation } from '../useNavigateToOperation'
-import {
-  useSeverityFiltersSearchParam,
-} from '@netcracker/qubership-apihub-ui-shared/hooks/change-severities/useSeverityFiltersSearchParam'
-import { useFlatVersionChangelog } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget'
+  COMPARE_SAME_OPERATIONS_MODE,
+} from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationView/OperationDisplayMode'
+import { useCompareBreadcrumbs } from '@apihub/routes/root/PortalPage/VersionPage/useCompareBreadcrumbs'
+import { useComparisonObjects } from '@apihub/routes/root/PortalPage/VersionPage/useComparisonObjects'
+import { useComparisonParams } from '@apihub/routes/root/PortalPage/VersionPage/useComparisonParams'
+import { groupOperationsByTags } from '@apihub/utils/operations'
+import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { Operation, OperationsGroupedByTag } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { OperationChangeData } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
 import type {
   DashboardComparisonSummary,
   RefComparisonSummary,
 } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
+import {
+  useSeverityFiltersSearchParam,
+} from '@netcracker/qubership-apihub-ui-shared/hooks/change-severities/useSeverityFiltersSearchParam'
 import { filterChangesBySeverity } from '@netcracker/qubership-apihub-ui-shared/utils/change-severities'
-import type { OperationsGroupedByTag } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import { groupOperationsByTags } from '@apihub/utils/operations'
 import {
   DOCUMENT_SEARCH_PARAM,
   FILTERS_SEARCH_PARAM,
@@ -59,15 +43,49 @@ import {
   REF_SEARCH_PARAM,
   VERSION_SEARCH_PARAM,
 } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
+import { useFlatVersionChangelog } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget'
 import {
-  COMPARE_SAME_OPERATIONS_MODE,
-} from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationView/OperationDisplayMode'
-import { OperationContent } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationContent'
-import { useComparisonParams } from '@apihub/routes/root/PortalPage/VersionPage/useComparisonParams'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { useCompareBreadcrumbs } from '@apihub/routes/root/PortalPage/VersionPage/useCompareBreadcrumbs'
-import { useComparisonObjects } from '@apihub/routes/root/PortalPage/VersionPage/useComparisonObjects'
+  usePagedVersionChangelog,
+} from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget/api/useCommonPagedVersionChangelog'
+import type { FC } from 'react'
+import { memo, useEffect, useMemo } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { usePackageSearchParam } from '../../../usePackageSearchParam'
+import { useTextSearchParam } from '../../../useTextSearchParam'
+import { useVersionSearchParam } from '../../../useVersionSearchParam'
+import { useCompareVersions } from '../../useCompareVersions'
+import { useIsPackageFromDashboard } from '../../useIsPackageFromDashboard'
+import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
+import { useChangesSummaryContext } from '../ChangesSummaryProvider'
+import { CompareOperationPathsDialog } from '../CompareOperationPathsDialog'
+import { ComparedOperationsContext } from '../ComparedOperationsContext'
+import { BreadcrumbsDataContext } from '../ComparedPackagesBreadcrumbsProvider'
+import { ComparisonToolbar } from '../ComparisonToolbar'
+import { SelectedOperationTagsProvider } from '../SelectedOperationTagsProvider'
+import { ShouldAutoExpandTagsProvider, useSetShouldAutoExpandTagsContext } from '../ShouldAutoExpandTagsProvider'
+import { VersionsComparisonGlobalParamsContext } from '../VersionsComparisonGlobalParams'
+import { VERSION_SWAPPER_HEIGHT } from '../shared-styles'
+import { useDocumentSearchParam } from '../useDocumentSearchParam'
+import { useNavigateToOperation } from '../useNavigateToOperation'
+import { useOperation } from '../useOperation'
+import { OperationsSidebarOnComparison } from './OperationsSidebarOnComparison'
+
+function getOperationsFromPackageChanges(
+  packageChanges: ReadonlyArray<OperationChangeData>
+): ReadonlyArray<Operation> {
+  const operationIds = new Set<Key>()
+  const operations: Operation[] = []
+  for (const item of packageChanges) {
+    if (item.currentOperation) {
+      const operationId = item.currentOperation.operationKey
+      if (!operationIds.has(operationId)) {
+        operations.push(item.currentOperation)
+      }
+      operationIds.add(operationId)
+    }
+  }
+  return operations
+}
 
 export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
   const navigate = useNavigate()
@@ -113,6 +131,11 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
   const flatPackageChangelog = useFlatVersionChangelog(packageChangelog)
   const packageChanges: ReadonlyArray<OperationChangeData> = flatPackageChangelog.operations
 
+  const operationsFromPackageChanges = useMemo(
+    () => getOperationsFromPackageChanges(packageChanges),
+    [packageChanges]
+  )
+
   useEffect(() => {
     // Fetch next page
     if (!arePackageChangesLoading && !isNextPageFetching && hasNextPage) {
@@ -144,23 +167,33 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
     apiType: apiType as ApiType,
   })
 
-  const areChangesAndOperationsLoading = ( arePackageChangesLoading || isOriginOperationInitialLoading || isChangedOperationInitialLoading ) && !hasNextPage
+  const areChangesAndOperationsLoading = (arePackageChangesLoading || isOriginOperationInitialLoading || isChangedOperationInitialLoading) && !hasNextPage
 
   const filteredPackageChanges = useMemo(
     () => packageChanges.filter(item => filterChangesBySeverity(filters, item.changeSummary)),
     [packageChanges, filters])
 
-  const filteredOperationsGroupedByTags: OperationsGroupedByTag<OperationChangeData> = useMemo(() => groupOperationsByTags(filteredPackageChanges), [filteredPackageChanges])
-  const tags = useMemo(() => Array.from(Object.keys(filteredOperationsGroupedByTags)), [filteredOperationsGroupedByTags])
+  const operationsFromFilteredPackageChanges = useMemo(
+    () => getOperationsFromPackageChanges(filteredPackageChanges),
+    [filteredPackageChanges]
+  )
+  const filteredOperationsGroupedByTags: OperationsGroupedByTag<Operation> = useMemo(
+    () => groupOperationsByTags(operationsFromFilteredPackageChanges),
+    [operationsFromFilteredPackageChanges]
+  )
+  const tags = useMemo(
+    () => Array.from(Object.keys(filteredOperationsGroupedByTags)),
+    [filteredOperationsGroupedByTags]
+  )
 
   const firstOperation = useMemo(
-    () => (filteredPackageChanges.length && !searchValue ? filteredPackageChanges[0] : null),
-    [filteredPackageChanges, searchValue],
+    () => (operationsFromFilteredPackageChanges.length && !searchValue ? operationsFromFilteredPackageChanges[0] : null),
+    [operationsFromFilteredPackageChanges, searchValue],
   )
 
   const packageChangesHaveCurrentOperation = useMemo(
-    () => !!searchValue || packageChanges.some(operation => operation.operationKey === operationKey),
-    [operationKey, packageChanges, searchValue],
+    () => !!searchValue || operationsFromPackageChanges.some(operation => operation.operationKey === operationKey),
+    [operationKey, operationsFromPackageChanges, searchValue],
   )
 
   useEffect(() => {
@@ -241,7 +274,7 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
             </ComparedOperationsContext.Provider>
           </BreadcrumbsDataContext.Provider>
         </VersionsComparisonGlobalParamsContext.Provider>
-        <CompareOperationPathsDialog/>
+        <CompareOperationPathsDialog />
       </SelectedOperationTagsProvider>
     </ShouldAutoExpandTagsProvider>
   )
