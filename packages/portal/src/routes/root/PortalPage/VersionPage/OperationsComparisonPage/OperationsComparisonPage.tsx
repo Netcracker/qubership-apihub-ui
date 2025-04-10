@@ -16,14 +16,13 @@
 
 import type { FC } from 'react'
 import { memo } from 'react'
+import { ChangesSummaryProvider } from '../ChangesSummaryProvider'
+import { useOperationSearchParam } from '../useOperationSearchParam'
 import { DifferentOperationsComparisonPage } from './DifferentOperationsComparisonPage'
 import { DifferentOperationVersionsComparisonPage } from './DifferentOperationVersionsComparisonPage'
-import { ChangesSummaryProvider } from '../ChangesSummaryProvider'
-import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
-import { OPERATION_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 
 export const OperationsComparisonPage: FC = memo(() => {
-  const operation = useSearchParam(OPERATION_SEARCH_PARAM)
+  const [operation] = useOperationSearchParam()
 
   return operation
     ? <DifferentOperationsComparisonPage/>

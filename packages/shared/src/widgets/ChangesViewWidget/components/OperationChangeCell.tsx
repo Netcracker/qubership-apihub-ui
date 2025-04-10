@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useMemo } from 'react'
 import { Box } from '@mui/material'
 import type { Row } from '@tanstack/react-table'
+import type { FC } from 'react'
+import { memo, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
-import type { ChangesViewTableData } from '../const/table'
-import { usePreviousReleasePackageKey, usePreviousReleaseVersion } from './PreviousReleaseOptionsProvider'
+import { ExpandableItem } from '../../../components/ExpandableItem'
+import { OperationTitleWithMeta } from '../../../components/Operations/OperationTitleWithMeta'
 import type { PackageKind } from '../../../entities/packages'
 import { DASHBOARD_KIND } from '../../../entities/packages'
 import {
@@ -29,8 +29,8 @@ import {
   REF_SEARCH_PARAM,
   VERSION_SEARCH_PARAM,
 } from '../../../utils/search-params'
-import { ExpandableItem } from '../../../components/ExpandableItem'
-import { OperationTitleWithMeta } from '../../../components/Operations/OperationTitleWithMeta'
+import type { ChangesViewTableData } from '../const/table'
+import { usePreviousReleasePackageKey, usePreviousReleaseVersion } from './PreviousReleaseOptionsProvider'
 
 export type OperationChangeCellProps = {
   value: Row<ChangesViewTableData>
@@ -48,7 +48,12 @@ export const OperationChangeCell: FC<OperationChangeCellProps> = memo<OperationC
     mainPackageKind,
   }) => {
   const { packageId, versionId, apiType } = useParams()
-  const { operationKey, packageRef, previousPackageRef } = change
+
+  const { currentOperation, previousOperation } = change
+
+  const operationKey = currentOperation?.operationKey ?? previousOperation?.operationKey
+  const packageRef = currentOperation?.packageRef ?? previousOperation?.packageRef
+  const previousPackageRef = previousOperation?.packageRef
 
   const isDashboard = mainPackageKind === DASHBOARD_KIND
 
@@ -73,7 +78,7 @@ export const OperationChangeCell: FC<OperationChangeCellProps> = memo<OperationC
     <Box>
       <ExpandableItem expanded={isExpanded} showToggler={expandable} onToggle={getToggleExpandedHandler()}>
         <OperationTitleWithMeta
-          operation={change}
+          operation={currentOperation ?? previousOperation!}
           link={link}
         />
       </ExpandableItem>

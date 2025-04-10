@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-import type { Dispatch, FC } from 'react'
-import React, { memo, useCallback, useLayoutEffect, useMemo, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { usePackageSearchParam } from '../../../usePackageSearchParam'
-import { useVersionSearchParam } from '../../../useVersionSearchParam'
-import { useIsPackageFromDashboard } from '../../useIsPackageFromDashboard'
-import { useDocumentSearchParam } from '../useDocumentSearchParam'
-import { OperationListItem } from './OperationListItem'
-import { useNavigation } from '../../../../NavigationProvider'
-import { useSetShouldAutoExpandTagsContext, useShouldAutoExpandTagsContext } from '../ShouldAutoExpandTagsProvider'
-import { useTextSearchParam } from '../../../useTextSearchParam'
-import type { OperationChangeData } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
+import { CustomListItemButton } from '@netcracker/qubership-apihub-ui-shared/components/CustomListItemButton'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { Operation, OperationPair } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import {
+  useSeverityFiltersSearchParam,
+} from '@netcracker/qubership-apihub-ui-shared/hooks/change-severities/useSeverityFiltersSearchParam'
+import { useRefWithAutoScroll } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useRefWithAutoScroll'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import {
   DOCUMENT_SEARCH_PARAM,
@@ -36,21 +32,24 @@ import {
   SEARCH_TEXT_PARAM_KEY,
   VERSION_SEARCH_PARAM,
 } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import {
-  useSeverityFiltersSearchParam,
-} from '@netcracker/qubership-apihub-ui-shared/hooks/change-severities/useSeverityFiltersSearchParam'
-import { filterChangesBySeverity } from '@netcracker/qubership-apihub-ui-shared/utils/change-severities'
-import { useRefWithAutoScroll } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useRefWithAutoScroll'
-import { CustomListItemButton } from '@netcracker/qubership-apihub-ui-shared/components/CustomListItemButton'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { Dispatch, FC } from 'react'
+import React, { memo, useCallback, useLayoutEffect, useMemo, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import { useNavigation } from '../../../../NavigationProvider'
+import { usePackageSearchParam } from '../../../usePackageSearchParam'
+import { useTextSearchParam } from '../../../useTextSearchParam'
+import { useVersionSearchParam } from '../../../useVersionSearchParam'
+import { useIsPackageFromDashboard } from '../../useIsPackageFromDashboard'
+import { useSetShouldAutoExpandTagsContext, useShouldAutoExpandTagsContext } from '../ShouldAutoExpandTagsProvider'
+import { useDocumentSearchParam } from '../useDocumentSearchParam'
+import { OperationListItem } from './OperationListItem'
 
 export type OperationsListOnComparisonProps = {
-  changedOperations: OperationChangeData[]
+  changedOperationPairs: OperationPair[]
 }
 
 export const OperationsListOnComparison: FC<OperationsListOnComparisonProps> = memo<OperationsListOnComparisonProps>(props => {
-  const { changedOperations } = props
+  const { changedOperationPairs } = props
   const { navigateToOperationsComparison, navigateToGroupsOperationsComparison } = useNavigation()
 
   const previousGroup = useSearchParam(GROUP_SEARCH_PARAM)
@@ -63,9 +62,6 @@ export const OperationsListOnComparison: FC<OperationsListOnComparisonProps> = m
   const [searchValue] = useTextSearchParam()
 
   const [filters] = useSeverityFiltersSearchParam()
-  const filteredVersionChanges = useMemo(
-    () => changedOperations.filter(item => filterChangesBySeverity(filters, item.changeSummary)),
-    [filters, changedOperations])
 
   const [selectedElement, setSelectedElement] = useState<string>('')
   const shouldAutoExpand = useShouldAutoExpandTagsContext()
@@ -95,7 +91,8 @@ export const OperationsListOnComparison: FC<OperationsListOnComparisonProps> = m
     ),
     [changedPackageKey, changedVersionKey, documentSlug, filters, isPackageFromDashboard, originPackageKey, originVersionKey, previousGroup, refPackageKey, searchValue])
 
-  const handleListItemClick = useCallback((operation: OperationChangeData) => {
+  const handleListItemClick = useCallback(
+    (operationPair: OperationPair) => {
       setShouldAutoExpand(false)
       group
         ? navigateToGroupsOperationsComparison({
@@ -103,14 +100,16 @@ export const OperationsListOnComparison: FC<OperationsListOnComparisonProps> = m
           versionKey: changedVersionKey!,
           groupKey: group!,
           apiType: apiType as ApiType,
-          operationKey: operation.operationKey!,
+          operationKey: operationPair.currentOperation!.operationKey!,
+          previousOperationKey: operationPair.previousOperation!.operationKey!,
           search: searchParams,
         })
         : navigateToOperationsComparison({
           packageKey: changedPackageKey!,
           versionKey: changedVersionKey!,
           apiType: apiType as ApiType,
-          operationKey: operation.operationKey!,
+          operationKey: operationPair.currentOperation!.operationKey!,
+          previousOperationKey: operationPair.previousOperation!.operationKey!,
           search: searchParams,
         })
     },
@@ -119,16 +118,17 @@ export const OperationsListOnComparison: FC<OperationsListOnComparisonProps> = m
 
   return (
     <>
-      {filteredVersionChanges.map(operation => {
-        const isSelected = selectedElement === operation.operationKey
+      {changedOperationPairs.map(operationPair => {
+        const isSelected = selectedElement === operationPair.currentOperation!.operationKey
+        const key = `operation-list-item-${operationPair.currentOperation!.operationKey}-${operationPair.previousOperation!.operationKey}`
         return (
-          <CustomListItemButton<OperationChangeData>
+          <CustomListItemButton<OperationPair>
             refObject={isSelected ? selectedElementRef : undefined}
-            key={operation.operationKey}
-            keyProp={operation.operationKey}
-            data={operation}
+            key={key}
+            keyProp={key}
+            data={operationPair}
             onClick={handleListItemClick}
-            itemComponent={<OperationListItem operation={operation}/>}
+            itemComponent={<OperationListItem operation={operationPair.currentOperation!} />}
             isSelected={isSelected}
             testId="OperationButton"
           />

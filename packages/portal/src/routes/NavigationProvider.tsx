@@ -113,6 +113,7 @@ export type OperationsDetail = {
   versionKey: Key
   apiType: ApiType
   operationKey?: Key
+  previousOperationKey?: Key
   search?: {
     [MODE_SEARCH_PARAM]?: SearchParam
     [FILE_VIEW_MODE_PARAM_KEY]?: SearchParam
@@ -122,6 +123,7 @@ export type OperationsDetail = {
     [SEARCH_TEXT_PARAM_KEY]?: SearchParam
     [EXPAND_NAVIGATION_MENU_SEARCH_PARAM]?: SearchParam
     [OPERATIONS_VIEW_MODE_PARAM]?: SearchParam
+    [OPERATION_SEARCH_PARAM]?: SearchParam
   }
 }
 
@@ -164,6 +166,7 @@ export type OperationsComparisonDetail = {
   versionKey: Key
   apiType: ApiType
   operationKey: Key
+  previousOperationKey: Key
   search: {
     [OPERATION_SEARCH_PARAM]?: SearchParam
     [REF_SEARCH_PARAM]: SearchParam
@@ -181,6 +184,7 @@ export type GroupsOperationsComparisonDetail = {
   groupKey: Key
   apiType: ApiType
   operationKey: Key
+  previousOperationKey: Key
   search: {
     [OPERATION_SEARCH_PARAM]?: SearchParam
     [REF_SEARCH_PARAM]: SearchParam
