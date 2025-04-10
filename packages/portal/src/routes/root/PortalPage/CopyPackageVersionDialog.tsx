@@ -137,6 +137,7 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     if(!workspace){
       setTargetPackage(null)
       setValue('package', null)
+      setTargetVersion('')     
     }
   }, [workspace, setValue])
 
