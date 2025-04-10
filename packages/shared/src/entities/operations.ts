@@ -79,6 +79,15 @@ export type OperationsGroupedByTag<T extends Operation = OperationData> = {
   [tag: string]: T[]
 }
 
+export type OperationPair<T extends Operation = Operation> = {
+  currentOperation?: T
+  previousOperation?: T
+}
+
+export type OperationPairsGroupedByTag = {
+  [tag: string]: OperationPair[]
+}
+
 export type Operations = ReadonlyArray<Operation>
 export type OperationsData = ReadonlyArray<OperationData>
 export type PagedOperations = ReadonlyArray<OperationsData>

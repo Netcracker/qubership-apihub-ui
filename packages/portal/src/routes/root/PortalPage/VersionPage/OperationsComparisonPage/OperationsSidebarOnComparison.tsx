@@ -25,7 +25,7 @@ import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/Sea
 import { SidebarSkeleton } from '@netcracker/qubership-apihub-ui-shared/components/SidebarSkeleton'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { Operation, OperationsGroupedByTag } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import type { Operation, OperationPairsGroupedByTag } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { DEFAULT_TAG } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { isEmpty, isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import type { FC } from 'react'
@@ -42,7 +42,7 @@ export type OperationsSidebarOnComparisonProps = {
   setSearchValue: (value: string) => void
   tags: string[]
   apiType: ApiType
-  operationsGroupedByTag: OperationsGroupedByTag<Operation>
+  operationsGroupedByTag: OperationPairsGroupedByTag
   areChangesLoading: boolean
   onOperationClick: (key: Key) => void
 }

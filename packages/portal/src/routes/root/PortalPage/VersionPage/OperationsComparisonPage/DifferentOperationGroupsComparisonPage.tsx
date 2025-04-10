@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+import { Key } from '@apihub/entities/keys'
 import { OperationContent } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationContent'
 import {
   COMPARE_SAME_OPERATIONS_MODE,
 } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationView/OperationDisplayMode'
 import { useComparisonObjects } from '@apihub/routes/root/PortalPage/VersionPage/useComparisonObjects'
 import {
-  groupOperationsByTags,
+  groupOperationPairsByTags,
   isFullyAddedOrRemovedOperationChange
 } from '@apihub/utils/operations'
 import type { ActionType } from '@netcracker/qubership-apihub-api-diff'
@@ -30,16 +31,14 @@ import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/Pa
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type {
   Operation,
-  OperationsGroupedByTag,
+  OperationPair,
+  OperationPairsGroupedByTag,
   RestOperation
 } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import {
-  isOperationChangeDataArray,
-  isOperationDataArray,
   isRestOperation,
-  NO_BWC_API_KIND,
+  NO_BWC_API_KIND
 } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import type { OperationChangeData } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
 import type {
   DashboardComparisonSummary,
   RefComparisonSummary,
@@ -54,6 +53,7 @@ import {
   DOCUMENT_SEARCH_PARAM,
   FILTERS_SEARCH_PARAM,
   GROUP_SEARCH_PARAM,
+  OPERATION_SEARCH_PARAM,
 } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import type { FC } from 'react'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
@@ -79,8 +79,29 @@ import { useComparisonParams } from '../useComparisonParams'
 import { useDocumentSearchParam } from '../useDocumentSearchParam'
 import { useNavigateToOperation } from '../useNavigateToOperation'
 import { useOperation } from '../useOperation'
-import { isOperationGrouped } from '../useOperationsGroupedByTags'
 import { OperationsSidebarOnComparison } from './OperationsSidebarOnComparison'
+
+export function isOperationPairGrouped(
+  operationPairsGroupedByTags: OperationPairsGroupedByTag,
+  operationKey?: Key
+): boolean {
+  if (!operationPairsGroupedByTags) {
+    return false
+  }
+
+  for (const groupedOperationPairs of Object.values(operationPairsGroupedByTags)) {
+    for (const groupedOperationPair of groupedOperationPairs) {
+      const { currentOperation, previousOperation } = groupedOperationPair
+      if (
+        currentOperation?.operationKey === operationKey ||
+        previousOperation?.operationKey === operationKey
+      ) {
+        return true
+      }
+    }
+  }
+  return false
+}
 
 export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
   const previousGroup = useSearchParam(GROUP_SEARCH_PARAM)
@@ -164,12 +185,12 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
   })
 
   const areChangesAndOperationsLoading = isOriginOperationLoading && isChangedOperationLoading
-  const operationsGroupedByTags: OperationsGroupedByTag<Operation> = useMemo(() => {
+  const operationPairsGroupedByTags: OperationPairsGroupedByTag = useMemo(() => {
     const filteredChanges: OperationChangesDto[] = compareGroups.data?.filter(
       operationChange => filterChangesBySeverity(filters, operationChange.changeSummary),
     ) ?? []
 
-    const operations: Operation[] = []
+    const operationPairs: OperationPair[] = []
     for (const operationChange of filteredChanges) {
       // @ts-expect-error // Will be gone after migration to new types
       const previousOperation: Operation | undefined = operationChange.previousOperationId ? {
@@ -187,36 +208,40 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
         apiAudience: 'unknown',
         tags: operationChange.metadata?.tags,
       } : undefined
-      const allTags = new Set([...previousOperation?.tags ?? [], ...currentOperation?.tags ?? []])
-      const operation: Operation = {
-        ...currentOperation ?? previousOperation!,
-        tags: Array.from(allTags),
-      }
-      operations.push(operation)
+      operationPairs.push({
+        currentOperation: currentOperation ?? previousOperation!,
+        previousOperation: previousOperation,
+      })
     }
 
-    return groupOperationsByTags(operations)
+    return groupOperationPairsByTags(operationPairs)
   }, [compareGroups.data, filters])
-  const tags = useMemo(() => Array.from(Object.keys(operationsGroupedByTags)), [operationsGroupedByTags])
+  const tags = useMemo(() => Array.from(Object.keys(operationPairsGroupedByTags)), [operationPairsGroupedByTags])
 
-  const filterGroupedOperations = useCallback((property: keyof Pick<RestOperation, 'method' | 'path' | 'title'>) =>
-    (operation: Operation): boolean => isRestOperation(operation) &&
-      !Array.isArray(operation[property]) &&
-      operation[property]?.toLowerCase().includes(searchValue.toLowerCase()),
-    [searchValue])
+  const filterGroupedOperations = useCallback(
+    (property: keyof Pick<RestOperation, 'method' | 'path' | 'title'>) => {
+      return (operationPair: OperationPair): boolean => {
+        const operation = operationPair.currentOperation ?? operationPair.previousOperation!
+        return (
+          isRestOperation(operation) &&
+          !Array.isArray(operation[property]) &&
+          operation[property]?.toLowerCase().includes(searchValue.toLowerCase())
+        )
+      }
+    },
+    [searchValue]
+  )
 
-  const filterOperations = useCallback((filterFunction: (operation: Operation) => boolean): OperationsGroupedByTag<Operation> => {
-    return Object.fromEntries(
-      Object.entries(operationsGroupedByTags).map(([tag, operations]) => [
-        tag,
-        isOperationDataArray(operations)
-          ? operations.filter(filterFunction)
-          : isOperationChangeDataArray(operations)
-            ? operations.filter(filterFunction)
-            : operations,
-      ]),
-    )
-  }, [operationsGroupedByTags])
+  const filterOperations = useCallback(
+    (filterFunction: (operation: OperationPair) => boolean): OperationPairsGroupedByTag => {
+      return Object.fromEntries(
+        Object.entries(operationPairsGroupedByTags).map(
+          ([tag, operationPairs]) => [tag, operationPairs.filter(filterFunction)]
+        ),
+      )
+    },
+    [operationPairsGroupedByTags]
+  )
 
   const filteredOperationsGroupedByTags = useMemo(() => {
     if (searchValue) {
@@ -238,28 +263,34 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
       return filterResult
     }
 
-    return operationsGroupedByTags
-  }, [filterGroupedOperations, filterOperations, operationsGroupedByTags, searchValue])
+    return operationPairsGroupedByTags
+  }, [filterGroupedOperations, filterOperations, operationPairsGroupedByTags, searchValue])
 
   const filteredTagsInSidebar = useMemo(() => tags.filter(tag => filteredOperationsGroupedByTags[tag]?.length), [filteredOperationsGroupedByTags, tags])
 
-  const [firstOperation] = useMemo(
+  const [firstOperationPair] = useMemo(
     () => (filteredTagsInSidebar.length && (filteredOperationsGroupedByTags || searchValue) ? filteredOperationsGroupedByTags[filteredTagsInSidebar[0]] : []),
     [filteredOperationsGroupedByTags, filteredTagsInSidebar, searchValue],
   )
   const isCurrentOperationGrouped = useMemo(
-    () => isOperationGrouped(filteredOperationsGroupedByTags, operationKey),
+    () => isOperationPairGrouped(filteredOperationsGroupedByTags, operationKey),
     [operationKey, filteredOperationsGroupedByTags],
   )
 
   useEffect(() => {
-    if (firstOperation && !isCurrentOperationGrouped && !areChangesAndOperationsLoading) {
+    if (firstOperationPair && !isCurrentOperationGrouped && !areChangesAndOperationsLoading) {
+      const firstOperation = firstOperationPair.currentOperation ?? firstOperationPair.previousOperation!
       const firstOperationId = firstOperation?.operationKey
 
       const searchParams = {
         [DOCUMENT_SEARCH_PARAM]: { value: selectedDocumentSlug },
         [FILTERS_SEARCH_PARAM]: { value: filters ? filters : undefined },
         [GROUP_SEARCH_PARAM]: { value: previousGroup },
+        [OPERATION_SEARCH_PARAM]: {
+          value: firstOperationPair.currentOperation
+            ? firstOperationPair.previousOperation?.operationKey
+            : undefined
+        },
       }
 
       navigateToFirstGroupOperation({
@@ -271,7 +302,7 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
         search: searchParams,
       })
     }
-  }, [apiType, areChangesAndOperationsLoading, changedPackageKey, changedVersionKey, filters, firstOperation, group, isCurrentOperationGrouped, navigateToFirstGroupOperation, previousGroup, selectedDocumentSlug])
+  }, [apiType, areChangesAndOperationsLoading, changedPackageKey, changedVersionKey, filters, firstOperationPair, group, isCurrentOperationGrouped, navigateToFirstGroupOperation, previousGroup, selectedDocumentSlug])
 
   const comparedOperationsPair = {
     left: originOperation,
@@ -289,7 +320,9 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
   })
   const mergedBreadcrumbsData = useCompareBreadcrumbs(originComparisonObject, changedComparisonObject)
 
-  const handleOperationClick = useNavigateToOperation(changedPackageKey!, changedVersionKey!, apiType as ApiType, setShouldAutoExpand)
+  const handleOperationClick = useNavigateToOperation(
+    changedPackageKey!, changedVersionKey!, apiType as ApiType, setShouldAutoExpand
+  )
 
   return (
     <ShouldAutoExpandTagsProvider>

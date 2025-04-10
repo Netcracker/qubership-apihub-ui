@@ -22,10 +22,10 @@ import {
 import { useCompareBreadcrumbs } from '@apihub/routes/root/PortalPage/VersionPage/useCompareBreadcrumbs'
 import { useComparisonObjects } from '@apihub/routes/root/PortalPage/VersionPage/useComparisonObjects'
 import { useComparisonParams } from '@apihub/routes/root/PortalPage/VersionPage/useComparisonParams'
-import { groupOperationsByTags } from '@apihub/utils/operations'
+import { groupOperationPairsByTags } from '@apihub/utils/operations'
 import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import type { Operation, OperationsGroupedByTag } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import type { Operation, OperationPair, OperationPairsGroupedByTag } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { OperationChangeData } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
 import type {
   DashboardComparisonSummary,
@@ -38,6 +38,7 @@ import { filterChangesBySeverity } from '@netcracker/qubership-apihub-ui-shared/
 import {
   DOCUMENT_SEARCH_PARAM,
   FILTERS_SEARCH_PARAM,
+  OPERATION_SEARCH_PARAM,
   optionalSearchParams,
   PACKAGE_SEARCH_PARAM,
   REF_SEARCH_PARAM,
@@ -68,21 +69,19 @@ import { VERSION_SWAPPER_HEIGHT } from '../shared-styles'
 import { useDocumentSearchParam } from '../useDocumentSearchParam'
 import { useNavigateToOperation } from '../useNavigateToOperation'
 import { useOperation } from '../useOperation'
+import { useOperationSearchParam } from '../useOperationSearchParam'
 import { OperationsSidebarOnComparison } from './OperationsSidebarOnComparison'
 
-function getOperationsFromPackageChanges(
+function getOperationPairsFromPackageChanges(
   packageChanges: ReadonlyArray<OperationChangeData>
-): ReadonlyArray<Operation> {
-  const operationIds = new Set<Key>()
-  const operations: Operation[] = []
+): ReadonlyArray<OperationPair> {
+  const operations: OperationPair[] = []
   for (const item of packageChanges) {
-    if (item.currentOperation) {
-      const operationId = item.currentOperation.operationKey
-      if (!operationIds.has(operationId)) {
-        operations.push(item.currentOperation)
-      }
-      operationIds.add(operationId)
+    const operationPair: OperationPair = {
+      currentOperation: item.currentOperation,
+      previousOperation: item.previousOperation,
     }
+    operations.push(operationPair)
   }
   return operations
 }
@@ -98,6 +97,7 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
   const [operationPackageKey, operationPackageVersion] = usePackageParamsWithRef()
   const [selectedDocumentSlug] = useDocumentSearchParam()
   const [filters] = useSeverityFiltersSearchParam()
+  const [previousOperationKey] = useOperationSearchParam()
 
   const { isPackageFromDashboard, refPackageKey } = useIsPackageFromDashboard()
   const [searchValue = '', setSearchValue] = useTextSearchParam()
@@ -132,7 +132,7 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
   const packageChanges: ReadonlyArray<OperationChangeData> = flatPackageChangelog.operations
 
   const operationsFromPackageChanges = useMemo(
-    () => getOperationsFromPackageChanges(packageChanges),
+    () => getOperationPairsFromPackageChanges(packageChanges),
     [packageChanges]
   )
 
@@ -157,7 +157,7 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
   const { data: originOperation, isInitialLoading: isOriginOperationInitialLoading } = useOperation({
     packageKey: !isPackageFromDashboard ? originPackageKey : refPackageKey,
     versionKey: !isPackageFromDashboard ? originVersionKey : refComparisonSummary?.previousVersion,
-    operationKey: operationKey,
+    operationKey: previousOperationKey ?? operationKey,
     apiType: apiType as ApiType,
   })
   const { data: changedOperation, isInitialLoading: isChangedOperationInitialLoading } = useOperation({
@@ -174,11 +174,11 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
     [packageChanges, filters])
 
   const operationsFromFilteredPackageChanges = useMemo(
-    () => getOperationsFromPackageChanges(filteredPackageChanges),
+    () => getOperationPairsFromPackageChanges(filteredPackageChanges),
     [filteredPackageChanges]
   )
-  const filteredOperationsGroupedByTags: OperationsGroupedByTag<Operation> = useMemo(
-    () => groupOperationsByTags(operationsFromFilteredPackageChanges),
+  const filteredOperationsGroupedByTags: OperationPairsGroupedByTag = useMemo(
+    () => groupOperationPairsByTags(operationsFromFilteredPackageChanges),
     [operationsFromFilteredPackageChanges]
   )
   const tags = useMemo(
@@ -186,33 +186,44 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
     [filteredOperationsGroupedByTags]
   )
 
-  const firstOperation = useMemo(
+  const firstOperationPair = useMemo(
     () => (operationsFromFilteredPackageChanges.length && !searchValue ? operationsFromFilteredPackageChanges[0] : null),
     [operationsFromFilteredPackageChanges, searchValue],
   )
 
   const packageChangesHaveCurrentOperation = useMemo(
-    () => !!searchValue || operationsFromPackageChanges.some(operation => operation.operationKey === operationKey),
+    () => !!searchValue || operationsFromPackageChanges.some(operationPair =>
+      operationPair.currentOperation?.operationKey === operationKey ||
+      operationPair.previousOperation?.operationKey === operationKey
+    ),
     [operationKey, operationsFromPackageChanges, searchValue],
   )
 
   useEffect(() => {
-    if (firstOperation && !packageChangesHaveCurrentOperation && !areChangesAndOperationsLoading) {
-      const firstOperationId = firstOperation?.operationKey
+    if (firstOperationPair && !packageChangesHaveCurrentOperation && !areChangesAndOperationsLoading) {
+      const firstOperation = firstOperationPair.currentOperation ?? firstOperationPair.previousOperation!
+      const firstOperationId = firstOperation.operationKey
+
       const newPathName = `/portal/packages/${changedPackageKey}/${changedVersionKey}/compare/${apiType}/${firstOperationId}`
       const searchParams = optionalSearchParams({
         [PACKAGE_SEARCH_PARAM]: { value: originPackageKey },
         [VERSION_SEARCH_PARAM]: { value: originVersionKey },
         [DOCUMENT_SEARCH_PARAM]: { value: selectedDocumentSlug },
-        [REF_SEARCH_PARAM]: { value: isPackageFromDashboard && firstOperation.packageRef?.key },
+        [REF_SEARCH_PARAM]: { value: isPackageFromDashboard && firstOperation.packageRef?.key }, // Assumption that we can't compare operations from different packages
         [FILTERS_SEARCH_PARAM]: { value: filters.join() },
+        [OPERATION_SEARCH_PARAM]: {
+          value:
+            firstOperationPair.currentOperation
+              ? firstOperationPair.previousOperation?.operationKey
+              : undefined
+        },
       })
       navigate({
         pathname: newPathName,
         search: `${searchParams}`,
       })
     }
-  }, [apiType, areChangesAndOperationsLoading, changedPackageKey, changedVersionKey, filters, firstOperation, packageChangesHaveCurrentOperation, isPackageFromDashboard, navigate, originPackageKey, originVersionKey, selectedDocumentSlug, hasNextPage])
+  }, [apiType, areChangesAndOperationsLoading, changedPackageKey, changedVersionKey, filters, firstOperationPair, packageChangesHaveCurrentOperation, isPackageFromDashboard, navigate, originPackageKey, originVersionKey, selectedDocumentSlug, hasNextPage])
 
   const comparedOperationsPair = {
     left: originOperation,
@@ -221,7 +232,9 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
   }
 
   const setShouldAutoExpand = useSetShouldAutoExpandTagsContext()
-  const handleOperationClick = useNavigateToOperation(changedPackageKey!, changedVersionKey!, apiType as ApiType, setShouldAutoExpand)
+  const handleOperationClick = useNavigateToOperation(
+    changedPackageKey!, changedVersionKey!, apiType as ApiType, setShouldAutoExpand
+  )
 
   // TODO 31.08.23 // Optimize it!
   // TODO 01.09.23 // Extract to hook? Can we optimize it and reuse some parameters?
