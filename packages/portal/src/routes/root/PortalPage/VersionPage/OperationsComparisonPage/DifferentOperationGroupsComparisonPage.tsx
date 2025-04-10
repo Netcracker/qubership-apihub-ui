@@ -192,9 +192,7 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
 
     const operationPairs: OperationPair[] = []
     for (const operationChange of filteredChanges) {
-      // @ts-expect-error // Will be gone after migration to new types
       const previousOperation: Operation | undefined = operationChange.previousOperationId ? {
-        // @ts-expect-error // Will be gone after migration to new types
         operationKey: operationChange.previousOperationId,
         title: operationChange.metadata?.previousOperationMetadata?.title ?? '',
         apiKind: operationChange.previousApiKind ?? NO_BWC_API_KIND, // TODO 10.04.25 // Fix it
