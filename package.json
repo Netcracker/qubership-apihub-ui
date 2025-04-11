@@ -35,7 +35,7 @@
     "@mui/private-theming": "5.11.9",
     "@netcracker/qubership-apihub-api-diff": "1.1.0",
     "@netcracker/qubership-apihub-api-doc-viewer": "2.0.7",
-    "@netcracker/qubership-apihub-api-processor": "3.1.0",
+    "@netcracker/qubership-apihub-api-processor": "feature-ignore-param-name-while-matching",
     "@netcracker/qubership-apihub-api-unifier": "1.0.4",
     "@netcracker/qubership-apihub-api-visitor": "1.0.5",
     "@netcracker/qubership-apihub-apispec-view": "1.0.24",
