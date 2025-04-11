@@ -15,5 +15,6 @@
  */
 
 export interface TestableProps {
+  'data-testid'?: string
   testId?: string
 }
