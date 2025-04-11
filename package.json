@@ -40,7 +40,7 @@
     "@netcracker/qubership-apihub-api-visitor": "1.0.5",
     "@netcracker/qubership-apihub-apispec-view": "feature-rename-label-semi-breaking-changes-two",
     "@netcracker/qubership-apihub-class-view": "1.0.3",
-    "@netcracker/qubership-apihub-rest-playground": "1.0.7",
+    "@netcracker/qubership-apihub-rest-playground": "1.0.8",
     "@otjs/monaco": "0.2.2",
     "@otjs/plaintext": "0.2.2",
     "@otjs/plaintext-editor": "0.2.2",

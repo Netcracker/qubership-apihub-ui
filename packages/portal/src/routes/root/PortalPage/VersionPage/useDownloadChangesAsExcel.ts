@@ -80,7 +80,6 @@ export const downloadChangesAsExcel = async (
     previousVersion: { value: previousVersion },
     previousVersionPackageId: { value: previousVersionPackageId },
   })
-  console.log('Обратная конвертация для работы фильтра')
 
   const pathPattern = '/packages/:packageId/versions/:versionId/:apiType/export/changes'
   const response = await portalRequestBlob(
