@@ -152,3 +152,13 @@ declare class TaskPriorityChangeEvent extends Event {
     },
   )
 }
+
+declare module '@mui/material/SvgIcon' {
+  interface SvgIconPropsColorOverrides {
+    'muted': true
+  }
+
+  interface SvgIconPropsSizeOverrides {
+    'extra-small': true
+  }
+}

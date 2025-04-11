@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import { Box, IconButton, Typography } from '@mui/material'
-
-import type { FC } from 'react'
-import React, { memo, useCallback, useMemo } from 'react'
+import { Box, IconButton, Tooltip, Typography } from '@mui/material'
+import React, { type FC, memo, useCallback, useMemo } from 'react'
 import type { PackageSettingsTabProps } from '../package-settings'
-import Tooltip from '@mui/material/Tooltip'
 import { EditGrouppingPrefixDialog } from './EditGrouppingPrefixDialog'
 import { useEventBus } from '@apihub/routes/EventBusProvider'
-import { CREATE_AND_UPDATE_PACKAGE_PERMISSION } from '@netcracker/qubership-apihub-ui-shared/entities/package-permissions'
+import {
+  CREATE_AND_UPDATE_PACKAGE_PERMISSION,
+} from '@netcracker/qubership-apihub-ui-shared/entities/package-permissions'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import { transformStringValue } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
 import { EditIcon } from '@netcracker/qubership-apihub-ui-shared/icons/EditIcon'
@@ -31,7 +30,7 @@ import {
   ENABLED_BUTTON_COLOR,
   GROUP_TYPE_REST_PATH_PREFIX,
 } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
-import { InfoIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoIcon'
+import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoContextIcon'
 
 export const SpecificConfigurationPackageSettingsTab: FC<PackageSettingsTabProps> = memo<PackageSettingsTabProps>(({ packageObject }) => {
   const { showEditPackagePrefixDialog } = useEventBus()
@@ -55,7 +54,7 @@ export const SpecificConfigurationPackageSettingsTab: FC<PackageSettingsTabProps
           <Box marginTop="8px" marginBottom="16px" overflow="hidden" height="100%">
             <Box width="268px" display="flex" gap={1}>
               <Box>
-                <Typography variant="subtitle2">${GROUP_TYPE_REST_PATH_PREFIX} for Grouping by Version</Typography>
+                <Typography variant="subtitle2">{GROUP_TYPE_REST_PATH_PREFIX} for Grouping by Version</Typography>
                 <Box
                   sx={{
                     '&:hover': {
@@ -88,9 +87,7 @@ export const SpecificConfigurationPackageSettingsTab: FC<PackageSettingsTabProps
                 title="The parameter allows you to define custom regular expression, which will be applied to the paths of REST operations. This expression must begin and end with a / character and contain the {group} keyword. For example: /api/{group}/. The system will look for the {group} entry in the REST operation paths during the publication of the package version. All found matches will form a list of groups that will include the corresponding operations."
                 placement="right"
               >
-                <Box height={20}>
-                  <InfoIcon/>
-                </Box>
+                <InfoContextIcon fontSize="extra-small"/>
               </Tooltip>
             </Box>
           </Box>

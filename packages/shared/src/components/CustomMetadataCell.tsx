@@ -19,7 +19,7 @@ import * as React from 'react'
 import { memo, useMemo, useState } from 'react'
 import { Box, Typography } from '@mui/material'
 import { CustomTagsTree, isPrimitive } from './CustomTagsTree'
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import { InfoContextIcon } from '../icons/InfoContextIcon'
 import { OverflowTooltip } from './OverflowTooltip'
 import type { JSONValue } from '../entities/operations'
 import type { Pixel } from '../utils/types'
@@ -111,12 +111,10 @@ export const CustomMetadataCell: FC<CustomMetadataCellProps> = memo<CustomMetada
           sx={{ visibility: 'hidden', height: '20px' }}
           className="hoverable"
           startIcon={
-            <InfoOutlinedIcon
+            <InfoContextIcon
               className="hoverable"
               sx={{
-                color: '#626D82',
                 fontSize: `${ICON_SIZE}px`,
-                cursor: 'pointer',
                 visibility: open ? 'visible' : 'hidden',
               }}
             />

@@ -28,7 +28,7 @@ import type { DeprecatedItem } from '@netcracker/qubership-apihub-ui-shared/enti
 import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import InfoIcon from '@mui/icons-material/Info'
+import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoContextIcon'
 
 const DESCRIPTION_COLUMN_ID = 'description'
 
@@ -137,8 +137,8 @@ export const DeprecatedItemsSubTable: FC<SubTableProps> = memo<SubTableProps>((
                       title={<DeprecatedInfo info={deprecatedInfo}/>}
                       placement="right"
                     >
-                      <Box sx={{ display: 'inline' }}>
-                        <InfoIcon/>
+                      <Box sx={{ display: 'inline', cursor: 'default' }}>
+                        <InfoContextIcon/>
                       </Box>
                     </Tooltip>
                   )}
