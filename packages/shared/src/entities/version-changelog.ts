@@ -32,6 +32,7 @@ import type { MethodType } from './method-types'
 import type { ApiAudience, ApiKind, GraphQlOperation, Operation, PackageRef, PackagesRefs, RestOperation } from './operations'
 import { toPackageRef } from './operations'
 
+// DTO Types
 export type VersionChangesDto = Partial<Readonly<{
   previousVersion: Key
   previousVersionPackageId: Key
@@ -39,22 +40,8 @@ export type VersionChangesDto = Partial<Readonly<{
   packages: PackagesRefs
 }>>
 
-export type VersionChanges = Readonly<{
-  previousVersion?: Key
-  previousVersionPackageKey?: Key
-  operations: ReadonlyArray<OperationChangeData>
-}>
-
-export type DifferentVersionChanges = Readonly<{
-  operations: ReadonlyArray<OperationWithDifferenceChangeData>
-}>
-
-export type VersionChangesData = VersionChangesDto
-
-export type PagedVersionChanges = ReadonlyArray<VersionChanges>
-export type PagedDiffVersionChanges = ReadonlyArray<DifferentVersionChanges>
-
-export interface OperationInfoFromDifferentVersionsDto {
+// Base DTO interface for operation info
+export interface OperationInfoDto {
   readonly operationId: Key
   readonly title: string
   readonly apiKind: ApiKind
@@ -62,30 +49,42 @@ export interface OperationInfoFromDifferentVersionsDto {
   readonly dataHash: string
   readonly packageRef?: string
 }
-export interface RestOperationInfoFromDifferentVersionsDto extends OperationInfoFromDifferentVersionsDto {
+
+export interface RestOperationInfoDto extends OperationInfoDto {
   readonly method: MethodType
   readonly path: string
 }
-export interface GraphQlOperationInfoFromDifferentVersionsDto extends OperationInfoFromDifferentVersionsDto {
+
+export interface GraphQlOperationInfoDto extends OperationInfoDto {
   readonly method: string
   readonly type: GraphQlOperationType
 }
 
-interface OperationChangeDataDto {
+// Combined DTO type for operation changes
+export interface OperationChangeDataDto {
   readonly changeSummary: ChangesSummaryDto
-  readonly currentOperation?: OperationInfoFromDifferentVersionsDto
-  readonly previousOperation?: OperationInfoFromDifferentVersionsDto
-}
-export interface RestOperationChangeDto extends OperationChangeDataDto {
-  readonly currentOperation: RestOperationInfoFromDifferentVersionsDto
-  readonly previousOperation: RestOperationInfoFromDifferentVersionsDto
-}
-export interface GraphQlOperationChangeDto extends OperationChangeDataDto {
-  readonly currentOperation: GraphQlOperationInfoFromDifferentVersionsDto
-  readonly previousOperation: GraphQlOperationInfoFromDifferentVersionsDto
+  readonly currentOperation?: OperationInfoDto
+  readonly previousOperation?: OperationInfoDto
 }
 
-export interface OperationInfoFromDifferentVersions {
+// Domain Types
+export type VersionChanges = Readonly<{
+  previousVersion?: Key
+  previousVersionPackageKey?: Key
+  operations: ReadonlyArray<OperationChangeBase<Operation>>
+}>
+
+export type DifferentVersionChanges = Readonly<{
+  operations: ReadonlyArray<OperationChangeBase<Operation>>
+}>
+
+export type VersionChangesData = VersionChangesDto
+
+export type PagedVersionChanges = ReadonlyArray<VersionChanges>
+export type PagedDiffVersionChanges = ReadonlyArray<DifferentVersionChanges>
+
+// Base domain interface for operation info
+export interface OperationInfo {
   readonly operationKey: Key
   readonly title: string
   readonly apiKind: ApiKind
@@ -93,51 +92,35 @@ export interface OperationInfoFromDifferentVersions {
   readonly dataHash: string
   readonly packageRef?: PackageRef
 }
-export interface RestOperationInfoFromDifferentVersions extends OperationInfoFromDifferentVersions {
+
+export interface RestOperationInfo extends OperationInfo {
   readonly method: MethodType
   readonly path: string
 }
-export interface GraphQlOperationInfoFromDifferentVersions extends OperationInfoFromDifferentVersions {
+
+export interface GraphQlOperationInfo extends OperationInfo {
   readonly method: string
   readonly type: GraphQlOperationType
 }
 
-export interface OperationChangeData {
+// Base interface for all operation change types
+export interface OperationChangeBase<T extends Operation = Operation> {
   readonly changeSummary: ChangesSummary
-  readonly action: ActionType // Optional, but always calculated
-  readonly currentOperation?: Operation
-  readonly previousOperation?: Operation
-}
-export interface RestOperationChangeData extends OperationChangeData {
-  readonly currentOperation: RestOperation
-  readonly previousOperation: RestOperation
-}
-export interface GraphQlOperationChangeData extends OperationChangeData {
-  readonly currentOperation: GraphQlOperation
-  readonly previousOperation: GraphQlOperation
+  readonly action: ActionType
+  readonly currentOperation?: T
+  readonly previousOperation?: T
 }
 
-export interface OperationWithDifferenceChangeData {
-  changeSummary: ChangesSummary
-  action: ActionType
-  currentOperation?: Operation
-  previousOperation?: Operation
-}
-export interface RestOperationWithDifferenceChangeData extends OperationWithDifferenceChangeData {
-  currentOperation: RestOperation
-  previousOperation: RestOperation
-}
-export interface GraphQlOperationWithDifferenceChangeData extends OperationWithDifferenceChangeData {
-  currentOperation: GraphQlOperation
-  previousOperation: GraphQlOperation
-}
+// Type aliases for specific operation types
+export type RestOperationChange = OperationChangeBase<RestOperation>
+export type GraphQlOperationChange = OperationChangeBase<GraphQlOperation>
 
 export const toVersionChanges = (dto: VersionChangesDto): VersionChanges => {
   return {
     previousVersion: dto?.previousVersion,
     previousVersionPackageKey: dto?.previousVersionPackageId,
     operations: dto?.operations?.map(
-      (operationChange) => toOperationChangeData(operationChange, dto?.packages),
+      (operationChange) => toOperationChange(operationChange, dto?.packages),
     ) ?? [],
   }
 }
@@ -145,47 +128,31 @@ export const toVersionChanges = (dto: VersionChangesDto): VersionChanges => {
 export const toDiffVersionChanges = (dto: VersionChangesDto): DifferentVersionChanges => {
   return {
     operations: dto?.operations?.map(
-      (operationChange) => toDiffOperationChangeData(operationChange),
+      (operationChange) => toOperationChange(operationChange, dto?.packages, false),
     ) ?? [],
   }
 }
 
-export const toOperationChangeData = (dto: OperationChangeDataDto, packagesRefs?: PackagesRefs): OperationChangeData => {
+// Unified transformation function
+export const toOperationChange = (
+  dto: OperationChangeDataDto, 
+  packagesRefs?: PackagesRefs, 
+  includePackageRefs: boolean = true,
+): OperationChangeBase<Operation> => {
   return {
-    ...dto,
+    changeSummary: dto.changeSummary,
     currentOperation: dto.currentOperation
       ? {
         ...dto.currentOperation,
         operationKey: dto.currentOperation.operationId,
-        packageRef: toPackageRef(dto.currentOperation.packageRef, packagesRefs),
+        packageRef: includePackageRefs ? toPackageRef(dto.currentOperation.packageRef, packagesRefs) : undefined,
       }
       : undefined,
     previousOperation: dto.previousOperation
       ? {
         ...dto.previousOperation,
         operationKey: dto.previousOperation.operationId,
-        packageRef: toPackageRef(dto.previousOperation.packageRef, packagesRefs),
-      }
-      : undefined,
-    action: calculateAction(dto.currentOperation?.dataHash, dto.previousOperation?.dataHash),
-  }
-}
-
-export const toDiffOperationChangeData = (dto: OperationChangeDataDto): OperationWithDifferenceChangeData => {
-  return {
-    ...dto,
-    currentOperation: dto.currentOperation
-      ? {
-        ...dto.currentOperation,
-        operationKey: dto.currentOperation.operationId,
-        packageRef: undefined,
-      }
-      : undefined,
-    previousOperation: dto.previousOperation
-      ? {
-        ...dto.previousOperation,
-        operationKey: dto.previousOperation.operationId,
-        packageRef: undefined,
+        packageRef: includePackageRefs ? toPackageRef(dto.previousOperation.packageRef, packagesRefs) : undefined,
       }
       : undefined,
     action: calculateAction(dto.currentOperation?.dataHash, dto.previousOperation?.dataHash),

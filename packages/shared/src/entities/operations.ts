@@ -19,7 +19,7 @@ import type { MethodType } from './method-types'
 import type { PackageKind } from './packages'
 import type { VersionStatus } from './version-status'
 import type { GraphQlOperationType } from './graphql-operation-types'
-import type { OperationChangeData, OperationWithDifferenceChangeData } from './version-changelog'
+import type { OperationChangeBase } from './version-changelog'
 import type { FetchNextPageOptions, InfiniteQueryObserverResult } from '@tanstack/react-query'
 import type { Key, VersionKey } from './keys'
 import type { ApiType } from './api-types'
@@ -277,7 +277,7 @@ export function isOperationData(value: unknown): value is OperationData {
   return isOperation(value) && 'deprecated' in value
 }
 
-export function isOperationChangeData(value: unknown): value is OperationChangeData {
+export function isOperationChangeData(value: unknown): value is OperationChangeBase {
   return isOperation(value) && 'changeSummary' in value
 }
 
@@ -285,7 +285,7 @@ export function isOperationDataArray(value: unknown): value is OperationData[] {
   return !!value && Array.isArray(value) && value.every(isOperationData)
 }
 
-export function isOperationChangeDataArray(value: unknown): value is OperationChangeData[] {
+export function isOperationChangeDataArray(value: unknown): value is OperationChangeBase[] {
   return !!value && Array.isArray(value) && value.every(isOperationChangeData)
 }
 

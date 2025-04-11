@@ -42,11 +42,12 @@ import {
   SEMI_BREAKING_CHANGE_SEVERITY,
 } from '../../../entities/change-severities'
 import type { Key } from '../../../entities/keys'
-import { DEFAULT_TAG, Tag } from '../../../entities/operations'
+import type { Tag } from '../../../entities/operations'
+import { DEFAULT_TAG } from '../../../entities/operations'
 import type { Package, PackageKind } from '../../../entities/packages'
 import { DASHBOARD_KIND } from '../../../entities/packages'
 import { API_AUDIENCE_COLUMN_ID, API_KIND_COLUMN_ID, ENDPOINT_COLUMN_ID, PACKAGE_COLUMN_ID, TAGS_COLUMN_ID } from '../../../entities/table-columns'
-import type { OperationChangeData, VersionChangesData } from '../../../entities/version-changelog'
+import type { OperationChangeBase, VersionChangesData } from '../../../entities/version-changelog'
 import { useIntersectionObserver } from '../../../hooks/common/useIntersectionObserver'
 import { useResizeObserver } from '../../../hooks/common/useResizeObserver'
 import { DEFAULT_CONTAINER_WIDTH, useColumnsSizing } from '../../../hooks/table-resizing/useColumnResizing'
@@ -67,7 +68,7 @@ export type SubTableComponentProps = {
 }
 
 export type ChangeViewTableProps = {
-  value: ReadonlyArray<OperationChangeData>
+  value: ReadonlyArray<OperationChangeBase>
   packageKey: Key
   versionKey: Key
   packageObject: Package | null

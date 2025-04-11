@@ -26,7 +26,7 @@ import { groupOperationPairsByTags } from '@apihub/utils/operations'
 import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { Operation, OperationPair, OperationPairsGroupedByTag } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import type { OperationChangeData } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
+import type { OperationChangeBase } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
 import type {
   DashboardComparisonSummary,
   RefComparisonSummary,
@@ -73,7 +73,7 @@ import { useOperationSearchParam } from '../useOperationSearchParam'
 import { OperationsSidebarOnComparison } from './OperationsSidebarOnComparison'
 
 function getOperationPairsFromPackageChanges(
-  packageChanges: ReadonlyArray<OperationChangeData>
+  packageChanges: ReadonlyArray<OperationChangeBase>,
 ): ReadonlyArray<OperationPair> {
   const operations: OperationPair[] = []
   for (const item of packageChanges) {
@@ -129,7 +129,7 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
     limit: 100,
   })
   const flatPackageChangelog = useFlatVersionChangelog(packageChangelog)
-  const packageChanges: ReadonlyArray<OperationChangeData> = flatPackageChangelog.operations
+  const packageChanges: ReadonlyArray<OperationChangeBase> = flatPackageChangelog.operations
 
   const operationsFromPackageChanges = useMemo(
     () => getOperationPairsFromPackageChanges(packageChanges),

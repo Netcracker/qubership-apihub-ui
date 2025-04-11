@@ -30,7 +30,7 @@ import {
   REMOVE_ACTION_TYPE,
 } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
 import type { Operation } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import { type OperationWithDifferenceChangeData } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
+import type { OperationChangeBase } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
 import {
   useSeverityFiltersSearchParam,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/change-severities/useSeverityFiltersSearchParam'
@@ -127,7 +127,7 @@ export const VersionCompareContent: FC = memo(() => {
     limit: 100,
   })
   const flatPackageChangelog = useDetailedVersionChangelog(packageChangelog)
-  const packageChanges: ReadonlyArray<OperationWithDifferenceChangeData> = flatPackageChangelog.operations
+  const packageChanges: ReadonlyArray<OperationChangeBase> = flatPackageChangelog.operations
 
   useEffect(() => {
     // Fetch next page
@@ -146,7 +146,8 @@ export const VersionCompareContent: FC = memo(() => {
   const [filters] = useSeverityFiltersSearchParam()
   const filteredPackageChanges = useMemo(
     () => packageChanges.filter(change => filterChangesBySeverity(filters, change.changeSummary)),
-    [filters, packageChanges])
+    [filters, packageChanges],
+  )
 
   const onClickOperationChange = (): void => {
     setBackwardLocation({ ...backwardLocation, fromOperationsComparison: location })
@@ -238,7 +239,7 @@ export const VersionCompareContent: FC = memo(() => {
                         `${apiType}`,
                         encodeURIComponent(
                           currentOperation?.operationKey ??
-                          previousOperation!.operationKey
+                          previousOperation!.operationKey,
                         ),
                       ),
                       search: `${comparingSearchParams}`,
