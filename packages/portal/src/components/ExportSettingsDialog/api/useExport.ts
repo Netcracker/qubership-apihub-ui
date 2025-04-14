@@ -85,14 +85,22 @@ type ExportDto = Partial<{
 
 type Export = ExportDto
 
-export function useExport(requestData?: IRequestDataExport): [Export | undefined, IsLoading, Error | null] {
-  const { data, isLoading, error } = useQuery<Export, Error | null, ExportDto>({
-    queryKey: ['export', requestData],
+const QUERY_KEY_EXPORT = 'export'
+
+export function useExport(
+  requestData?: IRequestDataExport,
+  onSuccess?: () => void,
+  onError?: () => void,
+): [Export | undefined, IsLoading, Error | null] {
+  const { data, isFetching, error } = useQuery<Export, Error | null, ExportDto>({
+    queryKey: [QUERY_KEY_EXPORT, requestData],
     queryFn: () => startExport(requestData!),
     enabled: !!requestData,
+    onSuccess: () => onSuccess?.(),
+    onError: () => onError?.(),
   })
 
-  return [data, isLoading, error]
+  return [data, isFetching, error]
 }
 
 function startExport(requestData: IRequestDataExport): Promise<ExportDto> {

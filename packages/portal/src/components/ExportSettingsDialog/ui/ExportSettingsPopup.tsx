@@ -31,13 +31,13 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
 
   // Initialize state used for request data export
   const [requestDataExport, setRequestDataExport] = useState<IRequestDataExport | undefined>(undefined)
-  const [exportTask, isLoading, error] = useExport(requestDataExport)
+  const [exportTask, isStartingExport, error] = useExport(requestDataExport, () => setOpen(false), () => setOpen(false))
 
   // Extract cached form data from local storage
   const { cachedFormData, setCachedFormField } = useLocalExportSettings(exportedEntity)
 
   // Initialize form with cached data or default values
-  const { control, handleSubmit } = useForm<ExportSettingsFormData>({
+  const { control, handleSubmit, setValue } = useForm<ExportSettingsFormData>({
     defaultValues: cachedFormData ?? fieldsDefaultValues
   })
 
@@ -77,6 +77,8 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
     setRequestDataExport(requestData)
   }
 
+  const isFormDisabled = isLoadingExportConfig || isStartingExport
+
   return (
     <Dialog open={open} onClose={() => setOpen(false)}>
       <DialogTitle>
@@ -84,24 +86,26 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
       </DialogTitle>
       <DialogContent>
         <ExportSettingsForm
+          disabled={isFormDisabled}
           fields={fields}
           exportConfig={exportConfig}
           control={control}
+          setValue={setValue}
           setCachedFormField={setCachedFormField}
         />
       </DialogContent>
       <DialogActions>
         <LoadingButton
+          disabled={isFormDisabled}
           variant="contained"
-          color="primary"
           onClick={handleSubmit(onSubmit)}
-          loading={isLoading}
+          loading={isStartingExport}
         >
           Export
         </LoadingButton>
         <Button
-          variant="contained"
-          color="secondary"
+          disabled={isFormDisabled}
+          variant="outlined"
           onClick={() => setOpen(false)}
         >
           Cancel
