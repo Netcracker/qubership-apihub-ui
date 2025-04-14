@@ -1,0 +1,2 @@
+import{j as r}from"./createTheme-bb66475d.js";import{r as t}from"./index-37ba2b57.js";import{b as l}from"./TableRow-0f563c1d.js";import{S as o}from"./Skeleton-e7bd6420.js";const a=t.memo(({maxWidth:e})=>r(l,{children:r(o,{variant:"rectangular",width:"80%",sx:{maxWidth:e}})}));try{a.displayName="TableCellSkeleton",a.__docgenInfo={description:"",displayName:"TableCellSkeleton",props:{maxWidth:{defaultValue:null,description:"",name:"maxWidth",required:!1,type:{name:"number"}}}}}catch{}export{a as T};
+//# sourceMappingURL=TableCellSkeleton-499e1eca.js.map
