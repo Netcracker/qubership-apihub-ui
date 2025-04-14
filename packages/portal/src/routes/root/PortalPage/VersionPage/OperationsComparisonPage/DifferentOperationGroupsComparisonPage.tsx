@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-import { Key } from '@apihub/entities/keys'
+import type { Key } from '@apihub/entities/keys'
 import { OperationContent } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationContent'
 import {
   COMPARE_SAME_OPERATIONS_MODE,
 } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationView/OperationDisplayMode'
 import { useComparisonObjects } from '@apihub/routes/root/PortalPage/VersionPage/useComparisonObjects'
-import {
-  groupOperationPairsByTags,
-  isFullyAddedOrRemovedOperationChange
-} from '@apihub/utils/operations'
+import { groupOperationPairsByTags, isFullyAddedOrRemovedOperationChange } from '@apihub/utils/operations'
 import type { ActionType } from '@netcracker/qubership-apihub-api-diff'
-import type { OperationChangesDto } from '@netcracker/qubership-apihub-api-processor'
+import type { OperationChanges } from '@netcracker/qubership-apihub-api-processor'
 import { convertToSlug } from '@netcracker/qubership-apihub-api-processor'
 import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
@@ -33,12 +30,9 @@ import type {
   Operation,
   OperationPair,
   OperationPairsGroupedByTag,
-  RestOperation
+  RestOperation,
 } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import {
-  isRestOperation,
-  NO_BWC_API_KIND
-} from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import { isRestOperation, NO_BWC_API_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type {
   DashboardComparisonSummary,
   RefComparisonSummary,
@@ -63,27 +57,27 @@ import { usePackage } from '../../../usePackage'
 import { usePackageSearchParam } from '../../../usePackageSearchParam'
 import { useVersionSearchParam } from '../../../useVersionSearchParam'
 import { useCompareGroups } from '../../useCompareGroups'
-import { useIsPackageFromDashboard } from '../../useIsPackageFromDashboard'
-import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
+import { SelectedOperationTagsProvider } from '../SelectedOperationTagsProvider'
+import { useOperation } from '../useOperation'
 import { useChangesSummaryContext } from '../ChangesSummaryProvider'
+import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
+import { useDocumentSearchParam } from '../useDocumentSearchParam'
+import { useIsPackageFromDashboard } from '../../useIsPackageFromDashboard'
 import { CompareOperationPathsDialog } from '../CompareOperationPathsDialog'
 import { ComparedOperationsContext } from '../ComparedOperationsContext'
 import { BreadcrumbsDataContext } from '../ComparedPackagesBreadcrumbsProvider'
 import { ComparisonToolbar } from '../ComparisonToolbar'
-import { SelectedOperationTagsProvider } from '../SelectedOperationTagsProvider'
 import { ShouldAutoExpandTagsProvider, useSetShouldAutoExpandTagsContext } from '../ShouldAutoExpandTagsProvider'
 import { VersionsComparisonGlobalParamsContext } from '../VersionsComparisonGlobalParams'
 import { VERSION_SWAPPER_HEIGHT } from '../shared-styles'
 import { useCompareBreadcrumbs } from '../useCompareBreadcrumbs'
 import { useComparisonParams } from '../useComparisonParams'
-import { useDocumentSearchParam } from '../useDocumentSearchParam'
 import { useNavigateToOperation } from '../useNavigateToOperation'
-import { useOperation } from '../useOperation'
 import { OperationsSidebarOnComparison } from './OperationsSidebarOnComparison'
 
 export function isOperationPairGrouped(
   operationPairsGroupedByTags: OperationPairsGroupedByTag,
-  operationKey?: Key
+  operationKey?: Key,
 ): boolean {
   if (!operationPairsGroupedByTags) {
     return false
@@ -139,7 +133,7 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
   const operationAction = useMemo((): ActionType | string => {
     const targetChange = compareGroups?.data?.find(
       element => element.operationId === operationKey && isFullyAddedOrRemovedOperationChange(element),
-    )?.changes?.[0]
+    )?.diffs?.[0]
 
     return isEmpty(compareGroups?.data) ? '' : targetChange?.action ?? 'rename'
   }, [compareGroups, operationKey])
@@ -186,7 +180,7 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
 
   const areChangesAndOperationsLoading = isOriginOperationLoading && isChangedOperationLoading
   const operationPairsGroupedByTags: OperationPairsGroupedByTag = useMemo(() => {
-    const filteredChanges: OperationChangesDto[] = compareGroups.data?.filter(
+    const filteredChanges: OperationChanges[] = compareGroups.data?.filter(
       operationChange => filterChangesBySeverity(filters, operationChange.changeSummary),
     ) ?? []
 
@@ -227,18 +221,18 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
         )
       }
     },
-    [searchValue]
+    [searchValue],
   )
 
   const filterOperations = useCallback(
     (filterFunction: (operation: OperationPair) => boolean): OperationPairsGroupedByTag => {
       return Object.fromEntries(
         Object.entries(operationPairsGroupedByTags).map(
-          ([tag, operationPairs]) => [tag, operationPairs.filter(filterFunction)]
+          ([tag, operationPairs]) => [tag, operationPairs.filter(filterFunction)],
         ),
       )
     },
-    [operationPairsGroupedByTags]
+    [operationPairsGroupedByTags],
   )
 
   const filteredOperationsGroupedByTags = useMemo(() => {
@@ -287,7 +281,7 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
         [OPERATION_SEARCH_PARAM]: {
           value: firstOperationPair.currentOperation
             ? firstOperationPair.previousOperation?.operationKey
-            : undefined
+            : undefined,
         },
       }
 
@@ -319,7 +313,7 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
   const mergedBreadcrumbsData = useCompareBreadcrumbs(originComparisonObject, changedComparisonObject)
 
   const handleOperationClick = useNavigateToOperation(
-    changedPackageKey!, changedVersionKey!, apiType as ApiType, setShouldAutoExpand
+    changedPackageKey!, changedVersionKey!, apiType as ApiType, setShouldAutoExpand,
   )
 
   return (

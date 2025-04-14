@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ActionType, ChangesSummary, ChangesSummaryDto } from './change-severities'
+import type { ActionType, ChangesSummary } from './change-severities'
 import {
   ADD_ACTION_TYPE,
   ANNOTATION_CHANGE_SEVERITY,
@@ -23,11 +23,27 @@ import {
   NON_BREAKING_CHANGE_SEVERITY,
   REMOVE_ACTION_TYPE,
   REPLACE_ACTION_TYPE,
-  SEMI_BREAKING_CHANGE_SEVERITY,
+  RISKY_CHANGE_SEVERITY,
   UNCLASSIFIED_CHANGE_SEVERITY,
 } from './change-severities'
+import type {
+  ApiAudience,
+  ApiKind,
+  Operation,
+  OperationWithDifference,
+  PackageRef,
+  PackagesRefs,
+  Tags,
+} from './operations'
+import { ALL_API_KIND, toPackageRef } from './operations'
 import type { GraphQlOperationType } from './graphql-operation-types'
 import type { Key } from './keys'
+import type {
+  DiffTypeDto} from '@netcracker/qubership-apihub-api-processor'
+import {
+  API_AUDIENCE_EXTERNAL,
+  replacePropertyInChangesSummary,
+} from '@netcracker/qubership-apihub-api-processor'
 import type { MethodType } from './method-types'
 import type { ApiAudience, ApiKind, GraphQlOperation, Operation, PackageRef, PackagesRefs, RestOperation } from './operations'
 import { toPackageRef } from './operations'
@@ -105,7 +121,7 @@ export interface GraphQlOperationInfo extends OperationInfo {
 
 // Base interface for all operation change types
 export interface OperationChangeBase<T extends Operation = Operation> {
-  readonly changeSummary: ChangesSummary
+  readonly changeSummary: ChangesSummary<DiffTypeDto>
   readonly action: ActionType
   readonly currentOperation?: T
   readonly previousOperation?: T
@@ -135,12 +151,12 @@ export const toDiffVersionChanges = (dto: VersionChangesDto): DifferentVersionCh
 
 // Unified transformation function
 export const toOperationChange = (
-  dto: OperationChangeDataDto, 
-  packagesRefs?: PackagesRefs, 
+  dto: OperationChangeDataDto,
+  packagesRefs?: PackagesRefs,
   includePackageRefs: boolean = true,
 ): OperationChangeBase<Operation> => {
   return {
-    changeSummary: dto.changeSummary,
+    changeSummary: replacePropertyInChangesSummary(dto.changeSummary),
     currentOperation: dto.currentOperation
       ? {
         ...dto.currentOperation,
@@ -173,7 +189,7 @@ export const EMPTY_CHANGES = {
 
 export const EMPTY_CHANGE_SUMMARY: ChangesSummary = {
   [BREAKING_CHANGE_SEVERITY]: 0,
-  [SEMI_BREAKING_CHANGE_SEVERITY]: 0,
+  [RISKY_CHANGE_SEVERITY]: 0,
   [DEPRECATED_CHANGE_SEVERITY]: 0,
   [NON_BREAKING_CHANGE_SEVERITY]: 0,
   [ANNOTATION_CHANGE_SEVERITY]: 0,
