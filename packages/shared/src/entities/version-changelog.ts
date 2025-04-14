@@ -29,24 +29,18 @@ import {
 import type {
   ApiAudience,
   ApiKind,
+  GraphQlOperation,
   Operation,
-  OperationWithDifference,
   PackageRef,
   PackagesRefs,
-  Tags,
+  RestOperation,
 } from './operations'
-import { ALL_API_KIND, toPackageRef } from './operations'
+import { toPackageRef } from './operations'
 import type { GraphQlOperationType } from './graphql-operation-types'
 import type { Key } from './keys'
-import type {
-  DiffTypeDto} from '@netcracker/qubership-apihub-api-processor'
-import {
-  API_AUDIENCE_EXTERNAL,
-  replacePropertyInChangesSummary,
-} from '@netcracker/qubership-apihub-api-processor'
+import type { DiffTypeDto } from '@netcracker/qubership-apihub-api-processor'
+import { replacePropertyInChangesSummary } from '@netcracker/qubership-apihub-api-processor'
 import type { MethodType } from './method-types'
-import type { ApiAudience, ApiKind, GraphQlOperation, Operation, PackageRef, PackagesRefs, RestOperation } from './operations'
-import { toPackageRef } from './operations'
 
 // DTO Types
 export type VersionChangesDto = Partial<Readonly<{
@@ -62,6 +56,7 @@ export interface OperationInfoDto {
   readonly title: string
   readonly apiKind: ApiKind
   readonly apiAudience: ApiAudience
+  readonly tags: string[]
   readonly dataHash: string
   readonly packageRef?: string
 }
@@ -78,7 +73,7 @@ export interface GraphQlOperationInfoDto extends OperationInfoDto {
 
 // Combined DTO type for operation changes
 export interface OperationChangeDataDto {
-  readonly changeSummary: ChangesSummaryDto
+  readonly changeSummary: ChangesSummary<DiffTypeDto>
   readonly currentOperation?: OperationInfoDto
   readonly previousOperation?: OperationInfoDto
 }
