@@ -16,7 +16,6 @@
 
 import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
 import { ExportedEntityKind } from '@apihub/components/ExportSettingsDialog/api/useExport'
-import { ExportSettingsDialog } from '@apihub/components/ExportSettingsDialog/ui/ExportSettingsDialog'
 import { PackageSettingsButton } from '@apihub/components/PackageSettingsButton'
 import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
 import { useEventBus } from '@apihub/routes/EventBusProvider'
@@ -48,6 +47,7 @@ import { VersionSelector } from '../VersionSelector'
 import { ComparisonSelectorButton } from './ComparisonSelectorButton'
 import { EditButton } from './EditButton'
 import { useDownloadVersionDocumentation } from './useDownloadVersionDocumentation'
+
 export const VersionPageToolbar: FC = memo(() => {
   const { packageId, versionId } = useParams()
   const setFullMainVersion = useSetFullMainVersion()
@@ -178,7 +178,6 @@ export const VersionPageToolbar: FC = memo(() => {
           </Box>
         }
       />
-      <ExportSettingsDialog />
     </>
   )
 })

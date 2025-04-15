@@ -39,7 +39,6 @@ import {
 import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { PublishOperationGroupPackageVersionDialog } from './PublishOperationGroupPackageVersionDialog'
-import { ExportSettingsDialog } from '@apihub/components/ExportSettingsDialog/ui/ExportSettingsDialog'
 import { ExportedEntityKind } from '@apihub/components/ExportSettingsDialog/api/useExport'
 
 export const OperationGroupsCard: FC = memo(() => {
@@ -170,7 +169,6 @@ export const OperationGroupsCard: FC = memo(() => {
             })}
             onCancel={() => setDeleteConfirmationOpen(false)}
           />
-          <ExportSettingsDialog />
         </>
       }
     />

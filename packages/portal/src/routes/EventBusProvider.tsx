@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ExportedEntityKind } from '@apihub/components/ExportSettingsDialog/api/useExport'
+import type { ExportedEntityKind } from '@apihub/components/ExportSettingsDialog/api/useExport'
 import { SHOW_EXPORT_SETTINGS_DIALOG } from '@apihub/components/ExportSettingsDialog/ui/ExportSettingsDialog'
 import type { SearchCriteria } from '@apihub/entities/global-search'
 import { SHOW_ADD_SYSTEM_ADMINISTRATOR_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/AddSystemAdministratorDialog'
@@ -397,9 +397,6 @@ function eventBusProvider(): EventBus {
   })
   eventBus.showExportSettingsDialog.on((detail: ExportSettingsPopupDetail) => {
     dispatchEvent(new CustomEvent(SHOW_EXPORT_SETTINGS_DIALOG, { detail }))
-  })
-  eventBus.showEditPackagePrefixDialog.on((detail: ShowEditPackagePrefixDetail) => {
-    dispatchEvent(new CustomEvent(SHOW_EDIT_PACKAGE_PREFIX_DIALOG, { detail }))
   })
   eventBus.showSpecificationDialog.on((detail: SpecificationDialogDetail) => {
     dispatchEvent(new CustomEvent(SHOW_SPECIFICATION_DIALOG, { detail }))
