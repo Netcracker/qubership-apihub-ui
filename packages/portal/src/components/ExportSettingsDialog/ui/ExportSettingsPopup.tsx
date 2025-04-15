@@ -37,15 +37,18 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
   const [requestDataExport, setRequestDataExport] = useState<IRequestDataExport | undefined>(undefined)
   const [exportTask, isStartingExport, error] = useExport(requestDataExport)
 
+  const [exporting, setExporting] = useState(false)
   const [needToGetExportStatus, setNeedToGetExportStatus] = useState(false)
 
   useEffect(() => {
     if (exportTask) {
+      setExporting(true)
       setNeedToGetExportStatus(true)
     }
   }, [exportTask])
 
   const completeExport = useCallback(() => {
+    setExporting(false)
     setOpen(false)
     setNeedToGetExportStatus(false)
   }, [setOpen])
@@ -102,7 +105,7 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
     setRequestDataExport(requestData)
   }
 
-  const isFormDisabled = isLoadingExportConfig || isStartingExport
+  const initializing = isLoadingExportConfig || isStartingExport
 
   return (
     <Dialog open={open} onClose={() => setOpen(false)}>
@@ -111,7 +114,7 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
       </DialogTitle>
       <DialogContent>
         <ExportSettingsForm
-          disabled={isFormDisabled}
+          disabled={initializing || exporting}
           fields={fields}
           exportConfig={exportConfig}
           control={control}
@@ -121,15 +124,15 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
       </DialogContent>
       <DialogActions>
         <LoadingButton
-          disabled={isFormDisabled}
+          disabled={initializing || exporting}
+          loading={isStartingExport || exporting}
           variant="contained"
           onClick={handleSubmit(onSubmit)}
-          loading={isStartingExport}
         >
           Export
         </LoadingButton>
         <Button
-          disabled={isFormDisabled}
+          disabled={initializing}
           variant="outlined"
           onClick={() => setOpen(false)}
         >
