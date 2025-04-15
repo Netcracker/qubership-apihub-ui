@@ -33,7 +33,7 @@ export const Playground: FC<PlaygroundProps> = memo<PlaygroundProps>(({ document
     <Suspense fallback={<LoadingIndicator />}>
       <Box lineHeight={1.5} height="100%" width="100%" data-testid="PlaygroundPanel">
         <PlaygroundElement
-          key={crypto.randomUUID()}
+         // key={crypto.randomUUID()}
           document={document}
           customServers={customServers}
           token={getToken()}
