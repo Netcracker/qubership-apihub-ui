@@ -133,7 +133,7 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
 
   const operationsFromPackageChanges = useMemo(
     () => getOperationPairsFromPackageChanges(packageChanges),
-    [packageChanges]
+    [packageChanges],
   )
 
   useEffect(() => {
@@ -175,15 +175,15 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
 
   const operationsFromFilteredPackageChanges = useMemo(
     () => getOperationPairsFromPackageChanges(filteredPackageChanges),
-    [filteredPackageChanges]
+    [filteredPackageChanges],
   )
   const filteredOperationsGroupedByTags: OperationPairsGroupedByTag = useMemo(
     () => groupOperationPairsByTags(operationsFromFilteredPackageChanges),
-    [operationsFromFilteredPackageChanges]
+    [operationsFromFilteredPackageChanges],
   )
   const tags = useMemo(
     () => Array.from(Object.keys(filteredOperationsGroupedByTags)),
-    [filteredOperationsGroupedByTags]
+    [filteredOperationsGroupedByTags],
   )
 
   const firstOperationPair = useMemo(
@@ -194,7 +194,7 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
   const packageChangesHaveCurrentOperation = useMemo(
     () => !!searchValue || operationsFromPackageChanges.some(operationPair =>
       operationPair.currentOperation?.operationKey === operationKey ||
-      operationPair.previousOperation?.operationKey === operationKey
+      operationPair.previousOperation?.operationKey === operationKey,
     ),
     [operationKey, operationsFromPackageChanges, searchValue],
   )
@@ -215,7 +215,7 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
           value:
             firstOperationPair.currentOperation
               ? firstOperationPair.previousOperation?.operationKey
-              : undefined
+              : undefined,
         },
       })
       navigate({
@@ -233,7 +233,7 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
 
   const setShouldAutoExpand = useSetShouldAutoExpandTagsContext()
   const handleOperationClick = useNavigateToOperation(
-    changedPackageKey!, changedVersionKey!, apiType as ApiType, setShouldAutoExpand
+    changedPackageKey!, changedVersionKey!, apiType as ApiType, setShouldAutoExpand,
   )
 
   // TODO 31.08.23 // Optimize it!

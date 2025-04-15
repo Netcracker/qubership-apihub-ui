@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type { DiffTypeDto } from '@netcracker/qubership-apihub-api-processor'
+import { replacePropertyInChangesSummary } from '@netcracker/qubership-apihub-api-processor'
 import type { ActionType, ChangesSummary } from './change-severities'
 import {
   ADD_ACTION_TYPE,
@@ -26,6 +28,9 @@ import {
   RISKY_CHANGE_SEVERITY,
   UNCLASSIFIED_CHANGE_SEVERITY,
 } from './change-severities'
+import type { GraphQlOperationType } from './graphql-operation-types'
+import type { Key } from './keys'
+import type { MethodType } from './method-types'
 import type {
   ApiAudience,
   ApiKind,
@@ -36,11 +41,6 @@ import type {
   RestOperation,
 } from './operations'
 import { toPackageRef } from './operations'
-import type { GraphQlOperationType } from './graphql-operation-types'
-import type { Key } from './keys'
-import type { DiffTypeDto } from '@netcracker/qubership-apihub-api-processor'
-import { replacePropertyInChangesSummary } from '@netcracker/qubership-apihub-api-processor'
-import type { MethodType } from './method-types'
 
 // DTO Types
 export type VersionChangesDto = Partial<Readonly<{
@@ -116,7 +116,7 @@ export interface GraphQlOperationInfo extends OperationInfo {
 
 // Base interface for all operation change types
 export interface OperationChangeBase<T extends Operation = Operation> {
-  readonly changeSummary: ChangesSummary<DiffTypeDto>
+  readonly changeSummary: ChangesSummary
   readonly action: ActionType
   readonly currentOperation?: T
   readonly previousOperation?: T
