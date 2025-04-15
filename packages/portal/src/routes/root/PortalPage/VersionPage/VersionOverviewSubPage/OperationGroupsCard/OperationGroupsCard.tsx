@@ -39,6 +39,8 @@ import {
 import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { PublishOperationGroupPackageVersionDialog } from './PublishOperationGroupPackageVersionDialog'
+import { ExportSettingsDialog } from '@apihub/components/ExportSettingsDialog/ui/ExportSettingsDialog'
+import { ExportedEntityKind } from '@apihub/components/ExportSettingsDialog/api/useExport'
 
 export const OperationGroupsCard: FC = memo(() => {
   const { packageId: packageKey } = useParams()
@@ -53,6 +55,7 @@ export const OperationGroupsCard: FC = memo(() => {
     showEditOperationGroupDialog,
     showEditOperationGroupContentDialog,
     showPublishOperationGroupPackageVersionDialog: showPublishGroupPackageVersionDialog,
+    showExportSettingsDialog,
   } = useEventBus()
   const { deleteOperationGroup, isLoading: isDeleteLoading } = useDeleteOperationGroup()
   const { versionContent, isLoading } = usePackageVersionContent({
@@ -108,6 +111,15 @@ export const OperationGroupsCard: FC = memo(() => {
     showPublishGroupPackageVersionDialog({ group })
   }, [showPublishGroupPackageVersionDialog])
 
+  const onExportButton = useCallback((group: OperationGroup) => {
+    showExportSettingsDialog({
+      exportedEntity: ExportedEntityKind.REST_OPERATIONS_GROUP,
+      packageId: packageKey!,
+      version: fullVersion!,
+      groupName: group.groupName,
+    })
+  }, [showExportSettingsDialog, packageKey, fullVersion])
+
   const isPackage = useMemo(() => currentPackage?.kind === PACKAGE_KIND, [currentPackage?.kind])
   const operationGroups = useMemo(() => (
     versionContent?.operationGroups ? [...versionContent.operationGroups] : []
@@ -137,6 +149,7 @@ export const OperationGroupsCard: FC = memo(() => {
             onDelete={onDeleteButton}
             onEditContent={onEditContentButton}
             onPublish={onPublishButton}
+            onExport={onExportButton}
           />
           <CreateOperationGroupDialog />
           <EditOperationGroupDialog />
@@ -157,6 +170,7 @@ export const OperationGroupsCard: FC = memo(() => {
             })}
             onCancel={() => setDeleteConfirmationOpen(false)}
           />
+          <ExportSettingsDialog />
         </>
       }
     />
