@@ -41,6 +41,7 @@ import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/sea
 import {
   FILTERS_SEARCH_PARAM,
   GROUP_SEARCH_PARAM,
+  OPERATION_SEARCH_PARAM,
   optionalSearchParams,
   PACKAGE_SEARCH_PARAM,
   REF_SEARCH_PARAM,
@@ -173,6 +174,7 @@ export const GroupCompareContent: FC<GroupCompareContentProps> = memo(({ groupCh
               filteredGroupChanges.map((change) => {
                 const {
                   operationId,
+                  previousOperationId,
                   changeSummary,
                   metadata: metadataObject,
                   diffs,
@@ -193,11 +195,12 @@ export const GroupCompareContent: FC<GroupCompareContentProps> = memo(({ groupCh
                   [REF_SEARCH_PARAM]: { value: refPackageKey },
                   [GROUP_SEARCH_PARAM]: { value: previousGroup },
                   [FILTERS_SEARCH_PARAM]: { value: [...CHANGE_SEVERITIES].join() },
+                  [OPERATION_SEARCH_PARAM]: { value: operationId ? previousOperationId : undefined },
                 })
 
                 return (
                   <Grid
-                    key={crypto.randomUUID()}
+                    key={`compare-group-${group}-operations-${operationId}-${previousOperationId}`}
                     component={NavLink}
                     container
                     spacing={0}
@@ -215,7 +218,7 @@ export const GroupCompareContent: FC<GroupCompareContentProps> = memo(({ groupCh
                         encodeURIComponent(changedVersionKey!),
                         encodeURIComponent(group!),
                         `${apiType}`,
-                        encodeURIComponent(operationId),
+                        encodeURIComponent(operationId ?? previousOperationId!),
                       ),
                       search: `${comparingSearchParams}`,
                     }}
