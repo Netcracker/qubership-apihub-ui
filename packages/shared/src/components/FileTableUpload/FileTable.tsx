@@ -170,8 +170,8 @@ export const FileTable: FC<FileTableProps> = memo<FileTableProps>(props => {
           ))}
         </TableHead>
         <TableBody>
-          {getRowModel().rows.map(row => (
-            <Fragment key={crypto.randomUUID()}>
+          {getRowModel().rows.map((row, index) => (
+            <Fragment key={`file-table-fragment-${index}`}>
               <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id} data-testid={`Cell-${cell.column.id}`}>

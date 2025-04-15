@@ -170,7 +170,7 @@ export const GroupCompareContent: FC<GroupCompareContentProps> = memo(({ groupCh
         >
           <Box pt={2}>
             {
-              filteredGroupChanges.map((change) => {
+              filteredGroupChanges.map((change, index) => {
                 const {
                   operationId,
                   changeSummary,
@@ -197,7 +197,7 @@ export const GroupCompareContent: FC<GroupCompareContentProps> = memo(({ groupCh
 
                 return (
                   <Grid
-                    key={crypto.randomUUID()}
+                    key={`group-compare-content-filtered-group-changes-grid-${index}`}
                     component={NavLink}
                     container
                     spacing={0}

@@ -52,7 +52,7 @@ export const RateResults: FC<RateResultsProps> = memo<RateResultsProps>(({
   if (labels && labels.some(label => hasSearchText(label, searchText))) {
     return (
       <>
-        {labels.map(label => <CustomChip sx={{ mr: 1 }} key={crypto.randomUUID()} value={label}/>)}
+        {labels.map((label, index) => <CustomChip sx={{ mr: 1 }} key={`rate-results-custom-chip-${index}`} value={label}/>)}
       </>
     )
   }

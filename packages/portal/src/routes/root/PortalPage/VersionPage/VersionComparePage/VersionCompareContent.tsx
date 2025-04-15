@@ -233,7 +233,7 @@ export const VersionCompareContent: FC = memo(() => {
 
                 return (
                   <Grid
-                    key={crypto.randomUUID()}
+                    key={`compared-operations-${previousOperation?.dataHash}-${currentOperation?.dataHash}`}
                     component={NavLink}
                     container
                     spacing={0}

@@ -26,10 +26,10 @@ export const ApiTypeListSelector: FC = memo(() => {
   return (
     <Box paddingTop={2} paddingBottom={1}>
       <List>
-        {API_TYPES.map(apiType => {
+        {API_TYPES.map((apiType, index) => {
           return (
             <ListItem
-              key={crypto.randomUUID()}
+              key={`api-type-list-selector-list-item-${index}`}
               sx={{ p: 0 }}
             >
               <ListItemButton

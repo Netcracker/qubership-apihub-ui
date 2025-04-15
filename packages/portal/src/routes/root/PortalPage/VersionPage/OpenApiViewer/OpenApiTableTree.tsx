@@ -74,7 +74,7 @@ export const OpenApiTableTree: FC<OpenApiTableTreeProps> = memo(({ documentSlug,
 
   const [expanded, setExpanded] = useState<ExpandedState>({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-
+  console.log('data->', data)
   const { getHeaderGroups, getRowModel, toggleAllRowsExpanded } = useReactTable({
     data: data,
     columns: columns,
@@ -108,8 +108,8 @@ export const OpenApiTableTree: FC<OpenApiTableTreeProps> = memo(({ documentSlug,
           ))}
         </TableHead>
         <TableBody>
-          {getRowModel().rows.map(row => (
-            <Fragment key={crypto.randomUUID()}>
+          {getRowModel().rows.map((row, index) => (
+            <Fragment key={`open-api-tree-table-row-${index}`}>
               <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id} data-testid="TagCell">

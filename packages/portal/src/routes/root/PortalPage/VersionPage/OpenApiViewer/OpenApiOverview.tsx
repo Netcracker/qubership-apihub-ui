@@ -81,7 +81,7 @@ export const OpenApiOverview: FC<OpenApiOverviewProps> = memo<OpenApiOverviewPro
       >
         {labels && labels.length !== 0 && (
           <Box sx={blockStyle} data-testid="DocumentLabels">
-            {labels.map(label => <CustomChip key={crypto.randomUUID()} value={label} sx={{ mr: 1 }}/>)}
+            {labels.map((label, index) => <CustomChip key={`open-api-overview-custom-chip-${index}`} value={label} sx={{ mr: 1 }}/>)}
           </Box>
         )}
         <Box sx={blockStyle}>

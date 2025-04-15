@@ -52,7 +52,6 @@ export const OperationChangesSubTable: FC<OperationChangesSubTableProps> = memo<
         cell: ({ row: { original: { description, severity } } }) => (
           <Box display="flex" alignItems="center" height="32px" position="relative" data-testid="ChangeDescriptionCell">
             <ChangeSeverityIndicator
-              key={crypto.randomUUID()}
               severity={severity as ChangeSeverity}
             />
             <OverflowTooltip title={description}>
@@ -107,7 +106,8 @@ export const OperationChangesSubTable: FC<OperationChangesSubTableProps> = memo<
 
   if (isLoading) {
     return (
-      <TableRow key={crypto.randomUUID()}>
+      //Сомнительно
+      <TableRow key={`operation-changes-sub-table-${String(Math.random())}`}>
         <TableCell colSpan={columns.length} sx={{ p: 0 }}>
           <Skeleton variant="text" width="100%" />
         </TableCell>
