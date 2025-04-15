@@ -1,25 +1,25 @@
-import { useCallback, useMemo } from "react";
-import { useLocalStorage } from "react-use";
-import { ExportedEntityKind } from "../api/useExport";
-import { ExportSettingsFormData } from "../entities/export-settings-form";
-import { ExportSettingsFormFieldKind } from "../entities/export-settings-form-field";
+import { useCallback, useMemo } from 'react'
+import { useLocalStorage } from 'react-use'
+import type { ExportedEntityKind } from '../api/useExport'
+import type { ExportSettingsFormData } from '../entities/export-settings-form'
+import { ExportSettingsFormFieldKind } from '../entities/export-settings-form-field'
 
-function buildKey(exportedEntity: ExportedEntityKind, field: ExportSettingsFormFieldKind) {
+function buildKey(exportedEntity: ExportedEntityKind, field: ExportSettingsFormFieldKind): string {
   return `export-settings.${exportedEntity}.${field}`
 }
 
 export function useLocalExportSettings(exportedEntity: ExportedEntityKind) {
   const specificationTypeKey = useMemo(
     () => buildKey(exportedEntity, ExportSettingsFormFieldKind.SPECIFICATION_TYPE),
-    [exportedEntity]
+    [exportedEntity],
   )
   const fileFormatKey = useMemo(
     () => buildKey(exportedEntity, ExportSettingsFormFieldKind.FILE_FORMAT),
-    [exportedEntity]
+    [exportedEntity],
   )
   const oasExtensionsKey = useMemo(
     () => buildKey(exportedEntity, ExportSettingsFormFieldKind.OAS_EXTENSIONS),
-    [exportedEntity]
+    [exportedEntity],
   )
 
   const [specificationType, setSpecificationType] = useLocalStorage<string | undefined>(specificationTypeKey)

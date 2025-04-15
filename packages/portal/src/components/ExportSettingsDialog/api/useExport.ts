@@ -1,8 +1,8 @@
-import { Key } from "@apihub/entities/keys"
-import { PackageKey, VersionKey } from "@netcracker/qubership-apihub-ui-shared/entities/keys"
-import { IsLoading } from "@netcracker/qubership-apihub-ui-shared/utils/aliases"
-import { API_V1, requestJson } from "@netcracker/qubership-apihub-ui-shared/utils/requests"
-import { useQuery } from "@tanstack/react-query"
+import type { Key } from '@apihub/entities/keys'
+import type { PackageKey, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { API_V1, requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import { useQuery } from '@tanstack/react-query'
 
 export enum ExportedEntityKind {
   VERSION = 'version',
@@ -43,9 +43,10 @@ export class RequestDataExportVersion extends CommonRequestDataExport {
   constructor(
     packageId: PackageKey,
     version: VersionKey,
+    format: ExportedFileFormat,
     removeOasExtensions?: boolean,
   ) {
-    super(ExportedEntityKind.VERSION, packageId, version, ExportedFileFormat.HTML, removeOasExtensions)
+    super(ExportedEntityKind.VERSION, packageId, version, format, removeOasExtensions)
   }
 }
 
@@ -55,7 +56,7 @@ export class RequestDataExportRestDocument extends CommonRequestDataExport {
     packageId: PackageKey,
     version: VersionKey,
     format: ExportedFileFormat,
-    removeOasExtensions?: boolean
+    removeOasExtensions?: boolean,
   ) {
     super(ExportedEntityKind.REST_DOCUMENT, packageId, version, format, removeOasExtensions)
   }
@@ -68,7 +69,7 @@ export class RequestDataExportRestOperationsGroup extends CommonRequestDataExpor
     packageId: PackageKey,
     version: VersionKey,
     format: ExportedFileFormat,
-    removeOasExtensions?: boolean
+    removeOasExtensions?: boolean,
   ) {
     super(ExportedEntityKind.REST_OPERATIONS_GROUP, packageId, version, format, removeOasExtensions)
   }
@@ -87,17 +88,11 @@ type Export = ExportDto
 
 const QUERY_KEY_EXPORT = 'export'
 
-export function useExport(
-  requestData?: IRequestDataExport,
-  onSuccess?: () => void,
-  onError?: () => void,
-): [Export | undefined, IsLoading, Error | null] {
+export function useExport(requestData?: IRequestDataExport): [Export | undefined, IsLoading, Error | null] {
   const { data, isFetching, error } = useQuery<Export, Error | null, ExportDto>({
     queryKey: [QUERY_KEY_EXPORT, requestData],
     queryFn: () => startExport(requestData!),
     enabled: !!requestData,
-    onSuccess: () => onSuccess?.(),
-    onError: () => onError?.(),
   })
 
   return [data, isFetching, error]
@@ -108,8 +103,8 @@ function startExport(requestData: IRequestDataExport): Promise<ExportDto> {
     '/export',
     {
       method: 'POST',
-      body: JSON.stringify(requestData)
+      body: JSON.stringify(requestData),
     },
-    { basePath: API_V1 }
+    { basePath: API_V1 },
   )
 }

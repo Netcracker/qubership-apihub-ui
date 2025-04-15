@@ -1,9 +1,9 @@
-import { PackageKey } from "@netcracker/qubership-apihub-ui-shared/entities/keys";
-import { PackageKind } from "@netcracker/qubership-apihub-ui-shared/entities/packages";
-import { IsLoading } from "@netcracker/qubership-apihub-ui-shared/utils/aliases";
-import { API_V1, requestJson } from "@netcracker/qubership-apihub-ui-shared/utils/requests";
-import { useQuery } from "@tanstack/react-query";
-import { generatePath } from "react-router";
+import type { PackageKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { API_V1, requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import { useQuery } from '@tanstack/react-query'
+import { generatePath } from 'react-router'
 
 type OasExtensionDto = Partial<{
   oasExtension: string
@@ -41,7 +41,7 @@ function getExportConfig(packageId: PackageKey): Promise<ExportConfigDto> {
   return requestJson<ExportConfigDto>(
     generatePath(pattern, { packageId }),
     { method: 'GET' },
-    { basePath: API_V1 }
+    { basePath: API_V1 },
   )
 }
 
@@ -49,7 +49,7 @@ function toExportConfig(dto: ExportConfigDto): ExportConfig {
   return {
     allowedOasExtensions: dto.allowedOasExtensions?.map(dto => ({
       ...dto,
-      packageKey: dto.packageId
-    }))
+      packageKey: dto.packageId,
+    })),
   }
 }

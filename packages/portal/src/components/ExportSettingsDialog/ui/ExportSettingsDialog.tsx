@@ -1,8 +1,8 @@
-import { PopupDelegate } from "@netcracker/qubership-apihub-ui-shared/components/PopupDelegate"
-import { FC } from "react"
-import { ExportSettingsPopup } from "./ExportSettingsPopup"
+import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
+import type { FC } from 'react'
+import { ExportSettingsPopup } from './ExportSettingsPopup'
 
-export const SHOW_EXPORT_SETTINGS_DIALOG = "show-export-settings-dialog"
+export const SHOW_EXPORT_SETTINGS_DIALOG = 'show-export-settings-dialog'
 
 export const ExportSettingsDialog: FC = () => {
   return (

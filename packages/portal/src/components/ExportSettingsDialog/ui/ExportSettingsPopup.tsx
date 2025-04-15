@@ -1,15 +1,19 @@
-import { ExportSettingsPopupDetail } from "@apihub/routes/EventBusProvider"
-import { LoadingButton } from "@mui/lab"
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material"
-import { PopupProps } from "@netcracker/qubership-apihub-ui-shared/components/PopupDelegate"
-import { FC, useMemo, useState } from "react"
-import { useForm } from "react-hook-form"
-import { ExportedEntityKind, ExportedEntityTransformation, ExportedFileFormat, IRequestDataExport, RequestDataExportRestDocument, RequestDataExportRestOperationsGroup, RequestDataExportVersion, useExport } from "../api/useExport"
-import { EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE, ExportSettingsFormData } from "../entities/export-settings-form"
-import { ExportSettingsFormFieldKind, ExportSettingsFormFieldOptionOasExtensions } from "../entities/export-settings-form-field"
-import { useLocalExportSettings } from "../storage/useLocalExportSettings"
-import { ExportSettingsForm } from "./ExportSettingsForm"
-import { useExportConfig } from "../api/useExportConfig"
+import type { ExportSettingsPopupDetail } from '@apihub/routes/EventBusProvider'
+import { LoadingButton } from '@mui/lab'
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'
+import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
+import type { FC } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import type { ExportedEntityTransformation, ExportedFileFormat, IRequestDataExport } from '../api/useExport'
+import { ExportedEntityKind, RequestDataExportRestDocument, RequestDataExportRestOperationsGroup, RequestDataExportVersion, useExport } from '../api/useExport'
+import { useExportConfig } from '../api/useExportConfig'
+import { useExportStatus } from '../api/useExportStatus'
+import type { ExportSettingsFormData } from '../entities/export-settings-form'
+import { EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE } from '../entities/export-settings-form'
+import { ExportSettingsFormFieldKind, ExportSettingsFormFieldOptionOasExtensions } from '../entities/export-settings-form-field'
+import { useLocalExportSettings } from '../storage/useLocalExportSettings'
+import { ExportSettingsForm } from './ExportSettingsForm'
 
 export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) => {
   const {
@@ -24,25 +28,45 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
   const fields = EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE[exportedEntity]
   const fieldsDefaultValues = useMemo(
     () => fields.reduce((acc, field) => ({ ...acc, [field.kind]: field.defaultValue }), {}),
-    [fields]
+    [fields],
   )
 
   const [exportConfig = {}, isLoadingExportConfig] = useExportConfig(packageId)
 
   // Initialize state used for request data export
   const [requestDataExport, setRequestDataExport] = useState<IRequestDataExport | undefined>(undefined)
-  const [exportTask, isStartingExport, error] = useExport(requestDataExport, () => setOpen(false), () => setOpen(false))
+  const [exportTask, isStartingExport, error] = useExport(requestDataExport)
+
+  const [needToGetExportStatus, setNeedToGetExportStatus] = useState(false)
+
+  useEffect(() => {
+    if (exportTask) {
+      setNeedToGetExportStatus(true)
+    }
+  }, [exportTask])
+
+  const completeExport = useCallback(() => {
+    setOpen(false)
+    setNeedToGetExportStatus(false)
+  }, [setOpen])
+
+  const [exportStatus, isLoadingExportStatus] = useExportStatus(
+    exportTask?.exportId,
+    needToGetExportStatus,
+    completeExport,
+    completeExport,
+  )
 
   // Extract cached form data from local storage
   const { cachedFormData, setCachedFormField } = useLocalExportSettings(exportedEntity)
 
   // Initialize form with cached data or default values
   const { control, handleSubmit, setValue } = useForm<ExportSettingsFormData>({
-    defaultValues: cachedFormData ?? fieldsDefaultValues
+    defaultValues: cachedFormData ?? fieldsDefaultValues,
   })
 
   // Handle form submission 
-  const onSubmit = (data: ExportSettingsFormData) => {
+  const onSubmit = (data: ExportSettingsFormData): void => {
     let requestData: IRequestDataExport | undefined
     const removeOasExtensions = data[ExportSettingsFormFieldKind.OAS_EXTENSIONS] === ExportSettingsFormFieldOptionOasExtensions.REMOVE
     const fileFormat: ExportedFileFormat = data[ExportSettingsFormFieldKind.FILE_FORMAT] as ExportedFileFormat
@@ -51,7 +75,8 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
         requestData = new RequestDataExportVersion(
           packageId,
           version,
-          removeOasExtensions
+          fileFormat,
+          removeOasExtensions,
         )
         break
       case ExportedEntityKind.REST_DOCUMENT:
@@ -60,7 +85,7 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
           packageId,
           version,
           fileFormat,
-          removeOasExtensions
+          removeOasExtensions,
         )
         break
       case ExportedEntityKind.REST_OPERATIONS_GROUP:
@@ -70,7 +95,7 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
           packageId,
           version,
           fileFormat,
-          removeOasExtensions
+          removeOasExtensions,
         )
         break
     }
@@ -108,7 +133,7 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
           variant="outlined"
           onClick={() => setOpen(false)}
         >
-          Cancel
+          Close
         </Button>
       </DialogActions>
     </Dialog>

@@ -30,6 +30,7 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
           control={control}
           render={({ field: { value } }) => (
             <RadioGroup
+              key={field.kind}
               value={value}
               onChange={(_, value) => {
                 setCachedFormField(field.kind, value)

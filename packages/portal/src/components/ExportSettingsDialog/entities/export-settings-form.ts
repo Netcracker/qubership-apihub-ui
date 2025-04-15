@@ -1,5 +1,6 @@
-import { ExportedEntityKind } from "../api/useExport";
-import { ExportSettingsFormField, ExportSettingsFormFieldKind, ExportSettingsFormFieldOption, FIELD_LABEL_FILE_FORMAT, FIELD_LABEL_FILE_FORMAT_OAS, FIELD_LABEL_OAS_EXTENSIONS, FIELD_LABEL_SPECIFICATION_TYPE, FIELD_OPTION_LIST_FILE_FORMAT_OAS, FIELD_OPTION_LIST_OAS_EXTENSIONS, FIELD_OPTION_LIST_SPECIFICATION_TYPE } from "./export-settings-form-field";
+import { ExportedEntityKind } from '../api/useExport'
+import type { ExportSettingsFormField, ExportSettingsFormFieldOption} from './export-settings-form-field'
+import { ExportSettingsFormFieldKind, FIELD_LABEL_FILE_FORMAT, FIELD_LABEL_FILE_FORMAT_OAS, FIELD_LABEL_OAS_EXTENSIONS, FIELD_LABEL_SPECIFICATION_TYPE, FIELD_OPTION_LIST_FILE_FORMAT_OAS, FIELD_OPTION_LIST_OAS_EXTENSIONS, FIELD_OPTION_LIST_SPECIFICATION_TYPE } from './export-settings-form-field'
 
 export interface ExportSettingsForm {
   fields: ExportSettingsFormField[]
