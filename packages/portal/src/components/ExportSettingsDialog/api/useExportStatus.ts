@@ -33,7 +33,13 @@ export function useExportStatus(
     queryFn: () => getExportStatus(exportId!),
     refetchInterval: (result) => {
       const receivedExportStatus = isExportStatusDto(result)
-      if (result === undefined || receivedExportStatus && result.status === ExportStatusValue.RUNNING) {
+      if (
+        result === undefined ||
+        receivedExportStatus && [
+          ExportStatusValue.NONE,
+          ExportStatusValue.RUNNING,
+        ].some(status => result.status === status)
+      ) {
         return 2000
       }
       if (receivedExportStatus && result.status === ExportStatusValue.ERROR) {

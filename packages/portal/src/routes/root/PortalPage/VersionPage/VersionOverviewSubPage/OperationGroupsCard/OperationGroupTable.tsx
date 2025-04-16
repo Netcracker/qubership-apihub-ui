@@ -167,7 +167,7 @@ export const OperationGroupTable: FC<OperationGroupTableProps> = memo<OperationG
     }
 
     return result
-  }, [isPackage, onDelete, onEdit, onEditContent, onPublish])
+  }, [isPackage, onDelete, onEdit, onEditContent, onExport, onPublish])
 
   const { getHeaderGroups, getRowModel, setColumnSizing } = useReactTable({
     data: groups,

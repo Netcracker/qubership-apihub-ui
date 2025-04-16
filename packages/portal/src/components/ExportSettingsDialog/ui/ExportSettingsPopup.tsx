@@ -67,7 +67,7 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
     setNeedToGetExportStatus(false)
   }, [removeExport, setOpen])
 
-  const [exportStatus, isLoadingExportStatus] = useExportStatus(
+  useExportStatus(
     exportTask?.exportId,
     needToGetExportStatus,
     completeExport,
