@@ -1,3 +1,4 @@
+import { useShowErrorNotification } from '@apihub/routes/root/BasePage/Notification'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { API_V1, requestUnknown } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
@@ -25,6 +26,8 @@ export function useExportStatus(
   onSuccess?: () => void,
   onError?: () => void,
 ): [ExportStatus | null, IsLoading] {
+  const showErrorNotification = useShowErrorNotification()
+
   const { data, isLoading } = useQuery({
     queryKey: [QUERY_KEY_EXPORT_STATUS, exportId],
     queryFn: () => getExportStatus(exportId!),
@@ -34,6 +37,10 @@ export function useExportStatus(
         return 2000
       }
       if (receivedExportStatus && result.status === ExportStatusValue.ERROR) {
+        showErrorNotification({
+          title: 'Export failed',
+          message: result.message ?? 'Unknown error',
+        })
         onError?.()
         return false
       }

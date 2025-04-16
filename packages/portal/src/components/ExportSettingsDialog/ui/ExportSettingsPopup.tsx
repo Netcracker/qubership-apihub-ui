@@ -1,4 +1,5 @@
 import type { ExportSettingsPopupDetail } from '@apihub/routes/EventBusProvider'
+import { useShowErrorNotification } from '@apihub/routes/root/BasePage/Notification'
 import { LoadingButton } from '@mui/lab'
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
@@ -33,9 +34,11 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
 
   const [exportConfig = {}, isLoadingExportConfig] = useExportConfig(packageId)
 
+  const showErrorNotification = useShowErrorNotification()
+
   // Initialize state used for request data export
   const [requestDataExport, setRequestDataExport] = useState<IRequestDataExport | undefined>(undefined)
-  const [exportTask, isStartingExport, error] = useExport(requestDataExport)
+  const [exportTask, isStartingExport, exportStartingError] = useExport(requestDataExport)
   const removeExport = useRemoveExport(requestDataExport?.exportedEntity, requestDataExport?.packageId, requestDataExport?.version)
 
   const [exporting, setExporting] = useState(false)
@@ -47,6 +50,15 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
       setNeedToGetExportStatus(true)
     }
   }, [exportTask])
+
+  useEffect(() => {
+    if (exportStartingError) {
+      showErrorNotification({
+        title: 'Starting export failed',
+        message: exportStartingError.message,
+      })
+    }
+  }, [exportStartingError, showErrorNotification])
 
   const completeExport = useCallback(() => {
     removeExport()
