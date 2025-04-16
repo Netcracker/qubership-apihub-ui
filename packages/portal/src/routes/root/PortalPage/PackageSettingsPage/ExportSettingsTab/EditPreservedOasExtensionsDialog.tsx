@@ -24,6 +24,7 @@ import {
   useOasExtensionsManager,
 } from './EditPreservedOasExtensionsDialog/useOasExtensionsManager'
 import { OasExtensionTooltip } from './EditPreservedOasExtensionsDialog/OasExtensionTooltip'
+import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 
 export const EditPreservedOasExtensionsDialog: FC = memo(() => {
   return (
@@ -46,9 +47,9 @@ const EditPreservedOasExtensionsDialogPopup: FC<PopupProps> = memo(({ open, setO
     isOasExtensionsUpdatingSuccess,
   } = useUpdateAllowedOasExtensions()
 
-  const [duplicateError, setDuplicateError] = useState<string | undefined>(undefined)
   const [isFocused, setIsFocused] = useState(false)
-  const [inputText, setInputText] = useState('')
+  const [isInputText, setIsInputText] = useState(false)
+  const [duplicateErrorText, setDuplicateErrorText] = useState<string | undefined>(undefined)
 
   useEffect((): void => {
     if (isOasExtensionsUpdatingSuccess) {
@@ -61,7 +62,10 @@ const EditPreservedOasExtensionsDialogPopup: FC<PopupProps> = memo(({ open, setO
     handleSubmit,
     setValue,
     processExtensionsUpdate,
+    watch,
   } = useOasExtensionsManager(oasExtensions)
+
+  const currentOasExtensions = watch('oasExtensions') || []
 
   const handleSaveExtensions = useCallback((formData: EditOasExtensionsForm): void => {
     if (!formData.oasExtensions || !packageKey) {
@@ -92,23 +96,25 @@ const EditPreservedOasExtensionsDialogPopup: FC<PopupProps> = memo(({ open, setO
     const isDuplicate = currentValue?.some(ext => ext.name === fullName)
 
     if (!isDuplicate) {
-      setDuplicateError(undefined)
+      setDuplicateErrorText(undefined)
       return
     }
 
     event.preventDefault()
     event.stopPropagation()
-    setDuplicateError(`Extension "${fullName}" already exists`)
+    setDuplicateErrorText(`Extension "${fullName}" already exists`)
   }, [])
 
   const handleInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
-    setInputText(event.target.value)
-    setDuplicateError(undefined)
+    setIsInputText(!!event.target.value)
+    setDuplicateErrorText(undefined)
   }, [])
 
-  const displayPlaceholder = oasExtensions.length > 0 || (isFocused && OAS_EXTENSION_PREFIX) ? '' : 'OAS extensions'
+  const placeholderText = isFocused || isNotEmpty(currentOasExtensions) ? '' : 'OAS extensions'
 
-  const helperText = duplicateError || (isFocused && inputText ? 'Press Enter to Add Value' : undefined)
+  const prefixText = isFocused || isInputText ? OAS_EXTENSION_PREFIX : undefined
+
+  const helperText = duplicateErrorText || (isFocused && isInputText ? 'Press Enter to Add Value' : undefined)
 
   return (
     <DialogForm
@@ -128,11 +134,11 @@ const EditPreservedOasExtensionsDialogPopup: FC<PopupProps> = memo(({ open, setO
             <LabellessAutocomplete<OasExtension>
               open={false}
               value={field.value || []}
-              placeholder={displayPlaceholder}
+              placeholder={placeholderText}
               options={[]}
               multiple
               freeSolo
-              prefixText={isFocused || inputText ? OAS_EXTENSION_PREFIX : undefined}
+              prefixText={prefixText}
               helperText={helperText}
               reserveHelperTextSpace={true}
               inputProps={{
@@ -140,7 +146,7 @@ const EditPreservedOasExtensionsDialogPopup: FC<PopupProps> = memo(({ open, setO
                 onBlur: () => setIsFocused(false),
                 onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => handleKeyDown(event, field.value || []),
                 onChange: handleInputChange,
-                error: !!duplicateError,
+                error: !!duplicateErrorText,
               }}
               renderTags={(tagValue, getTagProps): React.ReactElement[] =>
                 tagValue.map((extension, index): React.ReactElement => {
@@ -166,6 +172,7 @@ const EditPreservedOasExtensionsDialogPopup: FC<PopupProps> = memo(({ open, setO
                 )
                 if (processedExtensions) {
                   setValue('oasExtensions', processedExtensions)
+                  setIsInputText(false)
                 }
               }}
               data-testid="OasExtensionsAutocomplete"

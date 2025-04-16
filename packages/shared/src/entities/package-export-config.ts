@@ -1,6 +1,6 @@
 import type { Key } from './keys'
 import type { PackageKind } from './packages'
-import { groupBy, sortByProperty } from '../utils/arrays'
+import { groupBy, isNotEmpty, sortByProperty } from '../utils/arrays'
 
 export type PackageExportConfigDto = {
   allowedOasExtensions: ReadonlyArray<OasExtensionDto>
@@ -136,13 +136,15 @@ const categorizeExtensionsBySource = (
   }, { direct: [] as OasExtension[], inherited: [] as OasExtension[] })
 }
 
+const oasExtensionNameProperty = 'name'
+
 /**
  * Combines inherited OAS extensions with the same name, merging their inheritances
  */
 const combineInheritedExtensions = (
   inheritedExtensions: OasExtensions,
 ): OasExtensions => {
-  const grouped = groupBy(inheritedExtensions, 'name')
+  const grouped = groupBy(inheritedExtensions, oasExtensionNameProperty)
 
   return Object.values(grouped).map(extensions => {
     if (extensions.length === 1) return extensions[0]
@@ -171,7 +173,7 @@ const collectInheritanceSources = (extensions: OasExtensions): InheritanceSource
 const hasInheritances = (extension: OasExtension): extension is OasExtension & {
   inheritances: InheritanceSources
 } => {
-  return Array.isArray(extension.inheritances) && extension.inheritances.length > 0
+  return isNotEmpty(extension.inheritances)
 }
 
 /**
@@ -214,7 +216,7 @@ const sortExtensionsByGroup = (extensions: OasExtensions): OasExtensions => {
   const { inheritedExtensions, nonInheritedExtensions } = separateExtensionsByInheritance(extensions)
 
   return [
-    ...sortByProperty(inheritedExtensions, 'name'),
-    ...sortByProperty(nonInheritedExtensions, 'name'),
+    ...sortByProperty(inheritedExtensions, oasExtensionNameProperty),
+    ...sortByProperty(nonInheritedExtensions, oasExtensionNameProperty),
   ]
 }

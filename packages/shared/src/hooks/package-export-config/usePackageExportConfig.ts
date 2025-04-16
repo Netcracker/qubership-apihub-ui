@@ -11,7 +11,7 @@ import type {
 import { toOasExtensionNames, toOasExtensions } from '../../entities/package-export-config'
 
 const QUERY_KEY_PACKAGE_EXPORT_CONFIG = 'package-export-config-query'
-const EXPORT_CONFIG_PATH = '/packages/:packageId/exportConfig'
+const EXPORT_CONFIG_PATH_PATTERN = '/packages/:packageId/exportConfig'
 
 interface AllowedOasExtensionsResult {
   oasExtensions: OasExtensions
@@ -62,7 +62,7 @@ export function useUpdateAllowedOasExtensions(): UpdateAllowedOasExtensionsResul
 
 async function getPackageExportConfig(packageId: Key): Promise<PackageExportConfigDto> {
   return await requestJson<PackageExportConfigDto>(
-    generatePath(EXPORT_CONFIG_PATH, { packageId }),
+    generatePath(EXPORT_CONFIG_PATH_PATTERN, { packageId }),
     { method: 'GET' },
     { basePath: API_V1 },
   )
@@ -74,7 +74,7 @@ async function updatePackageExportConfig(packageId: Key, extensions: OasExtensio
   }
 
   return await requestJson<PackageExportConfigDto>(
-    generatePath(EXPORT_CONFIG_PATH, { packageId }),
+    generatePath(EXPORT_CONFIG_PATH_PATTERN, { packageId }),
     {
       method: 'PATCH',
       body: JSON.stringify(payload),
