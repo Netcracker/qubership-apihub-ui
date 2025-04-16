@@ -88,14 +88,14 @@ const DOCUMENT_MENU_CONFIG: MenuItemConfig[] = [
   {
     id: 'preview',
     label: 'Preview',
-    condition: (isOpenApiSpec, _) => isOpenApiSpec,
+    condition: (isOpenApiSpec) => isOpenApiSpec,
     action: ({ navigateToDocumentPreview, packageId, versionId, slug, ref }) => {
       navigateToDocumentPreview({
         packageKey: packageId,
         versionKey: versionId,
         documentKey: slug,
         search: {
-          [REF_SEARCH_PARAM]: { value: ref ?? '' },
+          [REF_SEARCH_PARAM]: { value: ref },
         },
       })
     },
@@ -103,7 +103,7 @@ const DOCUMENT_MENU_CONFIG: MenuItemConfig[] = [
   {
     id: 'export',
     label: 'Export',
-    condition: (isOpenApiSpec, _) => isOpenApiSpec,
+    condition: (isOpenApiSpec) => isOpenApiSpec,
     action: ({ showExportSettingsDialog, packageId, versionId, slug }) => {
       showExportSettingsDialog({
         exportedEntity: ExportedEntityKind.REST_DOCUMENT,
@@ -116,7 +116,7 @@ const DOCUMENT_MENU_CONFIG: MenuItemConfig[] = [
   {
     id: 'download',
     label: 'Download',
-    condition: (isOpenApiSpec, _) => !isOpenApiSpec,
+    condition: (isOpenApiSpec) => !isOpenApiSpec,
     action: ({ downloadPublishedDocument }) => {
       downloadPublishedDocument()
     },
@@ -124,6 +124,7 @@ const DOCUMENT_MENU_CONFIG: MenuItemConfig[] = [
   {
     id: 'copy-public-link',
     label: 'Copy public link to source',
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     condition: (_, isSharingAvailable) => isSharingAvailable,
     action: ({ getSharedKey, protocol, host, copyToClipboard, showNotification }) => {
       getSharedKey().then(({ data }) => {

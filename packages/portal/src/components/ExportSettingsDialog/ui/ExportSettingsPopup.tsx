@@ -2,11 +2,12 @@ import type { ExportSettingsPopupDetail } from '@apihub/routes/EventBusProvider'
 import { LoadingButton } from '@mui/lab'
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
+import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import type { FC } from 'react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import type { ExportedEntityTransformation, ExportedFileFormat, IRequestDataExport } from '../api/useExport'
-import { ExportedEntityKind, RequestDataExportRestDocument, RequestDataExportRestOperationsGroup, RequestDataExportVersion, useExport } from '../api/useExport'
+import { ExportedEntityKind, RequestDataExportRestDocument, RequestDataExportRestOperationsGroup, RequestDataExportVersion, useExport, useRemoveExport } from '../api/useExport'
 import { useExportConfig } from '../api/useExportConfig'
 import { useExportStatus } from '../api/useExportStatus'
 import type { ExportSettingsFormData } from '../entities/export-settings-form'
@@ -36,6 +37,7 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
   // Initialize state used for request data export
   const [requestDataExport, setRequestDataExport] = useState<IRequestDataExport | undefined>(undefined)
   const [exportTask, isStartingExport, error] = useExport(requestDataExport)
+  const removeExport = useRemoveExport(requestDataExport?.exportedEntity, requestDataExport?.packageId, requestDataExport?.version)
 
   const [exporting, setExporting] = useState(false)
   const [needToGetExportStatus, setNeedToGetExportStatus] = useState(false)
@@ -48,10 +50,11 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
   }, [exportTask])
 
   const completeExport = useCallback(() => {
+    removeExport()
     setExporting(false)
     setOpen(false)
     setNeedToGetExportStatus(false)
-  }, [setOpen])
+  }, [removeExport, setOpen])
 
   const [exportStatus, isLoadingExportStatus] = useExportStatus(
     exportTask?.exportId,

@@ -2,7 +2,7 @@ import type { Key } from '@apihub/entities/keys'
 import type { PackageKey, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { API_V1, requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 export enum ExportedEntityKind {
   VERSION = 'version',
@@ -90,7 +90,7 @@ const QUERY_KEY_EXPORT = 'export'
 
 export function useExport(requestData?: IRequestDataExport): [Export | undefined, IsLoading, Error | null] {
   const { data, isFetching, error } = useQuery<Export, Error | null, ExportDto>({
-    queryKey: [QUERY_KEY_EXPORT, requestData],
+    queryKey: [QUERY_KEY_EXPORT, requestData?.exportedEntity, requestData?.packageId, requestData?.version],
     queryFn: () => startExport(requestData!),
     enabled: !!requestData,
   })
@@ -107,4 +107,18 @@ function startExport(requestData: IRequestDataExport): Promise<ExportDto> {
     },
     { basePath: API_V1 },
   )
+}
+
+type RemoveExportCallback = () => void
+
+export function useRemoveExport(
+  exportedEntity: ExportedEntityKind | undefined,
+  packageId: PackageKey | undefined,
+  version: VersionKey | undefined,
+): RemoveExportCallback {
+  const queryClient = useQueryClient()
+
+  return () => {
+    queryClient.removeQueries({ queryKey: [QUERY_KEY_EXPORT, exportedEntity, packageId, version] })
+  }
 }
