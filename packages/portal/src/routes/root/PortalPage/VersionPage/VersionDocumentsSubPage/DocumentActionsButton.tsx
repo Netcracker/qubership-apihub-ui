@@ -15,6 +15,7 @@
  */
 
 import { ExportedEntityKind } from '@apihub/components/ExportSettingsDialog/api/useExport'
+import type { ExportSettingsPopupDetail, NotificationDetail } from '@apihub/routes/EventBusProvider'
 import { useEventBus } from '@apihub/routes/EventBusProvider'
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
 import KeyboardArrowUpOutlinedIcon from '@mui/icons-material/KeyboardArrowUpOutlined'
@@ -36,6 +37,7 @@ import type { FC, ReactNode } from 'react'
 import { memo, useCallback, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useCopyToClipboard, useLocation } from 'react-use'
+import type { DocumentPreviewDetail } from '../../../../NavigationProvider'
 import { useNavigation } from '../../../../NavigationProvider'
 import { useShowSuccessNotification } from '../../../BasePage/Notification'
 import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
@@ -58,6 +60,94 @@ const DEFAULT_ACTION_BUTTON_STYLE = {
   pr: '20px',
   pl: '20px',
 }
+
+type ActionParams = {
+  packageId: string
+  versionId: string
+  slug: Key
+  ref?: string
+  protocol: string | undefined
+  host: string | undefined
+  navigateToDocumentPreview: (detail?: DocumentPreviewDetail) => void
+  downloadPublishedDocument: () => void
+  showExportSettingsDialog: (detail: ExportSettingsPopupDetail) => void
+  getSharedKey: () => Promise<{ data?: Key }>
+  copyToClipboard: (text: string) => void
+  showNotification: (detail: NotificationDetail) => void
+  createTemplate: (key?: Key) => string
+}
+
+type MenuItemConfig = {
+  id: string
+  label: string
+  condition: (isOpenApiSpec: boolean, isSharingAvailable: boolean) => boolean
+  action: (params: ActionParams) => void
+}
+
+const DOCUMENT_MENU_CONFIG: MenuItemConfig[] = [
+  {
+    id: 'preview',
+    label: 'Preview',
+    condition: (isOpenApiSpec, _) => isOpenApiSpec,
+    action: ({ navigateToDocumentPreview, packageId, versionId, slug, ref }) => {
+      navigateToDocumentPreview({
+        packageKey: packageId,
+        versionKey: versionId,
+        documentKey: slug,
+        search: {
+          [REF_SEARCH_PARAM]: { value: ref ?? '' },
+        },
+      })
+    },
+  },
+  {
+    id: 'export',
+    label: 'Export',
+    condition: (isOpenApiSpec, _) => isOpenApiSpec,
+    action: ({ showExportSettingsDialog, packageId, versionId, slug }) => {
+      showExportSettingsDialog({
+        exportedEntity: ExportedEntityKind.REST_DOCUMENT,
+        packageId: packageId,
+        version: versionId,
+        documentId: slug,
+      })
+    },
+  },
+  {
+    id: 'download',
+    label: 'Download',
+    condition: (isOpenApiSpec, _) => !isOpenApiSpec,
+    action: ({ downloadPublishedDocument }) => {
+      downloadPublishedDocument()
+    },
+  },
+  {
+    id: 'copy-public-link',
+    label: 'Copy public link to source',
+    condition: (_, isSharingAvailable) => isSharingAvailable,
+    action: ({ getSharedKey, protocol, host, copyToClipboard, showNotification }) => {
+      getSharedKey().then(({ data }) => {
+        if (data) {
+          copyToClipboard(`${protocol}//${host}/api/v2/sharedFiles/${data}`)
+          showNotification({ message: 'Link copied' })
+        }
+      })
+    },
+  },
+  {
+    id: 'copy-page-template',
+    label: 'Copy page template',
+    condition: (isOpenApiSpec, isSharingAvailable) => isOpenApiSpec && isSharingAvailable,
+    action: ({ getSharedKey, createTemplate, copyToClipboard, showNotification }) => {
+      getSharedKey().then(({ data }) => {
+        if (data) {
+          copyToClipboard(createTemplate(data))
+          showNotification({ message: 'Template copied' })
+        }
+      })
+    },
+  },
+]
 
 export const DocumentActionsButton: FC<DocumentActionsButtonProps> = memo<DocumentActionsButtonProps>((props) => {
   const { slug, docType, format, sx, customProps, openedIcon, icon } = props
@@ -96,6 +186,22 @@ export const DocumentActionsButton: FC<DocumentActionsButtonProps> = memo<Docume
   const isSharingAvailable = docType !== UNKNOWN_SPEC_TYPE || format === MD_FILE_FORMAT
   const isOpenApiSpecification = isOpenApiSpecType(docType)
 
+  const actionParams: ActionParams = {
+    packageId: packageId!,
+    versionId: versionId!,
+    slug: slug,
+    ref: ref,
+    protocol: protocol,
+    host: host,
+    navigateToDocumentPreview: navigateToDocumentPreview,
+    downloadPublishedDocument: downloadPublishedDocument,
+    showExportSettingsDialog: showExportSettingsDialog,
+    getSharedKey: getSharedKey,
+    copyToClipboard: copyToClipboard,
+    showNotification: showNotification,
+    createTemplate: createTemplate,
+  }
+
   return (
     <MenuButton
       sx={sx ?? DEFAULT_ACTION_BUTTON_STYLE}
@@ -112,69 +218,16 @@ export const DocumentActionsButton: FC<DocumentActionsButtonProps> = memo<Docume
       {...customProps}
       data-testid="DocumentActionsButton"
     >
-      {isOpenApiSpecification && (
+      {DOCUMENT_MENU_CONFIG.map((menuItem) => (
+        menuItem.condition(isOpenApiSpecification, isSharingAvailable) &&
         <MenuItem
-          onClick={() => navigateToDocumentPreview({
-            packageKey: packageId!,
-            versionKey: versionId!,
-            documentKey: slug,
-            search: {
-              [REF_SEARCH_PARAM]: { value: ref ?? '' },
-            },
-          })}
+          key={menuItem.id}
+          onClick={() => menuItem.action(actionParams)}
+          data-testid={menuItem.id === 'download' ? 'DownloadMenuItem' : undefined}
         >
-          Preview
+          {menuItem.label}
         </MenuItem>
-      )}
-      {isOpenApiSpecification ? (
-        <MenuItem
-          onClick={() => {
-            showExportSettingsDialog({
-              exportedEntity: ExportedEntityKind.REST_DOCUMENT,
-              packageId: packageId!,
-              version: versionId!,
-              documentId: slug,
-            })
-          }}
-        >
-          Export
-        </MenuItem>
-      ) : (
-        <MenuItem
-          onClick={() => downloadPublishedDocument()}
-          data-testid="DownloadMenuItem"
-        >
-          Download
-        </MenuItem>
-      )}
-      {isSharingAvailable && (
-        <MenuItem
-          onClick={() => {
-            getSharedKey().then(({ data }) => {
-              if (data) {
-                copyToClipboard(`${protocol}//${host}/api/v2/sharedFiles/${data}`)
-                showNotification({ message: 'Link copied' })
-              }
-            })
-          }}
-        >
-          Copy public link to source
-        </MenuItem>
-      )}
-      {isOpenApiSpecification && isSharingAvailable && (
-        <MenuItem
-          onClick={() => {
-            getSharedKey().then(({ data }) => {
-              if (data) {
-                copyToClipboard(createTemplate(data))
-                showNotification({ message: 'Template copied' })
-              }
-            })
-          }}
-        >
-          Copy page template
-        </MenuItem>
-      )}
+      ))}
     </MenuButton>
   )
 })
