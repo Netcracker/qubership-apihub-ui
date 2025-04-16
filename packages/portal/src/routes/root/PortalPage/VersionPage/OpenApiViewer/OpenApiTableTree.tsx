@@ -74,7 +74,6 @@ export const OpenApiTableTree: FC<OpenApiTableTreeProps> = memo(({ documentSlug,
 
   const [expanded, setExpanded] = useState<ExpandedState>({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-  console.log('data->', data)
   const { getHeaderGroups, getRowModel, toggleAllRowsExpanded } = useReactTable({
     data: data,
     columns: columns,

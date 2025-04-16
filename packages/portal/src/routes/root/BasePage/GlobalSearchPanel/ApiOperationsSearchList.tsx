@@ -61,11 +61,10 @@ export const ApiOperationsSearchList: FC<ApiOperationsSearchListProps> = memo<Ap
           method,
           apiType,
           type,
-        },
-        index) => {
+        }) => {
         const { versionKey } = getSplittedVersionKey(version)
         return (
-          <Box mb={2} key={`api-operations-search-list-box-${index}`} data-testid="SearchResultRow">
+          <Box mb={2} key={`api-operations-search-list-box-${packageKey}-${operationKey}`} data-testid="SearchResultRow">
             <ResultCommonHeader
               url={getOperationsPath({
                 packageKey: packageKey,

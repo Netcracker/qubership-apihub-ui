@@ -93,7 +93,6 @@ export const DeprecatedItemsSubTable: FC<SubTableProps> = memo<SubTableProps>((
 
   if (isLoading) {
     return (
-      //Сомнительно
       <TableRow key={`deprecated-items-sub-table-row-${versionKey}-${packageKey}`}>
         {getVisibleCells().map(({ column: { id } }) => (
           <TableCell key={id}>
