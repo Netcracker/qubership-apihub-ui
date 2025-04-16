@@ -29,7 +29,6 @@ import { OverflowTooltip } from '../../../components/OverflowTooltip'
 import { insertIntoArrayByIndex } from '../../../utils/arrays'
 import { CHANGES_COLUMN_ID } from '../const/table'
 import { API_KIND_COLUMN_ID, ENDPOINT_COLUMN_ID, PACKAGE_COLUMN_ID, TAGS_COLUMN_ID } from '../../../entities/table-columns'
-import { v4 as uuidv4 } from 'uuid'
 
 export type OperationChangesSubTableProps = {
   packageKind?: PackageKind
@@ -107,7 +106,7 @@ export const OperationChangesSubTable: FC<OperationChangesSubTableProps> = memo<
 
   if (isLoading) {
     return (
-      <TableRow key={uuidv4()}>
+      <TableRow>
         <TableCell colSpan={columns.length} sx={{ p: 0 }}>
           <Skeleton variant="text" width="100%" />
         </TableCell>

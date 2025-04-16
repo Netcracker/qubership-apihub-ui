@@ -33,7 +33,6 @@ export const Examples: FC<ExamplesProps> = memo<ExamplesProps>(({ document, full
     <Suspense fallback={<LoadingIndicator/>}>
       <Box lineHeight={1.5} height="100%" width="100%" data-testid="ExamplesPanel">
         <ExamplesElement
-          key={uuidv4()}
           document={document}
           fullScreenAvailable={fullScreenAvailable}
         />
