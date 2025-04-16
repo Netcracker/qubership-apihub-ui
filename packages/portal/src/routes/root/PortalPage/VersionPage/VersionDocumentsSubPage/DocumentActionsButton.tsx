@@ -33,7 +33,7 @@ import {
 import { REF_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import { isOpenApiSpecType, UNKNOWN_SPEC_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import type { FC, ReactNode } from 'react'
+import type { FC, ReactNode, MouseEvent } from 'react'
 import { memo, useCallback, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useCopyToClipboard, useLocation } from 'react-use'
@@ -48,6 +48,7 @@ export type DocumentActionsButtonProps = {
   slug: Key
   docType: SpecType
   format: FileFormat
+  startIcon?: ReactNode
   icon?: ReactNode
   openedIcon?: ReactNode
   sx?: SxProps<Theme> | undefined
@@ -150,8 +151,9 @@ const DOCUMENT_MENU_CONFIG: MenuItemConfig[] = [
   },
 ]
 
+// TODO 16.04.25 // Change props for icons. They are not clear to understand
 export const DocumentActionsButton: FC<DocumentActionsButtonProps> = memo<DocumentActionsButtonProps>((props) => {
-  const { slug, docType, format, sx, customProps, openedIcon, icon } = props
+  const { slug, docType, format, sx, customProps, startIcon, openedIcon, icon } = props
 
   const { packageId, versionId } = useParams()
   const ref = useSearchParam(REF_SEARCH_PARAM)
@@ -203,19 +205,22 @@ export const DocumentActionsButton: FC<DocumentActionsButtonProps> = memo<Docume
     createTemplate: createTemplate,
   }
 
+  const handleClick = useCallback((event: MouseEvent) => {
+    event.stopPropagation()
+    setActionMenuOpen(prev => !prev)
+  }, [])
+
   return (
     <MenuButton
       sx={sx ?? DEFAULT_ACTION_BUTTON_STYLE}
+      startIcon={startIcon}
       icon={(
         actionMenuOpen
           ? (openedIcon ?? icon ?? <KeyboardArrowUpOutlinedIcon fontSize="small" />)
           : (icon ?? <KeyboardArrowDownOutlinedIcon fontSize="small" />)
       )}
-      onClick={event => {
-        event.stopPropagation()
-        setActionMenuOpen(prev => !prev)
-      }}
-      onItemClick={event => event.stopPropagation()}
+      onClick={handleClick}
+      onItemClick={handleClick}
       {...customProps}
       data-testid="DocumentActionsButton"
     >
