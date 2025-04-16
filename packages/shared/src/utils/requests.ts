@@ -123,8 +123,7 @@ export async function requestUnknown<T extends Record<PropertyKey, unknown> | nu
       .split('filename=')[1]
       .split(';')[0]
     const data = await response.blob()
-    const text = await data.text()
-    fileDownload(text, getFilename())
+    fileDownload(data, getFilename())
     return null as T
   }
   return null as T
