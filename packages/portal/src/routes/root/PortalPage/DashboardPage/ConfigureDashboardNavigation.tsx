@@ -37,9 +37,9 @@ export const ConfigureDashboardNavigation: FC = memo(() => {
 
   return (
     <List>
-      {CONFIGURE_DASHBOARD_SIDEBAR.map(({ id, title, testId }, index) =>
+      {CONFIGURE_DASHBOARD_SIDEBAR.map(({ id, title, testId }) =>
         <ListItem
-          key={`configure-dashboard-navigation-list-item-${index}`}
+          key={`configure-dashboard-navigation-list-item-${id}-${title}`}
           sx={{ p: 0 }}
         >
           <ListItemButton

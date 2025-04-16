@@ -29,7 +29,7 @@ export const ApiTypeListSelector: FC = memo(() => {
         {API_TYPES.map((apiType, index) => {
           return (
             <ListItem
-              key={`api-type-list-selector-list-item-${index}`}
+              key={`api-type-list-selector-list-item-${index}-${apiType}`}
               sx={{ p: 0 }}
             >
               <ListItemButton

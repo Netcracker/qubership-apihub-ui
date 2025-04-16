@@ -153,7 +153,7 @@ export const DashboardsCompareContent: FC = memo(() => {
           {/*todo think about unification changes list */}
           <Box pt={2}>
             {
-              filteredDashboardChanges.map((refChangesSummary, index) => {
+              filteredDashboardChanges.map((refChangesSummary) => {
                 const {
                   refKey,
                   version,
@@ -179,7 +179,7 @@ export const DashboardsCompareContent: FC = memo(() => {
 
                 return (
                   <Grid
-                    key={`dashboards-compare-content-filtered-dashboard-changes-grid-${index}`}
+                    key={`dashboards-compare-content-filtered-dashboard-changes-grid-${refKey}`}
                     component={NavLink}
                     container
                     spacing={0}

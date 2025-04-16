@@ -213,8 +213,8 @@ export const OperationGroupTable: FC<OperationGroupTableProps> = memo<OperationG
             ))}
           </TableHead>
           <TableBody>
-            {getRowModel().rows.map((row, index) => (
-              <Fragment key={`operation-group-table-row-${index}`}>
+            {getRowModel().rows.map((row) => (
+              <Fragment key={`operation-group-table-row-${row.id}`}>
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} data-testid={`Cell-${cell.column.id}`}>

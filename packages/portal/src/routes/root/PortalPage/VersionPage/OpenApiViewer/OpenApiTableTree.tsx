@@ -107,8 +107,8 @@ export const OpenApiTableTree: FC<OpenApiTableTreeProps> = memo(({ documentSlug,
           ))}
         </TableHead>
         <TableBody>
-          {getRowModel().rows.map((row, index) => (
-            <Fragment key={`open-api-tree-table-row-${index}`}>
+          {getRowModel().rows.map((row) => (
+            <Fragment key={`open-api-tree-table-row-${row.id}`}>
               <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id} data-testid="TagCell">

@@ -51,7 +51,6 @@ export const EMPTY_SETTINGS: Settings = {
 
 export function toSettings(value: SettingsDto): Settings {
   return {
-  //  key: crypto.randomUUID(),
     name: value.name,
     versionKey: value.version,
     previousVersionKey: value.previousVersion,

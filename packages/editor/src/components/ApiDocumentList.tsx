@@ -35,9 +35,9 @@ export const ApiDocumentList: FC<ApiDocumentListProps> = memo<ApiDocumentListPro
 
   return (
     <List>
-      {value.map(({ type, title, url, subtitle }, index) => (
+      {value.map(({ type, title, url, subtitle }) => (
         <ListItem
-          key={`api-document-list-list-item-${index}`}
+          key={`api-document-list-list-item-${type}-${title}-${subtitle}`}
           sx={{ px: 0, alignItems: 'start' }}
         >
           <ListItemIcon sx={{ minWidth: 2, mt: 0, mr: 1 }}>

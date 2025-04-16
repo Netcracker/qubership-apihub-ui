@@ -104,7 +104,7 @@ export const SummaryTab: FC = memo(() => {
             {versionLabels?.map((label, index) => (
               <CustomChip
                 sx={{ mr: 1, mt: 0.5 }}
-                key={`summary-tab-custom-chip-${index}`}
+                key={`summary-tab-custom-chip-${index}-${label}`}
                 value={label}
                 label={
                   <OverflowTooltip title={label}>
