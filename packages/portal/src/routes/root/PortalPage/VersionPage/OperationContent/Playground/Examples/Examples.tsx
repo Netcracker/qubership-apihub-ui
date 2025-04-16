@@ -19,7 +19,6 @@ import type { FC, PropsWithChildren } from 'react'
 import { lazy, memo, Suspense } from 'react'
 import type { ExamplesElementProps } from './ExamplesElement'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
-import { v4 as uuidv4 } from 'uuid'
 
 export type ExamplesProps = PropsWithChildren<{
   document?: string

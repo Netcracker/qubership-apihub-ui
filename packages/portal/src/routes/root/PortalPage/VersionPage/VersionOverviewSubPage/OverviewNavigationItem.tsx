@@ -45,7 +45,6 @@ export const OverviewNavigationItem: FC<OverviewNavigationItemProps> = memo<Over
 
   return (
     <ListItem
-      key={`overview-navigation-item-${id}`}
       sx={{ p: 0 }}
     >
       <ListItemButton
