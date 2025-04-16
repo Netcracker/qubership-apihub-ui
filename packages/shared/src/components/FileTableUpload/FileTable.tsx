@@ -171,8 +171,8 @@ export const FileTable: FC<FileTableProps> = memo<FileTableProps>(props => {
         </TableHead>
         <TableBody>
           {getRowModel().rows.map((row) => (
-            <Fragment key={`file-table-fragment-${row.id}`}>
-              <TableRow key={row.id}>
+            <Fragment key={row.id}>
+              <TableRow>
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id} data-testid={`Cell-${cell.column.id}`}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
