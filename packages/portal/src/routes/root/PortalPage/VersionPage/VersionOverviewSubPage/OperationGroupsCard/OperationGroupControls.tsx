@@ -58,7 +58,7 @@ export const OperationGroupControls: FC<OperationGroupControlsProps> = memo<Oper
   const downloadButtonTitle = useMemo(
     () => {
       if (isGraphQlGroup) {
-        return 'Export is not available because there are no operations in the group'
+        return 'Export is not available for groups with GraphQL operations'
       }
       if (!operationsCount) {
         return 'Export is not available because there are no operations in the group'
