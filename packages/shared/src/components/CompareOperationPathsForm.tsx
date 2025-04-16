@@ -158,7 +158,7 @@ const OperationController: FC<OperationControllerProps> = memo<OperationControll
           getOptionLabel={({ title }: Operation) => title}
           isOptionEqualToValue={(option, value) => option.operationKey === value.operationKey}
           renderOption={(props, operation) => <OperationOptionItem
-            key={`operation-controller-autocomplete-${operation.operationKey}-${operation.title}`}
+            key={`operation-controller-autocomplete-${operation.operationKey}`}
             props={props}
             operation={operation}
           />}
