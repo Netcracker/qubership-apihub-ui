@@ -21,9 +21,10 @@ import { memo, useEffect } from 'react'
 import { useSearchParam } from 'react-use'
 import { useUser } from '../../../hooks/authorization'
 import { useSystemConfiguration } from '../../../hooks/authorization/useSystemConfiguration'
-import { AuthMethod, isSsoAuthKind } from '../../../types/system-configuration'
-import { LocalAuthForm } from './LocalAuthForm'
-import { SsoAuthControls } from './SsoAuthControls'
+import type { IdentityProviderDto } from '../../../types/system-configuration'
+import { IdentityProviderTypes, isExternalIdentityProvider } from '../../../types/system-configuration'
+import { InternalAuthForm } from './InternalAuthForm'
+import { ExternalAuthControls } from './ExternalAuthControls'
 
 export type LoginPageComponentProps = {
   applicationName: string
@@ -36,13 +37,15 @@ export const LoginPage: FC<LoginPageComponentProps> = memo(({ applicationName })
   const [user] = useUser(noAuth !== 'true')
   const [systemConfiguration] = useSystemConfiguration()
 
-  const authKinds = systemConfiguration?.authKinds ?? []
-  const ssoAuthKinds = authKinds.filter(isSsoAuthKind)
-  const localAuthEnabled = authKinds.some(kind => kind.type === AuthMethod.LOCAL_AUTH_METHOD)
-  const ssoAuthEnabled = !isEmpty(ssoAuthKinds)
-  const ssoAuthControls = (
-    ssoAuthEnabled
-      ? <SsoAuthControls kinds={ssoAuthKinds} />
+  const identityProviders = systemConfiguration?.authConfig.identityProviders ?? []
+  const externalIdentityProviders = identityProviders.filter(isExternalIdentityProvider)
+  const internalAuthEnabled = identityProviders.some(
+    (idp: IdentityProviderDto) => idp.type === IdentityProviderTypes.INTERNAL,
+  )
+  const externalAuthEnabled = !isEmpty(externalIdentityProviders)
+  const externalAuthControls = (
+    externalAuthEnabled
+      ? <ExternalAuthControls providers={externalIdentityProviders} />
       : null
   )
 
@@ -64,6 +67,10 @@ export const LoginPage: FC<LoginPageComponentProps> = memo(({ applicationName })
 
         <Grid item component="div" xs={12} sm={8} md={5} sx={{ margin: 'auto' }}>
           <Box
+            display='flex'
+            flexDirection='column'
+            alignItems='flex-start'
+            gap={4}
             sx={{
               my: 8,
               mx: 4,
@@ -75,12 +82,9 @@ export const LoginPage: FC<LoginPageComponentProps> = memo(({ applicationName })
             <Typography component="h1" variant="h1" data-testid="ApihubLoginHeaderTypography">
               Log in to {applicationName}
             </Typography>
-            {localAuthEnabled ? (
-              <LocalAuthForm
-                ssoEnabled={ssoAuthEnabled}
-                additionalControls={ssoAuthControls}
-              />
-            ) : ssoAuthControls}
+            {internalAuthEnabled ? (
+              <InternalAuthForm additionalControls={externalAuthControls} />
+            ) : externalAuthControls}
           </Box>
         </Grid>
       </Grid>

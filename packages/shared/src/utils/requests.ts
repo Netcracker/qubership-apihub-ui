@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { SystemConfiguration } from '../types/system-configuration'
-import { isLocalAuthKind } from '../types/system-configuration'
+import type { SystemConfigurationDto } from '../types/system-configuration'
+import { isInternalIdentityProvider } from '../types/system-configuration'
 import { SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION } from './constants'
 import type { ErrorMessage } from './packages-builder'
 import { redirectTo, redirectToLogin } from './redirects'
@@ -158,15 +158,15 @@ export async function requestVoid(
 function handleAuthentication(response: Response): void {
   if (response.status === 401 && !location.pathname.startsWith('/login')) {
     const systemConfigurationFromStorage = sessionStorage.getItem(SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION)
-    const systemConfiguration: SystemConfiguration | null =
+    const systemConfiguration: SystemConfigurationDto | null =
       systemConfigurationFromStorage
-        ? JSON.parse(systemConfigurationFromStorage) as SystemConfiguration
+        ? JSON.parse(systemConfigurationFromStorage) as SystemConfigurationDto
         : null
 
     if (!systemConfiguration) { return }
 
     const { defaultAuthKind } = systemConfiguration
-    if (isLocalAuthKind(defaultAuthKind)) {
+    if (isInternalIdentityProvider(defaultAuthKind)) {
       redirectToLogin()
     } else if (defaultAuthKind.url) {
       redirectTo(defaultAuthKind.url)

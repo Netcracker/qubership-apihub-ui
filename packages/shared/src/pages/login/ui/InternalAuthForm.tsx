@@ -7,16 +7,12 @@ import { memo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useLoginUser } from '../api/useLoginUser'
 
-type LocalAuthFormProps = {
-  ssoEnabled: boolean
+type InternalAuthFormProps = {
   additionalControls?: ReactNode
 }
 
-export const LocalAuthForm: FC<LocalAuthFormProps> = memo(props => {
-  const {
-    ssoEnabled,
-    additionalControls,
-  } = props
+export const InternalAuthForm: FC<InternalAuthFormProps> = memo(props => {
+  const { additionalControls } = props
 
   const [loginWithLocalUser, isLoading, isError] = useLoginUser()
 
@@ -37,7 +33,7 @@ export const LocalAuthForm: FC<LocalAuthFormProps> = memo(props => {
     }
     <Box
       component="form"
-      sx={{ my: 2, width: 1 }}
+      sx={{ width: 1 }}
       onSubmit={handleSubmit(loginWithLocalUser)}
     >
       <Controller
@@ -91,15 +87,17 @@ export const LocalAuthForm: FC<LocalAuthFormProps> = memo(props => {
           </FormControl>
         )}
       />
-      <LoadingButton
-        type="submit"
-        variant={ssoEnabled ? 'outlined' : 'contained'}
-        loading={isLoading}
-        data-testid="SignInButton"
-      >
-        Log in
-      </LoadingButton>
-      {additionalControls}
+      <Box display='flex' justifyContent='flex-start' gap={2}>
+        <LoadingButton
+          type="submit"
+          variant='contained'
+          loading={isLoading}
+          data-testid="SignInButton"
+        >
+          Log in
+        </LoadingButton>
+        {additionalControls}
+      </Box>
     </Box>
   </>
 })

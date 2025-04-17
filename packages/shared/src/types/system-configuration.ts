@@ -14,35 +14,42 @@
  * limitations under the License.
  */
 
-export enum AuthMethod {
-  LOCAL_AUTH_METHOD = 'local',
-  SSO_AUTH_METHOD = 'sso'
-}
+import type { Key } from '../entities/keys'
 
-export type AuthKind = Readonly<{
-  type: AuthMethod
+export const IdentityProviderTypes = {
+  INTERNAL: 'internal',
+  EXTERNAL: 'external',
+} as const
+
+export type IdentityProviderType = (typeof IdentityProviderTypes)[keyof typeof IdentityProviderTypes]
+
+export type IdentityProviderDto = Readonly<{
+  id: Key
+  type: IdentityProviderType
   displayName: string
   url?: string
-  image?: string
+  imageSvg?: string
 }>
 
-export type LocalAuthKind = Omit<AuthKind, 'type'> & { type: typeof AuthMethod.LOCAL_AUTH_METHOD }
-export type SsoAuthKind = Omit<AuthKind, 'type'> & { type: typeof AuthMethod.SSO_AUTH_METHOD }
+export type InternalIdentityProvider = Omit<IdentityProviderDto, 'type'> & { type: typeof IdentityProviderTypes.INTERNAL }
+export type ExternalIdentityProvider = Omit<IdentityProviderDto, 'type'> & { type: typeof IdentityProviderTypes.EXTERNAL }
 
-export type SystemConfiguration = Readonly<{
+export type SystemConfigurationDto = Readonly<{
   ssoIntegrationEnabled: boolean
   autoRedirect: boolean
   defaultWorkspaceId: string
-  authKinds: ReadonlyArray<AuthKind>
-  defaultAuthKind: AuthKind
+  authConfig: {
+    identityProviders: ReadonlyArray<IdentityProviderDto>
+    defaultProviderId?: IdentityProviderDto['id']
+  }
 }>
 
-export type SystemConfigurationDto = SystemConfiguration
+export type SystemConfiguration = SystemConfigurationDto
 
-export function isLocalAuthKind(kind: AuthKind): kind is LocalAuthKind {
-  return kind.type === AuthMethod.LOCAL_AUTH_METHOD
+export function isInternalIdentityProvider(idp: IdentityProviderDto): idp is InternalIdentityProvider {
+  return idp.type === IdentityProviderTypes.INTERNAL
 }
 
-export function isSsoAuthKind(authKind: AuthKind): authKind is SsoAuthKind {
-  return authKind.type === AuthMethod.SSO_AUTH_METHOD
+export function isExternalIdentityProvider(idp: IdentityProviderDto): idp is ExternalIdentityProvider {
+  return idp.type === IdentityProviderTypes.EXTERNAL
 }
