@@ -5,35 +5,37 @@ import { API_V1, requestJson } from '@netcracker/qubership-apihub-ui-shared/util
 import { useQuery } from '@tanstack/react-query'
 import { generatePath } from 'react-router'
 
-type OasExtensionDto = Partial<{
+export type OasExtensionDto = Readonly<{
   oasExtension: string
   packageId: PackageKey
   packageName: string
   packageKind: PackageKind
 }>
 
-type ExportConfigDto = {
-  allowedOasExtensions?: OasExtensionDto[]
-}
-
-type OasExtension = Omit<OasExtensionDto, 'packageId'> & Partial<{
-  packageKey: PackageKey
+export type ExportConfigDto = Readonly<{
+  allowedOasExtensions: OasExtensionDto[]
 }>
 
-export type ExportConfig = {
-  allowedOasExtensions?: OasExtension[]
-}
+export type OasExtension = Readonly<Omit<OasExtensionDto, 'packageId'> & Partial<{
+  packageKey: PackageKey
+}>>
+
+export type ExportConfig = Readonly<{
+  allowedOasExtensions: ReadonlyArray<OasExtension>
+}>
 
 const QUERY_KEY_EXPORT_CONFIG = 'query-key-export-config'
 
-export function useExportConfig(packageKey: PackageKey): [ExportConfig | undefined, IsLoading] {
+const DEFAULT_EXPORT_CONFIG: ExportConfig = { allowedOasExtensions: [] }
+
+export function useExportConfig(packageKey: PackageKey): [ExportConfig, IsLoading] {
   const { data, isLoading } = useQuery({
     queryKey: [QUERY_KEY_EXPORT_CONFIG, packageKey],
     queryFn: () => getExportConfig(packageKey),
     select: toExportConfig,
   })
 
-  return [data, isLoading]
+  return [data ?? DEFAULT_EXPORT_CONFIG, isLoading]
 }
 
 function getExportConfig(packageId: PackageKey): Promise<ExportConfigDto> {

@@ -1,5 +1,5 @@
 import { ExportedEntityTransformation, ExportedFileFormat } from '../api/useExport'
-import type { ExportConfig } from '../api/useExportConfig'
+import type { ExportConfig } from '../../../routes/root/PortalPage/useExportConfig'
 
 export type ExportSettingsFormFieldOption<L extends string = string, V extends string = string> = Readonly<{
   label: L

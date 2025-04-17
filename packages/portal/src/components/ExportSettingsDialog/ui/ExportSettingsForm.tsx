@@ -4,7 +4,7 @@ import { memo } from 'react'
 import type { Control, UseFormSetValue } from 'react-hook-form'
 import { Controller } from 'react-hook-form'
 import { InfoIcon } from '../../../../../shared/src/icons/InfoIcon'
-import type { ExportConfig } from '../api/useExportConfig'
+import type { ExportConfig } from '../../../routes/root/PortalPage/useExportConfig'
 import type { ExportSettingsFormData } from '../entities/export-settings-form'
 import type { ExportSettingsFormField, ExportSettingsFormFieldKind } from '../entities/export-settings-form-field'
 

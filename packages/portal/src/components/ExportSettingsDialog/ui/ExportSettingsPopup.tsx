@@ -8,7 +8,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import type { ExportedEntityTransformation, ExportedFileFormat, IRequestDataExport } from '../api/useExport'
 import { ExportedEntityKind, RequestDataExportRestDocument, RequestDataExportRestOperationsGroup, RequestDataExportVersion, useExport, useRemoveExport } from '../api/useExport'
-import { useExportConfig } from '../api/useExportConfig'
+import { useExportConfig } from '../../../routes/root/PortalPage/useExportConfig'
 import { useExportStatus } from '../api/useExportStatus'
 import type { ExportSettingsFormData } from '../entities/export-settings-form'
 import { EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE } from '../entities/export-settings-form'
@@ -32,7 +32,7 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
     [fields],
   )
 
-  const [exportConfig = {}, isLoadingExportConfig] = useExportConfig(packageId)
+  const [exportConfig, isLoadingExportConfig] = useExportConfig(packageId)
 
   const showErrorNotification = useShowErrorNotification()
 
