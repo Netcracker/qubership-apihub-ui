@@ -1,0 +1,4 @@
+import{j as e}from"./createTheme-504c4016.js";import{F as i}from"./FileUpload-6df317f7.js";import{B as p}from"./Box-b4865c4d.js";import"./index-37ba2b57.js";import"./_commonjsHelpers-de833af9.js";import"./emotion-use-insertion-effect-with-fallbacks.browser.esm-9c75dc50.js";import"./index-e70dac86.js";import"./extendSxProp-b89c4ee2.js";const g={title:"File Upload"},t=r=>e(i,{...r,children:e(p,{children:"Drop files here"})}),o=t.bind({});o.args={onDrop:r=>console.log("files",r)};o.storyName="File Upload";var s,a,l;o.parameters={...o.parameters,docs:{...(s=o.parameters)==null?void 0:s.docs,source:{originalSource:`args => <FileUpload {...args}>
+    <Box>Drop files here</Box>
+  </FileUpload>`,...(l=(a=o.parameters)==null?void 0:a.docs)==null?void 0:l.source}}};const h=["FileUploadStory"];export{o as FileUploadStory,h as __namedExportsOrder,g as default};
+//# sourceMappingURL=FileUpload.stories-af197599.js.map
