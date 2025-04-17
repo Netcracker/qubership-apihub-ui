@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Button, Typography } from '@mui/material'
+import { Box, Button, Typography } from '@mui/material'
 import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import { useUser } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useUser'
 import type { FC } from 'react'
@@ -39,7 +39,7 @@ export const PrivatePagePlaceholder: FC = memo(() => {
           invisible={false}
           area={CONTENT_PLACEHOLDER_AREA}
           message={
-            <>
+            <Box display='flex' flexDirection='column' alignItems='center'>
               <Typography component="div" variant="h3" color="#8F9EB4" display={'block'}>
                 Create your own workspace that will be available only to you.
               </Typography>
@@ -50,7 +50,7 @@ export const PrivatePagePlaceholder: FC = memo(() => {
                 onClick={onCreatePrivatePackage}
                 data-testid="CreatePrivateWorkspaceButton"
               />
-            </>
+            </Box>
           }
           testId="PrivateWorkspacePlaceholder"
         />

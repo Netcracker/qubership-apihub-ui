@@ -38,23 +38,29 @@ const client = new QueryClient({
   },
 })
 
-export const App: FC = memo(() => {
+const AppProtected: FC = memo(() => {
   const [auth, isLoginPage] = useInitializeAuth()
 
+  return <>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <ErrorHandler>
+        <EventBusProvider>
+          {auth || isLoginPage
+            ? <RouterProvider router={router} />
+            : <AppPlaceholder />}
+        </EventBusProvider>
+      </ErrorHandler>
+    </ThemeProvider>
+    <ReactQueryDevtools initialIsOpen={false} />
+  </>
+})
+
+export const App: FC = memo(() => {
   return (
     <StrictMode>
       <QueryClientProvider client={client}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <ErrorHandler>
-            <EventBusProvider>
-              {auth || isLoginPage
-                ? <RouterProvider router={router} />
-                : <AppPlaceholder />}
-            </EventBusProvider>
-          </ErrorHandler>
-        </ThemeProvider>
-        <ReactQueryDevtools initialIsOpen={false} />
+        <AppProtected />
       </QueryClientProvider>
     </StrictMode>
   )
