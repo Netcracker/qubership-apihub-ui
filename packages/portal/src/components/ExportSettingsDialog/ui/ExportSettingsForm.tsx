@@ -75,34 +75,38 @@ const ExportSettingsFormFields: FC<ExportSettingsFormFieldsProps> = memo(props =
 })
 
 interface ExportSettingsFormProps {
-  exportConfig: ExportConfig
-  exporting: boolean
-  exportedEntity: ExportedEntityKind
+  // Control props
   open: boolean
   onClose: () => void
+  // Data props
+  exportConfig: ExportConfig
+  exportedEntity: ExportedEntityKind
   packageId: PackageKey
   version: VersionKey
   documentId?: Key
   groupName?: Key
-  setRequestDataExport: (requestData: IRequestDataExport) => void
+  // State props
+  exporting: boolean
   isLoadingExportConfig: boolean
   isStartingExport: boolean
+  // Action props
+  setRequestDataExport: (requestData: IRequestDataExport) => void
 }
 
 export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
   const {
-    exportedEntity,
     open,
     onClose,
+    exportConfig,
+    exportedEntity,
     packageId,
     version,
     documentId,
     groupName,
-    setRequestDataExport,
-    exportConfig,
     exporting,
     isLoadingExportConfig,
     isStartingExport,
+    setRequestDataExport,
   } = props
 
   // Calculate fields and default values

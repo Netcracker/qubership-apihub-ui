@@ -59,16 +59,16 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
     <ExportSettingsForm
       open={open}
       onClose={() => setOpen(false)}
+      exportConfig={exportConfig}
       exportedEntity={exportedEntity}
       packageId={packageId}
       version={version}
       documentId={documentId}
       groupName={groupName}
-      setRequestDataExport={setRequestDataExport}
-      exportConfig={exportConfig}
       exporting={exporting}
       isLoadingExportConfig={isLoadingExportConfig}
       isStartingExport={isStartingExport}
+      setRequestDataExport={setRequestDataExport}
     />
   )
 }
