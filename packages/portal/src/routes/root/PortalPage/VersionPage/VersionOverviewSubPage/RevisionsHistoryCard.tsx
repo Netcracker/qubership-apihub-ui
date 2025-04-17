@@ -100,20 +100,16 @@ const RevisionActions: FC<RevisionActionsProps> = memo<RevisionActionsProps>(({ 
   const { publishMeta } = revision
   if (publishMeta && isNotEmpty(Object.keys(publishMeta))) {
     return (
-      <Box sx={{ visibility: 'hidden' }} className="hoverable" area-label="info">
-        <Tooltip
-          disableHoverListener={false}
-          title={<MetaDataContent metaData={publishMeta}/>}
-          placement="left"
-          slotProps={{
-            tooltip: { sx: { maxWidth: REVISION_ACTION_TOOLTIP_MAX_WIDTH } },
-          }}
-        >
-          <Box sx={{ cursor: 'default' }}>
-            <InfoContextIcon/>
-          </Box>
-        </Tooltip>
-      </Box>
+      <Tooltip
+        disableHoverListener={false}
+        title={<MetaDataContent metaData={publishMeta}/>}
+        placement="left"
+        slotProps={{
+          tooltip: { sx: { maxWidth: REVISION_ACTION_TOOLTIP_MAX_WIDTH } },
+        }}
+      >
+        <InfoContextIcon sx={{ visibility: 'hidden' }} className="visible-on-hover" area-label="info"/>
+      </Tooltip>
     )
   }
 

@@ -668,8 +668,10 @@ export function createComponents(): Components {
         root: {
           '&:hover': {
             '& .MuiTableCell-root': {
-              '& .hoverable': {
+              '& .hoverable, & .visible-on-hover': {
                 visibility: 'visible',
+              },
+              '& .hoverable': {
                 cursor: 'pointer',
               },
             },

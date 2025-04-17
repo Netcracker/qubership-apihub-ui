@@ -118,9 +118,7 @@ export const SecurityReportsTable: FC<SecurityReportsTableProps> = memo(({
               <Typography fontSize="13px">{status}</Typography>
               {status !== RUNNING_SECURITY_REPORT_STATUS && details && (
                 <Tooltip title={details}>
-                  <Box display="flex" alignItems="center" ml={0.5}>
-                    <InfoContextIcon fontSize="extra-small"/>
-                  </Box>
+                  <InfoContextIcon fontSize="extra-small" sx={{ ml: 0.5 }}/>
                 </Tooltip>
               )}
             </Box>

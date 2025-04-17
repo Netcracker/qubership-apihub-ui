@@ -109,13 +109,13 @@ export const CustomMetadataCell: FC<CustomMetadataCellProps> = memo<CustomMetada
           }
           size="small"
           sx={{ visibility: 'hidden', height: '20px' }}
-          className="hoverable"
           startIcon={
             <InfoContextIcon
-              className="hoverable"
+              className="visible-on-hover"
               sx={{
                 fontSize: `${ICON_SIZE}px`,
                 visibility: open ? 'visible' : 'hidden',
+                cursor: 'default', // needed to prevent the cursor from changing to a pointer (default for buttons) when hovering over the icon
               }}
             />
           }

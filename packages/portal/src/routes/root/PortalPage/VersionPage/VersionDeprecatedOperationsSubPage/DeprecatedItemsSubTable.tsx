@@ -130,19 +130,15 @@ export const DeprecatedItemsSubTable: FC<SubTableProps> = memo<SubTableProps>((
           const deprecatedInfoCell = (
             <TableCell key={DETAILS_COLUMN_ID}>
               <Box display="flex" alignItems="center" height="32px" position="relative">
-                <Box sx={{ visibility: 'hidden', height: '20px' }} className="hoverable">
-                  {deprecatedInfo && (
-                    <Tooltip
-                      disableHoverListener={false}
-                      title={<DeprecatedInfo info={deprecatedInfo}/>}
-                      placement="right"
-                    >
-                      <Box sx={{ display: 'inline', cursor: 'default' }}>
-                        <InfoContextIcon/>
-                      </Box>
-                    </Tooltip>
-                  )}
-                </Box>
+                {deprecatedInfo && (
+                  <Tooltip
+                    disableHoverListener={false}
+                    title={<DeprecatedInfo info={deprecatedInfo}/>}
+                    placement="right"
+                  >
+                    <InfoContextIcon sx={{ visibility: 'hidden' }} className="visible-on-hover"/>
+                  </Tooltip>
+                )}
               </Box>
             </TableCell>
           )
