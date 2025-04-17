@@ -1,14 +1,22 @@
-import { Box, FormControlLabel, Radio, RadioGroup, Tooltip, Typography } from '@mui/material'
+import type { Key } from '@apihub/entities/keys'
+import { LoadingButton } from '@mui/lab'
+import { Box, Button, DialogActions, DialogContent, DialogTitle, FormControlLabel, Radio, RadioGroup, Tooltip, Typography } from '@mui/material'
+import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
+import type { PackageKey, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { FC } from 'react'
-import { memo } from 'react'
+import { memo, useMemo } from 'react'
 import type { Control, UseFormSetValue } from 'react-hook-form'
-import { Controller } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { InfoIcon } from '../../../../../shared/src/icons/InfoIcon'
 import type { ExportConfig } from '../../../routes/root/PortalPage/useExportConfig'
-import type { ExportSettingsFormData } from '../entities/export-settings-form'
-import type { ExportSettingsFormField, ExportSettingsFormFieldKind } from '../entities/export-settings-form-field'
+import type { ExportedEntityTransformation, ExportedFileFormat, IRequestDataExport } from '../api/useExport'
+import { ExportedEntityKind, RequestDataExportRestDocument, RequestDataExportRestOperationsGroup, RequestDataExportVersion } from '../api/useExport'
+import { EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE, type ExportSettingsFormData } from '../entities/export-settings-form'
+import { ExportSettingsFormFieldKind, ExportSettingsFormFieldOptionOasExtensions } from '../entities/export-settings-form-field'
+import type { ExportSettingsFormField } from '../entities/export-settings-form-field'
+import { useLocalExportSettings } from '../storage/useLocalExportSettings'
 
-interface ExportSettingsFormProps {
+interface ExportSettingsFormFieldsProps {
   disabled: boolean
   fields: ExportSettingsFormField[]
   exportConfig: ExportConfig
@@ -17,7 +25,7 @@ interface ExportSettingsFormProps {
   setCachedFormField: (field: ExportSettingsFormFieldKind, value: string) => void
 }
 
-export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
+const ExportSettingsFormFields: FC<ExportSettingsFormFieldsProps> = memo(props => {
   const { disabled, fields, exportConfig, control, setValue, setCachedFormField } = props
 
   return (
@@ -63,5 +71,130 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
         />
       </>)}
     </Box>
+  )
+})
+
+interface ExportSettingsFormProps {
+  exportConfig: ExportConfig
+  exporting: boolean
+  exportedEntity: ExportedEntityKind
+  open: boolean
+  onClose: () => void
+  packageId: PackageKey
+  version: VersionKey
+  documentId?: Key
+  groupName?: Key
+  setRequestDataExport: (requestData: IRequestDataExport) => void
+  isLoadingExportConfig: boolean
+  isStartingExport: boolean
+}
+
+export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
+  const {
+    exportedEntity,
+    open,
+    onClose,
+    packageId,
+    version,
+    documentId,
+    groupName,
+    setRequestDataExport,
+    exportConfig,
+    exporting,
+    isLoadingExportConfig,
+    isStartingExport,
+  } = props
+
+  // Calculate fields and default values
+  const fields = EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE[exportedEntity]
+  const fieldsDefaultValues = useMemo(
+    () => fields.reduce((acc, field) => ({ ...acc, [field.kind]: field.defaultValue }), {}),
+    [fields],
+  )
+
+  // Extract cached form data from local storage
+  const { cachedFormData, setCachedFormField } = useLocalExportSettings(exportedEntity)
+
+  // Initialize form with cached data or default values
+  const { control, handleSubmit, setValue } = useForm<ExportSettingsFormData>({
+    defaultValues: cachedFormData ?? fieldsDefaultValues,
+  })
+
+  // Handle form submission 
+  const onSubmit = (data: ExportSettingsFormData): void => {
+    let requestData: IRequestDataExport | undefined
+    const removeOasExtensions = data[ExportSettingsFormFieldKind.OAS_EXTENSIONS] === ExportSettingsFormFieldOptionOasExtensions.REMOVE
+    const fileFormat: ExportedFileFormat = data[ExportSettingsFormFieldKind.FILE_FORMAT] as ExportedFileFormat
+    switch (exportedEntity) {
+      case ExportedEntityKind.VERSION:
+        requestData = new RequestDataExportVersion(
+          packageId,
+          version,
+          fileFormat,
+          removeOasExtensions,
+        )
+        break
+      case ExportedEntityKind.REST_DOCUMENT:
+        requestData = new RequestDataExportRestDocument(
+          documentId!,
+          packageId,
+          version,
+          fileFormat,
+          removeOasExtensions,
+        )
+        break
+      case ExportedEntityKind.REST_OPERATIONS_GROUP:
+        requestData = new RequestDataExportRestOperationsGroup(
+          groupName!,
+          data[ExportSettingsFormFieldKind.SPECIFICATION_TYPE] as ExportedEntityTransformation,
+          packageId,
+          version,
+          fileFormat,
+          removeOasExtensions,
+        )
+        break
+    }
+    setRequestDataExport(requestData)
+  }
+
+  const initializing = isLoadingExportConfig || isStartingExport
+
+  return (
+    <DialogForm
+      open={open}
+      onClose={onClose}
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      <DialogTitle>
+        Export Settings
+      </DialogTitle>
+      <DialogContent>
+        <ExportSettingsFormFields
+          disabled={initializing || exporting}
+          fields={fields}
+          exportConfig={exportConfig}
+          control={control}
+          setValue={setValue}
+          setCachedFormField={setCachedFormField}
+        />
+      </DialogContent>
+      <DialogActions>
+        <LoadingButton
+          type="submit"
+          disabled={initializing || exporting}
+          loading={isStartingExport || exporting}
+          variant="contained"
+        >
+          Export
+        </LoadingButton>
+        <Button
+          disabled={initializing}
+          variant="outlined"
+          onClick={onClose}
+        >
+          Close
+        </Button>
+      </DialogActions>
+    </DialogForm>
   )
 })
