@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import { Box } from '@mui/material'
 import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
@@ -28,6 +27,7 @@ import {
 import { AddSquareIcon } from '@netcracker/qubership-apihub-ui-shared/icons/AddSquareIcon'
 import { DeleteIcon } from '@netcracker/qubership-apihub-ui-shared/icons/DeleteIcon'
 import { DownloadIcon } from '@netcracker/qubership-apihub-ui-shared/icons/DownloadIcon'
+import { EditIcon } from '@netcracker/qubership-apihub-ui-shared/icons/EditIcon'
 import { PublishIcon } from '@netcracker/qubership-apihub-ui-shared/icons/PublishIcon'
 import type { FC } from 'react'
 import { memo, useMemo } from 'react'
@@ -87,7 +87,7 @@ export const OperationGroupControls: FC<OperationGroupControlsProps> = memo<Oper
         disabled={isPrefixGroup}
         disableHint={false}
         hint={isPrefixGroup ? `Operations cannot be changed in the ${GROUP_TYPE_REST_PATH_PREFIX} group` : 'Change operations in the group'}
-        startIcon={<AddSquareIcon />}
+        startIcon={<AddSquareIcon color={ENABLED_BUTTON_COLOR} />}
         sx={{ visibility: 'hidden', height: '20px' }}
         onClick={() => onEditContent(operationGroup)}
         testId="AddButton"
@@ -98,7 +98,7 @@ export const OperationGroupControls: FC<OperationGroupControlsProps> = memo<Oper
         className="hoverable"
         disableHint={false}
         hint="Edit group"
-        startIcon={<EditOutlinedIcon />}
+        startIcon={<EditIcon color={ENABLED_BUTTON_COLOR} />}
         sx={{ visibility: 'hidden', height: '20px' }}
         onClick={() => onEdit(operationGroup)}
         testId="EditButton"
@@ -121,13 +121,7 @@ export const OperationGroupControls: FC<OperationGroupControlsProps> = memo<Oper
         className="hoverable"
         disabled={isDownloadButtonDisabled}
         hint={downloadButtonTitle}
-        startIcon={
-          <DownloadIcon
-            color={isDownloadButtonDisabled
-              ? DISABLED_BUTTON_COLOR
-              : ENABLED_BUTTON_COLOR}
-          />
-        }
+        startIcon={<DownloadIcon color={isDownloadButtonDisabled ? DISABLED_BUTTON_COLOR : ENABLED_BUTTON_COLOR} />}
         sx={{ visibility: 'hidden', height: '20px' }}
         onClick={() => onExport(operationGroup)}
         testId="ExportButton"
@@ -139,7 +133,7 @@ export const OperationGroupControls: FC<OperationGroupControlsProps> = memo<Oper
         disabled={isPrefixGroup}
         disableHint={false}
         hint={isPrefixGroup ? `Deletion is not available for the ${GROUP_TYPE_REST_PATH_PREFIX} group` : 'Delete group'}
-        startIcon={<DeleteIcon color="#626D82" />}
+        startIcon={<DeleteIcon color={ENABLED_BUTTON_COLOR} />}
         sx={{ visibility: 'hidden', height: '20px' }}
         onClick={() => onDelete(operationGroup)}
         testId="DeleteButton"
