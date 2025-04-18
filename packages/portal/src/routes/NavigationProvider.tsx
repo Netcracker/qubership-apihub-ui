@@ -161,21 +161,26 @@ export type DocumentPreviewDetail = {
   documentKey: Key
 } & DocumentsDetail
 
+export type OperationsComparisonSearchParams = {
+  [OPERATION_SEARCH_PARAM]?: SearchParam
+  [REF_SEARCH_PARAM]: SearchParam
+  [PACKAGE_SEARCH_PARAM]?: SearchParam
+  [VERSION_SEARCH_PARAM]?: SearchParam
+  [DOCUMENT_SEARCH_PARAM]?: SearchParam
+  [SEARCH_TEXT_PARAM_KEY]?: SearchParam
+  [FILTERS_SEARCH_PARAM]?: SearchParam
+}
+
 export type OperationsComparisonDetail = {
   packageKey: Key
   versionKey: Key
   apiType: ApiType
   operationKey: Key
-  previousOperationKey: Key
-  search: {
-    [OPERATION_SEARCH_PARAM]?: SearchParam
-    [REF_SEARCH_PARAM]: SearchParam
-    [PACKAGE_SEARCH_PARAM]?: SearchParam
-    [VERSION_SEARCH_PARAM]?: SearchParam
-    [DOCUMENT_SEARCH_PARAM]?: SearchParam
-    [SEARCH_TEXT_PARAM_KEY]?: SearchParam
-    [FILTERS_SEARCH_PARAM]?: SearchParam
-  }
+  search: OperationsComparisonSearchParams
+}
+
+export type GroupsOperationsComparisonSearchParams = OperationsComparisonSearchParams & {
+  [GROUP_SEARCH_PARAM]?: SearchParam
 }
 
 export type GroupsOperationsComparisonDetail = {
@@ -184,17 +189,7 @@ export type GroupsOperationsComparisonDetail = {
   groupKey: Key
   apiType: ApiType
   operationKey: Key
-  previousOperationKey: Key
-  search: {
-    [OPERATION_SEARCH_PARAM]?: SearchParam
-    [REF_SEARCH_PARAM]: SearchParam
-    [PACKAGE_SEARCH_PARAM]?: SearchParam
-    [VERSION_SEARCH_PARAM]?: SearchParam
-    [DOCUMENT_SEARCH_PARAM]?: SearchParam
-    [GROUP_SEARCH_PARAM]?: SearchParam
-    [SEARCH_TEXT_PARAM_KEY]?: SearchParam
-    [FILTERS_SEARCH_PARAM]?: SearchParam
-  }
+  search: GroupsOperationsComparisonSearchParams
 }
 
 export type FirstGroupOperationDetail = {

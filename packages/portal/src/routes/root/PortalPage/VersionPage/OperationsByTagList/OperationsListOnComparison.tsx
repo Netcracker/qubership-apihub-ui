@@ -17,7 +17,7 @@
 import { CustomListItemButton } from '@netcracker/qubership-apihub-ui-shared/components/CustomListItemButton'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { Operation, OperationPair } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import type { OperationPair } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import {
   useSeverityFiltersSearchParam,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/change-severities/useSeverityFiltersSearchParam'
@@ -27,6 +27,7 @@ import {
   DOCUMENT_SEARCH_PARAM,
   FILTERS_SEARCH_PARAM,
   GROUP_SEARCH_PARAM,
+  OPERATION_SEARCH_PARAM,
   PACKAGE_SEARCH_PARAM,
   REF_SEARCH_PARAM,
   SEARCH_TEXT_PARAM_KEY,
@@ -35,6 +36,7 @@ import {
 import type { Dispatch, FC } from 'react'
 import React, { memo, useCallback, useLayoutEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import type { GroupsOperationsComparisonSearchParams, OperationsComparisonSearchParams } from '../../../../NavigationProvider'
 import { useNavigation } from '../../../../NavigationProvider'
 import { usePackageSearchParam } from '../../../usePackageSearchParam'
 import { useTextSearchParam } from '../../../useTextSearchParam'
@@ -69,7 +71,7 @@ export const OperationsListOnComparison: FC<OperationsListOnComparisonProps> = m
   const setShouldAutoExpand = useSetShouldAutoExpandTagsContext()
   useNavigateToSelectedOperation(setSelectedElement, operationId)
 
-  const searchParams = useMemo(
+  const searchParams: OperationsComparisonSearchParams | GroupsOperationsComparisonSearchParams = useMemo(
     () => (
       (changedPackageKey === originPackageKey || !originPackageKey)
         ? {
@@ -94,22 +96,26 @@ export const OperationsListOnComparison: FC<OperationsListOnComparisonProps> = m
   const handleListItemClick = useCallback(
     (operationPair: OperationPair) => {
       setShouldAutoExpand(false)
+      if (operationPair.currentOperation?.operationKey && operationPair.previousOperation?.operationKey) {
+        searchParams[OPERATION_SEARCH_PARAM] = { value: operationPair.previousOperation.operationKey }
+      }
+      const operationKey =
+        operationPair.currentOperation?.operationKey ??
+        operationPair.previousOperation!.operationKey
       group
         ? navigateToGroupsOperationsComparison({
           packageKey: changedPackageKey!,
           versionKey: changedVersionKey!,
           groupKey: group!,
           apiType: apiType as ApiType,
-          operationKey: operationPair.currentOperation!.operationKey!,
-          previousOperationKey: operationPair.previousOperation!.operationKey!,
+          operationKey: operationKey,
           search: searchParams,
         })
         : navigateToOperationsComparison({
           packageKey: changedPackageKey!,
           versionKey: changedVersionKey!,
           apiType: apiType as ApiType,
-          operationKey: operationPair.currentOperation!.operationKey!,
-          previousOperationKey: operationPair.previousOperation!.operationKey!,
+          operationKey: operationKey,
           search: searchParams,
         })
     },
@@ -120,7 +126,7 @@ export const OperationsListOnComparison: FC<OperationsListOnComparisonProps> = m
     <>
       {changedOperationPairs.map(operationPair => {
         const isSelected = selectedElement === operationPair.currentOperation!.operationKey
-        const key = `operation-list-item-${operationPair.currentOperation!.operationKey}-${operationPair.previousOperation!.operationKey}`
+        const key = `${operationPair.currentOperation?.operationKey}-${operationPair.previousOperation?.operationKey}`
         return (
           <CustomListItemButton<OperationPair>
             refObject={isSelected ? selectedElementRef : undefined}
