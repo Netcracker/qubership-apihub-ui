@@ -2,20 +2,20 @@ import {
   OAS_EXTENSION_KIND_DIRECT,
   OAS_EXTENSION_KIND_INHERITED,
   OAS_EXTENSION_KIND_MIXED,
-  type OasExtension,
-  type PackageExportConfigDto,
+  type OasSettingsExtension,
   separateExtensionsByInheritance,
   toOasExtensionNames,
-  toOasExtensions,
-} from '../../entities/package-export-config'
-import { GROUP_KIND, PACKAGE_KIND, WORKSPACE_KIND } from '../../entities/packages'
+  toOasSettingsExtensions,
+} from './package-export-config'
+import { GROUP_KIND, PACKAGE_KIND, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import type { ExportConfigDto } from '../../useExportConfig'
 
 describe('toOasExtensions', () => {
   // Test direct extensions
   test('should properly handle direct extensions', () => {
     // Arrange
     const packageId = 'test.package'
-    const config: PackageExportConfigDto = {
+    const config: ExportConfigDto = {
       allowedOasExtensions: [
         {
           oasExtension: 'x-extension-1',
@@ -33,7 +33,7 @@ describe('toOasExtensions', () => {
     }
 
     // Act
-    const result = toOasExtensions(config, packageId)
+    const result = toOasSettingsExtensions(config, packageId)
 
     // Assert
     expect(result).toHaveLength(2)
@@ -55,7 +55,7 @@ describe('toOasExtensions', () => {
   test('should properly handle inherited extensions', () => {
     // Arrange
     const packageId = 'aaa.bbb.ccc' // Current package (package inside group)
-    const config: PackageExportConfigDto = {
+    const config: ExportConfigDto = {
       allowedOasExtensions: [
         {
           oasExtension: 'x-parent-extension',
@@ -73,7 +73,7 @@ describe('toOasExtensions', () => {
     }
 
     // Act
-    const result = toOasExtensions(config, packageId)
+    const result = toOasSettingsExtensions(config, packageId)
 
     // Assert
     expect(result).toHaveLength(2)
@@ -113,7 +113,7 @@ describe('toOasExtensions', () => {
   test('should mark extensions as mixed when they exist in both direct and inherited form', () => {
     // Arrange
     const packageId = 'aaa.bbb.ccc' // Current package (package inside group)
-    const config: PackageExportConfigDto = {
+    const config: ExportConfigDto = {
       allowedOasExtensions: [
         {
           oasExtension: 'x-mixed-extension',
@@ -131,7 +131,7 @@ describe('toOasExtensions', () => {
     }
 
     // Act
-    const result = toOasExtensions(config, packageId)
+    const result = toOasSettingsExtensions(config, packageId)
 
     // Assert
     expect(result).toHaveLength(1)
@@ -151,7 +151,7 @@ describe('toOasExtensions', () => {
   test('should combine multiple inheritances for the same extension', () => {
     // Arrange
     const packageId = 'aaa.bbb.ccc' // Current package (package inside group)
-    const config: PackageExportConfigDto = {
+    const config: ExportConfigDto = {
       allowedOasExtensions: [
         {
           oasExtension: 'x-inherited-extension',
@@ -169,7 +169,7 @@ describe('toOasExtensions', () => {
     }
 
     // Act
-    const result = toOasExtensions(config, packageId)
+    const result = toOasSettingsExtensions(config, packageId)
 
     // Assert
     expect(result).toHaveLength(1)
@@ -194,7 +194,7 @@ describe('toOasExtensions', () => {
   test('should sort extensions with inherited first, then by name', () => {
     // Arrange
     const packageId = 'aaa.bbb.ccc' // Current package (package inside group)
-    const config: PackageExportConfigDto = {
+    const config: ExportConfigDto = {
       allowedOasExtensions: [
         {
           oasExtension: 'x-z-direct-extension',
@@ -224,7 +224,7 @@ describe('toOasExtensions', () => {
     }
 
     // Act
-    const result = toOasExtensions(config, packageId)
+    const result = toOasSettingsExtensions(config, packageId)
 
     // Assert
     expect(result).toHaveLength(4)
@@ -248,7 +248,7 @@ describe('toOasExtensions', () => {
 describe('toOasExtensionNames', () => {
   test('should return array of names for valid extensions', () => {
     // Arrange
-    const extensions: OasExtension[] = [
+    const extensions: OasSettingsExtension[] = [
       {
         key: 'key1',
         name: 'x-extension-1',
@@ -287,7 +287,7 @@ describe('toOasExtensionNames', () => {
 
   test('should return empty array for empty extensions', () => {
     // Arrange
-    const extensions: OasExtension[] = []
+    const extensions: OasSettingsExtension[] = []
 
     // Act
     const names = toOasExtensionNames(extensions)
@@ -300,7 +300,7 @@ describe('toOasExtensionNames', () => {
 describe('separateExtensionsByInheritance', () => {
   test('should separate extensions by inheritance kind', () => {
     // Arrange
-    const extensions: OasExtension[] = [
+    const extensions: OasSettingsExtension[] = [
       {
         key: 'key1',
         name: 'x-direct-extension',
@@ -354,7 +354,7 @@ describe('separateExtensionsByInheritance', () => {
 
   test('should handle empty extensions array', () => {
     // Arrange
-    const extensions: OasExtension[] = []
+    const extensions: OasSettingsExtension[] = []
 
     // Act
     const { inheritedExtensions, nonInheritedExtensions } = separateExtensionsByInheritance(extensions)
@@ -366,7 +366,7 @@ describe('separateExtensionsByInheritance', () => {
 
   test('should handle array with only inherited extensions', () => {
     // Arrange
-    const extensions: OasExtension[] = [
+    const extensions: OasSettingsExtension[] = [
       {
         key: 'key1',
         name: 'x-inherited-extension-1',
@@ -412,7 +412,7 @@ describe('separateExtensionsByInheritance', () => {
 
   test('should handle array with only non-inherited extensions', () => {
     // Arrange
-    const extensions: OasExtension[] = [
+    const extensions: OasSettingsExtension[] = [
       {
         key: 'key1',
         name: 'x-direct-extension',

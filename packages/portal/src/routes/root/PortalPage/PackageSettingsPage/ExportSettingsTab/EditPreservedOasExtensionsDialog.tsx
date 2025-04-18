@@ -2,20 +2,14 @@ import React, { type FC, memo, useCallback, useEffect, useState } from 'react'
 import { Controller } from 'react-hook-form'
 import { Button, Chip, DialogActions, DialogContent, DialogTitle } from '@mui/material'
 import { LoadingButton } from '@mui/lab'
-import {
-  useUpdateAllowedOasExtensions,
-} from '@netcracker/qubership-apihub-ui-shared/hooks/package-export-config/usePackageExportConfig'
+import { useUpdateAllowedOasExtensions } from './useAllowedOasExtensions'
 import { PopupDelegate, type PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import {
   SHOW_EDIT_PRESERVED_OAS_EXTENSIONS_DIALOG,
   type ShowEditPreservedOasExtensionsDetail,
 } from '@apihub/routes/EventBusProvider'
 import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
-import {
-  OAS_EXTENSION_KIND_INHERITED,
-  OAS_EXTENSION_PREFIX,
-  type OasExtension,
-} from '@netcracker/qubership-apihub-ui-shared/entities/package-export-config'
+import { OAS_EXTENSION_KIND_INHERITED, OAS_EXTENSION_PREFIX, type OasSettingsExtension } from './package-export-config'
 import {
   LabellessAutocomplete,
 } from '@netcracker/qubership-apihub-ui-shared/components/Autocompletes/LabellessAutocomplete'
@@ -80,7 +74,7 @@ const EditPreservedOasExtensionsDialogPopup: FC<PopupProps> = memo(({ open, setO
 
   const handleKeyDown = useCallback((
     event: React.KeyboardEvent<HTMLInputElement>,
-    currentValue: OasExtension[],
+    currentValue: OasSettingsExtension[],
   ): void => {
     if (event.key !== 'Enter') {
       return
@@ -131,7 +125,7 @@ const EditPreservedOasExtensionsDialogPopup: FC<PopupProps> = memo(({ open, setO
           name="oasExtensions"
           control={control}
           render={({ field }): React.ReactElement => (
-            <LabellessAutocomplete<OasExtension>
+            <LabellessAutocomplete<OasSettingsExtension>
               open={false}
               value={field.value || []}
               placeholder={placeholderText}
