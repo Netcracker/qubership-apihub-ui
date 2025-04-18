@@ -58,7 +58,7 @@ import { getSplittedVersionKey, handleVersionsRevision } from '../utils/versions
 import { ErrorTypography } from './Typography/ErrorTypography'
 import type { PackageVersions } from '../entities/versions'
 import { LabelsAutocomplete } from './LabelsAutocomplete'
-import type { Package, Packages } from '../entities/packages'
+import { type Package, type Packages } from '../entities/packages'
 import { OptionItem } from './OptionItem'
 import { disableAutocompleteSearch } from '../utils/mui'
 import { DEFAULT_DEBOUNCE } from '../utils/constants'
@@ -119,6 +119,7 @@ export type VersionDialogFormProps<T extends VersionFormData = VersionFormData> 
   hideCopyPackageFields?: boolean
   hidePreviousVersionField?: boolean
   publishButtonDisabled?: boolean
+  kindTitle?: string
 }
 
 export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogFormProps>((props) => {
@@ -160,6 +161,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
     hidePreviousVersionField,
     hideCopyPackageFields,
     publishButtonDisabled,
+    kindTitle,
   } = props
 
   const { errors } = formState
@@ -179,7 +181,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
 
   const [descriptorContent, setDescriptorContent] = useState<string | null>(null)
   const [isFileReading, setIsFileReading] = useState<boolean>(false)
-
+  
   const onFileContentLoaded = useCallback((event: ProgressEvent<FileReader>): void => {
     setDescriptorContent(event?.target?.result ? String(event.target.result) : null)
     setIsFileReading(false)
@@ -418,7 +420,9 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
 
         {!hideCopyPackageFields && (
           <>
-            <Typography sx={{ mb: 1 }} variant="body2">Target Dashboard</Typography>
+            <Typography sx={{ mb: 1 }} variant="body2">
+              {`Target ${kindTitle}`}
+              </Typography>
 
             <Controller
               name="workspace"
