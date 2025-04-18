@@ -17,7 +17,7 @@
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Accordion, AccordionDetails, AccordionSummary, Skeleton, Typography } from '@mui/material'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { Operation, OperationPairsGroupedByTag, OperationsGroupedByTag } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import type { OperationPairsGroupedByTag } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import { GROUP_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import type { Dispatch, FC, SetStateAction } from 'react'

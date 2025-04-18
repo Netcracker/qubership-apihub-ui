@@ -161,7 +161,6 @@ function useData(
       versionKey: defaultVersionKey!,
       apiType: apiType as ApiType,
       operationKey: changedOperation!.operationKey,
-      previousOperationKey: originalOperation!.operationKey,
       search: {
         [OPERATION_SEARCH_PARAM]: { value: originalOperation!.operationKey },
         [REF_SEARCH_PARAM]: { value: ref ?? '' },
