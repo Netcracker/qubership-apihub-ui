@@ -8,24 +8,24 @@ import {
   toOasSettingsExtensions,
 } from './package-export-config'
 import { GROUP_KIND, PACKAGE_KIND, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import type { ExportConfigDto } from '../../useExportConfig'
+import type { ExportConfig } from '../../useExportConfig'
 
 describe('toOasExtensions', () => {
   // Test direct extensions
   test('should properly handle direct extensions', () => {
     // Arrange
-    const packageId = 'test.package'
-    const config: ExportConfigDto = {
+    const packageKey = 'test.package'
+    const config: ExportConfig = {
       allowedOasExtensions: [
         {
           oasExtension: 'x-extension-1',
-          packageId: 'test.package',
+          packageKey: 'test.package',
           packageName: 'Test Package',
           packageKind: PACKAGE_KIND,
         },
         {
           oasExtension: 'x-extension-2',
-          packageId: 'test.package',
+          packageKey: 'test.package',
           packageName: 'Test Package',
           packageKind: PACKAGE_KIND,
         },
@@ -33,7 +33,7 @@ describe('toOasExtensions', () => {
     }
 
     // Act
-    const result = toOasSettingsExtensions(config, packageId)
+    const result = toOasSettingsExtensions(config, packageKey)
 
     // Assert
     expect(result).toHaveLength(2)
@@ -55,17 +55,17 @@ describe('toOasExtensions', () => {
   test('should properly handle inherited extensions', () => {
     // Arrange
     const packageId = 'aaa.bbb.ccc' // Current package (package inside group)
-    const config: ExportConfigDto = {
+    const config: ExportConfig = {
       allowedOasExtensions: [
         {
           oasExtension: 'x-parent-extension',
-          packageId: 'aaa.bbb', // Parent package (group inside workspace)
+          packageKey: 'aaa.bbb', // Parent package (group inside workspace)
           packageName: 'Group',
           packageKind: GROUP_KIND,
         },
         {
           oasExtension: 'x-grandparent-extension',
-          packageId: 'aaa', // Grandparent package (workspace)
+          packageKey: 'aaa', // Grandparent package (workspace)
           packageName: 'Workspace',
           packageKind: WORKSPACE_KIND,
         },
@@ -113,17 +113,17 @@ describe('toOasExtensions', () => {
   test('should mark extensions as mixed when they exist in both direct and inherited form', () => {
     // Arrange
     const packageId = 'aaa.bbb.ccc' // Current package (package inside group)
-    const config: ExportConfigDto = {
+    const config: ExportConfig = {
       allowedOasExtensions: [
         {
           oasExtension: 'x-mixed-extension',
-          packageId: 'aaa.bbb', // Parent package (group inside workspace)
+          packageKey: 'aaa.bbb', // Parent package (group inside workspace)
           packageName: 'Group',
           packageKind: GROUP_KIND,
         },
         {
           oasExtension: 'x-mixed-extension',
-          packageId: 'aaa.bbb.ccc', // Current package
+          packageKey: 'aaa.bbb.ccc', // Current package
           packageName: 'Current Package',
           packageKind: PACKAGE_KIND,
         },
@@ -151,17 +151,17 @@ describe('toOasExtensions', () => {
   test('should combine multiple inheritances for the same extension', () => {
     // Arrange
     const packageId = 'aaa.bbb.ccc' // Current package (package inside group)
-    const config: ExportConfigDto = {
+    const config: ExportConfig = {
       allowedOasExtensions: [
         {
           oasExtension: 'x-inherited-extension',
-          packageId: 'aaa.bbb', // Parent package (group inside workspace)
+          packageKey: 'aaa.bbb', // Parent package (group inside workspace)
           packageName: 'Group',
           packageKind: GROUP_KIND,
         },
         {
           oasExtension: 'x-inherited-extension',
-          packageId: 'aaa', // Grandparent package (workspace)
+          packageKey: 'aaa', // Grandparent package (workspace)
           packageName: 'Workspace',
           packageKind: WORKSPACE_KIND,
         },
@@ -194,29 +194,29 @@ describe('toOasExtensions', () => {
   test('should sort extensions with inherited first, then by name', () => {
     // Arrange
     const packageId = 'aaa.bbb.ccc' // Current package (package inside group)
-    const config: ExportConfigDto = {
+    const config: ExportConfig = {
       allowedOasExtensions: [
         {
           oasExtension: 'x-z-direct-extension',
-          packageId: 'aaa.bbb.ccc', // Current package
+          packageKey: 'aaa.bbb.ccc', // Current package
           packageName: 'Current Package',
           packageKind: PACKAGE_KIND,
         },
         {
           oasExtension: 'x-b-inherited-extension',
-          packageId: 'aaa.bbb', // Parent package (group inside workspace)
+          packageKey: 'aaa.bbb', // Parent package (group inside workspace)
           packageName: 'Group',
           packageKind: GROUP_KIND,
         },
         {
           oasExtension: 'x-a-direct-extension',
-          packageId: 'aaa.bbb.ccc', // Current package
+          packageKey: 'aaa.bbb.ccc', // Current package
           packageName: 'Current Package',
           packageKind: PACKAGE_KIND,
         },
         {
           oasExtension: 'x-c-inherited-extension',
-          packageId: 'aaa', // Grandparent package (workspace)
+          packageKey: 'aaa', // Grandparent package (workspace)
           packageName: 'Workspace',
           packageKind: WORKSPACE_KIND,
         },
