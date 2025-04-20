@@ -1,5 +1,4 @@
 import { useCallback } from 'react'
-import type { UseFormWatch } from 'react-hook-form'
 import { type Control, useForm, type UseFormHandleSubmit, type UseFormSetValue } from 'react-hook-form'
 import {
   OAS_EXTENSION_KIND_DIRECT,
@@ -19,7 +18,6 @@ type OasExtensionsManagerResult = {
   control: Control<EditOasExtensionsForm>
   handleSubmit: UseFormHandleSubmit<EditOasExtensionsForm>
   setValue: UseFormSetValue<EditOasExtensionsForm>
-  watch: UseFormWatch<EditOasExtensionsForm>
   processExtensionsUpdate: (newExtensions: Array<string | OasSettingsExtension>, currentExtensions?: OasSettingsExtension[]) => OasSettingsExtension[]
 }
 
@@ -36,7 +34,7 @@ type OasExtensionsManagerResult = {
  *          and a `processExtensionsUpdate` function to handle changes to the extensions list.
  **/
 export const useOasExtensionsManager = (initialExtensions?: OasSettingsExtension[]): OasExtensionsManagerResult => {
-  const { control, handleSubmit, setValue, watch } = useForm<EditOasExtensionsForm>({
+  const { control, handleSubmit, setValue } = useForm<EditOasExtensionsForm>({
     defaultValues: {
       oasExtensions: initialExtensions,
     },
@@ -110,6 +108,5 @@ export const useOasExtensionsManager = (initialExtensions?: OasSettingsExtension
     handleSubmit,
     setValue,
     processExtensionsUpdate,
-    watch,
   }
 }
