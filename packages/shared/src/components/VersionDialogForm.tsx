@@ -58,7 +58,7 @@ import { getSplittedVersionKey, handleVersionsRevision } from '../utils/versions
 import { ErrorTypography } from './Typography/ErrorTypography'
 import type { PackageVersions } from '../entities/versions'
 import { LabelsAutocomplete } from './LabelsAutocomplete'
-import { type Package, type Packages } from '../entities/packages'
+import type { Package, Packages } from '../entities/packages'
 import { OptionItem } from './OptionItem'
 import { disableAutocompleteSearch } from '../utils/mui'
 import { DEFAULT_DEBOUNCE } from '../utils/constants'
@@ -180,8 +180,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
   const debouncedOnVersionsChange = useMemo(() => debounce(onVersionsChange, DEFAULT_DEBOUNCE), [onVersionsChange])
 
   const [descriptorContent, setDescriptorContent] = useState<string | null>(null)
-  const [isFileReading, setIsFileReading] = useState<boolean>(false)
-  
+  const [isFileReading, setIsFileReading] = useState<boolean>(false)  
   const onFileContentLoaded = useCallback((event: ProgressEvent<FileReader>): void => {
     setDescriptorContent(event?.target?.result ? String(event.target.result) : null)
     setIsFileReading(false)
