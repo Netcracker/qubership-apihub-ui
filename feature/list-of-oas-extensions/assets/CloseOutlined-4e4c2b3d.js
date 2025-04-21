@@ -1,2 +1,0 @@
-import{r,i as a,a as t}from"./jsx-runtime_commonjs-proxy-c837e089.js";var e={},u=a;Object.defineProperty(e,"__esModule",{value:!0});var i=e.default=void 0,l=u(r()),o=t,d=(0,l.default)((0,o.jsx)("path",{d:"M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"}),"CloseOutlined");i=e.default=d;export{i as d};
-//# sourceMappingURL=CloseOutlined-4e4c2b3d.js.map
