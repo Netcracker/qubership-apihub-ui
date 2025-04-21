@@ -42,6 +42,7 @@ import { useDashboardVersionFromCSVPublicationStatuses } from '@apihub/routes/ro
 import { usePublishDashboardVersionFromCSV } from '@apihub/routes/root/PortalPage/usePublishDashboardVersionFromCSV'
 import { usePackages } from '@apihub/routes/root/usePackages'
 import { usePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
+import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
 
 export const PublishDashboardVersionFromCSVDialog: FC = memo(() => {
   return (
@@ -54,45 +55,49 @@ export const PublishDashboardVersionFromCSVDialog: FC = memo(() => {
 
 const PublishDashboardVersionFromCSVPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }) => {
   const { versionId } = useParams()
+  const currentPackage = useCurrentPackage()
   const [packageObj, isPackageLoading] = usePackage()
   const packagePermissions = useMemo(() => packageObj?.permissions ?? [], [packageObj])
   const releaseVersionPattern = useMemo(() => packageObj?.releaseVersionPattern, [packageObj])
 
-  const [versionsFilter, setVersionsFilter] = useState('')
+  const [versionsFilter, setVersionsFilter] = useState(versionId)
   const { versions, areVersionsLoading } = usePackageVersions({ textFilter: versionsFilter })
   const [targetVersion, setTargetVersion] = useState<Key>('')
   const isEditingVersion = !!versionId && versionId !== SPECIAL_VERSION_KEY
 
   const currentVersion = useMemo(
-    () => (isEditingVersion ? versions.find(({ key }) => key === versionId) : null),
-    [isEditingVersion, versionId, versions],
+    () => (isEditingVersion ? versions.find(({ key }) => getSplittedVersionKey(key).versionKey === versionsFilter) : null),
+    [isEditingVersion, versions, versionsFilter],
   )
 
   const onVersionsFilter = useCallback((value: Key) => setVersionsFilter(value), [setVersionsFilter])
   const versionLabelsMap = useMemo(() => getVersionLabelsMap(versions), [versions])
   const getVersionLabels = useCallback((version: Key) => versionLabelsMap[version] ?? [], [versionLabelsMap])
 
+  const [workspace, setWorkspace] = useState<Package | null>(currentPackage?.parents?.[0] ?? null)
   const [workspacesFilter, setWorkspacesFilter] = useState('')
   const [workspaces, areWorkspacesLoading] = usePackages({
     kind: WORKSPACE_KIND,
     textFilter: workspacesFilter,
   })
   const onWorkspacesFilter = useCallback((value: Key) => setWorkspacesFilter(value), [setWorkspacesFilter])
+  const onSetWorkspace = useCallback((workspace: Package | null) => setWorkspace(workspace), [])
 
   const defaultValues = useMemo(() => {
     const { status, versionLabels, previousVersion } = currentVersion ?? {}
     return {
-      version: isEditingVersion ? getSplittedVersionKey(versionId).versionKey : '',
+      workspace: workspace,
+      version: isEditingVersion ? versionsFilter : '',
       status: status ?? DRAFT_VERSION_STATUS,
       labels: versionLabels ?? [],
-      previousVersion: previousVersion ?? NO_PREVIOUS_RELEASE_VERSION_OPTION,
+      previousVersion: previousVersion || NO_PREVIOUS_RELEASE_VERSION_OPTION,
     }
-  }, [currentVersion, isEditingVersion, versionId])
+  }, [currentVersion, isEditingVersion, versionsFilter, workspace])
 
   const { versions: previousVersions } = usePackageVersions({ status: RELEASE_VERSION_STATUS })
   const previousVersionOptions = usePreviousVersionOptions(previousVersions)
 
-  const { handleSubmit, control, setValue, formState } = useForm<VersionFormData>({ defaultValues })
+  const { handleSubmit, control, setValue, formState, reset } = useForm<VersionFormData>({ defaultValues })
 
   const { publishId, publish, isPublishStarting, isPublishStartedSuccessfully } = usePublishDashboardVersionFromCSV()
   const [isPublishing, isPublished, isPublishError] = useDashboardVersionFromCSVPublicationStatuses(packageObj?.key ?? '', publishId ?? '', targetVersion)
@@ -102,6 +107,8 @@ const PublishDashboardVersionFromCSVPopup: FC<PopupProps> = memo<PopupProps>(({ 
     isPublishing
 
   useEffect(() => { isPublishStartedSuccessfully && isPublished && setOpen(false) }, [isPublishStartedSuccessfully, isPublished, setOpen])
+  useEffect(() => { defaultValues && reset(defaultValues) }, [defaultValues, reset])
+  useEffect(() => { !workspace && reset(defaultValues) }, [workspace, defaultValues, reset])
 
   const onPublish = useCallback(async ({
     version,
@@ -136,6 +143,7 @@ const PublishDashboardVersionFromCSVPopup: FC<PopupProps> = memo<PopupProps>(({ 
       setValue={setValue}
       formState={formState}
       workspaces={workspaces}
+      onSetWorkspace={onSetWorkspace}
       onWorkspacesFilter={onWorkspacesFilter}
       areWorkspacesLoading={areWorkspacesLoading}
       versions={Object.keys(versionLabelsMap)}
