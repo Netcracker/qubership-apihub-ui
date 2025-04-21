@@ -31,7 +31,7 @@ import { usePackages } from '@apihub/routes/root/usePackages'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
 import { usePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
-import { getVersionLabelsMap } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
+import { getSplittedVersionKey, getVersionLabelsMap } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import { usePublishOperationGroupPackageVersion } from '../../../usePublishOperationGroupPackageVersion'
 import { useOperationGroupPublicationStatuses } from '../../../usePublicationStatus'
 import { useFullMainVersion } from '../../../FullMainVersionProvider'
@@ -51,7 +51,7 @@ const PublishOperationGroupPackageVersionPopup: FC<PopupProps> = memo<PopupProps
   const currentPackage = useCurrentPackage()
   const currentVersionId = useFullMainVersion()
 
-  const [targetPackage, setTargetPackage] = useState<Package | null>()
+  const [targetPackage, setTargetPackage] = useState<Package | null>(currentPackage)
   const [targetVersion, setTargetVersion] = useState<Key>('')
 
   const [workspace, setWorkspace] = useState<Package | null>(currentPackage?.parents?.[0] ?? null)
@@ -69,12 +69,18 @@ const PublishOperationGroupPackageVersionPopup: FC<PopupProps> = memo<PopupProps
     textFilter: packagesFilter,
   })
 
-  const [versionsFilter, setVersionsFilter] = useState('')
+  const [versionsFilter, setVersionsFilter] = useState(getSplittedVersionKey(currentVersionId).versionKey)
   const { versions: versionsWithRevisions, areVersionsLoading } = usePackageVersions({
     packageKey: targetPackage?.key,
     enabled: !!targetPackage,
     textFilter: versionsFilter,
   })
+
+  const versionsWithRevision = useMemo(
+      () => (versionsWithRevisions.find(({ key }) => getSplittedVersionKey(key).versionKey === versionsFilter)),
+      [ versionsFilter, versionsWithRevisions],
+  )
+
   const versionLabelsMap = useMemo(() => getVersionLabelsMap(versionsWithRevisions), [versionsWithRevisions])
   const versions = useMemo(() => Object.keys(versionLabelsMap), [versionLabelsMap])
   const getVersionLabels = useCallback((version: Key) => versionLabelsMap[version] ?? [], [versionLabelsMap])
@@ -98,14 +104,16 @@ const PublishOperationGroupPackageVersionPopup: FC<PopupProps> = memo<PopupProps
   const targetReleaseVersionPattern = useMemo(() => targetPackage?.releaseVersionPattern, [targetPackage?.releaseVersionPattern])
 
   const defaultValues = useMemo(() => {
+    const {status, versionLabels, previousVersion } = versionsWithRevision ?? {}
     return {
+      package: targetPackage,
       workspace: workspace,
-      version: undefined,
-      status: DRAFT_VERSION_STATUS as VersionStatus,
-      labels: [],
-      previousVersion: NO_PREVIOUS_RELEASE_VERSION_OPTION,
+      version: versionsFilter,
+      status: status ?? DRAFT_VERSION_STATUS,
+      labels: versionLabels ?? [],
+      previousVersion: previousVersion || NO_PREVIOUS_RELEASE_VERSION_OPTION,
     }
-  }, [workspace])
+  }, [workspace, versionsWithRevision, versionsFilter, targetPackage])
 
   const { handleSubmit, control, reset, setValue, formState } = useForm<VersionFormData>({ defaultValues })
 
@@ -113,7 +121,14 @@ const PublishOperationGroupPackageVersionPopup: FC<PopupProps> = memo<PopupProps
   const [isPublishing, isPublished] = useOperationGroupPublicationStatuses(targetPackage?.key ?? '', targetVersion, group.groupName, publishId ?? '')
 
   useEffect(() => { isPublishStartedSuccessfully && isPublished && setOpen(false) }, [isPublishStartedSuccessfully, isPublished, setOpen])
-  useEffect(() => { reset(defaultValues) }, [defaultValues, reset])
+  useEffect(() => { versionsWithRevision && defaultValues && reset(defaultValues) }, [versionsWithRevision, defaultValues, reset])
+  useEffect(() => { !targetPackage && reset(defaultValues) }, [targetPackage, defaultValues, reset])
+  useEffect(() =>{
+    if(!workspace){
+      setTargetPackage(null)
+      setValue('package', null)
+    }
+  }, [workspace, setValue])
 
   const onPublish = useCallback(async (data: PublishInfo): Promise<void> => {
     const previousVersion = replaceEmptyPreviousVersion(data.previousVersion)

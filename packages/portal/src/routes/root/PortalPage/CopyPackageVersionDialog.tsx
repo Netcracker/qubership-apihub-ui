@@ -40,7 +40,6 @@ import {
 import { usePackages } from '@apihub/routes/root/usePackages'
 import { useCopyPackageVersion } from '@apihub/routes/root/PortalPage/useCopyPackageVersion'
 import { usePublicationStatuses } from '@apihub/routes/root/PortalPage/usePublicationStatus'
-import { usePackageVersionConfig } from '@apihub/routes/root/PortalPage/usePackageVersionConfig'
 import { useFullMainVersion } from '@apihub/routes/root/PortalPage/FullMainVersionProvider'
 import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
 
@@ -61,26 +60,29 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const isPackage = packageKind === PACKAGE_KIND
   const kindTitle = isPackage ? 'Package' : 'Dashboard'
 
-  const [currentVersionConfig] = usePackageVersionConfig(currentPackage?.key, currentVersionId)
-
-  const [workspace, setWorkspace] = useState<Package | null>()
-  const [workspacesFilter, setWorkspacesFilter] = useState('')
+  const [workspace, setWorkspace] = useState<Package | null>(currentPackage?.parents?.[0] ?? null)
+  const [workspacesFilter, setWorkspacesFilter] = useState(workspace?.key)
   const [workspaces, areWorkspacesLoading] = usePackages({
     kind: WORKSPACE_KIND,
     textFilter: workspacesFilter,
   })
 
-  const [targetPackage, setTargetPackage] = useState<Package | null>()
+  const [targetPackage, setTargetPackage] = useState<Package | null>(currentPackage)
   const [targetVersion, setTargetVersion] = useState<Key>('')
 
-  const [versionsFilter, setVersionsFilter] = useState('')
+  const [versionsFilter, setVersionsFilter] = useState(getSplittedVersionKey(currentVersionId).versionKey)
   const { versions: versionsWithRevisions, areVersionsLoading } = usePackageVersions({
     packageKey: targetPackage?.key,
     enabled: !!targetPackage,
     textFilter: versionsFilter,
   })
 
-  const [packagesFilter, setPackagesFilter] = useState('')
+  const versionsWithRevision = useMemo(
+      () => (versionsWithRevisions.find(({ key }) => getSplittedVersionKey(key).versionKey === versionsFilter)),
+      [ versionsFilter, versionsWithRevisions],
+  )
+
+  const [packagesFilter, setPackagesFilter] = useState(currentPackage?.name)
   const [packages, arePackagesLoading] = usePackages({
     kind: isPackage ? PACKAGE_KIND : DASHBOARD_KIND,
     parentId: workspace?.key,
@@ -104,15 +106,16 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const getVersionLabels = useCallback((version: Key) => versionLabelsMap[version] ?? [], [versionLabelsMap])
 
   const defaultValues: VersionFormData = useMemo(() => {
-    const { version, status, metaData } = currentVersionConfig || {}
+    const {status, versionLabels, previousVersion } = versionsWithRevision ?? {}
     return {
-      workspace: currentPackage?.parents?.[0] ?? null,
-      version: getSplittedVersionKey(version).versionKey || '',
+      package: targetPackage,
+      workspace: workspace,
+      version: versionsFilter,
       status: status || DRAFT_VERSION_STATUS,
-      labels: metaData?.versionLabels ?? [],
-      previousVersion: NO_PREVIOUS_RELEASE_VERSION_OPTION,
+      labels: versionLabels ?? [],
+      previousVersion: previousVersion ?? NO_PREVIOUS_RELEASE_VERSION_OPTION,
     }
-  }, [currentVersionConfig, currentPackage?.parents])
+  }, [versionsWithRevision, targetPackage, workspace, versionsFilter])
 
   const { versions: targetPackagePreviousVersions } = usePackageVersions({
     packageKey: targetPackage?.key,
@@ -128,11 +131,12 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
 
   useEffect(() => {
     const workspace = currentPackage?.parents?.find(pack => pack.kind === WORKSPACE_KIND)
-    setWorkspace(workspace)
+    setWorkspace(workspace ?? null)
   }, [currentPackage?.parents])
 
   useEffect(() => {isCopyingStartedSuccessfully && isPublished && setOpen(false)}, [setOpen, isCopyingStartedSuccessfully, isPublished])
-  useEffect(() => {reset(defaultValues)}, [defaultValues, reset])
+  useEffect(() => {versionsWithRevision && defaultValues && reset(defaultValues)}, [versionsWithRevision, defaultValues, reset])
+  useEffect(() => {!targetPackage && reset(defaultValues)}, [targetPackage, defaultValues, reset])
   useEffect(() =>{
     if(!workspace){
       setTargetPackage(null)
