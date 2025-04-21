@@ -18,7 +18,7 @@ on:
 
 jobs:  
   build-and-unit-test:
-    uses: netcracker/qubership-apihub-ci/.github/workflows/frontend-ci.yaml@main
+    uses: netcracker/qubership-apihub-ci/.github/workflows/frontend-ci.yaml@bugfix/republish-preselection
   build-docker-image:
     needs: build-and-unit-test
     if: (github.event_name == 'push') || (github.event_name == 'pull_request')
