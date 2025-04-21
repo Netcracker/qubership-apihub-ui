@@ -22,6 +22,7 @@ import {
 import { useComparisonObjects } from '@apihub/routes/root/PortalPage/VersionPage/useComparisonObjects'
 import { groupOperationPairsByTags, isFullyAddedOrRemovedOperationChange } from '@apihub/utils/operations'
 import type { ActionType } from '@netcracker/qubership-apihub-api-diff'
+import { DiffAction } from '@netcracker/qubership-apihub-api-diff'
 import type { OperationChanges } from '@netcracker/qubership-apihub-api-processor'
 import { convertToSlug } from '@netcracker/qubership-apihub-api-processor'
 import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
@@ -43,6 +44,7 @@ import {
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import { filterChangesBySeverity } from '@netcracker/qubership-apihub-ui-shared/utils/change-severities'
+import { isObject } from '@netcracker/qubership-apihub-ui-shared/utils/objects'
 import {
   DOCUMENT_SEARCH_PARAM,
   FILTERS_SEARCH_PARAM,
@@ -57,24 +59,23 @@ import { usePackage } from '../../../usePackage'
 import { usePackageSearchParam } from '../../../usePackageSearchParam'
 import { useVersionSearchParam } from '../../../useVersionSearchParam'
 import { useCompareGroups } from '../../useCompareGroups'
-import { SelectedOperationTagsProvider } from '../SelectedOperationTagsProvider'
-import { useOperation } from '../useOperation'
-import { useChangesSummaryContext } from '../ChangesSummaryProvider'
-import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
-import { useDocumentSearchParam } from '../useDocumentSearchParam'
 import { useIsPackageFromDashboard } from '../../useIsPackageFromDashboard'
+import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
+import { useChangesSummaryContext } from '../ChangesSummaryProvider'
 import { CompareOperationPathsDialog } from '../CompareOperationPathsDialog'
 import { ComparedOperationsContext } from '../ComparedOperationsContext'
 import { BreadcrumbsDataContext } from '../ComparedPackagesBreadcrumbsProvider'
 import { ComparisonToolbar } from '../ComparisonToolbar'
+import { SelectedOperationTagsProvider } from '../SelectedOperationTagsProvider'
 import { ShouldAutoExpandTagsProvider, useSetShouldAutoExpandTagsContext } from '../ShouldAutoExpandTagsProvider'
 import { VersionsComparisonGlobalParamsContext } from '../VersionsComparisonGlobalParams'
 import { VERSION_SWAPPER_HEIGHT } from '../shared-styles'
 import { useCompareBreadcrumbs } from '../useCompareBreadcrumbs'
 import { useComparisonParams } from '../useComparisonParams'
+import { useDocumentSearchParam } from '../useDocumentSearchParam'
 import { useNavigateToOperation } from '../useNavigateToOperation'
+import { useOperation } from '../useOperation'
 import { OperationsSidebarOnComparison } from './OperationsSidebarOnComparison'
-import { isObject } from '@netcracker/qubership-apihub-ui-shared/utils/objects'
 
 export function isOperationPairGrouped(
   operationPairsGroupedByTags: OperationPairsGroupedByTag,
@@ -136,15 +137,15 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
     if (isEmpty(compareGroupsData)) {
       return ''
     }
-    
+
     const targetChange = compareGroupsData!.find(
-      element => isFullyAddedOrRemovedOperationChange(element) &&  (
+      element => isFullyAddedOrRemovedOperationChange(element) && (
         element.operationId === operationKey ||
         element.previousOperationId === operationKey
       ),
     )?.diffs?.[0]
 
-    return targetChange?.action ?? 'rename'
+    return targetChange?.action ?? DiffAction.rename
   }, [compareGroups, operationKey])
 
   const [changesSummary] = useChangesSummaryContext({
@@ -172,7 +173,7 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
     versionKey: !isPackageFromDashboard ? changedVersionKey : refComparisonSummary?.previousVersion,
     enabled: actionForOriginalOperation.includes(operationAction) && !!restGroupingPrefix,
     apiType: apiType as ApiType,
-    operationKey: operationAction === 'rename'
+    operationKey: operationAction === DiffAction.rename
       ? `${getFullGroupForOperation(restGroupingPrefix, previousGroup!)}-${operationKey}`
       : operationKey,
   })
@@ -182,7 +183,7 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
     versionKey: !isPackageFromDashboard ? changedVersionKey : refComparisonSummary?.version,
     enabled: actionForChangedOperation.includes(operationAction) && !!restGroupingPrefix,
     apiType: apiType as ApiType,
-    operationKey: operationAction === 'rename'
+    operationKey: operationAction === DiffAction.rename
       ? `${getFullGroupForOperation(restGroupingPrefix, group!)}-${operationKey}`
       : operationKey,
   })
