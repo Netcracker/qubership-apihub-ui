@@ -187,7 +187,6 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       hideDescriptorVersionField
       hideSaveMessageField
       publishButtonDisabled={!currentPackage}
-      kindTitle={kindTitle}
     />
   )
 })

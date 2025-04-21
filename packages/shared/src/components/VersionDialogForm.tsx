@@ -119,7 +119,6 @@ export type VersionDialogFormProps<T extends VersionFormData = VersionFormData> 
   hideCopyPackageFields?: boolean
   hidePreviousVersionField?: boolean
   publishButtonDisabled?: boolean
-  kindTitle?: string
 }
 
 export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogFormProps>((props) => {
@@ -161,7 +160,6 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
     hidePreviousVersionField,
     hideCopyPackageFields,
     publishButtonDisabled,
-    kindTitle,
   } = props
 
   const { errors } = formState
@@ -419,10 +417,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
 
         {!hideCopyPackageFields && (
           <>
-            <Typography sx={{ mb: 1 }} variant="body2">
-              {`Target ${kindTitle}`}
-              </Typography>
-
+            <Typography sx={{ mb: 1 }} variant="body2">{`Target ${packagesTitle}`}</Typography>
             <Controller
               name="workspace"
               control={control}
