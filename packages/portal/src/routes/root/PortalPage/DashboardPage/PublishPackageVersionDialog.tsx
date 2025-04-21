@@ -60,7 +60,7 @@ const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
   const packagePermissions = useMemo(() => packageObj?.permissions ?? [], [packageObj])
   const releaseVersionPattern = useMemo(() => packageObj?.releaseVersionPattern, [packageObj])
 
-  const [versionsFilter, setVersionsFilter] = useState('')
+  const [versionsFilter, setVersionsFilter] = useState(getSplittedVersionKey(versionId).versionKey)
   const { versions, areVersionsLoading } = usePackageVersions({ textFilter: versionsFilter })
   const { filesWithLabels } = useFiles()
   const isEditingVersion = !!versionId && versionId !== SPECIAL_VERSION_KEY
@@ -70,8 +70,8 @@ const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
   const isPackage = packageKind === PACKAGE_KIND
 
   const currentVersion = useMemo(
-    () => (isEditingVersion ? versions.find(({ key }) => key === versionId) : null),
-    [isEditingVersion, versionId, versions],
+    () => (isEditingVersion ? versions.find(({ key }) => getSplittedVersionKey(key).versionKey === versionsFilter) : null),
+    [isEditingVersion, versionsFilter, versions],
   )
 
   const onVersionsFilter = useCallback((value: Key) => setVersionsFilter(value), [setVersionsFilter])
@@ -79,23 +79,24 @@ const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
   const getVersionLabels = useCallback((version: Key) => versionLabelsMap[version] ?? [], [versionLabelsMap])
 
   const defaultValues = useMemo(() => {
-    const { status, versionLabels, previousVersion } = currentVersion ?? {}
+    const {status, versionLabels, previousVersion } = currentVersion ?? {}
     return {
-      version: isEditingVersion ? getSplittedVersionKey(versionId).versionKey : '',
+      version: isEditingVersion ? versionsFilter : '',
       status: status ?? DRAFT_VERSION_STATUS,
       labels: versionLabels ?? [],
-      previousVersion: previousVersion ?? NO_PREVIOUS_RELEASE_VERSION_OPTION,
+      previousVersion: previousVersion || NO_PREVIOUS_RELEASE_VERSION_OPTION,
     }
-  }, [currentVersion, isEditingVersion, versionId])
+  }, [currentVersion, isEditingVersion, versionsFilter])
 
   const { versions: previousVersions } = usePackageVersions({ status: RELEASE_VERSION_STATUS })
   const previousVersionOptions = usePreviousVersionOptions(previousVersions)
 
-  const { handleSubmit, control, setValue, formState } = useForm<VersionFormData>({ defaultValues })
+  const { handleSubmit, control, setValue, formState, reset } = useForm<VersionFormData>({ defaultValues })
 
   const [publishPackage, isPublishLoading, isPublishSuccess] = usePublishPackageVersion()
 
   useEffect(() => {isPublishSuccess && setOpen(false)}, [setOpen, isPublishSuccess])
+  useEffect(() => {currentVersion && reset(defaultValues)}, [currentVersion, defaultValues, reset])
 
   const dashboardRefs = useDashboardReferences()
 
