@@ -417,7 +417,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
 
         {!hideCopyPackageFields && (
           <>
-            <Typography sx={{ mb: 1 }} variant="body2">{`Target ${packagesTitle}`}</Typography>
+            <Typography sx={{ mb: 1 }} variant="body2">Target {packagesTitle}</Typography>
             <Controller
               name="workspace"
               control={control}
