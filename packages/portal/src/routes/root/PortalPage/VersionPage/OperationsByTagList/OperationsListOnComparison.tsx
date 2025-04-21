@@ -125,7 +125,10 @@ export const OperationsListOnComparison: FC<OperationsListOnComparisonProps> = m
   return (
     <>
       {changedOperationPairs.map(operationPair => {
-        const isSelected = selectedElement === operationPair.currentOperation!.operationKey
+        const isSelected = (
+          selectedElement === operationPair.currentOperation?.operationKey ||
+          selectedElement === operationPair.previousOperation?.operationKey
+        )
         const key = `${operationPair.currentOperation?.operationKey}-${operationPair.previousOperation?.operationKey}`
         return (
           <CustomListItemButton<OperationPair>
@@ -134,7 +137,7 @@ export const OperationsListOnComparison: FC<OperationsListOnComparisonProps> = m
             keyProp={key}
             data={operationPair}
             onClick={handleListItemClick}
-            itemComponent={<OperationListItem operation={operationPair.currentOperation!} />}
+            itemComponent={<OperationListItem operation={operationPair.currentOperation ?? operationPair.previousOperation!} />}
             isSelected={isSelected}
             testId="OperationButton"
           />

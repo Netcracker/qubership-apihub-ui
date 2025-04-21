@@ -74,6 +74,7 @@ import { useCompareBreadcrumbs } from '../useCompareBreadcrumbs'
 import { useComparisonParams } from '../useComparisonParams'
 import { useNavigateToOperation } from '../useNavigateToOperation'
 import { OperationsSidebarOnComparison } from './OperationsSidebarOnComparison'
+import { isObject } from '@netcracker/qubership-apihub-ui-shared/utils/objects'
 
 export function isOperationPairGrouped(
   operationPairsGroupedByTags: OperationPairsGroupedByTag,
@@ -131,11 +132,19 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
   })
 
   const operationAction = useMemo((): ActionType | string => {
-    const targetChange = compareGroups?.data?.find(
-      element => element.operationId === operationKey && isFullyAddedOrRemovedOperationChange(element),
+    const compareGroupsData = compareGroups?.data
+    if (isEmpty(compareGroupsData)) {
+      return ''
+    }
+    
+    const targetChange = compareGroupsData!.find(
+      element => isFullyAddedOrRemovedOperationChange(element) &&  (
+        element.operationId === operationKey ||
+        element.previousOperationId === operationKey
+      ),
     )?.diffs?.[0]
 
-    return isEmpty(compareGroups?.data) ? '' : targetChange?.action ?? 'rename'
+    return targetChange?.action ?? 'rename'
   }, [compareGroups, operationKey])
 
   const [changesSummary] = useChangesSummaryContext({
@@ -186,22 +195,44 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
 
     const operationPairs: OperationPair[] = []
     for (const operationChange of filteredChanges) {
+      const currentMetadata = operationChange.metadata
+      const hasCurrentMetadata = isObject(currentMetadata)
+      const previousMetadata = hasCurrentMetadata ? currentMetadata.previousOperationMetadata : undefined
+      const hasPreviousMetadata = isObject(previousMetadata)
       const previousOperation: Operation | undefined = operationChange.previousOperationId ? {
         operationKey: operationChange.previousOperationId,
-        title: operationChange.metadata?.previousOperationMetadata?.title ?? '',
         apiKind: operationChange.previousApiKind ?? NO_BWC_API_KIND, // TODO 10.04.25 // Fix it
         apiAudience: 'unknown',
-        tags: operationChange.metadata?.previousOperationMetadata?.tags,
+        title: currentMetadata?.title ?? previousMetadata?.title ?? '',
+        tags: previousMetadata?.tags ?? currentMetadata?.tags ?? [],
+        // FIXME 21.04.25 // WA, fix contract
+        // 1. when "previousOperationMetadata" is on the one level with "metadata", 
+        // 2. when "previousOperationMetadata" is present even if operation is "removed" (absent in current prefix group)
+        ...(hasCurrentMetadata ? {
+          ...('type' in currentMetadata ? { type: currentMetadata.type } : {}),
+          ...('path' in currentMetadata ? { path: currentMetadata.path } : {}),
+          ...('method' in currentMetadata ? { method: currentMetadata.method } : {}),
+        } : {}),
+        ...(hasPreviousMetadata ? {
+          ...('type' in previousMetadata ? { type: previousMetadata.type } : {}),
+          ...('path' in previousMetadata ? { path: previousMetadata.path } : {}),
+          ...('method' in previousMetadata ? { method: previousMetadata.method } : {}),
+        } : {}),
       } : undefined
       const currentOperation: Operation | undefined = operationChange.operationId ? {
         operationKey: operationChange.operationId,
-        title: operationChange.metadata?.title ?? '',
         apiKind: operationChange.apiKind ?? NO_BWC_API_KIND, // TODO 10.04.25 // Fix it
         apiAudience: 'unknown',
-        tags: operationChange.metadata?.tags,
+        title: currentMetadata?.title ?? '',
+        tags: currentMetadata?.tags ?? [],
+        ...(hasCurrentMetadata ? {
+          ...('type' in currentMetadata ? { type: currentMetadata.type } : {}),
+          ...('path' in currentMetadata ? { path: currentMetadata.path } : {}),
+          ...('method' in currentMetadata ? { method: currentMetadata.method } : {}),
+        } : {}),
       } : undefined
       operationPairs.push({
-        currentOperation: currentOperation ?? previousOperation!,
+        currentOperation: currentOperation,
         previousOperation: previousOperation,
       })
     }
