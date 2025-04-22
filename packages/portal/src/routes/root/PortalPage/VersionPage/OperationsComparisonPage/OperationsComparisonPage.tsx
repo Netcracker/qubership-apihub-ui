@@ -20,11 +20,13 @@ import { ChangesSummaryProvider } from '../ChangesSummaryProvider'
 import { useOperationSearchParam } from '../useOperationSearchParam'
 import { DifferentOperationsComparisonPage } from './DifferentOperationsComparisonPage'
 import { DifferentOperationVersionsComparisonPage } from './DifferentOperationVersionsComparisonPage'
+import { useVersionSearchParam } from '../../../useVersionSearchParam'
 
 export const OperationsComparisonPage: FC = memo(() => {
   const [operation] = useOperationSearchParam()
+  const [version] = useVersionSearchParam()
 
-  return operation
+  return operation && !version
     ? <DifferentOperationsComparisonPage/>
     : (
       <ChangesSummaryProvider>
