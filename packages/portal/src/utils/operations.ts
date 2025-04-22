@@ -99,6 +99,14 @@ export function isFullyAddedOrRemovedOperationChange(change: OperationChanges): 
   return false
 }
 
+export function isFullyRemovedOperationChange(change: OperationChanges): boolean {
+  return change.diffs?.[0]?.action === DiffAction.remove && isOperationChange(change.diffs[0].beforeDeclarationPaths)
+}
+
+export function isFullyAddedOperationChange(change: OperationChanges): boolean {
+  return change.diffs?.[0]?.action === DiffAction.add && isOperationChange(change.diffs[0].afterDeclarationPaths)
+}
+
 function isOperationChange(paths: JsonPath[]): boolean { //check
   return !!matchPaths(paths, [[OPEN_API_PROPERTY_PATHS, PREDICATE_UNCLOSED_END]])
 }

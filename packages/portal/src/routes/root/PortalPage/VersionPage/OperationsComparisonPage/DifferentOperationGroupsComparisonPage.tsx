@@ -20,7 +20,7 @@ import {
   COMPARE_SAME_OPERATIONS_MODE,
 } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationView/OperationDisplayMode'
 import { useComparisonObjects } from '@apihub/routes/root/PortalPage/VersionPage/useComparisonObjects'
-import { groupOperationPairsByTags, isFullyAddedOrRemovedOperationChange } from '@apihub/utils/operations'
+import { groupOperationPairsByTags, isFullyAddedOperationChange, isFullyAddedOrRemovedOperationChange, isFullyRemovedOperationChange } from '@apihub/utils/operations'
 import type { ActionType } from '@netcracker/qubership-apihub-api-diff'
 import { DiffAction } from '@netcracker/qubership-apihub-api-diff'
 import type { OperationChanges } from '@netcracker/qubership-apihub-api-processor'
@@ -76,6 +76,8 @@ import { useDocumentSearchParam } from '../useDocumentSearchParam'
 import { useNavigateToOperation } from '../useNavigateToOperation'
 import { useOperation } from '../useOperation'
 import { OperationsSidebarOnComparison } from './OperationsSidebarOnComparison'
+import { useOperationSearchParam } from '../useOperationSearchParam'
+import { safeOperationKeysPair } from '../../../../../../../shared/src/utils/operations'
 
 export function isOperationPairGrouped(
   operationPairsGroupedByTags: OperationPairsGroupedByTag,
@@ -116,6 +118,7 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
   const [operationPackageKey, operationPackageVersion] = usePackageParamsWithRef()
   const [selectedDocumentSlug] = useDocumentSearchParam()
   const [filters] = useSeverityFiltersSearchParam()
+  const [operationSearchParam] = useOperationSearchParam()
 
   const { isPackageFromDashboard, refPackageKey } = useIsPackageFromDashboard()
 
@@ -132,21 +135,39 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
     previousGroup: previousGroup,
   })
 
-  const operationAction = useMemo((): ActionType | string => {
+  const operationAction = useMemo((): ActionType | undefined => {
     const compareGroupsData = compareGroups?.data
     if (isEmpty(compareGroupsData)) {
-      return ''
+      return undefined
     }
 
     const targetChange = compareGroupsData!.find(
-      element => isFullyAddedOrRemovedOperationChange(element) && (
-        element.operationId === operationKey ||
-        element.previousOperationId === operationKey
-      ),
+      element => {
+        const isFullyAdded = isFullyAddedOperationChange(element)
+        const isFullyRemoved = isFullyRemovedOperationChange(element)
+        let _operationAction: ActionType | undefined = undefined
+        if (isFullyAdded) {
+          _operationAction = DiffAction.add
+        } else if (isFullyRemoved) {
+          _operationAction = DiffAction.remove
+        }
+        const {
+          previousOperationKey: _operationKeyForOriginOperation,
+          currentOperationKey: _operationKeyForChangedOperation,
+        } = safeOperationKeysPair({
+          previousOperationKey: operationSearchParam,
+          currentOperationKey: operationKey,
+        }, _operationAction)
+
+        return (
+          isFullyAdded && element.operationId === _operationKeyForChangedOperation ||
+          isFullyRemoved && !!_operationKeyForOriginOperation && element.previousOperationId === _operationKeyForOriginOperation
+        )
+      },
     )?.diffs?.[0]
 
     return targetChange?.action ?? DiffAction.rename
-  }, [compareGroups, operationKey])
+  }, [compareGroups?.data, operationKey, operationSearchParam])
 
   const [changesSummary] = useChangesSummaryContext({
     changedPackageKey: changedPackageKey,
@@ -168,24 +189,32 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
 
   const restGroupingPrefix = packageObj?.restGroupingPrefix
 
+  const {
+    previousOperationKey: operationKeyForOriginOperation,
+    currentOperationKey: operationKeyForChangedOperation,
+  } = safeOperationKeysPair({
+    previousOperationKey: operationSearchParam,
+    currentOperationKey: operationKey,
+  }, operationAction)
+
   const { data: originOperation, isLoading: isOriginOperationLoading } = useOperation({
     packageKey: !isPackageFromDashboard ? originPackageKey : refPackageKey,
     versionKey: !isPackageFromDashboard ? changedVersionKey : refComparisonSummary?.previousVersion,
-    enabled: actionForOriginalOperation.includes(operationAction) && !!restGroupingPrefix,
+    enabled: !!operationAction && actionForOriginalOperation.includes(operationAction) && !!restGroupingPrefix,
     apiType: apiType as ApiType,
     operationKey: operationAction === DiffAction.rename
-      ? `${getFullGroupForOperation(restGroupingPrefix, previousGroup!)}-${operationKey}`
-      : operationKey,
+      ? `${getFullGroupForOperation(restGroupingPrefix, previousGroup!)}-${operationKeyForOriginOperation}`
+      : operationKeyForOriginOperation,
   })
 
   const { data: changedOperation, isLoading: isChangedOperationLoading } = useOperation({
     packageKey: !isPackageFromDashboard ? originPackageKey : refPackageKey,
     versionKey: !isPackageFromDashboard ? changedVersionKey : refComparisonSummary?.version,
-    enabled: actionForChangedOperation.includes(operationAction) && !!restGroupingPrefix,
+    enabled: !!operationAction && actionForChangedOperation.includes(operationAction) && !!restGroupingPrefix,
     apiType: apiType as ApiType,
     operationKey: operationAction === DiffAction.rename
-      ? `${getFullGroupForOperation(restGroupingPrefix, group!)}-${operationKey}`
-      : operationKey,
+      ? `${getFullGroupForOperation(restGroupingPrefix, group!)}-${operationKeyForChangedOperation}`
+      : operationKeyForChangedOperation,
   })
 
   const areChangesAndOperationsLoading = isOriginOperationLoading && isChangedOperationLoading
@@ -198,22 +227,15 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
     for (const operationChange of filteredChanges) {
       const currentMetadata = operationChange.metadata
       const hasCurrentMetadata = isObject(currentMetadata)
-      const previousMetadata = hasCurrentMetadata ? currentMetadata.previousOperationMetadata : undefined
+      // eslint-disable-next-line prefer-destructuring
+      const previousMetadata = operationChange.previousMetadata
       const hasPreviousMetadata = isObject(previousMetadata)
       const previousOperation: Operation | undefined = operationChange.previousOperationId ? {
         operationKey: operationChange.previousOperationId,
         apiKind: operationChange.previousApiKind ?? NO_BWC_API_KIND, // TODO 10.04.25 // Fix it
         apiAudience: 'unknown',
-        title: currentMetadata?.title ?? previousMetadata?.title ?? '',
-        tags: previousMetadata?.tags ?? currentMetadata?.tags ?? [],
-        // FIXME 21.04.25 // WA, fix contract
-        // 1. when "previousOperationMetadata" is on the one level with "metadata", 
-        // 2. when "previousOperationMetadata" is present even if operation is "removed" (absent in current prefix group)
-        ...(hasCurrentMetadata ? {
-          ...('type' in currentMetadata ? { type: currentMetadata.type } : {}),
-          ...('path' in currentMetadata ? { path: currentMetadata.path } : {}),
-          ...('method' in currentMetadata ? { method: currentMetadata.method } : {}),
-        } : {}),
+        title: previousMetadata?.title ?? '',
+        tags: previousMetadata?.tags ?? [],
         ...(hasPreviousMetadata ? {
           ...('type' in previousMetadata ? { type: previousMetadata.type } : {}),
           ...('path' in previousMetadata ? { path: previousMetadata.path } : {}),
