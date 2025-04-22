@@ -77,8 +77,6 @@ export const OasExtensionsAutocomplete: FC<OasExtensionsAutocompleteProps> = ({
     const updatedExtensions = processExtensionsUpdate([inputValue], value)
     onChange(updatedExtensions)
 
-    // Clear the input field
-    inputElement.value = ''
     setIsInputText(false)
   }, [value, onChange, processExtensionsUpdate, setIsInputText, setDuplicateErrorText])
 
