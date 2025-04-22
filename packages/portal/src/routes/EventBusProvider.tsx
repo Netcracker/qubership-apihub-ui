@@ -161,6 +161,7 @@ export type OperationsMovementDetails =
 
 export type ShowEditPackagePrefixDetail = {
   packageKey?: string
+  existingPrefix?:string
 }
 
 type EventBus = {
