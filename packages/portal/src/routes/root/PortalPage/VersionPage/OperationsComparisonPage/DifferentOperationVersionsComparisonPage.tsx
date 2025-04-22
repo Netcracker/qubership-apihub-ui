@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Key } from '@apihub/entities/keys'
 import { OperationContent } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationContent'
 import {
   COMPARE_SAME_OPERATIONS_MODE,
@@ -25,7 +24,7 @@ import { useComparisonParams } from '@apihub/routes/root/PortalPage/VersionPage/
 import { groupOperationPairsByTags } from '@apihub/utils/operations'
 import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import type { Operation, OperationPair, OperationPairsGroupedByTag } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import type { OperationPair, OperationPairsGroupedByTag } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { OperationChangeBase } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
 import type {
   DashboardComparisonSummary,
@@ -71,6 +70,7 @@ import { useNavigateToOperation } from '../useNavigateToOperation'
 import { useOperation } from '../useOperation'
 import { useOperationSearchParam } from '../useOperationSearchParam'
 import { OperationsSidebarOnComparison } from './OperationsSidebarOnComparison'
+import { safeOperationKeysPair } from '@netcracker/qubership-apihub-ui-shared/utils/operations'
 
 function getOperationPairsFromPackageChanges(
   packageChanges: ReadonlyArray<OperationChangeBase>,
@@ -97,7 +97,7 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
   const [operationPackageKey, operationPackageVersion] = usePackageParamsWithRef()
   const [selectedDocumentSlug] = useDocumentSearchParam()
   const [filters] = useSeverityFiltersSearchParam()
-  const [previousOperationKey] = useOperationSearchParam()
+  const [operationSearchParam] = useOperationSearchParam()
 
   const { isPackageFromDashboard, refPackageKey } = useIsPackageFromDashboard()
   const [searchValue = '', setSearchValue] = useTextSearchParam()
@@ -153,17 +153,22 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
     })
   }, [changesSummary, isPackageFromDashboard, refPackageKey])
 
+  const { currentOperationKey, previousOperationKey } = safeOperationKeysPair({
+    currentOperationKey: operationKey,
+    previousOperationKey: operationSearchParam ?? operationKey,
+  }, undefined)
+
   // TODO: Add placeholder handling the case if there were no operations matching the original operationKey
   const { data: originOperation, isInitialLoading: isOriginOperationInitialLoading } = useOperation({
     packageKey: !isPackageFromDashboard ? originPackageKey : refPackageKey,
     versionKey: !isPackageFromDashboard ? originVersionKey : refComparisonSummary?.previousVersion,
-    operationKey: previousOperationKey ?? operationKey,
+    operationKey: previousOperationKey,
     apiType: apiType as ApiType,
   })
   const { data: changedOperation, isInitialLoading: isChangedOperationInitialLoading } = useOperation({
     packageKey: !isPackageFromDashboard ? changedPackageKey : refPackageKey,
     versionKey: !isPackageFromDashboard ? changedVersionKey : refComparisonSummary?.version,
-    operationKey: operationKey,
+    operationKey: currentOperationKey,
     apiType: apiType as ApiType,
   })
 
