@@ -63,7 +63,7 @@ import { SHOW_ADD_USER_DIALOG, SHOW_USER_ROLES_DIALOG } from '@netcracker/qubers
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type {
   OasSettingsExtension,
-} from '@apihub/routes/root/PortalPage/PackageSettingsPage/ExportSettingsTab/package-export-config'
+} from '@netcracker/qubership-apihub-ui-portal/src/routes/root/PortalPage/PackageSettingsPage/ExportSettingsTab/package-export-config'
 
 // base
 export const SHOW_SUCCESS_NOTIFICATION = 'show-success-notification'
