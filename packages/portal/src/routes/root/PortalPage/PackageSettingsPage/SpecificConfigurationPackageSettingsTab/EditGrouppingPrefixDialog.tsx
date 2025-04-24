@@ -43,10 +43,6 @@ const EditPrefixDialogPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen,
   const [recalculatePackageVersionGroups] = useRecalculatePackageVersionGroups()
   useEffect(() => {isSuccess && setOpen(false)}, [isSuccess, setOpen])
 
-  useEffect(() => {
-    if (isSuccess) setOpen(false)
-  }, [isSuccess, setOpen])
-
   const defaultValues = useMemo(() => ({
     restGroupingPrefix: existingPrefix,
     recalculate: false,
