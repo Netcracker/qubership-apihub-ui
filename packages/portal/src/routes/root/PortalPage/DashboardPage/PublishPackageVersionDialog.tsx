@@ -69,7 +69,7 @@ const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
 
   const { filesWithLabels } = useFiles()
 
-  const [targetVersion, setTargetVersion] = useState<Key>(currentVersionId ?? '')
+  const [targetVersion, setTargetVersion] = useState<Key>(isEditingVersion ? currentVersionId ?? '' : '')
   const [versionsFilter, setVersionsFilter] = useState('')
   const [targetStatus, setTargetStatus] = useState(DRAFT_VERSION_STATUS as VersionStatus)
   const [targetLabels, setTargetLabels] = useState([] as string[])
@@ -92,12 +92,12 @@ const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
   const releaseVersionPattern = useMemo(() => packageObj?.releaseVersionPattern, [packageObj])
   const defaultValues = useMemo(() => {
     return {
-      version: isEditingVersion ? targetVersion : '',
+      version: targetVersion,
       status: targetStatus,
       labels: targetLabels,
       previousVersion: targetPreviousVersion,
     }
-  }, [isEditingVersion, targetVersion, targetStatus, targetLabels, targetPreviousVersion])
+  }, [targetVersion, targetStatus, targetLabels, targetPreviousVersion])
 
   const { handleSubmit, control, setValue, formState, reset } = useForm<VersionFormData>({ defaultValues })
 
