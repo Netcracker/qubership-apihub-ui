@@ -215,7 +215,11 @@ export const VersionCompareContent: FC = memo(() => {
                   [PACKAGE_SEARCH_PARAM]: { value: changedPackageKey === originPackageKey ? '' : encodeURIComponent(originPackageKey!) },
                   [VERSION_SEARCH_PARAM]: { value: originVersionKey! },
                   [REF_SEARCH_PARAM]: { value: refPackageKey },
-                  [OPERATION_SEARCH_PARAM]: { value: previousOperation?.operationKey },
+                  [OPERATION_SEARCH_PARAM]: {
+                    value: currentOperation?.operationKey
+                      ? previousOperation?.operationKey
+                      : undefined,
+                  },
                 })
 
                 return (
@@ -275,7 +279,7 @@ export const VersionCompareContent: FC = memo(() => {
                           }}
                         />
                         <OperationChangesSummary
-                          key={`original-${previousOperation!.operationKey}`}
+                          key={`original-${previousOperation?.operationKey}`}
                           operation={action !== ADD_ACTION_TYPE ? previousOperation : undefined}
                         />
                       </Box>
@@ -288,7 +292,7 @@ export const VersionCompareContent: FC = memo(() => {
                       data-testid="RightComparisonSummary"
                     >
                       <OperationChangesSummary
-                        key={`changed-${currentOperation!.operationKey}`}
+                        key={`changed-${currentOperation?.operationKey}`}
                         operation={action !== REMOVE_ACTION_TYPE ? currentOperation : undefined}
                         changes={changeSummary}
                       />
