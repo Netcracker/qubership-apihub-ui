@@ -29,7 +29,11 @@ import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components
 import { SHOW_PUBLISH_PACKAGE_VERSION_DIALOG } from '@apihub/routes/EventBusProvider'
 import { SPECIAL_VERSION_KEY } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
 import { DASHBOARD_KIND, PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { getSplittedVersionKey, getVersionLabelsMap } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
+import {
+  getSplittedVersionKey,
+  getVersionLabelsMap,
+  getVersions,
+} from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 import {
@@ -55,50 +59,64 @@ export const PublishPackageVersionDialog: FC = memo(() => {
 })
 
 const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }) => {
-  const { versionId } = useParams()
+  const { versionId: currentVersionId } = useParams()
   const [packageObj, isPackageLoading] = usePackage()
-  const packagePermissions = useMemo(() => packageObj?.permissions ?? [], [packageObj])
-  const releaseVersionPattern = useMemo(() => packageObj?.releaseVersionPattern, [packageObj])
 
-  const [versionsFilter, setVersionsFilter] = useState(getSplittedVersionKey(versionId).versionKey)
-  const { versions, areVersionsLoading } = usePackageVersions({ textFilter: versionsFilter })
-  const { filesWithLabels } = useFiles()
-  const isEditingVersion = !!versionId && versionId !== SPECIAL_VERSION_KEY
-
+  const isEditingVersion = !!currentVersionId && currentVersionId !== SPECIAL_VERSION_KEY
   const packageKind = packageObj?.kind
   const isDashboard = packageKind === DASHBOARD_KIND
   const isPackage = packageKind === PACKAGE_KIND
 
-  const currentVersion = useMemo(
-    () => (isEditingVersion ? versions.find(({ key }) => getSplittedVersionKey(key).versionKey === versionsFilter) : null),
-    [isEditingVersion, versionsFilter, versions],
-  )
+  const { filesWithLabels } = useFiles()
 
-  const onVersionsFilter = useCallback((value: Key) => setVersionsFilter(value), [setVersionsFilter])
-  const versionLabelsMap = useMemo(() => getVersionLabelsMap(versions), [versions])
-  const getVersionLabels = useCallback((version: Key) => versionLabelsMap[version] ?? [], [versionLabelsMap])
+  const [targetVersion, setTargetVersion] = useState<Key>(currentVersionId ?? '')
+  const [versionsFilter, setVersionsFilter] = useState('')
+  const [targetStatus, setTargetStatus] = useState(DRAFT_VERSION_STATUS as VersionStatus)
+  const [targetLabels, setTargetLabels] = useState([] as string[])
+  const [targetPreviousVersion, setTargetPreviousVersion] = useState(NO_PREVIOUS_RELEASE_VERSION_OPTION)
 
-  const defaultValues = useMemo(() => {
-    const {status, versionLabels, previousVersion } = currentVersion ?? {}
-    return {
-      version: isEditingVersion ? versionsFilter : '',
-      status: status ?? DRAFT_VERSION_STATUS,
-      labels: versionLabels ?? [],
-      previousVersion: previousVersion || NO_PREVIOUS_RELEASE_VERSION_OPTION,
-    }
-  }, [currentVersion, isEditingVersion, versionsFilter])
-
+  const { versions: currentVersions, areVersionsLoading: areCurrentVersionsLoading } = usePackageVersions({ textFilter: currentVersionId })
+  const { versions: filteredVersions, areVersionsLoading: areFilteredVersionsLoading } = usePackageVersions({ textFilter: versionsFilter })
   const { versions: previousVersions } = usePackageVersions({ status: RELEASE_VERSION_STATUS })
   const previousVersionOptions = usePreviousVersionOptions(previousVersions)
+  const [publishPackage, isPublishLoading, isPublishSuccess] = usePublishPackageVersion()
+  const dashboardRefs = useDashboardReferences()
+
+  const currentVersion = useMemo(
+      () => (isEditingVersion ? currentVersions.find(({ key }) => getSplittedVersionKey(key).versionKey === currentVersionId) : null),
+      [isEditingVersion, currentVersionId, currentVersions],
+  )
+  const versionLabelsMap = useMemo(() => getVersionLabelsMap(filteredVersions), [filteredVersions])
+  const versions = useMemo(() => getVersions(versionLabelsMap, targetVersion), [targetVersion, versionLabelsMap])
+  const packagePermissions = useMemo(() => packageObj?.permissions ?? [], [packageObj])
+  const releaseVersionPattern = useMemo(() => packageObj?.releaseVersionPattern, [packageObj])
+  const defaultValues = useMemo(() => {
+    return {
+      version: isEditingVersion ? targetVersion : '',
+      status: targetStatus,
+      labels: targetLabels,
+      previousVersion: targetPreviousVersion,
+    }
+  }, [isEditingVersion, targetVersion, targetStatus, targetLabels, targetPreviousVersion])
 
   const { handleSubmit, control, setValue, formState, reset } = useForm<VersionFormData>({ defaultValues })
 
-  const [publishPackage, isPublishLoading, isPublishSuccess] = usePublishPackageVersion()
+  const onVersionsFilter = useCallback((value: Key) => setVersionsFilter(value), [setVersionsFilter])
+  const getVersionLabels = useCallback((version: Key) => versionLabelsMap[version] ?? [], [versionLabelsMap])
+  const onSetTargetVersion = useCallback((version: string) => setTargetVersion(version), [])
+  const onSetTargetStatus = useCallback((status: VersionStatus) => setTargetStatus(status), [])
+  const onSetTargetLabels = useCallback((labels: string[]) => setTargetLabels(labels), [])
+  const onSetTargetPreviousVersion = useCallback((version: Key) => setTargetPreviousVersion(version), [])
 
   useEffect(() => {isPublishSuccess && setOpen(false)}, [setOpen, isPublishSuccess])
-  useEffect(() => {currentVersion && reset(defaultValues)}, [currentVersion, defaultValues, reset])
-
-  const dashboardRefs = useDashboardReferences()
+  useEffect(() => {reset(defaultValues)}, [defaultValues, reset])
+  useEffect(() => {
+    if (currentVersion) {
+      setTargetStatus(currentVersion.status as VersionStatus || DRAFT_VERSION_STATUS)
+      setTargetLabels(currentVersion.versionLabels ?? [])
+      setTargetPreviousVersion(currentVersion.previousVersion || NO_PREVIOUS_RELEASE_VERSION_OPTION)
+    }
+  }, [currentVersion])
 
   const onPublish = useCallback(async (data: PublishInfo): Promise<void> => {
     const previousVersion = replaceEmptyPreviousVersion(data.previousVersion)
@@ -128,13 +146,17 @@ const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
       control={control}
       setValue={setValue}
       formState={formState}
-      versions={Object.keys(versionLabelsMap)}
+      versions={versions}
       onVersionsFilter={onVersionsFilter}
-      areVersionsLoading={areVersionsLoading}
+      areVersionsLoading={areCurrentVersionsLoading || areFilteredVersionsLoading}
       previousVersions={previousVersionOptions}
       getVersionLabels={getVersionLabels}
       packagePermissions={packagePermissions}
       releaseVersionPattern={releaseVersionPattern}
+      onSetTargetVersion={onSetTargetVersion}
+      onSetTargetStatus={onSetTargetStatus}
+      onSetTargetLabels={onSetTargetLabels}
+      setSelectedPreviousVersion={onSetTargetPreviousVersion}
       isPublishing={isPublishLoading}
       hideDescriptorField
       hideCopyPackageFields

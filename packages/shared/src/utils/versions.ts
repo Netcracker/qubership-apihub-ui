@@ -74,6 +74,14 @@ export function getVersionLabelsMap(versions: PackageVersions): Record<Key, stri
   )
 }
 
+export function getVersions(versionLabelsMap: Record<string, string[]>, targetVersion: string): string[] {
+  const versions: string[] = Object.keys(versionLabelsMap)
+  if(targetVersion && !versions.includes(targetVersion)){
+    versions.unshift(targetVersion)
+  }
+  return versions
+}
+
 export function handleVersionsRevision(versions: ReadonlyArray<PackageVersion>): ReadonlyArray<PackageVersion> {
   return versions.map(handleVersionRevision)
 }
