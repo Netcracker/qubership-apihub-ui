@@ -6,7 +6,8 @@
     "plugin:@typescript-eslint/recommended",
     "plugin:react-hooks/recommended",
     "plugin:storybook/recommended",
-    "plugin:boundaries/recommended"
+    "plugin:boundaries/recommended",
+    "prettier"
   ],
   "env": {
     "es6": true,
