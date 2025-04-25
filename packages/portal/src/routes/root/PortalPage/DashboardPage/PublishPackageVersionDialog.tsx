@@ -29,11 +29,7 @@ import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components
 import { SHOW_PUBLISH_PACKAGE_VERSION_DIALOG } from '@apihub/routes/EventBusProvider'
 import { SPECIAL_VERSION_KEY } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
 import { DASHBOARD_KIND, PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import {
-  getSplittedVersionKey,
-  getVersionLabelsMap,
-  getVersions,
-} from '@netcracker/qubership-apihub-ui-shared/utils/versions'
+import { getVersionLabelsMap } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 import {
@@ -41,13 +37,15 @@ import {
   NO_PREVIOUS_RELEASE_VERSION_OPTION,
   RELEASE_VERSION_STATUS,
 } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import type { VersionFormData } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
+import type { VersionFormData} from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
+import {getVersionOptions} from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
 import {
   replaceEmptyPreviousVersion,
   usePreviousVersionOptions,
   VersionDialogForm,
 } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
 import { takeIf } from '@netcracker/qubership-apihub-ui-shared/utils/objects'
+import {usePackageVersionConfig} from '@apihub/routes/root/PortalPage/usePackageVersionConfig'
 
 export const PublishPackageVersionDialog: FC = memo(() => {
   return (
@@ -60,10 +58,12 @@ export const PublishPackageVersionDialog: FC = memo(() => {
 
 const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }) => {
   const { versionId: currentVersionId } = useParams()
-  const [packageObj, isPackageLoading] = usePackage()
-
+  const [currentPackage, isPackageLoading] = usePackage()
+  
+  const [currentVersionConfig] = usePackageVersionConfig(currentPackage?.key, currentVersionId)
+  
   const isEditingVersion = !!currentVersionId && currentVersionId !== SPECIAL_VERSION_KEY
-  const packageKind = packageObj?.kind
+  const packageKind = currentPackage?.kind
   const isDashboard = packageKind === DASHBOARD_KIND
   const isPackage = packageKind === PACKAGE_KIND
 
@@ -74,22 +74,17 @@ const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
   const [targetStatus, setTargetStatus] = useState(DRAFT_VERSION_STATUS as VersionStatus)
   const [targetLabels, setTargetLabels] = useState([] as string[])
   const [targetPreviousVersion, setTargetPreviousVersion] = useState(NO_PREVIOUS_RELEASE_VERSION_OPTION)
-
-  const { versions: currentVersions, areVersionsLoading: areCurrentVersionsLoading } = usePackageVersions({ textFilter: currentVersionId })
+  
   const { versions: filteredVersions, areVersionsLoading: areFilteredVersionsLoading } = usePackageVersions({ textFilter: versionsFilter })
   const { versions: previousVersions } = usePackageVersions({ status: RELEASE_VERSION_STATUS })
   const previousVersionOptions = usePreviousVersionOptions(previousVersions)
   const [publishPackage, isPublishLoading, isPublishSuccess] = usePublishPackageVersion()
   const dashboardRefs = useDashboardReferences()
-
-  const currentVersion = useMemo(
-      () => (isEditingVersion ? currentVersions.find(({ key }) => getSplittedVersionKey(key).versionKey === currentVersionId) : null),
-      [isEditingVersion, currentVersionId, currentVersions],
-  )
+  
   const versionLabelsMap = useMemo(() => getVersionLabelsMap(filteredVersions), [filteredVersions])
-  const versions = useMemo(() => getVersions(versionLabelsMap, targetVersion), [targetVersion, versionLabelsMap])
-  const packagePermissions = useMemo(() => packageObj?.permissions ?? [], [packageObj])
-  const releaseVersionPattern = useMemo(() => packageObj?.releaseVersionPattern, [packageObj])
+  const versions = useMemo(() => getVersionOptions(versionLabelsMap, targetVersion), [targetVersion, versionLabelsMap])
+  const packagePermissions = useMemo(() => currentPackage?.permissions ?? [], [currentPackage])
+  const releaseVersionPattern = useMemo(() => currentPackage?.releaseVersionPattern, [currentPackage])
   const defaultValues = useMemo(() => {
     return {
       version: targetVersion,
@@ -111,12 +106,13 @@ const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
   useEffect(() => {isPublishSuccess && setOpen(false)}, [setOpen, isPublishSuccess])
   useEffect(() => {reset(defaultValues)}, [defaultValues, reset])
   useEffect(() => {
-    if (currentVersion) {
-      setTargetStatus(currentVersion.status as VersionStatus || DRAFT_VERSION_STATUS)
-      setTargetLabels(currentVersion.versionLabels ?? [])
-      setTargetPreviousVersion(currentVersion.previousVersion || NO_PREVIOUS_RELEASE_VERSION_OPTION)
+    if (currentVersionConfig) {
+      setTargetStatus(currentVersionConfig.status as VersionStatus || DRAFT_VERSION_STATUS)
+      setTargetLabels(currentVersionConfig.metaData?.versionLabels ?? [])
+      setTargetPreviousVersion(currentVersionConfig.previousVersion || NO_PREVIOUS_RELEASE_VERSION_OPTION)
     }
-  }, [currentVersion])
+  }, [currentVersionConfig])
+
 
   const onPublish = useCallback(async (data: PublishInfo): Promise<void> => {
     const previousVersion = replaceEmptyPreviousVersion(data.previousVersion)
@@ -148,7 +144,7 @@ const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
       formState={formState}
       versions={versions}
       onVersionsFilter={onVersionsFilter}
-      areVersionsLoading={areCurrentVersionsLoading || areFilteredVersionsLoading}
+      areVersionsLoading={areFilteredVersionsLoading}
       previousVersions={previousVersionOptions}
       getVersionLabels={getVersionLabels}
       packagePermissions={packagePermissions}

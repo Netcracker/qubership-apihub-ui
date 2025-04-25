@@ -36,6 +36,7 @@ import { usePublishOperationGroupPackageVersion } from '../../../usePublishOpera
 import { useOperationGroupPublicationStatuses } from '../../../usePublicationStatus'
 import { useFullMainVersion } from '../../../FullMainVersionProvider'
 import { REST_API_TYPE } from '@netcracker/qubership-apihub-api-processor'
+import {usePackageVersionConfig} from '@apihub/routes/root/PortalPage/usePackageVersionConfig'
 
 export const PublishOperationGroupPackageVersionDialog: FC = memo(() => {
   return (
@@ -50,7 +51,9 @@ const PublishOperationGroupPackageVersionPopup: FC<PopupProps> = memo<PopupProps
   const { group } = detail as PublishOperationGroupPackageVersionDetail
   const currentPackage = useCurrentPackage()
   const currentVersionId = useFullMainVersion()
-
+  
+  const [currentVersionConfig] = usePackageVersionConfig(currentPackage?.key, currentVersionId)
+  
   const [workspace, setWorkspace] = useState<Package | null>(currentPackage?.parents?.[0] ?? null)
   const [workspacesFilter, setWorkspacesFilter] = useState('')
   const [targetPackage, setTargetPackage] = useState<Package | null>()
@@ -76,11 +79,6 @@ const PublishOperationGroupPackageVersionPopup: FC<PopupProps> = memo<PopupProps
     showAllDescendants: true,
     textFilter: packagesFilter,
   })
-  const {versions: currentVersions, areVersionsLoading: areCurrentVersionsLoading} = usePackageVersions({
-    packageKey: currentPackage?.key,
-    enabled: !!currentPackage,
-    textFilter: getSplittedVersionKey(currentVersionId).versionKey,
-  })
   const { versions: filteredVersions, areVersionsLoading: areFilteredVersionsLoading } = usePackageVersions({
     packageKey: targetPackage?.key,
     enabled: !!targetPackage,
@@ -91,10 +89,6 @@ const PublishOperationGroupPackageVersionPopup: FC<PopupProps> = memo<PopupProps
   const { publishId, publishOperationGroupPackageVersion, isLoading: isPublishStarting, isSuccess: isPublishStartedSuccessfully } = usePublishOperationGroupPackageVersion()
   const [isPublishing, isPublished] = useOperationGroupPublicationStatuses(targetPackage?.key ?? '', targetVersion, group.groupName, publishId ?? '')
 
-  const currentVersionWithRevision = useMemo(
-      () => (currentVersions.find(({ key }) => key === currentVersionId)),
-      [currentVersions, currentVersionId],
-  )
   const filteredVersion = useMemo(
       () => (filteredVersions.find(({ key }) => getSplittedVersionKey(key).versionKey === versionsFilter)),
       [ versionsFilter, filteredVersions],
@@ -136,11 +130,11 @@ const PublishOperationGroupPackageVersionPopup: FC<PopupProps> = memo<PopupProps
     }
   }, [workspace, setValue])
   useEffect(() => {
-    if (currentVersionWithRevision) {
-      setTargetStatus(currentVersionWithRevision.status as VersionStatus || DRAFT_VERSION_STATUS)
-      setTargetLabels(currentVersionWithRevision.versionLabels ?? [])
+    if (currentVersionConfig) {
+      setTargetStatus(currentVersionConfig.status as VersionStatus || DRAFT_VERSION_STATUS)
+      setTargetLabels(currentVersionConfig.metaData?.versionLabels ?? [])
     }
-  }, [currentVersionWithRevision])
+  }, [currentVersionConfig])
 
   const onPublish = useCallback(async (data: PublishInfo): Promise<void> => {
     const previousVersion = replaceEmptyPreviousVersion(data.previousVersion)
@@ -183,7 +177,7 @@ const PublishOperationGroupPackageVersionPopup: FC<PopupProps> = memo<PopupProps
 
       versions={versions}
       onVersionsFilter={onVersionsFilter}
-      areVersionsLoading={areCurrentVersionsLoading || areFilteredVersionsLoading}
+      areVersionsLoading={areFilteredVersionsLoading}
       getVersionLabels={getVersionLabels}
       previousVersions={targetPreviousVersionOptions}
       onSetTargetVersion={onSetTargetVersion}

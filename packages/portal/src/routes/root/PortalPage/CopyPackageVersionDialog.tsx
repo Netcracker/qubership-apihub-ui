@@ -26,7 +26,6 @@ import { DASHBOARD_KIND, PACKAGE_KIND, WORKSPACE_KIND } from '@netcracker/qubers
 import {
   getSplittedVersionKey,
   getVersionLabelsMap,
-  getVersions,
 } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
@@ -35,7 +34,8 @@ import {
   NO_PREVIOUS_RELEASE_VERSION_OPTION,
   RELEASE_VERSION_STATUS,
 } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import type { VersionFormData } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
+import type { VersionFormData} from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
+import {getVersionOptions} from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
 import {
   replaceEmptyPreviousVersion,
   usePreviousVersionOptions,
@@ -46,6 +46,7 @@ import { useCopyPackageVersion } from '@apihub/routes/root/PortalPage/useCopyPac
 import { usePublicationStatuses } from '@apihub/routes/root/PortalPage/usePublicationStatus'
 import { useFullMainVersion } from '@apihub/routes/root/PortalPage/FullMainVersionProvider'
 import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
+import {usePackageVersionConfig} from '@apihub/routes/root/PortalPage/usePackageVersionConfig'
 
 export const CopyPackageVersionDialog: FC = memo(() => {
   return (
@@ -64,6 +65,7 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const isPackage = packageKind === PACKAGE_KIND
   const kindTitle = isPackage ? 'Package' : 'Dashboard'
 
+  const [currentVersionConfig] = usePackageVersionConfig(currentPackage?.key, currentVersionId)
   const [targetWorkspace, setTargetWorkspace] = useState<Package | null>(currentPackage?.parents?.[0] ?? null)
   const [workspacesFilter, setWorkspacesFilter] = useState('')
   const [targetPackage, setTargetPackage] = useState<Package | null>(null)
@@ -84,11 +86,6 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     showAllDescendants: true,
     textFilter: packagesFilter,
   })
-  const {versions: currentVersions} = usePackageVersions({
-    packageKey: currentPackage?.key,
-    enabled: !!currentPackage,
-    textFilter: versionId,
-  })
   const {versions: filteredVersions, areVersionsLoading: areFilteredVersionsLoading} = usePackageVersions({
     packageKey: targetPackage?.key,
     enabled: !!targetPackage,
@@ -103,15 +100,11 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const targetPreviousVersionOptions = usePreviousVersionOptions(targetPreviousVersions)
   const [copyPackage, publishId, isCopyStarting, isCopyingStartedSuccessfully] = useCopyPackageVersion()
   const [isPublishing, isPublished] = usePublicationStatuses(targetPackage?.key ?? '', publishId, targetVersion)
-
-  const currentVersion = useMemo(
-      () => (currentVersions.find(({ key }) => key === currentVersionId)),
-      [currentVersions, currentVersionId],
-  )
+  
   const targetPackagePermissions = useMemo(() => targetPackage?.permissions ?? [], [targetPackage?.permissions])
   const targetReleaseVersionPattern = useMemo(() => targetPackage?.releaseVersionPattern, [targetPackage?.releaseVersionPattern])
   const versionLabelsMap = useMemo(() => getVersionLabelsMap(filteredVersions), [filteredVersions])
-  const versions = useMemo(() => getVersions(versionLabelsMap, targetVersion), [targetVersion, versionLabelsMap])
+  const versions = useMemo(() => getVersionOptions(versionLabelsMap, targetVersion), [targetVersion, versionLabelsMap])
   const defaultValues: VersionFormData = useMemo(() => {
     return {
       package: targetPackage,
@@ -148,11 +141,11 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     }
   }, [targetWorkspace, setValue])
   useEffect(() => {
-    if (currentVersion) {
-      setTargetStatus(currentVersion.status as VersionStatus || DRAFT_VERSION_STATUS)
-      setTargetLabels(currentVersion.versionLabels ?? [])
+    if (currentVersionConfig) {
+      setTargetStatus(currentVersionConfig.status as VersionStatus || DRAFT_VERSION_STATUS)
+      setTargetLabels(currentVersionConfig.metaData?.versionLabels ?? [])
     }
-  }, [currentVersion])
+  }, [currentVersionConfig])
 
   const onCopy = useCallback(async (data: CopyInfo): Promise<void> => {
     const { package: targetPackage, version, status, labels, previousVersion } = data
