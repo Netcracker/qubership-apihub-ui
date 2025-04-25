@@ -25,6 +25,7 @@ import type { Key, VersionKey } from './keys'
 import type { ApiType } from './api-types'
 import { API_TYPE_REST } from './api-types'
 import type { DeprecateItem } from '@netcracker/qubership-apihub-api-processor'
+import type { IsLoading } from '../utils/aliases'
 
 export const DEFAULT_API_TYPE: ApiType = API_TYPE_REST
 
@@ -82,6 +83,11 @@ export type OperationsGroupedByTag<T extends Operation = OperationData> = {
 export type OperationPair<T extends Operation = Operation> = {
   currentOperation?: T
   previousOperation?: T
+}
+
+// When isLoading = true, the operation pair is not available yet
+export type OptionalOperationPair<T extends Operation = Operation> = OperationPair<T> & {
+  isLoading: IsLoading
 }
 
 export type OperationPairsGroupedByTag = {

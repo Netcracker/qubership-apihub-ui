@@ -20,7 +20,7 @@ import {
   COMPARE_SAME_OPERATIONS_MODE,
 } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationView/OperationDisplayMode'
 import { useComparisonObjects } from '@apihub/routes/root/PortalPage/VersionPage/useComparisonObjects'
-import { groupOperationPairsByTags, isFullyAddedOperationChange, isFullyAddedOrRemovedOperationChange, isFullyRemovedOperationChange } from '@apihub/utils/operations'
+import { groupOperationPairsByTags, isFullyAddedOperationChange, isFullyRemovedOperationChange } from '@apihub/utils/operations'
 import type { ActionType } from '@netcracker/qubership-apihub-api-diff'
 import { DiffAction } from '@netcracker/qubership-apihub-api-diff'
 import type { OperationChanges } from '@netcracker/qubership-apihub-api-processor'
@@ -29,8 +29,10 @@ import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/Pa
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type {
   Operation,
+  OperationData,
   OperationPair,
   OperationPairsGroupedByTag,
+  OptionalOperationPair,
   RestOperation,
 } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { isRestOperation, NO_BWC_API_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
@@ -54,6 +56,7 @@ import {
 import type { FC } from 'react'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { safeOperationKeysPair } from '../../../../../../../shared/src/utils/operations'
 import { useNavigation } from '../../../../NavigationProvider'
 import { usePackage } from '../../../usePackage'
 import { usePackageSearchParam } from '../../../usePackageSearchParam'
@@ -75,9 +78,8 @@ import { useComparisonParams } from '../useComparisonParams'
 import { useDocumentSearchParam } from '../useDocumentSearchParam'
 import { useNavigateToOperation } from '../useNavigateToOperation'
 import { useOperation } from '../useOperation'
-import { OperationsSidebarOnComparison } from './OperationsSidebarOnComparison'
 import { useOperationSearchParam } from '../useOperationSearchParam'
-import { safeOperationKeysPair } from '../../../../../../../shared/src/utils/operations'
+import { OperationsSidebarOnComparison } from './OperationsSidebarOnComparison'
 
 export function isOperationPairGrouped(
   operationPairsGroupedByTags: OperationPairsGroupedByTag,
@@ -350,9 +352,9 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
     }
   }, [apiType, areChangesAndOperationsLoading, changedPackageKey, changedVersionKey, filters, firstOperationPair, group, isCurrentOperationGrouped, navigateToFirstGroupOperation, previousGroup, selectedDocumentSlug])
 
-  const comparedOperationsPair = {
-    left: originOperation,
-    right: changedOperation,
+  const comparedOperationsPair: OptionalOperationPair<OperationData> = {
+    previousOperation: originOperation,
+    currentOperation: changedOperation,
     isLoading: isOriginOperationLoading || isChangedOperationLoading,
   }
 

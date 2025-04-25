@@ -24,7 +24,7 @@ import { useComparisonParams } from '@apihub/routes/root/PortalPage/VersionPage/
 import { groupOperationPairsByTags } from '@apihub/utils/operations'
 import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import type { OperationPair, OperationPairsGroupedByTag } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import type { OperationData, OperationPair, OperationPairsGroupedByTag, OptionalOperationPair } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { OperationChangeBase } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
 import type {
   DashboardComparisonSummary,
@@ -34,6 +34,7 @@ import {
   useSeverityFiltersSearchParam,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/change-severities/useSeverityFiltersSearchParam'
 import { filterChangesBySeverity } from '@netcracker/qubership-apihub-ui-shared/utils/change-severities'
+import { safeOperationKeysPair } from '@netcracker/qubership-apihub-ui-shared/utils/operations'
 import {
   DOCUMENT_SEARCH_PARAM,
   FILTERS_SEARCH_PARAM,
@@ -70,7 +71,6 @@ import { useNavigateToOperation } from '../useNavigateToOperation'
 import { useOperation } from '../useOperation'
 import { useOperationSearchParam } from '../useOperationSearchParam'
 import { OperationsSidebarOnComparison } from './OperationsSidebarOnComparison'
-import { safeOperationKeysPair } from '@netcracker/qubership-apihub-ui-shared/utils/operations'
 
 function getOperationPairsFromPackageChanges(
   packageChanges: ReadonlyArray<OperationChangeBase>,
@@ -230,9 +230,9 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
     }
   }, [apiType, areChangesAndOperationsLoading, changedPackageKey, changedVersionKey, filters, firstOperationPair, packageChangesHaveCurrentOperation, isPackageFromDashboard, navigate, originPackageKey, originVersionKey, selectedDocumentSlug, hasNextPage])
 
-  const comparedOperationsPair = {
-    left: originOperation,
-    right: changedOperation,
+  const comparedOperationsPair: OptionalOperationPair<OperationData> = {
+    previousOperation: originOperation,
+    currentOperation: changedOperation,
     isLoading: isOriginOperationInitialLoading || isChangedOperationInitialLoading,
   }
 
