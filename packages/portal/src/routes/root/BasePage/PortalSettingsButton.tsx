@@ -47,7 +47,7 @@ export const PortalSettingsButton: FC = memo(() => {
       to={getSettingsPath()}
       onClick={packageSettingsLinkHandle}
     >
-      <PortalSettingsIcon/>
+      <PortalSettingsIcon />
     </IconButton>
   )
 })

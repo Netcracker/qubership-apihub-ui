@@ -20,7 +20,6 @@ import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { editorRequestJson } from '@apihub/utils/requests'
 
-
 const INTEGRATION_BRANCHES_QUERY_KEY = 'integration-branches-query-key'
 
 export function useIntegrationBranches(repositoryKey: Key): IntegrationBranches {
@@ -34,10 +33,7 @@ export function useIntegrationBranches(repositoryKey: Key): IntegrationBranches 
   return data ?? []
 }
 
-async function getIntegrationBranches(
-  repositoryKey: Key,
-  limit = 100,
-): Promise<IntegrationBranchesDto> {
+async function getIntegrationBranches(repositoryKey: Key, limit = 100): Promise<IntegrationBranchesDto> {
   const repositoryId = encodeURIComponent(repositoryKey)
 
   const searchParams = optionalSearchParams({

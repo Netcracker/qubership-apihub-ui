@@ -21,38 +21,32 @@ import Dialog from '@mui/material/Dialog'
 import type { DialogProps } from '@mui/material/Dialog/Dialog'
 import { takeIfDefined } from '../utils/objects'
 
-export type DialogFormProps = PropsWithChildren<Pick<DialogProps, 'open' | 'onClose'> & {
-  onSubmit?: () => void
-  width?: string
-  maxWidth?: DialogProps['maxWidth']
-}>
+export type DialogFormProps = PropsWithChildren<
+  Pick<DialogProps, 'open' | 'onClose'> & {
+    onSubmit?: () => void
+    width?: string
+    maxWidth?: DialogProps['maxWidth']
+  }
+>
 
-export const DialogForm: FC<DialogFormProps> = memo<DialogFormProps>(({
-  open,
-  onClose,
-  onSubmit,
-  children,
-  width,
-  maxWidth,
-}) => {
-  return (
-    <Dialog
-      maxWidth={maxWidth}
-      open={open}
-      onClose={onClose}
-      PaperProps={{
-        sx: {
-          borderRadius: '10px',
-          ...takeIfDefined({ width }),
-        },
-      }}
-    >
-      <Box
-        component="form"
-        onSubmit={onSubmit}
+export const DialogForm: FC<DialogFormProps> = memo<DialogFormProps>(
+  ({ open, onClose, onSubmit, children, width, maxWidth }) => {
+    return (
+      <Dialog
+        maxWidth={maxWidth}
+        open={open}
+        onClose={onClose}
+        PaperProps={{
+          sx: {
+            borderRadius: '10px',
+            ...takeIfDefined({ width }),
+          },
+        }}
       >
-        {children}
-      </Box>
-    </Dialog>
-  )
-})
+        <Box component="form" onSubmit={onSubmit}>
+          {children}
+        </Box>
+      </Dialog>
+    )
+  },
+)

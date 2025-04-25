@@ -94,9 +94,7 @@ export class WSAdapter implements IDatabaseAdapter {
   handleConnectedUser: (user: UserConnectedEventData) => void
   handleUserCursor: (user: UserCursorEventData) => void
 
-  constructor(
-    { userId, userName, websocket, initialDocument }: TWSAdapterConstructionOptions,
-  ) {
+  constructor({ userId, userName, websocket, initialDocument }: TWSAdapterConstructionOptions) {
     this.userId = userId
     this.userName = userName || this.userId
     this.onClose = this.onclose.bind(this)
@@ -120,10 +118,7 @@ export class WSAdapter implements IDatabaseAdapter {
    * @param event - Event name.
    * @param listener - Event handler callback.
    */
-  on<Key extends DatabaseAdapterEvent>(
-    event: Key,
-    listener: Handler<TDatabaseAdapterEventArgs[Key]>,
-  ): void {
+  on<Key extends DatabaseAdapterEvent>(event: Key, listener: Handler<TDatabaseAdapterEventArgs[Key]>): void {
     this._emitter.on(event, listener)
   }
 
@@ -132,10 +127,7 @@ export class WSAdapter implements IDatabaseAdapter {
    * @param event - Event name.
    * @param listener - Event handler callback (optional).
    */
-  off<Key extends DatabaseAdapterEvent>(
-    event: Key,
-    listener?: Handler<TDatabaseAdapterEventArgs[Key]>,
-  ): void {
+  off<Key extends DatabaseAdapterEvent>(event: Key, listener?: Handler<TDatabaseAdapterEventArgs[Key]>): void {
     this._emitter.off(event, listener)
   }
 
@@ -199,9 +191,7 @@ export class WSAdapter implements IDatabaseAdapter {
 
     /** Sanity check that this operation is valid. */
     if (!this._document.canMergeWith(operation)) {
-      const error = new InvalidOperationError(
-        'sendOperation() called with an invalid operation.',
-      )
+      const error = new InvalidOperationError('sendOperation() called with an invalid operation.')
       this._trigger(DatabaseAdapterEvent.Error, {
         err: error,
         operation: operation.toString(),
@@ -221,11 +211,13 @@ export class WSAdapter implements IDatabaseAdapter {
       revision: this._revision,
       operation: operation,
     }
-    this.ws?.send(JSON.stringify({
-      type: 'operation',
-      operation: value,
-      revision: this._revision,
-    }))
+    this.ws?.send(
+      JSON.stringify({
+        type: 'operation',
+        operation: value,
+        revision: this._revision,
+      }),
+    )
 
     return true
   }
@@ -235,13 +227,17 @@ export class WSAdapter implements IDatabaseAdapter {
    * @param cursor - Cursor of Current User.
    */
   async sendCursor(cursor: ICursor | null): Promise<void> {
-    if (!this.ws || this.ws.readyState !== WebSocket.OPEN || !cursor) { return }
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN || !cursor) {
+      return
+    }
     const { position = -1, selectionEnd = -1 } = cursor ? cursor.toJSON() : {}
-    this.ws?.send(JSON.stringify({
-      type: 'cursor',
-      position: position,
-      selectionEnd: selectionEnd,
-    }))
+    this.ws?.send(
+      JSON.stringify({
+        type: 'cursor',
+        position: position,
+        selectionEnd: selectionEnd,
+      }),
+    )
   }
 
   protected onclose({ code }: CloseEvent): void {

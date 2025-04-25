@@ -33,7 +33,7 @@ import { requestJson, requestVoid } from '../../utils/requests'
 export const ROLES_QUERY_KEY = 'roles-query-key'
 
 export function toRoles(value: RolesDto): Roles {
-  return value?.roles.map(role => toRole(role))
+  return value?.roles.map((role) => toRole(role))
 }
 
 export function toRole(value: RoleDto): Role {
@@ -59,7 +59,7 @@ export function toUpdateRoleDto(value: Role): UpdateRoleDto {
 }
 
 export function toRolesOrder(value: Roles): RolesOrder {
-  return value.map(role => role.key)
+  return value.map((role) => role.key)
 }
 
 export function toRolesOrderDto(value: RolesOrder): RolesOrderDto {
@@ -102,16 +102,20 @@ export function useRoles(): RolesQueryState {
 export function useInvalidateRoles(): InvalidateQuery<void> {
   const client = useQueryClient()
 
-  return () => client.invalidateQueries({
-    queryKey: [ROLES_QUERY_KEY],
-    refetchType: 'all',
-  })
+  return () =>
+    client.invalidateQueries({
+      queryKey: [ROLES_QUERY_KEY],
+      refetchType: 'all',
+    })
 }
 
-export function useCreateRole(onError: OnError, onSuccess: OnSuccess): [CreateRole, IsLoading, IsSuccess, Error | null] {
+export function useCreateRole(
+  onError: OnError,
+  onSuccess: OnSuccess,
+): [CreateRole, IsLoading, IsSuccess, Error | null] {
   const invalidateRoles = useInvalidateRoles()
   const { mutate, isLoading, isSuccess, error } = useMutation<CreateRoleDto, Error, Role>({
-    mutationFn: value => createRole(toCreateRoleDto(value)),
+    mutationFn: (value) => createRole(toCreateRoleDto(value)),
     onSuccess: ({ role }) => {
       invalidateRoles()
       onSuccess(role)
@@ -122,11 +126,14 @@ export function useCreateRole(onError: OnError, onSuccess: OnSuccess): [CreateRo
   return [mutate, isLoading, isSuccess, error]
 }
 
-export function useUpdateRole(onError: OnError, onSuccess: OnSuccess): [UpdateRole, IsLoading, IsSuccess, Error | null] {
+export function useUpdateRole(
+  onError: OnError,
+  onSuccess: OnSuccess,
+): [UpdateRole, IsLoading, IsSuccess, Error | null] {
   const invalidateRoles = useInvalidateRoles()
 
   const { mutate, isLoading, isSuccess, error } = useMutation<void, Error, Role>({
-    mutationFn: role => updateRole(role.key, toUpdateRoleDto(role)),
+    mutationFn: (role) => updateRole(role.key, toUpdateRoleDto(role)),
     onSuccess: (_, { role }) => {
       invalidateRoles()
       onSuccess(role)
@@ -141,7 +148,7 @@ export function useUpdateRolesOrder(): [UpdateRoleOrder, IsLoading, IsSuccess, E
   const invalidateRoles = useInvalidateRoles()
 
   const { mutate, isLoading, isSuccess, error } = useMutation<void, Error, RolesOrder>({
-    mutationFn: rolesOrder => updateRoleOrder(toRolesOrderDto(rolesOrder)),
+    mutationFn: (rolesOrder) => updateRoleOrder(toRolesOrderDto(rolesOrder)),
     onSuccess: () => {
       invalidateRoles()
     },
@@ -153,7 +160,7 @@ export function useDeleteRole(onError: OnError, onSuccess: OnSuccess): [DeleteRo
   const invalidateRoles = useInvalidateRoles()
 
   const { mutate, isLoading, isSuccess } = useMutation<void, Error, Role>({
-    mutationFn: role => deleteRole(role.key),
+    mutationFn: (role) => deleteRole(role.key),
     onSuccess: (_, { role }) => {
       invalidateRoles()
       onSuccess(role)
@@ -170,37 +177,28 @@ export async function getRoles(): Promise<RolesDto> {
   })
 }
 
-export async function createRole(
-  value: CreateRoleDto,
-): Promise<RoleDto> {
+export async function createRole(value: CreateRoleDto): Promise<RoleDto> {
   return await requestJson<RoleDto>('/api/v2/roles', {
     method: 'POST',
     body: JSON.stringify(value),
   })
 }
 
-export async function updateRole(
-  roleKey: Key,
-  value: UpdateRoleDto,
-): Promise<void> {
+export async function updateRole(roleKey: Key, value: UpdateRoleDto): Promise<void> {
   return await requestVoid(`/api/v2/roles/${roleKey}`, {
     method: 'PATCH',
     body: JSON.stringify(value),
   })
 }
 
-export async function updateRoleOrder(
-  value: RolesOrderDto,
-): Promise<void> {
+export async function updateRoleOrder(value: RolesOrderDto): Promise<void> {
   await requestVoid('/api/v2/roles/changeOrder', {
     method: 'POST',
     body: JSON.stringify(value),
   })
 }
 
-export async function deleteRole(
-  roleKey: Key,
-): Promise<void> {
+export async function deleteRole(roleKey: Key): Promise<void> {
   return await requestVoid(`/api/v2/roles/${roleKey}`, {
     method: 'DELETE',
   })

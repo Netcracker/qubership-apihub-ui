@@ -59,7 +59,10 @@ export const VersionPageToolbar: FC = memo(() => {
   const [downloadVersionDocumentation] = useDownloadVersionDocumentation()
 
   const currentPackage = useCurrentPackage()
-  const isDashboard: boolean | null = useMemo(() => currentPackage?.kind === DASHBOARD_KIND ?? null, [currentPackage?.kind])
+  const isDashboard: boolean | null = useMemo(
+    () => currentPackage?.kind === DASHBOARD_KIND ?? null,
+    [currentPackage?.kind],
+  )
   const isPackage: boolean | null = useMemo(() => currentPackage?.kind === PACKAGE_KIND ?? null, [currentPackage?.kind])
 
   const { versionContent } = usePackageVersionContent({
@@ -75,7 +78,7 @@ export const VersionPageToolbar: FC = memo(() => {
 
   // This is a temporary solution because of portal can't work with hierarchical structure with folders
   const filesHaveFolders = useMemo(() => {
-    return (isConfigLoading || config?.files?.some(file => file.fileKey.includes('/'))) ?? false
+    return (isConfigLoading || config?.files?.some((file) => file.fileKey.includes('/'))) ?? false
   }, [config?.files, isConfigLoading])
 
   useEffect(() => {
@@ -84,24 +87,17 @@ export const VersionPageToolbar: FC = memo(() => {
   }, [latestRevision, setBackwardLocation, setFullMainVersion, setIsLatestRevision, version])
 
   const showCompareGroups = useMemo(
-    () => (
-      API_TYPE_SHOW_COMPARE_GROUPS_MAP[defaultApiType](isPackage, restGroupingPrefix)
-    ),
+    () => API_TYPE_SHOW_COMPARE_GROUPS_MAP[defaultApiType](isPackage, restGroupingPrefix),
     [defaultApiType, isPackage, restGroupingPrefix],
   )
 
-  const handleCreateVersionClick = useCallback(
-    () => {
-      setBackwardLocation({ ...backwardLocation, fromPackage: location })
-      navigateToVersion({ packageKey: packageId!, versionKey: SPECIAL_VERSION_KEY, edit: true })
-    },
-    [backwardLocation, location, navigateToVersion, packageId, setBackwardLocation],
-  )
+  const handleCreateVersionClick = useCallback(() => {
+    setBackwardLocation({ ...backwardLocation, fromPackage: location })
+    navigateToVersion({ packageKey: packageId!, versionKey: SPECIAL_VERSION_KEY, edit: true })
+  }, [backwardLocation, location, navigateToVersion, packageId, setBackwardLocation])
 
   const hasCreateVersionPermissions = useMemo(
-    () => CREATE_VERSION_PERMISSIONS.some(managePermission =>
-      permissions?.includes(managePermission),
-    ),
+    () => CREATE_VERSION_PERMISSIONS.some((managePermission) => permissions?.includes(managePermission)),
     [permissions],
   )
 
@@ -113,36 +109,41 @@ export const VersionPageToolbar: FC = memo(() => {
   return (
     <>
       <Toolbar
-        breadcrumbs={<PackageBreadcrumbs packageObject={currentPackage}/>}
+        breadcrumbs={<PackageBreadcrumbs packageObject={currentPackage} />}
         header={
           <>
-            <ToolbarTitle value={currentPackage?.name}/>
+            <ToolbarTitle value={currentPackage?.name} />
             <Typography sx={{ ml: 2 }} variant="subtitle3">
               Version
             </Typography>
-            <VersionSelector/>
-            {versionContent &&
-              <CustomChip value={versionContent!.status} sx={{ height: 20 }} data-testid="VersionStatusChip"/>}
-            <Divider orientation="vertical" sx={{ height: '20px', mt: '6px' }}/>
-            {isDashboard && <CreateDashboardVersionButton
-              variant="text"
-              disabled={!hasCreateVersionPermissions}
-              primaryButtonProps={{ sx: { borderRight: 'none !important', px: 0 } }}
-            />}
-            {isPackage && <ButtonWithHint
-              disabled={!hasCreateVersionPermissions}
-              disableHint={hasCreateVersionPermissions}
-              hint="You do not have permission to edit the version"
-              startIcon={<AddIcon color="#0068FF"/>}
-              tooltipMaxWidth="unset"
-              onClick={handleCreateVersionClick}
-              testId="AddNewVersionButton"
-            />}
+            <VersionSelector />
+            {versionContent && (
+              <CustomChip value={versionContent!.status} sx={{ height: 20 }} data-testid="VersionStatusChip" />
+            )}
+            <Divider orientation="vertical" sx={{ height: '20px', mt: '6px' }} />
+            {isDashboard && (
+              <CreateDashboardVersionButton
+                variant="text"
+                disabled={!hasCreateVersionPermissions}
+                primaryButtonProps={{ sx: { borderRight: 'none !important', px: 0 } }}
+              />
+            )}
+            {isPackage && (
+              <ButtonWithHint
+                disabled={!hasCreateVersionPermissions}
+                disableHint={hasCreateVersionPermissions}
+                hint="You do not have permission to edit the version"
+                startIcon={<AddIcon color="#0068FF" />}
+                tooltipMaxWidth="unset"
+                onClick={handleCreateVersionClick}
+                testId="AddNewVersionButton"
+              />
+            )}
           </>
         }
         action={
           <Box display="flex" gap={2}>
-            <CopyPackageVersionButton/>
+            <CopyPackageVersionButton />
 
             {!isDashboard && version && (
               <Button
@@ -154,14 +155,14 @@ export const VersionPageToolbar: FC = memo(() => {
               </Button>
             )}
 
-            <ComparisonSelectorButton showCompareGroups={showCompareGroups}/>
+            <ComparisonSelectorButton showCompareGroups={showCompareGroups} />
 
             <EditButton
               disabled={!hasEditPermission || filesHaveFolders}
               hint={getEditButtonHint(hasEditPermission, filesHaveFolders, latestRevision)}
               isDashboard={isDashboard}
             />
-            <PackageSettingsButton packageKey={packageId!}/>
+            <PackageSettingsButton packageKey={packageId!} />
           </Box>
         }
       />

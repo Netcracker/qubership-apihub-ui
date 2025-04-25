@@ -33,33 +33,30 @@ export type TemplateUploadProps = {
   apiType: ApiType
   downloadAvailable: boolean
 }
-export const TemplateUpload: FC<TemplateUploadProps> = memo<TemplateUploadProps>(({
-  uploadedFile,
-  setUploadedFile,
-  groupName,
-  apiType,
-  downloadAvailable,
-}) => {
-  const { packageId, versionId } = useParams()
-  const [downloadExportTemplate] = useDownloadExportTemplate()
+export const TemplateUpload: FC<TemplateUploadProps> = memo<TemplateUploadProps>(
+  ({ uploadedFile, setUploadedFile, groupName, apiType, downloadAvailable }) => {
+    const { packageId, versionId } = useParams()
+    const [downloadExportTemplate] = useDownloadExportTemplate()
 
-  const onDownload = useCallback(
-    () => downloadExportTemplate({
-      packageKey: packageId!,
-      version: versionId!,
-      groupName: groupName,
-      apiType: apiType,
-    }),
-    [apiType, downloadExportTemplate, groupName, packageId, versionId],
-  )
+    const onDownload = useCallback(
+      () =>
+        downloadExportTemplate({
+          packageKey: packageId!,
+          version: versionId!,
+          groupName: groupName,
+          apiType: apiType,
+        }),
+      [apiType, downloadExportTemplate, groupName, packageId, versionId],
+    )
 
-  return (
-    <FileUploadField
-      uploadedFile={uploadedFile}
-      setUploadedFile={setUploadedFile}
-      downloadAvailable={downloadAvailable}
-      onDownload={onDownload}
-      acceptableExtensions={[YAML_FILE_EXTENSION, YML_FILE_EXTENSION, JSON_FILE_EXTENSION]}
-    />
-  )
-})
+    return (
+      <FileUploadField
+        uploadedFile={uploadedFile}
+        setUploadedFile={setUploadedFile}
+        downloadAvailable={downloadAvailable}
+        onDownload={onDownload}
+        acceptableExtensions={[YAML_FILE_EXTENSION, YML_FILE_EXTENSION, JSON_FILE_EXTENSION]}
+      />
+    )
+  },
+)

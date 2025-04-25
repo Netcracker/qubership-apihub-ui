@@ -66,14 +66,9 @@ MenuButtonStory.argTypes = {
 
 MenuButtonStory.args = {
   title: 'Title',
-  icon: <MoreVertIcon/>,
+  icon: <MoreVertIcon />,
   alignItems: 'normal',
-  children: [
-    <MenuItem>Option 1</MenuItem>,
-    <MenuItem>Option 2</MenuItem>,
-    <MenuItem>Option 3</MenuItem>,
-  ],
-
+  children: [<MenuItem>Option 1</MenuItem>, <MenuItem>Option 2</MenuItem>, <MenuItem>Option 3</MenuItem>],
 }
 MenuButtonStory.storyName = 'Menu Button'
 

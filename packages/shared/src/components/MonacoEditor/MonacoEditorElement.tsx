@@ -36,24 +36,12 @@ export type MonacoEditorElementProps = {
   onSearchPhraseChange?: (value: string | undefined) => void
 }
 
-const MonacoEditorElement: FC<MonacoEditorElementProps> = /* @__PURE__ */ memo<MonacoEditorElementProps>((
-  {
-    value,
-    type,
-    language,
-    selectedUri,
-    searchPhrase,
-    onSearchPhraseChange,
-  },
-) => {
-  const element = useMonacoEditorElement({ value, type, language, selectedUri, searchPhrase, onSearchPhraseChange })
+const MonacoEditorElement: FC<MonacoEditorElementProps> = /* @__PURE__ */ memo<MonacoEditorElementProps>(
+  ({ value, type, language, selectedUri, searchPhrase, onSearchPhraseChange }) => {
+    const element = useMonacoEditorElement({ value, type, language, selectedUri, searchPhrase, onSearchPhraseChange })
 
-  return (
-    <div
-      ref={element}
-      style={{ height: '100%' }}
-    />
-  )
-})
+    return <div ref={element} style={{ height: '100%' }} />
+  },
+)
 
 export default MonacoEditorElement

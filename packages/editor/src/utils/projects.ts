@@ -17,5 +17,5 @@
 import type { Project } from '@apihub/entities/projects'
 
 export function calculateProjectPath(project: Project): string {
-  return project.groups.map(group => group.name).join(' / ')
+  return project.groups.map((group) => group.name).join(' / ')
 }

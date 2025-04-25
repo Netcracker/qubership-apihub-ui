@@ -54,7 +54,9 @@ function getPublishDetails(router: PublishRouter): void {
       }
     }
 
-    if (publishDetail?.status !== RUNNING_PUBLISH_STATUS) { /* empty */ } else {
+    if (publishDetail?.status !== RUNNING_PUBLISH_STATUS) {
+      /* empty */
+    } else {
       setTimeout(() => {
         publishDetailMap[publishId] = {
           publishId: publishId,
@@ -73,11 +75,13 @@ function getAllPublishDetails(router: PublishRouter): void {
     const { publishIds }: { publishIds: string[] } = JSON.parse(req.body)
 
     setTimeout(() => {
-      res.status(200).json(publishIds.map(publishId => ({
-        publishId: publishId,
-        status: COMPLETE_PUBLISH_STATUS,
-        message: 'Published successfully',
-      })))
+      res.status(200).json(
+        publishIds.map((publishId) => ({
+          publishId: publishId,
+          status: COMPLETE_PUBLISH_STATUS,
+          message: 'Published successfully',
+        })),
+      )
     }, 3000)
   })
 }

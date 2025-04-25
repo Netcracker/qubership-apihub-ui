@@ -27,20 +27,23 @@ export type NavigationItemProps = Readonly<{
   icon?: React.ReactNode
   selected?: boolean
   packageKey?: string
-}> & TestableProps
+}> &
+  TestableProps
 
-export const NavigationItem: FC<NavigationItemProps> = memo<NavigationItemProps>(props => {
+export const NavigationItem: FC<NavigationItemProps> = memo<NavigationItemProps>((props) => {
   const { to, icon, label, packageKey, testId, selected } = props
 
   return (
-    <Box sx={{
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center',
-      height: '32px',
-      mb: packageKey ? '8px' : '16px',
-      pr: '6px',
-    }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        height: '32px',
+        mb: packageKey ? '8px' : '16px',
+        pr: '6px',
+      }}
+    >
       <ListItemButton
         component={NavLink}
         to={to}
@@ -69,7 +72,7 @@ export const NavigationItem: FC<NavigationItemProps> = memo<NavigationItemProps>
         >
           {icon}
         </ListItemIcon>
-        <ListItemText sx={{ fontWeight: 500 }} primary={label}/>
+        <ListItemText sx={{ fontWeight: 500 }} primary={label} />
       </ListItemButton>
     </Box>
   )

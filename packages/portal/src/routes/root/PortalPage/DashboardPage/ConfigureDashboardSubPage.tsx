@@ -27,11 +27,7 @@ export const ConfigureDashboardSubPage: FC = memo(() => {
   return (
     <ActiveTabConfigureDashboard.Provider value={activeTab}>
       <SetActiveTabConfigureDashboard.Provider value={setActiveTab}>
-        <PageLayout
-          navigation={<ConfigureDashboardSidebar/>}
-          body={<ConfigureDashboardBody/>}
-          nestedPage
-        />
+        <PageLayout navigation={<ConfigureDashboardSidebar />} body={<ConfigureDashboardBody />} nestedPage />
       </SetActiveTabConfigureDashboard.Provider>
     </ActiveTabConfigureDashboard.Provider>
   )

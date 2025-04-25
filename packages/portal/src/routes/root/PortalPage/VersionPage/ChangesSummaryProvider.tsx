@@ -29,24 +29,21 @@ export function useChangesSummaryFromContext(): VersionChangesSummary | undefine
   return useContext(ChangesSummaryContext)
 }
 
-function useIsChangesSummaryContextValid(
-  actualComparisonOptions: UseCompareVersionsOptions,
-): boolean {
+function useIsChangesSummaryContextValid(actualComparisonOptions: UseCompareVersionsOptions): boolean {
   const comparisonOptionsFromContext = useVersionsComparisonOptions()
 
-  return useMemo(
-    () => {
-      const actual = actualComparisonOptions
-      const saved = comparisonOptionsFromContext
-      return actual.changedPackageKey === saved?.changedPackageKey &&
-        actual.changedVersionKey === saved?.changedVersionKey &&
-        actual.originPackageKey === saved?.originPackageKey &&
-        actual.originVersionKey === saved?.originVersionKey &&
-        actual.currentGroup === saved?.currentGroup &&
-        actual.previousGroup === saved?.previousGroup
-    },
-    [actualComparisonOptions, comparisonOptionsFromContext],
-  )
+  return useMemo(() => {
+    const actual = actualComparisonOptions
+    const saved = comparisonOptionsFromContext
+    return (
+      actual.changedPackageKey === saved?.changedPackageKey &&
+      actual.changedVersionKey === saved?.changedVersionKey &&
+      actual.originPackageKey === saved?.originPackageKey &&
+      actual.originVersionKey === saved?.originVersionKey &&
+      actual.currentGroup === saved?.currentGroup &&
+      actual.previousGroup === saved?.previousGroup
+    )
+  }, [actualComparisonOptions, comparisonOptionsFromContext])
 }
 
 function useSetChangesSummaryContext(): Dispatch<SetStateAction<VersionChangesSummary | undefined>> {
@@ -77,7 +74,13 @@ export function useChangesSummaryContext(
       return clearedChangesSummary
     }
     return changesSummaryFromContext
-  }, [actualComparisonOptions, changesSummaryFromContext, isContextValid, setChangesSummary, setVersionsComparisonOptions])
+  }, [
+    actualComparisonOptions,
+    changesSummaryFromContext,
+    isContextValid,
+    setChangesSummary,
+    setVersionsComparisonOptions,
+  ])
 
   return [changesSummary, isContextValid, useSetChangesSummaryContext()]
 }
@@ -90,9 +93,7 @@ export const ChangesSummaryProvider: FC<PropsWithChildren> = ({ children }) => {
     <VersionsComparisonOptions.Provider value={comparisonOptions}>
       <SetVersionsComparisonOptions.Provider value={setComparisonOptions}>
         <ChangesSummaryContext.Provider value={changesSummary}>
-          <SetChangesSummaryContext.Provider value={setChangesSummary}>
-            {children}
-          </SetChangesSummaryContext.Provider>
+          <SetChangesSummaryContext.Provider value={setChangesSummary}>{children}</SetChangesSummaryContext.Provider>
         </ChangesSummaryContext.Provider>
       </SetVersionsComparisonOptions.Provider>
     </VersionsComparisonOptions.Provider>

@@ -25,7 +25,7 @@ const meta: Meta<typeof IdpAuthTokenForm> = {
   decorators: [
     (Story) => (
       <ThemeProvider theme={theme}>
-        <Story/>
+        <Story />
       </ThemeProvider>
     ),
   ],

@@ -37,9 +37,7 @@ export default {
   title: 'Principal View',
 } as Meta
 
-const TokenViewFn: StoryFn<PrincipalViewProps> = (args) => (
-  <PrincipalView {...args}/>
-)
+const TokenViewFn: StoryFn<PrincipalViewProps> = (args) => <PrincipalView {...args} />
 
 export const TokenViewStory = TokenViewFn.bind({})
 
@@ -47,9 +45,7 @@ TokenViewStory.args = {
   value: TOKEN_SAMPLE,
 }
 
-const UserViewFn: StoryFn<PrincipalViewProps> = (args) => (
-  <PrincipalView {...args}/>
-)
+const UserViewFn: StoryFn<PrincipalViewProps> = (args) => <PrincipalView {...args} />
 
 export const UserViewStory = UserViewFn.bind({})
 

@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-export function alphabeticallyBy<T>(
-  propertyName: keyof T,
-  it: T,
-  that: T,
-): number {
+export function alphabeticallyBy<T>(propertyName: keyof T, it: T, that: T): number {
   const a = it[propertyName]
   const b = that[propertyName]
 

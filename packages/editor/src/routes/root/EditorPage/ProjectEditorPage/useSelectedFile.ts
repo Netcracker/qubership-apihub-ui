@@ -23,8 +23,5 @@ export function useSelectedFile(): ProjectFile | null {
   const [fileKey] = useFileSearchParam()
   const [branchConfig] = useBranchConfig()
 
-  return useMemo(
-    () => branchConfig?.files.find(({ key }) => key === fileKey) ?? null,
-    [fileKey, branchConfig?.files],
-  )
+  return useMemo(() => branchConfig?.files.find(({ key }) => key === fileKey) ?? null, [fileKey, branchConfig?.files])
 }

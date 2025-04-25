@@ -42,15 +42,21 @@ export const SystemTokensTab: FC = memo(() => {
   const [userSearch, setUserSearch] = useState<string>('')
   const [usersData, isUsersDataLoading] = useUsers(userSearch)
 
-  const handleGenerateToken = useCallback((value: GenerateApiKeyValue): void => {
-    generateApiKey({ value })
-  }, [generateApiKey])
+  const handleGenerateToken = useCallback(
+    (value: GenerateApiKeyValue): void => {
+      generateApiKey({ value })
+    },
+    [generateApiKey],
+  )
 
-  const handleSetUserSearch = useCallback((search: string) => {
-    setUserSearch(search)
-  }, [setUserSearch])
+  const handleSetUserSearch = useCallback(
+    (search: string) => {
+      setUserSearch(search)
+    },
+    [setUserSearch],
+  )
 
-  const availableRoles = useMemo(() => roles?.map(role => role.role) ?? [], [roles])
+  const availableRoles = useMemo(() => roles?.map((role) => role.role) ?? [], [roles])
 
   const showSuccessNotification = useShowSuccessNotification()
 
@@ -78,5 +84,6 @@ export const SystemTokensTab: FC = memo(() => {
           />
         </>
       }
-    />)
+    />
+  )
 })

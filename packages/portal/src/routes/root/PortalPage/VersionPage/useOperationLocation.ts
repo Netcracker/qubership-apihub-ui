@@ -27,5 +27,3 @@ export function useOperationLocation(): OperationLocation {
     operationKey: operationId,
   }
 }
-
-

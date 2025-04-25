@@ -18,7 +18,7 @@ import type { Writeable } from '../../types'
 import type { SystemTokensDto } from './types'
 
 export const ACCESS_TOKENS_LIST: Writeable<SystemTokensDto> = {
-  'apiKeys': [
+  apiKeys: [
     {
       id: '964eccbe-87f2-443d-8eed-665a750d6a69',
       packageId: 'CLDPKG',

@@ -20,10 +20,5 @@ import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components
 import { SHOW_EDIT_OPERATION_GROUP_CONTENT_DIALOG } from '@apihub/routes/EventBusProvider'
 
 export const EditOperationGroupContentDialog: FC = () => {
-  return (
-    <PopupDelegate
-      type={SHOW_EDIT_OPERATION_GROUP_CONTENT_DIALOG}
-      render={props => <Popup {...props} />}
-    />
-  )
+  return <PopupDelegate type={SHOW_EDIT_OPERATION_GROUP_CONTENT_DIALOG} render={(props) => <Popup {...props} />} />
 }

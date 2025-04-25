@@ -40,78 +40,72 @@ export type DocSpecViewProps = {
   schemaViewMode?: string
 }
 
-export const DocSpecView: FC<DocSpecViewProps> = memo<DocSpecViewProps>(({
-  type,
-  format,
-  value,
-  selectedUri,
-  sidebarEnabled,
-  searchPhrase,
-  schemaViewMode,
-}) => {
-  if (type === UNKNOWN_SPEC_TYPE && (format === JSON_FILE_FORMAT || format === YAML_FILE_FORMAT)) {
-    const specification = generateSpecificationByPathItems(format, value)
-    if (!specification) {
-      const jsonSchema = toJsonSchema(value)
-      if (jsonSchema) {
-        // TODO: Fix types as casting is required now
+export const DocSpecView: FC<DocSpecViewProps> = memo<DocSpecViewProps>(
+  ({ type, format, value, selectedUri, sidebarEnabled, searchPhrase, schemaViewMode }) => {
+    if (type === UNKNOWN_SPEC_TYPE && (format === JSON_FILE_FORMAT || format === YAML_FILE_FORMAT)) {
+      const specification = generateSpecificationByPathItems(format, value)
+      if (!specification) {
+        const jsonSchema = toJsonSchema(value)
+        if (jsonSchema) {
+          // TODO: Fix types as casting is required now
+          return (
+            <Marker mark={searchPhrase}>
+              <JsonSchemaViewer schema={jsonSchema as object} />
+            </Marker>
+          )
+        }
+
         return (
-          <Marker mark={searchPhrase}>
-            <JsonSchemaViewer schema={jsonSchema as object}/>
-          </Marker>
+          <Placeholder
+            invisible={false}
+            area={CONTENT_PLACEHOLDER_AREA}
+            message="Cannot render specification preview"
+          />
         )
       }
 
+      const [content, , pathItemUri] = specification
       return (
-        <Placeholder
-          invisible={false}
-          area={CONTENT_PLACEHOLDER_AREA}
-          message="Cannot render specification preview"
+        <ApispecView
+          apiDescriptionDocument={content}
+          selectedUri={pathItemUri}
+          sidebarEnabled={sidebarEnabled}
+          searchPhrase={searchPhrase}
+          schemaViewMode={schemaViewMode}
+          hideTryIt={true}
         />
       )
     }
 
-    const [content, , pathItemUri] = specification
-    return (
-      <ApispecView
-        apiDescriptionDocument={content}
-        selectedUri={pathItemUri}
-        sidebarEnabled={sidebarEnabled}
-        searchPhrase={searchPhrase}
-        schemaViewMode={schemaViewMode}
-        hideTryIt={true}
-      />
-    )
-  }
+    if (isOpenApiSpecType(type)) {
+      return (
+        <ApispecView
+          apiDescriptionDocument={value}
+          selectedUri={selectedUri}
+          sidebarEnabled={sidebarEnabled}
+          searchPhrase={searchPhrase}
+          schemaViewMode={schemaViewMode}
+          hideTryIt={true}
+        />
+      )
+    }
 
-  if (isOpenApiSpecType(type)) {
-    return (
-      <ApispecView
-        apiDescriptionDocument={value}
-        selectedUri={selectedUri}
-        sidebarEnabled={sidebarEnabled}
-        searchPhrase={searchPhrase}
-        schemaViewMode={schemaViewMode}
-        hideTryIt={true}
-      />
-    )
-  }
+    if (isJsonSchemaSpecType(type)) {
+      return (
+        <Marker mark={searchPhrase}>
+          <JsonSchemaViewer schema={JSON.parse(value)} />
+        </Marker>
+      )
+    }
 
-  if (isJsonSchemaSpecType(type)) {
-    return (
-      <Marker mark={searchPhrase}>
-        <JsonSchemaViewer schema={JSON.parse(value)}/>
-      </Marker>
-    )
-  }
+    if (format === MD_FILE_FORMAT) {
+      return (
+        <Marker mark={searchPhrase}>
+          <MarkdownViewer value={value} />
+        </Marker>
+      )
+    }
 
-  if (format === MD_FILE_FORMAT) {
-    return (
-      <Marker mark={searchPhrase}>
-        <MarkdownViewer value={value}/>
-      </Marker>
-    )
-  }
-
-  return null
-})
+    return null
+  },
+)

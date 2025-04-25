@@ -40,7 +40,9 @@ export const MainPage: FC = memo(() => {
   const isFavoriteMainPageMode = useIsFavoriteMainViewMode()
   const { productionMode } = useSystemInfo()
   const groupCreationAvailable = useMemo(
-    () => (productionMode && (authorization?.user.key === 'user001' || authorization?.user.key === 'user002')) || !productionMode,
+    () =>
+      (productionMode && (authorization?.user.key === 'user001' || authorization?.user.key === 'user002')) ||
+      !productionMode,
     [authorization?.user.key, productionMode],
   )
 
@@ -60,11 +62,7 @@ export const MainPage: FC = memo(() => {
             action={
               <Paper sx={{ display: 'flex', gap: 2 }}>
                 <GroupsAndProjectsFilterer />
-                <MenuButton
-                  variant="added"
-                  title="Create"
-                  icon={<KeyboardArrowDownOutlinedIcon />}
-                >
+                <MenuButton variant="added" title="Create" icon={<KeyboardArrowDownOutlinedIcon />}>
                   <MenuItem onClick={showCreateProjectDialog}>Project</MenuItem>
                   {groupCreationAvailable && <MenuItem onClick={showCreateGroupDialog}>Group</MenuItem>}
                 </MenuButton>
@@ -75,12 +73,8 @@ export const MainPage: FC = memo(() => {
             }
           />
           <CardContent sx={{ px: 4, py: 0 }}>
-            {isTreeMainPageMode && (
-              <GroupsAndProjectsTree />
-            )}
-            {(isTableMainPageMode || isFavoriteMainPageMode) && (
-              <GroupsAndProjectsTable />
-            )}
+            {isTreeMainPageMode && <GroupsAndProjectsTree />}
+            {(isTableMainPageMode || isFavoriteMainPageMode) && <GroupsAndProjectsTable />}
           </CardContent>
         </Card>
       }

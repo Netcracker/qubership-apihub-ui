@@ -39,45 +39,38 @@ type GraphqlApiSpecViewProps = {
   header?: string
 }
 
-export const GraphqlApiSpecView: FC<GraphqlApiSpecViewProps> = /* @__PURE__ */ memo<GraphqlApiSpecViewProps>(({
-  value,
-  fetchDataUrl,
-  header,
-}) => {
-  const introspection = toIntrospection(value)
+export const GraphqlApiSpecView: FC<GraphqlApiSpecViewProps> = /* @__PURE__ */ memo<GraphqlApiSpecViewProps>(
+  ({ value, fetchDataUrl, header }) => {
+    const introspection = toIntrospection(value)
 
-  const fetcher = createGraphiQLFetcher({
-    url: fetchDataUrl ?? EMPTY_FETCH_DATA_URL,
-    headers: {
-      'X-Apihub-Authorization': getAuthorization(), // for INSECURE_PROXY = false
-    },
-  })
+    const fetcher = createGraphiQLFetcher({
+      url: fetchDataUrl ?? EMPTY_FETCH_DATA_URL,
+      headers: {
+        'X-Apihub-Authorization': getAuthorization(), // for INSECURE_PROXY = false
+      },
+    })
 
-  const explorer = explorerPlugin({})
+    const explorer = explorerPlugin({})
 
-  const defaultHeader = JSON.stringify({
-    Authorization: header || 'Bearer XXX',
-  }, undefined, 2)
+    const defaultHeader = JSON.stringify(
+      {
+        Authorization: header || 'Bearer XXX',
+      },
+      undefined,
+      2,
+    )
 
-  return (
-    <Box sx={GRAPHQL_CUSTOM_STYLE}>
-      <Placeholder
-        invisible={!!value}
-        area={CONTENT_PLACEHOLDER_AREA}
-        message="No file exist"
-      >
-        <ErrorBoundary>
-          <GraphiQL
-            fetcher={fetcher}
-            plugins={[explorer]}
-            schema={introspection?.data}
-            headers={defaultHeader}
-          />
-        </ErrorBoundary>
-      </Placeholder>
-    </Box>
-  )
-})
+    return (
+      <Box sx={GRAPHQL_CUSTOM_STYLE}>
+        <Placeholder invisible={!!value} area={CONTENT_PLACEHOLDER_AREA} message="No file exist">
+          <ErrorBoundary>
+            <GraphiQL fetcher={fetcher} plugins={[explorer]} schema={introspection?.data} headers={defaultHeader} />
+          </ErrorBoundary>
+        </Placeholder>
+      </Box>
+    )
+  },
+)
 
 type GraphqlIntrospection = {
   data: IntrospectionQuery
@@ -91,11 +84,11 @@ function toIntrospection(value: string): GraphqlIntrospection | null {
     return value.startsWith('{')
       ? JSON.parse(value)
       : {
-        data: introspectionFromSchema(buildSchema(value)),
-        dataPresent: true,
-        errors: [],
-        extensions: null,
-      }
+          data: introspectionFromSchema(buildSchema(value)),
+          dataPresent: true,
+          errors: [],
+          extensions: null,
+        }
   } catch (e) {
     return null
   }

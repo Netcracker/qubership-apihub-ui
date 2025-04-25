@@ -29,9 +29,7 @@ export type UserCursorEventData = {
   }
 }
 
-export function isUserCursorEventData(
-  value: Record<string, unknown>,
-): value is UserCursorEventData {
+export function isUserCursorEventData(value: Record<string, unknown>): value is UserCursorEventData {
   return value.type === USER_CURSOR_EVENT_TYPE
 }
 
@@ -42,9 +40,7 @@ export type UserOperationEventData = {
   operation: (string | number)[]
 }
 
-export function isUserOperationEventData(
-  value: Record<string, unknown>,
-): value is UserOperationEventData {
+export function isUserOperationEventData(value: Record<string, unknown>): value is UserOperationEventData {
   return value.type === USER_OPERATION_EVENT_TYPE
 }
 
@@ -54,8 +50,6 @@ export type DocumentSnapshotEventData = {
   revision: number
 }
 
-export function isDocumentSnapshotEventData(
-  value: Record<string, unknown>,
-): value is DocumentSnapshotEventData {
+export function isDocumentSnapshotEventData(value: Record<string, unknown>): value is DocumentSnapshotEventData {
   return value.type === DOCUMENT_SNAPSHOT_EVENT_TYPE
 }

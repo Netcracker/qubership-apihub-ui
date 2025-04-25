@@ -27,24 +27,25 @@ export type ModelLabelProps = {
 }
 
 // First Order Component //
-export const ModelLabel: FC<ModelLabelProps> = memo<ModelLabelProps>(({
-  title,
-  onModelUsagesClick,
-}) => {
+export const ModelLabel: FC<ModelLabelProps> = memo<ModelLabelProps>(({ title, onModelUsagesClick }) => {
   return (
-    <Box sx={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: 1,
-      justifyContent: 'space-between',
-      width: '100%',
-      '&:hover': {
-        '& .hoverable': {
-          visibility: 'visible',
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1,
+        justifyContent: 'space-between',
+        width: '100%',
+        '&:hover': {
+          '& .hoverable': {
+            visibility: 'visible',
+          },
         },
-      },
-    }}>
-      <Typography noWrap variant="body2">{title}</Typography>
+      }}
+    >
+      <Typography noWrap variant="body2">
+        {title}
+      </Typography>
       <MenuButton
         sx={{
           visibility: 'hidden',
@@ -58,8 +59,8 @@ export const ModelLabel: FC<ModelLabelProps> = memo<ModelLabelProps>(({
         }}
         className="hoverable"
         size="small"
-        icon={<MoreVertIcon sx={{ color: '#626D82' }} fontSize="small"/>}
-        onClick={event => event.stopPropagation()}
+        icon={<MoreVertIcon sx={{ color: '#626D82' }} fontSize="small" />}
+        onClick={(event) => event.stopPropagation()}
         data-testid="ActionMenuButton"
       >
         <MenuItem onClick={onModelUsagesClick} data-testid="DependantOperationsMenuItem">
@@ -76,21 +77,22 @@ export type ErrorModelLabelProps = {
 }
 
 // First Order Component //
-export const ErrorModelLabel: FC<ErrorModelLabelProps> = memo<ErrorModelLabelProps>(({
-  title,
-  error,
-}) => {
+export const ErrorModelLabel: FC<ErrorModelLabelProps> = memo<ErrorModelLabelProps>(({ title, error }) => {
   return (
-    <Box sx={{
-      cursor: 'default',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '4px',
-    }}>
-      <Typography noWrap variant="body2">{title}</Typography>
+    <Box
+      sx={{
+        cursor: 'default',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '4px',
+      }}
+    >
+      <Typography noWrap variant="body2">
+        {title}
+      </Typography>
       <Tooltip title={error}>
         <Box sx={{ cursor: 'pointer' }}>
-          <YellowWarningIcon/>
+          <YellowWarningIcon />
         </Box>
       </Tooltip>
     </Box>

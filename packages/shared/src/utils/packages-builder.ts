@@ -108,7 +108,6 @@ export async function fetchDeprecatedItems(
   operationIds: string[] | undefined,
   authorization: string,
 ): Promise<ResolvedDeprecations | null> {
-
   const queryParams = optionalSearchParams({
     ids: { value: operationIds },
     includeDeprecatedItems: { value: true },
@@ -178,16 +177,7 @@ export type SetPublicationDetailsOptions = {
 }
 
 export async function setPublicationDetails(options: SetPublicationDetailsOptions): Promise<void> {
-  const {
-    packageKey,
-    publishKey,
-    status,
-    authorization,
-    builderId,
-    abortController,
-    data,
-    errors,
-  } = options
+  const { packageKey, publishKey, status, authorization, builderId, abortController, data, errors } = options
 
   const formData = new FormData()
   formData.append('status', status)
@@ -293,15 +283,15 @@ export type PublishDetailsDto = {
 export function toVersionOperation(value: OperationDto): ResolvedOperation {
   const metadata = isRestOperationDto(value)
     ? {
-      tags: value.tags,
-      method: value.method,
-      path: value.path,
-    }
+        tags: value.tags,
+        method: value.method,
+        path: value.path,
+      }
     : {
-      tags: value.tags,
-      method: value.method,
-      type: value.type,
-    }
+        tags: value.tags,
+        method: value.method,
+        type: value.type,
+      }
   return {
     operationId: value.operationId,
     data: value.data!,
@@ -341,10 +331,7 @@ export async function fetchExportTemplate(
   )
   const data = await response.blob()
 
-  const getFilename = (): string => response.headers
-    .get('content-disposition')!
-    .split('filename=')[1]
-    .split(';')[0]
+  const getFilename = (): string => response.headers.get('content-disposition')!.split('filename=')[1].split(';')[0]
 
   return [await data.text(), getFilename()]
 }

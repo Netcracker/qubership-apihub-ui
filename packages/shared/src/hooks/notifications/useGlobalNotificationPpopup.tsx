@@ -28,10 +28,7 @@ const defaultState: NotificationData = {
   type: SUCCESS_NOTIFICATION_TYPE,
 }
 
-export function useGlobalNotification(): [
-  ReactNode,
-  NotificationDataCatcherFn,
-] {
+export function useGlobalNotification(): [ReactNode, NotificationDataCatcherFn] {
   const [notificationState, setNotificationState] = useState<NotificationData>(defaultState)
   const [open, setOpen] = useState<boolean>(false)
 
@@ -45,16 +42,19 @@ export function useGlobalNotification(): [
     setOpen(true)
   }, [])
 
-  const node = useMemo(() => (
-    <Notification
-      open={open}
-      setOpen={setOpen}
-      title={notificationState.title}
-      message={notificationState.message}
-      type={notificationState.type}
-      link={notificationState.link}
-    />
-  ), [notificationState, open])
+  const node = useMemo(
+    () => (
+      <Notification
+        open={open}
+        setOpen={setOpen}
+        title={notificationState.title}
+        message={notificationState.message}
+        type={notificationState.type}
+        link={notificationState.link}
+      />
+    ),
+    [notificationState, open],
+  )
 
   return [node, dataCatcher]
 }

@@ -26,29 +26,24 @@ type ItemProps = MenuItemProps & TestableProps
 export type MenuButtonContentWithSectionsProps = {
   content: Record<SectionName, ItemProps[]>
 }
-export const MenuButtonContentWithSections: FC<MenuButtonContentWithSectionsProps> = memo<MenuButtonContentWithSectionsProps>(({ content }) => {
-  return (
-    <>
-      {Object.entries(content).map(([sectionName, items]) => (
-        <Box component="div" key={sectionName}>
-          <Typography sx={EXPORT_MENU_DELIMITER_STYLES}>
-            {sectionName}
-          </Typography>
-          {items.map(({ onClick, title, testId }, index) => (
-            <MenuItem
-              key={`${sectionName}-${index}`}
-              onClick={onClick}
-              data-testid={testId}
-            >
-              {title}
-            </MenuItem>
-          ))}
-          <Box/>
-        </Box>
-      ))}
-    </>
-  )
-})
+export const MenuButtonContentWithSections: FC<MenuButtonContentWithSectionsProps> =
+  memo<MenuButtonContentWithSectionsProps>(({ content }) => {
+    return (
+      <>
+        {Object.entries(content).map(([sectionName, items]) => (
+          <Box component="div" key={sectionName}>
+            <Typography sx={EXPORT_MENU_DELIMITER_STYLES}>{sectionName}</Typography>
+            {items.map(({ onClick, title, testId }, index) => (
+              <MenuItem key={`${sectionName}-${index}`} onClick={onClick} data-testid={testId}>
+                {title}
+              </MenuItem>
+            ))}
+            <Box />
+          </Box>
+        ))}
+      </>
+    )
+  })
 
 const EXPORT_MENU_DELIMITER_STYLES = {
   color: '#626D82',
@@ -57,4 +52,3 @@ const EXPORT_MENU_DELIMITER_STYLES = {
   lineHeight: '20px',
   padding: '8px',
 }
-

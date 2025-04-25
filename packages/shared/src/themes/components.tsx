@@ -145,21 +145,23 @@ export function createComponents(): Components {
           height: 32,
         },
       },
-      variants: [{
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        props: { variant: 'added' },
-        style: {
-          minWidth: 100,
-          color: '#FFFFFF',
-          backgroundColor: '#00BB5B',
-          boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.05)',
-          '&:hover': {
+      variants: [
+        {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          props: { variant: 'added' },
+          style: {
+            minWidth: 100,
+            color: '#FFFFFF',
+            backgroundColor: '#00BB5B',
             boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.05)',
-            backgroundColor: '#00A356',
+            '&:hover': {
+              boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.05)',
+              backgroundColor: '#00A356',
+            },
           },
         },
-      }],
+      ],
     },
     MuiButtonBase: {
       defaultProps: {
@@ -252,15 +254,16 @@ export function createComponents(): Components {
         disableRipple: true,
         icon: (
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="0.5" y="0.5" width="15" height="15" rx="3.5" fill="white"/>
-            <rect x="0.5" y="0.5" width="15" height="15" rx="3.5" stroke="#B4BFCF"/>
+            <rect x="0.5" y="0.5" width="15" height="15" rx="3.5" fill="white" />
+            <rect x="0.5" y="0.5" width="15" height="15" rx="3.5" stroke="#B4BFCF" />
           </svg>
         ),
         checkedIcon: (
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="16" height="16" rx="4" fill="#0068FF"/>
+            <rect width="16" height="16" rx="4" fill="#0068FF" />
             <path
-              fillRule="evenodd" clipRule="evenodd"
+              fillRule="evenodd"
+              clipRule="evenodd"
               d="M12.1757 4.76285C12.5828 5.13604 12.6104 5.76861 12.2372 6.17572L7.79324 11.0236C7.19873 11.6722 6.17628 11.6722 5.58177 11.0236L3.76285 9.03936C3.38966 8.63224 3.41716 7.99968 3.82428 7.62648C4.2314 7.25329 4.86397 7.28079 5.23716 7.68791L6.68751 9.27011L10.7629 4.82428C11.136 4.41716 11.7686 4.38965 12.1757 4.76285Z"
               fill="white"
             />
@@ -268,11 +271,14 @@ export function createComponents(): Components {
         ),
         indeterminateIcon: (
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="0.5" y="0.5" width="15" height="15" rx="3.5" fill="white"/>
-            <path fillRule="evenodd" clipRule="evenodd"
-                  d="M4 8C4 6.89543 4.89543 6 6 6H10C11.1046 6 12 6.89543 12 8C12 9.10457 11.1046 10 10 10H6C4.89543 10 4 9.10457 4 8Z"
-                  fill="#0068FF"/>
-            <rect x="0.5" y="0.5" width="15" height="15" rx="3.5" stroke="#B4BFCF"/>
+            <rect x="0.5" y="0.5" width="15" height="15" rx="3.5" fill="white" />
+            <path
+              fillRule="evenodd"
+              clipRule="evenodd"
+              d="M4 8C4 6.89543 4.89543 6 6 6H10C11.1046 6 12 6.89543 12 8C12 9.10457 11.1046 10 10 10H6C4.89543 10 4 9.10457 4 8Z"
+              fill="#0068FF"
+            />
+            <rect x="0.5" y="0.5" width="15" height="15" rx="3.5" stroke="#B4BFCF" />
           </svg>
         ),
       },
@@ -294,14 +300,16 @@ export function createComponents(): Components {
           fontSize: 13,
         },
       },
-      variants: [{
-        props: { variant: 'readonly' },
-        style: {
-          '& .MuiChip-label': {
-            opacity: 0.5,
+      variants: [
+        {
+          props: { variant: 'readonly' },
+          style: {
+            '& .MuiChip-label': {
+              opacity: 0.5,
+            },
           },
         },
-      }],
+      ],
     },
     MuiCssBaseline: {
       styleOverrides: `${ScrollbarBaseline}`,
@@ -498,7 +506,8 @@ export function createComponents(): Components {
         paper: {
           marginTop: 4,
           borderRadius: 10,
-          boxShadow: '0px 1px 1px rgba(4, 10, 21, 0.04), 0px 3px 14px rgba(4, 12, 29, 0.09), 0px 0px 1px rgba(7, 13, 26, 0.27)',
+          boxShadow:
+            '0px 1px 1px rgba(4, 10, 21, 0.04), 0px 3px 14px rgba(4, 12, 29, 0.09), 0px 0px 1px rgba(7, 13, 26, 0.27)',
         },
       },
     },
@@ -705,7 +714,8 @@ export function createComponents(): Components {
           color: '#353C4E',
           '&.Mui-selected': {
             backgroundColor: '#FFFFFF',
-            boxShadow: '0px 1px 1px rgba(4, 10, 21, 0.04), 0px 3px 14px rgba(4, 12, 29, 0.09), 0px 0px 1px rgba(7, 13, 26, 0.27)',
+            boxShadow:
+              '0px 1px 1px rgba(4, 10, 21, 0.04), 0px 3px 14px rgba(4, 12, 29, 0.09), 0px 0px 1px rgba(7, 13, 26, 0.27)',
           },
           '&:hover': {
             backgroundColor: 'rgba(46, 58, 82, 0.09)',
@@ -741,10 +751,12 @@ export function createComponents(): Components {
     },
     MuiPopper: {
       defaultProps: {
-        modifiers: [{
-          name: 'preventOverflow',
-          options: { padding: 16 },
-        }],
+        modifiers: [
+          {
+            name: 'preventOverflow',
+            options: { padding: 16 },
+          },
+        ],
       },
     },
     MuiTooltip: {
@@ -752,13 +764,15 @@ export function createComponents(): Components {
         arrow: true,
         slotProps: {
           popper: {
-            modifiers: [{
-              name: 'preventOverflow',
-              options: {
-                padding: 16,
-                altAxis: true, // allows overlapping with the reference (origin) element in case when flipping is not enough
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  padding: 16,
+                  altAxis: true, // allows overlapping with the reference (origin) element in case when flipping is not enough
+                },
               },
-            }],
+            ],
           },
         },
       },

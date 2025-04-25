@@ -35,9 +35,7 @@ export const SelectedSubPageProvider: FC<PropsWithChildren> = ({ children }) => 
 
   return (
     <SelectedSubPageContext.Provider value={selectedSubPage}>
-      <SetSelectedSubPageContext.Provider value={setSelectedSubPage}>
-        {children}
-      </SetSelectedSubPageContext.Provider>
+      <SetSelectedSubPageContext.Provider value={setSelectedSubPage}>{children}</SetSelectedSubPageContext.Provider>
     </SelectedSubPageContext.Provider>
   )
 }

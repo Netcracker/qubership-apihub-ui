@@ -31,52 +31,49 @@ export type ChangeSeverityFiltersProps = {
   category?: ChangesTooltipCategory
 }
 
-export const ChangeSeverityFilters: FC<ChangeSeverityFiltersProps> = memo<ChangeSeverityFiltersProps>((
-  {
-    changes,
-    changeSeverities = CHANGE_SEVERITIES,
-    filters,
-    handleFilters,
-    category,
+export const ChangeSeverityFilters: FC<ChangeSeverityFiltersProps> = memo<ChangeSeverityFiltersProps>(
+  ({ changes, changeSeverities = CHANGE_SEVERITIES, filters, handleFilters, category }) => {
+    if (!changes) {
+      return null
+    }
+
+    const filtersLayout = (Object.keys(changes) as Array<ChangeSeverity>).map((severity) => {
+      return changeSeverities.has(severity) ? (
+        <ToggleButton key={severity} value={severity} data-testid={`ChangesFilterButton-${severity}`}>
+          <ChangesTooltip changeType={severity} category={category}>
+            <Box alignItems="center" display="flex">
+              <Box
+                sx={{
+                  borderRadius: '50%',
+                  background: CHANGE_SEVERITY_COLOR_MAP[severity],
+                  width: 12,
+                  height: 12,
+                  mr: '6px',
+                }}
+              />
+              <Box sx={{ fontSize: '13px' }} data-testid={`FilterButtonChangesCount-${severity}`}>
+                {changes[severity]}
+              </Box>
+            </Box>
+          </ChangesTooltip>
+        </ToggleButton>
+      ) : null
+    })
+
+    const isCustomLastButton =
+      filtersLayout.reduce((count, item) => {
+        return item !== null ? count + 1 : count
+      }, 0) < 2
+
+    return (
+      <CustomToggleButtonGroup
+        aria-label="text alignment"
+        customLastButton={isCustomLastButton}
+        value={filters}
+        onClick={handleFilters}
+      >
+        {filtersLayout}
+      </CustomToggleButtonGroup>
+    )
   },
-) => {
-
-  if (!changes) {
-    return null
-  }
-
-  const filtersLayout = (Object.keys(changes) as Array<ChangeSeverity>).map(severity => {
-    return changeSeverities.has(severity) ? (
-      <ToggleButton key={severity} value={severity} data-testid={`ChangesFilterButton-${severity}`}>
-        <ChangesTooltip changeType={severity} category={category}>
-          <Box alignItems="center" display="flex">
-            <Box sx={{
-              borderRadius: '50%',
-              background: CHANGE_SEVERITY_COLOR_MAP[severity],
-              width: 12,
-              height: 12,
-              mr: '6px',
-            }}/>
-            <Box sx={{ fontSize: '13px' }}
-                 data-testid={`FilterButtonChangesCount-${severity}`}>{changes[severity]}</Box>
-          </Box>
-        </ChangesTooltip>
-      </ToggleButton>
-    ) : null
-  })
-
-  const isCustomLastButton = filtersLayout.reduce((count, item) => {
-    return item !== null ? count + 1 : count
-  }, 0) < 2
-
-  return (
-    <CustomToggleButtonGroup
-      aria-label="text alignment"
-      customLastButton={isCustomLastButton}
-      value={filters}
-      onClick={handleFilters}
-    >
-      {filtersLayout}
-    </CustomToggleButtonGroup>
-  )
-})
+)

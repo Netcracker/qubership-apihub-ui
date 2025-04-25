@@ -48,4 +48,3 @@ PackageRedirectPageStory.args = {
   href: '/sameurl/newid',
 }
 PackageRedirectPageStory.storyName = 'Package Redirect Page'
-

@@ -24,7 +24,10 @@ import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apih
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import { OutlinedIconButton } from '@netcracker/qubership-apihub-ui-shared/components/OutlinedIconButton'
 import { EditIcon } from '@netcracker/qubership-apihub-ui-shared/icons/EditIcon'
-import { DISABLED_BUTTON_COLOR, ENABLED_BUTTON_COLOR } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
+import {
+  DISABLED_BUTTON_COLOR,
+  ENABLED_BUTTON_COLOR,
+} from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
 
 export type OperationsFilterByDocumentProps = {
   disabled: boolean
@@ -32,45 +35,55 @@ export type OperationsFilterByDocumentProps = {
   isDashboard: boolean
 }
 
-export const EditButton: FC<OperationsFilterByDocumentProps> = memo<OperationsFilterByDocumentProps>(({
-  disabled,
-  hint,
-  isDashboard,
-}) => {
-  const { navigateToVersion } = useNavigation()
-  const { packageId } = useParams()
+export const EditButton: FC<OperationsFilterByDocumentProps> = memo<OperationsFilterByDocumentProps>(
+  ({ disabled, hint, isDashboard }) => {
+    const { navigateToVersion } = useNavigation()
+    const { packageId } = useParams()
 
-  const location = useBackwardLocation()
-  const backwardLocation = useBackwardLocationContext()
-  const setBackwardLocation = useSetBackwardLocationContext()
+    const location = useBackwardLocation()
+    const backwardLocation = useBackwardLocationContext()
+    const setBackwardLocation = useSetBackwardLocationContext()
 
-  const fullMainVersion = useFullMainVersion()
-  const isLatestRevision = useIsLatestRevision()
-  const version = getSplittedVersionKey(fullMainVersion, isLatestRevision).versionKey
+    const fullMainVersion = useFullMainVersion()
+    const isLatestRevision = useIsLatestRevision()
+    const version = getSplittedVersionKey(fullMainVersion, isLatestRevision).versionKey
 
-  const handleEditVersionClick = useCallback(
-    () => {
+    const handleEditVersionClick = useCallback(() => {
       setBackwardLocation({ ...backwardLocation, fromPackage: location })
       navigateToVersion({ packageKey: packageId!, versionKey: isDashboard ? version : fullMainVersion!, edit: true })
-    },
-    [setBackwardLocation, backwardLocation, location, navigateToVersion, packageId, isDashboard, version, fullMainVersion],
-  )
+    }, [
+      setBackwardLocation,
+      backwardLocation,
+      location,
+      navigateToVersion,
+      packageId,
+      isDashboard,
+      version,
+      fullMainVersion,
+    ])
 
-  const disabledValue = useMemo(() => (isDashboard ? disabled || !isLatestRevision : disabled), [disabled, isDashboard, isLatestRevision])
-  const hintValue = useMemo(() => (isDashboard ? hint || NOT_LATEST_REVISION : hint), [hint, isDashboard])
-  const disableHintValue = useMemo(() => (isDashboard ? !disabled && isLatestRevision : !disabled), [disabled, isDashboard, isLatestRevision])
+    const disabledValue = useMemo(
+      () => (isDashboard ? disabled || !isLatestRevision : disabled),
+      [disabled, isDashboard, isLatestRevision],
+    )
+    const hintValue = useMemo(() => (isDashboard ? hint || NOT_LATEST_REVISION : hint), [hint, isDashboard])
+    const disableHintValue = useMemo(
+      () => (isDashboard ? !disabled && isLatestRevision : !disabled),
+      [disabled, isDashboard, isLatestRevision],
+    )
 
-  return (
-    <OutlinedIconButton
-      onClick={handleEditVersionClick}
-      startIcon={<EditIcon color={disabled ? DISABLED_BUTTON_COLOR : ENABLED_BUTTON_COLOR}/>}
-      data-testid="EditButton"
-      disabled={disabledValue}
-      disableHint={disableHintValue}
-      hint={hintValue}
-      tooltipMaxWidth="500px"
-    />
-  )
-})
+    return (
+      <OutlinedIconButton
+        onClick={handleEditVersionClick}
+        startIcon={<EditIcon color={disabled ? DISABLED_BUTTON_COLOR : ENABLED_BUTTON_COLOR} />}
+        data-testid="EditButton"
+        disabled={disabledValue}
+        disableHint={disableHintValue}
+        hint={hintValue}
+        tooltipMaxWidth="500px"
+      />
+    )
+  },
+)
 
 export const NOT_LATEST_REVISION = 'Version editing is only available for the latest revision.'

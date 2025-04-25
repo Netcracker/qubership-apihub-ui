@@ -26,22 +26,14 @@ import { SHOW_EDIT_OPERATION_GROUP_DIALOG } from '@apihub/routes/EventBusProvide
 
 export const EditOperationGroupDialog: FC = memo(() => {
   return (
-    <PopupDelegate
-      type={SHOW_EDIT_OPERATION_GROUP_DIALOG}
-      render={props => <EditOperationGroupPopup {...props}/>}
-    />
+    <PopupDelegate type={SHOW_EDIT_OPERATION_GROUP_DIALOG} render={(props) => <EditOperationGroupPopup {...props} />} />
   )
 })
 
 const EditOperationGroupPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, detail }) => {
   const { updateOperationGroupParameters, isLoading, isSuccess } = useUpdateOperationGroupParameters()
-  const {
-    packageKey,
-    versionKey,
-    existsGroupNames,
-    groupInfo,
-    templateName,
-  } = detail as EditOperationGroupDetail ?? ''
+  const { packageKey, versionKey, existsGroupNames, groupInfo, templateName } =
+    (detail as EditOperationGroupDetail) ?? ''
 
   useEffect(() => {
     if (isSuccess) {
@@ -61,11 +53,14 @@ const EditOperationGroupPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     [updateOperationGroupParameters, packageKey, versionKey, groupInfo.groupName],
   )
 
-  const defaultValues: OperationGroupParameters = useMemo(() => ({
-    groupName: groupInfo.groupName,
-    apiType: groupInfo.apiType!,
-    description: groupInfo.description,
-  }), [groupInfo])
+  const defaultValues: OperationGroupParameters = useMemo(
+    () => ({
+      groupName: groupInfo.groupName,
+      apiType: groupInfo.apiType!,
+      description: groupInfo.description,
+    }),
+    [groupInfo],
+  )
 
   return (
     <OperationGroupParametersPopup

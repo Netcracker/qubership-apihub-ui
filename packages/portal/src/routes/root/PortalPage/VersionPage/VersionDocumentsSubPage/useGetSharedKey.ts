@@ -34,25 +34,18 @@ export function useGetSharedKey(slug: string, refPackageKey: string | undefined)
   return refetch
 }
 
-async function getSharedKey(
-  packageKey: Key,
-  versionKey: Key,
-  fileKey: Key,
-): Promise<string> {
+async function getSharedKey(packageKey: Key, versionKey: Key, fileKey: Key): Promise<string> {
   const packageId = encodeURIComponent(packageKey)
   const fileId = encodeURIComponent(fileKey)
 
-  const data = await portalRequestJson<SharedIdType>(
-    '/sharedFiles',
-    {
-      method: 'post',
-      body: JSON.stringify({
-        packageId: packageId,
-        version: versionKey,
-        slug: fileId,
-      }),
-    },
-  )
+  const data = await portalRequestJson<SharedIdType>('/sharedFiles', {
+    method: 'post',
+    body: JSON.stringify({
+      packageId: packageId,
+      version: versionKey,
+      slug: fileId,
+    }),
+  })
   const { sharedFileId } = data
 
   return sharedFileId

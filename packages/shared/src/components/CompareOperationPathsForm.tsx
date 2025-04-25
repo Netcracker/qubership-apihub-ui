@@ -62,69 +62,64 @@ export type CompareOperationPathsDialogFormProps = CompareOperationPathsDialogDa
 }
 
 // First Order Component //
-export const CompareOperationPathsDialogForm: FC<CompareOperationPathsDialogFormProps> = memo(({
-  open,
-  setOpen,
-  control,
-  originalOperationOptions,
-  changedOperationOptions,
-  onSwap,
-  onSubmit,
-  isOriginalOperationsLoading,
-  isChangedOperationsLoading,
-  onOriginalInputChange,
-  onChangedInputChange,
-}) => {
-  return (
-    <DialogForm
-      open={open}
-      onClose={() => setOpen(false)}
-      onSubmit={onSubmit}
-      maxWidth="md"
-    >
-      <DialogTitle>
-        Select Operations to Compare
-      </DialogTitle>
-      <DialogContent sx={DIALOG_CONTENT_STYLES}>
-        <Typography variant="button" sx={{ gridArea: 'originalTitle' }}>
-          Original
-        </Typography>
-        <OperationController
-          name="originalOperation"
-          control={control}
-          options={originalOperationOptions}
-          isLoading={isOriginalOperationsLoading}
-          onInputChange={onOriginalInputChange}
-          testId="OriginalOperationAutocomplete"
-        />
+export const CompareOperationPathsDialogForm: FC<CompareOperationPathsDialogFormProps> = memo(
+  ({
+    open,
+    setOpen,
+    control,
+    originalOperationOptions,
+    changedOperationOptions,
+    onSwap,
+    onSubmit,
+    isOriginalOperationsLoading,
+    isChangedOperationsLoading,
+    onOriginalInputChange,
+    onChangedInputChange,
+  }) => {
+    return (
+      <DialogForm open={open} onClose={() => setOpen(false)} onSubmit={onSubmit} maxWidth="md">
+        <DialogTitle>Select Operations to Compare</DialogTitle>
+        <DialogContent sx={DIALOG_CONTENT_STYLES}>
+          <Typography variant="button" sx={{ gridArea: 'originalTitle' }}>
+            Original
+          </Typography>
+          <OperationController
+            name="originalOperation"
+            control={control}
+            options={originalOperationOptions}
+            isLoading={isOriginalOperationsLoading}
+            onInputChange={onOriginalInputChange}
+            testId="OriginalOperationAutocomplete"
+          />
 
-        <Box sx={{ gridArea: 'swapper', alignSelf: 'center' }}>
-          <Swapper onSwap={onSwap}/>
-        </Box>
+          <Box sx={{ gridArea: 'swapper', alignSelf: 'center' }}>
+            <Swapper onSwap={onSwap} />
+          </Box>
 
-        <Typography variant="button" sx={{ gridArea: 'changedTitle' }}>
-          Changed
-        </Typography>
-        <OperationController
-          name="changedOperation"
-          control={control}
-          options={changedOperationOptions}
-          isLoading={isChangedOperationsLoading}
-          onInputChange={onChangedInputChange}
-          testId="ChangedOperationAutocomplete"
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button variant="contained" type="submit" data-testid="CompareButton">
-          Compare
-        </Button>
-        <Button variant="outlined" onClick={() => setOpen(false)} data-testid="CancelButton">
-          Cancel
-        </Button>
-      </DialogActions>
-    </DialogForm>
-  )
-})
+          <Typography variant="button" sx={{ gridArea: 'changedTitle' }}>
+            Changed
+          </Typography>
+          <OperationController
+            name="changedOperation"
+            control={control}
+            options={changedOperationOptions}
+            isLoading={isChangedOperationsLoading}
+            onInputChange={onChangedInputChange}
+            testId="ChangedOperationAutocomplete"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" type="submit" data-testid="CompareButton">
+            Compare
+          </Button>
+          <Button variant="outlined" onClick={() => setOpen(false)} data-testid="CancelButton">
+            Cancel
+          </Button>
+        </DialogActions>
+      </DialogForm>
+    )
+  },
+)
 
 type OperationControllerProps = {
   name: keyof CompareOperationPathsDialogFormData
@@ -134,42 +129,35 @@ type OperationControllerProps = {
   onInputChange: (event: SyntheticEvent, value: string) => void
 } & TestableProps
 
-const OperationController: FC<OperationControllerProps> = memo<OperationControllerProps>(({
-  name,
-  control,
-  options,
-  isLoading,
-  testId,
-  onInputChange,
-}) => {
-  return (
-    <Controller
-      name={name}
-      control={control}
-      render={({ field: { value, onChange } }) => (
-        <Autocomplete
-          autoSelect
-          filterOptions={disableAutocompleteSearch}
-          onInputChange={debounce(onInputChange, DEFAULT_DEBOUNCE)}
-          sx={{ gridArea: name }}
-          loading={isLoading}
-          value={value}
-          options={options}
-          getOptionLabel={({ title }: Operation) => title}
-          isOptionEqualToValue={(option, value) => option.operationKey === value.operationKey}
-          renderOption={(props, operation) => <OperationOptionItem
-            key={crypto.randomUUID()}
-            props={props}
-            operation={operation}
-          />}
-          renderInput={(params) => <TextField {...params} required label="Operation"/>}
-          onChange={(_, value) => onChange(value)}
-          data-testid={testId}
-        />
-      )}
-    />
-  )
-})
+const OperationController: FC<OperationControllerProps> = memo<OperationControllerProps>(
+  ({ name, control, options, isLoading, testId, onInputChange }) => {
+    return (
+      <Controller
+        name={name}
+        control={control}
+        render={({ field: { value, onChange } }) => (
+          <Autocomplete
+            autoSelect
+            filterOptions={disableAutocompleteSearch}
+            onInputChange={debounce(onInputChange, DEFAULT_DEBOUNCE)}
+            sx={{ gridArea: name }}
+            loading={isLoading}
+            value={value}
+            options={options}
+            getOptionLabel={({ title }: Operation) => title}
+            isOptionEqualToValue={(option, value) => option.operationKey === value.operationKey}
+            renderOption={(props, operation) => (
+              <OperationOptionItem key={crypto.randomUUID()} props={props} operation={operation} />
+            )}
+            renderInput={(params) => <TextField {...params} required label="Operation" />}
+            onChange={(_, value) => onChange(value)}
+            data-testid={testId}
+          />
+        )}
+      />
+    )
+  },
+)
 
 const DIALOG_CONTENT_STYLES = {
   display: 'grid',

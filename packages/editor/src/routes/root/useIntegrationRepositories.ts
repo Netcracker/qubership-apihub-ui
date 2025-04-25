@@ -31,9 +31,7 @@ export function useIntegrationRepositories(namePart: string): IntegrationReposit
   return data ?? []
 }
 
-async function getIntegrationRepositories(
-  namePart: string,
-): Promise<IntegrationRepositoriesDto> {
+async function getIntegrationRepositories(namePart: string): Promise<IntegrationRepositoriesDto> {
   const searchParams = optionalSearchParams({
     filter: { value: namePart },
   })
@@ -42,9 +40,7 @@ async function getIntegrationRepositories(
   })
 }
 
-function toIntegrationRepositories(
-  { repositories }: IntegrationRepositoriesDto,
-): IntegrationRepositories {
+function toIntegrationRepositories({ repositories }: IntegrationRepositoriesDto): IntegrationRepositories {
   return repositories.map(({ repositoryId, name, defaultBranch }) => ({
     key: repositoryId,
     name: name,

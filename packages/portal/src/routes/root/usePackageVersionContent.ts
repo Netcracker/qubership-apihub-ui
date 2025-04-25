@@ -66,16 +66,22 @@ export function usePackageVersionContent(options: {
   const includeGroups = options?.includeGroups ?? false
   const enabled = options?.enabled ?? true
 
-  const {
-    data,
-    isLoading,
-    error,
-    refetch,
-    isRefetching,
-    isInitialLoading,
-  } = useQuery<PackageVersionContentDto, Error, PackageVersionContent>({
-    queryKey: [PACKAGE_VERSION_CONTENT_QUERY_KEY, packageKey, versionKey, includeSummary, includeOperations, includeGroups, enabled],
-    queryFn: ({ signal }) => getPackageVersionContent(packageKey!, versionKey!, signal, includeSummary, includeOperations, includeGroups),
+  const { data, isLoading, error, refetch, isRefetching, isInitialLoading } = useQuery<
+    PackageVersionContentDto,
+    Error,
+    PackageVersionContent
+  >({
+    queryKey: [
+      PACKAGE_VERSION_CONTENT_QUERY_KEY,
+      packageKey,
+      versionKey,
+      includeSummary,
+      includeOperations,
+      includeGroups,
+      enabled,
+    ],
+    queryFn: ({ signal }) =>
+      getPackageVersionContent(packageKey!, versionKey!, signal, includeSummary, includeOperations, includeGroups),
     enabled: enabled && !!packageKey && !!versionKey && versionKey !== SPECIAL_VERSION_KEY,
     select: toPackageVersionContent,
   })
@@ -133,35 +139,35 @@ export function useAsyncInvalidateVersionContent(): (version: InvalidateVersion)
 export function useInvalidateVersionContent(): InvalidateQuery<InvalidateVersion> {
   const client = useQueryClient()
   return (invalidateVersion: InvalidateVersion) =>
-    client.invalidateQueries({
-      queryKey: [PACKAGE_VERSION_CONTENT_QUERY_KEY, invalidateVersion.packageKey, invalidateVersion.versionKey],
-      refetchType: 'all',
-    }).then()
+    client
+      .invalidateQueries({
+        queryKey: [PACKAGE_VERSION_CONTENT_QUERY_KEY, invalidateVersion.packageKey, invalidateVersion.versionKey],
+        refetchType: 'all',
+      })
+      .then()
 }
 
 export function useAsyncInvalidateAllByVersion(): InvalidateQueryByVersionCallback {
   const client = useQueryClient()
-  return (versionKey: Key) => client.invalidateQueries({
-    predicate: ({ queryKey }) => (
-      hasVersionKeyIn(queryKey, versionKey)
-    ),
-    refetchType: 'all',
-  })
+  return (versionKey: Key) =>
+    client.invalidateQueries({
+      predicate: ({ queryKey }) => hasVersionKeyIn(queryKey, versionKey),
+      refetchType: 'all',
+    })
 }
 
 export function useAsyncInvalidatePackageVersionContentByVersion(): InvalidateQueryByVersionCallback {
   const client = useQueryClient()
-  return (versionKey: Key) => client.invalidateQueries({
-    predicate: ({ queryKey }) => (
-      queryKey[0] === PACKAGE_VERSION_CONTENT_QUERY_KEY &&
-      hasVersionKeyIn(queryKey, versionKey)
-    ),
-    refetchType: 'all',
-  })
+  return (versionKey: Key) =>
+    client.invalidateQueries({
+      predicate: ({ queryKey }) =>
+        queryKey[0] === PACKAGE_VERSION_CONTENT_QUERY_KEY && hasVersionKeyIn(queryKey, versionKey),
+      refetchType: 'all',
+    })
 }
 
 function hasVersionKeyIn(queryKey: QueryKey, versionKey: Key): boolean {
-  return queryKey.some(queryKeyPart => queryKeyPart === versionKey)
+  return queryKey.some((queryKeyPart) => queryKeyPart === versionKey)
 }
 
 export function getCurrentPackageVersionContent(
@@ -186,15 +192,18 @@ function toPackageVersionContent(value: PackageVersionContentDto): PackageVersio
     operationTypes: toApiTypeMap(convertDtoFieldOperationTypesWithApiType(value.operationTypes)),
     latestRevision: !value?.notLatestRevision,
     revisionsCount: value.revisionsCount ?? 0,
-    operationGroups: value.operationGroups?.map(groupDto => ({
-      ...groupDto,
-      description: groupDto?.description ?? '',
-      operationsCount: groupDto?.operationsCount ?? 0,
-    })) ?? [],
+    operationGroups:
+      value.operationGroups?.map((groupDto) => ({
+        ...groupDto,
+        description: groupDto?.description ?? '',
+        operationsCount: groupDto?.operationsCount ?? 0,
+      })) ?? [],
   }
 }
 
-function convertDtoFieldOperationTypesWithApiType(operationTypes: ReadonlyArray<OperationTypeSummaryDto> | undefined): ReadonlyArray<OperationTypeSummary> {
+function convertDtoFieldOperationTypesWithApiType(
+  operationTypes: ReadonlyArray<OperationTypeSummaryDto> | undefined,
+): ReadonlyArray<OperationTypeSummary> {
   return operationTypes?.map((type) => {
     if (!type.changesSummary || !type.numberOfImpactedOperations) return { ...type }
     return {

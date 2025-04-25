@@ -23,7 +23,7 @@ import { deduplicate } from '@netcracker/qubership-apihub-ui-shared/utils/arrays
 export function useSelectOperationTags(...operations: ReadonlyArray<Operation | null | undefined>): void {
   const operationsTags = useMemo(() => {
     const tags = operations
-      .map(operation => operation?.tags ?? [])
+      .map((operation) => operation?.tags ?? [])
       .reduce((allTagList, currentTagList) => [...allTagList, ...currentTagList])
 
     const tagSet = new Set<string>(tags)
@@ -33,6 +33,6 @@ export function useSelectOperationTags(...operations: ReadonlyArray<Operation | 
   const setSelectedOperationTags = useSetSelectedOperationTags()
 
   useEffect(() => {
-    operationsTags && setSelectedOperationTags(prevState => deduplicate([...prevState, ...operationsTags]))
+    operationsTags && setSelectedOperationTags((prevState) => deduplicate([...prevState, ...operationsTags]))
   }, [setSelectedOperationTags, operationsTags])
 }

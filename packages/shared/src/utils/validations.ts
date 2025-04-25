@@ -19,18 +19,43 @@ import { type FileExtension, getFileExtension, createFileFormatEnumeration } fro
 const RESTRICTED_ALIAS_SYMBOLS = ['.', ' ', '/', '#', '&']
 
 export const ALIAS_VALIDATION_RULES: Record<string, (alias: string) => boolean | string> = {
-  limit: alias => alias.length <= 10 || 'Max number of characters is 10',
-  restrictedSymbols: alias => !RESTRICTED_ALIAS_SYMBOLS.find(char => alias.includes(char)) || `Next symbols are restricted — "${RESTRICTED_ALIAS_SYMBOLS}"`,
+  limit: (alias) => alias.length <= 10 || 'Max number of characters is 10',
+  restrictedSymbols: (alias) =>
+    !RESTRICTED_ALIAS_SYMBOLS.find((char) => alias.includes(char)) ||
+    `Next symbols are restricted — "${RESTRICTED_ALIAS_SYMBOLS}"`,
 }
 
 const RESTRICTED_FILENAME_SYMBOLS = ['\\', '/', ':', '*', '?', '"', '<', '>', '|']
 
 export const FILENAME_VALIDATION_RULES: Record<string, (alias: string) => boolean | string> = {
-  limit: filename => filename.length <= 256 || 'Max number of characters is 256',
-  restrictedSymbols: filename => !RESTRICTED_FILENAME_SYMBOLS.find(char => filename.includes(char)) || `Next symbols are restricted — "${RESTRICTED_FILENAME_SYMBOLS}"`,
+  limit: (filename) => filename.length <= 256 || 'Max number of characters is 256',
+  restrictedSymbols: (filename) =>
+    !RESTRICTED_FILENAME_SYMBOLS.find((char) => filename.includes(char)) ||
+    `Next symbols are restricted — "${RESTRICTED_FILENAME_SYMBOLS}"`,
 }
 
-export const RESTRICTED_VERSION_SYMBOLS = ['\\', '/', ':', '*', '?', '"', '<', '>', '|', '#', '&', '^', '@', '!', '$', '%', '(', ')', '+', '=']
+export const RESTRICTED_VERSION_SYMBOLS = [
+  '\\',
+  '/',
+  ':',
+  '*',
+  '?',
+  '"',
+  '<',
+  '>',
+  '|',
+  '#',
+  '&',
+  '^',
+  '@',
+  '!',
+  '$',
+  '%',
+  '(',
+  ')',
+  '+',
+  '=',
+]
 
 export function checkReleaseVersionFormat(version: string, versionPattern: string): boolean | string {
   const regexp = new RegExp(versionPattern)
@@ -39,7 +64,9 @@ export function checkReleaseVersionFormat(version: string, versionPattern: strin
 }
 
 export function checkVersionRestrictedSymbols(version: string): boolean | string {
-  return !RESTRICTED_VERSION_SYMBOLS.find(char => version.includes(char)) || 'Only \'A-Za-z0-9_.~-\' characters are allowed'
+  return (
+    !RESTRICTED_VERSION_SYMBOLS.find((char) => version.includes(char)) || "Only 'A-Za-z0-9_.~-' characters are allowed"
+  )
 }
 
 export function checkVersionNotEqualToPrevious(version: string, previousVersion: string): boolean | string {

@@ -54,13 +54,17 @@ export function useVersionsComparisons(options?: {
 
   const changedPackageKey = options?.changedPackageKey ?? packageKey ?? NO_VERSION_TO_COMPARE
   const changedVersionKey = options?.changedVersionKey ?? versionKey ?? NO_VERSION_TO_COMPARE
-  const { fullVersion: changedVersion = changedVersionKey } = useVersionWithRevision(changedVersionKey, changedPackageKey)
+  const { fullVersion: changedVersion = changedVersionKey } = useVersionWithRevision(
+    changedVersionKey,
+    changedPackageKey,
+  )
 
   const originPackageKey = options?.originPackageKey ?? changedPackageKey
   const originVersionKey = options?.originVersionKey ?? NO_VERSION_TO_COMPARE
   const { fullVersion: originVersion = originVersionKey } = useVersionWithRevision(originVersionKey, originPackageKey)
 
-  const allComparisonParamsProvided = changedPackageKey !== NO_VERSION_TO_COMPARE &&
+  const allComparisonParamsProvided =
+    changedPackageKey !== NO_VERSION_TO_COMPARE &&
     changedVersionKey !== NO_VERSION_TO_COMPARE &&
     originPackageKey !== NO_VERSION_TO_COMPARE &&
     originVersionKey !== NO_VERSION_TO_COMPARE
@@ -165,33 +169,25 @@ type GetVersionChangelogOrBuildResponseOptions = {
   reCalculate?: boolean
 }
 
-async function getVersionChangelogOrBuildResponse(options: GetVersionChangelogOrBuildResponseOptions): Promise<CompareViaBuilderResponse> {
-  const {
-    builderId,
-    version,
-    packageId,
-    previousVersion,
-    previousVersionPackageId,
-    reCalculate = false,
-  } = options
+async function getVersionChangelogOrBuildResponse(
+  options: GetVersionChangelogOrBuildResponseOptions,
+): Promise<CompareViaBuilderResponse> {
+  const { builderId, version, packageId, previousVersion, previousVersionPackageId, reCalculate = false } = options
 
   const searchParams = optionalSearchParams({
     builderId: { value: builderId },
     clientBuild: { value: true },
     reCalculate: { value: reCalculate },
   })
-  return await portalRequestJson<CompareViaBuilderResponse>(
-    `/compare?${searchParams}`,
-    {
-      method: 'POST',
-      body: JSON.stringify({
-        packageId,
-        version,
-        previousVersion,
-        previousVersionPackageId,
-      }),
-    },
-  )
+  return await portalRequestJson<CompareViaBuilderResponse>(`/compare?${searchParams}`, {
+    method: 'POST',
+    body: JSON.stringify({
+      packageId,
+      version,
+      previousVersion,
+      previousVersionPackageId,
+    }),
+  })
 }
 
 export function isChangelogBuildCreatedSuccessfully(

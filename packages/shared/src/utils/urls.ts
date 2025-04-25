@@ -28,7 +28,7 @@ export function isUrl(url: string): boolean {
 
 export function matchPathname(pathname: string, patterns: string[]): PathMatch | null {
   let pathMatch: PathMatch<string> | null = null
-  patterns.find(pattern => {
+  patterns.find((pattern) => {
     const match = matchPath(`${pattern}*`, pathname)
     if (match) {
       pathMatch = match
@@ -38,14 +38,19 @@ export function matchPathname(pathname: string, patterns: string[]): PathMatch |
   return pathMatch
 }
 
-export function replaceParam(locationPathname: string, params: Params<string>, paramKey: string, newParamValue: string): string | null {
+export function replaceParam(
+  locationPathname: string,
+  params: Params<string>,
+  paramKey: string,
+  newParamValue: string,
+): string | null {
   if (!params[paramKey]) {
     return null
   }
 
   return locationPathname
     .split('/')
-    .map(segment => (segment === params[paramKey] ? newParamValue : segment))
+    .map((segment) => (segment === params[paramKey] ? newParamValue : segment))
     .join('/')
 }
 

@@ -43,161 +43,160 @@ export type GenerateTokenFormProps = {
 }
 
 //First Order Component
-export const GenerateTokenForm: FC<GenerateTokenFormProps> = memo(({
-  roles,
-  users,
-  defaultUser,
-  disabled = false,
-  isLoading,
-  generateApiKey,
-  generatedApiKey,
-  setUserSearch,
-  showSuccessNotification,
-}) => {
-  const { handleSubmit, setValue, control, reset } = useForm<TokenDataForm>({
-    defaultValues: {
-      name: '',
-      createdFor: defaultUser ?? EMPTY_USER,
-    },
-  })
+export const GenerateTokenForm: FC<GenerateTokenFormProps> = memo(
+  ({
+    roles,
+    users,
+    defaultUser,
+    disabled = false,
+    isLoading,
+    generateApiKey,
+    generatedApiKey,
+    setUserSearch,
+    showSuccessNotification,
+  }) => {
+    const { handleSubmit, setValue, control, reset } = useForm<TokenDataForm>({
+      defaultValues: {
+        name: '',
+        createdFor: defaultUser ?? EMPTY_USER,
+      },
+    })
 
-  const [searchValue, setSearchValue] = useState('')
+    const [searchValue, setSearchValue] = useState('')
 
-  useDebounce(() => setUserSearch(searchValue), DEFAULT_DEBOUNCE, [searchValue])
+    useDebounce(() => setUserSearch(searchValue), DEFAULT_DEBOUNCE, [searchValue])
 
-  const onConfirmCallback = useCallback((value: TokenDataForm): void => {
-    const { name, roles, createdFor } = value
-    const mappedRoles = roles?.map(role => reverseTokenRoleMapping[role])
+    const onConfirmCallback = useCallback(
+      (value: TokenDataForm): void => {
+        const { name, roles, createdFor } = value
+        const mappedRoles = roles?.map((role) => reverseTokenRoleMapping[role])
 
-    generateApiKey({ name: name, roles: mappedRoles, createdFor: createdFor.key })
-    reset()
-  }, [generateApiKey, reset])
+        generateApiKey({ name: name, roles: mappedRoles, createdFor: createdFor.key })
+        reset()
+      },
+      [generateApiKey, reset],
+    )
 
-  if (generatedApiKey) {
-    return <DisplayToken generatedApiKey={generatedApiKey} showSuccessNotification={showSuccessNotification}/>
-  }
+    if (generatedApiKey) {
+      return <DisplayToken generatedApiKey={generatedApiKey} showSuccessNotification={showSuccessNotification} />
+    }
 
-  return (
-    <Box component="form" marginBottom={1} onSubmit={handleSubmit(onConfirmCallback)}>
-      <Typography variant="body2">
-        Enter the name of your application and select role for the token
-      </Typography>
-      <Box display="flex" alignItems="flex-start" gap={2}>
-        <Controller
-          name="name"
-          rules={{
-            required: 'The field must be filled',
-          }}
-          control={control}
-          render={({ field }) => <TextField
-            {...field}
-            required
-            disabled={disabled}
-            sx={{ width: '260px' }}
-            value={field.value}
-            label="Name"
-            onChange={field.onChange}
-            data-testid="NameTextField"
-          />}
-        />
-        <Controller
-          name="roles"
-          control={control}
-          render={({ field: { value } }) => (
-            <Autocomplete<string, true>
-              multiple
-              disabled={disabled}
-              sx={{ width: '260px' }}
-              value={value ?? []}
-              options={roles}
-              renderOption={(props, option) => <ListItem
-                {...props}
-                key={option}
-                data-testid={`ListItem-${option}`}
-              >
-                {capitalize(option)}
-              </ListItem>}
-              renderTags={(values) =>
-                values.map((value, index) =>
-                  <Typography fontSize="13px">
-                    {capitalize(value)} {index === values.length - 1 ? undefined : ', '}
-                  </Typography>,
-                )
-              }
-              onChange={(_, roles) => setValue('roles', roles)}
-              renderInput={(params) =>
-                <TextField
-                  {...params}
-                  label="Roles"
-                  inputProps={{
-                    ...params.inputProps,
-                    readOnly: true,
-                  }}
-                />
-              }
-              data-testid="RolesAutocomplete"
-            />
-          )}
-        />
-        <Controller
-          name="createdFor"
-          rules={{
-            required: 'The field must be filled',
-          }}
-          control={control}
-          render={({ field: { value, onChange } }) => (
-            <Autocomplete
-              isOptionEqualToValue={(option, value) => option.key === value.key}
-              value={value}
-              disabled={disabled}
-              sx={{ width: '260px' }}
-              loading={isLoading}
-              loadingText={<CircularProgress size={16}/>}
-              options={users ?? []}
-              getOptionLabel={(option) => option.name}
-              onChange={(_, value) => onChange(value)}
-              renderOption={(props, { name, avatarUrl }) => {
-                return (
-                  <ListItem {...props} key={name}>
-                    <Box sx={{ pr: '6px' }}>
-                      <UserAvatar
-                        name={name}
-                        src={avatarUrl}
-                        size="small"
-                      />
-                    </Box>
-                    {name}
+    return (
+      <Box component="form" marginBottom={1} onSubmit={handleSubmit(onConfirmCallback)}>
+        <Typography variant="body2">Enter the name of your application and select role for the token</Typography>
+        <Box display="flex" alignItems="flex-start" gap={2}>
+          <Controller
+            name="name"
+            rules={{
+              required: 'The field must be filled',
+            }}
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                required
+                disabled={disabled}
+                sx={{ width: '260px' }}
+                value={field.value}
+                label="Name"
+                onChange={field.onChange}
+                data-testid="NameTextField"
+              />
+            )}
+          />
+          <Controller
+            name="roles"
+            control={control}
+            render={({ field: { value } }) => (
+              <Autocomplete<string, true>
+                multiple
+                disabled={disabled}
+                sx={{ width: '260px' }}
+                value={value ?? []}
+                options={roles}
+                renderOption={(props, option) => (
+                  <ListItem {...props} key={option} data-testid={`ListItem-${option}`}>
+                    {capitalize(option)}
                   </ListItem>
-                )
-              }}
-              renderInput={(params) =>
-                <TextField
-                  {...params}
-                  required
-                  label="Created For"
-                  onChange={(event) => setSearchValue(event?.target?.value ?? '')}
-                />
-              }
-              data-testid="CreatedForAutocomplete"
-            />
-          )}
-        />
-        <ButtonWithHint
-          variant="contained"
-          size="large"
-          sx={{ mt: 1.2 }}
-          disabled={disabled}
-          disableHint={!disabled}
-          hint="You do not have permission to generate token"
-          isLoading={isLoading}
-          title="Generate"
-          type="submit"
-          testId="GenerateButton"
-        />
+                )}
+                renderTags={(values) =>
+                  values.map((value, index) => (
+                    <Typography fontSize="13px">
+                      {capitalize(value)} {index === values.length - 1 ? undefined : ', '}
+                    </Typography>
+                  ))
+                }
+                onChange={(_, roles) => setValue('roles', roles)}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Roles"
+                    inputProps={{
+                      ...params.inputProps,
+                      readOnly: true,
+                    }}
+                  />
+                )}
+                data-testid="RolesAutocomplete"
+              />
+            )}
+          />
+          <Controller
+            name="createdFor"
+            rules={{
+              required: 'The field must be filled',
+            }}
+            control={control}
+            render={({ field: { value, onChange } }) => (
+              <Autocomplete
+                isOptionEqualToValue={(option, value) => option.key === value.key}
+                value={value}
+                disabled={disabled}
+                sx={{ width: '260px' }}
+                loading={isLoading}
+                loadingText={<CircularProgress size={16} />}
+                options={users ?? []}
+                getOptionLabel={(option) => option.name}
+                onChange={(_, value) => onChange(value)}
+                renderOption={(props, { name, avatarUrl }) => {
+                  return (
+                    <ListItem {...props} key={name}>
+                      <Box sx={{ pr: '6px' }}>
+                        <UserAvatar name={name} src={avatarUrl} size="small" />
+                      </Box>
+                      {name}
+                    </ListItem>
+                  )
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    required
+                    label="Created For"
+                    onChange={(event) => setSearchValue(event?.target?.value ?? '')}
+                  />
+                )}
+                data-testid="CreatedForAutocomplete"
+              />
+            )}
+          />
+          <ButtonWithHint
+            variant="contained"
+            size="large"
+            sx={{ mt: 1.2 }}
+            disabled={disabled}
+            disableHint={!disabled}
+            hint="You do not have permission to generate token"
+            isLoading={isLoading}
+            title="Generate"
+            type="submit"
+            testId="GenerateButton"
+          />
+        </Box>
       </Box>
-    </Box>
-  )
-})
+    )
+  },
+)
 
 const EMPTY_USER: User = {
   key: '',

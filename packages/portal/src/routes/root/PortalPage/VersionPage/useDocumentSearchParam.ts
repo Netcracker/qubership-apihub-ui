@@ -25,7 +25,7 @@ export function useDocumentSearchParam(): [Key | undefined, SetDocumentKey] {
   const setSearchParams = useSetSearchParams()
 
   return useMemo(
-    () => [param, value => setSearchParams({ [DOCUMENT_SEARCH_PARAM]: value ?? '' }, { replace: true })],
+    () => [param, (value) => setSearchParams({ [DOCUMENT_SEARCH_PARAM]: value ?? '' }, { replace: true })],
     [param, setSearchParams],
   )
 }

@@ -71,11 +71,13 @@ export type DocumentSearchResult = Readonly<{
   createdAt: string
 }>
 
-export type SearchResultsDto = Readonly<Partial<{
-  packages: PackageSearchResultDto[]
-  operations: OperationSearchResultDto[]
-  documents: DocumentSearchResultDto[]
-}>>
+export type SearchResultsDto = Readonly<
+  Partial<{
+    packages: PackageSearchResultDto[]
+    operations: OperationSearchResultDto[]
+    documents: DocumentSearchResultDto[]
+  }>
+>
 
 export type PackageSearchResultDto = Readonly<{
   packageId: Key
@@ -121,10 +123,7 @@ export const PACKAGE_LEVEL = 'packages'
 export const OPERATION_LEVEL = 'operations'
 export const DOCUMENT_LEVEL = 'documents'
 
-export type Level =
-  | typeof PACKAGE_LEVEL
-  | typeof OPERATION_LEVEL
-  | typeof DOCUMENT_LEVEL
+export type Level = typeof PACKAGE_LEVEL | typeof OPERATION_LEVEL | typeof DOCUMENT_LEVEL
 
 export const REQUEST_SCOPE = 'request'
 export const RESPONSE_SCOPE = 'response'
@@ -142,14 +141,9 @@ export const QUERY_OPERATION_TYPES = 'query'
 export const MUTATION_OPERATION_TYPES = 'mutation'
 export const SUBSCRIPTION_OPERATION_TYPES = 'subscription'
 
-export type RestScope =
-  | typeof REQUEST_SCOPE
-  | typeof RESPONSE_SCOPE
+export type RestScope = typeof REQUEST_SCOPE | typeof RESPONSE_SCOPE
 
-export type GraphqlScope =
-  | typeof ARGUMENT_SCOPE
-  | typeof PROPERTY_SCOPE
-  | typeof ANNOTATION_SCOPE
+export type GraphqlScope = typeof ARGUMENT_SCOPE | typeof PROPERTY_SCOPE | typeof ANNOTATION_SCOPE
 
 export type Scopes = RestScope | GraphqlScope
 
@@ -201,9 +195,17 @@ export const API_TYPE_SCOPES_MAP: Record<ApiType, RestScope[] | GraphqlScope[]> 
   [API_TYPE_GRAPHQL]: GRAPHQL_SCOPES,
 }
 
-export const OPERATIONS_TYPES: GraphQlOperationTypes[] = [QUERY_OPERATION_TYPES, MUTATION_OPERATION_TYPES, SUBSCRIPTION_OPERATION_TYPES]
+export const OPERATIONS_TYPES: GraphQlOperationTypes[] = [
+  QUERY_OPERATION_TYPES,
+  MUTATION_OPERATION_TYPES,
+  SUBSCRIPTION_OPERATION_TYPES,
+]
 
-export const DETAILED_SCOPES: OptionRestDetailedScope[] = [PROPERTIES_AND_PARAMETER_DETAILED_SCOPE, ANNOTATION_DETAILED_SCOPE, EXAMPLES_DETAILED_SCOPE]
+export const DETAILED_SCOPES: OptionRestDetailedScope[] = [
+  PROPERTIES_AND_PARAMETER_DETAILED_SCOPE,
+  ANNOTATION_DETAILED_SCOPE,
+  EXAMPLES_DETAILED_SCOPE,
+]
 
 export const detailedScopeMapping: Record<OptionRestDetailedScope, RestDetailedScope> = {
   [PROPERTIES_AND_PARAMETER_DETAILED_SCOPE]: PROPERTIES_DETAILED_SCOPE,

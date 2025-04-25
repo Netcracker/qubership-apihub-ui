@@ -39,10 +39,14 @@ export interface SearchParam {
 }
 
 export function optionalSearchParams(
-  params: Record<string, {
-    value: unknown
-    toStringValue?: (value: object | string | number) => string
-  }>): URLSearchParams {
+  params: Record<
+    string,
+    {
+      value: unknown
+      toStringValue?: (value: object | string | number) => string
+    }
+  >,
+): URLSearchParams {
   const searchParams = new URLSearchParams()
 
   Object.entries(params).forEach(([key, { value, toStringValue }]) => {

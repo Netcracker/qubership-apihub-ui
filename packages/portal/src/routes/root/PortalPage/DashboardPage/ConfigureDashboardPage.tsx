@@ -36,18 +36,16 @@ export const ConfigureDashboardPage: FC = memo(() => {
       <RecursiveDashboardNameContextProvider>
         <NoPackageVersionPlaceholder packageObject={packageObject}>
           <PageLayout
-            toolbar={<ConfigureDashboardToolbar packageObject={packageObject}/>}
-            menu={<VersionNavigationMenu menuItems={CONFIGURE_DASHBOARD_PAGE_MENU_ITEMS}/>}
-            body={<ConfigureDashboardSubPage/>}
+            toolbar={<ConfigureDashboardToolbar packageObject={packageObject} />}
+            menu={<VersionNavigationMenu menuItems={CONFIGURE_DASHBOARD_PAGE_MENU_ITEMS} />}
+            body={<ConfigureDashboardSubPage />}
           />
         </NoPackageVersionPlaceholder>
-        <AddPackageDialog packageObject={packageObject}/>
-        <PublishPackageVersionDialog/>
+        <AddPackageDialog packageObject={packageObject} />
+        <PublishPackageVersionDialog />
       </RecursiveDashboardNameContextProvider>
     </DashboardReferencesContextProvider>
   )
 })
 
-const CONFIGURE_DASHBOARD_PAGE_MENU_ITEMS = [
-  CONFIGURATION_PAGE,
-]
+const CONFIGURE_DASHBOARD_PAGE_MENU_ITEMS = [CONFIGURATION_PAGE]

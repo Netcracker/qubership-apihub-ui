@@ -47,11 +47,7 @@ export function usePublishedDocumentRaw(options?: {
   return [data ?? '', isLoading]
 }
 
-export async function getPublishedDocumentRaw(
-  packageKey: Key,
-  versionKey: Key,
-  slug: Key,
-): Promise<FileContent> {
+export async function getPublishedDocumentRaw(packageKey: Key, versionKey: Key, slug: Key): Promise<FileContent> {
   const packageId = encodeURIComponent(packageKey)
   const versionId = encodeURIComponent(versionKey)
   const fileId = encodeURIComponent(slug)

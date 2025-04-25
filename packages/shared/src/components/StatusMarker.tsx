@@ -38,12 +38,7 @@ export const StatusMarker: FC<StatusMarkerProps> = memo<StatusMarkerProps>(({ va
 
   return (
     <Tooltip title={title} placement={placement}>
-      <Box
-        display="flex"
-        gap={0.5}
-        alignItems="center"
-        width="max-content"
-      >
+      <Box display="flex" gap={0.5} alignItems="center" width="max-content">
         {STATUS_MARKER_VARIANT_TO_ICON_MAP[value]}
       </Box>
     </Tooltip>
@@ -70,9 +65,9 @@ const STATUS_ICON_SX: SxProps = {
 }
 
 const STATUS_MARKER_VARIANT_TO_ICON_MAP: Record<StatusMarkerVariant, ReactNode> = {
-  [LOADING_STATUS_MARKER_VARIANT]: <CircularProgress size={16} sx={STATUS_ICON_SX}/>,
-  [DEFAULT_STATUS_MARKER_VARIANT]: <ErrorRoundedIcon color="info" sx={STATUS_ICON_SX}/>,
-  [SUCCESS_STATUS_MARKER_VARIANT]: <CheckCircleRoundedIcon color="success" sx={STATUS_ICON_SX}/>,
-  [WARNING_STATUS_MARKER_VARIANT]: <ErrorRoundedIcon color="warning" sx={STATUS_ICON_SX}/>,
-  [ERROR_STATUS_MARKER_VARIANT]: <CancelIcon color="error" sx={STATUS_ICON_SX}/>,
+  [LOADING_STATUS_MARKER_VARIANT]: <CircularProgress size={16} sx={STATUS_ICON_SX} />,
+  [DEFAULT_STATUS_MARKER_VARIANT]: <ErrorRoundedIcon color="info" sx={STATUS_ICON_SX} />,
+  [SUCCESS_STATUS_MARKER_VARIANT]: <CheckCircleRoundedIcon color="success" sx={STATUS_ICON_SX} />,
+  [WARNING_STATUS_MARKER_VARIANT]: <ErrorRoundedIcon color="warning" sx={STATUS_ICON_SX} />,
+  [ERROR_STATUS_MARKER_VARIANT]: <CancelIcon color="error" sx={STATUS_ICON_SX} />,
 }

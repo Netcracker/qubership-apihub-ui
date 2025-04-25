@@ -28,34 +28,35 @@ export type RateResultsProps = {
   labels?: string[] | undefined
 }
 
-export const RateResults: FC<RateResultsProps> = memo<RateResultsProps>(({
-  searchText,
-  serviceName,
-  packageKey,
-  labels,
-}) => {
-  if (serviceName && hasSearchText(serviceName, searchText)) {
-    return (
-      <Box display="flex" gap={1} alignItems="center">
-        <Typography variant="body2">Service name</Typography>
-        <Typography variant="subtitle2">{serviceName}</Typography>
-      </Box>
-    )
-  }
-  if (packageKey && hasSearchText(packageKey, searchText)) {
-    return (
-      <OverflowTooltip title={packageKey}>
-        <Typography noWrap textOverflow="ellipsis" overflow="hidden" variant="subtitle2">{packageKey}</Typography>
-      </OverflowTooltip>
-    )
-  }
-  if (labels && labels.some(label => hasSearchText(label, searchText))) {
-    return (
-      <>
-        {labels.map(label => <CustomChip sx={{ mr: 1 }} key={crypto.randomUUID()} value={label}/>)}
-      </>
-    )
-  }
+export const RateResults: FC<RateResultsProps> = memo<RateResultsProps>(
+  ({ searchText, serviceName, packageKey, labels }) => {
+    if (serviceName && hasSearchText(serviceName, searchText)) {
+      return (
+        <Box display="flex" gap={1} alignItems="center">
+          <Typography variant="body2">Service name</Typography>
+          <Typography variant="subtitle2">{serviceName}</Typography>
+        </Box>
+      )
+    }
+    if (packageKey && hasSearchText(packageKey, searchText)) {
+      return (
+        <OverflowTooltip title={packageKey}>
+          <Typography noWrap textOverflow="ellipsis" overflow="hidden" variant="subtitle2">
+            {packageKey}
+          </Typography>
+        </OverflowTooltip>
+      )
+    }
+    if (labels && labels.some((label) => hasSearchText(label, searchText))) {
+      return (
+        <>
+          {labels.map((label) => (
+            <CustomChip sx={{ mr: 1 }} key={crypto.randomUUID()} value={label} />
+          ))}
+        </>
+      )
+    }
 
-  return null
-})
+    return null
+  },
+)

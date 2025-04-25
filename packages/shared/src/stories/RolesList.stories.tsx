@@ -27,7 +27,7 @@ const meta: Meta<typeof RolesList> = {
     (Story) => (
       <ThemeProvider theme={theme}>
         <Box sx={{ width: '800px' }}>
-          <Story/>
+          <Story />
         </Box>
       </ThemeProvider>
     ),

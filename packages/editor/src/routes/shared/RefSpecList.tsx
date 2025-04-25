@@ -33,20 +33,10 @@ export type RefSpecListProps = {
 
 export const RefSpecList: FC<RefSpecListProps> = memo<RefSpecListProps>(({ kind, refKey, versionKey }) => {
   if (kind === 'group') {
-    return (
-      <GroupSpecList
-        groupKey={refKey}
-        versionKey={versionKey}
-      />
-    )
+    return <GroupSpecList groupKey={refKey} versionKey={versionKey} />
   }
 
-  return (
-    <ProjectSpecList
-      projectKey={refKey}
-      versionKey={versionKey}
-    />
-  )
+  return <ProjectSpecList projectKey={refKey} versionKey={versionKey} />
 })
 
 export type GroupSpecListProps = {
@@ -63,12 +53,7 @@ const GroupSpecList: FC<GroupSpecListProps> = memo<GroupSpecListProps>(({ groupK
     [versionContent?.specs, versionKey],
   )
 
-  return (
-    <ApiDocumentList
-      isLoading={isLoading}
-      value={apiDocuments}
-    />
-  )
+  return <ApiDocumentList isLoading={isLoading} value={apiDocuments} />
 })
 
 type ProjectSpecListProps = {
@@ -84,12 +69,7 @@ const ProjectSpecList: FC<ProjectSpecListProps> = memo<ProjectSpecListProps>(({ 
     [projectKey, versionContent?.specs, versionKey],
   )
 
-  return (
-    <ApiDocumentList
-      isLoading={isLoading}
-      value={apiDocuments}
-    />
-  )
+  return <ApiDocumentList isLoading={isLoading} value={apiDocuments} />
 })
 
 function toApiDocuments(specs: ReadonlyArray<PublishedSpec> | undefined, projectKey: Key, version: Key): ApiDocument[] {
@@ -106,4 +86,3 @@ function toApiDocuments(specs: ReadonlyArray<PublishedSpec> | undefined, project
     },
   }))
 }
-

@@ -25,13 +25,7 @@ export const FileCellContent: FC<{
   getFileClickHandler: (file: File) => ((file: File) => void) | null
   getFileLeftIcon: (file: File) => ReactNode
   getFileRightIcon: (file: File) => ReactNode
-}> = memo(({
-  fileKey,
-  file,
-  getFileClickHandler,
-  getFileLeftIcon,
-  getFileRightIcon,
-}) => {
+}> = memo(({ fileKey, file, getFileClickHandler, getFileLeftIcon, getFileRightIcon }) => {
   const onTitleClick = useMemo(() => getFileClickHandler(file), [file, getFileClickHandler])
   const leftIcon = useMemo(() => getFileLeftIcon(file), [file, getFileLeftIcon])
   const rightIcon = useMemo(() => getFileRightIcon(file), [file, getFileRightIcon])

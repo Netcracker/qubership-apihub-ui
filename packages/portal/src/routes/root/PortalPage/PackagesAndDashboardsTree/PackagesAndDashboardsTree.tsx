@@ -53,176 +53,177 @@ export type PackagesAndDashboardsTreeProps = {
   readonly: boolean
 }
 
-export const PackagesAndDashboardsTree: FC<PackagesAndDashboardsTreeProps> = memo<PackagesAndDashboardsTreeProps>(({
-  currentDashboardReferences,
-  onRemove,
-  isLoading,
-  readonly,
-}) => {
-  const [collapsedKeys, setCollapsedKeys] = useState<Key[]>([])
-  const { packageId, versionId } = useParams()
-  const { data: versionReferences, isInitialLoading: isReferencesLoading } = useVersionReferences({
-    packageKey: packageId!,
-    version: versionId!,
-    enabled: true,
-  })
+export const PackagesAndDashboardsTree: FC<PackagesAndDashboardsTreeProps> = memo<PackagesAndDashboardsTreeProps>(
+  ({ currentDashboardReferences, onRemove, isLoading, readonly }) => {
+    const [collapsedKeys, setCollapsedKeys] = useState<Key[]>([])
+    const { packageId, versionId } = useParams()
+    const { data: versionReferences, isInitialLoading: isReferencesLoading } = useVersionReferences({
+      packageKey: packageId!,
+      version: versionId!,
+      enabled: true,
+    })
 
-  const addedDashboardReferences = useMemo(() => {
-    return currentDashboardReferences?.filter(({ added }) => added)
-  }, [currentDashboardReferences])
+    const addedDashboardReferences = useMemo(() => {
+      return currentDashboardReferences?.filter(({ added }) => added)
+    }, [currentDashboardReferences])
 
-  const { data: dashboardPackages } = useDashboardPackages(packageId!, versionId!)
+    const { data: dashboardPackages } = useDashboardPackages(packageId!, versionId!)
 
-  const [addDashboardPackages] = useAddDashboardPackages()
-  const [addConflictedReferences] = useAddConflictedReferences()
-  const [resetDashboardPackages] = useResetDashboardPackages()
-  const [updateDeletedReferences] = useUpdateDeletedReferences()
+    const [addDashboardPackages] = useAddDashboardPackages()
+    const [addConflictedReferences] = useAddConflictedReferences()
+    const [resetDashboardPackages] = useResetDashboardPackages()
+    const [updateDeletedReferences] = useUpdateDeletedReferences()
 
-  useEffectOnce(() => {
-    resetDashboardPackages()
-  })
+    useEffectOnce(() => {
+      resetDashboardPackages()
+    })
 
-  useEffect(() => {
-    updateDeletedReferences({ versionReferences })
-    addDashboardPackages({ versionReferences })
-  }, [versionReferences, addDashboardPackages, updateDeletedReferences])
+    useEffect(() => {
+      updateDeletedReferences({ versionReferences })
+      addDashboardPackages({ versionReferences })
+    }, [versionReferences, addDashboardPackages, updateDeletedReferences])
 
-  useEffect(() => {
-    addConflictedReferences({ versionReferences })
-  }, [addConflictedReferences, dashboardPackages, versionReferences])
+    useEffect(() => {
+      addConflictedReferences({ versionReferences })
+    }, [addConflictedReferences, dashboardPackages, versionReferences])
 
-  const [containerWidth, setContainerWidth] = useState(DEFAULT_CONTAINER_WIDTH)
-  const [columnSizingInfo, setColumnSizingInfo] = useState<ColumnSizingInfoState>()
-  const [, setHandlingColumnSizing] = useState<ColumnSizingState>()
+    const [containerWidth, setContainerWidth] = useState(DEFAULT_CONTAINER_WIDTH)
+    const [columnSizingInfo, setColumnSizingInfo] = useState<ColumnSizingInfoState>()
+    const [, setHandlingColumnSizing] = useState<ColumnSizingState>()
 
-  const tableContainerRef = useRef<HTMLDivElement>(null)
-  useResizeObserver(tableContainerRef, setContainerWidth)
+    const tableContainerRef = useRef<HTMLDivElement>(null)
+    useResizeObserver(tableContainerRef, setContainerWidth)
 
-  const actualColumnSizing = useColumnsSizing({
-    containerWidth: containerWidth,
-    columnModels: COLUMNS_MODELS,
-    columnSizingInfo: columnSizingInfo,
-    defaultMinColumnSize: 60,
-  })
+    const actualColumnSizing = useColumnsSizing({
+      containerWidth: containerWidth,
+      columnModels: COLUMNS_MODELS,
+      columnSizingInfo: columnSizingInfo,
+      defaultMinColumnSize: 60,
+    })
 
-  const data: TableData[] = useMemo(() => currentDashboardReferences.map(pack => ({
-    packageReference: pack,
-  })), [currentDashboardReferences])
+    const data: TableData[] = useMemo(
+      () =>
+        currentDashboardReferences.map((pack) => ({
+          packageReference: pack,
+        })),
+      [currentDashboardReferences],
+    )
 
-  const columns: ColumnDef<TableData>[] = useMemo(() => [
-      {
-        id: PACKAGE_COLUMN_ID,
-        header: () => <CustomTableHeadCell title="Packages and Dashboards"/>,
-      },
-      {
-        id: VERSION_COLUMN_ID,
-        header: () => <CustomTableHeadCell title="Version"/>,
-      },
-      {
-        id: STATUS_COLUMN_ID,
-        header: () => <CustomTableHeadCell title="Status"/>,
-      },
-      {
-        id: REMOVE_COLUMN_ID,
-        header: () => <CustomTableHeadCell title=""/>,
-      },
-    ], [],
-  )
+    const columns: ColumnDef<TableData>[] = useMemo(
+      () => [
+        {
+          id: PACKAGE_COLUMN_ID,
+          header: () => <CustomTableHeadCell title="Packages and Dashboards" />,
+        },
+        {
+          id: VERSION_COLUMN_ID,
+          header: () => <CustomTableHeadCell title="Version" />,
+        },
+        {
+          id: STATUS_COLUMN_ID,
+          header: () => <CustomTableHeadCell title="Status" />,
+        },
+        {
+          id: REMOVE_COLUMN_ID,
+          header: () => <CustomTableHeadCell title="" />,
+        },
+      ],
+      [],
+    )
 
-  const { getHeaderGroups, setColumnSizing } = useReactTable({
-    data: data,
-    columns: columns,
-    getCoreRowModel: getCoreRowModel(),
-    // TODO: remove 'as' since compatible types
-    columnResizeMode: 'onChange',
-    onColumnSizingChange: setHandlingColumnSizing as OnChangeFn<ColumnSizingState>,
-    onColumnSizingInfoChange: setColumnSizingInfo as OnChangeFn<ColumnSizingInfoState>,
-  })
+    const { getHeaderGroups, setColumnSizing } = useReactTable({
+      data: data,
+      columns: columns,
+      getCoreRowModel: getCoreRowModel(),
+      // TODO: remove 'as' since compatible types
+      columnResizeMode: 'onChange',
+      onColumnSizingChange: setHandlingColumnSizing as OnChangeFn<ColumnSizingState>,
+      onColumnSizingInfoChange: setColumnSizingInfo as OnChangeFn<ColumnSizingInfoState>,
+    })
 
-  useEffect(
-    () => setColumnSizing(actualColumnSizing),
-    [setColumnSizing, actualColumnSizing],
-  )
+    useEffect(() => setColumnSizing(actualColumnSizing), [setColumnSizing, actualColumnSizing])
 
-  return (
-    <DashboardCollapsedReferenceKeysContext.Provider value={collapsedKeys}>
-      <SetDashboardCollapsedReferenceKeysContext.Provider value={setCollapsedKeys}>
-        <Placeholder
-          invisible={(isLoading || isReferencesLoading) || isNotEmpty(currentDashboardReferences)}
-          area={CONTENT_PLACEHOLDER_AREA}
-          message="No included packages or dashboards"
-        >
-          <TableContainer ref={tableContainerRef} sx={{ height: '100%' }}>
-            <Table stickyHeader size="small" sx={{ tableLayout: 'fixed' }}>
-              <TableHead>
-                {getHeaderGroups().map(headerGroup => (
-                  <TableRow
-                    key={headerGroup.id}
-                  >
-                    {headerGroup.headers.map((headerColumn, index) => (
-                      <TableCell
-                        key={headerColumn.id}
-                        align="left"
-                        width={actualColumnSizing ? actualColumnSizing[headerColumn.id] : headerColumn.getSize()}
-                        sx={{
-                          '&:hover': {
-                            borderRight: '2px solid rgba(224, 224, 224, 1)',
-                          },
-                        }}
-                      >
-                        {flexRender(headerColumn.column.columnDef.header, headerColumn.getContext())}
-                        {index !== headerGroup.headers.length - 1 &&
-                          <ColumnDelimiter header={headerColumn} resizable={true}/>}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableHead>
-              <TableBody>
-                {versionReferences.references?.filter(({ parentPackageRef }) => !parentPackageRef).map(ref => {
-                  const packageByRef = versionReferences.packages![ref.packageRef!]
-                  if (currentDashboardReferences?.some(({
-                    packageReference: { key },
-                    added,
-                  }) => key === packageByRef.key && !added)) {
+    return (
+      <DashboardCollapsedReferenceKeysContext.Provider value={collapsedKeys}>
+        <SetDashboardCollapsedReferenceKeysContext.Provider value={setCollapsedKeys}>
+          <Placeholder
+            invisible={isLoading || isReferencesLoading || isNotEmpty(currentDashboardReferences)}
+            area={CONTENT_PLACEHOLDER_AREA}
+            message="No included packages or dashboards"
+          >
+            <TableContainer ref={tableContainerRef} sx={{ height: '100%' }}>
+              <Table stickyHeader size="small" sx={{ tableLayout: 'fixed' }}>
+                <TableHead>
+                  {getHeaderGroups().map((headerGroup) => (
+                    <TableRow key={headerGroup.id}>
+                      {headerGroup.headers.map((headerColumn, index) => (
+                        <TableCell
+                          key={headerColumn.id}
+                          align="left"
+                          width={actualColumnSizing ? actualColumnSizing[headerColumn.id] : headerColumn.getSize()}
+                          sx={{
+                            '&:hover': {
+                              borderRight: '2px solid rgba(224, 224, 224, 1)',
+                            },
+                          }}
+                        >
+                          {flexRender(headerColumn.column.columnDef.header, headerColumn.getContext())}
+                          {index !== headerGroup.headers.length - 1 && (
+                            <ColumnDelimiter header={headerColumn} resizable={true} />
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableHead>
+                <TableBody>
+                  {versionReferences.references
+                    ?.filter(({ parentPackageRef }) => !parentPackageRef)
+                    .map((ref) => {
+                      const packageByRef = versionReferences.packages![ref.packageRef!]
+                      if (
+                        currentDashboardReferences?.some(
+                          ({ packageReference: { key }, added }) => key === packageByRef.key && !added,
+                        )
+                      ) {
+                        return (
+                          <ReferenceRow
+                            key={packageByRef.key}
+                            reference={ref}
+                            pack={packageByRef}
+                            versionReferences={versionReferences}
+                            level={0}
+                            onRemove={onRemove}
+                            added={false}
+                            readonly={readonly}
+                          />
+                        )
+                      }
+                    })}
+                  {addedDashboardReferences?.map(({ packageReference }) => {
                     return (
                       <ReferenceRow
-                        key={packageByRef.key}
-                        reference={ref}
-                        pack={packageByRef}
-                        versionReferences={versionReferences}
+                        key={packageReference.key}
+                        reference={{}}
+                        pack={packageReference}
+                        versionReferences={{}}
                         level={0}
                         onRemove={onRemove}
-                        added={false}
+                        added={true}
                         readonly={readonly}
                       />
                     )
-                  }
-                })}
-                {addedDashboardReferences?.map(({ packageReference }) => {
-                  return (
-                    <ReferenceRow
-                      key={packageReference.key}
-                      reference={{}}
-                      pack={packageReference}
-                      versionReferences={{}}
-                      level={0}
-                      onRemove={onRemove}
-                      added={true}
-                      readonly={readonly}
-                    />
-                  )
-                })
-                }
-                {(isLoading || isReferencesLoading) && <TableSkeleton/>}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Placeholder>
-      </SetDashboardCollapsedReferenceKeysContext.Provider>
-    </DashboardCollapsedReferenceKeysContext.Provider>
-  )
-})
+                  })}
+                  {(isLoading || isReferencesLoading) && <TableSkeleton />}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Placeholder>
+        </SetDashboardCollapsedReferenceKeysContext.Provider>
+      </DashboardCollapsedReferenceKeysContext.Provider>
+    )
+  },
+)
 
 const PACKAGE_COLUMN_ID = 'packages'
 const VERSION_COLUMN_ID = 'version'
@@ -241,22 +242,22 @@ type TableData = {
 }
 
 const TableSkeleton: FC = memo(() => {
-  return createComponents(<RowSkeleton/>, DEFAULT_NUMBER_SKELETON_ROWS)
+  return createComponents(<RowSkeleton />, DEFAULT_NUMBER_SKELETON_ROWS)
 })
 
 const RowSkeleton: FC = memo(() => {
   return (
     <TableRow>
       <TableCell>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
-      <TableCell/>
+      <TableCell />
     </TableRow>
   )
 })

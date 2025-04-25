@@ -32,17 +32,20 @@ export function useExpandNavigationMenuSearchParam(): [boolean, SetExpandNavigat
 
   return [
     !!expand,
-    useCallback(expand => {
-      if (expand) {
-        searchParams.set(EXPAND_NAVIGATION_MENU_SEARCH_PARAM, EXPAND_NAVIGATION_MENU)
-      } else {
-        searchParams.delete(EXPAND_NAVIGATION_MENU_SEARCH_PARAM)
-      }
-      navigate({
-        search: `${searchParams}`,
-        hash: hashParam,
-      })
-    }, [hashParam, navigate, searchParams]),
+    useCallback(
+      (expand) => {
+        if (expand) {
+          searchParams.set(EXPAND_NAVIGATION_MENU_SEARCH_PARAM, EXPAND_NAVIGATION_MENU)
+        } else {
+          searchParams.delete(EXPAND_NAVIGATION_MENU_SEARCH_PARAM)
+        }
+        navigate({
+          search: `${searchParams}`,
+          hash: hashParam,
+        })
+      },
+      [hashParam, navigate, searchParams],
+    ),
   ]
 }
 

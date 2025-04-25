@@ -24,10 +24,7 @@ export const VERSIONS: Writeable<PackageVersionsDto> = {
       version: '2.6',
       status: 'draft',
       publishedAt: '2022-03-27T14:15:22Z',
-      versionLabels: [
-        'version-label-1',
-        'version-label-2',
-      ],
+      versionLabels: ['version-label-1', 'version-label-2'],
     },
     // @ts-expect-error // FIXME 24.01.25
     {

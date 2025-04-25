@@ -48,11 +48,13 @@ import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-share
 
 const PACKAGE_QUERY_KEY = 'package-query-key'
 
-export function usePackage(options?: Partial<{
-  packageKey: Key
-  showParents: boolean
-  hideError: boolean
-}>): [Package | null, IsLoading, Error | null] {
+export function usePackage(
+  options?: Partial<{
+    packageKey: Key
+    showParents: boolean
+    hideError: boolean
+  }>,
+): [Package | null, IsLoading, Error | null] {
   const { packageId: paramPackageId } = useParams()
   const { packageKey, showParents = false, hideError = false } = options ?? {}
   const key = packageKey ?? paramPackageId
@@ -102,7 +104,7 @@ export function useDeletePackage(): [DeletePackage, IsLoading, IsSuccess] {
   const showErrorNotification = useShowErrorNotification()
 
   const { mutate, isLoading, isSuccess } = useMutation<void, Error, Key>({
-    mutationFn: packageKey => deletePackage(packageKey),
+    mutationFn: (packageKey) => deletePackage(packageKey),
     onSuccess: (_, key) => {
       showNotification({ message: `Package ${key} has been deleted` })
     },
@@ -121,7 +123,7 @@ export function useCreatePackage(refererPageName?: string): [CreatePackage, IsLo
   const { navigateToWorkspace, navigateToGroup, navigateToPackage } = useNavigation()
 
   const { mutate, isLoading, isSuccess, error } = useMutation<PackageDto, Error, Package>({
-    mutationFn: value => createPackage(toCreatePackageProps(value)),
+    mutationFn: (value) => createPackage(toCreatePackageProps(value)),
     onSuccess: ({ packageId }, { kind, alias, parentGroup }) => {
       if (kind === PACKAGE_KIND) {
         showNotification({ message: 'Package has been created' })
@@ -147,7 +149,7 @@ export function useRecalculatePackageVersionGroups(): [RecalculatePackage, IsLoa
   const refetchPackages = useRefetchPackages({ refererPageName: MAIN_PAGE_REFERER })
 
   const { mutate, isLoading, isSuccess } = useMutation<void, Error, Key>({
-    mutationFn: packageKey => recalculatePackageVersionGroups(packageKey),
+    mutationFn: (packageKey) => recalculatePackageVersionGroups(packageKey),
     onSuccess: () => {
       refetchPackages()
     },
@@ -156,21 +158,21 @@ export function useRecalculatePackageVersionGroups(): [RecalculatePackage, IsLoa
   return [mutate, isLoading, isSuccess]
 }
 
-export async function recalculatePackageVersionGroups(
-  packageKey: Key,
-): Promise<void> {
+export async function recalculatePackageVersionGroups(packageKey: Key): Promise<void> {
   const packageId = encodeURIComponent(packageKey)
   const pathPattern = '/packages/:packageId/recalculateGroups'
-  return await portalRequestVoid(generatePath(pathPattern, { packageId }), {
-    method: 'POST',
-  }, {
-    customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-  })
+  return await portalRequestVoid(
+    generatePath(pathPattern, { packageId }),
+    {
+      method: 'POST',
+    },
+    {
+      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+    },
+  )
 }
 
-export async function createPackage(
-  value: CreatePackageProps,
-): Promise<PackageDto> {
+export async function createPackage(value: CreatePackageProps): Promise<PackageDto> {
   return await portalRequestJson<PackageDto>('/packages', {
     method: 'POST',
     body: JSON.stringify(value),
@@ -197,30 +199,33 @@ export async function getPackageDetails(
   )
 }
 
-export async function updatePackage(
-  packageKey: Key,
-  value: Partial<Package>,
-): Promise<PackageDto> {
+export async function updatePackage(packageKey: Key, value: Partial<Package>): Promise<PackageDto> {
   const packageId = encodeURIComponent(packageKey)
   const pathPattern = '/packages/:packageId'
-  return await portalRequestJson<PackageDto>(generatePath(pathPattern, { packageId }), {
-    method: 'PATCH',
-    body: JSON.stringify(toPackageDto(value)),
-  }, {
-    customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-  })
+  return await portalRequestJson<PackageDto>(
+    generatePath(pathPattern, { packageId }),
+    {
+      method: 'PATCH',
+      body: JSON.stringify(toPackageDto(value)),
+    },
+    {
+      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+    },
+  )
 }
 
-export async function deletePackage(
-  packageKey: Key,
-): Promise<void> {
+export async function deletePackage(packageKey: Key): Promise<void> {
   const packageId = encodeURIComponent(packageKey)
   const pathPattern = '/packages/:packageId'
-  return await portalRequestVoid(generatePath(pathPattern, { packageId }), {
-    method: 'DELETE',
-  }, {
-    customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-  })
+  return await portalRequestVoid(
+    generatePath(pathPattern, { packageId }),
+    {
+      method: 'DELETE',
+    },
+    {
+      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+    },
+  )
 }
 
 export function useAsyncInvalidatePackage(): (packageKey: Key) => Promise<void> {
@@ -233,10 +238,12 @@ export function useInvalidatePackage(): OptionInvalidateQuery<Key | undefined> {
 
   const client = useQueryClient()
   return (packageKey?: Key) => {
-    client.invalidateQueries({
-      queryKey: [PACKAGE_QUERY_KEY, packageId ?? packageKey],
-      refetchType: 'all',
-    }).then()
+    client
+      .invalidateQueries({
+        queryKey: [PACKAGE_QUERY_KEY, packageId ?? packageKey],
+        refetchType: 'all',
+      })
+      .then()
   }
 }
 
@@ -276,7 +283,9 @@ export function toPackageDto(value: Partial<Package>): Partial<PackageDto> {
   }
 }
 
-export function toLastReleaseVersionDetailsDto(value?: LastReleaseVersionDetails): LastReleaseVersionDetailsDto | undefined {
+export function toLastReleaseVersionDetailsDto(
+  value?: LastReleaseVersionDetails,
+): LastReleaseVersionDetailsDto | undefined {
   if (!value) {
     return undefined
   }

@@ -49,10 +49,7 @@ export function useResetBranch(onSuccess: () => void): [ResetBranch, IsLoading] 
   return [mutate, isLoading]
 }
 
-async function resetBranch(
-  projectKey: Key,
-  branchName: string,
-): Promise<void> {
+async function resetBranch(projectKey: Key, branchName: string): Promise<void> {
   const projectId = encodeURIComponent(projectKey)
   const branch = encodeURIComponent(branchName)
 

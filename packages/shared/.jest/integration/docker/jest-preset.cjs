@@ -19,5 +19,5 @@ const path = require('path')
 module.exports = {
   globalSetup: path.join(__dirname, 'setup.cjs'),
   globalTeardown: path.join(__dirname, 'teardown.cjs'),
-  testEnvironment: 'jest-environment-puppeteer'
+  testEnvironment: 'jest-environment-puppeteer',
 }

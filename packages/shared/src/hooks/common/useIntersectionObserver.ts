@@ -23,13 +23,15 @@ export function useIntersectionObserver(
   hasNextPage?: boolean,
   fetchNextPage?: () => void,
 ): void {
-
-  const onIntersection = useCallback((entries: IntersectionObserverEntry[]) => {
-    const [firstEntry] = entries
-    if (firstEntry.isIntersecting && hasNextPage && !isNextPageFetching) {
-      fetchNextPage?.()
-    }
-  }, [hasNextPage, isNextPageFetching, fetchNextPage])
+  const onIntersection = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      const [firstEntry] = entries
+      if (firstEntry.isIntersecting && hasNextPage && !isNextPageFetching) {
+        fetchNextPage?.()
+      }
+    },
+    [hasNextPage, isNextPageFetching, fetchNextPage],
+  )
 
   useEffect(() => {
     const observer = new IntersectionObserver(onIntersection)

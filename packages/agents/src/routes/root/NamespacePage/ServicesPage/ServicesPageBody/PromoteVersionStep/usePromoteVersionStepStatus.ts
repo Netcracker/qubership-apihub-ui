@@ -20,7 +20,9 @@ import type { StepStatus } from '../../ServicesPageProvider/ServicesStepsProvide
 import { usePromoteVersionPublicationOptions } from '../../ServicesPageProvider/ServicesPublicationOptionsProvider'
 
 export function usePromoteVersionStepStatus(): StepStatus {
-  const { promotePublicationOptions: { config } } = usePromoteVersionPublicationOptions()
+  const {
+    promotePublicationOptions: { config },
+  } = usePromoteVersionPublicationOptions()
   const status = useAllPublishDetailsStatus({ config })
   return PUBLISH_STATUS_TO_STEP_STATUS_MAP[status]
 }

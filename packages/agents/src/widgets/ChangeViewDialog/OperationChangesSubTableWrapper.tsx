@@ -23,28 +23,15 @@ import { OperationChangesSubTable } from '@netcracker/qubership-apihub-ui-shared
 // copy-pasted from portal
 export type OperationChangesSubTableWrapper = SubTableComponentProps
 
-export const OperationChangesSubTableWrapper: FC<OperationChangesSubTableWrapper> = memo<OperationChangesSubTableWrapper>((
-  {
-    value,
-    packageKey,
-    versionKey,
-    apiType,
-    packageKind,
-  },
-) => {
-  const { operationKey } = value.original.change
-  const [changes, isLoading] = useOperationChangelog({
-    versionKey: versionKey!,
-    packageKey: packageKey!,
-    operationKey: operationKey!,
-    apiType: apiType,
-  })
+export const OperationChangesSubTableWrapper: FC<OperationChangesSubTableWrapper> =
+  memo<OperationChangesSubTableWrapper>(({ value, packageKey, versionKey, apiType, packageKind }) => {
+    const { operationKey } = value.original.change
+    const [changes, isLoading] = useOperationChangelog({
+      versionKey: versionKey!,
+      packageKey: packageKey!,
+      operationKey: operationKey!,
+      apiType: apiType,
+    })
 
-  return (
-    <OperationChangesSubTable
-      changes={changes}
-      isLoading={isLoading}
-      packageKind={packageKind}
-    />
-  )
-})
+    return <OperationChangesSubTable changes={changes} isLoading={isLoading} packageKind={packageKind} />
+  })

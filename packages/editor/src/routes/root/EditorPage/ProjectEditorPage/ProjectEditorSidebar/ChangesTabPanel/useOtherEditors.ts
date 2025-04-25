@@ -25,7 +25,7 @@ export function useOtherEditors(): ReadonlyArray<User> {
   const userKey = authorization?.user.key ?? ''
 
   return useMemo(
-    () => branchConfig?.editors.filter(editor => editor.key !== userKey) ?? [],
+    () => branchConfig?.editors.filter((editor) => editor.key !== userKey) ?? [],
     [userKey, branchConfig?.editors],
   )
 }

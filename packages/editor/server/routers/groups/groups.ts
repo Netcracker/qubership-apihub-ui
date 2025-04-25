@@ -23,9 +23,9 @@ export function getGroups(router: Router): void {
     let { groups } = GROUPS
 
     if (groupId) {
-      groups = groups.filter(group => group.parentId === groupId)
+      groups = groups.filter((group) => group.parentId === groupId)
     } else {
-      groups = depth === '0' ? groups : groups.filter(group => !group.parentId)
+      groups = depth === '0' ? groups : groups.filter((group) => !group.parentId)
     }
 
     res.status(200).json({ groups })
@@ -34,7 +34,7 @@ export function getGroups(router: Router): void {
 
 export function getGroup(router: Router): void {
   router.get('/:id/', (req, res) => {
-    res.status(200).json(GROUPS.groups.find(group => group.groupId === req.params.id))
+    res.status(200).json(GROUPS.groups.find((group) => group.groupId === req.params.id))
   })
 }
 
@@ -52,10 +52,8 @@ export function createGroup(router: Router): void {
 
 export function favorGroup(router: Router): void {
   router.post('/:id/favor/', (req, res) => {
-    GROUPS.groups = GROUPS.groups.map(group => {
-      return group.groupId === req.params.id
-        ? { ...group, isFavorite: true }
-        : group
+    GROUPS.groups = GROUPS.groups.map((group) => {
+      return group.groupId === req.params.id ? { ...group, isFavorite: true } : group
     })
     res.status(200).json()
   })
@@ -63,10 +61,8 @@ export function favorGroup(router: Router): void {
 
 export function disfavorGroup(router: Router): void {
   router.post('/:id/disfavor/', (req, res) => {
-    GROUPS.groups = GROUPS.groups.map(group => {
-      return group.groupId === req.params.id
-        ? { ...group, isFavorite: false }
-        : group
+    GROUPS.groups = GROUPS.groups.map((group) => {
+      return group.groupId === req.params.id ? { ...group, isFavorite: false } : group
     })
     res.status(200).json()
   })

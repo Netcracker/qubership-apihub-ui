@@ -55,9 +55,7 @@ export function useCreateProject(): [CreateProject, IsLoading, Error | null] {
   return [mutate, isLoading, error]
 }
 
-async function createProject(
-  project: Project,
-): Promise<Project> {
+async function createProject(project: Project): Promise<Project> {
   const data = await editorRequestJson<ProjectDto>('/projects', {
     method: 'POST',
     body: JSON.stringify(toProjectDto(project)),

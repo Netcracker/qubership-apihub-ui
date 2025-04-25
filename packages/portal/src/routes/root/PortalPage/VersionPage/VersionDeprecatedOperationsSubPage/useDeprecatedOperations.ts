@@ -37,9 +37,7 @@ import {
 } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { OperationGroupName } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
 import type { HasNextPage, IsFetchingNextPage, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import {
-  useResolvedOperationGroupParameters,
-} from '@netcracker/qubership-apihub-ui-shared/hooks/operation-groups/useResolvedOperationGroupParameters'
+import { useResolvedOperationGroupParameters } from '@netcracker/qubership-apihub-ui-shared/hooks/operation-groups/useResolvedOperationGroupParameters'
 import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { portalRequestJson } from '@apihub/utils/requests'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
@@ -48,22 +46,24 @@ import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/ap
 const DEPRECATED_OPERATIONS_QUERY_KEY = 'deprecated-operations-query-key'
 const EMPTY_TAG_QUERY_PARAM_KEY = 'emptyTag'
 
-export function useDeprecatedOperations(options?: Partial<{
-  packageKey: Key
-  versionKey: Key
-  ids: string[]
-  apiKind: ApiKind
-  apiAudience: ApiAudience
-  label: string
-  tag: string
-  textFilter: string
-  apiType: ApiType
-  excludedGroupName: OperationGroupName
-  groupName: OperationGroupName
-  refPackageKey: PackageKey
-  page: number
-  limit: number
-}>): [OperationsData, IsLoading, FetchNextOperationList, IsFetchingNextPage, HasNextPage] {
+export function useDeprecatedOperations(
+  options?: Partial<{
+    packageKey: Key
+    versionKey: Key
+    ids: string[]
+    apiKind: ApiKind
+    apiAudience: ApiAudience
+    label: string
+    tag: string
+    textFilter: string
+    apiType: ApiType
+    excludedGroupName: OperationGroupName
+    groupName: OperationGroupName
+    refPackageKey: PackageKey
+    page: number
+    limit: number
+  }>,
+): [OperationsData, IsLoading, FetchNextOperationList, IsFetchingNextPage, HasNextPage] {
   const {
     packageKey,
     versionKey,
@@ -82,11 +82,10 @@ export function useDeprecatedOperations(options?: Partial<{
   } = options ?? {}
   const { fullVersion } = useVersionWithRevision(versionKey, packageKey)
 
-  const {
-    resolvedExcludedGroupName,
-    resolvedGroupName,
-    resolvedEmptyGroup,
-  } = useResolvedOperationGroupParameters(groupName, excludedGroupName)
+  const { resolvedExcludedGroupName, resolvedGroupName, resolvedEmptyGroup } = useResolvedOperationGroupParameters(
+    groupName,
+    excludedGroupName,
+  )
 
   const {
     data: operationsList,
@@ -95,25 +94,40 @@ export function useDeprecatedOperations(options?: Partial<{
     isFetchingNextPage,
     hasNextPage,
   } = useInfiniteQuery<OperationsData, Error, OperationsData>({
-    queryKey: [DEPRECATED_OPERATIONS_QUERY_KEY, packageKey, fullVersion, tag, apiKind, apiAudience, textFilter, apiType, excludedGroupName, groupName, refPackageKey],
+    queryKey: [
+      DEPRECATED_OPERATIONS_QUERY_KEY,
+      packageKey,
+      fullVersion,
+      tag,
+      apiKind,
+      apiAudience,
+      textFilter,
+      apiType,
+      excludedGroupName,
+      groupName,
+      refPackageKey,
+    ],
     queryFn: ({ pageParam = page, signal }) => {
-      return getDeprecatedOperations({
-        packageKey: packageKey!,
-        versionKey: fullVersion!,
-        ids: ids,
-        apiKind: apiKind,
-        apiAudience: apiAudience,
-        label: label,
-        tag: tag,
-        textFilter: textFilter,
-        apiType: apiType,
-        excludedGroupName: resolvedExcludedGroupName,
-        groupName: resolvedGroupName,
-        refPackageKey: refPackageKey,
-        emptyGroup: resolvedEmptyGroup,
-        page: pageParam - 1,
-        limit: limit,
-      }, signal)
+      return getDeprecatedOperations(
+        {
+          packageKey: packageKey!,
+          versionKey: fullVersion!,
+          ids: ids,
+          apiKind: apiKind,
+          apiAudience: apiAudience,
+          label: label,
+          tag: tag,
+          textFilter: textFilter,
+          apiType: apiType,
+          excludedGroupName: resolvedExcludedGroupName,
+          groupName: resolvedGroupName,
+          refPackageKey: refPackageKey,
+          emptyGroup: resolvedEmptyGroup,
+          page: pageParam - 1,
+          limit: limit,
+        },
+        signal,
+      )
     },
     getNextPageParam: (lastPage, allPages) => {
       if (!limit) {
@@ -125,13 +139,7 @@ export function useDeprecatedOperations(options?: Partial<{
     enabled: !!packageKey && !!fullVersion,
   })
 
-  return [
-    operationsList?.pages.flat() ?? [],
-    isLoading,
-    fetchNextPage,
-    isFetchingNextPage,
-    hasNextPage,
-  ]
+  return [operationsList?.pages.flat() ?? [], isLoading, fetchNextPage, isFetchingNextPage, hasNextPage]
 }
 
 async function getDeprecatedOperations(
@@ -190,16 +198,28 @@ async function getDeprecatedOperations(
     group: { value: groupName },
     emptyGroup: { value: emptyGroup },
     refPackageId: { value: refPackageKey },
-    page: { value: page, toStringValue: page => `${page}` },
+    page: { value: page, toStringValue: (page) => `${page}` },
     limit: { value: limit },
   })
 
-  let operations: OperationsWithDeprecations = await fetchDeprecatedOperations(packageId, versionId, queryParams, apiType, signal)
+  let operations: OperationsWithDeprecations = await fetchDeprecatedOperations(
+    packageId,
+    versionId,
+    queryParams,
+    apiType,
+    signal,
+  )
 
   if (tag === DEFAULT_TAG) {
     // It's possible to have operations with explicitly defined default tag, we've to load them
     queryParams.set(EMPTY_TAG_QUERY_PARAM_KEY, 'false')
-    const additionalOperations: OperationsWithDeprecations = await fetchDeprecatedOperations(packageId, versionId, queryParams, apiType, signal)
+    const additionalOperations: OperationsWithDeprecations = await fetchDeprecatedOperations(
+      packageId,
+      versionId,
+      queryParams,
+      apiType,
+      signal,
+    )
     operations = [...operations, ...additionalOperations]
   }
 
@@ -214,12 +234,14 @@ async function fetchDeprecatedOperations(
   signal?: AbortSignal,
 ): Promise<OperationsWithDeprecations> {
   const pathPattern = '/packages/:packageId/versions/:versionId/:apiType/deprecated'
-  return toOperations(await portalRequestJson<OperationsWithDeprecationsDto>(
-    `${generatePath(pathPattern, { packageId, versionId, apiType })}?${queryParams}`,
-    { method: 'get' },
-    {
-      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-    },
-    signal,
-  ) as OperationsDto)
+  return toOperations(
+    (await portalRequestJson<OperationsWithDeprecationsDto>(
+      `${generatePath(pathPattern, { packageId, versionId, apiType })}?${queryParams}`,
+      { method: 'get' },
+      {
+        customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+      },
+      signal,
+    )) as OperationsDto,
+  )
 }

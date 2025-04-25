@@ -32,13 +32,11 @@ export function usePackagesGlobalSearch(options: {
 }): [SearchResults, IsLoading, FetchNextSearchResultList, IsFetchingNextPage, HasNextPage] {
   const { criteria, enabled, page = 1, limit = 100 } = options
 
-  const {
-    data,
-    isInitialLoading,
-    fetchNextPage,
-    isFetchingNextPage,
-    hasNextPage,
-  } = useInfiniteQuery<SearchResults, Error, SearchResults>({
+  const { data, isInitialLoading, fetchNextPage, isFetchingNextPage, hasNextPage } = useInfiniteQuery<
+    SearchResults,
+    Error,
+    SearchResults
+  >({
     queryKey: [GLOBAL_PACKAGES_SEARCH_RESULT_QUERY_KEY, criteria, PACKAGE_LEVEL],
     queryFn: ({ pageParam = page }) => getSearchResult(criteria, PACKAGE_LEVEL, limit, pageParam - 1),
     enabled: enabled && !!criteria.searchString,
@@ -51,7 +49,7 @@ export function usePackagesGlobalSearch(options: {
     },
   })
 
-  const packages = useMemo(() => data?.pages.flatMap(page => page.packages) ?? [], [data?.pages])
+  const packages = useMemo(() => data?.pages.flatMap((page) => page.packages) ?? [], [data?.pages])
 
   return [
     {

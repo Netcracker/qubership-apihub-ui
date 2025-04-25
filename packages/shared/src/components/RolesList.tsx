@@ -28,7 +28,6 @@ export type RolesListProps = {
   setRoles: (roles: Roles) => void
 }
 export const RolesList: FC<RolesListProps> = memo(({ roles, setRoles }) => {
-
   const reorder = (list: Roles, startIndex: number, endIndex: number): Roles => {
     const result = Array.from(list)
     const [removed] = result.splice(startIndex, 1)
@@ -45,11 +44,7 @@ export const RolesList: FC<RolesListProps> = memo(({ roles, setRoles }) => {
       return
     }
 
-    const rolesOder = reorder(
-      roles,
-      result.source.index,
-      result.destination.index,
-    )
+    const rolesOder = reorder(roles, result.source.index, result.destination.index)
 
     setRoles(rolesOder)
   }
@@ -59,8 +54,7 @@ export const RolesList: FC<RolesListProps> = memo(({ roles, setRoles }) => {
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell sx={{ width: '44px' }}>
-            </TableCell>
+            <TableCell sx={{ width: '44px' }}></TableCell>
             <TableCell>
               <Typography noWrap variant="subtitle2" sx={{ pl: 0 }}>
                 Role
@@ -75,17 +69,9 @@ export const RolesList: FC<RolesListProps> = memo(({ roles, setRoles }) => {
                 {roles.map((role, index) => (
                   <Draggable key={role.key} draggableId={role.key} index={index} isDragDisabled={role.readOnly}>
                     {(provided) => (
-                      <TableRow
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                      >
-                        <TableCell key={index}>
-                          {!role.readOnly && <DragIcon/>}
-                        </TableCell>
-                        <TableCell key={role.role}>
-                          {role.role}
-                        </TableCell>
+                      <TableRow ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                        <TableCell key={index}>{!role.readOnly && <DragIcon />}</TableCell>
+                        <TableCell key={role.role}>{role.role}</TableCell>
                       </TableRow>
                     )}
                   </Draggable>

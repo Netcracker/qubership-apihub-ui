@@ -31,10 +31,7 @@ import { toApiTypeMap } from '@netcracker/qubership-apihub-ui-shared/entities/ap
 
 const DEPRECATED_SUMMARY_QUERY_KEY = 'deprecated-summary-query-key'
 
-export function useDeprecatedSummary(options: {
-  packageKey: Key | undefined
-  versionKey: Key | undefined
-}): {
+export function useDeprecatedSummary(options: { packageKey: Key | undefined; versionKey: Key | undefined }): {
   deprecatedSummary: VersionDeprecatedSummary | null
   isLoading: IsLoading
   error: Error | null
@@ -86,5 +83,3 @@ export function toDeprecatedSummary(value: VersionDeprecatedSummaryDto): Version
     }
   }
 }
-
-

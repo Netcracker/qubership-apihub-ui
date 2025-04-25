@@ -49,24 +49,21 @@ const OPENAPI_SPEC = {
 
 const SpecificationPopupWrapper: FC<PopupProps & { value: string }> = ({ open, setOpen, detail, value }) => {
   const { spec } = detail as SpecificationDialogDetail
-  const {
-    viewer,
-    viewModes,
-    viewMode,
-    setViewMode,
-  } = useSpecViewer({ spec: spec, value: value })
+  const { viewer, viewModes, viewMode, setViewMode } = useSpecViewer({ spec: spec, value: value })
 
-  return <SpecificationPopup
-    open={open}
-    setOpen={setOpen}
-    detail={{
-      spec: spec,
-      viewer: viewer,
-      viewModes: viewModes,
-      viewMode: viewMode,
-      setViewMode: setViewMode,
-    }}
-  />
+  return (
+    <SpecificationPopup
+      open={open}
+      setOpen={setOpen}
+      detail={{
+        spec: spec,
+        viewer: viewer,
+        viewModes: viewModes,
+        viewMode: viewMode,
+        setViewMode: setViewMode,
+      }}
+    />
+  )
 }
 
 const meta: Meta<typeof SpecificationPopup> = {
@@ -75,9 +72,9 @@ const meta: Meta<typeof SpecificationPopup> = {
   decorators: [
     (Story) => (
       <ThemeProvider theme={theme}>
-        <CssBaseline/>
+        <CssBaseline />
         <Box sx={{ width: '800px' }}>
-          <Story/>
+          <Story />
         </Box>
       </ThemeProvider>
     ),
@@ -96,7 +93,7 @@ export const OpenApiStory: Story = {
       spec: OPENAPI_SPEC,
     },
   },
-  render: (args) => <SpecificationPopupWrapper {...args} value={JSON.stringify(openapiSample, null, 2)}/>,
+  render: (args) => <SpecificationPopupWrapper {...args} value={JSON.stringify(openapiSample, null, 2)} />,
 }
 
 export const MarkdownStory: Story = {
@@ -105,11 +102,9 @@ export const MarkdownStory: Story = {
     open: true,
     detail: {
       spec: {
-        'name': 'Markdown file',
+        name: 'Markdown file',
       },
-      viewer: <MarkdownViewer
-        value={markdownSample}
-      />,
+      viewer: <MarkdownViewer value={markdownSample} />,
       viewModes: [],
       setViewMode: () => null,
     },
@@ -125,5 +120,5 @@ export const GraphqlStory: Story = {
       spec: GRAPHQL_SPEC,
     },
   },
-  render: (args) => <SpecificationPopupWrapper {...args} value={graphqlSample}/>,
+  render: (args) => <SpecificationPopupWrapper {...args} value={graphqlSample} />,
 }

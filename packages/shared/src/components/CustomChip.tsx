@@ -28,38 +28,39 @@ export type CustomChipProps = {
   isExtraSmall?: boolean
 } & ChipProps
 
-export const CustomChip: FC<CustomChipProps> = memo<CustomChipProps>(({
-  value,
-  label,
-  component = 'div',
-  isExtraSmall = false,
-  sx,
-  ...props
-}) => {
-  const isCustomColor = useMemo(() => Object.keys(CHIP_COLOR_OVERRIDES).includes(value), [value])
+export const CustomChip: FC<CustomChipProps> = memo<CustomChipProps>(
+  ({ value, label, component = 'div', isExtraSmall = false, sx, ...props }) => {
+    const isCustomColor = useMemo(() => Object.keys(CHIP_COLOR_OVERRIDES).includes(value), [value])
 
-  //to support many usages in UI
-  const sxOverrides = useMemo(() => (isExtraSmall
-      ? {
-        ...sx,
-        ...extraSmallStyles,
-      }
-      : sx
-  ), [isExtraSmall, sx])
+    //to support many usages in UI
+    const sxOverrides = useMemo(
+      () =>
+        isExtraSmall
+          ? {
+              ...sx,
+              ...extraSmallStyles,
+            }
+          : sx,
+      [isExtraSmall, sx],
+    )
 
-  return (
-    <Chip
-      {...props}
-      sx={sxOverrides}
-      size="small"
-      label={label ?? value}
-      component={component}
-      color={isCustomColor ? value as ChipColor : 'default'}
-    />
-  )
-})
+    return (
+      <Chip
+        {...props}
+        sx={sxOverrides}
+        size="small"
+        label={label ?? value}
+        component={component}
+        color={isCustomColor ? (value as ChipColor) : 'default'}
+      />
+    )
+  },
+)
 
-type ChipColor = OverridableStringUnion<'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning', ChipPropsColorOverrides>
+type ChipColor = OverridableStringUnion<
+  'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning',
+  ChipPropsColorOverrides
+>
 
 const extraSmallStyles = {
   height: '14px',

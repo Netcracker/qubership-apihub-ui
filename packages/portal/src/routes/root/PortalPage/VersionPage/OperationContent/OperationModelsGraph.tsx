@@ -30,8 +30,15 @@ import {
   isSchema,
 } from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView/schema-graph-content'
 import type { OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import type { Action, NavigationState, ViewPortCenter } from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView'
-import { FIT_TO_SCREEN_ACTION, SchemaGraphView } from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView'
+import type {
+  Action,
+  NavigationState,
+  ViewPortCenter,
+} from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView'
+import {
+  FIT_TO_SCREEN_ACTION,
+  SchemaGraphView,
+} from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView'
 import { CONTEXT_PANEL_DEFAULT_WIDTH, SchemaContextPanel } from '@apihub/components/SchemaContextPanel'
 import { ZoomPanel } from '@netcracker/qubership-apihub-ui-shared/components/ZoomPanel'
 import { ResizableSidebar } from '@netcracker/qubership-apihub-ui-shared/components/ResizableSidebar'
@@ -62,13 +69,13 @@ export const OperationModelsGraph: FC<OperationModelsGraphProps> = memo<Operatio
   const [emptyModelsContent, setEmptyModelsContent] = useState<boolean>(false)
 
   const navigationState: NavigationState | undefined = useMemo(
-    () => (navigationDetails
-      ? {
-        ...navigationDetails,
-        viewPort: modelViewPort,
-      }
-      : undefined
-    ),
+    () =>
+      navigationDetails
+        ? {
+            ...navigationDetails,
+            viewPort: modelViewPort,
+          }
+        : undefined,
     // should calc only on change path for navigation
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [navigationDetails],
@@ -97,10 +104,13 @@ export const OperationModelsGraph: FC<OperationModelsGraphProps> = memo<Operatio
     }
   }, [hideContextPanel])
 
-  const onSelectionChange = useCallback((value?: SelectableObject<SchemaGraphMeta> | null) => {
-    setSelectedData(value)
-    onSelect(!!value)
-  }, [onSelect])
+  const onSelectionChange = useCallback(
+    (value?: SelectableObject<SchemaGraphMeta> | null) => {
+      setSelectedData(value)
+      onSelect(!!value)
+    },
+    [onSelect],
+  )
 
   const selectedSchema: OpenAPIV3.SchemaObject | undefined = useMemo(() => {
     if (!selectedData) {
@@ -183,7 +193,7 @@ function matchesWithName(name: string) {
       return schema.title === name
     }
     const schemaAsRecord = schema as Record<PropertyKey, unknown>
-    const [firstRef, ...rest]: string[] = schemaAsRecord[VISITOR_FLAG_INLINE_REFS] as string[] ?? []
+    const [firstRef, ...rest]: string[] = (schemaAsRecord[VISITOR_FLAG_INLINE_REFS] as string[]) ?? []
     if (isEmpty(rest)) {
       return firstRef.endsWith(`/${name}`)
     }

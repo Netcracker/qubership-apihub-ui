@@ -65,7 +65,7 @@ function CustomListItemButtonComponent<T>(props: CustomListItemButtonProps<T>): 
   )
 }
 
-const genericMemo: <T>  (component: T) => T = memo
+const genericMemo: <T>(component: T) => T = memo
 export const CustomListItemButton = genericMemo(CustomListItemButtonComponent)
 
 export const LIST_ITEM_SIZE_BIG = 'big'

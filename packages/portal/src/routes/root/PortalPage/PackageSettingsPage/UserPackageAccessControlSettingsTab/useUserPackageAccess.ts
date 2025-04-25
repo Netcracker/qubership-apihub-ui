@@ -31,7 +31,12 @@ import type {
 import { ADD_CHANGE_ROLE_ACTION, REMOVE_CHANGE_ROLE_ACTION, toPackageMembers } from '../package-settings'
 import { generatePath } from 'react-router-dom'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { IsError, IsLoading, IsSuccess, OptionInvalidateQuery } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import type {
+  IsError,
+  IsLoading,
+  IsSuccess,
+  OptionInvalidateQuery,
+} from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { portalRequestJson, portalRequestVoid } from '@apihub/utils/requests'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
 import { useInvalidatePackage } from '@apihub/routes/root/usePackage'
@@ -68,33 +73,32 @@ export function usePackageMembers(packageKey: Key): [PackageMembers, IsLoading, 
     select: toPackageMembers,
   })
 
-  return [
-    data ?? [],
-    isLoading,
-    error,
-  ]
+  return [data ?? [], isLoading, error]
 }
 
 export function useInvalidatePackageMembers(): OptionInvalidateQuery<Key | undefined> {
-
   const client = useQueryClient()
   return () => {
-    client.refetchQueries({
-      queryKey: [USER_PACKAGE_ACCESS_QUERY_KEY],
-    }).then()
+    client
+      .refetchQueries({
+        queryKey: [USER_PACKAGE_ACCESS_QUERY_KEY],
+      })
+      .then()
   }
 }
 
-export async function getPackageMembers(
-  packageKey: Key,
-): Promise<PackageMembersDto> {
+export async function getPackageMembers(packageKey: Key): Promise<PackageMembersDto> {
   const packageId = encodeURIComponent(packageKey)
   const pathPattern = '/packages/:packageId/members'
-  return await portalRequestJson<PackageMembersDto>(generatePath(pathPattern, { packageId }), {
-    method: 'GET',
-  }, {
-    customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-  })
+  return await portalRequestJson<PackageMembersDto>(
+    generatePath(pathPattern, { packageId }),
+    {
+      method: 'GET',
+    },
+    {
+      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+    },
+  )
 }
 
 export function useDeletePackageMember(): [DeletePackageMember, IsLoading] {
@@ -118,17 +122,18 @@ export function useDeletePackageMember(): [DeletePackageMember, IsLoading] {
   return [mutate, isLoading]
 }
 
-export async function deletePackageMember(
-  packageKey: Key,
-  userId: Key,
-): Promise<void> {
+export async function deletePackageMember(packageKey: Key, userId: Key): Promise<void> {
   const packageId = encodeURIComponent(packageKey)
   const pathPattern = '/packages/:packageId/members/:userId'
-  return await portalRequestVoid(generatePath(pathPattern, { packageId, userId }), {
-    method: 'DELETE',
-  }, {
-    customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-  })
+  return await portalRequestVoid(
+    generatePath(pathPattern, { packageId, userId }),
+    {
+      method: 'DELETE',
+    },
+    {
+      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+    },
+  )
 }
 
 export function useChangePackageMemberRole(): [ChangePackageMemberRole, IsLoading, IsSuccess] {
@@ -138,29 +143,28 @@ export function useChangePackageMemberRole(): [ChangePackageMemberRole, IsLoadin
   const invalidatePackageMembers = useInvalidatePackageMembers()
 
   const { mutate, isLoading, isSuccess } = useMutation<void, Error, ChangePackageMemberRoleData>({
-      mutationFn: ({ packageKey, userId, roleId, action }) =>
-        changePackageMemberRole(packageKey, userId, toChangePackageMemberDto(roleId, action)),
-      onSuccess: async (_, { packageKey, userId, roleId, action }) => {
-        const oppositeAction = action === ADD_CHANGE_ROLE_ACTION ? REMOVE_CHANGE_ROLE_ACTION : ADD_CHANGE_ROLE_ACTION
-        showNotification({
-          message: 'The change has been saved',
-          button: {
-            title: 'Undo',
-            onClick: async () => {
-              await changePackageMemberRole(packageKey, userId, toChangePackageMemberDto(roleId, oppositeAction))
-              invalidatePackage()
-              invalidatePackageMembers()
-            },
+    mutationFn: ({ packageKey, userId, roleId, action }) =>
+      changePackageMemberRole(packageKey, userId, toChangePackageMemberDto(roleId, action)),
+    onSuccess: async (_, { packageKey, userId, roleId, action }) => {
+      const oppositeAction = action === ADD_CHANGE_ROLE_ACTION ? REMOVE_CHANGE_ROLE_ACTION : ADD_CHANGE_ROLE_ACTION
+      showNotification({
+        message: 'The change has been saved',
+        button: {
+          title: 'Undo',
+          onClick: async () => {
+            await changePackageMemberRole(packageKey, userId, toChangePackageMemberDto(roleId, oppositeAction))
+            invalidatePackage()
+            invalidatePackageMembers()
           },
-        })
-        invalidatePackage()
-        invalidatePackageMembers()
-      },
-      onError: (error) => {
-        showErrorNotification({ message: error?.message })
-      },
+        },
+      })
+      invalidatePackage()
+      invalidatePackageMembers()
     },
-  )
+    onError: (error) => {
+      showErrorNotification({ message: error?.message })
+    },
+  })
 
   return [mutate, isLoading, isSuccess]
 }
@@ -172,12 +176,16 @@ export async function changePackageMemberRole(
 ): Promise<void> {
   const packageId = encodeURIComponent(packageKey)
   const pathPattern = '/packages/:packageId/members/:userId'
-  return await portalRequestVoid(generatePath(pathPattern, { packageId, userId }), {
-    method: 'PATCH',
-    body: JSON.stringify(value),
-  }, {
-    customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-  })
+  return await portalRequestVoid(
+    generatePath(pathPattern, { packageId, userId }),
+    {
+      method: 'PATCH',
+      body: JSON.stringify(value),
+    },
+    {
+      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+    },
+  )
 }
 
 export function useAddPackageMember(): [AddPackageMemberRole, IsLoading, IsSuccess, IsError] {
@@ -192,26 +200,22 @@ export function useAddPackageMember(): [AddPackageMemberRole, IsLoading, IsSucce
     },
   })
 
-  return [
-    mutate,
-    isLoading,
-    isSuccess,
-    isError,
-  ]
+  return [mutate, isLoading, isSuccess, isError]
 }
 
-export async function addPackageMember(
-  packageKey: Key,
-  value: AddPackageMemberPropsDto,
-): Promise<void> {
+export async function addPackageMember(packageKey: Key, value: AddPackageMemberPropsDto): Promise<void> {
   const packageId = encodeURIComponent(packageKey)
   const pathPattern = '/packages/:packageId/members/'
-  return await portalRequestVoid(generatePath(pathPattern, { packageId }), {
-    method: 'POST',
-    body: JSON.stringify(value),
-  }, {
-    customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-  })
+  return await portalRequestVoid(
+    generatePath(pathPattern, { packageId }),
+    {
+      method: 'POST',
+      body: JSON.stringify(value),
+    },
+    {
+      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+    },
+  )
 }
 
 function toAddPackageMemberDto({ emails, roleKeys }: AddPackageMemberProps): AddPackageMemberPropsDto {

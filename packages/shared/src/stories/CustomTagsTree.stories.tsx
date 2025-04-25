@@ -27,13 +27,13 @@ const meta: Meta<typeof CustomTagsTree> = {
     (Story) => (
       <Box
         sx={{
-          'ul': {
+          ul: {
             'list-style-type': 'none',
             'padding-inline-start': 0,
           },
         }}
       >
-        <Story/>
+        <Story />
       </Box>
     ),
   ],

@@ -42,11 +42,7 @@ export type EditOperationGroupContentPopupLayoutProps = {
 export const PopupLayout: FC<EditOperationGroupContentPopupLayoutProps> = (props) => {
   const { navigation, leftHeader, leftBody, exchangerParameters, rightHeader, rightBody, rightCount } = props
   return (
-    <Box
-      display="flex"
-      width="100%"
-      borderTop={BORDER}
-    >
+    <Box display="flex" width="100%" borderTop={BORDER}>
       {/* Navigation */}
       <Box
         display="flex"
@@ -59,40 +55,32 @@ export const PopupLayout: FC<EditOperationGroupContentPopupLayoutProps> = (props
         {navigation}
       </Box>
       {/* Left List */}
-      <Box
-        width={LIST_WIDTH}
-        height={CONTENT_HEIGHT}
-        data-testid="LeftList"
-      >
+      <Box width={LIST_WIDTH} height={CONTENT_HEIGHT} data-testid="LeftList">
         <BodyCard
           header={leftHeader}
-          body={(
+          body={
             <Box display="flex" height="100%" overflow="auto">
               {leftBody}
             </Box>
-          )}
+          }
           overrideHeaderSx={OVERRIDE_LEFT_SECTION_INDENTS}
           overrideBodySx={OVERRIDE_LEFT_SECTION_INDENTS}
         />
       </Box>
       {/* Exchanger Controls */}
-      <ExchangerControls {...exchangerParameters}/>
+      <ExchangerControls {...exchangerParameters} />
       {/* Right List */}
-      <Box
-        width={LIST_WIDTH}
-        height={CONTENT_HEIGHT}
-        data-testid="RightList"
-      >
+      <Box width={LIST_WIDTH} height={CONTENT_HEIGHT} data-testid="RightList">
         <BodyCard
           header={rightHeader}
-          body={(
+          body={
             <>
               <Box display="flex" flexDirection="column" height="100%" overflow="auto">
                 {rightBody}
               </Box>
-              <OperationGroupLimit count={rightCount}/>
+              <OperationGroupLimit count={rightCount} />
             </>
-          )}
+          }
           overrideHeaderSx={OVERRIDE_RIGHT_SECTION_INDENTS}
           overrideBodySx={OVERRIDE_RIGHT_SECTION_INDENTS}
         />

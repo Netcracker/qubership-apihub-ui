@@ -51,45 +51,28 @@ function TabsPanelRenderer<T extends Key>({
   onChangeTab,
 }: TabsPanelProps<T>): JSX.Element {
   const [internalActiveTab, setInternalActiveTab] = useStateWithExternal(activeTab, activeTab, onChangeTab)
-  const tabListStyles = useMemo(() => (separator
-      ? { borderBottom: 1, borderColor: 'divider' }
-      : undefined
-  ), [separator])
+  const tabListStyles = useMemo(
+    () => (separator ? { borderBottom: 1, borderColor: 'divider' } : undefined),
+    [separator],
+  )
 
   return (
-    <Box
-      height="100%"
-      width="100%"
-      overflow="hidden"
-    >
+    <Box height="100%" width="100%" overflow="hidden">
       <TabContext value={internalActiveTab}>
-        <TabList
-          sx={tabListStyles}
-          onChange={(_, value) => setInternalActiveTab(value)}
-        >
-          {
-            tabs.map(({ key, name, isLoading, info }) => (
-              <Tab
-                value={key}
-                label={
-                  <TabLabel
-                    name={name}
-                    isLoading={isLoading}
-                    info={info}
-                  />
-                }
-                data-testid={`TabButton-${key}`}
-              />
-            ))
-          }
+        <TabList sx={tabListStyles} onChange={(_, value) => setInternalActiveTab(value)}>
+          {tabs.map(({ key, name, isLoading, info }) => (
+            <Tab
+              value={key}
+              label={<TabLabel name={name} isLoading={isLoading} info={info} />}
+              data-testid={`TabButton-${key}`}
+            />
+          ))}
         </TabList>
-        {
-          panels.map(({ key, content }) => (
-            <TabPanel value={key} sx={tabPanelStyle}>
-              {content}
-            </TabPanel>
-          ))
-        }
+        {panels.map(({ key, content }) => (
+          <TabPanel value={key} sx={tabPanelStyle}>
+            {content}
+          </TabPanel>
+        ))}
       </TabContext>
     </Box>
   )
@@ -103,15 +86,11 @@ type TabLabelProps = {
   info?: ReactNode
 }
 
-const TabLabel: FC<TabLabelProps> = memo<TabLabelProps>(({
-  name,
-  info,
-  isLoading = false,
-}) => {
+const TabLabel: FC<TabLabelProps> = memo<TabLabelProps>(({ name, info, isLoading = false }) => {
   return (
     <Box display="flex" alignItems="center" gap={1}>
       <Typography variant="subtitle1">{name}</Typography>
-      {isLoading ? <CircularProgress size={14}/> : info}
+      {isLoading ? <CircularProgress size={14} /> : info}
     </Box>
   )
 })

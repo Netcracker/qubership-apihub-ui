@@ -16,7 +16,11 @@
 
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { toPackage } from './usePackage'
-import type { InvalidatePackagesProps, Packages, PackagesDto } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import type {
+  InvalidatePackagesProps,
+  Packages,
+  PackagesDto,
+} from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import type { InvalidateQuery, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { editorRequestJson } from '@apihub/utils/requests'
@@ -51,7 +55,19 @@ export function usePackages(options: {
 
   const { data, isLoading, error } = useQuery<PackagesDto, Error, Packages>({
     queryKey: [PACKAGES_QUERY_KEY, kind, limit, onlyFavorite, textFilter, page, parentId, onlyShared],
-    queryFn: () => getPackages(kind, limit, onlyFavorite, page, parentId, showParents, textFilter, onlyShared, lastReleaseVersionDetails, versionLabel),
+    queryFn: () =>
+      getPackages(
+        kind,
+        limit,
+        onlyFavorite,
+        page,
+        parentId,
+        showParents,
+        textFilter,
+        onlyShared,
+        lastReleaseVersionDetails,
+        versionLabel,
+      ),
     select: toPackages,
   })
 
@@ -100,7 +116,9 @@ export async function getPackages(
     versionLabel: encodeURIComponent(versionLabel),
   })
 
-  return await editorRequestJson<PackagesDto>(`/packages?${searchParam}`, {
+  return await editorRequestJson<PackagesDto>(
+    `/packages?${searchParam}`,
+    {
       method: 'GET',
     },
     { basePath: API_V2 },
@@ -114,7 +132,9 @@ export function toPackages(value: PackagesDto): Packages {
 export function useInvalidatePackagesByParams(): InvalidateQuery<InvalidatePackagesProps> {
   const client = useQueryClient()
   return ({ kind, parentId, limit, onlyFavorite, page, onlyShared, textFilter }) => {
-    client.invalidateQueries([PACKAGES_QUERY_KEY, kind, limit, onlyFavorite, textFilter, page, parentId, onlyShared]).then()
+    client
+      .invalidateQueries([PACKAGES_QUERY_KEY, kind, limit, onlyFavorite, textFilter, page, parentId, onlyShared])
+      .then()
   }
 }
 

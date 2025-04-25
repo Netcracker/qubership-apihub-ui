@@ -37,74 +37,69 @@ export interface DropdownPackageReferenceSelectorProps {
 }
 
 // First Order Component //
-export const DropdownPackageReferenceSelector: FC<DropdownPackageReferenceSelectorProps> = memo(({
-  selectedPackage,
-  references,
-  loading,
-  searchValue,
-  onSearch,
-  defaultPackageKey,
-  onSearchParam,
-}) => {
-  const [anchor, setAnchor] = useState<HTMLElement>()
+export const DropdownPackageReferenceSelector: FC<DropdownPackageReferenceSelectorProps> = memo(
+  ({ selectedPackage, references, loading, searchValue, onSearch, defaultPackageKey, onSearchParam }) => {
+    const [anchor, setAnchor] = useState<HTMLElement>()
 
-  return (
-    <Box display="flex" alignItems="center" gap={2} overflow="hidden" data-testid="PackageSelector">
-      <Button
-        sx={{
-          minWidth: 4,
-          maxWidth: '200px',
-          width: '200px',
-          height: 20,
-          p: 0,
-          textOverflow: 'ellipsis',
-          boxShadow: 'none',
-          '&:hover': {
+    return (
+      <Box display="flex" alignItems="center" gap={2} overflow="hidden" data-testid="PackageSelector">
+        <Button
+          sx={{
+            minWidth: 4,
+            maxWidth: '200px',
+            width: '200px',
+            height: 20,
+            p: 0,
+            textOverflow: 'ellipsis',
             boxShadow: 'none',
-          },
-        }}
-        variant="text"
-        onClick={({ currentTarget }) => setAnchor(currentTarget)}
-        endIcon={<KeyboardArrowDownOutlinedIcon/>}
-      >
-        <span style={{
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          width: '100%',
-        }}>
-          {`${selectedPackage?.name ?? ''}`}
-        </span>
-        <MenuButtonItems
-          anchorEl={anchor}
-          open={!!anchor}
-          onClick={event => event.stopPropagation()}
-          onClose={() => setAnchor(undefined)}
+            '&:hover': {
+              boxShadow: 'none',
+            },
+          }}
+          variant="text"
+          onClick={({ currentTarget }) => setAnchor(currentTarget)}
+          endIcon={<KeyboardArrowDownOutlinedIcon />}
         >
-          <Box
-            sx={{ p: 2 }}
-            overflow="hidden"
-            display="grid"
-            gap={1}
-            gridTemplateAreas="
+          <span
+            style={{
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              width: '100%',
+            }}
+          >
+            {`${selectedPackage?.name ?? ''}`}
+          </span>
+          <MenuButtonItems
+            anchorEl={anchor}
+            open={!!anchor}
+            onClick={(event) => event.stopPropagation()}
+            onClose={() => setAnchor(undefined)}
+          >
+            <Box
+              sx={{ p: 2 }}
+              overflow="hidden"
+              display="grid"
+              gap={1}
+              gridTemplateAreas="
               'searchbar'
               'content'
             "
-          >
-            <Box gridArea="searchbar" overflow="hidden">
-              <SearchBar value={searchValue} onValueChange={onSearch} data-testid="SearchPackage"/>
-            </Box>
-            <Box gridArea="content">
-              {loading
-                ? <LoadingIndicator/>
-                : (
+            >
+              <Box gridArea="searchbar" overflow="hidden">
+                <SearchBar value={searchValue} onValueChange={onSearch} data-testid="SearchPackage" />
+              </Box>
+              <Box gridArea="content">
+                {loading ? (
+                  <LoadingIndicator />
+                ) : (
                   <Placeholder
                     invisible={isNotEmpty(references)}
                     area={NAVIGATION_PLACEHOLDER_AREA}
                     message={searchValue ? NO_SEARCH_RESULTS : 'No package references'}
                   >
                     <List>
-                      {references.map(reference => {
+                      {references.map((reference) => {
                         return (
                           <ListItem key={reference.key} sx={{ p: 0 }}>
                             <ListItemButton
@@ -115,10 +110,7 @@ export const DropdownPackageReferenceSelector: FC<DropdownPackageReferenceSelect
                               selected={reference.key === defaultPackageKey}
                               onClick={() => onSearchParam(reference.key)}
                             >
-                              <ListItemText
-                                primary={reference.name}
-                                primaryTypographyProps={{ sx: { mt: 1 } }}
-                              />
+                              <ListItemText primary={reference.name} primaryTypographyProps={{ sx: { mt: 1 } }} />
                             </ListItemButton>
                           </ListItem>
                         )
@@ -126,10 +118,11 @@ export const DropdownPackageReferenceSelector: FC<DropdownPackageReferenceSelect
                     </List>
                   </Placeholder>
                 )}
+              </Box>
             </Box>
-          </Box>
-        </MenuButtonItems>
-      </Button>
-    </Box>
-  )
-})
+          </MenuButtonItems>
+        </Button>
+      </Box>
+    )
+  },
+)

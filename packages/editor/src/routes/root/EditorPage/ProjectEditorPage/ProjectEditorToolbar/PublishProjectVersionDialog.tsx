@@ -39,14 +39,17 @@ import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/ent
 import { getVersionLabelsMap } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import { waitForSocketEvent } from '@netcracker/qubership-apihub-ui-shared/utils/sockets'
 import type { VersionFormData } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
-import { EMPTY_VERSION_KEY, VersionDialogForm } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
+import {
+  EMPTY_VERSION_KEY,
+  VersionDialogForm,
+} from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
 import { usePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
 
 export const PublishProjectVersionDialog: FC = memo(() => {
   return (
     <PopupDelegate
       type={SHOW_PUBLISH_PROJECT_VERSION_DIALOG}
-      render={props => <PublishProjectVersionPopup {...props}/>}
+      render={(props) => <PublishProjectVersionPopup {...props} />}
     />
   )
 })
@@ -61,12 +64,15 @@ const PublishProjectVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
     return (detail as PublishProjectVersionDialogDetails).version
   }, [detail])
 
-  const defaultValues = useMemo(() => ({
-    version: version ?? '',
-    status: DRAFT_VERSION_STATUS as VersionStatus,
-    labels: [],
-    previousVersion: NO_PREVIOUS_RELEASE_VERSION_OPTION,
-  }), [version])
+  const defaultValues = useMemo(
+    () => ({
+      version: version ?? '',
+      status: DRAFT_VERSION_STATUS as VersionStatus,
+      labels: [],
+      previousVersion: NO_PREVIOUS_RELEASE_VERSION_OPTION,
+    }),
+    [version],
+  )
 
   const { showBwcPublishProjectVersionDialog } = useEventBus()
   const [project] = useProject()
@@ -77,16 +83,23 @@ const PublishProjectVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
 
   const defaultPackageKey = usePackageKey()
   const [versionsFilter, setVersionsFilter] = useState('')
-  const { versions, areVersionsLoading } = usePackageVersions({ packageKey: defaultPackageKey, textFilter: versionsFilter })
+  const { versions, areVersionsLoading } = usePackageVersions({
+    packageKey: defaultPackageKey,
+    textFilter: versionsFilter,
+  })
 
   const previousVersionOptions = usePreviousVersionOptions()
 
   const { handleSubmit, control, reset, setValue, formState } = useForm<VersionFormData>({ defaultValues })
   const bwcVersionKey = useBwcVersionKey()
   const setBwcVersionKey = useSetBwcVersionKey()
-  const [selectedPreviousVersion, setSelectedPreviousVersion] = useState<VersionKey>(() => bwcVersionKey ?? NO_PREVIOUS_RELEASE_VERSION_OPTION)
+  const [selectedPreviousVersion, setSelectedPreviousVersion] = useState<VersionKey>(
+    () => bwcVersionKey ?? NO_PREVIOUS_RELEASE_VERSION_OPTION,
+  )
   const [bwcProblems, , isBwcChecking, checkBwcProblems] = useBwcProblems(selectedPreviousVersion)
-  useEffect(() => {bwcVersionKey && setSelectedPreviousVersion(bwcVersionKey)}, [bwcVersionKey])
+  useEffect(() => {
+    bwcVersionKey && setSelectedPreviousVersion(bwcVersionKey)
+  }, [bwcVersionKey])
   const bwcProblemsMassage = useMemo(
     () => (bwcProblems.size !== 0 && !isBwcChecking ? BWC_PROBLEMS_MASSAGE : null),
     [bwcProblems.size, isBwcChecking],
@@ -96,64 +109,88 @@ const PublishProjectVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
   const [saveChanges, isSaveLoading, isSaveSuccess] = useSaveChanges()
   const [publishProject, isPublishLoading, isPublishSuccess] = usePublishProjectVersion()
 
-  useEffect(() => {isSaveSuccess && setOpen(false)}, [setOpen, isSaveSuccess])
-  useEffect(() => {isPublishSuccess && setOpen(false)}, [setOpen, isPublishSuccess])
-  useEffect(() => {reset(defaultValues)}, [defaultValues, reset])
+  useEffect(() => {
+    isSaveSuccess && setOpen(false)
+  }, [setOpen, isSaveSuccess])
+  useEffect(() => {
+    isPublishSuccess && setOpen(false)
+  }, [setOpen, isPublishSuccess])
+  useEffect(() => {
+    reset(defaultValues)
+  }, [defaultValues, reset])
 
   // todo sync between shared and editor PackageVersion types until dont changes all places in Editor
-  const versionLabelsMap = useMemo(() => getVersionLabelsMap(versions.map((version) => ({
-    key: version.key,
-    status: version.status,
-    versionLabels: version.versionLabels,
-    latestRevision: version.latestRevision,
-    createdBy: version.createdBy,
-  }))), [versions])
+  const versionLabelsMap = useMemo(
+    () =>
+      getVersionLabelsMap(
+        versions.map((version) => ({
+          key: version.key,
+          status: version.status,
+          versionLabels: version.versionLabels,
+          latestRevision: version.latestRevision,
+          createdBy: version.createdBy,
+        })),
+      ),
+    [versions],
+  )
   const getVersionLabels = useCallback((version: Key) => versionLabelsMap[version] ?? [], [versionLabelsMap])
 
   const onVersionsFilter = useCallback((value: Key) => setVersionsFilter(value), [setVersionsFilter])
 
-  const onPublish = useCallback(async (data: VersionFormData): Promise<void> => {
-    async function findBwcProblems(previousVersion: VersionKey): Promise<BwcProblems> {
-      if (!previousVersion || previousVersion === NO_PREVIOUS_RELEASE_VERSION_OPTION) {
-        return NO_BWC_PROBLEMS
+  const onPublish = useCallback(
+    async (data: VersionFormData): Promise<void> => {
+      async function findBwcProblems(previousVersion: VersionKey): Promise<BwcProblems> {
+        if (!previousVersion || previousVersion === NO_PREVIOUS_RELEASE_VERSION_OPTION) {
+          return NO_BWC_PROBLEMS
+        }
+        setBwcVersionKey(previousVersion)
+        const { data } = await checkBwcProblems()
+        return data ?? NO_BWC_PROBLEMS
       }
-      setBwcVersionKey(previousVersion)
-      const { data } = await checkBwcProblems()
-      return data ?? NO_BWC_PROBLEMS
-    }
 
-    const bwcProblems: BwcProblems = await findBwcProblems(selectedPreviousVersion)
+      const bwcProblems: BwcProblems = await findBwcProblems(selectedPreviousVersion)
 
-    const previousVersion = selectedPreviousVersion === NO_PREVIOUS_RELEASE_VERSION_OPTION
-      ? EMPTY_VERSION_KEY
-      : selectedPreviousVersion
+      const previousVersion =
+        selectedPreviousVersion === NO_PREVIOUS_RELEASE_VERSION_OPTION ? EMPTY_VERSION_KEY : selectedPreviousVersion
 
-    if (bwcProblems && bwcProblems.size > 0) {
-      setOpen(false)
-      showBwcPublishProjectVersionDialog({
-        message: data.message,
+      if (bwcProblems && bwcProblems.size > 0) {
+        setOpen(false)
+        showBwcPublishProjectVersionDialog({
+          message: data.message,
+          version: data.version,
+          status: data.status,
+          labels: data.labels,
+          previousVersion: previousVersion,
+        })
+        return Promise.resolve()
+      }
+
+      if (saveAvailable && !version) {
+        await saveChanges({
+          message: data.message!,
+        })
+        await waitForSocketEvent()
+      }
+
+      publishProject({
         version: data.version,
         status: data.status,
         labels: data.labels,
         previousVersion: previousVersion,
       })
-      return Promise.resolve()
-    }
-
-    if (saveAvailable && !version) {
-      await saveChanges({
-        message: data.message!,
-      })
-      await waitForSocketEvent()
-    }
-
-    publishProject({
-      version: data.version,
-      status: data.status,
-      labels: data.labels,
-      previousVersion: previousVersion,
-    })
-  }, [selectedPreviousVersion, saveAvailable, version, publishProject, setBwcVersionKey, checkBwcProblems, setOpen, showBwcPublishProjectVersionDialog, saveChanges])
+    },
+    [
+      selectedPreviousVersion,
+      saveAvailable,
+      version,
+      publishProject,
+      setBwcVersionKey,
+      checkBwcProblems,
+      setOpen,
+      showBwcPublishProjectVersionDialog,
+      saveChanges,
+    ],
+  )
 
   return (
     <VersionDialogForm

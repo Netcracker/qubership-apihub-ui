@@ -32,7 +32,12 @@ import {
   DEFAULT_API_TYPE,
   DEFAULT_TAG,
 } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import type { HasNextPage, IsFetching, IsFetchingNextPage, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import type {
+  HasNextPage,
+  IsFetching,
+  IsFetchingNextPage,
+  IsLoading,
+} from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
@@ -42,7 +47,9 @@ import { useVersionWithRevision } from '../../useVersionWithRevision'
 
 const TAGS_QUERY_KEY = 'tags-query-key'
 
-export type FetchNextTags = (options?: FetchNextPageOptions) => Promise<InfiniteQueryObserverResult<OperationTags, Error>>
+export type FetchNextTags = (
+  options?: FetchNextPageOptions,
+) => Promise<InfiniteQueryObserverResult<OperationTags, Error>>
 
 export type TagsQueryState = {
   data: OperationTags
@@ -53,16 +60,18 @@ export type TagsQueryState = {
   hasNextPage: HasNextPage
 }
 
-export function useTags(options?: Partial<{
-  packageKey: Key
-  versionKey: Key
-  textFilter: string
-  apiKind: ApiKind
-  apiAudience: ApiAudience
-  apiType: ApiType
-  page: number
-  limit: number
-}>): TagsQueryState {
+export function useTags(
+  options?: Partial<{
+    packageKey: Key
+    versionKey: Key
+    textFilter: string
+    apiKind: ApiKind
+    apiAudience: ApiAudience
+    apiType: ApiType
+    page: number
+    limit: number
+  }>,
+): TagsQueryState {
   const {
     packageKey: providedPackageKey,
     versionKey: providedVersionKey,
@@ -89,20 +98,18 @@ export function useTags(options?: Partial<{
     hasNextPage,
   } = useInfiniteQuery<OperationTags, Error, OperationTags>({
     queryKey: [TAGS_QUERY_KEY, packageKey, fullVersion, apiKind, apiAudience, apiType, textFilter],
-    queryFn: ({
-      pageParam = page,
-      signal,
-    }) => getTags({
-      packageKey: packageKey!,
-      versionKey: fullVersion!,
-      textFilter: textFilter,
-      apiKind: apiKind,
-      apiAudience: apiAudience,
-      apiType: apiType,
-      page: pageParam - 1,
-      limit: limit,
-      signal: signal,
-    }),
+    queryFn: ({ pageParam = page, signal }) =>
+      getTags({
+        packageKey: packageKey!,
+        versionKey: fullVersion!,
+        textFilter: textFilter,
+        apiKind: apiKind,
+        apiAudience: apiAudience,
+        apiType: apiType,
+        page: pageParam - 1,
+        limit: limit,
+        signal: signal,
+      }),
     enabled: !!packageKey && !!fullVersion,
     refetchOnWindowFocus: false,
     getNextPageParam: (lastPage, allPages) => {
@@ -114,7 +121,7 @@ export function useTags(options?: Partial<{
     },
   })
 
-  const tags = useMemo(() => (tagsList?.pages.flat() ?? []), [tagsList?.pages])
+  const tags = useMemo(() => tagsList?.pages.flat() ?? [], [tagsList?.pages])
   return {
     data: tags,
     loading: isLoading,
@@ -130,12 +137,7 @@ async function mergeDefaultTags(operationTagsDto: OperationTagsDto): Promise<Ope
   if (!tags) {
     return []
   }
-  return Array.from(
-    tags.reduce(
-      (tagsSet, value) => tagsSet.add(value || DEFAULT_TAG),
-      new Set<string>(),
-    ),
-  )
+  return Array.from(tags.reduce((tagsSet, value) => tagsSet.add(value || DEFAULT_TAG), new Set<string>()))
 }
 
 async function getTags(options: {
@@ -173,12 +175,14 @@ async function getTags(options: {
   })
 
   const pathPattern = '/packages/:packageId/versions/:versionId/:apiType/tags'
-  return mergeDefaultTags(await portalRequestJson<OperationTagsDto>(
-    `${generatePath(pathPattern, { packageId, versionId, apiType })}?${queryParams}`,
-    { method: 'get' },
-    {
-      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-    },
-    signal,
-  ))
+  return mergeDefaultTags(
+    await portalRequestJson<OperationTagsDto>(
+      `${generatePath(pathPattern, { packageId, versionId, apiType })}?${queryParams}`,
+      { method: 'get' },
+      {
+        customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+      },
+      signal,
+    ),
+  )
 }

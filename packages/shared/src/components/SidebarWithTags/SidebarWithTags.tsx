@@ -37,8 +37,14 @@ export type SidebarWithTagsProps = {
 // First Order Component //
 export const SidebarWithTags: FC<SidebarWithTagsProps> = memo<SidebarWithTagsProps>((props) => {
   const {
-    tags, areTagsLoading, fetchNextTagsPage, hasNextTagsPage, isNextTagsPageFetching,
-    onSearch, selectedTag, onSelectTag,
+    tags,
+    areTagsLoading,
+    fetchNextTagsPage,
+    hasNextTagsPage,
+    isNextTagsPageFetching,
+    onSearch,
+    selectedTag,
+    onSelectTag,
   } = props
 
   const [searchValue, setSearchValue] = useState('')
@@ -46,23 +52,14 @@ export const SidebarWithTags: FC<SidebarWithTagsProps> = memo<SidebarWithTagsPro
   useEffect(() => onSearch?.(searchValue), [onSearch, searchValue])
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      overflow="hidden"
-      height="100%"
-    >
+    <Box display="flex" flexDirection="column" overflow="hidden" height="100%">
       <Box mx={2} mt={2}>
         <Typography width="100%" noWrap variant="button">
           Filters by Tag
         </Typography>
       </Box>
       <Box mx={2} mb={1} mt={1}>
-        <SearchBar
-          placeholder="Search tags"
-          onValueChange={setSearchValue}
-          data-testid="SearchTags"
-        />
+        <SearchBar placeholder="Search tags" onValueChange={setSearchValue} data-testid="SearchTags" />
       </Box>
       <Box overflow="auto" flexGrow={1} data-testid="TagsList">
         <TagList

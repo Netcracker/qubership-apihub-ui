@@ -36,9 +36,7 @@ import { usePackage } from '../../../usePackage'
 import { getVersionPath } from '../../../../NavigationProvider'
 import { ApiChangesNavigation } from './ApiChangesNavigation'
 import { isEmptyTag } from '@netcracker/qubership-apihub-ui-shared/utils/tags'
-import {
-  usePreviousReleaseVersion,
-} from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget/components/PreviousReleaseOptionsProvider'
+import { usePreviousReleaseVersion } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget/components/PreviousReleaseOptionsProvider'
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { RichFiltersLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/RichFiltersLayout'
@@ -83,26 +81,31 @@ export const VersionApiChangesSubPage: FC = memo(() => {
 
   const { hideFiltersPanel, toggleHideFiltersPanel } = usePortalPageSettingsContext()
 
-  const versionElement = useMemo(() => (
-    <Link
-      component={NavLink}
-      to={getVersionPath({ packageKey: packageId!, versionKey: previousReleaseVersion! })}
-      data-testid="ComparedToLink"
-    >
-      {previousReleaseVersionKey}
-    </Link>
-  ), [packageId, previousReleaseVersion, previousReleaseVersionKey])
+  const versionElement = useMemo(
+    () => (
+      <Link
+        component={NavLink}
+        to={getVersionPath({ packageKey: packageId!, versionKey: previousReleaseVersion! })}
+        data-testid="ComparedToLink"
+      >
+        {previousReleaseVersionKey}
+      </Link>
+    ),
+    [packageId, previousReleaseVersion, previousReleaseVersionKey],
+  )
 
   return (
     <ChangesSummaryProvider>
       <RichFiltersLayout
-        title={<PageTitle
-          title={API_CHANGES_TITLE}
-          titleComponent={versionElement}
-          onApiTypeChange={setPathParam}
-          apiType={apiType}
-          withApiSelector={isApiTypeSelectorShown(apiTypes)}
-        />}
+        title={
+          <PageTitle
+            title={API_CHANGES_TITLE}
+            titleComponent={versionElement}
+            onApiTypeChange={setPathParam}
+            apiType={apiType}
+            withApiSelector={isApiTypeSelectorShown(apiTypes)}
+          />
+        }
         searchPlaceholder="Search Operations"
         setSearchValue={setSearchValue}
         exportButton={
@@ -121,10 +124,7 @@ export const VersionApiChangesSubPage: FC = memo(() => {
           />
         }
         additionalActions={
-          <ComparisonChangeSeverityFilters
-            category={CATEGORY_OPERATION}
-            apiType={apiType ?? DEFAULT_API_TYPE}
-          />
+          <ComparisonChangeSeverityFilters category={CATEGORY_OPERATION} apiType={apiType ?? DEFAULT_API_TYPE} />
         }
         filtersApplied={filtersApplied}
         hideFiltersPanel={hideFiltersPanel}

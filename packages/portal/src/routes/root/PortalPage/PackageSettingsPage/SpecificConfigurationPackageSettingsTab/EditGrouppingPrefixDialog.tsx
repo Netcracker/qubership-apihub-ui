@@ -30,10 +30,7 @@ import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/Di
 
 export const EditGrouppingPrefixDialog: FC = memo(() => {
   return (
-    <PopupDelegate
-      type={SHOW_EDIT_PACKAGE_PREFIX_DIALOG}
-      render={props => <EditPrefixDialogPopup {...props}/>}
-    />
+    <PopupDelegate type={SHOW_EDIT_PACKAGE_PREFIX_DIALOG} render={(props) => <EditPrefixDialogPopup {...props} />} />
   )
 })
 
@@ -41,34 +38,43 @@ const EditPrefixDialogPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen,
   const { packageKey } = detail as ShowEditPackagePrefixDetail
   const [updatePackage, isUpdateLoading, isSuccess] = useUpdatePackage()
   const [recalculatePackageVersionGroups] = useRecalculatePackageVersionGroups()
-  useEffect(() => {isSuccess && setOpen(false)}, [isSuccess, setOpen])
+  useEffect(() => {
+    isSuccess && setOpen(false)
+  }, [isSuccess, setOpen])
 
-  const defaultValues = useMemo(() => ({
-    restGroupingPrefix: '',
-    recalculate: false,
-  }), [])
+  const defaultValues = useMemo(
+    () => ({
+      restGroupingPrefix: '',
+      recalculate: false,
+    }),
+    [],
+  )
 
-  const { handleSubmit, control, formState: { errors }, watch } = useForm<FormData>({ defaultValues })
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+    watch,
+  } = useForm<FormData>({ defaultValues })
   const { recalculate } = watch()
 
-  useEffect(() => {isSuccess && packageKey && recalculate && recalculatePackageVersionGroups(packageKey)}, [isSuccess, packageKey, recalculate, recalculatePackageVersionGroups, setOpen])
+  useEffect(() => {
+    isSuccess && packageKey && recalculate && recalculatePackageVersionGroups(packageKey)
+  }, [isSuccess, packageKey, recalculate, recalculatePackageVersionGroups, setOpen])
 
-  const onSubmit = useCallback(({ restGroupingPrefix }: FormData) => {
-    updatePackage({
-      packageKey: packageKey!,
-      value: { restGroupingPrefix: restGroupingPrefix } as Package,
-    })
-  }, [packageKey, updatePackage])
+  const onSubmit = useCallback(
+    ({ restGroupingPrefix }: FormData) => {
+      updatePackage({
+        packageKey: packageKey!,
+        value: { restGroupingPrefix: restGroupingPrefix } as Package,
+      })
+    },
+    [packageKey, updatePackage],
+  )
 
   return (
-    <DialogForm
-      open={open}
-      onClose={() => setOpen(false)}
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      <DialogTitle>
-        Edit REST Grouping Prefix
-      </DialogTitle>
+    <DialogForm open={open} onClose={() => setOpen(false)} onSubmit={handleSubmit(onSubmit)}>
+      <DialogTitle>Edit REST Grouping Prefix</DialogTitle>
 
       <DialogContent>
         <Controller
@@ -77,7 +83,8 @@ const EditPrefixDialogPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen,
           rules={{
             pattern: {
               value: /^\/.*{group}.*\/$/,
-              message: 'The value must begin and end with a "/" character and contain the {group} keyword, for example /api/{group}/.',
+              message:
+                'The value must begin and end with a "/" character and contain the {group} keyword, for example /api/{group}/.',
             },
           }}
           render={({ field }) => (
@@ -103,7 +110,7 @@ const EditPrefixDialogPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen,
           render={({ field }) => (
             <FormControlLabel
               {...field}
-              control={<Checkbox data-testid="RecalculateCheckbox"/>}
+              control={<Checkbox data-testid="RecalculateCheckbox" />}
               label="Recalculate groups in all published versions"
             />
           )}

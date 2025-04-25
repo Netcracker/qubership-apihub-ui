@@ -27,7 +27,8 @@ export type TextWithTooltipProps = {
   variant?: Variant | 'inherit'
   tooltipText?: React.ReactNode
   sx?: SxProps<Theme>
-} & PropsWithChildren & TestableProps
+} & PropsWithChildren &
+  TestableProps
 
 export const TextWithOverflowTooltip: FC<TextWithTooltipProps> = ({
   variant = 'body2',
@@ -38,10 +39,7 @@ export const TextWithOverflowTooltip: FC<TextWithTooltipProps> = ({
   ...props
 }) => {
   return (
-    <OverflowTooltip
-      title={tooltipText}
-      {...props}
-    >
+    <OverflowTooltip title={tooltipText} {...props}>
       <Typography noWrap variant={variant} sx={sx} data-testid={testId}>
         {children}
       </Typography>

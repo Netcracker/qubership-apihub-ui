@@ -81,9 +81,7 @@ type OverviewSidebarMenu = SidebarMenu & {
   id: OverviewPageRoute
 }
 
-const OVERVIEW_SIDEBAR = (
-  packageKind: PackageKind | undefined,
-): OverviewSidebarMenu[] => {
+const OVERVIEW_SIDEBAR = (packageKind: PackageKind | undefined): OverviewSidebarMenu[] => {
   const isDashboard = packageKind === DASHBOARD_KIND
 
   const commonSidebarMenu: OverviewSidebarMenu[] = [
@@ -120,4 +118,3 @@ const OVERVIEW_SIDEBAR = (
 
   return commonSidebarMenu
 }
-

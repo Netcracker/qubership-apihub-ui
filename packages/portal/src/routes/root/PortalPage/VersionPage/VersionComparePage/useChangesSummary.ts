@@ -36,18 +36,19 @@ export function useChangesSummary(options: {
   previousVersionKey: Key
   enabled?: boolean
 }): [VersionChangesSummary | undefined, IsLoading, IsFetching, Error | null] {
-  const {
-    packageKey,
-    versionKey,
-    previousVersionPackageKey,
-    previousVersionKey,
-    enabled = true,
-  } = options ?? {}
+  const { packageKey, versionKey, previousVersionPackageKey, previousVersionKey, enabled = true } = options ?? {}
   const { fullVersion } = useVersionWithRevision(versionKey, packageKey)
   const { fullVersion: fullPreviousVersion } = useVersionWithRevision(previousVersionKey, previousVersionPackageKey)
 
   const { data, isLoading, isFetching, error } = useQuery<VersionChangesSummaryDto, Error, VersionChangesSummary>({
-    queryKey: [CHANGES_SUMMARY_QUERY_KEY, packageKey, fullVersion, previousVersionPackageKey, previousVersionKey, fullPreviousVersion],
+    queryKey: [
+      CHANGES_SUMMARY_QUERY_KEY,
+      packageKey,
+      fullVersion,
+      previousVersionPackageKey,
+      previousVersionKey,
+      fullPreviousVersion,
+    ],
     enabled: !!packageKey && !!fullVersion && !!previousVersionPackageKey && !!fullPreviousVersion && enabled,
     retry: 1,
     queryFn: ({ signal }) =>
@@ -94,7 +95,8 @@ async function triggerBuilderBySummaryAbsence(response: Response): Promise<void>
 
 export function useRefetchChangesSummary(): InvalidateQuery<void> {
   const queryClient = useQueryClient()
-  return () => queryClient.refetchQueries({
-    queryKey: [CHANGES_SUMMARY_QUERY_KEY],
-  })
+  return () =>
+    queryClient.refetchQueries({
+      queryKey: [CHANGES_SUMMARY_QUERY_KEY],
+    })
 }

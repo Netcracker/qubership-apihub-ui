@@ -59,9 +59,7 @@ export const OperationListItem: FC<{
       }}
       data-testid="OperationListItem"
     >
-      <ListItemIcon
-        sx={{ minWidth: 0, marginRight: '16px' }}
-      >
+      <ListItemIcon sx={{ minWidth: 0, marginRight: '16px' }}>
         <Checkbox
           sx={{ p: 0 }}
           checked={isChecked}

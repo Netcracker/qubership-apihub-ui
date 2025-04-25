@@ -49,7 +49,11 @@ const ListBoxFn: StoryFn<PropsWithChildren> = (args) => <ListBox {...args} />
 export const ListBoxStory = ListBoxFn.bind({})
 
 ListBoxStory.args = {
-  children: <Box sx={{ backgroundColor: BLUE_SECTION_COLOR }} height="100%">This is a list content</Box>,
+  children: (
+    <Box sx={{ backgroundColor: BLUE_SECTION_COLOR }} height="100%">
+      This is a list content
+    </Box>
+  ),
 }
 ListBoxStory.storyName = 'List Box'
 
@@ -59,29 +63,40 @@ const TabsPanelFn: StoryFn<TabsPanelProps<TabKeys>> = (args) => <TabsPanel {...a
 export const TabsPanelStory = TabsPanelFn.bind({})
 
 TabsPanelStory.args = {
-  tabs: [{
-    key: 'tab-1',
-    name: 'Tab Name 1',
-    info: <Box sx={{ backgroundColor: GREEN_SECTION_COLOR, width: '20px', height: '20px' }}/>,
-  }, {
-    key: 'tab-2',
-    name: 'Tab Name 2',
-    isLoading: true,
-  }, {
-    key: 'tab-3',
-    name: 'Tab Name 3',
-  }],
-  panels: [{
-    key: 'tab-1',
-    content: <Box sx={{ backgroundColor: GREEN_SECTION_COLOR, width: '100%', height: '100%' }}>Tab 1 Content</Box>,
-  }, {
-    key: 'tab-2',
-    content: <Box sx={{ backgroundColor: RED_SECTION_COLOR, width: '100%', height: '500px' }}>Tab 2 Content</Box>,
-  }, {
-    key: 'tab-3',
-    content: <Box sx={{ backgroundColor: BLUE_SECTION_COLOR, width: '100%', height: '2000px' }}>Tab 3 Content with
-      scroll</Box>,
-  }],
+  tabs: [
+    {
+      key: 'tab-1',
+      name: 'Tab Name 1',
+      info: <Box sx={{ backgroundColor: GREEN_SECTION_COLOR, width: '20px', height: '20px' }} />,
+    },
+    {
+      key: 'tab-2',
+      name: 'Tab Name 2',
+      isLoading: true,
+    },
+    {
+      key: 'tab-3',
+      name: 'Tab Name 3',
+    },
+  ],
+  panels: [
+    {
+      key: 'tab-1',
+      content: <Box sx={{ backgroundColor: GREEN_SECTION_COLOR, width: '100%', height: '100%' }}>Tab 1 Content</Box>,
+    },
+    {
+      key: 'tab-2',
+      content: <Box sx={{ backgroundColor: RED_SECTION_COLOR, width: '100%', height: '500px' }}>Tab 2 Content</Box>,
+    },
+    {
+      key: 'tab-3',
+      content: (
+        <Box sx={{ backgroundColor: BLUE_SECTION_COLOR, width: '100%', height: '2000px' }}>
+          Tab 3 Content with scroll
+        </Box>
+      ),
+    },
+  ],
   activeTab: 'tab-1',
   separator: false,
 }

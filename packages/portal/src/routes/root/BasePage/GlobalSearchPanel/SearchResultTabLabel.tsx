@@ -25,20 +25,16 @@ export type SearchResultTabLabelProps = {
   isLoading: boolean
 }
 
-export const SearchResultTabLabel: FC<SearchResultTabLabelProps> = memo<SearchResultTabLabelProps>(({
-  isLoading,
-  results,
-  label,
-}) => {
-  return (
-    <Box display="flex" gap={1}>
-      <Box>{label}</Box>
-      <>
-        {isLoading ? <CircularProgress size={14}/> : countSearchResult(results)}
-      </>
-    </Box>
-  )
-})
+export const SearchResultTabLabel: FC<SearchResultTabLabelProps> = memo<SearchResultTabLabelProps>(
+  ({ isLoading, results, label }) => {
+    return (
+      <Box display="flex" gap={1}>
+        <Box>{label}</Box>
+        <>{isLoading ? <CircularProgress size={14} /> : countSearchResult(results)}</>
+      </Box>
+    )
+  },
+)
 
 function countSearchResult(
   value: Array<PackageSearchResult | DocumentSearchResult | OperationSearchResult>,

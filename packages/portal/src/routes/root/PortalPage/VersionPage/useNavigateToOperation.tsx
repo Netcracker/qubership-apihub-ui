@@ -41,7 +41,12 @@ import type { PackageRef } from '@netcracker/qubership-apihub-ui-shared/entities
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 
-export function useNavigateToOperation(packageKey: Key, versionKey: Key, apiType: ApiType, setShouldAutoExpand: Dispatch<SetStateAction<boolean>>): (operationKey: Key) => void {
+export function useNavigateToOperation(
+  packageKey: Key,
+  versionKey: Key,
+  apiType: ApiType,
+  setShouldAutoExpand: Dispatch<SetStateAction<boolean>>,
+): (operationKey: Key) => void {
   const { navigateToOperations } = useNavigation()
 
   const { mode } = useOperationViewMode()
@@ -51,24 +56,39 @@ export function useNavigateToOperation(packageKey: Key, versionKey: Key, apiType
   const [documentSlug] = useDocumentSearchParam()
   const [searchValue] = useTextSearchParam()
 
-  return useCallback((operationKey: Key) => {
-    setShouldAutoExpand(false)
+  return useCallback(
+    (operationKey: Key) => {
+      setShouldAutoExpand(false)
 
-    navigateToOperations({
-      packageKey: packageKey!,
-      versionKey: versionKey!,
-      apiType: apiType,
-      operationKey: operationKey,
-      search: {
-        [MODE_SEARCH_PARAM]: { value: mode !== DOC_OPERATION_VIEW_MODE ? mode : '' },
-        [FILE_VIEW_MODE_PARAM_KEY]: { value: fileViewMode !== YAML_FILE_VIEW_MODE ? fileViewMode : '' },
-        [REF_SEARCH_PARAM]: { value: ref ?? '' },
-        [PLAYGROUND_SIDEBAR_VIEW_MODE_SEARCH_PARAM]: { value: playgroundViewMode ?? '' },
-        [DOCUMENT_SEARCH_PARAM]: { value: documentSlug },
-        [SEARCH_TEXT_PARAM_KEY]: { value: searchValue },
-      },
-    })
-  }, [apiType, documentSlug, fileViewMode, mode, navigateToOperations, packageKey, playgroundViewMode, ref, searchValue, setShouldAutoExpand, versionKey])
+      navigateToOperations({
+        packageKey: packageKey!,
+        versionKey: versionKey!,
+        apiType: apiType,
+        operationKey: operationKey,
+        search: {
+          [MODE_SEARCH_PARAM]: { value: mode !== DOC_OPERATION_VIEW_MODE ? mode : '' },
+          [FILE_VIEW_MODE_PARAM_KEY]: { value: fileViewMode !== YAML_FILE_VIEW_MODE ? fileViewMode : '' },
+          [REF_SEARCH_PARAM]: { value: ref ?? '' },
+          [PLAYGROUND_SIDEBAR_VIEW_MODE_SEARCH_PARAM]: { value: playgroundViewMode ?? '' },
+          [DOCUMENT_SEARCH_PARAM]: { value: documentSlug },
+          [SEARCH_TEXT_PARAM_KEY]: { value: searchValue },
+        },
+      })
+    },
+    [
+      apiType,
+      documentSlug,
+      fileViewMode,
+      mode,
+      navigateToOperations,
+      packageKey,
+      playgroundViewMode,
+      ref,
+      searchValue,
+      setShouldAutoExpand,
+      versionKey,
+    ],
+  )
 }
 
 export function getOperationLink(params: {
@@ -85,9 +105,17 @@ export function getOperationLink(params: {
   ref?: Key
 }): Partial<Path> {
   const {
-    packageKey, versionKey, operationKey,
-    apiType, packageRef, ref,
-    mode, playgroundViewMode, fileViewMode, kind, documentSlug,
+    packageKey,
+    versionKey,
+    operationKey,
+    apiType,
+    packageRef,
+    ref,
+    mode,
+    playgroundViewMode,
+    fileViewMode,
+    kind,
+    documentSlug,
   } = params
 
   return getOperationsPath({
@@ -104,4 +132,3 @@ export function getOperationLink(params: {
     },
   })
 }
-

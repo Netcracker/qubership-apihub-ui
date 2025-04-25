@@ -23,12 +23,7 @@ import { PopupDelegate } from '../PopupDelegate'
 import { DialogForm } from '../DialogForm'
 
 export const DeleteFileDialog: FC = memo(() => {
-  return (
-    <PopupDelegate
-      type={SHOW_DELETE_FILE_DIALOG}
-      render={props => <DeleteFilePopup {...props}/>}
-    />
-  )
+  return <PopupDelegate type={SHOW_DELETE_FILE_DIALOG} render={(props) => <DeleteFilePopup {...props} />} />
 })
 
 export const SHOW_DELETE_FILE_DIALOG = 'show-delete-file-dialog'
@@ -54,34 +49,18 @@ export const DeleteFilePopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen
   }, [setOpen])
 
   return (
-    <DialogForm
-      open={open}
-      onClose={onClose}
-      width="330px"
-    >
+    <DialogForm open={open} onClose={onClose} width="330px">
       <DialogTitle>
         Delete {file.name} document?
-        <IconButton
-          sx={{ position: 'absolute', right: 8, top: 8, color: '#626D82' }}
-          onClick={onClose}
-        >
-          <CloseOutlinedIcon fontSize="small"/>
+        <IconButton sx={{ position: 'absolute', right: 8, top: 8, color: '#626D82' }} onClick={onClose}>
+          <CloseOutlinedIcon fontSize="small" />
         </IconButton>
       </DialogTitle>
       <DialogActions sx={{ pt: 0 }}>
-        <Button
-          variant="contained"
-          color="error"
-          onClick={onConfirmCallback}
-          data-testid="DeleteButton"
-        >
+        <Button variant="contained" color="error" onClick={onConfirmCallback} data-testid="DeleteButton">
           Delete
         </Button>
-        <Button
-          variant="outlined"
-          onClick={onClose}
-          data-testid="CancelButton"
-        >
+        <Button variant="outlined" onClick={onClose} data-testid="CancelButton">
           Cancel
         </Button>
       </DialogActions>

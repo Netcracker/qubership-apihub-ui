@@ -28,27 +28,19 @@ export type ApiDocumentListProps = {
 
 export const ApiDocumentList: FC<ApiDocumentListProps> = memo<ApiDocumentListProps>(({ value, isLoading }) => {
   if (isLoading) {
-    return (
-      <Skeleton variant="rectangular" width={150}/>
-    )
+    return <Skeleton variant="rectangular" width={150} />
   }
 
   return (
     <List>
       {value.map(({ type, title, url, subtitle }) => (
-        <ListItem
-          key={crypto.randomUUID()}
-          sx={{ px: 0, alignItems: 'start' }}
-        >
+        <ListItem key={crypto.randomUUID()} sx={{ px: 0, alignItems: 'start' }}>
           <ListItemIcon sx={{ minWidth: 2, mt: 0, mr: 1 }}>
-            <SpecLogo value={type}/>
+            <SpecLogo value={type} />
           </ListItemIcon>
           <ListItemText
             primary={
-              <Link
-                component={NavLink}
-                to={url}
-              >
+              <Link component={NavLink} to={url}>
                 {title}
               </Link>
             }

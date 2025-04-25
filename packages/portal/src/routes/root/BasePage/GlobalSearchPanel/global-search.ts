@@ -31,7 +31,9 @@ import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/uti
 import { requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { getOptionalBody } from '@netcracker/qubership-apihub-ui-shared/utils/request-bodies'
 
-export type FetchNextSearchResultList = (options?: FetchNextPageOptions) => Promise<InfiniteQueryObserverResult<SearchResults, Error>>
+export type FetchNextSearchResultList = (
+  options?: FetchNextPageOptions,
+) => Promise<InfiniteQueryObserverResult<SearchResults, Error>>
 
 export async function getSearchResult(
   criteria: SearchCriteria,
@@ -39,10 +41,9 @@ export async function getSearchResult(
   limit: number,
   page: number,
 ): Promise<SearchResults> {
-
   const queryParams = optionalSearchParams({
     limit: { value: limit },
-    page: { value: page, toStringValue: page => `${page}` },
+    page: { value: page, toStringValue: (page) => `${page}` },
   })
 
   const searchResultsDto = await requestJson<SearchResultsDto>(`/api/v3/search/${level}?${queryParams}`, {

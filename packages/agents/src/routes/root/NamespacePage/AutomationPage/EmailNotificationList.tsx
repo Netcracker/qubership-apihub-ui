@@ -95,10 +95,7 @@ export const EmailNotificationList: FC<NotificationListProps> = memo<Notificatio
           type={'email'}
           onChange={(e) => setNewEmail(e.target.value)}
         />
-        <Button variant="contained"
-                sx={buttonSX}
-                onClick={() => addMail(onChange, value)}
-        >
+        <Button variant="contained" sx={buttonSX} onClick={() => addMail(onChange, value)}>
           Add Email
         </Button>
       </Box>
@@ -110,42 +107,38 @@ export const EmailNotificationList: FC<NotificationListProps> = memo<Notificatio
         </Box>
       )}
       <Box sx={itemsBoxSX}>
-        {value && isNotEmpty(value) && value.map((data: string, index: number) => {
-          return (
-            <Box sx={boxSX} onMouseEnter={() => handleMouseEnter(index)} onMouseLeave={handleMouseLeave} key={index}>
-              <Typography variant="body2">{data}</Typography>
-              {hoveredIndex === index && (
-                <Box
-                  style={{ cursor: 'pointer' }}
-                  onClick={() => setDeletingIndex(index)}
-                >
-                  <DeleteIcon color="#626D82"/>
-                </Box>
-              )}
-            </Box>
-          )
-        })}
+        {value &&
+          isNotEmpty(value) &&
+          value.map((data: string, index: number) => {
+            return (
+              <Box sx={boxSX} onMouseEnter={() => handleMouseEnter(index)} onMouseLeave={handleMouseLeave} key={index}>
+                <Typography variant="body2">{data}</Typography>
+                {hoveredIndex === index && (
+                  <Box style={{ cursor: 'pointer' }} onClick={() => setDeletingIndex(index)}>
+                    <DeleteIcon color="#626D82" />
+                  </Box>
+                )}
+              </Box>
+            )
+          })}
         <Dialog open={deletingIndex !== -1} onClose={() => setDeletingIndex(-1)}>
           <DialogTitle>Confirm Deletion</DialogTitle>
           <DialogContent>
             <Typography>Are you sure you want to delete this Email?</Typography>
           </DialogContent>
           <DialogActions style={{ justifyContent: 'flex-end' }}>
-            <Button variant="contained"
-                    sx={buttonSX}
-                    onClick={() => {
-                      const updatedList = value?.filter((_email: string, i: number) => i !== deletingIndex) ?? []
-                      onChange(updatedList)
-                      setDeletingIndex(-1)
-                    }}
+            <Button
+              variant="contained"
+              sx={buttonSX}
+              onClick={() => {
+                const updatedList = value?.filter((_email: string, i: number) => i !== deletingIndex) ?? []
+                onChange(updatedList)
+                setDeletingIndex(-1)
+              }}
             >
               Yes
             </Button>
-            <Button
-              variant="outlined"
-              sx={buttonSX}
-              onClick={() => setDeletingIndex(-1)}
-            >
+            <Button variant="outlined" sx={buttonSX} onClick={() => setDeletingIndex(-1)}>
               No
             </Button>
           </DialogActions>

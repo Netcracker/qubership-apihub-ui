@@ -47,7 +47,9 @@ const getTree = (tree: JSONValue): ReactNode => {
           return (
             <li key={index}>
               <Box display="flex" marginLeft="8px">
-                <Typography display="block" variant="subtitle1">- </Typography>
+                <Typography display="block" variant="subtitle1">
+                  -{' '}
+                </Typography>
                 {getTree(item)}
               </Box>
             </li>
@@ -63,7 +65,9 @@ const getTree = (tree: JSONValue): ReactNode => {
           return (
             <li key={key} style={{ marginLeft: '8px' }}>
               <Box display="flex" flexDirection={isPrimitive(value) ? 'row' : 'column'}>
-                <Typography sx={{ textWrap: 'nowrap' }} display="block" variant="subtitle1">{key}: </Typography>
+                <Typography sx={{ textWrap: 'nowrap' }} display="block" variant="subtitle1">
+                  {key}:{' '}
+                </Typography>
                 {getTree(value)}
               </Box>
             </li>
@@ -75,9 +79,5 @@ const getTree = (tree: JSONValue): ReactNode => {
 }
 
 export const CustomTagsTree: FC<TagsTreeProps> = memo<TagsTreeProps>(({ tree }) => {
-  return (
-    <>
-      {getTree(tree)}
-    </>
-  )
+  return <>{getTree(tree)}</>
 })

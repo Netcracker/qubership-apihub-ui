@@ -39,33 +39,32 @@ export type SystemAdministratorsTableProps = {
 }
 
 // First Order Component //
-export const SystemAdministratorsTable: FC<SystemAdministratorsTableProps> = memo(({
-  data,
-  deleteAdministrator,
-  isLoading,
-}) => {
-  const [containerWidth, setContainerWidth] = useState(DEFAULT_CONTAINER_WIDTH)
-  const [columnSizingInfo, setColumnSizingInfo] = useState<ColumnSizingInfoState>()
-  const [, setHandlingColumnSizing] = useState<ColumnSizingState>()
+export const SystemAdministratorsTable: FC<SystemAdministratorsTableProps> = memo(
+  ({ data, deleteAdministrator, isLoading }) => {
+    const [containerWidth, setContainerWidth] = useState(DEFAULT_CONTAINER_WIDTH)
+    const [columnSizingInfo, setColumnSizingInfo] = useState<ColumnSizingInfoState>()
+    const [, setHandlingColumnSizing] = useState<ColumnSizingState>()
 
-  const tableContainerRef = useRef<HTMLDivElement>(null)
-  useResizeObserver(tableContainerRef, setContainerWidth)
+    const tableContainerRef = useRef<HTMLDivElement>(null)
+    useResizeObserver(tableContainerRef, setContainerWidth)
 
-  const actualColumnSizing = useColumnsSizing({
-    containerWidth: containerWidth,
-    columnModels: COLUMNS_MODELS,
-    columnSizingInfo: columnSizingInfo,
-    defaultMinColumnSize: 50,
-  })
+    const actualColumnSizing = useColumnsSizing({
+      containerWidth: containerWidth,
+      columnModels: COLUMNS_MODELS,
+      columnSizingInfo: columnSizingInfo,
+      defaultMinColumnSize: 50,
+    })
 
-  const columns: ColumnDef<SystemAdmin>[] = useMemo(() => {
+    const columns: ColumnDef<SystemAdmin>[] = useMemo(() => {
       return [
         {
           id: SYSTEM_ADMINISTRATOR_COLUMN_ID,
           header: 'System Administrators',
-          cell: ({ row: { original: { avatarUrl, name } } }) => (
-            <UserView name={name} avatarUrl={avatarUrl}/>
-          ),
+          cell: ({
+            row: {
+              original: { avatarUrl, name },
+            },
+          }) => <UserView name={name} avatarUrl={avatarUrl} />,
         },
         {
           id: DELETE_COLUMN_ID,
@@ -75,86 +74,82 @@ export const SystemAdministratorsTable: FC<SystemAdministratorsTableProps> = mem
               size="small"
               sx={{ visibility: 'hidden', height: '20px' }}
               className="hoverable"
-              startIcon={<DeleteIcon color={'#626D82'}/>}
+              startIcon={<DeleteIcon color={'#626D82'} />}
               onClick={() => deleteAdministrator(admin)}
             />
           ),
         },
       ]
-    },
-    [deleteAdministrator],
-  )
+    }, [deleteAdministrator])
 
-  const { getHeaderGroups, getRowModel, setColumnSizing } = useReactTable({
-    data: data,
-    columns: columns,
-    columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
-    getExpandedRowModel: getExpandedRowModel(),
-    onColumnSizingChange: setHandlingColumnSizing as OnChangeFn<ColumnSizingState>,
-    onColumnSizingInfoChange: setColumnSizingInfo as OnChangeFn<ColumnSizingInfoState>,
-  })
+    const { getHeaderGroups, getRowModel, setColumnSizing } = useReactTable({
+      data: data,
+      columns: columns,
+      columnResizeMode: 'onChange',
+      getCoreRowModel: getCoreRowModel(),
+      getExpandedRowModel: getExpandedRowModel(),
+      onColumnSizingChange: setHandlingColumnSizing as OnChangeFn<ColumnSizingState>,
+      onColumnSizingInfoChange: setColumnSizingInfo as OnChangeFn<ColumnSizingInfoState>,
+    })
 
-  useEffect(() => setColumnSizing(actualColumnSizing), [setColumnSizing, actualColumnSizing])
+    useEffect(() => setColumnSizing(actualColumnSizing), [setColumnSizing, actualColumnSizing])
 
-  return (
-    <TableContainer sx={{ mt: 1 }} ref={tableContainerRef}>
-      <Table>
-        <TableHead>
-          {getHeaderGroups().map(headerGroup => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <TableCell
-                  key={header.id}
-                  align="left"
-                  width={actualColumnSizing ? actualColumnSizing[header.id] : header.getSize()}
-                >
-                  {flexRender(header.column.columnDef.header, header.getContext())}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableHead>
-        <TableBody>
-          {getRowModel().rows.map(row => (
-            <TableRow>
-              {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.column.id} data-testid={`Cell-${cell.column.id}`}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-          {isLoading && <TableSkeleton/>}
-        </TableBody>
-      </Table>
-      {isEmpty(data) && !isLoading
-        ? (
+    return (
+      <TableContainer sx={{ mt: 1 }} ref={tableContainerRef}>
+        <Table>
+          <TableHead>
+            {getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableCell
+                    key={header.id}
+                    align="left"
+                    width={actualColumnSizing ? actualColumnSizing[header.id] : header.getSize()}
+                  >
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableHead>
+          <TableBody>
+            {getRowModel().rows.map((row) => (
+              <TableRow>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.column.id} data-testid={`Cell-${cell.column.id}`}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+            {isLoading && <TableSkeleton />}
+          </TableBody>
+        </Table>
+        {isEmpty(data) && !isLoading ? (
           <Placeholder
             sx={{ width: 'inherit' }}
             invisible={isLoading}
             area={CONTENT_PLACEHOLDER_AREA}
             message="No System Administrators"
           />
-        )
-        : null
-      }
-    </TableContainer>
-  )
-})
+        ) : null}
+      </TableContainer>
+    )
+  },
+)
 
 const TableSkeleton: FC = memo(() => {
-  return createComponents(<RowSkeleton/>, DEFAULT_NUMBER_SKELETON_ROWS)
+  return createComponents(<RowSkeleton />, DEFAULT_NUMBER_SKELETON_ROWS)
 })
 
 const RowSkeleton: FC = memo(() => {
   return (
     <TableRow>
       <TableCell>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
     </TableRow>
   )

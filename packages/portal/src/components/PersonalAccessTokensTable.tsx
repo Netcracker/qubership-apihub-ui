@@ -8,9 +8,16 @@ import { TableCellSkeleton } from '@netcracker/qubership-apihub-ui-shared/compon
 import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
 import { useResizeObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useResizeObserver'
 import type { ColumnModel } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
-import { DEFAULT_CONTAINER_WIDTH, useColumnsSizing } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
+import {
+  DEFAULT_CONTAINER_WIDTH,
+  useColumnsSizing,
+} from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
 import { DeleteIcon } from '@netcracker/qubership-apihub-ui-shared/icons/DeleteIcon'
-import type { DeletePersonalAccessTokenCallback, PersonalAccessToken, PersonalAccessTokens } from '@netcracker/qubership-apihub-ui-shared/types/tokens'
+import type {
+  DeletePersonalAccessTokenCallback,
+  PersonalAccessToken,
+  PersonalAccessTokens,
+} from '@netcracker/qubership-apihub-ui-shared/types/tokens'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import { createComponents } from '@netcracker/qubership-apihub-ui-shared/utils/components'
@@ -57,13 +64,8 @@ export type TokensTableTableProps = {
   isTokenBeingDeleted?: boolean
 }
 
-export const PersonalAccessTokensTable: FC<TokensTableTableProps> = memo(props => {
-  const {
-    data,
-    onDelete: onDeletePersonalAccessToken,
-    loading,
-    isTokenBeingDeleted,
-  } = props
+export const PersonalAccessTokensTable: FC<TokensTableTableProps> = memo((props) => {
+  const { data, onDelete: onDeletePersonalAccessToken, loading, isTokenBeingDeleted } = props
 
   const [deletionConfirmationDialog, setDeletionConfirmationDialog] = useState<boolean>(false)
   const [deletingTokenData, setDeletingTokenData] = useState<PersonalAccessToken | undefined>(undefined)
@@ -82,74 +84,81 @@ export const PersonalAccessTokensTable: FC<TokensTableTableProps> = memo(props =
     defaultMinColumnSize: 45,
   })
 
-  const columns: ColumnDef<PersonalAccessToken>[] = useMemo(
-    () => {
-      return [
-        {
-          id: NAME_COLUMN_ID,
-          header: 'Name',
-          cell: ({ row: { original: { name } } }) => (
-            <TextWithOverflowTooltip tooltipText={name}>
-              <Typography variant="inherit">{name}</Typography>
-            </TextWithOverflowTooltip>
-          ),
-        },
-        {
-          id: EXPIRATION_DATE_COLUMN_ID,
-          header: 'Expiration Date',
-          cell: ({ row: { original: { expiresAt } } }) => (
-            <>
-              {expiresAt
-                ? <FormattedDate value={expiresAt} />
-                : (
-                  <Typography component="span" variant="body2"                  >
-                    No expiration date
-                  </Typography>
-                )}
-            </>
-          ),
-        },
-        {
-          id: STATUS_COLUMN_ID,
-          header: 'Status',
-          cell: ({ row: { original: { status } } }) => (
-            <CustomChip value={status} label={status} />
-          ),
-        },
-        {
-          id: CREATED_AT_COLUMN_ID,
-          header: 'Created At',
-          cell: ({ row: { original: { createdAt } } }) => (
-            <FormattedDate value={createdAt} />
-          ),
-        },
-        {
-          id: DELETE_COLUMN_ID,
-          header: '',
-          cell: ({ row: { original: tokenData } }) => (
-            <ButtonWithHint
-              area-label="delete"
-              disabled={isTokenBeingDeleted}
-              disableHint={false}
-              hint={isTokenBeingDeleted
-                ? 'Deleting is going now, please wait'
-                : 'Delete'}
-              size="small"
-              sx={{ visibility: 'hidden', height: '20px' }}
-              className="hoverable"
-              startIcon={<DeleteIcon color={'#626D82'} />}
-              onClick={() => {
-                setDeletingTokenData(tokenData)
-                setDeletionConfirmationDialog(true)
-              }}
-              testId="DeleteButton"
-            />
-          ),
-        },
-      ]
-    },
-    [isTokenBeingDeleted],
-  )
+  const columns: ColumnDef<PersonalAccessToken>[] = useMemo(() => {
+    return [
+      {
+        id: NAME_COLUMN_ID,
+        header: 'Name',
+        cell: ({
+          row: {
+            original: { name },
+          },
+        }) => (
+          <TextWithOverflowTooltip tooltipText={name}>
+            <Typography variant="inherit">{name}</Typography>
+          </TextWithOverflowTooltip>
+        ),
+      },
+      {
+        id: EXPIRATION_DATE_COLUMN_ID,
+        header: 'Expiration Date',
+        cell: ({
+          row: {
+            original: { expiresAt },
+          },
+        }) => (
+          <>
+            {expiresAt ? (
+              <FormattedDate value={expiresAt} />
+            ) : (
+              <Typography component="span" variant="body2">
+                No expiration date
+              </Typography>
+            )}
+          </>
+        ),
+      },
+      {
+        id: STATUS_COLUMN_ID,
+        header: 'Status',
+        cell: ({
+          row: {
+            original: { status },
+          },
+        }) => <CustomChip value={status} label={status} />,
+      },
+      {
+        id: CREATED_AT_COLUMN_ID,
+        header: 'Created At',
+        cell: ({
+          row: {
+            original: { createdAt },
+          },
+        }) => <FormattedDate value={createdAt} />,
+      },
+      {
+        id: DELETE_COLUMN_ID,
+        header: '',
+        cell: ({ row: { original: tokenData } }) => (
+          <ButtonWithHint
+            area-label="delete"
+            disabled={isTokenBeingDeleted}
+            disableHint={false}
+            hint={isTokenBeingDeleted ? 'Deleting is going now, please wait' : 'Delete'}
+            size="small"
+            sx={{ visibility: 'hidden', height: '20px' }}
+            className="hoverable"
+            startIcon={<DeleteIcon color={'#626D82'} />}
+            onClick={() => {
+              setDeletingTokenData(tokenData)
+              setDeletionConfirmationDialog(true)
+            }}
+            testId="DeleteButton"
+          />
+        ),
+      },
+    ]
+  }, [isTokenBeingDeleted])
 
   const { getHeaderGroups, getRowModel, setColumnSizing } = useReactTable({
     data: data,
@@ -161,16 +170,13 @@ export const PersonalAccessTokensTable: FC<TokensTableTableProps> = memo(props =
     onColumnSizingInfoChange: setColumnSizingInfo as OnChangeFn<ColumnSizingInfoState>,
   })
 
-  useEffect(
-    () => setColumnSizing(actualColumnSizing),
-    [setColumnSizing, actualColumnSizing],
-  )
+  useEffect(() => setColumnSizing(actualColumnSizing), [setColumnSizing, actualColumnSizing])
 
   return (
     <TableContainer sx={{ mt: 1 }} ref={tableContainerRef}>
       <Table>
         <TableHead>
-          {getHeaderGroups().map(headerGroup => (
+          {getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <TableCell
@@ -185,7 +191,7 @@ export const PersonalAccessTokensTable: FC<TokensTableTableProps> = memo(props =
           ))}
         </TableHead>
         <TableBody>
-          {getRowModel().rows.map(row => (
+          {getRowModel().rows.map((row) => (
             <TableRow key={row.id}>
               {row.getVisibleCells().map((cell) => (
                 <TableCell key={cell.column.id} data-testid={`Cell-${cell.column.id}`}>
@@ -197,21 +203,18 @@ export const PersonalAccessTokensTable: FC<TokensTableTableProps> = memo(props =
           {loading && <TableSkeleton />}
         </TableBody>
       </Table>
-      {isEmpty(data) && !loading
-        ? (
-          <Placeholder
-            sx={{ width: 'inherit' }}
-            invisible={loading}
-            area={CONTENT_PLACEHOLDER_AREA}
-            message="No personal access tokens"
-          />
-        )
-        : null
-      }
+      {isEmpty(data) && !loading ? (
+        <Placeholder
+          sx={{ width: 'inherit' }}
+          invisible={loading}
+          area={CONTENT_PLACEHOLDER_AREA}
+          message="No personal access tokens"
+        />
+      ) : null}
       <ConfirmationDialog
         open={deletionConfirmationDialog}
         title={`Delete token ${deletingTokenData?.name}?`}
-        message='Once a token is deleted, it can no longer be used to authenticate to APIHUB.'
+        message="Once a token is deleted, it can no longer be used to authenticate to APIHUB."
         loading={isTokenBeingDeleted}
         confirmButtonName="Delete"
         onConfirm={() => onDeletePersonalAccessToken(deletingTokenData!.id)}

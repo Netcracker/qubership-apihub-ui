@@ -28,13 +28,13 @@ import type {
 } from '../../../entities/version-changelog'
 import { toDiffVersionChanges, toVersionChanges } from '../../../entities/version-changelog'
 import type { HasNextPage, IsFetchingNextPage, IsLoading } from '../../../utils/aliases'
-import {
-  useResolvedOperationGroupParameters,
-} from '../../../hooks/operation-groups/useResolvedOperationGroupParameters'
+import { useResolvedOperationGroupParameters } from '../../../hooks/operation-groups/useResolvedOperationGroupParameters'
 
 const VERSION_CHANGELOG = 'version-changelog-query-key'
 
-export type FetchNextPage = (options?: FetchNextPageOptions) => Promise<InfiniteQueryObserverResult<VersionChangesDto, Error>>
+export type FetchNextPage = (
+  options?: FetchNextPageOptions,
+) => Promise<InfiniteQueryObserverResult<VersionChangesDto, Error>>
 
 function useCommonPagedVersionChangelog<T>(
   options: VersionChangelogOptions,
@@ -61,38 +61,54 @@ function useCommonPagedVersionChangelog<T>(
 
   const { resolvedGroupName, resolvedEmptyGroup } = useResolvedOperationGroupParameters(group)
 
-  const {
-    data,
-    isLoading,
-    fetchNextPage,
-    isFetchingNextPage,
-    hasNextPage,
-  } = useInfiniteQuery<VersionChangesDto, Error, VersionChangesDto>({
+  const { data, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } = useInfiniteQuery<
+    VersionChangesDto,
+    Error,
+    VersionChangesDto
+  >({
     queryKey: [
-      VERSION_CHANGELOG, packageKey, versionKey, documentSlug, packageIdFilter,
-      previousVersionKey, previousVersionPackageKey, tag, searchValue, apiType, apiAudience, apiKind, group,
-      page, limit, enabled, severityFilters,
+      VERSION_CHANGELOG,
+      packageKey,
+      versionKey,
+      documentSlug,
+      packageIdFilter,
+      previousVersionKey,
+      previousVersionPackageKey,
+      tag,
+      searchValue,
+      apiType,
+      apiAudience,
+      apiKind,
+      group,
+      page,
+      limit,
+      enabled,
+      severityFilters,
     ],
     enabled: !!versionKey && !!packageKey && enabled,
     retry: false,
-    queryFn: ({ pageParam = page, signal }) => getVersionChangelog({
-      packageKey: packageKey,
-      versionKey: versionKey,
-      documentSlug: documentSlug,
-      packageIdFilter: packageIdFilter,
-      previousVersionKey: previousVersionKey,
-      previousVersionPackageKey: previousVersionPackageKey,
-      tag: tag,
-      searchValue: searchValue,
-      apiType: apiType,
-      apiKind: apiKind,
-      apiAudience: apiAudience,
-      group: resolvedGroupName,
-      severityFilters: severityFilters,
-      emptyGroup: resolvedEmptyGroup,
-      page: pageParam - 1,
-      limit: limit,
-    }, signal),
+    queryFn: ({ pageParam = page, signal }) =>
+      getVersionChangelog(
+        {
+          packageKey: packageKey,
+          versionKey: versionKey,
+          documentSlug: documentSlug,
+          packageIdFilter: packageIdFilter,
+          previousVersionKey: previousVersionKey,
+          previousVersionPackageKey: previousVersionPackageKey,
+          tag: tag,
+          searchValue: searchValue,
+          apiType: apiType,
+          apiKind: apiKind,
+          apiAudience: apiAudience,
+          group: resolvedGroupName,
+          severityFilters: severityFilters,
+          emptyGroup: resolvedEmptyGroup,
+          page: pageParam - 1,
+          limit: limit,
+        },
+        signal,
+      ),
     getNextPageParam: (lastPage, allPages) => {
       if (limit && enabled) {
         return lastPage.operations?.length === limit ? allPages.length + 1 : undefined
@@ -101,18 +117,9 @@ function useCommonPagedVersionChangelog<T>(
     },
   })
 
-  const versionChanges = useMemo(
-    () => data?.pages.map(page => toChanges(page)) ?? [],
-    [data?.pages, toChanges],
-  )
+  const versionChanges = useMemo(() => data?.pages.map((page) => toChanges(page)) ?? [], [data?.pages, toChanges])
 
-  return [
-    versionChanges,
-    isLoading,
-    fetchNextPage,
-    isFetchingNextPage,
-    hasNextPage,
-  ]
+  return [versionChanges, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage]
 }
 
 export function usePagedVersionChangelog(

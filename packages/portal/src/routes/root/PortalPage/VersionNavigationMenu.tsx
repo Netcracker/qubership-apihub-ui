@@ -69,54 +69,59 @@ export type VersionNavigationMenuProps = {
   showSettings?: boolean
 }
 
-export const VersionNavigationMenu: FC<VersionNavigationMenuProps> = memo<VersionNavigationMenuProps>(({
-  menuItems,
-  showSettings = false,
-}) => {
-  const navigate = useNavigate()
-  const { productionMode } = useSystemInfo()
+export const VersionNavigationMenu: FC<VersionNavigationMenuProps> = memo<VersionNavigationMenuProps>(
+  ({ menuItems, showSettings = false }) => {
+    const navigate = useNavigate()
+    const { productionMode } = useSystemInfo()
 
-  const { packageId, versionId } = useParams()
-  const { versionContent } = usePackageVersionContent({
-    packageKey: packageId,
-    versionKey: versionId,
-    includeSummary: true,
-  })
-  const { previousVersion, operationTypes } = versionContent ?? {}
-  const defaultApiType = useMemo(() => getDefaultApiType(operationTypes), [operationTypes])
-  const { expandMainMenu, toggleExpandMainMenu, operationsViewMode } = usePortalPageSettingsContext()
-  const [operationsView] = useOperationsView(operationsViewMode)
+    const { packageId, versionId } = useParams()
+    const { versionContent } = usePackageVersionContent({
+      packageKey: packageId,
+      versionKey: versionId,
+      includeSummary: true,
+    })
+    const { previousVersion, operationTypes } = versionContent ?? {}
+    const defaultApiType = useMemo(() => getDefaultApiType(operationTypes), [operationTypes])
+    const { expandMainMenu, toggleExpandMainMenu, operationsViewMode } = usePortalPageSettingsContext()
+    const [operationsView] = useOperationsView(operationsViewMode)
 
-  const [currentMenuItem] = useActiveTabs()
-  const sidebarMenuItems = useMemo(
-    () => getAvailableSidebarMenuItems(previousVersion, defaultApiType, productionMode).filter(({ id }) => menuItems.includes(id)),
-    [defaultApiType, menuItems, previousVersion, productionMode],
-  )
-  const sidebarServiceMenuItems = useMemo(
-    () => getAvailableSidebarServiceMenuItems(showSettings).filter(({ id }) => menuItems.includes(id)),
-    [menuItems, showSettings],
-  )
-  const pagePathsMap = useMemo(
-    () => getPagePathsMap(packageId!, versionId!, defaultApiType, operationsView, expandMainMenu),
-    [defaultApiType, operationsView, expandMainMenu, packageId, versionId],
-  )
+    const [currentMenuItem] = useActiveTabs()
+    const sidebarMenuItems = useMemo(
+      () =>
+        getAvailableSidebarMenuItems(previousVersion, defaultApiType, productionMode).filter(({ id }) =>
+          menuItems.includes(id),
+        ),
+      [defaultApiType, menuItems, previousVersion, productionMode],
+    )
+    const sidebarServiceMenuItems = useMemo(
+      () => getAvailableSidebarServiceMenuItems(showSettings).filter(({ id }) => menuItems.includes(id)),
+      [menuItems, showSettings],
+    )
+    const pagePathsMap = useMemo(
+      () => getPagePathsMap(packageId!, versionId!, defaultApiType, operationsView, expandMainMenu),
+      [defaultApiType, operationsView, expandMainMenu, packageId, versionId],
+    )
 
-  const navigateAndSelect = useCallback((menuItemId: string): void => {
-    const pathToNavigate = pagePathsMap[menuItemId]
-    pathToNavigate && navigate(pathToNavigate)
-  }, [navigate, pagePathsMap])
+    const navigateAndSelect = useCallback(
+      (menuItemId: string): void => {
+        const pathToNavigate = pagePathsMap[menuItemId]
+        pathToNavigate && navigate(pathToNavigate)
+      },
+      [navigate, pagePathsMap],
+    )
 
-  return (
-    <NavigationMenu
-      open={expandMainMenu}
-      setOpen={toggleExpandMainMenu}
-      activeItem={currentMenuItem}
-      sidebarMenuItems={sidebarMenuItems}
-      sidebarServiceMenuItems={sidebarServiceMenuItems}
-      onSelectItem={navigateAndSelect}
-    />
-  )
-})
+    return (
+      <NavigationMenu
+        open={expandMainMenu}
+        setOpen={toggleExpandMainMenu}
+        activeItem={currentMenuItem}
+        sidebarMenuItems={sidebarMenuItems}
+        sidebarServiceMenuItems={sidebarServiceMenuItems}
+        onSelectItem={navigateAndSelect}
+      />
+    )
+  },
+)
 
 const getPagePathsMap = (
   packageKey: Key,
@@ -184,21 +189,21 @@ const getAvailableSidebarMenuItems = (
       id: CONFIGURATION_PAGE,
       title: 'Configuration',
       tooltip: 'Configuration',
-      icon: <ConfigureIcon/>,
+      icon: <ConfigureIcon />,
       testId: 'ConfigureDashboardButton',
     },
     {
       id: OVERVIEW_PAGE,
       title: 'Overview',
       tooltip: 'Overview',
-      icon: <ServicesIcon/>,
+      icon: <ServicesIcon />,
       testId: 'OverviewButton',
     },
     {
       id: OPERATIONS_PAGE,
       title: 'Operations',
       tooltip: 'Operations',
-      icon: <ApiIcon/>,
+      icon: <ApiIcon />,
       testId: 'OperationsButton',
     },
     {
@@ -206,7 +211,7 @@ const getAvailableSidebarMenuItems = (
       title: 'API Changes',
       tooltip: !previousVersion ? 'No API changes since there is no previous version' : 'API Changes',
       disabled: !previousVersion || disableTab,
-      icon: <ComparisonIcon/>,
+      icon: <ComparisonIcon />,
       testId: 'ApiChangesButton',
     },
     {
@@ -214,22 +219,20 @@ const getAvailableSidebarMenuItems = (
       title: 'Deprecated',
       tooltip: 'Deprecated',
       disabled: disableTab,
-      icon: <DefaultWarningIcon/>,
+      icon: <DefaultWarningIcon />,
       testId: 'DeprecatedButton',
     },
     {
       id: DOCUMENTS_PAGE,
       title: 'Documents',
       tooltip: 'Documents',
-      icon: <FileIcon/>,
+      icon: <FileIcon />,
       testId: 'DocumentsButton',
     },
   ]
 }
 
-const getAvailableSidebarServiceMenuItems = (
-  showSettings: boolean,
-): SidebarMenu[] => {
+const getAvailableSidebarServiceMenuItems = (showSettings: boolean): SidebarMenu[] => {
   const sidebarServiceMenu: SidebarMenu[] = []
 
   if (showSettings) {
@@ -237,7 +240,7 @@ const getAvailableSidebarServiceMenuItems = (
       id: PACKAGE_SETTINGS_PAGE,
       title: 'Settings',
       tooltip: 'Package Settings',
-      icon: <SettingIcon color="#626D82"/>,
+      icon: <SettingIcon color="#626D82" />,
       testId: 'SettingsButton',
     })
   }

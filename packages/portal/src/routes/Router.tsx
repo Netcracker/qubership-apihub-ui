@@ -54,82 +54,92 @@ import { OperationPage } from '@apihub/routes/root/PortalPage/VersionPage/Operat
 import { DocumentPreviewPage } from '@apihub/routes/root/PortalPage/VersionPage/DocumentPreviewPage/DocumentPreviewPage'
 import { ChangesSummaryProvider } from '@apihub/routes/root/PortalPage/VersionPage/ChangesSummaryProvider'
 import { VersionComparePage } from '@apihub/routes/root/PortalPage/VersionPage/VersionComparePage/VersionComparePage'
-import {
-  OperationsComparisonPage,
-} from '@apihub/routes/root/PortalPage/VersionPage/OperationsComparisonPage/OperationsComparisonPage'
+import { OperationsComparisonPage } from '@apihub/routes/root/PortalPage/VersionPage/OperationsComparisonPage/OperationsComparisonPage'
 import { GroupComparePage } from '@apihub/routes/root/PortalPage/VersionPage/GroupComparePage/GroupComparePage'
-import {
-  DifferentOperationGroupsComparisonPage,
-} from '@apihub/routes/root/PortalPage/VersionPage/OperationsComparisonPage/DifferentOperationGroupsComparisonPage'
+import { DifferentOperationGroupsComparisonPage } from '@apihub/routes/root/PortalPage/VersionPage/OperationsComparisonPage/DifferentOperationGroupsComparisonPage'
 import { ErrorPage, NOT_FOUND_TITLE } from '@netcracker/qubership-apihub-ui-shared/components/ErrorPage'
 import { LoginPage } from '@netcracker/qubership-apihub-ui-shared/pages/login'
 import { ProfilePage } from './root/ProfilePage/ProfilePage'
 
 export const router = createBrowserRouter(
   createRoutes([
-    <Route path="/" element={<NavigationProvider><BasePage/></NavigationProvider>}>
-      <Route index element={<Navigate to="portal" replace/>}/>
+    <Route
+      path="/"
+      element={
+        <NavigationProvider>
+          <BasePage />
+        </NavigationProvider>
+      }
+    >
+      <Route index element={<Navigate to="portal" replace />} />
       <Route path="portal">
-        <Route element={<MainPage/>}>
-          <Route index element={<Navigate to={FAVORITE_PAGE} replace/>}/>
-          <Route path={FAVORITE_PAGE} element={<FavoritePage/>}/>
-          <Route path={SHARED_PAGE} element={<SharedPage/>}/>
-          <Route path={PRIVATE_PAGE} element={<PrivatePage/>}/>
-          <Route path={WORKSPACES_PAGE} element={<WorkspacesPage/>}/>
-          <Route path={`${WORKSPACES_PAGE}/:workspaceKey`} element={<WorkspacePage/>}/>
-          <Route path={`${GROUPS_PAGE}/:groupId`} element={<GroupPage/>}/>
+        <Route element={<MainPage />}>
+          <Route index element={<Navigate to={FAVORITE_PAGE} replace />} />
+          <Route path={FAVORITE_PAGE} element={<FavoritePage />} />
+          <Route path={SHARED_PAGE} element={<SharedPage />} />
+          <Route path={PRIVATE_PAGE} element={<PrivatePage />} />
+          <Route path={WORKSPACES_PAGE} element={<WorkspacesPage />} />
+          <Route path={`${WORKSPACES_PAGE}/:workspaceKey`} element={<WorkspacePage />} />
+          <Route path={`${GROUPS_PAGE}/:groupId`} element={<GroupPage />} />
         </Route>
-        <Route path="settings/*" element={<SettingsPage/>}/>
-        <Route path="profile/*" element={<ProfilePage/>}/>
+        <Route path="settings/*" element={<SettingsPage />} />
+        <Route path="profile/*" element={<ProfilePage />} />
         <Route path="packages/:packageId">
-          <Route index element={<PackagePage/>}/>
-          <Route path={`${SPECIAL_VERSION_KEY}/${PACKAGE_SETTINGS_PAGE}/*`} element={<PackageSettingsPage/>}/>
+          <Route index element={<PackagePage />} />
+          <Route path={`${SPECIAL_VERSION_KEY}/${PACKAGE_SETTINGS_PAGE}/*`} element={<PackageSettingsPage />} />
           <Route path={`:${VERSION_ID}/*`}>
-            <Route element={<VersionPage/>}/>
-            <Route index element={<Navigate to={SUMMARY_ROUTE} replace/>}/>
-            <Route path="*" element={<VersionPage/>}/>
-            <Route path={`${API_CHANGES_PAGE}/:apiType`} element={<VersionPage/>}/>
+            <Route element={<VersionPage />} />
+            <Route index element={<Navigate to={SUMMARY_ROUTE} replace />} />
+            <Route path="*" element={<VersionPage />} />
+            <Route path={`${API_CHANGES_PAGE}/:apiType`} element={<VersionPage />} />
             <Route path={`${OPERATIONS_PAGE}/:apiType`}>
-              <Route index element={<VersionPage/>}/>
-              <Route path=":operationId/*" element={<OperationPage/>}/>
+              <Route index element={<VersionPage />} />
+              <Route path=":operationId/*" element={<OperationPage />} />
             </Route>
-            <Route path={`${DEPRECATED_PAGE}/:apiType`} element={<VersionPage/>}/>
+            <Route path={`${DEPRECATED_PAGE}/:apiType`} element={<VersionPage />} />
             <Route path={DOCUMENTS_PAGE}>
-              <Route index element={<VersionPage/>}/>
+              <Route index element={<VersionPage />} />
               <Route path=":documentId">
-                <Route index element={<VersionPage/>}/>
-                <Route path={PREVIEW_PAGE} element={<DocumentPreviewPage/>}/>
+                <Route index element={<VersionPage />} />
+                <Route path={PREVIEW_PAGE} element={<DocumentPreviewPage />} />
               </Route>
             </Route>
             <Route path={`${COMPARE_PAGE}/*`}>
-              <Route index element={(
-                <ChangesSummaryProvider>
-                  <VersionComparePage/>
-                </ChangesSummaryProvider>
-              )}/>
-              <Route path=":apiType/:operationId" element={<OperationsComparisonPage/>}/>
+              <Route
+                index
+                element={
+                  <ChangesSummaryProvider>
+                    <VersionComparePage />
+                  </ChangesSummaryProvider>
+                }
+              />
+              <Route path=":apiType/:operationId" element={<OperationsComparisonPage />} />
             </Route>
             <Route path="groups/:group/compare">
-              <Route index element={(
-                <ChangesSummaryProvider>
-                  <GroupComparePage/>
-                </ChangesSummaryProvider>
-              )}/>
-              <Route path=":apiType/:operationId" element={
-                <ChangesSummaryProvider>
-                  <DifferentOperationGroupsComparisonPage/>
-                </ChangesSummaryProvider>}/>
+              <Route
+                index
+                element={
+                  <ChangesSummaryProvider>
+                    <GroupComparePage />
+                  </ChangesSummaryProvider>
+                }
+              />
+              <Route
+                path=":apiType/:operationId"
+                element={
+                  <ChangesSummaryProvider>
+                    <DifferentOperationGroupsComparisonPage />
+                  </ChangesSummaryProvider>
+                }
+              />
             </Route>
-            <Route
-              path={CONFIGURATION_PAGE}
-              element={<ConfigurePage/>}
-            />
+            <Route path={CONFIGURATION_PAGE} element={<ConfigurePage />} />
           </Route>
         </Route>
       </Route>
-      <Route path="*" element={<ErrorPage title={NOT_FOUND_TITLE} homePath="/portal"/>}/>
+      <Route path="*" element={<ErrorPage title={NOT_FOUND_TITLE} homePath="/portal" />} />
     </Route>,
-    <Route path="/login" element={<LoginPage applicationName={'APIHUB Portal'}/>}/>,
+    <Route path="/login" element={<LoginPage applicationName={'APIHUB Portal'} />} />,
   ]),
 )
 

@@ -53,34 +53,31 @@ export const ProjectEditorToolbar: FC<{ isBranchIndexing: boolean }> = memo(({ i
   return (
     <>
       <Toolbar
-        breadcrumbs={<BreadcrumbNavigation/>}
+        breadcrumbs={<BreadcrumbNavigation />}
         header={
           <>
-            <ToolbarTitle value={project?.name}/>
-            <Typography variant="subtitle3">
-              {
-                `${isBranchReadonly ? 'View' : 'Edit'} branch`
-              }
-            </Typography>
-            <BranchSelector/>
-            {isBranchIndexing && <>
-              <Tooltip title="Branch files are indexing">
-                <CircularProgress sx={{ alignSelf: 'center' }} size={10}/>
-              </Tooltip>
-            </>}
+            <ToolbarTitle value={project?.name} />
+            <Typography variant="subtitle3">{`${isBranchReadonly ? 'View' : 'Edit'} branch`}</Typography>
+            <BranchSelector />
+            {isBranchIndexing && (
+              <>
+                <Tooltip title="Branch files are indexing">
+                  <CircularProgress sx={{ alignSelf: 'center' }} size={10} />
+                </Tooltip>
+              </>
+            )}
           </>
         }
         action={
           <Box display="flex" gap={1} alignItems="center">
             <Box display="flex" gap={1} alignItems="center">
-              {
-                connecting
-                  ? <CircularProgress sx={{ alignSelf: 'center' }} size={20}/>
-                  : <RedactorsBar redactors={connectedUsers}/>
-              }
-              <Divider/>
-              <Tooltip
-                title="To start the branch editing make any change after that you can finish the editing manually using this button">
+              {connecting ? (
+                <CircularProgress sx={{ alignSelf: 'center' }} size={20} />
+              ) : (
+                <RedactorsBar redactors={connectedUsers} />
+              )}
+              <Divider />
+              <Tooltip title="To start the branch editing make any change after that you can finish the editing manually using this button">
                 <Box>
                   <Button
                     disabled={!branchEditingMode}
@@ -93,22 +90,13 @@ export const ProjectEditorToolbar: FC<{ isBranchIndexing: boolean }> = memo(({ i
               </Tooltip>
 
               {packageKey ? (
-                <Button
-                  variant="outlined"
-                  onClick={redirectToPortal}
-                  data-testid="ViewLinkedPackageButton"
-                >
+                <Button variant="outlined" onClick={redirectToPortal} data-testid="ViewLinkedPackageButton">
                   View Linked Package
                 </Button>
               ) : (
-                <Tooltip
-                  title="You cannot go to the linked package in the APIHUB Portal because no package is specified for this project">
+                <Tooltip title="You cannot go to the linked package in the APIHUB Portal because no package is specified for this project">
                   <Box>
-                    <Button
-                      disabled
-                      variant="outlined"
-                      data-testid="ViewLinkedPackageButton"
-                    >
+                    <Button disabled variant="outlined" data-testid="ViewLinkedPackageButton">
                       View Linked Package
                     </Button>
                   </Box>
@@ -119,8 +107,8 @@ export const ProjectEditorToolbar: FC<{ isBranchIndexing: boolean }> = memo(({ i
         }
       />
 
-      <CreateBranchDialog/>
-      <PublishProjectVersionDialog/>
+      <CreateBranchDialog />
+      <PublishProjectVersionDialog />
     </>
   )
 })

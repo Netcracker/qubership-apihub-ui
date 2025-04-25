@@ -44,10 +44,7 @@ export type PackageVersionsTableProps = Readonly<{
   status: VersionStatus | undefined
 }>
 export const PackageVersionsTable: FC<PackageVersionsTableProps> = memo<PackageVersionsTableProps>((props) => {
-  const {
-    packageKey, permissions, status,
-    onDelete, onEdit, searchValue,
-  } = props
+  const { packageKey, permissions, status, onDelete, onEdit, searchValue } = props
 
   const { versions, areVersionsLoading, fetchNextPage, isFetchingNextPage, hasNextPage } = usePackageVersions({
     packageKey: packageKey,
@@ -55,9 +52,7 @@ export const PackageVersionsTable: FC<PackageVersionsTableProps> = memo<PackageV
     textFilter: searchValue,
   })
 
-  const filteredVersions = useMemo(() => (
-    handleVersionsRevision(versions)
-  ), [versions])
+  const filteredVersions = useMemo(() => handleVersionsRevision(versions), [versions])
 
   const ref = useRef<HTMLDivElement>(null)
   useIntersectionObserver(ref, isFetchingNextPage, hasNextPage, fetchNextPage)
@@ -71,12 +66,14 @@ export const PackageVersionsTable: FC<PackageVersionsTableProps> = memo<PackageV
       <VersionHistoryTable
         value={filteredVersions}
         packageKey={packageKey}
-        actionsCell={(item) => <VersionHistoryActions
-          version={item as PackageVersion}
-          permissions={permissions}
-          onEdit={onEdit}
-          onDelete={onDelete}
-        />}
+        actionsCell={(item) => (
+          <VersionHistoryActions
+            version={item as PackageVersion}
+            permissions={permissions}
+            onEdit={onEdit}
+            onDelete={onDelete}
+          />
+        )}
         hasNextPage={hasNextPage}
         refObject={ref}
         isLoading={areVersionsLoading}
@@ -111,7 +108,7 @@ export const VersionHistoryActions: FC<VersionHistoryActionsProps> = memo<Versio
         size="small"
         sx={{ visibility: 'hidden', height: '20px' }}
         className="hoverable"
-        startIcon={<EditOutlinedIcon sx={{ color: actionsDisabled ? '#00000026' : '#626D82' }}/>}
+        startIcon={<EditOutlinedIcon sx={{ color: actionsDisabled ? '#00000026' : '#626D82' }} />}
         onClick={() => onEdit(version)}
         testId="EditButton"
       />
@@ -123,11 +120,10 @@ export const VersionHistoryActions: FC<VersionHistoryActionsProps> = memo<Versio
         size="small"
         sx={{ visibility: 'hidden', height: '20px' }}
         className="hoverable"
-        startIcon={<DeleteIcon color="#626D82"/>}
+        startIcon={<DeleteIcon color="#626D82" />}
         onClick={() => onDelete(version)}
         testId="DeleteButton"
       />
     </Box>
   )
 })
-

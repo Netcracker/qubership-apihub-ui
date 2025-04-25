@@ -23,22 +23,23 @@ import type { Key } from './types'
 export type SpecItemUri = Key
 export type SpecItemPath = Key[]
 
-export type OpenapiSchema = Record<Key, never> & JSONSchema & {
-  info?: SchemaObject
-  paths?: Record<Key, PathItemObject>
-  components?: {
-    schemas?: Record<Key, ReferenceObject | SchemaObject>
-    securitySchemes?: Record<Key, ReferenceObject | SchemaObject>
-    links?: Record<Key, LinkObject | ReferenceObject>
-    responses?: Record<Key, ResponseObject | ReferenceObject>
-    parameters?: Record<Key, ParameterObject | ReferenceObject>
-    requestBodies?: Record<Key, RequestBody | ReferenceObject>
-    headers?: Record<Key, ReferenceObject | HeaderObject>
-    examples?: Record<Key, ReferenceObject | ExampleObject>
-    callbacks?: Record<Key, ReferenceObject | CallbackObject>
+export type OpenapiSchema = Record<Key, never> &
+  JSONSchema & {
+    info?: SchemaObject
+    paths?: Record<Key, PathItemObject>
+    components?: {
+      schemas?: Record<Key, ReferenceObject | SchemaObject>
+      securitySchemes?: Record<Key, ReferenceObject | SchemaObject>
+      links?: Record<Key, LinkObject | ReferenceObject>
+      responses?: Record<Key, ResponseObject | ReferenceObject>
+      parameters?: Record<Key, ParameterObject | ReferenceObject>
+      requestBodies?: Record<Key, RequestBody | ReferenceObject>
+      headers?: Record<Key, ReferenceObject | HeaderObject>
+      examples?: Record<Key, ReferenceObject | ExampleObject>
+      callbacks?: Record<Key, ReferenceObject | CallbackObject>
+    }
+    definitions?: Record<Key, ReferenceObject | SchemaObject>
   }
-  definitions?: Record<Key, ReferenceObject | SchemaObject>
-}
 
 export type Headers = Record<string, string>
 
@@ -155,7 +156,11 @@ export function toJsonSchema(value: string): JSONSchema | null {
 }
 
 export function isFastJsonSchema(data: unknown | null): data is JSONSchema {
-  return !!data && typeof data === 'object' && ['object', 'array', 'string', 'number', 'boolean', 'integer', 'null'].includes((data as JSONSchema).type as string)
+  return (
+    !!data &&
+    typeof data === 'object' &&
+    ['object', 'array', 'string', 'number', 'boolean', 'integer', 'null'].includes((data as JSONSchema).type as string)
+  )
 }
 
 export function toOpenApiSchema(value: string): OpenapiSchema | null {
@@ -182,18 +187,12 @@ export function toFormattedOpenApiPathName(value: string): string {
   return value.replaceAll(new RegExp('{\\w+}', 'g'), '•')
 }
 
-export function findPathLocation(
-  content: string,
-  specItemUri: SpecItemUri,
-): ILocation | undefined {
+export function findPathLocation(content: string, specItemUri: SpecItemUri): ILocation | undefined {
   if (!specItemUri.includes('/')) {
     return undefined
   }
 
-  return getLocationForJsonPath(
-    parseWithPointers(content),
-    specItemUri.split('/').map(decodeKey).slice(1),
-  )
+  return getLocationForJsonPath(parseWithPointers(content), specItemUri.split('/').map(decodeKey).slice(1))
 }
 
 export function encodeKey(key: Key): Key {

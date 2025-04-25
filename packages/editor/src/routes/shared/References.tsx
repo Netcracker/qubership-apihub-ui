@@ -30,10 +30,5 @@ export const References: FC = memo(() => {
     versionKey: versionId ?? undefined,
   })
 
-  return (
-    <ReferenceList
-      isLoading={isLoading}
-      references={versionContent?.refs ?? []}
-    />
-  )
+  return <ReferenceList isLoading={isLoading} references={versionContent?.refs ?? []} />
 })

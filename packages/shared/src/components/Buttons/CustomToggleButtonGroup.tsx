@@ -26,13 +26,11 @@ type CustomToggleButtonGroupProps<T> = {
   customLastButton?: boolean
 }
 
-export function CustomToggleButtonGroup<T>(
-  props: CustomToggleButtonGroupProps<T>,
-): JSX.Element {
+export function CustomToggleButtonGroup<T>(props: CustomToggleButtonGroupProps<T>): JSX.Element {
   const { value, onClick, children, exclusive, customLastButton } = props
 
-  return useMemo(() =>
-    (
+  return useMemo(
+    () => (
       <ToggleButtonGroup
         sx={{
           '.MuiToggleButtonGroup-grouped': {
@@ -65,11 +63,11 @@ export function CustomToggleButtonGroup<T>(
         value={value}
         onChange={(event, value) => {
           onClick?.(value)
-        }
-        }
+        }}
       >
         {children}
       </ToggleButtonGroup>
-    ), [children, customLastButton, exclusive, onClick, value],
+    ),
+    [children, customLastButton, exclusive, onClick, value],
   )
 }

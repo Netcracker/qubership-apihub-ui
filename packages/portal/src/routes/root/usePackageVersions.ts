@@ -20,7 +20,8 @@ import type { PackageVersionDto } from '@netcracker/qubership-apihub-ui-shared/e
 import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import {
-  deletePackageVersion, editPackageVersion,
+  deletePackageVersion,
+  editPackageVersion,
   useInvalidatePackageVersions,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
 

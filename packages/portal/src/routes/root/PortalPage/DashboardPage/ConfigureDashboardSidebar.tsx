@@ -21,10 +21,5 @@ import { SidebarPanel } from '@netcracker/qubership-apihub-ui-shared/components/
 import { PageTitle } from '@netcracker/qubership-apihub-ui-shared/components/Titles/PageTitle'
 
 export const ConfigureDashboardSidebar: FC = memo(() => {
-  return (
-    <SidebarPanel
-      header={<PageTitle title="Configuration"/>}
-      body={<ConfigureDashboardNavigation/>}
-    />
-  )
+  return <SidebarPanel header={<PageTitle title="Configuration" />} body={<ConfigureDashboardNavigation />} />
 })

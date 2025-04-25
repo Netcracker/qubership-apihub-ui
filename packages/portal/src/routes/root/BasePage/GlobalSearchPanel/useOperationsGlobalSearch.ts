@@ -32,13 +32,11 @@ export function useOperationsGlobalSearch(options: {
 }): [SearchResults, IsLoading, FetchNextSearchResultList, IsFetchingNextPage, HasNextPage] {
   const { criteria, enabled, page = 1, limit = 100 } = options
 
-  const {
-    data,
-    isInitialLoading,
-    fetchNextPage,
-    isFetchingNextPage,
-    hasNextPage,
-  } = useInfiniteQuery<SearchResults, Error, SearchResults>({
+  const { data, isInitialLoading, fetchNextPage, isFetchingNextPage, hasNextPage } = useInfiniteQuery<
+    SearchResults,
+    Error,
+    SearchResults
+  >({
     queryKey: [GLOBAL_OPERATIONS_SEARCH_RESULT_QUERY_KEY, criteria, OPERATION_LEVEL],
     queryFn: ({ pageParam = page }) => getSearchResult(criteria, OPERATION_LEVEL, limit, pageParam - 1),
     enabled: enabled && !!criteria.searchString,
@@ -51,7 +49,7 @@ export function useOperationsGlobalSearch(options: {
     },
   })
 
-  const operations = useMemo(() => data?.pages.flatMap(page => page.operations) ?? [], [data?.pages])
+  const operations = useMemo(() => data?.pages.flatMap((page) => page.operations) ?? [], [data?.pages])
 
   return [
     {
@@ -65,4 +63,3 @@ export function useOperationsGlobalSearch(options: {
     hasNextPage,
   ]
 }
-

@@ -34,9 +34,7 @@ export const CurrentDocumentsListProvider: FC<PropsWithChildren> = ({ children }
 
   return (
     <SelectedDocumentContext.Provider value={currentDocuments}>
-      <SetSelectedDocumentContext.Provider value={setCurrentDocuments}>
-        {children}
-      </SetSelectedDocumentContext.Provider>
+      <SetSelectedDocumentContext.Provider value={setCurrentDocuments}>{children}</SetSelectedDocumentContext.Provider>
     </SelectedDocumentContext.Provider>
   )
 }

@@ -40,14 +40,10 @@ export function useDownloadPublishedDocument(options: {
   versionKey?: Key
   slug: Key
 }): [DownloadPublishedDocument, IsLoading] {
-  const {
-    packageKey,
-    versionKey,
-    slug,
-  } = options
+  const { packageKey, versionKey, slug } = options
   const { fullVersion } = useVersionWithRevision(versionKey, packageKey)
   const { mutate, isLoading } = useMutation<void, Error, Options | undefined>({
-    mutationFn: options => downloadPublishedDocument(packageKey!, fullVersion, slug, options),
+    mutationFn: (options) => downloadPublishedDocument(packageKey!, fullVersion, slug, options),
   })
 
   return [mutate, isLoading]
@@ -97,7 +93,8 @@ async function getPublishedDocumentRaw(
     `${generatePath(pathPattern, { packageId, versionId, docId })}?${searchParams}`,
     {
       method: 'get',
-    }, {
+    },
+    {
       customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
     },
   )
@@ -122,7 +119,8 @@ async function downloadPublishedDocument(
     `${generatePath(pathPattern, { packageId, versionId, docId })}?docType=${options?.docType?.toUpperCase()}`,
     {
       method: 'get',
-    }, {
+    },
+    {
       customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
     },
   )
@@ -131,7 +129,12 @@ async function downloadPublishedDocument(
 
   const data = await response.blob()
   if (options?.docType === RAW_DOC_TYPE && options.rawOptions) {
-    return downloadPublishedDocumentRaw(data, getFilename, options.rawOptions.resultFileExtension, options.rawOptions.inlineRefs)
+    return downloadPublishedDocumentRaw(
+      data,
+      getFilename,
+      options.rawOptions.resultFileExtension,
+      options.rawOptions.inlineRefs,
+    )
   }
 
   return fileDownload(data, getFilename())
@@ -158,7 +161,6 @@ async function downloadPublishedDocumentRaw(
     return inlineRefs
       ? fileDownload(toFormattedJsonString(resolvedContent), resultFileName)
       : fileDownload(toFormattedJsonString(toJsonSchema(rawText) ?? {}), resultFileName)
-
   }
   if (jsonToYaml) {
     return inlineRefs
@@ -169,16 +171,12 @@ async function downloadPublishedDocumentRaw(
   // case of no conversion
   if (inlineRefs) {
     return fileDownload(
-      isYamlFile(fileExtension)
-        ? toYaml(resolvedContent) ?? ''
-        : toFormattedJsonString(resolvedContent),
+      isYamlFile(fileExtension) ? (toYaml(resolvedContent) ?? '') : toFormattedJsonString(resolvedContent),
       getFilename(),
     )
   } else {
     return fileDownload(
-      resultFileExtension === YAML_FILE_EXTENSION
-        ? toYaml(safeParse(rawText)) ?? ''
-        : data,
+      resultFileExtension === YAML_FILE_EXTENSION ? (toYaml(safeParse(rawText)) ?? '') : data,
       getFilename(),
     )
   }
@@ -189,9 +187,7 @@ type DownloadPublishedDocument = (options?: Options) => void
 export const INTERACTIVE_DOC_TYPE = 'interactive'
 export const RAW_DOC_TYPE = 'raw'
 
-type DocType =
-  | typeof INTERACTIVE_DOC_TYPE
-  | typeof RAW_DOC_TYPE
+type DocType = typeof INTERACTIVE_DOC_TYPE | typeof RAW_DOC_TYPE
 
 type Options = {
   docType?: DocType

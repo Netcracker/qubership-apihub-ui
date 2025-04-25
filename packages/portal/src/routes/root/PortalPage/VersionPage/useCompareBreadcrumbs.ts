@@ -40,15 +40,18 @@ import type { OperationsApiType } from '@netcracker/qubership-apihub-api-process
 import { useParams } from 'react-router-dom'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 
-export function getVersionWithRevisionOptions(obj?: ComparisonObject | null, enabled?: boolean): [Key | undefined, Key | undefined, boolean | undefined] {
-  return [
-    `${obj?.version}${REVISION_DELIMITER}${obj?.revision}`,
-    obj?.id,
-    enabled,
-  ]
+export function getVersionWithRevisionOptions(
+  obj?: ComparisonObject | null,
+  enabled?: boolean,
+): [Key | undefined, Key | undefined, boolean | undefined] {
+  return [`${obj?.version}${REVISION_DELIMITER}${obj?.revision}`, obj?.id, enabled]
 }
 
-export function getOperationOptions(obj?: ComparisonObject | null, apiType?: OperationsApiType, enabled?: boolean): OperationOptions {
+export function getOperationOptions(
+  obj?: ComparisonObject | null,
+  apiType?: OperationsApiType,
+  enabled?: boolean,
+): OperationOptions {
   if (obj?.type === COMPARISON_OBJECT_TYPE_OPERATION_IN_PACKAGE_REVISION) {
     return {
       packageKey: obj.id,
@@ -72,10 +75,11 @@ export function getOperationOptions(obj?: ComparisonObject | null, apiType?: Ope
   }
 }
 
-function isOperationComparisonObject(
-  object: ComparisonObject | null,
-): object is OperationInPackageRevision {
-  return object?.type === COMPARISON_OBJECT_TYPE_OPERATION_IN_PACKAGE_REVISION || object?.type === COMPARISON_OBJECT_TYPE_OPERATION_IN_DASHBOARD_REVISION
+function isOperationComparisonObject(object: ComparisonObject | null): object is OperationInPackageRevision {
+  return (
+    object?.type === COMPARISON_OBJECT_TYPE_OPERATION_IN_PACKAGE_REVISION ||
+    object?.type === COMPARISON_OBJECT_TYPE_OPERATION_IN_DASHBOARD_REVISION
+  )
 }
 
 function isOperationsGroupComparisonObject(
@@ -102,8 +106,12 @@ export function useCompareBreadcrumbs(
   const [originPackageOrDashboard] = usePackage({ packageKey: obj1?.id, showParents: true })
   const [changedPackageOrDashboard] = usePackage({ packageKey: obj2?.id, showParents: true })
 
-  const { latestRevision: originIsLatestRevision } = useVersionWithRevision(...getVersionWithRevisionOptions(obj1, isRevisionCompare))
-  const { latestRevision: changedIsLatestRevision } = useVersionWithRevision(...getVersionWithRevisionOptions(obj2, isRevisionCompare))
+  const { latestRevision: originIsLatestRevision } = useVersionWithRevision(
+    ...getVersionWithRevisionOptions(obj1, isRevisionCompare),
+  )
+  const { latestRevision: changedIsLatestRevision } = useVersionWithRevision(
+    ...getVersionWithRevisionOptions(obj2, isRevisionCompare),
+  )
 
   const { data: originOperation } = useOperation(getOperationOptions(obj1, apiType, areOperationsDifferent))
   const { data: changedOperation } = useOperation(getOperationOptions(obj2, apiType, areOperationsDifferent))
@@ -149,7 +157,7 @@ function splitBreadcrumbs(
     changed: [],
   }
 
-  for (let i = 0; i < (Math.max(originBreadcrumbs.length, changedBreadcrumbs.length)); i++) {
+  for (let i = 0; i < Math.max(originBreadcrumbs.length, changedBreadcrumbs.length); i++) {
     if (originBreadcrumbs[i]?.key === changedBreadcrumbs[i]?.key) {
       breadcrumbsData.common.push(originBreadcrumbs[i])
     } else {

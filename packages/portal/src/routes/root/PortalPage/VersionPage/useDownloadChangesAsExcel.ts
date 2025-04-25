@@ -26,9 +26,7 @@ import type { ApiAudience, ApiKind } from '@netcracker/qubership-apihub-ui-share
 import { ALL_API_KIND, API_AUDIENCE_ALL } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { API_V3 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
-import {
-  replaceStringDiffTypeForDTO,
-} from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget/api/getOperationChangelog'
+import { replaceStringDiffTypeForDTO } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget/api/getOperationChangelog'
 import { type DiffType } from '@netcracker/qubership-apihub-api-diff'
 
 export function useDownloadChangesAsExcel(): [DownloadChangesAsExcelFunction, IsLoading] {
@@ -44,9 +42,7 @@ export function useDownloadChangesAsExcel(): [DownloadChangesAsExcelFunction, Is
   return [mutate, isLoading]
 }
 
-export const downloadChangesAsExcel = async (
-  options: Options,
-): Promise<void> => {
+export const downloadChangesAsExcel = async (options: Options): Promise<void> => {
   const {
     packageKey,
     version,
@@ -72,7 +68,7 @@ export const downloadChangesAsExcel = async (
     apiKind: { value: apiKind !== ALL_API_KIND ? apiKind : undefined },
     apiAudience: { value: apiAudience },
     tag: { value: tag },
-    severity: { value: severityDto},
+    severity: { value: severityDto },
     group: { value: group },
     emptyGroup: { value: emptyGroup },
     refPackageId: { value: refPackageId },
@@ -86,16 +82,14 @@ export const downloadChangesAsExcel = async (
     `${generatePath(pathPattern, { packageId, versionId, apiType })}?${queryParams}`,
     {
       method: 'GET',
-    }, {
-    basePath: API_V3,
-    customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-  },
+    },
+    {
+      basePath: API_V3,
+      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+    },
   )
 
-  const getFilename = (): string => response.headers
-    .get('content-disposition')!
-    .split('filename=')[1]
-    .split(';')[0]
+  const getFilename = (): string => response.headers.get('content-disposition')!.split('filename=')[1].split(';')[0]
 
   fileDownload(await response.blob(), getFilename())
 }

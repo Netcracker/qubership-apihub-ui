@@ -75,7 +75,7 @@ const restOperationData = {
         operationId: 'exampleOperationId',
         parameters: [
           {
-            'in': 'path',
+            in: 'path',
             name: 'id',
             required: true,
             schema: {
@@ -84,7 +84,7 @@ const restOperationData = {
             },
           },
           {
-            'in': 'query',
+            in: 'query',
             name: 'name',
             required: false,
             schema: {
@@ -126,9 +126,7 @@ const restOperationData = {
           },
         },
         summary: 'Get Something',
-        tags: [
-          'Load Data',
-        ],
+        tags: ['Load Data'],
       },
     },
   },
@@ -239,44 +237,27 @@ export const OPERATIONS: Writeable<OperationsDto> = {
     },
   ],
   packages: {
-    'package-1@1.0.0':
-      {
-        refId: 'package-1',
-        version:
-          '1.0.0',
-        name:
-          'Package 1',
-      }
-    ,
-    'package-2@2.2':
-      {
-        refId: 'package-2',
-        version:
-          '2.2',
-        name:
-          'Package 2',
-      }
-    ,
-    'package-3@1.4':
-      {
-        refId: 'package-3',
-        version:
-          '1.4',
-        name:
-          'Package 3',
-      }
-    ,
-    'package-4@1.0.0':
-      {
-        refId: 'package-4',
-        version:
-          '4.0.0',
-        name:
-          'Package 4',
-      }
-    ,
-  }
-  ,
+    'package-1@1.0.0': {
+      refId: 'package-1',
+      version: '1.0.0',
+      name: 'Package 1',
+    },
+    'package-2@2.2': {
+      refId: 'package-2',
+      version: '2.2',
+      name: 'Package 2',
+    },
+    'package-3@1.4': {
+      refId: 'package-3',
+      version: '1.4',
+      name: 'Package 3',
+    },
+    'package-4@1.0.0': {
+      refId: 'package-4',
+      version: '4.0.0',
+      name: 'Package 4',
+    },
+  },
 }
 
 export const DEPRECATED_OPERATIONS: Writeable<OperationsWithDeprecatedDto> = {
@@ -286,12 +267,14 @@ export const DEPRECATED_OPERATIONS: Writeable<OperationsWithDeprecatedDto> = {
     return {
       deprecatedCount: operationBaseProps.deprecated ? '1' : '5',
       deprecatedInPreviousVersions: operationBaseProps.deprecated ? ['2022.1', '2021.4'] : undefined,
-      deprecatedInfo: !operationBaseProps.deprecated ? {
-        key1: 'sfsd',
-        key2: 'value',
-        key3: 'qwerty',
-        key4: 'fsdfgd',
-      } : undefined,
+      deprecatedInfo: !operationBaseProps.deprecated
+        ? {
+            key1: 'sfsd',
+            key2: 'value',
+            key3: 'qwerty',
+            key4: 'fsdfgd',
+          }
+        : undefined,
       ...operationBaseProps,
     }
   }),
@@ -301,13 +284,13 @@ export const DEPRECATED_OPERATIONS: Writeable<OperationsWithDeprecatedDto> = {
 export const DEPRECATED_ITEMS: Writeable<DeprecatedItemsDto> = [
   {
     jsonPath: ['dsa', 'dasad'],
-    description: 'property \'status\' in Response \'200\' is deprecated',
+    description: "property 'status' in Response '200' is deprecated",
     deprecatedInPreviousVersions: ['2022.1', '2021.4'],
     deprecatedInfo: { json: 'sfsd', key: 'value' },
   },
   {
     jsonPath: ['dsa', 'dasad'],
-    description: 'query parameter \'textFilter\' is deprecated',
+    description: "query parameter 'textFilter' is deprecated",
     deprecatedInPreviousVersions: ['2022.1', '2021.2'],
     deprecatedInfo: { json: 'sfsd', key: 'value' },
   },
@@ -319,21 +302,18 @@ export const DEPRECATED_ITEMS: Writeable<DeprecatedItemsDto> = [
   },
   {
     jsonPath: ['dsa', 'dasad'],
-    description: 'property \'status\' in Response \'200\' is deprecated',
+    description: "property 'status' in Response '200' is deprecated",
     deprecatedInPreviousVersions: ['2022.1', '2020.1'],
     deprecatedInfo: { json: 'sfsd', key: 'value' },
   },
   {
     jsonPath: ['dsa', 'dasad'],
-    description: 'query parameter \'textFilter\' is deprecated',
+    description: "query parameter 'textFilter' is deprecated",
     deprecatedInPreviousVersions: ['2022.1', '2021.1'],
     deprecatedInfo: { json: 'sfsd', key: 'value' },
   },
 ]
 
 export const TAGS: Writeable<OperationTagsDto> = {
-  tags: [
-    'TMF',
-    'RestControllerV5',
-  ],
+  tags: ['TMF', 'RestControllerV5'],
 }

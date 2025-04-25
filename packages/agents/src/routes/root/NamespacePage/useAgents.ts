@@ -15,7 +15,7 @@
  */
 
 import { useQuery } from '@tanstack/react-query'
-import type { Agents} from '@netcracker/qubership-apihub-ui-shared/entities/agents'
+import type { Agents } from '@netcracker/qubership-apihub-ui-shared/entities/agents'
 import { EMPTY_AGENTS, getAgents } from '@netcracker/qubership-apihub-ui-shared/entities/agents'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 
@@ -27,8 +27,5 @@ export function useAgents(): [Agents, IsLoading] {
     queryFn: () => getAgents(),
   })
 
-  return [
-    data ?? EMPTY_AGENTS,
-    isLoading,
-  ]
+  return [data ?? EMPTY_AGENTS, isLoading]
 }

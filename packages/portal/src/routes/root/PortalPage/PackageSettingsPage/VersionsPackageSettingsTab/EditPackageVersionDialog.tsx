@@ -28,48 +28,47 @@ import { useEditPackageVersion } from '@apihub/routes/root/usePackageVersions'
 
 export const EditPackageVersionDialog: FC = memo(() => {
   return (
-    <PopupDelegate
-      type={SHOW_EDIT_PACKAGE_VERSION_DIALOG}
-      render={props => <EditPackageVersionPopup {...props}/>}
-    />
+    <PopupDelegate type={SHOW_EDIT_PACKAGE_VERSION_DIALOG} render={(props) => <EditPackageVersionPopup {...props} />} />
   )
 })
 
 const EditPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, detail }) => {
-  const {
-    packageKey,
-    permissions,
-    releaseVersionPattern,
-    version,
-    status,
-    versionLabels,
-  } = detail as ShowEditPackageVersionDetail
+  const { packageKey, permissions, releaseVersionPattern, version, status, versionLabels } =
+    detail as ShowEditPackageVersionDetail
   const [editPackageVersion, isLoading, isSuccess] = useEditPackageVersion()
 
-  useEffect(() => {isSuccess && setOpen(false)}, [isSuccess, setOpen])
+  useEffect(() => {
+    isSuccess && setOpen(false)
+  }, [isSuccess, setOpen])
 
-  const defaultValues = useMemo(() => ({
-    version: version,
-    status: status,
-    labels: versionLabels ?? [],
-  }), [status, version, versionLabels])
+  const defaultValues = useMemo(
+    () => ({
+      version: version,
+      status: status,
+      labels: versionLabels ?? [],
+    }),
+    [status, version, versionLabels],
+  )
 
   const { handleSubmit, control, setValue, formState } = useForm<VersionFormData>({ defaultValues })
 
-  const onPublish = useCallback(({ version, status, labels }: VersionFormData) => {
-    editPackageVersion({
-      packageKey: packageKey,
-      version: version!,
-      value: {
-        status: status,
-        versionLabels: labels,
-      },
-      oldValue: {
-        status: defaultValues.status,
-        versionLabels: defaultValues.labels,
-      },
-    })
-  }, [defaultValues, editPackageVersion, packageKey])
+  const onPublish = useCallback(
+    ({ version, status, labels }: VersionFormData) => {
+      editPackageVersion({
+        packageKey: packageKey,
+        version: version!,
+        value: {
+          status: status,
+          versionLabels: labels,
+        },
+        oldValue: {
+          status: defaultValues.status,
+          versionLabels: defaultValues.labels,
+        },
+      })
+    },
+    [defaultValues, editPackageVersion, packageKey],
+  )
 
   return (
     <VersionDialogForm

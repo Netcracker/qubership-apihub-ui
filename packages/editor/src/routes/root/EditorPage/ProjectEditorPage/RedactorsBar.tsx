@@ -42,31 +42,22 @@ export const RedactorsBar: FC<RedactorsBarProps> = memo<RedactorsBarProps>(({ re
         }}
         onClick={({ currentTarget }) => setAnchor(currentTarget)}
       >
-        {
-          redactorsCount > 3 && (
-            <Box sx={{ fontSize: 12, fontWeight: 400, color: '#626D82' }}>
-              +{redactorsCount - 3}
-            </Box>
-          )
-        }
-        {
-          redactors
-            .slice(0, 3)
-            .map(({ sessionId, user: { avatarUrl, name } }, index) => (
-              <UserAvatar
-                sx={{
-                  border: '2px solid #FFFFFF',
-                  boxSizing: 'content-box',
-                  marginLeft: index === redactors.length - 1 ? 0 : -1,
-                }}
-                key={sessionId}
-                name={name}
-                src={avatarUrl}
-                size="small"
-              />
-            ))
-        }
-
+        {redactorsCount > 3 && (
+          <Box sx={{ fontSize: 12, fontWeight: 400, color: '#626D82' }}>+{redactorsCount - 3}</Box>
+        )}
+        {redactors.slice(0, 3).map(({ sessionId, user: { avatarUrl, name } }, index) => (
+          <UserAvatar
+            sx={{
+              border: '2px solid #FFFFFF',
+              boxSizing: 'content-box',
+              marginLeft: index === redactors.length - 1 ? 0 : -1,
+            }}
+            key={sessionId}
+            name={name}
+            src={avatarUrl}
+            size="small"
+          />
+        ))}
       </Button>
       <MenuButtonItems
         sx={{ maxHeight: 250 }}
@@ -76,20 +67,12 @@ export const RedactorsBar: FC<RedactorsBarProps> = memo<RedactorsBarProps>(({ re
         transformOrigin={{ horizontal: 'center', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'center', vertical: 'bottom' }}
       >
-        {
-          redactors.map(({ sessionId, user: { avatarUrl, name } }) => (
-            <Box
-              sx={{ display: 'flex', alignItems: 'center', gap: 0.75, px: 2, py: 0.5 }}
-              key={sessionId}
-            >
-              <Avatar
-                sx={{ width: 16, height: 16 }}
-                src={avatarUrl}
-              />
-              <Typography variant="body2">{name}</Typography>
-            </Box>
-          ))
-        }
+        {redactors.map(({ sessionId, user: { avatarUrl, name } }) => (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, px: 2, py: 0.5 }} key={sessionId}>
+            <Avatar sx={{ width: 16, height: 16 }} src={avatarUrl} />
+            <Typography variant="body2">{name}</Typography>
+          </Box>
+        ))}
       </MenuButtonItems>
     </>
   )

@@ -45,13 +45,14 @@ export const LayoutWithTabs: FC<LayoutWithTabsProps> = memo<LayoutWithTabsProps>
         {tabs}
       </Box>
 
-      <Box sx={{
-        gridArea: BODY_GRID_AREA,
-        overflow: 'hidden',
-      }}>
+      <Box
+        sx={{
+          gridArea: BODY_GRID_AREA,
+          overflow: 'hidden',
+        }}
+      >
         {body}
       </Box>
     </Box>
   )
 })
-

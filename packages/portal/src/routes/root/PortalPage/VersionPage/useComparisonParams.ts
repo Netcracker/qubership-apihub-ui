@@ -53,6 +53,16 @@ export function useComparisonParams(): ComparisonParams {
       changedPackageKey: changedPackageKey,
       changedVersionKey: changedVersionKey,
       apiType: (apiType ?? apiTypeAsSearchParam) as ApiType,
-    }), [apiType, apiTypeAsSearchParam, changedPackage, changedPackageKey, changedVersionKey, originPackage, originPackageKey, originVersionKey],
+    }),
+    [
+      apiType,
+      apiTypeAsSearchParam,
+      changedPackage,
+      changedPackageKey,
+      changedVersionKey,
+      originPackage,
+      originPackageKey,
+      originVersionKey,
+    ],
   )
 }

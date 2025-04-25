@@ -26,9 +26,12 @@ export function useApiKindSearchFilter(): [ApiKind, SetApiKingFilter] {
 
   return useMemo(() => {
     const kind = param ?? ALL_API_KIND
-    return [kind, value => setSearchParams({ [KIND_SEARCH_PARAM]: (value === ALL_API_KIND ? '' : value) ?? '' }, { replace: true })]
+    return [
+      kind,
+      (value) =>
+        setSearchParams({ [KIND_SEARCH_PARAM]: (value === ALL_API_KIND ? '' : value) ?? '' }, { replace: true }),
+    ]
   }, [param, setSearchParams])
-
 }
 
 const KIND_SEARCH_PARAM = 'kind'

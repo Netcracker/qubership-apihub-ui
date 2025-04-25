@@ -20,7 +20,10 @@ import { generatePath } from 'react-router-dom'
 import { getPackageRedirectDetails } from './redirects'
 import type { PackageVersion, PackageVersions } from '../entities/versions'
 
-export function getSplittedVersionKey(version: Key | undefined, latestRevision: boolean = true): {
+export function getSplittedVersionKey(
+  version: Key | undefined,
+  latestRevision: boolean = true,
+): {
   versionKey: Key
   revisionKey: Key
 } {
@@ -67,10 +70,7 @@ export async function getFullVersion(
 
 export function getVersionLabelsMap(versions: PackageVersions): Record<Key, string[]> {
   return Object.fromEntries<string[]>(
-    versions.map(({ key, versionLabels }) => [
-      getSplittedVersionKey(key).versionKey,
-      versionLabels ?? [],
-    ]),
+    versions.map(({ key, versionLabels }) => [getSplittedVersionKey(key).versionKey, versionLabels ?? []]),
   )
 }
 

@@ -32,19 +32,19 @@ export const NamespaceToolbar: FC = memo(() => {
       minWidth="max-content"
       data-testid="NamespaceToolbar"
     >
-      <CloudIcon/>
+      <CloudIcon />
 
       <Typography variant="subtitle2">From</Typography>
 
-      <AgentsSelector/>
+      <AgentsSelector />
 
-      <NamespaceSelector/>
+      <NamespaceSelector />
 
-      <Divider orientation="vertical"/>
+      <Divider orientation="vertical" />
 
       <Typography variant="subtitle2">To</Typography>
 
-      <WorkspaceSelector/>
+      <WorkspaceSelector />
     </Box>
   )
 })

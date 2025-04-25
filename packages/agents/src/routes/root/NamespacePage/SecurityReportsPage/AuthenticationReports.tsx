@@ -34,23 +34,21 @@ export const AuthenticationReports: FC = memo(() => {
 
   const startSecurityCheck = useCheckSecurity()
   const [downloadSecurityReport] = useDownloadSecurityReport()
-  const [
-    securityReports,
-    isLoading,
-    fetchNextPage,
-    isFetchingNextPage,
-    hasNextPage,
-  ] = useSecurityReports({
+  const [securityReports, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage] = useSecurityReports({
     agentKey: agentId,
     namespaceKey: namespaceId,
     workspaceKey: workspaceId!,
     type: SECURITY_REPORT_TYPE_AUTH_CHECK,
   })
 
-  const onDownloadSecurityReport = useCallback((processId: Key) => downloadSecurityReport({
-    processKey: processId,
-    type: SECURITY_REPORT_TYPE_AUTH_CHECK,
-  }), [downloadSecurityReport])
+  const onDownloadSecurityReport = useCallback(
+    (processId: Key) =>
+      downloadSecurityReport({
+        processKey: processId,
+        type: SECURITY_REPORT_TYPE_AUTH_CHECK,
+      }),
+    [downloadSecurityReport],
+  )
 
   const onStartSecurityCheck = useCallback(() => {
     startSecurityCheck()

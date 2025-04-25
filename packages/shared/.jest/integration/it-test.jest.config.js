@@ -26,18 +26,9 @@ export default {
   globalTeardown: 'jest-environment-puppeteer/teardown',
   testEnvironment: 'jest-environment-puppeteer',
   setupFilesAfterEnv: ['<rootDir>/.jest/integration/setup.it-test.ts'],
-  moduleFileExtensions: [
-    'ts',
-    'js',
-    'json',
-    'node'
-  ],
+  moduleFileExtensions: ['ts', 'js', 'json', 'node'],
   transform: {
-    '\\.ts?$': [
-      'ts-jest', { tsconfig: '<rootDir>/.jest/integration/tsconfig.it-test.json' }
-    ]
+    '\\.ts?$': ['ts-jest', { tsconfig: '<rootDir>/.jest/integration/tsconfig.it-test.json' }],
   },
-  reporters: [
-    'default', 'jest-image-snapshot-diff-reporter'
-  ]
+  reporters: ['default', 'jest-image-snapshot-diff-reporter'],
 }

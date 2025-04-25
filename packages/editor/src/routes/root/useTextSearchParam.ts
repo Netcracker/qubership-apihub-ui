@@ -32,17 +32,20 @@ export function useTextSearchParam(): [Key | undefined, SetTextSearchParam] {
 
   return [
     text,
-    useCallback(text => {
-      if (text) {
-        searchParams.set(SEARCH_TEXT_PARAM_KEY, text)
-      } else {
-        searchParams.delete(SEARCH_TEXT_PARAM_KEY)
-      }
-      navigate({
-        search: `${searchParams}`,
-        hash: hashParam,
-      })
-    }, [hashParam, navigate, searchParams]),
+    useCallback(
+      (text) => {
+        if (text) {
+          searchParams.set(SEARCH_TEXT_PARAM_KEY, text)
+        } else {
+          searchParams.delete(SEARCH_TEXT_PARAM_KEY)
+        }
+        navigate({
+          search: `${searchParams}`,
+          hash: hashParam,
+        })
+      },
+      [hashParam, navigate, searchParams],
+    ),
   ]
 }
 

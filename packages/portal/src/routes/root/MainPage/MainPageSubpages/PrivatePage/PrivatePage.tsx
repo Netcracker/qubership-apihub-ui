@@ -23,7 +23,9 @@ import { PrivatePageTable } from './PrivatePageTable'
 export const PrivatePage: FC = memo(() => {
   const [workspaceId, isLoading] = usePrivateWorkspace()
 
-  return workspaceId
-    ? <PrivatePageTable workspaceId={workspaceId} isIdLoading={isLoading}/>
-    : <PrivatePagePlaceholder/>
+  return workspaceId ? (
+    <PrivatePageTable workspaceId={workspaceId} isIdLoading={isLoading} />
+  ) : (
+    <PrivatePagePlaceholder />
+  )
 })

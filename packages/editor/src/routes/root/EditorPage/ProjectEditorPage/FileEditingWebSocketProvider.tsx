@@ -52,17 +52,17 @@ export const FileEditingWebSocketProvider: FC<PropsWithChildren> = memo<PropsWit
       const parsedData = JSON.parse(data)
 
       if (isUserConnectedEventData(parsedData)) {
-        setConnectedUsersData(prevState => [...prevState, parsedData])
+        setConnectedUsersData((prevState) => [...prevState, parsedData])
       }
 
       if (isUserDisconnectedEventData(parsedData)) {
         const { sessionId }: UserDisconnectedEventData = parsedData
-        setConnectedUsersData(prevState => prevState.filter(({ sessionId: id }) => id !== sessionId))
+        setConnectedUsersData((prevState) => prevState.filter(({ sessionId: id }) => id !== sessionId))
       }
 
       if (isUserCursorEventData(parsedData)) {
         const { sessionId }: UserCursorEventData = parsedData
-        setCursors(prevState => [...prevState.filter(cursor => cursor.sessionId !== sessionId), parsedData])
+        setCursors((prevState) => [...prevState.filter((cursor) => cursor.sessionId !== sessionId), parsedData])
       }
 
       if (isDocumentSnapshotEventData(parsedData)) {
@@ -73,32 +73,29 @@ export const FileEditingWebSocketProvider: FC<PropsWithChildren> = memo<PropsWit
     }
   }, [])
 
-  const openWebsocket = useCallback(
-    () => {
-      if (isSocketClosed(websocket.current) && fileId) {
-        setConnecting(true)
+  const openWebsocket = useCallback(() => {
+    if (isSocketClosed(websocket.current) && fileId) {
+      setConnecting(true)
 
-        websocket.current = new WebSocket(
-          `${protocol === 'https:' ? 'wss:' : 'ws:'}//${host}/ws/v1/projects/${encodeURIComponent(projectId!)}/branches/${encodeURIComponent(branch!)}/files/${encodeURIComponent(fileId)}?token=${getToken()}`,
-        )
+      websocket.current = new WebSocket(
+        `${protocol === 'https:' ? 'wss:' : 'ws:'}//${host}/ws/v1/projects/${encodeURIComponent(projectId!)}/branches/${encodeURIComponent(branch!)}/files/${encodeURIComponent(fileId)}?token=${getToken()}`,
+      )
 
-        websocket.current.onopen = () => {
-          setConnecting(false)
-          setReconnectInterval(null)
-        }
-
-        websocket.current.onclose = ({ code }) => {
-          if (code !== NORMAL_CLOSURE_CODE) {
-            setConnectedUsersData([])
-            setReconnectInterval(DEFAULT_RECONNECT_INTERVAL)
-          }
-        }
-
-        websocket.current.onmessage = messageHandler
+      websocket.current.onopen = () => {
+        setConnecting(false)
+        setReconnectInterval(null)
       }
-    },
-    [branch, fileId, host, messageHandler, projectId, protocol],
-  )
+
+      websocket.current.onclose = ({ code }) => {
+        if (code !== NORMAL_CLOSURE_CODE) {
+          setConnectedUsersData([])
+          setReconnectInterval(DEFAULT_RECONNECT_INTERVAL)
+        }
+      }
+
+      websocket.current.onmessage = messageHandler
+    }
+  }, [branch, fileId, host, messageHandler, projectId, protocol])
 
   useInterval(openWebsocket, reconnectInterval)
 
@@ -128,9 +125,7 @@ export const FileEditingWebSocketProvider: FC<PropsWithChildren> = memo<PropsWit
               <UserCursorsContext.Provider value={cursors}>
                 <SetConnectedUsersContext.Provider value={setConnectedUsersData}>
                   <ContentLoadingContext.Provider value={loading}>
-                    <SetContentLoadingContext.Provider value={setLoading}>
-                      {children}
-                    </SetContentLoadingContext.Provider>
+                    <SetContentLoadingContext.Provider value={setLoading}>{children}</SetContentLoadingContext.Provider>
                   </ContentLoadingContext.Provider>
                 </SetConnectedUsersContext.Provider>
               </UserCursorsContext.Provider>

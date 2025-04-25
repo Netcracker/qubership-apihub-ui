@@ -16,18 +16,13 @@
 
 import type { Color } from './types'
 
-export function interpolate(
-  inputValue: string,
-  params?: Record<string, string>,
-): string {
+export function interpolate(inputValue: string, params?: Record<string, string>): string {
   let interpolatedValue = inputValue
 
-  params && Object.entries(params).forEach(([key, value]) => {
-    interpolatedValue = interpolatedValue.replace(
-      new RegExp(`([\\w]+)*\\$${key}`),
-      value,
-    )
-  })
+  params &&
+    Object.entries(params).forEach(([key, value]) => {
+      interpolatedValue = interpolatedValue.replace(new RegExp(`([\\w]+)*\\$${key}`), value)
+    })
 
   return interpolatedValue
 }
@@ -52,21 +47,14 @@ export function stringToColor(value: string): Color {
 
 export function toFormattedJsonString(value: object | string): string {
   try {
-    return JSON.stringify(
-      typeof value === 'string' ? JSON.parse(value) : value,
-      undefined,
-      2,
-    )
+    return JSON.stringify(typeof value === 'string' ? JSON.parse(value) : value, undefined, 2)
   } catch {
     return typeof value === 'string' ? value : value.toString()
   }
 }
 
 export function toTitleCase(value: string): string {
-  return value.replace(
-    /\w\S*/g,
-    value => value.charAt(0).toUpperCase() + value.substring(1).toLowerCase(),
-  )
+  return value.replace(/\w\S*/g, (value) => value.charAt(0).toUpperCase() + value.substring(1).toLowerCase())
 }
 
 export const NO_DATA_STRING = '—'
@@ -76,7 +64,6 @@ export const transformStringValue = (value: string | undefined): string => {
     return NO_DATA_STRING
   }
   return value
-
 }
 
 /**
@@ -109,7 +96,7 @@ type Substitution = {
  * @returns e.g. aaaa/value1/bbbb/value2/cccc
  */
 export const namedFormat = (template: string, substitutions: Substitution = {}): string => {
-  Object.keys(substitutions).forEach(key => {
+  Object.keys(substitutions).forEach((key) => {
     substitutions[key] && (template = template.replace(`{${key}}`, substitutions[key]))
   })
 

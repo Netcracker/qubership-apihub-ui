@@ -46,45 +46,46 @@ export const SystemAdministratorsTab: FC = memo(() => {
     setDeleteConfirmationData(admin)
   }, [])
 
-  const handleSetUserSearch = useCallback((search: string) => {
-    setUserSearch(search)
-  }, [setUserSearch])
+  const handleSetUserSearch = useCallback(
+    (search: string) => {
+      setUserSearch(search)
+    },
+    [setUserSearch],
+  )
 
-  return <>
-    <BodyCard
-      header="System Administrators"
-      action={
-        <Box>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon/>}
-            onClick={showAddSystemAdministratorDialog}
-          >
-            Add User
-          </Button>
-        </Box>
-      }
-      body={
-        <SystemAdministratorsTable
-          data={systemAdmins ?? []}
-          deleteAdministrator={handleDeleteAdministrator}
-          isLoading={isSystemAdminsLoading || isAddSystemAdminLoading || isDeleteSystemAdminLoading}
-        />
-      }
-    />
-    <AddSystemAdministratorDialog
-      users={usersData?.users}
-      onConfirm={addSystemAdmin}
-      isUsersDataLoading={isUsersDataLoading}
-      setUserSearch={handleSetUserSearch}
-    />
-    <ConfirmationDialog
-      open={confirmationOpen}
-      message={`Remove ${deleteConfirmationData?.name} from system administrators?`}
-      loading={isDeleteSystemAdminLoading}
-      confirmButtonName="Delete"
-      onConfirm={() => deleteSystemAdmin(deleteConfirmationData!.key)}
-      onCancel={() => setConfirmationOpen(false)}
-    />
-  </>
+  return (
+    <>
+      <BodyCard
+        header="System Administrators"
+        action={
+          <Box>
+            <Button variant="contained" startIcon={<AddIcon />} onClick={showAddSystemAdministratorDialog}>
+              Add User
+            </Button>
+          </Box>
+        }
+        body={
+          <SystemAdministratorsTable
+            data={systemAdmins ?? []}
+            deleteAdministrator={handleDeleteAdministrator}
+            isLoading={isSystemAdminsLoading || isAddSystemAdminLoading || isDeleteSystemAdminLoading}
+          />
+        }
+      />
+      <AddSystemAdministratorDialog
+        users={usersData?.users}
+        onConfirm={addSystemAdmin}
+        isUsersDataLoading={isUsersDataLoading}
+        setUserSearch={handleSetUserSearch}
+      />
+      <ConfirmationDialog
+        open={confirmationOpen}
+        message={`Remove ${deleteConfirmationData?.name} from system administrators?`}
+        loading={isDeleteSystemAdminLoading}
+        confirmButtonName="Delete"
+        onConfirm={() => deleteSystemAdmin(deleteConfirmationData!.key)}
+        onCancel={() => setConfirmationOpen(false)}
+      />
+    </>
+  )
 })

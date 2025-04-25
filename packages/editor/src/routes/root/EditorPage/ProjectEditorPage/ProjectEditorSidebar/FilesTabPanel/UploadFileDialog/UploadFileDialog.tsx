@@ -46,29 +46,20 @@ export const UploadFileDialog: FC = memo(() => {
   const [uploadFiles, setUploadFiles] = useState<File[]>([])
   const [uploadProjectFiles, isLoading] = useUploadProjectFiles()
 
-  useEffect(
-    () => {
-      if (!isLoading) {
-        // TODO: Move to `handleSubmit`
-        setUploadFiles([])
-        setOpen(false)
-      }
-    },
-    [isLoading],
-  )
+  useEffect(() => {
+    if (!isLoading) {
+      // TODO: Move to `handleSubmit`
+      setUploadFiles([])
+      setOpen(false)
+    }
+  }, [isLoading])
 
-  const preloadFiles = useCallback(
-    (files: FileList | null) => {
-      if (files === null) {
-        return
-      }
-      setUploadFiles(prevState => [
-        ...prevState,
-        ...getUploadFiles(files),
-      ])
-    },
-    [],
-  )
+  const preloadFiles = useCallback((files: FileList | null) => {
+    if (files === null) {
+      return
+    }
+    setUploadFiles((prevState) => [...prevState, ...getUploadFiles(files)])
+  }, [])
 
   // TODO: Use `DialogForm` component
   return (
@@ -78,9 +69,7 @@ export const UploadFileDialog: FC = memo(() => {
         onClose={() => setOpen(false)}
         onSubmit={handleSubmit(() => uploadProjectFiles({ files: uploadFiles, path: path }))}
       >
-        <DialogTitle>
-          Upload File
-        </DialogTitle>
+        <DialogTitle>Upload File</DialogTitle>
 
         <DialogContent sx={{ pb: 0, overflow: 'hidden' }}>
           <UploadButton
@@ -89,46 +78,30 @@ export const UploadFileDialog: FC = memo(() => {
             title="Browse files"
             onUpload={({ target: { files } }) => preloadFiles(files)}
           />
-          <Typography variant="button">
-            or drop them here
-          </Typography>
+          <Typography variant="button">or drop them here</Typography>
 
           <FileUpload onDrop={({ dataTransfer: { files } }) => preloadFiles(files)}>
             <FileListPreview
               value={uploadFiles}
-              onDelete={file => setUploadFiles(prevState => prevState.filter(prevFile => prevFile !== file))}
+              onDelete={(file) => setUploadFiles((prevState) => prevState.filter((prevFile) => prevFile !== file))}
             />
           </FileUpload>
 
-          <Typography variant="button">
-            Enter the GIT folder where you want to upload files
-          </Typography>
+          <Typography variant="button">Enter the GIT folder where you want to upload files</Typography>
           <Controller
             name="path"
             control={control}
             render={({ field }) => (
-              <TextField
-                {...field}
-                value={path}
-                label="Folder"
-                onChange={({ target: { value } }) => setPath(value)}
-              />
+              <TextField {...field} value={path} label="Folder" onChange={({ target: { value } }) => setPath(value)} />
             )}
           />
         </DialogContent>
 
         <DialogActions>
-          <LoadingButton
-            variant="contained"
-            type="submit"
-            loading={isLoading}
-          >
+          <LoadingButton variant="contained" type="submit" loading={isLoading}>
             Add
           </LoadingButton>
-          <Button
-            variant="outlined"
-            onClick={() => setOpen(false)}
-          >
+          <Button variant="outlined" onClick={() => setOpen(false)}>
             Cancel
           </Button>
         </DialogActions>

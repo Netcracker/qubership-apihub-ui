@@ -75,6 +75,6 @@ export const InfinityDataStory: Story = {
       return Promise.resolve(1)
     }
 
-    return <SecurityReportsTable {...args} fetchNextPage={onFetchNextPage} data={data}/>
+    return <SecurityReportsTable {...args} fetchNextPage={onFetchNextPage} data={data} />
   },
 }

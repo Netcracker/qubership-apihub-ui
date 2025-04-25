@@ -23,29 +23,31 @@ import { USER_ROLES_PAGE } from '../../../routes'
 import { useActiveTabs } from '@netcracker/qubership-apihub-ui-shared/hooks/pathparams/useActiveTabs'
 import { useSuperAdminCheck } from '@netcracker/qubership-apihub-ui-shared/hooks/user-roles/useSuperAdminCheck'
 import { LayoutWithToolbar } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/LayoutWithToolbar'
-import { CONTENT_PLACEHOLDER_AREA, NO_PERMISSION, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
+import {
+  CONTENT_PLACEHOLDER_AREA,
+  NO_PERMISSION,
+  Placeholder,
+} from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 
 export const SettingsPage: FC = memo(() => {
   const [menuItem] = useActiveTabs()
   const isSuperAdmin = useSuperAdminCheck()
   const [, setActiveTab] = useState<SettingsPageRoute>(USER_ROLES_PAGE)
 
-  return <LayoutWithToolbar
-    toolbar={isSuperAdmin ? <SettingsToolbar/> : null}
-    body={
-      <Placeholder
-        invisible={isSuperAdmin}
-        area={CONTENT_PLACEHOLDER_AREA}
-        message={NO_PERMISSION}
-      >
-        <ActiveTabContentContext.Provider value={menuItem as SettingsPageRoute}>
-          <SetActiveTabContentContext.Provider value={setActiveTab}>
-            <SettingsBody/>
-          </SetActiveTabContentContext.Provider>
-        </ActiveTabContentContext.Provider>
-      </Placeholder>
-    }
-  />
+  return (
+    <LayoutWithToolbar
+      toolbar={isSuperAdmin ? <SettingsToolbar /> : null}
+      body={
+        <Placeholder invisible={isSuperAdmin} area={CONTENT_PLACEHOLDER_AREA} message={NO_PERMISSION}>
+          <ActiveTabContentContext.Provider value={menuItem as SettingsPageRoute}>
+            <SetActiveTabContentContext.Provider value={setActiveTab}>
+              <SettingsBody />
+            </SetActiveTabContentContext.Provider>
+          </ActiveTabContentContext.Provider>
+        </Placeholder>
+      }
+    />
+  )
 })
 
 const ActiveTabContentContext = createContext<SettingsPageRoute>()

@@ -104,12 +104,7 @@ function reducer(state: State, action: StateActions): State {
         fileTypesMap: new Map([...fileTypesMap, ...action.fileTypesMap]),
         replacedFiles: [
           ...replacedFiles,
-          ...intersectionBy(
-            filesRecordToArray(filesWithLabels),
-            sources,
-            action.files,
-            'name',
-          ),
+          ...intersectionBy(filesRecordToArray(filesWithLabels), sources, action.files, 'name'),
         ],
       }
     case DELETE_FILE_ACTION:
@@ -119,7 +114,7 @@ function reducer(state: State, action: StateActions): State {
       return {
         ...state,
         filesWithLabels: { ...filesWithLabels },
-        replacedFiles: replacedFiles.filter(file => file.name !== action.fileName),
+        replacedFiles: replacedFiles.filter((file) => file.name !== action.fileName),
         fileTypesMap: fileTypesMap,
       }
     case EDIT_FILE_ACTION:
@@ -130,7 +125,7 @@ function reducer(state: State, action: StateActions): State {
     case RESTORE_FILE_ACTION:
       return {
         ...state,
-        replacedFiles: replacedFiles.filter(file => file.name !== action.fileName),
+        replacedFiles: replacedFiles.filter((file) => file.name !== action.fileName),
       }
     default:
       return state
@@ -140,7 +135,7 @@ function reducer(state: State, action: StateActions): State {
 type Actions = {
   addFiles: (files: File[]) => void
   deleteFile: (fileName: string) => void
-  editFile: (fileName: string, labels: string []) => void
+  editFile: (fileName: string, labels: string[]) => void
   restoreFile: (fileName: string) => void
 }
 
@@ -158,42 +153,55 @@ export const FilesProvider: FC<FilesProviderProps> = memo<FilesProviderProps>(({
   const [areFilesProcessing, setAreFilesProcessing] = useState(true)
 
   useEffect(() => {
-    getFileTypesAndLabels(sources, config).then(([fileTypesMap, filesWithLabels]) =>
-      dispatch({
-        type: INIT_FILES_ACTION,
-        sources: sources,
-        fileTypesMap: fileTypesMap,
-        filesWithLabels: filesWithLabels,
-      })).then(() => !isConfigLoading && !isSourcesLoading && setAreFilesProcessing(false))
+    getFileTypesAndLabels(sources, config)
+      .then(([fileTypesMap, filesWithLabels]) =>
+        dispatch({
+          type: INIT_FILES_ACTION,
+          sources: sources,
+          fileTypesMap: fileTypesMap,
+          filesWithLabels: filesWithLabels,
+        }),
+      )
+      .then(() => !isConfigLoading && !isSourcesLoading && setAreFilesProcessing(false))
   }, [sources, config, isConfigLoading, isSourcesLoading])
 
   const addFiles = useCallback((files: File[]): void => {
-    getFileTypesAndLabels(files).then(([map, record]) => dispatch({
-      type: ADD_FILES_ACTION,
-      files: files,
-      fileTypesMap: new Map(map),
-      filesWithLabels: record,
-    }))
-    }, [],
+    getFileTypesAndLabels(files).then(([map, record]) =>
+      dispatch({
+        type: ADD_FILES_ACTION,
+        files: files,
+        fileTypesMap: new Map(map),
+        filesWithLabels: record,
+      }),
+    )
+  }, [])
+
+  const deleteFile = useCallback(
+    (fileName: string): void =>
+      dispatch({
+        type: DELETE_FILE_ACTION,
+        fileName: fileName,
+      }),
+    [],
   )
 
-  const deleteFile = useCallback((fileName: string): void => dispatch({
-      type: DELETE_FILE_ACTION,
-      fileName: fileName,
-    }), [],
+  const editFile = useCallback(
+    (fileName: string, labels: string[]): void =>
+      dispatch({
+        type: EDIT_FILE_ACTION,
+        fileName: fileName,
+        labels: labels,
+      }),
+    [],
   )
 
-  const editFile = useCallback((fileName: string, labels: string[]): void => dispatch({
-      type: EDIT_FILE_ACTION,
-      fileName: fileName,
-      labels: labels,
-    }), [],
-  )
-
-  const restoreFile = useCallback((fileName: string): void => dispatch({
-      type: RESTORE_FILE_ACTION,
-      fileName: fileName,
-    }), [],
+  const restoreFile = useCallback(
+    (fileName: string): void =>
+      dispatch({
+        type: RESTORE_FILE_ACTION,
+        fileName: fileName,
+      }),
+    [],
   )
 
   const actions: Actions = useMemo(
@@ -202,14 +210,16 @@ export const FilesProvider: FC<FilesProviderProps> = memo<FilesProviderProps>(({
       deleteFile,
       editFile,
       restoreFile,
-    }), [addFiles, deleteFile, editFile, restoreFile],
+    }),
+    [addFiles, deleteFile, editFile, restoreFile],
   )
 
   return (
     <FilesContext.Provider value={state}>
       <FileActionsContext.Provider value={actions}>
         <FilesLoadingContext.Provider
-          value={isSourcesLoading || !state.isInitialized || isConfigLoading || areFilesProcessing}>
+          value={isSourcesLoading || !state.isInitialized || isConfigLoading || areFilesProcessing}
+        >
           {children}
         </FilesLoadingContext.Provider>
       </FileActionsContext.Provider>
@@ -217,18 +227,25 @@ export const FilesProvider: FC<FilesProviderProps> = memo<FilesProviderProps>(({
   )
 })
 
-async function getFileTypesAndLabels(files: File[], config?: PackageVersionConfig | null): Promise<[Map<string, SpecType>, FileLabelsRecord]> {
+async function getFileTypesAndLabels(
+  files: File[],
+  config?: PackageVersionConfig | null,
+): Promise<[Map<string, SpecType>, FileLabelsRecord]> {
   let fileLabelsRecord = {}
 
-  const fileTypesMap = new Map(await Promise.all(files.map(file => {
-    return file.text().then(value => {
-      return [file.name, calculateSpecType(getFileExtension(file.name), value)] as [string, SpecType]
-    })
-  })))
+  const fileTypesMap = new Map(
+    await Promise.all(
+      files.map((file) => {
+        return file.text().then((value) => {
+          return [file.name, calculateSpecType(getFileExtension(file.name), value)] as [string, SpecType]
+        })
+      }),
+    ),
+  )
 
   if (config) {
     fileLabelsRecord = files.reduce((acc, file) => {
-      const fileLabels = config.files?.find(f => f.fileKey === file.name)?.labels ?? []
+      const fileLabels = config.files?.find((f) => f.fileKey === file.name)?.labels ?? []
       acc[file.name] = {
         file: file,
         labels: fileLabels,
@@ -237,10 +254,7 @@ async function getFileTypesAndLabels(files: File[], config?: PackageVersionConfi
     }, {} as FileLabelsRecord)
   }
 
-  return [
-    fileTypesMap,
-    fileLabelsRecord,
-  ]
+  return [fileTypesMap, fileLabelsRecord]
 }
 
 const FilesContext = createContext<State>(INITIAL_STATE)

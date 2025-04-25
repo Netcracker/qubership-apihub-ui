@@ -30,10 +30,7 @@ export const PUBLISHED_VERSION_CONTENT_2_6: ProjectVersionContentDto = {
   status: 'draft',
   publishedAt: '2022-03-25T07:02:00.943324181+03:00',
   publishedBy: 'User',
-  versionLabels: [
-    'version-label-1',
-    'version-label-2',
-  ],
+  versionLabels: ['version-label-1', 'version-label-2'],
   previousVersion: '2022.2',
   previousVersionPackageId: 'package-1',
   summary: SUMMARY,
@@ -105,10 +102,7 @@ export const PUBLISHED_VERSION_CONTENT_2_2: ProjectVersionContentDto = {
   status: 'release',
   publishedAt: '2022-03-25T07:02:00.943324181+03:00',
   publishedBy: 'User',
-  versionLabels: [
-    'version-label-1',
-    'version-label-2',
-  ],
+  versionLabels: ['version-label-1', 'version-label-2'],
   previousVersion: '2022.2',
   previousVersionPackageId: 'package-1',
   summary: SUMMARY,
@@ -127,10 +121,7 @@ export const PUBLISHED_VERSION_CONTENT_2_2: ProjectVersionContentDto = {
       title: 'Sample Postman_collection',
       type: 'openapi-3-0',
       format: 'yaml',
-      labels: [
-        'MyOrganization',
-        'ServiceExample',
-      ],
+      labels: ['MyOrganization', 'ServiceExample'],
     },
   ],
   refs: [
@@ -299,10 +290,7 @@ export const PUBLISHED_VERSION_CONTENT_0_0: ProjectVersionContentDto = {
   publishedAt: '2022-03-25T07:02:00.943324181+03:00',
   previousVersion: '22.2',
   publishedBy: 'User',
-  versionLabels: [
-    'version-label-1',
-    'version-label-2',
-  ],
+  versionLabels: ['version-label-1', 'version-label-2'],
   summary: SUMMARY,
   files: [],
   refs: [],

@@ -39,22 +39,22 @@ export const DocumentsTab: FC<DocumentsTabProps> = memo<DocumentsTabProps>((prop
       <Box sx={{ mt: 3 }}>
         {Array(5)
           .fill(0)
-          .map(() => <Skeleton sx={{ width: '70%' }}/>)}
+          .map(() => (
+            <Skeleton sx={{ width: '70%' }} />
+          ))}
       </Box>
     )
   }
 
   //todo fix component naming
   if (isOpenApiSpecType(type) || isGraphQlSpecType(type)) {
-    return <OpenApiViewerWrapper/>
+    return <OpenApiViewerWrapper />
   }
 
-  return <FormatViewer format={format}/>
+  return <FormatViewer format={format} />
 })
 
 const OpenApiViewerWrapper: FC = memo(() => {
   const content = useSelectedDocument()
-  return (
-    <OpenApiViewer value={content ?? EMPTY_DOC}/>
-  )
+  return <OpenApiViewer value={content ?? EMPTY_DOC} />
 })

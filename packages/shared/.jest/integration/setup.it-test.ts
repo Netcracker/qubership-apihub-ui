@@ -23,12 +23,12 @@ const toMatchImageSnapshot = configureToMatchImageSnapshot({
   // comparisonMethod: "ssim",
   customDiffConfig: {
     threshold: 0.14, //not stable shadows and subpixels
-    includeAA: false
+    includeAA: false,
   },
   failureThreshold: 5, //not stable shadows and subpixels
   customSnapshotIdentifier: ({ defaultIdentifier }) => {
     return defaultIdentifier
-  }
+  },
 })
 
 expect.extend({ toMatchImageSnapshot })

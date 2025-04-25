@@ -36,12 +36,15 @@ import {
   EMPTY_TAG,
   toOperations,
 } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import type { HasNextPage, IsFetching, IsFetchingNextPage, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import type {
+  HasNextPage,
+  IsFetching,
+  IsFetchingNextPage,
+  IsLoading,
+} from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import type { Key, PackageKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { OperationGroupName } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
-import {
-  useResolvedOperationGroupParameters,
-} from '@netcracker/qubership-apihub-ui-shared/hooks/operation-groups/useResolvedOperationGroupParameters'
+import { useResolvedOperationGroupParameters } from '@netcracker/qubership-apihub-ui-shared/hooks/operation-groups/useResolvedOperationGroupParameters'
 import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { isEmptyTag } from '@netcracker/qubership-apihub-ui-shared/utils/tags'
 import { portalRequestJson } from '@apihub/utils/requests'
@@ -62,25 +65,27 @@ export type PagedOperationsQueryState = {
 }
 
 // TODO 03.08.23 // Check is there any more optimal way to do it
-export function usePagedOperations(options?: Partial<{
-  packageKey: Key
-  versionKey: Key
-  refPackageKey: PackageKey
-  deprecated: DeprecatedQueryStatus
-  hashList: string[]
-  ids: string[]
-  includeData: boolean
-  kind: ApiKind
-  label: string
-  tag: string
-  textFilter: string
-  documentId: string
-  apiType: ApiType
-  excludedGroupName?: OperationGroupName
-  groupName?: OperationGroupName
-  page: number
-  limit: number
-}>): PagedOperationsQueryState {
+export function usePagedOperations(
+  options?: Partial<{
+    packageKey: Key
+    versionKey: Key
+    refPackageKey: PackageKey
+    deprecated: DeprecatedQueryStatus
+    hashList: string[]
+    ids: string[]
+    includeData: boolean
+    kind: ApiKind
+    label: string
+    tag: string
+    textFilter: string
+    documentId: string
+    apiType: ApiType
+    excludedGroupName?: OperationGroupName
+    groupName?: OperationGroupName
+    page: number
+    limit: number
+  }>,
+): PagedOperationsQueryState {
   const {
     packageKey,
     versionKey,
@@ -102,11 +107,10 @@ export function usePagedOperations(options?: Partial<{
   } = options ?? {}
   const { fullVersion } = useVersionWithRevision(versionKey, packageKey)
 
-  const {
-    resolvedExcludedGroupName,
-    resolvedGroupName,
-    resolvedEmptyGroup,
-  } = useResolvedOperationGroupParameters(groupName, excludedGroupName)
+  const { resolvedExcludedGroupName, resolvedGroupName, resolvedEmptyGroup } = useResolvedOperationGroupParameters(
+    groupName,
+    excludedGroupName,
+  )
 
   const {
     data: operationsList,
@@ -116,27 +120,44 @@ export function usePagedOperations(options?: Partial<{
     isFetchingNextPage,
     hasNextPage,
   } = useInfiniteQuery<OperationsData, Error, OperationsData>({
-    queryKey: [PAGED_OPERATIONS_QUERY_KEY, packageKey, fullVersion, refPackageKey, tag, kind, deprecated, textFilter, documentId, apiType, excludedGroupName, groupName],
-    queryFn: ({ pageParam = page, signal }) => getOperations({
-      packageKey: packageKey!,
-      versionKey: fullVersion!,
-      refPackageKey: refPackageKey,
-      deprecated: deprecated,
-      hashList: hashList,
-      ids: ids,
-      includeData: includeData,
-      kind: kind,
-      label: label,
-      limit: limit,
-      page: pageParam - 1,
-      tag: tag,
-      textFilter: textFilter,
-      documentId: documentId,
-      apiType: apiType,
-      excludedGroupName: resolvedExcludedGroupName,
-      groupName: resolvedGroupName,
-      emptyGroup: resolvedEmptyGroup,
-    }, signal),
+    queryKey: [
+      PAGED_OPERATIONS_QUERY_KEY,
+      packageKey,
+      fullVersion,
+      refPackageKey,
+      tag,
+      kind,
+      deprecated,
+      textFilter,
+      documentId,
+      apiType,
+      excludedGroupName,
+      groupName,
+    ],
+    queryFn: ({ pageParam = page, signal }) =>
+      getOperations(
+        {
+          packageKey: packageKey!,
+          versionKey: fullVersion!,
+          refPackageKey: refPackageKey,
+          deprecated: deprecated,
+          hashList: hashList,
+          ids: ids,
+          includeData: includeData,
+          kind: kind,
+          label: label,
+          limit: limit,
+          page: pageParam - 1,
+          tag: tag,
+          textFilter: textFilter,
+          documentId: documentId,
+          apiType: apiType,
+          excludedGroupName: resolvedExcludedGroupName,
+          groupName: resolvedGroupName,
+          emptyGroup: resolvedEmptyGroup,
+        },
+        signal,
+      ),
     getNextPageParam: (lastPage, allPages) => {
       if (!limit) {
         return undefined
@@ -147,35 +168,40 @@ export function usePagedOperations(options?: Partial<{
     enabled: !!packageKey && !!fullVersion,
   })
 
-  return useMemo(() => ({
-    pagedData: operationsList?.pages ?? [],
-    loading: isLoading,
-    fetching: isFetching,
-    fetchNextPage: fetchNextPage,
-    fetchingNextPage: isFetchingNextPage,
-    hasNextPage: hasNextPage,
-  }), [fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, isLoading, operationsList?.pages])
+  return useMemo(
+    () => ({
+      pagedData: operationsList?.pages ?? [],
+      loading: isLoading,
+      fetching: isFetching,
+      fetchNextPage: fetchNextPage,
+      fetchingNextPage: isFetchingNextPage,
+      hasNextPage: hasNextPage,
+    }),
+    [fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, isLoading, operationsList?.pages],
+  )
 }
 
-export function useOperations(options?: Partial<{
-  packageKey: Key
-  versionKey: Key
-  deprecated: DeprecatedQueryStatus
-  hashList: string[]
-  ids: string[]
-  includeData: boolean
-  kind: ApiKind
-  apiAudience: ApiAudience
-  label: string
-  tag: string
-  textFilter: string
-  apiType: ApiType
-  refPackageKey?: PackageKey
-  excludedGroupName?: OperationGroupName
-  groupName?: OperationGroupName
-  page: number
-  limit: number
-}>): [OperationsData, IsLoading, FetchNextOperationList, IsFetchingNextPage, HasNextPage] {
+export function useOperations(
+  options?: Partial<{
+    packageKey: Key
+    versionKey: Key
+    deprecated: DeprecatedQueryStatus
+    hashList: string[]
+    ids: string[]
+    includeData: boolean
+    kind: ApiKind
+    apiAudience: ApiAudience
+    label: string
+    tag: string
+    textFilter: string
+    apiType: ApiType
+    refPackageKey?: PackageKey
+    excludedGroupName?: OperationGroupName
+    groupName?: OperationGroupName
+    page: number
+    limit: number
+  }>,
+): [OperationsData, IsLoading, FetchNextOperationList, IsFetchingNextPage, HasNextPage] {
   const packageKey = options?.packageKey
   const versionKey = options?.versionKey
 
@@ -199,11 +225,10 @@ export function useOperations(options?: Partial<{
     refPackageKey,
   } = options ?? {}
 
-  const {
-    resolvedExcludedGroupName,
-    resolvedGroupName,
-    resolvedEmptyGroup,
-  } = useResolvedOperationGroupParameters(groupName, excludedGroupName)
+  const { resolvedExcludedGroupName, resolvedGroupName, resolvedEmptyGroup } = useResolvedOperationGroupParameters(
+    groupName,
+    excludedGroupName,
+  )
 
   const {
     data: operationsList,
@@ -212,28 +237,44 @@ export function useOperations(options?: Partial<{
     isFetchingNextPage,
     hasNextPage,
   } = useInfiniteQuery<OperationsData, Error, OperationsData>({
-    queryKey: [OPERATIONS_QUERY_KEY, packageKey, fullVersion, tag, kind, apiAudience, deprecated, textFilter, apiType, excludedGroupName, groupName, refPackageKey],
+    queryKey: [
+      OPERATIONS_QUERY_KEY,
+      packageKey,
+      fullVersion,
+      tag,
+      kind,
+      apiAudience,
+      deprecated,
+      textFilter,
+      apiType,
+      excludedGroupName,
+      groupName,
+      refPackageKey,
+    ],
     queryFn: ({ pageParam = page, signal }) => {
-      return getOperations({
-        packageKey: packageKey!,
-        versionKey: fullVersion!,
-        deprecated: deprecated,
-        hashList: hashList,
-        ids: ids,
-        includeData: includeData,
-        kind: kind,
-        apiAudience: apiAudience,
-        label: label,
-        limit: limit,
-        page: pageParam - 1,
-        tag: tag,
-        textFilter: textFilter,
-        apiType: apiType,
-        excludedGroupName: resolvedExcludedGroupName,
-        refPackageKey: refPackageKey,
-        groupName: resolvedGroupName,
-        emptyGroup: resolvedEmptyGroup,
-      }, signal)
+      return getOperations(
+        {
+          packageKey: packageKey!,
+          versionKey: fullVersion!,
+          deprecated: deprecated,
+          hashList: hashList,
+          ids: ids,
+          includeData: includeData,
+          kind: kind,
+          apiAudience: apiAudience,
+          label: label,
+          limit: limit,
+          page: pageParam - 1,
+          tag: tag,
+          textFilter: textFilter,
+          apiType: apiType,
+          excludedGroupName: resolvedExcludedGroupName,
+          refPackageKey: refPackageKey,
+          groupName: resolvedGroupName,
+          emptyGroup: resolvedEmptyGroup,
+        },
+        signal,
+      )
     },
     getNextPageParam: (lastPage, allPages) => {
       if (!limit) {
@@ -319,7 +360,7 @@ export async function getOperations(
     group: { value: groupName },
     emptyGroup: { value: emptyGroup },
     refPackageId: { value: refPackageKey },
-    page: { value: page, toStringValue: page => `${page}` },
+    page: { value: page, toStringValue: (page) => `${page}` },
     limit: { value: limit },
   })
 
@@ -328,7 +369,13 @@ export async function getOperations(
   if (tag === DEFAULT_TAG) {
     // It's possible to have operations with explicitly defined default tag, we've to load them
     queryParams.set(EMPTY_TAG_QUERY_PARAM_KEY, 'false')
-    const additionalOperations: OperationsData = await fetchOperations(packageId, versionId, queryParams, apiType, signal)
+    const additionalOperations: OperationsData = await fetchOperations(
+      packageId,
+      versionId,
+      queryParams,
+      apiType,
+      signal,
+    )
     operations = [...operations, ...additionalOperations]
   }
 
@@ -342,14 +389,15 @@ async function fetchOperations(
   apiType: ApiType,
   signal?: AbortSignal,
 ): Promise<OperationsData> {
-
   const pathPattern = '/packages/:packageId/versions/:versionId/:apiType/operations'
-  return toOperations(await portalRequestJson<OperationsDto>(
-    `${generatePath(pathPattern, { packageId, versionId, apiType })}?${queryParams}`,
-    { method: 'get' },
-    {
-      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-    },
-    signal,
-  ))
+  return toOperations(
+    await portalRequestJson<OperationsDto>(
+      `${generatePath(pathPattern, { packageId, versionId, apiType })}?${queryParams}`,
+      { method: 'get' },
+      {
+        customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+      },
+      signal,
+    ),
+  )
 }

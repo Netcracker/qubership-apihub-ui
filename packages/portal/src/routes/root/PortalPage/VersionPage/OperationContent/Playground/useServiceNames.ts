@@ -30,8 +30,5 @@ export function useServiceNames(agentKey: Key, namespaceName: string | undefined
     enabled: !!agentKey && !!namespaceName,
   })
 
-  return [
-    data ?? [],
-    isLoading,
-  ]
+  return [data ?? [], isLoading]
 }

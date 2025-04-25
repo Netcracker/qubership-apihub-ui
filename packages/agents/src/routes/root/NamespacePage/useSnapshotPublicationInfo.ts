@@ -16,18 +16,20 @@
 
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
-import type {
-  SnapshotPublicationInfo,
-  SnapshotPublicationInfoDto} from '@apihub/entities/snapshot-publication-info'
+import type { SnapshotPublicationInfo, SnapshotPublicationInfoDto } from '@apihub/entities/snapshot-publication-info'
 import {
   EMPTY_SNAPSHOT_PUBLICATION_INFO,
-  getSnapshotPublicationInfo, toSnapshotPublicationInfo,
+  getSnapshotPublicationInfo,
+  toSnapshotPublicationInfo,
 } from '@apihub/entities/snapshot-publication-info'
-import type { InvalidateQuery, IsInitialLoading, IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import type {
+  InvalidateQuery,
+  IsInitialLoading,
+  IsLoading,
+  IsSuccess,
+} from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import type { SnapshotKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import {
-  useCreateSnapshotPublicationOptions,
-} from './ServicesPage/ServicesPageProvider/ServicesPublicationOptionsProvider'
+import { useCreateSnapshotPublicationOptions } from './ServicesPage/ServicesPageProvider/ServicesPublicationOptionsProvider'
 import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 
@@ -46,16 +48,17 @@ export function useSnapshotPublicationInfo(options?: {
 }): SnapshotPublicationInfoQueryState {
   const { agentId, namespaceKey } = useParams()
   const workspaceKey = useSearchParam(WORKSPACE_SEARCH_PARAM)
-  const { createSnapshotPublicationOptions: { name } } = useCreateSnapshotPublicationOptions()
+  const {
+    createSnapshotPublicationOptions: { name },
+  } = useCreateSnapshotPublicationOptions()
   const snapshotKey = options?.snapshotKey ?? name
   const promotion = options?.promote ?? false
 
-  const {
-    data,
-    isLoading,
-    isInitialLoading,
-    isSuccess,
-  } = useQuery<SnapshotPublicationInfoDto, Error, SnapshotPublicationInfo>({
+  const { data, isLoading, isInitialLoading, isSuccess } = useQuery<
+    SnapshotPublicationInfoDto,
+    Error,
+    SnapshotPublicationInfo
+  >({
     queryKey: [SNAPSHOT_PUBLICATION_INFO_QUERY_KEY, namespaceKey, snapshotKey, promotion],
     queryFn: () => getSnapshotPublicationInfo(agentId!, namespaceKey!, workspaceKey!, snapshotKey!, promotion),
     enabled: !!namespaceKey && !!snapshotKey,
@@ -70,14 +73,17 @@ export function useSnapshotPublicationInfo(options?: {
   }
 }
 
-export function useInvalidateSnapshotPublicationInfo(): InvalidateQuery<Partial<{
-  snapshotPublicationName: string
-}>> {
+export function useInvalidateSnapshotPublicationInfo(): InvalidateQuery<
+  Partial<{
+    snapshotPublicationName: string
+  }>
+> {
   const { namespaceKey } = useParams()
   const client = useQueryClient()
 
-  return ({ snapshotPublicationName }) => client.invalidateQueries({
-    queryKey: [SNAPSHOT_PUBLICATION_INFO_QUERY_KEY, namespaceKey, snapshotPublicationName],
-    refetchType: 'all',
-  })
+  return ({ snapshotPublicationName }) =>
+    client.invalidateQueries({
+      queryKey: [SNAPSHOT_PUBLICATION_INFO_QUERY_KEY, namespaceKey, snapshotPublicationName],
+      refetchType: 'all',
+    })
 }

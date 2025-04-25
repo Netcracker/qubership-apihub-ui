@@ -29,9 +29,7 @@ import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/sea
 import { DASHBOARD_KIND, PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import type { PackageReference } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
-import {
-  DashboardPackageSelector,
-} from '@netcracker/qubership-apihub-ui-shared/components/OperationFilters/DashboardPackageSelector'
+import { DashboardPackageSelector } from '@netcracker/qubership-apihub-ui-shared/components/OperationFilters/DashboardPackageSelector'
 import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
 
 export const DocNavigation: FC = memo(() => {
@@ -65,7 +63,7 @@ export const DocNavigation: FC = memo(() => {
     enabled: selectedPackage !== null,
   })
   const filteredDocuments = useMemo(() => {
-    return documents.filter(document => {
+    return documents.filter((document) => {
       const lowerCaseTitle = document.title.toLowerCase()
       const lowerCaseValue = searchValue.toLowerCase()
       return lowerCaseTitle.includes(lowerCaseValue) || lowerCaseValue.includes(lowerCaseTitle)
@@ -103,19 +101,19 @@ export const DocNavigation: FC = memo(() => {
   })
 
   if (isPackageKindLoading) {
-    return (
-      <LoadingIndicator/>
-    )
+    return <LoadingIndicator />
   }
 
   return (
     <Box height="100%" display="contents">
       {isDashboard && (
-        <Box sx={{
-          borderTop: '1px solid #D9D9D9',
-          borderBottom: '1px solid #D9D9D9',
-          p: 2,
-        }}>
+        <Box
+          sx={{
+            borderTop: '1px solid #D9D9D9',
+            borderBottom: '1px solid #D9D9D9',
+            p: 2,
+          }}
+        >
           <DashboardPackageSelector
             defaultPackageKey={refKey}
             onSelectPackage={selectDashboardPackage}
@@ -126,12 +124,9 @@ export const DocNavigation: FC = memo(() => {
         </Box>
       )}
       <Box sx={{ p: 2 }}>
-        <SearchBar value={searchValue} onValueChange={setSearchValue} data-testid="SearchDocuments"/>
+        <SearchBar value={searchValue} onValueChange={setSearchValue} data-testid="SearchDocuments" />
       </Box>
-      <DocumentList
-        isLoading={isInitialLoading}
-        documents={filteredDocuments}
-      />
+      <DocumentList isLoading={isInitialLoading} documents={filteredDocuments} />
     </Box>
   )
 })

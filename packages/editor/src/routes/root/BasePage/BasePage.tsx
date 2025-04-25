@@ -41,18 +41,17 @@ export const BasePage: FC = memo(() => {
   const EDITOR_DEPRECATED = 40
   const viewPortStyleCalculator = useCallback(
     (theme: Theme): SystemStyleObject<Theme> => {
-      return cutViewPortStyleCalculator(theme, systemNotification ? NOTIFICATION_HEIGHT + EDITOR_DEPRECATED : EDITOR_DEPRECATED)
+      return cutViewPortStyleCalculator(
+        theme,
+        systemNotification ? NOTIFICATION_HEIGHT + EDITOR_DEPRECATED : EDITOR_DEPRECATED,
+      )
     },
     [systemNotification],
   )
 
   return (
     <MainPageProvider>
-      <Box
-        display="grid"
-        gridTemplateRows="max-content 1fr"
-        height="100vh"
-      >
+      <Box display="grid" gridTemplateRows="max-content 1fr" height="100vh">
         <AppHeader
           logo={<LogoIcon />}
           title="APIHUB"
@@ -61,25 +60,25 @@ export const BasePage: FC = memo(() => {
             { name: 'API Editor', pathname: '/editor', active: true, testId: 'EditorHeaderButton' },
             { name: 'Agent', pathname: '/agents', testId: 'AgentHeaderButton' },
           ]}
-          action={<>
-            <SystemInfoPopup frontendVersionKey={packageJson.version} />
-            <UserPanel />
-          </>}
+          action={
+            <>
+              <SystemInfoPopup frontendVersionKey={packageJson.version} />
+              <UserPanel />
+            </>
+          }
         />
         <Box sx={viewPortStyleCalculator}>
-          <ExceptionSituationHandler
-            homePath="/editor"
-            showErrorNotification={showErrorNotification}
-          >
+          <ExceptionSituationHandler homePath="/editor" showErrorNotification={showErrorNotification}>
             <Outlet />
           </ExceptionSituationHandler>
         </Box>
         <Notification />
-        {systemNotification && (
-          <MaintenanceNotification value={systemNotification} />
-        )}
+        {systemNotification && <MaintenanceNotification value={systemNotification} />}
         <MaintenanceNotification
-          value={'API Editor will be deprecated in upcoming releases. A VS Code plugin will replace it, enabling you to publish your API documents directly to Portal.'} />
+          value={
+            'API Editor will be deprecated in upcoming releases. A VS Code plugin will replace it, enabling you to publish your API documents directly to Portal.'
+          }
+        />
       </Box>
     </MainPageProvider>
   )

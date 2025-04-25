@@ -27,7 +27,6 @@ export function useSetReferences(
   setReferences: Dispatch<SetStateAction<PackageReferenceWithStatus[]>>,
   onLoading: (value: boolean) => void,
 ): void {
-
   const { data: packageReferences, isInitialLoading } = useFilteredPackageRefs({
     packageKey: packageKey!,
     version: versionKey!,
@@ -37,11 +36,14 @@ export function useSetReferences(
   useEffect(() => onLoading(isInitialLoading), [isInitialLoading, onLoading])
 
   useEffect(() => {
-    isNotEmpty(packageReferences) && setReferences(packageReferences.map(packageReference => {
-      return {
-        packageReference: packageReference,
-        added: false,
-      }
-    }))
+    isNotEmpty(packageReferences) &&
+      setReferences(
+        packageReferences.map((packageReference) => {
+          return {
+            packageReference: packageReference,
+            added: false,
+          }
+        }),
+      )
   }, [setReferences, packageReferences])
 }

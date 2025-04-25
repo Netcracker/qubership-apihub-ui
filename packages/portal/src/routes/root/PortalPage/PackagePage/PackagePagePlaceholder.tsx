@@ -45,38 +45,42 @@ export const PackagePagePlaceholder: FC<PackagePagePlaceholderProps> = memo<Pack
     [backwardLocation, location, setBackwardLocation],
   )
 
-  const handleNavigateToEdit = useCallback(
-    () => {
-      handleClick()
-      navigateToVersion({ packageKey: packageId!, versionKey: SPECIAL_VERSION_KEY, edit: true })
-    },
-    [handleClick, navigateToVersion, packageId],
+  const handleNavigateToEdit = useCallback(() => {
+    handleClick()
+    navigateToVersion({ packageKey: packageId!, versionKey: SPECIAL_VERSION_KEY, edit: true })
+  }, [handleClick, navigateToVersion, packageId])
+
+  const emptyPackageData = useMemo(
+    () => [
+      {
+        label: 'Create a new version in the Portal',
+        navigate: handleNavigateToEdit,
+        description: 'Upload files from your local file system, and publish the version.',
+        testId: 'ToPortalButton',
+      },
+      {
+        label: 'Go to Agent',
+        navigate: navigateToAgent,
+        description: 'Discover the API documentation in your environment, and promote it to the package in Portal.',
+        testId: 'ToAgentButton',
+      },
+      {
+        label: 'Go to the Editor',
+        navigate: navigateToEditor,
+        description: 'Publish a version from the Editor project connected to the Git repository.',
+        testId: 'ToEditorButton',
+      },
+    ],
+    [handleNavigateToEdit, navigateToAgent, navigateToEditor],
   )
 
-  const emptyPackageData = useMemo(() => [
-    {
-      label: 'Create a new version in the Portal',
-      navigate: handleNavigateToEdit,
-      description: 'Upload files from your local file system, and publish the version.',
-      testId: 'ToPortalButton',
-    },
-    {
-      label: 'Go to Agent',
-      navigate: navigateToAgent,
-      description: 'Discover the API documentation in your environment, and promote it to the package in Portal.',
-      testId: 'ToAgentButton',
-    },
-    {
-      label: 'Go to the Editor',
-      navigate: navigateToEditor,
-      description: 'Publish a version from the Editor project connected to the Git repository.',
-      testId: 'ToEditorButton',
-    },
-  ], [handleNavigateToEdit, navigateToAgent, navigateToEditor])
-
-  const handleShowEmptyPackageDialog = useCallback(() => showEmptyPackageDialog({
-    emptyPackageData,
-  }), [emptyPackageData, showEmptyPackageDialog])
+  const handleShowEmptyPackageDialog = useCallback(
+    () =>
+      showEmptyPackageDialog({
+        emptyPackageData,
+      }),
+    [emptyPackageData, showEmptyPackageDialog],
+  )
 
   return (
     <Placeholder
@@ -94,17 +98,21 @@ export const PackagePagePlaceholder: FC<PackagePagePlaceholderProps> = memo<Pack
               >
                 How to Upload API documentation?
               </Button>
-              <EmptyPackageDialog/>
+              <EmptyPackageDialog />
             </Box>
           ) : (
             <>
-              <Link component={NavLink}
-                    to={getVersionPath({ packageKey: packageId!, versionKey: SPECIAL_VERSION_KEY, edit: true })}
-                    onClick={handleClick}
-                    data-testid="CreateVersionLink">
+              <Link
+                component={NavLink}
+                to={getVersionPath({ packageKey: packageId!, versionKey: SPECIAL_VERSION_KEY, edit: true })}
+                onClick={handleClick}
+                data-testid="CreateVersionLink"
+              >
                 Create
               </Link>
-              &nbsp;new<br/>{kind} version.
+              &nbsp;new
+              <br />
+              {kind} version.
             </>
           )}
         </Box>

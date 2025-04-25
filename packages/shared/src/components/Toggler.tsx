@@ -45,18 +45,11 @@ export const Toggler: FC<TogglerProps> = memo<TogglerProps>(({ mode, modes, onCh
           }
         }}
       >
-        {
-          modes.map(mode => (
-            <ToggleButton
-              sx={{ textTransform: 'capitalize' }}
-              key={mode}
-              value={mode}
-              data-testid={`ModeButton-${mode}`}
-            >
-              {modeToText?.[mode] ?? mode}
-            </ToggleButton>
-          ))
-        }
+        {modes.map((mode) => (
+          <ToggleButton sx={{ textTransform: 'capitalize' }} key={mode} value={mode} data-testid={`ModeButton-${mode}`}>
+            {modeToText?.[mode] ?? mode}
+          </ToggleButton>
+        ))}
       </ToggleButtonGroup>
     </Paper>
   )

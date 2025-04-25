@@ -63,10 +63,7 @@ LayoutWithToolbarStory.args = {
     </Box>
   ),
   body: (
-    <Box
-      sx={{ height: '100%', backgroundColor: WITH_TOOLBAR_COLOR, pt: '200px' }}
-      textAlign="center"
-    >
+    <Box sx={{ height: '100%', backgroundColor: WITH_TOOLBAR_COLOR, pt: '200px' }} textAlign="center">
       This is a body
     </Box>
   ),
@@ -77,19 +74,12 @@ const LayoutWithTabsFn: StoryFn<LayoutWithTabsProps> = (args) => <LayoutWithTabs
 export const LayoutWithTabsStory = LayoutWithTabsFn.bind({})
 LayoutWithTabsStory.args = {
   tabs: (
-    <Box
-      sx={{ height: '100%', border: `solid ${WITH_TABS_COLOR}` }}
-      textAlign="center"
-      pt="30%"
-    >
+    <Box sx={{ height: '100%', border: `solid ${WITH_TABS_COLOR}` }} textAlign="center" pt="30%">
       This is a tabs
     </Box>
   ),
   body: (
-    <Box
-      sx={{ height: '100%', backgroundColor: WITH_TABS_COLOR, pt: '200px' }}
-      textAlign="center"
-    >
+    <Box sx={{ height: '100%', backgroundColor: WITH_TABS_COLOR, pt: '200px' }} textAlign="center">
       This is a body
     </Box>
   ),
@@ -102,18 +92,12 @@ const withSidbarBorder = `solid ${WITH_SIDEBAR_COLOR}`
 
 LayoutWithSidebarStory.args = {
   sidebar: (
-    <Box
-      sx={{ height: '100%', border: withSidbarBorder }}
-      textAlign="center"
-    >
+    <Box sx={{ height: '100%', border: withSidbarBorder }} textAlign="center">
       This is a sidebar
     </Box>
   ),
   body: (
-    <Box
-      sx={{ height: '100%', backgroundColor: WITH_SIDEBAR_COLOR, pt: '200px' }}
-      textAlign="center"
-    >
+    <Box sx={{ height: '100%', backgroundColor: WITH_SIDEBAR_COLOR, pt: '200px' }} textAlign="center">
       This is a body
     </Box>
   ),
@@ -129,29 +113,26 @@ RichFiltersLayoutStory.args = {
   title: <Box sx={{ backgroundColor: GREEN_SECTION_COLOR }}>This is a Title</Box>,
   viewMode: 'option-1',
   additionalActions: <Box sx={{ backgroundColor: ORANGE_SECTION_COLOR }}>Additional Actions</Box>,
-  viewOptions: [{
-    icon: <Box width="20px" height="20px" sx={{ backgroundColor: GREEN_SECTION_COLOR }}/>,
-    value: 'option-1',
-    tooltip: 'View 1',
-  }, {
-    icon: <Box width="20px" height="20px" sx={{ backgroundColor: BROWN_SECTION_COLOR }}/>,
-    value: 'option-2',
-    tooltip: 'View 2',
-  }],
+  viewOptions: [
+    {
+      icon: <Box width="20px" height="20px" sx={{ backgroundColor: GREEN_SECTION_COLOR }} />,
+      value: 'option-1',
+      tooltip: 'View 1',
+    },
+    {
+      icon: <Box width="20px" height="20px" sx={{ backgroundColor: BROWN_SECTION_COLOR }} />,
+      value: 'option-2',
+      tooltip: 'View 2',
+    },
+  ],
   searchPlaceholder: 'Search Placeholder',
   exportButton: <Box sx={{ backgroundColor: PURPLE_SECTION_COLOR }}>Export button here</Box>,
   body: (
-    <Box
-      sx={{ height: '100%', backgroundColor: WITH_SIDEBAR_COLOR }}
-      textAlign="center"
-    >
+    <Box sx={{ height: '100%', backgroundColor: WITH_SIDEBAR_COLOR }} textAlign="center">
       This is a body
     </Box>
   ),
-  filters: <Box sx={{ height: '100%', backgroundColor: RED_SECTION_COLOR }}>
-    These are rich filters
-  </Box>,
+  filters: <Box sx={{ height: '100%', backgroundColor: RED_SECTION_COLOR }}>These are rich filters</Box>,
   hideFiltersPanel: true,
 }
 RichFiltersLayoutStory.storyName = 'Rich Filters Layout'
-

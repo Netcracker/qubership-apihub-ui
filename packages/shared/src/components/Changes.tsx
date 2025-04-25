@@ -34,52 +34,49 @@ export type ChangesProps = {
   category?: ChangesTooltipCategory
 }
 
-export const Changes: FC<ChangesProps> = memo<ChangesProps>(({
-  value,
-  mode = 'default',
-  zeroView = false,
-  category,
-}) => {
+export const Changes: FC<ChangesProps> = memo<ChangesProps>(
+  ({ value, mode = 'default', zeroView = false, category }) => {
+    const sortedChanges = useMemo(() => (value ? sortSummaryChanges(value) : null), [value])
 
-  const sortedChanges = useMemo(() => (value ? sortSummaryChanges(value) : null), [value])
+    if (!sortedChanges) {
+      return null
+    }
 
-  if (!sortedChanges) {
-    return null
-  }
-
-  return (
-    <List component="span" sx={{ display: 'flex', p: 0, width: 'fit-content' }} data-testid="ChangesSummary">
-      {Object.entries(sortedChanges).map(([type, count]) => {
-        if (!count && !zeroView) {
-          return null
-        }
-        const changeName = CHANGE_SEVERITY_NAME_MAP[type as keyof ChangesSummary]
-        const changeColor = CHANGE_SEVERITY_COLOR_MAP[type as keyof ChangesSummary]
-        return (
-          <ListItem component="span" key={type} sx={{ p: 0 }}>
-            <ChangesTooltip changeType={type as ChangeSeverity} category={category}
-                            disableHoverListener={mode === 'default'}>
-              <Box data-testid={type} display="flex" alignItems="baseline">
-                <Box
-                  component="span"
-                  sx={{ background: changeColor, width: 8, height: 8, borderRadius: '50%', mr: 1 }}
-                />
-                <Typography noWrap component="span" sx={{ fontSize: 12, fontWeight: 500, color: '#8F9EB4', mr: 1.5 }}>
-                  {mode === 'default' ? `${changeName}: ${count}` : count}
-                </Typography>
-              </Box>
-            </ChangesTooltip>
-          </ListItem>
-        )
-      })}
-    </List>
-  )
-})
+    return (
+      <List component="span" sx={{ display: 'flex', p: 0, width: 'fit-content' }} data-testid="ChangesSummary">
+        {Object.entries(sortedChanges).map(([type, count]) => {
+          if (!count && !zeroView) {
+            return null
+          }
+          const changeName = CHANGE_SEVERITY_NAME_MAP[type as keyof ChangesSummary]
+          const changeColor = CHANGE_SEVERITY_COLOR_MAP[type as keyof ChangesSummary]
+          return (
+            <ListItem component="span" key={type} sx={{ p: 0 }}>
+              <ChangesTooltip
+                changeType={type as ChangeSeverity}
+                category={category}
+                disableHoverListener={mode === 'default'}
+              >
+                <Box data-testid={type} display="flex" alignItems="baseline">
+                  <Box
+                    component="span"
+                    sx={{ background: changeColor, width: 8, height: 8, borderRadius: '50%', mr: 1 }}
+                  />
+                  <Typography noWrap component="span" sx={{ fontSize: 12, fontWeight: 500, color: '#8F9EB4', mr: 1.5 }}>
+                    {mode === 'default' ? `${changeName}: ${count}` : count}
+                  </Typography>
+                </Box>
+              </ChangesTooltip>
+            </ListItem>
+          )
+        })}
+      </List>
+    )
+  },
+)
 
 function sortSummaryChanges(value: ChangesSummary): ChangesSummary {
   return Object.fromEntries(
-    Object.entries(value).sort(
-      ([keyA], [keyB]) => severityOrder[keyA as DiffType] - severityOrder[keyB as DiffType],
-    ),
+    Object.entries(value).sort(([keyA], [keyB]) => severityOrder[keyA as DiffType] - severityOrder[keyB as DiffType]),
   ) as ChangesSummary
 }

@@ -35,10 +35,7 @@ export function useSettings(): [Settings, IsLoading] {
     select: toSettings,
   })
 
-  return [
-    data ?? EMPTY_SETTINGS,
-    isLoading,
-  ]
+  return [data ?? EMPTY_SETTINGS, isLoading]
 }
 
 export function useSetSettings(): SetSettings {
@@ -46,7 +43,7 @@ export function useSetSettings(): SetSettings {
   const client = useQueryClient()
 
   return (settings: SettingsDto) => {
-    client.setQueryData<SettingsDto>([SETTINGS_QUERY_KEY, agentId, namespaceKey], prevSettings => {
+    client.setQueryData<SettingsDto>([SETTINGS_QUERY_KEY, agentId, namespaceKey], (prevSettings) => {
       if (!prevSettings) {
         return prevSettings
       }

@@ -45,13 +45,13 @@ export const ExportSettingsTab: FC<PackageSettingsTabProps> = memo<PackageSettin
                 isLoading={isOasExtensionsLoading}
                 data-testid="ListOfOasExtensionsSettingsParameter"
               >
-                <OasExtensionsList extensions={oasExtensions}/>
+                <OasExtensionsList extensions={oasExtensions} />
               </SettingsEditableParameter>
             </Box>
           </Box>
         }
       />
-      <EditPreservedOasExtensionsDialog/>
+      <EditPreservedOasExtensionsDialog />
     </Box>
   )
 })

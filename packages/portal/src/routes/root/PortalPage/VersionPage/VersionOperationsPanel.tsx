@@ -34,7 +34,10 @@ import { SegmentItemIcon } from '@netcracker/qubership-apihub-ui-shared/icons/Se
 import { ListBox } from '@netcracker/qubership-apihub-ui-shared/components/Panels/ListBox'
 import { useOperationsView } from './useOperationsView'
 import type { OperationsViewMode } from '@netcracker/qubership-apihub-ui-shared/types/views'
-import { DETAILED_OPERATIONS_VIEW_MODE, LIST_OPERATIONS_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/types/views'
+import {
+  DETAILED_OPERATIONS_VIEW_MODE,
+  LIST_OPERATIONS_VIEW_MODE,
+} from '@netcracker/qubership-apihub-ui-shared/types/views'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 
 export type VersionOperationsProps = {
@@ -52,78 +55,88 @@ export type VersionOperationsProps = {
 } & TestableProps
 
 // High Order Component //
-export const VersionOperationsPanel: FC<VersionOperationsProps> = memo<VersionOperationsProps>(({
-  title,
-  onContextSearch,
-  bodyRef,
-  table,
-  list,
-  filters,
-  exportButton,
-  testId,
-  operationsViewMode,
-  toggleOperationsViewMode,
-  toggleHideFiltersPanel,
-  hideFiltersPanel,
-}) => {
-  const { apiType = DEFAULT_API_TYPE } = useParams<{ apiType: ApiType }>()
-  const [packageObject] = usePackage({ showParents: true })
-  const setPathParam = useSetPathParam()
-  const setPreviewOperation = useSetSelectedPreviewOperation()
-  const fullMainVersion = useFullMainVersion()
+export const VersionOperationsPanel: FC<VersionOperationsProps> = memo<VersionOperationsProps>(
+  ({
+    title,
+    onContextSearch,
+    bodyRef,
+    table,
+    list,
+    filters,
+    exportButton,
+    testId,
+    operationsViewMode,
+    toggleOperationsViewMode,
+    toggleHideFiltersPanel,
+    hideFiltersPanel,
+  }) => {
+    const { apiType = DEFAULT_API_TYPE } = useParams<{ apiType: ApiType }>()
+    const [packageObject] = usePackage({ showParents: true })
+    const setPathParam = useSetPathParam()
+    const setPreviewOperation = useSetSelectedPreviewOperation()
+    const fullMainVersion = useFullMainVersion()
 
-  const isDashboard = packageObject?.kind === DASHBOARD_KIND
-  const showFilterBadge = useCheckOperationFiltersApplied(isDashboard)
+    const isDashboard = packageObject?.kind === DASHBOARD_KIND
+    const showFilterBadge = useCheckOperationFiltersApplied(isDashboard)
 
-  const { apiTypes } = usePackageVersionApiTypes(packageObject?.key ?? '', fullMainVersion!)
+    const { apiTypes } = usePackageVersionApiTypes(packageObject?.key ?? '', fullMainVersion!)
 
-  const [operationsView, setOperationsView] = useOperationsView(operationsViewMode)
-  const onOperationsViewChange = useCallback((value: OperationsViewMode | undefined) => {
-    if (value) {
-      setOperationsView(value)
-      toggleOperationsViewMode?.(value)
-    }
-  }, [setOperationsView, toggleOperationsViewMode])
+    const [operationsView, setOperationsView] = useOperationsView(operationsViewMode)
+    const onOperationsViewChange = useCallback(
+      (value: OperationsViewMode | undefined) => {
+        if (value) {
+          setOperationsView(value)
+          toggleOperationsViewMode?.(value)
+        }
+      },
+      [setOperationsView, toggleOperationsViewMode],
+    )
 
-  const onApiTypeChange = useCallback((apiType: ApiType) => {
-    setPreviewOperation?.(undefined)
-    setPathParam?.(apiType)
-  }, [setPathParam, setPreviewOperation])
+    const onApiTypeChange = useCallback(
+      (apiType: ApiType) => {
+        setPreviewOperation?.(undefined)
+        setPathParam?.(apiType)
+      },
+      [setPathParam, setPreviewOperation],
+    )
 
-  return (
-    <RichFiltersLayout
-      title={<PageTitle
-        apiType={apiType}
-        title={title}
-        withApiSelector={isApiTypeSelectorShown(apiTypes)}
-        onApiTypeChange={onApiTypeChange}
-      />}
-      searchPlaceholder="Search Operations"
-      setSearchValue={onContextSearch}
-      viewMode={operationsView}
-      viewOptions={VIEW_OPTIONS}
-      onOperationsViewChange={onOperationsViewChange}
-      exportButton={exportButton}
-      filtersApplied={showFilterBadge}
-      hideFiltersPanel={hideFiltersPanel}
-      filters={filters}
-      onClickFilterButton={toggleHideFiltersPanel}
-      bodyRef={bodyRef}
-      body={operationsView === LIST_OPERATIONS_VIEW_MODE
-        ? <ListBox>{table}</ListBox>
-        : list
-      }
-      testId={testId}
-    />
-  )
-})
+    return (
+      <RichFiltersLayout
+        title={
+          <PageTitle
+            apiType={apiType}
+            title={title}
+            withApiSelector={isApiTypeSelectorShown(apiTypes)}
+            onApiTypeChange={onApiTypeChange}
+          />
+        }
+        searchPlaceholder="Search Operations"
+        setSearchValue={onContextSearch}
+        viewMode={operationsView}
+        viewOptions={VIEW_OPTIONS}
+        onOperationsViewChange={onOperationsViewChange}
+        exportButton={exportButton}
+        filtersApplied={showFilterBadge}
+        hideFiltersPanel={hideFiltersPanel}
+        filters={filters}
+        onClickFilterButton={toggleHideFiltersPanel}
+        bodyRef={bodyRef}
+        body={operationsView === LIST_OPERATIONS_VIEW_MODE ? <ListBox>{table}</ListBox> : list}
+        testId={testId}
+      />
+    )
+  },
+)
 
-const VIEW_OPTIONS = [{
-  icon: <MenuOutlinedIcon fontSize="small"/>,
-  value: LIST_OPERATIONS_VIEW_MODE,
-  tooltip: 'List view',
-}, {
-  icon: <SegmentItemIcon/>,
-  value: DETAILED_OPERATIONS_VIEW_MODE,
-  tooltip: 'Detailed view',
-}]
+const VIEW_OPTIONS = [
+  {
+    icon: <MenuOutlinedIcon fontSize="small" />,
+    value: LIST_OPERATIONS_VIEW_MODE,
+    tooltip: 'List view',
+  },
+  {
+    icon: <SegmentItemIcon />,
+    value: DETAILED_OPERATIONS_VIEW_MODE,
+    tooltip: 'Detailed view',
+  },
+]

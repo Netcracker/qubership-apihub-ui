@@ -31,13 +31,9 @@ import { AssertionError } from './errors'
  * @param statement - Statement of Assertion (Evaluated for Truthy value)
  * @param message - Error Message if Assertion Fails
  */
-export function assert(
-  statement: boolean | undefined,
-  message: string | Error,
-): void {
+export function assert(statement: boolean | undefined, message: string | Error): void {
   if (statement == null || statement === false) {
-    const err =
-      typeof message === 'string' ? new AssertionError(message) : message
+    const err = typeof message === 'string' ? new AssertionError(message) : message
     throw err
   }
 }

@@ -38,8 +38,14 @@ export const NamespaceSelector: FC = memo(() => {
   const [, setIdpAuthToken] = useLocalIdpAuthToken()
 
   const [namespaces, isLoading] = useNamespaces()
-  const selectedNamespace = useMemo(() => namespaces?.find(namespace => namespace.namespaceKey === namespaceKey) ?? EMPTY_NAMESPACE, [namespaceKey, namespaces])
-  const filteredNamespaces = useMemo(() => namespaces.filter(({ namespaceKey }) => includes([namespaceKey], searchValue)), [namespaces, searchValue])
+  const selectedNamespace = useMemo(
+    () => namespaces?.find((namespace) => namespace.namespaceKey === namespaceKey) ?? EMPTY_NAMESPACE,
+    [namespaceKey, namespaces],
+  )
+  const filteredNamespaces = useMemo(
+    () => namespaces.filter(({ namespaceKey }) => includes([namespaceKey], searchValue)),
+    [namespaces, searchValue],
+  )
 
   return (
     <Tooltip title={!agentId && 'Select the Cloud first to select the Namespace'} placement="right">
@@ -51,11 +57,7 @@ export const NamespaceSelector: FC = memo(() => {
           value={selectedNamespace}
           options={filteredNamespaces}
           renderOption={(props, option) => (
-            <OptionItem
-              props={props}
-              key={option.namespaceKey}
-              title={option.namespaceKey}
-            />
+            <OptionItem props={props} key={option.namespaceKey} title={option.namespaceKey} />
           )}
           isOptionEqualToValue={(option, value) => option.namespaceKey === value.namespaceKey}
           getOptionLabel={(option) => option?.namespaceKey ?? ''}
@@ -66,9 +68,7 @@ export const NamespaceSelector: FC = memo(() => {
               sx={{ m: 0, '& .MuiInputBase-root': { pt: '1px', pb: '1px' } }}
             />
           )}
-          onInputChange={(event, value, reason) =>
-            setSearchValue(reason === 'input' ? value : '')
-          }
+          onInputChange={(event, value, reason) => setSearchValue(reason === 'input' ? value : '')}
           onChange={(_, value) => {
             setIdpAuthToken('')
             navigateToNamespace({

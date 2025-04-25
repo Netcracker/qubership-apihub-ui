@@ -47,32 +47,32 @@ export type TokensTableTableProps = {
 }
 
 // First Order Component //
-export const TokensTable: FC<TokensTableTableProps> = memo(({
-  data,
-  isLoading,
-  deleteApiKey,
-  disableDelete = false,
-}) => {
-  const [containerWidth, setContainerWidth] = useState(DEFAULT_CONTAINER_WIDTH)
-  const [columnSizingInfo, setColumnSizingInfo] = useState<ColumnSizingInfoState>()
-  const [, setHandlingColumnSizing] = useState<ColumnSizingState>()
+export const TokensTable: FC<TokensTableTableProps> = memo(
+  ({ data, isLoading, deleteApiKey, disableDelete = false }) => {
+    const [containerWidth, setContainerWidth] = useState(DEFAULT_CONTAINER_WIDTH)
+    const [columnSizingInfo, setColumnSizingInfo] = useState<ColumnSizingInfoState>()
+    const [, setHandlingColumnSizing] = useState<ColumnSizingState>()
 
-  const tableContainerRef = useRef<HTMLDivElement>(null)
-  useResizeObserver(tableContainerRef, setContainerWidth)
+    const tableContainerRef = useRef<HTMLDivElement>(null)
+    useResizeObserver(tableContainerRef, setContainerWidth)
 
-  const actualColumnSizing = useColumnsSizing({
-    containerWidth: containerWidth,
-    columnModels: COLUMNS_MODELS,
-    columnSizingInfo: columnSizingInfo,
-    defaultMinColumnSize: 45,
-  })
+    const actualColumnSizing = useColumnsSizing({
+      containerWidth: containerWidth,
+      columnModels: COLUMNS_MODELS,
+      columnSizingInfo: columnSizingInfo,
+      defaultMinColumnSize: 45,
+    })
 
-  const columns: ColumnDef<SystemToken>[] = useMemo(() => {
+    const columns: ColumnDef<SystemToken>[] = useMemo(() => {
       return [
         {
           id: NAME_COLUMN_ID,
           header: 'Name',
-          cell: ({ row: { original: { name } } }) => (
+          cell: ({
+            row: {
+              original: { name },
+            },
+          }) => (
             <TextWithOverflowTooltip tooltipText={name}>
               <Typography variant="inherit">{name}</Typography>
             </TextWithOverflowTooltip>
@@ -81,37 +81,55 @@ export const TokensTable: FC<TokensTableTableProps> = memo(({
         {
           id: ROLES_COLUMN_ID,
           header: 'Roles',
-          cell: ({ row: { original: { roles } } }) => (
-            <TextWithOverflowTooltip tooltipText={roles.map(role => tokenRoleMapping[role]).join(', ')}>
-              <Typography variant="inherit">{roles.map(role => tokenRoleMapping[role]).join(', ')}</Typography>
+          cell: ({
+            row: {
+              original: { roles },
+            },
+          }) => (
+            <TextWithOverflowTooltip tooltipText={roles.map((role) => tokenRoleMapping[role]).join(', ')}>
+              <Typography variant="inherit">{roles.map((role) => tokenRoleMapping[role]).join(', ')}</Typography>
             </TextWithOverflowTooltip>
           ),
         },
         {
           id: CREATED_AT_COLUMN_ID,
           header: 'Created At',
-          cell: ({ row: { original: { createdAt } } }) => (
-            <FormattedDate value={createdAt}/>
-          ),
+          cell: ({
+            row: {
+              original: { createdAt },
+            },
+          }) => <FormattedDate value={createdAt} />,
         },
         {
           id: CREATED_BY_COLUMN_ID,
           header: 'Created By',
-          cell: ({ row: { original: { createdBy } } }) => {
-            return <UserView name={createdBy.name} avatarUrl={createdBy.avatarUrl}/>
+          cell: ({
+            row: {
+              original: { createdBy },
+            },
+          }) => {
+            return <UserView name={createdBy.name} avatarUrl={createdBy.avatarUrl} />
           },
         },
         {
           id: CREATED_FOR_COLUMN_ID,
           header: 'Created For',
-          cell: ({ row: { original: { createdFor } } }) => {
-            return <UserView name={createdFor.name} avatarUrl={createdFor.avatarUrl}/>
+          cell: ({
+            row: {
+              original: { createdFor },
+            },
+          }) => {
+            return <UserView name={createdFor.name} avatarUrl={createdFor.avatarUrl} />
           },
         },
         {
           id: DELETE_COLUMN_ID,
           header: '',
-          cell: ({ row: { original: { key, packageKey } } }) => (
+          cell: ({
+            row: {
+              original: { key, packageKey },
+            },
+          }) => (
             <ButtonWithHint
               area-label="delete"
               disabled={disableDelete}
@@ -120,91 +138,89 @@ export const TokensTable: FC<TokensTableTableProps> = memo(({
               size="small"
               sx={{ visibility: 'hidden', height: '20px' }}
               className="hoverable"
-              startIcon={<DeleteIcon color={'#626D82'}/>}
-              onClick={() => deleteApiKey({
-                key: key,
-                packageKey: packageKey,
-              })}
+              startIcon={<DeleteIcon color={'#626D82'} />}
+              onClick={() =>
+                deleteApiKey({
+                  key: key,
+                  packageKey: packageKey,
+                })
+              }
               testId="DeleteButton"
             />
           ),
         },
       ]
-    },
-    [deleteApiKey, disableDelete],
-  )
+    }, [deleteApiKey, disableDelete])
 
-  const { getHeaderGroups, getRowModel, setColumnSizing } = useReactTable({
-    data: data,
-    columns: columns,
-    columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
-    getExpandedRowModel: getExpandedRowModel(),
-    onColumnSizingChange: setHandlingColumnSizing as OnChangeFn<ColumnSizingState>,
-    onColumnSizingInfoChange: setColumnSizingInfo as OnChangeFn<ColumnSizingInfoState>,
-  })
+    const { getHeaderGroups, getRowModel, setColumnSizing } = useReactTable({
+      data: data,
+      columns: columns,
+      columnResizeMode: 'onChange',
+      getCoreRowModel: getCoreRowModel(),
+      getExpandedRowModel: getExpandedRowModel(),
+      onColumnSizingChange: setHandlingColumnSizing as OnChangeFn<ColumnSizingState>,
+      onColumnSizingInfoChange: setColumnSizingInfo as OnChangeFn<ColumnSizingInfoState>,
+    })
 
-  useEffect(() => setColumnSizing(actualColumnSizing), [setColumnSizing, actualColumnSizing])
+    useEffect(() => setColumnSizing(actualColumnSizing), [setColumnSizing, actualColumnSizing])
 
-  return (
-    <TableContainer sx={{ mt: 1 }} ref={tableContainerRef}>
-      <Table>
-        <TableHead>
-          {getHeaderGroups().map(headerGroup => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <TableCell
-                  key={header.id}
-                  align="left"
-                  width={actualColumnSizing ? actualColumnSizing[header.id] : header.getSize()}
-                >
-                  {flexRender(header.column.columnDef.header, header.getContext())}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableHead>
-        <TableBody>
-          {getRowModel().rows.map(row => (
-            <TableRow>
-              {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.column.id} data-testid={`Cell-${cell.column.id}`}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-          {isLoading && <TableSkeleton/>}
-        </TableBody>
-      </Table>
-      {isEmpty(data) && !isLoading
-        ? (
+    return (
+      <TableContainer sx={{ mt: 1 }} ref={tableContainerRef}>
+        <Table>
+          <TableHead>
+            {getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableCell
+                    key={header.id}
+                    align="left"
+                    width={actualColumnSizing ? actualColumnSizing[header.id] : header.getSize()}
+                  >
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableHead>
+          <TableBody>
+            {getRowModel().rows.map((row) => (
+              <TableRow>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.column.id} data-testid={`Cell-${cell.column.id}`}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+            {isLoading && <TableSkeleton />}
+          </TableBody>
+        </Table>
+        {isEmpty(data) && !isLoading ? (
           <Placeholder
             sx={{ width: 'inherit' }}
             invisible={isLoading}
             area={CONTENT_PLACEHOLDER_AREA}
             message="No Tokens"
           />
-        )
-        : null
-      }
-    </TableContainer>
-  )
-})
+        ) : null}
+      </TableContainer>
+    )
+  },
+)
 
 const TableSkeleton: FC = memo(() => {
-  return createComponents(<RowSkeleton/>, DEFAULT_NUMBER_SKELETON_ROWS)
+  return createComponents(<RowSkeleton />, DEFAULT_NUMBER_SKELETON_ROWS)
 })
 
 const RowSkeleton: FC = memo(() => {
   return (
     <TableRow>
-      <TableCellSkeleton/>
-      <TableCellSkeleton/>
-      <TableCellSkeleton/>
-      <TableCellSkeleton/>
-      <TableCellSkeleton/>
-      <TableCellSkeleton/>
+      <TableCellSkeleton />
+      <TableCellSkeleton />
+      <TableCellSkeleton />
+      <TableCellSkeleton />
+      <TableCellSkeleton />
+      <TableCellSkeleton />
     </TableRow>
   )
 })

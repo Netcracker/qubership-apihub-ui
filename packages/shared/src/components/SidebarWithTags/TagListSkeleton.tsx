@@ -26,7 +26,7 @@ export const TagListSkeleton: FC<TagListSkeletonProps> = memo<TagListSkeletonPro
   return (
     <List>
       {[...Array(count)].map((_, index) => (
-        <TagSkeleton key={index}/>
+        <TagSkeleton key={index} />
       ))}
     </List>
   )
@@ -39,7 +39,7 @@ type TagSkeletonProps = {
 export const TagSkeleton: FC<TagSkeletonProps> = memo<TagSkeletonProps>(({ refObject }) => {
   return (
     <ListItem>
-      <Skeleton ref={refObject} sx={{}} variant="rectangular" width={116} height={15}/>
+      <Skeleton ref={refObject} sx={{}} variant="rectangular" width={116} height={15} />
     </ListItem>
   )
 })

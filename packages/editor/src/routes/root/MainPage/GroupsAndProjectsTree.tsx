@@ -70,12 +70,8 @@ export const GroupsAndProjectsTree: FC = memo(() => {
         </TableHead>
 
         <TableBody>
-          {groups.map(group => (
-            <GroupRow
-              key={group.key}
-              group={group}
-              level={0}
-            />
+          {groups.map((group) => (
+            <GroupRow key={group.key} group={group} level={0} />
           ))}
         </TableBody>
       </Table>
@@ -88,10 +84,7 @@ type GroupRowProps = {
   level: number
 }
 
-const GroupRow: FC<GroupRowProps> = memo<GroupRowProps>(({
-  group: { key, name, favorite },
-  level,
-}) => {
+const GroupRow: FC<GroupRowProps> = memo<GroupRowProps>(({ group: { key, name, favorite }, level }) => {
   const collapsedKeys = useMainPageCollapsedGroupKeys()
   const setCollapsedKeys = useSetMainPageCollapsedGroupKeys()
 
@@ -104,74 +97,69 @@ const GroupRow: FC<GroupRowProps> = memo<GroupRowProps>(({
 
   const nextLevel = level + 1
 
-  const updateCollapseKeys = useCallback((key: Key) => {
-    setOpen(!open)
-    setCollapsedKeys(previousKey => (
-      !previousKey.includes(key)
-        ? [...previousKey, key]
-        : previousKey.filter(id => id !== key)
-    ))
-  }, [open, setCollapsedKeys])
+  const updateCollapseKeys = useCallback(
+    (key: Key) => {
+      setOpen(!open)
+      setCollapsedKeys((previousKey) =>
+        !previousKey.includes(key) ? [...previousKey, key] : previousKey.filter((id) => id !== key),
+      )
+    },
+    [open, setCollapsedKeys],
+  )
 
   return (
     <>
       <TableRow hover tabIndex={-1} key={key}>
-        {
-          columns.map(column => {
-            switch (column.key) {
-              case 'favorite': {
-                return (
-                  <TableCell
-                    sx={{ width: 32 }}
-                    key={column.key}
-                    onClick={() => (favorite ? disfavorGroup(key) : favorGroup(key))}
-                  >
-                    {
-                      favorite
-                        ? <StarRoundedIcon fontSize="small" color="warning" />
-                        : <StarOutlineRoundedIcon fontSize="small" color="action" />
-                    }
-                  </TableCell>
-                )
-              }
-              case 'name': {
-                return (
-                  <TableCell key={column.key}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', pl: (level * 3.5) }}>
-                      {(!open || isNotEmpty(groups) || isNotEmpty(projects))
-                        ? <IconButton
-                          sx={{ p: 0, mr: 1 }}
-                          onClick={() => updateCollapseKeys(key)}
-                        >
-                          {
-                            open
-                              ? <KeyboardArrowDownOutlinedIcon sx={{ fontSize: '16px' }} />
-                              : <KeyboardArrowRightOutlinedIcon sx={{ fontSize: '16px' }} />
-                          }
-                        </IconButton>
-                        : <Box sx={{ width: '24px' }} />
-                      }
-                      <GroupIcon />
-                      <Box sx={{ pl: 0.5 }}>
-                        <Typography noWrap variant="body2">{name}</Typography>
-                      </Box>
-                    </Box>
-                  </TableCell>
-                )
-              }
-              case 'id': {
-                return (
-                  <TableCell key={column.key}>
-                    {key}
-                  </TableCell>
-                )
-              }
+        {columns.map((column) => {
+          switch (column.key) {
+            case 'favorite': {
+              return (
+                <TableCell
+                  sx={{ width: 32 }}
+                  key={column.key}
+                  onClick={() => (favorite ? disfavorGroup(key) : favorGroup(key))}
+                >
+                  {favorite ? (
+                    <StarRoundedIcon fontSize="small" color="warning" />
+                  ) : (
+                    <StarOutlineRoundedIcon fontSize="small" color="action" />
+                  )}
+                </TableCell>
+              )
             }
-          })
-        }
+            case 'name': {
+              return (
+                <TableCell key={column.key}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', pl: level * 3.5 }}>
+                    {!open || isNotEmpty(groups) || isNotEmpty(projects) ? (
+                      <IconButton sx={{ p: 0, mr: 1 }} onClick={() => updateCollapseKeys(key)}>
+                        {open ? (
+                          <KeyboardArrowDownOutlinedIcon sx={{ fontSize: '16px' }} />
+                        ) : (
+                          <KeyboardArrowRightOutlinedIcon sx={{ fontSize: '16px' }} />
+                        )}
+                      </IconButton>
+                    ) : (
+                      <Box sx={{ width: '24px' }} />
+                    )}
+                    <GroupIcon />
+                    <Box sx={{ pl: 0.5 }}>
+                      <Typography noWrap variant="body2">
+                        {name}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </TableCell>
+              )
+            }
+            case 'id': {
+              return <TableCell key={column.key}>{key}</TableCell>
+            }
+          }
+        })}
       </TableRow>
-      {open && groups.map(group => <GroupRow key={group.key} group={group} level={nextLevel} />)}
-      {open && projects.map(project => <ProjectRow key={project.key} project={project} level={nextLevel} />)}
+      {open && groups.map((group) => <GroupRow key={group.key} group={group} level={nextLevel} />)}
+      {open && projects.map((project) => <ProjectRow key={project.key} project={project} level={nextLevel} />)}
     </>
   )
 })
@@ -181,18 +169,15 @@ type ProjectRowProps = {
   level: number
 }
 
-const ProjectRow: FC<ProjectRowProps> = memo<ProjectRowProps>(({
-  project: { key, name, favorite, integration },
-  level,
-}) => {
-  const favorProject = useFavorProject()
-  const disfavorProject = useDisfavorProject()
+const ProjectRow: FC<ProjectRowProps> = memo<ProjectRowProps>(
+  ({ project: { key, name, favorite, integration }, level }) => {
+    const favorProject = useFavorProject()
+    const disfavorProject = useDisfavorProject()
 
-  return (
-    <>
-      <TableRow hover tabIndex={-1} key={key}>
-        {
-          columns.map(column => {
+    return (
+      <>
+        <TableRow hover tabIndex={-1} key={key}>
+          {columns.map((column) => {
             switch (column.key) {
               case 'favorite': {
                 return (
@@ -201,11 +186,11 @@ const ProjectRow: FC<ProjectRowProps> = memo<ProjectRowProps>(({
                     key={column.key}
                     onClick={() => (favorite ? disfavorProject(key) : favorProject(key))}
                   >
-                    {
-                      favorite
-                        ? <StarRoundedIcon fontSize="small" color="warning" />
-                        : <StarOutlineRoundedIcon fontSize="small" color="action" />
-                    }
+                    {favorite ? (
+                      <StarRoundedIcon fontSize="small" color="warning" />
+                    ) : (
+                      <StarOutlineRoundedIcon fontSize="small" color="action" />
+                    )}
                   </TableCell>
                 )
               }
@@ -230,19 +215,15 @@ const ProjectRow: FC<ProjectRowProps> = memo<ProjectRowProps>(({
                 )
               }
               case 'id': {
-                return (
-                  <TableCell key={column.key}>
-                    {key}
-                  </TableCell>
-                )
+                return <TableCell key={column.key}>{key}</TableCell>
               }
             }
-          })
-        }
-      </TableRow>
-    </>
-  )
-})
+          })}
+        </TableRow>
+      </>
+    )
+  },
+)
 
 const columns: ReadonlyArray<Column> = [
   { key: 'favorite', label: '' },

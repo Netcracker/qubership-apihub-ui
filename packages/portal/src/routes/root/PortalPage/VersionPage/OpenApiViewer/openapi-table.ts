@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { API_AUDIENCE_COLUMN_ID, API_KIND_COLUMN_ID } from '@netcracker/qubership-apihub-ui-shared/entities/table-columns'
+import {
+  API_AUDIENCE_COLUMN_ID,
+  API_KIND_COLUMN_ID,
+} from '@netcracker/qubership-apihub-ui-shared/entities/table-columns'
 
 export const CUSTOM_METADATA_COLUMN_ID = 'custom-metadata'
 export const STATUS_COLUMN_ID = 'status'

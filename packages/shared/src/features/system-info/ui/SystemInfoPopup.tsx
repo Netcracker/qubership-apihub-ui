@@ -59,30 +59,26 @@ export const SystemInfoPopup: FC<SystemInfoPopupProps> = memo(({ frontendVersion
           </IconButton>
         </DialogTitle>
         <DialogContent data-testid="SystemInfoContent" sx={{ minWidth: 236, pb: 2 }}>
-          <Box sx={{
-            display: 'grid',
-            rowGap: 1,
-          }}>
-            <Typography variant="subtitle2">
-              {`Backend v. ${backendVersionKey}`}
-            </Typography>
+          <Box
+            sx={{
+              display: 'grid',
+              rowGap: 1,
+            }}
+          >
+            <Typography variant="subtitle2">{`Backend v. ${backendVersionKey}`}</Typography>
 
-            <Typography variant="subtitle2">
-              {`Frontend v. ${frontendVersionKey}`}
-            </Typography>
+            <Typography variant="subtitle2">{`Frontend v. ${frontendVersionKey}`}</Typography>
 
-            {isNotEmpty(externalLinks) && <>
-              <Divider sx={{ mx: 0 }} orientation="horizontal" />
-              {externalLinks.map((link, index) => (
-                <Link
-                  key={index}
-                  variant="subtitle2"
-                  href={link.url}
-                >
-                  {link.title}
-                </Link>
-              ))}
-            </>}
+            {isNotEmpty(externalLinks) && (
+              <>
+                <Divider sx={{ mx: 0 }} orientation="horizontal" />
+                {externalLinks.map((link, index) => (
+                  <Link key={index} variant="subtitle2" href={link.url}>
+                    {link.title}
+                  </Link>
+                ))}
+              </>
+            )}
           </Box>
         </DialogContent>
       </Popover>

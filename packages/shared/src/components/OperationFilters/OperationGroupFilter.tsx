@@ -38,21 +38,13 @@ export type OperationGroupFilterProps = Partial<{
 const FILTER_GROUP_LABEL = 'Filter by Group'
 
 export const OperationGroupFilter: FC<OperationGroupFilterProps> = (props) => {
-  const {
-    required = false, labelText, value,
-    onSelectValue, isLoading, apiType, versionContent,
-  } = props
+  const { required = false, labelText, value, onSelectValue, isLoading, apiType, versionContent } = props
 
-  const options: OperationGroupName[] = useOperationGroupsFromPackageVersionContent(
-    apiType as ApiType,
-    versionContent,
-  )
+  const options: OperationGroupName[] = useOperationGroupsFromPackageVersionContent(apiType as ApiType, versionContent)
 
   return (
     <>
-      <InputLabel required={required}>
-        {labelText ?? FILTER_GROUP_LABEL}
-      </InputLabel>
+      <InputLabel required={required}>{labelText ?? FILTER_GROUP_LABEL}</InputLabel>
       <Autocomplete<OperationGroupName>
         loading={isLoading}
         disabled={!isLoading && options.length === SYNTHETIC_OPERATION_GROUPS.length}
@@ -94,13 +86,7 @@ export function useOperationGroupsFromPackageVersionContent(
       .map(({ groupName }) => groupName)
   }, [apiType, versionContent?.operationGroups])
 
-  return [
-    ...SYNTHETIC_OPERATION_GROUPS,
-    ...groupsFromContent,
-  ]
+  return [...SYNTHETIC_OPERATION_GROUPS, ...groupsFromContent]
 }
 
-const SYNTHETIC_OPERATION_GROUPS = [
-  ALL_OPERATION_GROUPS,
-  UNGROUPED_OPERATION_GROUP,
-]
+const SYNTHETIC_OPERATION_GROUPS = [ALL_OPERATION_GROUPS, UNGROUPED_OPERATION_GROUP]

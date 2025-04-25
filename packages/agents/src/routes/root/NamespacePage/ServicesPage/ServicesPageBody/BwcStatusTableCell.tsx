@@ -25,8 +25,7 @@ import {
   BASELINE_NOT_FOUND_MESSAGE,
   BASELINE_VERSION_NOT_FOUND_MESSAGE,
 } from './validationMessages'
-import type {
-  StatusMarkerVariant} from '@netcracker/qubership-apihub-ui-shared/components/StatusMarker'
+import type { StatusMarkerVariant } from '@netcracker/qubership-apihub-ui-shared/components/StatusMarker'
 import {
   ERROR_STATUS_MARKER_VARIANT,
   StatusMarker,
@@ -45,61 +44,55 @@ type CellData = Partial<{
   baselineVersionFound: boolean
 }>
 
-export const BwcStatusTableCell: FC<BwcStatusTableCellProps> = memo<BwcStatusTableCellProps>((
-  {
+export const BwcStatusTableCell: FC<BwcStatusTableCellProps> = memo<BwcStatusTableCellProps>(
+  ({
     value: {
       original: { service, bwcErrors, baselineFound, baselineVersionFound },
     },
-  },
-) => {
-  if (!service) {
-    return null
-  }
-
-  if (!baselineFound) {
-    return (
-      <BwcStatusTableCellContent
-        status={WARNING_STATUS_MARKER_VARIANT}
-        content={BASELINE_NOT_FOUND_MESSAGE}
-      />
-    )
-  } else {
-    if (!baselineVersionFound) {
-      return (
-        <BwcStatusTableCellContent
-          status={WARNING_STATUS_MARKER_VARIANT}
-          content={BASELINE_VERSION_NOT_FOUND_MESSAGE}
-        />
-      )
-    } else if (bwcErrors !== undefined) {
-      const areBwcErrorsExist = bwcErrors > 0
-      return (
-        <BwcStatusTableCellContent
-          status={areBwcErrorsExist ? ERROR_STATUS_MARKER_VARIANT : SUCCESS_STATUS_MARKER_VARIANT}
-          content={areBwcErrorsExist ? BACKWARD_INCOMPATIBLE_MESSAGE : BACKWARD_COMPATIBLE_MESSAGE}
-        />
-      )
+  }) => {
+    if (!service) {
+      return null
     }
-  }
 
-  return null
-})
+    if (!baselineFound) {
+      return <BwcStatusTableCellContent status={WARNING_STATUS_MARKER_VARIANT} content={BASELINE_NOT_FOUND_MESSAGE} />
+    } else {
+      if (!baselineVersionFound) {
+        return (
+          <BwcStatusTableCellContent
+            status={WARNING_STATUS_MARKER_VARIANT}
+            content={BASELINE_VERSION_NOT_FOUND_MESSAGE}
+          />
+        )
+      } else if (bwcErrors !== undefined) {
+        const areBwcErrorsExist = bwcErrors > 0
+        return (
+          <BwcStatusTableCellContent
+            status={areBwcErrorsExist ? ERROR_STATUS_MARKER_VARIANT : SUCCESS_STATUS_MARKER_VARIANT}
+            content={areBwcErrorsExist ? BACKWARD_INCOMPATIBLE_MESSAGE : BACKWARD_COMPATIBLE_MESSAGE}
+          />
+        )
+      }
+    }
+
+    return null
+  },
+)
 
 type BwcStatusTableCellContentProps = {
   status: StatusMarkerVariant
   content: string
 }
 
-const BwcStatusTableCellContent: FC<BwcStatusTableCellContentProps> = memo<BwcStatusTableCellContentProps>(({
-  status,
-  content,
-}) => {
-  return (
-    <Box display="flex" gap={1}>
-      <StatusMarker value={status}/>
-      <Typography noWrap variant="inherit">
-        {content}
-      </Typography>
-    </Box>
-  )
-})
+const BwcStatusTableCellContent: FC<BwcStatusTableCellContentProps> = memo<BwcStatusTableCellContentProps>(
+  ({ status, content }) => {
+    return (
+      <Box display="flex" gap={1}>
+        <StatusMarker value={status} />
+        <Typography noWrap variant="inherit">
+          {content}
+        </Typography>
+      </Box>
+    )
+  },
+)

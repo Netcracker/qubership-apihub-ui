@@ -25,20 +25,14 @@ export function useSelectedPreviewFileKey(): [Key | undefined, SetEditorSelected
   const file = useSearchParam<Key>('previewFile')
   const setSearchParams = useSetSearchParams()
 
-  return useMemo(
-    () => [file, fileKey => setSearchParams({ previewFile: fileKey ?? '' })],
-    [file, setSearchParams],
-  )
+  return useMemo(() => [file, (fileKey) => setSearchParams({ previewFile: fileKey ?? '' })], [file, setSearchParams])
 }
 
 export function useSelectedPreviewFile(): ProjectFile | null {
   const [fileKey] = useSelectedPreviewFileKey()
   const [branchConfig] = useBranchConfig()
 
-  return useMemo(
-    () => branchConfig?.files.find(({ key }) => key === fileKey) ?? null,
-    [fileKey, branchConfig?.files],
-  )
+  return useMemo(() => branchConfig?.files.find(({ key }) => key === fileKey) ?? null, [fileKey, branchConfig?.files])
 }
 
 type SetEditorSelectedPreviewFileKey = (fileKey: Key | undefined) => void

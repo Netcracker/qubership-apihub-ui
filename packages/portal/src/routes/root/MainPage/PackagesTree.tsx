@@ -112,32 +112,34 @@ export const PackagesTree: FC<PackagesTreeProps> = memo<PackagesTreeProps>(({ ro
     defaultMinColumnSize: 60,
   })
 
-  const columns: ColumnDef<TableData>[] = useMemo(() => [
-    {
-      id: FAVORITE_COLUMN_ID,
-      header: () => <CustomTableHeadCell title={''} />,
-    },
-    {
-      id: NAME_COLUMN_ID,
-      header: () => <CustomTableHeadCell title={'Name'} />,
-    },
-    {
-      id: ID_COLUMN_ID,
-      header: () => <CustomTableHeadCell title={'ID'} />,
-    },
-    {
-      id: SERVICE_NAME_COLUMN_ID,
-      header: () => <CustomTableHeadCell title={'Service Name'} />,
-    },
-    {
-      id: LAST_VERSION_COLUMN_ID,
-      header: () => <CustomTableHeadCell title={'Latest Release'} />,
-    },
-    {
-      id: BWC_ERRORS_COLUMN_ID,
-      header: () => <CustomTableHeadCell title={'BWC Status'} />,
-    },
-  ], [],
+  const columns: ColumnDef<TableData>[] = useMemo(
+    () => [
+      {
+        id: FAVORITE_COLUMN_ID,
+        header: () => <CustomTableHeadCell title={''} />,
+      },
+      {
+        id: NAME_COLUMN_ID,
+        header: () => <CustomTableHeadCell title={'Name'} />,
+      },
+      {
+        id: ID_COLUMN_ID,
+        header: () => <CustomTableHeadCell title={'ID'} />,
+      },
+      {
+        id: SERVICE_NAME_COLUMN_ID,
+        header: () => <CustomTableHeadCell title={'Service Name'} />,
+      },
+      {
+        id: LAST_VERSION_COLUMN_ID,
+        header: () => <CustomTableHeadCell title={'Latest Release'} />,
+      },
+      {
+        id: BWC_ERRORS_COLUMN_ID,
+        header: () => <CustomTableHeadCell title={'BWC Status'} />,
+      },
+    ],
+    [],
   )
 
   const { getHeaderGroups, setColumnSizing } = useReactTable({
@@ -150,12 +152,9 @@ export const PackagesTree: FC<PackagesTreeProps> = memo<PackagesTreeProps>(({ ro
     onColumnSizingInfoChange: setColumnSizingInfo as OnChangeFn<ColumnSizingInfoState>,
   })
 
-  useEffect(
-    () => setColumnSizing(actualColumnSizing),
-    [setColumnSizing, actualColumnSizing],
-  )
+  useEffect(() => setColumnSizing(actualColumnSizing), [setColumnSizing, actualColumnSizing])
 
-  const isLoading = useMemo(() => (isGroupsLoading || isPackagesLoading), [isGroupsLoading, isPackagesLoading])
+  const isLoading = useMemo(() => isGroupsLoading || isPackagesLoading, [isGroupsLoading, isPackagesLoading])
 
   return (
     <Placeholder
@@ -166,10 +165,8 @@ export const PackagesTree: FC<PackagesTreeProps> = memo<PackagesTreeProps>(({ ro
       <TableContainer ref={tableContainerRef} sx={{ overflowX: 'hidden' }}>
         <Table stickyHeader size="small" sx={{ tableLayout: 'fixed' }}>
           <TableHead>
-            {getHeaderGroups().map(headerGroup => (
-              <TableRow
-                key={headerGroup.id}
-              >
+            {getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((headerColumn, index) => (
                   <TableCell
                     key={headerColumn.id}
@@ -182,34 +179,38 @@ export const PackagesTree: FC<PackagesTreeProps> = memo<PackagesTreeProps>(({ ro
                     }}
                   >
                     {flexRender(headerColumn.column.columnDef.header, headerColumn.getContext())}
-                    {index !== headerGroup.headers.length - 1 &&
-                      <ColumnDelimiter header={headerColumn} resizable={true} />}
+                    {index !== headerGroup.headers.length - 1 && (
+                      <ColumnDelimiter header={headerColumn} resizable={true} />
+                    )}
                   </TableCell>
                 ))}
               </TableRow>
             ))}
           </TableHead>
           <TableBody>
-            {!isLoading && groups && groups?.map(group => (
-              <GroupRow
-                key={group.key}
-                group={group}
-                level={0}
-                onlyFavorite={onlyFavorite}
-                onlyShared={onlyShared}
-                refererPageName={refererPageName}
-                isFetching={isFetching && updatingPackageKey === group.key}
-              />
-            ))}
-            {!isLoading && packages?.map(packageItem => (
-              <PackageRow
-                key={packageItem.key}
-                package={packageItem}
-                level={0}
-                refererPageName={refererPageName}
-                isFetching={isFetching && updatingPackageKey === packageItem.key}
-              />
-            ))}
+            {!isLoading &&
+              groups &&
+              groups?.map((group) => (
+                <GroupRow
+                  key={group.key}
+                  group={group}
+                  level={0}
+                  onlyFavorite={onlyFavorite}
+                  onlyShared={onlyShared}
+                  refererPageName={refererPageName}
+                  isFetching={isFetching && updatingPackageKey === group.key}
+                />
+              ))}
+            {!isLoading &&
+              packages?.map((packageItem) => (
+                <PackageRow
+                  key={packageItem.key}
+                  package={packageItem}
+                  level={0}
+                  refererPageName={refererPageName}
+                  isFetching={isFetching && updatingPackageKey === packageItem.key}
+                />
+              ))}
           </TableBody>
           {isLoading && <TableSkeleton />}
         </Table>
@@ -227,15 +228,9 @@ type GroupRowProps = {
   refererPageName?: string
 }
 
-const GroupRow: FC<GroupRowProps> = memo<GroupRowProps>(props => {
+const GroupRow: FC<GroupRowProps> = memo<GroupRowProps>((props) => {
   const {
-    group: {
-      key,
-      name,
-      serviceName,
-      isFavorite,
-      kind,
-    },
+    group: { key, name, serviceName, isFavorite, kind },
     level,
     onlyFavorite,
     onlyShared,
@@ -270,152 +265,143 @@ const GroupRow: FC<GroupRowProps> = memo<GroupRowProps>(props => {
     refererPageKey: refererPageName ?? MAIN_PAGE_REFERER,
   })
 
-  const isLoading = useMemo(() => (isFetchingPackage || isFetchingGroup), [isFetchingPackage, isFetchingGroup])
+  const isLoading = useMemo(() => isFetchingPackage || isFetchingGroup, [isFetchingPackage, isFetchingGroup])
 
   const nextLevel = level + 1
 
-  const updateCollapseKeys = useCallback((key: Key) => {
-    setOpen(!open)
-    setCollapsedKeys(previousKey => (
-      !previousKey.includes(key)
-        ? [...previousKey, key]
-        : previousKey.filter(id => id !== key)
-    ))
-  }, [open, setCollapsedKeys])
+  const updateCollapseKeys = useCallback(
+    (key: Key) => {
+      setOpen(!open)
+      setCollapsedKeys((previousKey) =>
+        !previousKey.includes(key) ? [...previousKey, key] : previousKey.filter((id) => id !== key),
+      )
+    },
+    [open, setCollapsedKeys],
+  )
 
   return (
     <>
       <TableRow hover tabIndex={-1} key={key}>
-        {
-          columns.map(column => {
-            switch (column.key) {
-              case FAVORITE_COLUMN_ID: {
-                return (
-                  <TableCell
-                    sx={{ width: 32 }}
-                    key={column.key}
-                    data-testid={`Cell-${FAVORITE_COLUMN_ID}`}
-                    onClick={() => {
-                      // TODO 11.08.23 // Has problems when user clicks on several buttons at the moment
-                      if (!isFetching) {
-                        setUpdatingPackageKey(key)
-                        isFavorite ? disfavorPackage(key) : favorPackage(key)
-                      }
-                    }}
-                  >
-                    <FavoriteIconButton
-                      isFetching={isFetching && updatingPackageKey === key}
-                      isFavorite={isFavorite}
-                    />
-                  </TableCell>
-                )
-              }
-              case NAME_COLUMN_ID: {
-                const expandButtonSize = 16
-                const paddingLeft = (level * 3.5)
-                const entityIconSize = 10
-                const paddingSettingsButtonSize = 20
-                const totalIndent = `${expandButtonSize + paddingLeft + entityIconSize + paddingSettingsButtonSize}px`
-                return (
-                  <TableCell key={column.key} data-testid={`Cell-${NAME_COLUMN_ID}`}>
-                    <Box sx={{
+        {columns.map((column) => {
+          switch (column.key) {
+            case FAVORITE_COLUMN_ID: {
+              return (
+                <TableCell
+                  sx={{ width: 32 }}
+                  key={column.key}
+                  data-testid={`Cell-${FAVORITE_COLUMN_ID}`}
+                  onClick={() => {
+                    // TODO 11.08.23 // Has problems when user clicks on several buttons at the moment
+                    if (!isFetching) {
+                      setUpdatingPackageKey(key)
+                      isFavorite ? disfavorPackage(key) : favorPackage(key)
+                    }
+                  }}
+                >
+                  <FavoriteIconButton isFetching={isFetching && updatingPackageKey === key} isFavorite={isFavorite} />
+                </TableCell>
+              )
+            }
+            case NAME_COLUMN_ID: {
+              const expandButtonSize = 16
+              const paddingLeft = level * 3.5
+              const entityIconSize = 10
+              const paddingSettingsButtonSize = 20
+              const totalIndent = `${expandButtonSize + paddingLeft + entityIconSize + paddingSettingsButtonSize}px`
+              return (
+                <TableCell key={column.key} data-testid={`Cell-${NAME_COLUMN_ID}`}>
+                  <Box
+                    sx={{
                       display: 'flex',
                       alignItems: 'center',
                       pl: paddingLeft,
                       width: '100%',
-                    }}>
-                      {(!open || isNotEmpty(groups) || isNotEmpty(packages))
-                        ? (
-                          <IconButton
-                            sx={{ p: 0, mr: 1 }}
-                            onClick={() => updateCollapseKeys(key)}
-                          >
-                            {
-                              open
-                                ? <KeyboardArrowDownOutlinedIcon sx={{ fontSize: expandButtonSize }} />
-                                : <KeyboardArrowRightOutlinedIcon sx={{ fontSize: expandButtonSize }} />
-                            }
-                          </IconButton>
-                        )
-                        : <Box sx={{ width: '24px' }} />
-                      }
-                      <PackageKindLogo kind={kind} />
-                      <Box sx={{
+                    }}
+                  >
+                    {!open || isNotEmpty(groups) || isNotEmpty(packages) ? (
+                      <IconButton sx={{ p: 0, mr: 1 }} onClick={() => updateCollapseKeys(key)}>
+                        {open ? (
+                          <KeyboardArrowDownOutlinedIcon sx={{ fontSize: expandButtonSize }} />
+                        ) : (
+                          <KeyboardArrowRightOutlinedIcon sx={{ fontSize: expandButtonSize }} />
+                        )}
+                      </IconButton>
+                    ) : (
+                      <Box sx={{ width: '24px' }} />
+                    )}
+                    <PackageKindLogo kind={kind} />
+                    <Box
+                      sx={{
                         pl: 0.5,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         width: `calc(100% - ${totalIndent})`,
-                      }}>
-                        <TextWithOverflowTooltip tooltipText={name} variant="body2">
-                          <Link
-                            component={NavLink}
-                            to={getGroupPath({ groupKey: key })}
-                          >
-                            {name}
-                          </Link>
-                        </TextWithOverflowTooltip>
-                        <PackageSettingsButton packageKey={key} isIconButton={true} />
-                      </Box>
+                      }}
+                    >
+                      <TextWithOverflowTooltip tooltipText={name} variant="body2">
+                        <Link component={NavLink} to={getGroupPath({ groupKey: key })}>
+                          {name}
+                        </Link>
+                      </TextWithOverflowTooltip>
+                      <PackageSettingsButton packageKey={key} isIconButton={true} />
                     </Box>
-                  </TableCell>
-                )
-              }
-              case ID_COLUMN_ID: {
-                return (
-                  <TableCell key={column.key} data-testid={`Cell-${ID_COLUMN_ID}`}>
-                    <TextWithOverflowTooltip tooltipText={key}>
-                      {key}
-                    </TextWithOverflowTooltip>
-                  </TableCell>
-                )
-              }
-              case SERVICE_NAME_COLUMN_ID: {
-                return (
-                  <TableCell key={column.key} data-testid={`Cell-${SERVICE_NAME_COLUMN_ID}`}>
-                    <TextWithOverflowTooltip tooltipText={serviceName}>
-                      {serviceName}
-                    </TextWithOverflowTooltip>
-                  </TableCell>
-                )
-              }
-              case LAST_VERSION_COLUMN_ID: {
-                return (
-                  //Group doesn't have version, leave empty column
-                  <TableCell key={column.key} data-testid={`Cell-${LAST_VERSION_COLUMN_ID}`}>
-                  </TableCell>
-                )
-              }
-              case BWC_ERRORS_COLUMN_ID: {
-                return (
-                  //Group doesn't have bwc errors, leave empty column
-                  <TableCell key={column.key} data-testid={`Cell-${BWC_ERRORS_COLUMN_ID}`}>
-                  </TableCell>
-                )
-              }
+                  </Box>
+                </TableCell>
+              )
             }
-          })
-        }
+            case ID_COLUMN_ID: {
+              return (
+                <TableCell key={column.key} data-testid={`Cell-${ID_COLUMN_ID}`}>
+                  <TextWithOverflowTooltip tooltipText={key}>{key}</TextWithOverflowTooltip>
+                </TableCell>
+              )
+            }
+            case SERVICE_NAME_COLUMN_ID: {
+              return (
+                <TableCell key={column.key} data-testid={`Cell-${SERVICE_NAME_COLUMN_ID}`}>
+                  <TextWithOverflowTooltip tooltipText={serviceName}>{serviceName}</TextWithOverflowTooltip>
+                </TableCell>
+              )
+            }
+            case LAST_VERSION_COLUMN_ID: {
+              return (
+                //Group doesn't have version, leave empty column
+                <TableCell key={column.key} data-testid={`Cell-${LAST_VERSION_COLUMN_ID}`}></TableCell>
+              )
+            }
+            case BWC_ERRORS_COLUMN_ID: {
+              return (
+                //Group doesn't have bwc errors, leave empty column
+                <TableCell key={column.key} data-testid={`Cell-${BWC_ERRORS_COLUMN_ID}`}></TableCell>
+              )
+            }
+          }
+        })}
       </TableRow>
-      {open && !isLoading && groups.map(group => (
-        <GroupRow
-          key={group.key}
-          group={group}
-          onlyFavorite={onlyFavorite}
-          level={nextLevel}
-          refererPageName={refererPageName}
-          isFetching={isFetching && updatingPackageKey === group.key}
-        />
-      ))}
-      {open && !isLoading && packages.map(packageItem => (
-        <PackageRow
-          key={packageItem.key}
-          package={packageItem}
-          level={nextLevel}
-          refererPageName={refererPageName}
-          isFetching={isFetching && updatingPackageKey === packageItem.key}
-        />
-      ))}
+      {open &&
+        !isLoading &&
+        groups.map((group) => (
+          <GroupRow
+            key={group.key}
+            group={group}
+            onlyFavorite={onlyFavorite}
+            level={nextLevel}
+            refererPageName={refererPageName}
+            isFetching={isFetching && updatingPackageKey === group.key}
+          />
+        ))}
+      {open &&
+        !isLoading &&
+        packages.map((packageItem) => (
+          <PackageRow
+            key={packageItem.key}
+            package={packageItem}
+            level={nextLevel}
+            refererPageName={refererPageName}
+            isFetching={isFetching && updatingPackageKey === packageItem.key}
+          />
+        ))}
       {isLoading && <RowSkeleton />}
     </>
   )
@@ -428,17 +414,9 @@ type PackageRowProps = {
   refererPageName?: string
 }
 
-const PackageRow: FC<PackageRowProps> = memo<PackageRowProps>(props => {
+const PackageRow: FC<PackageRowProps> = memo<PackageRowProps>((props) => {
   const {
-    package: {
-      key,
-      name,
-      kind,
-      isFavorite,
-      lastReleaseVersionDetails,
-      defaultVersion,
-      serviceName,
-    },
+    package: { key, name, kind, isFavorite, lastReleaseVersionDetails, defaultVersion, serviceName },
     level,
     refererPageName,
     isFetching,
@@ -451,118 +429,108 @@ const PackageRow: FC<PackageRowProps> = memo<PackageRowProps>(props => {
   return (
     <>
       <TableRow hover tabIndex={-1} key={key}>
-        {
-          columns.map(column => {
-            switch (column.key) {
-              case FAVORITE_COLUMN_ID: {
-                return (
-                  <TableCell
-                    sx={{ width: 32 }}
-                    key={column.key}
-                    onClick={() => {
-                      // TODO 11.08.23 // Has problems when user clicks on several buttons at the moment
-                      if (!isFetching) {
-                        setUpdatingPackageKey(key)
-                        isFavorite ? disfavorPackage(key) : favorPackage(key)
-                      }
-                    }}
-                    data-testid={`Cell-${FAVORITE_COLUMN_ID}`}
-                  >
-                    <FavoriteIconButton
-                      isFetching={isFetching && updatingPackageKey === key}
-                      isFavorite={isFavorite}
-                    />
-                  </TableCell>
-                )
-              }
-              case NAME_COLUMN_ID: {
-                return (
-                  <TableCell key={column.key} data-testid={`Cell-${NAME_COLUMN_ID}`}>
-                    <Box sx={{
+        {columns.map((column) => {
+          switch (column.key) {
+            case FAVORITE_COLUMN_ID: {
+              return (
+                <TableCell
+                  sx={{ width: 32 }}
+                  key={column.key}
+                  onClick={() => {
+                    // TODO 11.08.23 // Has problems when user clicks on several buttons at the moment
+                    if (!isFetching) {
+                      setUpdatingPackageKey(key)
+                      isFavorite ? disfavorPackage(key) : favorPackage(key)
+                    }
+                  }}
+                  data-testid={`Cell-${FAVORITE_COLUMN_ID}`}
+                >
+                  <FavoriteIconButton isFetching={isFetching && updatingPackageKey === key} isFavorite={isFavorite} />
+                </TableCell>
+              )
+            }
+            case NAME_COLUMN_ID: {
+              return (
+                <TableCell key={column.key} data-testid={`Cell-${NAME_COLUMN_ID}`}>
+                  <Box
+                    sx={{
                       alignItems: 'center',
                       display: 'flex',
                       gap: '5px',
-                      pl: (level * 3.5),
-                    }}>
-                      <Box ml="24px">
-                        <PackageKindLogo kind={kind} />
-                      </Box>
-                      <TextWithOverflowTooltip tooltipText={name}>
-                        <Link
-                          component={NavLink}
-                          to={{
-                            pathname: format(
-                              '/portal/packages/{}/{}',
-                              encodeURIComponent(key),
-                              defaultVersion ? encodeURIComponent(defaultVersion) : '',
-                            ),
-                          }}
-                        >
-                          {name}
-                        </Link>
-                      </TextWithOverflowTooltip>
-                      <Box ml="auto">
-                        <PackageSettingsButton packageKey={key} isIconButton={true} />
-                      </Box>
+                      pl: level * 3.5,
+                    }}
+                  >
+                    <Box ml="24px">
+                      <PackageKindLogo kind={kind} />
                     </Box>
-                  </TableCell>
-                )
-              }
-              case ID_COLUMN_ID: {
-                return (
-                  <TableCell key={column.key} data-testid={`Cell-${ID_COLUMN_ID}`}>
-                    <TextWithOverflowTooltip tooltipText={key}>
-                      {key}
+                    <TextWithOverflowTooltip tooltipText={name}>
+                      <Link
+                        component={NavLink}
+                        to={{
+                          pathname: format(
+                            '/portal/packages/{}/{}',
+                            encodeURIComponent(key),
+                            defaultVersion ? encodeURIComponent(defaultVersion) : '',
+                          ),
+                        }}
+                      >
+                        {name}
+                      </Link>
                     </TextWithOverflowTooltip>
-                  </TableCell>
-                )
-              }
-              case SERVICE_NAME_COLUMN_ID: {
-                return (
-                  <TableCell key={column.key} data-testid={`Cell-${SERVICE_NAME_COLUMN_ID}`}>
-                    <TextWithOverflowTooltip tooltipText={serviceName}>
-                      {serviceName}
-                    </TextWithOverflowTooltip>
-                  </TableCell>
-                )
-              }
-              case LAST_VERSION_COLUMN_ID: {
-                const { versionKey: lastVersion } = getSplittedVersionKey(
-                  lastReleaseVersionDetails?.version,
-                  lastReleaseVersionDetails?.latestRevision,
-                ) || '―'
-
-                return (
-                  <TableCell key={column.key} data-testid={`Cell-${LAST_VERSION_COLUMN_ID}`}>
-                    <TextWithOverflowTooltip tooltipText={lastVersion}>
-                      {lastVersion}
-                    </TextWithOverflowTooltip>
-                  </TableCell>
-                )
-              }
-              case BWC_ERRORS_COLUMN_ID: {
-                const bwcData = getBwcData(lastReleaseVersionDetails?.summary)
-
-                return (
-                  <TableCell key={column.key} data-testid={`Cell-${BWC_ERRORS_COLUMN_ID}`}>
-                    <Tooltip placement="right" title={getTooltipMessage(bwcData)}>
-                      <Box width={'min-content'}>
-                        {bwcData && (
-                          <Box display="flex" gap={1}>
-                            <StatusMarker value={bwcData.type} />
-                            <Typography noWrap variant="inherit">
-                              {bwcData.count}
-                            </Typography>
-                          </Box>
-                        )}
-                      </Box>
-                    </Tooltip>
-                  </TableCell>
-                )
-              }
+                    <Box ml="auto">
+                      <PackageSettingsButton packageKey={key} isIconButton={true} />
+                    </Box>
+                  </Box>
+                </TableCell>
+              )
             }
-          })
-        }
+            case ID_COLUMN_ID: {
+              return (
+                <TableCell key={column.key} data-testid={`Cell-${ID_COLUMN_ID}`}>
+                  <TextWithOverflowTooltip tooltipText={key}>{key}</TextWithOverflowTooltip>
+                </TableCell>
+              )
+            }
+            case SERVICE_NAME_COLUMN_ID: {
+              return (
+                <TableCell key={column.key} data-testid={`Cell-${SERVICE_NAME_COLUMN_ID}`}>
+                  <TextWithOverflowTooltip tooltipText={serviceName}>{serviceName}</TextWithOverflowTooltip>
+                </TableCell>
+              )
+            }
+            case LAST_VERSION_COLUMN_ID: {
+              const { versionKey: lastVersion } =
+                getSplittedVersionKey(lastReleaseVersionDetails?.version, lastReleaseVersionDetails?.latestRevision) ||
+                '―'
+
+              return (
+                <TableCell key={column.key} data-testid={`Cell-${LAST_VERSION_COLUMN_ID}`}>
+                  <TextWithOverflowTooltip tooltipText={lastVersion}>{lastVersion}</TextWithOverflowTooltip>
+                </TableCell>
+              )
+            }
+            case BWC_ERRORS_COLUMN_ID: {
+              const bwcData = getBwcData(lastReleaseVersionDetails?.summary)
+
+              return (
+                <TableCell key={column.key} data-testid={`Cell-${BWC_ERRORS_COLUMN_ID}`}>
+                  <Tooltip placement="right" title={getTooltipMessage(bwcData)}>
+                    <Box width={'min-content'}>
+                      {bwcData && (
+                        <Box display="flex" gap={1}>
+                          <StatusMarker value={bwcData.type} />
+                          <Typography noWrap variant="inherit">
+                            {bwcData.count}
+                          </Typography>
+                        </Box>
+                      )}
+                    </Box>
+                  </Tooltip>
+                </TableCell>
+              )
+            }
+          }
+        })}
       </TableRow>
     </>
   )

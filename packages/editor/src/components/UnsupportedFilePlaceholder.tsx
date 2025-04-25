@@ -23,31 +23,29 @@ export type UnsupportedFilePlaceholderProps = {
   message: string
 }
 
-export const UnsupportedFilePlaceholder: FC<UnsupportedFilePlaceholderProps> = memo<UnsupportedFilePlaceholderProps>(({
-  onDownload,
-  message,
-}) => {
-  return (
-    <Box sx={{
-      display: 'grid',
-      justifyItems: 'center',
-      mt: '15%',
-      width: '100%',
-      gridTemplateRows: 'max-content',
-      gridTemplateAreas: `
+export const UnsupportedFilePlaceholder: FC<UnsupportedFilePlaceholderProps> = memo<UnsupportedFilePlaceholderProps>(
+  ({ onDownload, message }) => {
+    return (
+      <Box
+        sx={{
+          display: 'grid',
+          justifyItems: 'center',
+          mt: '15%',
+          width: '100%',
+          gridTemplateRows: 'max-content',
+          gridTemplateAreas: `
           'title'
           'button'
       `,
-    }}>
-      <Box sx={{ gridArea: 'title' }}>
-        {message}
+        }}
+      >
+        <Box sx={{ gridArea: 'title' }}>{message}</Box>
+        {onDownload && (
+          <Button sx={{ gridArea: 'button' }} onClick={onDownload}>
+            Download
+          </Button>
+        )}
       </Box>
-      {
-        onDownload &&
-        <Button sx={{ gridArea: 'button' }} onClick={onDownload}>
-          Download
-        </Button>
-      }
-    </Box>
-  )
-})
+    )
+  },
+)

@@ -32,7 +32,7 @@ export function useUploadProjectFiles(): [UploadProjectFiles, IsLoading] {
 
   const { mutate, isLoading } = useMutation<Key[], Error, UploadProjectFilesInfo>({
     mutationFn: ({ files, path }) => uploadProjectFiles(projectId!, selectedBranch!, files, path),
-    onSuccess: fileIds => {
+    onSuccess: (fileIds) => {
       showNotification({ message: 'Project has been updated' })
       setSearchParams({ file: fileIds[0] })
     },

@@ -26,10 +26,7 @@ export const DRAFT_VERSION_STATUS = 'draft'
 export const RELEASE_VERSION_STATUS = 'release'
 export const ARCHIVED_VERSION_STATUS = 'archived'
 
-export type VersionStatus =
-  | typeof DRAFT_VERSION_STATUS
-  | typeof RELEASE_VERSION_STATUS
-  | typeof ARCHIVED_VERSION_STATUS
+export type VersionStatus = typeof DRAFT_VERSION_STATUS | typeof RELEASE_VERSION_STATUS | typeof ARCHIVED_VERSION_STATUS
 
 export type VersionStatuses = ReadonlyArray<VersionStatus>
 
@@ -45,10 +42,6 @@ export const VERSION_STATUS_MANAGE_PERMISSIONS: Record<VersionStatus, PackagePer
   [ARCHIVED_VERSION_STATUS]: MANAGE_ARCHIVED_VERSION_PERMISSION,
 }
 
-export const VERSION_STATUSES: VersionStatuses = [
-  DRAFT_VERSION_STATUS,
-  RELEASE_VERSION_STATUS,
-  ARCHIVED_VERSION_STATUS,
-]
+export const VERSION_STATUSES: VersionStatuses = [DRAFT_VERSION_STATUS, RELEASE_VERSION_STATUS, ARCHIVED_VERSION_STATUS]
 
 export const NO_PREVIOUS_RELEASE_VERSION_OPTION: Key = 'No previous release version'

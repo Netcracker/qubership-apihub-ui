@@ -35,7 +35,7 @@ export const GroupsAndProjectsFilterer: FC = memo(() => {
       <SearchBar
         placeholder="Search project"
         value={textFilter}
-        onValueChange={text => {
+        onValueChange={(text) => {
           setSearchParams({ text: text, view: text === '' ? mainViewMode : FLAT_MAIN_PAGE_MODE }, { replace: true })
         }}
       />
@@ -60,13 +60,13 @@ export const GroupsAndProjectsFilterer: FC = memo(() => {
           }}
         >
           <ToggleButton value={TREE_MAIN_PAGE_MODE}>
-            <TreeIcon/>
+            <TreeIcon />
           </ToggleButton>
           <ToggleButton value={FLAT_MAIN_PAGE_MODE}>
-            <ListOutlinedIcon/>
+            <ListOutlinedIcon />
           </ToggleButton>
           <ToggleButton value={FAVORITE_MAIN_PAGE_MODE}>
-            <StarOutlineRoundedIcon/>
+            <StarOutlineRoundedIcon />
           </ToggleButton>
         </ToggleButtonGroup>
       </Paper>

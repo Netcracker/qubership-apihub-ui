@@ -32,30 +32,19 @@ export type CreateVersionButtonProps = {
   kind?: PackageKind
 }
 
-export const CreateVersionButton: FC<CreateVersionButtonProps> = memo(({
-  disabled,
-  kind,
-}) => {
+export const CreateVersionButton: FC<CreateVersionButtonProps> = memo(({ disabled, kind }) => {
   const location = useBackwardLocation()
   const backwardLocation = useBackwardLocationContext()
   const setBackwardLocation = useSetBackwardLocationContext()
   const { navigateToVersion } = useNavigation()
   const { packageId } = useParams()
-  const handleClick = useCallback(
-    () => {
-      setBackwardLocation({ ...backwardLocation, fromPackage: location })
-      navigateToVersion({ packageKey: packageId!, versionKey: SPECIAL_VERSION_KEY, edit: true })
-    },
-    [backwardLocation, location, navigateToVersion, packageId, setBackwardLocation],
-  )
+  const handleClick = useCallback(() => {
+    setBackwardLocation({ ...backwardLocation, fromPackage: location })
+    navigateToVersion({ packageKey: packageId!, versionKey: SPECIAL_VERSION_KEY, edit: true })
+  }, [backwardLocation, location, navigateToVersion, packageId, setBackwardLocation])
 
   if (kind === DASHBOARD_KIND) {
-    return (
-      <CreateDashboardVersionButton
-        disabled={disabled}
-        sx={{ ml: 'auto' }}
-      />
-    )
+    return <CreateDashboardVersionButton disabled={disabled} sx={{ ml: 'auto' }} />
   }
 
   return (

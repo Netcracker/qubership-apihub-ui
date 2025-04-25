@@ -39,7 +39,13 @@ export const RevisionsHistoryCard: FC = memo(() => {
   const [searchValue, setSearchValue] = useState('')
   const fullMainVersion = useFullMainVersion()
 
-  const { data: revisions, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } = usePagedRevisions({
+  const {
+    data: revisions,
+    isLoading,
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
+  } = usePagedRevisions({
     packageKey: packageId,
     versionKey: fullMainVersion,
     textFilter: searchValue,
@@ -50,7 +56,7 @@ export const RevisionsHistoryCard: FC = memo(() => {
 
   return (
     <BodyCard
-      header={<RevisionsHistoryCardHeader setSearchValue={setSearchValue}/>}
+      header={<RevisionsHistoryCardHeader setSearchValue={setSearchValue} />}
       body={
         <Placeholder
           invisible={isNotEmpty(revisions) || isLoading}
@@ -62,10 +68,11 @@ export const RevisionsHistoryCard: FC = memo(() => {
             packageKey={packageId ?? ''}
             hasNextPage={hasNextPage}
             refObject={ref}
-            actionsCell={(item) => <RevisionActions revision={item as Revision}/>}
+            actionsCell={(item) => <RevisionActions revision={item as Revision} />}
             isLoading={isLoading}
           />
-        </Placeholder>}
+        </Placeholder>
+      }
     />
   )
 })
@@ -74,21 +81,23 @@ type RevisionsHistoryCardHeaderProps = {
   setSearchValue: Dispatch<SetStateAction<string>>
 }
 
-const RevisionsHistoryCardHeader: FC<RevisionsHistoryCardHeaderProps> = memo<RevisionsHistoryCardHeaderProps>(({ setSearchValue }) => {
-  return (
-    <Box
-      sx={{
-        display: 'grid',
-        gap: 1,
-        gridTemplateColumns: '1fr auto',
-        alignItems: 'center',
-      }}
-    >
-      <Typography variant="inherit">Revision History</Typography>
-      <SearchBar onValueChange={setSearchValue} data-testid="SearchRevisions"/>
-    </Box>
-  )
-})
+const RevisionsHistoryCardHeader: FC<RevisionsHistoryCardHeaderProps> = memo<RevisionsHistoryCardHeaderProps>(
+  ({ setSearchValue }) => {
+    return (
+      <Box
+        sx={{
+          display: 'grid',
+          gap: 1,
+          gridTemplateColumns: '1fr auto',
+          alignItems: 'center',
+        }}
+      >
+        <Typography variant="inherit">Revision History</Typography>
+        <SearchBar onValueChange={setSearchValue} data-testid="SearchRevisions" />
+      </Box>
+    )
+  },
+)
 
 type RevisionActionsProps = {
   revision: Revision
@@ -102,13 +111,13 @@ const RevisionActions: FC<RevisionActionsProps> = memo<RevisionActionsProps>(({ 
     return (
       <Tooltip
         disableHoverListener={false}
-        title={<MetaDataContent metaData={publishMeta}/>}
+        title={<MetaDataContent metaData={publishMeta} />}
         placement="left"
         slotProps={{
           tooltip: { sx: { maxWidth: REVISION_ACTION_TOOLTIP_MAX_WIDTH } },
         }}
       >
-        <InfoContextIcon sx={{ visibility: 'hidden' }} className="visible-on-hover" area-label="info"/>
+        <InfoContextIcon sx={{ visibility: 'hidden' }} className="visible-on-hover" area-label="info" />
       </Tooltip>
     )
   }

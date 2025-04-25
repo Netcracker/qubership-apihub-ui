@@ -53,7 +53,7 @@ export function usePublishProjectVersion(): [PublishProjectVersion, IsLoading, I
   const showErrorNotification = useShowErrorNotification()
 
   const { mutate, isLoading, isSuccess } = useMutation<PublishDetails, Error, Options>({
-    mutationFn: options => {
+    mutationFn: (options) => {
       const config = queryClient.getQueryData([BRANCH_CONFIG_QUERY_KEY, projectId, branchName!]) as BranchConfig
 
       return PackageVersionBuilder.publishPackage(
@@ -95,7 +95,7 @@ function toPublishOptions(
     status: status as VersionStatus,
     createdBy: createdBy,
     refs: [],
-    files: files.map(file => ({
+    files: files.map((file) => ({
       fileId: file.key,
       publish: !!file.publish,
       labels: file.labels ?? [],

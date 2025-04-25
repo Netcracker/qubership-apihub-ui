@@ -27,14 +27,13 @@ export function usePrivateWorkspace(): [Key, IsLoading] {
     queryFn: () => getPrivateWorkspaceUser(),
   })
 
-  return [
-    data ?? '',
-    isLoading,
-  ]
+  return [data ?? '', isLoading]
 }
 
 export async function getPrivateWorkspaceUser(): Promise<Key> {
-  const { packageId } = await portalRequestJson<PrivateWorkspaceId>('/space', {
+  const { packageId } = await portalRequestJson<PrivateWorkspaceId>(
+    '/space',
+    {
       method: 'get',
     },
     { customErrorHandler: onErrorHandler },

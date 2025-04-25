@@ -27,14 +27,14 @@ export const CopyPackageVersionButton = memo(() => {
     <>
       <Button
         variant="outlined"
-        startIcon={<ContentCopyOutlinedIcon/>}
+        startIcon={<ContentCopyOutlinedIcon />}
         onClick={showCopyPackageVersionDialog}
         data-testid="CopyVersionButton"
       >
         Copy
       </Button>
 
-      <CopyPackageVersionDialog/>
+      <CopyPackageVersionDialog />
     </>
   )
 })

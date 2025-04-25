@@ -25,12 +25,14 @@ type OperationViewModeSelectorProps = {
   modes: ReadonlyArray<OperationViewMode>
 }
 
-export const OperationViewModeSelector: FC<OperationViewModeSelectorProps> = memo<OperationViewModeSelectorProps>(({ modes }) => {
-  const { mode, setMode } = useOperationViewMode()
-  const handleMode = useCallback((mode: OperationViewMode) => setMode(mode), [setMode])
+export const OperationViewModeSelector: FC<OperationViewModeSelectorProps> = memo<OperationViewModeSelectorProps>(
+  ({ modes }) => {
+    const { mode, setMode } = useOperationViewMode()
+    const handleMode = useCallback((mode: OperationViewMode) => setMode(mode), [setMode])
 
-  return <ViewModeSegmentedSelector mode={mode} modes={modes} onChange={handleMode}/>
-})
+    return <ViewModeSegmentedSelector mode={mode} modes={modes} onChange={handleMode} />
+  },
+)
 
 type ViewModeSegmentedSelectorProps = TogglerProps<OperationViewMode>
 const ViewModeSegmentedSelector = Toggler as FC<ViewModeSegmentedSelectorProps>

@@ -37,10 +37,10 @@ export const App: FC = memo(() => {
     <StrictMode>
       <QueryClientProvider client={client}>
         <ThemeProvider theme={theme}>
-          <CssBaseline/>
-          <Router/>
+          <CssBaseline />
+          <Router />
         </ThemeProvider>
-        <ReactQueryDevtools initialIsOpen={false}/>
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </StrictMode>
   )

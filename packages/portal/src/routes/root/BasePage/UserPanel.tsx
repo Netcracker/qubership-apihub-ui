@@ -33,11 +33,11 @@ export const UserPanel: FC = memo(() => {
   return (
     <>
       <IconButton data-testid="AppUserAvatar" size="large" color="inherit">
-        {
-          authorization?.user.avatarUrl
-            ? <Avatar src={authorization.user.avatarUrl}/>
-            : <UserAvatar size="medium" name={authorization?.user.name ?? ''}/>
-        }
+        {authorization?.user.avatarUrl ? (
+          <Avatar src={authorization.user.avatarUrl} />
+        ) : (
+          <UserAvatar size="medium" name={authorization?.user.name ?? ''} />
+        )}
       </IconButton>
 
       <MenuButton
@@ -45,7 +45,7 @@ export const UserPanel: FC = memo(() => {
         variant="text"
         color="inherit"
         title={authorization?.user.name ?? ''}
-        icon={<KeyboardArrowDownOutlinedIcon/>}
+        icon={<KeyboardArrowDownOutlinedIcon />}
         data-testid="UserMenuButton"
       >
         <MenuItem

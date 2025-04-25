@@ -28,5 +28,5 @@ delete customConfig.testEnvironment
 
 export default {
   ...customConfig,
-  ...presetConfig
+  ...presetConfig,
 }

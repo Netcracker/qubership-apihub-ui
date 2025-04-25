@@ -35,22 +35,31 @@ export const SecurityReportsPage: FC = memo(() => {
   const [, securitySubTab] = useActiveTabs()
   const { navigateToNamespace } = useNavigation()
 
-  const tabPanels: PanelItem<SecurityReportsTabs>[] = useMemo(() => [{
-    key: AUTHENTICATION_REPORTS_PAGE,
-    content: <AuthenticationReports/>,
-  }, {
-    key: ROUTING_REPORTS_PAGE,
-    content: <RoutingReports/>,
-  }], [])
+  const tabPanels: PanelItem<SecurityReportsTabs>[] = useMemo(
+    () => [
+      {
+        key: AUTHENTICATION_REPORTS_PAGE,
+        content: <AuthenticationReports />,
+      },
+      {
+        key: ROUTING_REPORTS_PAGE,
+        content: <RoutingReports />,
+      },
+    ],
+    [],
+  )
 
-  const onChangeTab = useCallback((tab: SecurityReportsTabs) => {
-    navigateToNamespace({
-      agentId: agentId!,
-      namespaceKey: namespaceKey!,
-      mode: `${SECURITY_REPORTS_PAGE}/${tab}`,
-      search: { [WORKSPACE_SEARCH_PARAM]: { value: workspace } },
-    })
-  }, [agentId, namespaceKey, navigateToNamespace, workspace])
+  const onChangeTab = useCallback(
+    (tab: SecurityReportsTabs) => {
+      navigateToNamespace({
+        agentId: agentId!,
+        namespaceKey: namespaceKey!,
+        mode: `${SECURITY_REPORTS_PAGE}/${tab}`,
+        search: { [WORKSPACE_SEARCH_PARAM]: { value: workspace } },
+      })
+    },
+    [agentId, namespaceKey, navigateToNamespace, workspace],
+  )
 
   return (
     <BodyCard
@@ -70,10 +79,13 @@ export const SecurityReportsPage: FC = memo(() => {
 
 export type SecurityReportsTabs = typeof AUTHENTICATION_REPORTS_PAGE | typeof ROUTING_REPORTS_PAGE
 
-const SECURITY_REPORTS_TABS: TabItem<SecurityReportsTabs>[] = [{
-  key: AUTHENTICATION_REPORTS_PAGE,
-  name: 'Authentication Check Report',
-}, {
-  key: ROUTING_REPORTS_PAGE,
-  name: 'Gateway Routing Report',
-}]
+const SECURITY_REPORTS_TABS: TabItem<SecurityReportsTabs>[] = [
+  {
+    key: AUTHENTICATION_REPORTS_PAGE,
+    name: 'Authentication Check Report',
+  },
+  {
+    key: ROUTING_REPORTS_PAGE,
+    name: 'Gateway Routing Report',
+  },
+]

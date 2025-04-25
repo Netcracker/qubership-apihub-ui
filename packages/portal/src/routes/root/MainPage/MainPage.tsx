@@ -30,18 +30,18 @@ export const MAIN_CARD_STYLES = {
 }
 
 export const MainPage: FC = memo(() => {
-
   return (
-    <Box sx={{
-      background: '#F5F5FA',
-      display: 'flex',
-      height: '100%',
-      width: '100%',
-      pt: DEFAULT_PAGE_LAYOUT_GAP,
-    }}>
-      <MainPageNavigation/>
-      <Outlet/>
+    <Box
+      sx={{
+        background: '#F5F5FA',
+        display: 'flex',
+        height: '100%',
+        width: '100%',
+        pt: DEFAULT_PAGE_LAYOUT_GAP,
+      }}
+    >
+      <MainPageNavigation />
+      <Outlet />
     </Box>
   )
 })
-

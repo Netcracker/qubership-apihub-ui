@@ -33,53 +33,57 @@ export type TaggedOperationWithMetaListProps = {
   openLinkInNewTab?: boolean
 }
 
-export const TaggedOperationWithMetaList: FC<TaggedOperationWithMetaListProps> = memo<TaggedOperationWithMetaListProps>((props) => {
-  const { operations, onClick, prepareLinkFn, isLoading = false, openLinkInNewTab } = props
+export const TaggedOperationWithMetaList: FC<TaggedOperationWithMetaListProps> = memo<TaggedOperationWithMetaListProps>(
+  (props) => {
+    const { operations, onClick, prepareLinkFn, isLoading = false, openLinkInNewTab } = props
 
-  const [expandedTags, setExpandedTags] = useState<string[]>([])
-  const handleExpandedTags = useCallback((tag: string) => {
-    setExpandedTags(prevState => (
-      !prevState.includes(tag)
-        ? [...prevState, tag]
-        : prevState.filter(key => key !== tag)
-    ))
-  }, [setExpandedTags])
+    const [expandedTags, setExpandedTags] = useState<string[]>([])
+    const handleExpandedTags = useCallback(
+      (tag: string) => {
+        setExpandedTags((prevState) =>
+          !prevState.includes(tag) ? [...prevState, tag] : prevState.filter((key) => key !== tag),
+        )
+      },
+      [setExpandedTags],
+    )
 
-  const relatedTags = useMemo(() => Object.keys(operations), [operations])
+    const relatedTags = useMemo(() => Object.keys(operations), [operations])
 
-  useEffect(() => setExpandedTags(relatedTags), [relatedTags])
+    useEffect(() => setExpandedTags(relatedTags), [relatedTags])
 
-  return (
-    <Box width="100%">
-      {isLoading
-        ? <LoadingIndicator/>
-        : <Placeholder
-          invisible={isNotEmpty(relatedTags) || isLoading}
-          area={NAVIGATION_PLACEHOLDER_AREA}
-          message="No operations"
-        >
-          {Object.entries(operations)?.map(([tag, operations]) => {
-            return (
-              <Box width="100%" mb={1} key={tag}>
-                <CustomAccordion
-                  expanded={expandedTags.includes(tag)}
-                  title={tag}
-                  accordionDetails={
-                    <OperationWithMetaList
-                      operations={operations}
-                      prepareLinkFn={prepareLinkFn}
-                      onClick={onClick}
-                      nestedList
-                      openLinkInNewTab={openLinkInNewTab}
-                    />
-                  }
-                  setExpanded={() => handleExpandedTags(tag)}
-                />
-              </Box>
-            )
-          })}
-        </Placeholder>
-      }
-    </Box>
-  )
-})
+    return (
+      <Box width="100%">
+        {isLoading ? (
+          <LoadingIndicator />
+        ) : (
+          <Placeholder
+            invisible={isNotEmpty(relatedTags) || isLoading}
+            area={NAVIGATION_PLACEHOLDER_AREA}
+            message="No operations"
+          >
+            {Object.entries(operations)?.map(([tag, operations]) => {
+              return (
+                <Box width="100%" mb={1} key={tag}>
+                  <CustomAccordion
+                    expanded={expandedTags.includes(tag)}
+                    title={tag}
+                    accordionDetails={
+                      <OperationWithMetaList
+                        operations={operations}
+                        prepareLinkFn={prepareLinkFn}
+                        onClick={onClick}
+                        nestedList
+                        openLinkInNewTab={openLinkInNewTab}
+                      />
+                    }
+                    setExpanded={() => handleExpandedTags(tag)}
+                  />
+                </Box>
+              )
+            })}
+          </Placeholder>
+        )}
+      </Box>
+    )
+  },
+)

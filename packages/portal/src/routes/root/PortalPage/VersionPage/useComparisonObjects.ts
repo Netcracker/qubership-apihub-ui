@@ -43,37 +43,37 @@ type UseComparisonObjectsOptions = Partial<{
   previousGroup: Key
 }>
 
-export function useComparisonObjects(
-  {
-    originPackage,
-    originPackageKey,
-    originVersionKey,
-    originOperationKey,
-    changedPackage,
-    changedPackageKey,
-    changedVersionKey,
-    changedOperationKey,
-    refId,
-    refVersion,
-    previousGroup,
-    currentGroup,
-  }: UseComparisonObjectsOptions,
-): [ComparisonObject | null, ComparisonObject | null] {
-
+export function useComparisonObjects({
+  originPackage,
+  originPackageKey,
+  originVersionKey,
+  originOperationKey,
+  changedPackage,
+  changedPackageKey,
+  changedVersionKey,
+  changedOperationKey,
+  refId,
+  refVersion,
+  previousGroup,
+  currentGroup,
+}: UseComparisonObjectsOptions): [ComparisonObject | null, ComparisonObject | null] {
   const { fullVersion: fullOriginVersion } = useVersionWithRevision(originVersionKey, originPackageKey)
   const { fullVersion: fullChangedVersion } = useVersionWithRevision(changedVersionKey, changedPackageKey)
 
-  const {
-    versionKey: originSplittedVersionKey,
-    revisionKey: originRevisionKey,
-  } = getSplittedVersionKey(fullOriginVersion)
+  const { versionKey: originSplittedVersionKey, revisionKey: originRevisionKey } =
+    getSplittedVersionKey(fullOriginVersion)
 
-  const {
-    versionKey: changedSplittedVersionKey,
-    revisionKey: changedRevisionKey,
-  } = getSplittedVersionKey(fullChangedVersion)
+  const { versionKey: changedSplittedVersionKey, revisionKey: changedRevisionKey } =
+    getSplittedVersionKey(fullChangedVersion)
 
-  if (!originPackage || !changedPackage || !originPackageKey || !changedPackageKey || !originSplittedVersionKey || !changedSplittedVersionKey) {
+  if (
+    !originPackage ||
+    !changedPackage ||
+    !originPackageKey ||
+    !changedPackageKey ||
+    !originSplittedVersionKey ||
+    !changedSplittedVersionKey
+  ) {
     return [null, null]
   }
 
@@ -101,27 +101,25 @@ export function useComparisonObjects(
   ]
 }
 
-export const getComparisonObject = (
-  {
-    kind,
-    id,
-    version,
-    revision,
-    refId,
-    refVersion,
-    operationId,
-    group,
-  }: {
-    kind: PackageKind
-    id: string
-    version: string
-    revision: string
-    refId?: string
-    refVersion?: string
-    operationId?: string
-    group?: Key
-  },
-): ComparisonObject => {
+export const getComparisonObject = ({
+  kind,
+  id,
+  version,
+  revision,
+  refId,
+  refVersion,
+  operationId,
+  group,
+}: {
+  kind: PackageKind
+  id: string
+  version: string
+  revision: string
+  refId?: string
+  refVersion?: string
+  operationId?: string
+  group?: Key
+}): ComparisonObject => {
   const base = {
     id: id,
     version: version,

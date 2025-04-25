@@ -24,7 +24,9 @@ import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { MODE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import type { SpecViewMode } from '@netcracker/qubership-apihub-ui-shared/components/SpecViewToggler'
 
-export function useSpecViewMode(defaultValue: Key = DOC_OPERATION_VIEW_MODE): [OperationViewMode, SetOperationViewMode] {
+export function useSpecViewMode(
+  defaultValue: Key = DOC_OPERATION_VIEW_MODE,
+): [OperationViewMode, SetOperationViewMode] {
   const specViewMode = useSearchParam<Key>(MODE_SEARCH_PARAM) ?? defaultValue
   const [hashParam] = useHash()
   const [searchParams] = useSearchParams()
@@ -32,13 +34,16 @@ export function useSpecViewMode(defaultValue: Key = DOC_OPERATION_VIEW_MODE): [O
 
   return [
     specViewMode as OperationViewMode,
-    useCallback(value => {
-      value && searchParams.set(MODE_SEARCH_PARAM, value)
-      navigate({
-        search: `${searchParams}`,
-        hash: hashParam,
-      })
-    }, [hashParam, navigate, searchParams]),
+    useCallback(
+      (value) => {
+        value && searchParams.set(MODE_SEARCH_PARAM, value)
+        navigate({
+          search: `${searchParams}`,
+          hash: hashParam,
+        })
+      },
+      [hashParam, navigate, searchParams],
+    ),
   ]
 }
 

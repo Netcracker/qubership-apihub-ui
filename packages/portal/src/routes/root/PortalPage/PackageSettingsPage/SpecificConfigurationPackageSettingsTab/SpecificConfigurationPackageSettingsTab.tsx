@@ -26,48 +26,50 @@ import { SettingsEditableParameter } from '../SettingsEditableParameter/Settings
 import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
 import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoContextIcon'
 
-export const SpecificConfigurationPackageSettingsTab: FC<PackageSettingsTabProps> = memo<PackageSettingsTabProps>(({ packageObject }) => {
-  const { showEditPackagePrefixDialog } = useEventBus()
+export const SpecificConfigurationPackageSettingsTab: FC<PackageSettingsTabProps> = memo<PackageSettingsTabProps>(
+  ({ packageObject }) => {
+    const { showEditPackagePrefixDialog } = useEventBus()
 
-  const onEditPackagePrefix = useCallback(() => {
-    showEditPackagePrefixDialog({
-      packageKey: packageObject?.key,
-    })
-  }, [packageObject, showEditPackagePrefixDialog])
+    const onEditPackagePrefix = useCallback(() => {
+      showEditPackagePrefixDialog({
+        packageKey: packageObject?.key,
+      })
+    }, [packageObject, showEditPackagePrefixDialog])
 
-  const restGroupingPrefix = transformStringValue(packageObject?.restGroupingPrefix)
+    const restGroupingPrefix = transformStringValue(packageObject?.restGroupingPrefix)
 
-  return (
-    <Box height="100%">
-      <BodyCard
-        header="API Specific Configuration"
-        body={
-          <Box marginTop="8px" marginBottom="16px" overflow="hidden" height="100%">
-            <Box width="268px" display="flex" gap={1}>
-              <SettingsEditableParameter
-                title={`${GROUP_TYPE_REST_PATH_PREFIX} for Grouping by Version`}
-                packageObject={packageObject}
-                onEdit={onEditPackagePrefix}
-                data-testid="PrefixContent"
-              >
-                <OverflowTooltip title={restGroupingPrefix}>
-                  <Typography variant="body2" textOverflow="ellipsis" overflow="hidden" noWrap>
-                    {restGroupingPrefix}
-                  </Typography>
-                </OverflowTooltip>
-              </SettingsEditableParameter>
-              <Tooltip
-                disableHoverListener={false}
-                title="The parameter allows you to define custom regular expression, which will be applied to the paths of REST operations. This expression must begin and end with a / character and contain the {group} keyword. For example: /api/{group}/. The system will look for the {group} entry in the REST operation paths during the publication of the package version. All found matches will form a list of groups that will include the corresponding operations."
-                placement="right"
-              >
-                <InfoContextIcon fontSize="extra-small"/>
-              </Tooltip>
+    return (
+      <Box height="100%">
+        <BodyCard
+          header="API Specific Configuration"
+          body={
+            <Box marginTop="8px" marginBottom="16px" overflow="hidden" height="100%">
+              <Box width="268px" display="flex" gap={1}>
+                <SettingsEditableParameter
+                  title={`${GROUP_TYPE_REST_PATH_PREFIX} for Grouping by Version`}
+                  packageObject={packageObject}
+                  onEdit={onEditPackagePrefix}
+                  data-testid="PrefixContent"
+                >
+                  <OverflowTooltip title={restGroupingPrefix}>
+                    <Typography variant="body2" textOverflow="ellipsis" overflow="hidden" noWrap>
+                      {restGroupingPrefix}
+                    </Typography>
+                  </OverflowTooltip>
+                </SettingsEditableParameter>
+                <Tooltip
+                  disableHoverListener={false}
+                  title="The parameter allows you to define custom regular expression, which will be applied to the paths of REST operations. This expression must begin and end with a / character and contain the {group} keyword. For example: /api/{group}/. The system will look for the {group} entry in the REST operation paths during the publication of the package version. All found matches will form a list of groups that will include the corresponding operations."
+                  placement="right"
+                >
+                  <InfoContextIcon fontSize="extra-small" />
+                </Tooltip>
+              </Box>
             </Box>
-          </Box>
-        }
-      />
-      <EditGrouppingPrefixDialog/>
-    </Box>
-  )
-})
+          }
+        />
+        <EditGrouppingPrefixDialog />
+      </Box>
+    )
+  },
+)

@@ -69,31 +69,37 @@ export const Notification: FC = memo(() => {
     <Snackbar
       open={open}
       anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      TransitionComponent={(props) => <Slide {...props} direction="up"/>}
+      TransitionComponent={(props) => <Slide {...props} direction="up" />}
       onClose={() => setOpen(false)}
       data-testid="Snackbar"
     >
       <SnackbarContent
         message={
           <Box sx={{ display: 'flex' }}>
-            {
-              type === SUCCESS_NOTIFICATION_TYPE
-                ? <CheckCircleOutlinedIcon color="secondary" data-testid="SuccessIcon"/>
-                : type === ERROR_NOTIFICATION_TYPE
-                  ? <ErrorOutlinedIcon color="error" data-testid="ErrorIcon"/>
-                  : <InfoIcon color="primary" data-testid="InfoIcon"/>
-            }
+            {type === SUCCESS_NOTIFICATION_TYPE ? (
+              <CheckCircleOutlinedIcon color="secondary" data-testid="SuccessIcon" />
+            ) : type === ERROR_NOTIFICATION_TYPE ? (
+              <ErrorOutlinedIcon color="error" data-testid="ErrorIcon" />
+            ) : (
+              <InfoIcon color="primary" data-testid="InfoIcon" />
+            )}
             <Box sx={{ display: 'flex', flexDirection: 'column', ml: 1, pr: 3, overflow: 'hidden' }}>
               <Typography variant="subtitle1">{title}</Typography>
-              <Typography variant="body2" sx={{ wordBreak: 'break-word' }}>{message}</Typography>
-              {link && <Link variant="subtitle2" href={link.href}>{link.name}</Link>}
+              <Typography variant="body2" sx={{ wordBreak: 'break-word' }}>
+                {message}
+              </Typography>
+              {link && (
+                <Link variant="subtitle2" href={link.href}>
+                  {link.name}
+                </Link>
+              )}
             </Box>
 
             <IconButton
               sx={{ position: 'absolute', right: 8, top: 8, color: '#353C4E' }}
               onClick={() => setOpen(false)}
             >
-              <CloseOutlinedIcon fontSize="small"/>
+              <CloseOutlinedIcon fontSize="small" />
             </IconButton>
           </Box>
         }

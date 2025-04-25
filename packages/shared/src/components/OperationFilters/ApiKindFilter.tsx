@@ -35,20 +35,13 @@ export const ApiKindFilter: FC<ApiKindFilterProps> = memo<ApiKindFilterProps>((p
   const { value, onSelectApiKind, required = false, labelText } = props
   return (
     <>
-      <InputLabel required={required}>
-        {labelText ?? FILTER_API_KIND_LABEL}
-      </InputLabel>
+      <InputLabel required={required}>{labelText ?? FILTER_API_KIND_LABEL}</InputLabel>
       <Autocomplete
         forcePopupIcon={true}
         value={value}
-        options={Object.keys(API_KINDS).map(apiKind => apiKind as ApiKind)}
+        options={Object.keys(API_KINDS).map((apiKind) => apiKind as ApiKind)}
         renderOption={(props, apiKind) => (
-          <OptionItem
-            key={apiKind}
-            props={props}
-            title={API_KINDS[apiKind as ApiKind]!}
-            testId={`Option-${apiKind}`}
-          />
+          <OptionItem key={apiKind} props={props} title={API_KINDS[apiKind as ApiKind]!} testId={`Option-${apiKind}`} />
         )}
         isOptionEqualToValue={(option, value) => option === value}
         renderInput={(params) => (

@@ -37,27 +37,21 @@ export const ProjectEditorBody: FC = memo(() => {
   if (isFilesEditorPageMode) {
     return (
       <ModuleFetchingErrorBoundary>
-        <FilesModeBody/>
+        <FilesModeBody />
       </ModuleFetchingErrorBoundary>
     )
   }
 
   if (isPublishEditorMode) {
-    return (
-      <PublishModeBody/>
-    )
+    return <PublishModeBody />
   }
 
   if (isChangesEditorPageMode) {
-    return (
-      <ChangesModeBody/>
-    )
+    return <ChangesModeBody />
   }
 
   if (isSettingsEditorMode) {
-    return (
-      <SettingsModeBody/>
-    )
+    return <SettingsModeBody />
   }
 
   return null

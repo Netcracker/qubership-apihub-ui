@@ -39,6 +39,4 @@ export type PublishStatus =
 export const NONE_AUTODISCOVERY_STATUS = 'none'
 export const SCHEDULE_AUTODISCOVERY_STATUS = 'schedule'
 
-export type AutodiscoveryStatus =
-  | typeof NONE_AUTODISCOVERY_STATUS
-  | typeof SCHEDULE_AUTODISCOVERY_STATUS
+export type AutodiscoveryStatus = typeof NONE_AUTODISCOVERY_STATUS | typeof SCHEDULE_AUTODISCOVERY_STATUS

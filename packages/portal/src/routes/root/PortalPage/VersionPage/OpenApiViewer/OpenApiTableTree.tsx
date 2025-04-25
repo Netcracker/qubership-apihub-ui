@@ -26,7 +26,11 @@ import { COLUMNS_SIZES_MAP } from './openapi-table'
 import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
 import { groupOperationsByTags } from '@apihub/utils/operations'
 import type { OperationData, OperationsData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import { API_AUDIENCE_COLUMN_ID, API_KIND_COLUMN_ID, ENDPOINT_COLUMN_ID } from '@netcracker/qubership-apihub-ui-shared/entities/table-columns'
+import {
+  API_AUDIENCE_COLUMN_ID,
+  API_KIND_COLUMN_ID,
+  ENDPOINT_COLUMN_ID,
+} from '@netcracker/qubership-apihub-ui-shared/entities/table-columns'
 
 export type OpenApiTableTreeProps = {
   documentSlug: string
@@ -36,39 +40,43 @@ export type OpenApiTableTreeProps = {
 export const OpenApiTableTree: FC<OpenApiTableTreeProps> = memo(({ documentSlug, operations }) => {
   const operationsGroupedByTag = useMemo(() => groupOperationsByTags(operations), [operations])
 
-  const columns: ColumnDef<OpenApiTreeTableData>[] = useMemo(() => [
-    {
-      id: ENDPOINT_COLUMN_ID,
-      header: 'Tag / Name / Path',
-      cell: ({ row }) =>
-        row.getCanExpand() && (
-          <Box sx={{ display: 'flex' }}>
-            <IconButton sx={{ p: 0, mr: 1 }} onClick={row.getToggleExpandedHandler()}>
-              {row.getIsExpanded()
-                ? <KeyboardArrowDownOutlinedIcon sx={{ fontSize: '16px' }} />
-                : <KeyboardArrowRightOutlinedIcon sx={{ fontSize: '16px' }} />}
-            </IconButton>
-            <TextWithOverflowTooltip tooltipText={row.original.tag}>
-              {row.original.tag}
-            </TextWithOverflowTooltip>
-          </Box>
-        ),
-    },
-    {
-      id: API_AUDIENCE_COLUMN_ID,
-      header: 'Audience',
-    },
-    {
-      id: API_KIND_COLUMN_ID,
-      header: 'Kind',
-    },
-  ], [])
+  const columns: ColumnDef<OpenApiTreeTableData>[] = useMemo(
+    () => [
+      {
+        id: ENDPOINT_COLUMN_ID,
+        header: 'Tag / Name / Path',
+        cell: ({ row }) =>
+          row.getCanExpand() && (
+            <Box sx={{ display: 'flex' }}>
+              <IconButton sx={{ p: 0, mr: 1 }} onClick={row.getToggleExpandedHandler()}>
+                {row.getIsExpanded() ? (
+                  <KeyboardArrowDownOutlinedIcon sx={{ fontSize: '16px' }} />
+                ) : (
+                  <KeyboardArrowRightOutlinedIcon sx={{ fontSize: '16px' }} />
+                )}
+              </IconButton>
+              <TextWithOverflowTooltip tooltipText={row.original.tag}>{row.original.tag}</TextWithOverflowTooltip>
+            </Box>
+          ),
+      },
+      {
+        id: API_AUDIENCE_COLUMN_ID,
+        header: 'Audience',
+      },
+      {
+        id: API_KIND_COLUMN_ID,
+        header: 'Kind',
+      },
+    ],
+    [],
+  )
 
   const data: OpenApiTreeTableData[] = useMemo(
-    () => Object.entries(operationsGroupedByTag).map(([tag, operations]) => ({
-      tag: tag,
-      operations: operations as OperationData[],
-    })),
+    () =>
+      Object.entries(operationsGroupedByTag).map(([tag, operations]) => ({
+        tag: tag,
+        operations: operations as OperationData[],
+      })),
     [operationsGroupedByTag],
   )
 
@@ -93,14 +101,10 @@ export const OpenApiTableTree: FC<OpenApiTableTreeProps> = memo(({ documentSlug,
     <TableContainer sx={{ mt: 1 }}>
       <Table>
         <TableHead>
-          {getHeaderGroups().map(headerGroup => (
+          {getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map(header => (
-                <TableCell
-                  key={header.id}
-                  align="left"
-                  sx={{ width: COLUMNS_SIZES_MAP[header.id] ?? 'auto' }}
-                >
+              {headerGroup.headers.map((header) => (
+                <TableCell key={header.id} align="left" sx={{ width: COLUMNS_SIZES_MAP[header.id] ?? 'auto' }}>
                   {flexRender(header.column.columnDef.header, header.getContext())}
                 </TableCell>
               ))}
@@ -108,7 +112,7 @@ export const OpenApiTableTree: FC<OpenApiTableTreeProps> = memo(({ documentSlug,
           ))}
         </TableHead>
         <TableBody>
-          {getRowModel().rows.map(row => (
+          {getRowModel().rows.map((row) => (
             <Fragment key={crypto.randomUUID()}>
               <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => (

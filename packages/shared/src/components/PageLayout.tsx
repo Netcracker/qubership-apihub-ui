@@ -46,99 +46,99 @@ export type PageLayoutProps = {
 /**
  * @deprecated Use layout from PageLayouts instead
  */
-export const PageLayout: FC<PageLayoutProps> = memo<PageLayoutProps>(({
-  toolbar,
-  navigation,
-  sx,
-  body,
-  menu,
-  nestedPage,
-  withShadow = true,
-  testId,
-}) => {
-  return (
-    <Box
-      sx={{
-        px: !nestedPage ? DEFAULT_PAGE_LAYOUT_GAP : 0,
-        height: '100%',
-        display: 'grid',
-        gridTemplateRows: 'max-content 1fr',
-        gridTemplateColumns: 'auto 1fr',
-        gridTemplateAreas: `${createGridAreas(navigation, menu)}`,
-      }}
-      data-testid={testId}
-    >
-      {toolbar && (
-        <Box sx={{
-          gridArea: 'toolbar',
-          overflow: 'hidden',
-          mb: !nestedPage ? DEFAULT_PAGE_LAYOUT_GAP : 0,
-          backgroundColor: '#FFFFFF',
-          borderRadius: `${!nestedPage && '0 0 10px 10px'}`,
-          boxShadow: withShadow ? DEFAULT_PAPER_SHADOW : undefined,
-        }}>
-          {toolbar}
-        </Box>
-      )}
-      {navigation && (
-        <Resizable
-          style={{
-            marginTop: (toolbar || nestedPage) ? 0 : 2,
-            gridArea: 'navigation',
-            overflow: 'hidden',
-            position: 'relative',
-            borderRight: '1px solid #D5DCE3',
-            borderRadius: `${!nestedPage && '10px 0 0 0'}`,
-            backgroundColor: '#FFFFFF',
-            boxShadow: withShadow ? DEFAULT_PAPER_SHADOW : undefined,
-            clipPath: 'inset(-10px 0px -10px -10px)',
-            paddingBottom: sx?.navigation?.paddingBottom ?? '24px',
-          }}
-          handleStyles={{ right: { cursor: 'ew-resize' } }}
-          defaultSize={{ width: NAVIGATION_DEFAULT_WIDTH, height: '100%' }}
-          maxWidth={NAVIGATION_MAX_WIDTH}
-          minWidth={NAVIGATION_MIN_WIDTH}
-          enable={{
-            top: false,
-            right: true,
-            bottom: false,
-            left: false,
-            topRight: false,
-            bottomRight: false,
-            bottomLeft: false,
-            topLeft: false,
-          }}
-        >
-          {navigation}
-        </Resizable>
-      )}
-      {menu && (
+export const PageLayout: FC<PageLayoutProps> = memo<PageLayoutProps>(
+  ({ toolbar, navigation, sx, body, menu, nestedPage, withShadow = true, testId }) => {
+    return (
+      <Box
+        sx={{
+          px: !nestedPage ? DEFAULT_PAGE_LAYOUT_GAP : 0,
+          height: '100%',
+          display: 'grid',
+          gridTemplateRows: 'max-content 1fr',
+          gridTemplateColumns: 'auto 1fr',
+          gridTemplateAreas: `${createGridAreas(navigation, menu)}`,
+        }}
+        data-testid={testId}
+      >
+        {toolbar && (
+          <Box
+            sx={{
+              gridArea: 'toolbar',
+              overflow: 'hidden',
+              mb: !nestedPage ? DEFAULT_PAGE_LAYOUT_GAP : 0,
+              backgroundColor: '#FFFFFF',
+              borderRadius: `${!nestedPage && '0 0 10px 10px'}`,
+              boxShadow: withShadow ? DEFAULT_PAPER_SHADOW : undefined,
+            }}
+          >
+            {toolbar}
+          </Box>
+        )}
+        {navigation && (
+          <Resizable
+            style={{
+              marginTop: toolbar || nestedPage ? 0 : 2,
+              gridArea: 'navigation',
+              overflow: 'hidden',
+              position: 'relative',
+              borderRight: '1px solid #D5DCE3',
+              borderRadius: `${!nestedPage && '10px 0 0 0'}`,
+              backgroundColor: '#FFFFFF',
+              boxShadow: withShadow ? DEFAULT_PAPER_SHADOW : undefined,
+              clipPath: 'inset(-10px 0px -10px -10px)',
+              paddingBottom: sx?.navigation?.paddingBottom ?? '24px',
+            }}
+            handleStyles={{ right: { cursor: 'ew-resize' } }}
+            defaultSize={{ width: NAVIGATION_DEFAULT_WIDTH, height: '100%' }}
+            maxWidth={NAVIGATION_MAX_WIDTH}
+            minWidth={NAVIGATION_MIN_WIDTH}
+            enable={{
+              top: false,
+              right: true,
+              bottom: false,
+              left: false,
+              topRight: false,
+              bottomRight: false,
+              bottomLeft: false,
+              topLeft: false,
+            }}
+          >
+            {navigation}
+          </Resizable>
+        )}
+        {menu && (
+          <Box
+            marginTop={toolbar || nestedPage ? 0 : 2}
+            sx={{
+              gridArea: 'menu',
+              boxShadow:
+                'rgb(4 10 21 / 4%) 0px 1px 1px, rgb(4 12 29 / 9%) 0px 3px 14px, rgb(7 13 26 / 27%) 0px 0px 1px',
+              borderRight: '1px solid #D5DCE3',
+              borderRadius: '10px 0 0 0',
+            }}
+          >
+            {menu}
+          </Box>
+        )}
         <Box
-          marginTop={(toolbar || nestedPage) ? 0 : 2}
           sx={{
-            gridArea: 'menu',
-            boxShadow: 'rgb(4 10 21 / 4%) 0px 1px 1px, rgb(4 12 29 / 9%) 0px 3px 14px, rgb(7 13 26 / 27%) 0px 0px 1px',
-            borderRight: '1px solid #D5DCE3',
-            borderRadius: '10px 0 0 0',
+            mt: toolbar || nestedPage ? 0 : 2,
+            gridArea: 'body',
+            overflow: 'hidden',
+            backgroundColor: '#FFFFFF',
+            borderRadius: `${navigation || menu || nestedPage ? '0' : '10px'} 10px 0 0`,
+            boxShadow: withShadow
+              ? 'rgb(4 10 21 / 4%) 0px 1px 1px, rgb(4 12 29 / 9%) 0px 3px 14px, rgb(7 13 26 / 27%) 0px 0px 1px'
+              : undefined,
+            paddingBottom: nestedPage ? 3 : 0,
           }}
         >
-          {menu}
+          {body}
         </Box>
-      )}
-      <Box sx={{
-        mt: (toolbar || nestedPage) ? 0 : 2,
-        gridArea: 'body',
-        overflow: 'hidden',
-        backgroundColor: '#FFFFFF',
-        borderRadius: `${(navigation || menu || nestedPage) ? '0' : '10px'} 10px 0 0`,
-        boxShadow: withShadow ? 'rgb(4 10 21 / 4%) 0px 1px 1px, rgb(4 12 29 / 9%) 0px 3px 14px, rgb(7 13 26 / 27%) 0px 0px 1px' : undefined,
-        paddingBottom: nestedPage ? 3 : 0,
-      }}>
-        {body}
       </Box>
-    </Box>
-  )
-})
+    )
+  },
+)
 
 function createGridAreas(navigation: ReactNode, menu: ReactNode): string {
   let tempGridArea = 'body'

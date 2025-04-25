@@ -25,25 +25,16 @@ export type NoPackagePlaceholderProps = PropsWithChildren<{
   isLoading: boolean
 }>
 
-export const NoPackagePlaceholder: FC<NoPackagePlaceholderProps> = memo<NoPackagePlaceholderProps>(({
-  packageObject,
-  isLoading,
-  children,
-}) => {
+export const NoPackagePlaceholder: FC<NoPackagePlaceholderProps> = memo<NoPackagePlaceholderProps>(
+  ({ packageObject, isLoading, children }) => {
+    if (isLoading) {
+      return <LoadingIndicator />
+    }
 
-  if (isLoading) {
-    return (
-      <LoadingIndicator/>
-    )
-  }
+    if (!packageObject) {
+      return <ErrorPage title={NOT_FOUND_TITLE} homePath="/portal" />
+    }
 
-  if (!packageObject) {
-    return (
-      <ErrorPage title={NOT_FOUND_TITLE} homePath="/portal"/>
-    )
-  }
-
-  return (
-    <>{children}</>
-  )
-})
+    return <>{children}</>
+  },
+)

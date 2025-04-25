@@ -42,12 +42,7 @@ const StoryComponent = (args: CompareOperationPathsDialogFormProps): ReactElemen
 
   const { control } = useForm<CompareOperationPathsDialogFormData>({ defaultValues })
 
-  return (
-    <CompareOperationPathsDialogForm
-      {...args}
-      control={control}
-    />
-  )
+  return <CompareOperationPathsDialogForm {...args} control={control} />
 }
 
 export const DefaultStory: Story = {

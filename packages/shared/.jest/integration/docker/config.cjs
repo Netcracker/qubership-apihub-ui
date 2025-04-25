@@ -30,7 +30,7 @@ module.exports = () => {
 
   return {
     connect: {
-      browserWSEndpoint: wsEndpoint
-    }
+      browserWSEndpoint: wsEndpoint,
+    },
   }
 }

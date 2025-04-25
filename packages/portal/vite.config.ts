@@ -24,13 +24,16 @@ export default defineConfig(({ mode }) => {
       ignoreDotsOnDevServer(),
       monacoEditor({
         languageWorkers: ['editorWorkerService', 'json'],
-        customWorkers: [{
-          label: 'yaml',
-          entry: 'monaco-yaml/yaml.worker',
-        }, {
-          label: 'graphql',
-          entry: 'monaco-graphql/dist/graphql.worker',
-        }],
+        customWorkers: [
+          {
+            label: 'yaml',
+            entry: 'monaco-yaml/yaml.worker',
+          },
+          {
+            label: 'graphql',
+            entry: 'monaco-graphql/dist/graphql.worker',
+          },
+        ],
       }),
       copy({
         targets: [
@@ -45,18 +48,20 @@ export default defineConfig(({ mode }) => {
           {
             src: '../../node_modules/@netcracker/qubership-apihub-apispec-view/dist/index.js.LICENSE.txt',
             dest: 'dist/apispec-view/',
-          }
+          },
         ],
         flatten: true,
         hook: 'writeBundle',
       }),
       VitePluginFonts({
         custom: {
-          families: [{
-            name: 'Inter',
-            local: 'Inter',
-            src: './public/fonts/*.woff2',
-          }],
+          families: [
+            {
+              name: 'Inter',
+              local: 'Inter',
+              src: './public/fonts/*.woff2',
+            },
+          ],
           display: 'auto',
           preload: true,
           prefetch: false,
@@ -70,9 +75,7 @@ export default defineConfig(({ mode }) => {
       // For example, without this setting, esbuildOptions are not being applied to the npm-linked
       // @netcracker/qubership-apihub-api-processor during "npm run proxy", which leads to reference errors
       // like "process is not defined" and "Buffer is not defined".
-      include: [
-        '@netcracker/qubership-apihub-api-processor',
-      ],
+      include: ['@netcracker/qubership-apihub-api-processor'],
       esbuildOptions: {
         plugins: [
           NodeModulesPolyfill(),
@@ -110,19 +113,19 @@ export default defineConfig(({ mode }) => {
       proxy: {
         '/playground': {
           target: isProxyMode ? `${proxyServer}/playground` : devServer,
-          rewrite: isProxyMode ? path => path.replace(/^\/playground/, '') : undefined,
+          rewrite: isProxyMode ? (path) => path.replace(/^\/playground/, '') : undefined,
           changeOrigin: true,
           secure: false,
         },
         '/api': {
           target: isProxyMode ? `${proxyServer}/api` : devServer,
-          rewrite: isProxyMode ? path => path.replace(/^\/api/, '') : undefined,
+          rewrite: isProxyMode ? (path) => path.replace(/^\/api/, '') : undefined,
           changeOrigin: true,
           secure: false,
         },
         '/ws/v1': {
           target: isProxyMode ? `${proxyServer}/ws` : devServer,
-          rewrite: isProxyMode ? path => path.replace(/^\/ws/, '') : undefined,
+          rewrite: isProxyMode ? (path) => path.replace(/^\/ws/, '') : undefined,
           changeOrigin: true,
           secure: false,
           ws: true,

@@ -25,12 +25,7 @@ import { DialogForm } from './DialogForm'
 import type { Role } from '../types/roles'
 
 export const DeleteRoleDialog: FC = memo(() => {
-  return (
-    <PopupDelegate
-      type={SHOW_DELETE_ROLE_DIALOG}
-      render={props => <DeleteRolePopup {...props}/>}
-    />
-  )
+  return <PopupDelegate type={SHOW_DELETE_ROLE_DIALOG} render={(props) => <DeleteRolePopup {...props} />} />
 })
 
 export const SHOW_DELETE_ROLE_DIALOG = 'show-delete-role-dialog'
@@ -56,42 +51,28 @@ export const DeleteRolePopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen
   }, [setOpen])
 
   return (
-    <DialogForm
-      open={open}
-      onClose={onClose}
-      width="352px"
-    >
+    <DialogForm open={open} onClose={onClose} width="352px">
       <DialogTitle>
         Delete {role.role} role?
-        <IconButton
-          sx={{ position: 'absolute', right: 8, top: 8, color: '#626D82' }}
-          onClick={onClose}
-        >
-          <CloseOutlinedIcon fontSize="small"/>
+        <IconButton sx={{ position: 'absolute', right: 8, top: 8, color: '#626D82' }} onClick={onClose}>
+          <CloseOutlinedIcon fontSize="small" />
         </IconButton>
       </DialogTitle>
-      <DialogContent sx={{
-        width: 'auto',
-        minWidth: 'unset',
-      }}>
+      <DialogContent
+        sx={{
+          width: 'auto',
+          minWidth: 'unset',
+        }}
+      >
         <Typography variant="body2" fontSize={13} sx={{ pl: 0 }}>
           If you delete the role, all users with that role will be removed from packages.
         </Typography>
       </DialogContent>
       <DialogActions>
-        <Button
-          variant="contained"
-          color="error"
-          onClick={onConfirmCallback}
-          data-testid="DeleteButton"
-        >
+        <Button variant="contained" color="error" onClick={onConfirmCallback} data-testid="DeleteButton">
           Delete
         </Button>
-        <Button
-          variant="outlined"
-          onClick={onClose}
-          data-testid="CancelButton"
-        >
+        <Button variant="outlined" onClick={onClose} data-testid="CancelButton">
           Cancel
         </Button>
       </DialogActions>

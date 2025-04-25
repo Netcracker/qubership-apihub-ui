@@ -33,8 +33,12 @@ export const serviceFilter: FilterFn<TableData> = (row, columnId, value) => {
     return false
   }
   const lowerCaseValue = value.searchValue.toLowerCase()
-  return key.includes(lowerCaseValue) ||
+  return (
+    key.includes(lowerCaseValue) ||
     baseline?.name.toLowerCase().includes(lowerCaseValue) ||
     baseline?.packageKey.toLowerCase().includes(lowerCaseValue) ||
-    Object.entries(labels ?? {}).some(([key, value]) => key.toLowerCase().includes(lowerCaseValue) || value.toLowerCase().includes(lowerCaseValue))
+    Object.entries(labels ?? {}).some(
+      ([key, value]) => key.toLowerCase().includes(lowerCaseValue) || value.toLowerCase().includes(lowerCaseValue),
+    )
+  )
 }

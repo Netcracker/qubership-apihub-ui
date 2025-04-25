@@ -32,7 +32,7 @@ export function useResetFile(): [ResetFile, IsLoading] {
   const showNotification = useShowSuccessNotification()
 
   const { mutate, isLoading } = useMutation<void, Error, Key>({
-    mutationFn: fileKey => resetFile(projectId!, selectedBranch!, fileKey),
+    mutationFn: (fileKey) => resetFile(projectId!, selectedBranch!, fileKey),
     onSuccess: () => {
       setChange(undefined)
       showNotification({ message: 'File has been reset' })
@@ -42,11 +42,7 @@ export function useResetFile(): [ResetFile, IsLoading] {
   return [mutate, isLoading]
 }
 
-async function resetFile(
-  projectKey: Key,
-  branchName: string,
-  fileKey: Key,
-): Promise<void> {
+async function resetFile(projectKey: Key, branchName: string, fileKey: Key): Promise<void> {
   const projectId = encodeURIComponent(projectKey)
   const branch = encodeURIComponent(branchName)
   const fileId = encodeURIComponent(fileKey)

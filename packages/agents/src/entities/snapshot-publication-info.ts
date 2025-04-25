@@ -53,7 +53,9 @@ export async function getSnapshotPublicationInfo(
   snapshotKey: SnapshotKey,
   promote = false,
 ): Promise<SnapshotPublicationInfoDto> {
-  return await ncCustomAgentsRequestJson<SnapshotPublicationInfoDto>(`/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/snapshots/${snapshotKey}?promote=${promote}`, {
+  return await ncCustomAgentsRequestJson<SnapshotPublicationInfoDto>(
+    `/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/snapshots/${snapshotKey}?promote=${promote}`,
+    {
       method: 'get',
     },
     {

@@ -30,4 +30,3 @@ export type OperationListsDelta = Array<{
   operation: Operation
   action: OperationsMovementDetails
 }>
-

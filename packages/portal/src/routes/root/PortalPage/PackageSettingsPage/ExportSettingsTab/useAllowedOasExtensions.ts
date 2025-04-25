@@ -3,9 +3,7 @@ import { generatePath } from 'react-router'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { API_V1, requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
-import type {
-  OasSettingsExtensions,
-} from '@apihub/routes/root/PortalPage/PackageSettingsPage/ExportSettingsTab/package-export-config'
+import type { OasSettingsExtensions } from '@apihub/routes/root/PortalPage/PackageSettingsPage/ExportSettingsTab/package-export-config'
 import {
   toOasExtensionNames,
   toOasSettingsExtensions,
@@ -29,7 +27,6 @@ interface UpdateAllowedOasExtensionsResult {
 }
 
 export function useAllowedOasExtensions(packageId: Key): AllowedOasExtensionsResult {
-
   const [data, isLoading] = useExportConfig(packageId)
 
   return {
@@ -47,8 +44,7 @@ export function useUpdateAllowedOasExtensions(): UpdateAllowedOasExtensionsResul
     { packageId: Key; extensions: OasSettingsExtensions }
   >({
     mutationFn: ({ packageId, extensions }) => updatePackageExportConfig(packageId, extensions),
-    onSuccess: () =>
-      queryClient.refetchQueries({ queryKey: [QUERY_KEY_EXPORT_CONFIG] }),
+    onSuccess: () => queryClient.refetchQueries({ queryKey: [QUERY_KEY_EXPORT_CONFIG] }),
   })
 
   const updateOasExtensions = (packageId: Key, extensions: OasSettingsExtensions): void =>

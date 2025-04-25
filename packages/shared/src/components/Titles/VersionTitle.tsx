@@ -29,35 +29,27 @@ export type VersionTitleProps = {
 }
 
 // First Order Component //
-export const VersionTitle: FC<VersionTitleProps> = memo<VersionTitleProps>(({
-  version,
-  revision,
-  latestRevision,
-  showTooltip = true,
-  subtitleVariant = false,
-}) => {
-  const versionKeyElement =
-    <Typography
-      variant={subtitleVariant ? 'subtitle3' : 'inherit'}
-      data-testid="VersionTitle"
-    >
-      {version}
-    </Typography>
-
-  if (latestRevision) {
-    return (
-      <>{versionKeyElement}</>
+export const VersionTitle: FC<VersionTitleProps> = memo<VersionTitleProps>(
+  ({ version, revision, latestRevision, showTooltip = true, subtitleVariant = false }) => {
+    const versionKeyElement = (
+      <Typography variant={subtitleVariant ? 'subtitle3' : 'inherit'} data-testid="VersionTitle">
+        {version}
+      </Typography>
     )
-  }
 
-  return (
-    <Tooltip
-      title={showTooltip ? `You are viewing the old revision ${REVISION_DELIMITER}${revision} of the version` : ''}>
-      <Box display="flex">
-        {versionKeyElement}
-        {revision && <Typography variant="inherit" color="#FB8A22">{`${REVISION_DELIMITER}${revision}`}</Typography>}
-      </Box>
-    </Tooltip>
-  )
-})
+    if (latestRevision) {
+      return <>{versionKeyElement}</>
+    }
 
+    return (
+      <Tooltip
+        title={showTooltip ? `You are viewing the old revision ${REVISION_DELIMITER}${revision} of the version` : ''}
+      >
+        <Box display="flex">
+          {versionKeyElement}
+          {revision && <Typography variant="inherit" color="#FB8A22">{`${REVISION_DELIMITER}${revision}`}</Typography>}
+        </Box>
+      </Tooltip>
+    )
+  },
+)

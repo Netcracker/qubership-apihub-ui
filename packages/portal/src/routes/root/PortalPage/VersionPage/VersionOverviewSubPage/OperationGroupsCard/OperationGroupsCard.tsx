@@ -62,16 +62,17 @@ export const OperationGroupsCard: FC = memo(() => {
     includeSummary: true,
   })
 
-  const apiTypes = useMemo(
-    () => Object.keys(versionContent?.operationTypes ?? {}) as ApiType[],
-    [versionContent],
-  )
+  const apiTypes = useMemo(() => Object.keys(versionContent?.operationTypes ?? {}) as ApiType[], [versionContent])
 
   const groupNamesByApiTypes = useGroupingNamesByApiType(apiTypes, versionContent?.operationGroups)
 
-  const hasCreatePermissions = useMemo(() =>
-    !!currentPackage?.permissions?.includes(VERSION_STATUS_MANAGE_PERMISSIONS[versionContent?.status ?? DRAFT_VERSION_STATUS]),
-    [currentPackage?.permissions, versionContent?.status])
+  const hasCreatePermissions = useMemo(
+    () =>
+      !!currentPackage?.permissions?.includes(
+        VERSION_STATUS_MANAGE_PERMISSIONS[versionContent?.status ?? DRAFT_VERSION_STATUS],
+      ),
+    [currentPackage?.permissions, versionContent?.status],
+  )
 
   const onCreateButton = useCallback(() => {
     showCreateOperationGroupDialog({
@@ -81,37 +82,47 @@ export const OperationGroupsCard: FC = memo(() => {
     })
   }, [showCreateOperationGroupDialog, packageKey, fullVersion, groupNamesByApiTypes])
 
-  const onEditButton = useCallback((group: OperationGroup) => {
-    showEditOperationGroupDialog({
-      packageKey: packageKey!,
-      versionKey: fullVersion!,
-      groupInfo: group,
-      existsGroupNames: groupNamesByApiTypes,
-      templateName: group.exportTemplateFileName,
-    })
-  }, [showEditOperationGroupDialog, packageKey, fullVersion, groupNamesByApiTypes])
+  const onEditButton = useCallback(
+    (group: OperationGroup) => {
+      showEditOperationGroupDialog({
+        packageKey: packageKey!,
+        versionKey: fullVersion!,
+        groupInfo: group,
+        existsGroupNames: groupNamesByApiTypes,
+        templateName: group.exportTemplateFileName,
+      })
+    },
+    [showEditOperationGroupDialog, packageKey, fullVersion, groupNamesByApiTypes],
+  )
 
-  const onEditContentButton = useCallback((group: OperationGroup) => {
-    showEditOperationGroupContentDialog({
-      packageKey: packageKey!,
-      versionKey: fullVersion!,
-      groupInfo: group,
-    })
-  }, [showEditOperationGroupContentDialog, packageKey, fullVersion])
+  const onEditContentButton = useCallback(
+    (group: OperationGroup) => {
+      showEditOperationGroupContentDialog({
+        packageKey: packageKey!,
+        versionKey: fullVersion!,
+        groupInfo: group,
+      })
+    },
+    [showEditOperationGroupContentDialog, packageKey, fullVersion],
+  )
 
   const onDeleteButton = useCallback((group: OperationGroup) => {
     setGroupToDelete(group)
     setDeleteConfirmationOpen(true)
   }, [])
 
-  const onPublishButton = useCallback((group: OperationGroup) => {
-    showPublishGroupPackageVersionDialog({ group })
-  }, [showPublishGroupPackageVersionDialog])
+  const onPublishButton = useCallback(
+    (group: OperationGroup) => {
+      showPublishGroupPackageVersionDialog({ group })
+    },
+    [showPublishGroupPackageVersionDialog],
+  )
 
   const isPackage = useMemo(() => currentPackage?.kind === PACKAGE_KIND, [currentPackage?.kind])
-  const operationGroups = useMemo(() => (
-    versionContent?.operationGroups ? [...versionContent.operationGroups] : []
-  ), [versionContent?.operationGroups])
+  const operationGroups = useMemo(
+    () => (versionContent?.operationGroups ? [...versionContent.operationGroups] : []),
+    [versionContent?.operationGroups],
+  )
 
   return (
     <BodyCard
@@ -149,12 +160,14 @@ export const OperationGroupsCard: FC = memo(() => {
             ${groupToDelete?.groupName} group from the dashboard?`}
             loading={isDeleteLoading}
             confirmButtonName="Delete"
-            onConfirm={() => deleteOperationGroup({
-              packageKey: packageKey!,
-              versionKey: fullVersion!,
-              groupName: groupToDelete!.groupName,
-              apiType: groupToDelete!.apiType!,
-            })}
+            onConfirm={() =>
+              deleteOperationGroup({
+                packageKey: packageKey!,
+                versionKey: fullVersion!,
+                groupName: groupToDelete!.groupName,
+                apiType: groupToDelete!.apiType!,
+              })
+            }
             onCancel={() => setDeleteConfirmationOpen(false)}
           />
         </>

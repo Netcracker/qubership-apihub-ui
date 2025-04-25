@@ -30,32 +30,25 @@ export type BreadcrumbNavigationProps = {
   }>
 }
 
-export const BreadcrumbNavigation: FC<BreadcrumbNavigationProps> = memo<BreadcrumbNavigationProps>(({ relativePath }) => {
-  const { groupId } = useParams()
+export const BreadcrumbNavigation: FC<BreadcrumbNavigationProps> = memo<BreadcrumbNavigationProps>(
+  ({ relativePath }) => {
+    const { groupId } = useParams()
 
-  const [project] = useProject()
-  const { packageObj: group } = usePackage({ packageKey: project?.groupKey ?? groupId, showParents: true })
-  const path = calculatePackagePath(group, true, '•')
+    const [project] = useProject()
+    const { packageObj: group } = usePackage({ packageKey: project?.groupKey ?? groupId, showParents: true })
+    const path = calculatePackagePath(group, true, '•')
 
-  return (
-    <Breadcrumbs>
-      <Link
-        component={NavLink}
-        to={getEditorPath()}
-      >
-        {`${path}`}
-      </Link>
-      {
-        relativePath?.map(({ name, to }, index) => (
-          <Link
-            key={`${name}-${to}-${index}`}
-            component={NavLink}
-            to={to}
-          >
+    return (
+      <Breadcrumbs>
+        <Link component={NavLink} to={getEditorPath()}>
+          {`${path}`}
+        </Link>
+        {relativePath?.map(({ name, to }, index) => (
+          <Link key={`${name}-${to}-${index}`} component={NavLink} to={to}>
             {name}
           </Link>
-        ))
-      }
-    </Breadcrumbs>
-  )
-})
+        ))}
+      </Breadcrumbs>
+    )
+  },
+)

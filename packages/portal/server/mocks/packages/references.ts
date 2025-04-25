@@ -18,27 +18,32 @@ import type { PackageRef } from './types'
 import { VERSION_1_0, VERSION_1_4, VERSION_2_6_1 } from './version-contents'
 import { DRAFT_VERSION_STATUS, RELEASE_VERSION_STATUS } from './version-statuses'
 
-export const DASHBOARD_1: ReadonlyArray<PackageRef> = [{
-  refId: 'package-2',
-  kind: 'package',
-  name: 'Package 2',
-  version: '2.2',
-  status: RELEASE_VERSION_STATUS,
-}, {
-  refId: 'package-3',
-  kind: 'package',
-  name: 'Service',
-  version: '1.4',
-  status: DRAFT_VERSION_STATUS,
-}]
+export const DASHBOARD_1: ReadonlyArray<PackageRef> = [
+  {
+    refId: 'package-2',
+    kind: 'package',
+    name: 'Package 2',
+    version: '2.2',
+    status: RELEASE_VERSION_STATUS,
+  },
+  {
+    refId: 'package-3',
+    kind: 'package',
+    name: 'Service',
+    version: '1.4',
+    status: DRAFT_VERSION_STATUS,
+  },
+]
 
-export const DASHBOARD_2: ReadonlyArray<PackageRef> = [{
-  refId: 'dashboard-1',
-  kind: 'dashboard',
-  name: 'Dashboard',
-  version: '0.3',
-  status: RELEASE_VERSION_STATUS,
-}]
+export const DASHBOARD_2: ReadonlyArray<PackageRef> = [
+  {
+    refId: 'dashboard-1',
+    kind: 'dashboard',
+    name: 'Dashboard',
+    version: '0.3',
+    status: RELEASE_VERSION_STATUS,
+  },
+]
 
 export const VERSION_REFERENCES = new Map([
   [VERSION_1_0, DASHBOARD_1],

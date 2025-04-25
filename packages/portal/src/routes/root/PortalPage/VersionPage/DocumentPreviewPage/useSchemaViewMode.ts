@@ -31,17 +31,20 @@ export function useSchemaViewMode(): [string | undefined, SetSchemaViewModeParam
 
   return [
     mode ?? DETAILED_SCHEMA_VIEW_MODE,
-    useCallback(value => {
-      if (value === DETAILED_SCHEMA_VIEW_MODE) {
-        searchParams.delete(SCHEMA_VIEW_MODE_PARAM_KEY)
-      } else {
-        searchParams.set(SCHEMA_VIEW_MODE_PARAM_KEY, value ?? '')
-      }
-      navigate({
-        search: `${searchParams}`,
-        hash: hashParam,
-      })
-    }, [hashParam, navigate, searchParams]),
+    useCallback(
+      (value) => {
+        if (value === DETAILED_SCHEMA_VIEW_MODE) {
+          searchParams.delete(SCHEMA_VIEW_MODE_PARAM_KEY)
+        } else {
+          searchParams.set(SCHEMA_VIEW_MODE_PARAM_KEY, value ?? '')
+        }
+        navigate({
+          search: `${searchParams}`,
+          hash: hashParam,
+        })
+      },
+      [hashParam, navigate, searchParams],
+    ),
   ]
 }
 

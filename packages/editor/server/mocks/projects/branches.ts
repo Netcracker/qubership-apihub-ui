@@ -91,10 +91,7 @@ export const BRANCH_CONFIG: Writeable<BranchConfigDto> = {
 }
 
 export const BRANCH_CONFLICTS: Writeable<BranchConflictsDto> = {
-  files: [
-    'readme.md',
-    'full-openapi.example.yaml',
-  ],
+  files: ['readme.md', 'full-openapi.example.yaml'],
 }
 
 export const BRANCHES: Writeable<BranchesDto> = {
@@ -131,5 +128,5 @@ export const BRANCHES: Writeable<BranchesDto> = {
 }
 
 export const LAST_FILE_CHANGE_STATUSES = new Map<string, ChangeStatus>(
-  BRANCH_CONFIG.files.map(file => [file.fileId, file.status]),
+  BRANCH_CONFIG.files.map((file) => [file.fileId, file.status]),
 )

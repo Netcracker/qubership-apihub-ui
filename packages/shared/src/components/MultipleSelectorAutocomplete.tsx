@@ -34,7 +34,9 @@ export type MultipleSelectorAutocompleteProps<Item extends object> = {
   setInputSearch?: (search: string) => void
 } & TestableProps
 
-function renderMultipleSelectorAutocomplete<Item extends object>(props: MultipleSelectorAutocompleteProps<Item>): ReactElement {
+function renderMultipleSelectorAutocomplete<Item extends object>(
+  props: MultipleSelectorAutocompleteProps<Item>,
+): ReactElement {
   const {
     options,
     value,
@@ -58,21 +60,23 @@ function renderMultipleSelectorAutocomplete<Item extends object>(props: Multiple
       sx={icon ? DEFAULT_AUTOCOMPLETE_STYLE : DEFAULT_AUTOCOMPLETE_STYLE_WITH_DEFAULT_ICON}
       popupIcon={icon}
       loading={isLoading}
-      loadingText={<CircularProgress size={16}/>}
+      loadingText={<CircularProgress size={16} />}
       value={value}
       options={options}
       getOptionLabel={(option) => getOptionLabel(option)}
-      onChange={(_, value) => {onChange(value)}}
+      onChange={(_, value) => {
+        onChange(value)
+      }}
       renderOption={(props, option) => renderOption(props, option)}
       renderTags={(value: Item[], getTagProps) => renderTags(value, getTagProps)}
-      renderInput={(params) =>
+      renderInput={(params) => (
         <TextField
           {...params}
           label={inputLabel}
           required={!value || value.length === 0}
           onChange={(event) => setInputSearch?.(event?.target?.value ?? '')}
         />
-      }
+      )}
       data-testid={testId}
     />
   )

@@ -62,11 +62,13 @@ export type DocumentSearchResult = Readonly<{
   showMoreOption?: boolean
 }>
 
-export type SearchResultsDto = Readonly<Partial<{
-  packages: PackageSearchResultDto[]
-  operations: OperationSearchResultDto[]
-  documents: DocumentSearchResultDto[]
-}>>
+export type SearchResultsDto = Readonly<
+  Partial<{
+    packages: PackageSearchResultDto[]
+    operations: OperationSearchResultDto[]
+    documents: DocumentSearchResultDto[]
+  }>
+>
 
 export type PackageSearchResultDto = Readonly<{
   packageId: string

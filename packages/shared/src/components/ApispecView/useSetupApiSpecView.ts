@@ -19,15 +19,8 @@ import type { ApispecView } from '@netcracker/qubership-apihub-apispec-view'
 import type { ApispecViewProps } from './ApispecView'
 
 export function useSetupApiSpecView(operationViewElement: ApispecView, props: ApispecViewProps): void {
-  const {
-    apiDescriptionDocument,
-    hideTryIt,
-    sidebarEnabled,
-    selectedUri,
-    searchPhrase,
-    schemaViewMode,
-    proxyServer,
-  } = props
+  const { apiDescriptionDocument, hideTryIt, sidebarEnabled, selectedUri, searchPhrase, schemaViewMode, proxyServer } =
+    props
 
   useEffect(() => {
     if (operationViewElement && apiDescriptionDocument) {

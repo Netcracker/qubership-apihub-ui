@@ -39,49 +39,44 @@ export type DocumentPreviewContentBodyProps = {
   isLoading: boolean
 }
 
-export const DocumentPreviewContentBody: FC<DocumentPreviewContentBodyProps> = memo<DocumentPreviewContentBodyProps>(props => {
-  const {
-    apiDescriptionDocument,
-    isLoading,
-  } = props
+export const DocumentPreviewContentBody: FC<DocumentPreviewContentBodyProps> = memo<DocumentPreviewContentBodyProps>(
+  (props) => {
+    const { apiDescriptionDocument, isLoading } = props
 
-  const { documentId } = useParams()
-  const [docPackageKey, docPackageVersion] = usePackageParamsWithRef()
-  const [{ type }] = useDocument(docPackageKey, docPackageVersion, documentId)
-  const [mode] = useSpecViewMode()
-  const [schemaViewMode = DETAILED_SCHEMA_VIEW_MODE] = useSchemaViewMode()
-  const [specItemUri] = useSpecItemUriHashParam()
+    const { documentId } = useParams()
+    const [docPackageKey, docPackageVersion] = usePackageParamsWithRef()
+    const [{ type }] = useDocument(docPackageKey, docPackageVersion, documentId)
+    const [mode] = useSpecViewMode()
+    const [schemaViewMode = DETAILED_SCHEMA_VIEW_MODE] = useSchemaViewMode()
+    const [specItemUri] = useSpecItemUriHashParam()
 
-  let operationContentElement
-  if (isLoading) {
-    operationContentElement = <LoadingIndicator/>
-  } else {
-    operationContentElement = (
-      <>
-        {mode === DOC_OPERATION_VIEW_MODE && (
-          <DocSpecView
-            value={apiDescriptionDocument}
-            type={type}
-            format={JSON_FILE_FORMAT}
-            sidebarEnabled={true}
-            schemaViewMode={schemaViewMode}
-            selectedUri={specItemUri}
-          />
-        )}
-        {mode === RAW_OPERATION_VIEW_MODE && (
-          <RawSpecView
-            value={toFormattedJsonString(apiDescriptionDocument)}
-            extension=".json"
-            type={type}
-          />
-        )}
-      </>
+    let operationContentElement
+    if (isLoading) {
+      operationContentElement = <LoadingIndicator />
+    } else {
+      operationContentElement = (
+        <>
+          {mode === DOC_OPERATION_VIEW_MODE && (
+            <DocSpecView
+              value={apiDescriptionDocument}
+              type={type}
+              format={JSON_FILE_FORMAT}
+              sidebarEnabled={true}
+              schemaViewMode={schemaViewMode}
+              selectedUri={specItemUri}
+            />
+          )}
+          {mode === RAW_OPERATION_VIEW_MODE && (
+            <RawSpecView value={toFormattedJsonString(apiDescriptionDocument)} extension=".json" type={type} />
+          )}
+        </>
+      )
+    }
+
+    return (
+      <Box sx={{ height: '100%', overflow: 'scroll', pl: 3, pr: 2, position: 'relative' }}>
+        {operationContentElement}
+      </Box>
     )
-  }
-
-  return (
-    <Box sx={{ height: '100%', overflow: 'scroll', pl: 3, pr: 2, position: 'relative' }}>
-      {operationContentElement}
-    </Box>
-  )
-})
+  },
+)

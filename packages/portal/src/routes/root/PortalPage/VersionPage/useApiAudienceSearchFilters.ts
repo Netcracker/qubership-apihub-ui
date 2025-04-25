@@ -30,7 +30,13 @@ export function useApiAudienceSearchFilter(): [ApiAudience, SetApiAudienceFilter
 
   return useMemo(() => {
     const audience = param ?? API_AUDIENCE_ALL
-    return [audience, value => setSearchParams({ [AUDIENCE_SEARCH_PARAM]: (value === API_AUDIENCE_ALL ? '' : value) ?? '' }, { replace: true })]
+    return [
+      audience,
+      (value) =>
+        setSearchParams(
+          { [AUDIENCE_SEARCH_PARAM]: (value === API_AUDIENCE_ALL ? '' : value) ?? '' },
+          { replace: true },
+        ),
+    ]
   }, [param, setSearchParams])
-
 }

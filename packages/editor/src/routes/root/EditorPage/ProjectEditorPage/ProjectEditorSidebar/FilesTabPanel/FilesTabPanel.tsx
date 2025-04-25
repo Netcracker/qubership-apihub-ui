@@ -75,48 +75,44 @@ export const FilesTabPanel: FC = memo(() => {
       <SidebarTabPanel
         value={FILES_PROJECT_EDITOR_MODE}
         header={
-          <Typography variant="h3" noWrap>Files</Typography>
+          <Typography variant="h3" noWrap>
+            Files
+          </Typography>
         }
         body={
           <>
-            {
-              isLoading
-                ? <FilesTabPanelSidebarSkeleton count={6}/>
-                : <Placeholder
-                  invisible={isNotEmpty(fileTree)}
-                  area={NAVIGATION_PLACEHOLDER_AREA}
-                  message="No files"
-                >
-                  <TreeView
-                    sx={{
-                      flexGrow: 1,
-                      maxWidth: '100%',
-                      overflow: 'auto',
-                      px: 0.25,
-                      py: 2,
-                      p: 0,
-                    }}
-                    defaultCollapseIcon={<ExpandMoreOutlinedIcon/>}
-                    defaultExpandIcon={<ChevronRightOutlinedIcon/>}
-                    selected={selectedFileKey}
-                    expanded={expanded}
-                    onNodeToggle={(_: SyntheticEvent, nodeIds: string[]) => setExpanded(nodeIds)}
-                    onNodeSelect={(_: SyntheticEvent, nodeId: string) => {
-                      const selectedFile = branchConfig?.files.find(({ key }) => key === nodeId)
-                      if (selectedFile) {
-                        setSearchParams({ file: selectedFile.key })
-                      }
-                    }}
-                  >
-                    {
-                      fileTree.map(file => (
-                        <InteractiveTreeItem key={file.key} nodeId={file.key} file={file} level={1}/>
-                      ))
+            {isLoading ? (
+              <FilesTabPanelSidebarSkeleton count={6} />
+            ) : (
+              <Placeholder invisible={isNotEmpty(fileTree)} area={NAVIGATION_PLACEHOLDER_AREA} message="No files">
+                <TreeView
+                  sx={{
+                    flexGrow: 1,
+                    maxWidth: '100%',
+                    overflow: 'auto',
+                    px: 0.25,
+                    py: 2,
+                    p: 0,
+                  }}
+                  defaultCollapseIcon={<ExpandMoreOutlinedIcon />}
+                  defaultExpandIcon={<ChevronRightOutlinedIcon />}
+                  selected={selectedFileKey}
+                  expanded={expanded}
+                  onNodeToggle={(_: SyntheticEvent, nodeIds: string[]) => setExpanded(nodeIds)}
+                  onNodeSelect={(_: SyntheticEvent, nodeId: string) => {
+                    const selectedFile = branchConfig?.files.find(({ key }) => key === nodeId)
+                    if (selectedFile) {
+                      setSearchParams({ file: selectedFile.key })
                     }
-                  </TreeView>
-                </Placeholder>
-            }
-            {!isLoading &&
+                  }}
+                >
+                  {fileTree.map((file) => (
+                    <InteractiveTreeItem key={file.key} nodeId={file.key} file={file} level={1} />
+                  ))}
+                </TreeView>
+              </Placeholder>
+            )}
+            {!isLoading && (
               <Tooltip
                 title={!hasAllPermission ? 'You do not have permissions to commit to the current branch in GitLab' : ''}
                 placement={'right'}
@@ -129,11 +125,11 @@ export const FilesTabPanel: FC = memo(() => {
                         backgroundColor: 'rgba(0, 187, 91, 0.4)',
                       },
                       width: '100%',
-                      }}
+                    }}
                     disabled={!hasAllPermission}
                     variant="added"
                     title="Add"
-                    icon={<KeyboardArrowDownOutlinedIcon/>}
+                    icon={<KeyboardArrowDownOutlinedIcon />}
                     alignItems="center"
                   >
                     <MenuItem onClick={() => showImportFromGitDialog()}>Import from GIT</MenuItem>
@@ -143,24 +139,20 @@ export const FilesTabPanel: FC = memo(() => {
                   </MenuButton>
                 </Box>
               </Tooltip>
-            }
+            )}
           </>
         }
       />
 
-      <CollapsibleNavPanel
-        filename={selectedFileName}
-        content={dereferencedSpec}
-        type={type}
-      />
+      <CollapsibleNavPanel filename={selectedFileName} content={dereferencedSpec} type={type} />
 
-      <ImportFromGitDialog/>
-      <UploadFileDialog/>
-      <ImportByUrlDialog/>
-      <CreateFileDialog/>
-      <RenameFileDialog/>
-      <MoveFileDialog/>
-      <DeleteContentDialog/>
+      <ImportFromGitDialog />
+      <UploadFileDialog />
+      <ImportByUrlDialog />
+      <CreateFileDialog />
+      <RenameFileDialog />
+      <MoveFileDialog />
+      <DeleteContentDialog />
     </>
   )
 })

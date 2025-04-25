@@ -20,9 +20,7 @@ import type {
   PROPERTY_TYPE_GROUP,
   RELATION_TYPE_INCLUDE_PROPERTIES_GROUP,
 } from '@netcracker/qubership-apihub-class-view'
-import {
-  PROPERTY_TYPE_LEAF,
-} from '@netcracker/qubership-apihub-class-view'
+import { PROPERTY_TYPE_LEAF } from '@netcracker/qubership-apihub-class-view'
 import { RELATION_TYPE_PROPERTY_TO_CLASS_REFERENCE } from '@netcracker/qubership-apihub-class-view'
 import type { OpenAPIV3 } from 'openapi-types'
 
@@ -58,7 +56,11 @@ export interface SchemaPropertiesGroup extends HasKey, HasName, HasDeprecation, 
   readonly kind: typeof PROPERTY_TYPE_GROUP
 }
 
-export interface SchemaClass extends HasKey, HasName, HasDeprecation, HasProperties<SchemaProperty | SchemaPropertiesGroup> {
+export interface SchemaClass
+  extends HasKey,
+    HasName,
+    HasDeprecation,
+    HasProperties<SchemaProperty | SchemaPropertiesGroup> {
   readonly kind: typeof SCHEMA_TYPE
   readonly sameHashObjects: OpenAPIV3.SchemaObject[]
   readonly sharedSchemaObjects: OpenAPIV3.SchemaObject[]
@@ -97,7 +99,9 @@ export type SchemaGraphContent = ContentObject<SchemaGraphMeta>
 
 export const UNKNOWN_SCHEMA_TYPE = 'unknown'
 
-export function isNamedObject(object: SchemaGraphObject): object is SchemaClass | SchemaProperty | SchemaPropertiesGroup {
+export function isNamedObject(
+  object: SchemaGraphObject,
+): object is SchemaClass | SchemaProperty | SchemaPropertiesGroup {
   return 'name' in object && 'fooName' in object && !object.fooName
 }
 

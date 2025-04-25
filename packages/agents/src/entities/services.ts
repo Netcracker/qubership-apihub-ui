@@ -78,9 +78,9 @@ export function isService(value: Record<string, unknown>): value is Service {
 export function toServices(value: ServicesDto): Services {
   return {
     status: value.status,
-    services: value.services.map(service => ({
+    services: value.services.map((service) => ({
       key: service.id,
-      specs: service.specs?.map(spec => toSpec(spec, service.id, service?.proxyServerUrl)),
+      specs: service.specs?.map((spec) => toSpec(spec, service.id, service?.proxyServerUrl)),
       baseline: service.baseline && {
         packageKey: service.baseline.packageId,
         name: service.baseline.name,
@@ -104,7 +104,9 @@ export async function getServices(
   workspaceKey: WorkspaceKey,
   onlyWithSpecs: boolean = false,
 ): Promise<ServicesDto> {
-  const servicesDto = await ncCustomAgentsRequestJson<ServicesDto>(`/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/services`, {
+  const servicesDto = await ncCustomAgentsRequestJson<ServicesDto>(
+    `/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/services`,
+    {
       method: 'get',
     },
   )
@@ -122,7 +124,9 @@ export async function runServiceDiscovery(
   namespaceKey: NamespaceKey,
   workspaceKey: WorkspaceKey,
 ): Promise<void> {
-  return await ncCustomAgentsRequestVoid(`/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/discover`, {
+  return await ncCustomAgentsRequestVoid(
+    `/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/discover`,
+    {
       method: 'post',
     },
   )

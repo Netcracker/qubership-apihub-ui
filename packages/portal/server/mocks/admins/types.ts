@@ -30,4 +30,3 @@ export type SystemAdmin = Readonly<{
 export type AddSystemAdmin = Readonly<{
   userId: string
 }>
-

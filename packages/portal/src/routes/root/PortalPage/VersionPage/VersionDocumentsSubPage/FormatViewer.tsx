@@ -44,13 +44,13 @@ export const FormatViewer: FC<FormatViewerProps> = memo<FormatViewerProps>(({ fo
   })
 
   if (isLoading) {
-    return <LoadingIndicator/>
+    return <LoadingIndicator />
   }
 
   if (format === MD_FILE_FORMAT) {
     return (
       <Box height="100%" overflow="scroll">
-        <MarkdownViewer value={raw}/>
+        <MarkdownViewer value={raw} />
       </Box>
     )
   }
@@ -59,10 +59,9 @@ export const FormatViewer: FC<FormatViewerProps> = memo<FormatViewerProps>(({ fo
   if (format === JSON_FILE_FORMAT || format === YAML_FILE_FORMAT) {
     const schema = toJsonSchema(raw)
     if (isFastJsonSchema(schema)) {
-      return <JsonSchemaViewer schema={schema as object}/>
+      return <JsonSchemaViewer schema={schema as object} />
     }
   }
 
-  return <UnsupportedView documentId={documentId}/>
+  return <UnsupportedView documentId={documentId} />
 })
-

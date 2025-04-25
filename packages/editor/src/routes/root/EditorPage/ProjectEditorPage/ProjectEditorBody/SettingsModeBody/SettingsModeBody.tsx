@@ -48,8 +48,8 @@ export const SettingsModeBody: FC = memo(() => {
   return (
     <EditableSettingsTabContentContext.Provider value={editable}>
       <SetEditableSettingsTabContentContext.Provider value={setEditable}>
-        <SettingsViewerGeneral project={project ?? EMPTY_PROJECT} packageObj={packageObj}/>
-        <SettingsEditorGeneral project={project ?? EMPTY_PROJECT} packageObj={packageObj}/>
+        <SettingsViewerGeneral project={project ?? EMPTY_PROJECT} packageObj={packageObj} />
+        <SettingsEditorGeneral project={project ?? EMPTY_PROJECT} packageObj={packageObj} />
       </SetEditableSettingsTabContentContext.Provider>
     </EditableSettingsTabContentContext.Provider>
   )

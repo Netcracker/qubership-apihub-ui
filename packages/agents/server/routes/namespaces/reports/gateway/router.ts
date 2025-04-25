@@ -32,4 +32,3 @@ function getGatewayRoutingReport(router: GatewayRoutingReportRouter): void {
     res.status(200).json(GATEWAY_ROUTING_REPORT_DTO)
   })
 }
-

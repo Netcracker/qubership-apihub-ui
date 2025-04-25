@@ -27,25 +27,22 @@ export class WSMonacoEditor implements IWSMonacoEditor {
   protected _editorAdapter: MonacoAdapter | null
   protected _editorClient: IEditorClient | null
 
-  constructor(
-    {
-      announcementDuration,
-      editor,
+  constructor({
+    announcementDuration,
+    editor,
+    websocket,
+    initialDocument,
+    userId,
+    userName,
+    users,
+    cursors,
+  }: IWSMonacoEditorConstructionOptions) {
+    this._databaseAdapter = new WSAdapter({
       websocket,
       initialDocument,
       userId,
       userName,
-      users,
-      cursors,
-    }: IWSMonacoEditorConstructionOptions,
-  ) {
-    this._databaseAdapter = new WSAdapter({
-        websocket,
-        initialDocument,
-        userId,
-        userName,
-      },
-    )
+    })
     this._editorAdapter = new MonacoAdapter({
       announcementDuration: announcementDuration,
       editor: editor,
@@ -59,27 +56,23 @@ export class WSMonacoEditor implements IWSMonacoEditor {
     this._userId = userId
     this._userName = userName ?? null
 
-    this._databaseAdapter.on(
-      DatabaseAdapterEvent.CursorChange,
-      ({ clientId, cursor }) => {
-        if (cursor === null) {
-          disposeCursorWidget(clientId)
-        }
-      })
-    this._databaseAdapter.on(
-      DatabaseAdapterEvent.Ready,
-      (ready) => {
-        if (!ready) {
-          // When socket reconnects, we need to reset initiated state to avoid intermediate operations
-          this._editorAdapter?.resetInitiated()
-        }
-      })
+    this._databaseAdapter.on(DatabaseAdapterEvent.CursorChange, ({ clientId, cursor }) => {
+      if (cursor === null) {
+        disposeCursorWidget(clientId)
+      }
+    })
+    this._databaseAdapter.on(DatabaseAdapterEvent.Ready, (ready) => {
+      if (!ready) {
+        // When socket reconnects, we need to reset initiated state to avoid intermediate operations
+        this._editorAdapter?.resetInitiated()
+      }
+    })
 
-    users?.forEach(user => {
+    users?.forEach((user) => {
       this._databaseAdapter?.handleConnectedUser(user)
     })
     initialDocument && this._databaseAdapter.handleSnapshot(initialDocument)
-    cursors?.forEach(cursor => {
+    cursors?.forEach((cursor) => {
       this._databaseAdapter?.handleUserCursor(cursor)
     })
   }
@@ -175,17 +168,11 @@ export class WSMonacoEditor implements IWSMonacoEditor {
     return this._databaseAdapter?.isHistoryEmpty() ?? true
   }
 
-  on<Key extends EditorClientEvent>(
-    event: Key,
-    listener: Handler<TEditorClientEventArgs[Key]>,
-  ): void {
+  on<Key extends EditorClientEvent>(event: Key, listener: Handler<TEditorClientEventArgs[Key]>): void {
     this._editorClient?.on(event, listener)
   }
 
-  off<Key extends EditorClientEvent>(
-    event: Key,
-    listener?: Handler<TEditorClientEventArgs[Key]>,
-  ): void {
+  off<Key extends EditorClientEvent>(event: Key, listener?: Handler<TEditorClientEventArgs[Key]>): void {
     this._editorClient?.off(event, listener)
   }
 }

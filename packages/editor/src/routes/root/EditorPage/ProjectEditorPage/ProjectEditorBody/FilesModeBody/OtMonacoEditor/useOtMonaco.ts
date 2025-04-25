@@ -60,11 +60,7 @@ export function useOtMonaco(options: {
   useRegisterLinks(editor, origin, pathname, currentBranch, mode, fileKey)
 
   useEffectOnce(() => {
-    const model = Editor.createModel(
-      value,
-      language,
-      Uri.parse(filename),
-    )
+    const model = Editor.createModel(value, language, Uri.parse(filename))
     model.setEOL(Editor.EndOfLineSequence.LF)
 
     Editor.defineTheme('custom', {
@@ -91,10 +87,12 @@ export function useOtMonaco(options: {
     setContent(value)
     codeEditor.onDidChangeModelContent(() => setContent(codeEditor.getValue()))
 
-    codeEditor.changeViewZones(changeAccessor => changeAccessor.addZone({
-      afterLineNumber: 0,
-      domNode: document.createElement('div'),
-    }))
+    codeEditor.changeViewZones((changeAccessor) =>
+      changeAccessor.addZone({
+        afterLineNumber: 0,
+        domNode: document.createElement('div'),
+      }),
+    )
 
     setEditor(codeEditor)
 
@@ -109,10 +107,7 @@ export function useOtMonaco(options: {
   return [ref, editor]
 }
 
-export function monacoEditorNavigateTo(
-  editor: Editor.IStandaloneCodeEditor,
-  lineNumber: number,
-): void {
+export function monacoEditorNavigateTo(editor: Editor.IStandaloneCodeEditor, lineNumber: number): void {
   editor.revealLineNearTop(lineNumber, Editor.ScrollType.Smooth)
   editor.setPosition({ lineNumber: lineNumber, column: 0 })
   editor.focus()

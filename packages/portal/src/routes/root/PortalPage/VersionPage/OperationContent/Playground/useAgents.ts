@@ -27,8 +27,5 @@ export function useAgents(): [Agents, IsLoading] {
     queryFn: () => getAgents(),
   })
 
-  return [
-    data ?? [],
-    isLoading,
-  ]
+  return [data ?? [], isLoading]
 }

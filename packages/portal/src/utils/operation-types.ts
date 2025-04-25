@@ -18,19 +18,13 @@ import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entitie
 import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 
-export type OperationTypeForm =
-  | ReadonlyArray<ApiType>
-  | Record<ApiType, unknown>
-  | undefined
-  | null
+export type OperationTypeForm = ReadonlyArray<ApiType> | Record<ApiType, unknown> | undefined | null
 
 export function isApiTypeSelectorShown(operationTypes: OperationTypeForm): boolean {
   if (!operationTypes) {
     return false
   }
-  return Array.isArray(operationTypes)
-    ? operationTypes.length > 1
-    : Object.keys(operationTypes).length > 1
+  return Array.isArray(operationTypes) ? operationTypes.length > 1 : Object.keys(operationTypes).length > 1
 }
 
 export function getDefaultApiType(operationTypes: OperationTypeForm): ApiType {
@@ -38,7 +32,7 @@ export function getDefaultApiType(operationTypes: OperationTypeForm): ApiType {
     return DEFAULT_API_TYPE
   }
 
-  const apiTypes = Array.isArray(operationTypes) ? operationTypes : Object.keys(operationTypes!) as ApiType[]
+  const apiTypes = Array.isArray(operationTypes) ? operationTypes : (Object.keys(operationTypes!) as ApiType[])
   if (apiTypes.length > 1 || isEmpty(apiTypes)) {
     return DEFAULT_API_TYPE
   }

@@ -42,10 +42,10 @@ export function usePackageRef(
     enabled: !!packageRefKey,
   })
 
-  return useMemo(() => [
-    refs.find((ref) => ref?.key === packageRefKey) ?? null,
-    isLoading,
-  ], [refs, isLoading, packageRefKey])
+  return useMemo(
+    () => [refs.find((ref) => ref?.key === packageRefKey) ?? null, isLoading],
+    [refs, isLoading, packageRefKey],
+  )
 }
 
 export function useFilteredPackageRefs(options: {
@@ -67,7 +67,12 @@ export function useFilteredPackageRefs(options: {
     showUndeleted = false,
   } = options ?? {}
 
-  const { data: versionReferences, isLoading, isInitialLoading, error } = useVersionReferences({
+  const {
+    data: versionReferences,
+    isLoading,
+    isInitialLoading,
+    error,
+  } = useVersionReferences({
     packageKey: packageKey,
     version: version,
     enabled: enabled,
@@ -87,7 +92,7 @@ export function useFilteredPackageRefs(options: {
     if (showAllDescendants) {
       packages = Object.values(versionReferences.packages!)
     } else {
-      versionReferences.references?.forEach(reference => {
+      versionReferences.references?.forEach((reference) => {
         if (!reference.parentPackageRef) {
           packages.push(versionReferences.packages![reference.packageRef!])
         }
@@ -95,15 +100,15 @@ export function useFilteredPackageRefs(options: {
     }
 
     if (textFilter) {
-      packages = packages.filter(ref => ref.name?.toLowerCase()?.includes(textFilter.toLowerCase()))
+      packages = packages.filter((ref) => ref.name?.toLowerCase()?.includes(textFilter.toLowerCase()))
     }
 
     if (kind) {
-      packages = packages.filter(ref => ref.kind === kind)
+      packages = packages.filter((ref) => ref.kind === kind)
     }
 
     if (showUndeleted) {
-      packages = packages.filter(ref => !ref.deletedAt)
+      packages = packages.filter((ref) => !ref.deletedAt)
     }
 
     return {

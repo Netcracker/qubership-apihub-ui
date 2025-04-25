@@ -27,52 +27,62 @@ export type ImageUploadingProps = Readonly<{
   onChange: (value: string) => void
 }>
 
-export const ImageUploading: FC<ImageUploadingProps> = memo<ImageUploadingProps>(({
-  title,
-  imageUrl,
-  inputFileRef,
-  onChange,
-}) => {
+export const ImageUploading: FC<ImageUploadingProps> = memo<ImageUploadingProps>(
+  ({ title, imageUrl, inputFileRef, onChange }) => {
+    const setImage = useCallback(
+      (newImage: string) => {
+        if (imageUrl) {
+          onChange('')
+        }
+        onChange(newImage)
+      },
+      [imageUrl, onChange],
+    )
 
-  const setImage = useCallback((newImage: string) => {
-    if (imageUrl) {
-      onChange('')
-    }
-    onChange(newImage)
-  }, [imageUrl, onChange])
-
-  return (
-    <div>
-      <input
-        ref={inputFileRef}
-        accept="image/*"
-        hidden
-        id="avatar-image-upload"
-        type="file"
-        onChange={(event) => {
-          const newImage = event.target?.files?.[0]
-          if (newImage) {
-            setImage(URL.createObjectURL(newImage))
-          }
-        }}/>
-      <label htmlFor="avatar-image-upload">
-        <Typography noWrap variant="subtitle2">{title}</Typography>
-        <IconButton
-          color="primary"
-          component="span"
-          onClick={(event) => {
-            if (imageUrl) {
-              event.preventDefault()
-              onChange('')
+    return (
+      <div>
+        <input
+          ref={inputFileRef}
+          accept="image/*"
+          hidden
+          id="avatar-image-upload"
+          type="file"
+          onChange={(event) => {
+            const newImage = event.target?.files?.[0]
+            if (newImage) {
+              setImage(URL.createObjectURL(newImage))
             }
           }}
-        >
-          {imageUrl ? <img style={{
-            height: '44px',
-            width: '44px',
-          }} alt={title ?? 'Logo'} src={imageUrl}/> : <UploadImageIcon/>}
-        </IconButton>
-      </label>
-    </div>
-  )
-})
+        />
+        <label htmlFor="avatar-image-upload">
+          <Typography noWrap variant="subtitle2">
+            {title}
+          </Typography>
+          <IconButton
+            color="primary"
+            component="span"
+            onClick={(event) => {
+              if (imageUrl) {
+                event.preventDefault()
+                onChange('')
+              }
+            }}
+          >
+            {imageUrl ? (
+              <img
+                style={{
+                  height: '44px',
+                  width: '44px',
+                }}
+                alt={title ?? 'Logo'}
+                src={imageUrl}
+              />
+            ) : (
+              <UploadImageIcon />
+            )}
+          </IconButton>
+        </label>
+      </div>
+    )
+  },
+)

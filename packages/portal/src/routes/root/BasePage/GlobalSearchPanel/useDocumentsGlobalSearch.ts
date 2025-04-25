@@ -32,13 +32,11 @@ export function useDocumentsGlobalSearch(options: {
 }): [SearchResults, IsLoading, FetchNextSearchResultList, IsFetchingNextPage, HasNextPage] {
   const { criteria, page = 1, limit = 100, enabled } = options
 
-  const {
-    data,
-    isInitialLoading,
-    fetchNextPage,
-    isFetchingNextPage,
-    hasNextPage,
-  } = useInfiniteQuery<SearchResults, Error, SearchResults>({
+  const { data, isInitialLoading, fetchNextPage, isFetchingNextPage, hasNextPage } = useInfiniteQuery<
+    SearchResults,
+    Error,
+    SearchResults
+  >({
     queryKey: [GLOBAL_DOCUMENTS_SEARCH_RESULT_QUERY_KEY, criteria, DOCUMENT_LEVEL],
     queryFn: ({ pageParam = page }) => getSearchResult(criteria, DOCUMENT_LEVEL, limit, pageParam - 1),
     enabled: enabled && !!criteria.searchString,
@@ -51,7 +49,7 @@ export function useDocumentsGlobalSearch(options: {
     },
   })
 
-  const documents = useMemo(() => data?.pages.flatMap(page => page.documents) ?? [], [data?.pages])
+  const documents = useMemo(() => data?.pages.flatMap((page) => page.documents) ?? [], [data?.pages])
 
   return [
     {

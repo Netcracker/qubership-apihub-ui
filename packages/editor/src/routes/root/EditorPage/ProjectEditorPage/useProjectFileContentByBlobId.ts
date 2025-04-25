@@ -24,10 +24,7 @@ import { editorRequestText } from '@apihub/utils/requests'
 
 const PROJECT_FILE_CONTENT_BY_BLOB_ID_QUERY_KEY = 'project-file-content-by-blob-id-query-key'
 
-export function useProjectFileContentByBlobId(
-  blobKey: CommitKey,
-  enabled: boolean = true,
-): [string | null, IsLoading] {
+export function useProjectFileContentByBlobId(blobKey: CommitKey, enabled: boolean = true): [string | null, IsLoading] {
   const { projectId } = useParams()
 
   const { data, isLoading } = useQuery<string, Error, Key>({
@@ -39,10 +36,7 @@ export function useProjectFileContentByBlobId(
   return [data ?? null, isLoading]
 }
 
-async function getProjectFileContentByBlobId(
-  projectKey: Key,
-  blobKey: Key,
-): Promise<string> {
+async function getProjectFileContentByBlobId(projectKey: Key, blobKey: Key): Promise<string> {
   if (blobKey === NONE_COMMIT_KEY) {
     return Promise.resolve('')
   }

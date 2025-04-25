@@ -23,9 +23,7 @@ import { ChangesViewAgentWidget } from './ChangesViewAgentWidget'
 import type { Service } from '@apihub/entities/services'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import {
-  useCreateSnapshotPublicationOptions,
-} from '../../routes/root/NamespacePage/ServicesPage/ServicesPageProvider/ServicesPublicationOptionsProvider'
+import { useCreateSnapshotPublicationOptions } from '../../routes/root/NamespacePage/ServicesPage/ServicesPageProvider/ServicesPublicationOptionsProvider'
 import type { ServiceConfig } from '@apihub/entities/publish-config'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 
@@ -39,54 +37,35 @@ export type ChangeViewDialogDetail = {
 
 export const ChangeViewContent: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, detail }) => {
   const { service, apiType } = detail as ChangeViewDialogDetail
-  const { createSnapshotPublicationOptions: { config } } = useCreateSnapshotPublicationOptions()
   const {
-    version,
-    packageId,
-  } = config?.serviceConfigs.find(({ serviceId }) => serviceId === service.key) as ServiceConfig
+    createSnapshotPublicationOptions: { config },
+  } = useCreateSnapshotPublicationOptions()
+  const { version, packageId } = config?.serviceConfigs.find(
+    ({ serviceId }) => serviceId === service.key,
+  ) as ServiceConfig
 
   const onClose = useCallback(() => {
     setOpen(false)
   }, [setOpen])
 
   return (
-    <Dialog
-      maxWidth="lg"
-      fullWidth
-      open={open}
-      onClose={onClose}
-    >
+    <Dialog maxWidth="lg" fullWidth open={open} onClose={onClose}>
       <DialogTitle display="flex">
-        <CardHeader
-          sx={{ p: 0 }}
-          title="Changelog"
-        />
+        <CardHeader sx={{ p: 0 }} title="Changelog" />
         <Box display="flex" marginLeft="auto" alignItems="center" gap={3}>
-          <IconButton
-            sx={{ color: '#353C4E' }}
-            onClick={onClose}
-          >
-            <CloseOutlinedIcon/>
+          <IconButton sx={{ color: '#353C4E' }} onClick={onClose}>
+            <CloseOutlinedIcon />
           </IconButton>
         </Box>
       </DialogTitle>
 
       <DialogContent sx={{ width: '100%' }}>
-        <ChangesViewAgentWidget
-          versionKey={version}
-          packageKey={packageId}
-          apiType={apiType}
-        />
+        <ChangesViewAgentWidget versionKey={version} packageKey={packageId} apiType={apiType} />
       </DialogContent>
     </Dialog>
   )
 })
 
 export const ChangeViewDialog: FC = memo(() => {
-  return (
-    <PopupDelegate
-      type={SHOW_CHANGE_VIEW_DIALOG}
-      render={props => <ChangeViewContent {...props}/>}
-    />
-  )
+  return <PopupDelegate type={SHOW_CHANGE_VIEW_DIALOG} render={(props) => <ChangeViewContent {...props} />} />
 })

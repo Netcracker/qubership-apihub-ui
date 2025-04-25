@@ -36,12 +36,9 @@ export const SnapshotsPage: FC = memo(() => {
           area={CONTENT_PLACEHOLDER_AREA}
           message="No snapshots"
         >
-          {isLoading
-            ? <LoadingIndicator/>
-            : <SnapshotsTable/>}
+          {isLoading ? <LoadingIndicator /> : <SnapshotsTable />}
         </Placeholder>
       }
     />
   )
 })
-

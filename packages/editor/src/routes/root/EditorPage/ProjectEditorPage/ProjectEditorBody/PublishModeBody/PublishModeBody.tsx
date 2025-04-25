@@ -40,11 +40,7 @@ export const PublishModeBody: FC = memo(() => {
   const previewDisabled = !branchCache[key] || GRAPHQL_SPEC_TYPES.includes(branchCache[key].type)
 
   return (
-    <Placeholder
-      invisible={!!key && !!publish}
-      area={CONTENT_PLACEHOLDER_AREA}
-      message="No file selected"
-    >
+    <Placeholder invisible={!!key && !!publish} area={CONTENT_PLACEHOLDER_AREA} message="No file selected">
       <BodyCard
         header={branchCache[key]?.title}
         subheader={key}
@@ -57,40 +53,46 @@ export const PublishModeBody: FC = memo(() => {
               disableHint={!previewDisabled}
               hint="Preview is not available for GraphQL"
               onClick={showPublishPreviewDialog}
-              startIcon={<VisibilityOutlinedIcon fontSize="small" sx={{ mr: 1 }}/>}
+              startIcon={<VisibilityOutlinedIcon fontSize="small" sx={{ mr: 1 }} />}
             />
           )
         }
         body={
-          isLoading
-            ? <LoadingIndicator/>
-            : <Box display="flex" flexDirection="column" overflow="auto" gap={2}>
+          isLoading ? (
+            <LoadingIndicator />
+          ) : (
+            <Box display="flex" flexDirection="column" overflow="auto" gap={2}>
               <Typography variant="h5">Labels</Typography>
               <Autocomplete
-                multiple freeSolo
+                multiple
+                freeSolo
                 options={['']}
                 getOptionLabel={(option) => option}
                 value={[...labels]}
                 onChange={(_, value) => updateFileMeta({ key: key, labels: value })}
-                renderTags={(value, getTagProps) => (
-                  value.map((option, index) => <Chip {...getTagProps({ index })} variant="filled" label={option}
-                                                     size="small"/>)
+                renderTags={(value, getTagProps) =>
+                  value.map((option, index) => (
+                    <Chip {...getTagProps({ index })} variant="filled" label={option} size="small" />
+                  ))
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    hiddenLabel
+                    variant="filled"
+                    placeholder="Add Label"
+                    sx={{ m: 0 }}
+                    inputProps={{ ...params.inputProps, style: { marginTop: -6 } }}
+                  />
                 )}
-                renderInput={(params) => <TextField
-                  {...params}
-                  hiddenLabel
-                  variant="filled"
-                  placeholder="Add Label"
-                  sx={{ m: 0 }}
-                  inputProps={{ ...params.inputProps, style: { marginTop: -6 } }}
-                />}
               />
               <Typography variant="h5">Problems</Typography>
-              <FileProblemsPanel fileKey={key}/>
+              <FileProblemsPanel fileKey={key} />
             </Box>
+          )
         }
       />
-      <PublishPreviewDialog/>
+      <PublishPreviewDialog />
     </Placeholder>
   )
 })

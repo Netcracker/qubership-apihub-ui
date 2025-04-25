@@ -37,25 +37,20 @@ type BeforeSpecContent = string
 type AfterSpecContent = string
 type SpecItemUri = string
 
-export const RawSpecDiffView: FC<RawDiffViewProps> = memo<RawDiffViewProps>(({
-  beforeValue,
-  afterValue,
-  type,
-  extension,
-  selectedUri,
-  sx,
-}) => {
-  return (
-    <ModuleFetchingErrorBoundary>
-      <Box height="100%" minWidth={0} sx={sx} data-testid="RawDiffView">
-        <MonacoDiffEditor
-          before={beforeValue}
-          after={afterValue}
-          type={type}
-          language={EXTENSION_TO_TYPE_LANGUAGE_MAP[extension]}
-          selectedUri={selectedUri}
-        />
-      </Box>
-    </ModuleFetchingErrorBoundary>
-  )
-})
+export const RawSpecDiffView: FC<RawDiffViewProps> = memo<RawDiffViewProps>(
+  ({ beforeValue, afterValue, type, extension, selectedUri, sx }) => {
+    return (
+      <ModuleFetchingErrorBoundary>
+        <Box height="100%" minWidth={0} sx={sx} data-testid="RawDiffView">
+          <MonacoDiffEditor
+            before={beforeValue}
+            after={afterValue}
+            type={type}
+            language={EXTENSION_TO_TYPE_LANGUAGE_MAP[extension]}
+            selectedUri={selectedUri}
+          />
+        </Box>
+      </ModuleFetchingErrorBoundary>
+    )
+  },
+)

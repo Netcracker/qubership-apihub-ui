@@ -29,9 +29,7 @@ const DEREFERENCED_SPEC_QUERY_KEY = 'dereferenced-spec-query-key'
 
 type DereferencedSpec = string
 
-export function useDereferencedSpec(
-  fileKey?: FileKey | null,
-): [DereferencedSpec, IsFetching] {
+export function useDereferencedSpec(fileKey?: FileKey | null): [DereferencedSpec, IsFetching] {
   const { projectId } = useParams()
   const [branchName] = useBranchSearchParam()
   const [branchConfig, isBranchConfigLoading] = useBranchConfig()
@@ -39,16 +37,19 @@ export function useDereferencedSpec(
 
   const { data, isFetching } = useQuery<string, Error, DereferencedSpec>({
     queryKey: [DEREFERENCED_SPEC_QUERY_KEY, projectId, branchName, fileKey],
-    queryFn: async () => (await PackageVersionBuilder.dereference(fileKey!, {
-      packageKey: projectId!,
-      versionKey: VERSION_CANDIDATE,
-      previousVersionKey: VERSION_CANDIDATE,
-      previousPackageKey: projectId!,
-      authorization: getAuthorization(),
-      branchName: branchName!,
-      files: branchConfig?.files ?? [],
-      sources: branchFiles,
-    })).content,
+    queryFn: async () =>
+      (
+        await PackageVersionBuilder.dereference(fileKey!, {
+          packageKey: projectId!,
+          versionKey: VERSION_CANDIDATE,
+          previousVersionKey: VERSION_CANDIDATE,
+          previousPackageKey: projectId!,
+          authorization: getAuthorization(),
+          branchName: branchName!,
+          files: branchConfig?.files ?? [],
+          sources: branchFiles,
+        })
+      ).content,
     enabled: !!projectId && !!branchName && !!fileKey && !isBranchConfigLoading && !isBranchFilesLoading,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,

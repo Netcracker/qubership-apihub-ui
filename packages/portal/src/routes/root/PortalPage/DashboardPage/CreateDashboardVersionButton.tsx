@@ -35,61 +35,52 @@ export type CreateVersionButtonProps = {
   sx?: SxProps
 }
 
-export const CreateDashboardVersionButton: FC<CreateVersionButtonProps> = memo(({
-  disabled,
-  variant = 'contained',
-  primaryButtonProps,
-  sx,
-}) => {
-  const location = useBackwardLocation()
-  const backwardLocation = useBackwardLocationContext()
-  const setBackwardLocation = useSetBackwardLocationContext()
-  const { navigateToVersion } = useNavigation()
-  const { packageId } = useParams()
-  const handleClick = useCallback(
-    () => {
+export const CreateDashboardVersionButton: FC<CreateVersionButtonProps> = memo(
+  ({ disabled, variant = 'contained', primaryButtonProps, sx }) => {
+    const location = useBackwardLocation()
+    const backwardLocation = useBackwardLocationContext()
+    const setBackwardLocation = useSetBackwardLocationContext()
+    const { navigateToVersion } = useNavigation()
+    const { packageId } = useParams()
+    const handleClick = useCallback(() => {
       setBackwardLocation({ ...backwardLocation, fromPackage: location })
       navigateToVersion({ packageKey: packageId!, versionKey: SPECIAL_VERSION_KEY, edit: true })
-    },
-    [backwardLocation, location, navigateToVersion, packageId, setBackwardLocation],
-  )
+    }, [backwardLocation, location, navigateToVersion, packageId, setBackwardLocation])
 
-  const { showPublishPackageVersionDialog } = useEventBus()
+    const { showPublishPackageVersionDialog } = useEventBus()
 
-  return (
-    <MultiButton
-      sx={sx}
-      buttonGroupProps={{
-        sx: { marginLeft: 'auto', minWidth: 'max-content' },
-        variant: variant,
-        disabled: disabled,
-      }}
-      arrowButtonProps={{
-        sx: { p: 0, width: '32px', '&.MuiButtonGroup-grouped': { minWidth: '32px' } },
-      }}
-      disableHint={!disabled}
-      hint="You do not have permission to create the version"
-      primary={
-        <Button
-          variant={variant}
-          onClick={handleClick}
-          data-testid="CreateVersionButton"
-          {...primaryButtonProps}
-        >
-          Create Version
-        </Button>
-      }
-      secondary={
-        <Box>
-          <MenuItem onClick={handleClick}>
-            <Typography component="span" variant="body2">Manually&nbsp;</Typography>
-            <Typography component="span" variant="body2" color="#626D82">(default)</Typography>
-          </MenuItem>
-          <MenuItem onClick={showPublishPackageVersionDialog}>
-            Import from CSV
-          </MenuItem>
-        </Box>
-      }
-    />
-  )
-})
+    return (
+      <MultiButton
+        sx={sx}
+        buttonGroupProps={{
+          sx: { marginLeft: 'auto', minWidth: 'max-content' },
+          variant: variant,
+          disabled: disabled,
+        }}
+        arrowButtonProps={{
+          sx: { p: 0, width: '32px', '&.MuiButtonGroup-grouped': { minWidth: '32px' } },
+        }}
+        disableHint={!disabled}
+        hint="You do not have permission to create the version"
+        primary={
+          <Button variant={variant} onClick={handleClick} data-testid="CreateVersionButton" {...primaryButtonProps}>
+            Create Version
+          </Button>
+        }
+        secondary={
+          <Box>
+            <MenuItem onClick={handleClick}>
+              <Typography component="span" variant="body2">
+                Manually&nbsp;
+              </Typography>
+              <Typography component="span" variant="body2" color="#626D82">
+                (default)
+              </Typography>
+            </MenuItem>
+            <MenuItem onClick={showPublishPackageVersionDialog}>Import from CSV</MenuItem>
+          </Box>
+        }
+      />
+    )
+  },
+)

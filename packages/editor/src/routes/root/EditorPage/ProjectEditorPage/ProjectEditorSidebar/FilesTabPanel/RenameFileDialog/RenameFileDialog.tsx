@@ -39,41 +39,36 @@ export const RenameFileDialog: FC = memo(() => {
 
   const [renameProjectFile, isLoading] = useRenameProjectFile()
 
-  useEffect(() => {!isLoading && setOpen(false)}, [isLoading])
-  useEffect(() => {file && reset()}, [file, reset])
+  useEffect(() => {
+    !isLoading && setOpen(false)
+  }, [isLoading])
+  useEffect(() => {
+    file && reset()
+  }, [file, reset])
 
-  const fileName = useMemo(
-    () => {
-      return file?.name?.substring(0, file?.name?.lastIndexOf('.'))
-    },
-    [file],
-  )
+  const fileName = useMemo(() => {
+    return file?.name?.substring(0, file?.name?.lastIndexOf('.'))
+  }, [file])
 
   return (
     <DialogForm
       open={open}
       onClose={() => setOpen(false)}
-      onSubmit={handleSubmit(({ newFileId }) => renameProjectFile({
-        fileId: file?.key ?? '',
-        newFileId: rename(newFileId, file),
-      }))}
+      onSubmit={handleSubmit(({ newFileId }) =>
+        renameProjectFile({
+          fileId: file?.key ?? '',
+          newFileId: rename(newFileId, file),
+        }),
+      )}
     >
-      <DialogTitle>
-        Rename File
-      </DialogTitle>
+      <DialogTitle>Rename File</DialogTitle>
 
       <DialogContent>
         <Controller
           name="newFileId"
           control={control}
           defaultValue={fileName}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              autoFocus required
-              label="Name"
-            />
-          )}
+          render={({ field }) => <TextField {...field} autoFocus required label="Name" />}
         />
       </DialogContent>
 

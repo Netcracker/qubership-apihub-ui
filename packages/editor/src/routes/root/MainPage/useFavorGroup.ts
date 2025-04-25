@@ -23,16 +23,14 @@ export function useFavorGroup(): FavorGroup {
   const invalidateGroups = useInvalidateGroups()
 
   const { mutate } = useMutation<void, Error, Key>({
-    mutationFn: key => favorGroup(key),
+    mutationFn: (key) => favorGroup(key),
     onSuccess: () => invalidateGroups(),
   })
 
   return mutate
 }
 
-async function favorGroup(
-  groupKey: Key,
-): Promise<void> {
+async function favorGroup(groupKey: Key): Promise<void> {
   const groupId = encodeURIComponent(groupKey)
 
   await editorRequestVoid(`/groups/${groupId}/favor`, {

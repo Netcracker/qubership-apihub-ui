@@ -25,7 +25,8 @@ import type { ServicePublishInfo } from '@apihub/entities/service-publish-info'
 import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import {
   ERROR_STEP_STATUS,
-  RUNNING_STEP_STATUS, SUCCESS_STEP_STATUS,
+  RUNNING_STEP_STATUS,
+  SUCCESS_STEP_STATUS,
   useValidationResultsStep,
 } from '../../ServicesPageProvider/ServicesStepsProvider'
 import { ProblemControls } from '../../../../../../components/ProblemControls'
@@ -41,13 +42,10 @@ export const BWC_ERRORS_FILTER = 'bwc-errors'
 export const NO_BWC_ERRORS_FILTER = 'no-bwc-errors'
 export const NO_BASELINE_FILTER = 'no-baseline'
 
-export type ValidationFilter =
-  typeof BWC_ERRORS_FILTER
-  | typeof NO_BWC_ERRORS_FILTER
-  | typeof NO_BASELINE_FILTER
+export type ValidationFilter = typeof BWC_ERRORS_FILTER | typeof NO_BWC_ERRORS_FILTER | typeof NO_BASELINE_FILTER
 
 const FILTERED_SERVICES_MAP: Record<ValidationFilter, (value: ServicePublishInfo) => boolean> = {
-  [BWC_ERRORS_FILTER]: (value) => value.baselineVersionFound && !!(value?.changeSummary?.breaking),
+  [BWC_ERRORS_FILTER]: (value) => value.baselineVersionFound && !!value?.changeSummary?.breaking,
   [NO_BWC_ERRORS_FILTER]: (value) => value.baselineVersionFound && value?.changeSummary?.breaking === 0,
   [NO_BASELINE_FILTER]: (value) => !value.baselineVersionFound || !value.baselineFound,
 }
@@ -60,56 +58,51 @@ export const ValidationResultsStep: FC = memo(() => {
   const [searchValue, setSearchValue] = useState('')
   const [filters, setFilters] = useState<(ValidationFilter | null)[]>([])
 
-  const filteredServices = useMemo(
-    () => {
-      if (isNotEmpty(filters)) {
-        return filterServices(searchValue, services).filter(({ key: serviceKey }) => {
-          const { services } = snapshotPublicationInfo
-          const currentService = services.find(({ key }) => key === serviceKey)
+  const filteredServices = useMemo(() => {
+    if (isNotEmpty(filters)) {
+      return filterServices(searchValue, services).filter(({ key: serviceKey }) => {
+        const { services } = snapshotPublicationInfo
+        const currentService = services.find(({ key }) => key === serviceKey)
 
-          return filters.some(filterItem => {
-            return currentService && FILTERED_SERVICES_MAP[filterItem!](currentService)
-          })
+        return filters.some((filterItem) => {
+          return currentService && FILTERED_SERVICES_MAP[filterItem!](currentService)
         })
-      }
-      return filterServices(searchValue, services)
-    },
-    [filters, searchValue, services, snapshotPublicationInfo],
-  )
+      })
+    }
+    return filterServices(searchValue, services)
+  }, [filters, searchValue, services, snapshotPublicationInfo])
 
   const promotableServices = useMemo(
-    () => services
-      .filter(service => !!snapshotPublicationInfo.services.find(({ key }) => key === service.key && !!service.baseline)),
+    () =>
+      services.filter(
+        (service) => !!snapshotPublicationInfo.services.find(({ key }) => key === service.key && !!service.baseline),
+      ),
     [services, snapshotPublicationInfo.services],
   )
 
   const [, setValidationResultsStep] = useValidationResultsStep()
   useEffect(() => {
     if (isLoading) {
-      setValidationResultsStep(prevState => ({ ...prevState, status: RUNNING_STEP_STATUS }))
+      setValidationResultsStep((prevState) => ({ ...prevState, status: RUNNING_STEP_STATUS }))
     } else {
       const status = isNotEmpty(promotableServices) ? SUCCESS_STEP_STATUS : ERROR_STEP_STATUS
-      setValidationResultsStep(prevState => ({ ...prevState, status }))
+      setValidationResultsStep((prevState) => ({ ...prevState, status }))
     }
   }, [isLoading, promotableServices, promotableServices.length, setValidationResultsStep])
 
   return (
     <>
       <Box sx={{ display: 'flex', alignSelf: 'center', ml: 'auto', pt: 1, gap: 1 }}>
-        <ProblemControls filters={filters} setFilters={setFilters}/>
-        <SearchBar
-          value={searchValue}
-          onValueChange={setSearchValue}
-        />
+        <ProblemControls filters={filters} setFilters={setFilters} />
+        <SearchBar value={searchValue} onValueChange={setSearchValue} />
       </Box>
       <Placeholder
         invisible={isNotEmpty(filteredServices) || isLoading}
         area={CONTENT_PLACEHOLDER_AREA}
         message={NO_SEARCH_RESULTS}
       >
-        <ValidationResultsStepTable value={filteredServices} isLoading={isLoading}/>
+        <ValidationResultsStepTable value={filteredServices} isLoading={isLoading} />
       </Placeholder>
     </>
   )
 })
-

@@ -39,7 +39,7 @@ export const ActivityListItem: FC<ActivitiesListItemProps> = ({ activity }) => {
   })
 
   const renderTextAsHTML = useCallback((text: string): ReactNode => {
-    return <div style={{ display: 'inline' }} dangerouslySetInnerHTML={{ __html: text }}/>
+    return <div style={{ display: 'inline' }} dangerouslySetInnerHTML={{ __html: text }} />
   }, [])
 
   const activityMessageElement = useMemo(() => {
@@ -83,17 +83,12 @@ export const ActivityListItem: FC<ActivitiesListItemProps> = ({ activity }) => {
     <Box mb={2} data-testid="ActivityListItem">
       <Box display="flex" mb={1} alignItems="center">
         <Box mr={1} minWidth={85} data-testid="ActivityDate">
-          <FormattedDate
-            value={activity.date}
-            color="#8992A1"
-          />
+          <FormattedDate value={activity.date} color="#8992A1" />
         </Box>
-        <PrincipalView value={activity.principal}/>
+        <PrincipalView value={activity.principal} />
       </Box>
       <Box overflow="auto" data-testid="ActivityMessage">
-        <Typography variant="body2">
-          {activityMessageElement}
-        </Typography>
+        <Typography variant="body2">{activityMessageElement}</Typography>
       </Box>
     </Box>
   )

@@ -18,13 +18,10 @@ import type { FC } from 'react'
 import React from 'react'
 import type { StoryContext } from '@storybook/react'
 
-export function fullHeight(
-  Story: FC<StoryContext>,
-  storyContext: StoryContext,
-): JSX.Element {
+export function fullHeight(Story: FC<StoryContext>, storyContext: StoryContext): JSX.Element {
   return (
     <div style={{ height: '100vh' }}>
-      <Story {...storyContext}/>
+      <Story {...storyContext} />
     </div>
   )
 }

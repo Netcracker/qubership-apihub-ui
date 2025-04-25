@@ -37,10 +37,7 @@ export const ROLES_LIST: Role[] = [
   {
     key: 'release-manager',
     role: 'Release Manager',
-    permissions: [
-      'read',
-      'manage_release_version',
-    ],
+    permissions: ['read', 'manage_release_version'],
   },
   {
     key: 'owner',
@@ -70,9 +67,7 @@ export const ROLES_LIST: Role[] = [
     key: 'viewer',
     role: 'Viewer',
     readOnly: true,
-    permissions: [
-      'read',
-    ],
+    permissions: ['read'],
   },
   {
     key: 'none',

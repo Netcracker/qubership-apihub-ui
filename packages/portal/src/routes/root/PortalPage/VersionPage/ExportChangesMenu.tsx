@@ -22,9 +22,7 @@ import { useOrderedComparisonFiltersSummary } from './useOrderedComparisonFilter
 import type { ChangeSeverity } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
 import type { ApiAudience, ApiKind } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import {
-  useResolvedOperationGroupParameters,
-} from '@netcracker/qubership-apihub-ui-shared/hooks/operation-groups/useResolvedOperationGroupParameters'
+import { useResolvedOperationGroupParameters } from '@netcracker/qubership-apihub-ui-shared/hooks/operation-groups/useResolvedOperationGroupParameters'
 import { ExportMenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ExportMenuButton'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 
@@ -43,71 +41,83 @@ export type ExportChangesMenuProps = {
   previousVersionPackageId?: string
 }
 
-export const ExportChangesMenu: FC<ExportChangesMenuProps> = memo(({
-  textFilter,
-  kind,
-  apiAudience,
-  tag,
-  severityFilter,
-  refPackageId,
-  emptyTag,
-  severityChanges,
-  group,
-  previousVersion,
-  previousVersionPackageId,
-}) => {
-  const { packageId, versionId, apiType = DEFAULT_API_TYPE } = useParams<{
-    packageId: string
-    versionId: string
-    apiType: ApiType
-  }>()
+export const ExportChangesMenu: FC<ExportChangesMenuProps> = memo(
+  ({
+    textFilter,
+    kind,
+    apiAudience,
+    tag,
+    severityFilter,
+    refPackageId,
+    emptyTag,
+    severityChanges,
+    group,
+    previousVersion,
+    previousVersionPackageId,
+  }) => {
+    const {
+      packageId,
+      versionId,
+      apiType = DEFAULT_API_TYPE,
+    } = useParams<{
+      packageId: string
+      versionId: string
+      apiType: ApiType
+    }>()
 
-  const { resolvedGroupName, resolvedEmptyGroup } = useResolvedOperationGroupParameters(group)
+    const { resolvedGroupName, resolvedEmptyGroup } = useResolvedOperationGroupParameters(group)
 
-  const [downloadChangesAsExcel] = useDownloadChangesAsExcel()
+    const [downloadChangesAsExcel] = useDownloadChangesAsExcel()
 
-  const changesSummaryFromContext = useOrderedComparisonFiltersSummary({ apiType })
-  const isDownloadButtonDisabled = isEmptyChangesSummary(severityChanges, changesSummaryFromContext)
+    const changesSummaryFromContext = useOrderedComparisonFiltersSummary({ apiType })
+    const isDownloadButtonDisabled = isEmptyChangesSummary(severityChanges, changesSummaryFromContext)
 
-  const onDownloadAllChanges = (): void => {
-    downloadChangesAsExcel({
-      packageKey: packageId!,
-      version: versionId!,
-      apiType: apiType!,
-    })
-  }
+    const onDownloadAllChanges = (): void => {
+      downloadChangesAsExcel({
+        packageKey: packageId!,
+        version: versionId!,
+        apiType: apiType!,
+      })
+    }
 
-  const onDownloadFilteredChanges = (): void => {
-    downloadChangesAsExcel({
-      packageKey: packageId!,
-      version: versionId!,
-      apiType: apiType!,
-      textFilter: textFilter!,
-      apiKind: kind!,
-      apiAudience: apiAudience,
-      tag: tag!,
-      severityFilter: severityFilter,
-      group: resolvedGroupName!,
-      emptyGroup: resolvedEmptyGroup,
-      refPackageId: refPackageId!,
-      emptyTag: emptyTag!,
-      previousVersion: previousVersion!,
-      previousVersionPackageId: previousVersionPackageId!,
-    })
-  }
+    const onDownloadFilteredChanges = (): void => {
+      downloadChangesAsExcel({
+        packageKey: packageId!,
+        version: versionId!,
+        apiType: apiType!,
+        textFilter: textFilter!,
+        apiKind: kind!,
+        apiAudience: apiAudience,
+        tag: tag!,
+        severityFilter: severityFilter,
+        group: resolvedGroupName!,
+        emptyGroup: resolvedEmptyGroup,
+        refPackageId: refPackageId!,
+        emptyTag: emptyTag!,
+        previousVersion: previousVersion!,
+        previousVersionPackageId: previousVersionPackageId!,
+      })
+    }
 
-  return <ExportMenuButton
-    disabled={isDownloadButtonDisabled}
-    title="Export Changes to Excel"
-    allDownloadText="All changes"
-    filteredDownloadText="Filtered changes"
-    downloadAll={onDownloadAllChanges}
-    downloadFiltered={onDownloadFilteredChanges}
-  />
-})
+    return (
+      <ExportMenuButton
+        disabled={isDownloadButtonDisabled}
+        title="Export Changes to Excel"
+        allDownloadText="All changes"
+        filteredDownloadText="Filtered changes"
+        downloadAll={onDownloadAllChanges}
+        downloadFiltered={onDownloadFilteredChanges}
+      />
+    )
+  },
+)
 
-function isEmptyChangesSummary(changeSeverities: ReadonlySet<ChangeSeverity>, changesSummary: Record<ChangeSeverity, number> | undefined): boolean {
-  return !changesSummary || Object.entries(changesSummary).every((
-    [key, value]) => !changeSeverities.has(key as ChangeSeverity) || value === 0,
+function isEmptyChangesSummary(
+  changeSeverities: ReadonlySet<ChangeSeverity>,
+  changesSummary: Record<ChangeSeverity, number> | undefined,
+): boolean {
+  return (
+    !changesSummary ||
+    Object.entries(changesSummary).every(([key, value]) => !changeSeverities.has(key as ChangeSeverity) || value === 0)
   )
 }

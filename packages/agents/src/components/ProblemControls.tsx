@@ -19,9 +19,7 @@ import { memo, useCallback, useMemo } from 'react'
 import { Box, ToggleButton, Typography } from '@mui/material'
 
 import { useSnapshotPublicationInfo } from '../routes/root/NamespacePage/useSnapshotPublicationInfo'
-import type {
-  ValidationFilter,
-} from '../routes/root/NamespacePage/ServicesPage/ServicesPageBody/ValidationResultsStep/ValidationResultsStep'
+import type { ValidationFilter } from '../routes/root/NamespacePage/ServicesPage/ServicesPageBody/ValidationResultsStep/ValidationResultsStep'
 import {
   BWC_ERRORS_FILTER,
   NO_BASELINE_FILTER,
@@ -31,7 +29,8 @@ import { CustomToggleButtonGroup } from '@netcracker/qubership-apihub-ui-shared/
 import {
   ERROR_STATUS_MARKER_VARIANT,
   StatusMarker,
-  SUCCESS_STATUS_MARKER_VARIANT, WARNING_STATUS_MARKER_VARIANT,
+  SUCCESS_STATUS_MARKER_VARIANT,
+  WARNING_STATUS_MARKER_VARIANT,
 } from '@netcracker/qubership-apihub-ui-shared/components/StatusMarker'
 
 export type ProblemsControlsProps = {
@@ -43,43 +42,40 @@ export const ProblemControls: FC<ProblemsControlsProps> = memo<ProblemsControlsP
   const { snapshotPublicationInfo } = useSnapshotPublicationInfo()
   const { services } = snapshotPublicationInfo
 
-  const withBwcErrorsCount = useMemo(() => services.filter(({
-    changeSummary,
-    baselineVersionFound,
-  }) => baselineVersionFound && changeSummary?.breaking).length, [services])
-  const withoutBwcErrorsCount = useMemo(() => services.filter(({
-    changeSummary,
-    baselineVersionFound,
-  }) => baselineVersionFound && changeSummary?.breaking === 0).length, [services])
-  const noBaselineCount = useMemo(() => services.filter(({
-    baselineFound,
-    baselineVersionFound,
-  }) => !baselineVersionFound || !baselineFound).length, [services])
+  const withBwcErrorsCount = useMemo(
+    () =>
+      services.filter(({ changeSummary, baselineVersionFound }) => baselineVersionFound && changeSummary?.breaking)
+        .length,
+    [services],
+  )
+  const withoutBwcErrorsCount = useMemo(
+    () =>
+      services.filter(
+        ({ changeSummary, baselineVersionFound }) => baselineVersionFound && changeSummary?.breaking === 0,
+      ).length,
+    [services],
+  )
+  const noBaselineCount = useMemo(
+    () => services.filter(({ baselineFound, baselineVersionFound }) => !baselineVersionFound || !baselineFound).length,
+    [services],
+  )
 
-  const handleFilterClick = useCallback((value: Array<ValidationFilter | null>): void => {
-    setFilters(value)
-  }, [setFilters])
+  const handleFilterClick = useCallback(
+    (value: Array<ValidationFilter | null>): void => {
+      setFilters(value)
+    },
+    [setFilters],
+  )
 
   return (
     <Box sx={{ display: 'flex', mb: 2, gap: 2 }}>
-      <CustomToggleButtonGroup
-        value={filters}
-        onClick={handleFilterClick}
-      >
+      <CustomToggleButtonGroup value={filters} onClick={handleFilterClick}>
         <ToggleButton value={BWC_ERRORS_FILTER} sx={{ gap: 1 }}>
-          <StatusMarker
-            value={ERROR_STATUS_MARKER_VARIANT}
-            title="Services with BWC errors"
-            placement="top"
-          />
+          <StatusMarker value={ERROR_STATUS_MARKER_VARIANT} title="Services with BWC errors" placement="top" />
           <Typography fontSize={11}>{withBwcErrorsCount}</Typography>
         </ToggleButton>
         <ToggleButton value={NO_BWC_ERRORS_FILTER} sx={{ gap: 1 }}>
-          <StatusMarker
-            value={SUCCESS_STATUS_MARKER_VARIANT}
-            title="Services without BWC errors"
-            placement="top"
-          />
+          <StatusMarker value={SUCCESS_STATUS_MARKER_VARIANT} title="Services without BWC errors" placement="top" />
           <Typography fontSize={11}>{withoutBwcErrorsCount}</Typography>
         </ToggleButton>
         <ToggleButton value={NO_BASELINE_FILTER} sx={{ gap: 1 }}>

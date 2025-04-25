@@ -32,4 +32,3 @@ function getAuthenticationCheckReport(router: AuthenticationCheckReportRouter): 
     res.status(200).json(AUTHENTICATION_CHECK_REPORT_DTO)
   })
 }
-

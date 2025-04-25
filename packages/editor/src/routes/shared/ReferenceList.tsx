@@ -29,24 +29,21 @@ export type ReferenceListProps = {
 
 export const ReferenceList: FC<ReferenceListProps> = memo<ReferenceListProps>(({ isLoading, references }) => {
   if (isLoading) {
-    return (
-      <LoadingIndicator/>
-    )
+    return <LoadingIndicator />
   }
 
   if (isEmpty(references)) {
     return (
-      <Typography noWrap variant="body2" mt={2}>No references</Typography>
+      <Typography noWrap variant="body2" mt={2}>
+        No references
+      </Typography>
     )
   }
 
   return (
     <List>
       {references.map(({ key, version, name, kind }, index) => (
-        <ListItem
-          key={`${key}-${index}`}
-          sx={{ px: 0 }}
-        >
+        <ListItem key={`${key}-${index}`} sx={{ px: 0 }}>
           <ListItemText
             sx={{ m: 0 }}
             primary={
@@ -60,7 +57,11 @@ export const ReferenceList: FC<ReferenceListProps> = memo<ReferenceListProps>(({
                 {name}
               </Link>
             }
-            secondary={<Typography noWrap variant="subtitle2">{key} • {version}</Typography>}
+            secondary={
+              <Typography noWrap variant="subtitle2">
+                {key} • {version}
+              </Typography>
+            }
           />
         </ListItem>
       ))}

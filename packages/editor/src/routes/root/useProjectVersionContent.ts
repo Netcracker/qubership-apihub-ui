@@ -65,9 +65,12 @@ export async function getProjectVersionContent(
     dependFiles: { value: dependFiles },
     importFiles: { value: importFiles },
   })
-  return await editorRequestJson<ProjectVersionContentDto>(`/projects/${projectId}/versions/${versionId}?${searchParams}`, {
-    method: 'GET',
-  })
+  return await editorRequestJson<ProjectVersionContentDto>(
+    `/projects/${projectId}/versions/${versionId}?${searchParams}`,
+    {
+      method: 'GET',
+    },
+  )
 }
 
 function toProjectVersionContent(value: ProjectVersionContentDto): ProjectVersionContent {

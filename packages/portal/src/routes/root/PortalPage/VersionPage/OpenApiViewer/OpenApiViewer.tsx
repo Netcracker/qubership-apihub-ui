@@ -21,57 +21,31 @@ import { Box } from '@mui/material'
 import type { Document } from '@apihub/entities/documents'
 import { OpenApiTableTree } from './OpenApiTableTree'
 import { OpenApiOverview } from './OpenApiOverview'
-import {
-  useSelectedSubPage,
-} from '@apihub/routes/root/PortalPage/VersionPage/VersionDocumentsSubPage/SelectedSubPageProvider'
+import { useSelectedSubPage } from '@apihub/routes/root/PortalPage/VersionPage/VersionDocumentsSubPage/SelectedSubPageProvider'
 
 export type OpenApiViewerProps = {
   value: Document
 }
 
-export const OpenApiViewer: FC<OpenApiViewerProps> = memo<OpenApiViewerProps>(({
-  value: {
-    slug,
-    description,
-    labels,
-    info,
-    externalDocs,
-    operations,
-  },
-}) => {
-  const selectedSubPage = useSelectedSubPage()
+export const OpenApiViewer: FC<OpenApiViewerProps> = memo<OpenApiViewerProps>(
+  ({ value: { slug, description, labels, info, externalDocs, operations } }) => {
+    const selectedSubPage = useSelectedSubPage()
 
-  return (
-    <Box
-      height="100%"
-      width="100%"
-      overflow="hidden"
-      pb={1}
-    >
-      {selectedSubPage === OVERVIEW_SUB_PAGE && (
-        <OpenApiOverview
-          description={description}
-          labels={labels}
-          info={info}
-          externalDocs={externalDocs}
-        />
-      )}
-      {selectedSubPage === OPERATIONS_SUB_PAGE && (
-        <OpenApiTableTree
-          documentSlug={slug}
-          operations={operations}
-        />
-      )}
-    </Box>
-  )
-})
+    return (
+      <Box height="100%" width="100%" overflow="hidden" pb={1}>
+        {selectedSubPage === OVERVIEW_SUB_PAGE && (
+          <OpenApiOverview description={description} labels={labels} info={info} externalDocs={externalDocs} />
+        )}
+        {selectedSubPage === OPERATIONS_SUB_PAGE && <OpenApiTableTree documentSlug={slug} operations={operations} />}
+      </Box>
+    )
+  },
+)
 
 export const OVERVIEW_SUB_PAGE = 'overview'
 export const OPERATIONS_SUB_PAGE = 'operations'
 
-export type DocumentsTabSubPageKey =
-  | typeof OVERVIEW_SUB_PAGE
-  | typeof OPERATIONS_SUB_PAGE
+export type DocumentsTabSubPageKey = typeof OVERVIEW_SUB_PAGE | typeof OPERATIONS_SUB_PAGE
 
 // const OVERVIEW_SUB_PAGE_NAME = 'Overview'
 // const OPERATIONS_SUB_PAGE_NAME = 'Operations'

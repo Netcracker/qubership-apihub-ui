@@ -28,7 +28,7 @@ export function useDeleteProject(): [DeleteProject, IsLoading] {
   const { navigateToEditor } = useNavigation()
 
   const { mutate, isLoading } = useMutation<void, Error, Key>({
-    mutationFn: projectKey => deleteProject(projectKey),
+    mutationFn: (projectKey) => deleteProject(projectKey),
     onSuccess: () => {
       navigateToEditor()
       showNotification({ message: 'Project has been deleted' })
@@ -39,9 +39,7 @@ export function useDeleteProject(): [DeleteProject, IsLoading] {
   return [mutate, isLoading]
 }
 
-async function deleteProject(
-  projectKey: Key,
-): Promise<void> {
+async function deleteProject(projectKey: Key): Promise<void> {
   await editorRequestVoid(`/projects/${projectKey}`, {
     method: 'DELETE',
   })

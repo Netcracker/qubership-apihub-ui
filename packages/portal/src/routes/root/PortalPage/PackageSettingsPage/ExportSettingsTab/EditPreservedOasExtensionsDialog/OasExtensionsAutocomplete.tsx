@@ -2,21 +2,18 @@ import type { FC } from 'react'
 import React, { useCallback } from 'react'
 import { Box, Chip, TextField } from '@mui/material'
 import { ErrorRounded } from '@mui/icons-material'
-import {
-  LabellessAutocomplete,
-} from '@netcracker/qubership-apihub-ui-shared/components/Autocompletes/LabellessAutocomplete/LabellessAutocomplete'
+import { LabellessAutocomplete } from '@netcracker/qubership-apihub-ui-shared/components/Autocompletes/LabellessAutocomplete/LabellessAutocomplete'
 import { OasExtensionTooltip } from './OasExtensionTooltip'
-import {
-  OAS_EXTENSION_KIND_INHERITED,
-  OAS_EXTENSION_PREFIX,
-  type OasSettingsExtension,
-} from '../package-export-config'
+import { OAS_EXTENSION_KIND_INHERITED, OAS_EXTENSION_PREFIX, type OasSettingsExtension } from '../package-export-config'
 import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 
 interface OasExtensionsAutocompleteProps {
   value: OasSettingsExtension[]
   onChange: (newValue: OasSettingsExtension[]) => void
-  processExtensionsUpdate: (newValue: Array<string | OasSettingsExtension>, currentValue?: OasSettingsExtension[]) => OasSettingsExtension[]
+  processExtensionsUpdate: (
+    newValue: Array<string | OasSettingsExtension>,
+    currentValue?: OasSettingsExtension[],
+  ) => OasSettingsExtension[]
   isFocused: boolean
   setIsFocused: (isFocused: boolean) => void
   isInputText: boolean
@@ -40,50 +37,56 @@ export const OasExtensionsAutocomplete: FC<OasExtensionsAutocompleteProps> = ({
   const prefixText = isFocused || isInputText ? OAS_EXTENSION_PREFIX : undefined
   const helperText = duplicateErrorText || (isFocused && isInputText ? 'Press Enter to Add Value' : undefined) || ' '
 
-  const handleChange = useCallback((_: unknown, newValue: Array<string | OasSettingsExtension>): void => {
-    const processedExtensions = processExtensionsUpdate(
-      Array.isArray(newValue) ? newValue : [],
-      value,
-    )
-    if (processedExtensions) {
-      onChange(processedExtensions)
+  const handleChange = useCallback(
+    (_: unknown, newValue: Array<string | OasSettingsExtension>): void => {
+      const processedExtensions = processExtensionsUpdate(Array.isArray(newValue) ? newValue : [], value)
+      if (processedExtensions) {
+        onChange(processedExtensions)
+        setIsInputText(false)
+      }
+    },
+    [onChange, processExtensionsUpdate, setIsInputText, value],
+  )
+
+  const handleExtensionAddition = useCallback(
+    (event: React.KeyboardEvent<HTMLInputElement>): void => {
+      if (event.key !== 'Enter') {
+        return
+      }
+
+      const inputElement = event.target as HTMLInputElement
+      const inputValue = inputElement.value
+      if (!inputValue) {
+        return
+      }
+
+      const fullName = `${OAS_EXTENSION_PREFIX}${inputValue}`
+      const isDuplicate = value.some((ext) => ext.name === fullName)
+
+      if (isDuplicate) {
+        event.preventDefault()
+        event.stopPropagation()
+        setDuplicateErrorText(`Extension "${fullName}" already exists`)
+        return
+      }
+
+      setDuplicateErrorText(undefined)
+
+      const updatedExtensions = processExtensionsUpdate([inputValue], value)
+      onChange(updatedExtensions)
+
       setIsInputText(false)
-    }
-  }, [onChange, processExtensionsUpdate, setIsInputText, value])
+    },
+    [value, onChange, processExtensionsUpdate, setIsInputText, setDuplicateErrorText],
+  )
 
-  const handleExtensionAddition = useCallback((event: React.KeyboardEvent<HTMLInputElement>): void => {
-    if (event.key !== 'Enter') {
-      return
-    }
-
-    const inputElement = event.target as HTMLInputElement
-    const inputValue = inputElement.value
-    if (!inputValue) {
-      return
-    }
-
-    const fullName = `${OAS_EXTENSION_PREFIX}${inputValue}`
-    const isDuplicate = value.some(ext => ext.name === fullName)
-
-    if (isDuplicate) {
-      event.preventDefault()
-      event.stopPropagation()
-      setDuplicateErrorText(`Extension "${fullName}" already exists`)
-      return
-    }
-
-    setDuplicateErrorText(undefined)
-
-    const updatedExtensions = processExtensionsUpdate([inputValue], value)
-    onChange(updatedExtensions)
-
-    setIsInputText(false)
-  }, [value, onChange, processExtensionsUpdate, setIsInputText, setDuplicateErrorText])
-
-  const handleInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
-    setIsInputText(!!event.target.value)
-    setDuplicateErrorText(undefined)
-  }, [setIsInputText, setDuplicateErrorText])
+  const handleInputChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
+      setIsInputText(!!event.target.value)
+      setDuplicateErrorText(undefined)
+    },
+    [setIsInputText, setDuplicateErrorText],
+  )
 
   return (
     <LabellessAutocomplete<OasSettingsExtension>
@@ -93,21 +96,22 @@ export const OasExtensionsAutocomplete: FC<OasExtensionsAutocompleteProps> = ({
       options={[]}
       multiple
       freeSolo
-
       // Display error icon instead of standard clear icon when duplicate extension error occurs
-      clearIcon={duplicateErrorText ? <ErrorRounded color="error"/> : undefined}
+      clearIcon={duplicateErrorText ? <ErrorRounded color="error" /> : undefined}
       componentsProps={{
-        clearIndicator: duplicateErrorText ? {
-          onClick: (event) => {
-            event.preventDefault()
-            event.stopPropagation()
-          },
-          title: '',
-          sx: {
-            cursor: 'default',
-            visibility: 'visible',
-          },
-        } : undefined,
+        clearIndicator: duplicateErrorText
+          ? {
+              onClick: (event) => {
+                event.preventDefault()
+                event.stopPropagation()
+              },
+              title: '',
+              sx: {
+                cursor: 'default',
+                visibility: 'visible',
+              },
+            }
+          : undefined,
       }}
       renderInput={(params) => (
         <TextField
@@ -147,7 +151,7 @@ export const OasExtensionsAutocomplete: FC<OasExtensionsAutocompleteProps> = ({
               {...tagProps}
               key={extension.key}
               size="small"
-              label={<OasExtensionTooltip extension={extension}/>}
+              label={<OasExtensionTooltip extension={extension} />}
               onDelete={isInherited ? undefined : onDelete}
               variant={isInherited ? 'readonly' : undefined}
               data-testid="OasExtensionChip"

@@ -31,7 +31,11 @@ import { flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from 
 import { EndpointTableCell } from './EndpointTableCell'
 import { CUSTOM_METADATA_COLUMN_ID } from './openapi-table'
 import { CustomMetadataCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomMetadataCell'
-import type { FetchNextOperationList, JSONValue, OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import type {
+  FetchNextOperationList,
+  JSONValue,
+  OperationData,
+} from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { DEFAULT_API_TYPE, DEFAULT_TAG } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { ColumnModel } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
 import {
@@ -51,7 +55,13 @@ import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
 import { useResizeObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useResizeObserver'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { API_TYPE_GRAPHQL, API_TYPE_REST } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { API_AUDIENCE_COLUMN_ID, API_KIND_COLUMN_ID, ENDPOINT_COLUMN_ID, PACKAGE_COLUMN_ID, TAGS_COLUMN_ID } from '@netcracker/qubership-apihub-ui-shared/entities/table-columns'
+import {
+  API_AUDIENCE_COLUMN_ID,
+  API_KIND_COLUMN_ID,
+  ENDPOINT_COLUMN_ID,
+  PACKAGE_COLUMN_ID,
+  TAGS_COLUMN_ID,
+} from '@netcracker/qubership-apihub-ui-shared/entities/table-columns'
 
 export type OpenApiTableData = {
   operation: OperationData
@@ -71,7 +81,8 @@ const DASHBOARD_COLUMNS_MODELS: ColumnModel[] = [
 ]
 
 const minDashboardTableWidth = DASHBOARD_COLUMNS_MODELS.reduce(
-  (sum, { width, fixedWidth }) => sum + (width || fixedWidth || 0), 0,
+  (sum, { width, fixedWidth }) => sum + (width || fixedWidth || 0),
+  0,
 )
 
 const PACKAGE_COLUMNS_MODELS: ColumnModel[] = [
@@ -83,7 +94,8 @@ const PACKAGE_COLUMNS_MODELS: ColumnModel[] = [
 ]
 
 const minPackageTableWidth = PACKAGE_COLUMNS_MODELS.reduce(
-  (sum, { width, fixedWidth }) => sum + (width || fixedWidth || 0), 0,
+  (sum, { width, fixedWidth }) => sum + (width || fixedWidth || 0),
+  0,
 )
 
 export type OpenApiTableProps = {
@@ -101,8 +113,8 @@ export type OpenApiTableProps = {
   apiType?: ApiType
 }
 
-export const OpenApiTable: FC<OpenApiTableProps> = memo<OpenApiTableProps>((
-  {
+export const OpenApiTable: FC<OpenApiTableProps> = memo<OpenApiTableProps>(
+  ({
     value,
     fetchNextPage,
     isNextPageFetching,
@@ -115,199 +127,216 @@ export const OpenApiTable: FC<OpenApiTableProps> = memo<OpenApiTableProps>((
     isLoading,
     textFilter,
     apiType,
-  },
-) => {
+  }) => {
+    const currentPackage = useCurrentPackage()
+    const isDashboard = currentPackage?.kind === DASHBOARD_KIND
+    const defaultMinWidth = isDashboard ? minDashboardTableWidth : minPackageTableWidth
 
-  const currentPackage = useCurrentPackage()
-  const isDashboard = currentPackage?.kind === DASHBOARD_KIND
-  const defaultMinWidth = isDashboard ? minDashboardTableWidth : minPackageTableWidth
-
-  const columns: ColumnDef<OpenApiTableData>[] = useMemo(() => {
-    const result: ColumnDef<OpenApiTableData>[] = [
-      {
-        id: ENDPOINT_COLUMN_ID,
-        header: () => <CustomTableHeadCell title="Endpoints" />,
-        cell: ({ row }) => <EndpointTableCell value={row} />,
-      },
-      {
-        id: TAGS_COLUMN_ID,
-        header: () => <CustomTableHeadCell title="Tag" />,
-        cell: ({ row: { original: { operation } } }) => {
-          if (operation) {
-            const tags = operation.tags?.join(', ') ?? DEFAULT_TAG
-            return (
-              <TextWithOverflowTooltip tooltipText={tags}>
-                {tags}
-              </TextWithOverflowTooltip>
-            )
-          }
+    const columns: ColumnDef<OpenApiTableData>[] = useMemo(() => {
+      const result: ColumnDef<OpenApiTableData>[] = [
+        {
+          id: ENDPOINT_COLUMN_ID,
+          header: () => <CustomTableHeadCell title="Endpoints" />,
+          cell: ({ row }) => <EndpointTableCell value={row} />,
         },
-      },
-      {
-        id: API_AUDIENCE_COLUMN_ID,
-        header: () => <CustomTableHeadCell title="Audience" />,
-        cell: ({ row: { original: { operation } } }) => {
-          if (operation?.apiAudience) {
-            return (
-              <TextWithOverflowTooltip tooltipText={operation.apiAudience}>
-                {operation.apiAudience}
-              </TextWithOverflowTooltip>
-            )
-          }
+        {
+          id: TAGS_COLUMN_ID,
+          header: () => <CustomTableHeadCell title="Tag" />,
+          cell: ({
+            row: {
+              original: { operation },
+            },
+          }) => {
+            if (operation) {
+              const tags = operation.tags?.join(', ') ?? DEFAULT_TAG
+              return <TextWithOverflowTooltip tooltipText={tags}>{tags}</TextWithOverflowTooltip>
+            }
+          },
         },
-      },
-      {
-        id: API_KIND_COLUMN_ID,
-        header: () => <CustomTableHeadCell title="Kind" />,
-        cell: ({ row: { original: { operation } } }) => {
-          if (operation?.apiKind) {
-            return (
-              <TextWithOverflowTooltip tooltipText={operation.apiKind}>
-                {operation.apiKind}
-              </TextWithOverflowTooltip>
-            )
-          }
+        {
+          id: API_AUDIENCE_COLUMN_ID,
+          header: () => <CustomTableHeadCell title="Audience" />,
+          cell: ({
+            row: {
+              original: { operation },
+            },
+          }) => {
+            if (operation?.apiAudience) {
+              return (
+                <TextWithOverflowTooltip tooltipText={operation.apiAudience}>
+                  {operation.apiAudience}
+                </TextWithOverflowTooltip>
+              )
+            }
+          },
         },
-      },
-      ...additionalColumns,
-    ]
-
-    API_TYPE_COLUMNS_MAP[apiType ?? DEFAULT_API_TYPE]?.(result, textFilter)
-
-    if (isDashboard) {
-      insertIntoArrayByIndex(result, {
-        id: PACKAGE_COLUMN_ID,
-        header: () => <CustomTableHeadCell title="Package" />,
-        cell: ({ row: { original: { operation } } }) => {
-          const packageRef = operation?.packageRef
-          if (packageRef) {
-            return (
-              <TextWithOverflowTooltip tooltipText={packageRef.name}>
-                {packageRef.name}
-              </TextWithOverflowTooltip>
-            )
-          }
+        {
+          id: API_KIND_COLUMN_ID,
+          header: () => <CustomTableHeadCell title="Kind" />,
+          cell: ({
+            row: {
+              original: { operation },
+            },
+          }) => {
+            if (operation?.apiKind) {
+              return (
+                <TextWithOverflowTooltip tooltipText={operation.apiKind}>{operation.apiKind}</TextWithOverflowTooltip>
+              )
+            }
+          },
         },
-      }, 2)
-    }
+        ...additionalColumns,
+      ]
 
-    return result
-  }, [additionalColumns, apiType, isDashboard, textFilter])
+      API_TYPE_COLUMNS_MAP[apiType ?? DEFAULT_API_TYPE]?.(result, textFilter)
 
-  const data: OpenApiTableData[] = useMemo(() => value.map(operation => {
-    return ({
-      operation: operation,
+      if (isDashboard) {
+        insertIntoArrayByIndex(
+          result,
+          {
+            id: PACKAGE_COLUMN_ID,
+            header: () => <CustomTableHeadCell title="Package" />,
+            cell: ({
+              row: {
+                original: { operation },
+              },
+            }) => {
+              const packageRef = operation?.packageRef
+              if (packageRef) {
+                return (
+                  <TextWithOverflowTooltip tooltipText={packageRef.name}>{packageRef.name}</TextWithOverflowTooltip>
+                )
+              }
+            },
+          },
+          2,
+        )
+      }
+
+      return result
+    }, [additionalColumns, apiType, isDashboard, textFilter])
+
+    const data: OpenApiTableData[] = useMemo(
+      () =>
+        value.map((operation) => {
+          return {
+            operation: operation,
+          }
+        }),
+      [value],
+    )
+
+    const strictColumnWidths = useMemo(() => {
+      if (columnSizes) {
+        return columnSizes
+      }
+      return isDashboard ? DASHBOARD_COLUMNS_MODELS : PACKAGE_COLUMNS_MODELS
+    }, [isDashboard, columnSizes])
+
+    const [containerWidth, setContainerWidth] = useState(DEFAULT_CONTAINER_WIDTH)
+    const [columnSizingInfo, setColumnSizingInfo] = useState<ColumnSizingInfoState>()
+    const [, setHandlingColumnSizing] = useState<ColumnSizingState>()
+
+    const tableContainerRef = useRef<HTMLDivElement>(null)
+    useResizeObserver(tableContainerRef, setContainerWidth)
+
+    const actualColumnSizing = useColumnsSizing({
+      containerWidth: containerWidth,
+      columnModels: strictColumnWidths,
+      columnSizingInfo: columnSizingInfo,
+      defaultMinColumnSize: 60,
     })
-  }), [value])
 
-  const strictColumnWidths = useMemo(() => {
-    if (columnSizes) {
-      return columnSizes
-    }
-    return isDashboard ? DASHBOARD_COLUMNS_MODELS : PACKAGE_COLUMNS_MODELS
-  }, [isDashboard, columnSizes])
+    const [expanded, setExpanded] = useState<ExpandedState>({})
+    const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 
-  const [containerWidth, setContainerWidth] = useState(DEFAULT_CONTAINER_WIDTH)
-  const [columnSizingInfo, setColumnSizingInfo] = useState<ColumnSizingInfoState>()
-  const [, setHandlingColumnSizing] = useState<ColumnSizingState>()
+    const { getHeaderGroups, getRowModel, setColumnSizing } = useReactTable({
+      data: data,
+      columns: columns,
+      state: { expanded, columnVisibility },
+      getRowCanExpand: isExpandableRow,
+      onExpandedChange: setExpanded,
+      onColumnVisibilityChange: setColumnVisibility,
+      getCoreRowModel: getCoreRowModel(),
+      getExpandedRowModel: getExpandedRowModel(),
+      columnResizeMode: 'onChange',
+      onColumnSizingChange: setHandlingColumnSizing as OnChangeFn<ColumnSizingState>,
+      onColumnSizingInfoChange: setColumnSizingInfo as OnChangeFn<ColumnSizingInfoState>,
+    })
 
-  const tableContainerRef = useRef<HTMLDivElement>(null)
-  useResizeObserver(tableContainerRef, setContainerWidth)
+    useEffect(() => setColumnSizing(actualColumnSizing), [setColumnSizing, actualColumnSizing])
 
-  const actualColumnSizing = useColumnsSizing({
-    containerWidth: containerWidth,
-    columnModels: strictColumnWidths,
-    columnSizingInfo: columnSizingInfo,
-    defaultMinColumnSize: 60,
-  })
+    const ref = useRef<HTMLDivElement>(null)
+    useIntersectionObserver(ref, isNextPageFetching, hasNextPage, fetchNextPage)
 
-  const [expanded, setExpanded] = useState<ExpandedState>({})
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+    const rowSkeleton = useMemo(
+      () => (
+        <RowSkeleton
+          key="row-skeleton"
+          refObject={ref}
+          columnModels={isDashboard ? DASHBOARD_COLUMNS_MODELS : PACKAGE_COLUMNS_MODELS}
+        />
+      ),
+      [isDashboard],
+    )
 
-  const { getHeaderGroups, getRowModel, setColumnSizing } = useReactTable({
-    data: data,
-    columns: columns,
-    state: { expanded, columnVisibility },
-    getRowCanExpand: isExpandableRow,
-    onExpandedChange: setExpanded,
-    onColumnVisibilityChange: setColumnVisibility,
-    getCoreRowModel: getCoreRowModel(),
-    getExpandedRowModel: getExpandedRowModel(),
-    columnResizeMode: 'onChange',
-    onColumnSizingChange: setHandlingColumnSizing as OnChangeFn<ColumnSizingState>,
-    onColumnSizingInfoChange: setColumnSizingInfo as OnChangeFn<ColumnSizingInfoState>,
-  })
-
-  useEffect(
-    () => setColumnSizing(actualColumnSizing),
-    [setColumnSizing, actualColumnSizing],
-  )
-
-  const ref = useRef<HTMLDivElement>(null)
-  useIntersectionObserver(ref, isNextPageFetching, hasNextPage, fetchNextPage)
-
-  const rowSkeleton = useMemo(() => (
-    <RowSkeleton
-      key="row-skeleton"
-      refObject={ref}
-      columnModels={isDashboard ? DASHBOARD_COLUMNS_MODELS : PACKAGE_COLUMNS_MODELS}
-    />
-  ), [isDashboard])
-
-  return (
-    <TableContainer ref={tableContainerRef} sx={{ overflowX: 'hidden' }}>
-      <Table sx={{ minWidth: tableMinWidth || defaultMinWidth }}>
-        <TableHead>
-          {getHeaderGroups().map(headerGroup => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((headerColumn, index) => (
-                <TableCell
-                  key={headerColumn.id}
-                  align="left"
-                  width={actualColumnSizing ? actualColumnSizing[headerColumn.id] : headerColumn.getSize()}
-                  sx={{
-                    '&:hover': {
-                      borderRight: '2px solid rgba(224, 224, 224, 1)',
-                    },
-                  }}
-                >
-                  {flexRender(headerColumn.column.columnDef.header, headerColumn.getContext())}
-                  {index !== headerGroup.headers.length - 1 &&
-                    <ColumnDelimiter header={headerColumn} resizable={true} />}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableHead>
-        <TableBody>
-          {getRowModel().rows.map(row => (
-            <Fragment key={row.id}>
-              <TableRow>
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} data-testid={`Cell-${cell.column.id}`}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+    return (
+      <TableContainer ref={tableContainerRef} sx={{ overflowX: 'hidden' }}>
+        <Table sx={{ minWidth: tableMinWidth || defaultMinWidth }}>
+          <TableHead>
+            {getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((headerColumn, index) => (
+                  <TableCell
+                    key={headerColumn.id}
+                    align="left"
+                    width={actualColumnSizing ? actualColumnSizing[headerColumn.id] : headerColumn.getSize()}
+                    sx={{
+                      '&:hover': {
+                        borderRight: '2px solid rgba(224, 224, 224, 1)',
+                      },
+                    }}
+                  >
+                    {flexRender(headerColumn.column.columnDef.header, headerColumn.getContext())}
+                    {index !== headerGroup.headers.length - 1 && (
+                      <ColumnDelimiter header={headerColumn} resizable={true} />
+                    )}
                   </TableCell>
                 ))}
               </TableRow>
-              {row.getIsExpanded() && SubTableComponent && (<SubTableComponent value={row} />)}
-            </Fragment>
+            ))}
+          </TableHead>
+          <TableBody>
+            {getRowModel().rows.map((row) => (
+              <Fragment key={row.id}>
+                <TableRow>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id} data-testid={`Cell-${cell.column.id}`}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+                {row.getIsExpanded() && SubTableComponent && <SubTableComponent value={row} />}
+              </Fragment>
+            ))}
+            {isLoading && <TableSkeleton isDashboard={isDashboard} />}
+            {hasNextPage && rowSkeleton}
+          </TableBody>
+        </Table>
+        {isLoading ||
+          (isEmpty(value) && (
+            <Placeholder
+              sx={{ width: 'inherit' }}
+              invisible={isNotEmpty(value)}
+              area={CONTENT_PLACEHOLDER_AREA}
+              message="No operations"
+              testId="NoOperationsPlaceholder"
+            />
           ))}
-          {isLoading && <TableSkeleton isDashboard={isDashboard} />}
-          {hasNextPage && rowSkeleton}
-        </TableBody>
-      </Table>
-      {isLoading || isEmpty(value) && (
-        <Placeholder
-          sx={{ width: 'inherit' }}
-          invisible={isNotEmpty(value)}
-          area={CONTENT_PLACEHOLDER_AREA}
-          message="No operations"
-          testId="NoOperationsPlaceholder"
-        />
-      )}
-    </TableContainer>
-  )
-})
+      </TableContainer>
+    )
+  },
+)
 
 type TableSkeletonProps = {
   isDashboard: boolean
@@ -341,21 +370,29 @@ const RowSkeleton: FC<RowSkeletonProps> = memo<RowSkeletonProps>(({ refObject, c
   )
 })
 
-type ColumnModelCallback = (tableColumns: ColumnDef<OpenApiTableData, unknown>[], textFilter: string | undefined) => void
+type ColumnModelCallback = (
+  tableColumns: ColumnDef<OpenApiTableData, unknown>[],
+  textFilter: string | undefined,
+) => void
 const API_TYPE_COLUMNS_MAP: Record<ApiType, ColumnModelCallback> = {
-  [API_TYPE_REST]: (tableColumns, textFilter) => tableColumns.push({
-    id: CUSTOM_METADATA_COLUMN_ID,
-    header: () => <CustomTableHeadCell title="Custom Metadata" />,
-    cell: ({ row: { original: { operation } } }) => {
-      if (operation?.customTags) {
-        return (
-          <CustomMetadataCell
-            metaData={operation.customTags as { [key: string]: JSONValue }}
-            textFilter={textFilter}
-          />
-        )
-      }
-    },
-  }),
+  [API_TYPE_REST]: (tableColumns, textFilter) =>
+    tableColumns.push({
+      id: CUSTOM_METADATA_COLUMN_ID,
+      header: () => <CustomTableHeadCell title="Custom Metadata" />,
+      cell: ({
+        row: {
+          original: { operation },
+        },
+      }) => {
+        if (operation?.customTags) {
+          return (
+            <CustomMetadataCell
+              metaData={operation.customTags as { [key: string]: JSONValue }}
+              textFilter={textFilter}
+            />
+          )
+        }
+      },
+    }),
   [API_TYPE_GRAPHQL]: () => null,
 }

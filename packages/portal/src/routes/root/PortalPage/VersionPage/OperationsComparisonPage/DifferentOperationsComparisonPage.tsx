@@ -27,9 +27,7 @@ import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
 import { VersionsComparisonGlobalParamsContext } from '../VersionsComparisonGlobalParams'
 import { ComparedOperationsContext } from '../ComparedOperationsContext'
 import { useComparisonParams } from '@apihub/routes/root/PortalPage/VersionPage/useComparisonParams'
-import {
-  COMPARE_DIFFERENT_OPERATIONS_MODE,
-} from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationView/OperationDisplayMode'
+import { COMPARE_DIFFERENT_OPERATIONS_MODE } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationView/OperationDisplayMode'
 import { OperationContent } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationContent'
 import { BreadcrumbsDataContext } from '../ComparedPackagesBreadcrumbsProvider'
 import { useCompareBreadcrumbs } from '@apihub/routes/root/PortalPage/VersionPage/useCompareBreadcrumbs'
@@ -86,7 +84,7 @@ export const DifferentOperationsComparisonPage: FC = memo(() => {
           <ChangesLoadingStatusProvider>
             <SelectedOperationTagsProvider>
               <LayoutWithToolbar
-                toolbar={<ComparisonToolbar compareToolbarMode={COMPARE_DIFFERENT_OPERATIONS_MODE}/>}
+                toolbar={<ComparisonToolbar compareToolbarMode={COMPARE_DIFFERENT_OPERATIONS_MODE} />}
                 body={
                   <OperationContent
                     changedOperation={changedOperation}
@@ -97,7 +95,7 @@ export const DifferentOperationsComparisonPage: FC = memo(() => {
                   />
                 }
               />
-              <CompareOperationPathsDialog/>
+              <CompareOperationPathsDialog />
             </SelectedOperationTagsProvider>
           </ChangesLoadingStatusProvider>
         </ComparedOperationsContext.Provider>

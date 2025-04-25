@@ -18,12 +18,8 @@ import type { FC, PropsWithChildren } from 'react'
 import { createContext, memo, useContext, useState } from 'react'
 import { createEventBus, slot } from 'ts-event-bus'
 import type { Path } from '@remix-run/router'
-import type {
-  SpecificationDialogDetail,
-} from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/SpecificationDialog'
-import {
-  SHOW_SPECIFICATION_DIALOG,
-} from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/SpecificationDialog'
+import type { SpecificationDialogDetail } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/SpecificationDialog'
+import { SHOW_SPECIFICATION_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/SpecificationDialog'
 import type { SearchCriteria } from '@apihub/entities/global-search'
 import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
@@ -41,29 +37,17 @@ import type { ShowDeleteRoleDetail } from '@netcracker/qubership-apihub-ui-share
 import { SHOW_DELETE_ROLE_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/DeleteRoleDialog'
 import type { ShowEditRoleDetail } from '@netcracker/qubership-apihub-ui-shared/components/EditRoleDialog'
 import { SHOW_EDIT_ROLE_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/EditRoleDialog'
-import type {
-  ShowDeleteFileDetail,
-} from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/DeleteFileDialog'
-import {
-  SHOW_DELETE_FILE_DIALOG,
-} from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/DeleteFileDialog'
+import type { ShowDeleteFileDetail } from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/DeleteFileDialog'
+import { SHOW_DELETE_FILE_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/DeleteFileDialog'
 import type { PackageReference } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
-import {
-  SHOW_ADD_SYSTEM_ADMINISTRATOR_DIALOG,
-} from '@netcracker/qubership-apihub-ui-shared/components/AddSystemAdministratorDialog'
-import type {
-  ShowEditFileLabelsDetail,
-} from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/EditFileLabelsDialog'
-import {
-  SHOW_EDIT_FILE_LABELS_DIALOG,
-} from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/EditFileLabelsDialog'
+import { SHOW_ADD_SYSTEM_ADMINISTRATOR_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/AddSystemAdministratorDialog'
+import type { ShowEditFileLabelsDetail } from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/EditFileLabelsDialog'
+import { SHOW_EDIT_FILE_LABELS_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/EditFileLabelsDialog'
 import type { ShowEmptyPackageDetail } from '@netcracker/qubership-apihub-ui-shared/components/EmptyPackageDialog'
 import { SHOW_EMPTY_PACKAGE_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/EmptyPackageDialog'
 import { SHOW_ADD_USER_DIALOG, SHOW_USER_ROLES_DIALOG } from '@netcracker/qubership-apihub-ui-shared/types/dialogs'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import type {
-  OasSettingsExtension,
-} from '@netcracker/qubership-apihub-ui-portal/src/routes/root/PortalPage/PackageSettingsPage/ExportSettingsTab/package-export-config'
+import type { OasSettingsExtension } from '@netcracker/qubership-apihub-ui-portal/src/routes/root/PortalPage/PackageSettingsPage/ExportSettingsTab/package-export-config'
 
 // base
 export const SHOW_SUCCESS_NOTIFICATION = 'show-success-notification'
@@ -429,11 +413,7 @@ const EventBusContext = createContext<EventBus>()
 export const EventBusProvider: FC<PropsWithChildren> = memo<PropsWithChildren>(({ children }) => {
   const [eventBus] = useState(eventBusProvider)
 
-  return (
-    <EventBusContext.Provider value={eventBus}>
-      {children}
-    </EventBusContext.Provider>
-  )
+  return <EventBusContext.Provider value={eventBus}>{children}</EventBusContext.Provider>
 })
 
 export function useEventBus(): EventBus {

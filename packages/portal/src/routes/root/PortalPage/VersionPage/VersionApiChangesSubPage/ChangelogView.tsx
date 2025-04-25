@@ -18,18 +18,17 @@ import type { FC } from 'react'
 import { memo } from 'react'
 import { usePackageKind } from '../../usePackageKind'
 import { OperationChangesSubTableWrapper } from './OperationChangesSubTableWrapper'
-import {
-  usePagedVersionChangelog,
-} from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget/api/useCommonPagedVersionChangelog'
+import { usePagedVersionChangelog } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget/api/useCommonPagedVersionChangelog'
 import { useOrderedComparisonFiltersSummary } from '../useOrderedComparisonFiltersSummary'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { ApiAudience, ApiKind } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { OperationGroupName } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
+import { useSeverityFiltersSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/change-severities/useSeverityFiltersSearchParam'
 import {
-  useSeverityFiltersSearchParam,
-} from '@netcracker/qubership-apihub-ui-shared/hooks/change-severities/useSeverityFiltersSearchParam'
-import { ChangesViewTable, useFlatVersionChangelog } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget'
+  ChangesViewTable,
+  useFlatVersionChangelog,
+} from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget'
 import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
 import {
   CONTENT_PLACEHOLDER_AREA,
@@ -51,7 +50,7 @@ export type ChangelogViewProps = {
   group?: OperationGroupName
 }
 
-export const ChangelogView: FC<ChangelogViewProps> = memo<ChangelogViewProps>(props => {
+export const ChangelogView: FC<ChangelogViewProps> = memo<ChangelogViewProps>((props) => {
   const { versionKey, packageKey, tag, searchValue, apiType = DEFAULT_API_TYPE, apiKind, apiAudience, group } = props
   const [mainPackageKind] = usePackageKind()
   const [severityFilters] = useSeverityFiltersSearchParam()
@@ -80,7 +79,7 @@ export const ChangelogView: FC<ChangelogViewProps> = memo<ChangelogViewProps>(pr
   const hasChanges = !!changes && Object.values(changes).some(Boolean)
   return (
     <Placeholder
-      invisible={!changes || isNotEmpty(operationsChanges) || isLoading && hasChanges}
+      invisible={!changes || isNotEmpty(operationsChanges) || (isLoading && hasChanges)}
       area={CONTENT_PLACEHOLDER_AREA}
       message={searchValue ? NO_SEARCH_RESULTS : 'No changes'}
       testId={searchValue ? 'NoSearchResultsPlaceholder' : 'NoChangesPlaceholder'}

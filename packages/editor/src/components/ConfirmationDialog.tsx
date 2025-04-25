@@ -31,66 +31,48 @@ export type ConfirmationDialogProps = {
   shouldCloseOnLoadingFinish?: boolean
 }
 
-export const ConfirmationDialog: FC<ConfirmationDialogProps> = memo<ConfirmationDialogProps>(({
-  loading,
-  message,
-  onConfirm,
-  onCancel,
-  open,
-  title,
-  confirmButtonName = 'Delete',
-  shouldCloseOnLoadingFinish = true,
-}) => {
-  useCloseOnLoadingFinish(loading, onCancel, shouldCloseOnLoadingFinish)
+export const ConfirmationDialog: FC<ConfirmationDialogProps> = memo<ConfirmationDialogProps>(
+  ({
+    loading,
+    message,
+    onConfirm,
+    onCancel,
+    open,
+    title,
+    confirmButtonName = 'Delete',
+    shouldCloseOnLoadingFinish = true,
+  }) => {
+    useCloseOnLoadingFinish(loading, onCancel, shouldCloseOnLoadingFinish)
 
-  return (
-    <Dialog
-      open={open}
-      onClose={onCancel}
-    >
-      <DialogTitle
-        sx={{ fontSize: 15, fontWeight: 600, color: 'black' }}
-      >
-        {title}
-        <IconButton
-          sx={{ position: 'absolute', right: 8, top: 8, color: '#353C4E' }}
-          onClick={onCancel}
-        >
-          <CloseOutlinedIcon fontSize="small" />
-        </IconButton>
-      </DialogTitle>
+    return (
+      <Dialog open={open} onClose={onCancel}>
+        <DialogTitle sx={{ fontSize: 15, fontWeight: 600, color: 'black' }}>
+          {title}
+          <IconButton sx={{ position: 'absolute', right: 8, top: 8, color: '#353C4E' }} onClick={onCancel}>
+            <CloseOutlinedIcon fontSize="small" />
+          </IconButton>
+        </DialogTitle>
 
-      <DialogContent>
-        <DialogContentText variant="body2">
-          {message}
-        </DialogContentText>
-      </DialogContent>
+        <DialogContent>
+          <DialogContentText variant="body2">{message}</DialogContentText>
+        </DialogContent>
 
-      <DialogActions>
-        <LoadingButton
-          variant="contained"
-          color="error"
-          loading={loading}
-          onClick={onConfirm}
-        >
-          {confirmButtonName}
-        </LoadingButton>
-        <Button
-          variant="outlined"
-          onClick={onCancel}
-        >
-          Cancel
-        </Button>
-      </DialogActions>
-    </Dialog>
-  )
-})
+        <DialogActions>
+          <LoadingButton variant="contained" color="error" loading={loading} onClick={onConfirm}>
+            {confirmButtonName}
+          </LoadingButton>
+          <Button variant="outlined" onClick={onCancel}>
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
+    )
+  },
+)
 
-function useCloseOnLoadingFinish(
-  loading?: boolean,
-  onClose?: () => void,
-  enabled?: boolean,
-): void {
+function useCloseOnLoadingFinish(loading?: boolean, onClose?: () => void, enabled?: boolean): void {
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { enabled && !loading && onClose?.() }, [enabled, loading])
+  useEffect(() => {
+    enabled && !loading && onClose?.()
+  }, [enabled, loading])
 }

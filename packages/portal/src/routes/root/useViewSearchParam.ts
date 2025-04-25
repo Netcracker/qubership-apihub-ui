@@ -24,7 +24,7 @@ export function useViewSearchParam(): [Key | undefined, SetViewSearchParam] {
   const setSearchParams = useSetSearchParams()
 
   return useMemo(
-    () => [param, value => setSearchParams({ view: value ?? '' }, { replace: true })],
+    () => [param, (value) => setSearchParams({ view: value ?? '' }, { replace: true })],
     [param, setSearchParams],
   )
 }

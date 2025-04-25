@@ -29,13 +29,9 @@ const ExamplesElement: FC<ExamplesElementProps> = lazy(() => import('./ExamplesE
 
 export const Examples: FC<ExamplesProps> = memo<ExamplesProps>(({ document, fullScreenAvailable }) => {
   return (
-    <Suspense fallback={<LoadingIndicator/>}>
+    <Suspense fallback={<LoadingIndicator />}>
       <Box lineHeight={1.5} height="100%" width="100%" data-testid="ExamplesPanel">
-        <ExamplesElement
-          key={crypto.randomUUID()}
-          document={document}
-          fullScreenAvailable={fullScreenAvailable}
-        />
+        <ExamplesElement key={crypto.randomUUID()} document={document} fullScreenAvailable={fullScreenAvailable} />
       </Box>
     </Suspense>
   )

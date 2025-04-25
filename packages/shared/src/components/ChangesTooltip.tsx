@@ -31,28 +31,16 @@ export type ChangesTooltipProps = PropsWithChildren<{
   category?: ChangesTooltipCategory
 }>
 
-export const ChangesTooltip: FC<ChangesTooltipProps> = memo<ChangesTooltipProps>(props => {
-  const {
-    children,
-    changeType,
-    disableHoverListener = false,
-    category,
-  } = props
+export const ChangesTooltip: FC<ChangesTooltipProps> = memo<ChangesTooltipProps>((props) => {
+  const { children, changeType, disableHoverListener = false, category } = props
 
   return (
     <Tooltip
-      title={
-        <ChangesTooltipContent
-          changeType={changeType}
-          category={category}
-        />
-      }
+      title={<ChangesTooltipContent changeType={changeType} category={category} />}
       placement="bottom-end"
       disableHoverListener={disableHoverListener}
     >
-      <Box>
-        {children}
-      </Box>
+      <Box>{children}</Box>
     </Tooltip>
   )
 })
@@ -62,40 +50,40 @@ type ChangesTooltipContentProps = {
   category?: ChangesTooltipCategory
 }
 
-const ChangesTooltipContent: FC<ChangesTooltipContentProps> = memo<ChangesTooltipContentProps>(({
-  changeType,
-  category,
-}) => {
-  const tooltipContent = CHANGE_SEVERITY_DESCRIPTION_MAP[changeType]
-  const categoryTitle = `${category ? `${TOOLTIP_TITLE_BY_CATEGORY[category]} with ` : ''}${CHANGE_SEVERITY_TOOLTIP_TITLE_MAP[changeType]}`
+const ChangesTooltipContent: FC<ChangesTooltipContentProps> = memo<ChangesTooltipContentProps>(
+  ({ changeType, category }) => {
+    const tooltipContent = CHANGE_SEVERITY_DESCRIPTION_MAP[changeType]
+    const categoryTitle = `${category ? `${TOOLTIP_TITLE_BY_CATEGORY[category]} with ` : ''}${CHANGE_SEVERITY_TOOLTIP_TITLE_MAP[changeType]}`
 
-  return (
-    <Box sx={{ p: '4px 4px' }}>
-      <Box display="flex" alignItems="center">
-        <Box
-          component="span"
-          sx={{
-            background: CHANGE_SEVERITY_COLOR_MAP[changeType],
-            width: 8,
-            height: 8,
-            borderRadius: '50%',
-            mr: 1,
-          }}
-        />
-        {categoryTitle}
+    return (
+      <Box sx={{ p: '4px 4px' }}>
+        <Box display="flex" alignItems="center">
+          <Box
+            component="span"
+            sx={{
+              background: CHANGE_SEVERITY_COLOR_MAP[changeType],
+              width: 8,
+              height: 8,
+              borderRadius: '50%',
+              mr: 1,
+            }}
+          />
+          {categoryTitle}
+        </Box>
+        <Divider sx={{ mx: 0, mt: 1, mb: 1 }} orientation="horizontal" />
+        <Box>
+          {tooltipContent.text}
+          {tooltipContent.options &&
+            tooltipContent.options.map((item, index) => (
+              <ListItem sx={{ display: 'list-item', py: 0 }} key={index}>
+                {item}
+              </ListItem>
+            ))}
+        </Box>
       </Box>
-      <Divider sx={{ mx: 0, mt: 1, mb: 1 }} orientation="horizontal"/>
-      <Box>
-        {tooltipContent.text}
-        {tooltipContent.options && tooltipContent.options.map((item, index) => (
-          <ListItem sx={{ display: 'list-item', py: 0 }} key={index}>
-            {item}
-          </ListItem>
-        ))}
-      </Box>
-    </Box>
-  )
-})
+    )
+  },
+)
 
 export const CATEGORY_OPERATION = 'operation'
 export const CATEGORY_PACKAGE = 'packages'

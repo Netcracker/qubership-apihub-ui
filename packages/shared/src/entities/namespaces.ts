@@ -38,7 +38,7 @@ export const EMPTY_NAMESPACE: Namespace = {
 export const EMPTY_NAMESPACES: Namespaces = []
 
 export function toNamespaces(value: NamespacesDto): Namespaces {
-  return value.namespaces.map(namespace => ({
+  return value.namespaces.map((namespace) => ({
     cloudKey: value.cloudName,
     namespaceKey: namespace,
   }))
@@ -47,7 +47,9 @@ export function toNamespaces(value: NamespacesDto): Namespaces {
 export async function getNamespaces(agentKey: Key): Promise<NamespacesDto> {
   const agentId = encodeURIComponent(agentKey)
 
-  return await requestJson<NamespacesDto>(`/api/v1/agents/${agentId}/namespaces`, {
+  return await requestJson<NamespacesDto>(
+    `/api/v1/agents/${agentId}/namespaces`,
+    {
       method: 'get',
     },
     {

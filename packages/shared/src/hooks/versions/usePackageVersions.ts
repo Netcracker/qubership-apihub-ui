@@ -39,52 +39,52 @@ import { getPatchedBody } from '../../utils/request-bodies'
 
 const PACKAGE_VERSIONS_QUERY_KEY = 'package-versions-query-key'
 
-type FetchNextVersionsList = (options?: FetchNextPageOptions) => Promise<InfiniteQueryObserverResult<PackageVersions, Error>>
+type FetchNextVersionsList = (
+  options?: FetchNextPageOptions,
+) => Promise<InfiniteQueryObserverResult<PackageVersions, Error>>
 
 // TODO 13.07.23 // Is there any more optimal way to do paged/flatten result?
-export function usePagedPackageVersions(options?: Partial<{
-  packageKey: Key
-  status: VersionStatus
-  textFilter: string
-  sortBy: PackageVersionsSortBy
-  sortOrder: SortOrder
-  limit: number
-  page: number
-  reloadQuery: boolean
-}>): [PagedPackageVersions, IsLoading, FetchNextVersionsList, boolean | undefined] {
+export function usePagedPackageVersions(
+  options?: Partial<{
+    packageKey: Key
+    status: VersionStatus
+    textFilter: string
+    sortBy: PackageVersionsSortBy
+    sortOrder: SortOrder
+    limit: number
+    page: number
+    reloadQuery: boolean
+  }>,
+): [PagedPackageVersions, IsLoading, FetchNextVersionsList, boolean | undefined] {
   const { status, textFilter, limit, page, reloadQuery = false, sortBy, sortOrder } = options ?? {}
   const packageKey = options?.packageKey
 
-  const {
-    data,
-    isLoading,
-    fetchNextPage,
-    isFetchingNextPage,
-  } = useInfiniteQuery<PackageVersions, Error, PackageVersions>({
+  const { data, isLoading, fetchNextPage, isFetchingNextPage } = useInfiniteQuery<
+    PackageVersions,
+    Error,
+    PackageVersions
+  >({
     queryKey: [PACKAGE_VERSIONS_QUERY_KEY, packageKey, status, textFilter, sortBy, sortOrder, reloadQuery],
     queryFn: ({ pageParam = 0, signal }) =>
       getPackageVersionsList(packageKey!, status, textFilter, sortBy, sortOrder, limit, pageParam ?? page, signal),
     enabled: !!packageKey,
   })
 
-  return [
-    data?.pages ?? [],
-    isLoading,
-    fetchNextPage,
-    isFetchingNextPage,
-  ]
+  return [data?.pages ?? [], isLoading, fetchNextPage, isFetchingNextPage]
 }
 
-export function usePackageVersions(options?: Partial<{
-  packageKey: Key
-  status: VersionStatus
-  textFilter: string
-  sortBy: PackageVersionsSortBy
-  sortOrder: SortOrder
-  limit: number
-  page: number
-  enabled: boolean
-}>): {
+export function usePackageVersions(
+  options?: Partial<{
+    packageKey: Key
+    status: VersionStatus
+    textFilter: string
+    sortBy: PackageVersionsSortBy
+    sortOrder: SortOrder
+    limit: number
+    page: number
+    enabled: boolean
+  }>,
+): {
   versions: PackageVersions
   areVersionsLoading: IsLoading
   areVersionsInitiallyLoading: IsInitialLoading
@@ -119,7 +119,7 @@ export function usePackageVersions(options?: Partial<{
     enabled: !!packageKey && enabled,
   })
 
-  const versions = useMemo(() => (data?.pages.flat() ?? []), [data?.pages])
+  const versions = useMemo(() => data?.pages.flat() ?? [], [data?.pages])
 
   return {
     versions,
@@ -141,7 +141,6 @@ export async function getPackageVersionsList(
   page: number = 0,
   signal?: AbortSignal,
 ): Promise<PackageVersions> {
-
   const packageId = encodeURIComponent(packageKey)
 
   const queryParams = optionalSearchParams({
@@ -178,20 +177,21 @@ export function useInvalidatePackageVersions(): InvalidateQuery<void> {
   }
 }
 
-export async function deletePackageVersion(
-  packageKey: Key,
-  versionKey: Key,
-): Promise<void> {
+export async function deletePackageVersion(packageKey: Key, versionKey: Key): Promise<void> {
   const packageId = encodeURIComponent(packageKey)
   const versionId = encodeURIComponent(versionKey)
 
   const pathPattern = '/packages/:packageId/versions/:versionId'
-  return await requestVoid(generatePath(pathPattern, { packageId, versionId }), {
-    method: 'DELETE',
-  }, {
-    customRedirectHandler: (response: Response) => getPackageRedirectDetails(response, pathPattern),
-    basePath: API_V2,
-  })
+  return await requestVoid(
+    generatePath(pathPattern, { packageId, versionId }),
+    {
+      method: 'DELETE',
+    },
+    {
+      customRedirectHandler: (response: Response) => getPackageRedirectDetails(response, pathPattern),
+      basePath: API_V2,
+    },
+  )
 }
 
 export async function editPackageVersion(
@@ -204,26 +204,27 @@ export async function editPackageVersion(
   const versionId = encodeURIComponent(version)
 
   const pathPattern = '/packages/:packageId/versions/:versionId'
-  return await requestVoid(generatePath(pathPattern, { packageId, versionId }), {
-    method: 'PATCH',
-    body: JSON.stringify(getPatchedBody(value, oldValue)),
-  }, {
-    customRedirectHandler: (response: Response) => getPackageRedirectDetails(response, pathPattern),
-    basePath: API_V2,
-  })
-}
-
-export function usePackageVersionKeys(): [VersionKey[], IsLoading] {
-  const {versions: versionsData, areVersionsLoading} = usePackageVersions()
-  const versions = handleVersionsRevision(versionsData)
-  return useMemo(
-    () => [versions.map(({ key }) => key), areVersionsLoading],
-    [areVersionsLoading, versions],
+  return await requestVoid(
+    generatePath(pathPattern, { packageId, versionId }),
+    {
+      method: 'PATCH',
+      body: JSON.stringify(getPatchedBody(value, oldValue)),
+    },
+    {
+      customRedirectHandler: (response: Response) => getPackageRedirectDetails(response, pathPattern),
+      basePath: API_V2,
+    },
   )
 }
 
+export function usePackageVersionKeys(): [VersionKey[], IsLoading] {
+  const { versions: versionsData, areVersionsLoading } = usePackageVersions()
+  const versions = handleVersionsRevision(versionsData)
+  return useMemo(() => [versions.map(({ key }) => key), areVersionsLoading], [areVersionsLoading, versions])
+}
+
 function toPackageVersions({ versions }: PackageVersionsDto): PackageVersions {
-  return versions.map(version => toPackageVersion(version))
+  return versions.map((version) => toPackageVersion(version))
 }
 
 function toPackageVersion(value: PackageVersionDto): PackageVersion {

@@ -16,9 +16,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
-import type {
-  Namespaces,
-  NamespacesDto} from '@netcracker/qubership-apihub-ui-shared/entities/namespaces'
+import type { Namespaces, NamespacesDto } from '@netcracker/qubership-apihub-ui-shared/entities/namespaces'
 import {
   EMPTY_NAMESPACES,
   getNamespaces,
@@ -37,8 +35,5 @@ export function useNamespaces(): [Namespaces, IsLoading] {
     enabled: !!agentKey,
   })
 
-  return [
-    data ?? EMPTY_NAMESPACES,
-    isLoading,
-  ]
+  return [data ?? EMPTY_NAMESPACES, isLoading]
 }

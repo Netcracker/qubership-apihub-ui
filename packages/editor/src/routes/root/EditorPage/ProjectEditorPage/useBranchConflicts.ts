@@ -28,7 +28,11 @@ export function useBranchConflicts(): [Key[], IsFetching, RefetchQuery<Key[], Er
   const { projectId } = useParams()
   const [selectedBranch] = useBranchSearchParam()
 
-  const { data = [], isFetching, refetch } = useQuery<Key[], Error, Key[]>({
+  const {
+    data = [],
+    isFetching,
+    refetch,
+  } = useQuery<Key[], Error, Key[]>({
     queryKey: [BRANCH_CONFLICTS_QUERY_KEY, projectId, selectedBranch],
     queryFn: () => getBranchConflicts(projectId!, selectedBranch!),
     enabled: false,
@@ -37,10 +41,7 @@ export function useBranchConflicts(): [Key[], IsFetching, RefetchQuery<Key[], Er
   return [data, isFetching, refetch]
 }
 
-async function getBranchConflicts(
-  projectKey: Key,
-  branchName: string,
-): Promise<Key[]> {
+async function getBranchConflicts(projectKey: Key, branchName: string): Promise<Key[]> {
   const projectId = encodeURIComponent(projectKey)
   const branch = encodeURIComponent(branchName)
 
@@ -49,4 +50,3 @@ async function getBranchConflicts(
   })
   return data.files
 }
-

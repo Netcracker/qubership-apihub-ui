@@ -33,7 +33,7 @@ export function deleteRole(router: Router): void {
 
 export function updateRole(router: Router): void {
   router.patch('/:roleId/', (req, res) => {
-    ROLES_LIST.roles = ROLES_LIST.roles.map(roleObject => {
+    ROLES_LIST.roles = ROLES_LIST.roles.map((roleObject) => {
       const { permissions } = JSON.parse(req.body)
       if (roleObject.roleId === req.params.roleId) {
         return {
@@ -45,7 +45,7 @@ export function updateRole(router: Router): void {
       return roleObject
     })
 
-    res.status(200).json(ROLES_LIST.roles.find(roleObject => roleObject.roleId === req.params.roleId))
+    res.status(200).json(ROLES_LIST.roles.find((roleObject) => roleObject.roleId === req.params.roleId))
   })
 }
 

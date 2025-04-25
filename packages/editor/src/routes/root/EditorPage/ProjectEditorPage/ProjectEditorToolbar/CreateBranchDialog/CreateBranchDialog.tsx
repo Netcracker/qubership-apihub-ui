@@ -39,18 +39,18 @@ import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/componen
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 
 export const CreateBranchDialog: FC = memo(() => {
-  return (
-    <PopupDelegate
-      type={SHOW_CREATE_BRANCH_DIALOG}
-      render={props => <CreateBranchPopup {...props}/>}
-    />
-  )
+  return <PopupDelegate type={SHOW_CREATE_BRANCH_DIALOG} render={(props) => <CreateBranchPopup {...props} />} />
 })
 
 const CreateBranchPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }) => {
   const [selectedBranch] = useBranchSearchParam()
 
-  const { handleSubmit, control, watch, formState: { errors } } = useForm<CreateBranchInfo>({
+  const {
+    handleSubmit,
+    control,
+    watch,
+    formState: { errors },
+  } = useForm<CreateBranchInfo>({
     defaultValues: {
       currentBranchName: selectedBranch,
       newBranchName: '',
@@ -66,28 +66,30 @@ const CreateBranchPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }) =
     <Dialog open={open} onClose={() => setOpen(false)}>
       <Box
         component="form"
-        onSubmit={
-          handleSubmit(({ currentBranchName, newBranchName }) => {
-            createBranch({ currentBranchName, newBranchName, withPublish })
-            setOpen(false)
-          })
-        }
+        onSubmit={handleSubmit(({ currentBranchName, newBranchName }) => {
+          createBranch({ currentBranchName, newBranchName, withPublish })
+          setOpen(false)
+        })}
       >
-        <DialogTitle>
-          Create New Branch
-        </DialogTitle>
+        <DialogTitle>Create New Branch</DialogTitle>
 
         <DialogContent>
           <Controller
             name="currentBranchName"
             control={control}
-            render={({ field: { value, onChange } }) => <Autocomplete
-              value={value}
-              options={branches.map(({ name }) => name)}
-              renderOption={(props, name) => <ListItem {...props} key={name}>{name}</ListItem>}
-              renderInput={params => <TextField {...params} onChange={onChange} required label="Current branch"/>}
-              onChange={(_, value) => onChange(value)}
-            />}
+            render={({ field: { value, onChange } }) => (
+              <Autocomplete
+                value={value}
+                options={branches.map(({ name }) => name)}
+                renderOption={(props, name) => (
+                  <ListItem {...props} key={name}>
+                    {name}
+                  </ListItem>
+                )}
+                renderInput={(params) => <TextField {...params} onChange={onChange} required label="Current branch" />}
+                onChange={(_, value) => onChange(value)}
+              />
+            )}
           />
           <Controller
             name="newBranchName"
@@ -96,22 +98,26 @@ const CreateBranchPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }) =
               validate: {
                 alreadyExists: () => !isNewBranchAlreadyExists || 'Branch already exists',
                 checkSpaces: (newBranch) => {
-                  return /^[a-z0-9]([/\-a-z0-9_|-|.|#]*[a-z0-9])?$/ig.test(newBranch) ||
+                  return (
+                    /^[a-z0-9]([/\-a-z0-9_|-|.|#]*[a-z0-9])?$/gi.test(newBranch) ||
                     'Branch name must contain only letters, numbers and these symbols (/, -, _, ., #), the name cannot end with a symbols'
+                  )
                 },
               },
             }}
-            render={({ field }) => <TextField
-              {...field}
-              required
-              label="New branch"
-              error={!!errors.newBranchName}
-              helperText={errors.newBranchName?.message}
-            />}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                required
+                label="New branch"
+                error={!!errors.newBranchName}
+                helperText={errors.newBranchName?.message}
+              />
+            )}
           />
           <FormControlLabel
             label="Create snapshot"
-            control={<Checkbox onChange={(_, checked) => setWithPublish(checked)}/>}
+            control={<Checkbox onChange={(_, checked) => setWithPublish(checked)} />}
           />
         </DialogContent>
         <DialogActions>

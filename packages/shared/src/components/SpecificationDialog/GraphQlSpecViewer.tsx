@@ -36,49 +36,47 @@ export type GraphQlSpecViewerProps = {
   header?: string
 }
 
-export const GRAPHQL_VIEW_MODES: SpecViewMode[] = [DOC_SPEC_VIEW_MODE, SCHEMA_SPEC_VIEW_MODE, INTROSPECTION_SPEC_VIEW_MODE]
+export const GRAPHQL_VIEW_MODES: SpecViewMode[] = [
+  DOC_SPEC_VIEW_MODE,
+  SCHEMA_SPEC_VIEW_MODE,
+  INTROSPECTION_SPEC_VIEW_MODE,
+]
 
-export const GraphQlSpecViewer: FC<GraphQlSpecViewerProps> = /* @__PURE__ */ memo<GraphQlSpecViewerProps>(({
-  view,
-  spec,
-  value,
-  proxyServer,
-  header,
-}) => {
-  const [transformedSpecRaw, transformedExtension]: [string, FileExtension] = useMemo(() => {
-    const graphQlSpecType = findGraphQlSpecType(spec.extension, value) || GRAPHQL_SPEC_TYPE
-    if (view === SCHEMA_SPEC_VIEW_MODE && graphQlSpecType === GRAPHQL_INTROSPECTION_SPEC_TYPE) {
-      const schema = buildClientSchema(JSON.parse(value).data)
-      return [stringifyGraphQl(schema), GRAPHQL_FILE_EXTENSION]
+export const GraphQlSpecViewer: FC<GraphQlSpecViewerProps> = /* @__PURE__ */ memo<GraphQlSpecViewerProps>(
+  ({ view, spec, value, proxyServer, header }) => {
+    const [transformedSpecRaw, transformedExtension]: [string, FileExtension] = useMemo(() => {
+      const graphQlSpecType = findGraphQlSpecType(spec.extension, value) || GRAPHQL_SPEC_TYPE
+      if (view === SCHEMA_SPEC_VIEW_MODE && graphQlSpecType === GRAPHQL_INTROSPECTION_SPEC_TYPE) {
+        const schema = buildClientSchema(JSON.parse(value).data)
+        return [stringifyGraphQl(schema), GRAPHQL_FILE_EXTENSION]
+      }
+      if (view === INTROSPECTION_SPEC_VIEW_MODE && graphQlSpecType === GRAPHQL_SCHEMA_SPEC_TYPE) {
+        const schema = buildSchema(value, { noLocation: true })
+        const introspection = JSON.stringify(
+          graphqlSync({
+            schema: schema,
+            source: getIntrospectionQuery(),
+          }).data,
+          null,
+          2,
+        )
+        return [introspection, JSON_FILE_EXTENSION]
+      }
+
+      return [value, spec.extension]
+    }, [spec, value, view])
+
+    if (view === DOC_SPEC_VIEW_MODE) {
+      return <GraphqlApiSpecView value={value} fetchDataUrl={proxyServer?.url} header={header} />
     }
-    if (view === INTROSPECTION_SPEC_VIEW_MODE && graphQlSpecType === GRAPHQL_SCHEMA_SPEC_TYPE) {
-      const schema = buildSchema(value, { noLocation: true })
-      const introspection = JSON.stringify(graphqlSync({
-        schema: schema,
-        source: getIntrospectionQuery(),
-      }).data, null, 2)
-      return [introspection, JSON_FILE_EXTENSION]
-    }
 
-    return [value, spec.extension]
-  }, [spec, value, view])
-
-  if (view === DOC_SPEC_VIEW_MODE) {
     return (
-      <GraphqlApiSpecView
-        value={value}
-        fetchDataUrl={proxyServer?.url}
-        header={header}
+      <RawSpecView
+        sx={{ mx: 0, height: '100%' }}
+        value={transformedSpecRaw}
+        type={spec.type}
+        extension={transformedExtension}
       />
     )
-  }
-
-  return (
-    <RawSpecView
-      sx={{ mx: 0, height: '100%' }}
-      value={transformedSpecRaw}
-      type={spec.type}
-      extension={transformedExtension}
-    />
-  )
-})
+  },
+)

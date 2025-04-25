@@ -61,71 +61,55 @@ export const FileHistoryDialog: FC = memo(() => {
   })
 
   return (
-    <Dialog
-      maxWidth={false}
-      fullWidth
-      open={open}
-      onClose={() => setOpen(false)}
-    >
+    <Dialog maxWidth={false} fullWidth open={open} onClose={() => setOpen(false)}>
       <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
         Compare
-
         <TextField
           sx={{ width: 300 }}
-          select hiddenLabel
+          select
+          hiddenLabel
           value={commitKey}
           onChange={({ target }) => setCommitKey(target.value)}
         >
-          {
-            fileHistory.map(({ comment, key }, index) => (
-              <MenuItem sx={{ width: 300 }} key={key} value={index === 0 ? LATEST_COMMIT_KEY : key}>
-                <OverflowTooltip placement="right" title={comment}>
-                  <Typography variant="body2" noWrap>
-                    {comment}
-                  </Typography>
-                </OverflowTooltip>
-              </MenuItem>
-            ))
-          }
+          {fileHistory.map(({ comment, key }, index) => (
+            <MenuItem sx={{ width: 300 }} key={key} value={index === 0 ? LATEST_COMMIT_KEY : key}>
+              <OverflowTooltip placement="right" title={comment}>
+                <Typography variant="body2" noWrap>
+                  {comment}
+                </Typography>
+              </OverflowTooltip>
+            </MenuItem>
+          ))}
         </TextField>
-
         vs
-
         <TextField
           sx={{ width: 300 }}
-          select hiddenLabel
+          select
+          hiddenLabel
           value={comparisonCommitKey}
           onChange={({ target }) => setComparisonCommitKey(target.value)}
         >
-          <MenuItem key={DRAFT_COMMIT_KEY} value={DRAFT_COMMIT_KEY}>Draft</MenuItem>
-          {
-            fileHistory.map(({ comment, key }) => (
-              <MenuItem sx={{ width: 300 }} key={key} value={key}>
-                <OverflowTooltip placement="right" title={comment}>
-                  <Typography variant="body2" noWrap>
-                    {comment}
-                  </Typography>
-                </OverflowTooltip>
-              </MenuItem>
-            ))
-          }
+          <MenuItem key={DRAFT_COMMIT_KEY} value={DRAFT_COMMIT_KEY}>
+            Draft
+          </MenuItem>
+          {fileHistory.map(({ comment, key }) => (
+            <MenuItem sx={{ width: 300 }} key={key} value={key}>
+              <OverflowTooltip placement="right" title={comment}>
+                <Typography variant="body2" noWrap>
+                  {comment}
+                </Typography>
+              </OverflowTooltip>
+            </MenuItem>
+          ))}
         </TextField>
-
         <Box display="flex" marginLeft="auto" alignItems="center" gap={3}>
-          <IconButton
-            sx={{ color: '#353C4E' }}
-            onClick={() => setOpen(false)}
-          >
+          <IconButton sx={{ color: '#353C4E' }} onClick={() => setOpen(false)}>
             <CloseOutlinedIcon />
           </IconButton>
         </Box>
       </DialogTitle>
 
-      <FileHistoryDialogContent
-        fileKey={fileKey}
-        commitKey={commitKey}
-        comparisonCommitKey={comparisonCommitKey}
-      />
+      <FileHistoryDialogContent fileKey={fileKey} commitKey={commitKey} comparisonCommitKey={comparisonCommitKey} />
     </Dialog>
   )
 })
@@ -136,11 +120,7 @@ type FileHistoryDialogContentProps = {
   comparisonCommitKey: CommitKey
 }
 
-const FileHistoryDialogContent: FC<FileHistoryDialogContentProps> = ({
-  fileKey,
-  commitKey,
-  comparisonCommitKey,
-}) => {
+const FileHistoryDialogContent: FC<FileHistoryDialogContentProps> = ({ fileKey, commitKey, comparisonCommitKey }) => {
   const [specItemUri, setSpecItemUri] = useSpecItemUriHashParam()
 
   const { name } = useSelectedFile() ?? { key: '' }
@@ -182,24 +162,20 @@ const FileHistoryDialogContent: FC<FileHistoryDialogContentProps> = ({
           topLeft: false,
         }}
       >
-        <SpecNavigation
-          content={before}
-          selectedUri={specItemUri}
-          onSelect={setSpecItemUri}
-        />
+        <SpecNavigation content={before} selectedUri={specItemUri} onSelect={setSpecItemUri} />
       </Resizable>
       <Box width="100%" height="100%" px={4}>
-        {
-          isLoading
-            ? <LoadingIndicator />
-            : <RawSpecDiffView
-              beforeValue={before}
-              afterValue={after}
-              selectedUri={specItemUri}
-              extension={extension}
-              type={specType}
-            />
-        }
+        {isLoading ? (
+          <LoadingIndicator />
+        ) : (
+          <RawSpecDiffView
+            beforeValue={before}
+            afterValue={after}
+            selectedUri={specItemUri}
+            extension={extension}
+            type={specType}
+          />
+        )}
       </Box>
     </DialogContent>
   )
@@ -215,7 +191,7 @@ function useDifferences(
   const draftContent = useMonacoEditorContent()
 
   return [
-    [beforeFileContent ?? '', comparisonCommitKey === DRAFT_COMMIT_KEY ? draftContent : afterFileContent ?? ''],
+    [beforeFileContent ?? '', comparisonCommitKey === DRAFT_COMMIT_KEY ? draftContent : (afterFileContent ?? '')],
     isBeforeFileContentLoading || isAfterFileContentLoading,
   ]
 }

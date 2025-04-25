@@ -41,73 +41,86 @@ type CellData = Partial<{
   spec: Spec
 }>
 
-export const ServiceOrDocumentationTableCell: FC<ServiceOrDocumentationTableCellProps> = memo<ServiceOrDocumentationTableCellProps>((
-  {
-    value: {
-      depth,
-      getCanExpand,
-      getToggleExpandedHandler,
-      getIsExpanded,
-      parentRow,
-      original: { service, spec },
-    },
-    isPromoteStep,
-    promoteStatus,
-  },
-) => {
-  const { agentId, namespaceKey } = useParams()
-  const { showSpecificationDialog } = useEventBus()
+export const ServiceOrDocumentationTableCell: FC<ServiceOrDocumentationTableCellProps> =
+  memo<ServiceOrDocumentationTableCellProps>(
+    ({
+      value: {
+        depth,
+        getCanExpand,
+        getToggleExpandedHandler,
+        getIsExpanded,
+        parentRow,
+        original: { service, spec },
+      },
+      isPromoteStep,
+      promoteStatus,
+    }) => {
+      const { agentId, namespaceKey } = useParams()
+      const { showSpecificationDialog } = useEventBus()
 
-  const promotable = useMemo(
-    () => service?.availablePromoteStatuses?.includes(promoteStatus!),
-    [service, promoteStatus],
-  )
+      const promotable = useMemo(
+        () => service?.availablePromoteStatuses?.includes(promoteStatus!),
+        [service, promoteStatus],
+      )
 
-  if (service && isEmpty(service.specs)) {
-    return (
-      <OverflowTooltip title={service.key}>
-        <Typography noWrap variant="inherit" color="#8F9EB4" pl={3}>{service.key}</Typography>
-      </OverflowTooltip>
-    )
-  }
-
-  return (
-    <Box display="flex" alignItems="center" gap={1} pl={3 + depth * 2} height={19}>
-      {getCanExpand() && (
-        <IconButton sx={{ p: 0, ml: -3 }} onClick={getToggleExpandedHandler()}>
-          {getIsExpanded()
-            ? <KeyboardArrowDownOutlinedIcon sx={{ fontSize: '16px' }}/>
-            : <KeyboardArrowRightOutlinedIcon sx={{ fontSize: '16px' }}/>}
-        </IconButton>
-      )}
-      {service && (<>
+      if (service && isEmpty(service.specs)) {
+        return (
           <OverflowTooltip title={service.key}>
-            <Typography noWrap color={isPromoteStep && !promotable ? '#8F9EB4' : 'inherit'}
-                        variant="inherit">{service.key}</Typography>
+            <Typography noWrap variant="inherit" color="#8F9EB4" pl={3}>
+              {service.key}
+            </Typography>
           </OverflowTooltip>
-          {isPromoteStep && !promotable && (
-            <Tooltip title="No grants to publish the service">
-              <Box><LockIcon/></Box>
-            </Tooltip>
+        )
+      }
+
+      return (
+        <Box display="flex" alignItems="center" gap={1} pl={3 + depth * 2} height={19}>
+          {getCanExpand() && (
+            <IconButton sx={{ p: 0, ml: -3 }} onClick={getToggleExpandedHandler()}>
+              {getIsExpanded() ? (
+                <KeyboardArrowDownOutlinedIcon sx={{ fontSize: '16px' }} />
+              ) : (
+                <KeyboardArrowRightOutlinedIcon sx={{ fontSize: '16px' }} />
+              )}
+            </IconButton>
           )}
-        </>
-      )}
-      {spec && <>
-        <SpecLogo value={spec.type}/>
-        <OverflowTooltip title={spec.name}>
-          <Link
-            noWrap
-            onClick={() => showSpecificationDialog({
-              spec: spec,
-              agentId: agentId,
-              namespaceKey: namespaceKey,
-              service: parentRow?.original.service,
-            })}
-          >
-            {spec.name}
-          </Link>
-        </OverflowTooltip>
-      </>}
-    </Box>
+          {service && (
+            <>
+              <OverflowTooltip title={service.key}>
+                <Typography noWrap color={isPromoteStep && !promotable ? '#8F9EB4' : 'inherit'} variant="inherit">
+                  {service.key}
+                </Typography>
+              </OverflowTooltip>
+              {isPromoteStep && !promotable && (
+                <Tooltip title="No grants to publish the service">
+                  <Box>
+                    <LockIcon />
+                  </Box>
+                </Tooltip>
+              )}
+            </>
+          )}
+          {spec && (
+            <>
+              <SpecLogo value={spec.type} />
+              <OverflowTooltip title={spec.name}>
+                <Link
+                  noWrap
+                  onClick={() =>
+                    showSpecificationDialog({
+                      spec: spec,
+                      agentId: agentId,
+                      namespaceKey: namespaceKey,
+                      service: parentRow?.original.service,
+                    })
+                  }
+                >
+                  {spec.name}
+                </Link>
+              </OverflowTooltip>
+            </>
+          )}
+        </Box>
+      )
+    },
   )
-})

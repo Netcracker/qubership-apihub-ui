@@ -27,17 +27,13 @@ export function useUpdateProjectRef(): [UpdateProjectRef, IsLoading] {
   const [selectedBranch] = useBranchSearchParam()
 
   const { mutate, isLoading } = useMutation<void, Error, RefData>({
-    mutationFn: ref => updateProjectRef(projectId!, selectedBranch!, ref),
+    mutationFn: (ref) => updateProjectRef(projectId!, selectedBranch!, ref),
   })
 
   return [mutate, isLoading]
 }
 
-async function updateProjectRef(
-  projectKey: Key,
-  branchName: string,
-  refData: RefData,
-): Promise<void> {
+async function updateProjectRef(projectKey: Key, branchName: string, refData: RefData): Promise<void> {
   const projectId = encodeURIComponent(projectKey)
   const branch = encodeURIComponent(branchName)
 

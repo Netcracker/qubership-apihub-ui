@@ -26,26 +26,23 @@ export function useSelectedChange(): Change | undefined {
   const [branchConfig] = useBranchConfig()
   const [changes] = useBranchChanges()
 
-  return useMemo(
-    () => {
-      if (branchConfig && branchConfig.key === selectedChangeKey) {
-        return {
-          name: getFileName(branchConfig.key),
-          path: getFilePath(branchConfig.key),
-        }
+  return useMemo(() => {
+    if (branchConfig && branchConfig.key === selectedChangeKey) {
+      return {
+        name: getFileName(branchConfig.key),
+        path: getFilePath(branchConfig.key),
       }
-      const change = changes.find(change => change.fileId === selectedChangeKey)
-      if (change) {
-        return {
-          name: getFileName(change.fileId),
-          path: change.fileId,
-          oldPath: change.movedFrom,
-        }
+    }
+    const change = changes.find((change) => change.fileId === selectedChangeKey)
+    if (change) {
+      return {
+        name: getFileName(change.fileId),
+        path: change.fileId,
+        oldPath: change.movedFrom,
       }
-      return undefined
-    },
-    [branchConfig, changes, selectedChangeKey],
-  )
+    }
+    return undefined
+  }, [branchConfig, changes, selectedChangeKey])
 }
 
 export type Change = {
@@ -59,4 +56,3 @@ export function useConfigChangeSelected(): boolean {
   const [branchConfig] = useBranchConfig()
   return selectedChangeKey === branchConfig?.key
 }
-

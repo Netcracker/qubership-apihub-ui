@@ -17,20 +17,16 @@ export const ProfileToolbar: FC = () => {
   const navigateToPrevPage = useCallback(() => {
     navigate(previousPageLocation)
   }, [previousPageLocation, navigate])
-  
+
   return (
     <Toolbar
-      header={<ToolbarTitle value="My Profile"/>}
+      header={<ToolbarTitle value="My Profile" />}
       size={LARGE_TOOLBAR_SIZE}
-      action={(
-        <Button
-          startIcon={<ExitIcon/>}
-          variant="outlined"
-          onClick={navigateToPrevPage}
-        >
+      action={
+        <Button startIcon={<ExitIcon />} variant="outlined" onClick={navigateToPrevPage}>
           Exit
         </Button>
-      )}
+      }
     />
   )
 }

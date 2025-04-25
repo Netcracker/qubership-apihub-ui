@@ -31,17 +31,20 @@ export function useSeverityFiltersSearchParam(): [ChangeSeverity[], SetChangeSev
 
   return [
     changeSeverityFilters,
-    useCallback(filters => {
-      if (filters) {
-        searchParams.set(FILTERS_SEARCH_PARAM, filters)
-      } else {
-        searchParams.delete(FILTERS_SEARCH_PARAM)
-      }
-      navigate({
-        search: `${searchParams}`,
-        hash: hashParam,
-      })
-    }, [hashParam, navigate, searchParams]),
+    useCallback(
+      (filters) => {
+        if (filters) {
+          searchParams.set(FILTERS_SEARCH_PARAM, filters)
+        } else {
+          searchParams.delete(FILTERS_SEARCH_PARAM)
+        }
+        navigate({
+          search: `${searchParams}`,
+          hash: hashParam,
+        })
+      },
+      [hashParam, navigate, searchParams],
+    ),
   ]
 }
 

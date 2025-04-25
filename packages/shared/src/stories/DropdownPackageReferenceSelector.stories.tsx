@@ -37,21 +37,25 @@ export default meta
 export const DefaultStory: StoryFn<DropdownPackageReferenceSelectorProps> = (args) => {
   const [, updateArgs] = useArgs()
 
-  const onSearch = useCallback((value: string) => {
-    updateArgs({ references: references.filter(reference => reference?.name && reference.name.toLowerCase().includes(value.toLowerCase())) })
-  }, [updateArgs])
-
-  const onSearchParam = useCallback((value: string | undefined) => {
-    if (value) {
-      updateArgs({ selectedPackage: references.find(reference => reference?.key && reference.key.includes(value)) })
-    }
-  }, [updateArgs])
-
-  return (
-    <DropdownPackageReferenceSelector
-      {...args}
-      onSearch={onSearch}
-      onSearchParam={onSearchParam}
-    />
+  const onSearch = useCallback(
+    (value: string) => {
+      updateArgs({
+        references: references.filter(
+          (reference) => reference?.name && reference.name.toLowerCase().includes(value.toLowerCase()),
+        ),
+      })
+    },
+    [updateArgs],
   )
+
+  const onSearchParam = useCallback(
+    (value: string | undefined) => {
+      if (value) {
+        updateArgs({ selectedPackage: references.find((reference) => reference?.key && reference.key.includes(value)) })
+      }
+    },
+    [updateArgs],
+  )
+
+  return <DropdownPackageReferenceSelector {...args} onSearch={onSearch} onSearchParam={onSearchParam} />
 }

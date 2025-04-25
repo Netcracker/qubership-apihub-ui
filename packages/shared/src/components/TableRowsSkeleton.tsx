@@ -22,21 +22,20 @@ export type TableRowsSkeletonProps = {
   cellsCount: number
   rowsCount?: number
 }
-export const TableRowsSkeleton: FC<TableRowsSkeletonProps> = memo<TableRowsSkeletonProps>(({
-  rowsCount = 5,
-  cellsCount,
-}) => {
-  return (
-    <>
-      {[...Array(rowsCount)].map((row, index) => (
-        <TableRow key={`row-${index}`}>
-          {[...Array(cellsCount)].map((cell, index) => (
-            <TableCell component="th" scope="row" key={`cell-${index}`}>
-              <Skeleton variant="text"/>
-            </TableCell>
-          ))}
-        </TableRow>
-      ))}
-    </>
-  )
-})
+export const TableRowsSkeleton: FC<TableRowsSkeletonProps> = memo<TableRowsSkeletonProps>(
+  ({ rowsCount = 5, cellsCount }) => {
+    return (
+      <>
+        {[...Array(rowsCount)].map((row, index) => (
+          <TableRow key={`row-${index}`}>
+            {[...Array(cellsCount)].map((cell, index) => (
+              <TableCell component="th" scope="row" key={`cell-${index}`}>
+                <Skeleton variant="text" />
+              </TableCell>
+            ))}
+          </TableRow>
+        ))}
+      </>
+    )
+  },
+)

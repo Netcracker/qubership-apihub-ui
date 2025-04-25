@@ -77,101 +77,115 @@ export const VersionHistoryTable: FC<VersionHistoryTableProps> = memo<VersionHis
   })
   // End of resizing logic
 
-  const baseColumns: ColumnDef<VersionHistoryItem>[] = useMemo(() => [
-    {
-      id: VERSION_COLUMN_ID,
-      header: () => <CustomTableHeadCell title={`${isVersionsHistoryContent ? 'Version' : 'Revision'}`}/>,
-      cell: ({ row: { original: { version, revision, latest } } }) => {
-        const value = isVersionsHistoryContent ? version : `${REVISION_DELIMITER}${revision}`
-        const isLatestRevision = !isVersionsHistoryContent && latest
-        return (
-          <TextWithOverflowTooltip tooltipText={value}>
-            <Box display="flex" gap={1} alignItems="center">
-              <Link
-                component={NavLink}
-                to={{
-                  pathname: format(
-                    '/portal/packages/{}/{}',
-                    encodeURIComponent(packageKey),
-                    encodeURIComponent(isLatestRevision ? getSplittedVersionKey(version).versionKey : version),
-                  ),
-                }}
-              >
-                {value}
-              </Link>
-              <LatestRevisionMark latest={isLatestRevision}/>
-            </Box>
-          </TextWithOverflowTooltip>
-        )
+  const baseColumns: ColumnDef<VersionHistoryItem>[] = useMemo(
+    () => [
+      {
+        id: VERSION_COLUMN_ID,
+        header: () => <CustomTableHeadCell title={`${isVersionsHistoryContent ? 'Version' : 'Revision'}`} />,
+        cell: ({
+          row: {
+            original: { version, revision, latest },
+          },
+        }) => {
+          const value = isVersionsHistoryContent ? version : `${REVISION_DELIMITER}${revision}`
+          const isLatestRevision = !isVersionsHistoryContent && latest
+          return (
+            <TextWithOverflowTooltip tooltipText={value}>
+              <Box display="flex" gap={1} alignItems="center">
+                <Link
+                  component={NavLink}
+                  to={{
+                    pathname: format(
+                      '/portal/packages/{}/{}',
+                      encodeURIComponent(packageKey),
+                      encodeURIComponent(isLatestRevision ? getSplittedVersionKey(version).versionKey : version),
+                    ),
+                  }}
+                >
+                  {value}
+                </Link>
+                <LatestRevisionMark latest={isLatestRevision} />
+              </Box>
+            </TextWithOverflowTooltip>
+          )
+        },
       },
-    },
-    {
-      id: VERSION_STATUS_COLUMN_ID,
-      header: () => <CustomTableHeadCell title="Status"/>,
-      cell: ({ row: { original: { status } } }) => <CustomChip value={status}/>,
-    },
-    {
-      id: LABELS_COLUMN_ID,
-      header: () => <CustomTableHeadCell title="Labels"/>,
-      cell: ({ row: { original: { labels } } }) => {
-        if (labels) {
-          return <LabelsTableCell labels={labels}/>
-        }
-        return null
+      {
+        id: VERSION_STATUS_COLUMN_ID,
+        header: () => <CustomTableHeadCell title="Status" />,
+        cell: ({
+          row: {
+            original: { status },
+          },
+        }) => <CustomChip value={status} />,
       },
-    },
-    {
-      id: PUBLICATION_DATE_COLUMN_ID,
-      header: () => <CustomTableHeadCell title="Publication Date"/>,
-      cell: ({ row: { original: { createdAt } } }) => (
-        <FormattedDate value={createdAt}/>
-      ),
-    },
-    {
-      id: PUBLISHED_BY_COLUMN_ID,
-      header: () => <CustomTableHeadCell title="Published by"/>,
-      cell: ({ row: { original: { createdBy } } }) => (
-        <PrincipalView value={createdBy}/>
-      ),
-    },
-  ], [isVersionsHistoryContent, packageKey])
+      {
+        id: LABELS_COLUMN_ID,
+        header: () => <CustomTableHeadCell title="Labels" />,
+        cell: ({
+          row: {
+            original: { labels },
+          },
+        }) => {
+          if (labels) {
+            return <LabelsTableCell labels={labels} />
+          }
+          return null
+        },
+      },
+      {
+        id: PUBLICATION_DATE_COLUMN_ID,
+        header: () => <CustomTableHeadCell title="Publication Date" />,
+        cell: ({
+          row: {
+            original: { createdAt },
+          },
+        }) => <FormattedDate value={createdAt} />,
+      },
+      {
+        id: PUBLISHED_BY_COLUMN_ID,
+        header: () => <CustomTableHeadCell title="Published by" />,
+        cell: ({
+          row: {
+            original: { createdBy },
+          },
+        }) => <PrincipalView value={createdBy} />,
+      },
+    ],
+    [isVersionsHistoryContent, packageKey],
+  )
 
-  const previousVersionColumn: ColumnDef<VersionHistoryItem> = useMemo(() => ({
-    id: PREVIOUS_VERSION_COLUMN_ID,
-    header: () => <CustomTableHeadCell title="Previous Version"/>,
-    cell: ({ row: { original: { previousValueKey } } }) => {
-      const { versionKey: previousVersion } = getSplittedVersionKey(previousValueKey)
-      return (
-        <TextWithOverflowTooltip tooltipText={previousVersion}>
-          {previousVersion}
-        </TextWithOverflowTooltip>
-      )
-    },
-  }), [])
+  const previousVersionColumn: ColumnDef<VersionHistoryItem> = useMemo(
+    () => ({
+      id: PREVIOUS_VERSION_COLUMN_ID,
+      header: () => <CustomTableHeadCell title="Previous Version" />,
+      cell: ({
+        row: {
+          original: { previousValueKey },
+        },
+      }) => {
+        const { versionKey: previousVersion } = getSplittedVersionKey(previousValueKey)
+        return <TextWithOverflowTooltip tooltipText={previousVersion}>{previousVersion}</TextWithOverflowTooltip>
+      },
+    }),
+    [],
+  )
 
-  const actionsColumn: ColumnDef<VersionHistoryItem> = useMemo(() => ({
-    id: ACTIONS_COLUMN_ID,
-    header: '',
-    cell: ({ row: { original } }) => (
-      actionsCell?.(isVersionsHistoryContent
-        ? toPackageVersion(original)
-        : toRevision(original),
-      )
-    ),
-  }), [actionsCell, isVersionsHistoryContent])
+  const actionsColumn: ColumnDef<VersionHistoryItem> = useMemo(
+    () => ({
+      id: ACTIONS_COLUMN_ID,
+      header: '',
+      cell: ({ row: { original } }) =>
+        actionsCell?.(isVersionsHistoryContent ? toPackageVersion(original) : toRevision(original)),
+    }),
+    [actionsCell, isVersionsHistoryContent],
+  )
 
-  const columns: ColumnDef<VersionHistoryItem>[] = useMemo(() => (
+  const columns: ColumnDef<VersionHistoryItem>[] = useMemo(
+    () =>
       isVersionsHistoryContent
-        ? [
-          ...baseColumns,
-          previousVersionColumn,
-          actionsColumn,
-        ]
-        : [
-          ...baseColumns,
-          actionsColumn,
-        ]
-    ),
+        ? [...baseColumns, previousVersionColumn, actionsColumn]
+        : [...baseColumns, actionsColumn],
     [actionsColumn, baseColumns, isVersionsHistoryContent, previousVersionColumn],
   )
 
@@ -188,21 +202,15 @@ export const VersionHistoryTable: FC<VersionHistoryTableProps> = memo<VersionHis
   })
 
   // Resizing logic
-  useEffect(
-    () => setColumnSizing(actualColumnSizing),
-    [setColumnSizing, actualColumnSizing],
-  )
+  useEffect(() => setColumnSizing(actualColumnSizing), [setColumnSizing, actualColumnSizing])
   // End of resizing logic
 
   return (
     <Box>
-      <TableContainer
-        ref={tableContainerRef}
-        sx={{ mt: 1, maxHeight: 'calc(100vh - 265px)', overflowX: 'hidden' }}
-      >
+      <TableContainer ref={tableContainerRef} sx={{ mt: 1, maxHeight: 'calc(100vh - 265px)', overflowX: 'hidden' }}>
         <Table>
           <TableHead>
-            {getHeaderGroups().map(headerGroup => (
+            {getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {/*TODO: delete condition header?.id !== REVISION_COLUMN_ID && when "Extend API for Admin UI" will be closed*/}
                 {headerGroup.headers.map((headerColumn, index) => (
@@ -217,29 +225,26 @@ export const VersionHistoryTable: FC<VersionHistoryTableProps> = memo<VersionHis
                     }}
                   >
                     {flexRender(headerColumn.column.columnDef.header, headerColumn.getContext())}
-                    {index !== headerGroup.headers.length - 1 &&
-                      <ColumnDelimiter header={headerColumn} resizable={true}/>}
+                    {index !== headerGroup.headers.length - 1 && (
+                      <ColumnDelimiter header={headerColumn} resizable={true} />
+                    )}
                   </TableCell>
                 ))}
               </TableRow>
             ))}
           </TableHead>
           <TableBody>
-            {getRowModel().rows.map(row => (
+            {getRowModel().rows.map((row) => (
               <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell
-                    key={cell.column.id}
-                    sx={{ overflow: 'hidden' }}
-                    data-testid={`Cell-${cell.column.id}`}
-                  >
+                  <TableCell key={cell.column.id} sx={{ overflow: 'hidden' }} data-testid={`Cell-${cell.column.id}`}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
               </TableRow>
             ))}
-            {isLoading && <TableSkeleton isVersionHistory={isVersionsHistoryContent}/>}
-            {hasNextPage && <RowSkeleton refObject={refObject} isVersionHistory={isVersionsHistoryContent}/>}
+            {isLoading && <TableSkeleton isVersionHistory={isVersionsHistoryContent} />}
+            {hasNextPage && <RowSkeleton refObject={refObject} isVersionHistory={isVersionsHistoryContent} />}
           </TableBody>
         </Table>
       </TableContainer>
@@ -268,15 +273,8 @@ function getColumnsModel(isVersionsHistory: boolean): ColumnModel[] {
   const PREVIOUS_VERSION_COLUMN = { name: PREVIOUS_VERSION_COLUMN_ID }
 
   return isVersionsHistory
-    ? [
-      ...BASE_COLUMNS_MODEL,
-      PREVIOUS_VERSION_COLUMN,
-      ACTIONS_COLUMN,
-    ]
-    : [
-      ...BASE_COLUMNS_MODEL,
-      ACTIONS_COLUMN,
-    ]
+    ? [...BASE_COLUMNS_MODEL, PREVIOUS_VERSION_COLUMN, ACTIONS_COLUMN]
+    : [...BASE_COLUMNS_MODEL, ACTIONS_COLUMN]
 }
 
 export type VersionHistoryItem = {
@@ -323,8 +321,8 @@ function toVersionHistoryItems(value: PackageVersions | Revisions): VersionHisto
 
   if (isVersionsItem) {
     const data = value as PackageVersions
-    return data.map(item => {
-      return ({
+    return data.map((item) => {
+      return {
         version: item.key,
         status: item.status,
         createdBy: item.createdBy,
@@ -332,18 +330,18 @@ function toVersionHistoryItems(value: PackageVersions | Revisions): VersionHisto
         labels: item.versionLabels,
         previousValueKey: item.previousVersion,
         latest: item.latestRevision,
-      })
+      }
     })
   } else {
     const data = value as Revisions
-    return data.map(item => {
-      return ({
+    return data.map((item) => {
+      return {
         ...item,
         createdBy: item.createdBy,
         createdAt: item.createdAt ?? '',
         labels: item.revisionLabels,
         latest: item.latestRevision,
-      })
+      }
     })
   }
 }
@@ -352,7 +350,7 @@ type TableSkeletonProps = {
   isVersionHistory: boolean
 }
 const TableSkeleton: FC<TableSkeletonProps> = memo<TableSkeletonProps>(({ isVersionHistory }) => {
-  return createComponents(<RowSkeleton isVersionHistory={isVersionHistory}/>, DEFAULT_NUMBER_SKELETON_ROWS)
+  return createComponents(<RowSkeleton isVersionHistory={isVersionHistory} />, DEFAULT_NUMBER_SKELETON_ROWS)
 })
 
 type RowSkeletonProps = {
@@ -364,22 +362,20 @@ const RowSkeleton: FC<RowSkeletonProps> = memo<RowSkeletonProps>(({ refObject, i
   return (
     <TableRow>
       <TableCell ref={refObject}>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
       <TableCell ref={refObject}>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
-      <TableCell ref={refObject} width={'80'}/>
+      <TableCell ref={refObject} width={'80'} />
       <TableCell ref={refObject}>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
       <TableCell ref={refObject}>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
-      {isVersionHistory && (
-        <TableCell ref={refObject}/>
-      )}
-      <TableCell ref={refObject}/>
+      {isVersionHistory && <TableCell ref={refObject} />}
+      <TableCell ref={refObject} />
     </TableRow>
   )
 })

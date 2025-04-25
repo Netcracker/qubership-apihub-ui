@@ -47,7 +47,7 @@ export const PublishDashboardVersionFromCSVDialog: FC = memo(() => {
   return (
     <PopupDelegate
       type={SHOW_PUBLISH_PACKAGE_VERSION_DIALOG}
-      render={props => <PublishDashboardVersionFromCSVPopup {...props} open/>}
+      render={(props) => <PublishDashboardVersionFromCSVPopup {...props} open />}
     />
   )
 })
@@ -95,36 +95,36 @@ const PublishDashboardVersionFromCSVPopup: FC<PopupProps> = memo<PopupProps>(({ 
   const { handleSubmit, control, setValue, formState } = useForm<VersionFormData>({ defaultValues })
 
   const { publishId, publish, isPublishStarting, isPublishStartedSuccessfully } = usePublishDashboardVersionFromCSV()
-  const [isPublishing, isPublished, isPublishError] = useDashboardVersionFromCSVPublicationStatuses(packageObj?.key ?? '', publishId ?? '', targetVersion)
+  const [isPublishing, isPublished, isPublishError] = useDashboardVersionFromCSVPublicationStatuses(
+    packageObj?.key ?? '',
+    publishId ?? '',
+    targetVersion,
+  )
   const isPublishInProgress =
-    isPublishStarting ||
-    isPublishStartedSuccessfully && !isPublished && !isPublishError ||
-    isPublishing
+    isPublishStarting || (isPublishStartedSuccessfully && !isPublished && !isPublishError) || isPublishing
 
-  useEffect(() => { isPublishStartedSuccessfully && isPublished && setOpen(false) }, [isPublishStartedSuccessfully, isPublished, setOpen])
+  useEffect(() => {
+    isPublishStartedSuccessfully && isPublished && setOpen(false)
+  }, [isPublishStartedSuccessfully, isPublished, setOpen])
 
-  const onPublish = useCallback(async ({
-    version,
-    status,
-    labels,
-    previousVersion,
-    workspace,
-    file,
-  }: PublishInfo): Promise<void> => {
-    setTargetVersion(version)
+  const onPublish = useCallback(
+    async ({ version, status, labels, previousVersion, workspace, file }: PublishInfo): Promise<void> => {
+      setTargetVersion(version)
 
-    publish({
-      packageKey: packageObj!.key,
-      value: {
-        versionLabels: labels,
-        csvFile: file!,
-        servicesWorkspaceId: workspace!.key,
-        version: version,
-        status: status,
-        previousVersion: replaceEmptyPreviousVersion(previousVersion),
-      },
-    })
-  }, [packageObj, publish])
+      publish({
+        packageKey: packageObj!.key,
+        value: {
+          versionLabels: labels,
+          csvFile: file!,
+          servicesWorkspaceId: workspace!.key,
+          version: version,
+          status: status,
+          previousVersion: replaceEmptyPreviousVersion(previousVersion),
+        },
+      })
+    },
+    [packageObj, publish],
+  )
 
   return (
     <VersionDialogForm

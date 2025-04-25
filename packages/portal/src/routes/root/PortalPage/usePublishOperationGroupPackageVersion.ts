@@ -51,7 +51,11 @@ type PublishOperationGroupPackageVersionQueryContent = {
 }
 
 export function usePublishOperationGroupPackageVersion(): PublishOperationGroupPackageVersionQueryContent {
-  const { data, mutate, isLoading, isSuccess } = useMutation<PublishResponse, Error, PublishOperationGroupPackageVersionData>({
+  const { data, mutate, isLoading, isSuccess } = useMutation<
+    PublishResponse,
+    Error,
+    PublishOperationGroupPackageVersionData
+  >({
     mutationFn: (data) => publishOperationGroupPackageVersion(data),
   })
 
@@ -63,30 +67,29 @@ export function usePublishOperationGroupPackageVersion(): PublishOperationGroupP
   }
 }
 
-async function publishOperationGroupPackageVersion(data: PublishOperationGroupPackageVersionData): Promise<PublishResponse> {
-  const {
-    packageKey,
-    versionKey,
-    groupName,
-    apiType,
-    value,
-  } = data
+async function publishOperationGroupPackageVersion(
+  data: PublishOperationGroupPackageVersionData,
+): Promise<PublishResponse> {
+  const { packageKey, versionKey, groupName, apiType, value } = data
   const packageId = encodeURIComponent(packageKey)
   const versionId = encodeURIComponent(versionKey)
 
   const pathPattern = '/packages/:packageId/versions/:versionId/:apiType/groups/:groupName/publish'
-  return await requestJson<PublishResponse>(generatePath(pathPattern, { packageId, versionId, apiType, groupName }), {
-    method: 'POST',
-    body: JSON.stringify({
-      packageId: value.targetPackageKey,
-      version: value.targetVersionKey,
-      previousVersion: value.previousVersion,
-      status: value.status,
-      versionLabels: value.versionLabels,
-    }),
-  }, {
-    customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-    basePath: API_V3,
-  })
+  return await requestJson<PublishResponse>(
+    generatePath(pathPattern, { packageId, versionId, apiType, groupName }),
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        packageId: value.targetPackageKey,
+        version: value.targetVersionKey,
+        previousVersion: value.previousVersion,
+        status: value.status,
+        versionLabels: value.versionLabels,
+      }),
+    },
+    {
+      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+      basePath: API_V3,
+    },
+  )
 }
-

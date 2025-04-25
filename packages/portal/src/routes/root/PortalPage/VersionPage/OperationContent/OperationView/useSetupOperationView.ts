@@ -27,19 +27,9 @@ export function useSetupOperationView(
   operationViewElement: OperationView | DiffOperationView,
   props: OperationViewProps,
 ): void {
-  const {
-    searchPhrase,
-    filters,
-    comparisonMode = true,
-    sidebarEnabled,
-    schemaViewMode,
-    mergedDocument,
-  } = props
+  const { searchPhrase, filters, comparisonMode = true, sidebarEnabled, schemaViewMode, mergedDocument } = props
 
-  const schemaDepth = useMemo(
-    () => (comparisonMode ? 0 : undefined),
-    [comparisonMode],
-  )
+  const schemaDepth = useMemo(() => (comparisonMode ? 0 : undefined), [comparisonMode])
 
   useEffect(() => {
     if (operationViewElement && mergedDocument) {

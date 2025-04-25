@@ -27,23 +27,19 @@ export const ModuleFetchingErrorPopup: FC<PropsWithChildren> = () => (
       },
     }}
   >
-    <DialogTitle>
-      APIHUB UI is out of date
-    </DialogTitle>
+    <DialogTitle>APIHUB UI is out of date</DialogTitle>
     <DialogContent>
-      <DialogContentText
-        variant="body2"
-        data-testid="ModuleFetchingErrorDialogContent"
-      >
-        Please reload the page to get the latest version;
-        otherwise, APIHUB UI may not function correctly
+      <DialogContentText variant="body2" data-testid="ModuleFetchingErrorDialogContent">
+        Please reload the page to get the latest version; otherwise, APIHUB UI may not function correctly
       </DialogContentText>
     </DialogContent>
     <DialogActions>
       <Button
         variant="contained"
-        startIcon={<Autorenew/>}
-        onClick={() => { location.reload() }}
+        startIcon={<Autorenew />}
+        onClick={() => {
+          location.reload()
+        }}
       >
         Reload
       </Button>

@@ -35,7 +35,6 @@ export const getJsonValue = (source: unknown, ...path: PropertyKey[]): unknown =
     return undefined
   }
   return result
-
 }
 
 function isObject(obj: unknown): obj is Record<PropertyKey, unknown> {

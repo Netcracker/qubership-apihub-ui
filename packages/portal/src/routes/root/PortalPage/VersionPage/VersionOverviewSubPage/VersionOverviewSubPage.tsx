@@ -40,16 +40,13 @@ export const VersionOverviewSubPage: FC = memo(() => {
   const { packageId, versionId } = useParams()
   const { navigateToOverview } = useNavigation()
 
-  useEffect(
-    () => {
-      !sidebarItem && navigateToOverview({ packageKey: packageId!, versionKey: versionId! })
-    },
-    [navigateToOverview, sidebarItem, packageId, versionId],
-  )
+  useEffect(() => {
+    !sidebarItem && navigateToOverview({ packageKey: packageId!, versionKey: versionId! })
+  }, [navigateToOverview, sidebarItem, packageId, versionId])
 
   return (
     <PageLayout
-      navigation={<OverviewSidebar/>}
+      navigation={<OverviewSidebar />}
       body={OVERVIEW_SUB_PAGE_MAP[sidebarItem as OverviewPageRoute]}
       nestedPage
       testId="OverviewTab"
@@ -58,10 +55,9 @@ export const VersionOverviewSubPage: FC = memo(() => {
 })
 
 const OVERVIEW_SUB_PAGE_MAP: Record<OverviewPageRoute, ReactNode> = {
-  [SUMMARY_PAGE]: <SummaryCard/>,
-  [ACTIVITY_HISTORY_PAGE]: <ActivityHistoryByPackageCard/>,
-  [PACKAGES_PAGE]: <IncludedPackagesCard/>,
-  [REVISION_HISTORY_PAGE]: <RevisionsHistoryCard/>,
-  [OPERATION_GROUPS_PAGE]: <OperationGroupsCard/>,
+  [SUMMARY_PAGE]: <SummaryCard />,
+  [ACTIVITY_HISTORY_PAGE]: <ActivityHistoryByPackageCard />,
+  [PACKAGES_PAGE]: <IncludedPackagesCard />,
+  [REVISION_HISTORY_PAGE]: <RevisionsHistoryCard />,
+  [OPERATION_GROUPS_PAGE]: <OperationGroupsCard />,
 }
-

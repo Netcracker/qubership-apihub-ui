@@ -34,70 +34,76 @@ import { useUsers } from '@apihub/routes/root/useUsers'
 import type { GenerateApiKeyValue } from '@netcracker/qubership-apihub-ui-shared/types/tokens'
 import { useShowSuccessNotification } from '@apihub/routes/root/BasePage/Notification'
 
-export const AccessTokensPackageSettingsTab: FC<PackageSettingsTabProps> = memo<PackageSettingsTabProps>(({ packageObject }) => {
-  const hasTokenManagementPermission = useMemo(
-    () => !!packageObject.permissions?.includes(ACCESS_TOKEN_MANAGEMENT_PERMISSION),
-    [packageObject],
-  )
+export const AccessTokensPackageSettingsTab: FC<PackageSettingsTabProps> = memo<PackageSettingsTabProps>(
+  ({ packageObject }) => {
+    const hasTokenManagementPermission = useMemo(
+      () => !!packageObject.permissions?.includes(ACCESS_TOKEN_MANAGEMENT_PERMISSION),
+      [packageObject],
+    )
 
-  const { packageId: packageKey = '' } = useParams()
-  const [authorization] = useAuthorization()
+    const { packageId: packageKey = '' } = useParams()
+    const [authorization] = useAuthorization()
 
-  const [availableRoles, isLoadingRoles] = useAvailablePackageRoles(packageKey, authorization?.user.key ?? '')
+    const [availableRoles, isLoadingRoles] = useAvailablePackageRoles(packageKey, authorization?.user.key ?? '')
 
-  const [tokensList, isTokensLoading] = useTokens(packageKey!)
-  const [deleteAPIKey] = useDeleteApiKey()
-  const [generatedApiKey, generateApiKey, isLoading] = useGenerateApiKey()
+    const [tokensList, isTokensLoading] = useTokens(packageKey!)
+    const [deleteAPIKey] = useDeleteApiKey()
+    const [generatedApiKey, generateApiKey, isLoading] = useGenerateApiKey()
 
-  const [userSearch, setUserSearch] = useState<string>('')
-  const [usersData, isUsersDataLoading] = useUsers(userSearch)
+    const [userSearch, setUserSearch] = useState<string>('')
+    const [usersData, isUsersDataLoading] = useUsers(userSearch)
 
-  const handleGenerateToken = useCallback((value: GenerateApiKeyValue): void => {
-    generateApiKey({ value, packageKey })
-  }, [generateApiKey, packageKey])
+    const handleGenerateToken = useCallback(
+      (value: GenerateApiKeyValue): void => {
+        generateApiKey({ value, packageKey })
+      },
+      [generateApiKey, packageKey],
+    )
 
-  const handleSetUserSearch = useCallback((search: string) => {
-    setUserSearch(search)
-  }, [setUserSearch])
+    const handleSetUserSearch = useCallback(
+      (search: string) => {
+        setUserSearch(search)
+      },
+      [setUserSearch],
+    )
 
-  const availableRolesForPackage = useMemo(
-    () => availableRoles?.map(role => role.role) ?? []
-    , [availableRoles])
+    const availableRolesForPackage = useMemo(() => availableRoles?.map((role) => role.role) ?? [], [availableRoles])
 
-  const showSuccessNotification = useShowSuccessNotification()
+    const showSuccessNotification = useShowSuccessNotification()
 
-  // TODO: need for expireTime control in a future
-  // const ref = useRef<DatePickerRef>()
+    // TODO: need for expireTime control in a future
+    // const ref = useRef<DatePickerRef>()
 
-  return (
-    <BodyCard
-      header="Access Tokens"
-      body={
-        <>
-          <Box>
-            <GenerateTokenForm
-              roles={availableRolesForPackage}
-              users={usersData?.users}
-              defaultUser={authorization?.user}
-              setUserSearch={handleSetUserSearch}
-              generatedApiKey={generatedApiKey}
-              disabled={!hasTokenManagementPermission}
-              generateApiKey={handleGenerateToken}
-              isLoading={isLoading || isLoadingRoles || isUsersDataLoading}
-              showSuccessNotification={showSuccessNotification}
+    return (
+      <BodyCard
+        header="Access Tokens"
+        body={
+          <>
+            <Box>
+              <GenerateTokenForm
+                roles={availableRolesForPackage}
+                users={usersData?.users}
+                defaultUser={authorization?.user}
+                setUserSearch={handleSetUserSearch}
+                generatedApiKey={generatedApiKey}
+                disabled={!hasTokenManagementPermission}
+                generateApiKey={handleGenerateToken}
+                isLoading={isLoading || isLoadingRoles || isUsersDataLoading}
+                showSuccessNotification={showSuccessNotification}
+              />
+            </Box>
+            <TokensTable
+              data={tokensList}
+              disableDelete={!hasTokenManagementPermission}
+              deleteApiKey={deleteAPIKey}
+              isLoading={isTokensLoading}
             />
-          </Box>
-          <TokensTable
-            data={tokensList}
-            disableDelete={!hasTokenManagementPermission}
-            deleteApiKey={deleteAPIKey}
-            isLoading={isTokensLoading}
-          />
-        </>
-      }
-    />
-  )
-})
+          </>
+        }
+      />
+    )
+  },
+)
 
 // TODO: need for expireTime control in a future
 // type DatePickerRef = {

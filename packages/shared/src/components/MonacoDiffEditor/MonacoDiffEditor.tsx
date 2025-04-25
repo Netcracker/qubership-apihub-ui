@@ -32,22 +32,18 @@ export type MonacoDiffEditorProps = {
 
 const MonacoDiffEditorElement: FC<MonacoDiffEditorElementProps> = lazy(() => import('./MonacoDiffEditorElement'))
 
-export const MonacoDiffEditor: FC<MonacoDiffEditorProps> = memo<MonacoDiffEditorProps>(({
-  before,
-  after,
-  type,
-  language,
-  selectedUri,
-}) => {
-  return (
-    <Suspense fallback={<LoadingIndicator/>}>
-      <MonacoDiffEditorElement
-        before={before}
-        after={after}
-        type={type}
-        language={language}
-        selectedUri={selectedUri}
-      />
-    </Suspense>
-  )
-})
+export const MonacoDiffEditor: FC<MonacoDiffEditorProps> = memo<MonacoDiffEditorProps>(
+  ({ before, after, type, language, selectedUri }) => {
+    return (
+      <Suspense fallback={<LoadingIndicator />}>
+        <MonacoDiffEditorElement
+          before={before}
+          after={after}
+          type={type}
+          language={language}
+          selectedUri={selectedUri}
+        />
+      </Suspense>
+    )
+  },
+)

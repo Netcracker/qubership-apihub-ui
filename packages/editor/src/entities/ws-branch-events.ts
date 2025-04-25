@@ -55,9 +55,7 @@ export type UserConnectedEventData = {
   userColor: string
 }
 
-export function isUserConnectedEventData(
-  value: Record<string, unknown>,
-): value is UserConnectedEventData {
+export function isUserConnectedEventData(value: Record<string, unknown>): value is UserConnectedEventData {
   return value.type === USER_CONNECTED_EVENT_TYPE
 }
 
@@ -67,9 +65,7 @@ export type UserDisconnectedEventData = {
   user: UserDto
 }
 
-export function isUserDisconnectedEventData(
-  value: Record<string, unknown>,
-): value is UserDisconnectedEventData {
+export function isUserDisconnectedEventData(value: Record<string, unknown>): value is UserDisconnectedEventData {
   return value.type === USER_DISCONNECTED_EVENT_TYPE
 }
 
@@ -89,9 +85,7 @@ export type BranchEditorsAddedEventData = {
   userId: Key
 }
 
-export function isBranchConfigUpdatedEventData(
-  value: Record<string, unknown>,
-): value is BranchConfigUpdatedEventData {
+export function isBranchConfigUpdatedEventData(value: Record<string, unknown>): value is BranchConfigUpdatedEventData {
   return value.type === BRANCH_CONFIG_UPDATED_EVENT_TYPE
 }
 
@@ -102,9 +96,7 @@ export type BranchConfigUpdatedEventData = {
   }
 }
 
-export function isBranchEditorsAddedEventData(
-  value: Record<string, unknown>,
-): value is BranchEditorsAddedEventData {
+export function isBranchEditorsAddedEventData(value: Record<string, unknown>): value is BranchEditorsAddedEventData {
   return value.type === BRANCH_EDITORS_ADDED_EVENT_TYPE
 }
 
@@ -125,9 +117,7 @@ export type BranchFilesResetEventData = {
   fileId: Key
 }
 
-export function isBranchFilesResetEventData(
-  value: Record<string, unknown>,
-): value is BranchFilesResetEventData {
+export function isBranchFilesResetEventData(value: Record<string, unknown>): value is BranchFilesResetEventData {
   return value.type === BRANCH_FILES_RESET_EVENT_TYPE
 }
 
@@ -150,9 +140,7 @@ export type BranchFilesUpdatedEventData = {
   data?: BranchFilesContent
 }
 
-export function isBranchFilesUpdatedEventData(
-  value: Record<string, unknown>,
-): value is BranchFilesUpdatedEventData {
+export function isBranchFilesUpdatedEventData(value: Record<string, unknown>): value is BranchFilesUpdatedEventData {
   return value.type === BRANCH_FILES_UPDATED_EVENT_TYPE
 }
 
@@ -177,9 +165,7 @@ export type BranchRefsUpdatedEventData = {
   data?: RefDto
 }
 
-export function isBranchRefsUpdatedEventData(
-  value: Record<string, unknown>,
-): value is BranchRefsUpdatedEventData {
+export function isBranchRefsUpdatedEventData(value: Record<string, unknown>): value is BranchRefsUpdatedEventData {
   return value.type === BRANCH_REFS_UPDATED_EVENT_TYPE
 }
 
@@ -188,9 +174,7 @@ export type BranchResetEventData = {
   userId: Key
 }
 
-export function isBranchResetEventData(
-  value: Record<string, unknown>,
-): value is BranchResetEventData {
+export function isBranchResetEventData(value: Record<string, unknown>): value is BranchResetEventData {
   return value.type === BRANCH_RESET_EVENT_TYPE
 }
 
@@ -202,9 +186,7 @@ export type BranchSavedEventData = {
   mrUrl?: string
 }
 
-export function isBranchSavedEventData(
-  value: Record<string, unknown>,
-): value is BranchSavedEventData {
+export function isBranchSavedEventData(value: Record<string, unknown>): value is BranchSavedEventData {
   return value.type === BRANCH_SAVED_EVENT_TYPE
 }
 
@@ -215,8 +197,6 @@ export type BranchPublishedEventData = {
   status?: VersionStatus
 }
 
-export function isBranchPublishedEventData(
-  value: Record<string, unknown>,
-): value is BranchPublishedEventData {
+export function isBranchPublishedEventData(value: Record<string, unknown>): value is BranchPublishedEventData {
   return value.type === BRANCH_PUBLISHED_EVENT_TYPE
 }

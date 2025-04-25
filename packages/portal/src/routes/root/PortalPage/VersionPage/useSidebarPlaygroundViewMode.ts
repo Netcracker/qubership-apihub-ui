@@ -28,17 +28,23 @@ export function useSidebarPlaygroundViewMode(): [string | undefined, SetPlaygrou
 
   return [
     mode ?? '',
-    useCallback(value => {
-      if (value === null) {
-        searchParams.delete(PLAYGROUND_SIDEBAR_VIEW_MODE_SEARCH_PARAM)
-      } else {
-        searchParams.set(PLAYGROUND_SIDEBAR_VIEW_MODE_SEARCH_PARAM, value ?? '')
-      }
-      navigate({
-        search: `${searchParams}`,
-        hash: hashParam,
-      }, { replace: true })
-    }, [hashParam, navigate, searchParams]),
+    useCallback(
+      (value) => {
+        if (value === null) {
+          searchParams.delete(PLAYGROUND_SIDEBAR_VIEW_MODE_SEARCH_PARAM)
+        } else {
+          searchParams.set(PLAYGROUND_SIDEBAR_VIEW_MODE_SEARCH_PARAM, value ?? '')
+        }
+        navigate(
+          {
+            search: `${searchParams}`,
+            hash: hashParam,
+          },
+          { replace: true },
+        )
+      },
+      [hashParam, navigate, searchParams],
+    ),
   ]
 }
 

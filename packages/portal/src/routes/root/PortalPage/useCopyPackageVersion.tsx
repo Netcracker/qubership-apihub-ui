@@ -22,12 +22,11 @@ import { generatePath } from 'react-router-dom'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
 
 export function useCopyPackageVersion(): [CopyPackageVersion, Key | undefined, IsLoading, IsSuccess] {
-  const {
-    mutate,
-    data,
-    isLoading,
-    isSuccess,
-  } = useMutation<CopyPackageVersionResponse, Error, CopyPackageVersionProps>({
+  const { mutate, data, isLoading, isSuccess } = useMutation<
+    CopyPackageVersionResponse,
+    Error,
+    CopyPackageVersionProps
+  >({
     mutationFn: ({ packageKey, versionKey, value }) => copyPackageVersion(packageKey, versionKey, value),
   })
 
@@ -42,18 +41,22 @@ async function copyPackageVersion(
   const packageId = encodeURIComponent(packageKey)
   const versionId = encodeURIComponent(versionKey)
   const pathPattern = '/packages/:packageId/versions/:versionId/copy'
-  return await portalRequestJson<CopyPackageVersionResponse>(generatePath(pathPattern, { packageId, versionId }), {
-    method: 'POST',
-    body: JSON.stringify({
-      targetPackageId: value.packageKey,
-      targetVersion: value.version,
-      targetPreviousVersion: value.previousVersion,
-      targetStatus: value.status,
-      targetVersionLabels: value.labels,
-    }),
-  }, {
-    customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-  })
+  return await portalRequestJson<CopyPackageVersionResponse>(
+    generatePath(pathPattern, { packageId, versionId }),
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        targetPackageId: value.packageKey,
+        targetVersion: value.version,
+        targetPreviousVersion: value.previousVersion,
+        targetStatus: value.status,
+        targetVersionLabels: value.labels,
+      }),
+    },
+    {
+      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+    },
+  )
 }
 
 type CopyPackageVersion = (values: CopyPackageVersionProps) => void

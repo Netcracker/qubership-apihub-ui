@@ -25,31 +25,30 @@ export type CollapsedPanelProps = {
 }
 
 // First Order Component //
-export const CollapsedPanel: FC<CollapsedPanelProps> = memo(props => {
-  const {
-    onExpand,
-  } = props
+export const CollapsedPanel: FC<CollapsedPanelProps> = memo((props) => {
+  const { onExpand } = props
 
   return (
     <>
-      <Card sx={{
-        width: '52px',
-        height: '68px',
-        boxShadow: DEFAULT_PAPER_SHADOW,
+      <Card
+        sx={{
+          width: '52px',
+          height: '68px',
+          boxShadow: DEFAULT_PAPER_SHADOW,
           borderRadius: '10px 0 0 10px',
-        }}>
-          <ListItemButton
-            onClick={onExpand}
-            sx={{
-              height: '100%',
-              justifyContent: 'center',
-            }}
-            data-testid="ExpandPanelButton"
-          >
-            <KeyboardDoubleArrowLeftIcon size={11}/>
-          </ListItemButton>
-        </Card>
-      </>
-    )
-  },
-)
+        }}
+      >
+        <ListItemButton
+          onClick={onExpand}
+          sx={{
+            height: '100%',
+            justifyContent: 'center',
+          }}
+          data-testid="ExpandPanelButton"
+        >
+          <KeyboardDoubleArrowLeftIcon size={11} />
+        </ListItemButton>
+      </Card>
+    </>
+  )
+})

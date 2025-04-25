@@ -40,30 +40,26 @@ export const ForceSaveChangesDialog: FC = memo(() => {
   const [conflicts, setConflicts] = useState<Key[]>([])
   const { showSaveChangesDialog } = useEventBus()
 
-  useEvent(SHOW_FORCE_SAVE_CHANGES_DIALOG, ({ detail: { conflicts: conflictFiles } }: CustomEvent<ForceSaveChangesDialogDetail>) => {
-    setConflicts(conflictFiles)
-    setOpen(true)
-  })
+  useEvent(
+    SHOW_FORCE_SAVE_CHANGES_DIALOG,
+    ({ detail: { conflicts: conflictFiles } }: CustomEvent<ForceSaveChangesDialogDetail>) => {
+      setConflicts(conflictFiles)
+      setOpen(true)
+    },
+  )
 
   return (
-    <Dialog
-      open={open}
-      onClose={() => setOpen(false)}
-    >
-      <DialogTitle>
-        Save Conflicts
-      </DialogTitle>
+    <Dialog open={open} onClose={() => setOpen(false)}>
+      <DialogTitle>Save Conflicts</DialogTitle>
 
       <DialogContent sx={{ width: 500 }}>
         <>
-          <Typography variant="body2">
-            There are some files with conflict with GIT:
-          </Typography>
+          <Typography variant="body2">There are some files with conflict with GIT:</Typography>
           <List sx={{ maxHeight: 188 }}>
-            {conflicts.map(conflict => (
+            {conflicts.map((conflict) => (
               <ListItem key={conflict} sx={{ alignItems: 'start', pb: 0 }}>
                 <ListItemIcon sx={{ minWidth: 2 }}>
-                  <WarningRoundedIcon fontSize="small" color="warning" sx={{ mr: 1 }}/>
+                  <WarningRoundedIcon fontSize="small" color="warning" sx={{ mr: 1 }} />
                 </ListItemIcon>
                 <ListItemText
                   primary={getFileName(conflict)}
@@ -83,7 +79,8 @@ export const ForceSaveChangesDialog: FC = memo(() => {
           onClick={() => {
             setOpen(false)
             showSaveChangesDialog({ saveToNewBranch: true })
-          }}>
+          }}
+        >
           Save to New Branch
         </Button>
         <Button variant="outlined" onClick={() => setOpen(false)}>
@@ -95,7 +92,8 @@ export const ForceSaveChangesDialog: FC = memo(() => {
           onClick={() => {
             setOpen(false)
             showSaveChangesDialog()
-          }}>
+          }}
+        >
           Force Save
         </Button>
       </DialogActions>

@@ -20,10 +20,7 @@ import { useComparedOperationsPair } from './ComparedOperationsContext'
 import { DEFAULT_CHANGE_SEVERITY_MAP } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
 import { ChangeSeverityFilters } from '@netcracker/qubership-apihub-ui-shared/components/ChangeSeverityFilters'
 import { useRiskyChanges } from '@apihub/routes/root/PortalPage/VersionPage/useRiskyChanges'
-import {
-  getApiDiffResult,
-  handleRiskyChanges,
-} from '@netcracker/qubership-apihub-ui-shared/utils/api-diff-result'
+import { getApiDiffResult, handleRiskyChanges } from '@netcracker/qubership-apihub-ui-shared/utils/api-diff-result'
 import { GLOBAL_DIFF_META_KEY } from '@netcracker/qubership-apihub-ui-shared/utils/api-diffs'
 import { BREAKING_CHANGE_TYPE } from '@netcracker/qubership-apihub-api-processor'
 import type { Diff } from '@netcracker/qubership-apihub-api-diff'
@@ -38,74 +35,84 @@ import type { ChangelogAvailable } from '@apihub/routes/root/PortalPage/VersionP
 type ChangesSummary = typeof DEFAULT_CHANGE_SEVERITY_MAP
 
 export type ComparisonOperationChangeSeverityFiltersProps = ChangelogAvailable
-export const ComparisonOperationChangeSeverityFilters: FC<ComparisonOperationChangeSeverityFiltersProps> = memo<ComparisonOperationChangeSeverityFiltersProps>(props => {
-  const { isChangelogAvailable } = props
+export const ComparisonOperationChangeSeverityFilters: FC<ComparisonOperationChangeSeverityFiltersProps> =
+  memo<ComparisonOperationChangeSeverityFiltersProps>((props) => {
+    const { isChangelogAvailable } = props
 
-  const {
-    left: originOperation,
-    right: changedOperation,
-    isLoading: isOperationsLoading,
-  } = useComparedOperationsPair()
+    const {
+      left: originOperation,
+      right: changedOperation,
+      isLoading: isOperationsLoading,
+    } = useComparedOperationsPair()
 
-  const setApiDiffResultContext = useSetApiDiffResult()
-  const isApiDiffResultLoading = useIsApiDiffResultLoading()
-  const setIsApiDiffResultLoadingContext = useSetIsApiDiffResultLoading()
+    const setApiDiffResultContext = useSetApiDiffResult()
+    const isApiDiffResultLoading = useIsApiDiffResultLoading()
+    const setIsApiDiffResultLoadingContext = useSetIsApiDiffResultLoading()
 
-  const [apiDiffLoading, setApiDiffLoading] = useState<boolean>(true)
+    const [apiDiffLoading, setApiDiffLoading] = useState<boolean>(true)
 
-  const [changes, setChanges] = useState<ChangesSummary | undefined>(undefined)
+    const [changes, setChanges] = useState<ChangesSummary | undefined>(undefined)
 
-  const apiDiffResult = useMemo(() =>
-    getApiDiffResult({
-      beforeData: originOperation?.data,
-      afterData: changedOperation?.data,
-      metaKey: GLOBAL_DIFF_META_KEY,
-      setApiDiffLoading: setApiDiffLoading,
-    }), [changedOperation?.data, originOperation?.data])
+    const apiDiffResult = useMemo(
+      () =>
+        getApiDiffResult({
+          beforeData: originOperation?.data,
+          afterData: changedOperation?.data,
+          metaKey: GLOBAL_DIFF_META_KEY,
+          setApiDiffLoading: setApiDiffLoading,
+        }),
+      [changedOperation?.data, originOperation?.data],
+    )
 
-  const [riskyChanges, isRiskyChangesLoading, isSuccess] = useRiskyChanges({
-    operationKey: changedOperation?.operationKey ?? originOperation?.operationKey,
-    comparisonMode: true,
-    needToCheckRisky: !apiDiffLoading && apiDiffResult?.diffs.some(diff => diff.type === BREAKING_CHANGE_TYPE),
-    isChangelogAvailable: isChangelogAvailable,
-  })
+    const [riskyChanges, isRiskyChangesLoading, isSuccess] = useRiskyChanges({
+      operationKey: changedOperation?.operationKey ?? originOperation?.operationKey,
+      comparisonMode: true,
+      needToCheckRisky: !apiDiffLoading && apiDiffResult?.diffs.some((diff) => diff.type === BREAKING_CHANGE_TYPE),
+      isChangelogAvailable: isChangelogAvailable,
+    })
 
-  useEffect(() => {
-    setIsApiDiffResultLoadingContext(apiDiffLoading || isRiskyChangesLoading)
-  }, [apiDiffLoading, isRiskyChangesLoading, setIsApiDiffResultLoadingContext])
+    useEffect(() => {
+      setIsApiDiffResultLoadingContext(apiDiffLoading || isRiskyChangesLoading)
+    }, [apiDiffLoading, isRiskyChangesLoading, setIsApiDiffResultLoadingContext])
 
-  useEffect(() => {
-    if (isOperationsLoading || apiDiffLoading || isRiskyChangesLoading) {
-      return
-    }
-    if (isSuccess && isNotEmpty(riskyChanges) && apiDiffResult) {
-      const apiDiffResultWithSemiBraking = handleRiskyChanges(riskyChanges, apiDiffResult)
-      setApiDiffResultContext(apiDiffResultWithSemiBraking)
-      setChanges(apiDiffResultWithSemiBraking?.diffs.reduce(changesSummaryReducer, { ...DEFAULT_CHANGE_SEVERITY_MAP }))
-    } else {
-      setApiDiffResultContext(apiDiffResult)
-      setChanges(apiDiffResult?.diffs.reduce(changesSummaryReducer, { ...DEFAULT_CHANGE_SEVERITY_MAP }))
-    }
-  }, [apiDiffLoading, apiDiffResult, isOperationsLoading, isRiskyChangesLoading, isSuccess, riskyChanges, setApiDiffResultContext, setChanges])
+    useEffect(() => {
+      if (isOperationsLoading || apiDiffLoading || isRiskyChangesLoading) {
+        return
+      }
+      if (isSuccess && isNotEmpty(riskyChanges) && apiDiffResult) {
+        const apiDiffResultWithSemiBraking = handleRiskyChanges(riskyChanges, apiDiffResult)
+        setApiDiffResultContext(apiDiffResultWithSemiBraking)
+        setChanges(
+          apiDiffResultWithSemiBraking?.diffs.reduce(changesSummaryReducer, { ...DEFAULT_CHANGE_SEVERITY_MAP }),
+        )
+      } else {
+        setApiDiffResultContext(apiDiffResult)
+        setChanges(apiDiffResult?.diffs.reduce(changesSummaryReducer, { ...DEFAULT_CHANGE_SEVERITY_MAP }))
+      }
+    }, [
+      apiDiffLoading,
+      apiDiffResult,
+      isOperationsLoading,
+      isRiskyChangesLoading,
+      isSuccess,
+      riskyChanges,
+      setApiDiffResultContext,
+      setChanges,
+    ])
 
-  //todo return after resolve
-  /*const [filters, setFilters] = useSeverityFiltersSearchParam()
+    //todo return after resolve
+    /*const [filters, setFilters] = useSeverityFiltersSearchParam()
 
   const handleFilters = useCallback((selectedFilters: ChangeSeverity[]): void => {
     setFilters(selectedFilters.toString())
   }, [setFilters])*/
 
-  if (isOperationsLoading || isApiDiffResultLoading || isRiskyChangesLoading) {
-    return null
-  }
+    if (isOperationsLoading || isApiDiffResultLoading || isRiskyChangesLoading) {
+      return null
+    }
 
-  return (
-    <ChangeSeverityFilters
-      changes={changes}
-      filters={[]}
-    />
-  )
-})
+    return <ChangeSeverityFilters changes={changes} filters={[]} />
+  })
 
 function changesSummaryReducer(accumulator: ChangesSummary, { type }: Diff): ChangesSummary {
   accumulator[type]++

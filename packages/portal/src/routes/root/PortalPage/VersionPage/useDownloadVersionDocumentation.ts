@@ -30,10 +30,7 @@ export function useDownloadVersionDocumentation(): [DownloadVersionDocumentation
   return [mutate, isLoading]
 }
 
-async function downloadVersionDocumentation(
-  packageKey: Key,
-  versionKey: Key,
-): Promise<void> {
+async function downloadVersionDocumentation(packageKey: Key, versionKey: Key): Promise<void> {
   const packageId = encodeURIComponent(packageKey)
   const versionId = encodeURIComponent(versionKey)
 
@@ -42,7 +39,8 @@ async function downloadVersionDocumentation(
     generatePath(pathPattern, { packageId, versionId }),
     {
       method: 'get',
-    }, {
+    },
+    {
       customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
     },
   )

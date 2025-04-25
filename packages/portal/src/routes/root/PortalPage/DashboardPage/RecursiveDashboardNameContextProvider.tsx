@@ -31,9 +31,9 @@ export function useSetRecursiveDashboardName(): Dispatch<SetStateAction<string |
 export const RecursiveDashboardNameContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const [key, setKey] = useState<string | undefined>()
 
-  return <RecursiveDashboardNameContext.Provider value={key}>
-    <SetRecursiveDashboardNameContext.Provider value={setKey}>
-      {children}
-    </SetRecursiveDashboardNameContext.Provider>
-  </RecursiveDashboardNameContext.Provider>
+  return (
+    <RecursiveDashboardNameContext.Provider value={key}>
+      <SetRecursiveDashboardNameContext.Provider value={setKey}>{children}</SetRecursiveDashboardNameContext.Provider>
+    </RecursiveDashboardNameContext.Provider>
+  )
 }

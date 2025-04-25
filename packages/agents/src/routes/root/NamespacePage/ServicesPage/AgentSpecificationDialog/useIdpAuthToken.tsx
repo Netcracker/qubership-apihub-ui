@@ -67,17 +67,16 @@ async function getIdpAuthToken(
 
   const pathPattern = '/agents/:agentId/namespaces/:name/idp/token'
   const res = await ncCustomAgentsRequestBlob(generatePath(pathPattern, { agentId, name }), {
-      method: 'post',
-      body: JSON.stringify({
-        agentId,
-        name,
-        identityProviderUrl,
-        username,
-        password,
-        tenant,
-      }),
-    },
-  )
+    method: 'post',
+    body: JSON.stringify({
+      agentId,
+      name,
+      identityProviderUrl,
+      username,
+      password,
+      tenant,
+    }),
+  })
 
   return res.headers.get('X-Authorization-Header-Value') ?? ''
 }

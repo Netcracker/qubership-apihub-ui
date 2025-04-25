@@ -23,13 +23,15 @@ import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/ali
 import { groupOperationsByTags } from '@apihub/utils/operations'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 
-export function useOperationsGroupedByTags(options?: Partial<{
-  operationPackageKey: Key
-  operationPackageVersion: Key
-  searchValue: string
-  documentId: string
-  apiType: ApiType
-}>): [OperationsGroupedByTag, IsLoading] {
+export function useOperationsGroupedByTags(
+  options?: Partial<{
+    operationPackageKey: Key
+    operationPackageVersion: Key
+    searchValue: string
+    documentId: string
+    apiType: ApiType
+  }>,
+): [OperationsGroupedByTag, IsLoading] {
   const { operationPackageKey, operationPackageVersion, searchValue, documentId, apiType } = options ?? {}
   const { fullVersion } = useVersionWithRevision(operationPackageVersion, operationPackageKey)
 
@@ -64,13 +66,13 @@ export function useOperationsGroupedByTags(options?: Partial<{
     // eslint-disable-next-line
   }, [pagedOperations])
 
-  return [
-    operationsGroupedByTag,
-    areOperationsLoading || isNextPageFetching || !!hasNextPage,
-  ]
+  return [operationsGroupedByTag, areOperationsLoading || isNextPageFetching || !!hasNextPage]
 }
 
-export function isOperationGrouped<T extends Operation>(operationsGroupedByTags: OperationsGroupedByTag<T>, operationKey?: Key): boolean {
+export function isOperationGrouped<T extends Operation>(
+  operationsGroupedByTags: OperationsGroupedByTag<T>,
+  operationKey?: Key,
+): boolean {
   if (!operationsGroupedByTags) {
     return false
   }

@@ -25,7 +25,7 @@ import { getPackageRedirectDetails } from '../../../utils/redirects'
 import { RISKY_CHANGE_SEVERITY } from '../../../entities/change-severities'
 import type { ApiType } from '../../../entities/api-types'
 import type { DiffType } from '@netcracker/qubership-apihub-api-diff'
-import type { DiffTypeDto} from '@netcracker/qubership-apihub-api-processor'
+import type { DiffTypeDto } from '@netcracker/qubership-apihub-api-processor'
 import { SEMI_BREAKING_CHANGE_TYPE } from '@netcracker/qubership-apihub-api-processor'
 
 export type UseOperationChangelogOptions = {
@@ -77,5 +77,7 @@ export async function getOperationChangeLog(
 }
 
 export function replaceStringDiffTypeForDTO(diff: DiffType[] | undefined): DiffTypeDto[] | undefined {
-  return diff?.map(diffValue => { return diffValue === RISKY_CHANGE_SEVERITY ? SEMI_BREAKING_CHANGE_TYPE : diffValue })
+  return diff?.map((diffValue) => {
+    return diffValue === RISKY_CHANGE_SEVERITY ? SEMI_BREAKING_CHANGE_TYPE : diffValue
+  })
 }

@@ -24,16 +24,14 @@ export function useDisfavorGroup(): DisfavorGroup {
   const invalidateGroups = useInvalidateGroups()
 
   const { mutate } = useMutation<void, Error, Key>({
-    mutationFn: key => disfavorGroup(key),
+    mutationFn: (key) => disfavorGroup(key),
     onSuccess: () => invalidateGroups(),
   })
 
   return mutate
 }
 
-async function disfavorGroup(
-  groupKey: Key,
-): Promise<void> {
+async function disfavorGroup(groupKey: Key): Promise<void> {
   const groupId = encodeURIComponent(groupKey)
 
   await editorRequestVoid(`/groups/${groupId}/disfavor`, {

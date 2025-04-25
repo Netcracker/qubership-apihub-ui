@@ -44,49 +44,50 @@ export function useOperationMovedEvent(options: {
     resetCheckedAllOperations,
   } = options
 
-  useEvent(
-    OPERATION_MOVED,
-    (e) => {
-      const action = e.detail as string
-      if (action === OPERATIONS_ADD_TO_GROUP_ACTION) {
-        const addedOperations: OperationListsDelta = []
-        const returnedBackOperationsIds: Operation[] = []
-        checkedOperations.forEach(checkedOperation => {
-          const operationFromInitialList = deepIncludes(operations, checkedOperation)
-          const groupOperationFromInitialList = deepIncludes(groupOperations, checkedOperation)
-          if (!operationFromInitialList && groupOperationFromInitialList) {
-            returnedBackOperationsIds.push(checkedOperation)
-          } else if (!groupOperationFromInitialList && operationFromInitialList) {
-            addedOperations.push({
-              operation: checkedOperation,
-              action: OPERATIONS_ADD_TO_GROUP_ACTION,
-            })
-          }
-        })
-        let newDelta = operationListsDelta.filter(deltaOperation => !returnedBackOperationsIds.includes(deltaOperation.operation))
-        newDelta = [...newDelta, ...addedOperations]
-        setOperationListsDelta(newDelta)
-      } else if (action === OPERATIONS_REMOVE_FROM_GROUP_ACTION) {
-        const removedOperations: OperationListsDelta = []
-        const returnedBackOperations: Operation[] = []
-        checkedGroupOperations.forEach(checkedOperation => {
-          const operationFromInitialList = deepIncludes(operations, checkedOperation)
-          const groupOperationFromInitialList = deepIncludes(groupOperations, checkedOperation)
-          if (!groupOperationFromInitialList && operationFromInitialList) {
-            returnedBackOperations.push(checkedOperation)
-          } else if (!operationFromInitialList && groupOperationFromInitialList) {
-            removedOperations.push({
-              operation: checkedOperation,
-              action: OPERATIONS_REMOVE_FROM_GROUP_ACTION,
-            })
-          }
-        })
-        let newDelta = operationListsDelta.filter(deltaOperation => !returnedBackOperations.includes(deltaOperation.operation))
-        newDelta = [...newDelta, ...removedOperations]
-        setOperationListsDelta(newDelta)
-      }
+  useEvent(OPERATION_MOVED, (e) => {
+    const action = e.detail as string
+    if (action === OPERATIONS_ADD_TO_GROUP_ACTION) {
+      const addedOperations: OperationListsDelta = []
+      const returnedBackOperationsIds: Operation[] = []
+      checkedOperations.forEach((checkedOperation) => {
+        const operationFromInitialList = deepIncludes(operations, checkedOperation)
+        const groupOperationFromInitialList = deepIncludes(groupOperations, checkedOperation)
+        if (!operationFromInitialList && groupOperationFromInitialList) {
+          returnedBackOperationsIds.push(checkedOperation)
+        } else if (!groupOperationFromInitialList && operationFromInitialList) {
+          addedOperations.push({
+            operation: checkedOperation,
+            action: OPERATIONS_ADD_TO_GROUP_ACTION,
+          })
+        }
+      })
+      let newDelta = operationListsDelta.filter(
+        (deltaOperation) => !returnedBackOperationsIds.includes(deltaOperation.operation),
+      )
+      newDelta = [...newDelta, ...addedOperations]
+      setOperationListsDelta(newDelta)
+    } else if (action === OPERATIONS_REMOVE_FROM_GROUP_ACTION) {
+      const removedOperations: OperationListsDelta = []
+      const returnedBackOperations: Operation[] = []
+      checkedGroupOperations.forEach((checkedOperation) => {
+        const operationFromInitialList = deepIncludes(operations, checkedOperation)
+        const groupOperationFromInitialList = deepIncludes(groupOperations, checkedOperation)
+        if (!groupOperationFromInitialList && operationFromInitialList) {
+          returnedBackOperations.push(checkedOperation)
+        } else if (!operationFromInitialList && groupOperationFromInitialList) {
+          removedOperations.push({
+            operation: checkedOperation,
+            action: OPERATIONS_REMOVE_FROM_GROUP_ACTION,
+          })
+        }
+      })
+      let newDelta = operationListsDelta.filter(
+        (deltaOperation) => !returnedBackOperations.includes(deltaOperation.operation),
+      )
+      newDelta = [...newDelta, ...removedOperations]
+      setOperationListsDelta(newDelta)
+    }
 
-      resetCheckedAllOperations()
-    },
-  )
+    resetCheckedAllOperations()
+  })
 }

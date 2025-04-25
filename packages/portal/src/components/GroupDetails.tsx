@@ -26,32 +26,18 @@ export type GroupDetails = Partial<{
   description: string
 }>
 
-export const GroupDetails: FC<GroupDetails> = memo<GroupDetails>(({
-  name,
-  parentGroup,
-  alias,
-  description,
-}) => {
+export const GroupDetails: FC<GroupDetails> = memo<GroupDetails>(({ name, parentGroup, alias, description }) => {
   return (
     <Box marginTop={2} height="100%" overflow="hidden">
       <Grid item xs container spacing={2} height="100%" overflow="auto">
         <Grid item xs={12}>
-          <TitledValue
-            title="Group name"
-            value={name}
-          />
+          <TitledValue title="Group name" value={name} />
         </Grid>
         <Grid item xs={12}>
-          <TitledValue
-            title="Alias"
-            value={alias}
-          />
+          <TitledValue title="Alias" value={alias} />
         </Grid>
         <Grid item xs={12}>
-          <TitledValue
-            title="Parent group"
-            value={parentGroup}
-          />
+          <TitledValue title="Parent group" value={parentGroup} />
         </Grid>
         <Grid item xs={12}>
           <Typography variant="subtitle2">Description</Typography>

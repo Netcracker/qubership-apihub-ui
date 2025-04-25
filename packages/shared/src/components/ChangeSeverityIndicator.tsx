@@ -26,29 +26,30 @@ export type ChangeSeverityIndicatorProps = {
   sx?: SxProps
 }
 
-export const ChangeSeverityIndicator: FC<ChangeSeverityIndicatorProps> = memo<ChangeSeverityIndicatorProps>(({
-  severity,
-  sx,
-}) => {
-
-  return CHANGE_SEVERITY_NAME_MAP[severity] ? <Box
-    sx={{
-      position: 'absolute',
-      backgroundColor: CHANGE_SEVERITY_COLOR_MAP[severity],
-      height: '100%',
-      width: '5px',
-      fontSize: 13,
-      color: 'transparent',
-      overflow: 'hidden',
-      transition: 'all 0.3s ease-in-out',
-      '&:hover': {
-        color: '#FFFFFF',
-        padding: '5px',
-        width: 'auto',
-      },
-      ...sx,
-    }}
-    data-testid="ChangeSeverityIndicator">
-    {CHANGE_SEVERITY_NAME_MAP[severity]?.toLocaleLowerCase()}
-  </Box> : null
-})
+export const ChangeSeverityIndicator: FC<ChangeSeverityIndicatorProps> = memo<ChangeSeverityIndicatorProps>(
+  ({ severity, sx }) => {
+    return CHANGE_SEVERITY_NAME_MAP[severity] ? (
+      <Box
+        sx={{
+          position: 'absolute',
+          backgroundColor: CHANGE_SEVERITY_COLOR_MAP[severity],
+          height: '100%',
+          width: '5px',
+          fontSize: 13,
+          color: 'transparent',
+          overflow: 'hidden',
+          transition: 'all 0.3s ease-in-out',
+          '&:hover': {
+            color: '#FFFFFF',
+            padding: '5px',
+            width: 'auto',
+          },
+          ...sx,
+        }}
+        data-testid="ChangeSeverityIndicator"
+      >
+        {CHANGE_SEVERITY_NAME_MAP[severity]?.toLocaleLowerCase()}
+      </Box>
+    ) : null
+  },
+)

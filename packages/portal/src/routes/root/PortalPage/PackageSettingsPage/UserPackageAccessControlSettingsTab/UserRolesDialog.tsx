@@ -33,21 +33,12 @@ export type UserRolesDialogProps = {
   isLoading: boolean
 }
 export const UserRolesDialog: FC<UserRolesDialogProps> = memo((props) => {
-  const {
-    permissions,
-    roles,
-    isLoading,
-  } = props
+  const { permissions, roles, isLoading } = props
 
   return (
     <PopupDelegate
       type={SHOW_USER_ROLES_DIALOG}
-      render={props => <UserRolesPopup
-        {...props}
-        permissions={permissions}
-        roles={roles}
-        isLoading={isLoading}
-      />}
+      render={(props) => <UserRolesPopup {...props} permissions={permissions} roles={roles} isLoading={isLoading} />}
     />
   )
 })
@@ -55,42 +46,21 @@ export const UserRolesDialog: FC<UserRolesDialogProps> = memo((props) => {
 type UserRolesPopupProps = PopupProps & UserRolesDialogProps
 
 const UserRolesPopup: FC<UserRolesPopupProps> = memo((props) => {
-  const {
-    open,
-    setOpen,
-    permissions,
-    roles,
-    isLoading,
-  } = props
+  const { open, setOpen, permissions, roles, isLoading } = props
 
   const onClose = useCallback(() => setOpen(false), [setOpen])
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      fullWidth
-      maxWidth={false}
-    >
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth={false}>
       <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <Box>Roles</Box>
-        <IconButton
-          sx={{ color: '#353C4E' }}
-          onClick={onClose}
-        >
-          <CloseOutlinedIcon/>
+        <IconButton sx={{ color: '#353C4E' }} onClick={onClose}>
+          <CloseOutlinedIcon />
         </IconButton>
       </DialogTitle>
       <DialogContent sx={{ width: '100%', height: '100%', overflow: 'hidden', paddingBottom: '16px' }}>
-        {isLoading
-          ? <LoadingIndicator/>
-          : <RolesTable
-            permissions={permissions}
-            roles={roles}
-          />
-        }
+        {isLoading ? <LoadingIndicator /> : <RolesTable permissions={permissions} roles={roles} />}
       </DialogContent>
     </Dialog>
   )
 })
-

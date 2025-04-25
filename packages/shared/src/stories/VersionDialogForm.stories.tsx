@@ -31,24 +31,20 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 const StoryComponent = (args: VersionDialogFormProps): ReactElement => {
-  const defaultValues = useMemo(() => ({
-    version: '',
-    status: DRAFT_VERSION_STATUS as VersionStatus,
-    labels: [],
-    descriptorFile: null,
-    previousVersion: NO_PREVIOUS_RELEASE_VERSION_OPTION,
-  }), [])
+  const defaultValues = useMemo(
+    () => ({
+      version: '',
+      status: DRAFT_VERSION_STATUS as VersionStatus,
+      labels: [],
+      descriptorFile: null,
+      previousVersion: NO_PREVIOUS_RELEASE_VERSION_OPTION,
+    }),
+    [],
+  )
 
   const { control, setValue, formState } = useForm<VersionFormData>({ defaultValues })
 
-  return (
-    <VersionDialogForm
-      {...args}
-      control={control}
-      setValue={setValue}
-      formState={formState}
-    />
-  )
+  return <VersionDialogForm {...args} control={control} setValue={setValue} formState={formState} />
 }
 
 export const DefaultStory: Story = {

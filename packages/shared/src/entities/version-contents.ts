@@ -107,7 +107,9 @@ export type OperationTypeDeprecatedSummary = Readonly<{
   tags: Tags
 }>
 
-export function isDashboardDeprecatedSummaryDto(value: VersionDeprecatedSummaryDto): value is DashboardDeprecatedSummaryDto {
+export function isDashboardDeprecatedSummaryDto(
+  value: VersionDeprecatedSummaryDto,
+): value is DashboardDeprecatedSummaryDto {
   return !!(value as DashboardDeprecatedSummaryDto)?.refs
 }
 

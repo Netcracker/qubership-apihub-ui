@@ -18,17 +18,21 @@ import { usePackageVersionContent } from '../../usePackageVersionContent'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 
-export function usePackageVersionApiTypes(packageKey: string, versionKey: string): {
+export function usePackageVersionApiTypes(
+  packageKey: string,
+  versionKey: string,
+): {
   apiTypes: ApiType[]
   isLoading: IsLoading
 } {
-  const { versionContent, isLoading } = usePackageVersionContent(
-    { packageKey: packageKey, versionKey: versionKey, includeSummary: true })
+  const { versionContent, isLoading } = usePackageVersionContent({
+    packageKey: packageKey,
+    versionKey: versionKey,
+    includeSummary: true,
+  })
 
   return {
-    apiTypes: versionContent?.operationTypes
-      ? Object.keys(versionContent.operationTypes!) as ApiType[]
-      : [],
+    apiTypes: versionContent?.operationTypes ? (Object.keys(versionContent.operationTypes!) as ApiType[]) : [],
     isLoading: isLoading,
   }
 }

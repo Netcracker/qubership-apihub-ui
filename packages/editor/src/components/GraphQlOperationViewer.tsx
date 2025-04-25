@@ -23,14 +23,12 @@ import { Box } from '@mui/material'
 
 export type GraphQlOperationViewerProps = GraphQLOperationViewerProps
 const DEFAULT_EXPANDED_DEPTH = 1
-export const GraphQlOperationViewer: FC<GraphQlOperationViewerProps> = memo<GraphQlOperationViewerProps>(({ source }) => {
-  return (
-    <Box lineHeight={1.5} height="100%">
-      <GraphQLOperationViewer
-        key={crypto.randomUUID()}
-        source={source}
-        expandedDepth={DEFAULT_EXPANDED_DEPTH}
-      />
-    </Box>
-  )
-})
+export const GraphQlOperationViewer: FC<GraphQlOperationViewerProps> = memo<GraphQlOperationViewerProps>(
+  ({ source }) => {
+    return (
+      <Box lineHeight={1.5} height="100%">
+        <GraphQLOperationViewer key={crypto.randomUUID()} source={source} expandedDepth={DEFAULT_EXPANDED_DEPTH} />
+      </Box>
+    )
+  },
+)

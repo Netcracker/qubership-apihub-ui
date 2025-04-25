@@ -25,20 +25,17 @@ type TooltipToggleButtonProps = ToggleButtonProps & {
   disableHint?: boolean
 }
 
-export const ToggleButtonWithHint: FC<TooltipToggleButtonProps> = forwardRef(
-  ({ hint, disableHint, ...props }, ref) => {
-    return disableHint
-      ? <ToggleButton ref={ref} {...props} />
-      : (
-        <Tooltip
-          title={hint}
-          disableHoverListener={disableHint}
-        >
-          <span><ToggleButton ref={ref} {...props} /></span>
-        </Tooltip>
-      )
-  },
-)
+export const ToggleButtonWithHint: FC<TooltipToggleButtonProps> = forwardRef(({ hint, disableHint, ...props }, ref) => {
+  return disableHint ? (
+    <ToggleButton ref={ref} {...props} />
+  ) : (
+    <Tooltip title={hint} disableHoverListener={disableHint}>
+      <span>
+        <ToggleButton ref={ref} {...props} />
+      </span>
+    </Tooltip>
+  )
+})
 
 // by https://github.com/mui/material-ui/issues/18091
 export const TOGGLE_BUTTON_DISABLING_START_STYLE = {
@@ -66,4 +63,3 @@ export const TOGGLE_BUTTON_DISABLING_END_STYLE = {
 export const TOGGLE_BUTTON_ENABLING_END_STYLE = {
   borderRadius: '0 6px 6px 0!important',
 }
-

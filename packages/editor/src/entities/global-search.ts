@@ -56,11 +56,13 @@ export type DocumentSearchResult = Readonly<{
 }>
 
 // TODO: Remove partial when BE will be ready
-export type SearchResultsDto = Readonly<Partial<{
-  packages: PackageSearchResultDto[]
-  versions: VersionSearchResultDto[]
-  documents: DocumentSearchResultDto[]
-}>>
+export type SearchResultsDto = Readonly<
+  Partial<{
+    packages: PackageSearchResultDto[]
+    versions: VersionSearchResultDto[]
+    documents: DocumentSearchResultDto[]
+  }>
+>
 
 export type PackageSearchResultDto = Readonly<{
   packageId: string
@@ -220,10 +222,7 @@ export const PACKAGE_LEVEL = 'package'
 export const VERSION_LEVEL = 'version'
 export const DOCUMENT_LEVEL = 'document'
 
-export type Level =
-  | typeof PACKAGE_LEVEL
-  | typeof VERSION_LEVEL
-  | typeof DOCUMENT_LEVEL
+export type Level = typeof PACKAGE_LEVEL | typeof VERSION_LEVEL | typeof DOCUMENT_LEVEL
 
 export type SearchCriteria = {
   searchLevel: Level

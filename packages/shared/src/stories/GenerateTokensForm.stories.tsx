@@ -25,7 +25,7 @@ const meta: Meta<typeof GenerateTokenForm> = {
   decorators: [
     (Story) => (
       <ThemeProvider theme={theme}>
-        <Story/>
+        <Story />
       </ThemeProvider>
     ),
   ],

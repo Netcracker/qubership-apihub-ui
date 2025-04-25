@@ -21,13 +21,18 @@ import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/ut
 
 export function useBaselineOptions(withDefaultOption = false): string[] {
   const [{ services }] = useServices()
-  return useMemo(() => [
-    ...new Set(withDefaultOption ? [NO_PREVIOUS_VERSION_OPTION] : []),
-    ...new Set(services.flatMap(({ baseline }) => {
-      if (baseline?.versions) {
-        return baseline.versions.map(version => getSplittedVersionKey(version).versionKey)
-      }
-      return []
-    })),
-  ], [services, withDefaultOption])
+  return useMemo(
+    () => [
+      ...new Set(withDefaultOption ? [NO_PREVIOUS_VERSION_OPTION] : []),
+      ...new Set(
+        services.flatMap(({ baseline }) => {
+          if (baseline?.versions) {
+            return baseline.versions.map((version) => getSplittedVersionKey(version).versionKey)
+          }
+          return []
+        }),
+      ),
+    ],
+    [services, withDefaultOption],
+  )
 }

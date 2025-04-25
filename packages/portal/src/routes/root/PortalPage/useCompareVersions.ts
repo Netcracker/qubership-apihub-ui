@@ -34,12 +34,7 @@ export type UseCompareVersionsOptions = Partial<{
 const MAX_CHANGES_SUMMARY_REFETCHES = 3
 
 export function useCompareVersions(options: UseCompareVersionsOptions): [VersionChangesSummary | undefined] {
-  const {
-    changedPackageKey,
-    changedVersionKey,
-    originPackageKey,
-    originVersionKey,
-  } = options
+  const { changedPackageKey, changedVersionKey, originPackageKey, originVersionKey } = options
 
   const [refetchCounter, setRefetchCounter] = useState(0)
   const refetchChangesSummary = useRefetchChangesSummary()
@@ -58,13 +53,10 @@ export function useCompareVersions(options: UseCompareVersionsOptions): [Version
     previousVersionKey: originVersionKey!,
   })
   const hasCache = useMemo(
-    () => !!cachedChangesSummary && !error || areChangesSummaryLoading || areChangesSummaryFetching,
+    () => (!!cachedChangesSummary && !error) || areChangesSummaryLoading || areChangesSummaryFetching,
     [areChangesSummaryFetching, areChangesSummaryLoading, cachedChangesSummary, error],
   )
-  const isCacheValid = useMemo(
-    () => hasCache && !hasNoContent(cachedChangesSummary!),
-    [cachedChangesSummary, hasCache],
-  )
+  const isCacheValid = useMemo(() => hasCache && !hasNoContent(cachedChangesSummary!), [cachedChangesSummary, hasCache])
 
   if (isCacheValid && !changesSummary && isContextValid) {
     setChangesSummary(cachedChangesSummary)

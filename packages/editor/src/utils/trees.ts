@@ -28,23 +28,20 @@ export type TreeFile<T extends ProjectFile | GitFile> = T & {
   children?: TreeFile<T>[]
 }
 
-export function buildProjectFileTree(
-  flatTree: ReadonlyArray<ProjectFile>,
-): Array<TreeProjectFile> {
-  const flatTreeFiles: TreeProjectFile[] = [...flatTree]
-    .sort(naturalFileComparator)
+export function buildProjectFileTree(flatTree: ReadonlyArray<ProjectFile>): Array<TreeProjectFile> {
+  const flatTreeFiles: TreeProjectFile[] = [...flatTree].sort(naturalFileComparator)
 
   const tree: TreeProjectFile[] = []
 
-  flatTreeFiles.forEach(file => {
+  flatTreeFiles.forEach((file) => {
     const { name, key: path } = file
     const pathParts = path ? splitPath(file) : []
 
     let current: TreeProjectFile[] = tree
     const folders: string[] = []
-    pathParts.forEach(part => {
+    pathParts.forEach((part) => {
       folders.push(part)
-      const existingNode: TreeProjectFile | undefined = current.find(treeFile => treeFile.name === part)
+      const existingNode: TreeProjectFile | undefined = current.find((treeFile) => treeFile.name === part)
       if (existingNode) {
         current = existingNode.children ?? tree
       } else if (name !== part) {
@@ -67,9 +64,7 @@ export function buildProjectFileTree(
   return collapseProjectFileTree(tree)
 }
 
-export function collapseProjectFileTree(
-  tree: TreeProjectFile[],
-): TreeProjectFile[] {
+export function collapseProjectFileTree(tree: TreeProjectFile[]): TreeProjectFile[] {
   const collapse = (item: TreeProjectFile, level: number): TreeProjectFile => {
     let current = item
     const { key, name, children } = item
@@ -96,25 +91,26 @@ export function collapseProjectFileTree(
     return current
   }
 
-  tree.forEach((item, index) => tree[index] = collapse(item, 1))
+  tree.forEach((item, index) => (tree[index] = collapse(item, 1)))
   sortAlphabetically(tree)
   return tree
 }
 
-export function buildGitFileTree(
-  flatTree: ReadonlyArray<GitFile>,
-): TreeGitFile[] {
-  const flatTreeFiles: TreeGitFile[] = flatTree.map(gitFile => ({ ...gitFile, ...gitFile.isFolder ? { children: [] } : {} }))
+export function buildGitFileTree(flatTree: ReadonlyArray<GitFile>): TreeGitFile[] {
+  const flatTreeFiles: TreeGitFile[] = flatTree.map((gitFile) => ({
+    ...gitFile,
+    ...(gitFile.isFolder ? { children: [] } : {}),
+  }))
 
   const tree: TreeGitFile[] = []
 
-  flatTreeFiles.forEach(file => {
+  flatTreeFiles.forEach((file) => {
     const pathParts = file.path ? splitPath(file) : []
 
     let current: TreeGitFile[] = tree
 
-    pathParts.forEach(part => {
-      const existingNode: TreeGitFile | undefined = current.find(treeFile => treeFile.name === part)
+    pathParts.forEach((part) => {
+      const existingNode: TreeGitFile | undefined = current.find((treeFile) => treeFile.name === part)
       if (existingNode) {
         current = existingNode.children ?? tree
       } else if (file.isFolder) {
@@ -123,7 +119,7 @@ export function buildGitFileTree(
       }
     })
 
-    if (!file.isFolder && !current.find(item => item.key === file.key)) {
+    if (!file.isFolder && !current.find((item) => item.key === file.key)) {
       current.push(file)
       current = tree
     }
@@ -154,17 +150,14 @@ export function getFileById<T extends ProjectFile | GitFile>(
   return result
 }
 
-export function getRelatives<T extends ProjectFile | GitFile>(
-  key: Key,
-  files: TreeFile<T>,
-): Relatives<T> {
+export function getRelatives<T extends ProjectFile | GitFile>(key: Key, files: TreeFile<T>): Relatives<T> {
   const children: TreeFile<T>[] = []
   const parents: TreeFile<T>[] = []
   const fileToToggle = getFileById(files, key, parents)
 
   return {
     children: getNestedChildren(fileToToggle, children),
-    parents: parents.filter(node => !!node.key),
+    parents: parents.filter((node) => !!node.key),
   }
 }
 
@@ -187,9 +180,7 @@ function getNestedChildren<T extends ProjectFile | GitFile>(
   return collectedChildren
 }
 
-function splitPath<T extends ProjectFile | GitFile>(
-  value: TreeFile<T>,
-): string[] {
+function splitPath<T extends ProjectFile | GitFile>(value: TreeFile<T>): string[] {
   return value.key.split('/')
 }
 
@@ -201,11 +192,7 @@ type Relatives<T extends ProjectFile | GitFile> = {
 const naturalFileComparator = (it: ProjectFile, that: ProjectFile): number => {
   const a = splitPath(that).length
   const b = splitPath(it).length
-  return a < b
-    ? -1
-    : a > b
-      ? 1
-      : alphabeticallyBy('name', it, that)
+  return a < b ? -1 : a > b ? 1 : alphabeticallyBy('name', it, that)
 }
 
 function sortAlphabetically(fileTree: TreeProjectFile[]): void {
@@ -220,8 +207,6 @@ function sortAlphabetically(fileTree: TreeProjectFile[]): void {
     if (b.children) {
       sortAlphabetically(b.children)
     }
-    return a.children && b.children
-      ? alphabeticallyBy('name', a, b)
-      : 0
+    return a.children && b.children ? alphabeticallyBy('name', a, b) : 0
   })
 }

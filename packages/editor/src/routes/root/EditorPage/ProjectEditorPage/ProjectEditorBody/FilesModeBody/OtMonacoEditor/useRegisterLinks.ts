@@ -37,14 +37,7 @@ export function useRegisterLinks(
     if (pathname && currentBranch && mode && fileKey && origin) {
       const linkProvider = registerLinkProvider(['yaml', 'json'], {
         provideLinks(model: ITextModel): ILinksList {
-          const foundMatches = model.findMatches(
-            '(?<=\\$ref:)\\s?["\'](.*)?["\']',
-            false,
-            true,
-            false,
-            null,
-            true,
-          )
+          const foundMatches = model.findMatches('(?<=\\$ref:)\\s?["\'](.*)?["\']', false, true, false, null, true)
           return {
             links: foundMatches
               .filter(({ matches }) => matches && !matches[1].startsWith('#/'))

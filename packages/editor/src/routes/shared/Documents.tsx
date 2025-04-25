@@ -57,25 +57,20 @@ export const Documents: FC = memo(() => {
   )
 
   if (isLoading) {
-    return (
-      <LoadingIndicator/>
-    )
+    return <LoadingIndicator />
   }
 
   return (
     <>
       <Box sx={{ width: '250px', my: 2 }}>
-        <SearchBar onValueChange={setSearchState}/>
+        <SearchBar onValueChange={setSearchState} />
       </Box>
       <Placeholder
         invisible={isNotEmpty(specs)}
         area={CONTENT_PLACEHOLDER_AREA}
         message={searchValue ? NO_SEARCH_RESULTS : 'No documentation'}
       >
-        <ApiDocumentList
-          isLoading={isLoading}
-          value={apiDocuments}
-        />
+        <ApiDocumentList isLoading={isLoading} value={apiDocuments} />
       </Placeholder>
     </>
   )

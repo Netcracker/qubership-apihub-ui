@@ -76,9 +76,11 @@ export const ChangesTabPanel: FC = memo(() => {
         value={CHANGES_PROJECT_EDITOR_MODE}
         header={
           <Box display="flex" width="100%" alignItems="center" flexGrow={1} gap={1}>
-            <Typography variant="h3" noWrap>Changes</Typography>
-            {conflicts.length > 0 && <WarningMarker/>}
-            <SaveChangesButton visible={hasEditPermission && changeCount > 0}/>
+            <Typography variant="h3" noWrap>
+              Changes
+            </Typography>
+            {conflicts.length > 0 && <WarningMarker />}
+            <SaveChangesButton visible={hasEditPermission && changeCount > 0} />
           </Box>
         }
         body={
@@ -98,8 +100,8 @@ export const ChangesTabPanel: FC = memo(() => {
                 },
               }}
             >
-              {
-                branchConfig && branchConfig.changeType !== NONE_CHANGE_TYPE && <ListItemButton
+              {branchConfig && branchConfig.changeType !== NONE_CHANGE_TYPE && (
+                <ListItemButton
                   key={branchConfig.key}
                   sx={{ borderLeft: `2px solid ${CHANGE_TYPE_COLORS[branchConfig.changeType]}` }}
                   selected={selectedChangeKey === branchConfig.key}
@@ -110,7 +112,7 @@ export const ChangesTabPanel: FC = memo(() => {
                 >
                   <Box display="flex" alignItems="end" height={24} width="100%">
                     <ListItemIcon sx={{ minWidth: 24 }}>
-                      <FileIcon/>
+                      <FileIcon />
                     </ListItemIcon>
                     <ListItemText
                       primary={getFileName(branchConfig.key)}
@@ -122,25 +124,19 @@ export const ChangesTabPanel: FC = memo(() => {
                     primaryTypographyProps={{ color: '#626D82' }}
                   />
                 </ListItemButton>
-              }
-              {
-                changes.map(({ fileId, status, conflictedBlobId }) => (
-                  <ChangesTabItem key={fileId} fileId={fileId} status={status} conflictedBlobId={conflictedBlobId}/>
-                ))
-              }
+              )}
+              {changes.map(({ fileId, status, conflictedBlobId }) => (
+                <ChangesTabItem key={fileId} fileId={fileId} status={status} conflictedBlobId={conflictedBlobId} />
+              ))}
             </List>
           </Placeholder>
         }
       />
 
-      <CollapsibleNavPanel
-        filename={name}
-        content={afterFileContent}
-        type={type}
-      />
+      <CollapsibleNavPanel filename={name} content={afterFileContent} type={type} />
 
-      <SaveChangesDialog/>
-      <ForceSaveChangesDialog/>
+      <SaveChangesDialog />
+      <ForceSaveChangesDialog />
     </>
   )
 })
@@ -149,9 +145,7 @@ export type SaveChangesButtonProps = {
   visible: boolean
 }
 
-const SaveChangesButton: FC<SaveChangesButtonProps> = memo<SaveChangesButtonProps>(({
-  visible,
-}) => {
+const SaveChangesButton: FC<SaveChangesButtonProps> = memo<SaveChangesButtonProps>(({ visible }) => {
   const { showSaveChangesDialog, showForceSaveChangesDialog } = useEventBus()
   const [confirmationOpen, setConfirmationOpen] = useState(false)
   const closeConfirmation = useCallback(() => setConfirmationOpen(false), [setConfirmationOpen])
@@ -159,57 +153,68 @@ const SaveChangesButton: FC<SaveChangesButtonProps> = memo<SaveChangesButtonProp
   const [resetBranch, isLoading] = useResetBranch(closeConfirmation)
   const [, isFetching, getBranchConflicts] = useBranchConflicts()
 
-  return (<>
-    {visible && <MultiButton
-      sx={{ ml: 'auto' }}
-      buttonGroupProps={{ sx: { marginLeft: 'auto', marginRight: 4, minWidth: 'max-content' } }}
-      primary={
-        <LoadingButton
-          loading={isFetching}
-          variant="contained"
-          onClick={() => {
-            getBranchConflicts().then(({ data }) => {
-              if (isNotEmpty(data)) {
-                showForceSaveChangesDialog({ conflicts: data! })
-              } else {
-                showSaveChangesDialog()
-              }
-            })
-          }}>
-          Save
-        </LoadingButton>
-      }
-      secondary={
-        <Box>
-          <MenuItem onClick={() => {
-            showSaveChangesDialog({ saveToNewBranch: true })
-          }}>
-            Save in new branch
-          </MenuItem>
-          <MenuItem onClick={() => {
-            setConfirmationOpen(true)
-          }}>
-            Reset to last saved
-          </MenuItem>
-          <MenuItem onClick={() => {
-            getBranchConflicts()
-          }}>
-            Check conflicts
-          </MenuItem>
-        </Box>
-      }
-    />}
-    <ConfirmationDialog
-      open={confirmationOpen}
-      title="Reset branch"
-      message="Are you sure, you want to reset branch to last saved? All changes will be lost"
-      loading={isLoading}
-      confirmButtonName="Reset"
-      onConfirm={resetBranch}
-      onCancel={closeConfirmation}
-      shouldCloseOnLoadingFinish={false}
-    />
-  </>)
+  return (
+    <>
+      {visible && (
+        <MultiButton
+          sx={{ ml: 'auto' }}
+          buttonGroupProps={{ sx: { marginLeft: 'auto', marginRight: 4, minWidth: 'max-content' } }}
+          primary={
+            <LoadingButton
+              loading={isFetching}
+              variant="contained"
+              onClick={() => {
+                getBranchConflicts().then(({ data }) => {
+                  if (isNotEmpty(data)) {
+                    showForceSaveChangesDialog({ conflicts: data! })
+                  } else {
+                    showSaveChangesDialog()
+                  }
+                })
+              }}
+            >
+              Save
+            </LoadingButton>
+          }
+          secondary={
+            <Box>
+              <MenuItem
+                onClick={() => {
+                  showSaveChangesDialog({ saveToNewBranch: true })
+                }}
+              >
+                Save in new branch
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  setConfirmationOpen(true)
+                }}
+              >
+                Reset to last saved
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  getBranchConflicts()
+                }}
+              >
+                Check conflicts
+              </MenuItem>
+            </Box>
+          }
+        />
+      )}
+      <ConfirmationDialog
+        open={confirmationOpen}
+        title="Reset branch"
+        message="Are you sure, you want to reset branch to last saved? All changes will be lost"
+        loading={isLoading}
+        confirmButtonName="Reset"
+        onConfirm={resetBranch}
+        onCancel={closeConfirmation}
+        shouldCloseOnLoadingFinish={false}
+      />
+    </>
+  )
 })
 
 const CHANGE_TYPE_COLORS: Record<ChangeType, string> = {

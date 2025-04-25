@@ -46,10 +46,8 @@ export function useInvalidateFileHistory(): InvalidateQuery<void> {
   }
 }
 
-function toProjectFileHistory(
-  value: ProjectFileHistoryDto,
-): ProjectFileHistory {
-  return value.changes.map(change => ({
+function toProjectFileHistory(value: ProjectFileHistoryDto): ProjectFileHistory {
+  return value.changes.map((change) => ({
     ...change,
     key: change.commitId,
     modifiedBy: toUser(change.modifiedBy),

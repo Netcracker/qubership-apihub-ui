@@ -37,11 +37,8 @@ export const ConfigureDashboardNavigation: FC = memo(() => {
 
   return (
     <List>
-      {CONFIGURE_DASHBOARD_SIDEBAR.map(({ id, title, testId }) =>
-        <ListItem
-          key={crypto.randomUUID()}
-          sx={{ p: 0 }}
-        >
+      {CONFIGURE_DASHBOARD_SIDEBAR.map(({ id, title, testId }) => (
+        <ListItem key={crypto.randomUUID()} sx={{ p: 0 }}>
           <ListItemButton
             sx={{
               backgroundColor: id === activeTab ? '#F5F5FA' : 'transparent',
@@ -52,28 +49,33 @@ export const ConfigureDashboardNavigation: FC = memo(() => {
             onClick={() => setActiveTab(id)}
             data-testid={testId}
           >
-            <ListItemText primary={
-              <Box display="flex">
-                {title}
-                <Box ml="5px" display="flex">
-                  {id === PACKAGES_CONFIGURE_DASHBOARD_TAB && isNotEmptySet(conflictedReferences) &&
-                    <Tooltip title="There are conflicts in dashboard configuration" placement="right">
-                      <Box data-testid="ConflictAlert">
-                        <YellowWarningIcon/>
-                      </Box>
-                    </Tooltip>}
-                  {id === PACKAGES_CONFIGURE_DASHBOARD_TAB && isNotEmptyMap(deletedReferences) &&
-                    <Tooltip title="Some included package/dashboard versions no longer exist" placement="right">
-                      <Box data-testid="NotExistAlert">
-                        <RedWarningIcon/>
-                      </Box>
-                    </Tooltip>}
+            <ListItemText
+              primary={
+                <Box display="flex">
+                  {title}
+                  <Box ml="5px" display="flex">
+                    {id === PACKAGES_CONFIGURE_DASHBOARD_TAB && isNotEmptySet(conflictedReferences) && (
+                      <Tooltip title="There are conflicts in dashboard configuration" placement="right">
+                        <Box data-testid="ConflictAlert">
+                          <YellowWarningIcon />
+                        </Box>
+                      </Tooltip>
+                    )}
+                    {id === PACKAGES_CONFIGURE_DASHBOARD_TAB && isNotEmptyMap(deletedReferences) && (
+                      <Tooltip title="Some included package/dashboard versions no longer exist" placement="right">
+                        <Box data-testid="NotExistAlert">
+                          <RedWarningIcon />
+                        </Box>
+                      </Tooltip>
+                    )}
+                  </Box>
                 </Box>
-              </Box>
-            } primaryTypographyProps={{ sx: { mt: 1 } }}/>
+              }
+              primaryTypographyProps={{ sx: { mt: 1 } }}
+            />
           </ListItemButton>
-        </ListItem>,
-      )}
+        </ListItem>
+      ))}
     </List>
   )
 })

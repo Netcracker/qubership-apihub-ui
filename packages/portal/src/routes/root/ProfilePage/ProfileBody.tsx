@@ -9,12 +9,12 @@ export const ProfileBody: FC = () => {
   const activeTab = useActiveTabContentContext()
   return (
     <LayoutWithTabs
-      tabs={<ProfileNavigation/>}
+      tabs={<ProfileNavigation />}
       body={
         <>
           {
             {
-              [PERSONAL_ACCESS_TOKENS_PAGE]: <PersonalAccessTokensTab/>,
+              [PERSONAL_ACCESS_TOKENS_PAGE]: <PersonalAccessTokensTab />,
             }[activeTab]
           }
         </>

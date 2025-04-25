@@ -41,8 +41,8 @@ export type ChangesViewWidgetProps = {
   hasNextPage?: boolean
 }
 
-export const ChangesViewWidget: FC<ChangesViewWidgetProps> = memo<ChangesViewWidgetProps>((
-  {
+export const ChangesViewWidget: FC<ChangesViewWidgetProps> = memo<ChangesViewWidgetProps>(
+  ({
     changes,
     isLoading,
     searchValue,
@@ -52,29 +52,27 @@ export const ChangesViewWidget: FC<ChangesViewWidgetProps> = memo<ChangesViewWid
     fetchNextPage,
     isNextPageFetching,
     hasNextPage,
+  }) => {
+    // TODO 18.07.23 // Check what we should do with 'packageObject'
+    return (
+      <Placeholder
+        invisible={isNotEmpty(changes) || isLoading}
+        area={CONTENT_PLACEHOLDER_AREA}
+        message={searchValue ? NO_SEARCH_RESULTS : 'No changes'}
+      >
+        <ChangesViewTable
+          value={changes}
+          packageKey={packageKey}
+          versionKey={versionKey}
+          packageObject={null}
+          apiType={apiType}
+          fetchNextPage={fetchNextPage}
+          isNextPageFetching={isNextPageFetching}
+          hasNextPage={hasNextPage}
+          SubTableComponent={OperationChangesSubTableWrapper}
+          isLoading={isLoading}
+        />
+      </Placeholder>
+    )
   },
-) => {
-
-  // TODO 18.07.23 // Check what we should do with 'packageObject'
-  return (
-    <Placeholder
-      invisible={isNotEmpty(changes) || isLoading}
-      area={CONTENT_PLACEHOLDER_AREA}
-      message={searchValue ? NO_SEARCH_RESULTS : 'No changes'}
-    >
-      <ChangesViewTable
-        value={changes}
-        packageKey={packageKey}
-        versionKey={versionKey}
-        packageObject={null}
-        apiType={apiType}
-        fetchNextPage={fetchNextPage}
-        isNextPageFetching={isNextPageFetching}
-        hasNextPage={hasNextPage}
-        SubTableComponent={OperationChangesSubTableWrapper}
-        isLoading={isLoading}
-      />
-    </Placeholder>
-  )
-})
-
+)

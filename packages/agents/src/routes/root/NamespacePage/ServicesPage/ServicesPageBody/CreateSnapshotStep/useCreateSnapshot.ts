@@ -18,13 +18,10 @@ import { useMutation } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import { useInvalidateSnapshots } from '../../../useSnapshots'
 import type { IsError, IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import type {
-  CreateSnapshotPublicationOptions} from '../../ServicesPageProvider/ServicesPublicationOptionsProvider'
-import {
-  useCreateSnapshotPublicationOptions,
-} from '../../ServicesPageProvider/ServicesPublicationOptionsProvider'
+import type { CreateSnapshotPublicationOptions } from '../../ServicesPageProvider/ServicesPublicationOptionsProvider'
+import { useCreateSnapshotPublicationOptions } from '../../ServicesPageProvider/ServicesPublicationOptionsProvider'
 import { publishSnapshot } from '@apihub/entities/snapshots'
-import type { PublishConfig} from '@apihub/entities/publish-config'
+import type { PublishConfig } from '@apihub/entities/publish-config'
 import { toPublishConfig } from '@apihub/entities/publish-config'
 import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
@@ -35,13 +32,11 @@ export function useCreateSnapshot(): [CreateSnapshot, IsLoading, IsSuccess, IsEr
   const { setCreateSnapshotPublicationOptions } = useCreateSnapshotPublicationOptions()
   const invalidateSnapshots = useInvalidateSnapshots()
 
-  const {
-    mutate,
-    isLoading,
-    isSuccess,
-    isError,
-    error,
-  } = useMutation<PublishConfig, Error, CreateSnapshotPublicationOptions>({
+  const { mutate, isLoading, isSuccess, isError, error } = useMutation<
+    PublishConfig,
+    Error,
+    CreateSnapshotPublicationOptions
+  >({
     mutationFn: async ({ name, baseline, serviceKeys }) => {
       const builderId = crypto.randomUUID()
 
@@ -65,13 +60,7 @@ export function useCreateSnapshot(): [CreateSnapshot, IsLoading, IsSuccess, IsEr
     },
   })
 
-  return [
-    mutate,
-    isLoading,
-    isSuccess,
-    isError,
-    error,
-  ]
+  return [mutate, isLoading, isSuccess, isError, error]
 }
 
 export type CreateSnapshot = (options: CreateSnapshotPublicationOptions) => void

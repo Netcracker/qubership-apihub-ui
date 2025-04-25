@@ -44,24 +44,16 @@ export function useSecurityReports(options: {
   page?: number
   limit?: number
 }): [SecurityReports, IsLoading, FetchNextReports, IsFetchingNextPage, HasNextPage] {
-  const {
-    agentKey,
-    namespaceKey,
-    workspaceKey,
-    type,
-    limit,
-    page,
-  } = options
+  const { agentKey, namespaceKey, workspaceKey, type, limit, page } = options
 
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-  } = useInfiniteQuery<SecurityReports, Error, SecurityReports>({
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteQuery<
+    SecurityReports,
+    Error,
+    SecurityReports
+  >({
     queryKey: [SECURITY_REPORTS_QUERY_KEY, agentKey, workspaceKey, type, namespaceKey],
-    queryFn: ({ pageParam = page }) => getSecurityReports(agentKey!, namespaceKey, workspaceKey, type, pageParam - 1, limit),
+    queryFn: ({ pageParam = page }) =>
+      getSecurityReports(agentKey!, namespaceKey, workspaceKey, type, pageParam - 1, limit),
     getNextPageParam: (lastPage, allPages) => {
       if (!limit) {
         return undefined
@@ -98,7 +90,7 @@ async function getSecurityReports(
     name: { value: namespaceKey },
     workspaceId: { value: workspaceKey },
     limit: { value: limit },
-    page: { value: page, toStringValue: page => `${page}` },
+    page: { value: page, toStringValue: (page) => `${page}` },
   })
 
   const [reportPath, basePath] = reportTypeToPath[type]
@@ -108,7 +100,8 @@ async function getSecurityReports(
     `${generatePath(pathPattern, { reportPath })}?${queryParams}`,
     {
       method: 'GET',
-    }, {
+    },
+    {
       basePath: `${APIHUB_NC_BASE_PATH}${basePath}`,
       customErrorHandler: () => Promise.reject(),
     },
@@ -124,7 +117,9 @@ export function useInvalidateSecurityReports(): InvalidateQuery<void> {
   }
 }
 
-export type FetchNextReports = (options?: FetchNextPageOptions) => Promise<InfiniteQueryObserverResult<SecurityReports, Error>>
+export type FetchNextReports = (
+  options?: FetchNextPageOptions,
+) => Promise<InfiniteQueryObserverResult<SecurityReports, Error>>
 
 type ResultReports = {
   reports: SecurityReports

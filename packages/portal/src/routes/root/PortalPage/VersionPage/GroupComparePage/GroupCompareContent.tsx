@@ -49,9 +49,7 @@ import {
 } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { useEventBus } from '@apihub/routes/EventBusProvider'
 import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
-import {
-  useSeverityFiltersSearchParam,
-} from '@netcracker/qubership-apihub-ui-shared/hooks/change-severities/useSeverityFiltersSearchParam'
+import { useSeverityFiltersSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/change-severities/useSeverityFiltersSearchParam'
 import {
   filterChangesBySeverity,
   getMajorSeverity,
@@ -90,13 +88,7 @@ export const GroupCompareContent: FC<GroupCompareContentProps> = memo(({ groupCh
   const backwardLocation = useBackwardLocationContext()
   const setBackwardLocation = useSetBackwardLocationContext()
 
-  const {
-    originPackageKey,
-    originVersionKey,
-    changedPackageKey,
-    changedVersionKey,
-    apiType,
-  } = useComparisonParams()
+  const { originPackageKey, originVersionKey, changedPackageKey, changedVersionKey, apiType } = useComparisonParams()
   const [refPackageKey] = useRefSearchParam()
 
   const [changesSummary] = useChangesSummaryContext({
@@ -116,10 +108,16 @@ export const GroupCompareContent: FC<GroupCompareContentProps> = memo(({ groupCh
 
   const [filters] = useSeverityFiltersSearchParam()
   const filteredGroupChanges: OperationChanges[] = useMemo(
-    () => groupChanges.filter(change => (selectedTag && change.metadata?.tags
-      ? Array.isArray(change.metadata?.tags) && change.metadata?.tags.includes(selectedTag) && filterChangesBySeverity(filters, change.changeSummary)
-      : filterChangesBySeverity(filters, change.changeSummary))),
-    [groupChanges, selectedTag, filters])
+    () =>
+      groupChanges.filter((change) =>
+        selectedTag && change.metadata?.tags
+          ? Array.isArray(change.metadata?.tags) &&
+            change.metadata?.tags.includes(selectedTag) &&
+            filterChangesBySeverity(filters, change.changeSummary)
+          : filterChangesBySeverity(filters, change.changeSummary),
+      ),
+    [groupChanges, selectedTag, filters],
+  )
 
   const onClickOperationChange = (): void => {
     setBackwardLocation({ ...backwardLocation, fromOperationsComparison: location })
@@ -140,12 +138,19 @@ export const GroupCompareContent: FC<GroupCompareContentProps> = memo(({ groupCh
       previousGroup: `${previousGroup}`,
       search: searchParams,
     })
-  }, [changedPackageKey, changedVersionKey, filters, group, navigateToGroupCompareContent, originPackageKey, previousGroup, selectedTag])
+  }, [
+    changedPackageKey,
+    changedVersionKey,
+    filters,
+    group,
+    navigateToGroupCompareContent,
+    originPackageKey,
+    previousGroup,
+    selectedTag,
+  ])
 
   if (changesLoadingStatus || isEmpty(groupChanges)) {
-    return (
-      <LoadingIndicator/>
-    )
+    return <LoadingIndicator />
   }
 
   return (
@@ -158,7 +163,8 @@ export const GroupCompareContent: FC<GroupCompareContentProps> = memo(({ groupCh
       <Placeholder
         invisible={isNotEmpty(filteredGroupChanges)}
         area={CONTENT_PLACEHOLDER_AREA}
-        message="No differences">
+        message="No differences"
+      >
         <CardContent
           sx={{
             display: 'flex',
@@ -169,121 +175,132 @@ export const GroupCompareContent: FC<GroupCompareContentProps> = memo(({ groupCh
           }}
         >
           <Box pt={2}>
-            {
-              filteredGroupChanges.map((change) => {
-                const {
-                  operationId,
-                  changeSummary,
-                  metadata: metadataObject,
-                  diffs,
-                } = change
+            {filteredGroupChanges.map((change) => {
+              const { operationId, changeSummary, metadata: metadataObject, diffs } = change
 
-                const metadata = metadataObject as OperationChangesMetadata & Partial<RestChangesMetadata> & Partial<GraphQLChangesMetadata>
+              const metadata = metadataObject as OperationChangesMetadata &
+                Partial<RestChangesMetadata> &
+                Partial<GraphQLChangesMetadata>
 
-                const { action } = diffs?.[0] ?? {}
-                const operationAction = getActionForOperation(change, REPLACE_ACTION_TYPE)
-                const severity = getMajorSeverity(changeSummary!)
+              const { action } = diffs?.[0] ?? {}
+              const operationAction = getActionForOperation(change, REPLACE_ACTION_TYPE)
+              const severity = getMajorSeverity(changeSummary!)
 
-                const isMetaDataPresent = !!(metadata?.title && metadata?.path && metadata?.method)
-                const previousMetadata = metadata?.previousOperationMetadata
+              const isMetaDataPresent = !!(metadata?.title && metadata?.path && metadata?.method)
+              const previousMetadata = metadata?.previousOperationMetadata
 
-                const comparingSearchParams = optionalSearchParams({
-                  [PACKAGE_SEARCH_PARAM]: { value: changedPackageKey === originPackageKey ? '' : encodeURIComponent(originPackageKey!) },
-                  [VERSION_SEARCH_PARAM]: { value: originVersionKey! },
-                  [REF_SEARCH_PARAM]: { value: refPackageKey },
-                  [GROUP_SEARCH_PARAM]: { value: previousGroup },
-                  [FILTERS_SEARCH_PARAM]: { value: [...CHANGE_SEVERITIES].join() },
-                })
+              const comparingSearchParams = optionalSearchParams({
+                [PACKAGE_SEARCH_PARAM]: {
+                  value: changedPackageKey === originPackageKey ? '' : encodeURIComponent(originPackageKey!),
+                },
+                [VERSION_SEARCH_PARAM]: { value: originVersionKey! },
+                [REF_SEARCH_PARAM]: { value: refPackageKey },
+                [GROUP_SEARCH_PARAM]: { value: previousGroup },
+                [FILTERS_SEARCH_PARAM]: { value: [...CHANGE_SEVERITIES].join() },
+              })
 
-                return (
+              return (
+                <Grid
+                  key={crypto.randomUUID()}
+                  component={NavLink}
+                  container
+                  spacing={0}
+                  sx={{
+                    textDecoration: 'none',
+                    color: '#353C4E',
+                    height: '70px',
+                    marginBottom: '8px',
+                    position: 'relative',
+                  }}
+                  to={{
+                    pathname: format(
+                      '/portal/packages/{}/{}/groups/{}/compare/{}/{}',
+                      encodeURIComponent(originPackageKey!),
+                      encodeURIComponent(changedVersionKey!),
+                      encodeURIComponent(group!),
+                      `${apiType}`,
+                      encodeURIComponent(operationId),
+                    ),
+                    search: `${comparingSearchParams}`,
+                  }}
+                  onClick={onClickOperationChange}
+                  data-testid="ComparisonRow"
+                >
                   <Grid
-                    key={crypto.randomUUID()}
-                    component={NavLink}
-                    container
-                    spacing={0}
+                    item
+                    xs={6}
                     sx={{
-                      textDecoration: 'none',
-                      color: '#353C4E',
-                      height: '70px',
-                      marginBottom: '8px',
-                      position: 'relative',
+                      borderRight: '1px solid #D5DCE3',
+                      background:
+                        ACTION_TYPE_COLOR_MAP[operationAction as keyof typeof ACTION_TYPE_COLOR_MAP] ?? '#F2F3F5',
                     }}
-                    to={{
-                      pathname: format(
-                        '/portal/packages/{}/{}/groups/{}/compare/{}/{}',
-                        encodeURIComponent(originPackageKey!),
-                        encodeURIComponent(changedVersionKey!),
-                        encodeURIComponent(group!),
-                        `${apiType}`,
-                        encodeURIComponent(operationId),
-                      ),
-                      search: `${comparingSearchParams}`,
-                    }}
-                    onClick={onClickOperationChange}
-                    data-testid="ComparisonRow"
+                    data-testid="LeftComparisonSummary"
                   >
-                    <Grid
-                      item
-                      xs={6}
+                    <Box
                       sx={{
-                        borderRight: '1px solid #D5DCE3',
-                        background: ACTION_TYPE_COLOR_MAP[operationAction as keyof typeof ACTION_TYPE_COLOR_MAP] ?? '#F2F3F5',
-                      }}
-                      data-testid="LeftComparisonSummary"
-                    >
-                      <Box sx={{
                         display: 'flex',
                         flexDirection: 'row',
-                      }}>
-                        <ChangeSeverityIndicator
-                          severity={severity as ChangeSeverity}
-                          sx={{
-                            alignItems: 'center',
-                            display: 'flex',
-                            overflow: 'hidden',
-                            zIndex: '1',
-                            '&:hover': {
-                              color: '#FFFFFF',
-                              padding: '5px',
-                              width: '105px',
-                            },
-                          }}
-                        />
-                        <Spec
-                          key={operationId}
-                          value={isMetaDataPresent && action !== ADD_ACTION_TYPE && previousMetadata ||
-                          !previousMetadata && action === REMOVE_ACTION_TYPE ? {
-                            title: previousMetadata?.title ?? metadata.title,
-                            operationId: operationId,
-                            method: previousMetadata?.method ?? metadata.method,
-                            path: (previousMetadata as typeof metadata)?.path ?? metadata.path,
-                          } : undefined}
-                        />
-                      </Box>
-                    </Grid>
-
-                    <Grid
-                      item
-                      xs={6}
-                      sx={{ background: ACTION_TYPE_COLOR_MAP[operationAction as keyof typeof ACTION_TYPE_COLOR_MAP] ?? '#F2F3F5' }}
-                      data-testid="RightComparisonSummary"
+                      }}
                     >
-                      <Spec
-                        key={`changed-${operationId}`}
-                        value={isMetaDataPresent && action !== REMOVE_ACTION_TYPE && previousMetadata ||
-                        !previousMetadata && action === ADD_ACTION_TYPE ? {
-                          title: metadata.title,
-                          operationId: operationId,
-                          method: metadata.method,
-                          path: metadata.path as string,
-                        } : undefined}
-                        changes={changeSummary}
+                      <ChangeSeverityIndicator
+                        severity={severity as ChangeSeverity}
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                          overflow: 'hidden',
+                          zIndex: '1',
+                          '&:hover': {
+                            color: '#FFFFFF',
+                            padding: '5px',
+                            width: '105px',
+                          },
+                        }}
                       />
-                    </Grid>
+                      <Spec
+                        key={operationId}
+                        value={
+                          (isMetaDataPresent && action !== ADD_ACTION_TYPE && previousMetadata) ||
+                          (!previousMetadata && action === REMOVE_ACTION_TYPE)
+                            ? {
+                                title: previousMetadata?.title ?? metadata.title,
+                                operationId: operationId,
+                                method: previousMetadata?.method ?? metadata.method,
+                                path: (previousMetadata as typeof metadata)?.path ?? metadata.path,
+                              }
+                            : undefined
+                        }
+                      />
+                    </Box>
                   </Grid>
-                )
-              })
-            }
+
+                  <Grid
+                    item
+                    xs={6}
+                    sx={{
+                      background:
+                        ACTION_TYPE_COLOR_MAP[operationAction as keyof typeof ACTION_TYPE_COLOR_MAP] ?? '#F2F3F5',
+                    }}
+                    data-testid="RightComparisonSummary"
+                  >
+                    <Spec
+                      key={`changed-${operationId}`}
+                      value={
+                        (isMetaDataPresent && action !== REMOVE_ACTION_TYPE && previousMetadata) ||
+                        (!previousMetadata && action === ADD_ACTION_TYPE)
+                          ? {
+                              title: metadata.title,
+                              operationId: operationId,
+                              method: metadata.method,
+                              path: metadata.path as string,
+                            }
+                          : undefined
+                      }
+                      changes={changeSummary}
+                    />
+                  </Grid>
+                </Grid>
+              )
+            })}
           </Box>
         </CardContent>
       </Placeholder>
@@ -306,10 +323,12 @@ const Spec: FC<SpecProps> = memo<SpecProps>(({ value, changes }) => {
 
   const secondary = (
     <Box component="span" sx={{ display: 'flex', alignItems: 'center' }} data-testid="OperationPath">
-      {method && <CustomChip component="span" sx={{ mr: 1 }} value={method} variant={'outlined'}/>}
+      {method && <CustomChip component="span" sx={{ mr: 1 }} value={method} variant={'outlined'} />}
       {path && (
         <OverflowTooltip title={path}>
-          <Typography component="span" noWrap variant="inherit">{path}</Typography>
+          <Typography component="span" noWrap variant="inherit">
+            {path}
+          </Typography>
         </OverflowTooltip>
       )}
     </Box>
@@ -328,16 +347,9 @@ const Spec: FC<SpecProps> = memo<SpecProps>(({ value, changes }) => {
       }}
     >
       <Box display="flex" gap={1}>
-        <ListItemText
-          primary={title}
-          secondary={secondary}
-          secondaryTypographyProps={{ noWrap: true }}
-        />
+        <ListItemText primary={title} secondary={secondary} secondaryTypographyProps={{ noWrap: true }} />
       </Box>
-      {changes && (
-        <Changes value={changes}/>
-      )}
+      {changes && <Changes value={changes} />}
     </ListItem>
   )
 })
-

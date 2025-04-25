@@ -23,9 +23,7 @@ export const BwcVersionKeyProvider: FC<PropsWithChildren> = memo<PropsWithChildr
 
   return (
     <BwcVersionKeyContext.Provider value={versionKey}>
-      <SetBwcVersionKeyContext.Provider value={setVersionKey}>
-        {children}
-      </SetBwcVersionKeyContext.Provider>
+      <SetBwcVersionKeyContext.Provider value={setVersionKey}>{children}</SetBwcVersionKeyContext.Provider>
     </BwcVersionKeyContext.Provider>
   )
 })

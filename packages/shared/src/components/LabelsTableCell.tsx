@@ -27,15 +27,13 @@ export type LabelsTableCellProps = {
 
 export const LabelsTableCell: FC<LabelsTableCellProps> = memo<LabelsTableCellProps>(({ labels }) => {
   return (
-    <OverflowTooltip title={labels.map(((label, index) => <Box key={index}>{label}</Box>))}>
+    <OverflowTooltip
+      title={labels.map((label, index) => (
+        <Box key={index}>{label}</Box>
+      ))}
+    >
       <Box sx={{ display: 'flex', overflow: 'hidden' }}>
-        {labels?.map((label, index) =>
-          <CustomChip
-            key={index}
-            sx={{ mr: 1 }}
-            value={label}
-          />,
-        )}
+        {labels?.map((label, index) => <CustomChip key={index} sx={{ mr: 1 }} value={label} />)}
       </Box>
     </OverflowTooltip>
   )

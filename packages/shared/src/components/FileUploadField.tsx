@@ -35,88 +35,80 @@ export type FileUploadFieldProps = {
   errorMessage?: string
 }
 
-export const FileUploadField: FC<FileUploadFieldProps> = memo<FileUploadFieldProps>(({
-  uploadedFile,
-  setUploadedFile,
-  onDownload,
-  downloadAvailable,
-  acceptableExtensions,
-  errorMessage,
-}) => {
-
-  const onUpload = useCallback(
-    ({ target: { files } }: ChangeEvent<HTMLInputElement>) =>
-      setUploadedFile(files ? transformFileListToFileArray(files)[0] : undefined),
-    [setUploadedFile])
-
-  const onDrop = useCallback(
-    ({ dataTransfer: { files } }: DragEvent<HTMLElement>) =>
-      setUploadedFile(transformFileListToFileArray(files)[0]),
-    [setUploadedFile])
-
-  const onDelete = useCallback(() => setUploadedFile(undefined), [setUploadedFile])
-
-  const alert = useMemo(
-    () => (
-      errorMessage && (
-        <Alert
-          icon={<ErrorOutlinedIcon color="error"/>}
-          severity="error"
-          sx={{ p: 0, py: '1px', pl: 2, alignItems: 'center' }}
-        >
-          {errorMessage}
-        </Alert>
-      )),
-    [errorMessage],
-  )
-
-  if (uploadedFile) {
-    return (
-      <>
-        <UploadedFilePreview
-          file={uploadedFile}
-          onDelete={onDelete}
-          onDownload={downloadAvailable ? onDownload : undefined}
-          testId={downloadAvailable ? 'DownloadableFilePreview' : 'NotDownloadableFilePreview'}
-        />
-        {alert}
-      </>
+export const FileUploadField: FC<FileUploadFieldProps> = memo<FileUploadFieldProps>(
+  ({ uploadedFile, setUploadedFile, onDownload, downloadAvailable, acceptableExtensions, errorMessage }) => {
+    const onUpload = useCallback(
+      ({ target: { files } }: ChangeEvent<HTMLInputElement>) =>
+        setUploadedFile(files ? transformFileListToFileArray(files)[0] : undefined),
+      [setUploadedFile],
     )
-  }
 
-  return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-      <FileUpload
-        onDrop={onDrop}
-        acceptableFileTypes={acceptableExtensions}
-      >
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'rgb(242, 243, 245)',
-            boxSizing: 'border-box',
-            borderRadius: '10px',
-            width: 1,
-            height: '44px',
-          }}
-        >
-          <CloudUploadIcon sx={{ color: '#626D82', mr: '8px' }}/>
-          <Typography variant="subtitle2" fontSize={13}>
-            {`Drop ${createFileFormatEnumeration(acceptableExtensions)} file here to attach or`}
-          </Typography>
+    const onDrop = useCallback(
+      ({ dataTransfer: { files } }: DragEvent<HTMLElement>) => setUploadedFile(transformFileListToFileArray(files)[0]),
+      [setUploadedFile],
+    )
 
-          <UploadButton
-            title="browse"
-            onUpload={onUpload}
-            buttonSxProp={{ p: 0, ml: 0.5, minWidth: 'auto', height: 1, display: 'flex' }}
-            data-testid="BrowseButton"
-            acceptableFileTypes={acceptableExtensions}
+    const onDelete = useCallback(() => setUploadedFile(undefined), [setUploadedFile])
+
+    const alert = useMemo(
+      () =>
+        errorMessage && (
+          <Alert
+            icon={<ErrorOutlinedIcon color="error" />}
+            severity="error"
+            sx={{ p: 0, py: '1px', pl: 2, alignItems: 'center' }}
+          >
+            {errorMessage}
+          </Alert>
+        ),
+      [errorMessage],
+    )
+
+    if (uploadedFile) {
+      return (
+        <>
+          <UploadedFilePreview
+            file={uploadedFile}
+            onDelete={onDelete}
+            onDownload={downloadAvailable ? onDownload : undefined}
+            testId={downloadAvailable ? 'DownloadableFilePreview' : 'NotDownloadableFilePreview'}
           />
-        </Box>
-      </FileUpload>
-      {alert}
-    </Box>
-  )
-})
+          {alert}
+        </>
+      )
+    }
+
+    return (
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+        <FileUpload onDrop={onDrop} acceptableFileTypes={acceptableExtensions}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: 'rgb(242, 243, 245)',
+              boxSizing: 'border-box',
+              borderRadius: '10px',
+              width: 1,
+              height: '44px',
+            }}
+          >
+            <CloudUploadIcon sx={{ color: '#626D82', mr: '8px' }} />
+            <Typography variant="subtitle2" fontSize={13}>
+              {`Drop ${createFileFormatEnumeration(acceptableExtensions)} file here to attach or`}
+            </Typography>
+
+            <UploadButton
+              title="browse"
+              onUpload={onUpload}
+              buttonSxProp={{ p: 0, ml: 0.5, minWidth: 'auto', height: 1, display: 'flex' }}
+              data-testid="BrowseButton"
+              acceptableFileTypes={acceptableExtensions}
+            />
+          </Box>
+        </FileUpload>
+        {alert}
+      </Box>
+    )
+  },
+)

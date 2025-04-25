@@ -28,45 +28,38 @@ export type ExpandableItemProps = PropsWithChildren<{
 }>
 
 // First Order Component //
-export const ExpandableItem: FC<ExpandableItemProps> = memo<ExpandableItemProps>(({
-  expanded = false,
-  onToggle,
-  showToggler,
-  children,
-}) => {
-  const [internalExpanded, setInternalExpanded] = useState<boolean>(expanded)
+export const ExpandableItem: FC<ExpandableItemProps> = memo<ExpandableItemProps>(
+  ({ expanded = false, onToggle, showToggler, children }) => {
+    const [internalExpanded, setInternalExpanded] = useState<boolean>(expanded)
 
-  useEffect(() => {
-    setInternalExpanded(expanded)
-  }, [expanded])
+    useEffect(() => {
+      setInternalExpanded(expanded)
+    }, [expanded])
 
-  const onClick = useCallback(() => {
-    setInternalExpanded(!internalExpanded)
-    onToggle(!internalExpanded)
-  }, [internalExpanded, onToggle])
+    const onClick = useCallback(() => {
+      setInternalExpanded(!internalExpanded)
+      onToggle(!internalExpanded)
+    }, [internalExpanded, onToggle])
 
-  return (
-    <Box
-      gap="2px"
-      py="4px"
-      display="grid"
-      gridTemplateColumns={`${ICON_SIZE} calc(100% - ${ICON_SIZE})`}
-    >
-      {showToggler
-        ? (
+    return (
+      <Box gap="2px" py="4px" display="grid" gridTemplateColumns={`${ICON_SIZE} calc(100% - ${ICON_SIZE})`}>
+        {showToggler ? (
           <IconButton sx={{ p: 0 }} onClick={onClick}>
-            {internalExpanded
-              ? <KeyboardArrowDownOutlinedIcon sx={{ fontSize: '16px' }}/>
-              : <KeyboardArrowRightOutlinedIcon sx={{ fontSize: '16px' }}/>}
+            {internalExpanded ? (
+              <KeyboardArrowDownOutlinedIcon sx={{ fontSize: '16px' }} />
+            ) : (
+              <KeyboardArrowRightOutlinedIcon sx={{ fontSize: '16px' }} />
+            )}
           </IconButton>
-        )
-        // placeholder
-        : <Box/>
-      }
+        ) : (
+          // placeholder
+          <Box />
+        )}
 
-      {children}
-    </Box>
-  )
-})
+        {children}
+      </Box>
+    )
+  },
+)
 
 const ICON_SIZE = '20px'

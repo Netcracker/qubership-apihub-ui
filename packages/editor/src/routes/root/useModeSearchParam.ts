@@ -24,7 +24,7 @@ export function useModeSearchParam(): [Key | undefined, SetModeSearchParam] {
   const setSearchParams = useSetSearchParams()
 
   return useMemo(
-    () => [param, value => setSearchParams({ mode: value ?? '' }, { replace: true })],
+    () => [param, (value) => setSearchParams({ mode: value ?? '' }, { replace: true })],
     [param, setSearchParams],
   )
 }

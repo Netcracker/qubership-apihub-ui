@@ -43,7 +43,7 @@ export const ProjectEditorPage: FC = memo(() => {
   const isBranchIndexing = isBranchCacheLoading || isFileProblemsMapLoading
 
   if (!integration) {
-    return <NoIntegrationPlaceholder/>
+    return <NoIntegrationPlaceholder />
   }
 
   return (
@@ -53,9 +53,9 @@ export const ProjectEditorPage: FC = memo(() => {
           <BwcVersionKeyProvider key={branchSearchParam!}>
             <MonacoContentProvider>
               <PageLayout
-                toolbar={<ProjectEditorToolbar isBranchIndexing={isBranchIndexing}/>}
-                navigation={<ProjectEditorSidebar/>}
-                body={<ProjectEditorBody/>}
+                toolbar={<ProjectEditorToolbar isBranchIndexing={isBranchIndexing} />}
+                navigation={<ProjectEditorSidebar />}
+                body={<ProjectEditorBody />}
                 sx={{ navigation: { paddingBottom: '0' } }}
               />
             </MonacoContentProvider>

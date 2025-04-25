@@ -52,107 +52,104 @@ export type NavigationMenuProps = {
   sidebarServiceMenuItems?: SidebarMenu[]
 }
 
-export const NavigationMenu: FC<NavigationMenuProps> = memo<NavigationMenuProps>(({
-  open,
-  setOpen,
-  activeItem,
-  sidebarMenuItems,
-  sidebarServiceMenuItems,
-  onSelectItem,
-}) => {
+export const NavigationMenu: FC<NavigationMenuProps> = memo<NavigationMenuProps>(
+  ({ open, setOpen, activeItem, sidebarMenuItems, sidebarServiceMenuItems, onSelectItem }) => {
+    const handleDrawerToggle = useCallback((): void => {
+      setOpen(!open)
+    }, [open, setOpen])
 
-  const handleDrawerToggle = useCallback((): void => {
-    setOpen(!open)
-  }, [open, setOpen])
+    const onClickItem = useCallback(
+      (itemId: string) => {
+        if (itemId === TOGGLE_SIDEBAR_BUTTON) {
+          handleDrawerToggle()
+        } else {
+          onSelectItem(itemId)
+        }
+      },
+      [handleDrawerToggle, onSelectItem],
+    )
 
-  const onClickItem = useCallback((itemId: string) => {
-    if (itemId === TOGGLE_SIDEBAR_BUTTON) {
-      handleDrawerToggle()
-    } else {
-      onSelectItem(itemId)
-    }
-  }, [handleDrawerToggle, onSelectItem])
+    const serviceItems: SidebarMenu[] = useMemo(
+      () => [
+        ...(sidebarServiceMenuItems ?? []),
+        {
+          id: TOGGLE_SIDEBAR_BUTTON,
+          title: open ? 'Collapse' : 'Expand',
+          tooltip: open ? '' : 'Expand',
+          icon: open ? <KeyboardDoubleArrowLeftIcon /> : <KeyboardDoubleArrowRightIcon />,
+          testId: open ? 'CollapseButton' : 'ExpandButton',
+        },
+      ],
+      [open, sidebarServiceMenuItems],
+    )
 
-  const serviceItems: SidebarMenu[] = useMemo(() => [
-    ...(sidebarServiceMenuItems ?? []),
-    {
-      id: TOGGLE_SIDEBAR_BUTTON,
-      title: open ? 'Collapse' : 'Expand',
-      tooltip: open ? '' : 'Expand',
-      icon: (
-        open
-          ? <KeyboardDoubleArrowLeftIcon/>
-          : <KeyboardDoubleArrowRightIcon/>
-      ),
-      testId: open ? 'CollapseButton' : 'ExpandButton',
-    },
-  ], [open, sidebarServiceMenuItems])
-
-  return (
-    <Box
-      height="100%"
-      display="grid"
-      sx={{ backgroundColor: '#F5F5FA' }}
-      borderRadius="10px 0 0 0"
-    >
-      <Drawer
-        variant="permanent"
-        open={open}
-        sx={{
-          borderRadius: '10px 0 0 0',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-        }}
-      >
-        <List sx={{ height: `calc(100% - ${serviceItems.length} *  48px)` }}>
-          {sidebarMenuItems.map(menuItem => {
-            const { id, title, disabled, tooltip, icon, testId } = menuItem
-            return (
-              <Tooltip key={`tooltip-${id}`} title={tooltip} disableHoverListener={open && !disabled} placement="right">
-                <ListItem key={id} disablePadding sx={{ display: 'block' }}>
-                  <ListItemButton
-                    sx={LIST_ITEM_BUTTON_STYLE(activeItem, id)}
-                    onClick={() => onClickItem(id)}
-                    disabled={disabled}
-                    data-testid={testId}
-                  >
-                    <ListItemIcon sx={LIST_ITEM_ICON_STYLE}>
-                      {icon}
-                    </ListItemIcon>
-                    {open ? <ListItemText primary={title}/> : null}
-                  </ListItemButton>
-                </ListItem>
-              </Tooltip>
-            )
-          })}
-        </List>
-        <List sx={{ height: 'auto' }}>
-          {serviceItems.map(menuItem => {
-            const { id, title, disabled, tooltip, icon, testId } = menuItem
-            return (
-              <Tooltip key={`tooltip-${id}`} title={tooltip} disableHoverListener={open && !disabled} placement="right">
-                <ListItem key={id} disablePadding sx={{ display: 'block' }}>
-                  <ListItemButton
-                    sx={LIST_ITEM_BUTTON_STYLE(activeItem, id)}
-                    onClick={() => onClickItem(id)}
-                    disabled={disabled}
-                    data-testid={testId}
-                  >
-                    <ListItemIcon sx={LIST_ITEM_ICON_STYLE}>
-                      {icon}
-                    </ListItemIcon>
-                    {open && <ListItemText primary={title}/>}
-                  </ListItemButton>
-                </ListItem>
-              </Tooltip>
-            )
-          })}
-        </List>
-      </Drawer>
-    </Box>
-  )
-})
+    return (
+      <Box height="100%" display="grid" sx={{ backgroundColor: '#F5F5FA' }} borderRadius="10px 0 0 0">
+        <Drawer
+          variant="permanent"
+          open={open}
+          sx={{
+            borderRadius: '10px 0 0 0',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+          }}
+        >
+          <List sx={{ height: `calc(100% - ${serviceItems.length} *  48px)` }}>
+            {sidebarMenuItems.map((menuItem) => {
+              const { id, title, disabled, tooltip, icon, testId } = menuItem
+              return (
+                <Tooltip
+                  key={`tooltip-${id}`}
+                  title={tooltip}
+                  disableHoverListener={open && !disabled}
+                  placement="right"
+                >
+                  <ListItem key={id} disablePadding sx={{ display: 'block' }}>
+                    <ListItemButton
+                      sx={LIST_ITEM_BUTTON_STYLE(activeItem, id)}
+                      onClick={() => onClickItem(id)}
+                      disabled={disabled}
+                      data-testid={testId}
+                    >
+                      <ListItemIcon sx={LIST_ITEM_ICON_STYLE}>{icon}</ListItemIcon>
+                      {open ? <ListItemText primary={title} /> : null}
+                    </ListItemButton>
+                  </ListItem>
+                </Tooltip>
+              )
+            })}
+          </List>
+          <List sx={{ height: 'auto' }}>
+            {serviceItems.map((menuItem) => {
+              const { id, title, disabled, tooltip, icon, testId } = menuItem
+              return (
+                <Tooltip
+                  key={`tooltip-${id}`}
+                  title={tooltip}
+                  disableHoverListener={open && !disabled}
+                  placement="right"
+                >
+                  <ListItem key={id} disablePadding sx={{ display: 'block' }}>
+                    <ListItemButton
+                      sx={LIST_ITEM_BUTTON_STYLE(activeItem, id)}
+                      onClick={() => onClickItem(id)}
+                      disabled={disabled}
+                      data-testid={testId}
+                    >
+                      <ListItemIcon sx={LIST_ITEM_ICON_STYLE}>{icon}</ListItemIcon>
+                      {open && <ListItemText primary={title} />}
+                    </ListItemButton>
+                  </ListItem>
+                </Tooltip>
+              )
+            })}
+          </List>
+        </Drawer>
+      </Box>
+    )
+  },
+)
 
 const DRAWER_WIDTH = 172
 
@@ -183,22 +180,20 @@ const closedMixin = (theme: Theme): CSSObject => ({
   },
 })
 
-const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
-  ({ theme, open }) => ({
-    width: DRAWER_WIDTH,
-    flexShrink: 0,
-    whiteSpace: 'nowrap',
-    boxSizing: 'border-box',
-    ...(open && {
-      ...openedMixin(theme),
-      '& .MuiDrawer-paper': openedMixin(theme),
-    }),
-    ...(!open && {
-      ...closedMixin(theme),
-      '& .MuiDrawer-paper': closedMixin(theme),
-    }),
+const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(({ theme, open }) => ({
+  width: DRAWER_WIDTH,
+  flexShrink: 0,
+  whiteSpace: 'nowrap',
+  boxSizing: 'border-box',
+  ...(open && {
+    ...openedMixin(theme),
+    '& .MuiDrawer-paper': openedMixin(theme),
   }),
-)
+  ...(!open && {
+    ...closedMixin(theme),
+    '& .MuiDrawer-paper': closedMixin(theme),
+  }),
+}))
 
 const LIST_ITEM_BUTTON_STYLE = (activeItem: string, id: string): SxProps => ({
   minHeight: 48,

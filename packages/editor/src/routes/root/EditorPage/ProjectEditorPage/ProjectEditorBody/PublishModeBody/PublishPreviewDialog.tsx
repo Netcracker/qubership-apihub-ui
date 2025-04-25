@@ -46,10 +46,7 @@ import { SpecNavigation } from '@netcracker/qubership-apihub-ui-shared/component
 import { DocSpecView } from '@apihub/components/DocSpecView'
 
 export const PublishPreviewDialog: FC = memo(() => (
-  <PopupDelegate
-    type={SHOW_PUBLISH_PREVIEW_DIALOG}
-    render={props => <PublishPreviewPopup {...props}/>}
-  />
+  <PopupDelegate type={SHOW_PUBLISH_PREVIEW_DIALOG} render={(props) => <PublishPreviewPopup {...props} />} />
 ))
 
 const PublishPreviewPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }) => {
@@ -57,32 +54,18 @@ const PublishPreviewPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen })
   const { name } = useSelectedPreviewFile() ?? {}
 
   return (
-    <Dialog
-      maxWidth={false}
-      fullWidth
-      open={open}
-      onClose={() => setOpen(false)}
-    >
+    <Dialog maxWidth={false} fullWidth open={open} onClose={() => setOpen(false)}>
       <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
         {name} Preview
         <Box display="flex" marginLeft="auto" alignItems="center" gap={3}>
-          <SpecViewToggler
-            mode={specViewMode}
-            modes={PORTAL_SPEC_VIEW_MODES}
-            onChange={setSpecViewMode}
-          />
-          <IconButton
-            sx={{ color: '#353C4E' }}
-            onClick={() => setOpen(false)}
-          >
-            <CloseOutlinedIcon/>
+          <SpecViewToggler mode={specViewMode} modes={PORTAL_SPEC_VIEW_MODES} onChange={setSpecViewMode} />
+          <IconButton sx={{ color: '#353C4E' }} onClick={() => setOpen(false)}>
+            <CloseOutlinedIcon />
           </IconButton>
         </Box>
       </DialogTitle>
 
-      <PublishPreviewDialogContent
-        mode={specViewMode as SpecViewMode}
-      />
+      <PublishPreviewDialogContent mode={specViewMode as SpecViewMode} />
     </Dialog>
   )
 })
@@ -136,20 +119,16 @@ const PublishPreviewDialogContent: FC<PublishPreviewDialogContentProps> = ({ mod
           topLeft: false,
         }}
       >
-        <SpecNavigation
-          content={dereferencedSpec}
-          selectedUri={specItemUri}
-          onSelect={setSpecItemUri}
-        />
+        <SpecNavigation content={dereferencedSpec} selectedUri={specItemUri} onSelect={setSpecItemUri} />
       </Resizable>
       <Box width="100%" height="100%" px={4}>
-        {
-          isLoading
-            ? <LoadingIndicator/>
-            : mode === RAW_SPEC_VIEW_MODE
-              ? <RawSpecView extension={getFileExtension(name)} type={type} value={content} selectedUri={specItemUri}/>
-              : <DocSpecView type={type} format={format} value={dereferencedSpec} sidebarEnabled/>
-        }
+        {isLoading ? (
+          <LoadingIndicator />
+        ) : mode === RAW_SPEC_VIEW_MODE ? (
+          <RawSpecView extension={getFileExtension(name)} type={type} value={content} selectedUri={specItemUri} />
+        ) : (
+          <DocSpecView type={type} format={format} value={dereferencedSpec} sidebarEnabled />
+        )}
       </Box>
     </DialogContent>
   )

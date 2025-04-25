@@ -37,64 +37,50 @@ export type DocumentSearchListProps = {
   hasNextPage?: boolean
 }
 
-export const DocumentSearchList: FC<DocumentSearchListProps> = memo<DocumentSearchListProps>((
-  { value, searchText, isNextPageFetching, hasNextPage, fetchNextPage },
-) => {
-  const ref = useRef<HTMLDivElement>(null)
-  useIntersectionObserver(ref, isNextPageFetching, hasNextPage, fetchNextPage)
+export const DocumentSearchList: FC<DocumentSearchListProps> = memo<DocumentSearchListProps>(
+  ({ value, searchText, isNextPageFetching, hasNextPage, fetchNextPage }) => {
+    const ref = useRef<HTMLDivElement>(null)
+    useIntersectionObserver(ref, isNextPageFetching, hasNextPage, fetchNextPage)
 
-  return (
-    <Box width={CONTENT_WIDTH} position="relative">
-      {value.map(
-        ({
-          packageKey,
-          name,
-          parentPackages,
-          labels,
-          version,
-          slug,
-          type,
-          title,
-          status,
-          content,
-          createdAt,
-        }) => {
-          const { versionKey } = getSplittedVersionKey(version)
-          return (
-            <Box mb={2} data-testid="SearchResultRow">
-              <ResultCommonHeader
-                url={getDocumentPath({ packageKey: packageKey, versionKey: versionKey, documentKey: slug })}
-                icon={type}
-                breadCrumbsStatus={status}
-                title={title}
-                parents={[...parentPackages, name, versionKey]}
-                searchText={searchText}
-              />
-              <Marker mark={searchText}>
-                <Box display="flex" gap={1} alignItems="center">
-                  <Typography variant="body2">Publication date</Typography>
-                  <Typography variant="subtitle2" data-testid="PublicationDateValue">
-                    <FormattedDate value={createdAt}/>
+    return (
+      <Box width={CONTENT_WIDTH} position="relative">
+        {value.map(
+          ({ packageKey, name, parentPackages, labels, version, slug, type, title, status, content, createdAt }) => {
+            const { versionKey } = getSplittedVersionKey(version)
+            return (
+              <Box mb={2} data-testid="SearchResultRow">
+                <ResultCommonHeader
+                  url={getDocumentPath({ packageKey: packageKey, versionKey: versionKey, documentKey: slug })}
+                  icon={type}
+                  breadCrumbsStatus={status}
+                  title={title}
+                  parents={[...parentPackages, name, versionKey]}
+                  searchText={searchText}
+                />
+                <Marker mark={searchText}>
+                  <Box display="flex" gap={1} alignItems="center">
+                    <Typography variant="body2">Publication date</Typography>
+                    <Typography variant="subtitle2" data-testid="PublicationDateValue">
+                      <FormattedDate value={createdAt} />
+                    </Typography>
+                  </Box>
+
+                  <RateResults searchText={searchText} labels={labels} />
+                  <Typography noWrap variant="body2" data-testid="DocumentContent">
+                    {content ?? 'No content'}
                   </Typography>
-                </Box>
+                </Marker>
+              </Box>
+            )
+          },
+        )}
 
-                <RateResults searchText={searchText} labels={labels}/>
-                <Typography noWrap variant="body2" data-testid="DocumentContent">
-                  {content ?? 'No content'}
-                </Typography>
-              </Marker>
-            </Box>
-          )
-        })}
-
-      {hasNextPage && (
-        <Box
-          ref={ref}
-          height="100px"
-        >
-          <LoadingIndicator/>
-        </Box>
-      )}
-    </Box>
-  )
-})
+        {hasNextPage && (
+          <Box ref={ref} height="100px">
+            <LoadingIndicator />
+          </Box>
+        )}
+      </Box>
+    )
+  },
+)

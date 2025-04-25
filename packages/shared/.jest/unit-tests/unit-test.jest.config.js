@@ -4,24 +4,15 @@ export default {
   rootDir: '../..',
   roots: ['<rootDir>/src', '<rootDir>/../portal/src', '<rootDir>/../agents/src'],
   testEnvironment: 'node',
-  moduleFileExtensions: [
-    'ts',
-    'js',
-    'json',
-    'node',
-  ],
+  moduleFileExtensions: ['ts', 'js', 'json', 'node'],
   transform: {
-    '\\.ts?$': [
-      'ts-jest', { tsconfig: '<rootDir>/.jest/unit-tests/tsconfig.unit-test.json' },
-    ],
+    '\\.ts?$': ['ts-jest', { tsconfig: '<rootDir>/.jest/unit-tests/tsconfig.unit-test.json' }],
   },
   moduleNameMapper: {
     '^@netcracker/qubership-apihub-ui-shared/(.*)$': '<rootDir>/src/$1',
   },
   modulePaths: ['<rootDir>/src', '<rootDir>/../portal/src'],
-  reporters: [
-    'default',
-  ],
+  reporters: ['default'],
   collectCoverage: true,
   coverageReporters: ['text'],
 }

@@ -148,7 +148,6 @@ type EventBus = {
   showPublishPreviewDialog: () => void
   showAddGroupReferenceDialog: () => void
   showPublishGroupVersionDialog: () => void
-
 }
 
 function eventBusProvider(): EventBus {
@@ -183,7 +182,6 @@ function eventBusProvider(): EventBus {
       showPublishPreviewDialog: slot(),
       showAddGroupReferenceDialog: slot(),
       showPublishGroupVersionDialog: slot(),
-
     },
   })
 
@@ -268,11 +266,7 @@ const EventBusContext = createContext<EventBus>()
 export const EventBusProvider: FC<PropsWithChildren> = memo<PropsWithChildren>(({ children }) => {
   const [eventBus] = useState(eventBusProvider)
 
-  return (
-    <EventBusContext.Provider value={eventBus}>
-      {children}
-    </EventBusContext.Provider>
-  )
+  return <EventBusContext.Provider value={eventBus}>{children}</EventBusContext.Provider>
 })
 
 export function useEventBus(): EventBus {

@@ -39,21 +39,33 @@ export const UserRolesSettingsTab: FC = memo(() => {
   const showNotification = useShowSuccessNotification()
   const showErrorNotification = useShowErrorNotification()
 
-  const onError = useCallback((error: Error) => {
-    showErrorNotification({ message: error?.message })
-  }, [showErrorNotification])
+  const onError = useCallback(
+    (error: Error) => {
+      showErrorNotification({ message: error?.message })
+    },
+    [showErrorNotification],
+  )
 
-  const onRoleCreated = useCallback((roleName: string) => {
-    showNotification({ message: `Role ${roleName} has been created` })
-  }, [showNotification])
+  const onRoleCreated = useCallback(
+    (roleName: string) => {
+      showNotification({ message: `Role ${roleName} has been created` })
+    },
+    [showNotification],
+  )
 
-  const onRoleUpdated = useCallback((roleName: string) => {
-    showNotification({ message: `Role ${roleName} has been updated` })
-  }, [showNotification])
+  const onRoleUpdated = useCallback(
+    (roleName: string) => {
+      showNotification({ message: `Role ${roleName} has been updated` })
+    },
+    [showNotification],
+  )
 
-  const onRoleDeleted = useCallback((roleName: string) => {
-    showNotification({ message: `Role ${roleName} has been deleted` })
-  }, [showNotification])
+  const onRoleDeleted = useCallback(
+    (roleName: string) => {
+      showNotification({ message: `Role ${roleName} has been deleted` })
+    },
+    [showNotification],
+  )
 
   const { data: roles, isLoading: isRolesLoading } = useRoles()
   const [permissions, isPermissionsLoading] = usePermissions()
@@ -61,53 +73,64 @@ export const UserRolesSettingsTab: FC = memo(() => {
   const [updateRole] = useUpdateRole(onError, onRoleUpdated)
   const [deleteRole] = useDeleteRole(onError, onRoleDeleted)
 
-  const handleCreateRole = useCallback(() => showEditRoleDialog({
-    permissions: permissions,
-    onConfirm: (role) => createRole(role),
-    isRoleUnique: (roleName) => !roles?.some(({ role }) => role.toLowerCase() === roleName.toLowerCase()),
-  }), [showEditRoleDialog, permissions, createRole, roles])
+  const handleCreateRole = useCallback(
+    () =>
+      showEditRoleDialog({
+        permissions: permissions,
+        onConfirm: (role) => createRole(role),
+        isRoleUnique: (roleName) => !roles?.some(({ role }) => role.toLowerCase() === roleName.toLowerCase()),
+      }),
+    [showEditRoleDialog, permissions, createRole, roles],
+  )
 
-  const handleEditRole = useCallback((role: Role) => {
-    showEditRoleDialog({
-      permissions: permissions,
-      role: role,
-      onConfirm: (role) => updateRole(role),
-    })
-  }, [permissions, showEditRoleDialog, updateRole])
+  const handleEditRole = useCallback(
+    (role: Role) => {
+      showEditRoleDialog({
+        permissions: permissions,
+        role: role,
+        onConfirm: (role) => updateRole(role),
+      })
+    },
+    [permissions, showEditRoleDialog, updateRole],
+  )
 
-  const handleDeleteRole = useCallback((role: Role) => showDeleteRoleDialog({
-    role: role,
-    onConfirm: (role) => deleteRole(role),
-  }), [deleteRole, showDeleteRoleDialog])
+  const handleDeleteRole = useCallback(
+    (role: Role) =>
+      showDeleteRoleDialog({
+        role: role,
+        onConfirm: (role) => deleteRole(role),
+      }),
+    [deleteRole, showDeleteRoleDialog],
+  )
 
-  return <>
-    <BodyCard
-      header="User Roles"
-      action={
-        <Button
-          variant="contained"
-          onClick={handleCreateRole}
-          data-testid="CreateRoleButton"
-        >
-          Create Role
-        </Button>
-      }
-      body={isRolesLoading || isPermissionsLoading ? (
-        <LoadingIndicator/>
-      ) : (
-        <Box overflow="hidden">
-          <Box marginTop="8px" height="100%" overflow="hidden">
-            <RolesTable
-              permissions={permissions}
-              roles={roles}
-              onDelete={handleDeleteRole}
-              onEdit={handleEditRole}
-            />
-          </Box>
-        </Box>
-      )}
-    />
-    <DeleteRoleDialog/>
-    <EditRoleDialog/>
-  </>
+  return (
+    <>
+      <BodyCard
+        header="User Roles"
+        action={
+          <Button variant="contained" onClick={handleCreateRole} data-testid="CreateRoleButton">
+            Create Role
+          </Button>
+        }
+        body={
+          isRolesLoading || isPermissionsLoading ? (
+            <LoadingIndicator />
+          ) : (
+            <Box overflow="hidden">
+              <Box marginTop="8px" height="100%" overflow="hidden">
+                <RolesTable
+                  permissions={permissions}
+                  roles={roles}
+                  onDelete={handleDeleteRole}
+                  onEdit={handleEditRole}
+                />
+              </Box>
+            </Box>
+          )
+        }
+      />
+      <DeleteRoleDialog />
+      <EditRoleDialog />
+    </>
+  )
 })

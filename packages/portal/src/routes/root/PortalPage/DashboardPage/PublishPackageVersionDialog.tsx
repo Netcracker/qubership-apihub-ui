@@ -49,7 +49,7 @@ export const PublishPackageVersionDialog: FC = memo(() => {
   return (
     <PopupDelegate
       type={SHOW_PUBLISH_PACKAGE_VERSION_DIALOG}
-      render={props => <PublishPackageVersionPopup {...props}/>}
+      render={(props) => <PublishPackageVersionPopup {...props} />}
     />
   )
 })
@@ -95,29 +95,37 @@ const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
 
   const [publishPackage, isPublishLoading, isPublishSuccess] = usePublishPackageVersion()
 
-  useEffect(() => {isPublishSuccess && setOpen(false)}, [setOpen, isPublishSuccess])
+  useEffect(() => {
+    isPublishSuccess && setOpen(false)
+  }, [setOpen, isPublishSuccess])
 
   const dashboardRefs = useDashboardReferences()
 
-  const onPublish = useCallback(async (data: PublishInfo): Promise<void> => {
-    const previousVersion = replaceEmptyPreviousVersion(data.previousVersion)
+  const onPublish = useCallback(
+    async (data: PublishInfo): Promise<void> => {
+      const previousVersion = replaceEmptyPreviousVersion(data.previousVersion)
 
-    publishPackage({
-      version: data.version,
-      status: data.status,
-      labels: data.labels,
-      previousVersion: previousVersion,
-      ...takeIf({
-        files: Object.entries(filesWithLabels)?.map(([key, { labels }]) => ({
-          fileId: key,
-          labels: labels,
-          publish: true,
-        })),
-        sources: filesRecordToArray(filesWithLabels),
-      }, isPackage),
-      refs: isDashboard ? dashboardRefs.map(ref => ref.packageReference) : [],
-    })
-  }, [dashboardRefs, filesWithLabels, isDashboard, isPackage, publishPackage])
+      publishPackage({
+        version: data.version,
+        status: data.status,
+        labels: data.labels,
+        previousVersion: previousVersion,
+        ...takeIf(
+          {
+            files: Object.entries(filesWithLabels)?.map(([key, { labels }]) => ({
+              fileId: key,
+              labels: labels,
+              publish: true,
+            })),
+            sources: filesRecordToArray(filesWithLabels),
+          },
+          isPackage,
+        ),
+        refs: isDashboard ? dashboardRefs.map((ref) => ref.packageReference) : [],
+      })
+    },
+    [dashboardRefs, filesWithLabels, isDashboard, isPackage, publishPackage],
+  )
 
   return (
     <VersionDialogForm

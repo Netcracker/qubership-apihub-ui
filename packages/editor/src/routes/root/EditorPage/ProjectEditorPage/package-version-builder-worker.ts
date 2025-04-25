@@ -15,11 +15,7 @@
  */
 
 import { expose } from 'comlink'
-import type {
-  BuildConfig,
-  BuildResult,
-  VersionsComparison,
-} from '@netcracker/qubership-apihub-api-processor'
+import type { BuildConfig, BuildResult, VersionsComparison } from '@netcracker/qubership-apihub-api-processor'
 import { PackageVersionBuilder } from '@netcracker/qubership-apihub-api-processor'
 
 import type { BuilderOptions } from './package-version-builder'
@@ -60,18 +56,9 @@ export type PackageVersionBuilderWorker = {
   init: (options: BuilderOptions) => Promise<void>
   getBranchCache: () => Promise<BranchCache>
   checkBwc: (options: BuilderOptions) => Promise<VersionsComparison[]>
-  dereference: (
-    fileKey: FileKey,
-    options: BuilderOptions,
-  ) => Promise<FileData>
-  updateCache: (
-    options: BuilderOptions,
-    fileKey?: FileKey,
-  ) => Promise<BranchCache>
-  publishPackage: (
-    options: PublishOptions,
-    authorization: string,
-  ) => Promise<PublishDetails>
+  dereference: (fileKey: FileKey, options: BuilderOptions) => Promise<FileData>
+  updateCache: (options: BuilderOptions, fileKey?: FileKey) => Promise<BranchCache>
+  publishPackage: (options: PublishOptions, authorization: string) => Promise<PublishDetails>
 }
 
 type BranchCache = Record<FileKey, FileData | undefined>
@@ -86,22 +73,18 @@ function getBuilderCache(): Promise<BranchCache> {
     return Promise.reject('No builder initialized')
   }
 
-  builder.buildResult.documents
-    .forEach(({ fileId }) => {
-      branchCache[fileId] = getFileDataFromCache(fileId)
-    })
+  builder.buildResult.documents.forEach(({ fileId }) => {
+    branchCache[fileId] = getFileDataFromCache(fileId)
+  })
 
   return Promise.resolve(branchCache)
 }
 
 function getFileDataFromCache(fileKey: string): FileData {
-  const cachingService =
-    VersionDocumentsCachingService.getInstance(BUILDER_WORKER_CACHING_SERVICE_TAG)
+  const cachingService = VersionDocumentsCachingService.getInstance(BUILDER_WORKER_CACHING_SERVICE_TAG)
 
   const updatedDocument = builder!.buildResult.documents.get(fileKey)!
-  const {
-    fileId, type, title, data, dependencies,
-  } = cachingService.eitherThisOrCache(updatedDocument)
+  const { fileId, type, title, data, dependencies } = cachingService.eitherThisOrCache(updatedDocument)
 
   const fileSource = builder?.parsedFiles.get(fileId)?.source
   const content = data && isNotEmpty(Object.keys(data)) ? safeStringify(data) : data
@@ -127,28 +110,21 @@ const worker: PackageVersionBuilderWorker = {
     if (!builder) {
       await initializeBuilder(options)
     } else {
-      await builder.update(
-        toPackageVersionBuilderConfig(options),
-        [],
-      )
+      await builder.update(toPackageVersionBuilderConfig(options), [])
     }
 
-    return builder!.comparisons.filter(
-      comparison => comparison.operationTypes.some(({ changesSummary }) => changesSummary && changesSummary.breaking > 0),
+    return builder!.comparisons.filter((comparison) =>
+      comparison.operationTypes.some(({ changesSummary }) => changesSummary && changesSummary.breaking > 0),
     )
   },
   dereference: async (fileKey, options): Promise<FileData> => {
     if (!builder) {
       await initializeBuilder(options)
     } else if (fileKey) {
-      await builder.update(
-        builder.config,
-        [fileKey],
-        {
-          withoutChangelog: true,
-          withoutDeprecatedDepth: true,
-        },
-      )
+      await builder.update(builder.config, [fileKey], {
+        withoutChangelog: true,
+        withoutDeprecatedDepth: true,
+      })
     }
 
     return getFileDataFromCache(fileKey)
@@ -157,14 +133,10 @@ const worker: PackageVersionBuilderWorker = {
     if (!builder) {
       await initializeBuilder(options)
     } else if (fileKey) {
-      await builder.update(
-        toPackageVersionBuilderConfig(options),
-        [fileKey],
-        {
-          withoutChangelog: true,
-          withoutDeprecatedDepth: true,
-        },
-      )
+      await builder.update(toPackageVersionBuilderConfig(options), [fileKey], {
+        withoutChangelog: true,
+        withoutDeprecatedDepth: true,
+      })
     }
 
     if (!fileKey) {
@@ -179,10 +151,12 @@ const worker: PackageVersionBuilderWorker = {
     const { packageId: packageKey } = options
     const builderId = crypto.randomUUID()
     const sources = await fetchAllFilesBlob(options.projectId, options.metadata.branchName, authorization)
-    const {
-      publishId,
-      config: buildConfig,
-    } = await startPackageVersionPublication(options, authorization, builderId, sources)
+    const { publishId, config: buildConfig } = await startPackageVersionPublication(
+      options,
+      authorization,
+      builderId,
+      sources,
+    )
 
     const abortController = new AbortController()
     const intervalId = setInterval(() => {
@@ -251,50 +225,48 @@ async function initializeBuilder(options: BuilderOptions): Promise<BuildResult> 
     }
   }
 
-  builder = new PackageVersionBuilder(toPackageVersionBuilderConfig(options), {
-    configuration: {
-      bundleComponents: true,
+  builder = new PackageVersionBuilder(
+    toPackageVersionBuilderConfig(options),
+    {
+      configuration: {
+        bundleComponents: true,
+      },
+      resolvers: {
+        fileResolver: async (fileId) => await fetchFileContent(packageKey, branchName!, fileId, authorization),
+        versionResolver: await packageVersionResolver(authorization),
+        versionReferencesResolver: await versionReferencesResolver(authorization),
+        versionOperationsResolver: await versionOperationsResolver(authorization),
+        versionDeprecatedResolver: await versionDeprecatedResolver(authorization),
+      },
     },
-    resolvers: {
-      fileResolver: async (fileId) =>
-        await fetchFileContent(
-          packageKey,
-          branchName!,
-          fileId,
-          authorization,
-        ),
-      versionResolver: await packageVersionResolver(authorization),
-      versionReferencesResolver: await versionReferencesResolver(authorization),
-      versionOperationsResolver: await versionOperationsResolver(authorization),
-      versionDeprecatedResolver: await versionDeprecatedResolver(authorization),
-    },
-  }, fileSources)
+    fileSources,
+  )
 
   return await builder.run({
     withoutDeprecatedDepth: true,
   })
 }
 
-function toPackageVersionBuilderConfig(
-  {
-    files,
-    packageKey,
-    previousPackageKey,
-    previousVersionKey,
-    versionKey,
-  }: BuilderOptions): BuildConfig {
+function toPackageVersionBuilderConfig({
+  files,
+  packageKey,
+  previousPackageKey,
+  previousVersionKey,
+  versionKey,
+}: BuilderOptions): BuildConfig {
   return {
     packageId: packageKey,
     version: versionKey,
     status: 'draft',
     previousVersion: previousVersionKey,
     previousVersionPackageId: previousPackageKey,
-    files: files?.map(({ key, blobKey, labels, publish }) => ({
-      fileId: key,
-      publish: publish,
-      blobId: blobKey,
-      labels: labels,
-    })) ?? [],
+    files:
+      files?.map(({ key, blobKey, labels, publish }) => ({
+        fileId: key,
+        publish: publish,
+        blobId: blobKey,
+        labels: labels,
+      })) ?? [],
   }
 }
 

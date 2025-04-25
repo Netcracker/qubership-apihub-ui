@@ -93,8 +93,10 @@ export function useOpenApiVisitor(operationData: object | undefined): OpenApiDat
       const schemaObjectNames = resolveSharedSchemaNames(value)
       const title = value?.title
       if (title && schemaObjectNames) {
-        schemaObjectNames.forEach(schemaObjectName => {
-          let existingData: OpenApiVisitorData | undefined = activeDataCollection.find(i => i.schemaObjectName === schemaObjectName)
+        schemaObjectNames.forEach((schemaObjectName) => {
+          let existingData: OpenApiVisitorData | undefined = activeDataCollection.find(
+            (i) => i.schemaObjectName === schemaObjectName,
+          )
           if (!existingData) {
             const commonData = {
               scopeDeclarationPath: scopeDeclarationPathStack.at(-1)!,
@@ -103,9 +105,9 @@ export function useOpenApiVisitor(operationData: object | undefined): OpenApiDat
               derivedSchemas: [],
             }
 
-            const sharedSchema =
-              (normalizedSpec[OPEN_API_PROPERTY_COMPONENTS] as OpenAPIV3.ComponentsObject)
-                ?.[OPEN_API_PROPERTY_SCHEMAS]?.[schemaObjectName] as OpenAPIV3.SchemaObject
+            const sharedSchema = (normalizedSpec[OPEN_API_PROPERTY_COMPONENTS] as OpenAPIV3.ComponentsObject)?.[
+              OPEN_API_PROPERTY_SCHEMAS
+            ]?.[schemaObjectName] as OpenAPIV3.SchemaObject
 
             if (!sharedSchema) {
               return activeDataCollection.push({
@@ -115,12 +117,14 @@ export function useOpenApiVisitor(operationData: object | undefined): OpenApiDat
               })
             }
 
-            activeDataCollection.push(existingData = {
-              ...commonData,
-              title: sharedSchema?.[JSON_SCHEMA_PROPERTY_TITLE] ?? title,
-              schemaObject: sharedSchema,
-              schemaTolerantHashWithTitle: schemaHashWithTitle(sharedSchema),
-            })
+            activeDataCollection.push(
+              (existingData = {
+                ...commonData,
+                title: sharedSchema?.[JSON_SCHEMA_PROPERTY_TITLE] ?? title,
+                schemaObject: sharedSchema,
+                schemaTolerantHashWithTitle: schemaHashWithTitle(sharedSchema),
+              }),
+            )
           }
           if (!existingData.derivedSchemas.includes(value)) {
             existingData.derivedSchemas.push(value)
@@ -130,81 +134,85 @@ export function useOpenApiVisitor(operationData: object | undefined): OpenApiDat
       return true
     }
 
-    walker.walkPathsOnNormalizedSource(normalizedSpec, {
-      pathStart: ({ declarationPaths }) => {
-        const path = pathItemToFullPath(declarationPaths[0])
-        scopeDeclarationPathStack.push(path)
-        return true
-      },
-      pathEnd: () => {
-        scopeDeclarationPathStack.pop()
-      },
-      responseStart: ({ responseCode, declarationPaths }) => {
-        responses[responseCode] = activeDataSection = {}
-        const path = pathItemToFullPath(declarationPaths[0])
-        scopeDeclarationPathStack.push(path)
-        return true
-      },
-      responseEnd: () => {
-        activeDataSection = {}
-        scopeDeclarationPathStack.pop()
-      },
-
-      requestBodyStart: ({ declarationPaths }) => {
-        const path = pathItemToFullPath(declarationPaths[0])
-        scopeDeclarationPathStack.push(path)
-        activeDataSection = requests
-        return true
-      },
-      requestBodyEnd: () => {
-        activeDataSection = {}
-        scopeDeclarationPathStack.pop()
-      },
-
-      parameterStart: ({ value, declarationPaths }) => {
-        if (value && value.name) {
+    walker.walkPathsOnNormalizedSource(
+      normalizedSpec,
+      {
+        pathStart: ({ declarationPaths }) => {
           const path = pathItemToFullPath(declarationPaths[0])
-          parameters.data.push({
-            title: value.name,
-            scopeDeclarationPath: scopeDeclarationPathStack.at(-1)!,
-            declarationPath: path,
-            schemaObject: paramToSchema(value),
-            derivedSchemas: [],
-          })
-        }
-        return false
-      },
-      headerStart: () => false, //forgotten?
+          scopeDeclarationPathStack.push(path)
+          return true
+        },
+        pathEnd: () => {
+          scopeDeclarationPathStack.pop()
+        },
+        responseStart: ({ responseCode, declarationPaths }) => {
+          responses[responseCode] = activeDataSection = {}
+          const path = pathItemToFullPath(declarationPaths[0])
+          scopeDeclarationPathStack.push(path)
+          return true
+        },
+        responseEnd: () => {
+          activeDataSection = {}
+          scopeDeclarationPathStack.pop()
+        },
 
-      mediaTypeStart: ({ mediaType, declarationPaths }) => {
-        const path = pathItemToFullPath(declarationPaths[0])
-        activeDataSection[mediaType] = {
-          data: activeDataCollection = [],
-          scopeDeclarationPath: path,
-          declarationPath: path,
-        }
-        activeDataCycleGuard = new Set()
-        scopeDeclarationPathStack.push(path)
-        return true
-      },
-      mediaTypeEnd: () => {
-        activeDataCycleGuard = new Set()
-        activeDataCollection = []
-        scopeDeclarationPathStack.pop()
-      },
+        requestBodyStart: ({ declarationPaths }) => {
+          const path = pathItemToFullPath(declarationPaths[0])
+          scopeDeclarationPathStack.push(path)
+          activeDataSection = requests
+          return true
+        },
+        requestBodyEnd: () => {
+          activeDataSection = {}
+          scopeDeclarationPathStack.pop()
+        },
 
-      schemaRootStart: schemaHandler,
-      combinerItemStart: schemaHandler,
-      schemaItemsStart: schemaHandler,
-      schemaPropertyStart: schemaHandler,
-      combinerStart: ({ value }) => {
-        if (activeDataCycleGuard.has(value)) {
+        parameterStart: ({ value, declarationPaths }) => {
+          if (value && value.name) {
+            const path = pathItemToFullPath(declarationPaths[0])
+            parameters.data.push({
+              title: value.name,
+              scopeDeclarationPath: scopeDeclarationPathStack.at(-1)!,
+              declarationPath: path,
+              schemaObject: paramToSchema(value),
+              derivedSchemas: [],
+            })
+          }
           return false
-        }
-        activeDataCycleGuard.add(value)
-        return true
+        },
+        headerStart: () => false, //forgotten?
+
+        mediaTypeStart: ({ mediaType, declarationPaths }) => {
+          const path = pathItemToFullPath(declarationPaths[0])
+          activeDataSection[mediaType] = {
+            data: (activeDataCollection = []),
+            scopeDeclarationPath: path,
+            declarationPath: path,
+          }
+          activeDataCycleGuard = new Set()
+          scopeDeclarationPathStack.push(path)
+          return true
+        },
+        mediaTypeEnd: () => {
+          activeDataCycleGuard = new Set()
+          activeDataCollection = []
+          scopeDeclarationPathStack.pop()
+        },
+
+        schemaRootStart: schemaHandler,
+        combinerItemStart: schemaHandler,
+        schemaItemsStart: schemaHandler,
+        schemaPropertyStart: schemaHandler,
+        combinerStart: ({ value }) => {
+          if (activeDataCycleGuard.has(value)) {
+            return false
+          }
+          activeDataCycleGuard.add(value)
+          return true
+        },
       },
-    }, { originsFlag: VISITOR_FLAG_ORIGINS })
+      { originsFlag: VISITOR_FLAG_ORIGINS },
+    )
 
     return {
       [OPEN_API_SECTION_PARAMETERS]: parameters,
@@ -217,7 +225,7 @@ export function useOpenApiVisitor(operationData: object | undefined): OpenApiDat
 //todo copy from ApiSpecView (httpOperationParamsToSchema), need to optimize
 // TODO 06.08.24 // Uncomment code fragments when it's ready to render parameter examples
 const paramToSchema = (value: OpenAPIV3.ParameterObject): OpenApiCustomSchemaObject => {
-  const { name, description, deprecated/*, examples*/, schema = {} } = value
+  const { name, description, deprecated /*, examples*/, schema = {} } = value
 
   // const paramExamples =
   //   examples

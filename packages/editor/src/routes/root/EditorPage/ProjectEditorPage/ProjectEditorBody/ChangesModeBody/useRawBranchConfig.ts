@@ -25,10 +25,7 @@ import { editorRequestText } from '@apihub/utils/requests'
 
 const RAW_BRANCH_CONFIG_QUERY_KEY = 'raw-branch-config-query-key'
 
-export function useRawBranchConfig(
-  original: boolean,
-  enabled: boolean = true,
-): [string, IsLoading] {
+export function useRawBranchConfig(original: boolean, enabled: boolean = true): [string, IsLoading] {
   const { projectId } = useParams()
   const [selectedBranch] = useBranchSearchParam()
 
@@ -38,17 +35,10 @@ export function useRawBranchConfig(
     enabled: enabled && !!projectId && !!selectedBranch,
   })
 
-  return [
-    data ?? '',
-    isLoading,
-  ]
+  return [data ?? '', isLoading]
 }
 
-async function getRawBranchConfig(
-  projectKey: Key,
-  branchName: string,
-  original: boolean,
-): Promise<string> {
+async function getRawBranchConfig(projectKey: Key, branchName: string, original: boolean): Promise<string> {
   const projectId = encodeURIComponent(projectKey)
   const branch = encodeURIComponent(branchName)
 

@@ -39,7 +39,8 @@ export function usePackagesFromDashboardsComparisonParams(
       ...refComparisonParams,
       originPackage: originPackageKey ? originPackage : null,
       changedPackage: changedPackageKey ? changedPackage : null,
-    }), [changedPackage, changedPackageKey, originPackage, originPackageKey, refComparisonParams],
+    }),
+    [changedPackage, changedPackageKey, originPackage, originPackageKey, refComparisonParams],
   )
 }
 

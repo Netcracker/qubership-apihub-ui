@@ -30,15 +30,12 @@ export const CustomAccordion: FC<CustomAccordionProps> = memo<CustomAccordionPro
 
   return (
     <Accordion expanded={expanded} onChange={setExpanded} elevation={0} sx={{ display: 'contents' }}>
-      <AccordionSummary
-        sx={ACCORDION_SUMMARY_STYLE}
-        expandIcon={<ExpandMoreIcon/>}
-      >
-        <Typography width="100%" noWrap variant="button">{title}</Typography>
+      <AccordionSummary sx={ACCORDION_SUMMARY_STYLE} expandIcon={<ExpandMoreIcon />}>
+        <Typography width="100%" noWrap variant="button">
+          {title}
+        </Typography>
       </AccordionSummary>
-      <AccordionDetails sx={{ width: '100%' }}>
-        {accordionDetails}
-      </AccordionDetails>
+      <AccordionDetails sx={{ width: '100%' }}>{accordionDetails}</AccordionDetails>
     </Accordion>
   )
 })

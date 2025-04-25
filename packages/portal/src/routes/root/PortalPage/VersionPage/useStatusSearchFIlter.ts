@@ -25,9 +25,12 @@ export function useStatusSearchFilter(): [DeprecatedQueryStatus, SetStatusFilter
 
   return useMemo(() => {
     const status = QUERY_PARAM_TO_STATUS[searchParam ?? ALL_DEPRECATED_STATUS_FILTER]
-    return [status, value => setSearchParams({ status: STATUS_TO_QUERY_PARAM[value ?? ALL_DEPRECATED_STATUS_FILTER] }, { replace: true })]
+    return [
+      status,
+      (value) =>
+        setSearchParams({ status: STATUS_TO_QUERY_PARAM[value ?? ALL_DEPRECATED_STATUS_FILTER] }, { replace: true }),
+    ]
   }, [searchParam, setSearchParams])
-
 }
 
 type SetStatusFilter = (value: DeprecatedQueryStatus | undefined) => void
@@ -37,7 +40,7 @@ export const NON_DEPRECATED_STATUS_FILTER = 'non-deprecated'
 export const ALL_DEPRECATED_STATUS_FILTER = 'all'
 
 export type DeprecatedStatus =
-  typeof DEPRECATED_STATUS_FILTER
+  | typeof DEPRECATED_STATUS_FILTER
   | typeof NON_DEPRECATED_STATUS_FILTER
   | typeof ALL_DEPRECATED_STATUS_FILTER
 
@@ -48,7 +51,7 @@ export const QUERY_PARAM_TO_STATUS: Record<DeprecatedStatus, DeprecatedQueryStat
 }
 
 const STATUS_TO_QUERY_PARAM: Record<DeprecatedQueryStatus, DeprecatedStatus | ''> = {
-  'true': DEPRECATED_STATUS_FILTER,
-  'false': NON_DEPRECATED_STATUS_FILTER,
-  'all': '',
+  true: DEPRECATED_STATUS_FILTER,
+  false: NON_DEPRECATED_STATUS_FILTER,
+  all: '',
 }

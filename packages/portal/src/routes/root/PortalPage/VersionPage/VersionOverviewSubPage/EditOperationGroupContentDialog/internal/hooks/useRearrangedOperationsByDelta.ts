@@ -64,15 +64,15 @@ export function rearrangeOperations(
   filtersApplied: boolean,
 ): Operations {
   return [
-    ...sourceOperations
-      .filter(operation => {
-        return !isOperationMovedWithAction(operation, excludeFromSourceByAction, delta)
-      }),
+    ...sourceOperations.filter((operation) => {
+      return !isOperationMovedWithAction(operation, excludeFromSourceByAction, delta)
+    }),
     ...delta
-      .filter(delta => {
-        const uiFiltersCriteria = !oppositeOperations || !filtersApplied || deepIncludes(oppositeOperations, delta.operation)
+      .filter((delta) => {
+        const uiFiltersCriteria =
+          !oppositeOperations || !filtersApplied || deepIncludes(oppositeOperations, delta.operation)
         return delta.action === includeToDeltaByAction && uiFiltersCriteria
       })
-      .map(delta => delta.operation),
+      .map((delta) => delta.operation),
   ]
 }

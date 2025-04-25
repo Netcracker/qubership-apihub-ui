@@ -38,29 +38,21 @@ type SpecContent = string
 type SpecItemUri = string
 type SpecExtension = FileExtension
 
-export const RawSpecView: FC<RawSpecViewProps> = /* @__PURE__ */ memo<RawSpecViewProps>((
-  {
-    value,
-    extension,
-    type,
-    selectedUri,
-    sx,
-    searchPhrase,
-    onSearchPhraseChange,
+export const RawSpecView: FC<RawSpecViewProps> = /* @__PURE__ */ memo<RawSpecViewProps>(
+  ({ value, extension, type, selectedUri, sx, searchPhrase, onSearchPhraseChange }) => {
+    return (
+      <ModuleFetchingErrorBoundary>
+        <Box mx={-4} height="100%" minWidth={0} sx={sx} data-testid="RawView">
+          <MonacoEditor
+            value={value}
+            type={type}
+            language={EXTENSION_TO_TYPE_LANGUAGE_MAP[extension]}
+            selectedUri={selectedUri}
+            searchPhrase={searchPhrase}
+            onSearchPhraseChange={onSearchPhraseChange}
+          />
+        </Box>
+      </ModuleFetchingErrorBoundary>
+    )
   },
-) => {
-  return (
-    <ModuleFetchingErrorBoundary>
-      <Box mx={-4} height="100%" minWidth={0} sx={sx} data-testid="RawView">
-        <MonacoEditor
-          value={value}
-          type={type}
-          language={EXTENSION_TO_TYPE_LANGUAGE_MAP[extension]}
-          selectedUri={selectedUri}
-          searchPhrase={searchPhrase}
-          onSearchPhraseChange={onSearchPhraseChange}
-        />
-      </Box>
-    </ModuleFetchingErrorBoundary>
-  )
-})
+)

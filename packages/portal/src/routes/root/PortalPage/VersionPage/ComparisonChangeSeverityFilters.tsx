@@ -18,9 +18,7 @@ import type { FC } from 'react'
 import { memo, useCallback, useMemo } from 'react'
 import { useOrderedComparisonFiltersSummary } from './useOrderedComparisonFiltersSummary'
 import type { ChangeSeverity } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
-import {
-  useSeverityFiltersSearchParam,
-} from '@netcracker/qubership-apihub-ui-shared/hooks/change-severities/useSeverityFiltersSearchParam'
+import { useSeverityFiltersSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/change-severities/useSeverityFiltersSearchParam'
 import { ChangeSeverityFilters } from '@netcracker/qubership-apihub-ui-shared/components/ChangeSeverityFilters'
 import type { ComparisonChangeSeverityFiltersProps } from '@apihub/routes/root/PortalPage/VersionPage/common-props'
 import { CATEGORY_PACKAGE } from '@netcracker/qubership-apihub-ui-shared/components/ChangesTooltip'
@@ -32,23 +30,18 @@ export const ComparisonChangeSeverityFilters: FC<ComparisonChangeSeverityFilters
       apiType: apiType,
     })
 
-    const changes = useMemo(
-      () => changesSummaryFromContext ?? undefined,
-      [changesSummaryFromContext],
-    )
+    const changes = useMemo(() => changesSummaryFromContext ?? undefined, [changesSummaryFromContext])
 
     const [filters, setFilters] = useSeverityFiltersSearchParam()
 
-    const handleFilters = useCallback((selectedFilters: ChangeSeverity[]): void => {
-      setFilters(selectedFilters.toString())
-    }, [setFilters])
+    const handleFilters = useCallback(
+      (selectedFilters: ChangeSeverity[]): void => {
+        setFilters(selectedFilters.toString())
+      },
+      [setFilters],
+    )
 
     return (
-      <ChangeSeverityFilters
-        changes={changes}
-        filters={filters}
-        handleFilters={handleFilters}
-        category={category}
-      />
+      <ChangeSeverityFilters changes={changes} filters={filters} handleFilters={handleFilters} category={category} />
     )
   })

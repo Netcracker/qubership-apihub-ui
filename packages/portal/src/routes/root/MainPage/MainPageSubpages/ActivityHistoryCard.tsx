@@ -26,10 +26,7 @@ export type ActivityHistoryCardProps = {
   useActivity: (enabled: boolean) => ActivityHistoryQueryResult
   textFilter?: string
   types?: ReadonlyArray<ActivityType>
-  onChangeFilters?: (filters: {
-    textFilter?: string
-    types?: ReadonlyArray<ActivityType>
-  }) => void
+  onChangeFilters?: (filters: { textFilter?: string; types?: ReadonlyArray<ActivityType> }) => void
   placeholderText?: string
 }
 
@@ -42,18 +39,16 @@ export const ActivityHistoryCard: FC<ActivityHistoryCardProps> = memo<ActivityHi
 
   return (
     <>
-      {
-        expandActivityHistoryPanel
-          ? <ActivityHistoryPanel
-            onCollapse={toggleExpandActivityHistoryPanel}
-            activities={activities}
-            isLoading={isLoading}
-            {...props}
-          />
-          : <CollapsedPanel
-            onExpand={toggleExpandActivityHistoryPanel}
-          />
-      }
+      {expandActivityHistoryPanel ? (
+        <ActivityHistoryPanel
+          onCollapse={toggleExpandActivityHistoryPanel}
+          activities={activities}
+          isLoading={isLoading}
+          {...props}
+        />
+      ) : (
+        <CollapsedPanel onExpand={toggleExpandActivityHistoryPanel} />
+      )}
     </>
   )
 })

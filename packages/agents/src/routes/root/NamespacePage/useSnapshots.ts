@@ -35,18 +35,16 @@ export function useSnapshots(): [Snapshots, IsLoading] {
     select: toSnapshots,
   })
 
-  return [
-    data ?? EMPTY_SNAPSHOTS,
-    isLoading,
-  ]
+  return [data ?? EMPTY_SNAPSHOTS, isLoading]
 }
 
 export function useInvalidateSnapshots(): InvalidateQuery<void> {
   const { namespaceKey, agentId } = useParams()
   const client = useQueryClient()
 
-  return () => client.invalidateQueries({
-    queryKey: [SNAPSHOTS_QUERY_KEY, agentId, namespaceKey],
-    refetchType: 'all',
-  })
+  return () =>
+    client.invalidateQueries({
+      queryKey: [SNAPSHOTS_QUERY_KEY, agentId, namespaceKey],
+      refetchType: 'all',
+    })
 }

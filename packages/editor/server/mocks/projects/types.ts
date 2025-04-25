@@ -108,16 +108,18 @@ export type ProjectFileDto = Readonly<{
 export type RefType = 'depend' | 'import'
 export type RefKind = 'group' | 'project'
 
-export type RefDto = Partial<Readonly<{
-  refId: Key
-  name: string
-  type: RefType
-  kind: RefKind | 'package'
-  version: string
-  versionStatus: VersionStatus
-  refUrl: Url
-  status: ChangeStatus
-}>>
+export type RefDto = Partial<
+  Readonly<{
+    refId: Key
+    name: string
+    type: RefType
+    kind: RefKind | 'package'
+    version: string
+    versionStatus: VersionStatus
+    refUrl: Url
+    status: ChangeStatus
+  }>
+>
 
 export type ProjectVersionContentDto = Readonly<{
   status: VersionStatus

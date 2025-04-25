@@ -49,41 +49,33 @@ export type OtMonacoEditorProps = {
   onChange?: (content: string) => void
 }
 
-const OtMonacoEditor: FC<OtMonacoEditorProps> = memo<OtMonacoEditorProps>(({
-  initialDocument,
-  fileType,
-  language,
-  readonly,
-  problems,
-  selectedUri,
-  onChange,
-}) => {
-  const [element, editor] = useOtMonaco({
-    value: initialDocument.document[0],
-    type: fileType,
-    language: language,
-    readonly: readonly,
-    problems: problems,
-    selectedUri: selectedUri,
-    setMonacoContent: onChange,
-  })
+const OtMonacoEditor: FC<OtMonacoEditorProps> = memo<OtMonacoEditorProps>(
+  ({ initialDocument, fileType, language, readonly, problems, selectedUri, onChange }) => {
+    const [element, editor] = useOtMonaco({
+      value: initialDocument.document[0],
+      type: fileType,
+      language: language,
+      readonly: readonly,
+      problems: problems,
+      selectedUri: selectedUri,
+      setMonacoContent: onChange,
+    })
 
-  const connecting = useConnecting()
-  const cursors = useUserCursors()
-  const connectedUsers = useConnectedUsers()
+    const connecting = useConnecting()
+    const cursors = useUserCursors()
+    const connectedUsers = useConnectedUsers()
 
-  const [authorization] = useAuthorization()
+    const [authorization] = useAuthorization()
 
-  const websocket = useFileEditingWebSocket()
+    const websocket = useFileEditingWebSocket()
 
-  const [fileId] = useFileSearchParam()
+    const [fileId] = useFileSearchParam()
 
-  useEffect(() => {
-    if (editor && fileId && websocket) {
-      const { key = '', name = '' } = authorization?.user ?? {}
+    useEffect(() => {
+      if (editor && fileId && websocket) {
+        const { key = '', name = '' } = authorization?.user ?? {}
 
-      const wsMonacoEditor = new WSMonacoEditor(
-        {
+        const wsMonacoEditor = new WSMonacoEditor({
           announcementDuration: Infinity,
           websocket: websocket,
           initialDocument: initialDocument,
@@ -92,27 +84,22 @@ const OtMonacoEditor: FC<OtMonacoEditorProps> = memo<OtMonacoEditorProps>(({
           userName: name,
           users: connectedUsers,
           cursors: cursors,
-        },
-      )
+        })
 
-      return () => {
-        wsMonacoEditor?.dispose()
+        return () => {
+          wsMonacoEditor?.dispose()
+        }
       }
-    }
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authorization?.user, editor, readonly, initialDocument, websocket])
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [authorization?.user, editor, readonly, initialDocument, websocket])
 
-  useEffect(() => {
-    editor?.updateOptions({ readOnly: readonly || connecting })
-  }, [connecting, editor, readonly])
+    useEffect(() => {
+      editor?.updateOptions({ readOnly: readonly || connecting })
+    }, [connecting, editor, readonly])
 
-  return (
-    <div
-      ref={element}
-      style={{ height: '100%' }}
-    />
-  )
-})
+    return <div ref={element} style={{ height: '100%' }} />
+  },
+)
 
 export default OtMonacoEditor

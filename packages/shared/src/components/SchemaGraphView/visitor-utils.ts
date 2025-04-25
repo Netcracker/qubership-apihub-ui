@@ -31,9 +31,9 @@ export const COMBINERS: Array<Combiner> = [ALL_OF_COMBINER, ONE_OF_COMBINER, ANY
 
 export function calculatePropertyType(value: OpenAPIV3.SchemaObject): string {
   if (!value?.type) {
-    const combinerUsed = COMBINERS.find(combiner => !!value?.[combiner])
+    const combinerUsed = COMBINERS.find((combiner) => !!value?.[combiner])
     if (combinerUsed) {
-      return combinerUsed === ALL_OF_COMBINER ? 'object'/*this wrong*/ : combinerUsed
+      return combinerUsed === ALL_OF_COMBINER ? 'object' /*this wrong*/ : combinerUsed
     }
 
     return UNKNOWN_SCHEMA_TYPE
@@ -78,8 +78,8 @@ export const VISITOR_FLAG_INLINE_REFS = Symbol('$inline')
 
 export const resolveSharedSchemaNames: (schema: OpenAPIV3.SchemaObject) => string[] | undefined = (schema) => {
   const schemaAsRecord = schema as Record<PropertyKey, unknown>
-  const inlined: string[] = schemaAsRecord[VISITOR_FLAG_INLINE_REFS] as string[] ?? []
-  const result = inlined.flatMap(ref => {
+  const inlined: string[] = (schemaAsRecord[VISITOR_FLAG_INLINE_REFS] as string[]) ?? []
+  const result = inlined.flatMap((ref) => {
     const name = parseRef(ref).jsonPath.at(-1)?.toString()
     return name ? [name] : []
   })

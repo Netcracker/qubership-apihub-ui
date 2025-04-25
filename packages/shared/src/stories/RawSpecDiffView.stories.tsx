@@ -78,4 +78,3 @@ export const FullyRemovedStory: Story = {
     extension: YAML_FILE_EXTENSION,
   },
 }
-

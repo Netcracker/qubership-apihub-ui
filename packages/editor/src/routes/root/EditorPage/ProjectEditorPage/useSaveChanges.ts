@@ -32,7 +32,7 @@ export function useSaveChanges(): [SaveChanges, IsLoading, IsSuccess] {
   const invalidateBranches = useInvalidateBranches()
 
   const { mutateAsync, isLoading, isSuccess } = useMutation<void, Error, SaveChangesDetail>({
-    mutationFn: detail => saveChanges(projectId!, selectedBranch!, detail),
+    mutationFn: (detail) => saveChanges(projectId!, selectedBranch!, detail),
     onSuccess: (_, { newBranchName }) => {
       newBranchName
         ? setSearchParams({ mode: FILES_PROJECT_EDITOR_MODE, change: '', branch: newBranchName }, { replace: true })
@@ -45,11 +45,7 @@ export function useSaveChanges(): [SaveChanges, IsLoading, IsSuccess] {
   return [mutateAsync, isLoading, isSuccess]
 }
 
-async function saveChanges(
-  projectKey: Key,
-  branchName: string,
-  detail: SaveChangesDetail,
-): Promise<void> {
+async function saveChanges(projectKey: Key, branchName: string, detail: SaveChangesDetail): Promise<void> {
   const projectId = encodeURIComponent(projectKey)
   const branch = encodeURIComponent(branchName)
 

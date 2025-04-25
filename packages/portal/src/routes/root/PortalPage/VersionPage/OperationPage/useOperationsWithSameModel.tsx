@@ -38,61 +38,45 @@ type GetModelUsages = (options: UseOperationChangelogOptions) => Promise<Operati
 
 export function useOperationsWithSameModel(): [GetModelUsages, IsLoading, IsError, Error | null] {
   const { showErrorNotification } = useEventBus()
-  const {
-    mutateAsync,
-    isLoading,
-    isError,
-    error,
-  } = useMutation<OperationsData, Error, UseOperationChangelogOptions>({
-      mutationFn: async ({
-        packageKey,
-        versionKey,
-        operationKey,
-        apiType,
-        modelName,
-      }: UseOperationChangelogOptions) => {
-        const modelUsages = await getModelUsages({
-          packageKey: packageKey,
-          versionKey: versionKey,
-          operationKey: operationKey!,
-          apiType: apiType as ApiType,
-          modelName: modelName,
-        })
-        return getOperations({
-          packageKey: packageKey,
-          versionKey: versionKey,
-          ids: modelUsages.map((usage) => usage.operationId),
-          apiType: apiType as ApiType,
-        })
-      },
-      onError: (error) => {
-        showErrorNotification({ message: error?.message })
-      },
+  const { mutateAsync, isLoading, isError, error } = useMutation<OperationsData, Error, UseOperationChangelogOptions>({
+    mutationFn: async ({ packageKey, versionKey, operationKey, apiType, modelName }: UseOperationChangelogOptions) => {
+      const modelUsages = await getModelUsages({
+        packageKey: packageKey,
+        versionKey: versionKey,
+        operationKey: operationKey!,
+        apiType: apiType as ApiType,
+        modelName: modelName,
+      })
+      return getOperations({
+        packageKey: packageKey,
+        versionKey: versionKey,
+        ids: modelUsages.map((usage) => usage.operationId),
+        apiType: apiType as ApiType,
+      })
     },
-  )
+    onError: (error) => {
+      showErrorNotification({ message: error?.message })
+    },
+  })
 
   return [mutateAsync, isLoading, isError, error]
 }
 
 async function getModelUsages(options: UseOperationChangelogOptions): Promise<ModelUsages> {
-  const {
-    versionKey,
-    packageKey,
-    operationKey,
-    apiType = DEFAULT_API_TYPE,
-    modelName,
-  } = options
+  const { versionKey, packageKey, operationKey, apiType = DEFAULT_API_TYPE, modelName } = options
 
   const packageId = encodeURIComponent(packageKey)
   const versionId = encodeURIComponent(versionKey)
   const operationId = encodeURIComponent(operationKey)
 
-  const pathPattern = '/packages/:packageId/versions/:versionId/:apiType/operations/:operationId/models/:modelName/usages'
+  const pathPattern =
+    '/packages/:packageId/versions/:versionId/:apiType/operations/:operationId/models/:modelName/usages'
   const response = await portalRequestJson<ModelUsagesDto>(
     generatePath(pathPattern, { packageId, versionId, apiType, operationId, modelName }),
     {
       method: 'get',
-    }, {
+    },
+    {
       customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
     },
   )

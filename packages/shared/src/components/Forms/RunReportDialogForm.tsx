@@ -48,129 +48,113 @@ export type RunReportDialogForm = {
   onIdpChange?: (value: string) => void
   errorMessage?: string
 }
-export const RunReportDialogForm: FC<RunReportDialogForm> = memo<RunReportDialogForm>(({
-  open,
-  setOpen,
-  onRunReport,
-  isRunning,
-  defaultIdpUrl = '',
-  onIdpChange,
-  errorMessage,
-}) => {
-  const [passwordVisible, setPasswordVisible] = useState(false)
+export const RunReportDialogForm: FC<RunReportDialogForm> = memo<RunReportDialogForm>(
+  ({ open, setOpen, onRunReport, isRunning, defaultIdpUrl = '', onIdpChange, errorMessage }) => {
+    const [passwordVisible, setPasswordVisible] = useState(false)
 
-  const defaultValues = useMemo(() => ({
-    idpUrl: defaultIdpUrl,
-    username: '',
-    password: '',
-  }), [defaultIdpUrl])
+    const defaultValues = useMemo(
+      () => ({
+        idpUrl: defaultIdpUrl,
+        username: '',
+        password: '',
+      }),
+      [defaultIdpUrl],
+    )
 
-  const {
-    handleSubmit,
-    control,
-    setValue,
-    formState,
-  } = useForm<RunReportFormData>({ defaultValues })
+    const { handleSubmit, control, setValue, formState } = useForm<RunReportFormData>({ defaultValues })
 
-  const onRunCallback = useCallback(async (data: RunReportFormData): Promise<void> => {
-    onRunReport(data)
-  }, [onRunReport])
+    const onRunCallback = useCallback(
+      async (data: RunReportFormData): Promise<void> => {
+        onRunReport(data)
+      },
+      [onRunReport],
+    )
 
-  useEffect(() => {
-    setValue('idpUrl', defaultIdpUrl)
-  }, [defaultIdpUrl, setValue])
+    useEffect(() => {
+      setValue('idpUrl', defaultIdpUrl)
+    }, [defaultIdpUrl, setValue])
 
-  return (
-    <DialogForm
-      open={open}
-      onClose={() => setOpen(false)}
-      onSubmit={handleSubmit(onRunCallback)}
-    >
-      <DialogTitle>
-        Run Gateway Routing Report
-      </DialogTitle>
-      <DialogContent>
-        <Controller
-          name="idpUrl"
-          control={control}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              value={field.value}
-              required
-              disabled={isRunning}
-              label="Identity Provider URL"
-              error={!!formState.errors.idpUrl}
-              onChange={(event) => {
-                setValue('idpUrl', event.target.value)
-                onIdpChange?.(event.target.value)
-              }}
-              data-testid="IdpUrlTextField"
-            />
+    return (
+      <DialogForm open={open} onClose={() => setOpen(false)} onSubmit={handleSubmit(onRunCallback)}>
+        <DialogTitle>Run Gateway Routing Report</DialogTitle>
+        <DialogContent>
+          <Controller
+            name="idpUrl"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                value={field.value}
+                required
+                disabled={isRunning}
+                label="Identity Provider URL"
+                error={!!formState.errors.idpUrl}
+                onChange={(event) => {
+                  setValue('idpUrl', event.target.value)
+                  onIdpChange?.(event.target.value)
+                }}
+                data-testid="IdpUrlTextField"
+              />
+            )}
+          />
+          <Controller
+            name="username"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                value={field.value}
+                required
+                disabled={isRunning}
+                label="Username"
+                error={!!formState.errors.username}
+                onChange={(event) => setValue('username', event.target.value)}
+                data-testid="UsernameTextField"
+              />
+            )}
+          />
+          {/*todo take out password input to shared*/}
+          <Controller
+            name="password"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                value={field.value}
+                required
+                disabled={isRunning}
+                label="Password"
+                type={passwordVisible ? 'text' : 'password'}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton edge="end" onClick={() => setPasswordVisible(!passwordVisible)}>
+                        {passwordVisible ? <VisibilityOffOutlinedIcon /> : <VisibilityOutlinedIcon />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+                error={!!formState.errors.password}
+                onChange={(event) => setValue('password', event.target.value)}
+                data-testid="PasswordTextField"
+              />
+            )}
+          />
+          {errorMessage && (
+            <Box pt={2}>
+              <ErrorTypography>{errorMessage}</ErrorTypography>
+            </Box>
           )}
-        />
-        <Controller
-          name="username"
-          control={control}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              value={field.value}
-              required
-              disabled={isRunning}
-              label="Username"
-              error={!!formState.errors.username}
-              onChange={(event) => setValue('username', event.target.value)}
-              data-testid="UsernameTextField"
-            />
-          )}
-        />
-        {/*todo take out password input to shared*/}
-        <Controller
-          name="password"
-          control={control}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              value={field.value}
-              required
-              disabled={isRunning}
-              label="Password"
-              type={passwordVisible ? 'text' : 'password'}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton edge="end" onClick={() => setPasswordVisible(!passwordVisible)}>
-                      {passwordVisible ? <VisibilityOffOutlinedIcon/> : <VisibilityOutlinedIcon/>}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-              error={!!formState.errors.password}
-              onChange={(event) => setValue('password', event.target.value)}
-              data-testid="PasswordTextField"
-            />
-          )}
-        />
-        {errorMessage && (
-          <Box pt={2}>
-            <ErrorTypography>{errorMessage}</ErrorTypography>
-          </Box>
-        )}
-      </DialogContent>
-      <DialogActions>
-        <LoadingButton
-          variant="contained"
-          type="submit"
-          loading={isRunning}
-          data-testid="RunReportButton"
-        >
-          Run Report
-        </LoadingButton>
-        <Button variant="outlined" onClick={() => setOpen(false)} data-testid="CancelButton">
-          Cancel
-        </Button>
-      </DialogActions>
-    </DialogForm>
-  )
-})
+        </DialogContent>
+        <DialogActions>
+          <LoadingButton variant="contained" type="submit" loading={isRunning} data-testid="RunReportButton">
+            Run Report
+          </LoadingButton>
+          <Button variant="outlined" onClick={() => setOpen(false)} data-testid="CancelButton">
+            Cancel
+          </Button>
+        </DialogActions>
+      </DialogForm>
+    )
+  },
+)

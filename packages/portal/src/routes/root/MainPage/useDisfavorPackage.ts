@@ -27,14 +27,18 @@ import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-share
 
 type DisfavorPackage = (packageKey: Key) => void
 
-export function useDisfavorPackage(packageKey?: Key, refererPageName?: string, isWorkspace: boolean = false): [DisfavorPackage, IsLoading, IsSuccess] {
+export function useDisfavorPackage(
+  packageKey?: Key,
+  refererPageName?: string,
+  isWorkspace: boolean = false,
+): [DisfavorPackage, IsLoading, IsSuccess] {
   const showErrorNotification = useShowErrorNotification()
   const showNotification = useShowSuccessNotification()
   const refetchPackages = useRefetchPackages({ refererPageName: refererPageName ?? MAIN_PAGE_REFERER })
   const invalidatePackage = useInvalidatePackage()
 
   const { mutate, isLoading, isSuccess } = useMutation<void, Error, Key>({
-    mutationFn: packageKey => disfavorPackage(packageKey),
+    mutationFn: (packageKey) => disfavorPackage(packageKey),
     onSuccess: () => {
       refetchPackages()
       packageKey && invalidatePackage(packageKey)
@@ -48,15 +52,17 @@ export function useDisfavorPackage(packageKey?: Key, refererPageName?: string, i
   return [mutate, isLoading, isSuccess]
 }
 
-export async function disfavorPackage(
-  packageKey: Key,
-): Promise<void> {
+export async function disfavorPackage(packageKey: Key): Promise<void> {
   const packageId = encodeURIComponent(packageKey)
 
   const pathPattern = '/packages/:packageId/disfavor'
-  return await portalRequestVoid(generatePath(pathPattern, { packageId }), {
-    method: 'POST',
-  }, {
-    customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-  })
+  return await portalRequestVoid(
+    generatePath(pathPattern, { packageId }),
+    {
+      method: 'POST',
+    },
+    {
+      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+    },
+  )
 }

@@ -22,17 +22,12 @@ import { memo } from 'react'
 import { Box } from '@mui/material'
 
 export type GraphQlOperationViewerProps = GraphQLOperationViewerProps
-export const GraphQlOperationViewer: FC<GraphQlOperationViewerProps> = memo<GraphQlOperationViewerProps>(({
-  source,
-  displayMode,
-}) => {
-  return (
-    <Box lineHeight={1.5} height="100%">
-      <GraphQLOperationViewer
-        key={crypto.randomUUID()}
-        source={source}
-        displayMode={displayMode}
-      />
-    </Box>
-  )
-})
+export const GraphQlOperationViewer: FC<GraphQlOperationViewerProps> = memo<GraphQlOperationViewerProps>(
+  ({ source, displayMode }) => {
+    return (
+      <Box lineHeight={1.5} height="100%">
+        <GraphQLOperationViewer key={crypto.randomUUID()} source={source} displayMode={displayMode} />
+      </Box>
+    )
+  },
+)

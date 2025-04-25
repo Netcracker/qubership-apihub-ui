@@ -35,7 +35,7 @@ export type ServiceName = {
 }
 
 export function toServiceNames(value: ServiceNamesDto): ServiceNames {
-  return value.serviceNames.map(serviceName => ({
+  return value.serviceNames.map((serviceName) => ({
     key: serviceName.id,
     name: serviceName.name,
   }))

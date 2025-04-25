@@ -16,9 +16,12 @@ export type ExportConfigDto = Readonly<{
   allowedOasExtensions: OasExtensionDto[]
 }>
 
-export type OasExtension = Readonly<Omit<OasExtensionDto, 'packageId'> & Partial<{
-  packageKey: PackageKey
-}>>
+export type OasExtension = Readonly<
+  Omit<OasExtensionDto, 'packageId'> &
+    Partial<{
+      packageKey: PackageKey
+    }>
+>
 
 export type ExportConfig = Readonly<{
   allowedOasExtensions: ReadonlyArray<OasExtension>
@@ -40,16 +43,12 @@ export function useExportConfig(packageKey: PackageKey): [ExportConfig, IsLoadin
 
 function getExportConfig(packageId: PackageKey): Promise<ExportConfigDto> {
   const pattern = '/packages/:packageId/exportConfig'
-  return requestJson<ExportConfigDto>(
-    generatePath(pattern, { packageId }),
-    { method: 'GET' },
-    { basePath: API_V1 },
-  )
+  return requestJson<ExportConfigDto>(generatePath(pattern, { packageId }), { method: 'GET' }, { basePath: API_V1 })
 }
 
 function toExportConfig(dto: ExportConfigDto): ExportConfig {
   return {
-    allowedOasExtensions: dto.allowedOasExtensions?.map(dto => ({
+    allowedOasExtensions: dto.allowedOasExtensions?.map((dto) => ({
       ...dto,
       packageKey: dto.packageId,
     })),

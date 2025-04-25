@@ -28,39 +28,25 @@ export type PackageVersionsSettingsControlsProps = Readonly<{
   onStatusFilterChange: (value: VersionStatusFilter) => void
   onSearchValueChange: (value: string) => void
 }>
-export const PackageVersionsSettingsControls: FC<PackageVersionsSettingsControlsProps> = memo<PackageVersionsSettingsControlsProps>(({
-  onSearchValueChange,
-  status,
-  onStatusFilterChange,
-}) => {
-
-// TODO: delete property exclusive from ToggleButtonGroup when BE part will be ready "Extend API for Admin UI" and we can choose several statuses
-  return (
-    <Box sx={{ display: 'flex', mb: 2, gap: 2, order: 1 }}>
-      <CustomToggleButtonGroup
-        exclusive
-        value={status}
-        onClick={onStatusFilterChange}
-      >
-        <ToggleButton value={ALL_VERSION} sx={{ gap: 1 }}>
-          <Typography fontSize={11}>{ALL_VERSION}</Typography>
-        </ToggleButton>
-        {
-          VERSION_STATUSES.map(status => (
+export const PackageVersionsSettingsControls: FC<PackageVersionsSettingsControlsProps> =
+  memo<PackageVersionsSettingsControlsProps>(({ onSearchValueChange, status, onStatusFilterChange }) => {
+    // TODO: delete property exclusive from ToggleButtonGroup when BE part will be ready "Extend API for Admin UI" and we can choose several statuses
+    return (
+      <Box sx={{ display: 'flex', mb: 2, gap: 2, order: 1 }}>
+        <CustomToggleButtonGroup exclusive value={status} onClick={onStatusFilterChange}>
+          <ToggleButton value={ALL_VERSION} sx={{ gap: 1 }}>
+            <Typography fontSize={11}>{ALL_VERSION}</Typography>
+          </ToggleButton>
+          {VERSION_STATUSES.map((status) => (
             <ToggleButton key={status} value={status} sx={{ gap: 1 }}>
               <Typography fontSize={11}>{PUBLISH_STATUSES.get(status)}</Typography>
             </ToggleButton>
-          ))
-        }
-      </CustomToggleButtonGroup>
+          ))}
+        </CustomToggleButtonGroup>
 
-      <Box sx={{ flex: 1, maxWidth: 336 }}>
-        <SearchBar
-          placeholder="Search"
-          onValueChange={onSearchValueChange}
-          data-testid="SearchVersions"
-        />
+        <Box sx={{ flex: 1, maxWidth: 336 }}>
+          <SearchBar placeholder="Search" onValueChange={onSearchValueChange} data-testid="SearchVersions" />
+        </Box>
       </Box>
-    </Box>
-  )
-})
+    )
+  })

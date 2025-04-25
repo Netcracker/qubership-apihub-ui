@@ -24,10 +24,7 @@ export type LatestRevisionMarkProps = {
 
 export const LatestRevisionMark: FC<LatestRevisionMarkProps> = memo<LatestRevisionMarkProps>(({ latest = false }) => {
   return (
-    <Typography
-      variant="subtitle2"
-      fontSize={13}
-    >
+    <Typography variant="subtitle2" fontSize={13}>
       {`${latest ? ' (latest)' : ''}`}
     </Typography>
   )

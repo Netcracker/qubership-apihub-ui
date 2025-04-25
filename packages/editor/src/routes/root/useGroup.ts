@@ -49,9 +49,7 @@ export function useInvalidateGroup(): InvalidateQuery<void> {
   }
 }
 
-export async function getGroup(
-  groupKey: Key,
-): Promise<GroupDto> {
+export async function getGroup(groupKey: Key): Promise<GroupDto> {
   const groupId = encodeURIComponent(groupKey)
 
   return await editorRequestJson<GroupDto>(`/groups/${groupId}`, {

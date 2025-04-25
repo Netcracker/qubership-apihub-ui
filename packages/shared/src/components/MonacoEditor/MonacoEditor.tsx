@@ -33,26 +33,19 @@ export type MonacoEditorProps = {
 
 const MonacoEditorElement: FC<MonacoEditorElementProps> = lazy(() => import('./MonacoEditorElement'))
 
-export const MonacoEditor: FC<MonacoEditorProps> = /* @__PURE__ */ memo<MonacoEditorProps>((
-  {
-    value,
-    type,
-    language,
-    selectedUri,
-    searchPhrase,
-    onSearchPhraseChange,
+export const MonacoEditor: FC<MonacoEditorProps> = /* @__PURE__ */ memo<MonacoEditorProps>(
+  ({ value, type, language, selectedUri, searchPhrase, onSearchPhraseChange }) => {
+    return (
+      <Suspense fallback={<LoadingIndicator />}>
+        <MonacoEditorElement
+          value={value}
+          type={type}
+          language={language}
+          selectedUri={selectedUri}
+          searchPhrase={searchPhrase}
+          onSearchPhraseChange={onSearchPhraseChange}
+        />
+      </Suspense>
+    )
   },
-) => {
-  return (
-    <Suspense fallback={<LoadingIndicator/>}>
-      <MonacoEditorElement
-        value={value}
-        type={type}
-        language={language}
-        selectedUri={selectedUri}
-        searchPhrase={searchPhrase}
-        onSearchPhraseChange={onSearchPhraseChange}
-      />
-    </Suspense>
-  )
-})
+)

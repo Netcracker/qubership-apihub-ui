@@ -34,27 +34,19 @@ export const ServicesPageBody: FC = memo(() => {
   const [promoteVersionStep] = usePromoteVersionStep()
 
   if (discoverServicesStep.active) {
-    return (
-      <DiscoverServicesStep/>
-    )
+    return <DiscoverServicesStep />
   }
 
   if (createSnapshotStep.active) {
-    return (
-      <CreateSnapshotStep/>
-    )
+    return <CreateSnapshotStep />
   }
 
   if (validationResultsStep.active) {
-    return (
-      <ValidationResultsStep/>
-    )
+    return <ValidationResultsStep />
   }
 
   if (promoteVersionStep.active) {
-    return (
-      <PromoteVersionStep/>
-    )
+    return <PromoteVersionStep />
   }
 
   return null

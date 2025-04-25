@@ -50,85 +50,97 @@ export type VersionOperationsLayoutProps = {
 } & TestableProps
 
 // First Order Component //
-export const RichFiltersLayout: FC<VersionOperationsLayoutProps> = memo<VersionOperationsLayoutProps>(({
-  body,
-  title,
-  viewMode,
-  viewOptions = [],
-  onOperationsViewChange,
-  hideFiltersPanel = false,
-  filtersApplied = false,
-  exportButton,
-  additionalActions,
-  bodyRef,
-  onClickFilterButton,
-  searchPlaceholder = 'Search',
-  setSearchValue,
-  filters,
-  testId,
-}) => {
+export const RichFiltersLayout: FC<VersionOperationsLayoutProps> = memo<VersionOperationsLayoutProps>(
+  ({
+    body,
+    title,
+    viewMode,
+    viewOptions = [],
+    onOperationsViewChange,
+    hideFiltersPanel = false,
+    filtersApplied = false,
+    exportButton,
+    additionalActions,
+    bodyRef,
+    onClickFilterButton,
+    searchPlaceholder = 'Search',
+    setSearchValue,
+    filters,
+    testId,
+  }) => {
+    const [hiddenFiltersPanel, setHiddenFiltersPanel] = useStateWithExternal<boolean>(
+      hideFiltersPanel,
+      hideFiltersPanel,
+      onClickFilterButton,
+    )
+    const [selectedViewMode, setSelectedViewMode] = useStateWithExternal<Key | undefined>(
+      viewMode,
+      viewMode,
+      onOperationsViewChange,
+    )
 
-  const [hiddenFiltersPanel, setHiddenFiltersPanel] = useStateWithExternal<boolean>(hideFiltersPanel, hideFiltersPanel, onClickFilterButton)
-  const [selectedViewMode, setSelectedViewMode] = useStateWithExternal<Key | undefined>(viewMode, viewMode, onOperationsViewChange)
+    const viewSelector = useMemo(() => {
+      if (viewOptions.length <= 1) {
+        return null
+      }
+      const [firstView, secondView] = viewOptions
 
-  const viewSelector = useMemo(() => {
-    if (viewOptions.length <= 1) {
-      return null
-    }
-    const [firstView, secondView] = viewOptions
+      return (
+        <SelectorWithIcons<Key>
+          mode={selectedViewMode ?? firstView.value}
+          firstIcon={firstView.icon}
+          firstValue={firstView.value}
+          firstTooltip={firstView.tooltip}
+          secondIcon={secondView.icon}
+          secondValue={secondView.value}
+          secondTooltip={secondView.tooltip}
+          onChange={(_, value) => setSelectedViewMode(value)}
+        />
+      )
+    }, [selectedViewMode, setSelectedViewMode, viewOptions])
+
+    const actions = useMemo(
+      () => (
+        <Box display="flex" alignItems="center" gap={2} ml="auto">
+          {additionalActions}
+
+          <SearchBar placeholder={searchPlaceholder} onValueChange={setSearchValue} data-testid="SearchOperations" />
+
+          <FilterButton
+            selected={hiddenFiltersPanel}
+            onSelect={() => setHiddenFiltersPanel(!hiddenFiltersPanel)}
+            showBadge={filtersApplied}
+          />
+
+          {viewSelector}
+
+          {exportButton}
+        </Box>
+      ),
+      [
+        additionalActions,
+        exportButton,
+        filtersApplied,
+        hiddenFiltersPanel,
+        searchPlaceholder,
+        setHiddenFiltersPanel,
+        setSearchValue,
+        viewSelector,
+      ],
+    )
 
     return (
-      <SelectorWithIcons<Key>
-        mode={selectedViewMode ?? firstView.value}
-        firstIcon={firstView.icon}
-        firstValue={firstView.value}
-        firstTooltip={firstView.tooltip}
-        secondIcon={secondView.icon}
-        secondValue={secondView.value}
-        secondTooltip={secondView.tooltip}
-        onChange={(_, value) => setSelectedViewMode(value)}
+      <LayoutWithSidebar
+        header={title}
+        action={actions}
+        sidebar={!hiddenFiltersPanel && <SidebarPanel body={filters} withDivider />}
+        body={
+          <Box height="100%" ref={bodyRef}>
+            {body}
+          </Box>
+        }
+        testId={testId}
       />
     )
-  }, [selectedViewMode, setSelectedViewMode, viewOptions])
-
-  const actions = useMemo(() => (
-    <Box display="flex" alignItems="center" gap={2} ml="auto">
-      {additionalActions}
-
-      <SearchBar
-        placeholder={searchPlaceholder}
-        onValueChange={setSearchValue}
-        data-testid="SearchOperations"
-      />
-
-      <FilterButton
-        selected={hiddenFiltersPanel}
-        onSelect={() => setHiddenFiltersPanel(!hiddenFiltersPanel)}
-        showBadge={filtersApplied}
-      />
-
-      {viewSelector}
-
-      {exportButton}
-    </Box>
-  ), [additionalActions, exportButton, filtersApplied, hiddenFiltersPanel, searchPlaceholder, setHiddenFiltersPanel, setSearchValue, viewSelector])
-
-  return (
-    <LayoutWithSidebar
-      header={title}
-      action={actions}
-      sidebar={!hiddenFiltersPanel && (
-        <SidebarPanel
-          body={filters}
-          withDivider
-        />
-      )}
-      body={
-        <Box height="100%" ref={bodyRef}>
-          {body}
-        </Box>
-      }
-      testId={testId}
-    />
-  )
-})
+  },
+)

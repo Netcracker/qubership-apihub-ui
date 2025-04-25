@@ -30,7 +30,10 @@ import { OperationListWithPreview } from '../OperationListWithPreview'
 import { DeprecatedItemsList } from './DeprecatedItemList'
 import { VersionOperationsPanel } from '../VersionOperationsPanel'
 import { DeprecatedOperationsNavigation } from './DeprecatedOperationsNavigation'
-import type { OperationData, OperationWithDeprecations } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import type {
+  OperationData,
+  OperationWithDeprecations,
+} from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { isEmptyTag } from '@netcracker/qubership-apihub-ui-shared/utils/tags'
 import { isEmpty, isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
@@ -43,7 +46,11 @@ import { useApiAudienceSearchFilter } from '../useApiAudienceSearchFilters'
 // High Order Component //
 export const VersionDeprecatedOperationsSubPage: FC = memo(() => {
   const [searchValue, setSearchValue] = useState('')
-  const { packageId, versionId, apiType = DEFAULT_API_TYPE } = useParams<{
+  const {
+    packageId,
+    versionId,
+    apiType = DEFAULT_API_TYPE,
+  } = useParams<{
     packageId: Key
     versionId: Key
     apiType: ApiType
@@ -73,9 +80,7 @@ export const VersionDeprecatedOperationsSubPage: FC = memo(() => {
   })
 
   useEffect(() => {
-    isNotEmpty(operations)
-      ? setPreviewOperation(operations[0])
-      : setPreviewOperation(undefined)
+    isNotEmpty(operations) ? setPreviewOperation(operations[0]) : setPreviewOperation(undefined)
   }, [operations, setPreviewOperation])
 
   const bodyRef: MutableRefObject<HTMLDivElement | null> = useRef(null)
@@ -91,7 +96,9 @@ export const VersionDeprecatedOperationsSubPage: FC = memo(() => {
   const onResize = useCallback(
     (_: MouseEvent | TouchEvent, __: ResizeDirection, ___: HTMLElement, delta: NumberSize) => {
       togglePreviewSize(previewSize + delta.width)
-    }, [previewSize, togglePreviewSize])
+    },
+    [previewSize, togglePreviewSize],
+  )
 
   //todo move to low level (VersionOperationsPanel or OperationListWithPreview)
   const maxPreviewWidth = useMemo(() => {
@@ -104,8 +111,9 @@ export const VersionDeprecatedOperationsSubPage: FC = memo(() => {
   }, [bodyRef.current?.clientWidth])
 
   const isExpandableItem = useCallback((operation: OperationData): boolean => {
-    const operationWithDeprecations = (operation as OperationWithDeprecations)
-    const onlyDeprecatedOperationItem = operationWithDeprecations.deprecated && Number(operationWithDeprecations?.deprecatedCount ?? 0) === 1
+    const operationWithDeprecations = operation as OperationWithDeprecations
+    const onlyDeprecatedOperationItem =
+      operationWithDeprecations.deprecated && Number(operationWithDeprecations?.deprecatedCount ?? 0) === 1
     return !onlyDeprecatedOperationItem
   }, [])
 
@@ -118,41 +126,46 @@ export const VersionDeprecatedOperationsSubPage: FC = memo(() => {
       onContextSearch={setSearchValue}
       title={DEPRECATED_TITLE}
       bodyRef={bodyRef}
-      table={<DeprecatedOperationsTable
-        operations={operations}
-        isLoading={isLoading}
-        fetchNextPage={fetchNextPage}
-        isFetchingNextPage={isFetchingNextPage}
-        hasNextPage={hasNextPage}
-      />}
-      list={<OperationListWithPreview
-        operations={operations}
-        fetchNextPage={fetchNextPage}
-        hasNextPage={hasNextPage}
-        isListLoading={isLoading}
-        isNextPageFetching={isFetchingNextPage}
-        packageKey={packageId!}
-        versionKey={versionId!}
-        apiType={apiType}
-        initialSize={previewSize}
-        handleResize={onResize}
-        maxPreviewWidth={maxPreviewWidth}
-        isExpandableItem={isExpandableItem}
-        SubComponent={DeprecatedItemsList}
-      />}
+      table={
+        <DeprecatedOperationsTable
+          operations={operations}
+          isLoading={isLoading}
+          fetchNextPage={fetchNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+          hasNextPage={hasNextPage}
+        />
+      }
+      list={
+        <OperationListWithPreview
+          operations={operations}
+          fetchNextPage={fetchNextPage}
+          hasNextPage={hasNextPage}
+          isListLoading={isLoading}
+          isNextPageFetching={isFetchingNextPage}
+          packageKey={packageId!}
+          versionKey={versionId!}
+          apiType={apiType}
+          initialSize={previewSize}
+          handleResize={onResize}
+          maxPreviewWidth={maxPreviewWidth}
+          isExpandableItem={isExpandableItem}
+          SubComponent={DeprecatedItemsList}
+        />
+      }
       filters={<DeprecatedOperationsNavigation />}
-      exportButton={<ExportOperationsMenu
-        title="Export to Excel"
-        disabled={isEmpty(operations)}
-        textFilter={searchValue}
-        kind={apiKindFilter}
-        apiAudience={apiAudienceFilter}
-        tag={selectedTag}
-        group={operationGroup}
-        refPackageId={refKey}
-        emptyTag={emptyTag}
-        onlyDeprecated
-      />
+      exportButton={
+        <ExportOperationsMenu
+          title="Export to Excel"
+          disabled={isEmpty(operations)}
+          textFilter={searchValue}
+          kind={apiKindFilter}
+          apiAudience={apiAudienceFilter}
+          tag={selectedTag}
+          group={operationGroup}
+          refPackageId={refKey}
+          emptyTag={emptyTag}
+          onlyDeprecated
+        />
       }
       testId="DeprecatedTab"
     />

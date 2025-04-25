@@ -51,10 +51,7 @@ export const ServicesPageHeader: FC = memo(() => {
         `,
       }}
     >
-      <Stepper
-        sx={{ gridArea: 'stepper' }}
-        activeStep={activeStepIndex}
-      >
+      <Stepper sx={{ gridArea: 'stepper' }} activeStep={activeStepIndex}>
         {allSteps.map(({ key, name, status }) => (
           <Step key={key}>
             <Tooltip title={STEP_KEY_TO_TOOLTIP_MESSAGE_MAP[key]}>
@@ -65,11 +62,12 @@ export const ServicesPageHeader: FC = memo(() => {
                     color: `${STEP_STATUS_TO_COLOR_MAP[status](theme)} !important`,
                   }),
                 }}
-                icon={status === RUNNING_STEP_STATUS && <CircularProgress size={24}/>}
+                icon={status === RUNNING_STEP_STATUS && <CircularProgress size={24} />}
                 optional={
                   <Box data-testid="StepStatus" display="flex">
-                    <Typography data-testid={status} noWrap
-                                variant="caption">{STEP_STATUS_TO_STATUS_MESSAGE_MAP[status]}</Typography>
+                    <Typography data-testid={status} noWrap variant="caption">
+                      {STEP_STATUS_TO_STATUS_MESSAGE_MAP[status]}
+                    </Typography>
                   </Box>
                 }
               >
@@ -88,14 +86,14 @@ export const ServicesPageHeader: FC = memo(() => {
           alignItems: 'center',
         }}
       >
-        <Divider orientation="vertical"/>
+        <Divider orientation="vertical" />
         <Button {...backButtonProps} data-testid="BackButton" variant="outlined">
-          <KeyboardArrowLeftIcon fontSize="small" sx={{ ml: -1.5 }}/>
+          <KeyboardArrowLeftIcon fontSize="small" sx={{ ml: -1.5 }} />
           Back
         </Button>
         <Button {...nextButtonProps} data-testid="NextButton">
           Next
-          <KeyboardArrowRightIcon fontSize="small" sx={{ mr: -1.5 }}/>
+          <KeyboardArrowRightIcon fontSize="small" sx={{ mr: -1.5 }} />
         </Button>
       </Box>
     </Box>
@@ -107,12 +105,7 @@ type AllSteps = ReadonlyArray<ServicesPageStep>
 type BackButtonProps = ButtonProps
 type NextButtonProps = ButtonProps
 
-function useHeaderData(): [
-  ActiveStepIndex,
-  AllSteps,
-  BackButtonProps,
-  NextButtonProps,
-] {
+function useHeaderData(): [ActiveStepIndex, AllSteps, BackButtonProps, NextButtonProps] {
   const [discoverServicesStep, setDiscoverServicesStep] = useDiscoverServicesStep()
   const [createSnapshotStep, setCreateSnapshotStep] = useCreateSnapshotStep()
   const [validationResultsStep, setValidationResultsStep] = useValidationResultsStep()
@@ -123,38 +116,54 @@ function useHeaderData(): [
     steps.push(promoteVersionStep)
     return steps
   }, [createSnapshotStep, discoverServicesStep, promoteVersionStep, validationResultsStep])
-  const activeStep = useMemo(() => allSteps.find(step => step.active)!, [allSteps])
+  const activeStep = useMemo(() => allSteps.find((step) => step.active)!, [allSteps])
   const activeStepIndex = activeStep.index
 
   const onBackButtonClick = useCallback(() => {
     if (createSnapshotStep.active) {
-      setCreateSnapshotStep(prevState => ({ ...prevState, active: false }))
-      setDiscoverServicesStep(prevState => ({ ...prevState, active: true }))
+      setCreateSnapshotStep((prevState) => ({ ...prevState, active: false }))
+      setDiscoverServicesStep((prevState) => ({ ...prevState, active: true }))
     }
     if (validationResultsStep.active) {
-      setValidationResultsStep(prevState => ({ ...prevState, active: false }))
-      setCreateSnapshotStep(prevState => ({ ...prevState, active: true }))
+      setValidationResultsStep((prevState) => ({ ...prevState, active: false }))
+      setCreateSnapshotStep((prevState) => ({ ...prevState, active: true }))
     }
     if (promoteVersionStep.active) {
-      setPromoteVersionStep(prevState => ({ ...prevState, active: false }))
-      setValidationResultsStep(prevState => ({ ...prevState, active: true }))
+      setPromoteVersionStep((prevState) => ({ ...prevState, active: false }))
+      setValidationResultsStep((prevState) => ({ ...prevState, active: true }))
     }
-  }, [createSnapshotStep.active, validationResultsStep.active, promoteVersionStep.active, setCreateSnapshotStep, setDiscoverServicesStep, setValidationResultsStep, setPromoteVersionStep])
+  }, [
+    createSnapshotStep.active,
+    validationResultsStep.active,
+    promoteVersionStep.active,
+    setCreateSnapshotStep,
+    setDiscoverServicesStep,
+    setValidationResultsStep,
+    setPromoteVersionStep,
+  ])
 
   const onNextButtonClick = useCallback(() => {
     if (discoverServicesStep.active) {
-      setDiscoverServicesStep(prevState => ({ ...prevState, active: false }))
-      setCreateSnapshotStep(prevState => ({ ...prevState, active: true }))
+      setDiscoverServicesStep((prevState) => ({ ...prevState, active: false }))
+      setCreateSnapshotStep((prevState) => ({ ...prevState, active: true }))
     }
     if (createSnapshotStep.active) {
-      setCreateSnapshotStep(prevState => ({ ...prevState, active: false }))
-      setValidationResultsStep(prevState => ({ ...prevState, active: true }))
+      setCreateSnapshotStep((prevState) => ({ ...prevState, active: false }))
+      setValidationResultsStep((prevState) => ({ ...prevState, active: true }))
     }
     if (validationResultsStep.active) {
-      setValidationResultsStep(prevState => ({ ...prevState, active: false }))
-      setPromoteVersionStep(prevState => ({ ...prevState, active: true }))
+      setValidationResultsStep((prevState) => ({ ...prevState, active: false }))
+      setPromoteVersionStep((prevState) => ({ ...prevState, active: true }))
     }
-  }, [discoverServicesStep.active, createSnapshotStep.active, validationResultsStep.active, setDiscoverServicesStep, setCreateSnapshotStep, setValidationResultsStep, setPromoteVersionStep])
+  }, [
+    discoverServicesStep.active,
+    createSnapshotStep.active,
+    validationResultsStep.active,
+    setDiscoverServicesStep,
+    setCreateSnapshotStep,
+    setValidationResultsStep,
+    setPromoteVersionStep,
+  ])
 
   const nextButtonVariant = useMemo(() => {
     if (activeStep.status === SUCCESS_STEP_STATUS) {

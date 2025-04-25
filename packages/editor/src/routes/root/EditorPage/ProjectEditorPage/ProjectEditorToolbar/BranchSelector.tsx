@@ -66,22 +66,21 @@ export const BranchSelector: FC = memo(() => {
   const hasEditPermission = useHasEditBranchPermission()
   const { navigateToProject } = useNavigation()
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-  } = useTable({ columns: COLUMNS, data: branches })
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({
+    columns: COLUMNS,
+    data: branches,
+  })
 
   return (
     <Button
       sx={{ minWidth: 4, height: 20, p: 0, boxShadow: 'none', '&:hover': { boxShadow: 'none' } }}
       variant="text"
       onClick={({ currentTarget }) => setAnchor(currentTarget)}
-      endIcon={<KeyboardArrowDownOutlinedIcon/>}
+      endIcon={<KeyboardArrowDownOutlinedIcon />}
     >
-      <Typography noWrap variant="subtitle3" color="inherit">{selectedBranch}</Typography>
+      <Typography noWrap variant="subtitle3" color="inherit">
+        {selectedBranch}
+      </Typography>
       <MenuButtonItems
         anchorEl={anchor}
         open={!!anchor}
@@ -94,12 +93,12 @@ export const BranchSelector: FC = memo(() => {
             title="Git repository"
             value={<Link href={project?.integration?.repositoryUrl}>{project?.integration?.repositoryName}</Link>}
           />
-          <SearchBar onValueChange={setSearchState}/>
-          {
-            hasEditPermission && <Button
+          <SearchBar onValueChange={setSearchState} />
+          {hasEditPermission && (
+            <Button
               sx={{ mt: 1, mb: -1, p: 1 }}
               variant="text"
-              startIcon={<AddOutlinedIcon/>}
+              startIcon={<AddOutlinedIcon />}
               onClick={() => {
                 setAnchor(undefined)
                 showCreateBranchDialog()
@@ -107,60 +106,53 @@ export const BranchSelector: FC = memo(() => {
             >
               Create new branch
             </Button>
-          }
+          )}
           <TableContainer sx={{ mt: 1, maxHeight: 400 }}>
             <Table {...getTableProps()} sx={{ maxWidth: 600 }}>
               <TableHead>
-                {
-                  headerGroups.map(headerGroup => (
-                    <TableRow {...headerGroup.getHeaderGroupProps()}>
-                      {
-                        headerGroups.map(headerGroup => headerGroup.headers.map(column => (
-                          <TableCell
-                            {...column.getHeaderProps({ style: { width: column.width } })}
-                            key={column.id}
-                            align={column.id === 'name' ? 'left' : 'right'}
-                          >
-                            {column.render('Header')}
-                          </TableCell>
-                        )))
-                      }
-                    </TableRow>
-                  ))
-                }
+                {headerGroups.map((headerGroup) => (
+                  <TableRow {...headerGroup.getHeaderGroupProps()}>
+                    {headerGroups.map((headerGroup) =>
+                      headerGroup.headers.map((column) => (
+                        <TableCell
+                          {...column.getHeaderProps({ style: { width: column.width } })}
+                          key={column.id}
+                          align={column.id === 'name' ? 'left' : 'right'}
+                        >
+                          {column.render('Header')}
+                        </TableCell>
+                      )),
+                    )}
+                  </TableRow>
+                ))}
               </TableHead>
               <TableBody {...getTableBodyProps()}>
-                {
-                  rows
-                    .map(row => {
-                      prepareRow(row)
-                      return (
-                        <TableRow {...row.getRowProps()}>
-                          {
-                            row.cells.map((cell) => (
-                              <TableCell
-                                align="right"
-                                key={cell.column.id}
-                                onClick={event => {
-                                  event.stopPropagation()
-                                  navigateToProject({
-                                    search: {
-                                      [BRANCH_SEARCH_PARAM]: { value: row.original.name },
-                                      [MODE_SEARCH_PARAM]: { value: FILES_PROJECT_EDITOR_MODE },
-                                    },
-                                    replace: true,
-                                  })
-                                  setAnchor(undefined)
-                                }}
-                              >
-                                {cell.render('Cell')}
-                              </TableCell>
-                            ))
-                          }
-                        </TableRow>
-                      )
-                    })
-                }
+                {rows.map((row) => {
+                  prepareRow(row)
+                  return (
+                    <TableRow {...row.getRowProps()}>
+                      {row.cells.map((cell) => (
+                        <TableCell
+                          align="right"
+                          key={cell.column.id}
+                          onClick={(event) => {
+                            event.stopPropagation()
+                            navigateToProject({
+                              search: {
+                                [BRANCH_SEARCH_PARAM]: { value: row.original.name },
+                                [MODE_SEARCH_PARAM]: { value: FILES_PROJECT_EDITOR_MODE },
+                              },
+                              replace: true,
+                            })
+                            setAnchor(undefined)
+                          }}
+                        >
+                          {cell.render('Cell')}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  )
+                })}
               </TableBody>
             </Table>
           </TableContainer>
@@ -175,15 +167,19 @@ const COLUMNS: ReadonlyArray<Column<Branch>> = [
     accessor: 'name',
     width: '38%',
     Header: 'Branch',
-    Cell: ({ row: { original: { permissions, name } } }) => (
+    Cell: ({
+      row: {
+        original: { permissions, name },
+      },
+    }) => (
       <Box display="flex" alignItems="center" gap={1}>
-        {
-          isNotEmpty(permissions)
-            ? null
-            : <Tooltip title="Read-only">{<VisibilityIcon fontSize="inherit" color="disabled"/>}</Tooltip>
-        }
+        {isNotEmpty(permissions) ? null : (
+          <Tooltip title="Read-only">{<VisibilityIcon fontSize="inherit" color="disabled" />}</Tooltip>
+        )}
         <OverflowTooltip title={name ?? ''}>
-          <Typography noWrap variant="inherit">{name}</Typography>
+          <Typography noWrap variant="inherit">
+            {name}
+          </Typography>
         </OverflowTooltip>
       </Box>
     ),
@@ -194,7 +190,9 @@ const COLUMNS: ReadonlyArray<Column<Branch>> = [
     Header: 'Version',
     Cell: ({ value }) => (
       <OverflowTooltip title={value ?? ''}>
-        <Typography noWrap variant="inherit">{value}</Typography>
+        <Typography noWrap variant="inherit">
+          {value}
+        </Typography>
       </OverflowTooltip>
     ),
   },
@@ -202,16 +200,16 @@ const COLUMNS: ReadonlyArray<Column<Branch>> = [
     accessor: 'status',
     width: '20%',
     Header: 'Status',
-    Cell: ({ value }) => <>
-      {value && <CustomChip value={value}/>}
-    </>,
+    Cell: ({ value }) => <>{value && <CustomChip value={value} />}</>,
   },
   {
     accessor: 'publishedAt',
     width: '22%',
     Header: 'Last Published',
-    Cell: ({ row: { original: { publishedAt } } }) => <>
-      {publishedAt && <FormattedDate value={publishedAt}/>}
-    </>,
+    Cell: ({
+      row: {
+        original: { publishedAt },
+      },
+    }) => <>{publishedAt && <FormattedDate value={publishedAt} />}</>,
   },
 ]

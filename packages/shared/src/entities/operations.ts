@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { API_AUDIENCE_EXTERNAL, API_AUDIENCE_INTERNAL, API_AUDIENCE_UNKNOWN } from '@netcracker/qubership-apihub-api-processor'
+import {
+  API_AUDIENCE_EXTERNAL,
+  API_AUDIENCE_INTERNAL,
+  API_AUDIENCE_UNKNOWN,
+} from '@netcracker/qubership-apihub-api-processor'
 import type { MethodType } from './method-types'
 import type { PackageKind } from './packages'
 import type { VersionStatus } from './version-status'
@@ -48,15 +52,17 @@ export type OperationMetadataDto = Readonly<{
   customTags?: CustomTags
 }>
 
-export type RestOperationDto = OperationMetadataDto & Readonly<{
-  method: MethodType
-  path: string
-}>
+export type RestOperationDto = OperationMetadataDto &
+  Readonly<{
+    method: MethodType
+    path: string
+  }>
 
-export type GraphQlOperationDto = OperationMetadataDto & Readonly<{
-  method: string
-  type: GraphQlOperationType
-}>
+export type GraphQlOperationDto = OperationMetadataDto &
+  Readonly<{
+    method: string
+    type: GraphQlOperationType
+  }>
 
 export type DeprecatedItem = DeprecateItem
 export type DeprecatedItems = ReadonlyArray<DeprecatedItem>
@@ -68,12 +74,13 @@ export type OperationsWithDeprecationsDto = Readonly<{
   operations: ReadonlyArray<OperationWithDeprecationsDto>
   packages: PackagesRefs
 }>
-export type OperationWithDeprecationsDto = Omit<OperationDto, 'dataHash' | 'data'> & Readonly<{
-  deprecatedCount?: string
-  deprecatedInfo?: object
-  deprecatedItems?: DeprecatedItemsDto
-  deprecatedInPreviousVersions?: string[]
-}>
+export type OperationWithDeprecationsDto = Omit<OperationDto, 'dataHash' | 'data'> &
+  Readonly<{
+    deprecatedCount?: string
+    deprecatedInfo?: object
+    deprecatedItems?: DeprecatedItemsDto
+    deprecatedInPreviousVersions?: string[]
+  }>
 
 export type OperationsGroupedByTag<T extends Operation = OperationData> = {
   [tag: string]: T[]
@@ -104,42 +111,40 @@ type OperationWithDifferenceCommon = Readonly<{
   customTags?: CustomTags
 }>
 
-export type JSONValue =
-  | null
-  | undefined
-  | string
-  | boolean
-  | number
-  | JSONValue[]
-  | { [key: string]: JSONValue }
+export type JSONValue = null | undefined | string | boolean | number | JSONValue[] | { [key: string]: JSONValue }
 
 export type CustomTags = { [key: string]: object }
 
-export type RestOperation = OperationCommon & Readonly<{
-  method: MethodType
-  path: string
-}>
+export type RestOperation = OperationCommon &
+  Readonly<{
+    method: MethodType
+    path: string
+  }>
 
-export type GraphQlOperation = OperationCommon & Readonly<{
-  method: string
-  type: GraphQlOperationType
-}>
+export type GraphQlOperation = OperationCommon &
+  Readonly<{
+    method: string
+    type: GraphQlOperationType
+  }>
 
-export type RestOperationWithDifference = OperationWithDifferenceCommon & Readonly<{
-  method: MethodType
-  path: string
-}>
+export type RestOperationWithDifference = OperationWithDifferenceCommon &
+  Readonly<{
+    method: MethodType
+    path: string
+  }>
 
-export type GraphQlOperationWithDifference = OperationWithDifferenceCommon & Readonly<{
-  method: string
-  type: GraphQlOperationType
-}>
+export type GraphQlOperationWithDifference = OperationWithDifferenceCommon &
+  Readonly<{
+    method: string
+    type: GraphQlOperationType
+  }>
 
-export type OperationData = Operation & Readonly<{
-  apiType?: ApiType
-  data?: object
-  deprecated: boolean
-}>
+export type OperationData = Operation &
+  Readonly<{
+    apiType?: ApiType
+    data?: object
+    deprecated: boolean
+  }>
 
 export type PackagesRefs = {
   [rawRefId: string]: PackageRefDto
@@ -156,12 +161,13 @@ export type PackageRefDto = {
   parentPackages?: ReadonlyArray<string>
 }
 
-export type OperationWithDeprecations = OperationData & Readonly<{
-  deprecatedCount?: string
-  deprecatedInfo?: string
-  deprecatedItems?: DeprecatedItems
-  deprecatedInPreviousVersions?: string[]
-}>
+export type OperationWithDeprecations = OperationData &
+  Readonly<{
+    deprecatedCount?: string
+    deprecatedInfo?: string
+    deprecatedItems?: DeprecatedItems
+    deprecatedInPreviousVersions?: string[]
+  }>
 export type OperationsWithDeprecations = ReadonlyArray<OperationWithDeprecations>
 
 export type PackageRef = {
@@ -188,7 +194,7 @@ export function toOperation(operationDto: OperationDto, packagesRefs: PackagesRe
 
 export function toOperations(value: OperationsDto): OperationsData {
   const { packages } = value
-  return value.operations.map(operation => toOperation(operation, packages))
+  return value.operations.map((operation) => toOperation(operation, packages))
 }
 
 export const ALL_API_KIND = 'all'
@@ -196,11 +202,7 @@ export const BWC_API_KIND = 'bwc'
 export const NO_BWC_API_KIND = 'no-bwc'
 export const EXPERIMENTAL_API_KIND = 'experimental'
 
-export type ApiKind =
-  | typeof ALL_API_KIND
-  | typeof BWC_API_KIND
-  | typeof NO_BWC_API_KIND
-  | typeof EXPERIMENTAL_API_KIND
+export type ApiKind = typeof ALL_API_KIND | typeof BWC_API_KIND | typeof NO_BWC_API_KIND | typeof EXPERIMENTAL_API_KIND
 
 export const API_KINDS: Record<ApiKind, string> = {
   [ALL_API_KIND]: 'All',
@@ -254,29 +256,31 @@ export function toPackageRef(packageRef: string | undefined, packages?: Packages
     return undefined
   }
   const relatedPackage = packages?.[packageRef]
-  return relatedPackage ? {
-    key: relatedPackage.refId,
-    refId: relatedPackage.refId,
-    version: relatedPackage.version,
-    status: relatedPackage.status,
-    name: relatedPackage.name,
-    parentPackages: relatedPackage.parentPackages,
-    latestRevision: !relatedPackage?.notLatestRevision,
-  } : undefined
+  return relatedPackage
+    ? {
+        key: relatedPackage.refId,
+        refId: relatedPackage.refId,
+        version: relatedPackage.version,
+        status: relatedPackage.status,
+        name: relatedPackage.name,
+        parentPackages: relatedPackage.parentPackages,
+        latestRevision: !relatedPackage?.notLatestRevision,
+      }
+    : undefined
 }
 
 export function isRestOperation(operation: Operation | OperationWithDifference): operation is RestOperation {
-  const asRestOperation = (operation as RestOperation)
+  const asRestOperation = operation as RestOperation
   return asRestOperation.path !== undefined
 }
 
 export function isRestOperationDto(operation: OperationDto): operation is RestOperationDto {
-  const asRestOperation = (operation as RestOperationDto)
+  const asRestOperation = operation as RestOperationDto
   return asRestOperation.path !== undefined
 }
 
 export function isGraphQlOperation(operation: Operation | OperationWithDifference): operation is GraphQlOperation {
-  const asGraphQlOperation = (operation as GraphQlOperation)
+  const asGraphQlOperation = operation as GraphQlOperation
   return asGraphQlOperation.type !== undefined
 }
 
@@ -300,7 +304,9 @@ export function isOperationChangeDataArray(value: unknown): value is OperationCh
   return !!value && Array.isArray(value) && value.every(isOperationChangeData)
 }
 
-export type FetchNextOperationList = (options?: FetchNextPageOptions) => Promise<InfiniteQueryObserverResult<OperationsData, Error>>
+export type FetchNextOperationList = (
+  options?: FetchNextPageOptions,
+) => Promise<InfiniteQueryObserverResult<OperationsData, Error>>
 
 export type SelectedPreviewOperationData = {
   operationKey: Key

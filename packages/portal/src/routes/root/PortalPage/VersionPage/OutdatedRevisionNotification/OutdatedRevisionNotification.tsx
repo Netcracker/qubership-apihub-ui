@@ -52,10 +52,10 @@ export const OutdatedRevisionNotification: FC = memo(() => {
 
   useEffect(() => {
     mainRevisionKey &&
-    updatedVersionKey === versionKey &&
-    updatedRevisionKey > mainRevisionKey &&
-    isLatestRevision &&
-    setOpen(true)
+      updatedVersionKey === versionKey &&
+      updatedRevisionKey > mainRevisionKey &&
+      isLatestRevision &&
+      setOpen(true)
   }, [isLatestRevision, mainRevisionKey, updatedRevisionKey, updatedVersionKey, versionKey])
 
   // navigation to the new latest revision

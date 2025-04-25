@@ -40,11 +40,12 @@ export const AgentsSelector: FC = memo(() => {
 
   const [agents, isLoading] = useAgents()
   const selectedAgent = useMemo(() => {
-      return agents?.find(agent => agent.agentId === agentId) ?? EMPTY_AGENT
-    },
-    [agentId, agents],
+    return agents?.find((agent) => agent.agentId === agentId) ?? EMPTY_AGENT
+  }, [agentId, agents])
+  const filteredAgents = useMemo(
+    () => agents.filter(({ agentId }) => includes([agentId], searchValue)),
+    [agents, searchValue],
   )
-  const filteredAgents = useMemo(() => agents.filter(({ agentId }) => includes([agentId], searchValue)), [agents, searchValue])
 
   return (
     <Box width={240}>
@@ -53,13 +54,7 @@ export const AgentsSelector: FC = memo(() => {
         value={selectedAgent}
         options={filteredAgents}
         forcePopupIcon={true}
-        renderOption={(props, option) => (
-          <OptionItem
-            props={props}
-            key={option.agentId}
-            title={option.agentId}
-          />
-        )}
+        renderOption={(props, option) => <OptionItem props={props} key={option.agentId} title={option.agentId} />}
         isOptionEqualToValue={(option, value) => option.agentId === value.agentId}
         getOptionLabel={(option) => option?.agentId ?? ''}
         renderInput={(params) => (
@@ -69,9 +64,7 @@ export const AgentsSelector: FC = memo(() => {
             sx={{ m: 0, '& .MuiInputBase-root': { pt: '1px', pb: '1px' } }}
           />
         )}
-        onInputChange={(event, value, reason) =>
-          setSearchValue(reason === 'input' ? value : '')
-        }
+        onInputChange={(event, value, reason) => setSearchValue(reason === 'input' ? value : '')}
         onChange={(_, value) => {
           setIdpAuthToken('')
           navigateToAgent({

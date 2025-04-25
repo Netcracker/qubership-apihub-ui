@@ -73,7 +73,7 @@ export const PackageSelector: FC = memo(() => {
 
   useEffect(() => {
     if (isNotEmpty(references) && !referencesLoading) {
-      const newSelectedReference = references.find(ref => ref.key === defaultPackageKey) ?? references[0]
+      const newSelectedReference = references.find((ref) => ref.key === defaultPackageKey) ?? references[0]
       setSelectedReference(newSelectedReference)
     }
   }, [defaultPackageKey, references, referencesLoading])

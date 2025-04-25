@@ -23,23 +23,21 @@ import { UserRolesSettingsTab } from './UserRolesSettingsTab'
 import { SystemTokensTab } from './SystemTokensTab'
 import { LayoutWithTabs } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/LayoutWithTabs'
 import { RolesHierarchySettingsTab } from '@apihub/routes/root/RolesHierarchySettingsTab'
-import {
-  SystemAdministratorsTab,
-} from '@apihub/routes/root/SettingsPage/SystemAdministratorsTab/SystemAdministratorsTab'
+import { SystemAdministratorsTab } from '@apihub/routes/root/SettingsPage/SystemAdministratorsTab/SystemAdministratorsTab'
 
 export const SettingsBody: FC = memo(() => {
   const activeTab = useActiveTabContentContext()
   return (
     <LayoutWithTabs
-      tabs={<SettingsNavigation/>}
+      tabs={<SettingsNavigation />}
       body={
         <>
           {
             {
-              [USER_ROLES_PAGE]: <UserRolesSettingsTab/>,
-              [ROLES_HIERARCHY_PAGE]: <RolesHierarchySettingsTab/>,
-              [SYSTEM_ADMINISTRATORS_PAGE]: <SystemAdministratorsTab/>,
-              [SYSTEM_TOKENS_PAGE]: <SystemTokensTab/>,
+              [USER_ROLES_PAGE]: <UserRolesSettingsTab />,
+              [ROLES_HIERARCHY_PAGE]: <RolesHierarchySettingsTab />,
+              [SYSTEM_ADMINISTRATORS_PAGE]: <SystemAdministratorsTab />,
+              [SYSTEM_TOKENS_PAGE]: <SystemTokensTab />,
             }[activeTab]
           }
         </>

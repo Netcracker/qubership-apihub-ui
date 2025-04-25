@@ -68,57 +68,58 @@ export type SecurityReportsTableProps = {
 }
 
 // First Order Component //
-export const SecurityReportsTable: FC<SecurityReportsTableProps> = memo(({
-  data,
-  downloadOptions,
-  downloadSecurityReport,
-  fetchNextPage,
-  isFetchingNextPage,
-  hasNextPage,
-  isLoading,
-}) => {
-  const [containerWidth, setContainerWidth] = useState(DEFAULT_CONTAINER_WIDTH)
-  const [columnSizingInfo, setColumnSizingInfo] = useState<ColumnSizingInfoState>()
-  const [, setHandlingColumnSizing] = useState<ColumnSizingState>()
+export const SecurityReportsTable: FC<SecurityReportsTableProps> = memo(
+  ({ data, downloadOptions, downloadSecurityReport, fetchNextPage, isFetchingNextPage, hasNextPage, isLoading }) => {
+    const [containerWidth, setContainerWidth] = useState(DEFAULT_CONTAINER_WIDTH)
+    const [columnSizingInfo, setColumnSizingInfo] = useState<ColumnSizingInfoState>()
+    const [, setHandlingColumnSizing] = useState<ColumnSizingState>()
 
-  const tableContainerRef = useRef<HTMLDivElement>(null)
-  useResizeObserver(tableContainerRef, setContainerWidth)
+    const tableContainerRef = useRef<HTMLDivElement>(null)
+    useResizeObserver(tableContainerRef, setContainerWidth)
 
-  const actualColumnSizing = useColumnsSizing({
-    containerWidth: containerWidth,
-    columnModels: COLUMNS_MODELS,
-    columnSizingInfo: columnSizingInfo,
-    defaultMinColumnSize: 150,
-  })
+    const actualColumnSizing = useColumnsSizing({
+      containerWidth: containerWidth,
+      columnModels: COLUMNS_MODELS,
+      columnSizingInfo: columnSizingInfo,
+      defaultMinColumnSize: 150,
+    })
 
-  const ref = useRef<HTMLTableRowElement>(null)
-  useIntersectionObserver(ref, isFetchingNextPage, hasNextPage, fetchNextPage)
+    const ref = useRef<HTMLTableRowElement>(null)
+    useIntersectionObserver(ref, isFetchingNextPage, hasNextPage, fetchNextPage)
 
-  const columns: ColumnDef<SecurityReport>[] = useMemo(() => {
+    const columns: ColumnDef<SecurityReport>[] = useMemo(() => {
       return [
         {
           id: DATE_COLUMN_ID,
           header: 'Date',
-          cell: ({ row: { original: { createdAt } } }) => (
-            <FormattedDate value={createdAt}/>
-          ),
+          cell: ({
+            row: {
+              original: { createdAt },
+            },
+          }) => <FormattedDate value={createdAt} />,
         },
         {
           id: CREATED_BY_COLUMN_ID,
           header: 'Created By',
-          cell: ({ row: { original: { createdBy } } }) => (
-            <PrincipalView value={createdBy}/>
-          ),
+          cell: ({
+            row: {
+              original: { createdBy },
+            },
+          }) => <PrincipalView value={createdBy} />,
         },
         {
           id: STATUS_COLUMN_ID,
           header: 'Status',
-          cell: ({ row: { original: { status, details } } }) => (
+          cell: ({
+            row: {
+              original: { status, details },
+            },
+          }) => (
             <Box display="flex">
               <Typography fontSize="13px">{status}</Typography>
               {status !== RUNNING_SECURITY_REPORT_STATUS && details && (
                 <Tooltip title={details}>
-                  <InfoContextIcon fontSize="extra-small" sx={{ ml: 0.5 }}/>
+                  <InfoContextIcon fontSize="extra-small" sx={{ ml: 0.5 }} />
                 </Tooltip>
               )}
             </Box>
@@ -127,7 +128,11 @@ export const SecurityReportsTable: FC<SecurityReportsTableProps> = memo(({
         {
           id: TOTAL_NUMBER_OF_SERVICES_COLUMN_ID,
           header: 'Total Number of Services',
-          cell: ({ row: { original: { servicesTotal } } }) => (
+          cell: ({
+            row: {
+              original: { servicesTotal },
+            },
+          }) => (
             <TextWithOverflowTooltip tooltipText={servicesTotal}>
               <Typography variant="inherit">{servicesTotal}</Typography>
             </TextWithOverflowTooltip>
@@ -136,7 +141,11 @@ export const SecurityReportsTable: FC<SecurityReportsTableProps> = memo(({
         {
           id: NUMBER_OF_PROCESSED_SERVICES_COLUMN_ID,
           header: 'Number of Processed Services',
-          cell: ({ row: { original: { servicesProcessed } } }) => (
+          cell: ({
+            row: {
+              original: { servicesProcessed },
+            },
+          }) => (
             <TextWithOverflowTooltip tooltipText={servicesProcessed}>
               <Typography variant="inherit">{servicesProcessed}</Typography>
             </TextWithOverflowTooltip>
@@ -145,7 +154,11 @@ export const SecurityReportsTable: FC<SecurityReportsTableProps> = memo(({
         {
           id: ACTIONS_COLUMN_ID,
           header: '',
-          cell: ({ row: { original: { processId } } }) => (
+          cell: ({
+            row: {
+              original: { processId },
+            },
+          }) => (
             <DownloadButton
               processId={processId}
               onDownloadReport={downloadSecurityReport}
@@ -154,68 +167,66 @@ export const SecurityReportsTable: FC<SecurityReportsTableProps> = memo(({
           ),
         },
       ]
-    },
-    [downloadOptions, downloadSecurityReport],
-  )
+    }, [downloadOptions, downloadSecurityReport])
 
-  const { getHeaderGroups, getRowModel, setColumnSizing } = useReactTable({
-    data: data,
-    columns: columns,
-    columnResizeMode: 'onChange',
-    getCoreRowModel: getCoreRowModel(),
-    getExpandedRowModel: getExpandedRowModel(),
-    onColumnSizingChange: setHandlingColumnSizing as OnChangeFn<ColumnSizingState>,
-    onColumnSizingInfoChange: setColumnSizingInfo as OnChangeFn<ColumnSizingInfoState>,
-  })
+    const { getHeaderGroups, getRowModel, setColumnSizing } = useReactTable({
+      data: data,
+      columns: columns,
+      columnResizeMode: 'onChange',
+      getCoreRowModel: getCoreRowModel(),
+      getExpandedRowModel: getExpandedRowModel(),
+      onColumnSizingChange: setHandlingColumnSizing as OnChangeFn<ColumnSizingState>,
+      onColumnSizingInfoChange: setColumnSizingInfo as OnChangeFn<ColumnSizingInfoState>,
+    })
 
-  useEffect(() => setColumnSizing(actualColumnSizing), [setColumnSizing, actualColumnSizing])
+    useEffect(() => setColumnSizing(actualColumnSizing), [setColumnSizing, actualColumnSizing])
 
-  return (
-    <TableContainer ref={tableContainerRef}>
-      <Table>
-        <TableHead>
-          {getHeaderGroups().map(headerGroup => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header, index) => (
-                <TableCell
-                  key={header.id}
-                  align="left"
-                  width={actualColumnSizing ? actualColumnSizing[header.id] : header.getSize()}
-                  sx={{
-                    '&:hover': {
-                      borderRight: '2px solid rgba(224, 224, 224, 1)',
-                    },
-                  }}
-                >
-                  {flexRender(header.column.columnDef.header, header.getContext())}
-                  {index !== headerGroup.headers.length - 1 && <ColumnDelimiter header={header} resizable={true}/>}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableHead>
-        <TableBody>
-          {getRowModel().rows.map(row => (
+    return (
+      <TableContainer ref={tableContainerRef}>
+        <Table>
+          <TableHead>
+            {getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header, index) => (
+                  <TableCell
+                    key={header.id}
+                    align="left"
+                    width={actualColumnSizing ? actualColumnSizing[header.id] : header.getSize()}
+                    sx={{
+                      '&:hover': {
+                        borderRight: '2px solid rgba(224, 224, 224, 1)',
+                      },
+                    }}
+                  >
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                    {index !== headerGroup.headers.length - 1 && <ColumnDelimiter header={header} resizable={true} />}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableHead>
+          <TableBody>
+            {getRowModel().rows.map((row) => (
+              <TableRow>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.column.id} data-testid={`Cell-${cell.column.id}`}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+            {isLoading && <TableSkeleton />}
             <TableRow>
-              {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.column.id} data-testid={`Cell-${cell.column.id}`}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
+              {hasNextPage &&
+                columns.map((cell) => (
+                  <TableCell ref={ref} key={cell.id}>
+                    <Skeleton variant="text" />
+                  </TableCell>
+                ))}
             </TableRow>
-          ))}
-          {isLoading && <TableSkeleton/>}
-          <TableRow>
-            {hasNextPage && columns.map(cell =>
-              <TableCell ref={ref} key={cell.id}>
-                <Skeleton variant="text"/>
-              </TableCell>,
-            )}
-          </TableRow>
-        </TableBody>
-      </Table>
-      {isEmpty(data) && !isLoading
-        ? (
+          </TableBody>
+        </Table>
+        {isEmpty(data) && !isLoading ? (
           <Placeholder
             sx={{ width: 'inherit' }}
             invisible={isLoading}
@@ -223,11 +234,11 @@ export const SecurityReportsTable: FC<SecurityReportsTableProps> = memo(({
             message="No reports"
             testId="NoReportsPlaceholder"
           />
-        ) : null
-      }
-    </TableContainer>
-  )
-})
+        ) : null}
+      </TableContainer>
+    )
+  },
+)
 
 const DATE_COLUMN_ID = 'date'
 const CREATED_BY_COLUMN_ID = 'created-by'
@@ -246,29 +257,29 @@ const COLUMNS_MODELS: ColumnModel[] = [
 ]
 
 const TableSkeleton: FC = memo(() => {
-  return createComponents(<RowSkeleton/>, DEFAULT_NUMBER_SKELETON_ROWS)
+  return createComponents(<RowSkeleton />, DEFAULT_NUMBER_SKELETON_ROWS)
 })
 
 const RowSkeleton: FC = memo(() => {
   return (
     <TableRow>
       <TableCell>
-        <Skeleton variant="rectangular" width={'70%'}/>
+        <Skeleton variant="rectangular" width={'70%'} />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width={'35%'}/>
+        <Skeleton variant="rectangular" width={'35%'} />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width={'50%'}/>
+        <Skeleton variant="rectangular" width={'50%'} />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width={'20%'}/>
+        <Skeleton variant="rectangular" width={'20%'} />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width={'20%'}/>
+        <Skeleton variant="rectangular" width={'20%'} />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width={'50%'}/>
+        <Skeleton variant="rectangular" width={'50%'} />
       </TableCell>
     </TableRow>
   )
@@ -313,39 +324,36 @@ type DownloadButtonProps = {
   downloadOptions?: ReportDownloadOption[]
 }
 
-const DownloadButton: FC<DownloadButtonProps> = memo<DownloadButtonProps>(({
-  processId,
-  onDownloadReport,
-  downloadOptions,
-}) => {
-  const onDownloadOption = useCallback(
-    (type: DownloadType) => onDownloadReport(processId, type),
-    [onDownloadReport, processId],
-  )
+const DownloadButton: FC<DownloadButtonProps> = memo<DownloadButtonProps>(
+  ({ processId, onDownloadReport, downloadOptions }) => {
+    const onDownloadOption = useCallback(
+      (type: DownloadType) => onDownloadReport(processId, type),
+      [onDownloadReport, processId],
+    )
 
-  const onButtonCLick = useCallback(
-    () => onDownloadReport(processId),
-    [onDownloadReport, processId],
-  )
+    const onButtonCLick = useCallback(() => onDownloadReport(processId), [onDownloadReport, processId])
 
-  return downloadOptions
-    ? (<DownloadOptions
-      sx={{ visibility: 'hidden' }}
-      className="hoverable"
-      options={downloadOptions}
-      onClick={onDownloadOption}
-    />)
-    : (<ButtonWithHint
-      area-label="edit"
-      hint="Download report"
-      size="small"
-      sx={{ visibility: 'hidden', height: '20px' }}
-      className="hoverable"
-      startIcon={<DownloadIcon color="#626D82"/>}
-      onClick={onButtonCLick}
-      testId="DownloadReportButton"
-    />)
-})
+    return downloadOptions ? (
+      <DownloadOptions
+        sx={{ visibility: 'hidden' }}
+        className="hoverable"
+        options={downloadOptions}
+        onClick={onDownloadOption}
+      />
+    ) : (
+      <ButtonWithHint
+        area-label="edit"
+        hint="Download report"
+        size="small"
+        sx={{ visibility: 'hidden', height: '20px' }}
+        className="hoverable"
+        startIcon={<DownloadIcon color="#626D82" />}
+        onClick={onButtonCLick}
+        testId="DownloadReportButton"
+      />
+    )
+  },
+)
 
 const DownloadOptions: FC<DownloadOptionsProps> = memo<DownloadOptionsProps>(({ options, onClick, sx, className }) => {
   return (
@@ -353,7 +361,7 @@ const DownloadOptions: FC<DownloadOptionsProps> = memo<DownloadOptionsProps>(({ 
       <Box sx={{ display: 'inline' }}>
         <MenuButton
           sx={sx}
-          icon={<DownloadIcon color="#626D82"/>}
+          icon={<DownloadIcon color="#626D82" />}
           alignItems="center"
           className={className}
           data-testid="DownloadMenuButton"

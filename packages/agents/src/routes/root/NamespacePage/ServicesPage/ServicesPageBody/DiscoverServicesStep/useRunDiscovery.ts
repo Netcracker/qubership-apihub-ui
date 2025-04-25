@@ -30,16 +30,11 @@ export function useRunDiscovery(): [RunDiscovery, IsLoading, IsSuccess, IsError]
   const invalidateServices = useInvalidateServices()
 
   const { mutate, isLoading, isSuccess, isError } = useMutation<void, Error, WorkspaceKey | undefined>({
-    mutationFn: ( workspaceKey ) => runServiceDiscovery(agentId!, namespaceKey!, workspaceKey ?? workspaceId!),
+    mutationFn: (workspaceKey) => runServiceDiscovery(agentId!, namespaceKey!, workspaceKey ?? workspaceId!),
     onSuccess: invalidateServices,
   })
 
-  return [
-    mutate,
-    isLoading,
-    isSuccess,
-    isError,
-  ]
+  return [mutate, isLoading, isSuccess, isError]
 }
 
 export type RunDiscovery = (workspaceKey?: WorkspaceKey) => void

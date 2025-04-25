@@ -86,16 +86,19 @@ function useOperationLink({ operationKey, apiType, packageRef }: OperationData, 
   const [kind] = usePackageKind()
 
   return useMemo(
-    () => getOperationsPath({
-      packageKey: packageId!,
-      versionKey: versionId!,
-      apiType: apiType ?? DEFAULT_API_TYPE,
-      operationKey: operationKey!,
-      search: {
-        [REF_SEARCH_PARAM]: { value: kind === DASHBOARD_KIND && (packageRef || ref) ? (packageRef?.key ?? ref!) : '' },
-        [DOCUMENT_SEARCH_PARAM]: { value: documentSlug },
-      },
-    }),
+    () =>
+      getOperationsPath({
+        packageKey: packageId!,
+        versionKey: versionId!,
+        apiType: apiType ?? DEFAULT_API_TYPE,
+        operationKey: operationKey!,
+        search: {
+          [REF_SEARCH_PARAM]: {
+            value: kind === DASHBOARD_KIND && (packageRef || ref) ? (packageRef?.key ?? ref!) : '',
+          },
+          [DOCUMENT_SEARCH_PARAM]: { value: documentSlug },
+        },
+      }),
     [apiType, documentSlug, kind, operationKey, packageId, packageRef, ref, versionId],
   )
 }

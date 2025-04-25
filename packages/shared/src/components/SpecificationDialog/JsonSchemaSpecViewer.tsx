@@ -32,25 +32,16 @@ export type JsonSchemaSpecViewerProps = {
   value: string
 }
 
-export const JsonSchemaSpecViewer: FC<JsonSchemaSpecViewerProps> = /* @__PURE__ */ memo<JsonSchemaSpecViewerProps>(({
-  view,
-  spec,
-  value,
-}) => {
+export const JsonSchemaSpecViewer: FC<JsonSchemaSpecViewerProps> = /* @__PURE__ */ memo<JsonSchemaSpecViewerProps>(
+  ({ view, spec, value }) => {
+    if (view === DOC_SPEC_VIEW_MODE) {
+      return (
+        <Box height="100%" overflow="scroll">
+          <JsonSchemaViewer schema={toJsonSchema(value) as object} />
+        </Box>
+      )
+    }
 
-  if (view === DOC_SPEC_VIEW_MODE) {
-    return (
-      <Box height="100%" overflow="scroll">
-        <JsonSchemaViewer schema={toJsonSchema(value) as object}/>
-      </Box>
-    )
-  }
-
-  return (
-    <RawSpecView
-      sx={{ px: 4, height: '100%' }}
-      value={value}
-      {...spec}
-    />
-  )
-})
+    return <RawSpecView sx={{ px: 4, height: '100%' }} value={value} {...spec} />
+  },
+)

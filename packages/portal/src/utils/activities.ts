@@ -38,7 +38,10 @@ import {
 import { format } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
 import { SPECIAL_VERSION_KEY } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
-import { GROUP_TYPE_MANUAL, GROUP_TYPE_REST_PATH_PREFIX } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
+import {
+  GROUP_TYPE_MANUAL,
+  GROUP_TYPE_REST_PATH_PREFIX,
+} from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
 import { API_TYPE_TITLE_MAP } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 
 export const EMPTY_ACTIVITY_MESSAGE: ActivityMessage = {
@@ -82,12 +85,7 @@ class BasicActivityMessageService implements ActivityMessageService {
     const commonPackagePath = `/portal/packages/${packageId}`
     return {
       path: version
-        ? format(
-          '{}/{}/{}',
-          commonPackagePath,
-          encodeURIComponent(version),
-          SUMMARY_ROUTE,
-        )
+        ? format('{}/{}/{}', commonPackagePath, encodeURIComponent(version), SUMMARY_ROUTE)
         : commonPackagePath,
       displayName: displayName,
     }
@@ -119,7 +117,6 @@ class BasicActivityMessageService implements ActivityMessageService {
   protected link(href: string, target: string = '_blank', displayedValue?: string): string {
     return `<a href='${href}' target='${target}'>${displayedValue ?? href}</a>`
   }
-
 }
 
 class GenerateAndRevokeApiKeysActivityMessageService extends BasicActivityMessageService {
@@ -283,12 +280,8 @@ class PatchPackageMetaActivityMessageService extends BasicActivityMessageService
 class CreateAndDeleteManualGroupActivityMessageService extends BasicActivityMessageService {
   mapActivityToMessage(): ActivityMessage {
     const { activityType, packageId, packageName, kind } = this.activity
-    const {
-      groupName,
-      version,
-      notLatestRevision,
-      apiType,
-    } = this.activity.details as CreateOrDeleteManualGroupEventDetails
+    const { groupName, version, notLatestRevision, apiType } = this.activity
+      .details as CreateOrDeleteManualGroupEventDetails
     const { versionKey } = getSplittedVersionKey(version, !notLatestRevision)
     const packageVersionLink = this.getPackageVersionLink(packageId, versionKey, versionKey)
 
@@ -319,18 +312,12 @@ export const GROUP_PARAMETERS: Record<GroupParameter, string> = {
 class UpdateOperationsGroupParametersActivityMessageService extends BasicActivityMessageService {
   mapActivityToMessage(): ActivityMessage {
     const { activityType, packageId, packageName, kind } = this.activity
-    const {
-      version,
-      groupName,
-      groupParameters,
-      notLatestRevision,
-      isPrefixGroup,
-      apiType,
-    } = this.activity.details as UpdateOperationsGroupParametersEventDetails
+    const { version, groupName, groupParameters, notLatestRevision, isPrefixGroup, apiType } = this.activity
+      .details as UpdateOperationsGroupParametersEventDetails
     const { versionKey } = getSplittedVersionKey(version, !notLatestRevision)
     const packageVersionLink = this.getPackageVersionLink(packageId, versionKey, versionKey)
 
-    const groupParametersString = groupParameters.map(groupParameter => GROUP_PARAMETERS[groupParameter]).join(', ')
+    const groupParametersString = groupParameters.map((groupParameter) => GROUP_PARAMETERS[groupParameter]).join(', ')
     const groupType = isPrefixGroup ? GROUP_TYPE_REST_PATH_PREFIX : GROUP_TYPE_MANUAL
     const apiTypeMessage = isPrefixGroup ? '' : ` (of ${API_TYPE_TITLE_MAP[apiType]} type)`
 

@@ -48,9 +48,7 @@ import {
   FILTERS_SEARCH_PARAM,
   GROUP_SEARCH_PARAM,
 } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import {
-  useSeverityFiltersSearchParam,
-} from '@netcracker/qubership-apihub-ui-shared/hooks/change-severities/useSeverityFiltersSearchParam'
+import { useSeverityFiltersSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/change-severities/useSeverityFiltersSearchParam'
 import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import type {
   DashboardComparisonSummary,
@@ -76,9 +74,7 @@ import {
 } from '@apihub/utils/operations'
 import { REPLACE_ACTION_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
 import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
-import {
-  COMPARE_SAME_OPERATIONS_MODE,
-} from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationView/OperationDisplayMode'
+import { COMPARE_SAME_OPERATIONS_MODE } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationView/OperationDisplayMode'
 import { OperationContent } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationContent'
 import { useComparisonObjects } from '@apihub/routes/root/PortalPage/VersionPage/useComparisonObjects'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
@@ -119,10 +115,10 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
 
   const operationAction = useMemo((): ActionType | string => {
     const targetChange = compareGroups?.data?.find(
-      element => element.operationId === operationKey && isFullyAddedOrRemovedOperationChange(element),
+      (element) => element.operationId === operationKey && isFullyAddedOrRemovedOperationChange(element),
     )?.diffs?.[0]
 
-    return isEmpty(compareGroups?.data) ? '' : targetChange?.action ?? 'rename'
+    return isEmpty(compareGroups?.data) ? '' : (targetChange?.action ?? 'rename')
   }, [compareGroups, operationKey])
 
   const [changesSummary] = useChangesSummaryContext({
@@ -138,7 +134,7 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
     if (!isPackageFromDashboard) {
       return undefined
     }
-    return (changesSummary as DashboardComparisonSummary)?.find(summary => {
+    return (changesSummary as DashboardComparisonSummary)?.find((summary) => {
       return summary.refKey === refPackageKey
     })
   }, [changesSummary, isPackageFromDashboard, refPackageKey])
@@ -150,9 +146,10 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
     versionKey: !isPackageFromDashboard ? changedVersionKey : refComparisonSummary?.previousVersion,
     enabled: actionForOriginalOperation.includes(operationAction) && !!restGroupingPrefix,
     apiType: apiType as ApiType,
-    operationKey: operationAction === 'rename'
-      ? `${getFullGroupForOperation(restGroupingPrefix, previousGroup!)}-${operationKey}`
-      : operationKey,
+    operationKey:
+      operationAction === 'rename'
+        ? `${getFullGroupForOperation(restGroupingPrefix, previousGroup!)}-${operationKey}`
+        : operationKey,
   })
 
   const { data: changedOperation, isLoading: isChangedOperationLoading } = useOperation({
@@ -160,18 +157,20 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
     versionKey: !isPackageFromDashboard ? changedVersionKey : refComparisonSummary?.version,
     enabled: actionForChangedOperation.includes(operationAction) && !!restGroupingPrefix,
     apiType: apiType as ApiType,
-    operationKey: operationAction === 'rename'
-      ? `${getFullGroupForOperation(restGroupingPrefix, group!)}-${operationKey}`
-      : operationKey,
+    operationKey:
+      operationAction === 'rename'
+        ? `${getFullGroupForOperation(restGroupingPrefix, group!)}-${operationKey}`
+        : operationKey,
   })
 
   const areChangesAndOperationsLoading = isOriginOperationLoading && isChangedOperationLoading
   const operationsGroupedByTags: OperationsGroupedByTag<OperationChangeData> = useMemo(() => {
-    const filteredChanges: OperationChanges[] = compareGroups.data?.filter(
-      operationChange => filterChangesBySeverity(filters, operationChange.changeSummary),
-    ) ?? []
+    const filteredChanges: OperationChanges[] =
+      compareGroups.data?.filter((operationChange) =>
+        filterChangesBySeverity(filters, operationChange.changeSummary),
+      ) ?? []
 
-    const transformedOps = filteredChanges?.map(change => {
+    const transformedOps = filteredChanges?.map((change) => {
       const action = getActionForOperation(change, REPLACE_ACTION_TYPE)
       return {
         operationKey: change.operationId,
@@ -190,24 +189,30 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
   }, [compareGroups.data, filters])
   const tags = useMemo(() => Array.from(Object.keys(operationsGroupedByTags)), [operationsGroupedByTags])
 
-  const filterGroupedOperations = useCallback((property: keyof Pick<RestOperation, 'method' | 'path' | 'title'>) =>
-      (operation: Operation): boolean => isRestOperation(operation) &&
+  const filterGroupedOperations = useCallback(
+    (property: keyof Pick<RestOperation, 'method' | 'path' | 'title'>) =>
+      (operation: Operation): boolean =>
+        isRestOperation(operation) &&
         !Array.isArray(operation[property]) &&
         operation[property]?.toLowerCase().includes(searchValue.toLowerCase()),
-    [searchValue])
+    [searchValue],
+  )
 
-  const filterOperations = useCallback((filterFunction: (operation: Operation) => boolean): OperationsGroupedByTag<OperationChangeData> => {
-    return Object.fromEntries(
-      Object.entries(operationsGroupedByTags).map(([tag, operations]) => [
-        tag,
-        isOperationDataArray(operations)
-          ? operations.filter(filterFunction)
-          : isOperationChangeDataArray(operations)
+  const filterOperations = useCallback(
+    (filterFunction: (operation: Operation) => boolean): OperationsGroupedByTag<OperationChangeData> => {
+      return Object.fromEntries(
+        Object.entries(operationsGroupedByTags).map(([tag, operations]) => [
+          tag,
+          isOperationDataArray(operations)
             ? operations.filter(filterFunction)
-            : operations,
-      ]),
-    )
-  }, [operationsGroupedByTags])
+            : isOperationChangeDataArray(operations)
+              ? operations.filter(filterFunction)
+              : operations,
+        ]),
+      )
+    },
+    [operationsGroupedByTags],
+  )
 
   const filteredOperationsGroupedByTags = useMemo(() => {
     if (searchValue) {
@@ -232,10 +237,16 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
     return operationsGroupedByTags
   }, [filterGroupedOperations, filterOperations, operationsGroupedByTags, searchValue])
 
-  const filteredTagsInSidebar = useMemo(() => tags.filter(tag => filteredOperationsGroupedByTags[tag]?.length), [filteredOperationsGroupedByTags, tags])
+  const filteredTagsInSidebar = useMemo(
+    () => tags.filter((tag) => filteredOperationsGroupedByTags[tag]?.length),
+    [filteredOperationsGroupedByTags, tags],
+  )
 
   const [firstOperation] = useMemo(
-    () => (filteredTagsInSidebar.length && (filteredOperationsGroupedByTags || searchValue) ? filteredOperationsGroupedByTags[filteredTagsInSidebar[0]] : []),
+    () =>
+      filteredTagsInSidebar.length && (filteredOperationsGroupedByTags || searchValue)
+        ? filteredOperationsGroupedByTags[filteredTagsInSidebar[0]]
+        : [],
     [filteredOperationsGroupedByTags, filteredTagsInSidebar, searchValue],
   )
   const isCurrentOperationGrouped = useMemo(
@@ -262,7 +273,19 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
         search: searchParams,
       })
     }
-  }, [apiType, areChangesAndOperationsLoading, changedPackageKey, changedVersionKey, filters, firstOperation, group, isCurrentOperationGrouped, navigateToFirstGroupOperation, previousGroup, selectedDocumentSlug])
+  }, [
+    apiType,
+    areChangesAndOperationsLoading,
+    changedPackageKey,
+    changedVersionKey,
+    filters,
+    firstOperation,
+    group,
+    isCurrentOperationGrouped,
+    navigateToFirstGroupOperation,
+    previousGroup,
+    selectedDocumentSlug,
+  ])
 
   const comparedOperationsPair = {
     left: originOperation,
@@ -280,7 +303,12 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
   })
   const mergedBreadcrumbsData = useCompareBreadcrumbs(originComparisonObject, changedComparisonObject)
 
-  const handleOperationClick = useNavigateToOperation(changedPackageKey!, changedVersionKey!, apiType as ApiType, setShouldAutoExpand)
+  const handleOperationClick = useNavigateToOperation(
+    changedPackageKey!,
+    changedVersionKey!,
+    apiType as ApiType,
+    setShouldAutoExpand,
+  )
 
   return (
     <ShouldAutoExpandTagsProvider>
@@ -289,7 +317,7 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
           <BreadcrumbsDataContext.Provider value={mergedBreadcrumbsData}>
             <ComparedOperationsContext.Provider value={comparedOperationsPair}>
               <PageLayout
-                toolbar={<ComparisonToolbar compareToolbarMode={COMPARE_SAME_OPERATIONS_MODE}/>}
+                toolbar={<ComparisonToolbar compareToolbarMode={COMPARE_SAME_OPERATIONS_MODE} />}
                 navigation={
                   <OperationsSidebarOnComparison
                     operationPackageKey={operationPackageKey!}
@@ -316,7 +344,7 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
             </ComparedOperationsContext.Provider>
           </BreadcrumbsDataContext.Provider>
         </VersionsComparisonGlobalParamsContext.Provider>
-        <CompareOperationPathsDialog/>
+        <CompareOperationPathsDialog />
       </SelectedOperationTagsProvider>
     </ShouldAutoExpandTagsProvider>
   )
@@ -332,4 +360,3 @@ export const getFullGroupForOperation = (restGroupingPrefix: string | undefined,
 }
 
 const httpMethods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
-

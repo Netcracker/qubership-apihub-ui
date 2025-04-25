@@ -27,7 +27,6 @@ export type FormattedDateProps = {
 }
 
 export const FormattedDate: FC<FormattedDateProps> = memo<FormattedDateProps>(({ value, format, color }) => {
-
   if (!value) {
     return null
   }
@@ -36,12 +35,8 @@ export const FormattedDate: FC<FormattedDateProps> = memo<FormattedDateProps>(({
   const formattedDate = toDateFormat(date, format)
 
   return (
-    <Tooltip title={`${(date.toTimeString())}`}>
-      <Typography
-        component="span"
-        variant="body2"
-        sx={{ color: color ? color : 'inherit' }}
-      >
+    <Tooltip title={`${date.toTimeString()}`}>
+      <Typography component="span" variant="body2" sx={{ color: color ? color : 'inherit' }}>
         {formattedDate}
       </Typography>
     </Tooltip>

@@ -15,7 +15,7 @@
  */
 
 import { useMutation } from '@tanstack/react-query'
-import type { Emails, Schedules} from '@apihub/entities/settings'
+import type { Emails, Schedules } from '@apihub/entities/settings'
 import { updateSettings } from '@apihub/entities/settings'
 import { useParams } from 'react-router-dom'
 import { useSetSettings } from './useSettings'
@@ -50,30 +50,29 @@ export function useUpdateSettings(): [UpdateSettings, IsLoading, IsSuccess, IsEr
         emailNotificationsEnabled,
         emailNotificationList,
       ),
-    onSuccess: (_, {
-      versionKey,
-      previousVersionKey,
-      autodiscoveryStatus,
-      schedules,
-      emailNotificationList,
-      emailNotificationsEnabled,
-    }) => setSettings({
-      name: namespaceKey!,
-      version: versionKey,
-      previousVersion: previousVersionKey,
-      autoDiscovery: autodiscoveryStatus,
-      schedules: schedules,
-      emailNotificationsEnabled: emailNotificationsEnabled,
-      emailNotificationList: emailNotificationList,
-    }),
+    onSuccess: (
+      _,
+      {
+        versionKey,
+        previousVersionKey,
+        autodiscoveryStatus,
+        schedules,
+        emailNotificationList,
+        emailNotificationsEnabled,
+      },
+    ) =>
+      setSettings({
+        name: namespaceKey!,
+        version: versionKey,
+        previousVersion: previousVersionKey,
+        autoDiscovery: autodiscoveryStatus,
+        schedules: schedules,
+        emailNotificationsEnabled: emailNotificationsEnabled,
+        emailNotificationList: emailNotificationList,
+      }),
   })
 
-  return [
-    mutate,
-    isLoading,
-    isSuccess,
-    isError,
-  ]
+  return [mutate, isLoading, isSuccess, isError]
 }
 
 export type UpdateSettings = (options: UpdateSettingsOptions) => void

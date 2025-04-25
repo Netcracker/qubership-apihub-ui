@@ -30,9 +30,9 @@ export const Header: FC<PropsWithChildren<HeaderProps>> = memo<PropsWithChildren
 
   return (
     <Box display="inline-flex" gap="16px" alignItems="center" justifyContent="center">
-      <Subtitle label="Cloud" value={agentId}/>
-      <Subtitle label="Namespace" value={namespaceKey}/>
-      <Subtitle label="Service" value={specKey}/>
+      <Subtitle label="Cloud" value={agentId} />
+      <Subtitle label="Namespace" value={namespaceKey} />
+      <Subtitle label="Service" value={specKey} />
       {children}
     </Box>
   )

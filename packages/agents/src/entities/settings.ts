@@ -69,7 +69,9 @@ export async function getSettings(
   namespaceKey: NamespaceKey,
   workspaceKey: WorkspaceKey,
 ): Promise<SettingsDto> {
-  return await ncCustomAgentsRequestJson<SettingsDto>(`/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/settings`, {
+  return await ncCustomAgentsRequestJson<SettingsDto>(
+    `/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/settings`,
+    {
       method: 'get',
     },
   )
@@ -92,7 +94,9 @@ export async function updateSettings(
   emailNotificationEnabled: boolean,
   emailNotificationList: Emails,
 ): Promise<void> {
-  return await ncCustomAgentsRequestVoid(`/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/settings`, {
+  return await ncCustomAgentsRequestVoid(
+    `/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/settings`,
+    {
       method: 'post',
       body: JSON.stringify(<UpdateSettingsRequestDto>{
         name: namespaceKey,

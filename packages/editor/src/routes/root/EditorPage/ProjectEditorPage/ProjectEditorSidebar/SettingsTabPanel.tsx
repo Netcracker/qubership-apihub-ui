@@ -24,8 +24,7 @@ import { SidebarTabPanel } from '@apihub/components/SidebarTabPanel'
 import { SETTINGS_PROJECT_EDITOR_MODE } from '@apihub/entities/editor-modes'
 
 export const GENERAL_SETTINGS_TAB = 'general'
-export type SettingsTab =
-  | typeof GENERAL_SETTINGS_TAB
+export type SettingsTab = typeof GENERAL_SETTINGS_TAB
 
 export const SettingsTabPanel: FC = memo(() => {
   const [selectedSetting, setSelectedSetting] = useSettingSearchParam()
@@ -51,8 +50,8 @@ export const SettingsTabPanel: FC = memo(() => {
             sx={{ justifyContent: 'center' }}
           >
             <Box>
-              <ListItemText primary="General"/>
-              <ListItemText primary="Project information" primaryTypographyProps={{ color: '#626D82' }}/>
+              <ListItemText primary="General" />
+              <ListItemText primary="Project information" primaryTypographyProps={{ color: '#626D82' }} />
             </Box>
           </ListItemButton>
         </List>

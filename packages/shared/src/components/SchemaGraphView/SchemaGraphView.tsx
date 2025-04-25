@@ -18,7 +18,13 @@ import type { FC } from 'react'
 import { memo, useEffect, useMemo, useRef } from 'react'
 import Box from '@mui/material/Box'
 import '@netcracker/qubership-apihub-class-view/class-view.css'
-import type { DomainObject, Point, SelectableObject, SelectionChangeData, Shape } from '@netcracker/qubership-apihub-class-view'
+import type {
+  DomainObject,
+  Point,
+  SelectableObject,
+  SelectionChangeData,
+  Shape,
+} from '@netcracker/qubership-apihub-class-view'
 import {
   ClassViewComponent,
   EVENT_SELECTION_CHANGE,
@@ -66,116 +72,125 @@ export type SchemaGraphViewProps = {
 }
 
 // Uses PURE annotation to tree-shake this on build (memo component will be ignored on tree-shaking by default)
-export const SchemaGraphView: FC<SchemaGraphViewProps> = /* @__PURE__ */ memo<SchemaGraphViewProps>(({
-  data = {},
-  navigationState,
-  selectedObject = null,
-  zoom,
-  action,
-  onSelectionChange,
-  onViewPortChange,
-  onZoomChange,
-  onNavigationToEmptyContent,
-}) => {
-  const viewContainerRef = useRef<HTMLDivElement | null>(null)
+export const SchemaGraphView: FC<SchemaGraphViewProps> = /* @__PURE__ */ memo<SchemaGraphViewProps>(
+  ({
+    data = {},
+    navigationState,
+    selectedObject = null,
+    zoom,
+    action,
+    onSelectionChange,
+    onViewPortChange,
+    onZoomChange,
+    onNavigationToEmptyContent,
+  }) => {
+    const viewContainerRef = useRef<HTMLDivElement | null>(null)
 
-  const view = useMemo(() => {
-    const component = createClassViewComponent()
-    component.classShapeFunction = selectClassShape
+    const view = useMemo(() => {
+      const component = createClassViewComponent()
+      component.classShapeFunction = selectClassShape
 
-    return component
-  }, [])
+      return component
+    }, [])
 
-  useMemoSubscription<SelectableObject<SchemaGraphMeta>, typeof EVENT_SELECTION_CHANGE>(view, EVENT_SELECTION_CHANGE, onSelectionChange, getSelectedObject, isSelectionCancel)
-  useMemoSubscription<number, typeof EVENT_ZOOM_CHANGE>(view, EVENT_ZOOM_CHANGE, onZoomChange, getEventValue)
-  useMemoSubscription<[number, number], typeof EVENT_VIEWPORT_CENTER_CHANGE>(view, EVENT_VIEWPORT_CENTER_CHANGE, onViewPortChange, getViewPortCoordinates)
-
-  const [content, objectsMap, isEmptyContent] = useGraphContentFactory(navigationState, data)
-
-  useEffect(() => {
-    if (!viewContainerRef.current) {
-      return
-    }
-
-    if (!isEmptyContent) {
-      viewContainerRef.current?.appendChild(view)
-    }
-  }, [view, isEmptyContent, viewContainerRef])
-
-  useEffect(() => {
-    if (view) {
-      //need set empty content also because previous graph will flash when next set other (not-empty) graph
-      view.animationDuration = ANIMATION_DURATION_ZERO
-      view.content = content
-      onNavigationToEmptyContent?.(isEmptyContent)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [content, view])
-
-  useEffect(() => {
-    if (isEmptyContent || !navigationState) {
-      return
-    }
-
-    const matchedClass = getMatchedClass(objectsMap, navigationState)
-
-    //graph will fit automatically if content is new
-    if (matchedClass) {
-      view.animationDuration = ANIMATION_DURATION_MORPH
-      view.navigateTo([matchedClass])
-    } else if (navigationState.viewPort) {
-      view.animationDuration = ANIMATION_DURATION_MORPH
-      view.viewportCenter = {
-        x: navigationState.viewPort.coordinates[0],
-        y: navigationState.viewPort.coordinates[1],
-      }
-      view.zoom = navigationState.viewPort.zoom
-
-      onZoomChange(navigationState.viewPort.zoom)
-      onViewPortChange(navigationState.viewPort.coordinates)
-    }
-
-    if (matchedClass) {
-      view.selectedObjects = [matchedClass]
-    } else {
-      view.selectedObjects = []
-    }
-    onSelectionChange(matchedClass)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [view, navigationState])
-
-  useEffect(() => {
-    view.selectedObjects = selectedObject ? [selectedObject] : []
-  }, [selectedObject, view])
-
-  useEffect(() => {
-    if (zoom && view.zoom !== zoom) {
-      view.zoom = zoom
-    }
-  }, [view, zoom])
-
-  useEffect(() => {
-    if (!view) {
-      return
-    }
-
-    if (action?.type === FIT_TO_SCREEN_ACTION) {
-      view.navigateTo(Object.values(objectsMap))
-    }
-    // Intentionally suppressed, because it shouldn't depend on objectsMap
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [view, action])
-
-  return !isEmptyContent
-    ? <Box ref={viewContainerRef}/>
-    : (
-      <Placeholder
-        invisible={false}
-        area={CONTENT_PLACEHOLDER_AREA}
-        message="No models to show"
-      />
+    useMemoSubscription<SelectableObject<SchemaGraphMeta>, typeof EVENT_SELECTION_CHANGE>(
+      view,
+      EVENT_SELECTION_CHANGE,
+      onSelectionChange,
+      getSelectedObject,
+      isSelectionCancel,
     )
-})
+    useMemoSubscription<number, typeof EVENT_ZOOM_CHANGE>(view, EVENT_ZOOM_CHANGE, onZoomChange, getEventValue)
+    useMemoSubscription<[number, number], typeof EVENT_VIEWPORT_CENTER_CHANGE>(
+      view,
+      EVENT_VIEWPORT_CENTER_CHANGE,
+      onViewPortChange,
+      getViewPortCoordinates,
+    )
+
+    const [content, objectsMap, isEmptyContent] = useGraphContentFactory(navigationState, data)
+
+    useEffect(() => {
+      if (!viewContainerRef.current) {
+        return
+      }
+
+      if (!isEmptyContent) {
+        viewContainerRef.current?.appendChild(view)
+      }
+    }, [view, isEmptyContent, viewContainerRef])
+
+    useEffect(() => {
+      if (view) {
+        //need set empty content also because previous graph will flash when next set other (not-empty) graph
+        view.animationDuration = ANIMATION_DURATION_ZERO
+        view.content = content
+        onNavigationToEmptyContent?.(isEmptyContent)
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [content, view])
+
+    useEffect(() => {
+      if (isEmptyContent || !navigationState) {
+        return
+      }
+
+      const matchedClass = getMatchedClass(objectsMap, navigationState)
+
+      //graph will fit automatically if content is new
+      if (matchedClass) {
+        view.animationDuration = ANIMATION_DURATION_MORPH
+        view.navigateTo([matchedClass])
+      } else if (navigationState.viewPort) {
+        view.animationDuration = ANIMATION_DURATION_MORPH
+        view.viewportCenter = {
+          x: navigationState.viewPort.coordinates[0],
+          y: navigationState.viewPort.coordinates[1],
+        }
+        view.zoom = navigationState.viewPort.zoom
+
+        onZoomChange(navigationState.viewPort.zoom)
+        onViewPortChange(navigationState.viewPort.coordinates)
+      }
+
+      if (matchedClass) {
+        view.selectedObjects = [matchedClass]
+      } else {
+        view.selectedObjects = []
+      }
+      onSelectionChange(matchedClass)
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [view, navigationState])
+
+    useEffect(() => {
+      view.selectedObjects = selectedObject ? [selectedObject] : []
+    }, [selectedObject, view])
+
+    useEffect(() => {
+      if (zoom && view.zoom !== zoom) {
+        view.zoom = zoom
+      }
+    }, [view, zoom])
+
+    useEffect(() => {
+      if (!view) {
+        return
+      }
+
+      if (action?.type === FIT_TO_SCREEN_ACTION) {
+        view.navigateTo(Object.values(objectsMap))
+      }
+      // Intentionally suppressed, because it shouldn't depend on objectsMap
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [view, action])
+
+    return !isEmptyContent ? (
+      <Box ref={viewContainerRef} />
+    ) : (
+      <Placeholder invisible={false} area={CONTENT_PLACEHOLDER_AREA} message="No models to show" />
+    )
+  },
+)
 
 function useGraphContentFactory(
   navigationState?: NavigationState,
@@ -193,11 +208,7 @@ function useGraphContentFactory(
       : EMPTY_CONTENT
 
     const objectsMap = resolveGraphObjectsMap(classDiagramObjects)
-    return [
-      classDiagramObjects,
-      objectsMap,
-      isEmpty(Object.values(objectsMap)),
-    ]
+    return [classDiagramObjects, objectsMap, isEmpty(Object.values(objectsMap))]
     // Should recalc content only on change contentKey
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contentKey])
@@ -232,13 +243,15 @@ function isClass(value: DomainObject): value is SchemaGraphMeta['class'] {
 }
 
 function selectClassShape(object: DomainObject): Shape {
-  return isClass(object)
-    ? SHAPE_ROUND_RECTANGLE
-    : SHAPE_RECTANGLE
+  return isClass(object) ? SHAPE_ROUND_RECTANGLE : SHAPE_RECTANGLE
 }
 
-function getSelectedObject(event: CustomEvent<SelectionChangeData<SchemaGraphMeta>>): SelectableObject<SchemaGraphMeta> {
-  const { newValue: [selectedObject] } = event.detail
+function getSelectedObject(
+  event: CustomEvent<SelectionChangeData<SchemaGraphMeta>>,
+): SelectableObject<SchemaGraphMeta> {
+  const {
+    newValue: [selectedObject],
+  } = event.detail
   return selectedObject
 }
 
@@ -271,17 +284,16 @@ const EMPTY_CONTENT = {
 const ANIMATION_DURATION_ZERO = 0
 const ANIMATION_DURATION_MORPH = 350
 
-function getMatchedClass(objectsMap: Record<string, DomainObject<SchemaGraphMeta>>, navigationState: NavigationState): SchemaClass | undefined {
-  const {
-    schemaTolerantHashWithTitle,
-    navigationFailedCallback,
-  } = navigationState
+function getMatchedClass(
+  objectsMap: Record<string, DomainObject<SchemaGraphMeta>>,
+  navigationState: NavigationState,
+): SchemaClass | undefined {
+  const { schemaTolerantHashWithTitle, navigationFailedCallback } = navigationState
 
   const matchedObjects = Object.values(objectsMap)
     .filter(isSchema)
-    .filter(
-      ({ sharedSchemaObjects }) =>
-        sharedSchemaObjects.some(schema => schemaHashWithTitle(schema) === schemaTolerantHashWithTitle),
+    .filter(({ sharedSchemaObjects }) =>
+      sharedSchemaObjects.some((schema) => schemaHashWithTitle(schema) === schemaTolerantHashWithTitle),
     )
 
   if (matchedObjects.length === 0) {

@@ -32,9 +32,7 @@ import { SwapperBreadcrumbs } from '../SwapperBreadcrumbs'
 import { useVersionsComparisonGlobalParams } from '../VersionsComparisonGlobalParams'
 import { VERSION_SWAPPER_HEIGHT } from '../shared-styles'
 import { useNavigation } from '../../../../NavigationProvider'
-import {
-  useSeverityFiltersSearchParam,
-} from '@netcracker/qubership-apihub-ui-shared/hooks/change-severities/useSeverityFiltersSearchParam'
+import { useSeverityFiltersSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/change-severities/useSeverityFiltersSearchParam'
 import {
   DOCUMENT_SEARCH_PARAM,
   FILTERS_SEARCH_PARAM,
@@ -58,109 +56,105 @@ export type OperationsSwapperProps = {
   actions: ReactNode
 }
 
-export const OperationsSwapper: FC<OperationsSwapperProps> = memo<OperationsSwapperProps>(({
-  displayMode,
-  breadcrumbsData,
-  actions,
-}) => {
-  const { operationId: changedOperationKey, group, apiType } = useParams()
-  const { operationKey: operationKeyParam } = useOperationLocation()
-  const originOperationKey = operationKeyParam ?? changedOperationKey
-  const [documentSlug] = useDocumentSearchParam()
-  const [filters] = useSeverityFiltersSearchParam()
+export const OperationsSwapper: FC<OperationsSwapperProps> = memo<OperationsSwapperProps>(
+  ({ displayMode, breadcrumbsData, actions }) => {
+    const { operationId: changedOperationKey, group, apiType } = useParams()
+    const { operationKey: operationKeyParam } = useOperationLocation()
+    const originOperationKey = operationKeyParam ?? changedOperationKey
+    const [documentSlug] = useDocumentSearchParam()
+    const [filters] = useSeverityFiltersSearchParam()
 
-  const previousGroup = useSearchParam(GROUP_SEARCH_PARAM)
+    const previousGroup = useSearchParam(GROUP_SEARCH_PARAM)
 
-  const {
-    changedPackageKey,
-    changedVersionKey,
-    originPackageKey,
-    originVersionKey,
-  } = useVersionsComparisonGlobalParams()
+    const { changedPackageKey, changedVersionKey, originPackageKey, originVersionKey } =
+      useVersionsComparisonGlobalParams()
 
-  const { isPackageFromDashboard, refPackageKey } = useIsPackageFromDashboard()
+    const { isPackageFromDashboard, refPackageKey } = useIsPackageFromDashboard()
 
-  const { mode } = useOperationViewMode()
-  const { showCompareOperationsDialog } = useEventBus()
+    const { mode } = useOperationViewMode()
+    const { showCompareOperationsDialog } = useEventBus()
 
-  const { navigateToGroupsOperationsSwapper, navigateToOperationsSwapper } = useNavigation()
+    const { navigateToGroupsOperationsSwapper, navigateToOperationsSwapper } = useNavigation()
 
-  const handleSwap = useCallback(() => {
-    const searchParams = {
-      mode: { value: mode === DOC_OPERATION_VIEW_MODE ? '' : mode },
-      [PACKAGE_SEARCH_PARAM]: { value: originPackageKey === changedPackageKey ? '' : changedPackageKey! },
-      [VERSION_SEARCH_PARAM]: { value: originVersionKey === changedVersionKey ? '' : changedVersionKey! },
-      [OPERATION_SEARCH_PARAM]: { value: originOperationKey === changedOperationKey ? '' : changedOperationKey! },
-      [REF_SEARCH_PARAM]: { value: isPackageFromDashboard ? refPackageKey : undefined },
-      [DOCUMENT_SEARCH_PARAM]: { value: documentSlug },
-      [GROUP_SEARCH_PARAM]: { value: group },
-      [FILTERS_SEARCH_PARAM]: { value: filters.join() },
-    }
+    const handleSwap = useCallback(() => {
+      const searchParams = {
+        mode: { value: mode === DOC_OPERATION_VIEW_MODE ? '' : mode },
+        [PACKAGE_SEARCH_PARAM]: { value: originPackageKey === changedPackageKey ? '' : changedPackageKey! },
+        [VERSION_SEARCH_PARAM]: { value: originVersionKey === changedVersionKey ? '' : changedVersionKey! },
+        [OPERATION_SEARCH_PARAM]: { value: originOperationKey === changedOperationKey ? '' : changedOperationKey! },
+        [REF_SEARCH_PARAM]: { value: isPackageFromDashboard ? refPackageKey : undefined },
+        [DOCUMENT_SEARCH_PARAM]: { value: documentSlug },
+        [GROUP_SEARCH_PARAM]: { value: group },
+        [FILTERS_SEARCH_PARAM]: { value: filters.join() },
+      }
 
-    previousGroup
-      ? navigateToGroupsOperationsSwapper({
-        packageKey: originPackageKey!,
-        versionKey: changedVersionKey!,
-        previousGroup: previousGroup!,
-        apiType: apiType as ApiType,
-        originOperationKey: originOperationKey!,
-        search: searchParams,
-      })
-      : navigateToOperationsSwapper({
-        packageKey: originPackageKey!,
-        versionKey: originVersionKey!,
-        apiType: apiType as ApiType,
-        originOperationKey: originOperationKey!,
-        search: searchParams,
-      })
-  }, [mode, originPackageKey, changedPackageKey, originVersionKey, changedVersionKey, originOperationKey, changedOperationKey, isPackageFromDashboard, refPackageKey, documentSlug, group, filters, previousGroup, navigateToGroupsOperationsSwapper, apiType, navigateToOperationsSwapper])
+      previousGroup
+        ? navigateToGroupsOperationsSwapper({
+            packageKey: originPackageKey!,
+            versionKey: changedVersionKey!,
+            previousGroup: previousGroup!,
+            apiType: apiType as ApiType,
+            originOperationKey: originOperationKey!,
+            search: searchParams,
+          })
+        : navigateToOperationsSwapper({
+            packageKey: originPackageKey!,
+            versionKey: originVersionKey!,
+            apiType: apiType as ApiType,
+            originOperationKey: originOperationKey!,
+            search: searchParams,
+          })
+    }, [
+      mode,
+      originPackageKey,
+      changedPackageKey,
+      originVersionKey,
+      changedVersionKey,
+      originOperationKey,
+      changedOperationKey,
+      isPackageFromDashboard,
+      refPackageKey,
+      documentSlug,
+      group,
+      filters,
+      previousGroup,
+      navigateToGroupsOperationsSwapper,
+      apiType,
+      navigateToOperationsSwapper,
+    ])
 
-  const isEditButtonEnabled = useMemo(() => (
-    [
-      COMPARE_DIFFERENT_OPERATIONS_MODE,
-      COMPARE_PACKAGES_MODE,
-      COMPARE_DASHBOARDS_MODE,
-    ].includes(displayMode)
-  ), [displayMode])
+    const isEditButtonEnabled = useMemo(
+      () => [COMPARE_DIFFERENT_OPERATIONS_MODE, COMPARE_PACKAGES_MODE, COMPARE_DASHBOARDS_MODE].includes(displayMode),
+      [displayMode],
+    )
 
-  return (
-    <Box sx={OPERATION_SWAPPER_STYLES}>
-      <Box sx={OPERATION_SWAPPER_HEADER_STYLES} data-testid="LeftSwapperHeader">
-        {<SwapperBreadcrumbs
-          side="before"
-          data={breadcrumbsData}
-        />}
-      </Box>
-      <Box sx={OPERATION_SWAPPER_DELIMITER_STYLES}>
-        <Box sx={OPERATION_SWAPPER_ARROW_STYLES}>
-          <Swapper onSwap={handleSwap}/>
+    return (
+      <Box sx={OPERATION_SWAPPER_STYLES}>
+        <Box sx={OPERATION_SWAPPER_HEADER_STYLES} data-testid="LeftSwapperHeader">
+          {<SwapperBreadcrumbs side="before" data={breadcrumbsData} />}
         </Box>
-      </Box>
-      <Box sx={OPERATION_SECOND_SWAPPER_HEADER_STYLES} data-testid="RightSwapperHeader">
-        <Box sx={OPERATION_SECOND_SWAPPER_HEADER_BOX_STYLES}>
-          {<SwapperBreadcrumbs
-            side="after"
-            data={breadcrumbsData}
-          />}
-        </Box>
-        <Box display="flex" flexDirection="row" gap={1} sx={OPERATION_ACTION_STYLES}>
-          <Box py={1}>
-            {actions}
+        <Box sx={OPERATION_SWAPPER_DELIMITER_STYLES}>
+          <Box sx={OPERATION_SWAPPER_ARROW_STYLES}>
+            <Swapper onSwap={handleSwap} />
           </Box>
-          {isEditButtonEnabled && (
-            <IconButton
-              onClick={showCompareOperationsDialog}
-              data-testid="EditButton"
-            >
-              <EditIcon/>
-            </IconButton>
-          )}
+        </Box>
+        <Box sx={OPERATION_SECOND_SWAPPER_HEADER_STYLES} data-testid="RightSwapperHeader">
+          <Box sx={OPERATION_SECOND_SWAPPER_HEADER_BOX_STYLES}>
+            {<SwapperBreadcrumbs side="after" data={breadcrumbsData} />}
+          </Box>
+          <Box display="flex" flexDirection="row" gap={1} sx={OPERATION_ACTION_STYLES}>
+            <Box py={1}>{actions}</Box>
+            {isEditButtonEnabled && (
+              <IconButton onClick={showCompareOperationsDialog} data-testid="EditButton">
+                <EditIcon />
+              </IconButton>
+            )}
+          </Box>
         </Box>
       </Box>
-
-    </Box>
-  )
-})
+    )
+  },
+)
 
 const OPERATION_SWAPPER_STYLES = {
   backgroundColor: '#FFF',

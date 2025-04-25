@@ -47,9 +47,9 @@ export function publishSnapshot(router: SnapshotRouter): void {
           publishId: 'snapshot-publish-key',
           packageId: 'MYPKG',
         },
-        services: services.map(serviceId => {
-          const serviceDto = COMPLETE_SERVICES_DTO.services.find(service => service.id === serviceId)
-          return ({
+        services: services.map((serviceId) => {
+          const serviceDto = COMPLETE_SERVICES_DTO.services.find((service) => service.id === serviceId)
+          return {
             serviceId: serviceId,
             publishId: `publication-${serviceId}`,
             packageId: 'MYPKG',
@@ -58,16 +58,13 @@ export function publishSnapshot(router: SnapshotRouter): void {
             versionFolder: '',
             status: 'draft',
             refs: [],
-            files: serviceDto?.specs.map(spec => ({
+            files: serviceDto?.specs.map((spec) => ({
               fileId: spec.fileId,
               publish: true,
               labels: [],
             })),
-            labels: [
-              'label-1',
-              'label-2',
-            ],
-          })
+            labels: ['label-1', 'label-2'],
+          }
         }),
       })
     }, 1000)

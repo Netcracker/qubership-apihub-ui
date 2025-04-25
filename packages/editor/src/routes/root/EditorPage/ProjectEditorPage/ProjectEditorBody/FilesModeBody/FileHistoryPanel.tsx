@@ -57,11 +57,14 @@ export const FileHistoryPanel: FC = memo(() => {
   const [project] = useProject()
   const { showFileHistoryDialog } = useEventBus()
 
-  const onHistoryCompare = useCallback((rows: Row<ProjectFileChangeHistory>[], row: Row<ProjectFileChangeHistory>): void => {
-    const commitKey = rows[rows.indexOf(row) + 1]?.original?.key ?? NONE_COMMIT_KEY
-    const comparisonCommitKey = row.original.key
-    showFileHistoryDialog({ fileKey, commitKey, comparisonCommitKey })
-  }, [fileKey, showFileHistoryDialog])
+  const onHistoryCompare = useCallback(
+    (rows: Row<ProjectFileChangeHistory>[], row: Row<ProjectFileChangeHistory>): void => {
+      const commitKey = rows[rows.indexOf(row) + 1]?.original?.key ?? NONE_COMMIT_KEY
+      const comparisonCommitKey = row.original.key
+      showFileHistoryDialog({ fileKey, commitKey, comparisonCommitKey })
+    },
+    [fileKey, showFileHistoryDialog],
+  )
 
   const columns: ReadonlyArray<Column<ProjectFileChangeHistory>> = useMemo(() => {
     const columns: Column<ProjectFileChangeHistory>[] = [
@@ -69,26 +72,26 @@ export const FileHistoryPanel: FC = memo(() => {
         accessor: 'modifiedAt',
         width: 80,
         Header: 'Date of change',
-        Cell: ({ row: { original: { modifiedAt } } }) => <>
-          {modifiedAt && <FormattedDate value={modifiedAt}/>}
-        </>,
+        Cell: ({
+          row: {
+            original: { modifiedAt },
+          },
+        }) => <>{modifiedAt && <FormattedDate value={modifiedAt} />}</>,
       },
       {
         accessor: 'modifiedBy',
         width: 44,
         Header: 'User',
-        Cell: ({ value }) => (
-          <UserAvatar
-            size="small"
-            name={value.name}
-            src={value.avatarUrl}
-          />
-        ),
+        Cell: ({ value }) => <UserAvatar size="small" name={value.name} src={value.avatarUrl} />,
       },
       {
         accessor: 'comment',
         Header: 'Comment',
-        Cell: ({ row: { original: { commitId, comment } } }) => (
+        Cell: ({
+          row: {
+            original: { commitId, comment },
+          },
+        }) => (
           <Link
             href={`${project?.integration?.repositoryUrl?.substring(0, project?.integration?.repositoryUrl?.lastIndexOf('.'))}/commit/${commitId}`}
           >
@@ -105,11 +108,8 @@ export const FileHistoryPanel: FC = memo(() => {
         Header: '',
         Cell: () => (
           <Tooltip title="Compare with previous">
-            <Box
-              className="hoverable"
-              sx={{ visibility: 'hidden' }}
-            >
-              <CompareArrowsRoundedIcon sx={{ color: '#626D82' }}/>
+            <Box className="hoverable" sx={{ visibility: 'hidden' }}>
+              <CompareArrowsRoundedIcon sx={{ color: '#626D82' }} />
             </Box>
           </Tooltip>
         ),
@@ -119,62 +119,55 @@ export const FileHistoryPanel: FC = memo(() => {
     return columns
   }, [project?.integration?.repositoryUrl, specType])
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-  } = useTable({ columns: columns, data: fileHistory })
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({
+    columns: columns,
+    data: fileHistory,
+  })
 
   return (
     <>
-      {
-        isLoading
-          ? <FileHistorySkeleton/>
-          : <Placeholder
-            invisible={isNotEmpty(fileHistory)}
-            area={NAVIGATION_PLACEHOLDER_AREA}
-            message="No history items"
-          >
-            <TableContainer>
-              <Table {...getTableProps()} >
-                <TableHead>
-                  {headerGroups.map(({ getHeaderGroupProps }) => (
-                    <TableRow {...getHeaderGroupProps()}>
-                      {headerGroups.map(({ headers }) => headers.map(({ getHeaderProps, id, render, width }) => (
+      {isLoading ? (
+        <FileHistorySkeleton />
+      ) : (
+        <Placeholder invisible={isNotEmpty(fileHistory)} area={NAVIGATION_PLACEHOLDER_AREA} message="No history items">
+          <TableContainer>
+            <Table {...getTableProps()}>
+              <TableHead>
+                {headerGroups.map(({ getHeaderGroupProps }) => (
+                  <TableRow {...getHeaderGroupProps()}>
+                    {headerGroups.map(({ headers }) =>
+                      headers.map(({ getHeaderProps, id, render, width }) => (
                         <TableCell {...getHeaderProps({ style: { width: width } })} key={id}>
                           {render('Header')}
                         </TableCell>
-                      )))}
+                      )),
+                    )}
+                  </TableRow>
+                ))}
+              </TableHead>
+              <TableBody {...getTableBodyProps()}>
+                {rows.map((row) => {
+                  prepareRow(row)
+                  return (
+                    <TableRow {...row.getRowProps()}>
+                      {row.cells.map((cell) => (
+                        <TableCell
+                          key={cell.column.id}
+                          align={cell.column.id === 'commitId' ? 'right' : 'left'}
+                          onClick={() => cell.column.id === 'commitId' && onHistoryCompare(rows, row)}
+                        >
+                          {cell.render('Cell')}
+                        </TableCell>
+                      ))}
                     </TableRow>
-                  ))}
-                </TableHead>
-                <TableBody {...getTableBodyProps()}>
-                  {
-                    rows.map(row => {
-                      prepareRow(row)
-                      return (
-                        <TableRow {...row.getRowProps()}>
-                          {row.cells.map((cell) => (
-                            <TableCell
-                              key={cell.column.id}
-                              align={cell.column.id === 'commitId' ? 'right' : 'left'}
-                              onClick={() => cell.column.id === 'commitId' && onHistoryCompare(rows, row)}
-                            >
-                              {cell.render('Cell')}
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      )
-                    })
-                  }
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Placeholder>
-      }
-      <FileHistoryDialog/>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Placeholder>
+      )}
+      <FileHistoryDialog />
     </>
   )
 })
@@ -193,10 +186,10 @@ const FileHistorySkeleton: FC = memo(() => {
             `,
           }}
         >
-          <Skeleton sx={{ gridArea: 'version' }} variant="text" width={94} height={22}/>
-          <Skeleton sx={{ gridArea: 'date' }} variant="text" width={118} height={22}/>
-          <Skeleton sx={{ gridArea: 'user' }} variant="circular" width={15} height={15}/>
-          <Skeleton sx={{ gridArea: 'comment' }} variant="text" width={184} height={22}/>
+          <Skeleton sx={{ gridArea: 'version' }} variant="text" width={94} height={22} />
+          <Skeleton sx={{ gridArea: 'date' }} variant="text" width={118} height={22} />
+          <Skeleton sx={{ gridArea: 'user' }} variant="circular" width={15} height={15} />
+          <Skeleton sx={{ gridArea: 'comment' }} variant="text" width={184} height={22} />
         </Box>
       ))}
     </Box>

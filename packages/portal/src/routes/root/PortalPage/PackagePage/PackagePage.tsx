@@ -24,9 +24,7 @@ import { DASHBOARD_KIND, PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-sh
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
-import {
-  PublishDashboardVersionFromCSVDialog,
-} from '@apihub/routes/root/PortalPage/DashboardPage/PublishDashboardVersionFromCSVDialog'
+import { PublishDashboardVersionFromCSVDialog } from '@apihub/routes/root/PortalPage/DashboardPage/PublishDashboardVersionFromCSVDialog'
 
 export const PackagePage: FC = memo(() => {
   const [packageObject, isPackageLoading] = usePackage({ showParents: true })
@@ -42,13 +40,15 @@ export const PackagePage: FC = memo(() => {
 
   return (
     <>
-      {isPackageLoading
-        ? <LoadingIndicator/>
-        : <PageLayout
-          toolbar={<PackagePageToolbar packageObject={packageObject}/>}
-          body={<PackagePagePlaceholder kind={kind}/>}
-        />}
-      {kind === DASHBOARD_KIND && <PublishDashboardVersionFromCSVDialog/>}
+      {isPackageLoading ? (
+        <LoadingIndicator />
+      ) : (
+        <PageLayout
+          toolbar={<PackagePageToolbar packageObject={packageObject} />}
+          body={<PackagePagePlaceholder kind={kind} />}
+        />
+      )}
+      {kind === DASHBOARD_KIND && <PublishDashboardVersionFromCSVDialog />}
     </>
   )
 })

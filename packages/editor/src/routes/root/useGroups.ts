@@ -26,10 +26,7 @@ import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/uti
 
 const GROUPS_QUERY_KEY = 'groups-query-key'
 
-export function useChildGroups(
-  groupKey: Key = ROOT_GROUP_KEY,
-  enabled = true,
-): Groups {
+export function useChildGroups(groupKey: Key = ROOT_GROUP_KEY, enabled = true): Groups {
   const { data } = useQuery<GroupsDto, Error, Groups>({
     queryKey: [GROUPS_QUERY_KEY, groupKey],
     queryFn: () => getNotEmptyGroups(1, groupKey),
@@ -48,7 +45,7 @@ export function useCreateGroup(): [CreateGroup, IsLoading, Error | null] {
   const showNotification = useShowSuccessNotification()
 
   const { mutate, isLoading, error } = useMutation<void, Error, Group>({
-    mutationFn: group => createGroup(group),
+    mutationFn: (group) => createGroup(group),
     onSuccess: () => {
       showNotification({ message: 'Group has been created' })
       return client.invalidateQueries([GROUPS_QUERY_KEY])
@@ -65,9 +62,7 @@ export function useInvalidateGroups(): InvalidateQuery<void> {
   }
 }
 
-async function createGroup(
-  group: Group,
-): Promise<void> {
+async function createGroup(group: Group): Promise<void> {
   await editorRequestVoid('/groups', {
     method: 'POST',
     body: JSON.stringify(toGroupDto(group)),
@@ -78,10 +73,7 @@ type CreateGroup = (group: Group) => void
 
 const ROOT_GROUP_KEY = ''
 
-async function getNotEmptyGroups(
-  depth = 0,
-  groupKey: Key = ROOT_GROUP_KEY,
-): Promise<GroupsDto> {
+async function getNotEmptyGroups(depth = 0, groupKey: Key = ROOT_GROUP_KEY): Promise<GroupsDto> {
   const searchParams = optionalSearchParams({
     depth: { value: depth },
     groupId: { value: groupKey },
@@ -92,7 +84,7 @@ async function getNotEmptyGroups(
 }
 
 function toGroups(value: GroupsDto): Groups {
-  return value.groups.map(group => ({
+  return value.groups.map((group) => ({
     ...toGroup(group),
     path: calculateGroupPath(value, group.groupId),
   }))
@@ -111,10 +103,7 @@ export function toGroup(value: GroupDto): Group {
   }
 }
 
-function calculateGroupPath(
-  { groups }: GroupsDto,
-  groupId: string,
-): string {
+function calculateGroupPath({ groups }: GroupsDto, groupId: string): string {
   const findName = (id: string): string => {
     const [currentGroup] = groups.filter(({ groupId }) => groupId === id)
     let value = ''

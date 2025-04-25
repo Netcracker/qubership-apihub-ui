@@ -43,7 +43,9 @@ export class TextState {
   }
 
   getOperations(revision = 0): TPlainTextOperation[] {
-    return this._snapshotRevision <= revision || !revision ? this._operations.slice(revision - this.revision) : this._operations
+    return this._snapshotRevision <= revision || !revision
+      ? this._operations.slice(revision - this.revision)
+      : this._operations
   }
 
   getSnapshot(revision = 0): TPlainTextOperation | undefined {

@@ -35,10 +35,7 @@ export const DocumentPreviewCard: FC = memo(() => {
 
   return (
     <Box height="100%" overflow="scroll">
-      <DocumentPreviewContentBody
-        apiDescriptionDocument={apiDescriptionDocument}
-        isLoading={isLoading}
-      />
+      <DocumentPreviewContentBody apiDescriptionDocument={apiDescriptionDocument} isLoading={isLoading} />
     </Box>
   )
 })

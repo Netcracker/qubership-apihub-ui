@@ -25,7 +25,7 @@ export function useRefSearchParam(): [Key | undefined, SetRefKey] {
   const setSearchParams = useSetSearchParams()
 
   return useMemo(
-    () => [param, value => setSearchParams({ [REF_SEARCH_PARAM]: value ?? '' }, { replace: true })],
+    () => [param, (value) => setSearchParams({ [REF_SEARCH_PARAM]: value ?? '' }, { replace: true })],
     [param, setSearchParams],
   )
 }

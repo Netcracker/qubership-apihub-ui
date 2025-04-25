@@ -19,7 +19,10 @@ import { useMemo } from 'react'
 import { useVersionWithRevision } from './useVersionWithRevision'
 import { generatePath } from 'react-router-dom'
 import { portalRequestJson } from '@apihub/utils/requests'
-import type { VersionReferences, VersionReferencesDto } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
+import type {
+  VersionReferences,
+  VersionReferencesDto,
+} from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
 import { toVersionReferences } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
@@ -40,11 +43,7 @@ export function useVersionReferences(options: {
   version?: Key
   enabled?: boolean
 }): VersionReferencesQueryContent {
-  const {
-    packageKey,
-    version,
-    enabled,
-  } = options ?? {}
+  const { packageKey, version, enabled } = options ?? {}
 
   const {
     fullVersion,
@@ -90,4 +89,3 @@ export async function getReferences(
     signal,
   )
 }
-

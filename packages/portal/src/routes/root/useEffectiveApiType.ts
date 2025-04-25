@@ -25,5 +25,5 @@ export function useEffectiveApiType(operationTypes: OperationTypeForm): ApiType 
   const { apiType } = useParams()
   const operationApiType: ApiType = useMemo(() => getDefaultApiType(operationTypes), [operationTypes])
 
-  return useMemo(() => (apiType ? apiType as ApiType : operationApiType), [apiType, operationApiType])
+  return useMemo(() => (apiType ? (apiType as ApiType) : operationApiType), [apiType, operationApiType])
 }

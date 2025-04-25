@@ -38,60 +38,54 @@ export type DocSpecViewProps = {
   schemaViewMode?: string
 }
 
-export const DocSpecView: FC<DocSpecViewProps> = memo<DocSpecViewProps>(({
-  type,
-  format,
-  value,
-  selectedUri,
-  sidebarEnabled,
-  searchPhrase,
-  schemaViewMode,
-}) => {
-  if (type === UNKNOWN_SPEC_TYPE && (format === JSON_FILE_FORMAT || format === YAML_FILE_FORMAT)) {
-    const specification = generateSpecificationByPathItems(format, value)
-    if (!specification) {
-      return null
+export const DocSpecView: FC<DocSpecViewProps> = memo<DocSpecViewProps>(
+  ({ type, format, value, selectedUri, sidebarEnabled, searchPhrase, schemaViewMode }) => {
+    if (type === UNKNOWN_SPEC_TYPE && (format === JSON_FILE_FORMAT || format === YAML_FILE_FORMAT)) {
+      const specification = generateSpecificationByPathItems(format, value)
+      if (!specification) {
+        return null
+      }
+
+      const [content, , pathItemUri] = specification
+      return (
+        <ApispecView
+          apiDescriptionDocument={content}
+          selectedUri={pathItemUri}
+          sidebarEnabled={sidebarEnabled}
+          searchPhrase={searchPhrase}
+          schemaViewMode={schemaViewMode}
+        />
+      )
     }
 
-    const [content, , pathItemUri] = specification
-    return (
-      <ApispecView
-        apiDescriptionDocument={content}
-        selectedUri={pathItemUri}
-        sidebarEnabled={sidebarEnabled}
-        searchPhrase={searchPhrase}
-        schemaViewMode={schemaViewMode}
-      />
-    )
-  }
+    if (isOpenApiSpecType(type)) {
+      return (
+        <ApispecView
+          apiDescriptionDocument={value}
+          selectedUri={selectedUri}
+          sidebarEnabled={sidebarEnabled}
+          searchPhrase={searchPhrase}
+          schemaViewMode={schemaViewMode}
+        />
+      )
+    }
 
-  if (isOpenApiSpecType(type)) {
-    return (
-      <ApispecView
-        apiDescriptionDocument={value}
-        selectedUri={selectedUri}
-        sidebarEnabled={sidebarEnabled}
-        searchPhrase={searchPhrase}
-        schemaViewMode={schemaViewMode}
-      />
-    )
-  }
+    if (isJsonSchemaSpecType(type)) {
+      return (
+        <Marker mark={searchPhrase}>
+          <JsonSchemaViewer schema={JSON.parse(value)} />
+        </Marker>
+      )
+    }
 
-  if (isJsonSchemaSpecType(type)) {
-    return (
-      <Marker mark={searchPhrase}>
-        <JsonSchemaViewer schema={JSON.parse(value)}/>
-      </Marker>
-    )
-  }
+    if (format === MD_FILE_FORMAT) {
+      return (
+        <Marker mark={searchPhrase}>
+          <MarkdownViewer value={value} />
+        </Marker>
+      )
+    }
 
-  if (format === MD_FILE_FORMAT) {
-    return (
-      <Marker mark={searchPhrase}>
-        <MarkdownViewer value={value}/>
-      </Marker>
-    )
-  }
-
-  return null
-})
+    return null
+  },
+)

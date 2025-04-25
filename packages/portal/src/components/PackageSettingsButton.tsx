@@ -33,58 +33,55 @@ export type PackageSettingsButtonProps = {
   marginLeft?: string
 }
 
-export const PackageSettingsButton: FC<PackageSettingsButtonProps> = memo<PackageSettingsButtonProps>(({
-  packageKey,
-  packageKind,
-  isIconButton,
-  visible,
-  marginLeft,
-}) => {
-  const location = useLocation()
-  const backwardLocation = useBackwardLocationContext()
-  const setBackwardLocation = useSetBackwardLocationContext()
+export const PackageSettingsButton: FC<PackageSettingsButtonProps> = memo<PackageSettingsButtonProps>(
+  ({ packageKey, packageKind, isIconButton, visible, marginLeft }) => {
+    const location = useLocation()
+    const backwardLocation = useBackwardLocationContext()
+    const setBackwardLocation = useSetBackwardLocationContext()
 
-  const packageSettingsLinkHandle = (): void => {
-    setBackwardLocation({
-      ...backwardLocation,
-      fromPackageSettings: {
-        pathname: location.pathname!,
-        search: location.search!,
-      },
-    })
-  }
+    const packageSettingsLinkHandle = (): void => {
+      setBackwardLocation({
+        ...backwardLocation,
+        fromPackageSettings: {
+          pathname: location.pathname!,
+          search: location.search!,
+        },
+      })
+    }
 
-  return (
-    <>
-      {isIconButton ? (
-        <IconButton sx={{ visibility: visible ? '' : 'hidden', ml: marginLeft ?? '5px' }}
-                    className={visible ? '' : 'hoverable'}
-                    aria-label="setting-icon"
-                    size="small"
-                    component={NavLink}
-                    to={getPackageSettingsPath({ packageKey })}
-                    onClick={packageSettingsLinkHandle}
-                    data-testid="PackageSettingsButton"
-        >
-          <SettingIcon color="#626D82"/>
-        </IconButton>
-      ) : (
-        <Tooltip title={`Manage ${PACKAGE_KIND_MAP[packageKind ?? PACKAGE_KIND]}`}>
-          <Button
+    return (
+      <>
+        {isIconButton ? (
+          <IconButton
+            sx={{ visibility: visible ? '' : 'hidden', ml: marginLeft ?? '5px' }}
+            className={visible ? '' : 'hoverable'}
+            aria-label="setting-icon"
+            size="small"
             component={NavLink}
-            sx={{
-              padding: '8px 5px',
-              minWidth: '10px',
-            }}
-            variant="outlined"
             to={getPackageSettingsPath({ packageKey })}
             onClick={packageSettingsLinkHandle}
             data-testid="PackageSettingsButton"
           >
-            <SettingIcon color="#353C4E"/>
-          </Button>
-        </Tooltip>)
-      }
-    </>
-  )
-})
+            <SettingIcon color="#626D82" />
+          </IconButton>
+        ) : (
+          <Tooltip title={`Manage ${PACKAGE_KIND_MAP[packageKind ?? PACKAGE_KIND]}`}>
+            <Button
+              component={NavLink}
+              sx={{
+                padding: '8px 5px',
+                minWidth: '10px',
+              }}
+              variant="outlined"
+              to={getPackageSettingsPath({ packageKey })}
+              onClick={packageSettingsLinkHandle}
+              data-testid="PackageSettingsButton"
+            >
+              <SettingIcon color="#353C4E" />
+            </Button>
+          </Tooltip>
+        )}
+      </>
+    )
+  },
+)

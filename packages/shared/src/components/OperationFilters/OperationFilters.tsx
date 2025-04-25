@@ -57,14 +57,31 @@ export type OperationFiltersProps = {
 }
 
 // First Order Component //
-export const OperationFilters: FC<OperationFiltersProps> = memo<OperationFiltersProps>(props => {
+export const OperationFilters: FC<OperationFiltersProps> = memo<OperationFiltersProps>((props) => {
   const {
-    selectedPackageKey, selectedOperationGroupName, selectedApiAudience, selectedApiKind,
-    onSelectPackage, onSelectOperationGroup, onSelectApiAudience, onSelectApiKind, onClickExpandCollapseButton,
-    areTagsLoading, fetchNextTagsPage, hasNextTagsPage, isNextTagsPageFetching,
-    isReferencesLoading, isPackageVersionContentLoading, hiddenGeneralFilters,
-    tags, references, versionContent, apiType,
-    onSelectTag, onTagSearch, selectedTag,
+    selectedPackageKey,
+    selectedOperationGroupName,
+    selectedApiAudience,
+    selectedApiKind,
+    onSelectPackage,
+    onSelectOperationGroup,
+    onSelectApiAudience,
+    onSelectApiKind,
+    onClickExpandCollapseButton,
+    areTagsLoading,
+    fetchNextTagsPage,
+    hasNextTagsPage,
+    isNextTagsPageFetching,
+    isReferencesLoading,
+    isPackageVersionContentLoading,
+    hiddenGeneralFilters,
+    tags,
+    references,
+    versionContent,
+    apiType,
+    onSelectTag,
+    onTagSearch,
+    selectedTag,
   } = props
 
   const onChange = useCallback(
@@ -80,15 +97,8 @@ export const OperationFilters: FC<OperationFiltersProps> = memo<OperationFilters
           p: 2,
         }}
       >
-        <Accordion
-          expanded={!hiddenGeneralFilters}
-          onChange={onChange}
-          data-testid="GeneralFiltersAccordion"
-        >
-          <AccordionSummary
-            sx={{ p: 0 }}
-            expandIcon={<ExpandMoreIcon />}
-          >
+        <Accordion expanded={!hiddenGeneralFilters} onChange={onChange} data-testid="GeneralFiltersAccordion">
+          <AccordionSummary sx={{ p: 0 }} expandIcon={<ExpandMoreIcon />}>
             <Typography width="100%" noWrap variant="button">
               General Filters
             </Typography>
@@ -116,18 +126,12 @@ export const OperationFilters: FC<OperationFiltersProps> = memo<OperationFilters
             )}
             {onSelectApiAudience && (
               <Box sx={{ mt: onSelectPackage || onSelectOperationGroup ? 1 : 0 }}>
-                <ApiAudienceFilter
-                  value={selectedApiAudience}
-                  onSelectApiAudience={onSelectApiAudience}
-                />
+                <ApiAudienceFilter value={selectedApiAudience} onSelectApiAudience={onSelectApiAudience} />
               </Box>
             )}
             {onSelectApiKind && (
               <Box sx={{ mt: onSelectPackage || onSelectOperationGroup || onSelectApiAudience ? 1 : 0 }}>
-                <ApiKindFilter
-                  value={selectedApiKind}
-                  onSelectApiKind={onSelectApiKind}
-                />
+                <ApiKindFilter value={selectedApiKind} onSelectApiKind={onSelectApiKind} />
               </Box>
             )}
           </AccordionDetails>

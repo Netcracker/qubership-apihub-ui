@@ -23,7 +23,6 @@ import { BRANCH_CONFIG } from '../../mocks/projects/branches'
 import { getFileContent } from '../packages/packages'
 
 export function ProjectsWsRouter(app: http.Server, branchWss: Server, fileWss: Server): Router {
-
   const router = Router()
 
   branchWss.on('connection', (current: Socket) => {
@@ -31,31 +30,37 @@ export function ProjectsWsRouter(app: http.Server, branchWss: Server, fileWss: S
     current.id = new Date().valueOf().toString()
 
     connectedClients.forEach((s: Socket) => {
-      s.send(JSON.stringify({
-        type: 'branch:config:snapshot',
-        data: BRANCH_CONFIG,
-      }))
+      s.send(
+        JSON.stringify({
+          type: 'branch:config:snapshot',
+          data: BRANCH_CONFIG,
+        }),
+      )
     })
 
     //send current user to other users
     connectedClients.forEach((s: Socket) => {
-      s.send(JSON.stringify({
-        type: 'user:connected',
-        sessionId: current.id,
-        connectedAt: new Date().toString(),
-        user: {
-          id: current.id,
-          name: `User ${(current.id)}`,
-          avatarUrl: '',
-        },
-      }))
+      s.send(
+        JSON.stringify({
+          type: 'user:connected',
+          sessionId: current.id,
+          connectedAt: new Date().toString(),
+          user: {
+            id: current.id,
+            name: `User ${current.id}`,
+            avatarUrl: '',
+          },
+        }),
+      )
     })
 
     //send other users to current user
-    connectedClients
-      .forEach(({ id }: Socket) => {
-        if (id === current.id) {return}
-        current.send(JSON.stringify({
+    connectedClients.forEach(({ id }: Socket) => {
+      if (id === current.id) {
+        return
+      }
+      current.send(
+        JSON.stringify({
           type: 'user:connected',
           sessionId: id,
           connectedAt: new Date().toString(),
@@ -64,22 +69,25 @@ export function ProjectsWsRouter(app: http.Server, branchWss: Server, fileWss: S
             name: `User ${id}`,
             avatarUrl: '',
           },
-        }))
-      })
+        }),
+      )
+    })
 
     current.on('message', (msg: string) => console.log(msg))
 
     current.on('close', () => {
-      branchWss.clients.forEach(s => {
-        s.send(JSON.stringify({
-          type: 'user:disconnected',
-          sessionId: current.id,
-          user: {
-            id: current.id,
-            name: `User ${current.id}`,
-            avatarUrl: '',
-          },
-        }))
+      branchWss.clients.forEach((s) => {
+        s.send(
+          JSON.stringify({
+            type: 'user:disconnected',
+            sessionId: current.id,
+            user: {
+              id: current.id,
+              name: `User ${current.id}`,
+              avatarUrl: '',
+            },
+          }),
+        )
       })
     })
   })
@@ -90,9 +98,9 @@ export function ProjectsWsRouter(app: http.Server, branchWss: Server, fileWss: S
     const textState = new TextState(getFileContent(fileId).toString())
 
     current.state = {
-      userId: current.id!,//req.query.userId as string,
-      userName: `User ${(current.id)}`, //req.query.userName as string,
-      color: userColor,//req.query.userColor as string,
+      userId: current.id!, //req.query.userId as string,
+      userName: `User ${current.id}`, //req.query.userName as string,
+      color: userColor, //req.query.userColor as string,
       revision: 0, //parseInt(req.query.revision as string),
       cursor: null,
     }
@@ -104,25 +112,27 @@ export function ProjectsWsRouter(app: http.Server, branchWss: Server, fileWss: S
         const { state } = current
 
         if (state) {
-          s.send(JSON.stringify({
-            type: 'user:connected',
-            sessionId: state.userId,
-            connectedAt: new Date().toString(),
-            user: {
-              id: state.userId,
-              name: state.userName,
-              avatarUrl: '',
-            },
-            color: state.color,
-          }))
+          s.send(
+            JSON.stringify({
+              type: 'user:connected',
+              sessionId: state.userId,
+              connectedAt: new Date().toString(),
+              user: {
+                id: state.userId,
+                name: state.userName,
+                avatarUrl: '',
+              },
+              color: state.color,
+            }),
+          )
         }
       })
 
     //send other users to current user
-    connectedClients
-      .forEach(({ state }: Socket) => {
-        if (state) {
-          current.send(JSON.stringify({
+    connectedClients.forEach(({ state }: Socket) => {
+      if (state) {
+        current.send(
+          JSON.stringify({
             type: 'user:connected',
             sessionId: state.userId,
             connectedAt: new Date().toString(),
@@ -132,18 +142,21 @@ export function ProjectsWsRouter(app: http.Server, branchWss: Server, fileWss: S
               avatarUrl: '',
             },
             color: state.color,
-          }))
+          }),
+        )
 
-          const revision = current.state?.revision ?? 0
+        const revision = current.state?.revision ?? 0
 
-          current.send(JSON.stringify({
+        current.send(
+          JSON.stringify({
             type: 'document:snapshot',
             revision: state.revision,
             document: textState?.getSnapshot(revision),
             operations: textState?.getOperations(revision),
-          }))
-        }
-      })
+          }),
+        )
+      }
+    })
 
     current.on('message', (msg: string) => {
       const parsedData = JSON.parse(msg)
@@ -151,41 +164,47 @@ export function ProjectsWsRouter(app: http.Server, branchWss: Server, fileWss: S
         connectedClients
           .filter(({ id }: Socket) => id !== current.id)
           .forEach((s: Socket) => {
-            s.send(JSON.stringify({
-              type: 'user:cursor',
-              userId: current.id,
-              cursor: {
-                position: parsedData.position,
-                selectionEnd: parsedData.selectionEnd,
-              },
-            }))
+            s.send(
+              JSON.stringify({
+                type: 'user:cursor',
+                userId: current.id,
+                cursor: {
+                  position: parsedData.position,
+                  selectionEnd: parsedData.selectionEnd,
+                },
+              }),
+            )
           })
       }
 
       if (parsedData.type === 'operation') {
         connectedClients.forEach((s: Socket) => {
-          s.send(JSON.stringify({
-            type: 'user:operation',
-            userId: current.id,
-            revision: parsedData.position,
-            operation: parsedData.operation,
-          }))
+          s.send(
+            JSON.stringify({
+              type: 'user:operation',
+              userId: current.id,
+              revision: parsedData.position,
+              operation: parsedData.operation,
+            }),
+          )
         })
         textState.clientOperation(parsedData.operation)
       }
     })
 
     current.on('close', () => {
-      fileWss.clients.forEach(s => {
-        s.send(JSON.stringify({
-          type: 'user:disconnected',
-          sessionId: current.id,
-          user: {
-            id: current.id,
-            name: `User ${current.id}`,
-            avatarUrl: '',
-          },
-        }))
+      fileWss.clients.forEach((s) => {
+        s.send(
+          JSON.stringify({
+            type: 'user:disconnected',
+            sessionId: current.id,
+            user: {
+              id: current.id,
+              name: `User ${current.id}`,
+              avatarUrl: '',
+            },
+          }),
+        )
       })
     })
   })

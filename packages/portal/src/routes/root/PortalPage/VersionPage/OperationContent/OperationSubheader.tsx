@@ -22,10 +22,7 @@ import { SUB_HEADER_HEIGHT } from '../shared-styles'
 export type OperationSubheaderProps = {
   actions: ReactNode
 }
-export const OperationSubheader: FC<OperationSubheaderProps> = memo<OperationSubheaderProps>(({
-  actions,
-}) => {
-
+export const OperationSubheader: FC<OperationSubheaderProps> = memo<OperationSubheaderProps>(({ actions }) => {
   return (
     <Box sx={headerStyles}>
       <Box ml="auto" p={1}>

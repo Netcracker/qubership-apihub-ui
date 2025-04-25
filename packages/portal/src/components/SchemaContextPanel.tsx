@@ -34,33 +34,31 @@ export type SchemaContextPanelProps = {
 }
 
 // First Order Component //
-export const SchemaContextPanel: FC<SchemaContextPanelProps> = memo<SchemaContextPanelProps>(({
-  contextSchema,
-  displayMode = DETAILED_SCHEMA_VIEW_MODE,
-  onClose,
-  title,
-}) => {
-  const calculatedTitle = useMemo(() => title ?? (contextSchema as OpenAPIV3.SchemaObject)?.title ?? '', [contextSchema, title])
+export const SchemaContextPanel: FC<SchemaContextPanelProps> = memo<SchemaContextPanelProps>(
+  ({ contextSchema, displayMode = DETAILED_SCHEMA_VIEW_MODE, onClose, title }) => {
+    const calculatedTitle = useMemo(
+      () => title ?? (contextSchema as OpenAPIV3.SchemaObject)?.title ?? '',
+      [contextSchema, title],
+    )
 
-  return (
-    <Suspense fallback={<LoadingIndicator/>}>
-      <Box height="100%" width="100%" overflow="hidden" display="flex" flexDirection="column">
-        <Box pl={2} pt={2} pb={0} alignItems="center" display="flex" justifyContent="space-between">
-          <Typography variant="h2" color="inherit">{calculatedTitle}</Typography>
-          <IconButton onClick={onClose}>
-            <CloseOutlinedIcon fontSize="small"/>
-          </IconButton>
+    return (
+      <Suspense fallback={<LoadingIndicator />}>
+        <Box height="100%" width="100%" overflow="hidden" display="flex" flexDirection="column">
+          <Box pl={2} pt={2} pb={0} alignItems="center" display="flex" justifyContent="space-between">
+            <Typography variant="h2" color="inherit">
+              {calculatedTitle}
+            </Typography>
+            <IconButton onClick={onClose}>
+              <CloseOutlinedIcon fontSize="small" />
+            </IconButton>
+          </Box>
+          <Box px={1} overflow="hidden auto">
+            <JsonSchemaViewer schema={contextSchema} expandedDepth={SCHEMA_EXPANDED_DEPTH} displayMode={displayMode} />
+          </Box>
         </Box>
-        <Box px={1} overflow="hidden auto">
-          <JsonSchemaViewer
-            schema={contextSchema}
-            expandedDepth={SCHEMA_EXPANDED_DEPTH}
-            displayMode={displayMode}
-          />
-        </Box>
-      </Box>
-    </Suspense>
-  )
-})
+      </Suspense>
+    )
+  },
+)
 
 const SCHEMA_EXPANDED_DEPTH = 1

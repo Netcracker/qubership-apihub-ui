@@ -42,44 +42,30 @@ export const ImportByUrlDialog: FC = memo(() => {
   const { handleSubmit, control, reset } = useForm<{ url: string; path: string }>()
   const [importProjectFile, isLoading, isError] = useImportProjectFile()
 
-  useEffect(() => {!isLoading && !isError && setOpen(false)}, [isLoading, isError])
-  useEffect(() => {!open && reset()}, [open, reset])
+  useEffect(() => {
+    !isLoading && !isError && setOpen(false)
+  }, [isLoading, isError])
+  useEffect(() => {
+    !open && reset()
+  }, [open, reset])
 
   return (
-    <DialogForm
-      open={open}
-      onClose={() => setOpen(false)}
-      onSubmit={handleSubmit(importProjectFile)}
-    >
-      <DialogTitle>
-        Import By URL
-      </DialogTitle>
+    <DialogForm open={open} onClose={() => setOpen(false)} onSubmit={handleSubmit(importProjectFile)}>
+      <DialogTitle>Import By URL</DialogTitle>
 
       <DialogContent>
         <Controller
           name="url"
           control={control}
           defaultValue=""
-          render={({ field }) => (
-            <TextField
-              {...field}
-              autoFocus required
-              type="url"
-              label="URL"
-            />
-          )}
+          render={({ field }) => <TextField {...field} autoFocus required type="url" label="URL" />}
         />
         <Typography variant="button">Enter the GIT folder where you want to upload files</Typography>
         <Controller
           name="path"
           control={control}
           defaultValue={path}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              label="Folder"
-            />
-          )}
+          render={({ field }) => <TextField {...field} label="Folder" />}
         />
         {isError && (
           <Alert severity="error" sx={{ mt: 1 }}>

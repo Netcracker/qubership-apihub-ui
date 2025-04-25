@@ -84,29 +84,17 @@ export const NavigationProvider: FC<PropsWithChildren> = memo<PropsWithChildren>
     navigate(getNamespacePath(detail))
   })
 
-  return (
-    <EventBusContext.Provider value={navigationEventBus}>
-      {children}
-    </EventBusContext.Provider>
-  )
+  return <EventBusContext.Provider value={navigationEventBus}>{children}</EventBusContext.Provider>
 })
 
-export function getAgentPath({
-  agentId,
-  search,
-}: AgentDetail): Partial<Path> {
+export function getAgentPath({ agentId, search }: AgentDetail): Partial<Path> {
   return {
     pathname: generatePath(AGENT_PAGE_PATH_PATTERN, { agentId }),
     search: search ? `${optionalSearchParams(search)}` : undefined,
   }
 }
 
-export function getNamespacePath({
-  agentId,
-  namespaceKey,
-  mode,
-  search,
-}: NamespaceDetail): Partial<Path> {
+export function getNamespacePath({ agentId, namespaceKey, mode, search }: NamespaceDetail): Partial<Path> {
   const namespaceId = encodeURIComponent(namespaceKey)
   return {
     pathname: `${generatePath(NAMESPACE_PAGE_PATH_PATTERN, { agentId, namespaceId })}/${mode}`,

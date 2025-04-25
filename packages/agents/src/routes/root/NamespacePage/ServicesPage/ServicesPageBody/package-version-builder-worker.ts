@@ -23,7 +23,10 @@ import {
   versionReferencesResolver,
 } from '@netcracker/qubership-apihub-ui-shared/utils/builder-resolvers'
 import { getSpecBlob } from '../../useSpecRaw'
-import { NONE_PUBLISH_STATUS, RUNNING_PUBLISH_STATUS } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
+import {
+  NONE_PUBLISH_STATUS,
+  RUNNING_PUBLISH_STATUS,
+} from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
 import type { PublishStatus } from '@apihub/entities/statuses'
 import { COMPLETE_PUBLISH_STATUS, ERROR_PUBLISH_STATUS } from '@apihub/entities/statuses'
 import type { PublishDetails } from '@apihub/entities/publish-details'
@@ -62,17 +65,21 @@ const worker: PackageVersionBuilderWorker = {
       })
     }, 15000)
 
-    const builder = new PackageVersionBuilder({
-      ...serviceConfig,
-    }, {
-      resolvers: {
-        fileResolver: fileId => getSpecBlob(agentId, namespaceKey, workspaceKey, serviceConfig.serviceId, fileId, authorization),
-        versionResolver: await packageVersionResolver(authorization),
-        versionReferencesResolver: await versionReferencesResolver(authorization),
-        versionOperationsResolver: await versionOperationsResolver(authorization),
-        versionDeprecatedResolver: await versionDeprecatedResolver(authorization),
+    const builder = new PackageVersionBuilder(
+      {
+        ...serviceConfig,
       },
-    })
+      {
+        resolvers: {
+          fileResolver: (fileId) =>
+            getSpecBlob(agentId, namespaceKey, workspaceKey, serviceConfig.serviceId, fileId, authorization),
+          versionResolver: await packageVersionResolver(authorization),
+          versionReferencesResolver: await versionReferencesResolver(authorization),
+          versionOperationsResolver: await versionOperationsResolver(authorization),
+          versionDeprecatedResolver: await versionDeprecatedResolver(authorization),
+        },
+      },
+    )
 
     await builder.run()
 

@@ -36,8 +36,8 @@ export function useImportFromGit(): [ImportFromGit, IsLoading] {
   const invalidateGitFiles = useInvalidateGitFiles()
 
   const { mutate, isLoading } = useMutation<Key[], Error, FilePaths>({
-    mutationFn: paths => importFromGit(projectId!, selectedBranch!, paths),
-    onSuccess: fileIds => {
+    mutationFn: (paths) => importFromGit(projectId!, selectedBranch!, paths),
+    onSuccess: (fileIds) => {
       isNotEmpty(fileIds) && setSelectedFile(fileIds[0])
       return invalidateGitFiles()
     },
@@ -46,11 +46,7 @@ export function useImportFromGit(): [ImportFromGit, IsLoading] {
   return [mutate, isLoading]
 }
 
-async function importFromGit(
-  projectKey: Key,
-  branchName: string,
-  filePaths: FilePaths,
-): Promise<Key[]> {
+async function importFromGit(projectKey: Key, branchName: string, filePaths: FilePaths): Promise<Key[]> {
   const projectId = encodeURIComponent(projectKey)
   const branch = encodeURIComponent(branchName)
 
@@ -81,10 +77,7 @@ export function useGitFilesNext(): [GitFiles, FetchNextGitFiles] {
     enabled: !!projectId && !!selectedBranch,
   })
 
-  return [
-    data?.pages.flat() ?? [],
-    fetchNextPage,
-  ]
+  return [data?.pages.flat() ?? [], fetchNextPage]
 }
 
 export function useInvalidateGitFiles(): InvalidateQuery<void> {
@@ -94,12 +87,7 @@ export function useInvalidateGitFiles(): InvalidateQuery<void> {
   }
 }
 
-async function getGitFiles(
-  projectKey: Key,
-  branchName: string,
-  path: string,
-  onlyAddable: boolean,
-): Promise<GitFiles> {
+async function getGitFiles(projectKey: Key, branchName: string, path: string, onlyAddable: boolean): Promise<GitFiles> {
   const projectId = encodeURIComponent(projectKey)
   const branch = encodeURIComponent(branchName)
 
@@ -107,16 +95,16 @@ async function getGitFiles(
     path: { value: `/${path}` },
     onlyAddable: { value: onlyAddable },
   })
-  const data = await editorRequestJson<GitFilesDto>(`/projects/${projectId}/branches/${branch}/integration/files?${searchParams}`, {
-    method: 'GET',
-  })
+  const data = await editorRequestJson<GitFilesDto>(
+    `/projects/${projectId}/branches/${branch}/integration/files?${searchParams}`,
+    {
+      method: 'GET',
+    },
+  )
   return toGitFiles(data, path)
 }
 
-function toGitFiles(
-  { files }: GitFilesDto,
-  path: string,
-): GitFiles {
+function toGitFiles({ files }: GitFilesDto, path: string): GitFiles {
   return files?.map(({ isFolder, name }) => {
     const gitRef = `${path ? `${path}/` : ''}${name}`
     return {

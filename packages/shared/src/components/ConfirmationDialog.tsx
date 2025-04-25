@@ -32,64 +32,53 @@ export type ConfirmationDialogProps = {
   onCancel?: () => void
 }
 
-export const ConfirmationDialog: FC<ConfirmationDialogProps> = memo<ConfirmationDialogProps>(({
-  loading,
-  message,
-  onConfirm,
-  onCancel,
-  open,
-  title,
-  confirmButtonName = 'Delete',
-  confirmButtonColor = 'error',
-}) => {
-  useCloseOnSuccess(loading, onCancel)
+export const ConfirmationDialog: FC<ConfirmationDialogProps> = memo<ConfirmationDialogProps>(
+  ({
+    loading,
+    message,
+    onConfirm,
+    onCancel,
+    open,
+    title,
+    confirmButtonName = 'Delete',
+    confirmButtonColor = 'error',
+  }) => {
+    useCloseOnSuccess(loading, onCancel)
 
-  return (
-    <Dialog
-      open={open}
-      onClose={onCancel}
-    >
-      <DialogTitle>
-        {title}
-      </DialogTitle>
+    return (
+      <Dialog open={open} onClose={onCancel}>
+        <DialogTitle>{title}</DialogTitle>
 
-      <DialogContent>
-        <DialogContentText
-          variant="body2"
-          data-testid="ConfirmationDialogContent"
-        >
-          {message}
-        </DialogContentText>
-      </DialogContent>
+        <DialogContent>
+          <DialogContentText variant="body2" data-testid="ConfirmationDialogContent">
+            {message}
+          </DialogContentText>
+        </DialogContent>
 
-      <DialogActions>
-        <LoadingButton
-          variant="contained"
-          color={confirmButtonColor}
-          loading={loading}
-          onClick={onConfirm}
-          data-testid={`${confirmButtonName}Button`}
-        >
-          {confirmButtonName}
-        </LoadingButton>
-        <Button
-          variant="outlined"
-          onClick={onCancel}
-          data-testid="CancelButton"
-        >
-          Cancel
-        </Button>
-      </DialogActions>
-    </Dialog>
-  )
-})
+        <DialogActions>
+          <LoadingButton
+            variant="contained"
+            color={confirmButtonColor}
+            loading={loading}
+            onClick={onConfirm}
+            data-testid={`${confirmButtonName}Button`}
+          >
+            {confirmButtonName}
+          </LoadingButton>
+          <Button variant="outlined" onClick={onCancel} data-testid="CancelButton">
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
+    )
+  },
+)
 
-function useCloseOnSuccess(
-  loading?: boolean,
-  onClose?: () => void,
-): void {
+function useCloseOnSuccess(loading?: boolean, onClose?: () => void): void {
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {loading === false && onClose?.()}, [loading])
+  useEffect(() => {
+    loading === false && onClose?.()
+  }, [loading])
 }
 
 type ButtonColor = OverridableStringUnion<

@@ -47,13 +47,15 @@ export function useAddSelectionDecorator(
       const startLine = location?.range.start.line
       const endLine = location?.range.end.line
 
-      const decorations: IModelDeltaDecoration[] = [{
-        range: new Range(startLine + 1, 0, endLine + 1, 0),
-        options: {
-          isWholeLine: false,
-          marginClassName: 'MonacoSelectedDecorator',
+      const decorations: IModelDeltaDecoration[] = [
+        {
+          range: new Range(startLine + 1, 0, endLine + 1, 0),
+          options: {
+            isWholeLine: false,
+            marginClassName: 'MonacoSelectedDecorator',
+          },
         },
-      }]
+      ]
 
       selectionDecorations?.set(decorations)
 

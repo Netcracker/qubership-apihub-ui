@@ -35,59 +35,49 @@ export type PackageSelectorProps = Readonly<{
   onSelect: (value: Package | null) => void
   loading?: boolean
   disabled?: boolean
-}> & TestableProps
+}> &
+  TestableProps
 
 // First Order Component //
-export const PackageSelector: FC<PackageSelectorProps> = memo<PackageSelectorProps>(({
-  title,
-  placeholder,
-  value,
-  options,
-  onInput,
-  onSelect,
-  loading = false,
-  disabled = false,
-  testId,
-}) => {
-  const onInputChange = useCallback((_: SyntheticEvent, value: string, reason: AutocompleteInputChangeReason) =>
-      onInput(reason === 'input' ? value : ''),
-    [onInput])
+export const PackageSelector: FC<PackageSelectorProps> = memo<PackageSelectorProps>(
+  ({ title, placeholder, value, options, onInput, onSelect, loading = false, disabled = false, testId }) => {
+    const onInputChange = useCallback(
+      (_: SyntheticEvent, value: string, reason: AutocompleteInputChangeReason) =>
+        onInput(reason === 'input' ? value : ''),
+      [onInput],
+    )
 
-  const onChange = useCallback(
-    (_: SyntheticEvent, value: AutocompleteValue<Package, false, false, false>) => onSelect(value ?? null),
-    [onSelect],
-  )
+    const onChange = useCallback(
+      (_: SyntheticEvent, value: AutocompleteValue<Package, false, false, false>) => onSelect(value ?? null),
+      [onSelect],
+    )
 
-  return (
-    <Box width={240}>
-      {title && <InputLabel sx={{ mb: 1 }}>{title}</InputLabel>}
-      <Autocomplete<Package>
-        loading={loading}
-        forcePopupIcon={true}
-        value={value}
-        disabled={disabled}
-        options={options}
-        renderOption={(props, dashboard) => (
-          <OptionItem
-            key={dashboard.key}
-            props={props}
-            title={dashboard.name}
-            subtitle={dashboard.key}
-          />
-        )}
-        isOptionEqualToValue={(option, value) => option.key === value.key}
-        getOptionLabel={(option) => option?.name ?? ''}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            placeholder={placeholder}
-            sx={{ m: 0, '& .MuiInputBase-root': { pt: '1px', pb: '1px' } }}
-          />
-        )}
-        onInputChange={debounce(onInputChange, DEFAULT_DEBOUNCE)}
-        onChange={onChange}
-        data-testid={testId}
-      />
-    </Box>
-  )
-})
+    return (
+      <Box width={240}>
+        {title && <InputLabel sx={{ mb: 1 }}>{title}</InputLabel>}
+        <Autocomplete<Package>
+          loading={loading}
+          forcePopupIcon={true}
+          value={value}
+          disabled={disabled}
+          options={options}
+          renderOption={(props, dashboard) => (
+            <OptionItem key={dashboard.key} props={props} title={dashboard.name} subtitle={dashboard.key} />
+          )}
+          isOptionEqualToValue={(option, value) => option.key === value.key}
+          getOptionLabel={(option) => option?.name ?? ''}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              placeholder={placeholder}
+              sx={{ m: 0, '& .MuiInputBase-root': { pt: '1px', pb: '1px' } }}
+            />
+          )}
+          onInputChange={debounce(onInputChange, DEFAULT_DEBOUNCE)}
+          onChange={onChange}
+          data-testid={testId}
+        />
+      </Box>
+    )
+  },
+)

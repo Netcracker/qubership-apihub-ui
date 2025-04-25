@@ -31,7 +31,7 @@ export function useApiTypeSearchParam(): {
   return useMemo(
     () => ({
       apiType: param,
-      setApiTypeSearchParam: value => setSearchParams({ [API_TYPE_SEARCH_PARAM]: value ?? '' }, { replace: true }),
+      setApiTypeSearchParam: (value) => setSearchParams({ [API_TYPE_SEARCH_PARAM]: value ?? '' }, { replace: true }),
     }),
     [param, setSearchParams],
   )

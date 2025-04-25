@@ -50,9 +50,7 @@ const COLUMNS_MODELS: ColumnModel[] = [
   { name: ACTIONS_COLUMN_ID, fixedWidth: 90 },
 ]
 
-const defaultMinWidth = COLUMNS_MODELS.reduce(
-  (sum, { width, fixedWidth }) => sum + (width || fixedWidth || 0), 0,
-)
+const defaultMinWidth = COLUMNS_MODELS.reduce((sum, { width, fixedWidth }) => sum + (width || fixedWidth || 0), 0)
 
 export type FileTableProps = {
   filesMap: FileLabelsRecord
@@ -64,7 +62,7 @@ export type FileTableProps = {
   getFileRightIcon: (file: File) => ReactNode
 }
 
-export const FileTable: FC<FileTableProps> = memo<FileTableProps>(props => {
+export const FileTable: FC<FileTableProps> = memo<FileTableProps>((props) => {
   const {
     filesMap,
     showPlaceholder = false,
@@ -79,8 +77,12 @@ export const FileTable: FC<FileTableProps> = memo<FileTableProps>(props => {
     const result: ColumnDef<FileTableData>[] = [
       {
         id: FILE_COLUMN_ID,
-        header: () => <CustomTableHeadCell title="File"/>,
-        cell: ({ row: { original: { file, fileKey } } }) => (
+        header: () => <CustomTableHeadCell title="File" />,
+        cell: ({
+          row: {
+            original: { file, fileKey },
+          },
+        }) => (
           <FileCellContent
             fileKey={fileKey}
             file={file}
@@ -92,25 +94,36 @@ export const FileTable: FC<FileTableProps> = memo<FileTableProps>(props => {
       },
       {
         id: LABELS_COLUMN_ID,
-        header: () => <CustomTableHeadCell title="Labels"/>,
-        cell: ({ row: { original: { labels } } }) => <LabelsTableCell labels={labels}/>,
+        header: () => <CustomTableHeadCell title="Labels" />,
+        cell: ({
+          row: {
+            original: { labels },
+          },
+        }) => <LabelsTableCell labels={labels} />,
       },
       {
         id: ACTIONS_COLUMN_ID,
-        cell: ({ row: { original: { fileActions } } }) => fileActions,
+        cell: ({
+          row: {
+            original: { fileActions },
+          },
+        }) => fileActions,
       },
     ]
 
     return result
   }, [getFileClickHandler, getFileLeftIcon, getFileRightIcon])
 
-  const data: FileTableData[] = useMemo(() => (
-    Object.entries(filesMap).map(([key, { file, labels }], index) => ({
-      fileKey: `${index}-${key}`,
-      file: file,
-      fileActions: getFileActions(file),
-      labels: labels,
-    }))), [filesMap, getFileActions])
+  const data: FileTableData[] = useMemo(
+    () =>
+      Object.entries(filesMap).map(([key, { file, labels }], index) => ({
+        fileKey: `${index}-${key}`,
+        file: file,
+        fileActions: getFileActions(file),
+        labels: labels,
+      })),
+    [filesMap, getFileActions],
+  )
 
   const [containerWidth, setContainerWidth] = useState(DEFAULT_CONTAINER_WIDTH)
   const [columnSizingInfo, setColumnSizingInfo] = useState<ColumnSizingInfoState>()
@@ -139,16 +152,13 @@ export const FileTable: FC<FileTableProps> = memo<FileTableProps>(props => {
     onColumnSizingInfoChange: setColumnSizingInfo as OnChangeFn<ColumnSizingInfoState>,
   })
 
-  useEffect(
-    () => setColumnSizing(actualColumnSizing),
-    [setColumnSizing, actualColumnSizing],
-  )
+  useEffect(() => setColumnSizing(actualColumnSizing), [setColumnSizing, actualColumnSizing])
 
   return (
     <TableContainer ref={tableContainerRef} sx={{ overflowX: 'hidden', display: 'flex', flexDirection: 'column' }}>
       <Table sx={{ minWidth: defaultMinWidth }}>
         <TableHead>
-          {getHeaderGroups().map(headerGroup => (
+          {getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((headerColumn, index) => (
                 <TableCell
@@ -162,15 +172,16 @@ export const FileTable: FC<FileTableProps> = memo<FileTableProps>(props => {
                   }}
                 >
                   {flexRender(headerColumn.column.columnDef.header, headerColumn.getContext())}
-                  {index !== headerGroup.headers.length - 1 &&
-                    <ColumnDelimiter header={headerColumn} resizable={true}/>}
+                  {index !== headerGroup.headers.length - 1 && (
+                    <ColumnDelimiter header={headerColumn} resizable={true} />
+                  )}
                 </TableCell>
               ))}
             </TableRow>
           ))}
         </TableHead>
         <TableBody>
-          {getRowModel().rows.map(row => (
+          {getRowModel().rows.map((row) => (
             <Fragment key={crypto.randomUUID()}>
               <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => (
@@ -181,7 +192,7 @@ export const FileTable: FC<FileTableProps> = memo<FileTableProps>(props => {
               </TableRow>
             </Fragment>
           ))}
-          {isLoading && <TableSkeleton/>}
+          {isLoading && <TableSkeleton />}
         </TableBody>
       </Table>
       {!isNotEmptyRecord(filesMap) && showPlaceholder && (
@@ -197,21 +208,19 @@ export const FileTable: FC<FileTableProps> = memo<FileTableProps>(props => {
 })
 
 const TableSkeleton: FC = memo(() => {
-  return createComponents(<FileRowSkeleton/>, DEFAULT_NUMBER_SKELETON_ROWS)
+  return createComponents(<FileRowSkeleton />, DEFAULT_NUMBER_SKELETON_ROWS)
 })
 
 const FileRowSkeleton: FC = memo(() => {
   return (
     <TableRow>
       <TableCell>
-        <Skeleton variant="rectangular" width="80%"/>
+        <Skeleton variant="rectangular" width="80%" />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width="80%"/>
+        <Skeleton variant="rectangular" width="80%" />
       </TableCell>
-      <TableCell/>
+      <TableCell />
     </TableRow>
   )
 })
-
-

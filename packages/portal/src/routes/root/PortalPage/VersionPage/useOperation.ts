@@ -18,7 +18,11 @@ import { useQuery } from '@tanstack/react-query'
 import { useVersionWithRevision } from '../../useVersionWithRevision'
 import { useMemo } from 'react'
 import { generatePath } from 'react-router-dom'
-import type { OperationData, OperationDto, PackagesRefs } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import type {
+  OperationData,
+  OperationDto,
+  PackagesRefs,
+} from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { DEFAULT_API_TYPE, toOperation } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { IsInitialLoading, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
@@ -67,11 +71,14 @@ export function useOperation(options?: OperationOptions): OperationQueryState {
     },
   })
 
-  return useMemo(() => ({
-    data: data,
-    isLoading: isLoading,
-    isInitialLoading: isInitialLoading,
-  }), [data, isInitialLoading, isLoading])
+  return useMemo(
+    () => ({
+      data: data,
+      isLoading: isLoading,
+      isInitialLoading: isInitialLoading,
+    }),
+    [data, isInitialLoading, isLoading],
+  )
 }
 
 async function getOperation(
@@ -89,7 +96,8 @@ async function getOperation(
     generatePath(pathPattern, { packageId, versionId, apiType, operationId }),
     {
       method: 'get',
-    }, {
+    },
+    {
       customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
     },
   )

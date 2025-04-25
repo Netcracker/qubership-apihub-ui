@@ -43,7 +43,4 @@ export const TREE_MAIN_PAGE_MODE = 'tree'
 export const FLAT_MAIN_PAGE_MODE = 'flat'
 export const FAVORITE_MAIN_PAGE_MODE = 'favorite'
 
-export type MainPageMode =
-  | typeof TREE_MAIN_PAGE_MODE
-  | typeof FLAT_MAIN_PAGE_MODE
-  | typeof FAVORITE_MAIN_PAGE_MODE
+export type MainPageMode = typeof TREE_MAIN_PAGE_MODE | typeof FLAT_MAIN_PAGE_MODE | typeof FAVORITE_MAIN_PAGE_MODE

@@ -14,16 +14,12 @@ export const OasExtensionsList: FC<{ extensions: ReadonlyArray<OasSettingsExtens
 
   return (
     <>
-      {extensions.map(extension => (
+      {extensions.map((extension) => (
         <Chip
           key={extension.key}
           label={
-            <OverflowTooltip
-              key={`tooltip-${extension.key}`}
-              title={extension.name}>
-              <Box sx={EXTENSION_NAME_STYLE}>
-                {extension.name}
-              </Box>
+            <OverflowTooltip key={`tooltip-${extension.key}`} title={extension.name}>
+              <Box sx={EXTENSION_NAME_STYLE}>{extension.name}</Box>
             </OverflowTooltip>
           }
         />

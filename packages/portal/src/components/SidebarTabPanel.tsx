@@ -27,10 +27,7 @@ export type SidebarTabPanelProps = SidebarPanelProps & {
 export const SidebarTabPanel: FC<SidebarTabPanelProps> = memo<SidebarTabPanelProps>(({ value, header, body }) => {
   return (
     <TabPanel value={value}>
-      <SidebarPanel
-        header={header}
-        body={body}
-      />
+      <SidebarPanel header={header} body={body} />
     </TabPanel>
   )
 })

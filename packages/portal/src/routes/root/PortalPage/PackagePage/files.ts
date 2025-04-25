@@ -23,13 +23,15 @@ export function createFilesRecord(files: File[], filesWithLabels: FileLabelsReco
     (acc, file) => ({
       ...acc,
       [file.name]: { file: file, labels: filesWithLabels[file.name]?.labels ?? [] },
-    }), {} as FileLabelsRecord,
+    }),
+    {} as FileLabelsRecord,
   )
 }
 
 export function sortFilesRecord(files: FileLabelsRecord, searchValue: string): FileLabelsRecord {
-  const filesArray = Object.values(files)
-    .filter(({ file: { name }, labels }) => includes([name], searchValue) || includes(labels, searchValue))
+  const filesArray = Object.values(files).filter(
+    ({ file: { name }, labels }) => includes([name], searchValue) || includes(labels, searchValue),
+  )
   const sortedArray = sortBy(filesArray, 'file.name')
 
   return sortedArray.reduce((acc, { file, labels }) => {

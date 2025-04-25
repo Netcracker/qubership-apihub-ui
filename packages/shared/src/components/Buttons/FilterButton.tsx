@@ -48,13 +48,13 @@ export const FilterButton: FC<FilterButtonProps> = memo<FilterButtonProps>(({ se
           onChange={onSelect}
           data-testid="FiltersButton"
         >
-          {showBadge
-            ? (
-              <Badge variant="dot" color="primary">
-                <FilterIcon/>
-              </Badge>
-            )
-            : <FilterIcon/>}
+          {showBadge ? (
+            <Badge variant="dot" color="primary">
+              <FilterIcon />
+            </Badge>
+          ) : (
+            <FilterIcon />
+          )}
         </ToggleButton>
       </Tooltip>
     </Paper>

@@ -26,9 +26,9 @@ export function useGitlabIntegrationCheck(): boolean {
 
   try {
     return getTokenPayload(authorization.token).extensions.gitIntegration
-  } catch (e) {/*do nothing*/}
+  } catch (e) {
+    /*do nothing*/
+  }
 
   return false
 }
-
-

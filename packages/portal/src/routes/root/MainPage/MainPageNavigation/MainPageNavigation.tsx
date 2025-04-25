@@ -76,19 +76,18 @@ export const MainPageNavigation: FC = memo(() => {
             selected={pathname?.includes(id)}
           />
         ))}
-        <Divider flexItem sx={DIVIDER_STYLES}/>
-        <InputLabel sx={LABEL_STYLES}>
-          Favorite workspaces
-        </InputLabel>
-        {workspaces && workspaces.map((item) => (
-          <NavigationItem
-            key={item?.key}
-            to={getWorkspacePath({ workspaceKey: item?.key })}
-            packageKey={item?.key}
-            label={item?.name}
-            selected={item.key === selectedWorkspace?.key}
-          />
-        ))}
+        <Divider flexItem sx={DIVIDER_STYLES} />
+        <InputLabel sx={LABEL_STYLES}>Favorite workspaces</InputLabel>
+        {workspaces &&
+          workspaces.map((item) => (
+            <NavigationItem
+              key={item?.key}
+              to={getWorkspacePath({ workspaceKey: item?.key })}
+              packageKey={item?.key}
+              label={item?.name}
+              selected={item.key === selectedWorkspace?.key}
+            />
+          ))}
       </List>
     </Box>
   )
@@ -107,28 +106,28 @@ const MAIN_PAGE_NAVIGATION_ITEMS: MainPageNavigationItem[] = [
     id: FAVORITE_PAGE,
     to: { pathname: 'favorite' },
     label: 'Favorite',
-    icon: <StarOutlineRoundedIcon fontSize="medium"/>,
+    icon: <StarOutlineRoundedIcon fontSize="medium" />,
     testId: 'FavoritesButton',
   },
   {
     id: SHARED_PAGE,
     to: { pathname: 'shared' },
     label: 'Shared',
-    icon: <GroupsOutlinedIcon fontSize="medium"/>,
+    icon: <GroupsOutlinedIcon fontSize="medium" />,
     testId: 'SharedButton',
   },
   {
     id: PRIVATE_PAGE,
     to: { pathname: 'private' },
     label: 'Private',
-    icon: <PermIdentityIcon fontSize="medium"/>,
+    icon: <PermIdentityIcon fontSize="medium" />,
     testId: 'PrivateButton',
   },
   {
     id: WORKSPACES_PAGE,
     to: { pathname: 'workspaces' },
     label: 'Workspaces',
-    icon: <WorkspacesOutlinedIcon/>,
+    icon: <WorkspacesOutlinedIcon />,
     testId: 'WorkspacesButton',
   },
 ]

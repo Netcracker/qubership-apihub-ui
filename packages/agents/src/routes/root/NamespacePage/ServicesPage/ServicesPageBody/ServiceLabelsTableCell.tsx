@@ -31,17 +31,19 @@ type CellData = Partial<{
   service: Service
 }>
 
-export const ServiceLabelsTableCell: FC<ServiceLabelsTableCellProps> = memo<ServiceLabelsTableCellProps>(({ value: { original: { service } } }) => {
-  if (service && service.labels) {
-    const labels = Object.entries(service.labels)
+export const ServiceLabelsTableCell: FC<ServiceLabelsTableCellProps> = memo<ServiceLabelsTableCellProps>(
+  ({
+    value: {
+      original: { service },
+    },
+  }) => {
+    if (service && service.labels) {
+      const labels = Object.entries(service.labels)
 
-    return (
+      return (
         <Box>
           {labels.map(([key, value]) => (
-            <Box
-              key={getFormattedLabel(key, value)}
-              sx={{ mr: 1, mb: 0.5 }}
-            >
+            <Box key={getFormattedLabel(key, value)} sx={{ mr: 1, mb: 0.5 }}>
               <CustomChip
                 value={getFormattedLabel(key, value)}
                 label={
@@ -55,8 +57,9 @@ export const ServiceLabelsTableCell: FC<ServiceLabelsTableCellProps> = memo<Serv
             </Box>
           ))}
         </Box>
-    )
-  }
+      )
+    }
 
-  return null
-})
+    return null
+  },
+)

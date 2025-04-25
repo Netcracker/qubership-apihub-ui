@@ -20,12 +20,6 @@ import { calculateSpecType, getFileExtension } from '@netcracker/qubership-apihu
 
 // TODO: Check usages.
 //  Seems most places can use 'type' from branch cache instead of calculation
-export function useSpecType(
-  filename?: string | null,
-  content?: string | null,
-): SpecType {
-  return useMemo(
-    () => calculateSpecType(getFileExtension(filename ?? ''), content ?? ''),
-    [filename, content],
-  )
+export function useSpecType(filename?: string | null, content?: string | null): SpecType {
+  return useMemo(() => calculateSpecType(getFileExtension(filename ?? ''), content ?? ''), [filename, content])
 }

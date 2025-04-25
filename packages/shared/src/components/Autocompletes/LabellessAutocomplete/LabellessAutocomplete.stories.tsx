@@ -8,13 +8,7 @@ import { LabellessAutocomplete } from './LabellessAutocomplete'
 
 type Option = string
 
-const options: Option[] = [
-  'Option 1',
-  'Option 2',
-  'Option 3',
-  'Option 4',
-  'Option 5',
-]
+const options: Option[] = ['Option 1', 'Option 2', 'Option 3', 'Option 4', 'Option 5']
 
 const meta = {
   title: 'Autocompletes/Labelless Autocomplete',
@@ -26,7 +20,7 @@ const meta = {
     (Story) => (
       <ThemeProvider theme={theme}>
         <Box sx={{ width: '600px', p: 2 }}>
-          <Story/>
+          <Story />
         </Box>
       </ThemeProvider>
     ),
@@ -71,7 +65,7 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 const RenderWithState = (args: LabellessAutocompleteProps<unknown>): ReactElement => {
-  const [selectedValues, setSelectedValues] = useState<string[]>(args.value as string[] || [])
+  const [selectedValues, setSelectedValues] = useState<string[]>((args.value as string[]) || [])
 
   const handleChange = (_: SyntheticEvent, newValue: unknown): void => {
     setSelectedValues(newValue as string[])

@@ -35,19 +35,12 @@ export const BasePage: FC = memo(() => {
   useAuthorization()
   const { notification: systemNotification } = useSystemInfo()
 
-  const viewPortStyleCalculator = useCallback(
-    (theme: Theme): SystemStyleObject<Theme> => {
-      return cutViewPortStyleCalculator(theme, 0)
-    },
-    [],
-  )
+  const viewPortStyleCalculator = useCallback((theme: Theme): SystemStyleObject<Theme> => {
+    return cutViewPortStyleCalculator(theme, 0)
+  }, [])
 
   return (
-    <Box
-      display="grid"
-      gridTemplateRows="max-content 1fr"
-      height="100vh"
-    >
+    <Box display="grid" gridTemplateRows="max-content 1fr" height="100vh">
       <AppHeader
         logo={<LogoIcon />}
         title="APIHUB"
@@ -61,15 +54,14 @@ export const BasePage: FC = memo(() => {
             <SystemInfoPopup frontendVersionKey={packageJson.version} />
             <UserPanel />
           </>
-        } />
+        }
+      />
       <Box sx={viewPortStyleCalculator}>
         <Outlet />
         <ErrorNotificationHandler />
         <SuccessNotificationHandler />
       </Box>
-      {systemNotification && (
-        <MaintenanceNotification value={systemNotification} />
-      )}
+      {systemNotification && <MaintenanceNotification value={systemNotification} />}
     </Box>
   )
 })

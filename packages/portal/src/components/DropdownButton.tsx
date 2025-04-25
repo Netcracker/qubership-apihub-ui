@@ -42,7 +42,8 @@ export type DropdownButtonProps = Readonly<{
   hint?: string
   closeOnClick?: boolean
   disableHint?: boolean
-}> & TestableProps
+}> &
+  TestableProps
 
 type DropdownButtonOption = Readonly<{
   key: string
@@ -50,40 +51,28 @@ type DropdownButtonOption = Readonly<{
   method?: () => void
   disabled?: boolean
   selected?: boolean
-}> & TestableProps
+}> &
+  TestableProps
 
 export const DropdownButton: FC<DropdownButtonProps> = memo<DropdownButtonProps>((props) => {
-  const {
-    label,
-    icon,
-    options,
-    disabled,
-    disableHint,
-    hint,
-    closeOnClick = true,
-  } = props
+  const { label, icon, options, disabled, disableHint, hint, closeOnClick = true } = props
 
   const [open, setOpen] = useState(false)
   const anchorRef = useRef(null)
 
-  const hasSelectedOptions = useMemo(
-    () => options.some(option => option?.selected),
-    [options],
-  )
+  const hasSelectedOptions = useMemo(() => options.some((option) => option?.selected), [options])
 
-  const handleMenuItemClick = useCallback((
-    option: DropdownButtonOption,
-  ) => {
-    option?.method?.()
-    closeOnClick && setOpen(false)
-  }, [closeOnClick])
+  const handleMenuItemClick = useCallback(
+    (option: DropdownButtonOption) => {
+      option?.method?.()
+      closeOnClick && setOpen(false)
+    },
+    [closeOnClick],
+  )
 
   return (
     <>
-      <Tooltip
-        disableHoverListener={disableHint}
-        title={hint}
-      >
+      <Tooltip disableHoverListener={disableHint} title={hint}>
         <Box>
           {label ? (
             <Button
@@ -92,8 +81,13 @@ export const DropdownButton: FC<DropdownButtonProps> = memo<DropdownButtonProps>
               variant="contained"
               sx={{ pr: '35px', pl: '35px' }}
               startIcon={icon}
-              endIcon={open ? <KeyboardArrowUpOutlinedIcon fontSize="small"/> : <KeyboardArrowDownOutlinedIcon
-                fontSize="small"/>}
+              endIcon={
+                open ? (
+                  <KeyboardArrowUpOutlinedIcon fontSize="small" />
+                ) : (
+                  <KeyboardArrowDownOutlinedIcon fontSize="small" />
+                )
+              }
               onClick={() => setOpen((prevOpen) => !prevOpen)}
               data-testid={props.testId}
             >
@@ -110,7 +104,9 @@ export const DropdownButton: FC<DropdownButtonProps> = memo<DropdownButtonProps>
                 <Badge variant="dot" color="primary">
                   {icon}
                 </Badge>
-              ) : icon}
+              ) : (
+                icon
+              )}
             </IconButton>
           )}
         </Box>
@@ -129,8 +125,7 @@ export const DropdownButton: FC<DropdownButtonProps> = memo<DropdownButtonProps>
           <Grow
             {...TransitionProps}
             style={{
-              transformOrigin:
-                placement === 'bottom' ? 'center top' : 'center bottom',
+              transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
             }}
           >
             <Paper
@@ -139,7 +134,8 @@ export const DropdownButton: FC<DropdownButtonProps> = memo<DropdownButtonProps>
                 marginTop: '7px',
                 background: '#FFFFFF',
                 boxShadow: '0px 0px 2px rgba(0, 0, 0, 0.2), 0px 6px 20px rgba(0, 0, 0, 0.15)',
-              }}>
+              }}
+            >
               <ClickAwayListener onClickAway={() => setOpen(false)}>
                 <MenuList id="split-button-menu" autoFocusItem>
                   {options.map((option) => (
@@ -149,10 +145,12 @@ export const DropdownButton: FC<DropdownButtonProps> = memo<DropdownButtonProps>
                       onClick={() => handleMenuItemClick(option)}
                       data-testid={option.testId}
                     >
-                      {option?.selected ? <CheckIcon/> : null}
-                      <span style={{
-                        marginLeft: option?.selected ? 10 : 25,
-                      }}>
+                      {option?.selected ? <CheckIcon /> : null}
+                      <span
+                        style={{
+                          marginLeft: option?.selected ? 10 : 25,
+                        }}
+                      >
                         {option?.label}
                       </span>
                     </MenuItem>

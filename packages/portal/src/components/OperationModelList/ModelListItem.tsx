@@ -21,21 +21,27 @@ import type { SectionKey } from './OperationModelList'
 import { joinedJsonPath } from '@netcracker/qubership-apihub-ui-shared/utils/operations'
 import type { JsonPath } from '@netcracker/qubership-apihub-json-crawl'
 import type { OpenApiCustomSchemaObject } from '@apihub/entities/operation-structure'
-import type {
-  HashWithTitle,
-} from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView/oasToClassDiagramService'
+import type { HashWithTitle } from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView/oasToClassDiagramService'
 
 type ItemProps = PropsWithChildren & {
   label: ReactNode
   scopeDeclarationPath: JsonPath
   declarationPath: JsonPath
-  onClick?: (event: SyntheticEvent, nodeId: string, scopeDeclarationPath: JsonPath, declarationPath: JsonPath, schemaTolerantHashWithTitle?: HashWithTitle, schemaObject?: OpenApiCustomSchemaObject) => void
+  onClick?: (
+    event: SyntheticEvent,
+    nodeId: string,
+    scopeDeclarationPath: JsonPath,
+    declarationPath: JsonPath,
+    schemaTolerantHashWithTitle?: HashWithTitle,
+    schemaObject?: OpenApiCustomSchemaObject,
+  ) => void
 }
 
-type SectionItemProps = PropsWithChildren & ItemProps & {
-  sectionKey: SectionKey
-  disabled: boolean
-}
+type SectionItemProps = PropsWithChildren &
+  ItemProps & {
+    sectionKey: SectionKey
+    disabled: boolean
+  }
 
 type ModelItemProps = ItemProps & {
   schemaTolerantHashWithTitle?: HashWithTitle
@@ -47,61 +53,43 @@ type ErrorModelItemProps = {
   label: ReactNode
 }
 
-export const SectionItem: FC<SectionItemProps> = memo<SectionItemProps>(({
-  sectionKey,
-  scopeDeclarationPath,
-  declarationPath,
-  disabled,
-  label,
-  onClick,
-  children,
-}) => {
-  return (
-    <TreeItem
-      key={`${sectionKey}-${disabled ? 'disabled' : 'enabled'}`}
-      nodeId={sectionKey}
-      disabled={disabled}
-      label={label}
-      onClick={(event) => onClick?.(event, sectionKey, scopeDeclarationPath, declarationPath)}
-      sx={TREE_ITEM_ROOT_LABEL_STYLES}
-    >
-      {children}
-    </TreeItem>
-  )
-})
+export const SectionItem: FC<SectionItemProps> = memo<SectionItemProps>(
+  ({ sectionKey, scopeDeclarationPath, declarationPath, disabled, label, onClick, children }) => {
+    return (
+      <TreeItem
+        key={`${sectionKey}-${disabled ? 'disabled' : 'enabled'}`}
+        nodeId={sectionKey}
+        disabled={disabled}
+        label={label}
+        onClick={(event) => onClick?.(event, sectionKey, scopeDeclarationPath, declarationPath)}
+        sx={TREE_ITEM_ROOT_LABEL_STYLES}
+      >
+        {children}
+      </TreeItem>
+    )
+  },
+)
 
-export const ModelItem: FC<ModelItemProps> = memo<ModelItemProps>(({
-  scopeDeclarationPath,
-  declarationPath,
-  schemaTolerantHashWithTitle,
-  schemaObject,
-  label,
-  onClick,
-}) => {
-  const nodeId = useMemo(() => joinedJsonPath(declarationPath), [declarationPath])
+export const ModelItem: FC<ModelItemProps> = memo<ModelItemProps>(
+  ({ scopeDeclarationPath, declarationPath, schemaTolerantHashWithTitle, schemaObject, label, onClick }) => {
+    const nodeId = useMemo(() => joinedJsonPath(declarationPath), [declarationPath])
 
-  return (
-    <TreeItem
-      key={nodeId}
-      nodeId={nodeId}
-      label={label}
-      onClick={(event) => onClick?.(event, nodeId, scopeDeclarationPath, declarationPath, schemaTolerantHashWithTitle, schemaObject)}
-      sx={TREE_ITEM_CHILD_LABEL_STYLES}
-    />
-  )
-})
+    return (
+      <TreeItem
+        key={nodeId}
+        nodeId={nodeId}
+        label={label}
+        onClick={(event) =>
+          onClick?.(event, nodeId, scopeDeclarationPath, declarationPath, schemaTolerantHashWithTitle, schemaObject)
+        }
+        sx={TREE_ITEM_CHILD_LABEL_STYLES}
+      />
+    )
+  },
+)
 
-export const ErrorModelItem: FC<ErrorModelItemProps> = memo<ErrorModelItemProps>(({
-  title,
-  label,
-}) => {
-  return (
-    <TreeItem
-      nodeId={`${title}-error-item`}
-      label={label}
-      sx={ERROR_TREE_ITEM_CHILD_LABEL_STYLES}
-    />
-  )
+export const ErrorModelItem: FC<ErrorModelItemProps> = memo<ErrorModelItemProps>(({ title, label }) => {
+  return <TreeItem nodeId={`${title}-error-item`} label={label} sx={ERROR_TREE_ITEM_CHILD_LABEL_STYLES} />
 })
 
 const SELECTED_COLOR = '#F2F3F5'

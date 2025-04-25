@@ -56,164 +56,183 @@ export type GraphQlSpecificationPopupProps = {
 }
 
 type SchemaOption = Pick<Spec, 'key' | 'name'>
-export const GraphQlSpecificationPopup: FC<GraphQlSpecificationPopupProps> = memo<GraphQlSpecificationPopupProps>(({
-  clickedSpec,
-  service,
-  open,
-  setOpen,
-  agentId,
-  namespaceKey,
-}) => {
-  const [endpoint, setEndpoint] = useState(DEFAULT_GRAPHQL_ENDPOINT)
-  const [currentSchemaOption, setCurrentSchemaOption] = useState<SchemaOption>(COMBINED_SCHEMA_OPTION)
-  const [schemaOptions, setSchemaOptions] = useState<SchemaOption[]>([COMBINED_SCHEMA_OPTION])
+export const GraphQlSpecificationPopup: FC<GraphQlSpecificationPopupProps> = memo<GraphQlSpecificationPopupProps>(
+  ({ clickedSpec, service, open, setOpen, agentId, namespaceKey }) => {
+    const [endpoint, setEndpoint] = useState(DEFAULT_GRAPHQL_ENDPOINT)
+    const [currentSchemaOption, setCurrentSchemaOption] = useState<SchemaOption>(COMBINED_SCHEMA_OPTION)
+    const [schemaOptions, setSchemaOptions] = useState<SchemaOption[]>([COMBINED_SCHEMA_OPTION])
 
-  const graphQlSpecs = useMemo(() => (
-    sortBy(service.specs.filter(({ type }) => isGraphQlSpecType(type)), 'name')
-  ), [service?.specs])
-  const hasManySpecs = graphQlSpecs.length > 1
-  const graphQlSpecKeys = useMemo(() => (graphQlSpecs?.map(spec => spec.key) || []), [graphQlSpecs])
-  const [specsRawMap, isSpecsLoading] = useSpecsRaw({ serviceKey: clickedSpec.serviceKey!, specKeys: graphQlSpecKeys })
-  const specsRaw = useMemo(() => [...specsRawMap.values()], [specsRawMap])
-  const mergedSpecRaw = useMergedGraphQlSpec({ specsRaw: specsRaw, enabled: hasManySpecs })
-
-  const [expand, setExpand] = useState<boolean>(false)
-
-  const proxyServer = useMemo(() => ({
-    url: getAgentProxyServerUrl(clickedSpec?.serviceKey, agentId, namespaceKey, endpoint),
-  }), [agentId, clickedSpec?.serviceKey, endpoint, namespaceKey])
-  const spec: Spec = useMemo(() => (
-    {
-      type: GRAPHQL_SCHEMA_SPEC_TYPE,
-      proxyServerUrl: proxyServer.url,
-      serviceKey: service.key,
-      extension: GRAPHQL_FILE_EXTENSION,
-      ...(mergedSpecRaw && (currentSchemaOption?.key === COMBINED_SCHEMA_OPTION_NAME) ? COMBINED_SCHEMA_OPTION : currentSchemaOption),
-    }
-  ), [currentSchemaOption, mergedSpecRaw, proxyServer.url, service.key])
-
-  const value = useMemo(() => (
-    spec.key === COMBINED_SCHEMA_OPTION_NAME && mergedSpecRaw ? mergedSpecRaw : specsRawMap.get(spec.key) || ''
-  ), [mergedSpecRaw, spec.key, specsRawMap])
-
-  const idpUrl = useIdentityProviderUrl()
-  const setIdpUrl = useSetIdentityProviderUrl()
-
-  const [localAuthToken, setLocalAuthToken] = useLocalIdpAuthToken()
-
-  const [authToken, getIdpAuthToken, isIdpAuthTokenLoading] = useIdpAuthToken()
-  const onGetIdpAuthToken = useCallback((data: IdpAuthTokenFormData): void => {
-    getIdpAuthToken({
-      agentId: agentId!,
-      namespaceId: namespaceKey!,
-      ...data,
+    const graphQlSpecs = useMemo(
+      () =>
+        sortBy(
+          service.specs.filter(({ type }) => isGraphQlSpecType(type)),
+          'name',
+        ),
+      [service?.specs],
+    )
+    const hasManySpecs = graphQlSpecs.length > 1
+    const graphQlSpecKeys = useMemo(() => graphQlSpecs?.map((spec) => spec.key) || [], [graphQlSpecs])
+    const [specsRawMap, isSpecsLoading] = useSpecsRaw({
+      serviceKey: clickedSpec.serviceKey!,
+      specKeys: graphQlSpecKeys,
     })
-  }, [agentId, getIdpAuthToken, namespaceKey])
+    const specsRaw = useMemo(() => [...specsRawMap.values()], [specsRawMap])
+    const mergedSpecRaw = useMergedGraphQlSpec({ specsRaw: specsRaw, enabled: hasManySpecs })
 
-  useEffectOnce(() => {
-    setExpand(!localAuthToken)
-  })
+    const [expand, setExpand] = useState<boolean>(false)
 
-  useEffect(() => {
-    if (authToken) {
-      setLocalAuthToken(authToken)
-    }
-  }, [authToken, setLocalAuthToken])
+    const proxyServer = useMemo(
+      () => ({
+        url: getAgentProxyServerUrl(clickedSpec?.serviceKey, agentId, namespaceKey, endpoint),
+      }),
+      [agentId, clickedSpec?.serviceKey, endpoint, namespaceKey],
+    )
+    const spec: Spec = useMemo(
+      () => ({
+        type: GRAPHQL_SCHEMA_SPEC_TYPE,
+        proxyServerUrl: proxyServer.url,
+        serviceKey: service.key,
+        extension: GRAPHQL_FILE_EXTENSION,
+        ...(mergedSpecRaw && currentSchemaOption?.key === COMBINED_SCHEMA_OPTION_NAME
+          ? COMBINED_SCHEMA_OPTION
+          : currentSchemaOption),
+      }),
+      [currentSchemaOption, mergedSpecRaw, proxyServer.url, service.key],
+    )
 
-  useEffect(() => {
-    setCurrentSchemaOption(hasManySpecs && mergedSpecRaw ? COMBINED_SCHEMA_OPTION : clickedSpec)
-    setSchemaOptions(hasManySpecs ? [COMBINED_SCHEMA_OPTION, ...graphQlSpecs] : graphQlSpecs)
-  }, [mergedSpecRaw, clickedSpec, hasManySpecs, graphQlSpecs])
+    const value = useMemo(
+      () =>
+        spec.key === COMBINED_SCHEMA_OPTION_NAME && mergedSpecRaw ? mergedSpecRaw : specsRawMap.get(spec.key) || '',
+      [mergedSpecRaw, spec.key, specsRawMap],
+    )
 
-  const headerComponent = (
-    <CardHeader
-      sx={{ p: 0 }}
-      title="GraphQL Playground"
-      subheader={(
-        <Box>
-          <Header agentId={agentId} namespaceKey={namespaceKey} specKey={clickedSpec?.serviceKey}>
-            <Box display="flex" gap="2px" alignItems="center" justifyContent="center" flexGrow="">
-              <Typography variant="caption" fontWeight="bold" minWidth="max-content">Endpoint*:</Typography>
-              <TextField
-                value={endpoint}
-                onChange={event => setEndpoint(event.target.value)}
-                size="small"
-                sx={{
-                  margin: 0,
-                  input: {
-                    textAlign: 'center',
-                    padding: 0,
+    const idpUrl = useIdentityProviderUrl()
+    const setIdpUrl = useSetIdentityProviderUrl()
+
+    const [localAuthToken, setLocalAuthToken] = useLocalIdpAuthToken()
+
+    const [authToken, getIdpAuthToken, isIdpAuthTokenLoading] = useIdpAuthToken()
+    const onGetIdpAuthToken = useCallback(
+      (data: IdpAuthTokenFormData): void => {
+        getIdpAuthToken({
+          agentId: agentId!,
+          namespaceId: namespaceKey!,
+          ...data,
+        })
+      },
+      [agentId, getIdpAuthToken, namespaceKey],
+    )
+
+    useEffectOnce(() => {
+      setExpand(!localAuthToken)
+    })
+
+    useEffect(() => {
+      if (authToken) {
+        setLocalAuthToken(authToken)
+      }
+    }, [authToken, setLocalAuthToken])
+
+    useEffect(() => {
+      setCurrentSchemaOption(hasManySpecs && mergedSpecRaw ? COMBINED_SCHEMA_OPTION : clickedSpec)
+      setSchemaOptions(hasManySpecs ? [COMBINED_SCHEMA_OPTION, ...graphQlSpecs] : graphQlSpecs)
+    }, [mergedSpecRaw, clickedSpec, hasManySpecs, graphQlSpecs])
+
+    const headerComponent = (
+      <CardHeader
+        sx={{ p: 0 }}
+        title="GraphQL Playground"
+        subheader={
+          <Box>
+            <Header agentId={agentId} namespaceKey={namespaceKey} specKey={clickedSpec?.serviceKey}>
+              <Box display="flex" gap="2px" alignItems="center" justifyContent="center" flexGrow="">
+                <Typography variant="caption" fontWeight="bold" minWidth="max-content">
+                  Endpoint*:
+                </Typography>
+                <TextField
+                  value={endpoint}
+                  onChange={(event) => setEndpoint(event.target.value)}
+                  size="small"
+                  sx={{
                     margin: 0,
-                    minWidth: '180px',
-                  },
-                }}
-              />
-            </Box>
-            <Box width={250} display="flex" gap="2px" alignItems="center" justifyContent="center" flexGrow="">
-              <Typography variant="caption" fontWeight="bold" minWidth="max-content">Schema:</Typography>
-              <Autocomplete<SchemaOption, false, true>
-                disabled={isSpecsLoading}
-                disableClearable
-                value={currentSchemaOption}
-                fullWidth
-                options={schemaOptions}
-                renderOption={(props, spec) => <SpecOptionItem
-                  props={props}
-                  key={spec.key}
-                  spec={spec}
-                  mergedSchemaAvailable={!!mergedSpecRaw}
-                />}
-                isOptionEqualToValue={(option, value) => option.key === value.key}
-                getOptionLabel={(option) => option?.name ?? ''}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    size="small"
-                    sx={{ '& .MuiInputBase-root': { pt: '1px', pb: '1px' }, m: 0 }}
-                  />
-                )}
-                onChange={(_, value) => setCurrentSchemaOption(value)}
-              />
-            </Box>
-          </Header>
-
-          <Box display="flex">
-            <Accordion expanded={expand}>
-              <AccordionSummary
-                sx={{ pl: 0, width: '130px' }}
-                expandIcon={<ExpandMoreIcon/>}
-                onClick={() => setExpand(!expand)}
-              >
-                <KeyIcon color="#626D82"/>
-                <Typography width="100%" noWrap variant="button">Authenticate</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <IdpAuthTokenForm
-                  onGetUdpAuthToken={onGetIdpAuthToken}
-                  isLoading={isIdpAuthTokenLoading}
-                  defaultIdpUrl={idpUrl}
-                  onIdpChange={setIdpUrl}
+                    input: {
+                      textAlign: 'center',
+                      padding: 0,
+                      margin: 0,
+                      minWidth: '180px',
+                    },
+                  }}
                 />
-              </AccordionDetails>
-            </Accordion>
-          </Box>
-        </Box>
-      )}
-    />
-  )
+              </Box>
+              <Box width={250} display="flex" gap="2px" alignItems="center" justifyContent="center" flexGrow="">
+                <Typography variant="caption" fontWeight="bold" minWidth="max-content">
+                  Schema:
+                </Typography>
+                <Autocomplete<SchemaOption, false, true>
+                  disabled={isSpecsLoading}
+                  disableClearable
+                  value={currentSchemaOption}
+                  fullWidth
+                  options={schemaOptions}
+                  renderOption={(props, spec) => (
+                    <SpecOptionItem props={props} key={spec.key} spec={spec} mergedSchemaAvailable={!!mergedSpecRaw} />
+                  )}
+                  isOptionEqualToValue={(option, value) => option.key === value.key}
+                  getOptionLabel={(option) => option?.name ?? ''}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      size="small"
+                      sx={{ '& .MuiInputBase-root': { pt: '1px', pb: '1px' }, m: 0 }}
+                    />
+                  )}
+                  onChange={(_, value) => setCurrentSchemaOption(value)}
+                />
+              </Box>
+            </Header>
 
-  return <CommonSpecificationPopup
-    spec={spec}
-    proxyServer={proxyServer}
-    value={value}
-    header={localAuthToken}
-    isLoading={isSpecsLoading}
-    headerComponent={headerComponent}
-    disableSpecViewToggler={true}
-    open={open}
-    setOpen={setOpen}
-  />
-})
+            <Box display="flex">
+              <Accordion expanded={expand}>
+                <AccordionSummary
+                  sx={{ pl: 0, width: '130px' }}
+                  expandIcon={<ExpandMoreIcon />}
+                  onClick={() => setExpand(!expand)}
+                >
+                  <KeyIcon color="#626D82" />
+                  <Typography width="100%" noWrap variant="button">
+                    Authenticate
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <IdpAuthTokenForm
+                    onGetUdpAuthToken={onGetIdpAuthToken}
+                    isLoading={isIdpAuthTokenLoading}
+                    defaultIdpUrl={idpUrl}
+                    onIdpChange={setIdpUrl}
+                  />
+                </AccordionDetails>
+              </Accordion>
+            </Box>
+          </Box>
+        }
+      />
+    )
+
+    return (
+      <CommonSpecificationPopup
+        spec={spec}
+        proxyServer={proxyServer}
+        value={value}
+        header={localAuthToken}
+        isLoading={isSpecsLoading}
+        headerComponent={headerComponent}
+        disableSpecViewToggler={true}
+        open={open}
+        setOpen={setOpen}
+      />
+    )
+  },
+)
 
 export type SpecOptionItemProps = {
   props: HTMLAttributes<HTMLLIElement>
@@ -221,32 +240,36 @@ export type SpecOptionItemProps = {
   mergedSchemaAvailable: boolean
 }
 
-export const SpecOptionItem: FC<SpecOptionItemProps> = memo<SpecOptionItemProps>(({
-  props,
-  spec,
-  mergedSchemaAvailable,
-}) => {
-  const isDisabled = useMemo(() => (
-    spec.key === COMBINED_SCHEMA_OPTION_NAME && !mergedSchemaAvailable
-  ), [mergedSchemaAvailable, spec.key])
+export const SpecOptionItem: FC<SpecOptionItemProps> = memo<SpecOptionItemProps>(
+  ({ props, spec, mergedSchemaAvailable }) => {
+    const isDisabled = useMemo(
+      () => spec.key === COMBINED_SCHEMA_OPTION_NAME && !mergedSchemaAvailable,
+      [mergedSchemaAvailable, spec.key],
+    )
 
-  return (
-    <OptionItem
-      props={props}
-      key={spec.key}
-      title={spec.name}
-      disabled={isDisabled}
-      tooltipProps={{
-        title: isDisabled ? 'Combined schema is not available due to problems with merging GraphQL schemas' : null,
-        PopperProps: {
-          sx: { '.MuiTooltip-tooltip': { maxWidth: 'unset' } },
-        },
-      }}
-    />
-  )
-})
+    return (
+      <OptionItem
+        props={props}
+        key={spec.key}
+        title={spec.name}
+        disabled={isDisabled}
+        tooltipProps={{
+          title: isDisabled ? 'Combined schema is not available due to problems with merging GraphQL schemas' : null,
+          PopperProps: {
+            sx: { '.MuiTooltip-tooltip': { maxWidth: 'unset' } },
+          },
+        }}
+      />
+    )
+  },
+)
 
-function getAgentProxyServerUrl(serviceKey?: string, agentId?: string, namespace?: string, endpoint = DEFAULT_GRAPHQL_ENDPOINT): string {
+function getAgentProxyServerUrl(
+  serviceKey?: string,
+  agentId?: string,
+  namespace?: string,
+  endpoint = DEFAULT_GRAPHQL_ENDPOINT,
+): string {
   if (!agentId || !namespace) {
     return ''
   }

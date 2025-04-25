@@ -36,9 +36,7 @@ import { useMemo } from 'react'
 import { REST_API_TYPE } from '@netcracker/qubership-apihub-api-processor'
 import { useDownloadPublicationReport } from './useDownloadPublicationReport'
 import { useAsyncInvalidateVersionContent } from '../usePackageVersionContent'
-import {
-  useAsyncInvalidatePackageVersions,
-} from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
+import { useAsyncInvalidatePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
 import { useAsyncInvalidatePackage } from '../usePackage'
 
 const PUBLISH_STATUS_QUERY_KEY = 'publish-status-query-key'
@@ -55,7 +53,8 @@ export function usePublicationStatuses(
   const { data } = useQuery<PublishStatusDto, Error, PublishStatusDto>({
     queryKey: [PUBLISH_STATUS_QUERY_KEY, packageId, publishId],
     queryFn: () => getPublishStatus(packageId, publishId!),
-    refetchInterval: data => (data?.status === RUNNING_PUBLISH_STATUS || data?.status === NONE_PUBLISH_STATUS ? STATUS_REFETCH_INTERVAL : false),
+    refetchInterval: (data) =>
+      data?.status === RUNNING_PUBLISH_STATUS || data?.status === NONE_PUBLISH_STATUS ? STATUS_REFETCH_INTERVAL : false,
     onSuccess: (data) => {
       if (data.status === COMPLETE_PUBLISH_STATUS) {
         const linkToVersion = getVersionPath({
@@ -84,16 +83,10 @@ export function usePublicationStatuses(
     [data?.status],
   )
 
-  return [
-    isPublishing,
-    data?.status === COMPLETE_PUBLISH_STATUS,
-  ]
+  return [isPublishing, data?.status === COMPLETE_PUBLISH_STATUS]
 }
 
-export async function getPublishStatus(
-  packageKey: Key,
-  publishKey: Key,
-): Promise<PublishStatusDto> {
+export async function getPublishStatus(packageKey: Key, publishKey: Key): Promise<PublishStatusDto> {
   const packageId = encodeURIComponent(packageKey)
   const publishId = encodeURIComponent(publishKey)
 
@@ -117,7 +110,8 @@ export function useOperationGroupPublicationStatuses(
   const { data } = useQuery<PublishStatusDto, Error, PublishStatusDto>({
     queryKey: [OPERATION_GROUP_PUBLISH_STATUS_QUERY_KEY, packageId, versionId, groupName, publishId],
     queryFn: () => getOperationGroupPublishStatus(packageId, versionId, groupName, publishId),
-    refetchInterval: data => (data?.status === RUNNING_PUBLISH_STATUS || data?.status === NONE_PUBLISH_STATUS ? STATUS_REFETCH_INTERVAL : false),
+    refetchInterval: (data) =>
+      data?.status === RUNNING_PUBLISH_STATUS || data?.status === NONE_PUBLISH_STATUS ? STATUS_REFETCH_INTERVAL : false,
     onSuccess: (data) => {
       if (data.status === COMPLETE_PUBLISH_STATUS) {
         const linkToVersion = getVersionPath({
@@ -146,10 +140,7 @@ export function useOperationGroupPublicationStatuses(
     [data?.status],
   )
 
-  return [
-    isPublishing,
-    data?.status === COMPLETE_PUBLISH_STATUS,
-  ]
+  return [isPublishing, data?.status === COMPLETE_PUBLISH_STATUS]
 }
 
 export async function getOperationGroupPublishStatus(
@@ -188,7 +179,8 @@ export function useDashboardVersionFromCSVPublicationStatuses(
   const { data: { status } = {} } = useQuery<PublishStatusDto, Error, PublishStatusDto>({
     queryKey: [PUBLISH_STATUS_QUERY_KEY, packageId, publishId],
     queryFn: () => getDashboardVersionFromCSVPublicationStatuses(packageId, publishId!),
-    refetchInterval: data => (data?.status === RUNNING_PUBLISH_STATUS || data?.status === NONE_PUBLISH_STATUS ? STATUS_REFETCH_INTERVAL : false),
+    refetchInterval: (data) =>
+      data?.status === RUNNING_PUBLISH_STATUS || data?.status === NONE_PUBLISH_STATUS ? STATUS_REFETCH_INTERVAL : false,
     onSuccess: async ({ status, message }) => {
       if (status === ERROR_PUBLISH_STATUS) {
         return showErrorNotification({ message: message })
@@ -209,11 +201,12 @@ export function useDashboardVersionFromCSVPublicationStatuses(
           message: `The dashboard version was published.\n${message}`,
           button: {
             title: 'Download report result',
-            onClick: () => downloadPublicationReport({
-              packageKey: packageId,
-              versionKey: versionId,
-              publishKey: publishId!,
-            }),
+            onClick: () =>
+              downloadPublicationReport({
+                packageKey: packageId,
+                versionKey: versionId,
+                publishKey: publishId!,
+              }),
           },
         })
       }
@@ -228,11 +221,7 @@ export function useDashboardVersionFromCSVPublicationStatuses(
 
   const isPublishing = status === RUNNING_PUBLISH_STATUS || status === NONE_PUBLISH_STATUS
 
-  return [
-    isPublishing,
-    status === COMPLETE_PUBLISH_STATUS,
-    status === ERROR_PUBLISH_STATUS,
-  ]
+  return [isPublishing, status === COMPLETE_PUBLISH_STATUS, status === ERROR_PUBLISH_STATUS]
 }
 
 export async function getDashboardVersionFromCSVPublicationStatuses(

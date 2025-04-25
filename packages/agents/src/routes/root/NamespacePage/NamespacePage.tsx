@@ -42,9 +42,7 @@ export const NamespacePage: FC = memo(() => {
   const workspace = useSearchParam(WORKSPACE_SEARCH_PARAM)
 
   if (!workspace) {
-    return (
-      <WelcomePage />
-    )
+    return <WelcomePage />
   }
 
   return (
@@ -70,12 +68,7 @@ type NamespacePageBodyProps = {
   menuItem: NamespacePageRoute
 }
 const NamespacePageBody: FC<NamespacePageBodyProps> = memo<NamespacePageBodyProps>(({ menuItem }) => {
-  return (
-    <LayoutWithTabs
-      tabs={<NamespaceNavigationMenu />}
-      body={PATH_PARAM_TO_SUB_PAGE_MAP[menuItem]}
-    />
-  )
+  return <LayoutWithTabs tabs={<NamespaceNavigationMenu />} body={PATH_PARAM_TO_SUB_PAGE_MAP[menuItem]} />
 })
 
 export const SERVICES_NAMESPACE_PAGE_MODE = 'services'

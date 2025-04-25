@@ -51,10 +51,7 @@ export type OperationPreviewProps = {
 
 // First Order Component //
 export const OperationPreview: FC<OperationPreviewProps> = memo<OperationPreviewProps>((props) => {
-  const {
-    apiType, changedOperation, changedOperationContent,
-    isLoading, mode, schemaViewMode, productionMode,
-  } = props
+  const { apiType, changedOperation, changedOperationContent, isLoading, mode, schemaViewMode, productionMode } = props
 
   const isDocViewMode = useIsDocOperationViewMode(mode)
   const isRawViewMode = useIsRawOperationViewMode(mode)
@@ -67,15 +64,11 @@ export const OperationPreview: FC<OperationPreviewProps> = memo<OperationPreview
 
   const mergedDocument = useMemo(() => {
     const existingOperation = removeComponents(changedOperation?.data)
-    return existingOperation
-      ? normalizeOpenApiDocument(existingOperation, changedOperation?.data)
-      : undefined
+    return existingOperation ? normalizeOpenApiDocument(existingOperation, changedOperation?.data) : undefined
   }, [changedOperation])
 
   if (isLoading) {
-    return (
-      <LoadingIndicator/>
-    )
+    return <LoadingIndicator />
   } else if (!changedOperation?.operationKey) {
     return (
       <Placeholder
@@ -103,9 +96,9 @@ export const OperationPreview: FC<OperationPreviewProps> = memo<OperationPreview
               }
             />
           }
-          action={<OperationViewModeSelector modes={OPERATION_PREVIEW_VIEW_MODES}/>}
+          action={<OperationViewModeSelector modes={OPERATION_PREVIEW_VIEW_MODES} />}
         />
-        <Divider orientation="horizontal" variant="fullWidth"/>
+        <Divider orientation="horizontal" variant="fullWidth" />
       </Box>
 
       <Box>
@@ -121,13 +114,7 @@ export const OperationPreview: FC<OperationPreviewProps> = memo<OperationPreview
             mergedDocument={mergedDocument}
           />
         )}
-        {isRawViewMode && (
-          <RawSpecView
-            value={rawContent}
-            extension={extension}
-            type={type}
-          />
-        )}
+        {isRawViewMode && <RawSpecView value={rawContent} extension={extension} type={type} />}
       </Box>
     </Box>
   )

@@ -59,11 +59,7 @@ export const BasePage: FC = memo(() => {
 
   return (
     <MainPageProvider>
-      <Box
-        display="grid"
-        gridTemplateRows="max-content 1fr"
-        height="100vh"
-      >
+      <Box display="grid" gridTemplateRows="max-content 1fr" height="100vh">
         <AppHeader
           logo={<LogoIcon />}
           title="APIHUB"
@@ -72,12 +68,14 @@ export const BasePage: FC = memo(() => {
             { name: 'API Editor', pathname: '/editor', testId: 'EditorHeaderButton' },
             { name: 'Agent', pathname: '/agents', testId: 'AgentHeaderButton' },
           ]}
-          action={<>
-            <SearchButton />
-            {isSuperAdmin && <PortalSettingsButton />}
-            <SystemInfoPopup frontendVersionKey={packageJson.version} />
-            <UserPanel />
-          </>}
+          action={
+            <>
+              <SearchButton />
+              {isSuperAdmin && <PortalSettingsButton />}
+              <SystemInfoPopup frontendVersionKey={packageJson.version} />
+              <UserPanel />
+            </>
+          }
         />
         <Box sx={viewPortStyleCalculator}>
           <ExceptionSituationHandler
@@ -90,9 +88,7 @@ export const BasePage: FC = memo(() => {
         </Box>
         <Notification />
         <GlobalSearchPanel />
-        {systemNotification && (
-          <MaintenanceNotification value={systemNotification} />
-        )}
+        {systemNotification && <MaintenanceNotification value={systemNotification} />}
       </Box>
     </MainPageProvider>
   )
@@ -101,12 +97,7 @@ export const BasePage: FC = memo(() => {
 const SearchButton: FC = memo(() => {
   const { showGlobalSearchPanel } = useEventBus()
   return (
-    <IconButton
-      data-testid="GlobalSearchButton"
-      size="large"
-      color="inherit"
-      onClick={showGlobalSearchPanel}
-    >
+    <IconButton data-testid="GlobalSearchButton" size="large" color="inherit" onClick={showGlobalSearchPanel}>
       <SearchOutlinedIcon />
     </IconButton>
   )
@@ -114,12 +105,9 @@ const SearchButton: FC = memo(() => {
 
 function replacePackageId(locationPathname: string, searchParams: URLSearchParams, packageId: Key): string {
   const locationMatch = matchPathname(locationPathname, PORTAL_PATH_PATTERNS)!
-  const newPathname = generatePath(
-    locationMatch.pattern.path,
-    {
-      ...locationMatch!.params,
-      packageId,
-    },
-  )
+  const newPathname = generatePath(locationMatch.pattern.path, {
+    ...locationMatch!.params,
+    packageId,
+  })
   return `${newPathname}?${searchParams}`
 }

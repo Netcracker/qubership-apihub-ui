@@ -110,8 +110,4 @@ export const PROJECTS: Writeable<ProjectsDto> = {
   ],
 }
 
-export const PUBLISHED_PROJECT_IDS = new Set([
-  'project-1',
-  'project-2',
-  'project-4',
-])
+export const PUBLISHED_PROJECT_IDS = new Set(['project-1', 'project-2', 'project-4'])

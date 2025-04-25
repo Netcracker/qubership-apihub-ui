@@ -27,24 +27,15 @@ export type OperationOptionItemProps = {
   operation: Operation
 } & TestableProps
 
-export const OperationOptionItem: FC<OperationOptionItemProps> = memo<OperationOptionItemProps>(({
-  props,
-  operation,
-  testId,
-}) => {
-  const [subtitle, chipValue] = useMemo(() => (
-    isRestOperation(operation)
-      ? [operation.path, operation.method]
-      : [operation.method, operation.type]
-  ), [operation])
+export const OperationOptionItem: FC<OperationOptionItemProps> = memo<OperationOptionItemProps>(
+  ({ props, operation, testId }) => {
+    const [subtitle, chipValue] = useMemo(
+      () => (isRestOperation(operation) ? [operation.path, operation.method] : [operation.method, operation.type]),
+      [operation],
+    )
 
-  return (
-    <OptionItem
-      title={operation.title}
-      subtitle={subtitle}
-      chipValue={chipValue}
-      testId={testId}
-      props={props}
-    />
-  )
-})
+    return (
+      <OptionItem title={operation.title} subtitle={subtitle} chipValue={chipValue} testId={testId} props={props} />
+    )
+  },
+)

@@ -68,7 +68,7 @@ export function useSetPathParam(): (valueToChange: string, keyToChange?: string)
 
   return (valueToChange: string, keyToChange: string = 'apiType') => {
     navigate({
-      pathname: `/${(generatePathname(pathname, params, valueToChange, keyToChange))}/`,
+      pathname: `/${generatePathname(pathname, params, valueToChange, keyToChange)}/`,
       search: location.search,
     })
   }

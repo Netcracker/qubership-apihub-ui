@@ -41,9 +41,7 @@ export const DeprecatedOperationsNavigation: FC = memo(() => {
   const isLoading = !deprecatedSummary
 
   const tags = useTagsFromSummary(apiType as ApiType, deprecatedSummary)
-  const filteredTags = searchValue
-    ? tags.filter(tag => isAppliedSearchValueForTag(tag, searchValue))
-    : tags
+  const filteredTags = searchValue ? tags.filter((tag) => isAppliedSearchValueForTag(tag, searchValue)) : tags
 
   const [packageKind] = usePackageKind()
   const isDashboard = packageKind === DASHBOARD_KIND
@@ -78,28 +76,22 @@ export const DeprecatedOperationsNavigation: FC = memo(() => {
   )
 })
 
-function useTagsFromSummary(
-  apiType: ApiType,
-  versionDeprecatedSummary: VersionDeprecatedSummary | null,
-): string[] {
-  return useMemo(
-    () => {
-      if (!versionDeprecatedSummary) {
-        return []
-      }
+function useTagsFromSummary(apiType: ApiType, versionDeprecatedSummary: VersionDeprecatedSummary | null): string[] {
+  return useMemo(() => {
+    if (!versionDeprecatedSummary) {
+      return []
+    }
 
-      const tagSet = new Set<string>(
-        isDashboardDeprecatedSummary(versionDeprecatedSummary)
-          ? versionDeprecatedSummary.map(ref => ref.operationTypes?.[apiType]?.tags ?? []).flat()
-          : versionDeprecatedSummary.operationTypes?.[apiType]?.tags ?? [],
-      )
+    const tagSet = new Set<string>(
+      isDashboardDeprecatedSummary(versionDeprecatedSummary)
+        ? versionDeprecatedSummary.map((ref) => ref.operationTypes?.[apiType]?.tags ?? []).flat()
+        : (versionDeprecatedSummary.operationTypes?.[apiType]?.tags ?? []),
+    )
 
-      const tagList = Array.from(tagSet)
-      if (isEmpty(tagList) || tagList.includes(EMPTY_TAG)) {
-        return [DEFAULT_TAG]
-      }
-      return tagList
-    },
-    [versionDeprecatedSummary, apiType],
-  )
+    const tagList = Array.from(tagSet)
+    if (isEmpty(tagList) || tagList.includes(EMPTY_TAG)) {
+      return [DEFAULT_TAG]
+    }
+    return tagList
+  }, [versionDeprecatedSummary, apiType])
 }

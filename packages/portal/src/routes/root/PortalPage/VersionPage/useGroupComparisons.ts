@@ -65,4 +65,3 @@ export function useGroupComparisons(options?: {
 export const getFullPrefixGroup = (restGroupingPrefix: string | undefined, group: string): string => {
   return restGroupingPrefix ? restGroupingPrefix.replace(/{group}/g, group) : group
 }
-

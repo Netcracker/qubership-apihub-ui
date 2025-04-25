@@ -32,10 +32,7 @@ import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/u
 // High Order Component //
 export const RunRoutingReportDialog: FC = memo(() => {
   return (
-    <PopupDelegate
-      type={RUN_ROUTING_REPORT_DIALOG}
-      render={props => <RunRoutingReportDialogForm {...props}/>}
-    />
+    <PopupDelegate type={RUN_ROUTING_REPORT_DIALOG} render={(props) => <RunRoutingReportDialogForm {...props} />} />
   )
 })
 
@@ -50,27 +47,33 @@ const RunRoutingReportDialogForm: FC<PopupProps> = memo<PopupProps>(({ open, set
   const [controlledException, setControlledException] = useState<string>()
 
   const onSuccessRunReport = useCallback(() => setOpen(false), [setOpen])
-  const onErrorRunReport = useCallback((error: HttpError) => {
-    if (CONTROLLED_EXCEPTION_CODES.includes(error.code)) {
-      setControlledException(error.message)
-    } else {
-      setOpen(false)
-      errorNotification({
-        title: error.name,
-        message: error.message,
-      })
-    }
-  }, [errorNotification, setOpen])
+  const onErrorRunReport = useCallback(
+    (error: HttpError) => {
+      if (CONTROLLED_EXCEPTION_CODES.includes(error.code)) {
+        setControlledException(error.message)
+      } else {
+        setOpen(false)
+        errorNotification({
+          title: error.name,
+          message: error.message,
+        })
+      }
+    },
+    [errorNotification, setOpen],
+  )
 
   const [startCheckRouting, isCheckStarting] = useCheckRouting(onSuccessRunReport, onErrorRunReport)
-  const onRunReport = useCallback((data: RunReportFormData): void => {
-    startCheckRouting({
-      agentId: agentId,
-      namespaceId: namespaceKey,
-      workspaceId: workspaceKey!,
-      ...data,
-    })
-  }, [agentId, namespaceKey, startCheckRouting, workspaceKey])
+  const onRunReport = useCallback(
+    (data: RunReportFormData): void => {
+      startCheckRouting({
+        agentId: agentId,
+        namespaceId: namespaceKey,
+        workspaceId: workspaceKey!,
+        ...data,
+      })
+    },
+    [agentId, namespaceKey, startCheckRouting, workspaceKey],
+  )
 
   return (
     <RunReportDialogForm

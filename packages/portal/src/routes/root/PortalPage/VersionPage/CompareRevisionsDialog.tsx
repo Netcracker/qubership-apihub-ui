@@ -46,12 +46,7 @@ import { useNavigation } from '@apihub/routes/NavigationProvider'
 import { useRefSearchParam } from '@apihub/routes/root/PortalPage/useRefSearchParam'
 
 export const CompareRevisionsDialog: FC = memo(() => {
-  return (
-    <PopupDelegate
-      type={SHOW_COMPARE_REVISIONS_DIALOG}
-      render={props => <CompareRevisionsPopup {...props}/>}
-    />
-  )
+  return <PopupDelegate type={SHOW_COMPARE_REVISIONS_DIALOG} render={(props) => <CompareRevisionsPopup {...props} />} />
 })
 
 const CompareRevisionsPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }) => {
@@ -82,9 +77,7 @@ const CompareRevisionsPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen 
   )
 })
 
-function useDialogData(
-  setOpen: (value: boolean) => void,
-): CompareRevisionsDialogData {
+function useDialogData(setOpen: (value: boolean) => void): CompareRevisionsDialogData {
   const { pathname, search } = useLocation()
   const { navigateToVersionsComparison } = useNavigation()
   const [ref] = useRefSearchParam()
@@ -105,8 +98,14 @@ function useDialogData(
   const { versionKey: defaultVersion, revisionKey: defaultRevisionKey } = getSplittedVersionKey(fullDefaultVersion)
   const { revisionKey: searchRevisionKey } = getSplittedVersionKey(fullSearchVersion)
 
-  const changedRevisionData = useMemo(() => revisions.find(revision => revision.revision === +defaultRevisionKey), [defaultRevisionKey, revisions])
-  const originRevisionData = useMemo(() => revisions.find(revision => revision.revision === +searchRevisionKey), [revisions, searchRevisionKey])
+  const changedRevisionData = useMemo(
+    () => revisions.find((revision) => revision.revision === +defaultRevisionKey),
+    [defaultRevisionKey, revisions],
+  )
+  const originRevisionData = useMemo(
+    () => revisions.find((revision) => revision.revision === +searchRevisionKey),
+    [revisions, searchRevisionKey],
+  )
 
   const defaultValues = useMemo(() => {
     return {
@@ -117,7 +116,9 @@ function useDialogData(
 
   const form = useForm<CompareRevisionsDialogFormData>({ defaultValues })
 
-  useEffect(() => {form.reset(defaultValues) }, [defaultValues, form])
+  useEffect(() => {
+    form.reset(defaultValues)
+  }, [defaultValues, form])
 
   const { changedRevision, originalRevision } = form.watch()
 
@@ -134,37 +135,57 @@ function useDialogData(
     includeOperations: true,
   })
 
-  const onSubmit = useMemo(() => form.handleSubmit(async ({ originalRevision, changedRevision }) => {
-    setBackwardLocation({ ...backwardLocation, fromDocumentsComparison: { pathname: pathname!, search: search! } })
-    const originalPackageKey = encodeURIComponent(searchPackageKey ?? '')
-    const changedPackageKey = encodeURIComponent(defaultPackageKey ?? '')
-    const changedVersionKey = encodeURIComponent(`${defaultVersion}${REVISION_DELIMITER}${changedRevision?.revision}`)
-    const originVersionKey = `${defaultVersion}${REVISION_DELIMITER}${originalRevision?.revision}`
+  const onSubmit = useMemo(
+    () =>
+      form.handleSubmit(async ({ originalRevision, changedRevision }) => {
+        setBackwardLocation({ ...backwardLocation, fromDocumentsComparison: { pathname: pathname!, search: search! } })
+        const originalPackageKey = encodeURIComponent(searchPackageKey ?? '')
+        const changedPackageKey = encodeURIComponent(defaultPackageKey ?? '')
+        const changedVersionKey = encodeURIComponent(
+          `${defaultVersion}${REVISION_DELIMITER}${changedRevision?.revision}`,
+        )
+        const originVersionKey = `${defaultVersion}${REVISION_DELIMITER}${originalRevision?.revision}`
 
-    const { data } = await refetch()
-    const apiTypes = Object.keys(data?.operationTypes ?? {}) as ApiType[]
-    const apiType = getDefaultApiType(apiTypes)
+        const { data } = await refetch()
+        const apiTypes = Object.keys(data?.operationTypes ?? {}) as ApiType[]
+        const apiType = getDefaultApiType(apiTypes)
 
-    navigateToVersionsComparison({
-      packageKey: changedPackageKey,
-      versionKey: changedVersionKey,
-      search: {
-        [VERSION_SEARCH_PARAM]: { value: originVersionKey },
-        [PACKAGE_SEARCH_PARAM]: { value: originalPackageKey !== changedPackageKey ? originalPackageKey : '' },
-        [API_TYPE_SEARCH_PARAM]: { value: apiType },
-        [REF_SEARCH_PARAM]: { value: ref ?? '' },
-      },
-    })
+        navigateToVersionsComparison({
+          packageKey: changedPackageKey,
+          versionKey: changedVersionKey,
+          search: {
+            [VERSION_SEARCH_PARAM]: { value: originVersionKey },
+            [PACKAGE_SEARCH_PARAM]: { value: originalPackageKey !== changedPackageKey ? originalPackageKey : '' },
+            [API_TYPE_SEARCH_PARAM]: { value: apiType },
+            [REF_SEARCH_PARAM]: { value: ref ?? '' },
+          },
+        })
 
-    !isRefetching && setOpen(false)
-  }), [form, setBackwardLocation, backwardLocation, pathname, search, searchPackageKey, defaultPackageKey, defaultVersion, refetch, navigateToVersionsComparison, ref, isRefetching, setOpen])
+        !isRefetching && setOpen(false)
+      }),
+    [
+      form,
+      setBackwardLocation,
+      backwardLocation,
+      pathname,
+      search,
+      searchPackageKey,
+      defaultPackageKey,
+      defaultVersion,
+      refetch,
+      navigateToVersionsComparison,
+      ref,
+      isRefetching,
+      setOpen,
+    ],
+  )
 
   const originalRevisions = useMemo(() => {
-    return revisions.filter(revision => revision.revision !== changedRevision?.revision)
+    return revisions.filter((revision) => revision.revision !== changedRevision?.revision)
   }, [changedRevision?.revision, revisions])
 
   const changedRevisions = useMemo(() => {
-    return revisions.filter(revision => revision.revision !== originalRevision?.revision)
+    return revisions.filter((revision) => revision.revision !== originalRevision?.revision)
   }, [originalRevision?.revision, revisions])
 
   return {

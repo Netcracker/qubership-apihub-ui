@@ -14,11 +14,4 @@
  * limitations under the License.
  */
 
-export const operationTags = [
-  'default',
-  'Cats',
-  'Dogs',
-  'Books',
-  'Magazines',
-  'Admin',
-]
+export const operationTags = ['default', 'Cats', 'Dogs', 'Books', 'Magazines', 'Admin']

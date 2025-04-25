@@ -50,21 +50,17 @@ export const Notification: FC = memo(() => {
     setButton(button)
   })
 
-  useEvent(SHOW_ERROR_NOTIFICATION, ({
-    detail: {
-      title = 'Error',
-      message = 'Something went wrong',
-      link,
-      button,
+  useEvent(
+    SHOW_ERROR_NOTIFICATION,
+    ({ detail: { title = 'Error', message = 'Something went wrong', link, button } }) => {
+      setType(ERROR_NOTIFICATION_TYPE)
+      setTitle(title)
+      setMessage(message)
+      setLink(link)
+      setOpen(true)
+      setButton(button)
     },
-  }) => {
-    setType(ERROR_NOTIFICATION_TYPE)
-    setTitle(title)
-    setMessage(message)
-    setLink(link)
-    setOpen(true)
-    setButton(button)
-  })
+  )
 
   useEvent(SHOW_INFO_NOTIFICATION, ({ detail: { message, link, button } }) => {
     setType(INFO_NOTIFICATION_TYPE)
@@ -92,7 +88,7 @@ export const Notification: FC = memo(() => {
     <Snackbar
       open={open}
       anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      TransitionComponent={(props) => <Slide {...props} direction="up"/>}
+      TransitionComponent={(props) => <Slide {...props} direction="up" />}
       onClose={() => setOpen(false)}
       data-testid="Snackbar"
     >
@@ -102,14 +98,15 @@ export const Notification: FC = memo(() => {
             {NOTIFICATION_TYPE_ICON_MAP[type]}
             <Box sx={{ display: 'flex', flexDirection: 'column', ml: 1, pr: 3, overflow: 'hidden' }}>
               <Typography variant="subtitle1">{title}</Typography>
-              <Typography
-                variant="body2"
-                sx={{ wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}
-              >
+              <Typography variant="body2" sx={{ wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
                 {message}
               </Typography>
-              {link && <Link variant="subtitle2" href={link.href}>{link.name}</Link>}
-              {button &&
+              {link && (
+                <Link variant="subtitle2" href={link.href}>
+                  {link.name}
+                </Link>
+              )}
+              {button && (
                 <Button
                   sx={{ p: 0, mr: 'auto', minWidth: 0, display: 'inline-block' }}
                   onClick={() => {
@@ -119,14 +116,14 @@ export const Notification: FC = memo(() => {
                 >
                   {button.title}
                 </Button>
-              }
+              )}
             </Box>
 
             <IconButton
               sx={{ position: 'absolute', right: 8, top: 8, color: '#353C4E' }}
               onClick={() => setOpen(false)}
             >
-              <CloseOutlinedIcon fontSize="small"/>
+              <CloseOutlinedIcon fontSize="small" />
             </IconButton>
           </Box>
         }
@@ -167,8 +164,8 @@ export function useShowWarningNotification(): (detail: NotificationDetail) => vo
 }
 
 const NOTIFICATION_TYPE_ICON_MAP: Record<NotificationType, ReactElement> = {
-  [SUCCESS_NOTIFICATION_TYPE]: <CheckCircleOutlinedIcon color="secondary" data-testid="SuccessIcon"/>,
-  [ERROR_NOTIFICATION_TYPE]: <ErrorOutlinedIcon color="error" data-testid="ErrorIcon"/>,
-  [INFO_NOTIFICATION_TYPE]: <InfoIcon color="primary" data-testid="InfoIcon"/>,
-  [WARNING_NOTIFICATION_TYPE]: <YellowWarningIcon/>,
+  [SUCCESS_NOTIFICATION_TYPE]: <CheckCircleOutlinedIcon color="secondary" data-testid="SuccessIcon" />,
+  [ERROR_NOTIFICATION_TYPE]: <ErrorOutlinedIcon color="error" data-testid="ErrorIcon" />,
+  [INFO_NOTIFICATION_TYPE]: <InfoIcon color="primary" data-testid="InfoIcon" />,
+  [WARNING_NOTIFICATION_TYPE]: <YellowWarningIcon />,
 }

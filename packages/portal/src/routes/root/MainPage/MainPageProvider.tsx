@@ -43,9 +43,7 @@ export const MainPageProvider: FC<PropsWithChildren> = memo<PropsWithChildren>((
                     <ActivityHistoryFiltersProvider>
                       <PortalPageSettingsProvider>
                         <OperationNavigationDataProvider>
-                          <ApiDiffResultProvider>
-                            {children}
-                          </ApiDiffResultProvider>
+                          <ApiDiffResultProvider>{children}</ApiDiffResultProvider>
                         </OperationNavigationDataProvider>
                       </PortalPageSettingsProvider>
                     </ActivityHistoryFiltersProvider>

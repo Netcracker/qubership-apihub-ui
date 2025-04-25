@@ -17,7 +17,12 @@
 import { getGroupPath, getOverviewPath, getWorkspacePath } from '../../../NavigationProvider'
 import type { Path } from '@remix-run/router'
 import type { Package, ParentPackage } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { DASHBOARD_KIND, GROUP_KIND, PACKAGE_KIND, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import {
+  DASHBOARD_KIND,
+  GROUP_KIND,
+  PACKAGE_KIND,
+  WORKSPACE_KIND,
+} from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { REVISION_DELIMITER } from '@apihub/entities/versions'
 import { takeIf } from '@netcracker/qubership-apihub-ui-shared/utils/objects'
@@ -71,7 +76,7 @@ export type OperationsGroupInPackageRevision = {
 }
 
 export type ComparisonObject =
-  DashboardRevision
+  | DashboardRevision
   | PackageRevision
   | OperationInPackageRevision
   | OperationInDashboardRevision
@@ -84,9 +89,8 @@ export type ComparedBreadcrumbPathItem = {
   description?: string
 }
 
-export type LinkedComparedBreadcrumbPathItem =
-  ComparedBreadcrumbPathItem
-  & Required<Pick<ComparedBreadcrumbPathItem, 'to'>>
+export type LinkedComparedBreadcrumbPathItem = ComparedBreadcrumbPathItem &
+  Required<Pick<ComparedBreadcrumbPathItem, 'to'>>
 
 export type ComparedPackagesBreadcrumbsData = {
   common: ComparedBreadcrumbPathItem[]
@@ -110,7 +114,7 @@ function getPackagePath(packageObject: Package | ParentPackage): Partial<Path> {
     case DASHBOARD_KIND:
       return getOverviewPath({
         packageKey: packageObject.key,
-        versionKey: 'defaultVersion' in packageObject && packageObject.defaultVersion || '',
+        versionKey: ('defaultVersion' in packageObject && packageObject.defaultVersion) || '',
       })
   }
 }

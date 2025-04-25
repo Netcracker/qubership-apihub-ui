@@ -18,11 +18,7 @@ import type { CompareResult, Diff } from '@netcracker/qubership-apihub-api-diff'
 import { risky } from '@netcracker/qubership-apihub-api-diff'
 import { apiDiff, COMPARE_MODE_OPERATION } from '@netcracker/qubership-apihub-api-diff'
 import { isNotEmpty } from './arrays'
-import {
-  calculateChangeId,
-  calculateDiffId,
-  removeComponents,
-} from '@netcracker/qubership-apihub-api-processor'
+import { calculateChangeId, calculateDiffId, removeComponents } from '@netcracker/qubership-apihub-api-processor'
 import { NORMALIZE_OPTIONS } from './normalize'
 import { isObject } from 'lodash-es'
 import type { Dispatch, SetStateAction } from 'react'
@@ -33,12 +29,7 @@ import { BREAKING_CHANGE_SEVERITY, type ChangeSeverity } from '../entities/chang
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export const getApiDiffResult = (options: DiffResultOptions): CompareResult | undefined => {
-  const {
-    beforeData,
-    afterData,
-    metaKey,
-    setApiDiffLoading,
-  } = options
+  const { beforeData, afterData, metaKey, setApiDiffLoading } = options
   if (!beforeData && !afterData) {
     setApiDiffLoading?.(false)
     return undefined
@@ -55,17 +46,13 @@ export const getApiDiffResult = (options: DiffResultOptions): CompareResult | un
   }
 
   // Used similar options like in builder
-  const diffResult = apiDiff(
-    beforeOperation,
-    afterOperation,
-    {
-      ...NORMALIZE_OPTIONS,
-      metaKey: metaKey,
-      mode: COMPARE_MODE_OPERATION,
-      beforeSource: beforeData,
-      afterSource: afterData,
-    },
-  )
+  const diffResult = apiDiff(beforeOperation, afterOperation, {
+    ...NORMALIZE_OPTIONS,
+    metaKey: metaKey,
+    mode: COMPARE_MODE_OPERATION,
+    beforeSource: beforeData,
+    afterSource: afterData,
+  })
 
   // due to the fact that we should not see the placeholder at the moment when apiDiff completes the comparison,
   // but BE has not yet sent semi-breaking changes
@@ -122,9 +109,11 @@ function getCopyWithEmptyPath(template: unknown): unknown {
   return template
 }
 
-export function handleRiskyChanges(riskyChanges: OperationChange[] | undefined, diffResult: CompareResult): CompareResult {
+export function handleRiskyChanges(
+  riskyChanges: OperationChange[] | undefined,
+  diffResult: CompareResult,
+): CompareResult {
   if (riskyChanges && isNotEmpty(riskyChanges)) {
-
     // turn risky changes into breaking to get matching results with diffResult.diffs
     const riskyChangesAdaptedForComparison = riskyChanges.map((change) => ({
       ...change,
@@ -136,7 +125,7 @@ export function handleRiskyChanges(riskyChanges: OperationChange[] | undefined, 
 
     for (const [key, value] of apiDiffMap.entries()) {
       if (riskyChangesAdaptedForComparisonMap.has(key)) {
-        (value as Diff).type = risky
+        ;(value as Diff).type = risky
       }
     }
   }
@@ -146,7 +135,8 @@ export function handleRiskyChanges(riskyChanges: OperationChange[] | undefined, 
 
 export const createDiffMap = (
   originalArray: Diff[] | OperationChange[],
-  by: ((item: any) => any)): Map<string[], Diff | OperationChange[]> => {
+  by: (item: any) => any,
+): Map<string[], Diff | OperationChange[]> => {
   const diffMap = new Map()
 
   for (const item of originalArray) {

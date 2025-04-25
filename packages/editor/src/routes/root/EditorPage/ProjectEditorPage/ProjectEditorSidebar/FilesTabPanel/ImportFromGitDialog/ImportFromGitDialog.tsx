@@ -49,7 +49,7 @@ export const ImportFromGitDialog: FC = memo(() => {
     if (detail) {
       const { folderKey } = detail
       loadFolders(folderKey).then((folderKeys) => {
-        setLoaded(prevState => [...new Set([...prevState, ...folderKeys])])
+        setLoaded((prevState) => [...new Set([...prevState, ...folderKeys])])
         setExpanded(folderKeys)
       })
     }
@@ -64,22 +64,21 @@ export const ImportFromGitDialog: FC = memo(() => {
   const [importFromGit, isLoading] = useImportFromGit()
   const [gitFiles, fetchFolder] = useGitFilesNext()
 
-  const reset = useCallback(
-    () => {
-      setSelected([])
-      setExpanded([])
-      setOpen(false)
-    },
-    [],
-  )
+  const reset = useCallback(() => {
+    setSelected([])
+    setExpanded([])
+    setOpen(false)
+  }, [])
 
-  useEffect(() => {!isLoading && reset()}, [isLoading, reset])
+  useEffect(() => {
+    !isLoading && reset()
+  }, [isLoading, reset])
 
   const handleToggle = useCallback(
     (keys: Key[]): void => {
-      setExpanded(prevState => {
-        const [expandedFolderPath] = keys.filter(id => !prevState.includes(id))
-        setLoaded(prevState => [...prevState, expandedFolderPath])
+      setExpanded((prevState) => {
+        const [expandedFolderPath] = keys.filter((id) => !prevState.includes(id))
+        setLoaded((prevState) => [...prevState, expandedFolderPath])
         if (!loaded.includes(expandedFolderPath)) {
           fetchFolder({ pageParam: expandedFolderPath }).then()
         }
@@ -89,42 +88,30 @@ export const ImportFromGitDialog: FC = memo(() => {
     [fetchFolder, loaded],
   )
 
-  const fileTree = useMemo(
-    () => buildGitFileTree(gitFiles),
-    [gitFiles],
-  )
+  const fileTree = useMemo(() => buildGitFileTree(gitFiles), [gitFiles])
 
-  const handleSelection = useCallback(
-    (checked: boolean, fileKey: Key, children?: TreeGitFile[]): void => {
-      const additionalKeys = getNonFolderFileKeys(children ?? [])
-      setSelected(prevState => {
-        return checked
-          ? [...prevState, fileKey, ...additionalKeys]
-          : prevState.filter(key => key !== fileKey && !additionalKeys.includes(key))
-      })
-    },
-    [],
-  )
+  const handleSelection = useCallback((checked: boolean, fileKey: Key, children?: TreeGitFile[]): void => {
+    const additionalKeys = getNonFolderFileKeys(children ?? [])
+    setSelected((prevState) => {
+      return checked
+        ? [...prevState, fileKey, ...additionalKeys]
+        : prevState.filter((key) => key !== fileKey && !additionalKeys.includes(key))
+    })
+  }, [])
 
-  const handleFolderSelection = useCallback(
-    (checked: boolean, folderKey: Key): void => {
-      setSelected(prevState => {
-        return checked
-          ? [...prevState, folderKey]
-          : prevState.filter(key => key !== folderKey)
-      })
-    },
-    [],
-  )
+  const handleFolderSelection = useCallback((checked: boolean, folderKey: Key): void => {
+    setSelected((prevState) => {
+      return checked ? [...prevState, folderKey] : prevState.filter((key) => key !== folderKey)
+    })
+  }, [])
 
   const loadFolders = async (folderKey: Key): Promise<Key[]> => {
     const folderKeys: Key[] = []
-    folderKey.match(/\/?[^/]+/g)
-      ?.reduce((previousValue: string, currentValue: string) => {
-        const path = `${previousValue}${currentValue}`
-        folderKeys.push(path)
-        return path
-      }, '')
+    folderKey.match(/\/?[^/]+/g)?.reduce((previousValue: string, currentValue: string) => {
+      const path = `${previousValue}${currentValue}`
+      folderKeys.push(path)
+      return path
+    }, '')
 
     for (const key of folderKeys) {
       if (!loaded.includes(key)) {
@@ -135,83 +122,92 @@ export const ImportFromGitDialog: FC = memo(() => {
     return folderKeys
   }
 
-  const renderTree = useCallback((fileTree: TreeGitFile[]) => fileTree.map(({
-    children,
-    isFolder,
-    key,
-    name,
-  }: TreeGitFile) => {
-    const nonFolderKeys = getNonFolderFileKeys(children ?? [])
-    const selectedNonFolderKeys = selected.filter(selectedKey => nonFolderKeys.includes(selectedKey))
+  const renderTree = useCallback(
+    (fileTree: TreeGitFile[]) =>
+      fileTree.map(({ children, isFolder, key, name }: TreeGitFile) => {
+        const nonFolderKeys = getNonFolderFileKeys(children ?? [])
+        const selectedNonFolderKeys = selected.filter((selectedKey) => nonFolderKeys.includes(selectedKey))
 
-    const someChildrenSelected = nonFolderKeys.some(key => !selectedNonFolderKeys.includes(key))
-    const folderCheckboxAvailable = isFolder && loaded.includes(key) && expanded.includes(key) && isNotEmpty(nonFolderKeys)
+        const someChildrenSelected = nonFolderKeys.some((key) => !selectedNonFolderKeys.includes(key))
+        const folderCheckboxAvailable =
+          isFolder && loaded.includes(key) && expanded.includes(key) && isNotEmpty(nonFolderKeys)
 
-    return (
-      <Box key={key} sx={{ display: 'flex', alignItems: 'flex-start' }}>
-        {folderCheckboxAvailable && (
-          <Checkbox
-            sx={{ p: 0 }}
-            checked={isEmpty(selectedNonFolderKeys) ? false : !someChildrenSelected}
-            indeterminate={isEmpty(selectedNonFolderKeys) ? false : someChildrenSelected}
-            onChange={(_, checked) => handleSelection(checked, key, children ?? [])}
-          />
-        )}
-        <TreeItem
-          nodeId={key}
-          icon={!isFolder && (
-            <Checkbox
-              sx={{ p: 0 }}
-              checked={selected.some(selectedKey => selectedKey === key)}
-              onChange={(_, checked) => handleSelection(checked, key)}
-            />
-          )}
-          label={
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              {isFolder
-                ? <FolderIcon sx={{ color: '#FFB02E' }} fontSize="small"/>
-                : <FileIcon/>}
-              <Typography noWrap variant="body2">{name}</Typography>
-            </Box>
-          }
-        >
-          {isFolder && children && expanded.some(expandedKey => expandedKey === key)
-            ? renderTree(children)
-            : <Box/>}
-        </TreeItem>
-      </Box>
-    )
-  }), [selected, loaded, expanded, handleSelection])
-
-  const renderFolderTree = useCallback((fileTree: TreeGitFile[]) => fileTree.filter(({ isFolder }) => isFolder).map(({
-    children,
-    isFolder,
-    key,
-    name,
-  }: TreeGitFile) => {
-    return (
-      <Box key={key} sx={{ display: 'flex', alignItems: 'flex-start' }}>
-        <TreeItem
-          nodeId={key}
-          label={
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        return (
+          <Box key={key} sx={{ display: 'flex', alignItems: 'flex-start' }}>
+            {folderCheckboxAvailable && (
               <Checkbox
                 sx={{ p: 0 }}
-                checked={selected.includes(key)}
-                onChange={(_, checked) => handleFolderSelection(checked, key)}
+                checked={isEmpty(selectedNonFolderKeys) ? false : !someChildrenSelected}
+                indeterminate={isEmpty(selectedNonFolderKeys) ? false : someChildrenSelected}
+                onChange={(_, checked) => handleSelection(checked, key, children ?? [])}
               />
-              <FolderIcon sx={{ color: '#FFB02E' }} fontSize="small"/>
-              <Typography noWrap variant="body2">{name}</Typography>
+            )}
+            <TreeItem
+              nodeId={key}
+              icon={
+                !isFolder && (
+                  <Checkbox
+                    sx={{ p: 0 }}
+                    checked={selected.some((selectedKey) => selectedKey === key)}
+                    onChange={(_, checked) => handleSelection(checked, key)}
+                  />
+                )
+              }
+              label={
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  {isFolder ? <FolderIcon sx={{ color: '#FFB02E' }} fontSize="small" /> : <FileIcon />}
+                  <Typography noWrap variant="body2">
+                    {name}
+                  </Typography>
+                </Box>
+              }
+            >
+              {isFolder && children && expanded.some((expandedKey) => expandedKey === key) ? (
+                renderTree(children)
+              ) : (
+                <Box />
+              )}
+            </TreeItem>
+          </Box>
+        )
+      }),
+    [selected, loaded, expanded, handleSelection],
+  )
+
+  const renderFolderTree = useCallback(
+    (fileTree: TreeGitFile[]) =>
+      fileTree
+        .filter(({ isFolder }) => isFolder)
+        .map(({ children, isFolder, key, name }: TreeGitFile) => {
+          return (
+            <Box key={key} sx={{ display: 'flex', alignItems: 'flex-start' }}>
+              <TreeItem
+                nodeId={key}
+                label={
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Checkbox
+                      sx={{ p: 0 }}
+                      checked={selected.includes(key)}
+                      onChange={(_, checked) => handleFolderSelection(checked, key)}
+                    />
+                    <FolderIcon sx={{ color: '#FFB02E' }} fontSize="small" />
+                    <Typography noWrap variant="body2">
+                      {name}
+                    </Typography>
+                  </Box>
+                }
+              >
+                {isFolder && children && expanded.some((expandedKey) => expandedKey === key) ? (
+                  renderFolderTree(children)
+                ) : (
+                  <Box />
+                )}
+              </TreeItem>
             </Box>
-          }
-        >
-          {isFolder && children && expanded.some(expandedKey => expandedKey === key)
-            ? renderFolderTree(children)
-            : <Box/>}
-        </TreeItem>
-      </Box>
-    )
-  }), [selected, expanded, handleFolderSelection])
+          )
+        }),
+    [selected, expanded, handleFolderSelection],
+  )
 
   const [activeTab, setActiveTab] = useState<ImportFromGitDialogMode>(FILES_TAB)
   const handleChange = useCallback((_: React.SyntheticEvent, value: ImportFromGitDialogMode) => {
@@ -220,55 +216,60 @@ export const ImportFromGitDialog: FC = memo(() => {
 
   const processImport = useCallback(() => {
     const importFolders = activeTab === FOLDERS_TAB
-    const filePaths = gitFiles.filter(item => importFolders || !item.isFolder)
+    const filePaths = gitFiles
+      .filter((item) => importFolders || !item.isFolder)
       .map(({ key }) => key)
-      .filter(value => selected.includes(value))
-      .map(key => `${key}${importFolders ? '/' : ''}`)
+      .filter((value) => selected.includes(value))
+      .map((key) => `${key}${importFolders ? '/' : ''}`)
 
     importFromGit(filePaths)
   }, [activeTab, gitFiles, importFromGit, selected])
 
   return (
     <Dialog open={open} onClose={() => setOpen(false)}>
-      <DialogTitle>
-        Import From GIT
-      </DialogTitle>
+      <DialogTitle>Import From GIT</DialogTitle>
 
       <DialogContent sx={{ height: 350, pb: 0 }}>
         <TabContext value={activeTab}>
           <Tabs value={activeTab} onChange={handleChange}>
-            <Tab label="Files" value={FILES_TAB}/>
-            <Tab label="Folders" value={FOLDERS_TAB}/>
+            <Tab label="Files" value={FILES_TAB} />
+            <Tab label="Folders" value={FOLDERS_TAB} />
           </Tabs>
-          {activeTab === FILES_TAB && <TabPanel value={FILES_TAB} tabIndex={0}>
-            <Box sx={{ backgroundColor: '#F5F5FA', minHeight: '-webkit-fill-available', borderRadius: 2, p: 1 }}>
-              <TreeView
-                defaultCollapseIcon={<ExpandMoreOutlinedIcon/>}
-                defaultExpandIcon={<ChevronRightOutlinedIcon/>}
-                expanded={expanded}
-                onNodeToggle={(_, keys) => handleToggle(keys)}
-              >
-                {renderTree(fileTree)}
-              </TreeView>
-            </Box>
-          </TabPanel>}
-          {activeTab === FOLDERS_TAB && <TabPanel value={FOLDERS_TAB} tabIndex={1}>
-            <Box sx={{ backgroundColor: '#F5F5FA', minHeight: '-webkit-fill-available', borderRadius: 2, p: 1 }}>
-              <TreeView
-                defaultCollapseIcon={<ExpandMoreOutlinedIcon/>}
-                defaultExpandIcon={<ChevronRightOutlinedIcon/>}
-                expanded={expanded}
-                onNodeToggle={(_, keys) => handleToggle(keys)}
-              >
-                {renderFolderTree(fileTree)}
-              </TreeView>
-            </Box>
-          </TabPanel>}
+          {activeTab === FILES_TAB && (
+            <TabPanel value={FILES_TAB} tabIndex={0}>
+              <Box sx={{ backgroundColor: '#F5F5FA', minHeight: '-webkit-fill-available', borderRadius: 2, p: 1 }}>
+                <TreeView
+                  defaultCollapseIcon={<ExpandMoreOutlinedIcon />}
+                  defaultExpandIcon={<ChevronRightOutlinedIcon />}
+                  expanded={expanded}
+                  onNodeToggle={(_, keys) => handleToggle(keys)}
+                >
+                  {renderTree(fileTree)}
+                </TreeView>
+              </Box>
+            </TabPanel>
+          )}
+          {activeTab === FOLDERS_TAB && (
+            <TabPanel value={FOLDERS_TAB} tabIndex={1}>
+              <Box sx={{ backgroundColor: '#F5F5FA', minHeight: '-webkit-fill-available', borderRadius: 2, p: 1 }}>
+                <TreeView
+                  defaultCollapseIcon={<ExpandMoreOutlinedIcon />}
+                  defaultExpandIcon={<ChevronRightOutlinedIcon />}
+                  expanded={expanded}
+                  onNodeToggle={(_, keys) => handleToggle(keys)}
+                >
+                  {renderFolderTree(fileTree)}
+                </TreeView>
+              </Box>
+            </TabPanel>
+          )}
         </TabContext>
       </DialogContent>
 
       <DialogContent>
-        <Alert sx={{ p: 0, pl: 2 }} severity="info">GIT repository structure will be preserved on import</Alert>
+        <Alert sx={{ p: 0, pl: 2 }} severity="info">
+          GIT repository structure will be preserved on import
+        </Alert>
       </DialogContent>
 
       <DialogActions>
@@ -284,13 +285,9 @@ export const ImportFromGitDialog: FC = memo(() => {
 })
 
 function getNonFolderFileKeys(files: TreeGitFile[]): Key[] {
-  return files
-    .filter(({ isFolder }) => !isFolder)
-    .map(({ key }) => key) ?? []
+  return files.filter(({ isFolder }) => !isFolder).map(({ key }) => key) ?? []
 }
 
 const FOLDERS_TAB = 'folders'
 const FILES_TAB = 'files'
-type ImportFromGitDialogMode =
-  | typeof FOLDERS_TAB
-  | typeof FILES_TAB
+type ImportFromGitDialogMode = typeof FOLDERS_TAB | typeof FILES_TAB

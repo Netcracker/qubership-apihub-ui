@@ -66,38 +66,38 @@ export const MainPageCard: FC<MainPageCardProps> = memo<MainPageCardProps>((prop
       <CardHeader
         title={title}
         sx={{ px: 3, py: 3 }}
-        action={action ??
-          <Box sx={{ display: 'flex', gap: 2, pr: 1 }}>
-            <PackagesFilterer
-              rootPackageKey={rootPackageKey}
-              hideViewSelector={hideViewSelector}
-              hideSearchBar={hideSearchBar}
-            />
-          </Box>}
+        action={
+          action ?? (
+            <Box sx={{ display: 'flex', gap: 2, pr: 1 }}>
+              <PackagesFilterer
+                rootPackageKey={rootPackageKey}
+                hideViewSelector={hideViewSelector}
+                hideSearchBar={hideSearchBar}
+              />
+            </Box>
+          )
+        }
         titleTypographyProps={{ 'data-testid': 'MainPageCardTitle' }}
         data-testid="MainPageCardHeader"
-      >
-      </CardHeader>
-      <CardContent
-        sx={{ px: 4 }}
-        data-testid="MainPageCardContent"
-      >
-        {content ??
+      ></CardHeader>
+      <CardContent sx={{ px: 4 }} data-testid="MainPageCardContent">
+        {content ?? (
           <Box sx={{ height: '100%' }}>
             <Box sx={{ display: 'inline', height: '100%' }}>
               <UpdatingPackageKeyProvider>
-                {isTreeView
-                  ? <PackagesTree rootPackageKey={rootPackageKey} refererPageName={pageKey ?? rootPackageKey}/>
-                  : <PackagesTable
+                {isTreeView ? (
+                  <PackagesTree rootPackageKey={rootPackageKey} refererPageName={pageKey ?? rootPackageKey} />
+                ) : (
+                  <PackagesTable
                     rootPackageKey={rootPackageKey}
                     packageKinds={flatViewKinds}
                     refererPageName={pageKey ?? rootPackageKey}
                   />
-                }
+                )}
               </UpdatingPackageKeyProvider>
             </Box>
           </Box>
-        }
+        )}
       </CardContent>
     </Card>
   )

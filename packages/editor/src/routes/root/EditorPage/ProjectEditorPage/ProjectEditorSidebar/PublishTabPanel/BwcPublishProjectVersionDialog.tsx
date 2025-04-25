@@ -30,7 +30,7 @@ import { waitForSocketEvent } from '@netcracker/qubership-apihub-ui-shared/utils
 export const BwcPublishProjectVersionDialog: FC = memo(() => (
   <PopupDelegate
     type={SHOW_BWC_PUBLISH_PROJECT_VERSION_DIALOG}
-    render={props => <BwcPublishProjectVersionPopup {...props} />}
+    render={(props) => <BwcPublishProjectVersionPopup {...props} />}
   />
 ))
 
@@ -52,13 +52,8 @@ const BwcPublishProjectVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, 
   }, [isPublishLoading, isPublishSuccess, isSaveLoading, setOpen])
 
   return (
-    <DialogForm
-      open={open}
-      onClose={() => setOpen(false)}
-    >
-      <DialogTitle>
-        Backward Compatibility Problems
-      </DialogTitle>
+    <DialogForm open={open} onClose={() => setOpen(false)}>
+      <DialogTitle>Backward Compatibility Problems</DialogTitle>
 
       <DialogContent sx={{ width: 440 }}>
         <DialogContentText variant="body2">
@@ -71,7 +66,7 @@ const BwcPublishProjectVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, 
           variant="contained"
           loading={isSaveLoading || isPublishLoading}
           onClick={async () => {
-            message && await saveChanges({ message })
+            message && (await saveChanges({ message }))
             await waitForSocketEvent()
             publishProject({ version, status, previousVersion, labels })
           }}

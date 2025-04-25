@@ -34,7 +34,9 @@ export const CustomListItem: FC<CustomListItemProps> = memo<CustomListItemProps>
       <ListItemText
         primary={
           <OverflowTooltip title={title}>
-            <Box width="inherit" textOverflow="ellipsis" overflow="hidden">{title}</Box>
+            <Box width="inherit" textOverflow="ellipsis" overflow="hidden">
+              {title}
+            </Box>
           </OverflowTooltip>
         }
         primaryTypographyProps={{

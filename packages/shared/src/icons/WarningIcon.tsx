@@ -49,19 +49,13 @@ const WarningIcon: FC<WarningIconProps> = memo(({ color = '#626D82', fill = fals
 })
 
 export const DefaultWarningIcon: FC = memo(() => {
-  return (
-    <WarningIcon fill={false}/>
-  )
+  return <WarningIcon fill={false} />
 })
 
 export const YellowWarningIcon: FC = memo(() => {
-  return (
-    <WarningIcon color="#FFB02E" fill={true}/>
-  )
+  return <WarningIcon color="#FFB02E" fill={true} />
 })
 
 export const RedWarningIcon: FC = memo(() => {
-  return (
-    <WarningIcon color="#FF5260" fill={true}/>
-  )
+  return <WarningIcon color="#FF5260" fill={true} />
 })

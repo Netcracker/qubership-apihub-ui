@@ -24,12 +24,7 @@ import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/Pa
 export const VersionDocumentsSubPage: FC = memo(() => {
   return (
     <CurrentDocumentsListProvider>
-      <PageLayout
-        navigation={<DocumentsSidebar/>}
-        body={<DocumentsCard/>}
-        nestedPage
-        testId="DocumentsTab"
-      />
+      <PageLayout navigation={<DocumentsSidebar />} body={<DocumentsCard />} nestedPage testId="DocumentsTab" />
     </CurrentDocumentsListProvider>
   )
 })

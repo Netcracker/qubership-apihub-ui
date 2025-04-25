@@ -86,14 +86,7 @@ export const PackagesTable: FC<PackagesTableProps> = memo(({ rootPackageKey, pac
 
   const [updatingPackageKey, setUpdatingPackageKey] = useUpdatingPackageKeyWritableContext()
 
-  const {
-    packages,
-    isLoading,
-    isFetching,
-    fetchNextPage,
-    fetchingNextPage,
-    hasNextPage,
-  } = usePagedPackages({
+  const { packages, isLoading, isFetching, fetchNextPage, fetchingNextPage, hasNextPage } = usePagedPackages({
     kind: packageKinds,
     onlyFavorite: onlyFavorite,
     textFilter: textFilter,
@@ -130,15 +123,24 @@ export const PackagesTable: FC<PackagesTableProps> = memo(({ rootPackageKey, pac
     defaultMinColumnSize: 60,
   })
 
-  const data: TableData[] = useMemo(() => packages.map(pack => ({
-    workspace: pack,
-  })), [packages])
+  const data: TableData[] = useMemo(
+    () =>
+      packages.map((pack) => ({
+        workspace: pack,
+      })),
+    [packages],
+  )
 
-  const columns: ColumnDef<TableData>[] = useMemo(() => [
+  const columns: ColumnDef<TableData>[] = useMemo(
+    () => [
       {
         id: FAVORITE_COLUMN_ID,
-        header: () => <CustomTableHeadCell title={''}/>,
-        cell: ({ row: { original: { workspace } } }) => {
+        header: () => <CustomTableHeadCell title={''} />,
+        cell: ({
+          row: {
+            original: { workspace },
+          },
+        }) => {
           return (
             <Box
               onClick={() => {
@@ -153,28 +155,36 @@ export const PackagesTable: FC<PackagesTableProps> = memo(({ rootPackageKey, pac
                 isFetching={isFetching && updatingPackageKey === workspace.key}
                 isFavorite={workspace.isFavorite}
               />
-            </Box>)
+            </Box>
+          )
         },
       },
       {
         id: NAME_COLUMN_ID,
-        header: () => <CustomTableHeadCell title={'Name'}/>,
-        cell: ({ row: { original: { workspace } } }) => {
+        header: () => <CustomTableHeadCell title={'Name'} />,
+        cell: ({
+          row: {
+            original: { workspace },
+          },
+        }) => {
           return (
-            <Box sx={{
-              display: 'flex',
-              alignItems: 'center',
-              width: '100%',
-            }}
-            >
-              {withIcons && <PackageKindLogo kind={workspace.kind}/>}
-              <Box sx={{
+            <Box
+              sx={{
                 display: 'flex',
                 alignItems: 'center',
                 width: '100%',
-                pl: 0.5,
-                justifyContent: 'space-between',
-              }}>
+              }}
+            >
+              {withIcons && <PackageKindLogo kind={workspace.kind} />}
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  width: '100%',
+                  pl: 0.5,
+                  justifyContent: 'space-between',
+                }}
+              >
                 <TextWithOverflowTooltip tooltipText={workspace.name} variant="body2">
                   <Link
                     component={NavLink}
@@ -183,8 +193,9 @@ export const PackagesTable: FC<PackagesTableProps> = memo(({ rootPackageKey, pac
                     {workspace.name}
                   </Link>
                 </TextWithOverflowTooltip>
-                {(!isWorkspacesPage || isSuperAdmin) &&
-                  <PackageSettingsButton packageKey={workspace.key} isIconButton={true}/>}
+                {(!isWorkspacesPage || isSuperAdmin) && (
+                  <PackageSettingsButton packageKey={workspace.key} isIconButton={true} />
+                )}
               </Box>
             </Box>
           )
@@ -192,19 +203,23 @@ export const PackagesTable: FC<PackagesTableProps> = memo(({ rootPackageKey, pac
       },
       {
         id: ID_COLUMN_ID,
-        header: () => <CustomTableHeadCell title={'ID'}/>,
-        cell: ({ row: { original: { workspace } } }) => {
-          return (
-            <TextWithOverflowTooltip tooltipText={workspace.key}>
-              {workspace.key}
-            </TextWithOverflowTooltip>
-          )
+        header: () => <CustomTableHeadCell title={'ID'} />,
+        cell: ({
+          row: {
+            original: { workspace },
+          },
+        }) => {
+          return <TextWithOverflowTooltip tooltipText={workspace.key}>{workspace.key}</TextWithOverflowTooltip>
         },
       },
       {
         id: DESCRIPTION_COLUMN_ID,
-        header: () => <CustomTableHeadCell title={'Description'}/>,
-        cell: ({ row: { original: { workspace } } }) => {
+        header: () => <CustomTableHeadCell title={'Description'} />,
+        cell: ({
+          row: {
+            original: { workspace },
+          },
+        }) => {
           return (
             <TextWithOverflowTooltip tooltipText={workspace.description}>
               {workspace.description}
@@ -214,20 +229,24 @@ export const PackagesTable: FC<PackagesTableProps> = memo(({ rootPackageKey, pac
       },
       {
         id: GROUP_COLUMN_ID,
-        header: () => <CustomTableHeadCell title={'Group'}/>,
-        cell: ({ row: { original: { workspace } } }) => {
+        header: () => <CustomTableHeadCell title={'Group'} />,
+        cell: ({
+          row: {
+            original: { workspace },
+          },
+        }) => {
           const groupPath = calculateGroup(workspace.parents)
-          return (
-            <TextWithOverflowTooltip tooltipText={groupPath}>
-              {groupPath}
-            </TextWithOverflowTooltip>
-          )
+          return <TextWithOverflowTooltip tooltipText={groupPath}>{groupPath}</TextWithOverflowTooltip>
         },
       },
       {
         id: SERVICE_NAME_COLUMN_ID,
-        header: () => <CustomTableHeadCell title={'Service Name'}/>,
-        cell: ({ row: { original: { workspace } } }) => {
+        header: () => <CustomTableHeadCell title={'Service Name'} />,
+        cell: ({
+          row: {
+            original: { workspace },
+          },
+        }) => {
           return (
             <TextWithOverflowTooltip tooltipText={workspace.serviceName}>
               {workspace.serviceName}
@@ -237,24 +256,29 @@ export const PackagesTable: FC<PackagesTableProps> = memo(({ rootPackageKey, pac
       },
       {
         id: LAST_VERSION_COLUMN_ID,
-        header: () => <CustomTableHeadCell title={'Latest Release'}/>,
-        cell: ({ row: { original: { workspace } } }) => {
-          const { versionKey: lastVersion } = getSplittedVersionKey(
-            workspace.lastReleaseVersionDetails?.version,
-            workspace.lastReleaseVersionDetails?.latestRevision,
-          ) || '―'
+        header: () => <CustomTableHeadCell title={'Latest Release'} />,
+        cell: ({
+          row: {
+            original: { workspace },
+          },
+        }) => {
+          const { versionKey: lastVersion } =
+            getSplittedVersionKey(
+              workspace.lastReleaseVersionDetails?.version,
+              workspace.lastReleaseVersionDetails?.latestRevision,
+            ) || '―'
 
-          return (
-            <TextWithOverflowTooltip tooltipText={lastVersion}>
-              {lastVersion}
-            </TextWithOverflowTooltip>
-          )
+          return <TextWithOverflowTooltip tooltipText={lastVersion}>{lastVersion}</TextWithOverflowTooltip>
         },
       },
       {
         id: BWC_ERRORS_COLUMN_ID,
-        header: () => <CustomTableHeadCell title={'BWC Status'}/>,
-        cell: ({ row: { original: { workspace } } }) => {
+        header: () => <CustomTableHeadCell title={'BWC Status'} />,
+        cell: ({
+          row: {
+            original: { workspace },
+          },
+        }) => {
           const bwcData = getBwcData(workspace.lastReleaseVersionDetails?.summary)
 
           return (
@@ -262,7 +286,7 @@ export const PackagesTable: FC<PackagesTableProps> = memo(({ rootPackageKey, pac
               <Box width={'min-content'}>
                 {bwcData && (
                   <Box display="flex" gap={1}>
-                    <StatusMarker value={bwcData.type}/>
+                    <StatusMarker value={bwcData.type} />
                     <Typography noWrap variant="inherit">
                       {bwcData.count}
                     </Typography>
@@ -273,7 +297,18 @@ export const PackagesTable: FC<PackagesTableProps> = memo(({ rootPackageKey, pac
           )
         },
       },
-    ], [calculateGroup, disfavorPackage, favorPackage, isFetching, isSuperAdmin, isWorkspacesPage, setUpdatingPackageKey, updatingPackageKey, withIcons],
+    ],
+    [
+      calculateGroup,
+      disfavorPackage,
+      favorPackage,
+      isFetching,
+      isSuperAdmin,
+      isWorkspacesPage,
+      setUpdatingPackageKey,
+      updatingPackageKey,
+      withIcons,
+    ],
   )
 
   const { getHeaderGroups, getRowModel, setColumnSizing } = useReactTable({
@@ -286,10 +321,7 @@ export const PackagesTable: FC<PackagesTableProps> = memo(({ rootPackageKey, pac
     onColumnSizingInfoChange: setColumnSizingInfo as OnChangeFn<ColumnSizingInfoState>,
   })
 
-  useEffect(
-    () => setColumnSizing(actualColumnSizing),
-    [setColumnSizing, actualColumnSizing],
-  )
+  useEffect(() => setColumnSizing(actualColumnSizing), [setColumnSizing, actualColumnSizing])
 
   return (
     <Placeholder
@@ -300,10 +332,8 @@ export const PackagesTable: FC<PackagesTableProps> = memo(({ rootPackageKey, pac
       <TableContainer sx={{ overflowX: 'hidden' }} ref={tableContainerRef}>
         <Table>
           <TableHead>
-            {getHeaderGroups().map(headerGroup => (
-              <TableRow
-                key={headerGroup.id}
-              >
+            {getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((headerColumn, index) => (
                   <TableCell
                     key={headerColumn.id}
@@ -316,29 +346,26 @@ export const PackagesTable: FC<PackagesTableProps> = memo(({ rootPackageKey, pac
                     }}
                   >
                     {flexRender(headerColumn.column.columnDef.header, headerColumn.getContext())}
-                    {index !== headerGroup.headers.length - 1 &&
-                      <ColumnDelimiter header={headerColumn} resizable={true}/>}
+                    {index !== headerGroup.headers.length - 1 && (
+                      <ColumnDelimiter header={headerColumn} resizable={true} />
+                    )}
                   </TableCell>
                 ))}
               </TableRow>
             ))}
           </TableHead>
           <TableBody>
-            {getRowModel().rows.map(row => (
+            {getRowModel().rows.map((row) => (
               <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell
-                    key={cell.column.id}
-                    data-testid={`Cell-${cell.column.id}`}
-                    sx={{ overflow: 'hidden' }}
-                  >
+                  <TableCell key={cell.column.id} data-testid={`Cell-${cell.column.id}`} sx={{ overflow: 'hidden' }}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
               </TableRow>
             ))}
-            {hasNextPage && <RowSkeleton refObject={ref}/>}
-            {isLoading && <TableSkeleton/>}
+            {hasNextPage && <RowSkeleton refObject={ref} />}
+            {isLoading && <TableSkeleton />}
           </TableBody>
         </Table>
       </TableContainer>
@@ -378,17 +405,11 @@ const FAVORITE_SHARED_COLUMNS_MODELS: ColumnModel[] = [
 
 function getNavigationLink(packageKey: Key, kind: PackageKind, defaultVersion?: Key): string {
   if (kind === WORKSPACE_KIND) {
-    return format(
-      '/portal/workspaces/{}',
-      encodeURIComponent(packageKey),
-    )
+    return format('/portal/workspaces/{}', encodeURIComponent(packageKey))
   }
 
   if (kind === GROUP_KIND) {
-    return format(
-      '/portal/groups/{}',
-      encodeURIComponent(packageKey!),
-    )
+    return format('/portal/groups/{}', encodeURIComponent(packageKey!))
   }
 
   return format(
@@ -399,7 +420,7 @@ function getNavigationLink(packageKey: Key, kind: PackageKind, defaultVersion?: 
 }
 
 export const TableSkeleton: FC = memo(() => {
-  return createComponents(<RowSkeleton/>, DEFAULT_NUMBER_SKELETON_ROWS)
+  return createComponents(<RowSkeleton />, DEFAULT_NUMBER_SKELETON_ROWS)
 })
 
 type RowSkeletonProps = {
@@ -409,18 +430,18 @@ type RowSkeletonProps = {
 const RowSkeleton: FC<RowSkeletonProps> = memo<RowSkeletonProps>(({ refObject }) => {
   return (
     <TableRow>
-      <TableCell/>
+      <TableCell />
       <TableCell ref={refObject}>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
-      <TableCell/>
-      <TableCell/>
-      <TableCell/>
-      <TableCell/>
-      <TableCell/>
+      <TableCell />
+      <TableCell />
+      <TableCell />
+      <TableCell />
+      <TableCell />
     </TableRow>
   )
 })

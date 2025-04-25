@@ -55,189 +55,205 @@ export type OperationSidebarProps = {
   isLoading: boolean
 }
 
-export const OperationModelList: FC<OperationSidebarProps> = memo<OperationSidebarProps>(({
-  models,
-  onModelUsagesClick,
-  onNavigate,
-  isSectionDisabled,
-  isLoading,
-}) => {
-  const parameters = models?.parameters
-  const responses = models?.responses
-  const requests = models?.requests
+export const OperationModelList: FC<OperationSidebarProps> = memo<OperationSidebarProps>(
+  ({ models, onModelUsagesClick, onNavigate, isSectionDisabled, isLoading }) => {
+    const parameters = models?.parameters
+    const responses = models?.responses
+    const requests = models?.requests
 
-  const showNotification = useShowInfoNotification()
-  const [selectedItem, setSelectedItem] = useState<string | null>(null)
-  const [expandedTreeItems, setExpandedTreeItems] = useState<string[]>([])
+    const showNotification = useShowInfoNotification()
+    const [selectedItem, setSelectedItem] = useState<string | null>(null)
+    const [expandedTreeItems, setExpandedTreeItems] = useState<string[]>([])
 
-  const sidebarSections = useMemo(() => {
-    const sections: OperationSection[] = []
-    if (parameters) {
-      sections.push({
-        sectionKey: OPEN_API_SECTION_PARAMETERS,
-        kind: OPEN_API_SECTION_PARAMETERS,
-        scopeDeclarationPath: parameters.scopeDeclarationPath,
-        declarationPath: parameters.declarationPath,
-        models: sortModels(parameters.data),
-      })
-    }
-    sections.push(...(requests ? flatRequests(requests) : []))
-    sections.push(...(responses ? flatResponses(responses) : []))
-    return sections
-  }, [responses, parameters, requests])
-
-  const [availableSections, availableSidebarSectionKeys] = useMemo(() => {
-    const availableSections = sidebarSections.filter(section => !isSectionDisabled(section.sectionKey))
-    return [
-      availableSections,
-      availableSections.map(section => section.sectionKey),
-    ]
-  }, [isSectionDisabled, sidebarSections])
-
-  const handleToggle = useCallback((event: SyntheticEvent, nodeIds: string[]): void => {
-    if (isTreeViewExpandIcon(event.target as Element)) {
-      setExpandedTreeItems(nodeIds)
-    }
-    event.stopPropagation()
-  }, [])
-
-  const getNavigationFailedCallback = useCallback((schemaObject?: OpenApiCustomSchemaObject) =>
-    (failReason: NavigationFailReason): void => {
-      if (!schemaObject) {
-        return console.error('Something went wrong during the navigation')
+    const sidebarSections = useMemo(() => {
+      const sections: OperationSection[] = []
+      if (parameters) {
+        sections.push({
+          sectionKey: OPEN_API_SECTION_PARAMETERS,
+          kind: OPEN_API_SECTION_PARAMETERS,
+          scopeDeclarationPath: parameters.scopeDeclarationPath,
+          declarationPath: parameters.declarationPath,
+          models: sortModels(parameters.data),
+        })
       }
-      if (!schemaObject.title) {
-        return showNotification({ message: 'The graph does not have a node for the selected schema' })
+      sections.push(...(requests ? flatRequests(requests) : []))
+      sections.push(...(responses ? flatResponses(responses) : []))
+      return sections
+    }, [responses, parameters, requests])
+
+    const [availableSections, availableSidebarSectionKeys] = useMemo(() => {
+      const availableSections = sidebarSections.filter((section) => !isSectionDisabled(section.sectionKey))
+      return [availableSections, availableSections.map((section) => section.sectionKey)]
+    }, [isSectionDisabled, sidebarSections])
+
+    const handleToggle = useCallback((event: SyntheticEvent, nodeIds: string[]): void => {
+      if (isTreeViewExpandIcon(event.target as Element)) {
+        setExpandedTreeItems(nodeIds)
       }
-      switch (failReason) {
-        case NavigationFailReason.NO_MATCHED_NODES:
-          return showNotification({ message: `The graph does not have a node for the schema "${schemaObject.title}"` })
-        case NavigationFailReason.MULTIPLE_MATCHED_NODES:
-          return showNotification({ message: `There are multiple nodes on the graph that match the schema "${schemaObject.title}", so navigation to a specific node is not possible` })
+      event.stopPropagation()
+    }, [])
+
+    const getNavigationFailedCallback = useCallback(
+      (schemaObject?: OpenApiCustomSchemaObject) =>
+        (failReason: NavigationFailReason): void => {
+          if (!schemaObject) {
+            return console.error('Something went wrong during the navigation')
+          }
+          if (!schemaObject.title) {
+            return showNotification({ message: 'The graph does not have a node for the selected schema' })
+          }
+          switch (failReason) {
+            case NavigationFailReason.NO_MATCHED_NODES:
+              return showNotification({
+                message: `The graph does not have a node for the schema "${schemaObject.title}"`,
+              })
+            case NavigationFailReason.MULTIPLE_MATCHED_NODES:
+              return showNotification({
+                message: `There are multiple nodes on the graph that match the schema "${schemaObject.title}", so navigation to a specific node is not possible`,
+              })
+          }
+        },
+      [showNotification],
+    )
+
+    const handleLabelClick = useCallback(
+      (
+        event: SyntheticEvent,
+        nodeId: string,
+        scopeDeclarationPath: JsonPath,
+        declarationPath: JsonPath,
+        schemaTolerantHashWithTitle?: HashWithTitle,
+        schemaObject?: OpenApiCustomSchemaObject,
+      ): void => {
+        if (isTreeViewLabel(event.target as Element)) {
+          setSelectedItem(nodeId)
+          onNavigate({
+            scopeDeclarationPath: scopeDeclarationPath,
+            declarationPath: declarationPath,
+            schemaTolerantHashWithTitle: schemaTolerantHashWithTitle,
+            navigationFailedCallback: getNavigationFailedCallback(schemaObject),
+          })
+        }
+      },
+      [getNavigationFailedCallback, onNavigate],
+    )
+
+    useEffect(() => {
+      if (isEmpty(availableSections)) {
+        return
       }
-    }, [showNotification])
 
-  const handleLabelClick = useCallback((
-    event: SyntheticEvent,
-    nodeId: string,
-    scopeDeclarationPath: JsonPath,
-    declarationPath: JsonPath,
-    schemaTolerantHashWithTitle?: HashWithTitle,
-    schemaObject?: OpenApiCustomSchemaObject,
-  ): void => {
-    if (isTreeViewLabel(event.target as Element)) {
-      setSelectedItem(nodeId)
-      onNavigate({
-        scopeDeclarationPath: scopeDeclarationPath,
-        declarationPath: declarationPath,
-        schemaTolerantHashWithTitle: schemaTolerantHashWithTitle,
-        navigationFailedCallback: getNavigationFailedCallback(schemaObject),
-      })
-    }
-  }, [getNavigationFailedCallback, onNavigate])
+      const selectedItemIsSection = sidebarSections.some(({ sectionKey }) => sectionKey === selectedItem)
 
-  useEffect(() => {
-    if (isEmpty(availableSections)) {
-      return
-    }
+      if (!selectedItem || (selectedItemIsSection && !availableSidebarSectionKeys.includes(selectedItem))) {
+        const { sectionKey, scopeDeclarationPath, declarationPath } = getDefaultAvailableSection(availableSections)
+        setSelectedItem(sectionKey)
+        onNavigate({
+          scopeDeclarationPath: scopeDeclarationPath,
+          declarationPath: declarationPath,
+        })
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [availableSidebarSectionKeys, availableSections])
 
-    const selectedItemIsSection = sidebarSections
-      .some(({ sectionKey }) => sectionKey === selectedItem)
-
-    if (!selectedItem || (selectedItemIsSection && !availableSidebarSectionKeys.includes(selectedItem))) {
-      const { sectionKey, scopeDeclarationPath, declarationPath } = getDefaultAvailableSection(availableSections)
-      setSelectedItem(sectionKey)
-      onNavigate({
-        scopeDeclarationPath: scopeDeclarationPath,
-        declarationPath: declarationPath,
-      })
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [availableSidebarSectionKeys, availableSections])
-
-  const content = useMemo(() => {
-    return sidebarSections.map(({
-      sectionKey,
-      kind,
-      scopeDeclarationPath,
-      declarationPath,
-      code,
-      mediaType,
-      isSingleMediaType,
-      models,
-    }) => {
-      const isParameters = kind === OPEN_API_SECTION_PARAMETERS
-      const isAvailableSection = availableSidebarSectionKeys.includes(sectionKey)
-      const sectionTitle = getSectionTitle(kind, code, mediaType, isSingleMediaType)
-      return (
-        <SectionItem
-          sectionKey={sectionKey}
-          scopeDeclarationPath={scopeDeclarationPath}
-          declarationPath={declarationPath}
-          disabled={!isAvailableSection}
-          label={sectionTitle}
-          onClick={isAvailableSection ? handleLabelClick : undefined}
-        >
-          {models.map(({ title, scopeDeclarationPath, declarationPath, schemaObjectName, schemaTolerantHashWithTitle, schemaObject, error }, index) => {
-            const handleOnModelUsagesClick = (): void => {
-              if (schemaObjectName) {
-                onModelUsagesClick(schemaObjectName)
-              }
-            }
-
-            if (error) {
-              return <ErrorModelItem
-                key={`${sectionKey}-${index}`}
-                title={title}
-                label={<ErrorModelLabel title={title} error={error}/>}
-              />
-            }
-
-            return (
-            <ModelItem
-              key={`${sectionKey}-${index}`}
+    const content = useMemo(() => {
+      return sidebarSections.map(
+        ({ sectionKey, kind, scopeDeclarationPath, declarationPath, code, mediaType, isSingleMediaType, models }) => {
+          const isParameters = kind === OPEN_API_SECTION_PARAMETERS
+          const isAvailableSection = availableSidebarSectionKeys.includes(sectionKey)
+          const sectionTitle = getSectionTitle(kind, code, mediaType, isSingleMediaType)
+          return (
+            <SectionItem
+              sectionKey={sectionKey}
               scopeDeclarationPath={scopeDeclarationPath}
               declarationPath={declarationPath}
-              schemaTolerantHashWithTitle={schemaTolerantHashWithTitle}
-              schemaObject={schemaObject}
-              label={isParameters ? title : <ModelLabel title={title} onModelUsagesClick={handleOnModelUsagesClick} />}
-              onClick={handleLabelClick}
-            />
-          )})}
-        </SectionItem>
+              disabled={!isAvailableSection}
+              label={sectionTitle}
+              onClick={isAvailableSection ? handleLabelClick : undefined}
+            >
+              {models.map(
+                (
+                  {
+                    title,
+                    scopeDeclarationPath,
+                    declarationPath,
+                    schemaObjectName,
+                    schemaTolerantHashWithTitle,
+                    schemaObject,
+                    error,
+                  },
+                  index,
+                ) => {
+                  const handleOnModelUsagesClick = (): void => {
+                    if (schemaObjectName) {
+                      onModelUsagesClick(schemaObjectName)
+                    }
+                  }
+
+                  if (error) {
+                    return (
+                      <ErrorModelItem
+                        key={`${sectionKey}-${index}`}
+                        title={title}
+                        label={<ErrorModelLabel title={title} error={error} />}
+                      />
+                    )
+                  }
+
+                  return (
+                    <ModelItem
+                      key={`${sectionKey}-${index}`}
+                      scopeDeclarationPath={scopeDeclarationPath}
+                      declarationPath={declarationPath}
+                      schemaTolerantHashWithTitle={schemaTolerantHashWithTitle}
+                      schemaObject={schemaObject}
+                      label={
+                        isParameters ? (
+                          title
+                        ) : (
+                          <ModelLabel title={title} onModelUsagesClick={handleOnModelUsagesClick} />
+                        )
+                      }
+                      onClick={handleLabelClick}
+                    />
+                  )
+                },
+              )}
+            </SectionItem>
+          )
+        },
       )
-    })
+    }, [availableSidebarSectionKeys, handleLabelClick, onModelUsagesClick, sidebarSections])
 
-  }, [availableSidebarSectionKeys, handleLabelClick, onModelUsagesClick, sidebarSections])
+    const defaultCollapseIcon = useMemo(() => <ExpandMoreIcon />, [])
+    const defaultExpandIcon = useMemo(() => <ChevronRightIcon />, [])
 
-  const defaultCollapseIcon = useMemo(() => <ExpandMoreIcon />, [])
-  const defaultExpandIcon = useMemo(() => <ChevronRightIcon />, [])
+    return (
+      <Box pt={1} pb={1} overflow="auto">
+        <Box px={2} py={1}>
+          <Typography variant="h2" color="inherit">
+            {SIDEBAR_TITLE}
+          </Typography>
+        </Box>
 
-  return (
-    <Box pt={1} pb={1} overflow="auto">
-      <Box px={2} py={1}>
-        <Typography variant="h2" color="inherit">{SIDEBAR_TITLE}</Typography>
+        {isLoading && <OperationModelListSkeleton />}
+
+        <TreeView
+          disabledItemsFocusable
+          selected={selectedItem ?? 'requests'}
+          defaultCollapseIcon={defaultCollapseIcon}
+          defaultExpandIcon={defaultExpandIcon}
+          expanded={expandedTreeItems}
+          onNodeToggle={handleToggle}
+          sx={TREE_GROUP_STYLES}
+          data-testid="OperationModelList"
+        >
+          {content}
+        </TreeView>
       </Box>
-
-      {isLoading && (
-        <OperationModelListSkeleton />
-      )}
-
-      <TreeView
-        disabledItemsFocusable
-        selected={selectedItem ?? 'requests'}
-        defaultCollapseIcon={defaultCollapseIcon}
-        defaultExpandIcon={defaultExpandIcon}
-        expanded={expandedTreeItems}
-        onNodeToggle={handleToggle}
-        sx={TREE_GROUP_STYLES}
-        data-testid="OperationModelList"
-      >
-        {content}
-      </TreeView>
-    </Box>
-  )
-})
+    )
+  },
+)
 
 const SIDEBAR_TITLE = 'Models'
 
@@ -260,7 +276,9 @@ type OperationSection = {
   models: OpenApiVisitorData[]
 }
 
-function flatResponses(responses: Record<ResponseCode, Record<MediaType, OpenApiVisitorDataWithSection>>): OperationSection[] {
+function flatResponses(
+  responses: Record<ResponseCode, Record<MediaType, OpenApiVisitorDataWithSection>>,
+): OperationSection[] {
   const result: OperationSection[] = []
   Object.entries(responses).forEach(([code, response]) => {
     Object.entries(response).forEach(([mediaType, content]) => {
@@ -323,23 +341,24 @@ function isTreeViewExpandIcon(element: Element): boolean {
 }
 
 function sortModels(models: OpenApiVisitorData[]): OpenApiVisitorData[] {
-  return models.sort((model1, model2) =>
-    model1.title.localeCompare(model2.title),
-  )
+  return models.sort((model1, model2) => model1.title.localeCompare(model2.title))
 }
 
 function getDefaultAvailableSection(sections: OperationSection[]): OperationSection {
-  const firstPriorityResponses = sections.filter(section => section.code === FIRST_PRIORITY_CODE)
+  const firstPriorityResponses = sections.filter((section) => section.code === FIRST_PRIORITY_CODE)
   if (isNotEmpty(firstPriorityResponses)) {
-    return firstPriorityResponses.find(response => response.mediaType === FIRST_PRIORITY_MEDIA_TYPE) ?? firstPriorityResponses[0]
+    return (
+      firstPriorityResponses.find((response) => response.mediaType === FIRST_PRIORITY_MEDIA_TYPE) ??
+      firstPriorityResponses[0]
+    )
   }
 
-  const secondPriorityResponses = sections.filter(section => section.code === SECOND_PRIORITY_CODE)
+  const secondPriorityResponses = sections.filter((section) => section.code === SECOND_PRIORITY_CODE)
   if (isNotEmpty(secondPriorityResponses)) {
     return secondPriorityResponses[0]
   }
 
-  return sections.find(section => section.sectionKey === OPEN_API_SECTION_REQUESTS) ?? sections[0]
+  return sections.find((section) => section.sectionKey === OPEN_API_SECTION_REQUESTS) ?? sections[0]
 }
 
 const FIRST_PRIORITY_CODE = '200'

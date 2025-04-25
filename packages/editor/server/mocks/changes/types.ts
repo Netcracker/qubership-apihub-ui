@@ -7,7 +7,6 @@ export const ClassifierType = {
   deprecated: 'deprecated',
 } as const
 
-export type DiffType = typeof ClassifierType[keyof typeof ClassifierType]
+export type DiffType = (typeof ClassifierType)[keyof typeof ClassifierType]
 
 export type ChangesSummaryDto = Record<DiffType, number>
-

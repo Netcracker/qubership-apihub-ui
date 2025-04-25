@@ -35,9 +35,9 @@ const StoryComponent = (args: SidebarWithTagsProps): ReactElement => {
   return (
     <SidebarWithTags
       {...args}
-      onSearch={value => {
+      onSearch={(value) => {
         updateArgs({
-          tags: value ? tags.filter(tag => tag.toLowerCase().includes(value.toLowerCase())) : operationTags,
+          tags: value ? tags.filter((tag) => tag.toLowerCase().includes(value.toLowerCase())) : operationTags,
         })
       }}
     />

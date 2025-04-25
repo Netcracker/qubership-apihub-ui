@@ -24,10 +24,7 @@ import { editorRequestJson } from '@apihub/utils/requests'
 
 const PROJECTS_QUERY_KEY = 'projects-query-key'
 
-export function useProjects(
-  textFilter: string | null = null,
-  onlyFavorite: boolean = false,
-): [Projects, IsLoading] {
+export function useProjects(textFilter: string | null = null, onlyFavorite: boolean = false): [Projects, IsLoading] {
   const onlyPublished = false
 
   const { data, isLoading } = useQuery<ProjectsDto, Error, Projects>({
@@ -49,10 +46,7 @@ export function useInvalidateProjects(): InvalidateQuery<void> {
   }
 }
 
-export function useProjectsByGroup(
-  groupKey: Key,
-  enabled = true,
-): Projects {
+export function useProjectsByGroup(groupKey: Key, enabled = true): Projects {
   const onlyPublished = false
 
   const { data } = useQuery<ProjectsDto, Error, Projects>({

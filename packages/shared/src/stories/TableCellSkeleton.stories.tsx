@@ -25,7 +25,7 @@ const meta: Meta<typeof TableCellSkeleton> = {
     (Story) => (
       <Table sx={{ width: '900px' }}>
         <TableRow>
-          <Story/>
+          <Story />
         </TableRow>
       </Table>
     ),

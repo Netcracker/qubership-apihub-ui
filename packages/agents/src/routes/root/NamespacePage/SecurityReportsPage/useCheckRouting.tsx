@@ -32,7 +32,10 @@ export type CheckRoutingDetails = {
   password: string
 }
 
-export function useCheckRouting(onSuccess: () => void, onError: (error: HttpError) => void): [StartRoutingCheckFunction, IsLoading] {
+export function useCheckRouting(
+  onSuccess: () => void,
+  onError: (error: HttpError) => void,
+): [StartRoutingCheckFunction, IsLoading] {
   const invalidateSecurityReports = useInvalidateSecurityReports()
 
   const { mutate, isLoading } = useMutation<void, HttpError, CheckRoutingDetails>({
@@ -42,7 +45,7 @@ export function useCheckRouting(onSuccess: () => void, onError: (error: HttpErro
       invalidateSecurityReports()
       onSuccess()
     },
-    onError: error => onError(error),
+    onError: (error) => onError(error),
   })
 
   return [mutate, isLoading]
@@ -72,7 +75,8 @@ async function startRoutingCheck(
         username,
         password,
       }),
-    }, {
+    },
+    {
       basePath: `${APIHUB_NC_BASE_PATH}${API_V3}`,
     },
   )

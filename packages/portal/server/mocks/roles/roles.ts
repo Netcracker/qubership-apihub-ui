@@ -38,10 +38,7 @@ export const ROLES_LIST: Writeable<RolesDto> = {
     {
       roleId: 'release-manager',
       role: 'Release Manager',
-      permissions: [
-        'read',
-        'manage_release_version',
-      ],
+      permissions: ['read', 'manage_release_version'],
     },
     {
       roleId: 'owner',
@@ -71,9 +68,7 @@ export const ROLES_LIST: Writeable<RolesDto> = {
       roleId: 'viewer',
       role: 'Viewer',
       readOnly: true,
-      permissions: [
-        'read',
-      ],
+      permissions: ['read'],
     },
     {
       roleId: 'none',

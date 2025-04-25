@@ -61,11 +61,11 @@ export const PackageVersionPageToolbar: FC = memo(() => {
 
   return (
     <Toolbar
-      breadcrumbs={<PackageBreadcrumbs packageObject={currentPackage}/>}
+      breadcrumbs={<PackageBreadcrumbs packageObject={currentPackage} />}
       header={
         <>
-          <ToolbarTitle value={`${currentPackage?.name}: Edit Version `}/>
-          {versionContent &&
+          <ToolbarTitle value={`${currentPackage?.name}: Edit Version `} />
+          {versionContent && (
             <Box display="flex" gap={1} alignItems="center" sx={{ ml: 2 }}>
               <VersionTitle
                 version={versionKey}
@@ -73,9 +73,9 @@ export const PackageVersionPageToolbar: FC = memo(() => {
                 latestRevision={latestRevision}
                 subtitleVariant
               />
-              <CustomChip value={status!}/>
+              <CustomChip value={status!} />
             </Box>
-          }
+          )}
         </>
       }
       action={
@@ -90,12 +90,7 @@ export const PackageVersionPageToolbar: FC = memo(() => {
             tooltipMaxWidth="unset"
             testId="PublishButton"
           />
-          <Button
-            startIcon={<ExitIcon/>}
-            variant="outlined"
-            onClick={navigateToPrevPage}
-            data-testid="ExitButton"
-          >
+          <Button startIcon={<ExitIcon />} variant="outlined" onClick={navigateToPrevPage} data-testid="ExitButton">
             Exit
           </Button>
         </Box>

@@ -37,57 +37,50 @@ export type PackageSearchListProps = {
   hasNextPage?: boolean
 }
 
-export const PackageSearchList: FC<PackageSearchListProps> = memo<PackageSearchListProps>((
-  { value, searchText, isNextPageFetching, hasNextPage, fetchNextPage },
-) => {
-  const ref = useRef<HTMLDivElement>(null)
-  useIntersectionObserver(ref, isNextPageFetching, hasNextPage, fetchNextPage)
+export const PackageSearchList: FC<PackageSearchListProps> = memo<PackageSearchListProps>(
+  ({ value, searchText, isNextPageFetching, hasNextPage, fetchNextPage }) => {
+    const ref = useRef<HTMLDivElement>(null)
+    useIntersectionObserver(ref, isNextPageFetching, hasNextPage, fetchNextPage)
 
-  return (
-    <Box width={CONTENT_WIDTH} position="relative">
-      {value.map(({ packageKey, name, parentPackages, createdAt, serviceName, labels, version, status }) => {
-        const { versionKey } = getSplittedVersionKey(version)
-        return (
-          <Box mb={2} key={crypto.randomUUID()} data-testid="SearchResultRow">
-            <ResultCommonHeader
-              url={getOverviewPath({ packageKey: packageKey, versionKey: versionKey })}
-              title={`${name} / ${versionKey}`}
-              status={status}
-              parents={parentPackages}
-              searchText={searchText}
-            />
-
-            <Marker mark={searchText}>
-              <Box display="flex" gap={1} alignItems="center">
-                <Typography variant="body2">Publication date</Typography>
-                <Typography
-                  variant="subtitle2"
-                  data-testid="PublicationDateValue"
-                >
-                  <FormattedDate value={createdAt}/>
-                </Typography>
-              </Box>
-
-              <RateResults
+    return (
+      <Box width={CONTENT_WIDTH} position="relative">
+        {value.map(({ packageKey, name, parentPackages, createdAt, serviceName, labels, version, status }) => {
+          const { versionKey } = getSplittedVersionKey(version)
+          return (
+            <Box mb={2} key={crypto.randomUUID()} data-testid="SearchResultRow">
+              <ResultCommonHeader
+                url={getOverviewPath({ packageKey: packageKey, versionKey: versionKey })}
+                title={`${name} / ${versionKey}`}
+                status={status}
+                parents={parentPackages}
                 searchText={searchText}
-                packageKey={packageKey}
-                serviceName={serviceName}
-                labels={labels}
               />
-            </Marker>
+
+              <Marker mark={searchText}>
+                <Box display="flex" gap={1} alignItems="center">
+                  <Typography variant="body2">Publication date</Typography>
+                  <Typography variant="subtitle2" data-testid="PublicationDateValue">
+                    <FormattedDate value={createdAt} />
+                  </Typography>
+                </Box>
+
+                <RateResults
+                  searchText={searchText}
+                  packageKey={packageKey}
+                  serviceName={serviceName}
+                  labels={labels}
+                />
+              </Marker>
+            </Box>
+          )
+        })}
+
+        {hasNextPage && (
+          <Box ref={ref} height="100px">
+            <LoadingIndicator />
           </Box>
-        )
-      })}
-
-      {hasNextPage && (
-        <Box
-          ref={ref}
-          height="100px"
-        >
-          <LoadingIndicator/>
-        </Box>
-      )}
-    </Box>
-  )
-})
-
+        )}
+      </Box>
+    )
+  },
+)

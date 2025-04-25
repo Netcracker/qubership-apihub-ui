@@ -38,75 +38,70 @@ export type LayoutWithSidebarProps = {
   sidebar?: ReactNode
   body: ReactNode
 } & TestableProps
-export const LayoutWithSidebar: FC<LayoutWithSidebarProps> = memo<LayoutWithSidebarProps>(({
-  header,
-  action,
-  sidebar,
-  body,
-  testId,
-}) => {
-  return (
-    <Box
-      sx={{
-        height: '100%',
-        display: 'grid',
-        gridTemplateRows: 'max-content 1fr',
-        gridTemplateColumns: 'auto 1fr',
-        gridTemplateAreas: `${createGridAreas({ toolbar: header, sidebar: sidebar })}`,
-      }}
-      data-testid={testId}
-    >
-      <Box sx={{
-        gridArea: TOOLBAR_GRID_AREA,
-        overflow: 'hidden',
-        backgroundColor: '#FFFFFF',
-      }}>
-        <Box>
-          <Toolbar
-            size={MEDIUM_TOOLBAR_SIZE}
-            header={header}
-            action={action}
-          />
-          <Divider orientation="horizontal" variant="fullWidth"/>
-        </Box>
-      </Box>
-
-      {sidebar && (
-        <Resizable
-          style={{
-            gridArea: SIDEBAR_GRID_AREA,
+export const LayoutWithSidebar: FC<LayoutWithSidebarProps> = memo<LayoutWithSidebarProps>(
+  ({ header, action, sidebar, body, testId }) => {
+    return (
+      <Box
+        sx={{
+          height: '100%',
+          display: 'grid',
+          gridTemplateRows: 'max-content 1fr',
+          gridTemplateColumns: 'auto 1fr',
+          gridTemplateAreas: `${createGridAreas({ toolbar: header, sidebar: sidebar })}`,
+        }}
+        data-testid={testId}
+      >
+        <Box
+          sx={{
+            gridArea: TOOLBAR_GRID_AREA,
             overflow: 'hidden',
-            position: 'relative',
-            borderRight: '1px solid #D5DCE3',
-            clipPath: 'inset(-10px 0px -10px -10px)',
-            paddingBottom: '24px',
-          }}
-          handleStyles={{ right: { cursor: 'ew-resize' } }}
-          defaultSize={{ width: NAVIGATION_DEFAULT_WIDTH, height: '100%' }}
-          maxWidth={NAVIGATION_MAX_WIDTH}
-          minWidth={NAVIGATION_MIN_WIDTH}
-          enable={{
-            top: false,
-            right: true,
-            bottom: false,
-            left: false,
-            topRight: false,
-            bottomRight: false,
-            bottomLeft: false,
-            topLeft: false,
+            backgroundColor: '#FFFFFF',
           }}
         >
-          {sidebar}
-        </Resizable>
-      )}
+          <Box>
+            <Toolbar size={MEDIUM_TOOLBAR_SIZE} header={header} action={action} />
+            <Divider orientation="horizontal" variant="fullWidth" />
+          </Box>
+        </Box>
 
-      <Box sx={{
-        gridArea: BODY_GRID_AREA,
-        overflow: 'hidden',
-      }}>
-        {body}
+        {sidebar && (
+          <Resizable
+            style={{
+              gridArea: SIDEBAR_GRID_AREA,
+              overflow: 'hidden',
+              position: 'relative',
+              borderRight: '1px solid #D5DCE3',
+              clipPath: 'inset(-10px 0px -10px -10px)',
+              paddingBottom: '24px',
+            }}
+            handleStyles={{ right: { cursor: 'ew-resize' } }}
+            defaultSize={{ width: NAVIGATION_DEFAULT_WIDTH, height: '100%' }}
+            maxWidth={NAVIGATION_MAX_WIDTH}
+            minWidth={NAVIGATION_MIN_WIDTH}
+            enable={{
+              top: false,
+              right: true,
+              bottom: false,
+              left: false,
+              topRight: false,
+              bottomRight: false,
+              bottomLeft: false,
+              topLeft: false,
+            }}
+          >
+            {sidebar}
+          </Resizable>
+        )}
+
+        <Box
+          sx={{
+            gridArea: BODY_GRID_AREA,
+            overflow: 'hidden',
+          }}
+        >
+          {body}
+        </Box>
       </Box>
-    </Box>
-  )
-})
-
+    )
+  },
+)

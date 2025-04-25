@@ -41,7 +41,7 @@ export const CompareOperationPathsDialog: FC = memo(() => {
   return (
     <PopupDelegate
       type={SHOW_COMPARE_OPERATIONS_DIALOG}
-      render={props => <CompareOperationPathsPopup {...props}/>}
+      render={(props) => <CompareOperationPathsPopup {...props} />}
     />
   )
 })
@@ -63,19 +63,21 @@ const CompareOperationPathsPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
   const onOriginalInputChange = useCallback((event: SyntheticEvent, value: string) => setOriginalInputValue(value), [])
   const onChangedInputChange = useCallback((event: SyntheticEvent, value: string) => setChangedInputValue(value), [])
 
-  return <CompareOperationPathsDialogForm
-    open={open}
-    setOpen={setOpen}
-    control={control}
-    originalOperationOptions={originalOperationOptions}
-    changedOperationOptions={changedOperationOptions}
-    onSwap={onSwap}
-    onSubmit={onSubmit}
-    isOriginalOperationsLoading={isOriginalOperationsLoading}
-    isChangedOperationsLoading={isChangedOperationsLoading}
-    onOriginalInputChange={onOriginalInputChange}
-    onChangedInputChange={onChangedInputChange}
-  />
+  return (
+    <CompareOperationPathsDialogForm
+      open={open}
+      setOpen={setOpen}
+      control={control}
+      originalOperationOptions={originalOperationOptions}
+      changedOperationOptions={changedOperationOptions}
+      onSwap={onSwap}
+      onSubmit={onSubmit}
+      isOriginalOperationsLoading={isOriginalOperationsLoading}
+      isChangedOperationsLoading={isChangedOperationsLoading}
+      onOriginalInputChange={onOriginalInputChange}
+      onChangedInputChange={onChangedInputChange}
+    />
+  )
 })
 
 //todo need retest (without nested value)
@@ -93,12 +95,7 @@ function useData(
   const { navigateToOperationsComparison } = useNavigation()
   const backwardLocation = useBackwardLocationContext()
   const setBackwardLocation = useSetBackwardLocationContext()
-  const {
-    packageId: defaultPackageKey,
-    versionId,
-    operationId: defaultOperationKey,
-    apiType,
-  } = useParams()
+  const { packageId: defaultPackageKey, versionId, operationId: defaultOperationKey, apiType } = useParams()
   const { fullVersion: defaultVersionKey } = useVersionWithRevision(versionId, defaultPackageKey)
 
   const [operationPackageKey, operationVersionKey] = usePackageParamsWithRef()
@@ -134,10 +131,13 @@ function useData(
 
   const ref = useSearchParam(REF_SEARCH_PARAM)
 
-  const defaultValues = useMemo(() => ({
-    originalOperation: defaultOriginalOperation ?? null,
-    changedOperation: defaultChangedOperation ?? null,
-  }), [defaultChangedOperation, defaultOriginalOperation])
+  const defaultValues = useMemo(
+    () => ({
+      originalOperation: defaultOriginalOperation ?? null,
+      changedOperation: defaultChangedOperation ?? null,
+    }),
+    [defaultChangedOperation, defaultOriginalOperation],
+  )
 
   const form = useForm<FormData>({ defaultValues })
 
@@ -154,21 +154,37 @@ function useData(
     })
   }, [form])
 
-  const onSubmit = useMemo(() => form.handleSubmit(({ originalOperation, changedOperation }) => {
-    setBackwardLocation({ ...backwardLocation, fromOperationsComparison: { pathname: pathname!, search: search! } })
-    navigateToOperationsComparison({
-      packageKey: defaultPackageKey!,
-      versionKey: defaultVersionKey!,
-      apiType: apiType as ApiType,
-      operationKey: changedOperation!.operationKey,
-      search: {
-        [OPERATION_SEARCH_PARAM]: { value: originalOperation!.operationKey },
-        [REF_SEARCH_PARAM]: { value: ref ?? '' },
-      },
-    })
+  const onSubmit = useMemo(
+    () =>
+      form.handleSubmit(({ originalOperation, changedOperation }) => {
+        setBackwardLocation({ ...backwardLocation, fromOperationsComparison: { pathname: pathname!, search: search! } })
+        navigateToOperationsComparison({
+          packageKey: defaultPackageKey!,
+          versionKey: defaultVersionKey!,
+          apiType: apiType as ApiType,
+          operationKey: changedOperation!.operationKey,
+          search: {
+            [OPERATION_SEARCH_PARAM]: { value: originalOperation!.operationKey },
+            [REF_SEARCH_PARAM]: { value: ref ?? '' },
+          },
+        })
 
-    setTimeout(() => setOpen(false), 1000)
-  }), [form, ref, setBackwardLocation, backwardLocation, pathname, search, navigateToOperationsComparison, defaultPackageKey, defaultVersionKey, apiType, setOpen])
+        setTimeout(() => setOpen(false), 1000)
+      }),
+    [
+      form,
+      ref,
+      setBackwardLocation,
+      backwardLocation,
+      pathname,
+      search,
+      navigateToOperationsComparison,
+      defaultPackageKey,
+      defaultVersionKey,
+      apiType,
+      setOpen,
+    ],
+  )
 
   const { originalOperation, changedOperation } = form.watch()
 

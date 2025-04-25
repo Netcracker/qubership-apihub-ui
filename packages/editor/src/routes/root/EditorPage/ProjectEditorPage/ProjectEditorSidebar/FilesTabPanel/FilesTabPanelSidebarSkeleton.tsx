@@ -22,15 +22,16 @@ export type ProjectEditorSidebarSkeletonProps = {
   count: number
 }
 
-export const FilesTabPanelSidebarSkeleton: FC<ProjectEditorSidebarSkeletonProps> = memo<ProjectEditorSidebarSkeletonProps>(({ count }) => {
-  return (
-    <Box sx={{ p: 2.5 }}>
-      {[...Array(count)].map((_, index) => (
-        <SkeletonItem key={index}/>
-      ))}
-    </Box>
-  )
-})
+export const FilesTabPanelSidebarSkeleton: FC<ProjectEditorSidebarSkeletonProps> =
+  memo<ProjectEditorSidebarSkeletonProps>(({ count }) => {
+    return (
+      <Box sx={{ p: 2.5 }}>
+        {[...Array(count)].map((_, index) => (
+          <SkeletonItem key={index} />
+        ))}
+      </Box>
+    )
+  })
 
 const SkeletonItem: FC = memo(() => {
   return (
@@ -45,8 +46,8 @@ const SkeletonItem: FC = memo(() => {
         mb: '5px',
       }}
     >
-      <Skeleton sx={{ gridArea: 'circle', alignSelf: 'center' }} variant="circular" width={15} height={15}/>
-      <Skeleton sx={{ gridArea: 'firstText' }} variant="text" width={210} height={22}/>
+      <Skeleton sx={{ gridArea: 'circle', alignSelf: 'center' }} variant="circular" width={15} height={15} />
+      <Skeleton sx={{ gridArea: 'firstText' }} variant="text" width={210} height={22} />
     </Box>
   )
 })

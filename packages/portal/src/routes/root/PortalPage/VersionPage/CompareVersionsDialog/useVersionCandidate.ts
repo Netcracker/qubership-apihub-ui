@@ -49,6 +49,5 @@ export function useVersionCandidate(option: {
       const { versionKey: currentVersionKey } = getSplittedVersionKey(versionKey)
       return isLatestRevision ? candidateVersionKey === currentVersionKey : key === versionKey
     })
-
   }, [isLatestRevision, versionKey, versionsCandidates])
 }

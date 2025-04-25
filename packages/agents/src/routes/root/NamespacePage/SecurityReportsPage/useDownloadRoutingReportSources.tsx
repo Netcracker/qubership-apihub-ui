@@ -25,32 +25,25 @@ import { generatePath } from 'react-router-dom'
 
 export function useDownloadRoutingReportSources(): [DownloadRoutingReportSourcesFunction, IsLoading] {
   const { mutate, isLoading } = useMutation<void, Error, Options>({
-    mutationFn: ({
-      processKey,
-    }) => downloadRoutingReportSources(processKey!),
+    mutationFn: ({ processKey }) => downloadRoutingReportSources(processKey!),
   })
   return [mutate, isLoading]
 }
 
-export const downloadRoutingReportSources = async (
-  processId: Key,
-): Promise<void> => {
-
+export const downloadRoutingReportSources = async (processId: Key): Promise<void> => {
   const pathPattern = '/security/gatewayRouting/:processId/source'
   const response = await ncCustomAgentsRequestBlob(
     generatePath(pathPattern, { processId }),
     {
       method: 'GET',
-    }, {
+    },
+    {
       basePath: `${APIHUB_NC_BASE_PATH}${API_V3}`,
     },
   )
 
-  const getFilename = (): string => response.headers
-    .get('content-disposition')!
-    .split('filename=')[1]
-    .split(';')[0]
-    .slice(1, -1)
+  const getFilename = (): string =>
+    response.headers.get('content-disposition')!.split('filename=')[1].split(';')[0].slice(1, -1)
 
   fileDownload(await response.blob(), getFilename())
 }

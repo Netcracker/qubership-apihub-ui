@@ -43,12 +43,7 @@ export function useRenameProjectFile(): [RenameProjectFile, IsLoading] {
   return [mutate, isLoading]
 }
 
-async function updateFileContent(
-  projectKey: Key,
-  branchName: string,
-  fileKey: Key,
-  newFileKey: string,
-): Promise<void> {
+async function updateFileContent(projectKey: Key, branchName: string, fileKey: Key, newFileKey: string): Promise<void> {
   const projectId = encodeURIComponent(projectKey)
   const branch = encodeURIComponent(branchName)
   const fileId = encodeURIComponent(fileKey)

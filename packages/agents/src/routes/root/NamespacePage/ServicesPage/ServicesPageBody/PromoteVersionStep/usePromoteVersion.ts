@@ -55,13 +55,7 @@ export function usePromoteVersion(): [PromoteVersion, IsLoading, IsSuccess, IsEr
     },
   })
 
-  return [
-    mutate,
-    isLoading,
-    isSuccess,
-    isError,
-    error,
-  ]
+  return [mutate, isLoading, isSuccess, isError, error]
 }
 
 export type PromoteVersion = (options: PromoteVersionOptions) => void

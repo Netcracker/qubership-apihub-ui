@@ -20,10 +20,5 @@ import { SummaryTab } from './SummaryTab/SummaryTab'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 
 export const SummaryCard: FC = memo(() => {
-  return (
-    <BodyCard
-      header="Summary"
-      body={<SummaryTab/>}
-    />
-  )
+  return <BodyCard header="Summary" body={<SummaryTab />} />
 })

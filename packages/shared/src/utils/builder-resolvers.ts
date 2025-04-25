@@ -102,15 +102,16 @@ export async function versionDocumentsResolver(authorization: string): Promise<V
     while (documentsCount === LIMIT) {
       page += 1
 
-      const { documents } = await fetchVersionDocuments(
-        apiType,
-        packageId,
-        version,
-        filterByOperationGroup,
-        authorization,
-        page,
-        LIMIT,
-      ) ?? EMPTY_DOCUMENTS
+      const { documents } =
+        (await fetchVersionDocuments(
+          apiType,
+          packageId,
+          version,
+          filterByOperationGroup,
+          authorization,
+          page,
+          LIMIT,
+        )) ?? EMPTY_DOCUMENTS
 
       response.documents = [...response.documents, ...documents]
 

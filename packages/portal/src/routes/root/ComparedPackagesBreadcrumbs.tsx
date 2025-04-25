@@ -25,23 +25,16 @@ export type ComparedPackagesBreadcrumbsProps = {
   data?: LinkedComparedBreadcrumbPathItem[]
 }
 
-export const ComparedPackagesBreadcrumbs: FC<ComparedPackagesBreadcrumbsProps> =
-  memo<ComparedPackagesBreadcrumbsProps>(({ data = [] }) => {
-    const links: ReactJSXElement[] = data.map(linkData => {
+export const ComparedPackagesBreadcrumbs: FC<ComparedPackagesBreadcrumbsProps> = memo<ComparedPackagesBreadcrumbsProps>(
+  ({ data = [] }) => {
+    const links: ReactJSXElement[] = data.map((linkData) => {
       return (
-        <Link
-          key={linkData.key}
-          component={NavLink}
-          to={linkData.to}
-        >
+        <Link key={linkData.key} component={NavLink} to={linkData.to}>
           {linkData.name}
         </Link>
       )
     })
 
-    return (
-      <Breadcrumbs data-testid="ComparedPackagesBreadcrumbs">
-        {links}
-      </Breadcrumbs>
-    )
-  })
+    return <Breadcrumbs data-testid="ComparedPackagesBreadcrumbs">{links}</Breadcrumbs>
+  },
+)

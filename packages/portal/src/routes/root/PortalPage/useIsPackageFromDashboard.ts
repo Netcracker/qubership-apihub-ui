@@ -32,7 +32,9 @@ export function useIsPackageFromDashboard(strict: boolean = false): {
   const [mainPackageKind] = usePackageKind()
   const [refPackageKey] = useRefSearchParam()
   return {
-    isPackageFromDashboard: !strict ? mainPackageKind === DASHBOARD_KIND || !!refPackageKey : mainPackageKind === DASHBOARD_KIND && !!refPackageKey,
+    isPackageFromDashboard: !strict
+      ? mainPackageKind === DASHBOARD_KIND || !!refPackageKey
+      : mainPackageKind === DASHBOARD_KIND && !!refPackageKey,
     mainPackageKind: mainPackageKind,
     refPackageKey: refPackageKey,
   }

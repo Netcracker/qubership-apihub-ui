@@ -46,60 +46,46 @@ export type EndpointViewerProps = {
 
 export const EndpointViewer: FC<EndpointViewerProps> = (props) => {
   const {
-    view: {
-      isSubTable = false,
-      canExpand = false,
-      isExpanded = false,
-      onToggleExpander,
-    } = {},
-    endpoint: {
-      title,
-      link,
-      deprecated = false,
-      method,
-      path,
-      onClickLink,
-    },
+    view: { isSubTable = false, canExpand = false, isExpanded = false, onToggleExpander } = {},
+    endpoint: { title, link, deprecated = false, method, path, onClickLink },
   } = props
 
   return (
     <Box sx={{ ml: isSubTable ? 3 : 0 }}>
       <Box display="flex">
-        {canExpand &&
+        {canExpand && (
           <IconButton sx={{ p: 0, mr: 1 }} onClick={onToggleExpander}>
-            {isExpanded
-              ? <KeyboardArrowDownOutlinedIcon sx={{ fontSize: '16px' }}/>
-              : <KeyboardArrowRightOutlinedIcon sx={{ fontSize: '16px' }}/>}
+            {isExpanded ? (
+              <KeyboardArrowDownOutlinedIcon sx={{ fontSize: '16px' }} />
+            ) : (
+              <KeyboardArrowRightOutlinedIcon sx={{ fontSize: '16px' }} />
+            )}
           </IconButton>
-        }
+        )}
 
         <OverflowTooltip title={title}>
           <Box sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-            <Link
-              component={NavLink}
-              to={link}
-              onClick={onClickLink}
-            >
+            <Link component={NavLink} to={link} onClick={onClickLink}>
               {title}
             </Link>
-            {deprecated && <Chip
-              label="Deprecated"
-              sx={{
-                marginLeft: '8px',
-                color: 'white',
-                backgroundColor: '#EF9206',
-                fontSize: '11px',
-                height: '14px',
-              }}/>
-            }
+            {deprecated && (
+              <Chip
+                label="Deprecated"
+                sx={{
+                  marginLeft: '8px',
+                  color: 'white',
+                  backgroundColor: '#EF9206',
+                  fontSize: '11px',
+                  height: '14px',
+                }}
+              />
+            )}
           </Box>
         </OverflowTooltip>
       </Box>
 
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        {method && (
-          <CustomChip sx={{ mr: 1 }} value={method} variant="outlined"/>
-        )}
+        {method && <CustomChip sx={{ mr: 1 }} value={method} variant="outlined" />}
         {path && (
           <OverflowTooltip title={path}>
             <Typography noWrap variant="inherit">

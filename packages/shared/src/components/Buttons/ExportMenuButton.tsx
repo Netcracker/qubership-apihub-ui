@@ -32,49 +32,42 @@ export type ExportMenuButtonProps = {
 }
 
 // First Order Component //
-export const ExportMenuButton: FC<ExportMenuButtonProps> = memo(({
-  title,
-  disabled,
-  allDownloadText,
-  filteredDownloadText,
-  downloadAll,
-  downloadFiltered,
-}) => {
-  return (
-    <Paper>
-      <MenuButton
-        disabled={disabled}
-        variant="outlined"
-        startIcon={<DownloadIcon color={disabled ? DISABLED_BUTTON_COLOR : ENABLED_BUTTON_COLOR}/>}
-        endIcon={<KeyboardArrowDownOutlinedIcon/>}
-        sx={{
-          '&.MuiButton-root': {
-            width: '48px',
-            '& .MuiButton-startIcon': {
-              marginRight: '0px',
+export const ExportMenuButton: FC<ExportMenuButtonProps> = memo(
+  ({ title, disabled, allDownloadText, filteredDownloadText, downloadAll, downloadFiltered }) => {
+    return (
+      <Paper>
+        <MenuButton
+          disabled={disabled}
+          variant="outlined"
+          startIcon={<DownloadIcon color={disabled ? DISABLED_BUTTON_COLOR : ENABLED_BUTTON_COLOR} />}
+          endIcon={<KeyboardArrowDownOutlinedIcon />}
+          sx={{
+            '&.MuiButton-root': {
+              width: '48px',
+              '& .MuiButton-startIcon': {
+                marginRight: '0px',
+              },
+              '& .MuiButton-endIcon': {
+                marginLeft: '0px',
+              },
             },
-            '& .MuiButton-endIcon': {
-              marginLeft: '0px',
-            },
-          },
-        }}
-        data-testid="ExportMenuButton"
-      >
-        <Box component="div">
-          <Typography sx={EXPORT_MENU_DELIMITER_STYLES}>
-            {title}
-          </Typography>
-          <MenuItem onClick={downloadAll} data-testid="DownloadAllMenuItem">
-            {allDownloadText}
-          </MenuItem>
-          <MenuItem onClick={downloadFiltered} data-testid="DownloadFilteredMenuItem">
-            {filteredDownloadText}
-          </MenuItem>
-        </Box>
-      </MenuButton>
-    </Paper>
-  )
-})
+          }}
+          data-testid="ExportMenuButton"
+        >
+          <Box component="div">
+            <Typography sx={EXPORT_MENU_DELIMITER_STYLES}>{title}</Typography>
+            <MenuItem onClick={downloadAll} data-testid="DownloadAllMenuItem">
+              {allDownloadText}
+            </MenuItem>
+            <MenuItem onClick={downloadFiltered} data-testid="DownloadFilteredMenuItem">
+              {filteredDownloadText}
+            </MenuItem>
+          </Box>
+        </MenuButton>
+      </Paper>
+    )
+  },
+)
 
 const EXPORT_MENU_DELIMITER_STYLES = {
   color: '#626D82',

@@ -75,11 +75,11 @@ export function useSpecViewer({
 
   const [viewer, viewModes] = useMemo(() => {
     if (isLoading) {
-      return [<LoadingIndicator/>, []]
+      return [<LoadingIndicator />, []]
     }
 
     const [Component, views] = specTypeViewers[spec.type] ?? getFormatViewer(spec.extension, value)
-    return [<Component view={viewMode} spec={spec} value={value} proxyServer={proxyServer} header={header}/>, views]
+    return [<Component view={viewMode} spec={spec} value={value} proxyServer={proxyServer} header={header} />, views]
   }, [header, isLoading, proxyServer, spec, value, viewMode])
 
   return { viewer, viewModes, viewMode, setViewMode }

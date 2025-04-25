@@ -20,7 +20,10 @@ import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 import { useEffectOnce, useLocation } from 'react-use'
-import { useInvalidatePackageVersions, usePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
+import {
+  useInvalidatePackageVersions,
+  usePackageVersions,
+} from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
 import { usePackage } from '../../../usePackage'
 import { usePackages } from '../../../usePackages'
 import { usePackageVersionContent } from '../../../usePackageVersionContent'
@@ -49,12 +52,7 @@ import type {
 import { CompareVersionsDialogForm } from '@netcracker/qubership-apihub-ui-shared/components/CompareVersionsDialogForm'
 
 export const CompareVersionsDialog: FC = memo(() => {
-  return (
-    <PopupDelegate
-      type={SHOW_COMPARE_VERSIONS_DIALOG}
-      render={props => <CompareVersionsPopup {...props}/>}
-    />
-  )
+  return <PopupDelegate type={SHOW_COMPARE_VERSIONS_DIALOG} render={(props) => <CompareVersionsPopup {...props} />} />
 })
 
 const CompareVersionsPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }) => {
@@ -82,13 +80,31 @@ const CompareVersionsPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }
     isDefaultOriginalPackageLoading,
     isDashboard,
     arePackagesDifferent,
-  } = useDialogData(setOpen, originalPackageInputValue, changedPackageInputValue, originalPackageVersionInputValue, changedPackageVersionInputValue)
+  } = useDialogData(
+    setOpen,
+    originalPackageInputValue,
+    changedPackageInputValue,
+    originalPackageVersionInputValue,
+    changedPackageVersionInputValue,
+  )
 
-  const onOriginalPackageInputChange = useCallback((event: SyntheticEvent, value: string) => setOriginalPackageInputValue(value), [])
-  const onChangedPackageInputChange = useCallback((event: SyntheticEvent, value: string) => setChangedPackageInputValue(value), [])
+  const onOriginalPackageInputChange = useCallback(
+    (event: SyntheticEvent, value: string) => setOriginalPackageInputValue(value),
+    [],
+  )
+  const onChangedPackageInputChange = useCallback(
+    (event: SyntheticEvent, value: string) => setChangedPackageInputValue(value),
+    [],
+  )
 
-  const onOriginalPackageVersionInputChange = useCallback((event: SyntheticEvent, value: string) => setOriginalPackageVersionInputValue(value), [])
-  const onChangedPackageVersionInputChange = useCallback((event: SyntheticEvent, value: string) => setChangedPackageVersionInputValue(value), [])
+  const onOriginalPackageVersionInputChange = useCallback(
+    (event: SyntheticEvent, value: string) => setOriginalPackageVersionInputValue(value),
+    [],
+  )
+  const onChangedPackageVersionInputChange = useCallback(
+    (event: SyntheticEvent, value: string) => setChangedPackageVersionInputValue(value),
+    [],
+  )
 
   return (
     <CompareVersionsDialogForm
@@ -152,16 +168,16 @@ function useDialogData(
 
   const defaultWorkspace = useMemo(() => {
     if (!isWorkspacesLoading && !isDefaultWorkspacePackageLoading && workspaces && defaultWorkspacePackage) {
-      const searchItem = defaultWorkspacePackage.parents?.find(item => item.kind === WORKSPACE_KIND)
-      return workspaces.find(item => item.key === searchItem?.key) ?? null
+      const searchItem = defaultWorkspacePackage.parents?.find((item) => item.kind === WORKSPACE_KIND)
+      return workspaces.find((item) => item.key === searchItem?.key) ?? null
     }
     return null
   }, [defaultWorkspacePackage, workspaces, isDefaultWorkspacePackageLoading, isWorkspacesLoading])
 
   const searchWorkspace = useMemo(() => {
     if (!isWorkspacesLoading && !isSearchWorkspacePackageLoading && workspaces && searchWorkspacePackage) {
-      const searchItem = searchWorkspacePackage.parents?.find(item => item.kind === WORKSPACE_KIND)
-      return workspaces.find(item => item.key === searchItem?.key) ?? null
+      const searchItem = searchWorkspacePackage.parents?.find((item) => item.kind === WORKSPACE_KIND)
+      return workspaces.find((item) => item.key === searchItem?.key) ?? null
     }
     return null
   }, [isWorkspacesLoading, isSearchWorkspacePackageLoading, workspaces, searchWorkspacePackage])
@@ -210,28 +226,16 @@ function useDialogData(
   }, [searchWorkspace, defaultWorkspace, defaultOriginalPackage, defaultChangedPackage, searchVersion, defaultVersion])
 
   const form = useForm<CompareVersionsDialogFormData>({ defaultValues })
-  const {
-    originalWorkspace,
-    changedWorkspace,
-    originalPackage,
-    changedPackage,
-    originalVersion,
-    changedVersion,
-  } = form.watch()
+  const { originalWorkspace, changedWorkspace, originalPackage, changedPackage, originalVersion, changedVersion } =
+    form.watch()
 
   useEffect(() => {
     form.reset(defaultValues)
   }, [defaultValues, form])
 
   const onSwap = useCallback(() => {
-    const {
-      originalWorkspace,
-      changedWorkspace,
-      originalPackage,
-      changedPackage,
-      originalVersion,
-      changedVersion,
-    } = form.getValues()
+    const { originalWorkspace, changedWorkspace, originalPackage, changedPackage, originalVersion, changedVersion } =
+      form.getValues()
     form.reset({
       originalWorkspace: changedWorkspace,
       changedWorkspace: originalWorkspace,
@@ -248,40 +252,53 @@ function useDialogData(
     includeOperations: true,
   })
 
-  const onSubmit = useMemo(() => form.handleSubmit(async ({
-    originalPackage,
-    changedPackage,
-    originalVersion,
-    changedVersion,
-  }) => {
-    setBackwardLocation({ ...backwardLocation, fromDocumentsComparison: { pathname: pathname!, search: search! } })
-    const { versionKey: splittedOriginalVersionKey } = getSplittedVersionKey(originalVersion!.key, originalVersion?.latestRevision)
-    const { versionKey: splittedChangedVersionKey } = getSplittedVersionKey(changedVersion!.key, changedVersion?.latestRevision)
-    const { data } = await refetch()
-    const apiTypes = Object.keys(data?.operationTypes ?? {}) as ApiType[]
-    const apiType = getDefaultApiType(apiTypes)
+  const onSubmit = useMemo(
+    () =>
+      form.handleSubmit(async ({ originalPackage, changedPackage, originalVersion, changedVersion }) => {
+        setBackwardLocation({ ...backwardLocation, fromDocumentsComparison: { pathname: pathname!, search: search! } })
+        const { versionKey: splittedOriginalVersionKey } = getSplittedVersionKey(
+          originalVersion!.key,
+          originalVersion?.latestRevision,
+        )
+        const { versionKey: splittedChangedVersionKey } = getSplittedVersionKey(
+          changedVersion!.key,
+          changedVersion?.latestRevision,
+        )
+        const { data } = await refetch()
+        const apiTypes = Object.keys(data?.operationTypes ?? {}) as ApiType[]
+        const apiType = getDefaultApiType(apiTypes)
 
-    navigateToVersionsComparison({
-      packageKey: changedPackage!.key,
-      versionKey: splittedChangedVersionKey,
-      search: {
-        [VERSION_SEARCH_PARAM]: { value: splittedOriginalVersionKey },
-        [PACKAGE_SEARCH_PARAM]: { value: originalPackage!.key !== changedPackage!.key ? originalPackage!.key : '' },
-        [API_TYPE_SEARCH_PARAM]: { value: apiType },
-      },
-    })
+        navigateToVersionsComparison({
+          packageKey: changedPackage!.key,
+          versionKey: splittedChangedVersionKey,
+          search: {
+            [VERSION_SEARCH_PARAM]: { value: splittedOriginalVersionKey },
+            [PACKAGE_SEARCH_PARAM]: { value: originalPackage!.key !== changedPackage!.key ? originalPackage!.key : '' },
+            [API_TYPE_SEARCH_PARAM]: { value: apiType },
+          },
+        })
 
-    !isRefetching && setOpen(false)
-  }), [form, setBackwardLocation, backwardLocation, pathname, search, refetch, isRefetching, navigateToVersionsComparison, setOpen])
+        !isRefetching && setOpen(false)
+      }),
+    [
+      form,
+      setBackwardLocation,
+      backwardLocation,
+      pathname,
+      search,
+      refetch,
+      isRefetching,
+      navigateToVersionsComparison,
+      setOpen,
+    ],
+  )
 
   const optionsKind: PackageKind | PackageKind[] = useMemo(() => {
     if (!originalPackage && !changedPackage) {
       return [PACKAGE_KIND, DASHBOARD_KIND]
     }
 
-    return [originalPackage?.kind, changedPackage?.kind].includes(DASHBOARD_KIND)
-      ? DASHBOARD_KIND
-      : PACKAGE_KIND
+    return [originalPackage?.kind, changedPackage?.kind].includes(DASHBOARD_KIND) ? DASHBOARD_KIND : PACKAGE_KIND
   }, [originalPackage, changedPackage])
 
   const [originalPackages, isOriginalPackagesLoading] = usePackages({
@@ -312,27 +329,48 @@ function useDialogData(
     const searchVersionWithRevision = generateVersionWithRevision(searchVersionContent)
     const handledVersions = handleVersionsRevision(originalVersions)
     const { versionKey: changedVersionKey } = getSplittedVersionKey(changedVersion?.key, changedVersion?.latestRevision)
-    const content = (searchVersionWithRevision && !isSearchVersionWithLatestRevision)
-      ? [searchVersionWithRevision, ...handledVersions]
-      : handledVersions
+    const content =
+      searchVersionWithRevision && !isSearchVersionWithLatestRevision
+        ? [searchVersionWithRevision, ...handledVersions]
+        : handledVersions
 
     return originalPackage?.key === changedPackage?.key
       ? content.filter(({ key }) => key !== changedVersionKey)
       : content
-  }, [searchVersionContent, originalVersions, changedVersion?.key, changedVersion?.latestRevision, isSearchVersionWithLatestRevision, originalPackage?.key, changedPackage?.key])
+  }, [
+    searchVersionContent,
+    originalVersions,
+    changedVersion?.key,
+    changedVersion?.latestRevision,
+    isSearchVersionWithLatestRevision,
+    originalPackage?.key,
+    changedPackage?.key,
+  ])
 
   const changedVersionOptions = useMemo(() => {
     const defaultVersionWithRevision = generateVersionWithRevision(defaultVersionContent)
     const handledVersions = handleVersionsRevision(changedVersions)
-    const { versionKey: originalVersionKey } = getSplittedVersionKey(originalVersion?.key, originalVersion?.latestRevision)
-    const content = (defaultVersionWithRevision && !isDefaultVersionWithLatestRevision)
-      ? [defaultVersionWithRevision, ...handledVersions]
-      : handledVersions
+    const { versionKey: originalVersionKey } = getSplittedVersionKey(
+      originalVersion?.key,
+      originalVersion?.latestRevision,
+    )
+    const content =
+      defaultVersionWithRevision && !isDefaultVersionWithLatestRevision
+        ? [defaultVersionWithRevision, ...handledVersions]
+        : handledVersions
 
     return originalPackage?.key === changedPackage?.key
       ? content.filter(({ key }) => key !== originalVersionKey)
       : content
-  }, [defaultVersionContent, changedVersions, originalVersion?.key, originalVersion?.latestRevision, isDefaultVersionWithLatestRevision, originalPackage?.key, changedPackage?.key])
+  }, [
+    defaultVersionContent,
+    changedVersions,
+    originalVersion?.key,
+    originalVersion?.latestRevision,
+    isDefaultVersionWithLatestRevision,
+    originalPackage?.key,
+    changedPackage?.key,
+  ])
 
   const isDashboard = defaultOriginalPackage?.kind === DASHBOARD_KIND
   const arePackagesDifferent = defaultOriginalPackage?.key !== defaultChangedPackage?.key

@@ -30,42 +30,33 @@ export type UploadButtonProps = {
   multiple?: boolean
 } & ButtonProps
 
-export const UploadButton: FC<UploadButtonProps> = memo<UploadButtonProps>(({
-  title,
-  acceptableFileTypes,
-  onUpload,
-  withIcon = false,
-  buttonSxProp,
-  multiple = false,
-  ...buttonProps
-}) => {
-  return (
-    <Box
-      component="label"
-      htmlFor="contained-button-file"
-    >
-      <Box
-        component="input"
-        id="contained-button-file"
-        display="none"
-        multiple={multiple}
-        type="file"
-        accept={acceptableFileTypes?.toString()}
-        onChange={onUpload}
-        onClick={(event) => {
-          // Reset the input value to allow the same file to be selected again
-          event.currentTarget.value = ''
-        }}
-        data-testid="UploadButtonInput"
-      />
-      <Button
-        sx={buttonSxProp}
-        component="span"
-        startIcon={withIcon ? <CloudUploadOutlinedIcon/> : undefined}
-        {...buttonProps}
-      >
-        {title}
-      </Button>
-    </Box>
-  )
-})
+export const UploadButton: FC<UploadButtonProps> = memo<UploadButtonProps>(
+  ({ title, acceptableFileTypes, onUpload, withIcon = false, buttonSxProp, multiple = false, ...buttonProps }) => {
+    return (
+      <Box component="label" htmlFor="contained-button-file">
+        <Box
+          component="input"
+          id="contained-button-file"
+          display="none"
+          multiple={multiple}
+          type="file"
+          accept={acceptableFileTypes?.toString()}
+          onChange={onUpload}
+          onClick={(event) => {
+            // Reset the input value to allow the same file to be selected again
+            event.currentTarget.value = ''
+          }}
+          data-testid="UploadButtonInput"
+        />
+        <Button
+          sx={buttonSxProp}
+          component="span"
+          startIcon={withIcon ? <CloudUploadOutlinedIcon /> : undefined}
+          {...buttonProps}
+        >
+          {title}
+        </Button>
+      </Box>
+    )
+  },
+)

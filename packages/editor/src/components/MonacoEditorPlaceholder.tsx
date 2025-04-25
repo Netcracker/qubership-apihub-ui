@@ -31,17 +31,11 @@ export const MonacoEditorPlaceholder: FC = memo(() => {
         py: 2,
       }}
     >
-      {
-        widths.map((width, index) => (
-          <Typography
-            key={index}
-            width={width}
-            variant="caption"
-          >
-            <Skeleton/>
-          </Typography>
-        ))
-      }
+      {widths.map((width, index) => (
+        <Typography key={index} width={width} variant="caption">
+          <Skeleton />
+        </Typography>
+      ))}
     </Box>
   )
 })

@@ -44,23 +44,23 @@ import { useEventBus } from '@apihub/routes/EventBusProvider'
 import { groupOperationsByTags, handleOperationTags } from '@apihub/utils/operations'
 import { useBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
 import { PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import type {
-  VisitorNavigationDetails,
-} from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView/oasToClassDiagramService'
+import type { VisitorNavigationDetails } from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView/oasToClassDiagramService'
 import type { SectionKey } from '@apihub/components/OperationModelList/OperationModelList'
 import { OperationModelList } from '@apihub/components/OperationModelList/OperationModelList'
 import type { OpenApiData } from '@apihub/entities/operation-structure'
 import { OPEN_API_SECTION_PARAMETERS } from '@apihub/entities/operation-structure'
 import { GRAPH_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
-import {
-  CustomServersProvider,
-} from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/Playground/CustomServersProvider'
+import { CustomServersProvider } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/Playground/CustomServersProvider'
 import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
 import { Toolbar } from '@netcracker/qubership-apihub-ui-shared/components/Toolbar'
 import { SidebarPanel } from '@netcracker/qubership-apihub-ui-shared/components/Panels/SidebarPanel'
 import { OperationContent } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationContent'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { API_TYPE_GRAPHQL, API_TYPE_REST, API_TYPE_TITLE_MAP } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import {
+  API_TYPE_GRAPHQL,
+  API_TYPE_REST,
+  API_TYPE_TITLE_MAP,
+} from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 
 // High Order Component //
 export const OperationPage: FC = memo(() => {
@@ -91,20 +91,28 @@ export const OperationPage: FC = memo(() => {
   const operationData = useMemo(() => changedOperation?.data, [changedOperation?.data])
   const visitorData: object | undefined = apiType ? API_TYPE_MODELS_MAP[apiType as ApiType](operationData) : undefined
 
-  const models = useOpenApiVisitor( visitorData )
+  const models = useOpenApiVisitor(visitorData)
   useUpdateRecentOperations(changedOperation)
   const recentOperationsData = useRecentOperations()
   const recentOperations = useMemo(
-    () => recentOperationsData?.filter(operation => operation?.operationKey !== operationKey && apiType === operation.apiType),
+    () =>
+      recentOperationsData?.filter(
+        (operation) => operation?.operationKey !== operationKey && apiType === operation.apiType,
+      ),
     [apiType, operationKey, recentOperationsData],
   )
 
   const currentOperationTags = Array.from(handleOperationTags(changedOperation?.tags))
   const relatedOperations = useMemo(
-    () => Object.fromEntries(currentOperationTags.map(tag => [
-      tag,
-      (operationsGroupedByTags[tag] as OperationData[])?.filter(operation => operation.operationKey !== operationKey),
-    ])),
+    () =>
+      Object.fromEntries(
+        currentOperationTags.map((tag) => [
+          tag,
+          (operationsGroupedByTags[tag] as OperationData[])?.filter(
+            (operation) => operation.operationKey !== operationKey,
+          ),
+        ]),
+      ),
     [currentOperationTags, operationKey, operationsGroupedByTags],
   )
 
@@ -119,47 +127,55 @@ export const OperationPage: FC = memo(() => {
   const [, setNavigationDetails] = useOperationNavigationDetails()
 
   const isPackage: boolean = operationPackage?.kind === PACKAGE_KIND ?? false
-  const showCompareGroups = isPackage && !!operationPackage?.restGroupingPrefix && API_TYPE_SHOW_GROUPS_MAP[apiType as ApiType]
+  const showCompareGroups =
+    isPackage && !!operationPackage?.restGroupingPrefix && API_TYPE_SHOW_GROUPS_MAP[apiType as ApiType]
 
   const handleBackClick = useCallback(() => {
-    backwardLocation.fromOperation ? navigate({ ...backwardLocation.fromOperation }) : navigateToVersion({
-      packageKey: packageId!,
-      versionKey: versionId!,
-    })
+    backwardLocation.fromOperation
+      ? navigate({ ...backwardLocation.fromOperation })
+      : navigateToVersion({
+          packageKey: packageId!,
+          versionKey: versionId!,
+        })
   }, [navigate, navigateToVersion, backwardLocation, packageId, versionId])
 
   const prepareLinkFn = useCallback(
-    (operation: OperationData) => getOperationLink({
-      packageKey: packageId!,
-      versionKey: versionId!,
-      kind: mainPackage?.kind ?? PACKAGE_KIND,
-      operationKey: operation.operationKey,
-      apiType: operation.apiType,
-      packageRef: operation.packageRef,
-      ...operationSearchParams,
-    }),
+    (operation: OperationData) =>
+      getOperationLink({
+        packageKey: packageId!,
+        versionKey: versionId!,
+        kind: mainPackage?.kind ?? PACKAGE_KIND,
+        operationKey: operation.operationKey,
+        apiType: operation.apiType,
+        packageRef: operation.packageRef,
+        ...operationSearchParams,
+      }),
     [mainPackage?.kind, operationSearchParams, packageId, versionId],
   )
 
-  const handleModelUsagesClick = useCallback((modelName: string) => {
-    const operationsWithSameModel = getOperationsWithSameModel({
-      packageKey: packageId!,
-      versionKey: versionId!,
-      operationKey: operationKey!,
-      apiType: apiType as ApiType,
-      modelName: modelName,
-    })
-    showModelUsagesDialog({
-      modelName: modelName,
-      usages: operationsWithSameModel.then(groupOperationsByTags),
-      prepareLinkFn: prepareLinkFn,
-    })
-  }, [getOperationsWithSameModel, packageId, versionId, operationKey, apiType, showModelUsagesDialog, prepareLinkFn])
+  const handleModelUsagesClick = useCallback(
+    (modelName: string) => {
+      const operationsWithSameModel = getOperationsWithSameModel({
+        packageKey: packageId!,
+        versionKey: versionId!,
+        operationKey: operationKey!,
+        apiType: apiType as ApiType,
+        modelName: modelName,
+      })
+      showModelUsagesDialog({
+        modelName: modelName,
+        usages: operationsWithSameModel.then(groupOperationsByTags),
+        prepareLinkFn: prepareLinkFn,
+      })
+    },
+    [getOperationsWithSameModel, packageId, versionId, operationKey, apiType, showModelUsagesDialog, prepareLinkFn],
+  )
 
   const [playgroundViewMode = '', setPlaygroundViewMode] = useSidebarPlaygroundViewMode()
 
   const toolbarTitle = useMemo(
-    () => `${API_TYPE_TITLE_MAP[changedOperation?.apiType ?? DEFAULT_API_TYPE]}: ${changedOperation?.title || changedOperation?.operationKey || ''}`,
+    () =>
+      `${API_TYPE_TITLE_MAP[changedOperation?.apiType ?? DEFAULT_API_TYPE]}: ${changedOperation?.title || changedOperation?.operationKey || ''}`,
     [changedOperation?.apiType, changedOperation?.operationKey, changedOperation?.title],
   )
 
@@ -168,9 +184,12 @@ export const OperationPage: FC = memo(() => {
     [setNavigationDetails],
   )
 
-  const isSidebarSectionDisabled = useCallback((key: SectionKey) => {
-    return key === OPEN_API_SECTION_PARAMETERS && viewMode === GRAPH_VIEW_MODE
-  }, [viewMode])
+  const isSidebarSectionDisabled = useCallback(
+    (key: SectionKey) => {
+      return key === OPEN_API_SECTION_PARAMETERS && viewMode === GRAPH_VIEW_MODE
+    },
+    [viewMode],
+  )
 
   return (
     <SelectedOperationTagsProvider>
@@ -179,11 +198,7 @@ export const OperationPage: FC = memo(() => {
           toolbar={
             <Toolbar
               breadcrumbs={
-                <PackageBreadcrumbs
-                  packageObject={mainPackage}
-                  versionKey={versionId}
-                  showPackagePath={true}
-                />
+                <PackageBreadcrumbs packageObject={mainPackage} versionKey={versionId} showPackagePath={true} />
               }
               header={
                 <OperationToolbarHeader
@@ -223,19 +238,28 @@ export const OperationPage: FC = memo(() => {
           }
         />
       </CustomServersProvider>
-      <ModelUsagesDialog/>
+      <ModelUsagesDialog />
     </SelectedOperationTagsProvider>
   )
 })
 
-const API_TYPE_NAVIGATION_MAP: Record<ApiType, (
-  models: OpenApiData | undefined,
-  isOperationLoading: boolean,
-  handleModelUsagesClick: (modelName: string) => void,
-  onNavigateToOperationSection: (navigationDetails: VisitorNavigationDetails) => void,
-  isSidebarSectionDisabled: (key: SectionKey) => boolean,
-) => ReactElement | null> = {
-  [API_TYPE_REST]: (models, isOperationLoading, handleModelUsagesClick, onNavigateToOperationSection, isSidebarSectionDisabled) => (
+const API_TYPE_NAVIGATION_MAP: Record<
+  ApiType,
+  (
+    models: OpenApiData | undefined,
+    isOperationLoading: boolean,
+    handleModelUsagesClick: (modelName: string) => void,
+    onNavigateToOperationSection: (navigationDetails: VisitorNavigationDetails) => void,
+    isSidebarSectionDisabled: (key: SectionKey) => boolean,
+  ) => ReactElement | null
+> = {
+  [API_TYPE_REST]: (
+    models,
+    isOperationLoading,
+    handleModelUsagesClick,
+    onNavigateToOperationSection,
+    isSidebarSectionDisabled,
+  ) => (
     <SidebarPanel
       body={
         <OperationModelList

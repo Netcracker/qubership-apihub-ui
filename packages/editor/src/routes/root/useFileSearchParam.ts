@@ -24,7 +24,7 @@ export function useFileSearchParam(): [Key | undefined, SetFileSearchParam] {
   const setSearchParams = useSetSearchParams()
 
   return useMemo(
-    () => [param, value => setSearchParams({ file: value ?? '' }, { replace: true })],
+    () => [param, (value) => setSearchParams({ file: value ?? '' }, { replace: true })],
     [param, setSearchParams],
   )
 }

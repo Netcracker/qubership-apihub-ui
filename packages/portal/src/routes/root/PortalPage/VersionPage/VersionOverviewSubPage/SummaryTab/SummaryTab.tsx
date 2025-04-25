@@ -35,27 +35,22 @@ const SUMMARY_BOX_MARGIN_TOP = 4
 
 const OPERATION_TYPES_ORDER = [API_TYPE_REST, API_TYPE_GRAPHQL]
 
-const PreviousVersion: FC<Partial<{
-  packageKey: PackageKey
-  versionKey: VersionKey
-}>> = ({ packageKey, versionKey }) => {
+const PreviousVersion: FC<
+  Partial<{
+    packageKey: PackageKey
+    versionKey: VersionKey
+  }>
+> = ({ packageKey, versionKey }) => {
   let link: ReactNode | undefined
   if (packageKey && versionKey) {
     link = (
-      <Link
-        component={NavLink}
-        to={getOverviewPath({ packageKey, versionKey })}
-      >
+      <Link component={NavLink} to={getOverviewPath({ packageKey, versionKey })}>
         {versionKey}
       </Link>
     )
   }
   return (
-    <Typography
-      sx={{ gridArea: 'previousVersion' }}
-      variant="body2"
-      data-testid="PreviousVersionTypography"
-    >
+    <Typography sx={{ gridArea: 'previousVersion' }} variant="body2" data-testid="PreviousVersionTypography">
       {link ?? '-'}
     </Typography>
   )
@@ -83,17 +78,14 @@ export const SummaryTab: FC = memo(() => {
 
   const sortedOperationTypes = useMemo(() => {
     return operationTypes
-      ? Object.values(operationTypes)
-        .sort(({ apiType: apiType1 }, { apiType: apiType2 }) => {
+      ? Object.values(operationTypes).sort(({ apiType: apiType1 }, { apiType: apiType2 }) => {
           return OPERATION_TYPES_ORDER.indexOf(apiType1) - OPERATION_TYPES_ORDER.indexOf(apiType2)
         })
       : []
   }, [operationTypes])
 
   if (isLoading) {
-    return (
-      <LoadingIndicator />
-    )
+    return <LoadingIndicator />
   }
 
   return (
@@ -101,16 +93,14 @@ export const SummaryTab: FC = memo(() => {
       {versionLabels && (
         <Box display="flex" gap={1} alignItems="center" width="100%">
           <Box sx={{ whiteSpace: 'break-spaces', width: 'calc(100% - 60px)' }} data-testid="VersionLabels">
-            {versionLabels?.map(label => (
+            {versionLabels?.map((label) => (
               <CustomChip
                 sx={{ mr: 1, mt: 0.5 }}
                 key={crypto.randomUUID()}
                 value={label}
                 label={
                   <OverflowTooltip title={label}>
-                    <Box sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {label}
-                    </Box>
+                    <Box sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{label}</Box>
                   </OverflowTooltip>
                 }
               />
@@ -159,10 +149,7 @@ export const SummaryTab: FC = memo(() => {
           <Typography sx={{ gridArea: 'previousVersionTitle' }} variant="subtitle2">
             Previous version
           </Typography>
-          <PreviousVersion
-            packageKey={previousVersionPackageId ?? packageId}
-            versionKey={previousVersionKey}
-          />
+          <PreviousVersion packageKey={previousVersionPackageId ?? packageId} versionKey={previousVersionKey} />
 
           <Typography sx={{ gridArea: 'publishedByTitle' }} variant="subtitle2">
             Published by
@@ -179,8 +166,18 @@ export const SummaryTab: FC = memo(() => {
           </Typography>
         </Box>
       </Box>
-      {sortedOperationTypes
-        .map(({ apiType, changesSummary, numberOfImpactedOperations, operationsCount, deprecatedCount, noBwcOperationsCount, internalAudienceOperationsCount, unknownAudienceOperationsCount, apiAudienceTransitions }) =>
+      {sortedOperationTypes.map(
+        ({
+          apiType,
+          changesSummary,
+          numberOfImpactedOperations,
+          operationsCount,
+          deprecatedCount,
+          noBwcOperationsCount,
+          internalAudienceOperationsCount,
+          unknownAudienceOperationsCount,
+          apiAudienceTransitions,
+        }) => (
           <OperationTypeChanges
             key={apiType}
             apiType={apiType}
@@ -192,9 +189,9 @@ export const SummaryTab: FC = memo(() => {
             internalAudienceOperationsCount={internalAudienceOperationsCount}
             unknownAudienceOperationsCount={unknownAudienceOperationsCount}
             apiAudienceTransitions={apiAudienceTransitions}
-          />,
-        )
-      }
+          />
+        ),
+      )}
     </Box>
   )
 })

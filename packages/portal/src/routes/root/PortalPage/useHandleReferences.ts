@@ -43,7 +43,6 @@ export function useHandleAddedReferences(): HandleAddedReferences {
 }
 
 export function useHandleRemovedReferences(): HandleRemoveReferences {
-
   const [removeDeletedReferences] = useRemoveDeletedReferences()
   const [removeDashboardPackages] = useRemoveDashboardPackages()
   const [resetConflictedReferences] = useResetConflictedReferences()
@@ -55,11 +54,6 @@ export function useHandleRemovedReferences(): HandleRemoveReferences {
   }
 }
 
-type HandleAddedReferences = (
-  versionReferences: VersionReferences,
-  packageKey?: PackageKey,
-) => void
+type HandleAddedReferences = (versionReferences: VersionReferences, packageKey?: PackageKey) => void
 
-type HandleRemoveReferences = (
-  packageItem: PackageItem,
-) => void
+type HandleRemoveReferences = (packageItem: PackageItem) => void

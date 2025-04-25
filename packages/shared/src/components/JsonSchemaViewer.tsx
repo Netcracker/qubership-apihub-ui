@@ -27,9 +27,7 @@ export type JsonSchemaViewerProps = JsonSchemaViewerElementProps
 export const JsonSchemaViewer: FC<JsonSchemaViewerProps> = /* @__PURE__ */ memo<JsonSchemaViewerProps>((props) => {
   return (
     <Box lineHeight={1.5} height="100%" data-testid="JsonSchemaViewer">
-      <JsonSchemaViewerElement
-        {...props}
-      />
+      <JsonSchemaViewerElement {...props} />
     </Box>
   )
 })

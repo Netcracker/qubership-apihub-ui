@@ -25,7 +25,10 @@ import { LoadingButton } from '@mui/lab'
 import { RunRoutingReportDialog } from './RunRoutingReportDialog'
 import { useEventBus } from '../../../EventBusProvider'
 import { useDownloadRoutingReportSources } from './useDownloadRoutingReportSources'
-import type { DownloadType, ReportDownloadOption } from '@netcracker/qubership-apihub-ui-shared/components/SecurityReportsTable'
+import type {
+  DownloadType,
+  ReportDownloadOption,
+} from '@netcracker/qubership-apihub-ui-shared/components/SecurityReportsTable'
 import {
   DOWNLOAD_REPORT,
   DOWNLOAD_SOURCES,
@@ -43,33 +46,30 @@ export const RoutingReports: FC = memo(() => {
 
   const [downloadReport] = useDownloadSecurityReport()
   const [downloadSources] = useDownloadRoutingReportSources()
-  const [
-    securityReports,
-    isLoading,
-    fetchNextPage,
-    isFetchingNextPage,
-    hasNextPage,
-  ] = useSecurityReports({
+  const [securityReports, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage] = useSecurityReports({
     agentKey: agentId,
     namespaceKey: namespaceId,
     workspaceKey: workspaceId!,
     type: SECURITY_REPORT_TYPE_GATEWAY_ROUTING,
   })
 
-  const onDownloadSecurityReport = useCallback((processId: Key, value?: DownloadType) => {
-    if (value === DOWNLOAD_REPORT) {
-      downloadReport({
-        processKey: processId,
-        type: SECURITY_REPORT_TYPE_GATEWAY_ROUTING,
-      })
-    }
+  const onDownloadSecurityReport = useCallback(
+    (processId: Key, value?: DownloadType) => {
+      if (value === DOWNLOAD_REPORT) {
+        downloadReport({
+          processKey: processId,
+          type: SECURITY_REPORT_TYPE_GATEWAY_ROUTING,
+        })
+      }
 
-    if (value === DOWNLOAD_SOURCES) {
-      downloadSources({
-        processKey: processId,
-      })
-    }
-  }, [downloadReport, downloadSources])
+      if (value === DOWNLOAD_SOURCES) {
+        downloadSources({
+          processKey: processId,
+        })
+      }
+    },
+    [downloadReport, downloadSources],
+  )
 
   const openDialog = useCallback(() => {
     showRunRoutingReportDialog()
@@ -104,7 +104,7 @@ export const RoutingReports: FC = memo(() => {
         />
       </Box>
 
-      <RunRoutingReportDialog/>
+      <RunRoutingReportDialog />
     </Box>
   )
 })
@@ -113,7 +113,8 @@ const downloadOptions: ReportDownloadOption[] = [
   {
     value: DOWNLOAD_REPORT,
     text: 'Download report',
-  }, {
+  },
+  {
     value: DOWNLOAD_SOURCES,
     text: 'Download sources',
   },

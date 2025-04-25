@@ -43,13 +43,10 @@ export function useSidebarItems(packageObject: Package): PackageSettingsNavItemP
     filters.push(({ value }) => value !== API_SPECIFIC_CONFIGURATION_PAGE)
   }
 
-  return SETTINGS_SIDEBAR_ITEM(key, kind).filter(item => filters.every(filter => filter(item)))
+  return SETTINGS_SIDEBAR_ITEM(key, kind).filter((item) => filters.every((filter) => filter(item)))
 }
 
-const SETTINGS_SIDEBAR_ITEM = (
-  packageKey: Key,
-  packageKind: PackageKind,
-): PackageSettingsNavItemProps[] => [
+const SETTINGS_SIDEBAR_ITEM = (packageKey: Key, packageKind: PackageKind): PackageSettingsNavItemProps[] => [
   {
     label: 'General',
     description: `${PACKAGE_KINDS_NAMES_MAP[packageKind]} information`,

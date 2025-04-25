@@ -22,9 +22,7 @@ export const MonacoContentProvider: FC<PropsWithChildren> = memo<PropsWithChildr
 
   return (
     <MonacoEditorContentContext.Provider value={content}>
-      <SetMonacoEditorContentContext.Provider value={setContent}>
-        {children}
-      </SetMonacoEditorContentContext.Provider>
+      <SetMonacoEditorContentContext.Provider value={setContent}>{children}</SetMonacoEditorContentContext.Provider>
     </MonacoEditorContentContext.Provider>
   )
 })

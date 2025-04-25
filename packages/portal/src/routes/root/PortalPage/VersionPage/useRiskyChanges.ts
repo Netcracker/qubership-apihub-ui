@@ -20,27 +20,15 @@ import { useOperationChangelog } from './useOperationChangelog'
 import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { ChangelogAvailable } from '@apihub/routes/root/PortalPage/VersionPage/common-props'
-import {
-  useVersionsComparisonGlobalParams,
-} from '@apihub/routes/root/PortalPage/VersionPage/VersionsComparisonGlobalParams'
+import { useVersionsComparisonGlobalParams } from '@apihub/routes/root/PortalPage/VersionPage/VersionsComparisonGlobalParams'
 import type { OperationChange } from '@netcracker/qubership-apihub-ui-shared/entities/operation-changelog'
 import { risky } from '@netcracker/qubership-apihub-api-diff'
 
 export function useRiskyChanges(options: UseRiskyChangesOptions): [OperationChange[], IsLoading, IsSuccess] {
-  const {
-    operationKey,
-    comparisonMode,
-    needToCheckRisky,
-    isChangelogAvailable = false,
-  } = options
+  const { operationKey, comparisonMode, needToCheckRisky, isChangelogAvailable = false } = options
 
-  const {
-    originPackageKey,
-    originVersionKey,
-    changedPackageKey,
-    changedVersionKey,
-    apiType,
-  } = useVersionsComparisonGlobalParams()
+  const { originPackageKey, originVersionKey, changedPackageKey, changedVersionKey, apiType } =
+    useVersionsComparisonGlobalParams()
 
   const [changes, isChangesLoading, isSuccess] = useOperationChangelog({
     versionKey: changedVersionKey!,
@@ -54,15 +42,9 @@ export function useRiskyChanges(options: UseRiskyChangesOptions): [OperationChan
   })
 
   // TODO: Remove filter after "Filter for operation changes works incorrect"
-  const filteredChanges = useMemo(() => (
-    changes.filter(change => change.severity === risky)
-  ), [changes])
+  const filteredChanges = useMemo(() => changes.filter((change) => change.severity === risky), [changes])
 
-  return useMemo(() => [
-    filteredChanges,
-    isChangesLoading,
-    isSuccess,
-  ], [filteredChanges, isChangesLoading, isSuccess])
+  return useMemo(() => [filteredChanges, isChangesLoading, isSuccess], [filteredChanges, isChangesLoading, isSuccess])
 }
 
 export type UseRiskyChangesOptions = Partial<{
@@ -76,4 +58,5 @@ export type UseRiskyChangesOptions = Partial<{
   previousVersionPackageId: Key
   comparisonMode?: boolean
   needToCheckRisky?: boolean
-}> & ChangelogAvailable
+}> &
+  ChangelogAvailable

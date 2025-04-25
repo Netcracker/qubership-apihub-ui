@@ -39,19 +39,17 @@ import type {
 import { ALL_API_KIND, toPackageRef } from './operations'
 import type { GraphQlOperationType } from './graphql-operation-types'
 import type { Key } from './keys'
-import type {
-  DiffTypeDto} from '@netcracker/qubership-apihub-api-processor'
-import {
-  API_AUDIENCE_EXTERNAL,
-  replacePropertyInChangesSummary,
-} from '@netcracker/qubership-apihub-api-processor'
+import type { DiffTypeDto } from '@netcracker/qubership-apihub-api-processor'
+import { API_AUDIENCE_EXTERNAL, replacePropertyInChangesSummary } from '@netcracker/qubership-apihub-api-processor'
 
-export type VersionChangesDto = Partial<Readonly<{
-  previousVersion: Key
-  previousVersionPackageId: Key
-  operations: ReadonlyArray<OperationChangeDataDto>
-  packages: PackagesRefs
-}>>
+export type VersionChangesDto = Partial<
+  Readonly<{
+    previousVersion: Key
+    previousVersionPackageId: Key
+    operations: ReadonlyArray<OperationChangeDataDto>
+    packages: PackagesRefs
+  }>
+>
 
 export type VersionChanges = Readonly<{
   previousVersion?: Key
@@ -86,49 +84,52 @@ type OperationChangeDataCommonDto = Readonly<{
   tags?: Tags
 }>
 
-export type RestOperationChangeDto = OperationChangeDataCommonDto & Readonly<{
-  method: MethodType
-  path: string
-}>
+export type RestOperationChangeDto = OperationChangeDataCommonDto &
+  Readonly<{
+    method: MethodType
+    path: string
+  }>
 
-export type GraphQlOperationChangeDto = OperationChangeDataCommonDto & Readonly<{
-  method: string
-  type: GraphQlOperationType
-}>
+export type GraphQlOperationChangeDto = OperationChangeDataCommonDto &
+  Readonly<{
+    method: string
+    type: GraphQlOperationType
+  }>
 
-export type OperationChangeData = Operation & Readonly<{
-  changeSummary: ChangesSummary
-  action: ActionType // Optional, but always calculated
-  currentOperation?: OperationInfoFromDifferentVersions
-  previousOperation?: OperationInfoFromDifferentVersions
-  previousPackageRef?: PackageRef
-  previousDataHash?: string
-}>
+export type OperationChangeData = Operation &
+  Readonly<{
+    changeSummary: ChangesSummary
+    action: ActionType // Optional, but always calculated
+    currentOperation?: OperationInfoFromDifferentVersions
+    previousOperation?: OperationInfoFromDifferentVersions
+    previousPackageRef?: PackageRef
+    previousDataHash?: string
+  }>
 
-export type OperationWithDifferenceChangeData = OperationWithDifference & Readonly<{
-  changeSummary: ChangesSummary
-  action: ActionType
-}>
+export type OperationWithDifferenceChangeData = OperationWithDifference &
+  Readonly<{
+    changeSummary: ChangesSummary
+    action: ActionType
+  }>
 
 export const toVersionChanges = (dto: VersionChangesDto): VersionChanges => {
   return {
     previousVersion: dto?.previousVersion,
     previousVersionPackageKey: dto?.previousVersionPackageId,
-    operations: dto?.operations?.map(
-      (operationChange) => toOperationChangeData(operationChange, dto?.packages),
-    ) ?? [],
+    operations: dto?.operations?.map((operationChange) => toOperationChangeData(operationChange, dto?.packages)) ?? [],
   }
 }
 
 export const toDiffVersionChanges = (dto: VersionChangesDto): DifferentVersionChanges => {
   return {
-    operations: dto?.operations?.map(
-      (operationChange) => toDiffOperationChangeData(operationChange),
-    ) ?? [],
+    operations: dto?.operations?.map((operationChange) => toDiffOperationChangeData(operationChange)) ?? [],
   }
 }
 
-export const toOperationChangeData = (dto: OperationChangeDataDto, packagesRefs?: PackagesRefs): OperationChangeData => {
+export const toOperationChangeData = (
+  dto: OperationChangeDataDto,
+  packagesRefs?: PackagesRefs,
+): OperationChangeData => {
   return {
     ...dto,
     changeSummary: replacePropertyInChangesSummary(dto.changeSummary),
@@ -155,11 +156,7 @@ export const toDiffOperationChangeData = (dto: OperationChangeDataDto): Operatio
 }
 
 export function calculateAction(current?: string, previous?: string): ActionType {
-  return current && previous
-    ? REPLACE_ACTION_TYPE
-    : previous
-      ? REMOVE_ACTION_TYPE
-      : ADD_ACTION_TYPE
+  return current && previous ? REPLACE_ACTION_TYPE : previous ? REMOVE_ACTION_TYPE : ADD_ACTION_TYPE
 }
 
 export const EMPTY_CHANGES = {

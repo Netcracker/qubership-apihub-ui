@@ -18,25 +18,16 @@
 //  Details: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/groupBy, https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/groupByToMap
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-export function groupBy<T extends ReadonlyArray<any>>(
-  array: T,
-  key: string,
-): Record<string, T> {
-  return array.reduce(
-    (previousValue, currentValue) => {
-      (previousValue[currentValue[key]] = previousValue[currentValue[key]] ?? []).push(currentValue)
-      return previousValue
-    },
-    {},
-  )
+export function groupBy<T extends ReadonlyArray<any>>(array: T, key: string): Record<string, T> {
+  return array.reduce((previousValue, currentValue) => {
+    ;(previousValue[currentValue[key]] = previousValue[currentValue[key]] ?? []).push(currentValue)
+    return previousValue
+  }, {})
 }
 
-export function sortByProperty<T>(
-  array: ReadonlyArray<T>,
-  property: keyof T,
-): T[] {
+export function sortByProperty<T>(array: ReadonlyArray<T>, property: keyof T): T[] {
   const collator = new Intl.Collator(undefined, { numeric: true })
-  
+
   return [...array].sort((a, b) => {
     const aValue = a[property]
     const bValue = b[property]
@@ -55,13 +46,15 @@ export function deduplicate<T>(array: ReadonlyArray<T>): T[] {
 }
 
 export function deduplicateByKey<T, K extends keyof T>(array: ReadonlyArray<T>, key: K): T[] {
-  return Object.values(array.reduce<Record<string, T>>((previousValue, currentValue) => {
-    const index = currentValue[key] as string
-    if (previousValue[index] === undefined) {
-      previousValue[index] = currentValue
-    }
-    return previousValue
-  }, {}))
+  return Object.values(
+    array.reduce<Record<string, T>>((previousValue, currentValue) => {
+      const index = currentValue[key] as string
+      if (previousValue[index] === undefined) {
+        previousValue[index] = currentValue
+      }
+      return previousValue
+    }, {}),
+  )
 }
 
 export function isEmpty(array: unknown): boolean {

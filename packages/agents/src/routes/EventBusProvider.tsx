@@ -75,11 +75,7 @@ const EventBusContext = createContext<EventBus>()
 export const EventBusProvider: FC<PropsWithChildren> = memo(({ children }) => {
   const [eventBus] = useState(eventBusProvider)
 
-  return (
-    <EventBusContext.Provider value={eventBus}>
-      {children}
-    </EventBusContext.Provider>
-  )
+  return <EventBusContext.Provider value={eventBus}>{children}</EventBusContext.Provider>
 })
 
 export function useEventBus(): EventBus {

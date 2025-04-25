@@ -18,7 +18,10 @@ type OasExtensionsManagerResult = {
   control: Control<EditOasExtensionsForm>
   handleSubmit: UseFormHandleSubmit<EditOasExtensionsForm>
   setValue: UseFormSetValue<EditOasExtensionsForm>
-  processExtensionsUpdate: (newExtensions: Array<string | OasSettingsExtension>, currentExtensions?: OasSettingsExtension[]) => OasSettingsExtension[]
+  processExtensionsUpdate: (
+    newExtensions: Array<string | OasSettingsExtension>,
+    currentExtensions?: OasSettingsExtension[],
+  ) => OasSettingsExtension[]
 }
 
 /**
@@ -57,51 +60,50 @@ export const useOasExtensionsManager = (initialExtensions?: OasSettingsExtension
   /**
    * Handles inheritance for deleted extensions (keeps inherited/mixed ones and updates their kind)
    */
-  const handleDeletedExtensions = useCallback((
-    newExtensions: OasSettingsExtension[],
-    currentExtensions: OasSettingsExtension[],
-  ): OasSettingsExtension[] => {
-
-    // Track new extension keys for fast lookup
-    const newExtensionKeys = new Set(newExtensions.map(ext => ext.key))
-    return currentExtensions
-      .filter(ext => {
-        const isDeleted = !newExtensionKeys.has(ext.key)
-        return isDeleted && (ext.kind === OAS_EXTENSION_KIND_MIXED || ext.kind === OAS_EXTENSION_KIND_INHERITED)
-      })
-      .map(ext => ({
-        ...ext,
-        kind: OAS_EXTENSION_KIND_INHERITED,
-      }))
-  }, [])
+  const handleDeletedExtensions = useCallback(
+    (newExtensions: OasSettingsExtension[], currentExtensions: OasSettingsExtension[]): OasSettingsExtension[] => {
+      // Track new extension keys for fast lookup
+      const newExtensionKeys = new Set(newExtensions.map((ext) => ext.key))
+      return currentExtensions
+        .filter((ext) => {
+          const isDeleted = !newExtensionKeys.has(ext.key)
+          return isDeleted && (ext.kind === OAS_EXTENSION_KIND_MIXED || ext.kind === OAS_EXTENSION_KIND_INHERITED)
+        })
+        .map((ext) => ({
+          ...ext,
+          kind: OAS_EXTENSION_KIND_INHERITED,
+        }))
+    },
+    [],
+  )
 
   /**
    * Processes extension updates, handling additions, deletions and inheritance
    */
-  const processExtensionsUpdate = useCallback((
-    newExtensions: Array<string | OasSettingsExtension>,
-    currentExtensions: OasSettingsExtension[] = [],
-  ): OasSettingsExtension[] => {
-    // Convert all extensions to uniform OasExtension objects
-    const newConvertedExtensions = newExtensions.map(convertToExtension)
+  const processExtensionsUpdate = useCallback(
+    (
+      newExtensions: Array<string | OasSettingsExtension>,
+      currentExtensions: OasSettingsExtension[] = [],
+    ): OasSettingsExtension[] => {
+      // Convert all extensions to uniform OasExtension objects
+      const newConvertedExtensions = newExtensions.map(convertToExtension)
 
-    // Early return if no current extensions to compare against
-    if (isEmpty(currentExtensions)) {
-      return newConvertedExtensions
-    }
+      // Early return if no current extensions to compare against
+      if (isEmpty(currentExtensions)) {
+        return newConvertedExtensions
+      }
 
-    // Handle deleted extensions that were inherited or mixed
-    const preservedExtensions = handleDeletedExtensions(newConvertedExtensions, currentExtensions)
+      // Handle deleted extensions that were inherited or mixed
+      const preservedExtensions = handleDeletedExtensions(newConvertedExtensions, currentExtensions)
 
-    // Combine and sort the final list
-    const finalExtensions = [...newConvertedExtensions, ...preservedExtensions]
-    const { inheritedExtensions, nonInheritedExtensions } = separateExtensionsByInheritance(finalExtensions)
+      // Combine and sort the final list
+      const finalExtensions = [...newConvertedExtensions, ...preservedExtensions]
+      const { inheritedExtensions, nonInheritedExtensions } = separateExtensionsByInheritance(finalExtensions)
 
-    return [
-      ...sortByProperty(inheritedExtensions, 'name'),
-      ...nonInheritedExtensions,
-    ]
-  }, [convertToExtension, handleDeletedExtensions])
+      return [...sortByProperty(inheritedExtensions, 'name'), ...nonInheritedExtensions]
+    },
+    [convertToExtension, handleDeletedExtensions],
+  )
 
   return {
     control,

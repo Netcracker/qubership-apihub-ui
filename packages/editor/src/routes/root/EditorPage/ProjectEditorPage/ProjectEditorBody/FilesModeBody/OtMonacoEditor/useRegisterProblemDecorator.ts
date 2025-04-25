@@ -53,7 +53,7 @@ export function useRegisterProblemDecorator(
     }
 
     const decorations = problems
-      .filter(message => message.externalFilePath === undefined)
+      .filter((message) => message.externalFilePath === undefined)
       .map(({ lineNumber, text, type }) => ({
         range: new Range(lineNumber ?? 0, 0, lineNumber ?? 0, 0),
         options: {

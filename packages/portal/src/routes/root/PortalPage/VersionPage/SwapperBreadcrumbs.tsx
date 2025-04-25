@@ -41,11 +41,13 @@ export const SwapperBreadcrumbs: FC<SwapperBreadcrumbsProps> = memo<SwapperBread
 
   return (
     <>
-      <ComparedPackagesBreadcrumbs data={linkedBreadcrumbs}/>
+      <ComparedPackagesBreadcrumbs data={linkedBreadcrumbs} />
       <OverflowTooltip title={textBreadcrumb?.name}>
         <Box sx={SWAPPER_TEXT_STYLES} data-testid="SwapperTitle">
           <Typography fontWeight="600">{textBreadcrumb?.name}</Typography>
-          <Typography variant="subtitle2" fontSize={13}>{textBreadcrumb?.description}</Typography>
+          <Typography variant="subtitle2" fontSize={13}>
+            {textBreadcrumb?.description}
+          </Typography>
         </Box>
       </OverflowTooltip>
     </>

@@ -76,7 +76,7 @@ export const AddPackageDialog: FC<AddPackageDialogProps> = memo(({ packageObject
   return (
     <PopupDelegate
       type={SHOW_ADD_PACKAGE_DIALOG}
-      render={props => <AddPackagePopup {...props} packageObject={packageObject}/>}
+      render={(props) => <AddPackagePopup {...props} packageObject={packageObject} />}
     />
   )
 })
@@ -93,12 +93,15 @@ const AddPackagePopup: FC<AddPackagePopupProps> = memo<AddPackagePopupProps>(({ 
   const setConfigurableReferences = useSetDashboardReferences()
   const configurableReferences = useDashboardReferences()
 
-  const isAlreadyAddedReference = useCallback((packageObject: Package) => {
-    return configurableReferences.some(ref => ref.packageReference.key === packageObject.key)
-  }, [configurableReferences])
+  const isAlreadyAddedReference = useCallback(
+    (packageObject: Package) => {
+      return configurableReferences.some((ref) => ref.packageReference.key === packageObject.key)
+    },
+    [configurableReferences],
+  )
 
   const defaultWorkspace = useMemo(
-    () => (packageObject?.parents ?? []).find(parent => parent.kind === WORKSPACE_KIND),
+    () => (packageObject?.parents ?? []).find((parent) => parent.kind === WORKSPACE_KIND),
     [packageObject?.parents],
   )
 
@@ -108,25 +111,38 @@ const AddPackagePopup: FC<AddPackagePopupProps> = memo<AddPackagePopupProps>(({ 
   const [selectedVersion, setSelectedVersion] = useState<PackageVersion | null>(null)
 
   const [selectedPackageInput, setSelectedPackageInput] = useState('')
-  const onSelectedPackageInputValueChange = useCallback((_: SyntheticEvent, value: string) => setSelectedPackageInput(value), [])
+  const onSelectedPackageInputValueChange = useCallback(
+    (_: SyntheticEvent, value: string) => setSelectedPackageInput(value),
+    [],
+  )
 
   const handleAddedReferences = useHandleAddedReferences()
 
   const onAddPackageToDashboard = useCallback(async () => {
     const versionReferences = toVersionReferences(await getReferences(selectedPackage!.key!, selectedVersion!.key!))
-    setConfigurableReferences([...configurableReferences, {
-      packageReference: {
-        key: selectedPackage?.key,
-        name: selectedPackage?.name,
-        kind: selectedPackage?.kind as ReferenceKind,
-        version: selectedVersion?.key,
-        status: selectedVersion?.status,
+    setConfigurableReferences([
+      ...configurableReferences,
+      {
+        packageReference: {
+          key: selectedPackage?.key,
+          name: selectedPackage?.name,
+          kind: selectedPackage?.kind as ReferenceKind,
+          version: selectedVersion?.key,
+          status: selectedVersion?.status,
+        },
+        added: true,
       },
-      added: true,
-    }])
+    ])
     handleAddedReferences(versionReferences, selectedPackage?.key)
     setOpen(false)
-  }, [selectedPackage, selectedVersion, setConfigurableReferences, configurableReferences, handleAddedReferences, setOpen])
+  }, [
+    selectedPackage,
+    selectedVersion,
+    setConfigurableReferences,
+    configurableReferences,
+    handleAddedReferences,
+    setOpen,
+  ])
 
   // Load data for connected fields
   const [workspaces] = usePackages({ kind: WORKSPACE_KIND })
@@ -138,7 +154,7 @@ const AddPackagePopup: FC<AddPackagePopupProps> = memo<AddPackagePopupProps>(({ 
     enabled: !!selectedWorkspace,
   })
   const unusedPackages = useMemo(
-    () => packages.filter(packageObject => !isAlreadyAddedReference(packageObject)),
+    () => packages.filter((packageObject) => !isAlreadyAddedReference(packageObject)),
     [packages, isAlreadyAddedReference],
   )
   const [versions] = usePagedPackageVersions({
@@ -147,11 +163,14 @@ const AddPackagePopup: FC<AddPackagePopupProps> = memo<AddPackagePopupProps>(({ 
   const flattenVersions = versions.flat()
 
   // Form initializing
-  const defaultFormData = useMemo<AddPackageForm>(() => ({
-    workspaceKey: selectedWorkspace?.key,
-    packageKey: selectedPackage?.key,
-    versionKey: selectedVersion?.key,
-  }), [selectedWorkspace?.key, selectedPackage?.key, selectedVersion?.key])
+  const defaultFormData = useMemo<AddPackageForm>(
+    () => ({
+      workspaceKey: selectedWorkspace?.key,
+      packageKey: selectedPackage?.key,
+      versionKey: selectedVersion?.key,
+    }),
+    [selectedWorkspace?.key, selectedPackage?.key, selectedVersion?.key],
+  )
   const { handleSubmit, control, setValue } = useForm<AddPackageForm>({
     defaultValues: defaultFormData,
   })
@@ -165,67 +184,67 @@ const AddPackagePopup: FC<AddPackagePopupProps> = memo<AddPackagePopupProps>(({ 
 
   // Rendering functions
 
-  const renderSelectWorkspace = useCallback(({ field }: ControllerRenderFunctionProps<typeof WORKSPACE_KEY>) => (
-    <Autocomplete
-      key="workspaceAutocomplete"
-      options={workspaces}
-      value={selectedWorkspace}
-      getOptionLabel={({ name }: Package) => name}
-      renderOption={(props, { key, name }) => (
-        <ListItem {...props} key={key}>
-          <Box
-            sx={{
-              height: '16px',
-              width: '16px',
-              marginRight: '6px',
-            }}
-          >
-            <GroupIcon/>
-          </Box>
-          {name}
-        </ListItem>
-      )}
-      isOptionEqualToValue={(option, value) => option.key === value?.key}
-      renderInput={(params) => (
-        <TextField {...field} {...params} required label="Workspace"/>
-      )}
-      onChange={(_, value) => {
-        setValue(WORKSPACE_KEY, value?.key ?? '')
-        setSelectedWorkspace(value)
-        setSelectedPackage(null)
-        setSelectedVersion(null)
-      }}
-      data-testid="WorkspaceAutocomplete"
-    />
-  ), [workspaces, selectedWorkspace, setValue])
+  const renderSelectWorkspace = useCallback(
+    ({ field }: ControllerRenderFunctionProps<typeof WORKSPACE_KEY>) => (
+      <Autocomplete
+        key="workspaceAutocomplete"
+        options={workspaces}
+        value={selectedWorkspace}
+        getOptionLabel={({ name }: Package) => name}
+        renderOption={(props, { key, name }) => (
+          <ListItem {...props} key={key}>
+            <Box
+              sx={{
+                height: '16px',
+                width: '16px',
+                marginRight: '6px',
+              }}
+            >
+              <GroupIcon />
+            </Box>
+            {name}
+          </ListItem>
+        )}
+        isOptionEqualToValue={(option, value) => option.key === value?.key}
+        renderInput={(params) => <TextField {...field} {...params} required label="Workspace" />}
+        onChange={(_, value) => {
+          setValue(WORKSPACE_KEY, value?.key ?? '')
+          setSelectedWorkspace(value)
+          setSelectedPackage(null)
+          setSelectedVersion(null)
+        }}
+        data-testid="WorkspaceAutocomplete"
+      />
+    ),
+    [workspaces, selectedWorkspace, setValue],
+  )
 
-  const renderSelectPackage = useCallback(({ field }: ControllerRenderFunctionProps<typeof PACKAGE_KEY>) => (
-    <Autocomplete
-      key="packageAutocomplete"
-      filterOptions={disableAutocompleteSearch}
-      onInputChange={debounce(onSelectedPackageInputValueChange, DEFAULT_DEBOUNCE)}
-      options={unusedPackages}
-      getOptionLabel={({ name }: Package) => name}
-      value={selectedPackage}
-      loading={isPackagesLoading}
-      renderOption={(props, { key, name }) => (
-        <OptionItem key={key} props={props} title={name} subtitle={key}/>
-      )}
-      isOptionEqualToValue={(option, value) => option.key === value?.key}
-      renderInput={(params) => (
-        <TextField {...field} {...params} required label="Package / Dashboard"/>
-      )}
-      onChange={(_, value) => {
-        setValue(PACKAGE_KEY, value?.key ?? '')
-        setSelectedPackage(value)
-        setSelectedVersion(null)
-      }}
-      data-testid="PackageAutocomplete"
-    />
-  ), [onSelectedPackageInputValueChange, unusedPackages, selectedPackage, isPackagesLoading, setValue])
+  const renderSelectPackage = useCallback(
+    ({ field }: ControllerRenderFunctionProps<typeof PACKAGE_KEY>) => (
+      <Autocomplete
+        key="packageAutocomplete"
+        filterOptions={disableAutocompleteSearch}
+        onInputChange={debounce(onSelectedPackageInputValueChange, DEFAULT_DEBOUNCE)}
+        options={unusedPackages}
+        getOptionLabel={({ name }: Package) => name}
+        value={selectedPackage}
+        loading={isPackagesLoading}
+        renderOption={(props, { key, name }) => <OptionItem key={key} props={props} title={name} subtitle={key} />}
+        isOptionEqualToValue={(option, value) => option.key === value?.key}
+        renderInput={(params) => <TextField {...field} {...params} required label="Package / Dashboard" />}
+        onChange={(_, value) => {
+          setValue(PACKAGE_KEY, value?.key ?? '')
+          setSelectedPackage(value)
+          setSelectedVersion(null)
+        }}
+        data-testid="PackageAutocomplete"
+      />
+    ),
+    [onSelectedPackageInputValueChange, unusedPackages, selectedPackage, isPackagesLoading, setValue],
+  )
 
-  const renderSelectVersion = useCallback((
-      { field }: ControllerRenderFunctionProps<typeof VERSION_KEY>) => (
+  const renderSelectVersion = useCallback(
+    ({ field }: ControllerRenderFunctionProps<typeof VERSION_KEY>) => (
       <Autocomplete<PackageVersion>
         key="versionAutocomplete"
         disabled={isEmpty(flattenVersions)}
@@ -235,13 +254,11 @@ const AddPackagePopup: FC<AddPackagePopupProps> = memo<AddPackagePopupProps>(({ 
         renderOption={(props, { key, status }) => (
           <ListItem {...props}>
             <ListItemText>{getSplittedVersionKey(key).versionKey}</ListItemText>
-            <CustomChip value={status}/>
+            <CustomChip value={status} />
           </ListItem>
         )}
         isOptionEqualToValue={(option, value) => option.key === value?.key}
-        renderInput={(params) => (
-          <TextField {...field} {...params} required label="Version"/>
-        )}
+        renderInput={(params) => <TextField {...field} {...params} required label="Version" />}
         onChange={(_, value) => {
           setValue(VERSION_KEY, value?.key ?? '')
           setSelectedVersion(value)
@@ -254,31 +271,13 @@ const AddPackagePopup: FC<AddPackagePopupProps> = memo<AddPackagePopupProps>(({ 
   )
 
   return (
-    <DialogForm
-      open={open}
-      onClose={() => setOpen(false)}
-      onSubmit={handleSubmit(onAddPackageToDashboard)}
-    >
-      <DialogTitle>
-        Add Package
-      </DialogTitle>
+    <DialogForm open={open} onClose={() => setOpen(false)} onSubmit={handleSubmit(onAddPackageToDashboard)}>
+      <DialogTitle>Add Package</DialogTitle>
 
       <DialogContent>
-        <Controller
-          name={WORKSPACE_KEY}
-          control={control}
-          render={renderSelectWorkspace}
-        />
-        <Controller
-          name={PACKAGE_KEY}
-          control={control}
-          render={renderSelectPackage}
-        />
-        <Controller
-          name={VERSION_KEY}
-          control={control}
-          render={renderSelectVersion}
-        />
+        <Controller name={WORKSPACE_KEY} control={control} render={renderSelectWorkspace} />
+        <Controller name={PACKAGE_KEY} control={control} render={renderSelectPackage} />
+        <Controller name={VERSION_KEY} control={control} render={renderSelectVersion} />
       </DialogContent>
 
       <DialogActions>

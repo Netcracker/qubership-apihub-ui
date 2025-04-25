@@ -40,19 +40,14 @@ export type ActivityListBodyProps = Partial<{
 
 // First Order Component //
 export const ActivityListBody: FC<ActivityListBodyProps> = memo((props) => {
-  const {
-    activities = [],
-    isLoading = false,
-    types = [],
-    textFilter,
-    placeholderText,
-  } = props
+  const { activities = [], isLoading = false, types = [], textFilter, placeholderText } = props
 
   return (
     <Box overflow="auto">
-      {isLoading
-        ? <ActivityListSkeleton/>
-        : <Placeholder
+      {isLoading ? (
+        <ActivityListSkeleton />
+      ) : (
+        <Placeholder
           invisible={isNotEmpty(activities)}
           area={CONTENT_PLACEHOLDER_AREA}
           message={!!textFilter || isNotEmpty(types) ? NO_SEARCH_RESULTS : placeholderText}
@@ -62,10 +57,10 @@ export const ActivityListBody: FC<ActivityListBodyProps> = memo((props) => {
               console.warn(`Unknown activity type = ${activity.activityType}`)
               return null
             }
-            return <ActivityListItem key={`activity-${index}`} activity={activity}/>
+            return <ActivityListItem key={`activity-${index}`} activity={activity} />
           })}
         </Placeholder>
-      }
+      )}
     </Box>
   )
 })

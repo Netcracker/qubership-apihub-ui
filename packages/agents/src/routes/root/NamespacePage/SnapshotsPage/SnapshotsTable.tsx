@@ -58,130 +58,157 @@ import type { ChangesSummary } from '@netcracker/qubership-apihub-ui-shared/enti
 export const SnapshotsTable: FC = memo(() => {
   const [{ snapshots }] = useSnapshots()
 
-  const columns: ColumnDef<SnapshotsTableData>[] = useMemo(() => [
-    {
-      id: SNAPSHOT_OR_SERVICE_COLUMN_ID,
-      header: 'Snapshot / Service',
-      cell: ({
-        row: {
-          getCanExpand,
-          getToggleExpandedHandler,
-          getIsExpanded,
-          original: { snapshot, servicePublishInfo },
-        },
-      }) => {
-        if (snapshot) {
-          const snapshotName = getSplittedVersionKey(snapshot.versionKey).versionKey
-          return (
-            <Box display="flex" alignItems="center" gap={1}>
-              {getCanExpand() && (
-                <IconButton sx={{ p: 0 }} onClick={getToggleExpandedHandler()}>
-                  {getIsExpanded()
-                    ? <KeyboardArrowDownOutlinedIcon sx={{ fontSize: '16px' }}/>
-                    : <KeyboardArrowRightOutlinedIcon sx={{ fontSize: '16px' }}/>}
-                </IconButton>
-              )}
+  const columns: ColumnDef<SnapshotsTableData>[] = useMemo(
+    () => [
+      {
+        id: SNAPSHOT_OR_SERVICE_COLUMN_ID,
+        header: 'Snapshot / Service',
+        cell: ({
+          row: {
+            getCanExpand,
+            getToggleExpandedHandler,
+            getIsExpanded,
+            original: { snapshot, servicePublishInfo },
+          },
+        }) => {
+          if (snapshot) {
+            const snapshotName = getSplittedVersionKey(snapshot.versionKey).versionKey
+            return (
+              <Box display="flex" alignItems="center" gap={1}>
+                {getCanExpand() && (
+                  <IconButton sx={{ p: 0 }} onClick={getToggleExpandedHandler()}>
+                    {getIsExpanded() ? (
+                      <KeyboardArrowDownOutlinedIcon sx={{ fontSize: '16px' }} />
+                    ) : (
+                      <KeyboardArrowRightOutlinedIcon sx={{ fontSize: '16px' }} />
+                    )}
+                  </IconButton>
+                )}
 
-              <OverflowTooltip sx={{ height: 19 }} title={snapshotName}>
-                <Typography noWrap variant="inherit">{snapshotName}</Typography>
+                <OverflowTooltip sx={{ height: 19 }} title={snapshotName}>
+                  <Typography noWrap variant="inherit">
+                    {snapshotName}
+                  </Typography>
+                </OverflowTooltip>
+              </Box>
+            )
+          }
+
+          if (servicePublishInfo) {
+            return (
+              <OverflowTooltip sx={{ pl: 5, height: 19 }} title={servicePublishInfo.key}>
+                <Typography noWrap variant="inherit">
+                  {servicePublishInfo.key}
+                </Typography>
               </OverflowTooltip>
-            </Box>
-          )
-        }
+            )
+          }
 
-        if (servicePublishInfo) {
-          return (
-            <OverflowTooltip sx={{ pl: 5, height: 19 }} title={servicePublishInfo.key}>
-              <Typography noWrap variant="inherit">{servicePublishInfo.key}</Typography>
-            </OverflowTooltip>
-          )
-        }
-
-        return null
-      },
-    },
-    {
-      id: PUBLISHED_DATE_COLUMN_ID,
-      header: 'Published Date',
-      cell: ({ row: { original: { publishedDate } } }) => (
-        publishedDate && (
-          <FormattedDate value={publishedDate}/>
-        )
-      ),
-    },
-    {
-      id: BASELINE_OR_BWC_STATUS_COLUMN_ID,
-      header: 'Baseline / BWC Status',
-      cell: ({ row: { original: { snapshot, servicePublishInfo, bwcErrors, viewChangesUrl } } }) => {
-        if (snapshot) {
           return null
-        }
-
-        if (servicePublishInfo) {
-          if (!viewChangesUrl) {
-            return (
-              <Box display="flex" gap={1}>
-                <StatusMarker value={WARNING_STATUS_MARKER_VARIANT}/>
-                <Typography noWrap variant="inherit">{BASELINE_VERSION_NOT_FOUND_MESSAGE}</Typography>
-              </Box>
-            )
+        },
+      },
+      {
+        id: PUBLISHED_DATE_COLUMN_ID,
+        header: 'Published Date',
+        cell: ({
+          row: {
+            original: { publishedDate },
+          },
+        }) => publishedDate && <FormattedDate value={publishedDate} />,
+      },
+      {
+        id: BASELINE_OR_BWC_STATUS_COLUMN_ID,
+        header: 'Baseline / BWC Status',
+        cell: ({
+          row: {
+            original: { snapshot, servicePublishInfo, bwcErrors, viewChangesUrl },
+          },
+        }) => {
+          if (snapshot) {
+            return null
           }
 
-          if (bwcErrors !== undefined) {
-            const areBwcErrorsExist = bwcErrors > 0
-            return (
-              <Box display="flex" gap={1}>
-                <StatusMarker value={areBwcErrorsExist ? ERROR_STATUS_MARKER_VARIANT : SUCCESS_STATUS_MARKER_VARIANT}/>
-                <Typography noWrap
-                            variant="inherit">{areBwcErrorsExist ? BACKWARD_INCOMPATIBLE_MESSAGE : BACKWARD_COMPATIBLE_MESSAGE}</Typography>
-              </Box>
-            )
+          if (servicePublishInfo) {
+            if (!viewChangesUrl) {
+              return (
+                <Box display="flex" gap={1}>
+                  <StatusMarker value={WARNING_STATUS_MARKER_VARIANT} />
+                  <Typography noWrap variant="inherit">
+                    {BASELINE_VERSION_NOT_FOUND_MESSAGE}
+                  </Typography>
+                </Box>
+              )
+            }
+
+            if (bwcErrors !== undefined) {
+              const areBwcErrorsExist = bwcErrors > 0
+              return (
+                <Box display="flex" gap={1}>
+                  <StatusMarker
+                    value={areBwcErrorsExist ? ERROR_STATUS_MARKER_VARIANT : SUCCESS_STATUS_MARKER_VARIANT}
+                  />
+                  <Typography noWrap variant="inherit">
+                    {areBwcErrorsExist ? BACKWARD_INCOMPATIBLE_MESSAGE : BACKWARD_COMPATIBLE_MESSAGE}
+                  </Typography>
+                </Box>
+              )
+            }
           }
-        }
 
-        return null
+          return null
+        },
       },
-    },
-    {
-      id: CHANGES_COLUMN_ID,
-      header: 'Changes',
-      cell: ({ row: { original: { changeSummary, viewChangesUrl } } }) => {
-        if (viewChangesUrl && changeSummary) {
-          return (
-            <Changes mode="compact" value={changeSummary}/>
-          )
-        }
+      {
+        id: CHANGES_COLUMN_ID,
+        header: 'Changes',
+        cell: ({
+          row: {
+            original: { changeSummary, viewChangesUrl },
+          },
+        }) => {
+          if (viewChangesUrl && changeSummary) {
+            return <Changes mode="compact" value={changeSummary} />
+          }
 
-        return null
+          return null
+        },
       },
-    },
-    {
-      id: VIEW_CHANGES_URL_COLUMN_ID,
-      cell: ({ row: { original: { viewChangesUrl } } }) => (
-        viewChangesUrl && (
-          <Button
-            sx={{ visibility: 'hidden', p: 0, height: 10, whiteSpace: 'nowrap' }}
-            className="hoverable"
-            component="a"
-            variant="text"
-            href={viewChangesUrl}
-            target="_blank"
-            startIcon={<ArrowOutwardRoundedIcon/>}
-          >
-            View Changes
-          </Button>
-        )
-      ),
-    },
-  ], [])
+      {
+        id: VIEW_CHANGES_URL_COLUMN_ID,
+        cell: ({
+          row: {
+            original: { viewChangesUrl },
+          },
+        }) =>
+          viewChangesUrl && (
+            <Button
+              sx={{ visibility: 'hidden', p: 0, height: 10, whiteSpace: 'nowrap' }}
+              className="hoverable"
+              component="a"
+              variant="text"
+              href={viewChangesUrl}
+              target="_blank"
+              startIcon={<ArrowOutwardRoundedIcon />}
+            >
+              View Changes
+            </Button>
+          ),
+      },
+    ],
+    [],
+  )
 
   const [expanded, setExpanded] = useState<ExpandedState>({})
 
-  const data: SnapshotsTableData[] = useMemo(() => snapshots.map(snapshot => ({
-    snapshot: snapshot,
-    publishedDate: snapshot.createdAt,
-    baselineOrChanges: snapshot.previousVersionKey,
-  })), [snapshots])
+  const data: SnapshotsTableData[] = useMemo(
+    () =>
+      snapshots.map((snapshot) => ({
+        snapshot: snapshot,
+        publishedDate: snapshot.createdAt,
+        baselineOrChanges: snapshot.previousVersionKey,
+      })),
+    [snapshots],
+  )
 
   const { getHeaderGroups, getRowModel } = useReactTable({
     data: data,
@@ -197,13 +224,10 @@ export const SnapshotsTable: FC = memo(() => {
     <TableContainer sx={{ mt: 1 }}>
       <Table>
         <TableHead>
-          {getHeaderGroups().map(headerGroup => (
+          {getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map(header => (
-                <TableCell
-                  key={header.id}
-                  align="left"
-                >
+              {headerGroup.headers.map((header) => (
+                <TableCell key={header.id} align="left">
                   {flexRender(header.column.columnDef.header, header.getContext())}
                 </TableCell>
               ))}
@@ -211,7 +235,7 @@ export const SnapshotsTable: FC = memo(() => {
           ))}
         </TableHead>
         <TableBody>
-          {getRowModel().rows.map(row => (
+          {getRowModel().rows.map((row) => (
             <Fragment key={row.id}>
               <TableRow>
                 {row.getVisibleCells().map((cell) => (
@@ -221,7 +245,7 @@ export const SnapshotsTable: FC = memo(() => {
                 ))}
               </TableRow>
               {row.original.snapshot && row.getIsExpanded() && (
-                <SnapshotsSubTable value={row} lastColumnId={VIEW_CHANGES_URL_COLUMN_ID}/>
+                <SnapshotsSubTable value={row} lastColumnId={VIEW_CHANGES_URL_COLUMN_ID} />
               )}
             </Fragment>
           ))}

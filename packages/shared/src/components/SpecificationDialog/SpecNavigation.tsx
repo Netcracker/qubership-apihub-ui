@@ -49,172 +49,190 @@ export type SpecNavigationProps = {
   onSelect?: (uri: SpecItemUri) => void
 }
 
-export const SpecNavigation: FC<SpecNavigationProps> = /* @__PURE__ */ memo<SpecNavigationProps>(({
-  content,
-  selectedUri,
-  onSelect,
-}) => {
-  const [schema, { paths, schemaNames, componentsSectionItems }] = useNavigationData(content)
+export const SpecNavigation: FC<SpecNavigationProps> = /* @__PURE__ */ memo<SpecNavigationProps>(
+  ({ content, selectedUri, onSelect }) => {
+    const [schema, { paths, schemaNames, componentsSectionItems }] = useNavigationData(content)
 
-  const [selectedElement, setSelectedElement] = useState<string | null>()
-  const navigateAndSelect = useCallback((pathToNavigate: SpecItemPath, elementToSelect?: string): void => {
-    onSelect?.(`${ROOT_URI_PREFIX}${pathToNavigate.map(encodeKey).join('/')}`)
-    setSelectedElement(elementToSelect)
-  }, [onSelect])
+    const [selectedElement, setSelectedElement] = useState<string | null>()
+    const navigateAndSelect = useCallback(
+      (pathToNavigate: SpecItemPath, elementToSelect?: string): void => {
+        onSelect?.(`${ROOT_URI_PREFIX}${pathToNavigate.map(encodeKey).join('/')}`)
+        setSelectedElement(elementToSelect)
+      },
+      [onSelect],
+    )
 
-  useNavigateToSelectedSpecItemUri(content, selectedUri, navigateAndSelect)
+    useNavigateToSelectedSpecItemUri(content, selectedUri, navigateAndSelect)
 
-  return (
-    <CardContent sx={{ p: 0 }}>
-      <Button
-        sx={{ width: '100%', height: 28, justifyContent: 'start', pb: 1, pl: 2, color: '#000000' }}
-        onClick={() => navigateAndSelect([INFO_SECTION])}
-      >
-        Overview
-      </Button>
-      {isNotEmpty(paths) && (
-        <Accordion defaultExpanded={true}>
-          <AccordionSummary expandIcon={<ExpandMoreOutlinedIcon/>}>
-            <Typography variant="button">Paths</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            {paths.map(([path, value]) => (
-              <ListItemButton
-                sx={{ backgroundColor: selectedElement === path ? '#ECEDEF' : 'transparent', pl: 4, pt: 0 }}
-                key={path}
-                onClick={() => {
-                  navigateAndSelect([PATHS_SECTION, path, value.find(({ key }) => !!key)?.method ?? ''], path)
-                }}
-              >
-                <ListItemText primary={toFormattedOpenApiPathName(path)} primaryTypographyProps={{ sx: { mt: 0.25 } }}/>
-                <Box display="flex" gap={0.5} mb={0.5} px={0}>
-                  {value.filter(({ method }) => METHOD_TYPES.has(method)).map(({ method }, index) => (
-                    <CustomChip
-                      variant="outlined"
-                      key={index}
-                      value={method}
-                      onClick={event => {
-                        event.stopPropagation()
-                        navigateAndSelect([PATHS_SECTION, path, method], path)
-                      }}
-                    />
-                  ))}
-                </Box>
-              </ListItemButton>
-            ))}
-          </AccordionDetails>
-        </Accordion>
-      )}
-      {isNotEmpty(schemaNames) && (
-        <Accordion defaultExpanded={true}>
-          <AccordionSummary expandIcon={<ExpandMoreOutlinedIcon/>}>
-            <Typography variant="button">Models</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            {schemaNames.map(name => (
-              <ListItemButton
-                sx={{ backgroundColor: selectedElement === name ? '#ECEDEF' : 'transparent', pl: 4, height: 24 }}
-                key={name}
-                onClick={() => {
-                  navigateAndSelect(
-                    [...((schema && isSwagger(schema)) ? [DEFINITIONS_SECTION] : [COMPONENTS_SECTION, SCHEMAS_SECTION]), name],
-                    name,
-                  )
-                }}
-              >
-                <ListItemText primary={name} primaryTypographyProps={{ sx: { mt: 0.25 } }}/>
-              </ListItemButton>
-            ))}
-          </AccordionDetails>
-        </Accordion>
-      )}
-      {componentsSectionItems.map(({ value, title, section }) => (
-        isNotEmpty(value) && (
-          <Accordion key={title}>
-            <AccordionSummary expandIcon={<ExpandMoreOutlinedIcon/>}>
-              <Typography variant="button">{title}</Typography>
+    return (
+      <CardContent sx={{ p: 0 }}>
+        <Button
+          sx={{ width: '100%', height: 28, justifyContent: 'start', pb: 1, pl: 2, color: '#000000' }}
+          onClick={() => navigateAndSelect([INFO_SECTION])}
+        >
+          Overview
+        </Button>
+        {isNotEmpty(paths) && (
+          <Accordion defaultExpanded={true}>
+            <AccordionSummary expandIcon={<ExpandMoreOutlinedIcon />}>
+              <Typography variant="button">Paths</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              {value.map(name => (
+              {paths.map(([path, value]) => (
                 <ListItemButton
-                  sx={{ backgroundColor: selectedElement === name ? '#ECEDEF' : 'transparent', pl: 4, height: 24 }}
-                  key={name}
+                  sx={{ backgroundColor: selectedElement === path ? '#ECEDEF' : 'transparent', pl: 4, pt: 0 }}
+                  key={path}
                   onClick={() => {
-                    navigateAndSelect([COMPONENTS_SECTION, section, name], name)
+                    navigateAndSelect([PATHS_SECTION, path, value.find(({ key }) => !!key)?.method ?? ''], path)
                   }}
                 >
-                  <ListItemText primary={name} primaryTypographyProps={{ sx: { mt: 0.25 } }}/>
+                  <ListItemText
+                    primary={toFormattedOpenApiPathName(path)}
+                    primaryTypographyProps={{ sx: { mt: 0.25 } }}
+                  />
+                  <Box display="flex" gap={0.5} mb={0.5} px={0}>
+                    {value
+                      .filter(({ method }) => METHOD_TYPES.has(method))
+                      .map(({ method }, index) => (
+                        <CustomChip
+                          variant="outlined"
+                          key={index}
+                          value={method}
+                          onClick={(event) => {
+                            event.stopPropagation()
+                            navigateAndSelect([PATHS_SECTION, path, method], path)
+                          }}
+                        />
+                      ))}
+                  </Box>
                 </ListItemButton>
               ))}
             </AccordionDetails>
           </Accordion>
-        )
-      ))}
-    </CardContent>
-  )
-})
+        )}
+        {isNotEmpty(schemaNames) && (
+          <Accordion defaultExpanded={true}>
+            <AccordionSummary expandIcon={<ExpandMoreOutlinedIcon />}>
+              <Typography variant="button">Models</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              {schemaNames.map((name) => (
+                <ListItemButton
+                  sx={{ backgroundColor: selectedElement === name ? '#ECEDEF' : 'transparent', pl: 4, height: 24 }}
+                  key={name}
+                  onClick={() => {
+                    navigateAndSelect(
+                      [
+                        ...(schema && isSwagger(schema)
+                          ? [DEFINITIONS_SECTION]
+                          : [COMPONENTS_SECTION, SCHEMAS_SECTION]),
+                        name,
+                      ],
+                      name,
+                    )
+                  }}
+                >
+                  <ListItemText primary={name} primaryTypographyProps={{ sx: { mt: 0.25 } }} />
+                </ListItemButton>
+              ))}
+            </AccordionDetails>
+          </Accordion>
+        )}
+        {componentsSectionItems.map(
+          ({ value, title, section }) =>
+            isNotEmpty(value) && (
+              <Accordion key={title}>
+                <AccordionSummary expandIcon={<ExpandMoreOutlinedIcon />}>
+                  <Typography variant="button">{title}</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  {value.map((name) => (
+                    <ListItemButton
+                      sx={{ backgroundColor: selectedElement === name ? '#ECEDEF' : 'transparent', pl: 4, height: 24 }}
+                      key={name}
+                      onClick={() => {
+                        navigateAndSelect([COMPONENTS_SECTION, section, name], name)
+                      }}
+                    >
+                      <ListItemText primary={name} primaryTypographyProps={{ sx: { mt: 0.25 } }} />
+                    </ListItemButton>
+                  ))}
+                </AccordionDetails>
+              </Accordion>
+            ),
+        )}
+      </CardContent>
+    )
+  },
+)
 
 function useNavigationData(content?: string | null): [OpenapiSchema | null, NavigationData] {
   const schema = useMemo(() => toOpenApiSchema(content ?? ''), [content])
 
-  return useMemo(() => ([
-    schema,
-    schema
-      ? {
-        paths: Object.entries(schema.paths ?? {}).map(([path, value]) => ([path, Object.keys(value).map((methodType) => ({
-          key: `${PATHS_URI_PREFIX}${encodeKey(path)}`,
-          method: methodType as MethodType,
-        }))])),
-        schemaNames: Object.keys(schema.components?.schemas ?? schema.definitions ?? []),
-        componentsSectionItems: [
-          {
-            value: Object.keys(schema.components?.securitySchemes ?? []),
-            title: 'Security schemas',
-            section: SECURITY_SCHEMES_COMPONENTS_SECTION,
+  return useMemo(
+    () => [
+      schema,
+      schema
+        ? {
+            paths: Object.entries(schema.paths ?? {}).map(([path, value]) => [
+              path,
+              Object.keys(value).map((methodType) => ({
+                key: `${PATHS_URI_PREFIX}${encodeKey(path)}`,
+                method: methodType as MethodType,
+              })),
+            ]),
+            schemaNames: Object.keys(schema.components?.schemas ?? schema.definitions ?? []),
+            componentsSectionItems: [
+              {
+                value: Object.keys(schema.components?.securitySchemes ?? []),
+                title: 'Security schemas',
+                section: SECURITY_SCHEMES_COMPONENTS_SECTION,
+              },
+              {
+                value: Object.keys(schema.components?.links ?? []),
+                title: 'Links',
+                section: LINKS_COMPONENTS_SECTION,
+              },
+              {
+                value: Object.keys(schema.components?.responses ?? []),
+                title: 'Responses',
+                section: RESPONSES_COMPONENTS_SECTION,
+              },
+              {
+                value: Object.keys(schema.components?.parameters ?? []),
+                title: 'Parameters',
+                section: PARAMETERS_COMPONENTS_SECTION,
+              },
+              {
+                value: Object.keys(schema.components?.requestBodies ?? []),
+                title: 'RequestBodies',
+                section: REQUEST_BODIES_COMPONENTS_SECTION,
+              },
+              {
+                value: Object.keys(schema.components?.headers ?? []),
+                title: 'Headers',
+                section: HEADERS_COMPONENTS_SECTION,
+              },
+              {
+                value: Object.keys(schema.components?.examples ?? []),
+                title: 'Examples',
+                section: EXAMPLE_COMPONENTS_SECTION,
+              },
+              {
+                value: Object.keys(schema.components?.callbacks ?? []),
+                title: 'Callbacks',
+                section: CALLBACKS_COMPONENTS_SECTION,
+              },
+            ],
+          }
+        : {
+            paths: [],
+            schemaNames: [],
+            componentsSectionItems: [],
           },
-          {
-            value: Object.keys(schema.components?.links ?? []),
-            title: 'Links',
-            section: LINKS_COMPONENTS_SECTION,
-          },
-          {
-            value: Object.keys(schema.components?.responses ?? []),
-            title: 'Responses',
-            section: RESPONSES_COMPONENTS_SECTION,
-          },
-          {
-            value: Object.keys(schema.components?.parameters ?? []),
-            title: 'Parameters',
-            section: PARAMETERS_COMPONENTS_SECTION,
-          },
-          {
-            value: Object.keys(schema.components?.requestBodies ?? []),
-            title: 'RequestBodies',
-            section: REQUEST_BODIES_COMPONENTS_SECTION,
-          },
-          {
-            value: Object.keys(schema.components?.headers ?? []),
-            title: 'Headers',
-            section: HEADERS_COMPONENTS_SECTION,
-          },
-          {
-            value: Object.keys(schema.components?.examples ?? []),
-            title: 'Examples',
-            section: EXAMPLE_COMPONENTS_SECTION,
-          },
-          {
-            value: Object.keys(schema.components?.callbacks ?? []),
-            title: 'Callbacks',
-            section: CALLBACKS_COMPONENTS_SECTION,
-          },
-        ],
-      }
-      : {
-        paths: [],
-        schemaNames: [],
-        componentsSectionItems: [],
-      },
-  ]), [schema])
+    ],
+    [schema],
+  )
 }
 
 type NavigationData = {

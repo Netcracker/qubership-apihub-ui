@@ -102,124 +102,139 @@ export const BranchEditingWebSocketProvider: FC<PropsWithChildren> = memo<PropsW
   const [reconnectInterval, setReconnectInterval] = useState<number | null>()
   const [connecting, setConnecting] = useState(false)
 
-  const connectedUsers = useMemo(
-    () => connectedUsersData.map(({ user }) => toUser(user)),
-    [connectedUsersData],
-  )
+  const connectedUsers = useMemo(() => connectedUsersData.map(({ user }) => toUser(user)), [connectedUsersData])
 
   const showNotification = useShowInfoNotification()
   const [, , getBranchConflicts] = useBranchConflicts()
 
   const websocket = useRef<WebSocket | null>(null)
 
-  const messageHandler = useCallback(({ data }: { data: string }) => {
-    if (data) {
-      const eventData = JSON.parse(data)
-      const { userId } = eventData
-      const username = userId ? connectedUsers.find(({ key }) => key === userId)?.name : ''
-      const isNotCurrentUser = authorization?.user.key !== userId
+  const messageHandler = useCallback(
+    ({ data }: { data: string }) => {
+      if (data) {
+        const eventData = JSON.parse(data)
+        const { userId } = eventData
+        const username = userId ? connectedUsers.find(({ key }) => key === userId)?.name : ''
+        const isNotCurrentUser = authorization?.user.key !== userId
 
-      if (isUserConnectedEventData(eventData)) {
-        setConnectedUsersData(prevState => [...prevState, eventData])
-      }
-      if (isUserDisconnectedEventData(eventData)) {
-        setConnectedUsersData(prevState => prevState.filter(({ sessionId }) => sessionId !== eventData.sessionId))
-      }
-      if (isBranchEditorsAddedEventData(eventData) || isBranchEditorsRemovedEventData(eventData)) {
-        updateEditorsInBranchConfig(eventData)
-      }
-      if (isBranchFilesResetEventData(eventData)) {
-        const { fileId = '' }: BranchFilesResetEventData = eventData
-        isNotCurrentUser && showNotification({ message: `${username} reset "${fileId}" file` })
-        getBranchConflicts()
-      }
-      if (isBranchConfigSnapshotEventData(eventData)) {
-        const { data }: BranchConfigSnapshotEventData = eventData
-        updateBranchConfig(toBranchConfig(data))
-      }
-      if (isBranchConfigUpdatedEventData(eventData)) {
-        const { data }: BranchConfigUpdatedEventData = eventData
-        updateChangeTypeInBranchConfig(data.changeType)
-      }
-      if (isBranchFilesUpdatedEventData(eventData)) {
-        const { fileId = '', data }: BranchFilesUpdatedEventData = eventData
-        updateFilesInBranchConfig(eventData)
-
-        if (needAddToBranchCache(eventData)) {
-          updateBranchCache(data?.fileId ?? fileId)
+        if (isUserConnectedEventData(eventData)) {
+          setConnectedUsersData((prevState) => [...prevState, eventData])
         }
-
-        if (needRemoveFromBranchCache(eventData)) {
-          updateBranchCache(data?.fileId ?? fileId)
+        if (isUserDisconnectedEventData(eventData)) {
+          setConnectedUsersData((prevState) => prevState.filter(({ sessionId }) => sessionId !== eventData.sessionId))
         }
-
-        const newData: BranchFilesContent = {
-          fileId: fileId ?? data?.fileId,
-          ...(data ? data : {}),
+        if (isBranchEditorsAddedEventData(eventData) || isBranchEditorsRemovedEventData(eventData)) {
+          updateEditorsInBranchConfig(eventData)
         }
-
-        if (newData.changeType && newData.changeType !== NONE_CHANGE_TYPE) {
-          showNotification({
-            message: `${username} ${CHANGE_TYPE_MAP[newData.changeType]} "${newData.fileId}" ${fileId && newData.fileId && fileId !== newData.fileId ? `with "${newData.fileId}"` : ''}`,
-          })
+        if (isBranchFilesResetEventData(eventData)) {
+          const { fileId = '' }: BranchFilesResetEventData = eventData
+          isNotCurrentUser && showNotification({ message: `${username} reset "${fileId}" file` })
+          getBranchConflicts()
         }
-      }
-      if (isBranchFilesDataModifiedEventData(eventData)) {
-        const { fileId }: BranchFilesDataModifiedEventData = eventData
-        updateExistingFileInBranchCache(fileId)
-      }
-      if (isBranchRefsUpdatedEventData(eventData)) {
-        const { refId, data, operation }: BranchRefsUpdatedEventData = eventData
-        isNotCurrentUser && showNotification({
-          message: data?.refId && data?.status && operation !== REMOVE_OPERATION
-            ? `${username} ${STATUS_MAP[data.status]} "${data.refId}"`
-            : `${username} ${STATUS_MAP[DELETED_CHANGE_STATUS]} "${refId}"`,
-        })
-        updateRefsInBranchConfig(eventData)
-      }
-      if (isBranchResetEventData(eventData)) {
-        isNotCurrentUser && showNotification({ message: `${username} reset "${branch}" branch` })
-      }
-      if (isBranchSavedEventData(eventData)) {
-        const { comment, branch, mrUrl }: BranchSavedEventData = eventData
-        isNotCurrentUser && showNotification({
-          message: `${username} saved changes: "${comment}" ${branch ? `to "${branch}" branch` : ''}`,
-          link: mrUrl ? {
-            name: 'See MR',
-            href: mrUrl,
-          } : undefined,
-        })
-        getBranchConflicts()
-      }
-    }
-  }, [connectedUsers, authorization?.user.key, updateEditorsInBranchConfig, showNotification, getBranchConflicts, updateBranchConfig, updateChangeTypeInBranchConfig, updateFilesInBranchConfig, updateBranchCache, updateExistingFileInBranchCache, updateRefsInBranchConfig, branch])
-
-  const openWebsocket = useCallback(
-    () => {
-      if (isSocketClosed(websocket.current)) {
-        setConnecting(true)
-
-        websocket.current = new WebSocket(
-          `${protocol === 'https:' ? 'wss:' : 'ws:'}//${host}/ws/v1/projects/${encodeURIComponent(projectId!)}/branches/${encodeURIComponent(branch!)}?token=${getToken()}`,
-        )
-
-        websocket.current.onopen = () => {
-          setConnecting(false)
-          setReconnectInterval(null)
+        if (isBranchConfigSnapshotEventData(eventData)) {
+          const { data }: BranchConfigSnapshotEventData = eventData
+          updateBranchConfig(toBranchConfig(data))
         }
+        if (isBranchConfigUpdatedEventData(eventData)) {
+          const { data }: BranchConfigUpdatedEventData = eventData
+          updateChangeTypeInBranchConfig(data.changeType)
+        }
+        if (isBranchFilesUpdatedEventData(eventData)) {
+          const { fileId = '', data }: BranchFilesUpdatedEventData = eventData
+          updateFilesInBranchConfig(eventData)
 
-        websocket.current.onclose = ({ code }) => {
-          if (code !== NORMAL_CLOSURE_CODE) {
-            setConnectedUsersData([])
-            setReconnectInterval(DEFAULT_RECONNECT_INTERVAL)
+          if (needAddToBranchCache(eventData)) {
+            updateBranchCache(data?.fileId ?? fileId)
+          }
+
+          if (needRemoveFromBranchCache(eventData)) {
+            updateBranchCache(data?.fileId ?? fileId)
+          }
+
+          const newData: BranchFilesContent = {
+            fileId: fileId ?? data?.fileId,
+            ...(data ? data : {}),
+          }
+
+          if (newData.changeType && newData.changeType !== NONE_CHANGE_TYPE) {
+            showNotification({
+              message: `${username} ${CHANGE_TYPE_MAP[newData.changeType]} "${newData.fileId}" ${fileId && newData.fileId && fileId !== newData.fileId ? `with "${newData.fileId}"` : ''}`,
+            })
           }
         }
-
-        websocket.current.onmessage = messageHandler
+        if (isBranchFilesDataModifiedEventData(eventData)) {
+          const { fileId }: BranchFilesDataModifiedEventData = eventData
+          updateExistingFileInBranchCache(fileId)
+        }
+        if (isBranchRefsUpdatedEventData(eventData)) {
+          const { refId, data, operation }: BranchRefsUpdatedEventData = eventData
+          isNotCurrentUser &&
+            showNotification({
+              message:
+                data?.refId && data?.status && operation !== REMOVE_OPERATION
+                  ? `${username} ${STATUS_MAP[data.status]} "${data.refId}"`
+                  : `${username} ${STATUS_MAP[DELETED_CHANGE_STATUS]} "${refId}"`,
+            })
+          updateRefsInBranchConfig(eventData)
+        }
+        if (isBranchResetEventData(eventData)) {
+          isNotCurrentUser && showNotification({ message: `${username} reset "${branch}" branch` })
+        }
+        if (isBranchSavedEventData(eventData)) {
+          const { comment, branch, mrUrl }: BranchSavedEventData = eventData
+          isNotCurrentUser &&
+            showNotification({
+              message: `${username} saved changes: "${comment}" ${branch ? `to "${branch}" branch` : ''}`,
+              link: mrUrl
+                ? {
+                    name: 'See MR',
+                    href: mrUrl,
+                  }
+                : undefined,
+            })
+          getBranchConflicts()
+        }
       }
     },
-    [branch, host, messageHandler, projectId, protocol],
+    [
+      connectedUsers,
+      authorization?.user.key,
+      updateEditorsInBranchConfig,
+      showNotification,
+      getBranchConflicts,
+      updateBranchConfig,
+      updateChangeTypeInBranchConfig,
+      updateFilesInBranchConfig,
+      updateBranchCache,
+      updateExistingFileInBranchCache,
+      updateRefsInBranchConfig,
+      branch,
+    ],
   )
+
+  const openWebsocket = useCallback(() => {
+    if (isSocketClosed(websocket.current)) {
+      setConnecting(true)
+
+      websocket.current = new WebSocket(
+        `${protocol === 'https:' ? 'wss:' : 'ws:'}//${host}/ws/v1/projects/${encodeURIComponent(projectId!)}/branches/${encodeURIComponent(branch!)}?token=${getToken()}`,
+      )
+
+      websocket.current.onopen = () => {
+        setConnecting(false)
+        setReconnectInterval(null)
+      }
+
+      websocket.current.onclose = ({ code }) => {
+        if (code !== NORMAL_CLOSURE_CODE) {
+          setConnectedUsersData([])
+          setReconnectInterval(DEFAULT_RECONNECT_INTERVAL)
+        }
+      }
+
+      websocket.current.onmessage = messageHandler
+    }
+  }, [branch, host, messageHandler, projectId, protocol])
 
   useInterval(openWebsocket, reconnectInterval)
 
@@ -240,9 +255,7 @@ export const BranchEditingWebSocketProvider: FC<PropsWithChildren> = memo<PropsW
 
   return (
     <ConnectingContext.Provider value={connecting}>
-      <ConnectedUsersContext.Provider value={connectedUsersData}>
-        {children}
-      </ConnectedUsersContext.Provider>
+      <ConnectedUsersContext.Provider value={connectedUsersData}>{children}</ConnectedUsersContext.Provider>
     </ConnectingContext.Provider>
   )
 })
@@ -276,20 +289,22 @@ export function useConnecting(): boolean {
 
 function needAddToBranchCache(event: BranchFilesUpdatedEventData): boolean {
   const isFileToAdd = !!event.data?.fileId && event.operation === ADD_OPERATION
-  const isUpdatedFileToAdd = !!event.fileId && (
-    event.operation === PATCH_OPERATION && (
-      event.data?.status === MOVED_CHANGE_STATUS || event.data?.status === MODIFIED_CHANGE_STATUS || event.data?.status === INCLUDED_CHANGE_STATUS || event.data?.status === UNMODIFIED_CHANGE_STATUS
-    )
-  )
+  const isUpdatedFileToAdd =
+    !!event.fileId &&
+    event.operation === PATCH_OPERATION &&
+    (event.data?.status === MOVED_CHANGE_STATUS ||
+      event.data?.status === MODIFIED_CHANGE_STATUS ||
+      event.data?.status === INCLUDED_CHANGE_STATUS ||
+      event.data?.status === UNMODIFIED_CHANGE_STATUS)
   return isFileToAdd || isUpdatedFileToAdd
 }
 
 function needRemoveFromBranchCache(event: BranchFilesUpdatedEventData): boolean {
   const isFileToRemove = !!event.fileId && event.operation === REMOVE_OPERATION
-  const isUpdatedFileToRemove = !!event.fileId && (
-    event.operation === REMOVE_OPERATION || (
-      event.operation === PATCH_OPERATION && (event.data?.status === EXCLUDED_CHANGE_STATUS || event.data?.status === DELETED_CHANGE_STATUS)
-    )
-  )
+  const isUpdatedFileToRemove =
+    !!event.fileId &&
+    (event.operation === REMOVE_OPERATION ||
+      (event.operation === PATCH_OPERATION &&
+        (event.data?.status === EXCLUDED_CHANGE_STATUS || event.data?.status === DELETED_CHANGE_STATUS)))
   return isFileToRemove || isUpdatedFileToRemove
 }

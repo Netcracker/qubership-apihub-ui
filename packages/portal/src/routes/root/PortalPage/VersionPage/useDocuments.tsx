@@ -34,12 +34,14 @@ export type DocumentsQueryState = {
   isInitialLoading: IsLoading
 }
 
-export function useDocuments(options: Partial<{
-  packageKey: Key
-  versionKey: Key
-  apiType: ApiType
-  enabled: boolean
-}>): DocumentsQueryState {
+export function useDocuments(
+  options: Partial<{
+    packageKey: Key
+    versionKey: Key
+    apiType: ApiType
+    enabled: boolean
+  }>,
+): DocumentsQueryState {
   const { packageKey, versionKey, apiType, enabled } = options
   const {
     fullVersion,

@@ -51,7 +51,8 @@ export const VERSION_DOCUMENTS_2_2: DocumentsDto = {
       type: 'openapi-3-0',
       format: 'json',
       labels: ['Cloud', 'QS'],
-      description: 'An increase in the scalability of different operations such as catalog browsing that is achieved by in-memory caching.',
+      description:
+        'An increase in the scalability of different operations such as catalog browsing that is achieved by in-memory caching.',
       info: {
         contact: {
           url: 'https://example.com/support',
@@ -92,7 +93,8 @@ export const VERSION_DOCUMENTS_2_2: DocumentsDto = {
       type: 'openapi-3-0',
       format: 'yaml',
       labels: [],
-      description: 'An increase in the scalability of different operations such as catalog browsing that is achieved by in-memory caching.',
+      description:
+        'An increase in the scalability of different operations such as catalog browsing that is achieved by in-memory caching.',
     },
     {
       fileId: 'sample.postman_collection.yaml',
@@ -100,10 +102,7 @@ export const VERSION_DOCUMENTS_2_2: DocumentsDto = {
       title: 'Sample Postman_collection',
       type: 'openapi-3-0',
       format: 'yaml',
-      labels: [
-        'MyOrganization',
-        'ServiceExample',
-      ],
+      labels: ['MyOrganization', 'ServiceExample'],
     },
     {
       fileId: 'unknown-sample.doc',

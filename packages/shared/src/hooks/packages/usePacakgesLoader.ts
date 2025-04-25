@@ -30,7 +30,11 @@ export type PackagesLoaderResult = {
   error: Error | null
 }
 
-export function usePackagesLoader(packageKey: Key | undefined, packagesKind: PackageKind, parentPackageKey?: Key): PackagesLoaderResult {
+export function usePackagesLoader(
+  packageKey: Key | undefined,
+  packagesKind: PackageKind,
+  parentPackageKey?: Key,
+): PackagesLoaderResult {
   const [textFilter, setTextFilter] = useState<string | undefined>()
 
   const { packages, isLoading: isPackagesLoading } = usePackages({

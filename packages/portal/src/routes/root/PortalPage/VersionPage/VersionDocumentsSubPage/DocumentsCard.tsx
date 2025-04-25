@@ -47,7 +47,7 @@ export const DocumentsCard: FC = memo(() => {
   const filteredDocument = useMemo(() => {
     return {
       ...document,
-      operations: document.operations.filter(operation => {
+      operations: document.operations.filter((operation) => {
         const lowerCaseTitle = operation.title.toLowerCase()
         const lowerCaseValue = searchValue.toLowerCase()
         return lowerCaseTitle.includes(lowerCaseValue) || lowerCaseValue.includes(lowerCaseTitle)
@@ -55,33 +55,21 @@ export const DocumentsCard: FC = memo(() => {
     } as Document
   }, [document, searchValue])
   const { key, format, title, type, version, slug } = document
-  const packageRef = currentDocumentsList.find(doc => doc.key === key)?.packageRef
+  const packageRef = currentDocumentsList.find((doc) => doc.key === key)?.packageRef
 
   if (isDashboard && !refKey) {
-    return (
-      <Placeholder
-        invisible={!!documentId}
-        area={CONTENT_PLACEHOLDER_AREA}
-        message="Please select a package"
-      />
-    )
+    return <Placeholder invisible={!!documentId} area={CONTENT_PLACEHOLDER_AREA} message="Please select a package" />
   }
 
   if (!documentId) {
-    return (
-      <Placeholder
-        invisible={!!documentId}
-        area={CONTENT_PLACEHOLDER_AREA}
-        message="No document selected"
-      />
-    )
+    return <Placeholder invisible={!!documentId} area={CONTENT_PLACEHOLDER_AREA} message="No document selected" />
   }
 
   return (
     <SelectedDocumentContext.Provider value={filteredDocument}>
       <SelectedSubPageProvider>
         <BodyCard
-          header={(
+          header={
             <DocumentsTabHeader
               title={title}
               version={version}
@@ -92,15 +80,9 @@ export const DocumentsCard: FC = memo(() => {
               setSearchValue={setSearchValue}
               isLoading={isLoading}
             />
-          )}
-          subheader={isDashboard ? packageRef?.name : ''}
-          body={
-            <DocumentsTab
-              format={format}
-              type={type}
-              isDocumentLoading={isLoading}
-            />
           }
+          subheader={isDashboard ? packageRef?.name : ''}
+          body={<DocumentsTab format={format} type={type} isDocumentLoading={isLoading} />}
         />
       </SelectedSubPageProvider>
     </SelectedDocumentContext.Provider>

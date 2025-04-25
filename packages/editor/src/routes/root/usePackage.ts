@@ -70,7 +70,7 @@ export function useUpdatePackage(): [UpdatePackage, IsLoading, IsSuccess] {
   const showErrorNotification = useShowErrorNotification()
 
   const { mutate, isLoading, isSuccess } = useMutation<PackageDto, Error, Package>({
-    mutationFn: value => updatePackage(value?.key, value),
+    mutationFn: (value) => updatePackage(value?.key, value),
     onSuccess: (_, { key }) => {
       showNotification({ message: 'Package has been updated' })
       return client.invalidateQueries({
@@ -92,7 +92,7 @@ export function useDeletePackage(): [DeletePackage, IsLoading, IsSuccess] {
   const showErrorNotification = useShowErrorNotification()
 
   const { mutate, isLoading, isSuccess } = useMutation<void, Error, Key>({
-    mutationFn: packageKey => deletePackage(packageKey),
+    mutationFn: (packageKey) => deletePackage(packageKey),
     onSuccess: (_, key) => {
       showNotification({ message: `Package ${key} has been deleted` })
       return client.invalidateQueries({
@@ -114,7 +114,7 @@ export function useCreatePackage(): [CreatePackage, IsLoading, IsSuccess] {
   const invalidatePackages = useInvalidatePackages()
 
   const { mutate, isLoading, isSuccess } = useMutation<PackageDto, Error, Package>({
-    mutationFn: value => createPackage(toPackageDto(value)),
+    mutationFn: (value) => createPackage(toPackageDto(value)),
     onSuccess: () => {
       showNotification({ message: 'Package has been created' })
       return invalidatePackages()
@@ -127,10 +127,10 @@ export function useCreatePackage(): [CreatePackage, IsLoading, IsSuccess] {
   return [mutate, isLoading, isSuccess]
 }
 
-export async function createPackage(
-  value: CreatePackageProps,
-): Promise<PackageDto> {
-  return await editorRequestJson<PackageDto>('/packages', {
+export async function createPackage(value: CreatePackageProps): Promise<PackageDto> {
+  return await editorRequestJson<PackageDto>(
+    '/packages',
+    {
       method: 'POST',
       body: JSON.stringify(value),
     },
@@ -138,13 +138,12 @@ export async function createPackage(
   )
 }
 
-export async function packageDetails(
-  packageKey: Key,
-  showParents: boolean,
-): Promise<PackageDto> {
+export async function packageDetails(packageKey: Key, showParents: boolean): Promise<PackageDto> {
   const packageId = encodeURIComponent(packageKey)
   const pathPattern = '/packages/:packageId'
-  return await editorRequestJson<PackageDto>(`${generatePath(pathPattern, { packageId })}?showParents=${showParents}`, {
+  return await editorRequestJson<PackageDto>(
+    `${generatePath(pathPattern, { packageId })}?showParents=${showParents}`,
+    {
       method: 'GET',
     },
     {
@@ -155,11 +154,10 @@ export async function packageDetails(
   )
 }
 
-export async function updatePackage(
-  packageKey: Key,
-  value: Package,
-): Promise<PackageDto> {
-  return await editorRequestJson<PackageDto>(`/packages/${packageKey}`, {
+export async function updatePackage(packageKey: Key, value: Package): Promise<PackageDto> {
+  return await editorRequestJson<PackageDto>(
+    `/packages/${packageKey}`,
+    {
       method: 'PATCH',
       body: JSON.stringify(toPackageDto(value)),
     },
@@ -167,10 +165,10 @@ export async function updatePackage(
   )
 }
 
-export async function deletePackage(
-  packageKey: Key,
-): Promise<void> {
-  return await editorRequestVoid(`/packages/${packageKey}`, {
+export async function deletePackage(packageKey: Key): Promise<void> {
+  return await editorRequestVoid(
+    `/packages/${packageKey}`,
+    {
       method: 'DELETE',
     },
     { basePath: API_V2 },
@@ -182,10 +180,12 @@ export function useInvalidatePackage(): InvalidateQuery<{
 }> {
   const client = useQueryClient()
   return ({ packageKey }) => {
-    client.invalidateQueries({
-      queryKey: [PACKAGE_QUERY_KEY, packageKey],
-      refetchType: 'all',
-    }).then()
+    client
+      .invalidateQueries({
+        queryKey: [PACKAGE_QUERY_KEY, packageKey],
+        refetchType: 'all',
+      })
+      .then()
   }
 }
 
@@ -227,7 +227,9 @@ export function toPackageDto(value: Package): PackageDto {
   }
 }
 
-export function toLastReleaseVersionDetails(value?: LastReleaseVersionDetailsDto): LastReleaseVersionDetails | undefined {
+export function toLastReleaseVersionDetails(
+  value?: LastReleaseVersionDetailsDto,
+): LastReleaseVersionDetails | undefined {
   if (!value) {
     return undefined
   }
@@ -239,7 +241,9 @@ export function toLastReleaseVersionDetails(value?: LastReleaseVersionDetailsDto
   }
 }
 
-export function toLastReleaseVersionDetailsDto(value?: LastReleaseVersionDetails): LastReleaseVersionDetailsDto | undefined {
+export function toLastReleaseVersionDetailsDto(
+  value?: LastReleaseVersionDetails,
+): LastReleaseVersionDetailsDto | undefined {
   if (!value) {
     return undefined
   }
@@ -267,7 +271,9 @@ export function countBwcErrors(lastPublishedVersion: PackageSummary | undefined)
     }
   }
 
-  const warningCount = lastPublishedVersion && (Object?.values(lastPublishedVersion)?.reduce((a, b) => a + b, 0) - (lastPublishedVersion?.breaking ?? 0))
+  const warningCount =
+    lastPublishedVersion &&
+    Object?.values(lastPublishedVersion)?.reduce((a, b) => a + b, 0) - (lastPublishedVersion?.breaking ?? 0)
 
   if (warningCount && warningCount > 0) {
     bwcErrors = {

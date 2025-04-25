@@ -17,15 +17,18 @@
 import type { To } from 'react-router-dom'
 import type { PackageSettingsPageRoute } from '../../../../routes'
 import type { Package, PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { DASHBOARD_KIND, GROUP_KIND, PACKAGE_KIND, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import {
+  DASHBOARD_KIND,
+  GROUP_KIND,
+  PACKAGE_KIND,
+  WORKSPACE_KIND,
+} from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import type { UserDto } from '@netcracker/qubership-apihub-ui-shared/types/user'
 
 export const ADD_CHANGE_ROLE_ACTION = 'add'
 export const REMOVE_CHANGE_ROLE_ACTION = 'remove'
 
-export type ChangeRoleAction =
-  | typeof ADD_CHANGE_ROLE_ACTION
-  | typeof REMOVE_CHANGE_ROLE_ACTION
+export type ChangeRoleAction = typeof ADD_CHANGE_ROLE_ACTION | typeof REMOVE_CHANGE_ROLE_ACTION
 
 export const PACKAGE_KINDS_NAMES_MAP: Record<PackageKind, string> = {
   [WORKSPACE_KIND]: 'Workspace',

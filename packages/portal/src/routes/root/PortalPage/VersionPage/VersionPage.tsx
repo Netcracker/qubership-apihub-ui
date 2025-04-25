@@ -24,9 +24,7 @@ import { usePackage } from '../../usePackage'
 import type { VersionPageRoute } from '../../../../routes'
 import { API_CHANGES_PAGE, DEPRECATED_PAGE, DOCUMENTS_PAGE, OPERATIONS_PAGE, OVERVIEW_PAGE } from '../../../../routes'
 import { VersionOverviewSubPage } from './VersionOverviewSubPage/VersionOverviewSubPage'
-import {
-  VersionDeprecatedOperationsSubPage,
-} from './VersionDeprecatedOperationsSubPage/VersionDeprecatedOperationsSubPage'
+import { VersionDeprecatedOperationsSubPage } from './VersionDeprecatedOperationsSubPage/VersionDeprecatedOperationsSubPage'
 import { NoPackageVersionPlaceholder } from '../../NoPackageVersionPlaceholder'
 import { CurrentPackageProvider } from '@apihub/components/CurrentPackageProvider'
 import { FullMainVersionProvider } from '../FullMainVersionProvider'
@@ -41,9 +39,7 @@ import { PreviousReleaseOptionsProvider } from '@netcracker/qubership-apihub-ui-
 import { TOGGLE_SIDEBAR_BUTTON } from '@netcracker/qubership-apihub-ui-shared/components/NavigationMenu'
 import { LayoutWithTabs } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/LayoutWithTabs'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import {
-  PublishDashboardVersionFromCSVDialog,
-} from '@apihub/routes/root/PortalPage/DashboardPage/PublishDashboardVersionFromCSVDialog'
+import { PublishDashboardVersionFromCSVDialog } from '@apihub/routes/root/PortalPage/DashboardPage/PublishDashboardVersionFromCSVDialog'
 
 export const VersionPage: FC = memo(() => {
   const [menuItem] = useActiveTabs()
@@ -56,13 +52,13 @@ export const VersionPage: FC = memo(() => {
           <NoPackagePlaceholder packageObject={packageObject} isLoading={isLoading}>
             <NoPackageVersionPlaceholder packageObject={packageObject}>
               <LayoutWithToolbar
-                toolbar={<VersionPageToolbar/>}
-                body={<VersionPageBody menuItem={menuItem as VersionPageRoute}/>}
+                toolbar={<VersionPageToolbar />}
+                body={<VersionPageBody menuItem={menuItem as VersionPageRoute} />}
               />
-              <OutdatedRevisionNotification/>
+              <OutdatedRevisionNotification />
             </NoPackageVersionPlaceholder>
           </NoPackagePlaceholder>
-          {packageObject?.kind === DASHBOARD_KIND && <PublishDashboardVersionFromCSVDialog/>}
+          {packageObject?.kind === DASHBOARD_KIND && <PublishDashboardVersionFromCSVDialog />}
         </ActivityHistoryFiltersProvider>
       </FullMainVersionProvider>
     </CurrentPackageProvider>
@@ -70,23 +66,23 @@ export const VersionPage: FC = memo(() => {
 })
 
 const PATH_PARAM_TO_SUB_PAGE_MAP: Record<VersionPageRoute, ReactNode> = {
-  [OVERVIEW_PAGE]: <VersionOverviewSubPage/>,
+  [OVERVIEW_PAGE]: <VersionOverviewSubPage />,
   [OPERATIONS_PAGE]: (
     <SelectedPreviewOperationProvider>
-      <VersionOperationsSubPage/>
+      <VersionOperationsSubPage />
     </SelectedPreviewOperationProvider>
   ),
   [API_CHANGES_PAGE]: (
     <PreviousReleaseOptionsProvider>
-      <VersionApiChangesSubPage/>
+      <VersionApiChangesSubPage />
     </PreviousReleaseOptionsProvider>
   ),
   [DEPRECATED_PAGE]: (
     <SelectedPreviewOperationProvider>
-      <VersionDeprecatedOperationsSubPage/>
+      <VersionDeprecatedOperationsSubPage />
     </SelectedPreviewOperationProvider>
   ),
-  [DOCUMENTS_PAGE]: <VersionDocumentsSubPage/>,
+  [DOCUMENTS_PAGE]: <VersionDocumentsSubPage />,
 }
 
 const VERSION_PAGE_MENU_ITEMS = [
@@ -104,7 +100,7 @@ type VersionPageBodyProps = {
 const VersionPageBody: FC<VersionPageBodyProps> = memo<VersionPageBodyProps>(({ menuItem }) => {
   return (
     <LayoutWithTabs
-      tabs={<VersionNavigationMenu menuItems={VERSION_PAGE_MENU_ITEMS}/>}
+      tabs={<VersionNavigationMenu menuItems={VERSION_PAGE_MENU_ITEMS} />}
       body={PATH_PARAM_TO_SUB_PAGE_MAP[menuItem]}
     />
   )

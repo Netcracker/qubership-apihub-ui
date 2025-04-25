@@ -27,12 +27,7 @@ import type { OperationsGroupedByTag } from '@netcracker/qubership-apihub-ui-sha
 import { TaggedOperationWithMetaList } from '@netcracker/qubership-apihub-ui-shared/components/TaggedOperationWithMetaList'
 
 export const ModelUsagesDialog: FC = memo(() => {
-  return (
-    <PopupDelegate
-      type={SHOW_MODEL_USAGES_DIALOG}
-      render={props => <ModelUsagesPopup {...props}/>}
-    />
-  )
+  return <PopupDelegate type={SHOW_MODEL_USAGES_DIALOG} render={(props) => <ModelUsagesPopup {...props} />} />
 })
 
 const ModelUsagesPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, detail }) => {
@@ -65,19 +60,18 @@ const ModelUsagesPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, deta
     >
       <DialogTitle sx={{ padding: '16px' }}>
         Operations that use {modelName} model:
-        <IconButton
-          sx={{ position: 'absolute', right: 8, top: 8, color: '#626D82' }}
-          onClick={onClose}
-        >
-          <CloseOutlinedIcon fontSize="small"/>
+        <IconButton sx={{ position: 'absolute', right: 8, top: 8, color: '#626D82' }} onClick={onClose}>
+          <CloseOutlinedIcon fontSize="small" />
         </IconButton>
       </DialogTitle>
-      <DialogContent sx={{
-        width: '100%',
-        padding: '16px',
-        display: 'flex',
-        placeContent: 'space-between center',
-      }}>
+      <DialogContent
+        sx={{
+          width: '100%',
+          padding: '16px',
+          display: 'flex',
+          placeContent: 'space-between center',
+        }}
+      >
         <TaggedOperationWithMetaList
           operations={usages}
           prepareLinkFn={prepareLinkFn}

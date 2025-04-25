@@ -20,10 +20,7 @@ import type { SpecItemUri } from '../../utils/specifications'
 export function useSpecItemUriHashParam(): [SpecItemUri, SetSpecItemUri] {
   const [hashParam, setHashParam] = useHash()
 
-  return [
-    hashParam.replace('#', ''),
-    (value: SpecItemUri) => setHashParam(`#${value}`),
-  ]
+  return [hashParam.replace('#', ''), (value: SpecItemUri) => setHashParam(`#${value}`)]
 }
 
 type SetSpecItemUri = (value: SpecItemUri) => void

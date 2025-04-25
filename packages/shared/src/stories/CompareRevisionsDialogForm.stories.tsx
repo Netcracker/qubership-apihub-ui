@@ -42,13 +42,7 @@ const StoryComponent = (args: CompareRevisionsDialogFormProps): ReactElement => 
 
   const { control, setValue } = useForm<CompareRevisionsDialogFormData>({ defaultValues })
 
-  return (
-    <CompareRevisionsDialogForm
-      {...args}
-      control={control}
-      setValue={setValue}
-    />
-  )
+  return <CompareRevisionsDialogForm {...args} control={control} setValue={setValue} />
 }
 
 export const DefaultStory: Story = {

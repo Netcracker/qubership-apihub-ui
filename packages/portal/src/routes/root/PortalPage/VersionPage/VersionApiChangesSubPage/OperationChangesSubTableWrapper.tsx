@@ -25,8 +25,8 @@ import { sortChanges } from '@netcracker/qubership-apihub-ui-shared/utils/api-ch
 
 export type OperationChangesSubTableWrapper = SubTableComponentProps
 
-export const OperationChangesSubTableWrapper: FC<OperationChangesSubTableWrapper> = memo<OperationChangesSubTableWrapper>(
-  ({ value, packageKey, versionKey, apiType, packageKind }) => {
+export const OperationChangesSubTableWrapper: FC<OperationChangesSubTableWrapper> =
+  memo<OperationChangesSubTableWrapper>(({ value, packageKey, versionKey, apiType, packageKind }) => {
     const { operationKey } = value.original.change
 
     const { versionContent, isLoading: isVersionLoading } = usePackageVersionContent({ packageKey, versionKey })
@@ -50,5 +50,4 @@ export const OperationChangesSubTableWrapper: FC<OperationChangesSubTableWrapper
         packageKind={packageKind}
       />
     )
-  },
-)
+  })

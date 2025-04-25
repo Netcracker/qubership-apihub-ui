@@ -23,16 +23,14 @@ export function useFavorProject(): FavorProject {
   const invalidateProjects = useInvalidateProjects()
 
   const { mutate } = useMutation<void, Error, Key>({
-    mutationFn: key => favorProject(key),
+    mutationFn: (key) => favorProject(key),
     onSuccess: invalidateProjects,
   })
 
   return mutate
 }
 
-async function favorProject(
-  projectKey: Key,
-): Promise<void> {
+async function favorProject(projectKey: Key): Promise<void> {
   const projectId = encodeURIComponent(projectKey)
 
   await editorRequestVoid(`/projects/${projectId}/favor`, {

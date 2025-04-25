@@ -54,13 +54,13 @@ export function isSnapshot(value: Record<string, unknown>): value is Snapshot {
 export function toSnapshots(value: SnapshotsDto): Snapshots {
   return {
     packageKey: value.packageId,
-    snapshots: value.snapshots.map(snapshot => {
-      return ({
+    snapshots: value.snapshots.map((snapshot) => {
+      return {
         key: crypto.randomUUID(),
         versionKey: snapshot.version,
         previousVersionKey: snapshot.previousVersion === '' ? undefined : snapshot.previousVersion,
         createdAt: snapshot.createdAt,
-      })
+      }
     }),
   }
 }
@@ -70,7 +70,9 @@ export async function getSnapshots(
   namespaceKey: NamespaceKey,
   workspaceKey: WorkspaceKey,
 ): Promise<SnapshotsDto> {
-  return await ncCustomAgentsRequestJson<SnapshotsDto>(`/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/snapshots`, {
+  return await ncCustomAgentsRequestJson<SnapshotsDto>(
+    `/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/snapshots`,
+    {
       method: 'get',
     },
   )
@@ -100,7 +102,9 @@ export async function publishSnapshot(
   builderId: string,
   status?: VersionStatus,
 ): Promise<PublishConfigDto> {
-  return await ncCustomAgentsRequestJson<PublishConfigDto>(`/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/snapshots?clientBuild=${clientBuild}&promote=${promote}`, {
+  return await ncCustomAgentsRequestJson<PublishConfigDto>(
+    `/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/snapshots?clientBuild=${clientBuild}&promote=${promote}`,
+    {
       method: 'post',
       body: JSON.stringify(<PublishSnapshotRequestDto>{
         version: version,

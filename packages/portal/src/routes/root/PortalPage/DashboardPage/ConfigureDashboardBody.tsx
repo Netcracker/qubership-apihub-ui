@@ -35,15 +35,14 @@ export const ConfigureDashboardBody: FC = memo(() => {
           [PACKAGES_CONFIGURE_DASHBOARD_TAB]: (
             <BodyCard
               header="Configure Dashboard"
-              body={<ConfigureDashboardTree/>}
-              action={<Button
-                variant="contained"
-                onClick={showAddPackageDialog}
-                data-testid="AddPackageButton"
-              >
-                Add Package
-              </Button>}
-            />),
+              body={<ConfigureDashboardTree />}
+              action={
+                <Button variant="contained" onClick={showAddPackageDialog} data-testid="AddPackageButton">
+                  Add Package
+                </Button>
+              }
+            />
+          ),
         }[activeTab]
       }
     </>

@@ -32,10 +32,7 @@ type ConflictedReferencesQueryState = {
   isLoading: IsLoading
 }
 
-export function useConflictedReferences(
-  packageKey: Key,
-  version: Key,
-): ConflictedReferencesQueryState {
+export function useConflictedReferences(packageKey: Key, version: Key): ConflictedReferencesQueryState {
   const { data, isLoading } = useQuery<Set<Key>, Error>({
     queryKey: [CONFLICTED_REFERENCE_QUERY_KEY, packageKey, version],
     enabled: false,
@@ -60,9 +57,12 @@ export function useAddConflictedReferences(): [AddConflictedReferences, IsLoadin
     mutationFn: () => Promise.resolve(),
     onSuccess: (_, { versionReferences, parentKey }) => {
       const conflictedReferencesSet = createConflictedReferencesSet(versionReferences, dashboardPackages!, parentKey)
-      client.setQueryData<Set<Key>>([CONFLICTED_REFERENCE_QUERY_KEY, packageId, versionId], (oldConflictedReferencesSet) => {
-        return mergeSet(conflictedReferencesSet, oldConflictedReferencesSet)
-      })
+      client.setQueryData<Set<Key>>(
+        [CONFLICTED_REFERENCE_QUERY_KEY, packageId, versionId],
+        (oldConflictedReferencesSet) => {
+          return mergeSet(conflictedReferencesSet, oldConflictedReferencesSet)
+        },
+      )
     },
   })
   return [mutate, isLoading]
@@ -91,14 +91,18 @@ type VersionReferencesItem = {
   parentKey?: Key
 }
 
-function createConflictedReferencesSet(versionReferences: VersionReferences, countPackageInDashboardMap: CountPackageInDashboardMap, parentKey?: Key): Set<Key> {
+function createConflictedReferencesSet(
+  versionReferences: VersionReferences,
+  countPackageInDashboardMap: CountPackageInDashboardMap,
+  parentKey?: Key,
+): Set<Key> {
   const conflictedPackages = new Set<Key>()
   if (!countPackageInDashboardMap) {
     return conflictedPackages
   }
   let conflicted = false
   if (isNotEmpty(versionReferences.references)) {
-    versionReferences.references?.forEach(reference => {
+    versionReferences.references?.forEach((reference) => {
       const packageByRef = versionReferences.packages![reference.packageRef!]
       const countDashboardPackages = countPackageInDashboardMap.get(packageByRef.key!)
       if (countDashboardPackages && countDashboardPackages > 1) {
@@ -117,6 +121,6 @@ function mergeSet(newSet: Set<Key>, oldSet?: Set<Key>): Set<Key> {
   if (!oldSet) {
     return newSet
   }
-  oldSet.forEach(key => newSet.add(key))
+  oldSet.forEach((key) => newSet.add(key))
   return newSet
 }

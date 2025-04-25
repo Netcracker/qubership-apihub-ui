@@ -25,7 +25,7 @@ export function useBranchSearchParam(): [Key | undefined, SetBranchSearchParam] 
   const setSearchParams = useSetSearchParams()
 
   return useMemo(
-    () => [param, value => setSearchParams({ [BRANCH_SEARCH_PARAM]: value ?? '' }, { replace: true })],
+    () => [param, (value) => setSearchParams({ [BRANCH_SEARCH_PARAM]: value ?? '' }, { replace: true })],
     [param, setSearchParams],
   )
 }

@@ -39,9 +39,10 @@ export const VersionCompareSidebar = memo(() => {
   const versionChangesSummary = useChangesSummaryFromContext()
   const isLoading = useMemo(() => !versionChangesSummary, [versionChangesSummary])
 
-  const filteredVersionChangesSummary = versionChangesSummary && isDashboardComparisonSummary(versionChangesSummary)
-    ? versionChangesSummary.filter(obj => obj.refKey === refPackageKey)
-    : versionChangesSummary
+  const filteredVersionChangesSummary =
+    versionChangesSummary && isDashboardComparisonSummary(versionChangesSummary)
+      ? versionChangesSummary.filter((obj) => obj.refKey === refPackageKey)
+      : versionChangesSummary
 
   const tags = useTagsFromChangesSummary(apiType as ApiType, filteredVersionChangesSummary)
 
@@ -55,13 +56,13 @@ export const VersionCompareSidebar = memo(() => {
   }, [apiType, apiTypes])
 
   const filteredTags = useMemo(
-    () => tags.filter(tag => isAppliedSearchValueForTag(tag, searchValue)),
+    () => tags.filter((tag) => isAppliedSearchValueForTag(tag, searchValue)),
     [searchValue, tags],
   )
 
   return (
     <SidebarPanel
-      header={isApiTypeSelectorShown(apiTypes) && <ApiTypeListSelector/>}
+      header={isApiTypeSelectorShown(apiTypes) && <ApiTypeListSelector />}
       headerFullWidth
       withDivider={isApiTypeSelectorShown(apiTypes)}
       body={

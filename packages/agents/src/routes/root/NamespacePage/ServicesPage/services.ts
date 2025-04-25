@@ -16,20 +16,20 @@
 
 import type { Service } from '@apihub/entities/services'
 
-export function filterServices(
-  value: string | undefined,
-  services: ReadonlyArray<Service>,
-): ReadonlyArray<Service> {
+export function filterServices(value: string | undefined, services: ReadonlyArray<Service>): ReadonlyArray<Service> {
   if (!value) {
     return services
   }
   const lowerCaseValue = value.toLowerCase()
   return services.filter(({ key, baseline, labels }) => {
-    return key.includes(lowerCaseValue) ||
+    return (
+      key.includes(lowerCaseValue) ||
       baseline?.name.toLowerCase().includes(lowerCaseValue) ||
       baseline?.packageKey.toLowerCase().includes(lowerCaseValue) ||
-      Object.entries(labels ?? {})
-        .some(([key, value]) => getFormattedLabel(key, value).toLowerCase().includes(lowerCaseValue))
+      Object.entries(labels ?? {}).some(([key, value]) =>
+        getFormattedLabel(key, value).toLowerCase().includes(lowerCaseValue),
+      )
+    )
   })
 }
 

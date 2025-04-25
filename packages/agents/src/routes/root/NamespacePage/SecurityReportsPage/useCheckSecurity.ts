@@ -37,20 +37,15 @@ export function useCheckSecurity(): StartSecurityCheckFunction {
   return mutate
 }
 
-async function startSecurityCheck(
-  agentKey: Key,
-  nameKey: Key,
-  workspaceKey: Key,
-): Promise<void> {
+async function startSecurityCheck(agentKey: Key, nameKey: Key, workspaceKey: Key): Promise<void> {
   const agentId = encodeURIComponent(agentKey)
   const name = encodeURIComponent(nameKey)
   const workspaceId = encodeURIComponent(workspaceKey)
 
   await ncCustomAgentsRequestVoid('/security/authCheck', {
-      method: 'POST',
-      body: JSON.stringify({ agentId, name, workspaceId }),
-    },
-  )
+    method: 'POST',
+    body: JSON.stringify({ agentId, name, workspaceId }),
+  })
 }
 
 type StartSecurityCheckFunction = () => void

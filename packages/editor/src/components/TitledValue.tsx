@@ -26,8 +26,14 @@ export type TitledValueProps = { sx?: SxProps<Theme> } & {
 }
 
 export const TitledValue: FC<TitledValueProps> = memo<TitledValueProps>(({ title, value, sx }) => {
-  return <Box sx={sx}>
-    <Typography noWrap variant="subtitle2">{title}</Typography>
-    <Typography noWrap variant="body2">{value}</Typography>
-  </Box>
+  return (
+    <Box sx={sx}>
+      <Typography noWrap variant="subtitle2">
+        {title}
+      </Typography>
+      <Typography noWrap variant="body2">
+        {value}
+      </Typography>
+    </Box>
+  )
 })

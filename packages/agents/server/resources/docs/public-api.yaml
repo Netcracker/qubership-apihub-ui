@@ -33,7 +33,7 @@ paths:
       tags:
         - Cloud Services
       responses:
-        "200":
+        '200':
           description: Successful operation
           content:
             application/json:
@@ -49,11 +49,11 @@ paths:
                   cloudName:
                     type: string
                     description: Cloud name
-        "500":
-          $ref: "#/components/responses/internalServerError500"
+        '500':
+          $ref: '#/components/responses/internalServerError500'
   /namespaces/{name}/snapshots:
     parameters:
-      - $ref: "#/components/parameters/Namespace"
+      - $ref: '#/components/parameters/Namespace'
     get:
       summary: Get snapshot (version) list
       description: |
@@ -62,10 +62,10 @@ paths:
       tags:
         - Package Versions
       parameters:
-        - $ref: "#/components/parameters/Limit"
-        - $ref: "#/components/parameters/Page"
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Page'
       responses:
-        "200":
+        '200':
           description: Successful operation
           content:
             application/json:
@@ -76,13 +76,13 @@ paths:
                     description: List of all published versions
                     type: array
                     items:
-                      $ref: "#/components/schemas/Snapshot"
+                      $ref: '#/components/schemas/Snapshot'
                   packageId:
                     description: Package unique string identifier (full alias)
                     type: string
                     example: QS.CLOUD.SERVICE
-        "500":
-          $ref: "#/components/responses/internalServerError500"
+        '500':
+          $ref: '#/components/responses/internalServerError500'
     post:
       tags:
         - Package Versions
@@ -97,19 +97,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PackageVersionData"
+              $ref: '#/components/schemas/PackageVersionData'
         required: true
       responses:
-        "202":
+        '202':
           description: Publish process started
-        "400":
-          $ref: "#/components/responses/badRequest400"
-        "500":
-          $ref: "#/components/responses/internalServerError500"
+        '400':
+          $ref: '#/components/responses/badRequest400'
+        '500':
+          $ref: '#/components/responses/internalServerError500'
   /namespaces/{name}/snapshots/{version}:
     parameters:
-      - $ref: "#/components/parameters/Namespace"
-      - $ref: "#/components/parameters/SnapshotVersion"
+      - $ref: '#/components/parameters/Namespace'
+      - $ref: '#/components/parameters/SnapshotVersion'
     get:
       summary: Get snapshot publish details
       description: Get snapshot version publish details
@@ -117,17 +117,17 @@ paths:
       tags:
         - Package Versions
       responses:
-        "200":
+        '200':
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SnapshotPublishStatus"
-        "500":
-          $ref: "#/components/responses/internalServerError500"
+                $ref: '#/components/schemas/SnapshotPublishStatus'
+        '500':
+          $ref: '#/components/responses/internalServerError500'
   /namespaces/{name}/services:
     parameters:
-      - $ref: "#/components/parameters/Namespace"
+      - $ref: '#/components/parameters/Namespace'
     get:
       summary: Get list of services
       description: |
@@ -138,7 +138,7 @@ paths:
       tags:
         - Cloud Services
       responses:
-        "200":
+        '200':
           description: Successful operation
           content:
             application/json:
@@ -152,7 +152,7 @@ paths:
                     description: The list of the services found
                     type: array
                     items:
-                      $ref: "#/components/schemas/Service"
+                      $ref: '#/components/schemas/Service'
                   status:
                     description: Overall status of the discovery process
                     type: string
@@ -161,11 +161,11 @@ paths:
                       - running
                       - complete
                       - error
-        "500":
-          $ref: "#/components/responses/internalServerError500"
+        '500':
+          $ref: '#/components/responses/internalServerError500'
   /namespaces/{name}/discover:
     parameters:
-      - $ref: "#/components/parameters/Namespace"
+      - $ref: '#/components/parameters/Namespace'
     post:
       tags:
         - Cloud Services
@@ -176,16 +176,16 @@ paths:
         The process status may be get by the getServices operation.
         API doesn't return the process ID, because Agent may have only one discovery process in one moment of time.
       responses:
-        "202":
+        '202':
           description: Success
-          content: { }
-        "500":
-          $ref: "#/components/responses/internalServerError500"
+          content: {}
+        '500':
+          $ref: '#/components/responses/internalServerError500'
   /namespaces/{name}/services/{serviceId}/specs/{specId}:
     parameters:
-      - $ref: "#/components/parameters/Namespace"
-      - $ref: "#/components/parameters/ServiceId"
-      - $ref: "#/components/parameters/SpecificationId"
+      - $ref: '#/components/parameters/Namespace'
+      - $ref: '#/components/parameters/ServiceId'
+      - $ref: '#/components/parameters/SpecificationId'
     get:
       summary: Get service specification
       description: Get one service specification
@@ -193,7 +193,7 @@ paths:
       tags:
         - Cloud Services
       responses:
-        "200":
+        '200':
           description: Successful operation
           content:
             text/plain; charset=utf-8:
@@ -205,13 +205,13 @@ paths:
             application/x-yaml:
               schema:
                 type: string
-        "404":
-          $ref: "#/components/responses/notFound404"
-        "500":
-          $ref: "#/components/responses/internalServerError500"
+        '404':
+          $ref: '#/components/responses/notFound404'
+        '500':
+          $ref: '#/components/responses/internalServerError500'
   /namespaces/{name}/settings:
     parameters:
-      - $ref: "#/components/parameters/Namespace"
+      - $ref: '#/components/parameters/Namespace'
     get:
       summary: Get namespace settings
       description: |
@@ -220,14 +220,14 @@ paths:
       tags:
         - Cloud Services
       responses:
-        "200":
+        '200':
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/NamespaceSettings"
-        "500":
-          $ref: "#/components/responses/internalServerError500"
+                $ref: '#/components/schemas/NamespaceSettings'
+        '500':
+          $ref: '#/components/responses/internalServerError500'
     post:
       summary: Set namespace settings
       description: |
@@ -240,19 +240,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/NamespaceSettings"
+              $ref: '#/components/schemas/NamespaceSettings'
         required: true
       responses:
-        "200":
+        '200':
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/NamespaceSettings"
-        "400":
-          $ref: "#/components/responses/badRequest400"
-        "500":
-          $ref: "#/components/responses/internalServerError500"
+                $ref: '#/components/schemas/NamespaceSettings'
+        '400':
+          $ref: '#/components/responses/badRequest400'
+        '500':
+          $ref: '#/components/responses/internalServerError500'
 components:
   parameters:
     Namespace:
@@ -354,7 +354,7 @@ components:
       type: object
       properties:
         publishDetails:
-          $ref: "#/components/schemas/PublishDetails"
+          $ref: '#/components/schemas/PublishDetails'
         services:
           type: array
           items:
@@ -392,7 +392,7 @@ components:
                 type: string
                 example: QS.CLOUD.SERVICE
               publishDetails:
-                $ref: "#/components/schemas/PublishDetails"
+                $ref: '#/components/schemas/PublishDetails'
     PublishDetails:
       description: Information about the publication process
       type: object
@@ -417,7 +417,7 @@ components:
           type: string
         previousVersion:
           type: string
-          default: ""
+          default: ''
           description: Previous version
       required:
         - version
@@ -468,12 +468,12 @@ components:
         version:
           description: Version for package publication
           type: string
-          example: "1.2"
+          example: '1.2'
         previousVersion:
           description: Previous published package version
           type: string
           default: <empty string>
-          example: "1.1"
+          example: '1.1'
         autodiscovery:
           description: |
             Type of the discovery process start.
@@ -505,7 +505,7 @@ components:
           description: Message parameters
           type: object
           example:
-            id: "12345"
+            id: '12345'
             type: string
         debug:
           description: |
@@ -522,16 +522,16 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ErrorResponse"
+            $ref: '#/components/schemas/ErrorResponse'
     notFound404:
       description: Not found or incorrect ID
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ErrorResponse"
+            $ref: '#/components/schemas/ErrorResponse'
     internalServerError500:
       description: Internal server error
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ErrorResponse"
+            $ref: '#/components/schemas/ErrorResponse'

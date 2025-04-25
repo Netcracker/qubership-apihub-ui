@@ -225,9 +225,7 @@ export const ACTIVITIES_LIST: ActivityHistory = {
       params: {
         memberId: 'mmbr1',
         memberName: 'Member 1',
-        roles: [
-          { roleId: 'role3', role: 'Role 3' },
-        ],
+        roles: [{ roleId: 'role3', role: 'Role 3' }],
       },
     },
     // Update Role

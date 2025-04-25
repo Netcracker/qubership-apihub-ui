@@ -91,26 +91,17 @@ export const NavigationProvider: FC<PropsWithChildren> = memo<PropsWithChildren>
     navigate(getProjectPath(rest), { replace: replace })
   })
 
-  return (
-    <EventBusContext.Provider value={navigationEventBus}>
-      {children}
-    </EventBusContext.Provider>
-  )
+  return <EventBusContext.Provider value={navigationEventBus}>{children}</EventBusContext.Provider>
 })
 
-export function getEditorPath({
-  search,
-}: EditorDetail = {}): Partial<Path> {
+export function getEditorPath({ search }: EditorDetail = {}): Partial<Path> {
   return {
     pathname: '/editor',
     ...(search ? { search: `${optionalSearchParams(search)}` } : {}),
   }
 }
 
-export function getProjectPath({
-  projectKey,
-  search,
-}: ProjectDetail): Partial<Path> {
+export function getProjectPath({ projectKey, search }: ProjectDetail): Partial<Path> {
   return {
     ...(projectKey ? { pathname: `/editor/projects/${encodeURIComponent(projectKey)}` } : {}),
     search: `${optionalSearchParams(search)}`,

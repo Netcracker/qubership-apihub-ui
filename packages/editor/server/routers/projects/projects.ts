@@ -52,16 +52,16 @@ export function getProjects(router: Router): void {
     let { projects } = PROJECTS
 
     if (projectId) {
-      projects = projects.filter(project => project.projectId === projectId)
+      projects = projects.filter((project) => project.projectId === projectId)
     }
     if (groupId) {
-      projects = projects.filter(project => project.groupId === groupId)
+      projects = projects.filter((project) => project.groupId === groupId)
     }
     if (onlyPublished === 'true') {
       projects = projects.filter(({ projectId }) => PUBLISHED_PROJECT_IDS.has(projectId))
     }
     if (onlyFavorite === 'true') {
-      projects = projects.filter(project => project.isFavorite)
+      projects = projects.filter((project) => project.isFavorite)
     }
     if (textFilter) {
       projects = projects.filter(({ projectId, name }) => {
@@ -76,7 +76,7 @@ export function getProjects(router: Router): void {
 
 export function getProject(router: Router): void {
   router.get('/:id/', (req, res) => {
-    res.status(200).json(PROJECTS.projects.find(project => project.projectId === req.params.id))
+    res.status(200).json(PROJECTS.projects.find((project) => project.projectId === req.params.id))
   })
 }
 
@@ -158,11 +158,13 @@ export function resetFile(router: Router & WithWebsocketMethod, wss: Server): vo
     })
 
     wss.clients.forEach((s: Socket) => {
-      s.send(JSON.stringify({
-        type: 'branch:files:reset',
-        userId: s.id,
-        fileId: fileId,
-      }))
+      s.send(
+        JSON.stringify({
+          type: 'branch:files:reset',
+          userId: s.id,
+          fileId: fileId,
+        }),
+      )
     })
 
     res.status(200).send()
@@ -185,15 +187,17 @@ export function deleteFile(router: Router & WithWebsocketMethod, wss: Server): v
     })
 
     wss.clients.forEach((s: Socket) => {
-      s.send(JSON.stringify({
-        type: 'branch:files:updated',
-        userId: s.id,
-        fileId: fileId,
-        operation: PATCH_OPERATION,
-        data: {
-          status: DELETED_CHANGE_STATUS,
-        },
-      }))
+      s.send(
+        JSON.stringify({
+          type: 'branch:files:updated',
+          userId: s.id,
+          fileId: fileId,
+          operation: PATCH_OPERATION,
+          data: {
+            status: DELETED_CHANGE_STATUS,
+          },
+        }),
+      )
     })
 
     res.status(200).send()
@@ -216,16 +220,18 @@ export function restoreFile(router: Router & WithWebsocketMethod, wss: Server): 
     })
 
     wss.clients.forEach((s: Socket) => {
-      s.send(JSON.stringify({
-        type: 'branch:files:updated',
-        userId: s.id,
-        operation: PATCH_OPERATION,
-        fileId: fileId,
-        data: {
-          changeType: UPDATED_CHANGE_TYPE,
-          status: LAST_FILE_CHANGE_STATUSES.get(fileId),
-        },
-      }))
+      s.send(
+        JSON.stringify({
+          type: 'branch:files:updated',
+          userId: s.id,
+          operation: PATCH_OPERATION,
+          fileId: fileId,
+          data: {
+            changeType: UPDATED_CHANGE_TYPE,
+            status: LAST_FILE_CHANGE_STATUSES.get(fileId),
+          },
+        }),
+      )
     })
 
     res.status(200).send()
@@ -251,34 +257,35 @@ export function updateFileMeta(router: Router & WithWebsocketMethod, wss: Server
     const files = [...BRANCH_CONFIG.files]
 
     if (bulk) {
-      const updatedFiles = files.filter(file => file.fileId.startsWith(fileId))
-      BRANCH_CONFIG.files = [
-        ...files,
-        ...updatedFiles.map(file => ({ ...file, publish })),
-      ]
+      const updatedFiles = files.filter((file) => file.fileId.startsWith(fileId))
+      BRANCH_CONFIG.files = [...files, ...updatedFiles.map((file) => ({ ...file, publish }))]
 
       wss.clients.forEach((s: Socket) => {
         updatedFiles.forEach(({ fileId }) => {
-          s.send(JSON.stringify({
+          s.send(
+            JSON.stringify({
+              type: 'branch:files:updated',
+              userId: s.id,
+              fileId: fileId,
+              operation: PATCH_OPERATION,
+              data: { publish, labels },
+            }),
+          )
+        })
+      })
+    } else {
+      BRANCH_CONFIG.files = files.map((file) => (file.fileId === fileId ? { ...file, publish, labels } : file))
+
+      wss.clients.forEach((s: Socket) => {
+        s.send(
+          JSON.stringify({
             type: 'branch:files:updated',
             userId: s.id,
             fileId: fileId,
             operation: PATCH_OPERATION,
             data: { publish, labels },
-          }))
-        })
-      })
-    } else {
-      BRANCH_CONFIG.files = files.map(file => (file.fileId === fileId ? { ...file, publish, labels } : file))
-
-      wss.clients.forEach((s: Socket) => {
-        s.send(JSON.stringify({
-          type: 'branch:files:updated',
-          userId: s.id,
-          fileId: fileId,
-          operation: PATCH_OPERATION,
-          data: { publish, labels },
-        }))
+          }),
+        )
       })
     }
 
@@ -293,32 +300,34 @@ export function renameFile(router: Router & WithWebsocketMethod, wss: Server): v
     const files = [...BRANCH_CONFIG.files]
     const { fileId } = req.params
 
-    BRANCH_CONFIG.files = files.map(file => {
+    BRANCH_CONFIG.files = files.map((file) => {
       if (file.fileId === fileId) {
-        return ({
+        return {
           ...file,
           fileId: newFileId,
           name: parts[parts.length - 1],
           path: newFileId,
           status: MODIFIED_CHANGE_STATUS,
-        })
+        }
       }
       return file
     })
 
     wss.clients.forEach((s: Socket) => {
-      s.send(JSON.stringify({
-        type: 'branch:files:updated',
-        userId: s.id,
-        fileId: fileId,
-        operation: PATCH_OPERATION,
-        data: {
-          fileId: newFileId,
-          changeType: UPDATED_CHANGE_TYPE,
-          status: MOVED_CHANGE_STATUS,
-          movedFrom: fileId,
-        },
-      }))
+      s.send(
+        JSON.stringify({
+          type: 'branch:files:updated',
+          userId: s.id,
+          fileId: fileId,
+          operation: PATCH_OPERATION,
+          data: {
+            fileId: newFileId,
+            changeType: UPDATED_CHANGE_TYPE,
+            status: MOVED_CHANGE_STATUS,
+            movedFrom: fileId,
+          },
+        }),
+      )
     })
 
     res.status(200).send()
@@ -340,16 +349,18 @@ export function importFromGit(router: Router & WithWebsocketMethod, wss: Server)
       })
 
       wss.clients.forEach((s: Socket) => {
-        s.send(JSON.stringify({
-          type: 'branch:files:updated',
-          userId: s.id,
-          operation: ADD_OPERATION,
-          data: {
-            fileId: fileId,
-            status: ADDED_CHANGE_STATUS,
-            changeType: ADDED_CHANGE_TYPE,
-          },
-        }))
+        s.send(
+          JSON.stringify({
+            type: 'branch:files:updated',
+            userId: s.id,
+            operation: ADD_OPERATION,
+            data: {
+              fileId: fileId,
+              status: ADDED_CHANGE_STATUS,
+              changeType: ADDED_CHANGE_TYPE,
+            },
+          }),
+        )
       })
     }
 
@@ -364,16 +375,20 @@ export function saveChanges(router: Router & WithWebsocketMethod, wss: Server): 
     const { comment, branch, createMergeRequest } = req.body
     const files = [...BRANCH_CONFIG.files]
 
-    BRANCH_CONFIG.files = files.filter(({ status }) => status !== DELETED_CHANGE_STATUS && status !== EXCLUDED_CHANGE_STATUS)
+    BRANCH_CONFIG.files = files.filter(
+      ({ status }) => status !== DELETED_CHANGE_STATUS && status !== EXCLUDED_CHANGE_STATUS,
+    )
 
     wss.clients.forEach((s: Socket) => {
-      s.send(JSON.stringify({
-        type: 'branch:saved',
-        userId: s.id,
-        comment: comment,
-        branch: branch,
-        mrUrl: createMergeRequest ? 'https://git.example.com/user1234/repositoryABC/-/merge_requests/1' : undefined,
-      }))
+      s.send(
+        JSON.stringify({
+          type: 'branch:saved',
+          userId: s.id,
+          comment: comment,
+          branch: branch,
+          mrUrl: createMergeRequest ? 'https://git.example.com/user1234/repositoryABC/-/merge_requests/1' : undefined,
+        }),
+      )
     })
 
     res.status(200).json()
@@ -385,12 +400,14 @@ export function publishProjectVersion(router: Router & WithWebsocketMethod, wss:
     const { version, status } = req.body
 
     wss.clients.forEach((s: Socket) => {
-      s.send(JSON.stringify({
-        type: 'branch:published',
-        userId: s.id,
-        version: version,
-        status: status,
-      }))
+      s.send(
+        JSON.stringify({
+          type: 'branch:published',
+          userId: s.id,
+          version: version,
+          status: status,
+        }),
+      )
     })
     res.status(200).json()
   })
@@ -401,10 +418,12 @@ export function enableBranchEditingMode(router: Router & WithWebsocketMethod, ws
     BRANCH_CONFIG.editors = [SUPERUSER]
 
     wss.clients.forEach((s: Socket) => {
-      s.send(JSON.stringify({
-        type: 'branch:editors:added',
-        userId: SUPERUSER.id,
-      }))
+      s.send(
+        JSON.stringify({
+          type: 'branch:editors:added',
+          userId: SUPERUSER.id,
+        }),
+      )
     })
 
     res.status(200).send()
@@ -416,10 +435,12 @@ export function disableBranchEditingMode(router: Router & WithWebsocketMethod, w
     BRANCH_CONFIG.editors = []
 
     wss.clients.forEach((s: Socket) => {
-      s.send(JSON.stringify({
-        type: 'branch:editors:removed',
-        userId: SUPERUSER.id,
-      }))
+      s.send(
+        JSON.stringify({
+          type: 'branch:editors:removed',
+          userId: SUPERUSER.id,
+        }),
+      )
     })
 
     res.status(200).send()
@@ -442,10 +463,12 @@ export function resetBranch(router: Router & WithWebsocketMethod, wss: Server): 
     BRANCH_CONFLICTS.files = []
 
     wss.clients.forEach((s: Socket) => {
-      s.send(JSON.stringify({
-        type: 'branch:reset',
-        userId: s.id,
-      }))
+      s.send(
+        JSON.stringify({
+          type: 'branch:reset',
+          userId: s.id,
+        }),
+      )
     })
 
     res.status(200).send()
@@ -525,10 +548,8 @@ export function getPublishedSpecRaw(router: Router): void {
 
 export function favorProject(router: Router): void {
   router.post('/:id/favor/', (req, res) => {
-    PROJECTS.projects = PROJECTS.projects.map(project => {
-      return project.projectId === req.params.id
-        ? { ...project, isFavorite: true }
-        : project
+    PROJECTS.projects = PROJECTS.projects.map((project) => {
+      return project.projectId === req.params.id ? { ...project, isFavorite: true } : project
     })
     res.status(200).json()
   })
@@ -536,10 +557,8 @@ export function favorProject(router: Router): void {
 
 export function disfavorProject(router: Router): void {
   router.post('/:id/disfavor/', (req, res) => {
-    PROJECTS.projects = PROJECTS.projects.map(project => {
-      return project.projectId === req.params.id
-        ? { ...project, isFavorite: false }
-        : project
+    PROJECTS.projects = PROJECTS.projects.map((project) => {
+      return project.projectId === req.params.id ? { ...project, isFavorite: false } : project
     })
     res.status(200).json()
   })
@@ -569,7 +588,7 @@ export function deleteProject(router: Router): void {
 export function updateProject(router: Router): void {
   router.put('/:id/', (req, res) => {
     const projects = [...PROJECTS.projects]
-    PROJECTS.projects = projects.map(project => {
+    PROJECTS.projects = projects.map((project) => {
       if (project.projectId === req.params.id) {
         project = { ...req.body }
       }

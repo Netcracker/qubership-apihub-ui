@@ -29,14 +29,14 @@ export const CreateOperationGroupDialog: FC = memo(() => {
   return (
     <PopupDelegate
       type={SHOW_CREATE_OPERATION_GROUP_DIALOG}
-      render={props => <CreateOperationGroupPopup {...props}/>}
+      render={(props) => <CreateOperationGroupPopup {...props} />}
     />
   )
 })
 
 const CreateOperationGroupPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, detail }) => {
   const { createOperationGroup, isLoading, isSuccess } = useCreateOperationGroup()
-  const { packageKey, versionKey, existsGroupNames } = detail as CreateOperationGroupDetail ?? ''
+  const { packageKey, versionKey, existsGroupNames } = (detail as CreateOperationGroupDetail) ?? ''
   const { showEditOperationGroupContentDialog } = useEventBus()
   const [creatingGroup, setCreatingGroup] = useState<OperationGroup | null>(null)
 

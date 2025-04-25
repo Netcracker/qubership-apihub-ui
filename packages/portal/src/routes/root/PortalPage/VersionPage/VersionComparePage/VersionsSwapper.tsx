@@ -38,13 +38,8 @@ export type VersionsSwapperProps = {
 }
 
 export const VersionsSwapper: FC<VersionsSwapperProps> = memo<VersionsSwapperProps>(({ breadcrumbsData }) => {
-  const {
-    originPackageKey,
-    originVersionKey,
-    changedPackageKey,
-    changedVersionKey,
-    apiType,
-  } = useVersionsComparisonGlobalParams()
+  const { originPackageKey, originVersionKey, changedPackageKey, changedVersionKey, apiType } =
+    useVersionsComparisonGlobalParams()
 
   const { isPackageFromDashboard, refPackageKey } = useIsPackageFromDashboard()
 
@@ -62,21 +57,30 @@ export const VersionsSwapper: FC<VersionsSwapperProps> = memo<VersionsSwapperPro
         [API_TYPE_SEARCH_PARAM]: { value: apiType },
       },
     })
-  }, [apiType, changedPackageKey, changedVersionKey, isPackageFromDashboard, navigateToVersionsComparison, originPackageKey, originVersionKey, refPackageKey])
+  }, [
+    apiType,
+    changedPackageKey,
+    changedVersionKey,
+    isPackageFromDashboard,
+    navigateToVersionsComparison,
+    originPackageKey,
+    originVersionKey,
+    refPackageKey,
+  ])
 
   return (
     <Box sx={VERSION_SWAPPER_STYLES}>
       <Box sx={VERSION_SWAPPER_HEADER_STYLES} data-testid="LeftCompareTitle">
-        <SwapperBreadcrumbs side="before" data={breadcrumbsData}/>
+        <SwapperBreadcrumbs side="before" data={breadcrumbsData} />
       </Box>
       <Box sx={VERSION_SWAPPER_DELIMITER_STYLES}>
         <Box sx={VERSION_SWAPPER_ARROW_STYLES}>
-          <Swapper onSwap={handleSwap}/>
+          <Swapper onSwap={handleSwap} />
         </Box>
       </Box>
       <Box sx={VERSION_SECOND_SWAPPER_HEADER_STYLES}>
         <Box gridArea="data" data-testid="RightCompareTitle">
-          <SwapperBreadcrumbs side="after" data={breadcrumbsData}/>
+          <SwapperBreadcrumbs side="after" data={breadcrumbsData} />
         </Box>
         {!isPackageFromDashboard && (
           <IconButton
@@ -84,7 +88,7 @@ export const VersionsSwapper: FC<VersionsSwapperProps> = memo<VersionsSwapperPro
             onClick={showCompareVersionsDialog}
             data-testid="EditButton"
           >
-            <EditIcon/>
+            <EditIcon />
           </IconButton>
         )}
       </Box>

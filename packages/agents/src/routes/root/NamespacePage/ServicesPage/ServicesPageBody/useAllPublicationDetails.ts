@@ -26,15 +26,21 @@ import {
   NONE_PUBLISH_STATUS,
   RUNNING_PUBLISH_STATUS,
 } from '@apihub/entities/statuses'
-import type { PublishDetails, PublishDetailsDto, PublishStatus } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
+import type {
+  PublishDetails,
+  PublishDetailsDto,
+  PublishStatus,
+} from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
 import type { PublishConfig } from '@apihub/entities/publish-config'
 import { STATUS_REFETCH_INTERVAL } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 
 const ALL_PUBLISH_DETAILS_QUERY_KEY = 'all-publish-details-query-key'
 
-export function useAllPublicationDetails(options?: Partial<{
-  config: PublishConfig
-}>): [PublishDetails[]] {
+export function useAllPublicationDetails(
+  options?: Partial<{
+    config: PublishConfig
+  }>,
+): [PublishDetails[]] {
   const { config } = options ?? {}
   const [snapshots, isLoading] = useSnapshots()
   const { createSnapshotPublicationOptions } = useCreateSnapshotPublicationOptions()
@@ -52,14 +58,19 @@ export function useAllPublicationDetails(options?: Partial<{
 
       return getPublishDetails(snapshots.packageKey, publishIds)
     },
-    refetchInterval: data => {
-      if (data?.find(publishDetails => publishDetails.status === RUNNING_PUBLISH_STATUS || publishDetails.status === NONE_PUBLISH_STATUS)) {
+    refetchInterval: (data) => {
+      if (
+        data?.find(
+          (publishDetails) =>
+            publishDetails.status === RUNNING_PUBLISH_STATUS || publishDetails.status === NONE_PUBLISH_STATUS,
+        )
+      ) {
         return STATUS_REFETCH_INTERVAL
       }
       return false
     },
-    onSuccess: data => {
-      if (data?.every(publishDetails => publishDetails.status === COMPLETE_PUBLISH_STATUS)) {
+    onSuccess: (data) => {
+      if (data?.every((publishDetails) => publishDetails.status === COMPLETE_PUBLISH_STATUS)) {
         invalidateSnapshotPublishInfo({ snapshotPublicationName: createSnapshotPublicationOptions.name })
         invalidateSnapshots()
       }
@@ -67,14 +78,14 @@ export function useAllPublicationDetails(options?: Partial<{
     enabled: !!config && !isLoading,
   })
 
-  return [
-    data ?? EMPTY_ALL_PUBLISH_DETAILS,
-  ]
+  return [data ?? EMPTY_ALL_PUBLISH_DETAILS]
 }
 
-export function useAllPublishDetailsStatus(options?: Partial<{
-  config: PublishConfig
-}>): PublishStatus {
+export function useAllPublishDetailsStatus(
+  options?: Partial<{
+    config: PublishConfig
+  }>,
+): PublishStatus {
   const { config } = options ?? {}
   const [allPublishDetails] = useAllPublicationDetails({ config })
 

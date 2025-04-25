@@ -26,22 +26,14 @@ import { truthy } from '@stoplight/spectral-functions'
 import { DiagnosticSeverity } from '@stoplight/types'
 import type { BranchCache } from './useBranchCache'
 import type { FileProblemType } from '@apihub/entities/file-problems'
-import {
-  ERROR_FILE_PROBLEM_TYPE,
-  INFO_FILE_PROBLEM_TYPE,
-  WARN_FILE_PROBLEM_TYPE,
-} from '@apihub/entities/file-problems'
+import { ERROR_FILE_PROBLEM_TYPE, INFO_FILE_PROBLEM_TYPE, WARN_FILE_PROBLEM_TYPE } from '@apihub/entities/file-problems'
 import { scheduleInBackground } from '@netcracker/qubership-apihub-ui-shared/utils/scheduler'
 import type { FileKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 
 export const MAX_CONCURRENT_WORKERS_COUNT = 3
 
 export type ValidationWorker = {
-  validate: (
-    fileKey: FileKey,
-    initialFileContent: string,
-    branchCache: BranchCache,
-  ) => Promise<ValidationDiagnostic[]>
+  validate: (fileKey: FileKey, initialFileContent: string, branchCache: BranchCache) => Promise<ValidationDiagnostic[]>
 }
 
 export type ValidationDiagnostic = {
@@ -49,34 +41,25 @@ export type ValidationDiagnostic = {
 } & ISpectralDiagnostic
 
 const validationWorker: ValidationWorker = {
-  validate: async (
-    fileKey,
-    initialFileContent,
-    branchCache,
-  ): Promise<ValidationDiagnostic[]> => {
-    return (
-      await scheduleInBackground(async () => {
-        const spectral = createSpectral(fileKey, branchCache)
+  validate: async (fileKey, initialFileContent, branchCache): Promise<ValidationDiagnostic[]> => {
+    return await scheduleInBackground(async () => {
+      const spectral = createSpectral(fileKey, branchCache)
 
-        const diagnostic = await spectral.run(new Document(initialFileContent, Parsers.Yaml, fileKey))
+      const diagnostic = await spectral.run(new Document(initialFileContent, Parsers.Yaml, fileKey))
 
-        return toValidationDiagnostic(diagnostic)
-      })
-    )
+      return toValidationDiagnostic(diagnostic)
+    })
   },
 }
 
 function toValidationDiagnostic(diagnostic: ISpectralDiagnostic[]): ValidationDiagnostic[] {
-  return diagnostic.map(value => ({
+  return diagnostic.map((value) => ({
     ...value,
     fileProblemType: toFileProblemType(value.severity),
   }))
 }
 
-function createSpectral(
-  fileKey: string,
-  branchCache: BranchCache,
-): Spectral {
+function createSpectral(fileKey: string, branchCache: BranchCache): Spectral {
   const resolver = new Resolver({
     resolvers: {
       file: {

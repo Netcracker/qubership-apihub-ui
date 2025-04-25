@@ -22,21 +22,27 @@ import type { StoryPage } from './story-page'
 export async function storyPage(page: Page, storyName: string): Promise<StoryPage> {
   enableConsoleLogs(page, false)
   await page.evaluateOnNewDocument(() => {
-    localStorage.setItem('storybook-layout', JSON.stringify({
-      resizerPanel: { x: 1300, y: 0 },
-      resizerNav: { x: 200, y: 0 },
-    }))
-    localStorage.setItem('@storybook/manager/store', JSON.stringify({
-      layout: {
-        'initialActive': 'canvas',
-        'showToolbar': true,
-        'isFullscreen': false,
-        'showPanel': true,
-        'showNav': true,
-        'panelPosition': 'right',
-        'showTabs': true,
-      },
-    }))
+    localStorage.setItem(
+      'storybook-layout',
+      JSON.stringify({
+        resizerPanel: { x: 1300, y: 0 },
+        resizerNav: { x: 200, y: 0 },
+      }),
+    )
+    localStorage.setItem(
+      '@storybook/manager/store',
+      JSON.stringify({
+        layout: {
+          initialActive: 'canvas',
+          showToolbar: true,
+          isFullscreen: false,
+          showPanel: true,
+          showNav: true,
+          panelPosition: 'right',
+          showTabs: true,
+        },
+      }),
+    )
   })
   await page.setViewport({ width: 1800, height: 1000 })
   await page.goto(`${host()}/iframe.html?args=&id=${storyName}&viewMode=story`, { waitUntil: 'networkidle2' })
@@ -71,15 +77,13 @@ function enableConsoleLogs(page: Page, enable: boolean): void {
   if (!enable) {
     return
   }
-  page.on('console', e => {
+  page.on('console', (e) => {
     const currentTest = expect.getState().currentTestName || ''
     if (e.type() === 'error') {
-
       console.log(`Error in ${currentTest} - ${e.text()}`)
     }
-    page.on('console', e => {
+    page.on('console', (e) => {
       if (e.type() === 'log') {
-
         console.log(`Log in ${currentTest} - ${e.text()}`)
       }
     })

@@ -39,34 +39,32 @@ export const MoveFileDialog: FC = memo(() => {
   // TODO: Create `useMoveProjectFile` and use it when backend will provide move API
   const [renameProjectFile, isLoading] = useRenameProjectFile()
 
-  useEffect(() => {!isLoading && setOpen(false)}, [isLoading])
-  useEffect(() => {file && reset()}, [file, reset])
+  useEffect(() => {
+    !isLoading && setOpen(false)
+  }, [isLoading])
+  useEffect(() => {
+    file && reset()
+  }, [file, reset])
 
   return (
     <DialogForm
       open={open}
       onClose={() => setOpen(false)}
-      onSubmit={handleSubmit(({ newFileId }) => renameProjectFile({
-        fileId: file?.key ?? '',
-        newFileId: move(newFileId, file),
-      }))}
+      onSubmit={handleSubmit(({ newFileId }) =>
+        renameProjectFile({
+          fileId: file?.key ?? '',
+          newFileId: move(newFileId, file),
+        }),
+      )}
     >
-      <DialogTitle>
-        Move
-      </DialogTitle>
+      <DialogTitle>Move</DialogTitle>
 
       <DialogContent>
         <Controller
           name="newFileId"
           control={control}
           defaultValue={file?.key.substring(0, file?.key.lastIndexOf('/'))}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              autoFocus required
-              label="Path"
-            />
-          )}
+          render={({ field }) => <TextField {...field} autoFocus required label="Path" />}
         />
       </DialogContent>
 
@@ -84,9 +82,7 @@ export const MoveFileDialog: FC = memo(() => {
 
 function move(newPath: string, file?: TreeProjectFile): string {
   if (file) {
-    const safePath = newPath
-      .concat('/')
-      .replaceAll(/([/]+)/g, '/')
+    const safePath = newPath.concat('/').replaceAll(/([/]+)/g, '/')
     return `${safePath}${file?.name}`
   }
   return ''

@@ -30,7 +30,8 @@ import { useSystemInfo } from '@netcracker/qubership-apihub-ui-shared/features/s
 import {
   ADDED_CHANGE_STATUS,
   DELETED_CHANGE_STATUS,
-  EXCLUDED_CHANGE_STATUS, STATUS_COLORS,
+  EXCLUDED_CHANGE_STATUS,
+  STATUS_COLORS,
 } from '@netcracker/qubership-apihub-ui-shared/entities/change-statuses'
 import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import { FileIcon } from '@netcracker/qubership-apihub-ui-shared/icons/FileIcon'
@@ -43,154 +44,153 @@ export type InteractiveTreeItemProps = {
   level: number
 } & TreeItemProps
 
-export const InteractiveTreeItem = styled(memo<InteractiveTreeItemProps>(({ file, level, ...props }) => {
-  const { key, name, status, children, publish } = file
-  const [actionMenuOpen, setActionMenuOpen] = useState(false)
-  const {
-    showImportFromGitDialog,
-    showUploadDialog,
-    showImportByUrlDialog,
-    showCreateFileDialog,
-    showRenameFileDialog,
-    showMoveFileDialog,
-    showDeleteContentDialog,
-  } = useEventBus()
-  const [restoreProjectFile] = useRestoreProjectFile()
-  const hasEditPermission = useHasEditBranchPermission()
-  const { productionMode } = useSystemInfo()
-  const [updateFileMeta] = useUpdateProjectFileMeta()
+export const InteractiveTreeItem = styled(
+  memo<InteractiveTreeItemProps>(({ file, level, ...props }) => {
+    const { key, name, status, children, publish } = file
+    const [actionMenuOpen, setActionMenuOpen] = useState(false)
+    const {
+      showImportFromGitDialog,
+      showUploadDialog,
+      showImportByUrlDialog,
+      showCreateFileDialog,
+      showRenameFileDialog,
+      showMoveFileDialog,
+      showDeleteContentDialog,
+    } = useEventBus()
+    const [restoreProjectFile] = useRestoreProjectFile()
+    const hasEditPermission = useHasEditBranchPermission()
+    const { productionMode } = useSystemInfo()
+    const [updateFileMeta] = useUpdateProjectFileMeta()
 
-  const isFileNotRemoved = useMemo(() => status !== EXCLUDED_CHANGE_STATUS && status !== DELETED_CHANGE_STATUS, [status])
-  const isFileCanBeRestored = useMemo(() => status !== ADDED_CHANGE_STATUS && status !== DELETED_CHANGE_STATUS, [status])
-  const isDeleteFolderAvailable = useMemo(() => children?.find(({ status }) => status !== DELETED_CHANGE_STATUS && status !== EXCLUDED_CHANGE_STATUS), [children])
+    const isFileNotRemoved = useMemo(
+      () => status !== EXCLUDED_CHANGE_STATUS && status !== DELETED_CHANGE_STATUS,
+      [status],
+    )
+    const isFileCanBeRestored = useMemo(
+      () => status !== ADDED_CHANGE_STATUS && status !== DELETED_CHANGE_STATUS,
+      [status],
+    )
+    const isDeleteFolderAvailable = useMemo(
+      () => children?.find(({ status }) => status !== DELETED_CHANGE_STATUS && status !== EXCLUDED_CHANGE_STATUS),
+      [children],
+    )
 
-  const actionButtonStyle = useMemo(() => {
-    return {
-      ml: 1,
-      visibility: actionMenuOpen ? 'visible' : 'hidden',
-      backgroundColor: actionMenuOpen ? '#E8E8E8' : 'transparent',
-      '&:hover': {
-        backgroundColor: '#ECEDEF',
-      },
-      width: 24,
-      minWidth: 24,
-      height: 24,
-    }
-  }, [actionMenuOpen])
+    const actionButtonStyle = useMemo(() => {
+      return {
+        ml: 1,
+        visibility: actionMenuOpen ? 'visible' : 'hidden',
+        backgroundColor: actionMenuOpen ? '#E8E8E8' : 'transparent',
+        '&:hover': {
+          backgroundColor: '#ECEDEF',
+        },
+        width: 24,
+        minWidth: 24,
+        height: 24,
+      }
+    }, [actionMenuOpen])
 
-  return (
-    <>
-      <TreeItem
-        {...props}
-        label={
-          <Box display="flex" alignItems="center" height={24}>
-            {isNotEmpty(children)
-              ? <FolderIcon sx={{ color: '#FFB02E' }} fontSize="small"/>
-              : publish ? <FileIcon/> : <ComponentIcon/>}
-            <OverflowTooltip title={name} placement="right">
-              <Typography
-                noWrap
-                variant="body2"
-                sx={{
-                  ml: 1,
-                  color: status && STATUS_COLORS[status],
-                  flexGrow: 1,
-                  direction: isNotEmpty(children) ? 'rtl' : 'ltr',
-                }}
-              >
-                {name}
-              </Typography>
-            </OverflowTooltip>
-            {hasEditPermission && (
-              isFileNotRemoved
-                ? (
+    return (
+      <>
+        <TreeItem
+          {...props}
+          label={
+            <Box display="flex" alignItems="center" height={24}>
+              {isNotEmpty(children) ? (
+                <FolderIcon sx={{ color: '#FFB02E' }} fontSize="small" />
+              ) : publish ? (
+                <FileIcon />
+              ) : (
+                <ComponentIcon />
+              )}
+              <OverflowTooltip title={name} placement="right">
+                <Typography
+                  noWrap
+                  variant="body2"
+                  sx={{
+                    ml: 1,
+                    color: status && STATUS_COLORS[status],
+                    flexGrow: 1,
+                    direction: isNotEmpty(children) ? 'rtl' : 'ltr',
+                  }}
+                >
+                  {name}
+                </Typography>
+              </OverflowTooltip>
+              {hasEditPermission &&
+                (isFileNotRemoved ? (
                   <MenuButton
                     sx={actionButtonStyle}
                     size="small"
-                    icon={<MoreVertIcon sx={{ color: '#626D82' }} fontSize="small"/>}
-                    onClick={event => {
+                    icon={<MoreVertIcon sx={{ color: '#626D82' }} fontSize="small" />}
+                    onClick={(event) => {
                       event.stopPropagation()
                       setActionMenuOpen(true)
                     }}
-                    onItemClick={event => event.stopPropagation()}
+                    onItemClick={(event) => event.stopPropagation()}
                     onClose={() => setActionMenuOpen(false)}
                   >
-                    {isNotEmpty(children)
-                      ? (
-                        <Box>
-                          <MenuItem onClick={() => showImportFromGitDialog({ folderKey: key })}>
-                            Import from GIT
-                          </MenuItem>
-                          <MenuItem onClick={() => showUploadDialog({ path: key })}>
-                            Upload
-                          </MenuItem>
-                          <MenuItem onClick={() => showImportByUrlDialog({ path: key })}>
-                            Import by URL
-                          </MenuItem>
-                          <MenuItem onClick={() => showCreateFileDialog({ path: key })}>
-                            Create
-                          </MenuItem>
-                          {isDeleteFolderAvailable && (
-                            <MenuItem sx={{ color: '#FF5260' }}
-                                      onClick={() => showDeleteContentDialog({ key: key, name: name, isFolder: true })}>
-                              Delete
-                            </MenuItem>
-                          )}
-                          <Divider orientation="horizontal" variant="fullWidth"/>
-                          <MenuItem onClick={() => updateFileMeta({ key: key, publish: true, bulk: true })}>
-                            Convert to document
-                          </MenuItem>
-                          <MenuItem onClick={() => updateFileMeta({ key: key, publish: false, bulk: true })}>
-                            Convert to component
-                          </MenuItem>
-                        </Box>
-                      )
-                      : (
-                        <Box>
-                          {!productionMode && (
-                            <MenuItem onClick={() => showRenameFileDialog({ file })}>
-                              Rename
-                            </MenuItem>
-                          )}
-                          {!productionMode && (
-                            <MenuItem onClick={() => showMoveFileDialog({ file })}>
-                              Move
-                            </MenuItem>
-                          )}
-                          <MenuItem sx={{ color: '#FF5260' }}
-                                    onClick={() => showDeleteContentDialog({ key: key, name: name, isFolder: false })}>
+                    {isNotEmpty(children) ? (
+                      <Box>
+                        <MenuItem onClick={() => showImportFromGitDialog({ folderKey: key })}>Import from GIT</MenuItem>
+                        <MenuItem onClick={() => showUploadDialog({ path: key })}>Upload</MenuItem>
+                        <MenuItem onClick={() => showImportByUrlDialog({ path: key })}>Import by URL</MenuItem>
+                        <MenuItem onClick={() => showCreateFileDialog({ path: key })}>Create</MenuItem>
+                        {isDeleteFolderAvailable && (
+                          <MenuItem
+                            sx={{ color: '#FF5260' }}
+                            onClick={() => showDeleteContentDialog({ key: key, name: name, isFolder: true })}
+                          >
                             Delete
                           </MenuItem>
-                          <Divider orientation="horizontal" variant="fullWidth"/>
-                          <MenuItem onClick={() => updateFileMeta({ key: file.key, publish: !file.publish })}>
-                            Convert to {publish ? 'component' : 'document'}
-                          </MenuItem>
-                        </Box>
-                      )}
+                        )}
+                        <Divider orientation="horizontal" variant="fullWidth" />
+                        <MenuItem onClick={() => updateFileMeta({ key: key, publish: true, bulk: true })}>
+                          Convert to document
+                        </MenuItem>
+                        <MenuItem onClick={() => updateFileMeta({ key: key, publish: false, bulk: true })}>
+                          Convert to component
+                        </MenuItem>
+                      </Box>
+                    ) : (
+                      <Box>
+                        {!productionMode && <MenuItem onClick={() => showRenameFileDialog({ file })}>Rename</MenuItem>}
+                        {!productionMode && <MenuItem onClick={() => showMoveFileDialog({ file })}>Move</MenuItem>}
+                        <MenuItem
+                          sx={{ color: '#FF5260' }}
+                          onClick={() => showDeleteContentDialog({ key: key, name: name, isFolder: false })}
+                        >
+                          Delete
+                        </MenuItem>
+                        <Divider orientation="horizontal" variant="fullWidth" />
+                        <MenuItem onClick={() => updateFileMeta({ key: file.key, publish: !file.publish })}>
+                          Convert to {publish ? 'component' : 'document'}
+                        </MenuItem>
+                      </Box>
+                    )}
                   </MenuButton>
-                )
-                : isFileCanBeRestored
-                  ? <Button
+                ) : isFileCanBeRestored ? (
+                  <Button
                     sx={actionButtonStyle}
-                    onClick={event => {
+                    onClick={(event) => {
                       event.stopPropagation()
                       restoreProjectFile(key)
                     }}
                   >
                     Restore
                   </Button>
-                  : null
-            )}
-          </Box>
-        }
-      >
-        {isNotEmpty(children) && children?.map((file) => (
-          <InteractiveTreeItem key={file.key} nodeId={file.key} file={file} level={level + 1}/>
-        ))}
-      </TreeItem>
-    </>
-  )
-}))(({ level = 1 }) => ({
+                ) : null)}
+            </Box>
+          }
+        >
+          {isNotEmpty(children) &&
+            children?.map((file) => (
+              <InteractiveTreeItem key={file.key} nodeId={file.key} file={file} level={level + 1} />
+            ))}
+        </TreeItem>
+      </>
+    )
+  }),
+)(({ level = 1 }) => ({
   [`& .${treeItemClasses.label}`]: {
     '& .MuiBox-root': {
       '&:hover': {

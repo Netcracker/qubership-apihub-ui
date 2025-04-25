@@ -26,12 +26,7 @@ import { LabelsAutocomplete } from '../LabelsAutocomplete'
 import { TextWithOverflowTooltip } from '../TextWithOverflowTooltip'
 
 export const EditFileLabelsDialog: FC = memo(() => {
-  return (
-    <PopupDelegate
-      type={SHOW_EDIT_FILE_LABELS_DIALOG}
-      render={props => <EditFileLabelsPopup {...props}/>}
-    />
-  )
+  return <PopupDelegate type={SHOW_EDIT_FILE_LABELS_DIALOG} render={(props) => <EditFileLabelsPopup {...props} />} />
 })
 
 export const SHOW_EDIT_FILE_LABELS_DIALOG = 'show-edit-file-labels-dialog'
@@ -48,9 +43,12 @@ export const EditFileLabelsPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
     return [file, onConfirm, labels]
   }, [detail])
 
-  const defaultValues = useMemo(() => ({
-    labels: labels,
-  }), [labels])
+  const defaultValues = useMemo(
+    () => ({
+      labels: labels,
+    }),
+    [labels],
+  )
 
   const { control, getValues } = useForm<{ labels?: string[] | undefined }>({ defaultValues })
 
@@ -66,20 +64,13 @@ export const EditFileLabelsPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
   const dialogTitle = `Edit Labels for ${file.name}`
 
   return (
-    <DialogForm
-      open={open}
-      onClose={onClose}
-      width="440px"
-    >
+    <DialogForm open={open} onClose={onClose} width="440px">
       <DialogTitle>
         <TextWithOverflowTooltip tooltipText={dialogTitle} variant="inherit">
           {dialogTitle}
         </TextWithOverflowTooltip>
-        <IconButton
-          sx={{ position: 'absolute', right: 8, top: 8, color: '#626D82' }}
-          onClick={onClose}
-        >
-          <CloseOutlinedIcon fontSize="small"/>
+        <IconButton sx={{ position: 'absolute', right: 8, top: 8, color: '#626D82' }} onClick={onClose}>
+          <CloseOutlinedIcon fontSize="small" />
         </IconButton>
       </DialogTitle>
 
@@ -90,7 +81,9 @@ export const EditFileLabelsPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
           render={({ field: { onChange, value } }) => {
             return (
               <LabelsAutocomplete
-                onChange={(_, value) => {onChange(value)}}
+                onChange={(_, value) => {
+                  onChange(value)
+                }}
                 value={value}
               />
             )
@@ -99,18 +92,10 @@ export const EditFileLabelsPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
       </DialogContent>
 
       <DialogActions>
-        <Button
-          variant="contained"
-          onClick={onConfirmCallback}
-          data-testid="SaveButton"
-        >
+        <Button variant="contained" onClick={onConfirmCallback} data-testid="SaveButton">
           Save
         </Button>
-        <Button
-          variant="outlined"
-          onClick={onClose}
-          data-testid="CancelButton"
-        >
+        <Button variant="outlined" onClick={onClose} data-testid="CancelButton">
           Cancel
         </Button>
       </DialogActions>

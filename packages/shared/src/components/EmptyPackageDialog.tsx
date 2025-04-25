@@ -24,12 +24,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import type { TestableProps } from './Testable'
 
 export const EmptyPackageDialog: FC = memo(() => {
-  return (
-    <PopupDelegate
-      type={SHOW_EMPTY_PACKAGE_DIALOG}
-      render={props => <EmptyPackagePopup {...props}/>}
-    />
-  )
+  return <PopupDelegate type={SHOW_EMPTY_PACKAGE_DIALOG} render={(props) => <EmptyPackagePopup {...props} />} />
 })
 
 export const SHOW_EMPTY_PACKAGE_DIALOG = 'show-empty-package-dialog'
@@ -52,18 +47,14 @@ export const EmptyPackagePopup: FC<PopupProps> = memo<PopupProps>(({ open, setOp
   }, [setOpen])
 
   return (
-    <DialogForm
-      open={open}
-      onClose={onClose}
-      width="440px"
-    >
-      <DialogTitle>
-        Methods for API Documentation Upload
-      </DialogTitle>
-      <DialogContent sx={{
-        width: 'auto',
-        minWidth: 'unset',
-      }}>
+    <DialogForm open={open} onClose={onClose} width="440px">
+      <DialogTitle>Methods for API Documentation Upload</DialogTitle>
+      <DialogContent
+        sx={{
+          width: 'auto',
+          minWidth: 'unset',
+        }}
+      >
         {emptyPackageData.map(({ label, navigate, description, testId }, index) => (
           <React.Fragment key={index}>
             <Box
@@ -78,22 +69,18 @@ export const EmptyPackagePopup: FC<PopupProps> = memo<PopupProps>(({ open, setOp
                 <Typography variant="subtitle1" fontSize={13}>
                   {label}
                 </Typography>
-                <ChevronRightIcon/>
+                <ChevronRightIcon />
               </Box>
               <Typography variant="body2" fontSize={13} maxWidth="352px">
                 {description}
               </Typography>
             </Box>
-            <Divider orientation="horizontal" sx={DIVIDER_STYLES}/>
+            <Divider orientation="horizontal" sx={DIVIDER_STYLES} />
           </React.Fragment>
         ))}
       </DialogContent>
       <DialogActions>
-        <Button
-          variant="contained"
-          onClick={onClose}
-          data-testid="GotItButton"
-        >
+        <Button variant="contained" onClick={onClose} data-testid="GotItButton">
           Got it
         </Button>
       </DialogActions>

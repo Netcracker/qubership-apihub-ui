@@ -46,11 +46,7 @@ export function useProjectFileContent(
   return [data ?? null, isLoading]
 }
 
-export async function getProjectFileContent(
-  projectKey: Key,
-  branchName: string,
-  fileKey: Key,
-): Promise<FileContent> {
+export async function getProjectFileContent(projectKey: Key, branchName: string, fileKey: Key): Promise<FileContent> {
   const projectId = encodeURIComponent(projectKey)
   const branch = encodeURIComponent(branchName)
   const fileId = encodeURIComponent(fileKey)
@@ -96,7 +92,10 @@ export async function getFileHistory(
   const branch = encodeURIComponent(branchName)
   const fileId = encodeURIComponent(fileKey)
 
-  return await editorRequestJson<ProjectFileHistoryDto>(`/projects/${projectId}/branches/${branch}/files/${fileId}/history`, {
-    method: 'GET',
-  })
+  return await editorRequestJson<ProjectFileHistoryDto>(
+    `/projects/${projectId}/branches/${branch}/files/${fileId}/history`,
+    {
+      method: 'GET',
+    },
+  )
 }

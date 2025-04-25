@@ -71,15 +71,21 @@ export type VisitorNavigationDetails = {
 }
 
 const walker = new OpenApiWalker()
-const declarationPathsToString: (origins: OriginLeafs) => string = (origins) => origins.map(origin => pathItemToFullPath(origin).join('/')).join(',')
+const declarationPathsToString: (origins: OriginLeafs) => string = (origins) =>
+  origins.map((origin) => pathItemToFullPath(origin).join('/')).join(',')
 
 const hasCombiners: (schema: OpenAPIV3.SchemaObject) => boolean = (schema) => {
-  return JSON_SCHEMA_PROPERTY_ANY_OF in schema ||
+  return (
+    JSON_SCHEMA_PROPERTY_ANY_OF in schema ||
     JSON_SCHEMA_PROPERTY_ONE_OF in schema ||
     JSON_SCHEMA_PROPERTY_ALL_OF in schema
+  )
 }
 
-const extractTargetValue: (schema: OpenAPIV3.SchemaObject | undefined, path?: OpenAPIV3.SchemaObject[]) => {
+const extractTargetValue: (
+  schema: OpenAPIV3.SchemaObject | undefined,
+  path?: OpenAPIV3.SchemaObject[],
+) => {
   schema: OpenAPIV3.SchemaObject
   depth: number
 } = (schema, path = []) => {
@@ -110,15 +116,21 @@ const extractTargetValue: (schema: OpenAPIV3.SchemaObject | undefined, path?: Op
 
 const collectCombinerNames: (schema: OpenAPIV3.SchemaObject) => string | undefined = (schema) => {
   const schemaRecord = schema as Record<PropertyKey, unknown>
-  const combs = [JSON_SCHEMA_PROPERTY_ONE_OF, JSON_SCHEMA_PROPERTY_ANY_OF].flatMap(com => (com in schemaRecord && isArray(schemaRecord[com]) ? [com] : []))
+  const combs = [JSON_SCHEMA_PROPERTY_ONE_OF, JSON_SCHEMA_PROPERTY_ANY_OF].flatMap((com) =>
+    com in schemaRecord && isArray(schemaRecord[com]) ? [com] : [],
+  )
   return combs.length !== 0 ? combs.join(', ') : undefined
 }
 
-const typeNmr: (schema: OpenAPIV3.SchemaObject, alternativeTitle?: string) => string =
-  (schema, alternativeTitle) => schema.title ?? alternativeTitle ?? collectCombinerNames(schema) ?? schema.type ?? 'unknown'
+const typeNmr: (schema: OpenAPIV3.SchemaObject, alternativeTitle?: string) => string = (schema, alternativeTitle) =>
+  schema.title ?? alternativeTitle ?? collectCombinerNames(schema) ?? schema.type ?? 'unknown'
 
-const propertyTypeNmr: (schema: OpenAPIV3.SchemaObject) => string =
-  (schema) => schema.title ?? collectCombinerNames(schema) ?? (schema.format && schema.type ? `${schema.type}<${schema.format}>` : undefined) ?? (schema.type) ?? 'unknown'
+const propertyTypeNmr: (schema: OpenAPIV3.SchemaObject) => string = (schema) =>
+  schema.title ??
+  collectCombinerNames(schema) ??
+  (schema.format && schema.type ? `${schema.type}<${schema.format}>` : undefined) ??
+  schema.type ??
+  'unknown'
 
 export function calculateTolerantHash(schema: OpenAPIV3.SchemaObject | OpenAPIV3.ParameterObject): string {
   if (!(VISITOR_FLAG_HASH in schema)) {
@@ -165,7 +177,7 @@ class GraphBuilder {
   private readonly rollbackStack: (() => void)[] = []
   private readonly combinerStack: CombinerType[] = []
 
-  constructor(private readonly cycledJso: Record<PropertyKey, unknown>) { }
+  constructor(private readonly cycledJso: Record<PropertyKey, unknown>) {}
 
   get root(): boolean {
     return this.propertyStack.length === 0
@@ -173,10 +185,10 @@ class GraphBuilder {
 
   private fillSharedSchemas(schema: OpenAPIV3.SchemaObject, sharedSchemas: OpenAPIV3.SchemaObject[]): void {
     const sharedSchemaObjectNames = resolveSharedSchemaNames(schema)
-    sharedSchemaObjectNames?.forEach(sharedSchemaName => {
-      const sharedSchema =
-        (this.cycledJso[OPEN_API_PROPERTY_COMPONENTS] as OpenAPIV3.ComponentsObject)
-          ?.[OPEN_API_PROPERTY_SCHEMAS]?.[sharedSchemaName] as OpenAPIV3.SchemaObject
+    sharedSchemaObjectNames?.forEach((sharedSchemaName) => {
+      const sharedSchema = (this.cycledJso[OPEN_API_PROPERTY_COMPONENTS] as OpenAPIV3.ComponentsObject)?.[
+        OPEN_API_PROPERTY_SCHEMAS
+      ]?.[sharedSchemaName] as OpenAPIV3.SchemaObject
       if (sharedSchema && !sharedSchemas.includes(sharedSchema)) {
         sharedSchemas.push(sharedSchema)
       }
@@ -212,7 +224,10 @@ class GraphBuilder {
         key: this.createPropertyKey(newNode, this.fooRootPropertyKey),
         name: this.propertyNameForPrimitives,
         fooName: true,
-        propertyType: schema === targetSchema ? targetSchema.type! : typeNmr(targetSchema) + (depth === Number.POSITIVE_INFINITY ? '[]...' : '[]'.repeat(depth)),
+        propertyType:
+          schema === targetSchema
+            ? targetSchema.type!
+            : typeNmr(targetSchema) + (depth === Number.POSITIVE_INFINITY ? '[]...' : '[]'.repeat(depth)),
         propertyTypeDeprecated: !!targetSchema.deprecated,
         deprecated: !resolveSharedSchemaNames(targetSchema) && !!targetSchema.deprecated,
         kind: PROPERTY_TYPE_LEAF,
@@ -252,15 +267,18 @@ class GraphBuilder {
   }
 
   get lastAvailableSchema(): SchemaClass | undefined {
-    return this.propertiesContainerStack.reduceRight((res, v) => {
-      if (res) {
-        return res
-      }
-      if (v.kind === SCHEMA_TYPE) {
-        return v
-      }
-      return undefined
-    }, undefined as SchemaClass | undefined)
+    return this.propertiesContainerStack.reduceRight(
+      (res, v) => {
+        if (res) {
+          return res
+        }
+        if (v.kind === SCHEMA_TYPE) {
+          return v
+        }
+        return undefined
+      },
+      undefined as SchemaClass | undefined,
+    )
   }
 
   createRootSchema(schema: OpenAPIV3.SchemaObject, alternativeTitle: string): void {
@@ -277,8 +295,16 @@ class GraphBuilder {
     })
   }
 
-  createAlternativeCombinerPropertyAndConnection(combinerIndex: number, schema: OpenAPIV3.SchemaObject): BuildPropertyResult {
-    return this.createPropertyAndConnection(this.propertyNameForNonObjectProperties, `${this.combinerStack.at(-1)}-${combinerIndex.toString()}`, schema, true)
+  createAlternativeCombinerPropertyAndConnection(
+    combinerIndex: number,
+    schema: OpenAPIV3.SchemaObject,
+  ): BuildPropertyResult {
+    return this.createPropertyAndConnection(
+      this.propertyNameForNonObjectProperties,
+      `${this.combinerStack.at(-1)}-${combinerIndex.toString()}`,
+      schema,
+      true,
+    )
   }
 
   createRootArrayPropertyAndConnection(schema: OpenAPIV3.SchemaObject): BuildPropertyResult {
@@ -289,19 +315,29 @@ class GraphBuilder {
     return this.createPropertyAndConnection(this.propertyNameForPrimitives, this.fooRootPropertyKey, schema, true, true)
   }
 
-  createPropertyAndConnection(propertyName: string, propertyKey: string, schema: OpenAPIV3.SchemaObject, foo: boolean, extraDepth = false): BuildPropertyResult {
+  createPropertyAndConnection(
+    propertyName: string,
+    propertyKey: string,
+    schema: OpenAPIV3.SchemaObject,
+    foo: boolean,
+    extraDepth = false,
+  ): BuildPropertyResult {
     let nestedResult: BuildPropertyResult = { hasDeepSchema: schema.type === JSON_SCHEMA_NODE_TYPE_ARRAY }
     const propertiesContainer = this.propertiesContainerStack.at(-1)
     const lastSchema = this.lastAvailableSchema
-    let rollback: () => void = () => {/*nothing*/ }
+    let rollback: () => void = () => {
+      /*nothing*/
+    }
     if (propertiesContainer && lastSchema) {
       const { schema: valueForTests, depth } = extractTargetValue(schema)
       const propertyNode: SchemaProperty = {
         key: this.createPropertyKey(propertiesContainer, propertyKey),
         name: propertyName,
         fooName: foo,
-        propertyType: propertyTypeNmr(valueForTests) + (depth === Number.POSITIVE_INFINITY ? '[]...' : '[]'.repeat(depth + (extraDepth ? 1 : 0))),
-        required: lastSchema.sameHashObjects.some(s => (s.required ?? []).includes(propertyName)),
+        propertyType:
+          propertyTypeNmr(valueForTests) +
+          (depth === Number.POSITIVE_INFINITY ? '[]...' : '[]'.repeat(depth + (extraDepth ? 1 : 0))),
+        required: lastSchema.sameHashObjects.some((s) => (s.required ?? []).includes(propertyName)),
         propertyTypeDeprecated: !!schema.deprecated || !!valueForTests.deprecated,
         deprecated: !resolveSharedSchemaNames(schema) && !!schema.deprecated,
         kind: PROPERTY_TYPE_LEAF,
@@ -323,10 +359,17 @@ class GraphBuilder {
   }
 
   createNestedSchemaAndConnection(schema: OpenAPIV3.SchemaObject): BuildPropertyResult {
-    let rollback: () => void = () => {/*nothing*/ }
-    let nestedResult: BuildPropertyResult = { hasDeepSchema: schema.type === JSON_SCHEMA_NODE_TYPE_ARRAY || schema.type === JSON_SCHEMA_NODE_TYPE_OBJECT }
+    let rollback: () => void = () => {
+      /*nothing*/
+    }
+    let nestedResult: BuildPropertyResult = {
+      hasDeepSchema: schema.type === JSON_SCHEMA_NODE_TYPE_ARRAY || schema.type === JSON_SCHEMA_NODE_TYPE_OBJECT,
+    }
     const lastProperty = this.propertyStack.at(-1)
-    if (lastProperty && (resolveSharedSchemaNames(schema) || schema.type === JSON_SCHEMA_NODE_TYPE_OBJECT || hasCombiners(schema))) {
+    if (
+      lastProperty &&
+      (resolveSharedSchemaNames(schema) || schema.type === JSON_SCHEMA_NODE_TYPE_OBJECT || hasCombiners(schema))
+    ) {
       const { schema: schemaNode, primitive, isNew } = this.getOrCreateSchema(schema)
       this.propertiesContainerStack.push(schemaNode)
       if (primitive) {
@@ -383,96 +426,104 @@ export function transformOasToEffectiveClassDiagram(
   delete invertOptions.inlineRefsFlag
   const cycledJsoSpec = denormalize(normalize(document, options), invertOptions)
   const builder = new GraphBuilder(cycledJsoSpec as Record<PropertyKey, unknown>)
-  walker.walkPathsOnNormalizedSource(cycledJsoSpec, {
-    responseStart: ({ responseCode, valueAlreadyVisited }) => {
-      if (valueAlreadyVisited) {
-        return false
-      }
-      rootSchemaSyntheticName.push(`Response ${responseCode}`)
-      return true
-    },
-    responseEnd: ({ valueAlreadyVisited }) => {
-      if (valueAlreadyVisited) {
-        return
-      }
-      rootSchemaSyntheticName.pop()
-    },
-    headerStart: ({ header, declarationPaths }) => {
-      rootSchemaSyntheticName.push(`Header ${header}`)
-      return graphScopePath === declarationPathsToString(declarationPaths)
-    },
-    headerEnd: () => {
-      rootSchemaSyntheticName.pop()
-    },
-    parameterStart: ({ value, declarationPaths }) => {
-      rootSchemaSyntheticName.push(`Parameter ${value.name}`)
-      return graphScopePath === declarationPathsToString(declarationPaths)
-    },
-    parameterEnd: () => {
-      rootSchemaSyntheticName.pop()
-    },
-    mediaTypeStart: ({ declarationPaths, mediaType }) => {
-      rootSchemaSyntheticName.push(`(${mediaType})`)
-      return graphScopePath === declarationPathsToString(declarationPaths)
-    },
-    mediaTypeEnd: () => {
-      rootSchemaSyntheticName.pop()
-    },
-    requestBodyStart: ({ valueAlreadyVisited }) => {
-      if (valueAlreadyVisited) {
-        return false
-      }
-      rootSchemaSyntheticName.push('Request')
-      return true
-    },
-    requestBodyEnd: ({ valueAlreadyVisited }) => {
-      if (valueAlreadyVisited) {
-        return
-      }
-      rootSchemaSyntheticName.pop()
-    },
-
-    schemaRootStart: ({ value, valueAlreadyVisited }) => {
-      const last = rootSchemaSyntheticName.at(-1)
-      const prev = rootSchemaSyntheticName.at(-2)
-      const alternative = prev ? `${prev} ${last}` : (last ?? '')
-      builder.createRootSchema(value, alternative)
-      return !valueAlreadyVisited
-    },
-    schemaRootEnd: () => builder.back(),
-    schemaPropertyStart: ({ propertyName, value }) => {
-      const { hasDeepSchema } = builder.createPropertyAndConnection(propertyName === PROPERTY_ALIAS_ADDITIONAL_PROPERTIES ? 'additionalProperties' : propertyName, `'${propertyName}'`, value, propertyName === PROPERTY_ALIAS_ADDITIONAL_PROPERTIES)
-      return hasDeepSchema
-    },
-    schemaPropertyEnd: () => builder.back(),
-    schemaItemsStart: ({ value }) => {
-      if (builder.root) {
-        const { hasDeepSchema } = builder.createRootArrayPropertyAndConnection(value)
-        return hasDeepSchema
-      } else {
-        const { hasDeepSchema } = builder.createNestedSchemaAndConnection(value)
-        return hasDeepSchema
-      }
-    },
-    schemaItemsEnd: () => builder.back(),
-    combinerStart: ({ combinerType, valueAlreadyVisited }) => {
-      switch (combinerType) {
-        case JSON_SCHEMA_PROPERTY_ONE_OF:
-        case JSON_SCHEMA_PROPERTY_ANY_OF:
-          builder.createCombiner(combinerType)
-          return !valueAlreadyVisited
-        case JSON_SCHEMA_PROPERTY_ALL_OF:
-          builder.createCombiner(combinerType)
+  walker.walkPathsOnNormalizedSource(
+    cycledJsoSpec,
+    {
+      responseStart: ({ responseCode, valueAlreadyVisited }) => {
+        if (valueAlreadyVisited) {
           return false
-      }
-    },
-    combinerEnd: () => builder.back(),
-    combinerItemStart: ({ value, combinerItemIndex }) => {
-      const { hasDeepSchema } = builder.createAlternativeCombinerPropertyAndConnection(combinerItemIndex, value)
-      return hasDeepSchema
-    },
-    combinerItemEnd: () => builder.back(),
+        }
+        rootSchemaSyntheticName.push(`Response ${responseCode}`)
+        return true
+      },
+      responseEnd: ({ valueAlreadyVisited }) => {
+        if (valueAlreadyVisited) {
+          return
+        }
+        rootSchemaSyntheticName.pop()
+      },
+      headerStart: ({ header, declarationPaths }) => {
+        rootSchemaSyntheticName.push(`Header ${header}`)
+        return graphScopePath === declarationPathsToString(declarationPaths)
+      },
+      headerEnd: () => {
+        rootSchemaSyntheticName.pop()
+      },
+      parameterStart: ({ value, declarationPaths }) => {
+        rootSchemaSyntheticName.push(`Parameter ${value.name}`)
+        return graphScopePath === declarationPathsToString(declarationPaths)
+      },
+      parameterEnd: () => {
+        rootSchemaSyntheticName.pop()
+      },
+      mediaTypeStart: ({ declarationPaths, mediaType }) => {
+        rootSchemaSyntheticName.push(`(${mediaType})`)
+        return graphScopePath === declarationPathsToString(declarationPaths)
+      },
+      mediaTypeEnd: () => {
+        rootSchemaSyntheticName.pop()
+      },
+      requestBodyStart: ({ valueAlreadyVisited }) => {
+        if (valueAlreadyVisited) {
+          return false
+        }
+        rootSchemaSyntheticName.push('Request')
+        return true
+      },
+      requestBodyEnd: ({ valueAlreadyVisited }) => {
+        if (valueAlreadyVisited) {
+          return
+        }
+        rootSchemaSyntheticName.pop()
+      },
 
-  }, { originsFlag: VISITOR_FLAG_ORIGINS })
+      schemaRootStart: ({ value, valueAlreadyVisited }) => {
+        const last = rootSchemaSyntheticName.at(-1)
+        const prev = rootSchemaSyntheticName.at(-2)
+        const alternative = prev ? `${prev} ${last}` : (last ?? '')
+        builder.createRootSchema(value, alternative)
+        return !valueAlreadyVisited
+      },
+      schemaRootEnd: () => builder.back(),
+      schemaPropertyStart: ({ propertyName, value }) => {
+        const { hasDeepSchema } = builder.createPropertyAndConnection(
+          propertyName === PROPERTY_ALIAS_ADDITIONAL_PROPERTIES ? 'additionalProperties' : propertyName,
+          `'${propertyName}'`,
+          value,
+          propertyName === PROPERTY_ALIAS_ADDITIONAL_PROPERTIES,
+        )
+        return hasDeepSchema
+      },
+      schemaPropertyEnd: () => builder.back(),
+      schemaItemsStart: ({ value }) => {
+        if (builder.root) {
+          const { hasDeepSchema } = builder.createRootArrayPropertyAndConnection(value)
+          return hasDeepSchema
+        } else {
+          const { hasDeepSchema } = builder.createNestedSchemaAndConnection(value)
+          return hasDeepSchema
+        }
+      },
+      schemaItemsEnd: () => builder.back(),
+      combinerStart: ({ combinerType, valueAlreadyVisited }) => {
+        switch (combinerType) {
+          case JSON_SCHEMA_PROPERTY_ONE_OF:
+          case JSON_SCHEMA_PROPERTY_ANY_OF:
+            builder.createCombiner(combinerType)
+            return !valueAlreadyVisited
+          case JSON_SCHEMA_PROPERTY_ALL_OF:
+            builder.createCombiner(combinerType)
+            return false
+        }
+      },
+      combinerEnd: () => builder.back(),
+      combinerItemStart: ({ value, combinerItemIndex }) => {
+        const { hasDeepSchema } = builder.createAlternativeCombinerPropertyAndConnection(combinerItemIndex, value)
+        return hasDeepSchema
+      },
+      combinerItemEnd: () => builder.back(),
+    },
+    { originsFlag: VISITOR_FLAG_ORIGINS },
+  )
   return builder.build()
 }

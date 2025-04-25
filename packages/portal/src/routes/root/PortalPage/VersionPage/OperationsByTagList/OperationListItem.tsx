@@ -29,23 +29,22 @@ export type OperationsListItemProps = {
   strikeThrough?: boolean
 }
 
-export const OperationListItem: FC<OperationsListItemProps> = memo<OperationsListItemProps>(({
-  operation,
-  strikeThrough = false,
-}) => {
-  const { type, typeColor } = isRestOperation(operation)
-    ? { type: operation.method, typeColor: METHOD_TYPE_COLOR_MAP[operation.method] }
-    : { type: renderGraphQlType(operation.type), typeColor: GRAPHQL_OPERATION_TYPE_COLOR_MAP[operation.type] }
+export const OperationListItem: FC<OperationsListItemProps> = memo<OperationsListItemProps>(
+  ({ operation, strikeThrough = false }) => {
+    const { type, typeColor } = isRestOperation(operation)
+      ? { type: operation.method, typeColor: METHOD_TYPE_COLOR_MAP[operation.method] }
+      : { type: renderGraphQlType(operation.type), typeColor: GRAPHQL_OPERATION_TYPE_COLOR_MAP[operation.type] }
 
-  return (
-    <CustomListItem
-      title={operation.title}
-      strikeThrough={strikeThrough}
-      badgeTitle={type.toUpperCase()}
-      badgeColor={typeColor}
-    />
-  )
-})
+    return (
+      <CustomListItem
+        title={operation.title}
+        strikeThrough={strikeThrough}
+        badgeTitle={type.toUpperCase()}
+        badgeColor={typeColor}
+      />
+    )
+  },
+)
 
 function renderGraphQlType(type: GraphQlOperationType): string {
   return type[0]

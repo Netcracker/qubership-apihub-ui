@@ -22,9 +22,7 @@ export const ShouldAutoExpandTagsProvider: FC<PropsWithChildren> = memo<PropsWit
 
   return (
     <ShouldAutoExpandTags.Provider value={shouldAutoExpandTags}>
-      <SetShouldAutoExpandTags.Provider value={setShouldAutoExpandTags}>
-        {children}
-      </SetShouldAutoExpandTags.Provider>
+      <SetShouldAutoExpandTags.Provider value={setShouldAutoExpandTags}>{children}</SetShouldAutoExpandTags.Provider>
     </ShouldAutoExpandTags.Provider>
   )
 })

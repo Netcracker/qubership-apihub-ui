@@ -39,21 +39,26 @@ export default defineConfig(({ mode }) => {
       ignoreDotsOnDevServer(),
       monacoEditor({
         languageWorkers: ['editorWorkerService', 'json'],
-        customWorkers: [{
-          label: 'yaml',
-          entry: 'monaco-yaml/yaml.worker',
-        }, {
-          label: 'graphql',
-          entry: 'monaco-graphql/dist/graphql.worker',
-        }],
+        customWorkers: [
+          {
+            label: 'yaml',
+            entry: 'monaco-yaml/yaml.worker',
+          },
+          {
+            label: 'graphql',
+            entry: 'monaco-graphql/dist/graphql.worker',
+          },
+        ],
       }),
       VitePluginFonts({
         custom: {
-          families: [{
-            name: 'Inter',
-            local: 'Inter',
-            src: './public/fonts/*.woff2',
-          }],
+          families: [
+            {
+              name: 'Inter',
+              local: 'Inter',
+              src: './public/fonts/*.woff2',
+            },
+          ],
           display: 'auto',
           preload: true,
           prefetch: false,
@@ -67,9 +72,7 @@ export default defineConfig(({ mode }) => {
       // For example, without this setting, esbuildOptions are not being applied to the npm-linked
       // @netcracker/qubership-apihub-api-processor during "npm run proxy", which leads to reference errors
       // like "process is not defined" and "Buffer is not defined".
-      include: [
-        '@netcracker/qubership-apihub-api-processor',
-      ],
+      include: ['@netcracker/qubership-apihub-api-processor'],
       esbuildOptions: {
         plugins: [
           NodeModulesPolyfill(),
@@ -102,7 +105,8 @@ export default defineConfig(({ mode }) => {
     server: {
       open: `/login?userView=${userView}`,
       proxy: {
-        '/api': { // /apihub-nc/api also proxied as it meets a substring inclusion condition
+        '/api': {
+          // /apihub-nc/api also proxied as it meets a substring inclusion condition
           target: isProxyMode ? `${proxyServer}` : devServer,
           changeOrigin: true,
           secure: false,

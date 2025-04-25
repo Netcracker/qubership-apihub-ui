@@ -42,40 +42,42 @@ import { ConfirmationDialog } from '@apihub/components/ConfirmationDialog'
 import { calculateProjectPath } from '@apihub/utils/projects'
 
 // TODO: Return the ability to change group and alias when BE will be ready
-export const SettingsEditorGeneral: FC<SettingsGeneralProps> = memo(props => {
+export const SettingsEditorGeneral: FC<SettingsGeneralProps> = memo((props) => {
   const { project, packageObj: relatedPackage } = props
 
   const [confirmationOpen, setConfirmationOpen] = useState(false)
   const setEditable = useSetEditableSettingsTabContent()
 
-  const {
-    key: projectKey = '',
-    name,
-    alias,
-    integration,
-    packageKey,
-  } = project
+  const { key: projectKey = '', name, alias, integration, packageKey } = project
 
   const [repositoryNamePart, setRepositoryNamePart] = useState('')
-  const onRepositoryNamePartChange = useCallback((_: SyntheticEvent, value: string): void => setRepositoryNamePart(value), [])
+  const onRepositoryNamePartChange = useCallback(
+    (_: SyntheticEvent, value: string): void => setRepositoryNamePart(value),
+    [],
+  )
   const repositories = useIntegrationRepositories(repositoryNamePart)
 
   const [packagesTextFilter, setPackagesTextFilter] = useState<string>('')
   const onPackageInputChange = useCallback((_: SyntheticEvent, value: string) => setPackagesTextFilter(value), [])
 
-  const defaultValues = useMemo(() => ({
-    ...project ?? EMPTY_PROJECT,
-    packageKey: packageKey,
-    repository: {
-      key: integration?.repositoryKey,
-      name: integration?.repositoryName,
-      defaultBranchName: integration?.defaultBranch,
-    },
-  }), [integration?.defaultBranch, integration?.repositoryKey, integration?.repositoryName, packageKey, project])
+  const defaultValues = useMemo(
+    () => ({
+      ...(project ?? EMPTY_PROJECT),
+      packageKey: packageKey,
+      repository: {
+        key: integration?.repositoryKey,
+        name: integration?.repositoryName,
+        defaultBranchName: integration?.defaultBranch,
+      },
+    }),
+    [integration?.defaultBranch, integration?.repositoryKey, integration?.repositoryName, packageKey, project],
+  )
 
-  const { handleSubmit, control, setValue, reset, watch } = useForm<Project & {
-    repository: IntegrationRepository
-  }>({ defaultValues })
+  const { handleSubmit, control, setValue, reset, watch } = useForm<
+    Project & {
+      repository: IntegrationRepository
+    }
+  >({ defaultValues })
 
   const branches = useIntegrationBranches(watch().repository?.key ?? '')
   const [packages, arePackagesLoading] = usePackages({
@@ -92,7 +94,9 @@ export const SettingsEditorGeneral: FC<SettingsGeneralProps> = memo(props => {
   const [updateProject, isUpdateLoading, isUpdateSuccess] = useUpdateProject()
   const [deleteProject, isDeleteLoading] = useDeleteProject()
 
-  useEffect(() => {isUpdateSuccess && setEditable(false)}, [isUpdateSuccess, setEditable])
+  useEffect(() => {
+    isUpdateSuccess && setEditable(false)
+  }, [isUpdateSuccess, setEditable])
   useEffect(() => reset(defaultValues), [defaultValues, reset])
 
   return (
@@ -102,7 +106,9 @@ export const SettingsEditorGeneral: FC<SettingsGeneralProps> = memo(props => {
       body={
         <Box
           component="form"
-          onSubmit={handleSubmit(updatedProject => updateProject({ project: updatedProject, withNotification: true }))}
+          onSubmit={handleSubmit((updatedProject) =>
+            updateProject({ project: updatedProject, withNotification: true }),
+          )}
         >
           <Grid container spacing={2} columns={2} marginTop={1}>
             <Grid item xs container spacing={2}>
@@ -110,33 +116,35 @@ export const SettingsEditorGeneral: FC<SettingsGeneralProps> = memo(props => {
                 <Controller
                   name="name"
                   control={control}
-                  render={({ field }) => <TextField {...field} sx={{ m: 0 }} required label="Project name"/>}
+                  render={({ field }) => <TextField {...field} sx={{ m: 0 }} required label="Project name" />}
                 />
               </Grid>
               <Grid item xs={6}>
                 <Controller
                   name="integration.defaultBranch"
                   control={control}
-                  render={({ field }) => <TextField {...field} sx={{ m: 0 }} required select label="Default Branch">
-                    {
-                      branches.map(({ name }) => (
-                        <MenuItem key={name} value={name}>{name}</MenuItem>
-                      ))
-                    }
-                  </TextField>}
+                  render={({ field }) => (
+                    <TextField {...field} sx={{ m: 0 }} required select label="Default Branch">
+                      {branches.map(({ name }) => (
+                        <MenuItem key={name} value={name}>
+                          {name}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  )}
                 />
               </Grid>
               <Grid item xs={6}>
-                <TitledValue title="Parent group" value={calculateProjectPath(project)}/>
+                <TitledValue title="Parent group" value={calculateProjectPath(project)} />
               </Grid>
               <Grid item xs={6}>
-                <TitledValue title="Alias" value={alias}/>
+                <TitledValue title="Alias" value={alias} />
               </Grid>
               <Grid item xs={12}>
                 <Controller
                   name="integration.defaultFolder"
                   control={control}
-                  render={({ field }) => <TextField {...field} sx={{ m: 0 }} required label="Default Folder"/>}
+                  render={({ field }) => <TextField {...field} sx={{ m: 0 }} required label="Default Folder" />}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -157,7 +165,7 @@ export const SettingsEditorGeneral: FC<SettingsGeneralProps> = memo(props => {
                         onChange(value)
                       }}
                       onInputChange={debounce(onRepositoryNamePartChange, DEFAULT_DEBOUNCE)}
-                      renderInput={(params) => <TextField {...params} required label="Git repository"/>}
+                      renderInput={(params) => <TextField {...params} required label="Git repository" />}
                     />
                   )}
                 />
@@ -166,8 +174,9 @@ export const SettingsEditorGeneral: FC<SettingsGeneralProps> = memo(props => {
                 <Controller
                   name="description"
                   control={control}
-                  render={({ field }) => <TextField {...field} sx={{ m: 0 }} multiline maxRows={5}
-                                                    label="Description"/>}
+                  render={({ field }) => (
+                    <TextField {...field} sx={{ m: 0 }} multiline maxRows={5} label="Description" />
+                  )}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -182,8 +191,12 @@ export const SettingsEditorGeneral: FC<SettingsGeneralProps> = memo(props => {
                       filterOptions={disableAutocompleteSearch}
                       getOptionLabel={({ name }: Package) => name ?? ''}
                       isOptionEqualToValue={({ key: optionKey }, { key: valueKey }) => optionKey === valueKey}
-                      renderOption={(props, { key, name }) => <ListItem {...props} key={key}>{name}</ListItem>}
-                      renderInput={(params) => <TextField {...params} label="Package"/>}
+                      renderOption={(props, { key, name }) => (
+                        <ListItem {...props} key={key}>
+                          {name}
+                        </ListItem>
+                      )}
+                      renderInput={(params) => <TextField {...params} label="Package" />}
                       onChange={(_, value) => {
                         setValue('packageKey', value?.key ?? '')
                         setSelectedPackage(value)
@@ -196,12 +209,8 @@ export const SettingsEditorGeneral: FC<SettingsGeneralProps> = memo(props => {
               </Grid>
             </Grid>
             <Grid item xs sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-              <Button
-                variant="outlined"
-                color="error"
-                onClick={() => setConfirmationOpen(true)}
-              >
-                <DeleteOutlinedIcon/>
+              <Button variant="outlined" color="error" onClick={() => setConfirmationOpen(true)}>
+                <DeleteOutlinedIcon />
                 Delete Project
               </Button>
             </Grid>

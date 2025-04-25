@@ -55,12 +55,7 @@ export const FileUpload: FC<FileUploadProps> = memo<FileUploadProps>(({ acceptab
   )
 
   if (!isDragOver) {
-    return (
-      <Box
-        {...dragEvents}
-        children={children}
-      />
-    )
+    return <Box {...dragEvents} children={children} />
   }
 
   return (

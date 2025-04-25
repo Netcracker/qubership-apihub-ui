@@ -45,7 +45,13 @@ export const CreateGroupDialog: FC = memo(() => {
   const [open, setOpen] = useState(false)
   useEvent(SHOW_CREATE_GROUP_DIALOG, () => setOpen(true))
 
-  const { handleSubmit, control, reset, setValue, formState: { errors } } = useForm<Group & { parent: Package }>({
+  const {
+    handleSubmit,
+    control,
+    reset,
+    setValue,
+    formState: { errors },
+  } = useForm<Group & { parent: Package }>({
     defaultValues: {
       ...EMPTY_GROUP,
       parent: EMPTY_GROUP,
@@ -63,24 +69,22 @@ export const CreateGroupDialog: FC = memo(() => {
   })
   const [createGroup, isLoading, error] = useCreateGroup()
 
-  useEffect(() => {!isLoading && !error && setOpen(false)}, [error, isLoading])
-  useEffect(() => {!open && reset()}, [open, reset])
+  useEffect(() => {
+    !isLoading && !error && setOpen(false)
+  }, [error, isLoading])
+  useEffect(() => {
+    !open && reset()
+  }, [open, reset])
 
   return (
-    <DialogForm
-      open={open}
-      onClose={() => setOpen(false)}
-      onSubmit={handleSubmit(createGroup)}
-    >
-      <DialogTitle>
-        Create New Group
-      </DialogTitle>
+    <DialogForm open={open} onClose={() => setOpen(false)} onSubmit={handleSubmit(createGroup)}>
+      <DialogTitle>Create New Group</DialogTitle>
 
       <DialogContent>
         <Controller
           name="name"
           control={control}
-          render={({ field }) => <TextField {...field} autoFocus required label="Group name"/>}
+          render={({ field }) => <TextField {...field} autoFocus required label="Group name" />}
         />
         <Controller
           name="alias"
@@ -92,7 +96,7 @@ export const CreateGroupDialog: FC = memo(() => {
               required
               label="Alias"
               error={!!errors.alias || !!error}
-              helperText={!!errors.alias && errors.alias?.message || !!error && error.message}
+              helperText={(!!errors.alias && errors.alias?.message) || (!!error && error.message)}
               inputProps={{ style: { textTransform: 'uppercase' } }}
             />
           )}
@@ -100,26 +104,27 @@ export const CreateGroupDialog: FC = memo(() => {
         <Controller
           name="parent"
           control={control}
-          render={({ field }) =>
+          render={({ field }) => (
             <Autocomplete
               loading={areGroupsLoading}
               value={selectedGroup}
               options={groups}
               filterOptions={disableAutocompleteSearch}
               getOptionLabel={(parent: Package) => calculatePackagePath(parent, true)}
-              renderOption={(props, parent) =>
+              renderOption={(props, parent) => (
                 <ListItem {...props} key={parent.key}>
                   {calculatePackagePath(parent, true)}
                 </ListItem>
-              }
+              )}
               isOptionEqualToValue={(option, value) => option.key === value.key}
               onInputChange={debouncedOnGroupInputChange}
-              renderInput={(params) => <TextField {...field} {...params} label="Parent group"/>}
+              renderInput={(params) => <TextField {...field} {...params} label="Parent group" />}
               onChange={(_, value) => {
                 setValue('parentKey', value?.key ?? '')
                 setSelectedGroup(value)
               }}
-            />}
+            />
+          )}
         />
       </DialogContent>
 

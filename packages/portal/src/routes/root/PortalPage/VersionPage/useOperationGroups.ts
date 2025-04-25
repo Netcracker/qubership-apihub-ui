@@ -26,10 +26,7 @@ import type { OperationGroup } from '@netcracker/qubership-apihub-ui-shared/enti
 const OPERATIONS_GROUP_QUERY_KEY = 'operations-group-query-key'
 
 export function useOperationGroups(options: Options): [OperationGroups, IsLoading] {
-  const {
-    packageKey,
-    version,
-  } = options ?? {}
+  const { packageKey, version } = options ?? {}
 
   const { fullVersion } = useVersionWithRevision(version, packageKey)
   const { data, isInitialLoading } = useQuery<OperationGroups, Error, OperationGroups>({
@@ -41,10 +38,7 @@ export function useOperationGroups(options: Options): [OperationGroups, IsLoadin
   return [data ?? EMPTY_OPERATION_GROUPS, isInitialLoading]
 }
 
-export async function getOperationGroups(
-  packageKey: Key,
-  version: Key,
-): Promise<OperationGroup[]> {
+export async function getOperationGroups(packageKey: Key, version: Key): Promise<OperationGroup[]> {
   const packageId = encodeURIComponent(packageKey)
   const versionId = encodeURIComponent(version)
 
@@ -56,9 +50,10 @@ export async function getOperationGroups(
     },
     {
       customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-    })
+    },
+  )
 
-  return result.operationGroups.filter(group => group.isPrefixGroup)
+  return result.operationGroups.filter((group) => group.isPrefixGroup)
 }
 
 type OperationDetails = {

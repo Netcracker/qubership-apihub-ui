@@ -37,7 +37,9 @@ type OperationViewModeState = {
   schemaViewMode: SchemaViewMode | undefined
 }
 
-export function useOperationViewMode(defaultValue: OperationViewMode = DOC_OPERATION_VIEW_MODE): OperationViewModeState {
+export function useOperationViewMode(
+  defaultValue: OperationViewMode = DOC_OPERATION_VIEW_MODE,
+): OperationViewModeState {
   const modeValue = useSearchParam<Key>(MODE_SEARCH_PARAM) ?? defaultValue
   const [hashParam] = useHash()
   const [searchParams] = useSearchParams()
@@ -45,19 +47,25 @@ export function useOperationViewMode(defaultValue: OperationViewMode = DOC_OPERA
 
   return {
     mode: modeValue as OperationViewMode,
-    setMode: useCallback(value => {
-      const isDefaultValue = value === DOC_OPERATION_VIEW_MODE
-      const mode = isDefaultValue ? '' : (value ?? '')
-      if (isDefaultValue) {
-        searchParams.delete(MODE_SEARCH_PARAM)
-      } else {
-        searchParams.set(MODE_SEARCH_PARAM, mode)
-      }
-      navigate({
-        search: `${searchParams}`,
-        hash: hashParam,
-      }, { replace: true })
-    }, [hashParam, navigate, searchParams]),
+    setMode: useCallback(
+      (value) => {
+        const isDefaultValue = value === DOC_OPERATION_VIEW_MODE
+        const mode = isDefaultValue ? '' : (value ?? '')
+        if (isDefaultValue) {
+          searchParams.delete(MODE_SEARCH_PARAM)
+        } else {
+          searchParams.set(MODE_SEARCH_PARAM, mode)
+        }
+        navigate(
+          {
+            search: `${searchParams}`,
+            hash: hashParam,
+          },
+          { replace: true },
+        )
+      },
+      [hashParam, navigate, searchParams],
+    ),
 
     schemaViewMode: calculateSchemaViewMode(modeValue),
   }

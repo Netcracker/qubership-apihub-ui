@@ -29,11 +29,7 @@ export type ErrorPageProps = {
   homePath: string
 }
 
-export const ErrorPage: FC<ErrorPageProps> = memo<ErrorPageProps>(({
-  title,
-  message,
-  homePath,
-}) => (
+export const ErrorPage: FC<ErrorPageProps> = memo<ErrorPageProps>(({ title, message, homePath }) => (
   <Box
     sx={{
       pt: DEFAULT_PAGE_LAYOUT_GAP,
@@ -41,22 +37,30 @@ export const ErrorPage: FC<ErrorPageProps> = memo<ErrorPageProps>(({
       height: '100%',
     }}
   >
-    <Box sx={{
-      height: '100%',
-      backgroundColor: '#FFFFFF',
-      borderRadius: '10px 10px 0 0',
-      boxShadow: DEFAULT_PAPER_SHADOW,
-    }}>
+    <Box
+      sx={{
+        height: '100%',
+        backgroundColor: '#FFFFFF',
+        borderRadius: '10px 10px 0 0',
+        boxShadow: DEFAULT_PAPER_SHADOW,
+      }}
+    >
       <Placeholder
         invisible={false}
         area={CONTENT_PLACEHOLDER_AREA}
         message={
           <Box flex={1} display="flex" flexDirection="column" gap={1} alignItems="center">
-            <Typography component="div" variant="h5" fontSize={20} textAlign="center">{title}</Typography>
-            {message && <Typography component="div" variant="h6" color="#626D82">{message}</Typography>}
+            <Typography component="div" variant="h5" fontSize={20} textAlign="center">
+              {title}
+            </Typography>
+            {message && (
+              <Typography component="div" variant="h6" color="#626D82">
+                {message}
+              </Typography>
+            )}
             <Button
               size="medium"
-              startIcon={<HomeIcon/>}
+              startIcon={<HomeIcon />}
               variant="text"
               href={homePath}
               sx={{

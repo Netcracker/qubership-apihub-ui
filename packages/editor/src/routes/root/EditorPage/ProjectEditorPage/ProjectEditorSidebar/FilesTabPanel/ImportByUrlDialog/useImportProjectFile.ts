@@ -33,18 +33,14 @@ export function useImportProjectFile(): [ImportProjectFile, IsLoading, IsError, 
   const [, setSelectedFile] = useFileSearchParam()
 
   const { mutate, isLoading, isError, error } = useMutation<Key, AxiosError, ImportFile>({
-    mutationFn: file => importProjectFile(projectId!, selectedBranch!, file),
-    onSuccess: fileIds => setSelectedFile(fileIds[0]),
+    mutationFn: (file) => importProjectFile(projectId!, selectedBranch!, file),
+    onSuccess: (fileIds) => setSelectedFile(fileIds[0]),
   })
 
   return [mutate, isLoading, isError, error]
 }
 
-function importProjectFile(
-  projectKey: Key,
-  branchName: string,
-  { url, path }: ImportFile,
-): Promise<Key> {
+function importProjectFile(projectKey: Key, branchName: string, { url, path }: ImportFile): Promise<Key> {
   const projectId = encodeURIComponent(projectKey)
   const branch = encodeURIComponent(branchName)
 
@@ -54,7 +50,8 @@ function importProjectFile(
       source: 'url',
       data: { url, path },
     }),
-  }).then(({ fileIds: [fileId] }) => fileId)
+  })
+    .then(({ fileIds: [fileId] }) => fileId)
     .catch(async () => {
       const fileContent = await requestText(url, {
         method: 'GET',

@@ -48,7 +48,12 @@ import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/ut
 import { useAsyncInvalidatePackageVersionContentByVersion } from '@apihub/routes/root/usePackageVersionContent'
 import { VersionsTable } from '@netcracker/qubership-apihub-ui-shared/components/VersionsTable'
 import type { PackageVersionsSortBy, SortOrder } from '@netcracker/qubership-apihub-ui-shared/types/sorting'
-import { ASC_ORDER, DESC_ORDER, SORT_BY_CREATED_AT, SORT_BY_VERSION } from '@netcracker/qubership-apihub-ui-shared/types/sorting'
+import {
+  ASC_ORDER,
+  DESC_ORDER,
+  SORT_BY_CREATED_AT,
+  SORT_BY_VERSION,
+} from '@netcracker/qubership-apihub-ui-shared/types/sorting'
 import { VersionTitle } from '@netcracker/qubership-apihub-ui-shared/components/Titles/VersionTitle'
 
 export const VersionSelector: FC = memo(() => {
@@ -69,35 +74,43 @@ export const VersionSelector: FC = memo(() => {
   const setIsLatestRevision = useSetIsLatestRevision()
   const invalidatePackageVersionContent = useAsyncInvalidatePackageVersionContentByVersion()
 
-  const onClickVersion = useCallback(async (version: PackageVersion | undefined) => {
-    const { key, latestRevision } = version ?? {}
-    const { versionKey } = getSplittedVersionKey(key)
+  const onClickVersion = useCallback(
+    async (version: PackageVersion | undefined) => {
+      const { key, latestRevision } = version ?? {}
+      const { versionKey } = getSplittedVersionKey(key)
 
-    /* This solution is applied because redirecting before invalidation is complete leads to
+      /* This solution is applied because redirecting before invalidation is complete leads to
     redundant displaying Outdated Revision Notification */
-    await invalidatePackageVersionContent(versionKey)
+      await invalidatePackageVersionContent(versionKey)
 
-    setIsLatestRevision(latestRevision)
-    setFullMainVersion(key)
+      setIsLatestRevision(latestRevision)
+      setFullMainVersion(key)
 
-    navigateToOverview({ packageKey: packageId!, versionKey: versionKey })
-    setAnchor(undefined)
-  }, [invalidatePackageVersionContent, navigateToOverview, packageId, setFullMainVersion, setIsLatestRevision])
+      navigateToOverview({ packageKey: packageId!, versionKey: versionKey })
+      setAnchor(undefined)
+    },
+    [invalidatePackageVersionContent, navigateToOverview, packageId, setFullMainVersion, setIsLatestRevision],
+  )
 
-  const selectorContent = useMemo(() =>
-    <>
-      <Placeholder
-        invisible={isNotEmpty(versions) || areVersionsLoading}
-        area={NAVIGATION_PLACEHOLDER_AREA}
-        message={searchValue ? NO_SEARCH_RESULTS : 'No versions to display'}
-      >
-        <VersionsTable
-          value={versions!}
-          versionStatus={VERSION_STATUS_MAP[activeTab]}
-          onClickVersion={onClickVersion}
-          isLoading={areVersionsLoading}/>
-      </Placeholder>
-    </>, [versions, areVersionsLoading, searchValue, activeTab, onClickVersion])
+  const selectorContent = useMemo(
+    () => (
+      <>
+        <Placeholder
+          invisible={isNotEmpty(versions) || areVersionsLoading}
+          area={NAVIGATION_PLACEHOLDER_AREA}
+          message={searchValue ? NO_SEARCH_RESULTS : 'No versions to display'}
+        >
+          <VersionsTable
+            value={versions!}
+            versionStatus={VERSION_STATUS_MAP[activeTab]}
+            onClickVersion={onClickVersion}
+            isLoading={areVersionsLoading}
+          />
+        </Placeholder>
+      </>
+    ),
+    [versions, areVersionsLoading, searchValue, activeTab, onClickVersion],
+  )
 
   return (
     <Box display="flex" alignItems="center" gap={2} overflow="hidden" data-testid="VersionSelector">
@@ -105,13 +118,13 @@ export const VersionSelector: FC = memo(() => {
         sx={{ minWidth: 4, height: 20, p: 0, boxShadow: 'none', '&:hover': { boxShadow: 'none' } }}
         variant="text"
         onClick={({ currentTarget }) => setAnchor(currentTarget)}
-        endIcon={<KeyboardArrowDownOutlinedIcon/>}
+        endIcon={<KeyboardArrowDownOutlinedIcon />}
       >
-        <VersionSelectorTitle/>
+        <VersionSelectorTitle />
         <MenuButtonItems
           anchorEl={anchor}
           open={!!anchor}
-          onClick={event => event.stopPropagation()}
+          onClick={(event) => event.stopPropagation()}
           onClose={() => setAnchor(undefined)}
         >
           <Box
@@ -127,13 +140,10 @@ export const VersionSelector: FC = memo(() => {
             "
           >
             <TabContext value={activeTab}>
-              <TabList
-                sx={{ mb: 1, gridArea: 'tabs' }}
-                onChange={(_, value) => setActiveTab(value)}
-              >
-                <Tab label="Release" value={RELEASE_TAB} data-testid="ReleaseButton"/>
-                <Tab label="Draft" value={DRAFT_TAB} data-testid="DraftButton"/>
-                <Tab label="Archived" value={ARCHIVED_TAB} data-testid="ArchivedButton"/>
+              <TabList sx={{ mb: 1, gridArea: 'tabs' }} onChange={(_, value) => setActiveTab(value)}>
+                <Tab label="Release" value={RELEASE_TAB} data-testid="ReleaseButton" />
+                <Tab label="Draft" value={DRAFT_TAB} data-testid="DraftButton" />
+                <Tab label="Archived" value={ARCHIVED_TAB} data-testid="ArchivedButton" />
               </TabList>
               {ACTIVE_TAB_CONTENT_MAP[activeTab](selectorContent)}
             </TabContext>
@@ -146,7 +156,7 @@ export const VersionSelector: FC = memo(() => {
               gridTemplateColumns="1fr auto"
               sx={{ mb: 1 }}
             >
-              <SearchBar onValueChange={setSearchValue} data-testid="VersionSearchBar"/>
+              <SearchBar onValueChange={setSearchValue} data-testid="VersionSearchBar" />
             </Box>
           </Box>
         </MenuButtonItems>
@@ -159,10 +169,7 @@ const RELEASE_TAB = 'release'
 const DRAFT_TAB = 'draft'
 const ARCHIVED_TAB = 'archived'
 
-type VersionTab =
-  | typeof RELEASE_TAB
-  | typeof DRAFT_TAB
-  | typeof ARCHIVED_TAB
+type VersionTab = typeof RELEASE_TAB | typeof DRAFT_TAB | typeof ARCHIVED_TAB
 
 export const VERSION_STATUS_MAP: Record<VersionTab, VersionStatus> = {
   [RELEASE_TAB]: RELEASE_VERSION_STATUS,
@@ -206,11 +213,5 @@ const VersionSelectorTitle: FC = memo(() => {
   const latestRevision = useIsLatestRevision()
   const { versionKey, revisionKey } = getSplittedVersionKey(fullVersion)
 
-  return (
-    <VersionTitle
-      version={versionKey}
-      revision={revisionKey}
-      latestRevision={latestRevision}
-    />
-  )
+  return <VersionTitle version={versionKey} revision={revisionKey} latestRevision={latestRevision} />
 })

@@ -54,25 +54,23 @@ export const OperationSelector: FC<OperationSelectorProps> = memo<OperationSelec
         sx={{ minWidth: 4, height: 20, p: 0, boxShadow: 'none', '&:hover': { boxShadow: 'none' } }}
         variant="text"
         onClick={({ currentTarget }) => setAnchor(currentTarget)}
-        endIcon={<KeyboardArrowDownOutlinedIcon/>}
+        endIcon={<KeyboardArrowDownOutlinedIcon />}
       >
         <MenuButtonItems
           anchorEl={anchor}
           open={!!anchor}
-          onClick={event => event.stopPropagation()}
+          onClick={(event) => event.stopPropagation()}
           onClose={onClose}
         >
-          <Box
-            p={2}
-            width="370px"
-            maxHeight="480px"
-            overflow="scroll"
-          >
+          <Box p={2} width="370px" maxHeight="480px" overflow="scroll">
             <Box data-testid="RecentOperationsSection">
-              <Typography variant="subtitle2" fontSize={13} mb={1}>Recent Operations</Typography>
-              {isRecentOperationsLoading
-                ? <LoadingIndicator/>
-                : <Placeholder
+              <Typography variant="subtitle2" fontSize={13} mb={1}>
+                Recent Operations
+              </Typography>
+              {isRecentOperationsLoading ? (
+                <LoadingIndicator />
+              ) : (
+                <Placeholder
                   invisible={isNotEmpty(recentOperations)}
                   area={NAVIGATION_PLACEHOLDER_AREA}
                   message="No operations"
@@ -82,11 +80,14 @@ export const OperationSelector: FC<OperationSelectorProps> = memo<OperationSelec
                     prepareLinkFn={prepareLinkFn}
                     onClick={onClose}
                   />
-                </Placeholder>}
+                </Placeholder>
+              )}
             </Box>
 
             <Box mt={2} data-testid="RelatedOperationsSection">
-              <Typography variant="subtitle2" fontSize={13} mb={1}>Related Operations</Typography>
+              <Typography variant="subtitle2" fontSize={13} mb={1}>
+                Related Operations
+              </Typography>
               <TaggedOperationWithMetaList
                 operations={relatedOperations}
                 onClick={onClose}

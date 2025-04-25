@@ -25,7 +25,7 @@ export default {
 } as Meta
 
 const FileUploadFn: StoryFn<FileUploadProps> = (args) => (
-  <FileUpload {...args} >
+  <FileUpload {...args}>
     <Box>Drop files here</Box>
   </FileUpload>
 )

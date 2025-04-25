@@ -53,69 +53,71 @@ export type SelfManagedOperationFiltersProps = OperationsFilterControllers & {
 }
 
 // High Order Component //
-export const SelfManagedOperationFilters: FC<SelfManagedOperationFiltersProps> = memo<SelfManagedOperationFiltersProps>((props) => {
-  const {
-    selectedPackageKey,
-    onSelectPackage,
-    selectedOperationGroupName,
-    onSelectOperationGroup,
-    selectedApiAudience,
-    onSelectApiAudience,
-    selectedApiKind,
-    onSelectApiKind,
-    tags,
-    areTagsLoading,
-    fetchNextTagsPage,
-    hasNextTagsPage,
-    isNextTagsPageFetching,
-    onTagSearch,
-    selectedTag,
-    onSelectTag,
-  } = props
+export const SelfManagedOperationFilters: FC<SelfManagedOperationFiltersProps> = memo<SelfManagedOperationFiltersProps>(
+  (props) => {
+    const {
+      selectedPackageKey,
+      onSelectPackage,
+      selectedOperationGroupName,
+      onSelectOperationGroup,
+      selectedApiAudience,
+      onSelectApiAudience,
+      selectedApiKind,
+      onSelectApiKind,
+      tags,
+      areTagsLoading,
+      fetchNextTagsPage,
+      hasNextTagsPage,
+      isNextTagsPageFetching,
+      onTagSearch,
+      selectedTag,
+      onSelectTag,
+    } = props
 
-  const { hideGeneralFilters, toggleHideGeneralFilters } = usePortalPageSettingsContext()
-  const fullVersion = useFullMainVersion()
-  const { packageId: rootPackageKey, versionId: rootPackageVersion, apiType = DEFAULT_API_TYPE } = useParams()
+    const { hideGeneralFilters, toggleHideGeneralFilters } = usePortalPageSettingsContext()
+    const fullVersion = useFullMainVersion()
+    const { packageId: rootPackageKey, versionId: rootPackageVersion, apiType = DEFAULT_API_TYPE } = useParams()
 
-  const { data: references, isLoading: isReferencesLoading } = useFilteredPackageRefs({
-    packageKey: rootPackageKey!,
-    version: rootPackageVersion!,
-    kind: PACKAGE_KIND,
-    showAllDescendants: true,
-    showUndeleted: true,
-  })
+    const { data: references, isLoading: isReferencesLoading } = useFilteredPackageRefs({
+      packageKey: rootPackageKey!,
+      version: rootPackageVersion!,
+      kind: PACKAGE_KIND,
+      showAllDescendants: true,
+      showUndeleted: true,
+    })
 
-  const { versionContent, isLoading: isPackageVersionContentLoading } = usePackageVersionContent({
-    packageKey: rootPackageKey,
-    versionKey: fullVersion,
-    includeGroups: true,
-  })
+    const { versionContent, isLoading: isPackageVersionContentLoading } = usePackageVersionContent({
+      packageKey: rootPackageKey,
+      versionKey: fullVersion,
+      includeGroups: true,
+    })
 
-  return (
-    <OperationFilters
-      tags={tags}
-      areTagsLoading={areTagsLoading}
-      fetchNextTagsPage={fetchNextTagsPage}
-      isNextTagsPageFetching={isNextTagsPageFetching}
-      hasNextTagsPage={hasNextTagsPage}
-      onSelectTag={onSelectTag}
-      onTagSearch={onTagSearch}
-      onSelectApiAudience={onSelectApiAudience}
-      onSelectApiKind={onSelectApiKind}
-      onSelectOperationGroup={onSelectOperationGroup}
-      onSelectPackage={onSelectPackage}
-      hiddenGeneralFilters={hideGeneralFilters}
-      onClickExpandCollapseButton={toggleHideGeneralFilters}
-      versionContent={versionContent}
-      isPackageVersionContentLoading={isPackageVersionContentLoading}
-      references={references}
-      isReferencesLoading={isReferencesLoading}
-      apiType={apiType as ApiType}
-      selectedApiAudience={selectedApiAudience}
-      selectedApiKind={selectedApiKind}
-      selectedOperationGroupName={selectedOperationGroupName}
-      selectedPackageKey={selectedPackageKey}
-      selectedTag={selectedTag}
-    />
-  )
-})
+    return (
+      <OperationFilters
+        tags={tags}
+        areTagsLoading={areTagsLoading}
+        fetchNextTagsPage={fetchNextTagsPage}
+        isNextTagsPageFetching={isNextTagsPageFetching}
+        hasNextTagsPage={hasNextTagsPage}
+        onSelectTag={onSelectTag}
+        onTagSearch={onTagSearch}
+        onSelectApiAudience={onSelectApiAudience}
+        onSelectApiKind={onSelectApiKind}
+        onSelectOperationGroup={onSelectOperationGroup}
+        onSelectPackage={onSelectPackage}
+        hiddenGeneralFilters={hideGeneralFilters}
+        onClickExpandCollapseButton={toggleHideGeneralFilters}
+        versionContent={versionContent}
+        isPackageVersionContentLoading={isPackageVersionContentLoading}
+        references={references}
+        isReferencesLoading={isReferencesLoading}
+        apiType={apiType as ApiType}
+        selectedApiAudience={selectedApiAudience}
+        selectedApiKind={selectedApiKind}
+        selectedOperationGroupName={selectedOperationGroupName}
+        selectedPackageKey={selectedPackageKey}
+        selectedTag={selectedTag}
+      />
+    )
+  },
+)

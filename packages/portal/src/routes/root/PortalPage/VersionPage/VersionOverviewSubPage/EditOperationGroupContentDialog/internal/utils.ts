@@ -15,7 +15,12 @@
  */
 
 import type { OperationListsDelta } from './types'
-import type { ApiAudience, ApiKind, Operation, Operations } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import type {
+  ApiAudience,
+  ApiKind,
+  Operation,
+  Operations,
+} from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { OperationsMovementDetails } from '@apihub/routes/EventBusProvider'
 import type { PackageReference } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
 
@@ -50,8 +55,9 @@ function deepCompare(operation1: Operation | null | undefined, operation2?: Oper
     return false
   }
 
-  return operation1.operationKey === operation2.operationKey &&
-    operation1.packageRef?.refId === operation2.packageRef?.refId
+  return (
+    operation1.operationKey === operation2.operationKey && operation1.packageRef?.refId === operation2.packageRef?.refId
+  )
 }
 
 export function deepIncludes(array: Operations, item: Operation): boolean {

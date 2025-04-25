@@ -34,9 +34,7 @@ import {
   useValidationResultsStep,
 } from './ServicesPage/ServicesPageProvider/ServicesStepsProvider'
 import { useRunDiscovery } from './ServicesPage/ServicesPageBody/DiscoverServicesStep/useRunDiscovery'
-import {
-  useCreateSnapshotPublicationOptions,
-} from './ServicesPage/ServicesPageProvider/ServicesPublicationOptionsProvider'
+import { useCreateSnapshotPublicationOptions } from './ServicesPage/ServicesPageProvider/ServicesPublicationOptionsProvider'
 import { useSetSearchParams } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSetSearchParams'
 import { useSystemConfigurationContext } from './SystemConfigurationProvider'
 import { useShowErrorNotification } from '../BasePage/NotificationHandler'
@@ -74,28 +72,38 @@ export const WorkspaceSelector: FC = memo(() => {
     error,
   } = usePackagesLoader(workspaceSeachParameter, WORKSPACE_KIND)
 
-  const setWorkspace = useCallback((workspaceId?: string) => {
-    if (workspaceId) {
-      setSearchParams({
-        [WORKSPACE_SEARCH_PARAM]: workspaceId,
-      })
+  const setWorkspace = useCallback(
+    (workspaceId?: string) => {
+      if (workspaceId) {
+        setSearchParams({
+          [WORKSPACE_SEARCH_PARAM]: workspaceId,
+        })
 
-      if (activeTab === SERVICES_PAGE) {
-        invalidateServices()
-        setDiscoverServicesStep(prevState => ({ ...prevState, active: true }))
-        resetCreateSnapshotPublicationOptions()
-        setCreateSnapshotStep(prevState => ({ ...prevState, status: INITIAL_STEP_STATUS, active: false }))
-        setValidationResultsStep(prevState => ({ ...prevState, status: INITIAL_STEP_STATUS, active: false }))
-        setPromoteVersionStep(prevState => ({ ...prevState, status: INITIAL_STEP_STATUS, active: false }))
-        runDiscovery(workspaceId)
+        if (activeTab === SERVICES_PAGE) {
+          invalidateServices()
+          setDiscoverServicesStep((prevState) => ({ ...prevState, active: true }))
+          resetCreateSnapshotPublicationOptions()
+          setCreateSnapshotStep((prevState) => ({ ...prevState, status: INITIAL_STEP_STATUS, active: false }))
+          setValidationResultsStep((prevState) => ({ ...prevState, status: INITIAL_STEP_STATUS, active: false }))
+          setPromoteVersionStep((prevState) => ({ ...prevState, status: INITIAL_STEP_STATUS, active: false }))
+          runDiscovery(workspaceId)
+        }
       }
-    }
-  }, [activeTab, invalidateServices, resetCreateSnapshotPublicationOptions, runDiscovery, setCreateSnapshotStep, setDiscoverServicesStep, setPromoteVersionStep, setSearchParams, setValidationResultsStep])
-
-  const onSelectWorkspace = useCallback(
-    (workspace: Package | null) => setWorkspace(workspace?.key),
-    [setWorkspace],
+    },
+    [
+      activeTab,
+      invalidateServices,
+      resetCreateSnapshotPublicationOptions,
+      runDiscovery,
+      setCreateSnapshotStep,
+      setDiscoverServicesStep,
+      setPromoteVersionStep,
+      setSearchParams,
+      setValidationResultsStep,
+    ],
   )
+
+  const onSelectWorkspace = useCallback((workspace: Package | null) => setWorkspace(workspace?.key), [setWorkspace])
 
   useEffect(() => {
     if (workspaceSeachParameter) {

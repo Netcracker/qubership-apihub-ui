@@ -22,9 +22,7 @@ import { ServicesPublicationOptionsProvider } from './ServicesPublicationOptions
 export const ServicesPageProvider: FC<PropsWithChildren> = memo(({ children }) => {
   return (
     <ServicesStepsProvider>
-      <ServicesPublicationOptionsProvider>
-        {children}
-      </ServicesPublicationOptionsProvider>
+      <ServicesPublicationOptionsProvider>{children}</ServicesPublicationOptionsProvider>
     </ServicesStepsProvider>
   )
 })

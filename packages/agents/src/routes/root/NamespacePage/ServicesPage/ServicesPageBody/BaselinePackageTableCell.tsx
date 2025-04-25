@@ -29,17 +29,25 @@ type CellData = Partial<{
   service: Service
 }>
 
-export const BaselinePackageTableCell: FC<BaselinePackageTableCellProps> = memo<BaselinePackageTableCellProps>(({ value: { original: { service } } }) => {
-  if (service && service.baseline) {
-    const baselinePackage = `${service.baseline.packageKey} / ${service.baseline.name}`
-    return (
-      <Box display="flex">
-        <OverflowTooltip title={baselinePackage}>
-          <Typography noWrap variant="inherit">{baselinePackage}</Typography>
-        </OverflowTooltip>
-      </Box>
-    )
-  }
+export const BaselinePackageTableCell: FC<BaselinePackageTableCellProps> = memo<BaselinePackageTableCellProps>(
+  ({
+    value: {
+      original: { service },
+    },
+  }) => {
+    if (service && service.baseline) {
+      const baselinePackage = `${service.baseline.packageKey} / ${service.baseline.name}`
+      return (
+        <Box display="flex">
+          <OverflowTooltip title={baselinePackage}>
+            <Typography noWrap variant="inherit">
+              {baselinePackage}
+            </Typography>
+          </OverflowTooltip>
+        </Box>
+      )
+    }
 
-  return null
-})
+    return null
+  },
+)

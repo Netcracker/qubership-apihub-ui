@@ -44,7 +44,20 @@ export function useDownloadOperationsAsExcel(): [DownloadOperationsAsExcelFuncti
       emptyGroup,
       onlyDeprecated,
     }) =>
-      downloadOperationsAsExcel(packageKey!, version!, apiType!, textFilter, kind, apiAudience, tag, group, refPackageId, emptyTag, emptyGroup, onlyDeprecated),
+      downloadOperationsAsExcel(
+        packageKey!,
+        version!,
+        apiType!,
+        textFilter,
+        kind,
+        apiAudience,
+        tag,
+        group,
+        refPackageId,
+        emptyTag,
+        emptyGroup,
+        onlyDeprecated,
+      ),
     onError: (error) => {
       showErrorNotification({ message: error?.message })
     },
@@ -67,7 +80,6 @@ export const downloadOperationsAsExcel = async (
   emptyGroup?: boolean,
   onlyDeprecated?: boolean,
 ): Promise<void> => {
-
   const queryParams = optionalSearchParams({
     textFilter: { value: textFilter },
     kind: { value: kind !== ALL_API_KIND ? kind : undefined },
@@ -92,10 +104,7 @@ export const downloadOperationsAsExcel = async (
     },
   )
 
-  const getFilename = (): string => response.headers
-    .get('content-disposition')!
-    .split('filename=')[1]
-    .split(';')[0]
+  const getFilename = (): string => response.headers.get('content-disposition')!.split('filename=')[1].split(';')[0]
 
   fileDownload(await response.blob(), getFilename())
 }

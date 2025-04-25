@@ -21,11 +21,5 @@ import { SidebarPanel } from '@netcracker/qubership-apihub-ui-shared/components/
 import { PageTitle } from '@netcracker/qubership-apihub-ui-shared/components/Titles/PageTitle'
 
 export const DocumentsSidebar: FC = memo(() => {
-  return (
-    <SidebarPanel
-      header={<PageTitle title="Documents"/>}
-      body={<DocNavigation/>}
-      withDivider
-    />
-  )
+  return <SidebarPanel header={<PageTitle title="Documents" />} body={<DocNavigation />} withDivider />
 })

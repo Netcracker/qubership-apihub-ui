@@ -44,19 +44,21 @@ export default meta
 export const DefaultStory: StoryFn<OperationFiltersProps> = (args) => {
   const [, updateArgs] = useArgs()
 
-  const onTagSearch = useCallback((value: string) => {
-    updateArgs({ tags: operationTags.filter(tag => tag.toLowerCase().includes(value.toLowerCase())) })
-  }, [updateArgs])
+  const onTagSearch = useCallback(
+    (value: string) => {
+      updateArgs({ tags: operationTags.filter((tag) => tag.toLowerCase().includes(value.toLowerCase())) })
+    },
+    [updateArgs],
+  )
 
-  const onClickExpandCollapseButton = useCallback((value: boolean) => {
-    updateArgs({ hiddenGeneralFilters: value })
-  }, [updateArgs])
+  const onClickExpandCollapseButton = useCallback(
+    (value: boolean) => {
+      updateArgs({ hiddenGeneralFilters: value })
+    },
+    [updateArgs],
+  )
 
   return (
-    <OperationFilters
-      {...args}
-      onTagSearch={onTagSearch}
-      onClickExpandCollapseButton={onClickExpandCollapseButton}
-    />
+    <OperationFilters {...args} onTagSearch={onTagSearch} onClickExpandCollapseButton={onClickExpandCollapseButton} />
   )
 }

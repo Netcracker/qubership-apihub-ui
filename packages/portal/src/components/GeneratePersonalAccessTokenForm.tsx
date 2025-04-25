@@ -33,7 +33,7 @@ const expirationDaysToLabel = (days: number): string => {
 }
 
 // First Order Component
-export const GeneratePersonalAccessTokenForm: FC<GeneratePersonalAccessTokenFormProps> = memo(props => {
+export const GeneratePersonalAccessTokenForm: FC<GeneratePersonalAccessTokenFormProps> = memo((props) => {
   const {
     disabled,
     loading: isLoading,
@@ -44,34 +44,35 @@ export const GeneratePersonalAccessTokenForm: FC<GeneratePersonalAccessTokenForm
     showSuccessNotification,
   } = props
 
-  const { handleSubmit, setValue, control, reset, formState: { errors } } = useForm<PersonalAccessTokenForm>({
+  const {
+    handleSubmit,
+    setValue,
+    control,
+    reset,
+    formState: { errors },
+  } = useForm<PersonalAccessTokenForm>({
     defaultValues: {
       name: '',
       expiration: DEFAULT_EXPIRATION,
     },
   })
 
-  const onConfirmCallback = useCallback((value: PersonalAccessTokenForm): void => {
-    const { name, expiration } = value
-    generateToken({ name: name, daysUntilExpiry: expiration })
-    reset()
-  }, [generateToken, reset])
+  const onConfirmCallback = useCallback(
+    (value: PersonalAccessTokenForm): void => {
+      const { name, expiration } = value
+      generateToken({ name: name, daysUntilExpiry: expiration })
+      reset()
+    },
+    [generateToken, reset],
+  )
 
   if (generatedToken) {
-    return (
-      <DisplayToken
-        generatedApiKey={generatedToken}
-        showSuccessNotification={showSuccessNotification}
-      />
-    )
+    return <DisplayToken generatedApiKey={generatedToken} showSuccessNotification={showSuccessNotification} />
   }
-
 
   return (
     <Box component="form" marginBottom={1} onSubmit={handleSubmit(onConfirmCallback)}>
-      <Typography variant="body2">
-        Enter a token name and select an expiration period
-      </Typography>
+      <Typography variant="body2">Enter a token name and select an expiration period</Typography>
       <Box display="flex" alignItems="flex-start" gap={2}>
         <Controller
           name="name"
@@ -117,15 +118,11 @@ export const GeneratePersonalAccessTokenForm: FC<GeneratePersonalAccessTokenForm
                 setValue('expiration', expiration ?? DEFAULT_EXPIRATION)
               }}
               renderOption={(props, option) => (
-                <ListItem
-                  {...props}
-                  key={option}
-                  data-testid={`ListItem-${option}`}
-                >
+                <ListItem {...props} key={option} data-testid={`ListItem-${option}`}>
                   {expirationDaysToLabel(option)}
                 </ListItem>
               )}
-              renderInput={(params) =>
+              renderInput={(params) => (
                 <TextField
                   {...params}
                   required
@@ -135,7 +132,7 @@ export const GeneratePersonalAccessTokenForm: FC<GeneratePersonalAccessTokenForm
                     readOnly: true,
                   }}
                 />
-              }
+              )}
               data-testid="ExpirationAutocomplete"
             />
           )}

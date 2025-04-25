@@ -53,12 +53,11 @@ type PublishDashboardVersionFromCSVQueryContent = {
 export function usePublishDashboardVersionFromCSV(): PublishDashboardVersionFromCSVQueryContent {
   const showErrorNotification = useShowErrorNotification()
 
-  const {
-    data,
-    mutate,
-    isLoading,
-    isSuccess,
-  } = useMutation<PublishResponse, Error, PublishDashboardVersionFromCSVData>({
+  const { data, mutate, isLoading, isSuccess } = useMutation<
+    PublishResponse,
+    Error,
+    PublishDashboardVersionFromCSVData
+  >({
     mutationFn: (data) => publishOperationGroupPackageVersion(data),
     onError: ({ message }) => {
       showErrorNotification({ message: message })
@@ -81,13 +80,17 @@ async function publishOperationGroupPackageVersion({
   const formData = makeFormData(value)
 
   const pathPattern = '/packages/:packageId/publish/withOperationsGroup'
-  return await requestJson<PublishResponse>(generatePath(pathPattern, { packageId }), {
-    method: 'POST',
-    body: formData,
-  }, {
-    customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-    basePath: API_V1,
-  })
+  return await requestJson<PublishResponse>(
+    generatePath(pathPattern, { packageId }),
+    {
+      method: 'POST',
+      body: formData,
+    },
+    {
+      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+      basePath: API_V1,
+    },
+  )
 }
 
 function makeFormData({

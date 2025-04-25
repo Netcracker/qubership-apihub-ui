@@ -52,26 +52,25 @@ export const AppHeader: FC<AppHeaderProps> = memo<AppHeaderProps>(({ logo, title
               {title}
             </Typography>
           )}
-          {links && links.map(({ name, pathname, active, testId }) => (
-            <Box
-              key={pathname}
-              sx={active ? { ...APP_HEADER_LINK_STYLES, ...APP_HEADER_LINK_STYLES_SELECTED } : APP_HEADER_LINK_STYLES}
-              onClick={event => {
-                const target = event.ctrlKey || event.metaKey ? '_blank' : '_self'
-                window.open(`${pathname}`, target)
-              }}
-              onAuxClick={event => {
-                if (event.button === 1) {
-                  return window.open(`${pathname}`, '_blank')
-                }
-              }}
-              data-testid={testId}
-            >
-              <Typography variant="h2">
-                {name}
-              </Typography>
-            </Box>
-          ))}
+          {links &&
+            links.map(({ name, pathname, active, testId }) => (
+              <Box
+                key={pathname}
+                sx={active ? { ...APP_HEADER_LINK_STYLES, ...APP_HEADER_LINK_STYLES_SELECTED } : APP_HEADER_LINK_STYLES}
+                onClick={(event) => {
+                  const target = event.ctrlKey || event.metaKey ? '_blank' : '_self'
+                  window.open(`${pathname}`, target)
+                }}
+                onAuxClick={(event) => {
+                  if (event.button === 1) {
+                    return window.open(`${pathname}`, '_blank')
+                  }
+                }}
+                data-testid={testId}
+              >
+                <Typography variant="h2">{name}</Typography>
+              </Box>
+            ))}
           {action && (
             <Box alignItems="center" display="flex" ml="auto">
               {action}

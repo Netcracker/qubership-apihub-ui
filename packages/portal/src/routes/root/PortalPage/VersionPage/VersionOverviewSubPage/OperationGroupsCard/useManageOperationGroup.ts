@@ -67,7 +67,13 @@ export function useCreateOperationGroup(): {
 
   const { mutate, isLoading, isSuccess } = useMutation<void, Error, CreateOperationGroupData>({
     mutationFn: ({ packageKey, versionKey, apiType, groupName, description, template, isTemplateUpdated }) =>
-      createOperationGroup(packageKey, versionKey, apiType, toCreateOperationGroupDto(groupName, description, template), isTemplateUpdated),
+      createOperationGroup(
+        packageKey,
+        versionKey,
+        apiType,
+        toCreateOperationGroupDto(groupName, description, template),
+        isTemplateUpdated,
+      ),
     onSuccess: (_, { packageKey, versionKey, groupName }) => {
       showNotification({ message: `New group ${groupName} has been added ` })
       return invalidateVersionContent({ packageKey, versionKey })
@@ -103,7 +109,14 @@ export function useUpdateOperationGroupParameters(): {
       template,
       isTemplateUpdated,
     }) =>
-      updateOperationGroupParameters(packageKey, versionKey, apiType, toUpdateOperationGroupDto(groupName, description, template), oldGroupName, isTemplateUpdated),
+      updateOperationGroupParameters(
+        packageKey,
+        versionKey,
+        apiType,
+        toUpdateOperationGroupDto(groupName, description, template),
+        oldGroupName,
+        isTemplateUpdated,
+      ),
     onSuccess: (_, { packageKey, versionKey, groupName }) => {
       showNotification({ message: `Group ${groupName} has been updated ` })
       return invalidateVersionContent({ packageKey, versionKey })
@@ -129,12 +142,8 @@ export function useDeleteOperationGroup(): {
   const showErrorNotification = useShowErrorNotification()
 
   const { mutate, isLoading, isSuccess } = useMutation<void, Error, DeleteOperationGroupData>({
-    mutationFn: ({
-      packageKey,
-      versionKey,
-      apiType,
-      groupName,
-    }) => deleteOperationGroup(packageKey, versionKey, apiType, groupName),
+    mutationFn: ({ packageKey, versionKey, apiType, groupName }) =>
+      deleteOperationGroup(packageKey, versionKey, apiType, groupName),
     onSuccess: (_, { packageKey, versionKey, groupName }) => {
       showNotification({ message: `Group ${groupName} has been deleted` })
       return invalidateVersionContent({ packageKey, versionKey })
@@ -166,13 +175,17 @@ async function updateOperationGroupParameters(
   const formData = makeFormData(groupName, description, template, isTemplateUpdated)
 
   const pathPattern = '/packages/:packageId/versions/:versionId/:apiType/groups/:name'
-  return await portalRequestVoid(generatePath(pathPattern, { packageId, versionId, apiType, name }), {
-    method: 'PATCH',
-    body: formData,
-  }, {
-    customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-    basePath: API_V3,
-  })
+  return await portalRequestVoid(
+    generatePath(pathPattern, { packageId, versionId, apiType, name }),
+    {
+      method: 'PATCH',
+      body: formData,
+    },
+    {
+      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+      basePath: API_V3,
+    },
+  )
 }
 
 async function createOperationGroup(
@@ -189,13 +202,17 @@ async function createOperationGroup(
   const formData = makeFormData(groupName, description, template, isTemplateUpdated)
 
   const pathPattern = '/packages/:packageId/versions/:versionId/:apiType/groups'
-  return await portalRequestVoid(generatePath(pathPattern, { packageId, versionId, apiType }), {
-    method: 'POST',
-    body: formData,
-  }, {
-    customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-    basePath: API_V3,
-  })
+  return await portalRequestVoid(
+    generatePath(pathPattern, { packageId, versionId, apiType }),
+    {
+      method: 'POST',
+      body: formData,
+    },
+    {
+      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+      basePath: API_V3,
+    },
+  )
 }
 
 async function deleteOperationGroup(
@@ -209,11 +226,15 @@ async function deleteOperationGroup(
   const name = encodeURIComponent(groupName)
 
   const pathPattern = '/packages/:packageId/versions/:versionId/:apiType/groups/:name'
-  return await portalRequestVoid(generatePath(pathPattern, { packageId, versionId, apiType, name }), {
-    method: 'DELETE',
-  }, {
-    customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-  })
+  return await portalRequestVoid(
+    generatePath(pathPattern, { packageId, versionId, apiType, name }),
+    {
+      method: 'DELETE',
+    },
+    {
+      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+    },
+  )
 }
 
 function makeFormData(

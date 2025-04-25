@@ -34,9 +34,5 @@ export function useBreadcrumbsData(): ComparedPackagesBreadcrumbsData | null {
 export const ComparedPackagesBreadcrumbsProvider: FC<PropsWithChildren & BreadcrumbsDataStore> = (props) => {
   const { children, forComparisonToolbar } = props
 
-  return (
-    <BreadcrumbsDataContext.Provider value={forComparisonToolbar}>
-      {children}
-    </BreadcrumbsDataContext.Provider>
-  )
+  return <BreadcrumbsDataContext.Provider value={forComparisonToolbar}>{children}</BreadcrumbsDataContext.Provider>
 }

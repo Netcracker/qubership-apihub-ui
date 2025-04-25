@@ -24,7 +24,7 @@ export function useVersionSearchParam(): [Key | undefined, SetVersionSearchParam
   const setSearchParams = useSetSearchParams()
 
   return useMemo(
-    () => [param, value => setSearchParams({ version: value ?? '' }, { replace: true })],
+    () => [param, (value) => setSearchParams({ version: value ?? '' }, { replace: true })],
     [param, setSearchParams],
   )
 }

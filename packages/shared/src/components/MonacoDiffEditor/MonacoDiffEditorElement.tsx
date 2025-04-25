@@ -34,21 +34,12 @@ export type MonacoDiffEditorElementProps = {
   selectedUri?: SpecItemUri
 }
 
-const MonacoDiffEditorElement: FC<MonacoDiffEditorElementProps> = memo<MonacoDiffEditorElementProps>(({
-  before,
-  after,
-  type,
-  language,
-  selectedUri,
-}) => {
-  const element = useMonacoDiffEditorElement({ before, after, type, language, selectedUri })
+const MonacoDiffEditorElement: FC<MonacoDiffEditorElementProps> = memo<MonacoDiffEditorElementProps>(
+  ({ before, after, type, language, selectedUri }) => {
+    const element = useMonacoDiffEditorElement({ before, after, type, language, selectedUri })
 
-  return (
-    <div
-      ref={element}
-      style={{ height: '100%' }}
-    />
-  )
-})
+    return <div ref={element} style={{ height: '100%' }} />
+  },
+)
 
 export default MonacoDiffEditorElement

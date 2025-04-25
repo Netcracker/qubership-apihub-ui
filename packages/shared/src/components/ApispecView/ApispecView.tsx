@@ -33,16 +33,9 @@ export type ApispecViewProps = PropsWithChildren<{
   hideTryIt?: boolean
 }>
 
-export const ApispecView: FC<ApispecViewProps> = /* @__PURE__ */ memo<ApispecViewProps>(props => {
-  const {
-    apiDescriptionDocument,
-    selectedUri,
-    sidebarEnabled,
-    searchPhrase,
-    schemaViewMode,
-    proxyServer,
-    hideTryIt,
-  } = props
+export const ApispecView: FC<ApispecViewProps> = /* @__PURE__ */ memo<ApispecViewProps>((props) => {
+  const { apiDescriptionDocument, selectedUri, sidebarEnabled, searchPhrase, schemaViewMode, proxyServer, hideTryIt } =
+    props
 
   const apiSpecViewContainerRef = useRef<HTMLDivElement | null>(null)
 
@@ -73,9 +66,9 @@ export const ApispecView: FC<ApispecViewProps> = /* @__PURE__ */ memo<ApispecVie
   }, [apiSpecViewContainerRef, apiSpecViewElement])
 
   return (
-    <Suspense fallback={<LoadingIndicator/>}>
+    <Suspense fallback={<LoadingIndicator />}>
       <Box lineHeight={1.5} height="100%">
-        <Box ref={apiSpecViewContainerRef}/>
+        <Box ref={apiSpecViewContainerRef} />
       </Box>
     </Suspense>
   )

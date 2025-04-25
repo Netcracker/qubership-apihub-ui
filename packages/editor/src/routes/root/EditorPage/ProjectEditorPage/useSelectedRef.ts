@@ -26,7 +26,7 @@ export function useRefSearchParam(): [Key | undefined, SetEditorSelectedRefKey] 
   const setSearchParams = useSetSearchParams()
 
   return useMemo(
-    () => [ref, refKey => setSearchParams({ ref: refKey ?? '' }, { replace: true })],
+    () => [ref, (refKey) => setSearchParams({ ref: refKey ?? '' }, { replace: true })],
     [ref, setSearchParams],
   )
 }
@@ -35,10 +35,7 @@ export function useSelectedRef(): Ref | null {
   const [refKey] = useRefSearchParam()
   const [branchConfig] = useBranchConfig()
 
-  return useMemo(
-    () => branchConfig?.refs.find(({ key }) => key === refKey) ?? null,
-    [refKey, branchConfig?.refs],
-  )
+  return useMemo(() => branchConfig?.refs.find(({ key }) => key === refKey) ?? null, [refKey, branchConfig?.refs])
 }
 
 type SetEditorSelectedRefKey = (refKey: Key | undefined) => void

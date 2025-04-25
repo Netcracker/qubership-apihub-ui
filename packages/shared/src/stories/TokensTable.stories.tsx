@@ -27,7 +27,7 @@ const meta: Meta<typeof TokensTable> = {
     (Story) => (
       <ThemeProvider theme={theme}>
         <Box sx={{ width: '1200px' }}>
-          <Story/>
+          <Story />
         </Box>
       </ThemeProvider>
     ),

@@ -27,11 +27,15 @@ export const ServicesPage: FC = memo(() => {
   return (
     <>
       <BodyCard
-        header={<ServicesPageHeader/>}
-        body={<SnapshotTableProvider><ServicesPageBody/></SnapshotTableProvider>}
+        header={<ServicesPageHeader />}
+        body={
+          <SnapshotTableProvider>
+            <ServicesPageBody />
+          </SnapshotTableProvider>
+        }
       />
-      <AgentSpecificationDialog/>
-      <ChangeViewDialog/>
+      <AgentSpecificationDialog />
+      <ChangeViewDialog />
     </>
   )
 })

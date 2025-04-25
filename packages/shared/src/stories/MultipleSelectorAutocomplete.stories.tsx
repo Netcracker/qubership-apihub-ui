@@ -37,7 +37,7 @@ const MultipleSelectorAutocompleteFn: StoryFn = () => {
         <Controller
           name="roles"
           control={control}
-          render={({ field: { value, onChange } }) =>
+          render={({ field: { value, onChange } }) => (
             <MultipleSelectorAutocomplete<Role>
               id="roles-selector"
               options={ROLES_LIST}
@@ -46,13 +46,11 @@ const MultipleSelectorAutocompleteFn: StoryFn = () => {
               onChange={onChange}
               getOptionLabel={(option) => option.role ?? option}
               renderOption={(props, { key, role }) => {
-                const selected = (value as Role[])?.some(role => role.key === key)
+                const selected = (value as Role[])?.some((role) => role.key === key)
                 return (
                   <ListItem {...props} key={role} sx={{ pointerEvents: selected ? 'none' : '' }}>
-                    {selected ? <CheckIcon/> : null}
-                    <Box sx={{ marginLeft: selected ? '6px' : '21px' }}>
-                      {role}
-                    </Box>
+                    {selected ? <CheckIcon /> : null}
+                    <Box sx={{ marginLeft: selected ? '6px' : '21px' }}>{role}</Box>
                   </ListItem>
                 )
               }}
@@ -62,14 +60,15 @@ const MultipleSelectorAutocompleteFn: StoryFn = () => {
                     variant="outlined"
                     size="small"
                     sx={DEFAULT_CHIP_STYLE}
-                    avatar={<CheckIcon/>}
-                    deleteIcon={<CloseOutlinedIcon/>}
-                    label={option?.role} {...getTagProps({ index })}
+                    avatar={<CheckIcon />}
+                    deleteIcon={<CloseOutlinedIcon />}
+                    label={option?.role}
+                    {...getTagProps({ index })}
                   />
                 ))
               }
             />
-          }
+          )}
         />
       </DialogContent>
     </DialogForm>

@@ -33,7 +33,7 @@ export const GroupCompareSidebar: FC<GroupCompareSidebarProps> = memo(({ tags })
   const isLoading = !versionChangesSummary || isEmpty(tags)
 
   const filteredTags = useMemo(
-    () => tags.filter(tag => isAppliedSearchValueForTag(tag, searchValue)),
+    () => tags.filter((tag) => isAppliedSearchValueForTag(tag, searchValue)),
     [searchValue, tags],
   )
 

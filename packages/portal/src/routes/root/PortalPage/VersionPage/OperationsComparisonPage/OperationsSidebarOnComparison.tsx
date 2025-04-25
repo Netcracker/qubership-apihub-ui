@@ -49,7 +49,7 @@ export type OperationsSidebarOnComparisonProps = {
 }
 
 export const OperationsSidebarOnComparison: FC<OperationsSidebarOnComparisonProps> =
-  memo<OperationsSidebarOnComparisonProps>(props => {
+  memo<OperationsSidebarOnComparisonProps>((props) => {
     const {
       operationPackageKey,
       operationPackageVersion,
@@ -75,25 +75,22 @@ export const OperationsSidebarOnComparison: FC<OperationsSidebarOnComparisonProp
               apiTypeFilter={apiType}
               comparisonPage={true}
             />
-            <Divider flexItem sx={DIVIDER_STYLES}/>
-            <SearchBar
-              value={searchValue}
-              onValueChange={setSearchValue}
-              data-testid="SearchOperations"
-            />
+            <Divider flexItem sx={DIVIDER_STYLES} />
+            <SearchBar value={searchValue} onValueChange={setSearchValue} data-testid="SearchOperations" />
           </Box>
         }
         body={
           <CardContent sx={{ p: 1 }}>
-            {areChangesLoading && isEmpty(tags)
-              ? <SidebarSkeleton/>
-              : <Placeholder
+            {areChangesLoading && isEmpty(tags) ? (
+              <SidebarSkeleton />
+            ) : (
+              <Placeholder
                 invisible={isNotEmpty(tags)}
                 area={NAVIGATION_PLACEHOLDER_AREA}
                 message={searchValue ? NO_SEARCH_RESULTS : 'No tags'}
                 testId={searchValue ? 'NoSearchResultsPlaceholder' : 'NoTagsPlaceholder'}
               >
-                {tags.map(tag =>
+                {tags.map((tag) => (
                   <OperationsByTagList
                     key={tag}
                     tag={tag || DEFAULT_TAG}
@@ -102,9 +99,10 @@ export const OperationsSidebarOnComparison: FC<OperationsSidebarOnComparisonProp
                     expanded={expanded}
                     setExpanded={setExpanded}
                     onOperationClick={onOperationClick}
-                  />,
-                )}
-              </Placeholder>}
+                  />
+                ))}
+              </Placeholder>
+            )}
           </CardContent>
         }
       />

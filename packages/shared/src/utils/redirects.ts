@@ -29,12 +29,9 @@ export function redirectToGitlab(): void {
 }
 
 function redirectTo(path: string, redirectUri?: string): void {
-  const url = format(
-    '{}{}?redirectUri={}',
-    location.origin, path, encodeURIComponent(redirectUri ?? location.href),
-  );
+  const url = format('{}{}?redirectUri={}', location.origin, path, encodeURIComponent(redirectUri ?? location.href))
 
-  (() => {
+  ;(() => {
     window.stop()
     location.replace(url)
   })()
@@ -48,11 +45,14 @@ export function getPackageRedirectDetails<P extends PackagePathPattern>(
   pathPattern: P,
 ): FetchRedirectDetails | null {
   const redirectedUrl = new URL(response.url)
-  const match = matchPath(`${API_BASE_PATH_PATTERN}${pathPattern}`, redirectedUrl.pathname) as PathMatch<'packageId'> | null
+  const match = matchPath(
+    `${API_BASE_PATH_PATTERN}${pathPattern}`,
+    redirectedUrl.pathname,
+  ) as PathMatch<'packageId'> | null
   return match && match.params.packageId
     ? {
-      redirectType: FETCH_REDIRECT_TYPE_PACKAGE,
-      id: match.params.packageId,
-    }
+        redirectType: FETCH_REDIRECT_TYPE_PACKAGE,
+        id: match.params.packageId,
+      }
     : null
 }

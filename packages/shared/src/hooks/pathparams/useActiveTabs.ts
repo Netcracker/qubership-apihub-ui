@@ -21,8 +21,5 @@ export function useActiveTabs(): string[] {
   const { '*': pathParams = '' } = useParams()
   const [menuItem, sidebarItem] = pathParams.split('/')
 
-  return [
-    menuItem,
-    sidebarItem,
-  ]
+  return [menuItem, sidebarItem]
 }

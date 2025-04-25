@@ -47,18 +47,12 @@ export interface IWSMonacoEditor extends IDisposable {
    * @param event - Event name.
    * @param listener - Event handler callback.
    */
-  on<Key extends EditorClientEvent>(
-    event: Key,
-    listener: Handler<TEditorClientEventArgs[Key]>,
-  ): void
+  on<Key extends EditorClientEvent>(event: Key, listener: Handler<TEditorClientEventArgs[Key]>): void
 
   /**
    * Remove listener to FireMonaco Editor.
    * @param event - Event name.
    * @param listener - Event handler callback (optional).
    */
-  off<Key extends EditorClientEvent>(
-    event: Key,
-    listener?: Handler<TEditorClientEventArgs[Key]>,
-  ): void
+  off<Key extends EditorClientEvent>(event: Key, listener?: Handler<TEditorClientEventArgs[Key]>): void
 }

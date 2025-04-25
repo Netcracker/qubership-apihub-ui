@@ -60,37 +60,55 @@ export const SearchResults: FC = memo(() => {
   const [apiSpecificSearchMode, setApiSpecificSearchMode] = useState(false)
 
   const [filters, setFilters] = useState<Omit<SearchCriteria, 'searchString'>>()
-  useEvent(APPLY_GLOBAL_SEARCH_FILTERS, ({
-    detail: {
-      filters,
-      apiSearchMode,
+  useEvent(
+    APPLY_GLOBAL_SEARCH_FILTERS,
+    ({ detail: { filters, apiSearchMode } }: CustomEvent<GlobalSearchPanelDetails>): void => {
+      setApiSpecificSearchMode(apiSearchMode)
+      filters && setFilters(getOptionalBody(filters))
     },
-  }: CustomEvent<GlobalSearchPanelDetails>): void => {
-    setApiSpecificSearchMode(apiSearchMode)
-    filters && setFilters(getOptionalBody(filters))
-  })
+  )
 
   const currentLevel = useMemo(() => SEARCH_LEVEL_MAP[activeTab], [activeTab])
 
-  const [{ operations }, isInitialOperationsLoading, fetchNextOperationsPage, isNextOperationsPageFetching, hasNextOperationsPage] = useOperationsGlobalSearch(
+  const [
+    { operations },
+    isInitialOperationsLoading,
+    fetchNextOperationsPage,
+    isNextOperationsPageFetching,
+    hasNextOperationsPage,
+  ] = useOperationsGlobalSearch(
     filters
       ? { criteria: { ...filters, searchString: searchText }, enabled: currentLevel === OPERATION_LEVEL }
       : { criteria: { searchString: searchText }, enabled: currentLevel === OPERATION_LEVEL },
   )
 
-  const [{ documents }, isInitialDocumentsLoading, fetchNextDocumentsPage, isNextDocumentsPageFetching, hasNextDocumentsPage] = useDocumentsGlobalSearch(
+  const [
+    { documents },
+    isInitialDocumentsLoading,
+    fetchNextDocumentsPage,
+    isNextDocumentsPageFetching,
+    hasNextDocumentsPage,
+  ] = useDocumentsGlobalSearch(
     filters
       ? { criteria: { ...filters, searchString: searchText }, enabled: currentLevel === DOCUMENT_LEVEL }
       : { criteria: { searchString: searchText }, enabled: currentLevel === DOCUMENT_LEVEL },
   )
 
-  const [{ packages }, isInitialPackagesLoading, fetchNextPackagesPage, isNextPackagesPageFetching, hasNextPackagesPage] = usePackagesGlobalSearch(
+  const [
+    { packages },
+    isInitialPackagesLoading,
+    fetchNextPackagesPage,
+    isNextPackagesPageFetching,
+    hasNextPackagesPage,
+  ] = usePackagesGlobalSearch(
     filters
       ? { criteria: { ...filters, searchString: searchText }, enabled: currentLevel === PACKAGE_LEVEL }
       : { criteria: { searchString: searchText }, enabled: currentLevel === PACKAGE_LEVEL },
   )
 
-  useEffect(() => {apiSpecificSearchMode && setActiveTab(OPERATIONS_TAB)}, [apiSpecificSearchMode, setActiveTab])
+  useEffect(() => {
+    apiSpecificSearchMode && setActiveTab(OPERATIONS_TAB)
+  }, [apiSpecificSearchMode, setActiveTab])
 
   return (
     <Box
@@ -106,17 +124,11 @@ export const SearchResults: FC = memo(() => {
     "
     >
       <Box gridArea="searchBar">
-        <SearchBar
-          value={searchText}
-          onValueChange={setSearchText}
-        />
+        <SearchBar value={searchText} onValueChange={setSearchText} />
       </Box>
 
       <TabContext value={activeTab}>
-        <TabList
-          sx={{ mt: 1, mb: 1, gridArea: 'tabs' }}
-          onChange={(_, value) => setActiveTab(value)}
-        >
+        <TabList sx={{ mt: 1, mb: 1, gridArea: 'tabs' }} onChange={(_, value) => setActiveTab(value)}>
           <Tab
             label={
               <SearchResultTabLabel
@@ -155,72 +167,68 @@ export const SearchResults: FC = memo(() => {
           />
         </TabList>
 
-
         <TabPanel sx={tabPanelStyle} value={OPERATIONS_TAB}>
-          {
-            isInitialOperationsLoading
-              ? <SearchResultSkeleton/>
-              : isNotEmpty(operations)
-                ? <ApiOperationsSearchList
-                  value={operations}
-                  searchText={searchText}
-                  fetchNextPage={fetchNextOperationsPage}
-                  isNextPageFetching={isNextOperationsPageFetching}
-                  hasNextPage={hasNextOperationsPage}
-                />
-                : <Placeholder
-                  invisible={isNotEmpty(operations)}
-                  area={CONTENT_PLACEHOLDER_AREA}
-                  message={searchText ? NO_SEARCH_RESULTS : 'No operations to display'}
-                  testId="NoOperationsPlaceholder"
-                />
-          }
+          {isInitialOperationsLoading ? (
+            <SearchResultSkeleton />
+          ) : isNotEmpty(operations) ? (
+            <ApiOperationsSearchList
+              value={operations}
+              searchText={searchText}
+              fetchNextPage={fetchNextOperationsPage}
+              isNextPageFetching={isNextOperationsPageFetching}
+              hasNextPage={hasNextOperationsPage}
+            />
+          ) : (
+            <Placeholder
+              invisible={isNotEmpty(operations)}
+              area={CONTENT_PLACEHOLDER_AREA}
+              message={searchText ? NO_SEARCH_RESULTS : 'No operations to display'}
+              testId="NoOperationsPlaceholder"
+            />
+          )}
         </TabPanel>
-
 
         <TabPanel sx={tabPanelStyle} value={DOCUMENTS_TAB}>
-          {
-            isInitialDocumentsLoading
-              ? <SearchResultSkeleton/>
-              : isNotEmpty(documents)
-                ? <DocumentSearchList
-                  value={documents}
-                  searchText={searchText}
-                  fetchNextPage={fetchNextDocumentsPage}
-                  isNextPageFetching={isNextDocumentsPageFetching}
-                  hasNextPage={hasNextDocumentsPage}
-                />
-                : <Placeholder
-                  invisible={isNotEmpty(documents)}
-                  area={CONTENT_PLACEHOLDER_AREA}
-                  message={searchText ? NO_SEARCH_RESULTS : 'No documents to display'}
-                  testId="NoDocumentsPlaceholder"
-                />
-          }
+          {isInitialDocumentsLoading ? (
+            <SearchResultSkeleton />
+          ) : isNotEmpty(documents) ? (
+            <DocumentSearchList
+              value={documents}
+              searchText={searchText}
+              fetchNextPage={fetchNextDocumentsPage}
+              isNextPageFetching={isNextDocumentsPageFetching}
+              hasNextPage={hasNextDocumentsPage}
+            />
+          ) : (
+            <Placeholder
+              invisible={isNotEmpty(documents)}
+              area={CONTENT_PLACEHOLDER_AREA}
+              message={searchText ? NO_SEARCH_RESULTS : 'No documents to display'}
+              testId="NoDocumentsPlaceholder"
+            />
+          )}
         </TabPanel>
-
 
         <TabPanel sx={tabPanelStyle} value={PACKAGES_TAB}>
-          {
-            isInitialPackagesLoading
-              ? <SearchResultSkeleton/>
-              : isNotEmpty(packages)
-                ? <PackageSearchList
-                  value={packages}
-                  searchText={searchText}
-                  fetchNextPage={fetchNextPackagesPage}
-                  isNextPageFetching={isNextPackagesPageFetching}
-                  hasNextPage={hasNextPackagesPage}
-                />
-                : <Placeholder
-                  invisible={isNotEmpty(packages)}
-                  area={CONTENT_PLACEHOLDER_AREA}
-                  message={searchText ? NO_SEARCH_RESULTS : 'No packages to display'}
-                  testId="NoPackagesPlaceholder"
-                />
-          }
+          {isInitialPackagesLoading ? (
+            <SearchResultSkeleton />
+          ) : isNotEmpty(packages) ? (
+            <PackageSearchList
+              value={packages}
+              searchText={searchText}
+              fetchNextPage={fetchNextPackagesPage}
+              isNextPageFetching={isNextPackagesPageFetching}
+              hasNextPage={hasNextPackagesPage}
+            />
+          ) : (
+            <Placeholder
+              invisible={isNotEmpty(packages)}
+              area={CONTENT_PLACEHOLDER_AREA}
+              message={searchText ? NO_SEARCH_RESULTS : 'No packages to display'}
+              testId="NoPackagesPlaceholder"
+            />
+          )}
         </TabPanel>
-
       </TabContext>
     </Box>
   )

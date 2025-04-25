@@ -36,9 +36,12 @@ export function useCreateBranch(): [CreateBranch, IsLoading] {
   const { mutate, isLoading } = useMutation<void, Error, Options>({
     mutationFn: ({ currentBranchName, newBranchName }) => createBranch(projectId!, currentBranchName!, newBranchName),
     onSuccess: (_, { newBranchName, withPublish }) => {
-      navigate({
-        search: `branch=${encodeURIComponent(newBranchName)}&mode=${FILES_PROJECT_EDITOR_MODE}`,
-      }, { replace: true })
+      navigate(
+        {
+          search: `branch=${encodeURIComponent(newBranchName)}&mode=${FILES_PROJECT_EDITOR_MODE}`,
+        },
+        { replace: true },
+      )
       showNotification({ message: `Branch "${newBranchName}" has been created` })
       if (withPublish) {
         setTimeout(() => showPublishProjectVersionDialog({ version: newBranchName }), 50)
@@ -50,11 +53,7 @@ export function useCreateBranch(): [CreateBranch, IsLoading] {
   return [mutate, isLoading]
 }
 
-async function createBranch(
-  projectKey: Key,
-  branchName: string,
-  newBranchName: string,
-): Promise<void> {
+async function createBranch(projectKey: Key, branchName: string, newBranchName: string): Promise<void> {
   const projectId = encodeURIComponent(projectKey)
   const branch = encodeURIComponent(branchName)
 

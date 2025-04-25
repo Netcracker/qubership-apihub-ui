@@ -20,13 +20,13 @@ import type { CustomServersPackageMap } from './useCustomServersPackageMap'
 import { getCustomServersPackageMapFromLocalStorage } from './useCustomServersPackageMap'
 
 export const CustomServersProvider: FC<PropsWithChildren> = memo<PropsWithChildren>(({ children }) => {
-  const [customServers, setCustomServers] = useState<CustomServersPackageMap | null>(getCustomServersPackageMapFromLocalStorage)
+  const [customServers, setCustomServers] = useState<CustomServersPackageMap | null>(
+    getCustomServersPackageMapFromLocalStorage,
+  )
 
   return (
     <CustomServersContext.Provider value={customServers}>
-      <SetCustomServersContext.Provider value={setCustomServers}>
-        {children}
-      </SetCustomServersContext.Provider>
+      <SetCustomServersContext.Provider value={setCustomServers}>{children}</SetCustomServersContext.Provider>
     </CustomServersContext.Provider>
   )
 })

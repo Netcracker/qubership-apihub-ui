@@ -60,107 +60,92 @@ export type CompareRestGroupsDialogFormProps = CompareRestGroupsDialogData & {
 }
 
 // First Order Component //
-export const CompareRestGroupsDialogForm: FC<CompareRestGroupsDialogFormProps> = memo(({
-  open,
-  setOpen,
-  control,
-  onSubmit,
-  onSwap,
-  originalGroupOptions,
-  changedGroupOptions,
-  isLoadingOriginalGroup,
-  isLoadingChangedGroup,
-  onOriginalInputChange,
-  onChangedInputChange,
-}) => {
-  return (
-    <DialogForm
-      open={open}
-      onClose={() => setOpen(false)}
-      onSubmit={onSubmit}
-      maxWidth="md"
-    >
-      <DialogTitle>
-        Select REST Groups to Compare
-      </DialogTitle>
-      <DialogContent sx={DIALOG_CONTENT_STYLES}>
-        <Typography variant="button" sx={{ gridArea: 'originalTitle' }}>
-          Previous
-        </Typography>
-        <Controller
-          name="originalGroup"
-          control={control}
-          render={({ field: { value, onChange } }) => {
-            return (
+export const CompareRestGroupsDialogForm: FC<CompareRestGroupsDialogFormProps> = memo(
+  ({
+    open,
+    setOpen,
+    control,
+    onSubmit,
+    onSwap,
+    originalGroupOptions,
+    changedGroupOptions,
+    isLoadingOriginalGroup,
+    isLoadingChangedGroup,
+    onOriginalInputChange,
+    onChangedInputChange,
+  }) => {
+    return (
+      <DialogForm open={open} onClose={() => setOpen(false)} onSubmit={onSubmit} maxWidth="md">
+        <DialogTitle>Select REST Groups to Compare</DialogTitle>
+        <DialogContent sx={DIALOG_CONTENT_STYLES}>
+          <Typography variant="button" sx={{ gridArea: 'originalTitle' }}>
+            Previous
+          </Typography>
+          <Controller
+            name="originalGroup"
+            control={control}
+            render={({ field: { value, onChange } }) => {
+              return (
+                <Autocomplete<OperationGroup>
+                  autoSelect
+                  filterOptions={disableAutocompleteSearch}
+                  onInputChange={debounce(onOriginalInputChange, DEFAULT_DEBOUNCE)}
+                  sx={{ gridArea: 'originalGroup' }}
+                  loading={isLoadingOriginalGroup}
+                  value={value}
+                  options={originalGroupOptions}
+                  getOptionLabel={({ groupName }) => groupName}
+                  renderOption={(props, { groupName }) => (
+                    <OptionItem key={groupName} props={props} title={groupName} />
+                  )}
+                  renderInput={(params) => <TextField {...params} required label="Group" />}
+                  onChange={(_, value) => onChange(value)}
+                  data-testid="OriginalGroupAutocomplete"
+                />
+              )
+            }}
+          />
+
+          <Box sx={{ gridArea: 'swapper', alignSelf: 'center' }}>
+            <Swapper onSwap={onSwap} />
+          </Box>
+
+          <Typography variant="button" sx={{ gridArea: 'changedTitle' }}>
+            Current
+          </Typography>
+          <Controller
+            name="changedGroup"
+            control={control}
+            render={({ field: { value, onChange } }) => (
               <Autocomplete<OperationGroup>
                 autoSelect
                 filterOptions={disableAutocompleteSearch}
-                onInputChange={debounce(onOriginalInputChange, DEFAULT_DEBOUNCE)}
-                sx={{ gridArea: 'originalGroup' }}
-                loading={isLoadingOriginalGroup}
+                onInputChange={debounce(onChangedInputChange, DEFAULT_DEBOUNCE)}
+                sx={{ gridArea: 'changedGroup' }}
+                loading={isLoadingChangedGroup}
                 value={value}
-                options={originalGroupOptions}
+                options={changedGroupOptions}
                 getOptionLabel={({ groupName }) => groupName}
-                renderOption={(props, { groupName }) =>
-                  <OptionItem
-                    key={groupName}
-                    props={props}
-                    title={groupName}
-                  />
-                }
-                renderInput={(params) => <TextField {...params} required label="Group"/>}
+                renderOption={(props, { groupName }) => <OptionItem key={groupName} props={props} title={groupName} />}
+                renderInput={(params) => <TextField {...params} required label="Group" />}
                 onChange={(_, value) => onChange(value)}
-                data-testid="OriginalGroupAutocomplete"
+                data-testid="ChangedGroupAutocomplete"
               />
-            )
-          }}
-        />
-
-        <Box sx={{ gridArea: 'swapper', alignSelf: 'center' }}>
-          <Swapper onSwap={onSwap}/>
-        </Box>
-
-        <Typography variant="button" sx={{ gridArea: 'changedTitle' }}>
-          Current
-        </Typography>
-        <Controller
-          name="changedGroup"
-          control={control}
-          render={({ field: { value, onChange } }) => (
-            <Autocomplete<OperationGroup>
-              autoSelect
-              filterOptions={disableAutocompleteSearch}
-              onInputChange={debounce(onChangedInputChange, DEFAULT_DEBOUNCE)}
-              sx={{ gridArea: 'changedGroup' }}
-              loading={isLoadingChangedGroup}
-              value={value}
-              options={changedGroupOptions}
-              getOptionLabel={({ groupName }) => groupName}
-              renderOption={(props, { groupName }) =>
-                <OptionItem
-                  key={groupName}
-                  props={props}
-                  title={groupName}
-                />
-              }
-              renderInput={(params) => <TextField {...params} required label="Group"/>}
-              onChange={(_, value) => onChange(value)}
-              data-testid="ChangedGroupAutocomplete"
-            />
-          )}
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button variant="contained" type="submit" data-testid="CompareButton">
-          Compare
-        </Button>
-        <Button variant="outlined" onClick={() => setOpen(false)} data-testid="CancelButton">
-          Cancel
-        </Button>
-      </DialogActions>
-    </DialogForm>
-  )
-})
+            )}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" type="submit" data-testid="CompareButton">
+            Compare
+          </Button>
+          <Button variant="outlined" onClick={() => setOpen(false)} data-testid="CancelButton">
+            Cancel
+          </Button>
+        </DialogActions>
+      </DialogForm>
+    )
+  },
+)
 
 const DIALOG_CONTENT_STYLES = {
   display: 'grid',

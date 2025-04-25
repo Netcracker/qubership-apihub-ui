@@ -48,14 +48,18 @@ export const OperationToolbarHeader: FC<OperationToolbarHeaderProps> = memo<Oper
   return (
     <Box sx={{ alignItems: 'center', display: 'flex', gap: '8px' }}>
       <IconButton color="primary" onClick={handleBackClick} data-testid="BackButton">
-        <ArrowBackIcon/>
+        <ArrowBackIcon />
       </IconButton>
       <ToolbarTitle
         value={
           <Box display="flex" component="span">
-            {isLoading
-              ? <Skeleton variant="text" width="150px"/>
-              : <Typography component="span" variant="h5" data-testid="ToolbarTitle">{title}</Typography>}
+            {isLoading ? (
+              <Skeleton variant="text" width="150px" />
+            ) : (
+              <Typography component="span" variant="h5" data-testid="ToolbarTitle">
+                {title}
+              </Typography>
+            )}
             <OperationSelector
               recentOperations={recentOperations}
               relatedOperations={relatedOperations}

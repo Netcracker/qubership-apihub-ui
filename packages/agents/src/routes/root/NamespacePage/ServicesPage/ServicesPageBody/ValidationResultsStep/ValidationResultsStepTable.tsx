@@ -54,176 +54,190 @@ export type ValidationResultsStepTableProps = {
   isLoading: boolean
 }
 
-export const ValidationResultsStepTable: FC<ValidationResultsStepTableProps> = memo<ValidationResultsStepTableProps>(({
-  value,
-  isLoading,
-}) => {
-  const [containerWidth, setContainerWidth] = useState(DEFAULT_CONTAINER_WIDTH)
-  const [columnSizingInfo, setColumnSizingInfo] = useState<ColumnSizingInfoState>()
-  const [, setHandlingColumnSizing] = useState<ColumnSizingState>()
+export const ValidationResultsStepTable: FC<ValidationResultsStepTableProps> = memo<ValidationResultsStepTableProps>(
+  ({ value, isLoading }) => {
+    const [containerWidth, setContainerWidth] = useState(DEFAULT_CONTAINER_WIDTH)
+    const [columnSizingInfo, setColumnSizingInfo] = useState<ColumnSizingInfoState>()
+    const [, setHandlingColumnSizing] = useState<ColumnSizingState>()
 
-  const tableContainerRef = useRef<HTMLDivElement>(null)
-  useResizeObserver(tableContainerRef, setContainerWidth)
+    const tableContainerRef = useRef<HTMLDivElement>(null)
+    useResizeObserver(tableContainerRef, setContainerWidth)
 
-  const actualColumnSizing = useColumnsSizing({
-    containerWidth: containerWidth,
-    columnModels: COLUMNS_MODELS,
-    columnSizingInfo: columnSizingInfo,
-    defaultMinColumnSize: 180,
-  })
-
-  const { snapshotPublicationInfo } = useSnapshotPublicationInfo()
-  const { showChangeViewDialog } = useEventBus()
-
-  const openChangeView = useCallback((service: Service, viewChangesUrl?: string, apiType?: ApiType) => {
-    return showChangeViewDialog({ service, viewChangesUrl, apiType })
-  }, [showChangeViewDialog])
-
-  const columns: ColumnDef<TableData>[] = useMemo(() => [
-    {
-      id: SERVICE_OR_DOCUMENTATION_COLUMN_ID,
-      header: 'Service / Documentation',
-      cell: ({ row }) => <ServiceOrDocumentationTableCell value={row}/>,
-    },
-    {
-      id: SERVICE_LABELS_COLUMN_ID,
-      header: 'Labels',
-      cell: ({ row }) => <ServiceLabelsTableCell value={row}/>,
-    },
-    {
-      id: BASELINE_PACKAGE_COLUMN_ID,
-      header: 'Baseline Package',
-      cell: ({ row }) => <BaselinePackageTableCell value={row}/>,
-    },
-    {
-      id: BWC_STATUS_COLUMN_ID,
-      header: 'BWC Status',
-      cell: ({ row }) => <BwcStatusTableCell value={row}/>,
-    },
-    {
-      id: CHANGES_COLUMN_ID,
-      header: 'Changes',
-      cell: ({ row: { original: { service, changeSummary, viewChangesUrl, apiType } } }) => {
-        if (service && changeSummary) {
-          return (
-            <Box onClick={() => openChangeView(service, viewChangesUrl, apiType)}>
-              <Changes mode="compact" value={changeSummary}/>
-            </Box>
-          )
-        }
-
-        return null
-      },
-    },
-    {
-      id: VIEW_CHANGES_URL_COLUMN_ID,
-      cell: ({ row: { original: { viewChangesUrl } } }) => {
-        if (viewChangesUrl) {
-          return (
-            <Button
-              data-testid="ViewChangesButton"
-              sx={{ visibility: 'hidden', p: 0, height: 10, whiteSpace: 'nowrap' }}
-              className="hoverable"
-              component="a"
-              variant="text"
-              href={viewChangesUrl}
-              target="_blank"
-              startIcon={<ArrowOutwardRoundedIcon/>}
-            >
-              View Changes
-            </Button>
-          )
-        }
-
-        return null
-      },
-    },
-  ], [openChangeView])
-
-  const data: TableData[] = useMemo(() => value.filter(service => !!snapshotPublicationInfo.services.find(({ key }) => key === service.key)).map(service => {
-    const {
-      changeSummary,
-      viewChangesUrl,
-      baselineFound,
-      baselineVersionFound,
-      apiTypes,
-    } = snapshotPublicationInfo.services.find(({ key }) => key === service.key)!
-    const [apiType = DEFAULT_API_TYPE] = apiTypes ?? []
-    return ({
-      service: service,
-      bwcErrors: (baselineFound && baselineVersionFound) ? changeSummary?.breaking : undefined,
-      changeSummary: changeSummary,
-      viewChangesUrl: viewChangesUrl,
-      children: service.specs?.map(spec => ({ spec })),
-      baselineFound: baselineFound,
-      baselineVersionFound: baselineVersionFound,
-      apiType: apiType,
+    const actualColumnSizing = useColumnsSizing({
+      containerWidth: containerWidth,
+      columnModels: COLUMNS_MODELS,
+      columnSizingInfo: columnSizingInfo,
+      defaultMinColumnSize: 180,
     })
-  }), [snapshotPublicationInfo.services, value])
 
-  const [expanded, setExpanded] = useState<ExpandedState>({})
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+    const { snapshotPublicationInfo } = useSnapshotPublicationInfo()
+    const { showChangeViewDialog } = useEventBus()
 
-  const { getHeaderGroups, getRowModel, setColumnSizing } = useReactTable({
-    data: data,
-    columns: columns,
-    columnResizeMode: 'onChange',
-    state: { expanded, columnVisibility },
-    onExpandedChange: setExpanded,
-    onColumnVisibilityChange: setColumnVisibility,
-    onColumnSizingChange: setHandlingColumnSizing as OnChangeFn<ColumnSizingState>,
-    onColumnSizingInfoChange: setColumnSizingInfo as OnChangeFn<ColumnSizingInfoState>,
-    getSubRows: row => row.children,
-    getCoreRowModel: getCoreRowModel(),
-    getExpandedRowModel: getExpandedRowModel(),
-  })
+    const openChangeView = useCallback(
+      (service: Service, viewChangesUrl?: string, apiType?: ApiType) => {
+        return showChangeViewDialog({ service, viewChangesUrl, apiType })
+      },
+      [showChangeViewDialog],
+    )
 
-  useEffect(() => setColumnSizing(actualColumnSizing), [setColumnSizing, actualColumnSizing])
+    const columns: ColumnDef<TableData>[] = useMemo(
+      () => [
+        {
+          id: SERVICE_OR_DOCUMENTATION_COLUMN_ID,
+          header: 'Service / Documentation',
+          cell: ({ row }) => <ServiceOrDocumentationTableCell value={row} />,
+        },
+        {
+          id: SERVICE_LABELS_COLUMN_ID,
+          header: 'Labels',
+          cell: ({ row }) => <ServiceLabelsTableCell value={row} />,
+        },
+        {
+          id: BASELINE_PACKAGE_COLUMN_ID,
+          header: 'Baseline Package',
+          cell: ({ row }) => <BaselinePackageTableCell value={row} />,
+        },
+        {
+          id: BWC_STATUS_COLUMN_ID,
+          header: 'BWC Status',
+          cell: ({ row }) => <BwcStatusTableCell value={row} />,
+        },
+        {
+          id: CHANGES_COLUMN_ID,
+          header: 'Changes',
+          cell: ({
+            row: {
+              original: { service, changeSummary, viewChangesUrl, apiType },
+            },
+          }) => {
+            if (service && changeSummary) {
+              return (
+                <Box onClick={() => openChangeView(service, viewChangesUrl, apiType)}>
+                  <Changes mode="compact" value={changeSummary} />
+                </Box>
+              )
+            }
 
-  return (
-    <TableContainer sx={{ mt: 1 }} ref={tableContainerRef}>
-      <Table>
-        <TableHead>
-          {getHeaderGroups().map(headerGroup => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header, index) => (
-                <TableCell
-                  key={header.id}
-                  align="left"
-                  width={actualColumnSizing ? actualColumnSizing[header.id] : header.getSize()}
-                  sx={{
-                    '&:hover': {
-                      borderRight: '2px solid rgba(224, 224, 224, 1)',
-                    },
-                  }}
+            return null
+          },
+        },
+        {
+          id: VIEW_CHANGES_URL_COLUMN_ID,
+          cell: ({
+            row: {
+              original: { viewChangesUrl },
+            },
+          }) => {
+            if (viewChangesUrl) {
+              return (
+                <Button
+                  data-testid="ViewChangesButton"
+                  sx={{ visibility: 'hidden', p: 0, height: 10, whiteSpace: 'nowrap' }}
+                  className="hoverable"
+                  component="a"
+                  variant="text"
+                  href={viewChangesUrl}
+                  target="_blank"
+                  startIcon={<ArrowOutwardRoundedIcon />}
                 >
-                  {flexRender(header.column.columnDef.header, header.getContext())}
-                  {index !== headerGroup.headers.length - 1 && <ColumnDelimiter header={header} resizable={true}/>}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableHead>
-        <TableBody>
-          {getRowModel().rows.map(row => (
-            <TableRow key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <TableCell
-                  data-testid={`Cell-${cell.column.id}`}
-                  key={cell.column.id}
-                  align={cell.column.id === VIEW_CHANGES_URL_COLUMN_ID ? 'right' : 'left'}
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-          {isLoading && <TableSkeleton/>}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  )
-})
+                  View Changes
+                </Button>
+              )
+            }
+
+            return null
+          },
+        },
+      ],
+      [openChangeView],
+    )
+
+    const data: TableData[] = useMemo(
+      () =>
+        value
+          .filter((service) => !!snapshotPublicationInfo.services.find(({ key }) => key === service.key))
+          .map((service) => {
+            const { changeSummary, viewChangesUrl, baselineFound, baselineVersionFound, apiTypes } =
+              snapshotPublicationInfo.services.find(({ key }) => key === service.key)!
+            const [apiType = DEFAULT_API_TYPE] = apiTypes ?? []
+            return {
+              service: service,
+              bwcErrors: baselineFound && baselineVersionFound ? changeSummary?.breaking : undefined,
+              changeSummary: changeSummary,
+              viewChangesUrl: viewChangesUrl,
+              children: service.specs?.map((spec) => ({ spec })),
+              baselineFound: baselineFound,
+              baselineVersionFound: baselineVersionFound,
+              apiType: apiType,
+            }
+          }),
+      [snapshotPublicationInfo.services, value],
+    )
+
+    const [expanded, setExpanded] = useState<ExpandedState>({})
+    const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+
+    const { getHeaderGroups, getRowModel, setColumnSizing } = useReactTable({
+      data: data,
+      columns: columns,
+      columnResizeMode: 'onChange',
+      state: { expanded, columnVisibility },
+      onExpandedChange: setExpanded,
+      onColumnVisibilityChange: setColumnVisibility,
+      onColumnSizingChange: setHandlingColumnSizing as OnChangeFn<ColumnSizingState>,
+      onColumnSizingInfoChange: setColumnSizingInfo as OnChangeFn<ColumnSizingInfoState>,
+      getSubRows: (row) => row.children,
+      getCoreRowModel: getCoreRowModel(),
+      getExpandedRowModel: getExpandedRowModel(),
+    })
+
+    useEffect(() => setColumnSizing(actualColumnSizing), [setColumnSizing, actualColumnSizing])
+
+    return (
+      <TableContainer sx={{ mt: 1 }} ref={tableContainerRef}>
+        <Table>
+          <TableHead>
+            {getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header, index) => (
+                  <TableCell
+                    key={header.id}
+                    align="left"
+                    width={actualColumnSizing ? actualColumnSizing[header.id] : header.getSize()}
+                    sx={{
+                      '&:hover': {
+                        borderRight: '2px solid rgba(224, 224, 224, 1)',
+                      },
+                    }}
+                  >
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                    {index !== headerGroup.headers.length - 1 && <ColumnDelimiter header={header} resizable={true} />}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableHead>
+          <TableBody>
+            {getRowModel().rows.map((row) => (
+              <TableRow key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell
+                    data-testid={`Cell-${cell.column.id}`}
+                    key={cell.column.id}
+                    align={cell.column.id === VIEW_CHANGES_URL_COLUMN_ID ? 'right' : 'left'}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+            {isLoading && <TableSkeleton />}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    )
+  },
+)
 
 const SERVICE_OR_DOCUMENTATION_COLUMN_ID = 'service-or-documentation'
 const SERVICE_LABELS_COLUMN_ID = 'service-labels'
@@ -253,22 +267,22 @@ type TableData = Partial<{
 }>
 
 const TableSkeleton: FC = memo(() => {
-  return createComponents(<RowSkeleton/>, DEFAULT_NUMBER_SKELETON_ROWS)
+  return createComponents(<RowSkeleton />, DEFAULT_NUMBER_SKELETON_ROWS)
 })
 
 const RowSkeleton: FC = memo(() => {
   return (
     <TableRow>
       <TableCell>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
-      <TableCell/>
+      <TableCell />
     </TableRow>
   )
 })

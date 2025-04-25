@@ -54,21 +54,17 @@ export function useUpdateOperationGroup(
   const {
     packageKey,
     versionKey,
-    groupInfo: {
-      apiType,
-      groupName,
-      template,
-    },
+    groupInfo: { apiType, groupName, template },
   } = parameters
   const { onSuccess } = hooks
 
   const invalidatePackageVersionContent = useInvalidateVersionContent()
 
-  const {
-    mutate,
-    isLoading,
-    error,
-  } = useMutation<UpdateOperationGroupResponse, Error, UpdateOperationGroupRequestBody>({
+  const { mutate, isLoading, error } = useMutation<
+    UpdateOperationGroupResponse,
+    Error,
+    UpdateOperationGroupRequestBody
+  >({
     mutationKey: [UPDATE_OPERATION_GROUP_MUTATION_KEY, packageKey, versionKey, apiType, groupName, template],
     mutationFn: (requestBody) => updateOperationGroup(parameters, requestBody),
     onSuccess: () => {
@@ -87,9 +83,7 @@ async function updateOperationGroup(
   const {
     packageKey,
     versionKey,
-    groupInfo: {
-      apiType = DEFAULT_API_TYPE,
-    },
+    groupInfo: { apiType = DEFAULT_API_TYPE },
   } = parameters
 
   const { description, template, operations, groupName: rawGroupName } = body
@@ -106,11 +100,15 @@ async function updateOperationGroup(
   formData.append('operations', JSON.stringify(operations))
 
   const pathPattern = '/packages/:packageId/versions/:versionId/:apiType/groups/:groupName'
-  return await portalRequestVoid(generatePath(pathPattern, { packageId, versionId, apiType, groupName }), {
-    method: 'PATCH',
-    body: formData,
-  }, {
-    customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-    basePath: API_V3,
-  })
+  return await portalRequestVoid(
+    generatePath(pathPattern, { packageId, versionId, apiType, groupName }),
+    {
+      method: 'PATCH',
+      body: formData,
+    },
+    {
+      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+      basePath: API_V3,
+    },
+  )
 }

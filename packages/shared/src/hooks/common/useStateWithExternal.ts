@@ -29,10 +29,13 @@ export function useStateWithExternal<T>(
     }
   }, [externalValue])
 
-  const internalHandler = useCallback((value: T) => {
-    setInternalValue(value)
-    externalListener?.(value)
-  }, [externalListener])
+  const internalHandler = useCallback(
+    (value: T) => {
+      setInternalValue(value)
+      externalListener?.(value)
+    },
+    [externalListener],
+  )
 
   return [internalValue, internalHandler]
 }

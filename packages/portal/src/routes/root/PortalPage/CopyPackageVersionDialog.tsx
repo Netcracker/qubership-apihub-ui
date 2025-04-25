@@ -46,10 +46,7 @@ import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
 
 export const CopyPackageVersionDialog: FC = memo(() => {
   return (
-    <PopupDelegate
-      type={SHOW_COPY_PACKAGE_VERSION_DIALOG}
-      render={props => <CopyPackageVersionPopup {...props}/>}
-    />
+    <PopupDelegate type={SHOW_COPY_PACKAGE_VERSION_DIALOG} render={(props) => <CopyPackageVersionPopup {...props} />} />
   )
 })
 
@@ -89,7 +86,10 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   })
 
   const targetPackagePermissions = useMemo(() => targetPackage?.permissions ?? [], [targetPackage?.permissions])
-  const targetReleaseVersionPattern = useMemo(() => targetPackage?.releaseVersionPattern, [targetPackage?.releaseVersionPattern])
+  const targetReleaseVersionPattern = useMemo(
+    () => targetPackage?.releaseVersionPattern,
+    [targetPackage?.releaseVersionPattern],
+  )
 
   const onVersionsFilter = useCallback((value: Key) => setVersionsFilter(value), [setVersionsFilter])
   const onPackagesFilter = useCallback((value: Key) => setPackagesFilter(value), [setPackagesFilter])
@@ -127,39 +127,46 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const [isPublishing, isPublished] = usePublicationStatuses(targetPackage?.key ?? '', publishId, targetVersion)
 
   useEffect(() => {
-    const workspace = currentPackage?.parents?.find(pack => pack.kind === WORKSPACE_KIND)
+    const workspace = currentPackage?.parents?.find((pack) => pack.kind === WORKSPACE_KIND)
     setWorkspace(workspace)
   }, [currentPackage?.parents])
 
-  useEffect(() => {isCopyingStartedSuccessfully && isPublished && setOpen(false)}, [setOpen, isCopyingStartedSuccessfully, isPublished])
-  useEffect(() => {reset(defaultValues)}, [defaultValues, reset])
-  useEffect(() =>{
-    if(!workspace){
+  useEffect(() => {
+    isCopyingStartedSuccessfully && isPublished && setOpen(false)
+  }, [setOpen, isCopyingStartedSuccessfully, isPublished])
+  useEffect(() => {
+    reset(defaultValues)
+  }, [defaultValues, reset])
+  useEffect(() => {
+    if (!workspace) {
       setTargetPackage(null)
       setValue('package', null)
     }
   }, [workspace, setValue])
 
-  const onCopy = useCallback(async (data: CopyInfo): Promise<void> => {
-    const { package: targetPackage, version, status, labels, previousVersion } = data
-    if (!targetPackage) {
-      throw Error('Incorrect parameters for copy: targetPackage is empty')
-    }
-    const targetPreviousVersion = replaceEmptyPreviousVersion(previousVersion)
-    setTargetVersion(version)
+  const onCopy = useCallback(
+    async (data: CopyInfo): Promise<void> => {
+      const { package: targetPackage, version, status, labels, previousVersion } = data
+      if (!targetPackage) {
+        throw Error('Incorrect parameters for copy: targetPackage is empty')
+      }
+      const targetPreviousVersion = replaceEmptyPreviousVersion(previousVersion)
+      setTargetVersion(version)
 
-    copyPackage({
-      packageKey: currentPackage?.key ?? '',
-      versionKey: currentVersionId!,
-      value: {
-        packageKey: targetPackage.key,
-        version: version,
-        status: status,
-        previousVersion: targetPreviousVersion,
-        labels: labels,
-      },
-    })
-  }, [copyPackage, currentPackage?.key, currentVersionId])
+      copyPackage({
+        packageKey: currentPackage?.key ?? '',
+        versionKey: currentVersionId!,
+        value: {
+          packageKey: targetPackage.key,
+          version: version,
+          status: status,
+          previousVersion: targetPreviousVersion,
+          labels: labels,
+        },
+      })
+    },
+    [copyPackage, currentPackage?.key, currentVersionId],
+  )
 
   return (
     <VersionDialogForm

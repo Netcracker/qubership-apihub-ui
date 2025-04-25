@@ -20,8 +20,4 @@ export const DRAFT_COMMIT_KEY = 'draft'
 export const LATEST_COMMIT_KEY = 'latest'
 export const NONE_COMMIT_KEY = ''
 
-export type CommitKey =
-  | Key
-  | typeof DRAFT_COMMIT_KEY
-  | typeof LATEST_COMMIT_KEY
-  | typeof NONE_COMMIT_KEY
+export type CommitKey = Key | typeof DRAFT_COMMIT_KEY | typeof LATEST_COMMIT_KEY | typeof NONE_COMMIT_KEY

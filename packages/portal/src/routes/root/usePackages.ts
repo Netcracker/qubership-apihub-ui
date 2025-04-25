@@ -54,24 +54,48 @@ export function usePackages(options: {
     refererPageKey = EMPTY_PAGE_REFERER,
   } = options ?? {}
 
-  const queryKey = [PACKAGES_QUERY_KEY, refererPageKey, kind, parentId, page, limit, onlyFavorite, textFilter, onlyShared, showAllDescendants, lastReleaseVersionDetails]
+  const queryKey = [
+    PACKAGES_QUERY_KEY,
+    refererPageKey,
+    kind,
+    parentId,
+    page,
+    limit,
+    onlyFavorite,
+    textFilter,
+    onlyShared,
+    showAllDescendants,
+    lastReleaseVersionDetails,
+  ]
   const { data, isLoading, isFetching, error } = useQuery<Packages, Error, Packages>({
     queryKey: queryKey,
-    queryFn: () => getPackages(kind, limit, onlyFavorite, page, parentId, showParents, textFilter, onlyShared, lastReleaseVersionDetails, versionLabel, showAllDescendants),
+    queryFn: () =>
+      getPackages(
+        kind,
+        limit,
+        onlyFavorite,
+        page,
+        parentId,
+        showParents,
+        textFilter,
+        onlyShared,
+        lastReleaseVersionDetails,
+        versionLabel,
+        showAllDescendants,
+      ),
     enabled: enabled,
   })
 
   return [data ?? [], isLoading, isFetching, error]
 }
 
-export function useRefetchPackages(options: Partial<{
-  queryKey: QueryKey
-  refererPageName: string
-}>): InvalidateQuery<void> {
-  const {
-    refererPageName = EMPTY_PAGE_REFERER,
-    queryKey = [PACKAGES_QUERY_KEY, refererPageName],
-  } = options
+export function useRefetchPackages(
+  options: Partial<{
+    queryKey: QueryKey
+    refererPageName: string
+  }>,
+): InvalidateQuery<void> {
+  const { refererPageName = EMPTY_PAGE_REFERER, queryKey = [PACKAGES_QUERY_KEY, refererPageName] } = options
   const client = useQueryClient()
   return () => client.refetchQueries({ queryKey }).then()
 }

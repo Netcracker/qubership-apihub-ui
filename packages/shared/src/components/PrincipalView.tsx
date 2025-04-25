@@ -28,21 +28,15 @@ export type PrincipalViewProps = {
 }
 
 export const PrincipalView: FC<PrincipalViewProps> = memo<PrincipalViewProps>(({ value }) => {
-
   if (!value) {
     return null
   }
 
   if (value.type === API_KEY) {
-    return (<TokenView name={value.name}/>)
+    return <TokenView name={value.name} />
   }
 
-  return (
-    <UserView
-      name={value.name || value.id}
-      avatarUrl={value.avatarUrl}
-    />
-  )
+  return <UserView name={value.name || value.id} avatarUrl={value.avatarUrl} />
 })
 
 type TokenViewProps = {
@@ -53,10 +47,8 @@ const TokenView: FC<TokenViewProps> = memo<TokenViewProps>(({ name }) => {
   const tokenName = `API key: ${name}`
   return (
     <Box display="flex" alignItems="center" gap="4px" overflow="hidden" data-testid="TokenView">
-      <KeyIcon/>
-      <TextWithOverflowTooltip tooltipText={tokenName}>
-        {tokenName}
-      </TextWithOverflowTooltip>
+      <KeyIcon />
+      <TextWithOverflowTooltip tooltipText={tokenName}>{tokenName}</TextWithOverflowTooltip>
     </Box>
   )
 })

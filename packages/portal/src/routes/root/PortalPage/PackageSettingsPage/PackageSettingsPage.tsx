@@ -39,11 +39,9 @@ export const PackageSettingsPage: FC = memo(() => {
       <SetActiveTabContentContext.Provider value={setActiveTab}>
         <NoPackagePlaceholder packageObject={packageObject} isLoading={isPackageLoading}>
           <PageLayout
-            toolbar={<PackageSettingsToolbar packageObject={packageObject!} isPackageLoading={isPackageLoading}/>}
-            navigation={
-              <PackageSettingsNavigation packageObject={packageObject!}/>
-            }
-            body={<PackageSettingsBody packageObject={packageObject!} isPackageLoading={isPackageLoading}/>}
+            toolbar={<PackageSettingsToolbar packageObject={packageObject!} isPackageLoading={isPackageLoading} />}
+            navigation={<PackageSettingsNavigation packageObject={packageObject!} />}
+            body={<PackageSettingsBody packageObject={packageObject!} isPackageLoading={isPackageLoading} />}
           />
         </NoPackagePlaceholder>
       </SetActiveTabContentContext.Provider>

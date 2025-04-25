@@ -59,10 +59,7 @@ type CreateCustomServerForm = {
 
 export const CreateCustomServerDialog: FC = memo(() => {
   return (
-    <PopupDelegate
-      type={SHOW_CREATE_CUSTOM_SERVER_DIALOG}
-      render={props => <CreateCustomServerPopup {...props}/>}
-    />
+    <PopupDelegate type={SHOW_CREATE_CUSTOM_SERVER_DIALOG} render={(props) => <CreateCustomServerPopup {...props} />} />
   )
 })
 
@@ -92,34 +89,35 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     () => new Map(agents.map(({ agentId, agentDeploymentCloud }) => [agentDeploymentCloud, agentId])),
     [agents],
   )
-  useEffect(
-    () => {selectedCloud && cloudAgentIdMap.has(selectedCloud) && setSelectedAgent(cloudAgentIdMap.get(selectedCloud) ?? '')},
-    [cloudAgentIdMap, selectedCloud],
-  )
+  useEffect(() => {
+    selectedCloud && cloudAgentIdMap.has(selectedCloud) && setSelectedAgent(cloudAgentIdMap.get(selectedCloud) ?? '')
+  }, [cloudAgentIdMap, selectedCloud])
   const [namespaces] = useNamespaces(selectedAgent!)
   const [serviceNames] = useServiceNames(selectedAgent!, selectedNamespace?.namespaceKey)
 
   // Form initializing
-  const defaultFormData = useMemo<CreateCustomServerForm>(() => ({
-    cloudKey: '',
-    namespaceKey: '',
-    serviceKey: serviceName ?? '',
-    customServerUrl: '',
-  }), [serviceName])
-  const {
-    handleSubmit,
-    control,
-    setValue,
-    getValues,
-  } = useForm<CreateCustomServerForm>({ defaultValues: defaultFormData })
+  const defaultFormData = useMemo<CreateCustomServerForm>(
+    () => ({
+      cloudKey: '',
+      namespaceKey: '',
+      serviceKey: serviceName ?? '',
+      customServerUrl: '',
+    }),
+    [serviceName],
+  )
+  const { handleSubmit, control, setValue, getValues } = useForm<CreateCustomServerForm>({
+    defaultValues: defaultFormData,
+  })
   const { cloudKey, namespaceKey } = getValues()
 
   const isUrlGenerationAvailable = isServiceNameExist && selectedAgent && selectedNamespace
 
-  useEffect(
-    () => {isUrlGenerationAvailable && setSelectedCustomUrl(`/apihub-nc/agents/${selectedAgent}/namespaces/${namespaceKey}/services/${selectedService}/proxy/`)},
-    [isUrlGenerationAvailable, namespaceKey, selectedAgent, selectedNamespace, selectedService],
-  )
+  useEffect(() => {
+    isUrlGenerationAvailable &&
+      setSelectedCustomUrl(
+        `/apihub-nc/agents/${selectedAgent}/namespaces/${namespaceKey}/services/${selectedService}/proxy/`,
+      )
+  }, [isUrlGenerationAvailable, namespaceKey, selectedAgent, selectedNamespace, selectedService])
 
   const isServiceNameValid = useMemo(
     () => isServiceNameExistInNamespace(serviceNames, serviceName, selectedCloud, selectedNamespace?.namespaceKey),
@@ -135,75 +133,81 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   // Storing data in local storage
   const [customServersPackageMap, setCustomServersPackageMap] = useCustomServersPackageMap()
 
-  const server = useMemo(() => ({
-    url: selectedCustomUrl ?? '',
-    description: cloudKey ? `Proxy via agent ${selectedAgent} to ${selectedNamespace?.namespaceKey}` : '',
-  }), [cloudKey, selectedAgent, selectedCustomUrl, selectedNamespace?.namespaceKey])
+  const server = useMemo(
+    () => ({
+      url: selectedCustomUrl ?? '',
+      description: cloudKey ? `Proxy via agent ${selectedAgent} to ${selectedNamespace?.namespaceKey}` : '',
+    }),
+    [cloudKey, selectedAgent, selectedCustomUrl, selectedNamespace?.namespaceKey],
+  )
 
   const onAddCustomServer = useCallback(() => {
     if (isServiceNameValid) {
-      setCustomServersPackageMap(packageId, [...customServersPackageMap?.[packageId] ?? [], server])
+      setCustomServersPackageMap(packageId, [...(customServersPackageMap?.[packageId] ?? []), server])
       setTimeout(() => setOpen(false), 50)
     }
   }, [isServiceNameValid, setCustomServersPackageMap, packageId, customServersPackageMap, server, setOpen])
 
   // Rendering functions
-  const renderSelectCloud = useCallback(({ field }: ControllerRenderFunctionProps<typeof CLOUD_KEY>) => (
-    <Autocomplete
-      key="cloudAutocomplete"
-      options={clouds}
-      value={selectedCloud}
-      renderOption={(props, cloud) => (
-        <ListItem {...props} key={crypto.randomUUID()}>
-          {cloud}
-        </ListItem>
-      )}
-      isOptionEqualToValue={(option, value) => option === value}
-      renderInput={(params) => (
-        <TextField {...field} {...params} label="Cloud"/>
-      )}
-      onChange={(_, value) => {
-        setValue(CLOUD_KEY, value ?? '')
-        setSelectedCloud(value ?? '')
-        setSelectedNamespace(null)
-        setSelectedCustomUrl('')
-      }}
-      data-testid="CloudAutocomplete"
-    />
-  ), [clouds, selectedCloud, setValue])
+  const renderSelectCloud = useCallback(
+    ({ field }: ControllerRenderFunctionProps<typeof CLOUD_KEY>) => (
+      <Autocomplete
+        key="cloudAutocomplete"
+        options={clouds}
+        value={selectedCloud}
+        renderOption={(props, cloud) => (
+          <ListItem {...props} key={crypto.randomUUID()}>
+            {cloud}
+          </ListItem>
+        )}
+        isOptionEqualToValue={(option, value) => option === value}
+        renderInput={(params) => <TextField {...field} {...params} label="Cloud" />}
+        onChange={(_, value) => {
+          setValue(CLOUD_KEY, value ?? '')
+          setSelectedCloud(value ?? '')
+          setSelectedNamespace(null)
+          setSelectedCustomUrl('')
+        }}
+        data-testid="CloudAutocomplete"
+      />
+    ),
+    [clouds, selectedCloud, setValue],
+  )
 
-  const renderSelectNamespace = useCallback((
-    { field }: ControllerRenderFunctionProps<typeof NAMESPACE_KEY>) => (
-    <Autocomplete
-      key="namespaceAutocomplete"
-      options={namespaces}
-      getOptionLabel={({ namespaceKey }: Namespace) => namespaceKey}
-      value={selectedNamespace}
-      renderOption={(props, { namespaceKey }) => (
-        <ListItem {...props} key={crypto.randomUUID()}>
-          {namespaceKey}
-        </ListItem>
-      )}
-      renderInput={(params) => (
-        <TextField
-          {...field}
-          {...params}
-          label="Namespace"
-          error={!isServiceNameValid}
-          helperText={!isServiceNameValid && `Service with ${serviceName} not found in selected namespace`}
-        />
-      )}
-      onChange={(_, value) => {
-        setValue(NAMESPACE_KEY, value?.namespaceKey ?? '')
-        setSelectedNamespace(value)
-        setSelectedCustomUrl('')
-      }}
-      data-testid="NamespaceAutocomplete"
-    />
-  ), [isServiceNameValid, namespaces, selectedNamespace, serviceName, setValue])
+  const renderSelectNamespace = useCallback(
+    ({ field }: ControllerRenderFunctionProps<typeof NAMESPACE_KEY>) => (
+      <Autocomplete
+        key="namespaceAutocomplete"
+        options={namespaces}
+        getOptionLabel={({ namespaceKey }: Namespace) => namespaceKey}
+        value={selectedNamespace}
+        renderOption={(props, { namespaceKey }) => (
+          <ListItem {...props} key={crypto.randomUUID()}>
+            {namespaceKey}
+          </ListItem>
+        )}
+        renderInput={(params) => (
+          <TextField
+            {...field}
+            {...params}
+            label="Namespace"
+            error={!isServiceNameValid}
+            helperText={!isServiceNameValid && `Service with ${serviceName} not found in selected namespace`}
+          />
+        )}
+        onChange={(_, value) => {
+          setValue(NAMESPACE_KEY, value?.namespaceKey ?? '')
+          setSelectedNamespace(value)
+          setSelectedCustomUrl('')
+        }}
+        data-testid="NamespaceAutocomplete"
+      />
+    ),
+    [isServiceNameValid, namespaces, selectedNamespace, serviceName, setValue],
+  )
 
-  const renderSelectService = useCallback((
-      { field }: ControllerRenderFunctionProps<typeof SERVICE_KEY>) => (
+  const renderSelectService = useCallback(
+    ({ field }: ControllerRenderFunctionProps<typeof SERVICE_KEY>) => (
       <Autocomplete
         disabled={true}
         key="serviceAutocomplete"
@@ -214,17 +218,15 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
             {serviceName}
           </ListItem>
         )}
-        renderInput={(params) => (
-          <TextField {...field} {...params} label="Service"/>
-        )}
+        renderInput={(params) => <TextField {...field} {...params} label="Service" />}
         data-testid="ServiceAutocomplete"
       />
     ),
     [selectedService, serviceName],
   )
 
-  const renderSelectUrl = useCallback((
-      { field }: ControllerRenderFunctionProps<typeof CUSTOM_SERVER_URL_KEY>) => (
+  const renderSelectUrl = useCallback(
+    ({ field }: ControllerRenderFunctionProps<typeof CUSTOM_SERVER_URL_KEY>) => (
       <TextField
         {...field}
         value={selectedCustomUrl ?? ''}
@@ -238,43 +240,25 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   )
 
   return (
-    <DialogForm
-      open={open}
-      onClose={() => setOpen(false)}
-      onSubmit={handleSubmit(onAddCustomServer)}
-    >
-      <DialogTitle>
-        Add Custom Server
-      </DialogTitle>
+    <DialogForm open={open} onClose={() => setOpen(false)} onSubmit={handleSubmit(onAddCustomServer)}>
+      <DialogTitle>Add Custom Server</DialogTitle>
 
       <DialogContent>
-        {isServiceNameExist && (<>
-          <Typography variant="subtitle2">Use Agent Proxy</Typography>
+        {isServiceNameExist && (
+          <>
+            <Typography variant="subtitle2">Use Agent Proxy</Typography>
 
-          <Controller
-            name={CLOUD_KEY}
-            control={control}
-            render={renderSelectCloud}
-          />
-          <Controller
-            name={NAMESPACE_KEY}
-            control={control}
-            render={renderSelectNamespace}
-          />
-          <Controller
-            name={SERVICE_KEY}
-            control={control}
-            render={renderSelectService}
-          />
-        </>)}
+            <Controller name={CLOUD_KEY} control={control} render={renderSelectCloud} />
+            <Controller name={NAMESPACE_KEY} control={control} render={renderSelectNamespace} />
+            <Controller name={SERVICE_KEY} control={control} render={renderSelectService} />
+          </>
+        )}
 
-        <Typography variant="subtitle2" mt={2}>Custom Server URL</Typography>
+        <Typography variant="subtitle2" mt={2}>
+          Custom Server URL
+        </Typography>
 
-        <Controller
-          name={CUSTOM_SERVER_URL_KEY}
-          control={control}
-          render={renderSelectUrl}
-        />
+        <Controller name={CUSTOM_SERVER_URL_KEY} control={control} render={renderSelectUrl} />
       </DialogContent>
 
       <DialogActions>

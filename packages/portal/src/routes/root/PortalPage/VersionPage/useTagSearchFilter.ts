@@ -24,12 +24,8 @@ export function useTagSearchFilter(): [Tag, SetTagFilter] {
 
   return useMemo(() => {
     const tag = param ?? ''
-    return [
-      tag,
-      value => setSearchParams({ [TAG_SEARCH_PARAM]: value ?? '' }, { replace: true }),
-    ]
+    return [tag, (value) => setSearchParams({ [TAG_SEARCH_PARAM]: value ?? '' }, { replace: true })]
   }, [param, setSearchParams])
-
 }
 
 const TAG_SEARCH_PARAM = 'tag'

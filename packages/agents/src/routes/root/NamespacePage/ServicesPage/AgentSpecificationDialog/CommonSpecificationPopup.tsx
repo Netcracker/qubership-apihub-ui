@@ -20,9 +20,7 @@ import { CardHeader } from '@mui/material'
 import { Header } from './internal/Header'
 import { useSpecRaw } from '../../useSpecRaw'
 import { useSpecViewer } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/useSpecViewer'
-import type {
-  SpecificationDialogDetail,
-} from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/SpecificationDialog'
+import type { SpecificationDialogDetail } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/SpecificationDialog'
 import { SpecificationPopup } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/SpecificationDialog'
 import type { Spec } from '@netcracker/qubership-apihub-ui-shared/entities/specs'
 import type { ProxyServer } from '@netcracker/qubership-apihub-ui-shared/entities/services'
@@ -43,59 +41,57 @@ export type CommonSpecificationPopupProps = {
   namespaceKey?: string
 }
 
-export const CommonSpecificationPopup: FC<CommonSpecificationPopupProps> = memo<CommonSpecificationPopupProps>(({
-  spec,
-  proxyServer,
-  value,
-  header,
-  isLoading,
-  headerComponent,
-  disableSpecViewToggler = false,
-  open,
-  setOpen,
-  agentId,
-  namespaceKey,
-}) => {
-  const [defaultValue, isDefaultValueLoading] = useSpecRaw({
-    serviceKey: spec.serviceKey,
-    specKey: spec.key,
-    enabled: !isGraphQlSpecType(spec.type),
-  })
+export const CommonSpecificationPopup: FC<CommonSpecificationPopupProps> = memo<CommonSpecificationPopupProps>(
+  ({
+    spec,
+    proxyServer,
+    value,
+    header,
+    isLoading,
+    headerComponent,
+    disableSpecViewToggler = false,
+    open,
+    setOpen,
+    agentId,
+    namespaceKey,
+  }) => {
+    const [defaultValue, isDefaultValueLoading] = useSpecRaw({
+      serviceKey: spec.serviceKey,
+      specKey: spec.key,
+      enabled: !isGraphQlSpecType(spec.type),
+    })
 
-  const defaultProxyServer = {
-    url: APIHUB_NC_BASE_PATH + spec?.proxyServerUrl,
-    description: spec?.serviceKey,
-  }
+    const defaultProxyServer = {
+      url: APIHUB_NC_BASE_PATH + spec?.proxyServerUrl,
+      description: spec?.serviceKey,
+    }
 
-  const defaultHeaderComponent = <CardHeader
-    sx={{ p: 0 }}
-    title={spec?.name}
-    subheader={<Header agentId={agentId} namespaceKey={namespaceKey} specKey={spec?.serviceKey}/>}
-  />
+    const defaultHeaderComponent = (
+      <CardHeader
+        sx={{ p: 0 }}
+        title={spec?.name}
+        subheader={<Header agentId={agentId} namespaceKey={namespaceKey} specKey={spec?.serviceKey} />}
+      />
+    )
 
-  const { viewer, viewModes, viewMode, setViewMode } = useSpecViewer({
-    spec: spec,
-    proxyServer: proxyServer || defaultProxyServer,
-    value: value || defaultValue,
-    isLoading: isLoading || isDefaultValueLoading,
-    header: header,
-  })
+    const { viewer, viewModes, viewMode, setViewMode } = useSpecViewer({
+      spec: spec,
+      proxyServer: proxyServer || defaultProxyServer,
+      value: value || defaultValue,
+      isLoading: isLoading || isDefaultValueLoading,
+      header: header,
+    })
 
-  const specificationPopupDetail: SpecificationDialogDetail = {
-    spec: spec,
-    viewer: viewer,
-    viewModes: viewModes,
-    viewMode: viewMode,
-    setViewMode: setViewMode,
-    headerComponent: headerComponent || defaultHeaderComponent,
-    disableSpecViewToggler: disableSpecViewToggler,
-  }
+    const specificationPopupDetail: SpecificationDialogDetail = {
+      spec: spec,
+      viewer: viewer,
+      viewModes: viewModes,
+      viewMode: viewMode,
+      setViewMode: setViewMode,
+      headerComponent: headerComponent || defaultHeaderComponent,
+      disableSpecViewToggler: disableSpecViewToggler,
+    }
 
-  return (
-    <SpecificationPopup
-      open={open}
-      setOpen={setOpen}
-      detail={specificationPopupDetail}
-    />
-  )
-})
+    return <SpecificationPopup open={open} setOpen={setOpen} detail={specificationPopupDetail} />
+  },
+)

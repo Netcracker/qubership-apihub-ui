@@ -25,7 +25,7 @@ export function usePackageSearchParam(): [Key | undefined, SetPackageSearchParam
   const setSearchParams = useSetSearchParams()
 
   return useMemo(
-    () => [param, value => setSearchParams({ [PACKAGE_SEARCH_PARAM]: value ?? '' }, { replace: true })],
+    () => [param, (value) => setSearchParams({ [PACKAGE_SEARCH_PARAM]: value ?? '' }, { replace: true })],
     [param, setSearchParams],
   )
 }

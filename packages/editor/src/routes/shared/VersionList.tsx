@@ -31,18 +31,10 @@ export const VersionList = memo<VersionListProps>(({ versions, selectedVersion, 
   return (
     <List disablePadding sx={{ height: '100%' }}>
       {versions?.map(({ key, status }) => (
-        <ListItem
-          disablePadding
-          key={key}
-          secondaryAction={action}
-        >
-          <ListItemButton
-            key={key}
-            selected={selectedVersion === key}
-            onClick={() => onSelectVersion?.(key)}
-          >
-            <ListItemText primary={key}/>
-            <CustomChip value={status}/>
+        <ListItem disablePadding key={key} secondaryAction={action}>
+          <ListItemButton key={key} selected={selectedVersion === key} onClick={() => onSelectVersion?.(key)}>
+            <ListItemText primary={key} />
+            <CustomChip value={status} />
           </ListItemButton>
         </ListItem>
       ))}

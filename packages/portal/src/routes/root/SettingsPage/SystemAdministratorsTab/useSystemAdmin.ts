@@ -36,27 +36,24 @@ export function useSystemAdmins(): [SystemAdmins | null, IsLoading, Error | null
     select: toSystemAdmins,
   })
 
-  return [
-    useMemo(() => data ?? null, [data]),
-    isLoading,
-    error,
-  ]
+  return [useMemo(() => data ?? null, [data]), isLoading, error]
 }
 
 export function useInvalidateSystemAdmins(): InvalidateQuery<void> {
   const client = useQueryClient()
 
-  return () => client.invalidateQueries({
-    queryKey: [SYSTEM_ADMINISTRATORS_QUERY_KEY],
-    refetchType: 'all',
-  })
+  return () =>
+    client.invalidateQueries({
+      queryKey: [SYSTEM_ADMINISTRATORS_QUERY_KEY],
+      refetchType: 'all',
+    })
 }
 
 export function useAddSystemAdmin(): [AddSystemAdminFn, IsLoading, Error | null] {
   const invalidateSystemAdmins = useInvalidateSystemAdmins()
 
   const { mutate, isLoading, error } = useMutation<SystemAdminsDto, Error, Key>({
-    mutationFn: userId => addSystemAdmin(toAddSystemAdminDto(userId)),
+    mutationFn: (userId) => addSystemAdmin(toAddSystemAdminDto(userId)),
     onSuccess: () => {
       invalidateSystemAdmins()
     },
@@ -69,7 +66,7 @@ export function useDeleteSystemAdmin(): [DeleteSystemAdminFn, IsLoading] {
   const invalidateSystemAdmins = useInvalidateSystemAdmins()
 
   const { mutate, isLoading } = useMutation<void, Error, Key>({
-    mutationFn: userId => deleteSystemAdmin(userId),
+    mutationFn: (userId) => deleteSystemAdmin(userId),
     onSuccess: () => {
       invalidateSystemAdmins()
     },
@@ -84,18 +81,14 @@ export async function getSystemAdmins(): Promise<SystemAdminsDto> {
   })
 }
 
-export async function addSystemAdmin(
-  value: AddSystemAdmin,
-): Promise<SystemAdminsDto> {
+export async function addSystemAdmin(value: AddSystemAdmin): Promise<SystemAdminsDto> {
   return await requestJson<SystemAdminsDto>('/api/v2/admins', {
     method: 'POST',
     body: JSON.stringify(value),
   })
 }
 
-export async function deleteSystemAdmin(
-  userKey: Key,
-): Promise<void> {
+export async function deleteSystemAdmin(userKey: Key): Promise<void> {
   const userId = encodeURIComponent(userKey)
 
   return await requestVoid(`/api/v2/admins/${userId}`, {
@@ -110,7 +103,7 @@ export function toAddSystemAdminDto(userId: Key): AddSystemAdmin {
 }
 
 export function toSystemAdmins(value: SystemAdminsDto): SystemAdmins {
-  return value?.admins.map(admin => toSystemAdmin(admin))
+  return value?.admins.map((admin) => toSystemAdmin(admin))
 }
 
 export function toSystemAdmin(value: SystemAdminDto): SystemAdmin {

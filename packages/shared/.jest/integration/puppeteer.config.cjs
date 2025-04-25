@@ -47,7 +47,7 @@ module.exports = {
       '--no-sandbox',
       '--force-color-profile=srgb',
       '--disable-web-security',
-      '--disable-dev-shm-usage'
-    ]
-  }
+      '--disable-dev-shm-usage',
+    ],
+  },
 }

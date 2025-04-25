@@ -44,21 +44,21 @@ export const ConfigurePackageVersionPage: FC = memo(() => {
       <FilesProvider enabled={isPackage}>
         <NoPackageVersionPlaceholder packageObject={packageObject}>
           <LayoutWithToolbar
-            toolbar={<PackageVersionPageToolbar/>}
-            body={<PackageVersionPageBody menuItem={menuItem as PackageVersionPageRoute}/>}
+            toolbar={<PackageVersionPageToolbar />}
+            body={<PackageVersionPageBody menuItem={menuItem as PackageVersionPageRoute} />}
           />
         </NoPackageVersionPlaceholder>
-        <DeleteFileDialog/>
-        <EditFileLabelsDialog/>
-        <PublishPackageVersionDialog/>
-        <PortalSpecificationDialog/>
+        <DeleteFileDialog />
+        <EditFileLabelsDialog />
+        <PublishPackageVersionDialog />
+        <PortalSpecificationDialog />
       </FilesProvider>
     </CurrentPackageProvider>
   )
 })
 
 const PATH_PARAM_TO_SUB_PAGE_MAP: Record<PackageVersionPageRoute, ReactNode> = {
-  [CONFIGURATION_PAGE]: <VersionConfigurationSubPage/>,
+  [CONFIGURATION_PAGE]: <VersionConfigurationSubPage />,
 }
 
 type PackageVersionPageBodyProps = {
@@ -66,10 +66,5 @@ type PackageVersionPageBodyProps = {
 }
 
 const PackageVersionPageBody: FC<PackageVersionPageBodyProps> = memo<PackageVersionPageBodyProps>(({ menuItem }) => {
-  return (
-    <LayoutWithTabs
-      tabs={<PackageVersionNavigationMenu/>}
-      body={PATH_PARAM_TO_SUB_PAGE_MAP[menuItem]}
-    />
-  )
+  return <LayoutWithTabs tabs={<PackageVersionNavigationMenu />} body={PATH_PARAM_TO_SUB_PAGE_MAP[menuItem]} />
 })

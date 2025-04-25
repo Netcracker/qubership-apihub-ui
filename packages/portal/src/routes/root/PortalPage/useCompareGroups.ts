@@ -32,12 +32,7 @@ export type UseCompareGroupsOptions = Partial<{
 }>
 
 export function useCompareGroups(options: UseCompareGroupsOptions): [VersionsComparison, IsLoading] {
-  const {
-    originPackageKey,
-    changedVersionKey,
-    currentGroup,
-    previousGroup,
-  } = options
+  const { originPackageKey, changedVersionKey, currentGroup, previousGroup } = options
 
   const [changesSummary, isContextValid, setChangesSummary] = useChangesSummaryContext(options)
 

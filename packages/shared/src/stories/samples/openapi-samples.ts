@@ -31,7 +31,7 @@ export const openapiSample = {
       url: 'http://{server}',
       variables: {
         server: {
-          'default': 'server:port',
+          default: 'server:port',
         },
       },
     },
@@ -43,7 +43,7 @@ export const openapiSample = {
         parameters: [
           {
             name: 'first',
-            'in': 'path',
+            in: 'path',
             required: true,
             schema: {
               type: 'string',
@@ -51,7 +51,7 @@ export const openapiSample = {
           },
           {
             name: 'second',
-            'in': 'path',
+            in: 'path',
             required: true,
             schema: {
               type: 'string',
@@ -157,7 +157,7 @@ export const openapiChangedSample = {
       url: 'http://{server}',
       variables: {
         server: {
-          'default': 'server:port',
+          default: 'server:port',
         },
       },
     },
@@ -169,7 +169,7 @@ export const openapiChangedSample = {
         parameters: [
           {
             name: 'id',
-            'in': 'query',
+            in: 'query',
             required: true,
             schema: {
               type: 'number',
@@ -177,7 +177,7 @@ export const openapiChangedSample = {
           },
           {
             name: 'first',
-            'in': 'path',
+            in: 'path',
             required: true,
             schema: {
               type: 'string',
@@ -185,7 +185,7 @@ export const openapiChangedSample = {
           },
           {
             name: 'second',
-            'in': 'path',
+            in: 'path',
             required: true,
             schema: {
               type: 'string',

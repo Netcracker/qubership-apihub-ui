@@ -42,19 +42,29 @@ export type ActivityHistoryQueryResult = {
   isLoading: IsLoading
 }
 
-export function useActivityHistory(options: Partial<{
-  kind: PackageKind[]
-  limit: number
-  onlyFavorite: boolean
-  textFilter: string
-  types: ReadonlyArray<ActivityType>
-  page: number
-  onlyShared: boolean
-  enabled: boolean
-}>): ActivityHistoryQueryResult {
+export function useActivityHistory(
+  options: Partial<{
+    kind: PackageKind[]
+    limit: number
+    onlyFavorite: boolean
+    textFilter: string
+    types: ReadonlyArray<ActivityType>
+    page: number
+    onlyShared: boolean
+    enabled: boolean
+  }>,
+): ActivityHistoryQueryResult {
   const activityTypesKey = generateTypeFiltersKey(options?.types)
   const { data, isLoading } = useQuery<ActivityHistoryDto, Error, Activities>({
-    queryKey: [ACTIVITY_HISTORY_QUERY_KEY, options.textFilter, options.onlyShared, options.onlyFavorite, activityTypesKey, options.page, options.limit],
+    queryKey: [
+      ACTIVITY_HISTORY_QUERY_KEY,
+      options.textFilter,
+      options.onlyShared,
+      options.onlyFavorite,
+      activityTypesKey,
+      options.page,
+      options.limit,
+    ],
     queryFn: () => fetchActivityHistory(options),
     select: toActivityHistory,
     cacheTime: 1000,
@@ -75,20 +85,18 @@ export function usePackageActivityHistory(options: {
   types?: ReadonlyArray<ActivityType>
   enabled: boolean
 }): ActivityHistoryQueryResult {
-  const {
-    packageKey,
-    includeRefs,
-    textFilter = '',
-    types = [],
-    enabled = false,
-  } = options ?? {}
+  const { packageKey, includeRefs, textFilter = '', types = [], enabled = false } = options ?? {}
   const activityTypesKey = generateTypeFiltersKey(types)
   const { data, isLoading } = useQuery<ActivityHistoryDto, Error, Activities>({
     queryKey: [PACKAGE_ACTIVITY_HISTORY_QUERY_KEY, packageKey, textFilter, includeRefs, activityTypesKey],
-    queryFn: ({ signal }) => fetchPackageActivityHistory({
-      ...options,
-      packageKey: packageKey!,
-    }, signal),
+    queryFn: ({ signal }) =>
+      fetchPackageActivityHistory(
+        {
+          ...options,
+          packageKey: packageKey!,
+        },
+        signal,
+      ),
     select: toActivityHistory,
     enabled: !!packageKey && enabled,
     cacheTime: 1000,
@@ -101,15 +109,17 @@ export function usePackageActivityHistory(options: {
   }
 }
 
-async function fetchActivityHistory(options: Partial<{
-  kind: PackageKind[]
-  limit: number
-  onlyFavorite: boolean
-  textFilter: string
-  types: ReadonlyArray<ActivityType>
-  page: number
-  onlyShared: boolean
-}>): Promise<ActivityHistoryDto> {
+async function fetchActivityHistory(
+  options: Partial<{
+    kind: PackageKind[]
+    limit: number
+    onlyFavorite: boolean
+    textFilter: string
+    types: ReadonlyArray<ActivityType>
+    page: number
+    onlyShared: boolean
+  }>,
+): Promise<ActivityHistoryDto> {
   const searchParams = optionalSearchParams({
     kind: { value: options.kind },
     limit: { value: options.limit },

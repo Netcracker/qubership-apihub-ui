@@ -47,135 +47,145 @@ type DiscoverServicesStepTableProps = {
   isLoading: boolean
 }
 
-export const DiscoverServicesStepTable: FC<DiscoverServicesStepTableProps> = memo<DiscoverServicesStepTableProps>(({
-  value,
-  isLoading,
-}) => {
-  const [containerWidth, setContainerWidth] = useState(DEFAULT_CONTAINER_WIDTH)
-  const [columnSizingInfo, setColumnSizingInfo] = useState<ColumnSizingInfoState>()
-  const [, setHandlingColumnSizing] = useState<ColumnSizingState>()
+export const DiscoverServicesStepTable: FC<DiscoverServicesStepTableProps> = memo<DiscoverServicesStepTableProps>(
+  ({ value, isLoading }) => {
+    const [containerWidth, setContainerWidth] = useState(DEFAULT_CONTAINER_WIDTH)
+    const [columnSizingInfo, setColumnSizingInfo] = useState<ColumnSizingInfoState>()
+    const [, setHandlingColumnSizing] = useState<ColumnSizingState>()
 
-  const tableContainerRef = useRef<HTMLDivElement>(null)
-  useResizeObserver(tableContainerRef, setContainerWidth)
+    const tableContainerRef = useRef<HTMLDivElement>(null)
+    useResizeObserver(tableContainerRef, setContainerWidth)
 
-  const actualColumnSizing = useColumnsSizing({
-    containerWidth: containerWidth,
-    columnModels: COLUMNS_MODELS,
-    columnSizingInfo: columnSizingInfo,
-    defaultMinColumnSize: 180,
-  })
-
-  const columns: ColumnDef<TableData>[] = useMemo(() => [
-    {
-      id: SERVICE_OR_DOCUMENTATION_COLUMN_ID,
-      header: 'Service / Documentation',
-      cell: ({ row }) => <ServiceOrDocumentationTableCell value={row}/>,
-    },
-    {
-      id: SERVICE_LABELS_COLUMN_ID,
-      header: 'Labels',
-      cell: ({ row }) => <ServiceLabelsTableCell value={row}/>,
-    },
-    {
-      id: BASELINE_PACKAGE_COLUMN_ID,
-      header: 'Baseline Package',
-      cell: ({ row }) => <BaselinePackageTableCell value={row}/>,
-    },
-    {
-      id: VIEW_PACKAGE_URL_COLUMN_ID,
-      cell: ({ row: { original: { service, viewPackageUrl } } }) => {
-        if (service && viewPackageUrl) {
-          return (
-            <Button
-              data-testid="ViewPackageButton"
-              sx={{ visibility: 'hidden', p: 0, height: 10, whiteSpace: 'nowrap' }}
-              className="hoverable"
-              component="a"
-              variant="text"
-              href={viewPackageUrl}
-              target="_blank"
-              startIcon={<ArrowOutwardRoundedIcon/>}
-            >
-              View Package
-            </Button>
-          )
-        }
-
-        return null
-      },
-    },
-  ], [])
-
-  const data: TableData[] = useMemo(() => value.map(service => {
-    return ({
-      service: service,
-      viewPackageUrl: service.baseline?.url,
-      children: service.specs?.map(spec => ({ spec })),
+    const actualColumnSizing = useColumnsSizing({
+      containerWidth: containerWidth,
+      columnModels: COLUMNS_MODELS,
+      columnSizingInfo: columnSizingInfo,
+      defaultMinColumnSize: 180,
     })
-  }), [value])
 
-  const [expanded, setExpanded] = useState<ExpandedState>({})
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-  const { getHeaderGroups, getRowModel, setColumnSizing } = useReactTable({
-    data: data,
-    columns: columns,
-    columnResizeMode: 'onChange',
-    state: { expanded, columnVisibility },
-    onExpandedChange: setExpanded,
-    onColumnVisibilityChange: setColumnVisibility,
-    onColumnSizingChange: setHandlingColumnSizing as OnChangeFn<ColumnSizingState>,
-    onColumnSizingInfoChange: setColumnSizingInfo as OnChangeFn<ColumnSizingInfoState>,
-    getSubRows: row => row.children,
-    getCoreRowModel: getCoreRowModel(),
-    getExpandedRowModel: getExpandedRowModel(),
-  })
-
-  useEffect(() => setColumnSizing(actualColumnSizing), [setColumnSizing, actualColumnSizing])
-
-  return (
-    <TableContainer sx={{ mt: 1 }} ref={tableContainerRef}>
-      <Table>
-        <TableHead>
-          {getHeaderGroups().map(headerGroup => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header, index) => (
-                <TableCell
-                  key={header.id}
-                  align="left"
-                  width={actualColumnSizing ? actualColumnSizing[header.id] : header.getSize()}
-                  sx={{
-                    '&:hover': {
-                      borderRight: '2px solid rgba(224, 224, 224, 1)',
-                    },
-                  }}
+    const columns: ColumnDef<TableData>[] = useMemo(
+      () => [
+        {
+          id: SERVICE_OR_DOCUMENTATION_COLUMN_ID,
+          header: 'Service / Documentation',
+          cell: ({ row }) => <ServiceOrDocumentationTableCell value={row} />,
+        },
+        {
+          id: SERVICE_LABELS_COLUMN_ID,
+          header: 'Labels',
+          cell: ({ row }) => <ServiceLabelsTableCell value={row} />,
+        },
+        {
+          id: BASELINE_PACKAGE_COLUMN_ID,
+          header: 'Baseline Package',
+          cell: ({ row }) => <BaselinePackageTableCell value={row} />,
+        },
+        {
+          id: VIEW_PACKAGE_URL_COLUMN_ID,
+          cell: ({
+            row: {
+              original: { service, viewPackageUrl },
+            },
+          }) => {
+            if (service && viewPackageUrl) {
+              return (
+                <Button
+                  data-testid="ViewPackageButton"
+                  sx={{ visibility: 'hidden', p: 0, height: 10, whiteSpace: 'nowrap' }}
+                  className="hoverable"
+                  component="a"
+                  variant="text"
+                  href={viewPackageUrl}
+                  target="_blank"
+                  startIcon={<ArrowOutwardRoundedIcon />}
                 >
-                  {flexRender(header.column.columnDef.header, header.getContext())}
-                  {index !== headerGroup.headers.length - 1 && <ColumnDelimiter header={header} resizable={true}/>}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableHead>
-        <TableBody>
-          {getRowModel().rows.map(row => (
-            <TableRow key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <TableCell
-                  data-testid={`Cell-${cell.column.id}`}
-                  key={cell.column.id}
-                  align={cell.column.id === VIEW_PACKAGE_URL_COLUMN_ID ? 'right' : 'left'}
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-          {isLoading && <TableSkeleton/>}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  )
-})
+                  View Package
+                </Button>
+              )
+            }
+
+            return null
+          },
+        },
+      ],
+      [],
+    )
+
+    const data: TableData[] = useMemo(
+      () =>
+        value.map((service) => {
+          return {
+            service: service,
+            viewPackageUrl: service.baseline?.url,
+            children: service.specs?.map((spec) => ({ spec })),
+          }
+        }),
+      [value],
+    )
+
+    const [expanded, setExpanded] = useState<ExpandedState>({})
+    const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+    const { getHeaderGroups, getRowModel, setColumnSizing } = useReactTable({
+      data: data,
+      columns: columns,
+      columnResizeMode: 'onChange',
+      state: { expanded, columnVisibility },
+      onExpandedChange: setExpanded,
+      onColumnVisibilityChange: setColumnVisibility,
+      onColumnSizingChange: setHandlingColumnSizing as OnChangeFn<ColumnSizingState>,
+      onColumnSizingInfoChange: setColumnSizingInfo as OnChangeFn<ColumnSizingInfoState>,
+      getSubRows: (row) => row.children,
+      getCoreRowModel: getCoreRowModel(),
+      getExpandedRowModel: getExpandedRowModel(),
+    })
+
+    useEffect(() => setColumnSizing(actualColumnSizing), [setColumnSizing, actualColumnSizing])
+
+    return (
+      <TableContainer sx={{ mt: 1 }} ref={tableContainerRef}>
+        <Table>
+          <TableHead>
+            {getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header, index) => (
+                  <TableCell
+                    key={header.id}
+                    align="left"
+                    width={actualColumnSizing ? actualColumnSizing[header.id] : header.getSize()}
+                    sx={{
+                      '&:hover': {
+                        borderRight: '2px solid rgba(224, 224, 224, 1)',
+                      },
+                    }}
+                  >
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                    {index !== headerGroup.headers.length - 1 && <ColumnDelimiter header={header} resizable={true} />}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableHead>
+          <TableBody>
+            {getRowModel().rows.map((row) => (
+              <TableRow key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell
+                    data-testid={`Cell-${cell.column.id}`}
+                    key={cell.column.id}
+                    align={cell.column.id === VIEW_PACKAGE_URL_COLUMN_ID ? 'right' : 'left'}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+            {isLoading && <TableSkeleton />}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    )
+  },
+)
 
 const SERVICE_OR_DOCUMENTATION_COLUMN_ID = 'service-or-documentation'
 const SERVICE_LABELS_COLUMN_ID = 'service-labels'
@@ -197,20 +207,20 @@ type TableData = Partial<{
 }>
 
 const TableSkeleton: FC = memo(() => {
-  return createComponents(<RowSkeleton/>, DEFAULT_NUMBER_SKELETON_ROWS)
+  return createComponents(<RowSkeleton />, DEFAULT_NUMBER_SKELETON_ROWS)
 })
 
 const RowSkeleton: FC = memo(() => {
   return (
     <TableRow>
       <TableCell>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
-      <TableCell/>
-      <TableCell/>
+      <TableCell />
+      <TableCell />
     </TableRow>
   )
 })

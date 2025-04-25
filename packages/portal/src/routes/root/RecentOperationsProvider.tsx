@@ -23,9 +23,7 @@ export const RecentOperationsProvider: FC<PropsWithChildren> = memo<PropsWithChi
 
   return (
     <RecentOperationsContext.Provider value={operations}>
-      <SetRecentOperationsContext.Provider value={setOperations}>
-        {children}
-      </SetRecentOperationsContext.Provider>
+      <SetRecentOperationsContext.Provider value={setOperations}>{children}</SetRecentOperationsContext.Provider>
     </RecentOperationsContext.Provider>
   )
 })

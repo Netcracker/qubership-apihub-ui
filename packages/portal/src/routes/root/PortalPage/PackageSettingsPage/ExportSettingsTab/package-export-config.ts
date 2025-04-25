@@ -18,9 +18,9 @@ export const OAS_EXTENSION_KIND_MIXED = 'mixed' as const
 export const OAS_EXTENSION_KIND_DIRECT = 'direct' as const
 
 export type OasSettingsExtensionKinds =
-  typeof OAS_EXTENSION_KIND_INHERITED |
-  typeof OAS_EXTENSION_KIND_MIXED |
-  typeof OAS_EXTENSION_KIND_DIRECT
+  | typeof OAS_EXTENSION_KIND_INHERITED
+  | typeof OAS_EXTENSION_KIND_MIXED
+  | typeof OAS_EXTENSION_KIND_DIRECT
 
 export type InheritanceSource = {
   packageName: string
@@ -55,7 +55,7 @@ export const toOasSettingsExtensions = (config: ExportConfig, packageKey: Key): 
  * @returns Array of OAS extension name strings
  */
 export const toOasExtensionNames = (extensions: OasSettingsExtensions): string[] => {
-  return extensions.map(extension => extension.name)
+  return extensions.map((extension) => extension.name)
 }
 
 /**
@@ -63,12 +63,14 @@ export const toOasExtensionNames = (extensions: OasSettingsExtensions): string[]
  * @param extensions The extensions to separate
  * @returns Object containing arrays of inherited and non-inherited extensions
  */
-export const separateExtensionsByInheritance = (extensions: OasSettingsExtensions): {
+export const separateExtensionsByInheritance = (
+  extensions: OasSettingsExtensions,
+): {
   inheritedExtensions: OasSettingsExtensions
   nonInheritedExtensions: OasSettingsExtensions
 } => {
-  const inheritedExtensions = extensions.filter(extension => extension.kind === OAS_EXTENSION_KIND_INHERITED)
-  const nonInheritedExtensions = extensions.filter(extension => extension.kind !== OAS_EXTENSION_KIND_INHERITED)
+  const inheritedExtensions = extensions.filter((extension) => extension.kind === OAS_EXTENSION_KIND_INHERITED)
+  const nonInheritedExtensions = extensions.filter((extension) => extension.kind !== OAS_EXTENSION_KIND_INHERITED)
 
   return {
     inheritedExtensions,
@@ -94,10 +96,12 @@ const toOasExtension = (oasExtension: OasExtension, packageId: Key): OasSettings
     key: `${oasExtension.packageKey}-${oasExtension.oasExtension}`,
     name: oasExtension.oasExtension,
     kind: OAS_EXTENSION_KIND_INHERITED,
-    inheritances: [{
-      packageName: oasExtension.packageName,
-      packageKind: oasExtension.packageKind,
-    }],
+    inheritances: [
+      {
+        packageName: oasExtension.packageName,
+        packageKind: oasExtension.packageKind,
+      },
+    ],
   }
 }
 
@@ -111,15 +115,19 @@ const categorizeExtensionsBySource = (
   direct: OasSettingsExtensions
   inherited: OasSettingsExtensions
 } => {
-  return oasExtensions.reduce((result, extension) => {
-    const mappedExtension = toOasExtension(extension, packageId)
-    const categoryKey = mappedExtension.kind === OAS_EXTENSION_KIND_INHERITED ? OAS_EXTENSION_KIND_INHERITED : OAS_EXTENSION_KIND_DIRECT
+  return oasExtensions.reduce(
+    (result, extension) => {
+      const mappedExtension = toOasExtension(extension, packageId)
+      const categoryKey =
+        mappedExtension.kind === OAS_EXTENSION_KIND_INHERITED ? OAS_EXTENSION_KIND_INHERITED : OAS_EXTENSION_KIND_DIRECT
 
-    return {
-      ...result,
-      [categoryKey]: [...result[categoryKey], mappedExtension],
-    }
-  }, { direct: [] as OasSettingsExtension[], inherited: [] as OasSettingsExtension[] })
+      return {
+        ...result,
+        [categoryKey]: [...result[categoryKey], mappedExtension],
+      }
+    },
+    { direct: [] as OasSettingsExtension[], inherited: [] as OasSettingsExtension[] },
+  )
 }
 
 const oasExtensionNameProperty = 'name'
@@ -127,12 +135,10 @@ const oasExtensionNameProperty = 'name'
 /**
  * Combines inherited OAS extensions with the same name, merging their inheritances
  */
-const combineInheritedExtensions = (
-  inheritedExtensions: OasSettingsExtensions,
-): OasSettingsExtensions => {
+const combineInheritedExtensions = (inheritedExtensions: OasSettingsExtensions): OasSettingsExtensions => {
   const grouped = groupBy(inheritedExtensions, oasExtensionNameProperty)
 
-  return Object.values(grouped).map(extensions => {
+  return Object.values(grouped).map((extensions) => {
     if (extensions.length === 1) return extensions[0]
 
     const [baseExtension] = extensions
@@ -151,12 +157,12 @@ const combineInheritedExtensions = (
  * Collects all inheritance sources from multiple extensions
  */
 const collectInheritanceSources = (extensions: OasSettingsExtensions): InheritanceSources => {
-  return extensions.flatMap(extension =>
-    (hasInheritances(extension) ? extension.inheritances : []),
-  )
+  return extensions.flatMap((extension) => (hasInheritances(extension) ? extension.inheritances : []))
 }
 
-const hasInheritances = (extension: OasSettingsExtension): extension is OasSettingsExtension & {
+const hasInheritances = (
+  extension: OasSettingsExtension,
+): extension is OasSettingsExtension & {
   inheritances: InheritanceSources
 } => {
   return isNotEmpty(extension.inheritances)
@@ -169,18 +175,11 @@ const mergeCategorizedExtensions = (
   inherited: OasSettingsExtensions,
   direct: OasSettingsExtensions,
 ): OasSettingsExtensions => {
-  const initialMap = new Map(
-    inherited.map(extension => [extension.name, extension]),
-  )
+  const initialMap = new Map(inherited.map((extension) => [extension.name, extension]))
 
-  direct.forEach(directExtension => {
+  direct.forEach((directExtension) => {
     const existingExtension = initialMap.get(directExtension.name)
-    initialMap.set(
-      directExtension.name,
-      existingExtension
-        ? createMixedExtension(existingExtension)
-        : directExtension,
-    )
+    initialMap.set(directExtension.name, existingExtension ? createMixedExtension(existingExtension) : directExtension)
   })
 
   return Array.from(initialMap.values())

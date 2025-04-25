@@ -48,16 +48,10 @@ export function useInvalidateBranches(): InvalidateQuery<void> {
 
 export function useIsBranchExists(branchName: string = ''): boolean {
   const branches = useBranches(branchName)
-  return useMemo(
-    () => !!branches.find(({ name }) => name === branchName),
-    [branchName, branches],
-  )
+  return useMemo(() => !!branches.find(({ name }) => name === branchName), [branchName, branches])
 }
 
-async function getBranches(
-  projectKey: Key,
-  textFilter?: string,
-): Promise<BranchesDto> {
+async function getBranches(projectKey: Key, textFilter?: string): Promise<BranchesDto> {
   const projectId = encodeURIComponent(projectKey)
 
   const searchParams = optionalSearchParams({

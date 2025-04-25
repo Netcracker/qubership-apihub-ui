@@ -28,65 +28,59 @@ export type SnapshotsSubTableProps = {
   lastColumnId: string
 }
 
-export const SnapshotsSubTable: FC<SnapshotsSubTableProps> = memo<SnapshotsSubTableProps>(({
-  value: {
-    id,
-    original,
-    getVisibleCells,
-  }, lastColumnId,
-}) => {
-  const { snapshotPublicationInfo, isLoading: isSnapshotPublicationInfoLoading } = useSnapshotPublicationInfo({
-    snapshotKey: original.snapshot!.versionKey,
-  })
+export const SnapshotsSubTable: FC<SnapshotsSubTableProps> = memo<SnapshotsSubTableProps>(
+  ({ value: { id, original, getVisibleCells }, lastColumnId }) => {
+    const { snapshotPublicationInfo, isLoading: isSnapshotPublicationInfoLoading } = useSnapshotPublicationInfo({
+      snapshotKey: original.snapshot!.versionKey,
+    })
 
-  if (isSnapshotPublicationInfoLoading) {
-    return (
-      <TableRow key={id}>
-        {getVisibleCells().map(({ column: { id } }) => (
-          <TableCell key={id}>
-            <Skeleton variant="text"/>
-          </TableCell>
-        ))}
-      </TableRow>
-    )
-  }
-
-  if (isEmpty(snapshotPublicationInfo.services)) {
-    return (
-      <TableRow key={id}>
-        <TableCell colSpan={getVisibleCells().length}>
-          <Typography noWrap variant="inherit" color="#8F9EB4" pl={5}>No services</Typography>
-        </TableCell>
-      </TableRow>
-    )
-  }
-
-  return (
-    <>
-      {snapshotPublicationInfo.services.map(service => (
-        <TableRow key={`${id}-${service.key}`}>
-          {getVisibleCells().map(({ column: { id, columnDef }, getContext }) => (
-            <TableCell
-              data-testid={`Cell-${id}`}
-              key={id}
-              align={id === lastColumnId ? 'right' : 'left'}
-            >
-              {flexRender(columnDef.cell, {
-                ...getContext(),
-                row: {
-                  ...getContext().row,
-                  original: {
-                    servicePublishInfo: service,
-                    changeSummary: service.changeSummary,
-                    bwcErrors: service.viewChangesUrl ? service.changeSummary?.breaking : undefined,
-                    viewChangesUrl: service.viewChangesUrl,
-                  },
-                },
-              })}
+    if (isSnapshotPublicationInfoLoading) {
+      return (
+        <TableRow key={id}>
+          {getVisibleCells().map(({ column: { id } }) => (
+            <TableCell key={id}>
+              <Skeleton variant="text" />
             </TableCell>
           ))}
         </TableRow>
-      ))}
-    </>
-  )
-})
+      )
+    }
+
+    if (isEmpty(snapshotPublicationInfo.services)) {
+      return (
+        <TableRow key={id}>
+          <TableCell colSpan={getVisibleCells().length}>
+            <Typography noWrap variant="inherit" color="#8F9EB4" pl={5}>
+              No services
+            </Typography>
+          </TableCell>
+        </TableRow>
+      )
+    }
+
+    return (
+      <>
+        {snapshotPublicationInfo.services.map((service) => (
+          <TableRow key={`${id}-${service.key}`}>
+            {getVisibleCells().map(({ column: { id, columnDef }, getContext }) => (
+              <TableCell data-testid={`Cell-${id}`} key={id} align={id === lastColumnId ? 'right' : 'left'}>
+                {flexRender(columnDef.cell, {
+                  ...getContext(),
+                  row: {
+                    ...getContext().row,
+                    original: {
+                      servicePublishInfo: service,
+                      changeSummary: service.changeSummary,
+                      bwcErrors: service.viewChangesUrl ? service.changeSummary?.breaking : undefined,
+                      viewChangesUrl: service.viewChangesUrl,
+                    },
+                  },
+                })}
+              </TableCell>
+            ))}
+          </TableRow>
+        ))}
+      </>
+    )
+  },
+)

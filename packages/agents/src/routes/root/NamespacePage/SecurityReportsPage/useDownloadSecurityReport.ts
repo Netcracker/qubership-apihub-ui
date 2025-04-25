@@ -27,18 +27,12 @@ import { API_V2, API_V3 } from '@netcracker/qubership-apihub-ui-shared/utils/req
 
 export function useDownloadSecurityReport(): [DownloadSecurityReportFunction, IsLoading] {
   const { mutate, isLoading } = useMutation<void, Error, Options>({
-    mutationFn: ({
-      processKey,
-      type,
-    }) => downloadSecurityReport(processKey!, type),
+    mutationFn: ({ processKey, type }) => downloadSecurityReport(processKey!, type),
   })
   return [mutate, isLoading]
 }
 
-export const downloadSecurityReport = async (
-  processKey: Key,
-  type: SecurityReportType,
-): Promise<void> => {
+export const downloadSecurityReport = async (processKey: Key, type: SecurityReportType): Promise<void> => {
   const processId = encodeURIComponent(processKey)
 
   const [reportPath, apiPath] = reportTypeToPath[type]
@@ -47,16 +41,14 @@ export const downloadSecurityReport = async (
     generatePath(pathPattern, { reportPath, processId }),
     {
       method: 'GET',
-    }, {
+    },
+    {
       basePath: `${APIHUB_NC_BASE_PATH}${apiPath}`,
     },
   )
 
-  const getFilename = (): string => response.headers
-    .get('content-disposition')!
-    .split('filename=')[1]
-    .split(';')[0]
-    .slice(1, -1)
+  const getFilename = (): string =>
+    response.headers.get('content-disposition')!.split('filename=')[1].split(';')[0].slice(1, -1)
 
   fileDownload(await response.blob(), getFilename())
 }

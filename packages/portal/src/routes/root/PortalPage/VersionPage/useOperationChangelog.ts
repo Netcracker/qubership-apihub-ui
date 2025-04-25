@@ -15,11 +15,12 @@
  */
 
 import { useQuery } from '@tanstack/react-query'
-import type {
-  UseOperationChangelogOptions,
-} from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget/api/getOperationChangelog'
+import type { UseOperationChangelogOptions } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget/api/getOperationChangelog'
 import { getOperationChangeLog } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget/api/getOperationChangelog'
-import type { OperationChanges, OperationChangesDto } from '@netcracker/qubership-apihub-ui-shared/entities/operation-changelog'
+import type {
+  OperationChanges,
+  OperationChangesDto,
+} from '@netcracker/qubership-apihub-ui-shared/entities/operation-changelog'
 import { toOperationChanges } from '@netcracker/qubership-apihub-ui-shared/entities/operation-changelog'
 import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { useMemo } from 'react'
@@ -39,10 +40,8 @@ export function useOperationChangelog(options: UseOperationChangelogOptions): [O
   } = options
 
   const { data, isInitialLoading, isSuccess } = useQuery<OperationChangesDto, Error, OperationChanges>({
-    queryKey: [OPERATION_CHANGELOG, versionKey, packageKey, operationKey, apiType, previousVersion, previousVersionPackageId, severity],
-    enabled: enable && !!versionKey && !!packageKey && !!operationKey,
-    retry: false,
-    queryFn: ({ signal }) => getOperationChangeLog({
+    queryKey: [
+      OPERATION_CHANGELOG,
       versionKey,
       packageKey,
       operationKey,
@@ -50,13 +49,24 @@ export function useOperationChangelog(options: UseOperationChangelogOptions): [O
       previousVersion,
       previousVersionPackageId,
       severity,
-    }, signal),
+    ],
+    enabled: enable && !!versionKey && !!packageKey && !!operationKey,
+    retry: false,
+    queryFn: ({ signal }) =>
+      getOperationChangeLog(
+        {
+          versionKey,
+          packageKey,
+          operationKey,
+          apiType,
+          previousVersion,
+          previousVersionPackageId,
+          severity,
+        },
+        signal,
+      ),
     select: toOperationChanges,
   })
 
-  return useMemo(() => [
-    data ?? [],
-    isInitialLoading,
-    isSuccess,
-  ], [data, isInitialLoading, isSuccess])
+  return useMemo(() => [data ?? [], isInitialLoading, isSuccess], [data, isInitialLoading, isSuccess])
 }

@@ -65,9 +65,7 @@ export async function addStyleRule({
   /** Throw error if limit exceeded for Retry */
   if (errorCount > MAX_ERROR_ON_DOM_OPERATION) {
     classNamesInprogress.delete(className)
-    throw new DOMFailureError(
-      `Failed to inject styles for class ${className}.`,
-    )
+    throw new DOMFailureError(`Failed to inject styles for class ${className}.`)
   }
 
   const style = getStyles({ className, cursorColor })
@@ -112,9 +110,7 @@ export async function createTooltipNode({
   /** Throw error if limit exceeded for Retry */
   if (errorCount > MAX_ERROR_ON_DOM_OPERATION) {
     classNamesInprogress.delete(className)
-    throw new DOMFailureError(
-      `Failed to create tooltip with class ${className}.`,
-    )
+    throw new DOMFailureError(`Failed to create tooltip with class ${className}.`)
   }
 
   try {
@@ -155,9 +151,7 @@ export async function createWidgetNode({
   /** Throw error if limit exceeded for Retry */
   if (errorCount > MAX_ERROR_ON_DOM_OPERATION) {
     classNamesInprogress.delete(className)
-    throw new DOMFailureError(
-      `Failed to create widget with class ${className}.`,
-    )
+    throw new DOMFailureError(`Failed to create widget with class ${className}.`)
   }
 
   try {
@@ -183,13 +177,7 @@ export async function createWidgetNode({
  * @param className - CSS Classname for the Cursor or the Selection.
  * @param cursorColor - Color of the Cursor or the Selection.
  */
-function getStyles({
-  className,
-  cursorColor,
-}: {
-  className: string
-  cursorColor: string
-}): string {
+function getStyles({ className, cursorColor }: { className: string; cursorColor: string }): string {
   return `
     /**
      * Copyright © 2021 Progyan Bhattacharya

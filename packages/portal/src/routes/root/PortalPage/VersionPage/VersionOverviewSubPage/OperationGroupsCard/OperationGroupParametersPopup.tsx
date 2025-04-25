@@ -66,197 +66,171 @@ export type OperationGroupParametersPopupProps = {
   isPrefixGroup?: boolean
 }
 
-export const OperationGroupParametersPopup: FC<OperationGroupParametersPopupProps> = memo<OperationGroupParametersPopupProps>(props => {
-  const {
-    open,
-    setOpen,
-    detail,
-    title,
-    submitText,
-    submitLoading,
-    existsGroupNames,
-    onSubmit,
-    templateName,
-    isPrefixGroup,
-  } = props
+export const OperationGroupParametersPopup: FC<OperationGroupParametersPopupProps> =
+  memo<OperationGroupParametersPopupProps>((props) => {
+    const {
+      open,
+      setOpen,
+      detail,
+      title,
+      submitText,
+      submitLoading,
+      existsGroupNames,
+      onSubmit,
+      templateName,
+      isPrefixGroup,
+    } = props
 
-  const {
-    handleSubmit,
-    control,
-    watch,
-  } = useForm<FormData>({ defaultValues: detail })
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const [uploadedFile, setUploadedFile] = useState<File | undefined>()
-  const [isFileUpdated, setIsFileUpdated] = useState(false)
+    const { handleSubmit, control, watch } = useForm<FormData>({ defaultValues: detail })
+    const [errorMessage, setErrorMessage] = useState<string | null>(null)
+    const [uploadedFile, setUploadedFile] = useState<File | undefined>()
+    const [isFileUpdated, setIsFileUpdated] = useState(false)
 
-  const handleSetUploadedFile = useCallback((file: File | undefined) => {
-    setUploadedFile(file)
-    setIsFileUpdated(true)
-  }, [])
+    const handleSetUploadedFile = useCallback((file: File | undefined) => {
+      setUploadedFile(file)
+      setIsFileUpdated(true)
+    }, [])
 
-  useEffect(() => {
-    if (templateName) {
-      setUploadedFile(new File([], templateName))
-    }
-  }, [templateName])
-
-  const handleSubmitCallback = useMemo(
-    () => handleSubmit(formData => {
-      const apiTypeNames = existsGroupNames.get(formData.apiType!)
-      if (apiTypeNames?.includes(formData.groupName!) && (detail?.groupName !== formData.groupName)) {
-        setErrorMessage(`Group with the same name for ${API_TYPE_TITLE_MAP[formData.apiType!]} operations already exists`)
-        return
+    useEffect(() => {
+      if (templateName) {
+        setUploadedFile(new File([], templateName))
       }
+    }, [templateName])
 
-      onSubmit({
-        apiType: formData.apiType!,
-        groupName: formData.groupName!,
-        description: formData.description,
-        template: uploadedFile,
-        isTemplateUpdated: isFileUpdated,
-      })
-    }),
-    [detail?.groupName, existsGroupNames, handleSubmit, onSubmit, uploadedFile, isFileUpdated],
-  )
+    const handleSubmitCallback = useMemo(
+      () =>
+        handleSubmit((formData) => {
+          const apiTypeNames = existsGroupNames.get(formData.apiType!)
+          if (apiTypeNames?.includes(formData.groupName!) && detail?.groupName !== formData.groupName) {
+            setErrorMessage(
+              `Group with the same name for ${API_TYPE_TITLE_MAP[formData.apiType!]} operations already exists`,
+            )
+            return
+          }
 
-  const availableApiTypes = useMemo(
-    () => Array.from(existsGroupNames.keys()),
-    [existsGroupNames],
-  )
+          onSubmit({
+            apiType: formData.apiType!,
+            groupName: formData.groupName!,
+            description: formData.description,
+            template: uploadedFile,
+            isTemplateUpdated: isFileUpdated,
+          })
+        }),
+      [detail?.groupName, existsGroupNames, handleSubmit, onSubmit, uploadedFile, isFileUpdated],
+    )
 
-  const formApiType = watch().apiType
-  const [expanded, setExpanded] = useState<boolean>(false)
+    const availableApiTypes = useMemo(() => Array.from(existsGroupNames.keys()), [existsGroupNames])
 
-  useEffect(() => {
-    if (formApiType) {
-      return API_TYPE_EXPANDED_MAP[formApiType as ApiType](setExpanded)
-    }
-    setExpanded(false)
-  }, [formApiType, setExpanded])
+    const formApiType = watch().apiType
+    const [expanded, setExpanded] = useState<boolean>(false)
 
-  return (
-    <DialogForm
-      open={open}
-      onClose={() => setOpen(false)}
-      onSubmit={handleSubmitCallback}
-    >
-      <DialogTitle>
-        {title}
-      </DialogTitle>
-      <DialogContent>
-        <Typography variant="button">
-          Main info
-        </Typography>
-        <Controller
-          name="groupName"
-          control={control}
-          render={({ field }) => (
-            <TextField
-              sx={{ mt: 0 }}
-              {...field}
-              value={field.value ?? ''}
-              disabled={isPrefixGroup}
-              error={!!errorMessage}
-              helperText={!!errorMessage && errorMessage}
-              onChange={(event) => {
-                setErrorMessage(null)
-                field.onChange(event.target.value)
-              }}
-              required
-              label="Group Name"
-              data-testid="GroupNameTextField"
-            />
-          )}
-        />
-        <Controller
-          name="apiType"
-          control={control}
-          rules={{ required: true }}
-          render={({ field: { value, onChange } }) => (
-            <Autocomplete
-              value={value ?? null}
-              options={availableApiTypes}
-              disabled={!!detail}
-              isOptionEqualToValue={(option, value) => option === value}
-              renderOption={(props, option) => <ListItem
-                {...props}
-                key={option}
-                data-testid={`Option-${option}`}
-              >
-                {API_TYPE_TITLE_MAP[option]}
-              </ListItem>}
-              getOptionLabel={(option) => API_TYPE_TITLE_MAP[option]!}
-              onChange={(_, type) => {
-                setErrorMessage(null)
-                onChange(type)
-              }}
-              renderInput={(params) => (
-                <TextField
-                  required
-                  {...params}
-                  label="API type"
-                />
-              )}
-              data-testid="ApiTypeAutocomplete"
-            />
-          )}
-        />
-        <Controller
-          name="description"
-          control={control}
-          render={({ field }) => <TextField
-            {...field}
-            value={field.value ?? ''}
-            label="Description"
-            data-testid="DescriptionTextField"
-          />}
-        />
+    useEffect(() => {
+      if (formApiType) {
+        return API_TYPE_EXPANDED_MAP[formApiType as ApiType](setExpanded)
+      }
+      setExpanded(false)
+    }, [formApiType, setExpanded])
 
-        <Accordion
-          disabled={formApiType ? API_TYPE_ACCORDION_DISABLED_MAP[formApiType as ApiType] : true}
-          expanded={expanded}
-          onChange={(_, expanded) => setExpanded(expanded)}
-          sx={ACCORDION_STYLE}
-        >
-          <AccordionSummary
-            sx={{ px: 0, pt: 1 }}
-            expandIcon={<ExpandMoreOutlinedIcon/>}
-            data-testid="AdditionalOptionsButton"
+    return (
+      <DialogForm open={open} onClose={() => setOpen(false)} onSubmit={handleSubmitCallback}>
+        <DialogTitle>{title}</DialogTitle>
+        <DialogContent>
+          <Typography variant="button">Main info</Typography>
+          <Controller
+            name="groupName"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                sx={{ mt: 0 }}
+                {...field}
+                value={field.value ?? ''}
+                disabled={isPrefixGroup}
+                error={!!errorMessage}
+                helperText={!!errorMessage && errorMessage}
+                onChange={(event) => {
+                  setErrorMessage(null)
+                  field.onChange(event.target.value)
+                }}
+                required
+                label="Group Name"
+                data-testid="GroupNameTextField"
+              />
+            )}
+          />
+          <Controller
+            name="apiType"
+            control={control}
+            rules={{ required: true }}
+            render={({ field: { value, onChange } }) => (
+              <Autocomplete
+                value={value ?? null}
+                options={availableApiTypes}
+                disabled={!!detail}
+                isOptionEqualToValue={(option, value) => option === value}
+                renderOption={(props, option) => (
+                  <ListItem {...props} key={option} data-testid={`Option-${option}`}>
+                    {API_TYPE_TITLE_MAP[option]}
+                  </ListItem>
+                )}
+                getOptionLabel={(option) => API_TYPE_TITLE_MAP[option]!}
+                onChange={(_, type) => {
+                  setErrorMessage(null)
+                  onChange(type)
+                }}
+                renderInput={(params) => <TextField required {...params} label="API type" />}
+                data-testid="ApiTypeAutocomplete"
+              />
+            )}
+          />
+          <Controller
+            name="description"
+            control={control}
+            render={({ field }) => (
+              <TextField {...field} value={field.value ?? ''} label="Description" data-testid="DescriptionTextField" />
+            )}
+          />
+
+          <Accordion
+            disabled={formApiType ? API_TYPE_ACCORDION_DISABLED_MAP[formApiType as ApiType] : true}
+            expanded={expanded}
+            onChange={(_, expanded) => setExpanded(expanded)}
+            sx={ACCORDION_STYLE}
           >
-            <Typography variant="button">Additional Options</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Box display="flex" gap={0.5} alignItems="center" py={2}>
-              <Typography variant="button">OpenAPI Specification Template</Typography>
-              <Tooltip
-                disableHoverListener={false}
-                placement="right"
-                title={TOOLTIP_TITLE}
-              >
-                <InfoContextIcon fontSize="extra-small"/>
-              </Tooltip>
-            </Box>
-            <TemplateUpload
-              uploadedFile={uploadedFile}
-              setUploadedFile={handleSetUploadedFile}
-              groupName={watch().groupName!}
-              apiType={watch().apiType!}
-              downloadAvailable={!isFileUpdated}
-            />
-          </AccordionDetails>
-        </Accordion>
-      </DialogContent>
-      <DialogActions>
-        <LoadingButton variant="contained" type="submit" loading={submitLoading} data-testid={`${submitText}Button`}>
-          {submitText}
-        </LoadingButton>
-        <Button variant="outlined" onClick={() => setOpen(false)} data-testid="Cancel">
-          Cancel
-        </Button>
-      </DialogActions>
-    </DialogForm>
-  )
-})
+            <AccordionSummary
+              sx={{ px: 0, pt: 1 }}
+              expandIcon={<ExpandMoreOutlinedIcon />}
+              data-testid="AdditionalOptionsButton"
+            >
+              <Typography variant="button">Additional Options</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Box display="flex" gap={0.5} alignItems="center" py={2}>
+                <Typography variant="button">OpenAPI Specification Template</Typography>
+                <Tooltip disableHoverListener={false} placement="right" title={TOOLTIP_TITLE}>
+                  <InfoContextIcon fontSize="extra-small" />
+                </Tooltip>
+              </Box>
+              <TemplateUpload
+                uploadedFile={uploadedFile}
+                setUploadedFile={handleSetUploadedFile}
+                groupName={watch().groupName!}
+                apiType={watch().apiType!}
+                downloadAvailable={!isFileUpdated}
+              />
+            </AccordionDetails>
+          </Accordion>
+        </DialogContent>
+        <DialogActions>
+          <LoadingButton variant="contained" type="submit" loading={submitLoading} data-testid={`${submitText}Button`}>
+            {submitText}
+          </LoadingButton>
+          <Button variant="outlined" onClick={() => setOpen(false)} data-testid="Cancel">
+            Cancel
+          </Button>
+        </DialogActions>
+      </DialogForm>
+    )
+  })
 
 type FormData = {
   groupName: string | null
@@ -272,7 +246,8 @@ const ACCORDION_STYLE = {
   },
 }
 
-const TOOLTIP_TITLE = 'The OpenAPI specification template is the template that will be used when downloading the combined specification. The following information will be taken from the template, if specified, and applied to the combined specification: info, servers, externalDocs, security and securitySchemes. The template must be a valid JSON or YAML file and have an OpenAPI 3.0 structure.'
+const TOOLTIP_TITLE =
+  'The OpenAPI specification template is the template that will be used when downloading the combined specification. The following information will be taken from the template, if specified, and applied to the combined specification: info, servers, externalDocs, security and securitySchemes. The template must be a valid JSON or YAML file and have an OpenAPI 3.0 structure.'
 
 const API_TYPE_EXPANDED_MAP: Record<ApiType, (setExpanded: Dispatch<SetStateAction<boolean>>) => void> = {
   [API_TYPE_REST]: (setExpanded) => setExpanded(true),

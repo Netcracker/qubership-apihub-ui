@@ -71,13 +71,16 @@ export function useUpdateChangeStatusInBranchConfig(): UpdateChangeStatusInBranc
   const [selectedBranch] = useBranchSearchParam()
 
   return (value: ChangeType): void => {
-    client.setQueryData<BranchConfig>([BRANCH_CONFIG_QUERY_KEY, projectId, selectedBranch], (oldBranchConfig): BranchConfig => {
-      const projectBranchConfig = (oldBranchConfig as BranchConfig)
-      return {
-        ...projectBranchConfig,
-        changeType: value,
-      }
-    })
+    client.setQueryData<BranchConfig>(
+      [BRANCH_CONFIG_QUERY_KEY, projectId, selectedBranch],
+      (oldBranchConfig): BranchConfig => {
+        const projectBranchConfig = oldBranchConfig as BranchConfig
+        return {
+          ...projectBranchConfig,
+          changeType: value,
+        }
+      },
+    )
   }
 }
 
@@ -92,19 +95,22 @@ export function useUpdateEditorsInBranchConfig(): UpdateEditorsInBranchConfig {
     const { userId } = value
 
     client.setQueryData<BranchConfig>([BRANCH_CONFIG_QUERY_KEY, projectId, selectedBranch], (oldData): BranchConfig => {
-      const projectBranchConfig = (oldData as BranchConfig)
+      const projectBranchConfig = oldData as BranchConfig
       let updatedEditors = projectBranchConfig.editors
 
       if (isBranchEditorsAddedEventData(value)) {
-        updatedEditors = [...updatedEditors, {
-          key: userId,
-          name: '',
-          avatarUrl: '',
-        }]
+        updatedEditors = [
+          ...updatedEditors,
+          {
+            key: userId,
+            name: '',
+            avatarUrl: '',
+          },
+        ]
       }
 
       if (isBranchEditorsRemovedEventData(value)) {
-        updatedEditors = [...updatedEditors.filter(editor => editor.key !== userId)]
+        updatedEditors = [...updatedEditors.filter((editor) => editor.key !== userId)]
       }
 
       return {
@@ -115,7 +121,9 @@ export function useUpdateEditorsInBranchConfig(): UpdateEditorsInBranchConfig {
   }
 }
 
-type UpdateEditorsInBranchConfig = (branchEditorsUpdatedData: BranchEditorsAddedEventData | BranchEditorsRemovedEventData) => void
+type UpdateEditorsInBranchConfig = (
+  branchEditorsUpdatedData: BranchEditorsAddedEventData | BranchEditorsRemovedEventData,
+) => void
 
 // TODO: Reorganize like `useUpdateRefsInBranchConfig`
 export function useUpdateFilesInBranchConfig(): UpdateFilesInBranchConfig {
@@ -127,7 +135,7 @@ export function useUpdateFilesInBranchConfig(): UpdateFilesInBranchConfig {
     const { fileId: updatedFileId, operation: updatedOperation, data: updatedData } = value
 
     client.setQueryData<BranchConfig>([BRANCH_CONFIG_QUERY_KEY, projectId, selectedBranch], (oldData): BranchConfig => {
-      const projectBranchConfig = (oldData as BranchConfig)
+      const projectBranchConfig = oldData as BranchConfig
       let updatedFiles = projectBranchConfig.files
 
       switch (updatedOperation) {
@@ -135,46 +143,47 @@ export function useUpdateFilesInBranchConfig(): UpdateFilesInBranchConfig {
           if (updatedData) {
             const { fileId = updatedFileId } = updatedData
             const name = fileId.substring(fileId.lastIndexOf('/') + 1, fileId.length)
-            updatedFiles = [...updatedFiles, {
-              key: fileId,
-              name: name,
-              format: getFileFormat(name),
-              status: updatedData.status ?? UNMODIFIED_CHANGE_STATUS,
-              publish: updatedData.publish,
-              labels: updatedData.labels,
-              changeType: updatedData.changeType,
-              blobKey: updatedData.blobId,
-            }]
+            updatedFiles = [
+              ...updatedFiles,
+              {
+                key: fileId,
+                name: name,
+                format: getFileFormat(name),
+                status: updatedData.status ?? UNMODIFIED_CHANGE_STATUS,
+                publish: updatedData.publish,
+                labels: updatedData.labels,
+                changeType: updatedData.changeType,
+                blobKey: updatedData.blobId,
+              },
+            ]
           }
           break
         }
         case PATCH_OPERATION: {
           if (updatedData) {
             const { fileId: newFileId = updatedFileId } = updatedData
-            updatedFiles = updatedFiles.map(file => {
+            updatedFiles = updatedFiles.map((file) => {
               return file.key === updatedFileId
                 ? {
-                  ...file,
-                  key: newFileId,
-                  fileId: newFileId,
-                  name: newFileId.substring(newFileId.lastIndexOf('/') + 1, newFileId.length),
-                  path: newFileId,
-                  status: updatedData.status ?? file.status,
-                  publish: updatedData.publish ?? file.publish,
-                  labels: updatedData.labels ?? file.labels,
-                  changeType: updatedData.changeType ?? file.changeType,
-                  blobKey: updatedData.blobId ?? file.blobKey,
-                }
+                    ...file,
+                    key: newFileId,
+                    fileId: newFileId,
+                    name: newFileId.substring(newFileId.lastIndexOf('/') + 1, newFileId.length),
+                    path: newFileId,
+                    status: updatedData.status ?? file.status,
+                    publish: updatedData.publish ?? file.publish,
+                    labels: updatedData.labels ?? file.labels,
+                    changeType: updatedData.changeType ?? file.changeType,
+                    blobKey: updatedData.blobId ?? file.blobKey,
+                  }
                 : file
             })
           }
           break
         }
         default: {
-          updatedFiles = updatedFiles.map(file => {
-            return file.key === updatedFileId
-              ? { ...file, operation: updatedOperation }
-              : file
+          updatedFiles = updatedFiles.map((file) => {
+            return file.key === updatedFileId ? { ...file, operation: updatedOperation } : file
           })
           break
         }
@@ -216,26 +225,22 @@ export function useUpdateRefsInBranchConfig(): UpdateRefsInBranchConfig {
       if (updatedOperation === ADD_OPERATION) {
         return {
           ...oldBranchConfig,
-          refs: [
-            ...oldBranchConfig.refs,
-            { ...toRef(updatedData) },
-          ],
+          refs: [...oldBranchConfig.refs, { ...toRef(updatedData) }],
         }
       }
 
       if (updatedOperation === PATCH_OPERATION) {
         return {
           ...oldBranchConfig,
-          refs: oldBranchConfig.refs.map((ref) => (
-              ref.key === updatedRefId
-                ? {
+          refs: oldBranchConfig.refs.map((ref) =>
+            ref.key === updatedRefId
+              ? {
                   ...ref,
                   version: updatedData.version ?? ref.version,
                   versionStatus: updatedData.versionStatus ?? ref.versionStatus,
                   status: updatedData.status ?? ref.status,
                 }
-                : ref
-            ),
+              : ref,
           ),
         }
       }

@@ -21,9 +21,7 @@ export const BackwardLocationProvider: FC<PropsWithChildren> = memo<PropsWithChi
   const [content, setContent] = useState({})
   return (
     <BackwardLocation.Provider value={content}>
-      <SetBackwardLocation.Provider value={setContent}>
-        {children}
-      </SetBackwardLocation.Provider>
+      <SetBackwardLocation.Provider value={setContent}>{children}</SetBackwardLocation.Provider>
     </BackwardLocation.Provider>
   )
 })

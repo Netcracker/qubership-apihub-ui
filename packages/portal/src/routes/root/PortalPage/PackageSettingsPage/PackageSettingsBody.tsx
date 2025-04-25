@@ -29,39 +29,31 @@ import {
   USER_ACCESS_CONTROLS_PAGE,
   VERSIONS_PAGE,
 } from '../../../../routes'
-import {
-  SpecificConfigurationPackageSettingsTab,
-} from './SpecificConfigurationPackageSettingsTab/SpecificConfigurationPackageSettingsTab'
-import {
-  UserPackageAccessControlSettingsTab,
-} from '@apihub/routes/root/PortalPage/PackageSettingsPage/UserPackageAccessControlSettingsTab/UserPackageAccessControlSettingsTab'
-import {
-  ExportSettingsTab,
-} from '@apihub/routes/root/PortalPage/PackageSettingsPage/ExportSettingsTab/ExportSettingsTab'
+import { SpecificConfigurationPackageSettingsTab } from './SpecificConfigurationPackageSettingsTab/SpecificConfigurationPackageSettingsTab'
+import { UserPackageAccessControlSettingsTab } from '@apihub/routes/root/PortalPage/PackageSettingsPage/UserPackageAccessControlSettingsTab/UserPackageAccessControlSettingsTab'
+import { ExportSettingsTab } from '@apihub/routes/root/PortalPage/PackageSettingsPage/ExportSettingsTab/ExportSettingsTab'
 
-export const PackageSettingsBody: FC<PackageSettingsTabProps> = memo<PackageSettingsTabProps>(({
-  packageObject,
-  isPackageLoading,
-}) => {
-  const activeTab = useActiveTabContentContext()
+export const PackageSettingsBody: FC<PackageSettingsTabProps> = memo<PackageSettingsTabProps>(
+  ({ packageObject, isPackageLoading }) => {
+    const activeTab = useActiveTabContentContext()
 
-  return (
-    <>
-      {
+    return (
+      <>
         {
-          [GENERAL_PAGE]: (
-            <GeneralPackageSettingsTab
-              packageObject={packageObject}
-              isPackageLoading={isPackageLoading}
-            />
-          ),
-          [API_SPECIFIC_CONFIGURATION_PAGE]: <SpecificConfigurationPackageSettingsTab packageObject={packageObject}/>,
-          [EXPORT_SETTINGS_PAGE]: <ExportSettingsTab packageObject={packageObject}/>,
-          [VERSIONS_PAGE]: <VersionsPackageSettingsTab packageObject={packageObject}/>,
-          [ACCESS_TOKENS_PAGE]: <AccessTokensPackageSettingsTab packageObject={packageObject}/>,
-          [USER_ACCESS_CONTROLS_PAGE]: <UserPackageAccessControlSettingsTab packageObject={packageObject}/>,
-        }[activeTab]
-      }
-    </>
-  )
-})
+          {
+            [GENERAL_PAGE]: (
+              <GeneralPackageSettingsTab packageObject={packageObject} isPackageLoading={isPackageLoading} />
+            ),
+            [API_SPECIFIC_CONFIGURATION_PAGE]: (
+              <SpecificConfigurationPackageSettingsTab packageObject={packageObject} />
+            ),
+            [EXPORT_SETTINGS_PAGE]: <ExportSettingsTab packageObject={packageObject} />,
+            [VERSIONS_PAGE]: <VersionsPackageSettingsTab packageObject={packageObject} />,
+            [ACCESS_TOKENS_PAGE]: <AccessTokensPackageSettingsTab packageObject={packageObject} />,
+            [USER_ACCESS_CONTROLS_PAGE]: <UserPackageAccessControlSettingsTab packageObject={packageObject} />,
+          }[activeTab]
+        }
+      </>
+    )
+  },
+)

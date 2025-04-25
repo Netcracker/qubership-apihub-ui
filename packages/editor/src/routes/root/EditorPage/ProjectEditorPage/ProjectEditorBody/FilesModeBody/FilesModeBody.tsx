@@ -45,7 +45,11 @@ import {
   TOGGLE_BUTTON_ENABLING_START_STYLE,
   ToggleButtonWithHint,
 } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ToggleButtonWithHint'
-import { calculateSpecType, getFileExtension, UNKNOWN_FILE_FORMAT } from '@netcracker/qubership-apihub-ui-shared/utils/files'
+import {
+  calculateSpecType,
+  getFileExtension,
+  UNKNOWN_FILE_FORMAT,
+} from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import { isOpenApiSpecType, UNKNOWN_SPEC_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import { useSpecItemUriHashParam } from '@netcracker/qubership-apihub-ui-shared/hooks/hashparams/useSpecItemUriHashParam'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
@@ -53,7 +57,10 @@ import { FileIcon } from '@netcracker/qubership-apihub-ui-shared/icons/FileIcon'
 import { ComponentIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ComponentIcon'
 import { CustomToggleButtonGroup } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/CustomToggleButtonGroup'
 import { MonacoEditorPlaceholder } from '@apihub/components/MonacoEditorPlaceholder'
-import { DELETED_CHANGE_STATUS, EXCLUDED_CHANGE_STATUS } from '@netcracker/qubership-apihub-ui-shared/entities/change-statuses'
+import {
+  DELETED_CHANGE_STATUS,
+  EXCLUDED_CHANGE_STATUS,
+} from '@netcracker/qubership-apihub-ui-shared/entities/change-statuses'
 import { UnsupportedFilePlaceholder } from '@netcracker/qubership-apihub-ui-shared/components/UnsupportedFilePlaceholder'
 import { NAVIGATION_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
@@ -73,14 +80,9 @@ const EnabledProblemsToggleButton: FC<EnabledProblemsToggleButtonProps & Omit<To
   problemsCounter,
   ...rest
 }) => (
-  <ToggleButton
-    {...rest}
-    value={PROBLEMS_INFO_MODE}
-    sx={TOGGLE_BUTTON_ENABLING_END_STYLE}
-  >
-    Problems {isLoading
-    ? <CircularProgress sx={{ alignSelf: 'center', marginLeft: '3px' }} size={10}/>
-    : problemsCounter}
+  <ToggleButton {...rest} value={PROBLEMS_INFO_MODE} sx={TOGGLE_BUTTON_ENABLING_END_STYLE}>
+    Problems{' '}
+    {isLoading ? <CircularProgress sx={{ alignSelf: 'center', marginLeft: '3px' }} size={10} /> : problemsCounter}
   </ToggleButton>
 )
 
@@ -133,20 +135,29 @@ export const FilesModeBody: FC = memo(() => {
   }, [name, setContentLoading, activeProjectFileName])
 
   const problemsCounter = useMemo(() => {
-      const MAX_TWO_DIGIT_NUMBER = 99
-      const biggerThanOneDigit = problems.length > 9
-      const biggerThanTwoDigits = problems.length > MAX_TWO_DIGIT_NUMBER
-      return <>
-        {biggerThanOneDigit
-          ? (biggerThanTwoDigits ? MAX_TWO_DIGIT_NUMBER : problems.length)
-          : (<Typography variant="button" sx={{ marginLeft: '9.46px' }}>{problems.length}</Typography>)
-        }
+    const MAX_TWO_DIGIT_NUMBER = 99
+    const biggerThanOneDigit = problems.length > 9
+    const biggerThanTwoDigits = problems.length > MAX_TWO_DIGIT_NUMBER
+    return (
+      <>
+        {biggerThanOneDigit ? (
+          biggerThanTwoDigits ? (
+            MAX_TWO_DIGIT_NUMBER
+          ) : (
+            problems.length
+          )
+        ) : (
+          <Typography variant="button" sx={{ marginLeft: '9.46px' }}>
+            {problems.length}
+          </Typography>
+        )}
       </>
-    },
-    [problems],
-  )
+    )
+  }, [problems])
 
-  {/*todo remove after support doc for graphql*/}
+  {
+    /*todo remove after support doc for graphql*/
+  }
   const disablePreview = origin === null || format === GRAPHQL_FILE_FORMAT
   useEffect(() => {
     if (disablePreview) {
@@ -159,9 +170,19 @@ export const FilesModeBody: FC = memo(() => {
       <BodyCard
         header={
           <Box display="flex" gap={1} alignItems="center">
-            {publish
-              ? <Tooltip title="Document will be published"><Box><FileIcon/></Box></Tooltip>
-              : <Tooltip title="Component will not be published"><Box><ComponentIcon/></Box></Tooltip>}
+            {publish ? (
+              <Tooltip title="Document will be published">
+                <Box>
+                  <FileIcon />
+                </Box>
+              </Tooltip>
+            ) : (
+              <Tooltip title="Component will not be published">
+                <Box>
+                  <ComponentIcon />
+                </Box>
+              </Tooltip>
+            )}
             {name}
           </Box>
         }
@@ -169,118 +190,103 @@ export const FilesModeBody: FC = memo(() => {
           format !== UNKNOWN_FILE_FORMAT && (
             <Box display="flex" gap={1} alignItems="center">
               <Box display="flex" gap={1} alignItems="center">
-                {
-                  connecting
-                    ? <CircularProgress sx={{ alignSelf: 'center' }} size={20}/>
-                    : <RedactorsBar redactors={connectedUsers}/>
-                }
-                <Divider/>
+                {connecting ? (
+                  <CircularProgress sx={{ alignSelf: 'center' }} size={20} />
+                ) : (
+                  <RedactorsBar redactors={connectedUsers} />
+                )}
+                <Divider />
               </Box>
 
-              <CustomToggleButtonGroup
-                value={infoMode as string}
-                onClick={setInfoMode}
-                exclusive
-                customLastButton
-              >
+              <CustomToggleButtonGroup value={infoMode as string} onClick={setInfoMode} exclusive customLastButton>
                 {/*todo return to classic ToggleButton for graphql after support doc*/}
                 <ToggleButtonWithHint
                   hint="Preview is not available for GraphQL"
                   disableHint={!disablePreview}
                   disabled={disablePreview}
                   value={PREVIEW_INFO_MODE}
-                  sx={disablePreview
-                    ? TOGGLE_BUTTON_DISABLING_START_STYLE
-                    : TOGGLE_BUTTON_ENABLING_START_STYLE
-                  }
+                  sx={disablePreview ? TOGGLE_BUTTON_DISABLING_START_STYLE : TOGGLE_BUTTON_ENABLING_START_STYLE}
                 >
                   Preview
                 </ToggleButtonWithHint>
-                <ToggleButton
-                  value={HISTORY_INFO_MODE}
-                  disabled={origin === null}
-                >
+                <ToggleButton value={HISTORY_INFO_MODE} disabled={origin === null}>
                   History
                 </ToggleButton>
-                {isProblemsToggleAvailable
-                  ? <EnabledProblemsToggleButton
-                    isLoading={isLoading}
-                    problemsCounter={problemsCounter}
-                  />
-                  : <DisabledProblemsToggleButton/>
-                }
+                {isProblemsToggleAvailable ? (
+                  <EnabledProblemsToggleButton isLoading={isLoading} problemsCounter={problemsCounter} />
+                ) : (
+                  <DisabledProblemsToggleButton />
+                )}
               </CustomToggleButtonGroup>
             </Box>
           )
         }
         body={
           <Box mx={-4} display="flex" minWidth={0} height="100%" borderTop="1px solid #D5DCE3">
-            {format !== UNKNOWN_FILE_FORMAT && name
-              ? (
-                <Suspense fallback={<MonacoEditorPlaceholder/>}>
-                  {contentLoading || !initialDocument
-                    ? <MonacoEditorPlaceholder/>
-                    : <Box sx={{ minWidth: 0, width: '100%' }}>
-                      <OtMonacoEditor
-                        fileType={calculateSpecType(getFileExtension(name), initialDocument.document[0])}
-                        language={EXTENSION_TO_TYPE_LANGUAGE_MAP[getFileExtension(name)]}
-                        onChange={setMonacoContent}
-                        readonly={!hasEditPermission || status === DELETED_CHANGE_STATUS || status === EXCLUDED_CHANGE_STATUS}
-                        problems={problems}
-                        selectedUri={specItemUri}
-                        initialDocument={initialDocument}
-                      />
-                    </Box>
-                  }
-                </Suspense>
-              )
-              : <UnsupportedFilePlaceholder message="Unsupported file"/>
-            }
-            {
-              infoMode && !isUnavailableProblemsToggleChosen && (
-                <Resizable
-                  defaultSize={{ width: 540, height: '100%' }}
-                  handleStyles={{ left: { cursor: 'ew-resize' } }}
-                  maxWidth="94%"
-                  minWidth="25%"
-                  enable={{
-                    top: false,
-                    right: false,
-                    bottom: false,
-                    left: true,
-                    topRight: false,
-                    bottomRight: false,
-                    bottomLeft: false,
-                    topLeft: false,
-                  }}
-                >
-                  <Card sx={{ borderRadius: 0, borderLeft: '1px solid  #D5DCE3' }}>
-                    <CardContent>
-                      {infoMode === PREVIEW_INFO_MODE && (
-                        <Placeholder
-                          invisible={Boolean(initialDocument?.document[0])}
-                          area={NAVIGATION_PLACEHOLDER_AREA}
-                          message="Nothing to preview"
-                        >
-                          {
-                            isDocumentLoading
-                              ? <LoadingIndicator/>
-                              : type !== UNKNOWN_SPEC_TYPE && content && <DocSpecView
-                              type={type}
-                              format={format}
-                              value={content}
-                              selectedUri={specItemUri}
-                            />
-                          }
-                        </Placeholder>
-                      )}
-                      {infoMode === HISTORY_INFO_MODE && <FileHistoryPanel/>}
-                      {infoMode === PROBLEMS_INFO_MODE && <FileProblemsPanel fileKey={key}/>}
-                    </CardContent>
-                  </Card>
-                </Resizable>
-              )
-            }
+            {format !== UNKNOWN_FILE_FORMAT && name ? (
+              <Suspense fallback={<MonacoEditorPlaceholder />}>
+                {contentLoading || !initialDocument ? (
+                  <MonacoEditorPlaceholder />
+                ) : (
+                  <Box sx={{ minWidth: 0, width: '100%' }}>
+                    <OtMonacoEditor
+                      fileType={calculateSpecType(getFileExtension(name), initialDocument.document[0])}
+                      language={EXTENSION_TO_TYPE_LANGUAGE_MAP[getFileExtension(name)]}
+                      onChange={setMonacoContent}
+                      readonly={
+                        !hasEditPermission || status === DELETED_CHANGE_STATUS || status === EXCLUDED_CHANGE_STATUS
+                      }
+                      problems={problems}
+                      selectedUri={specItemUri}
+                      initialDocument={initialDocument}
+                    />
+                  </Box>
+                )}
+              </Suspense>
+            ) : (
+              <UnsupportedFilePlaceholder message="Unsupported file" />
+            )}
+            {infoMode && !isUnavailableProblemsToggleChosen && (
+              <Resizable
+                defaultSize={{ width: 540, height: '100%' }}
+                handleStyles={{ left: { cursor: 'ew-resize' } }}
+                maxWidth="94%"
+                minWidth="25%"
+                enable={{
+                  top: false,
+                  right: false,
+                  bottom: false,
+                  left: true,
+                  topRight: false,
+                  bottomRight: false,
+                  bottomLeft: false,
+                  topLeft: false,
+                }}
+              >
+                <Card sx={{ borderRadius: 0, borderLeft: '1px solid  #D5DCE3' }}>
+                  <CardContent>
+                    {infoMode === PREVIEW_INFO_MODE && (
+                      <Placeholder
+                        invisible={Boolean(initialDocument?.document[0])}
+                        area={NAVIGATION_PLACEHOLDER_AREA}
+                        message="Nothing to preview"
+                      >
+                        {isDocumentLoading ? (
+                          <LoadingIndicator />
+                        ) : (
+                          type !== UNKNOWN_SPEC_TYPE &&
+                          content && (
+                            <DocSpecView type={type} format={format} value={content} selectedUri={specItemUri} />
+                          )
+                        )}
+                      </Placeholder>
+                    )}
+                    {infoMode === HISTORY_INFO_MODE && <FileHistoryPanel />}
+                    {infoMode === PROBLEMS_INFO_MODE && <FileProblemsPanel fileKey={key} />}
+                  </CardContent>
+                </Card>
+              </Resizable>
+            )}
           </Box>
         }
       />

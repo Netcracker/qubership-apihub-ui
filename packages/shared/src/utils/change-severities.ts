@@ -33,11 +33,9 @@ import {
 } from '../components/StatusMarker'
 import type { PackageSummary } from '../entities/packages'
 
-export function countVersionDifferences(
-  changes: ChangesSummary | undefined,
-): number {
+export function countVersionDifferences(changes: ChangesSummary | undefined): number {
   let totalAmount = 0
-  changes && Object.values(changes).forEach(changesAmount => (totalAmount += changesAmount))
+  changes && Object.values(changes).forEach((changesAmount) => (totalAmount += changesAmount))
   return totalAmount
 }
 
@@ -71,7 +69,9 @@ export function countVersionDifferencesBySeverity(
 }
 
 export function filterChangesBySeverity(filters: ChangeSeverity[], changes: ChangesSummary | undefined): boolean {
-  return isEmpty(filters) || !!filters.find((filterItem => countVersionDifferencesBySeverity(changes, filterItem) !== 0))
+  return (
+    isEmpty(filters) || !!filters.find((filterItem) => countVersionDifferencesBySeverity(changes, filterItem) !== 0)
+  )
 }
 
 export function getMajorSeverity(changes: ChangeSummary): ChangeSeverity {
@@ -100,7 +100,7 @@ export function hasNoChangesInSummary(changes: ChangesSummary): boolean {
 // TODO: Copy-pasted from countVersionDifferences - correct types
 export function hasNoChangesInSummaryRecord(changes: Record<ChangeSeverity, number>): boolean {
   let totalAmount = 0
-  changes && Object.values(changes).forEach(changesAmount => (totalAmount += changesAmount))
+  changes && Object.values(changes).forEach((changesAmount) => (totalAmount += changesAmount))
   return totalAmount === 0
 }
 
@@ -127,4 +127,3 @@ export function getBwcData(summary: PackageSummary | undefined): BwcData {
 
   return { type: SUCCESS_STATUS_MARKER_VARIANT, count: 0 }
 }
-

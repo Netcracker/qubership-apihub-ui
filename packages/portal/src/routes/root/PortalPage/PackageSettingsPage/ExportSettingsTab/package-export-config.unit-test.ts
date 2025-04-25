@@ -37,18 +37,20 @@ describe('toOasExtensions', () => {
 
     // Assert
     expect(result).toHaveLength(2)
-    expect(result).toEqual(expect.arrayContaining([
-      expect.objectContaining({
-        key: 'test.package-x-extension-1',
-        name: 'x-extension-1',
-        kind: 'direct',
-      }),
-      expect.objectContaining({
-        key: 'test.package-x-extension-2',
-        name: 'x-extension-2',
-        kind: 'direct',
-      }),
-    ]))
+    expect(result).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          key: 'test.package-x-extension-1',
+          name: 'x-extension-1',
+          kind: 'direct',
+        }),
+        expect.objectContaining({
+          key: 'test.package-x-extension-2',
+          name: 'x-extension-2',
+          kind: 'direct',
+        }),
+      ]),
+    )
   })
 
   // Test inherited extensions
@@ -79,34 +81,36 @@ describe('toOasExtensions', () => {
     expect(result).toHaveLength(2)
 
     // Check both extensions are marked as inherited
-    const extensions = result.map(ext => ({
+    const extensions = result.map((ext) => ({
       name: ext.name,
       kind: ext.kind,
       inheritances: ext.inheritances,
     }))
 
-    expect(extensions).toEqual(expect.arrayContaining([
-      expect.objectContaining({
-        name: 'x-parent-extension',
-        kind: 'inherited',
-        inheritances: expect.arrayContaining([
-          {
-            packageName: 'Group',
-            packageKind: GROUP_KIND,
-          },
-        ]),
-      }),
-      expect.objectContaining({
-        name: 'x-grandparent-extension',
-        kind: 'inherited',
-        inheritances: expect.arrayContaining([
-          {
-            packageName: 'Workspace',
-            packageKind: WORKSPACE_KIND,
-          },
-        ]),
-      }),
-    ]))
+    expect(extensions).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: 'x-parent-extension',
+          kind: 'inherited',
+          inheritances: expect.arrayContaining([
+            {
+              packageName: 'Group',
+              packageKind: GROUP_KIND,
+            },
+          ]),
+        }),
+        expect.objectContaining({
+          name: 'x-grandparent-extension',
+          kind: 'inherited',
+          inheritances: expect.arrayContaining([
+            {
+              packageName: 'Workspace',
+              packageKind: WORKSPACE_KIND,
+            },
+          ]),
+        }),
+      ]),
+    )
   })
 
   // Test mixed extensions (both direct and inherited with the same name)
@@ -178,16 +182,18 @@ describe('toOasExtensions', () => {
     expect(inheritedExtension.name).toBe('x-inherited-extension')
     expect(inheritedExtension.kind).toBe(OAS_EXTENSION_KIND_INHERITED)
     expect(inheritedExtension.inheritances).toHaveLength(2)
-    expect(inheritedExtension.inheritances).toEqual(expect.arrayContaining([
-      {
-        packageName: 'Group',
-        packageKind: GROUP_KIND,
-      },
-      {
-        packageName: 'Workspace',
-        packageKind: WORKSPACE_KIND,
-      },
-    ]))
+    expect(inheritedExtension.inheritances).toEqual(
+      expect.arrayContaining([
+        {
+          packageName: 'Group',
+          packageKind: GROUP_KIND,
+        },
+        {
+          packageName: 'Workspace',
+          packageKind: WORKSPACE_KIND,
+        },
+      ]),
+    )
   })
 
   // Test sorting
@@ -340,16 +346,18 @@ describe('separateExtensionsByInheritance', () => {
     expect(inheritedExtensions[0].name).toBe('x-inherited-extension')
     expect(inheritedExtensions[0].kind).toBe(OAS_EXTENSION_KIND_INHERITED)
 
-    expect(nonInheritedExtensions).toEqual(expect.arrayContaining([
-      expect.objectContaining({
-        name: 'x-direct-extension',
-        kind: OAS_EXTENSION_KIND_DIRECT,
-      }),
-      expect.objectContaining({
-        name: 'x-mixed-extension',
-        kind: OAS_EXTENSION_KIND_MIXED,
-      }),
-    ]))
+    expect(nonInheritedExtensions).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: 'x-direct-extension',
+          kind: OAS_EXTENSION_KIND_DIRECT,
+        }),
+        expect.objectContaining({
+          name: 'x-mixed-extension',
+          kind: OAS_EXTENSION_KIND_MIXED,
+        }),
+      ]),
+    )
   })
 
   test('should handle empty extensions array', () => {
@@ -398,16 +406,18 @@ describe('separateExtensionsByInheritance', () => {
     expect(inheritedExtensions).toHaveLength(2)
     expect(nonInheritedExtensions).toHaveLength(0)
 
-    expect(inheritedExtensions).toEqual(expect.arrayContaining([
-      expect.objectContaining({
-        name: 'x-inherited-extension-1',
-        kind: OAS_EXTENSION_KIND_INHERITED,
-      }),
-      expect.objectContaining({
-        name: 'x-inherited-extension-2',
-        kind: OAS_EXTENSION_KIND_INHERITED,
-      }),
-    ]))
+    expect(inheritedExtensions).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: 'x-inherited-extension-1',
+          kind: OAS_EXTENSION_KIND_INHERITED,
+        }),
+        expect.objectContaining({
+          name: 'x-inherited-extension-2',
+          kind: OAS_EXTENSION_KIND_INHERITED,
+        }),
+      ]),
+    )
   })
 
   test('should handle array with only non-inherited extensions', () => {
@@ -438,15 +448,17 @@ describe('separateExtensionsByInheritance', () => {
     expect(inheritedExtensions).toHaveLength(0)
     expect(nonInheritedExtensions).toHaveLength(2)
 
-    expect(nonInheritedExtensions).toEqual(expect.arrayContaining([
-      expect.objectContaining({
-        name: 'x-direct-extension',
-        kind: OAS_EXTENSION_KIND_DIRECT,
-      }),
-      expect.objectContaining({
-        name: 'x-mixed-extension',
-        kind: OAS_EXTENSION_KIND_MIXED,
-      }),
-    ]))
+    expect(nonInheritedExtensions).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: 'x-direct-extension',
+          kind: OAS_EXTENSION_KIND_DIRECT,
+        }),
+        expect.objectContaining({
+          name: 'x-mixed-extension',
+          kind: OAS_EXTENSION_KIND_MIXED,
+        }),
+      ]),
+    )
   })
 })

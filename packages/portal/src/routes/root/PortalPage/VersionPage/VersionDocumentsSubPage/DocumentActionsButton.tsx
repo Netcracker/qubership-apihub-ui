@@ -42,9 +42,7 @@ import { MenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Bu
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import { REF_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
-import {
-  MenuButtonContentWithSections,
-} from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButtonContentWithSections'
+import { MenuButtonContentWithSections } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButtonContentWithSections'
 
 export type DocumentActionsButtonProps = {
   slug: Key
@@ -85,7 +83,8 @@ export const DocumentActionsButton: FC<DocumentActionsButtonProps> = memo<Docume
 
   const { navigateToDocumentPreview } = useNavigation()
 
-  const createTemplate = useCallback((key?: Key): string => `
+  const createTemplate = useCallback(
+    (key?: Key): string => `
     <script src="${protocol}//${host}/portal/apispec-view/index.js"></script>
     <apispec-view
       apiDescriptionUrl="${protocol}//${host}/api/v2/sharedFiles/${key}"
@@ -93,139 +92,144 @@ export const DocumentActionsButton: FC<DocumentActionsButtonProps> = memo<Docume
       layout="stacked"
       hideExport>
     </apispec-view>
-  `, [host, protocol])
+  `,
+    [host, protocol],
+  )
 
   const isShareAvailable = docType !== UNKNOWN_SPEC_TYPE || format === MD_FILE_FORMAT
 
-  const openApiActions = useMemo(() => ({
-    'Interactive HTML': [
-      {
-        onClick: () => navigateToDocumentPreview({
-          packageKey: packageId!,
-          versionKey: versionId!,
-          documentKey: slug,
-          search: {
-            [REF_SEARCH_PARAM]: { value: ref ?? '' },
-          },
-        }),
-        title: 'Preview document',
-        testId: 'PreviewDocumentMenuItem',
-      },
-      {
-        onClick: () => downloadPublishedDocument({
-          docType: INTERACTIVE_DOC_TYPE,
-          rawOptions: { resultFileExtension: HTML_FILE_EXTENSION, inlineRefs: false },
-        }),
-        title: 'Download (zip)',
-        testId: 'DownloadZipMenuItem',
-      },
-    ],
-    'Download source': [
-      {
-        onClick: () => downloadPublishedDocument({
-          docType: RAW_DOC_TYPE,
-          rawOptions: { resultFileExtension: YAML_FILE_EXTENSION, inlineRefs: false },
-        }),
-        title: 'Download as YAML',
-        testId: 'DownloadYamlMenuItem',
-      },
-      {
-        onClick: () => downloadPublishedDocument({
-          docType: RAW_DOC_TYPE,
-          rawOptions: { resultFileExtension: JSON_FILE_EXTENSION, inlineRefs: false },
-        }),
-        title: 'Download as JSON',
-        testId: 'DownloadJsonMenuItem',
-      },
-      {
-        onClick: () => downloadPublishedDocument({
-          docType: RAW_DOC_TYPE,
-          rawOptions: { resultFileExtension: YAML_FILE_EXTENSION, inlineRefs: true },
-        }),
-        title: 'Download as YAML (inline refs)',
-        testId: 'DownloadYamlInlineRefsMenuItem',
-      },
-      {
-        onClick: () => downloadPublishedDocument({
-          docType: RAW_DOC_TYPE,
-          rawOptions: { resultFileExtension: JSON_FILE_EXTENSION, inlineRefs: true },
-        }),
-        title: 'Download as JSON (inline refs)',
-        testId: 'DownloadJsonInlineRefsMenuItem',
-      },
-    ],
-  }), [downloadPublishedDocument, navigateToDocumentPreview, packageId, ref, slug, versionId])
+  const openApiActions = useMemo(
+    () => ({
+      'Interactive HTML': [
+        {
+          onClick: () =>
+            navigateToDocumentPreview({
+              packageKey: packageId!,
+              versionKey: versionId!,
+              documentKey: slug,
+              search: {
+                [REF_SEARCH_PARAM]: { value: ref ?? '' },
+              },
+            }),
+          title: 'Preview document',
+          testId: 'PreviewDocumentMenuItem',
+        },
+        {
+          onClick: () =>
+            downloadPublishedDocument({
+              docType: INTERACTIVE_DOC_TYPE,
+              rawOptions: { resultFileExtension: HTML_FILE_EXTENSION, inlineRefs: false },
+            }),
+          title: 'Download (zip)',
+          testId: 'DownloadZipMenuItem',
+        },
+      ],
+      'Download source': [
+        {
+          onClick: () =>
+            downloadPublishedDocument({
+              docType: RAW_DOC_TYPE,
+              rawOptions: { resultFileExtension: YAML_FILE_EXTENSION, inlineRefs: false },
+            }),
+          title: 'Download as YAML',
+          testId: 'DownloadYamlMenuItem',
+        },
+        {
+          onClick: () =>
+            downloadPublishedDocument({
+              docType: RAW_DOC_TYPE,
+              rawOptions: { resultFileExtension: JSON_FILE_EXTENSION, inlineRefs: false },
+            }),
+          title: 'Download as JSON',
+          testId: 'DownloadJsonMenuItem',
+        },
+        {
+          onClick: () =>
+            downloadPublishedDocument({
+              docType: RAW_DOC_TYPE,
+              rawOptions: { resultFileExtension: YAML_FILE_EXTENSION, inlineRefs: true },
+            }),
+          title: 'Download as YAML (inline refs)',
+          testId: 'DownloadYamlInlineRefsMenuItem',
+        },
+        {
+          onClick: () =>
+            downloadPublishedDocument({
+              docType: RAW_DOC_TYPE,
+              rawOptions: { resultFileExtension: JSON_FILE_EXTENSION, inlineRefs: true },
+            }),
+          title: 'Download as JSON (inline refs)',
+          testId: 'DownloadJsonInlineRefsMenuItem',
+        },
+      ],
+    }),
+    [downloadPublishedDocument, navigateToDocumentPreview, packageId, ref, slug, versionId],
+  )
 
-  const shareActions = useMemo(() => ({
-    'Share': [
-      {
-        onClick: () => {
-          getSharedKey().then(({ data }) => {
-            if (data) {
-              copyToClipboard(`${protocol}//${host}/api/v2/sharedFiles/${data}`)
-              showNotification({ message: 'Link copied' })
-            }
-          })
+  const shareActions = useMemo(
+    () => ({
+      Share: [
+        {
+          onClick: () => {
+            getSharedKey().then(({ data }) => {
+              if (data) {
+                copyToClipboard(`${protocol}//${host}/api/v2/sharedFiles/${data}`)
+                showNotification({ message: 'Link copied' })
+              }
+            })
+          },
+          title: `Public link to source${isOpenApiSpecType(docType) ? ' (JSON)' : ''}`,
+          testId: 'ShareSourceLinkMenuItem',
         },
-        title: `Public link to source${isOpenApiSpecType(docType) ? ' (JSON)' : ''}`,
-        testId: 'ShareSourceLinkMenuItem',
-      },
-      {
-        onClick: () => {
-          copyToClipboard(href + slug ?? '')
-          showNotification({ message: 'Link copied' })
+        {
+          onClick: () => {
+            copyToClipboard(href + slug ?? '')
+            showNotification({ message: 'Link copied' })
+          },
+          title: 'Link to document page',
+          testId: 'ShareDocumentLinkMenuItem',
         },
-        title: 'Link to document page',
-        testId: 'ShareDocumentLinkMenuItem',
-      },
-      {
-        onClick: () => {
-          getSharedKey().then(({ data }) => {
-            if (data) {
-              copyToClipboard(createTemplate(data))
-              showNotification({ message: 'Template copied' })
-            }
-          })
+        {
+          onClick: () => {
+            getSharedKey().then(({ data }) => {
+              if (data) {
+                copyToClipboard(createTemplate(data))
+                showNotification({ message: 'Template copied' })
+              }
+            })
+          },
+          title: 'Page template',
+          testId: 'ShareTemplateMenuItem',
         },
-        title: 'Page template',
-        testId: 'ShareTemplateMenuItem',
-      },
-    ],
-  }), [copyToClipboard, createTemplate, docType, getSharedKey, host, href, protocol, showNotification, slug])
+      ],
+    }),
+    [copyToClipboard, createTemplate, docType, getSharedKey, host, href, protocol, showNotification, slug],
+  )
 
   return (
     <MenuButton
       sx={sx ?? DEFAULT_ACTION_BUTTON_STYLE}
-      icon={(
+      icon={
         actionMenuOpen
-          ? (openedIcon ?? icon ?? <KeyboardArrowUpOutlinedIcon fontSize="small"/>)
-          : (icon ?? <KeyboardArrowDownOutlinedIcon fontSize="small"/>)
-      )}
-      onClick={event => {
+          ? (openedIcon ?? icon ?? <KeyboardArrowUpOutlinedIcon fontSize="small" />)
+          : (icon ?? <KeyboardArrowDownOutlinedIcon fontSize="small" />)
+      }
+      onClick={(event) => {
         event.stopPropagation()
         setActionMenuOpen(!actionMenuOpen)
       }}
-      onItemClick={event => event.stopPropagation()}
+      onItemClick={(event) => event.stopPropagation()}
       {...customProps}
       data-testid="DocumentActionsButton"
     >
-      {isOpenApiSpecType(docType)
-        ? (
-          <MenuButtonContentWithSections
-            content={openApiActions}
-          />
-        )
-        : <MenuItem onClick={() => downloadPublishedDocument()} data-testid="DownloadMenuItem">
+      {isOpenApiSpecType(docType) ? (
+        <MenuButtonContentWithSections content={openApiActions} />
+      ) : (
+        <MenuItem onClick={() => downloadPublishedDocument()} data-testid="DownloadMenuItem">
           Download
         </MenuItem>
-      }
-      {
-        isShareAvailable && (
-          <MenuButtonContentWithSections
-            content={shareActions}
-          />
-        )
-      }
+      )}
+      {isShareAvailable && <MenuButtonContentWithSections content={shareActions} />}
     </MenuButton>
   )
 })

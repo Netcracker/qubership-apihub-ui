@@ -28,48 +28,35 @@ export type ToolbarProps = {
   size?: ToolbarSize
 } & TestableProps
 
-export const Toolbar: FC<ToolbarProps> = memo<ToolbarProps>(({
-  breadcrumbs,
-  header,
-  action,
-  size = SMALL_TOOLBAR_SIZE,
-  testId,
-}) => {
-  return (
-    <Card>
-      <CardHeader
-        sx={{ height: TOOLBAR_HEIGHT[breadcrumbs ? LARGE_TOOLBAR_SIZE : size], px: 4 }}
-        title={breadcrumbs}
-        subheader={
-          <Box
-            display="flex"
-            maxWidth="55vw"
-            gap={1}
-            alignItems="baseline"
-            height={28}
-          >
-            {header}
-          </Box>
-        }
-        subheaderTypographyProps={{ variant: 'h5', color: '#000000' }}
-        action={
-          <Box display="flex" gap={1}>
-            {action}
-          </Box>
-        }
-        data-testid={testId}
-      />
-    </Card>
-  )
-})
+export const Toolbar: FC<ToolbarProps> = memo<ToolbarProps>(
+  ({ breadcrumbs, header, action, size = SMALL_TOOLBAR_SIZE, testId }) => {
+    return (
+      <Card>
+        <CardHeader
+          sx={{ height: TOOLBAR_HEIGHT[breadcrumbs ? LARGE_TOOLBAR_SIZE : size], px: 4 }}
+          title={breadcrumbs}
+          subheader={
+            <Box display="flex" maxWidth="55vw" gap={1} alignItems="baseline" height={28}>
+              {header}
+            </Box>
+          }
+          subheaderTypographyProps={{ variant: 'h5', color: '#000000' }}
+          action={
+            <Box display="flex" gap={1}>
+              {action}
+            </Box>
+          }
+          data-testid={testId}
+        />
+      </Card>
+    )
+  },
+)
 
 export const SMALL_TOOLBAR_SIZE = 'small'
 export const MEDIUM_TOOLBAR_SIZE = 'medium'
 export const LARGE_TOOLBAR_SIZE = 'large'
-type ToolbarSize =
-  | typeof SMALL_TOOLBAR_SIZE
-  | typeof MEDIUM_TOOLBAR_SIZE
-  | typeof LARGE_TOOLBAR_SIZE
+type ToolbarSize = typeof SMALL_TOOLBAR_SIZE | typeof MEDIUM_TOOLBAR_SIZE | typeof LARGE_TOOLBAR_SIZE
 
 const TOOLBAR_HEIGHT: Record<ToolbarSize, string> = {
   [SMALL_TOOLBAR_SIZE]: '36px',

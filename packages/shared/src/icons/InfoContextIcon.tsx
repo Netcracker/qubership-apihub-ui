@@ -13,4 +13,4 @@ InfoContextIcon.defaultProps = {
   'data-testid': 'InfoIcon',
 }
 
-InfoContextIcon.displayName = 'InfoContextIcon' 
+InfoContextIcon.displayName = 'InfoContextIcon'

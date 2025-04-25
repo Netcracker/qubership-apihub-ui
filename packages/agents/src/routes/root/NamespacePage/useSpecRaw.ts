@@ -33,11 +33,13 @@ import { API_V2 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 const SPEC_RAW_QUERY_KEY = 'spec-raw-query-key'
 const EMPTY_SPECS_RESULT: Map<SpecKey, SpecRaw> = new Map()
 
-export function useSpecRaw(options?: Partial<{
-  serviceKey: ServiceKey
-  specKey: SpecKey
-  enabled: boolean
-}>): [SpecRaw, IsLoading] {
+export function useSpecRaw(
+  options?: Partial<{
+    serviceKey: ServiceKey
+    specKey: SpecKey
+    enabled: boolean
+  }>,
+): [SpecRaw, IsLoading] {
   const { agentId, namespaceKey } = useParams()
   const { serviceKey, specKey, enabled } = options ?? {}
   const workspaceKey = useSearchParam(WORKSPACE_SEARCH_PARAM)
@@ -49,10 +51,7 @@ export function useSpecRaw(options?: Partial<{
     select: toFormattedJsonString,
   })
 
-  return [
-    data ?? '',
-    isInitialLoading,
-  ]
+  return [data ?? '', isInitialLoading]
 }
 
 export function useSpecsRaw(options: {
@@ -70,7 +69,7 @@ export function useSpecsRaw(options: {
         queryKey: [SPEC_RAW_QUERY_KEY, namespaceKey, serviceKey, specKey],
         queryFn: () => getSpecRaw(agentId!, namespaceKey!, workspaceKey!, serviceKey, specKey, getAuthorization()),
         enabled: enabled && !!namespaceKey && !!serviceKey && !!specKey,
-        select: (specRaw => [specKey, specRaw]),
+        select: (specRaw) => [specKey, specRaw],
       }
     }),
   })
@@ -80,29 +79,24 @@ export function useSpecsRaw(options: {
     // useQueries returns a new array on every call ( https://github.com/TanStack/query/issues/6840 )
     // todo remove memoizedQueriesResult after react-query update to v5.29.0 ( https://github.com/TanStack/query/pull/7233 )
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [...results.flatMap(result => Object.keys(result).concat(Object.values(result)))])
+  }, [...results.flatMap((result) => Object.keys(result).concat(Object.values(result)))])
 
   const isInitialLoading = useMemo(
-    () => memoizedQueriesResult.some(query => query.isLoading),
+    () => memoizedQueriesResult.some((query) => query.isLoading),
     [memoizedQueriesResult],
   )
 
-  const hasErrors = useMemo(
-    () => memoizedQueriesResult.some(query => query.isError),
-    [memoizedQueriesResult],
-  )
+  const hasErrors = useMemo(() => memoizedQueriesResult.some((query) => query.isError), [memoizedQueriesResult])
 
   const specsRaw = useMemo(
-    () => (isInitialLoading || hasErrors ? EMPTY_SPECS_RESULT : new Map<SpecKey, SpecRaw>(
-      memoizedQueriesResult.map((result) => [...result.data!]),
-    )),
+    () =>
+      isInitialLoading || hasErrors
+        ? EMPTY_SPECS_RESULT
+        : new Map<SpecKey, SpecRaw>(memoizedQueriesResult.map((result) => [...result.data!])),
     [hasErrors, isInitialLoading, memoizedQueriesResult],
   )
 
-  return [
-    specsRaw,
-    isInitialLoading,
-  ]
+  return [specsRaw, isInitialLoading]
 }
 
 export async function getSpecRaw(
@@ -128,13 +122,21 @@ export async function getSpecBlob(
   authorization: string,
   ignoreErrors?: boolean,
 ): Promise<Blob> {
-  return (await ncCustomAgentsRequestBlob(`/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/services/${serviceKey}/specs/${encodeURIComponent(specKey)}`, {
-      method: 'get',
-      headers: { authorization },
-    },
-    {
-      basePath: `${APIHUB_NC_BASE_PATH}${API_V2}`,
-      customErrorHandler: ignoreErrors ? () => {/*do nothing*/} : undefined,
-    },
-  )).blob()
+  return (
+    await ncCustomAgentsRequestBlob(
+      `/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/services/${serviceKey}/specs/${encodeURIComponent(specKey)}`,
+      {
+        method: 'get',
+        headers: { authorization },
+      },
+      {
+        basePath: `${APIHUB_NC_BASE_PATH}${API_V2}`,
+        customErrorHandler: ignoreErrors
+          ? () => {
+              /*do nothing*/
+            }
+          : undefined,
+      },
+    )
+  ).blob()
 }

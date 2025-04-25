@@ -15,7 +15,11 @@
  */
 
 import { useMemo } from 'react'
-import type { OperationWithDifferenceChangeData, DifferentVersionChanges , PagedDiffVersionChanges } from '../../../entities/version-changelog'
+import type {
+  OperationWithDifferenceChangeData,
+  DifferentVersionChanges,
+  PagedDiffVersionChanges,
+} from '../../../entities/version-changelog'
 import { EMPTY_CHANGES } from '../../../entities/version-changelog'
 
 export function useDetailedVersionChangelog(versionChangelog: PagedDiffVersionChanges): DifferentVersionChanges {

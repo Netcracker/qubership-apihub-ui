@@ -24,7 +24,7 @@ export function useChangeSearchParam(): [Key | undefined, SetEditorSelectedChang
   const setSearchParams = useSetSearchParams()
 
   return useMemo(
-    () => [param, value => setSearchParams({ change: value ?? '' }, { replace: true })],
+    () => [param, (value) => setSearchParams({ change: value ?? '' }, { replace: true })],
     [param, setSearchParams],
   )
 }

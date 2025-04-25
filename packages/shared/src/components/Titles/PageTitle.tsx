@@ -30,36 +30,27 @@ export type PageTitleProps = {
 }
 
 // First Order Component //
-export const PageTitle: FC<PageTitleProps> = memo<PageTitleProps>(({
-  title,
-  titleComponent,
-  apiType,
-  withApiSelector = false,
-  onApiTypeChange,
-}) => {
-  return (
-    <Box
-      display="flex"
-      width="100%"
-      alignItems="center"
-      flexGrow={1}
-      gap={3}
-      mr={3}
-      height="32px"
-    >
-      <Box display="flex" alignItems="center" gap={1}>
-        <Typography variant="body1" fontSize={15} sx={{ fontWeight: 600 }}>{title}</Typography>
-        {titleComponent && <Box fontSize={15} fontWeight={600}>{titleComponent}</Box>}
-      </Box>
-
-      {withApiSelector && apiType && (
-        <Box>
-          <ApiTypeSelector
-            apiType={apiType}
-            onChange={onApiTypeChange}
-          />
+export const PageTitle: FC<PageTitleProps> = memo<PageTitleProps>(
+  ({ title, titleComponent, apiType, withApiSelector = false, onApiTypeChange }) => {
+    return (
+      <Box display="flex" width="100%" alignItems="center" flexGrow={1} gap={3} mr={3} height="32px">
+        <Box display="flex" alignItems="center" gap={1}>
+          <Typography variant="body1" fontSize={15} sx={{ fontWeight: 600 }}>
+            {title}
+          </Typography>
+          {titleComponent && (
+            <Box fontSize={15} fontWeight={600}>
+              {titleComponent}
+            </Box>
+          )}
         </Box>
-      )}
-    </Box>
-  )
-})
+
+        {withApiSelector && apiType && (
+          <Box>
+            <ApiTypeSelector apiType={apiType} onChange={onApiTypeChange} />
+          </Box>
+        )}
+      </Box>
+    )
+  },
+)

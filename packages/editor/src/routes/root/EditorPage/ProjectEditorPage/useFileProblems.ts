@@ -31,17 +31,17 @@ import { wrap } from 'comlink'
 import pLimit from 'p-limit'
 import type { FileKey, Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { FileProblem } from '@apihub/entities/file-problems'
-import {
-  ERROR_FILE_PROBLEM_TYPE,
-  INFO_FILE_PROBLEM_TYPE,
-  WARN_FILE_PROBLEM_TYPE,
-} from '@apihub/entities/file-problems'
+import { ERROR_FILE_PROBLEM_TYPE, INFO_FILE_PROBLEM_TYPE, WARN_FILE_PROBLEM_TYPE } from '@apihub/entities/file-problems'
 import type { InvalidateQuery, IsFetching } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { deduplicate, isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import { UNKNOWN_SPEC_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import type { FileFormat } from '@netcracker/qubership-apihub-ui-shared/utils/files'
-import { JSON_FILE_FORMAT, UNKNOWN_FILE_FORMAT, YAML_FILE_FORMAT } from '@netcracker/qubership-apihub-ui-shared/utils/files'
+import {
+  JSON_FILE_FORMAT,
+  UNKNOWN_FILE_FORMAT,
+  YAML_FILE_FORMAT,
+} from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import type { SpecContent } from '@apihub/entities/specs'
 import type { AddedLineCount } from '@apihub/utils/specifications'
 import { generateSpecificationByPathItems } from '@apihub/utils/specifications'
@@ -50,10 +50,7 @@ const FILE_PROBLEMS_QUERY_KEY = 'file-problems'
 const FILE_PROBLEMS_MAP: Record<FileKey, FileProblem[]> = {}
 
 const { validate } = wrap<ValidationWorker>(new Worker())
-export function useFileProblems(
-  fileKey?: FileKey | null,
-  withoutCache = false,
-): [FileProblem[], IsFetching] {
+export function useFileProblems(fileKey?: FileKey | null, withoutCache = false): [FileProblem[], IsFetching] {
   const { projectId } = useParams()
   const [branchName] = useBranchSearchParam()
 
@@ -66,12 +63,7 @@ export function useFileProblems(
     queryKey: [FILE_PROBLEMS_QUERY_KEY, projectId, branchName, fileKey, withoutCache],
     queryFn: async () => {
       const branchCache = client.getQueryData<BranchCache>([BRANCH_CACHE_QUERY_KEY, projectId, branchName])!
-      return getValidationMessages(
-        bwcProblems,
-        fileKey!,
-        branchCache,
-        withoutCache,
-      )
+      return getValidationMessages(bwcProblems, fileKey!, branchCache, withoutCache)
     },
     enabled: !!projectId && !!branchName && !!fileKey && !isBwcChecking && !isBranchCacheLoading,
     refetchOnWindowFocus: false,
@@ -82,10 +74,7 @@ export function useFileProblems(
   return [data ?? [], isFetching || isLoading]
 }
 
-export function useFileProblemsMap(
-  fileKeys?: FileKey[],
-  fileKeysHash?: Key,
-): [Record<Key, FileProblem[]>, IsFetching] {
+export function useFileProblemsMap(fileKeys?: FileKey[], fileKeysHash?: Key): [Record<Key, FileProblem[]>, IsFetching] {
   const { projectId } = useParams()
   const [branchName] = useBranchSearchParam()
 
@@ -106,9 +95,11 @@ export function useFileProblemsMap(
       const promises = []
 
       for (const fileKey of fileKeys) {
-        promises.push(limit(async () => {
-          result[fileKey] = await getValidationMessages(bwcProblems, fileKey, branchCache)
-        }))
+        promises.push(
+          limit(async () => {
+            result[fileKey] = await getValidationMessages(bwcProblems, fileKey, branchCache)
+          }),
+        )
       }
 
       await Promise.all(promises)
@@ -131,14 +122,11 @@ export function useUpdateBwcFileProblems(): InvalidateQuery<{ fileKey: FileKey; 
   const client = useQueryClient()
 
   return ({ fileKey, bwcProblems }) => {
-    client.setQueryData<FileProblem[]>([FILE_PROBLEMS_QUERY_KEY, projectId, branch, fileKey], oldData => {
+    client.setQueryData<FileProblem[]>([FILE_PROBLEMS_QUERY_KEY, projectId, branch, fileKey], (oldData) => {
       if (!oldData) {
         return oldData
       }
-      return [
-        ...oldData,
-        ...bwcProblems,
-      ]
+      return [...oldData, ...bwcProblems]
     })
   }
 }
@@ -202,24 +190,15 @@ export async function getValidationMessages(
 }
 
 export function useErrorFileProblemCount(value: FileProblem[]): number {
-  return useMemo(
-    () => value.filter(({ type }) => type === ERROR_FILE_PROBLEM_TYPE).length,
-    [value],
-  )
+  return useMemo(() => value.filter(({ type }) => type === ERROR_FILE_PROBLEM_TYPE).length, [value])
 }
 
 export function useWarnFileProblemCount(value: FileProblem[]): number {
-  return useMemo(
-    () => value.filter(({ type }) => type === WARN_FILE_PROBLEM_TYPE).length,
-    [value],
-  )
+  return useMemo(() => value.filter(({ type }) => type === WARN_FILE_PROBLEM_TYPE).length, [value])
 }
 
 export function useInfoFileProblemCount(value: FileProblem[]): number {
-  return useMemo(
-    () => value.filter(({ type }) => type === INFO_FILE_PROBLEM_TYPE).length,
-    [value],
-  )
+  return useMemo(() => value.filter(({ type }) => type === INFO_FILE_PROBLEM_TYPE).length, [value])
 }
 
 export function toValidationMessages(
@@ -227,48 +206,40 @@ export function toValidationMessages(
   fileKey: FileKey,
   lineNumberCorrection: number,
 ): FileProblem[] {
-  return data.map(({
-    code,
-    message,
-    source,
-    path,
-    range: { start: { line } },
-    fileProblemType,
-  }: ValidationDiagnostic) => ({
-    type: fileProblemType,
-    critical: code === 'invalid-ref',
-    text: message,
-    filePath: fileKey,
-    externalFilePath: isExternalFile(source, fileKey) ? getExternalFilePath(source, path) : undefined,
-    lineNumber: line + 1 - lineNumberCorrection,
-  }))
+  return data.map(
+    ({
+      code,
+      message,
+      source,
+      path,
+      range: {
+        start: { line },
+      },
+      fileProblemType,
+    }: ValidationDiagnostic) => ({
+      type: fileProblemType,
+      critical: code === 'invalid-ref',
+      text: message,
+      filePath: fileKey,
+      externalFilePath: isExternalFile(source, fileKey) ? getExternalFilePath(source, path) : undefined,
+      lineNumber: line + 1 - lineNumberCorrection,
+    }),
+  )
 }
 
-function isExternalFile(
-  currentFilePath: string | undefined,
-  rootFilePath: string,
-): boolean {
+function isExternalFile(currentFilePath: string | undefined, rootFilePath: string): boolean {
   return currentFilePath !== rootFilePath
 }
 
-function getExternalFilePath(
-  source: string | undefined,
-  path: JsonPath,
-): string {
+function getExternalFilePath(source: string | undefined, path: JsonPath): string {
   return `${source ? `${source}` : ''}#/${jsonPathToString(path)}`
 }
 
 export function jsonPathToString(path: JsonPath): string {
-  return path
-    .map(segment => `${segment}`.replaceAll('~', '~0').replaceAll('/', '~1'))
-    .join('/')
+  return path.map((segment) => `${segment}`.replaceAll('~', '~0').replaceAll('/', '~1')).join('/')
 }
 
-function prepareValidationData(
-  type: SpecType,
-  format: FileFormat,
-  value: string,
-): [SpecContent, AddedLineCount] {
+function prepareValidationData(type: SpecType, format: FileFormat, value: string): [SpecContent, AddedLineCount] {
   if (type === UNKNOWN_SPEC_TYPE && (format === JSON_FILE_FORMAT || format === YAML_FILE_FORMAT)) {
     const specification = generateSpecificationByPathItems(format, value)
     if (specification) {

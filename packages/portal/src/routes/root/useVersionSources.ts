@@ -27,9 +27,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 const VERSION_SOURCES_QUERY_KEY = 'version-sources-query-key'
 
-export function useVersionSources(options: {
-  enabled?: boolean
-}): [File[], IsLoading] {
+export function useVersionSources(options: { enabled?: boolean }): [File[], IsLoading] {
   const { enabled = true } = options
   const { packageId, versionId } = useParams()
   const showErrorNotification = useShowErrorNotification()
@@ -50,10 +48,7 @@ export function useVersionSources(options: {
   )
 }
 
-export async function fetchSources(
-  packageKey: Key,
-  versionKey: Key,
-): Promise<File[]> {
+export async function fetchSources(packageKey: Key, versionKey: Key): Promise<File[]> {
   const data = await fetchSourcesBlob(packageKey, versionKey)
   return data ? getSourcesFromZip(data) : []
 }
@@ -61,29 +56,24 @@ export async function fetchSources(
 export async function getSourcesFromZip(data: Blob): Promise<File[]> {
   const zip = new JSZip()
   const jsZip = await zip.loadAsync(data)
-  return Promise.all(Object.values(jsZip.files)
-    .filter(file => !file.dir)
-    .map(async (file) => {
-      const fileData = await file.async('blob')
-      return new File([fileData], getFileName(file.name))
-    }),
+  return Promise.all(
+    Object.values(jsZip.files)
+      .filter((file) => !file.dir)
+      .map(async (file) => {
+        const fileData = await file.async('blob')
+        return new File([fileData], getFileName(file.name))
+      }),
   )
 }
 
-export async function fetchSourcesBlob(
-  packageKey: Key,
-  versionKey: Key,
-): Promise<Blob | null> {
+export async function fetchSourcesBlob(packageKey: Key, versionKey: Key): Promise<Blob | null> {
   const packageId = encodeURIComponent(packageKey)
   const versionId = encodeURIComponent(versionKey)
 
   const pathPattern = '/packages/:packageId/versions/:versionId/sources'
-  const response = await portalRequestBlob(
-    `${generatePath(pathPattern, { packageId, versionId })}`,
-    {
-      method: 'GET',
-    },
-  )
+  const response = await portalRequestBlob(`${generatePath(pathPattern, { packageId, versionId })}`, {
+    method: 'GET',
+  })
   return response.blob()
 }
 
@@ -103,7 +93,9 @@ export function useAsyncInvalidateVersionSources(): (sources: InvalidateVersionS
 export function useInvalidateVersionSources(): InvalidateQuery<InvalidateVersionSources> {
   const client = useQueryClient()
   return ({ packageKey, versionKey }: InvalidateVersionSources) =>
-    client.invalidateQueries({
-      queryKey: [VERSION_SOURCES_QUERY_KEY, packageKey, versionKey],
-    }).then()
+    client
+      .invalidateQueries({
+        queryKey: [VERSION_SOURCES_QUERY_KEY, packageKey, versionKey],
+      })
+      .then()
 }

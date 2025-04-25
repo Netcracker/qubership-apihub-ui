@@ -33,10 +33,11 @@ import { useNavigation } from '../../../../NavigationProvider'
 import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
 import { useEventBus } from '@apihub/routes/EventBusProvider'
 import type { OperationWithDifferenceChangeData } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
+import { useSeverityFiltersSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/change-severities/useSeverityFiltersSearchParam'
 import {
-  useSeverityFiltersSearchParam,
-} from '@netcracker/qubership-apihub-ui-shared/hooks/change-severities/useSeverityFiltersSearchParam'
-import { filterChangesBySeverity, getMajorSeverity } from '@netcracker/qubership-apihub-ui-shared/utils/change-severities'
+  filterChangesBySeverity,
+  getMajorSeverity,
+} from '@netcracker/qubership-apihub-ui-shared/utils/change-severities'
 import {
   API_TYPE_SEARCH_PARAM,
   FILTERS_SEARCH_PARAM,
@@ -63,22 +64,12 @@ import { OperationTitleWithMeta } from '@netcracker/qubership-apihub-ui-shared/c
 import { Changes } from '@netcracker/qubership-apihub-ui-shared/components/Changes'
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/utils/types'
-import {
-  useDetailedVersionChangelog,
-} from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget/api/useDetailedVersionChangelog'
-import {
-  usePagedDetailedVersionChangelog,
-} from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget/api/useCommonPagedVersionChangelog'
+import { useDetailedVersionChangelog } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget/api/useDetailedVersionChangelog'
+import { usePagedDetailedVersionChangelog } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget/api/useCommonPagedVersionChangelog'
 
 export function isRevisionCompare(originVersion: Key, changedVersion: Key): boolean {
-  const {
-    versionKey: originVersionKey,
-    revisionKey: originRevisionKey,
-  } = getSplittedVersionKey(originVersion)
-  const {
-    versionKey: changedVersionKey,
-    revisionKey: changedRevisionKey,
-  } = getSplittedVersionKey(changedVersion)
+  const { versionKey: originVersionKey, revisionKey: originRevisionKey } = getSplittedVersionKey(originVersion)
+  const { versionKey: changedVersionKey, revisionKey: changedRevisionKey } = getSplittedVersionKey(changedVersion)
 
   return originVersionKey === changedVersionKey && originRevisionKey !== changedRevisionKey
 }
@@ -90,13 +81,8 @@ export const VersionCompareContent: FC = memo(() => {
 
   const { isPackageFromDashboard } = useIsPackageFromDashboard()
 
-  const {
-    originPackageKey,
-    originVersionKey,
-    changedPackageKey,
-    changedVersionKey,
-    apiType,
-  } = useVersionsComparisonGlobalParams()
+  const { originPackageKey, originVersionKey, changedPackageKey, changedVersionKey, apiType } =
+    useVersionsComparisonGlobalParams()
   const [refPackageKey] = useRefSearchParam()
   const [tag] = useTagSearchFilter()
 
@@ -114,18 +100,19 @@ export const VersionCompareContent: FC = memo(() => {
   })
   const breadcrumbsData = useBreadcrumbsData()
 
-  const [packageChangelog, isLoading, fetchNextPage, isNextPageFetching, hasNextPage] = usePagedDetailedVersionChangelog({
-    packageKey: changedPackageKey!,
-    versionKey: changedVersionKey!,
-    previousVersionPackageKey: originPackageKey,
-    previousVersionKey: originVersionKey,
-    tag: tag,
-    apiType: apiType,
-    packageIdFilter: refPackageKey,
-    enabled: !!changesSummary && isContextValid,
-    page: 1,
-    limit: 100,
-  })
+  const [packageChangelog, isLoading, fetchNextPage, isNextPageFetching, hasNextPage] =
+    usePagedDetailedVersionChangelog({
+      packageKey: changedPackageKey!,
+      versionKey: changedVersionKey!,
+      previousVersionPackageKey: originPackageKey,
+      previousVersionKey: originVersionKey,
+      tag: tag,
+      apiType: apiType,
+      packageIdFilter: refPackageKey,
+      enabled: !!changesSummary && isContextValid,
+      page: 1,
+      limit: 100,
+    })
   const flatPackageChangelog = useDetailedVersionChangelog(packageChangelog)
   const packageChanges: ReadonlyArray<OperationWithDifferenceChangeData> = flatPackageChangelog.operations
 
@@ -145,8 +132,9 @@ export const VersionCompareContent: FC = memo(() => {
 
   const [filters] = useSeverityFiltersSearchParam()
   const filteredPackageChanges = useMemo(
-    () => packageChanges.filter(change => filterChangesBySeverity(filters, change.changeSummary)),
-    [filters, packageChanges])
+    () => packageChanges.filter((change) => filterChangesBySeverity(filters, change.changeSummary)),
+    [filters, packageChanges],
+  )
 
   const onClickOperationChange = (): void => {
     setBackwardLocation({ ...backwardLocation, fromOperationsComparison: location })
@@ -157,7 +145,9 @@ export const VersionCompareContent: FC = memo(() => {
   const handleSwap = useCallback(() => {
     const searchParams = {
       [VERSION_SEARCH_PARAM]: { value: changedVersionKey },
-      [PACKAGE_SEARCH_PARAM]: { value: originPackageKey !== changedPackageKey ? encodeURIComponent(changedPackageKey!) : '' },
+      [PACKAGE_SEARCH_PARAM]: {
+        value: originPackageKey !== changedPackageKey ? encodeURIComponent(changedPackageKey!) : '',
+      },
       [REF_SEARCH_PARAM]: { value: isPackageFromDashboard ? refPackageKey : undefined },
       [API_TYPE_SEARCH_PARAM]: { value: apiType },
       [TAG_SEARCH_PARAM]: { value: tag },
@@ -169,12 +159,21 @@ export const VersionCompareContent: FC = memo(() => {
       versionKey: originVersionKey!,
       search: searchParams,
     })
-  }, [apiType, changedPackageKey, changedVersionKey, filters, isPackageFromDashboard, navigateToComparison, originPackageKey, originVersionKey, refPackageKey, tag])
+  }, [
+    apiType,
+    changedPackageKey,
+    changedVersionKey,
+    filters,
+    isPackageFromDashboard,
+    navigateToComparison,
+    originPackageKey,
+    originVersionKey,
+    refPackageKey,
+    tag,
+  ])
 
   if (changesLoadingStatus) {
-    return (
-      <LoadingIndicator />
-    )
+    return <LoadingIndicator />
   }
 
   return (
@@ -188,7 +187,8 @@ export const VersionCompareContent: FC = memo(() => {
         invisible={isNotEmpty(filteredPackageChanges)}
         area={CONTENT_PLACEHOLDER_AREA}
         message="No differences"
-        testId="NoDifferencesPlaceholder">
+        testId="NoDifferencesPlaceholder"
+      >
         <CardContent
           sx={{
             display: 'flex',
@@ -199,114 +199,110 @@ export const VersionCompareContent: FC = memo(() => {
           }}
         >
           <Box pt={2}>
-            {
-              filteredPackageChanges.map((operationChange) => {
-                const {
-                  operationKey,
-                  action,
-                  changeSummary,
-                  currentOperation,
-                  previousOperation,
-                } = operationChange
+            {filteredPackageChanges.map((operationChange) => {
+              const { operationKey, action, changeSummary, currentOperation, previousOperation } = operationChange
 
-                const firstOperation: Operation = {
-                  ...operationChange,
-                  title: previousOperation?.title ?? '',
-                  apiKind: previousOperation?.apiKind ?? ALL_API_KIND,
-                  apiAudience: previousOperation?.apiAudience ?? API_AUDIENCE_EXTERNAL,
-                }
+              const firstOperation: Operation = {
+                ...operationChange,
+                title: previousOperation?.title ?? '',
+                apiKind: previousOperation?.apiKind ?? ALL_API_KIND,
+                apiAudience: previousOperation?.apiAudience ?? API_AUDIENCE_EXTERNAL,
+              }
 
-                const secondOperation: Operation = {
-                  ...operationChange,
-                  title: currentOperation?.title ?? '',
-                  apiKind: currentOperation?.apiKind ?? ALL_API_KIND,
-                  apiAudience: currentOperation?.apiAudience ?? API_AUDIENCE_EXTERNAL,
-                }
+              const secondOperation: Operation = {
+                ...operationChange,
+                title: currentOperation?.title ?? '',
+                apiKind: currentOperation?.apiKind ?? ALL_API_KIND,
+                apiAudience: currentOperation?.apiAudience ?? API_AUDIENCE_EXTERNAL,
+              }
 
-                const severity = getMajorSeverity(changeSummary)
+              const severity = getMajorSeverity(changeSummary)
 
-                const comparingSearchParams = optionalSearchParams({
-                  [PACKAGE_SEARCH_PARAM]: { value: changedPackageKey === originPackageKey ? '' : encodeURIComponent(originPackageKey!) },
-                  [VERSION_SEARCH_PARAM]: { value: originVersionKey! },
-                  [REF_SEARCH_PARAM]: { value: refPackageKey },
-                })
+              const comparingSearchParams = optionalSearchParams({
+                [PACKAGE_SEARCH_PARAM]: {
+                  value: changedPackageKey === originPackageKey ? '' : encodeURIComponent(originPackageKey!),
+                },
+                [VERSION_SEARCH_PARAM]: { value: originVersionKey! },
+                [REF_SEARCH_PARAM]: { value: refPackageKey },
+              })
 
-                return (
+              return (
+                <Grid
+                  key={crypto.randomUUID()}
+                  component={NavLink}
+                  container
+                  spacing={0}
+                  sx={{
+                    textDecoration: 'none',
+                    color: '#353C4E',
+                    height: '70px',
+                    marginBottom: '8px',
+                    position: 'relative',
+                  }}
+                  to={{
+                    pathname: format(
+                      '/portal/packages/{}/{}/compare/{}/{}',
+                      encodeURIComponent(changedPackageKey!),
+                      encodeURIComponent(changedVersionKey!),
+                      `${apiType}`,
+                      encodeURIComponent(operationKey),
+                    ),
+                    search: `${comparingSearchParams}`,
+                  }}
+                  onClick={onClickOperationChange}
+                  data-testid="ComparisonRow"
+                >
                   <Grid
-                    key={crypto.randomUUID()}
-                    component={NavLink}
-                    container
-                    spacing={0}
+                    item
+                    xs={6}
                     sx={{
-                      textDecoration: 'none',
-                      color: '#353C4E',
-                      height: '70px',
-                      marginBottom: '8px',
-                      position: 'relative',
+                      borderRight: '1px solid #D5DCE3',
+                      background: ACTION_TYPE_COLOR_MAP[action] ?? '#F2F3F5',
                     }}
-                    to={{
-                      pathname: format(
-                        '/portal/packages/{}/{}/compare/{}/{}',
-                        encodeURIComponent(changedPackageKey!),
-                        encodeURIComponent(changedVersionKey!),
-                        `${apiType}`,
-                        encodeURIComponent(operationKey),
-                      ),
-                      search: `${comparingSearchParams}`,
-                    }}
-                    onClick={onClickOperationChange}
-                    data-testid="ComparisonRow"
+                    data-testid="LeftComparisonSummary"
                   >
-                    <Grid
-                      item
-                      xs={6}
+                    <Box
                       sx={{
-                        borderRight: '1px solid #D5DCE3',
-                        background: ACTION_TYPE_COLOR_MAP[action] ?? '#F2F3F5',
-                      }}
-                      data-testid="LeftComparisonSummary"
-                    >
-                      <Box sx={{
                         display: 'flex',
                         flexDirection: 'row',
-                      }}>
-                        <ChangeSeverityIndicator
-                          severity={severity as ChangeSeverity}
-                          sx={{
-                            alignItems: 'center',
-                            display: 'flex',
-                            overflow: 'hidden',
-                            zIndex: '1',
-                            '&:hover': {
-                              color: '#FFFFFF',
-                              padding: '5px',
-                              width: '105px',
-                            },
-                          }}
-                        />
-                        <OperationChangesSummary
-                          key={operationKey}
-                          operation={action !== ADD_ACTION_TYPE ? firstOperation : undefined}
-                        />
-                      </Box>
-                    </Grid>
-
-                    <Grid
-                      item
-                      xs={6}
-                      sx={{ background: ACTION_TYPE_COLOR_MAP[action] ?? '#F2F3F5' }}
-                      data-testid="RightComparisonSummary"
+                      }}
                     >
-                      <OperationChangesSummary
-                        key={`changed-${operationKey}`}
-                        operation={action !== REMOVE_ACTION_TYPE ? secondOperation : undefined}
-                        changes={changeSummary}
+                      <ChangeSeverityIndicator
+                        severity={severity as ChangeSeverity}
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                          overflow: 'hidden',
+                          zIndex: '1',
+                          '&:hover': {
+                            color: '#FFFFFF',
+                            padding: '5px',
+                            width: '105px',
+                          },
+                        }}
                       />
-                    </Grid>
+                      <OperationChangesSummary
+                        key={operationKey}
+                        operation={action !== ADD_ACTION_TYPE ? firstOperation : undefined}
+                      />
+                    </Box>
                   </Grid>
-                )
-              })
-            }
+
+                  <Grid
+                    item
+                    xs={6}
+                    sx={{ background: ACTION_TYPE_COLOR_MAP[action] ?? '#F2F3F5' }}
+                    data-testid="RightComparisonSummary"
+                  >
+                    <OperationChangesSummary
+                      key={`changed-${operationKey}`}
+                      operation={action !== REMOVE_ACTION_TYPE ? secondOperation : undefined}
+                      changes={changeSummary}
+                    />
+                  </Grid>
+                </Grid>
+              )
+            })}
           </Box>
         </CardContent>
       </Placeholder>
@@ -319,28 +315,24 @@ type OperationChangesSummaryProps = {
   changes?: ChangeSummary
 }
 
-const OperationChangesSummary: FC<OperationChangesSummaryProps> = memo<OperationChangesSummaryProps>(({
-  operation,
-  changes,
-}) => {
-  return (
-    <ListItem
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-start',
+const OperationChangesSummary: FC<OperationChangesSummaryProps> = memo<OperationChangesSummaryProps>(
+  ({ operation, changes }) => {
+    return (
+      <ListItem
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-start',
 
-        padding: changes ? '2px 16px' : '8px 16px',
-        paddingTop: operation ? 0 : '44px',
-        overflow: 'hidden',
-        gap: '2px',
-      }}
-    >
-      {operation && <OperationTitleWithMeta operation={operation} />}
-      {changes && (
-        <Changes value={changes} mode="compact" />
-      )}
-    </ListItem>
-  )
-})
-
+          padding: changes ? '2px 16px' : '8px 16px',
+          paddingTop: operation ? 0 : '44px',
+          overflow: 'hidden',
+          gap: '2px',
+        }}
+      >
+        {operation && <OperationTitleWithMeta operation={operation} />}
+        {changes && <Changes value={changes} mode="compact" />}
+      </ListItem>
+    )
+  },
+)

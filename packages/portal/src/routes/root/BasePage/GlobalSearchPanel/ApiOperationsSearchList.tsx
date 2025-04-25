@@ -41,79 +41,66 @@ export type ApiOperationsSearchListProps = {
   hasNextPage?: boolean
 }
 
-export const ApiOperationsSearchList: FC<ApiOperationsSearchListProps> = memo<ApiOperationsSearchListProps>((
-  { value, searchText, isNextPageFetching, hasNextPage, fetchNextPage },
-) => {
-  const ref = useRef<HTMLDivElement>(null)
-  useIntersectionObserver(ref, isNextPageFetching, hasNextPage, fetchNextPage)
+export const ApiOperationsSearchList: FC<ApiOperationsSearchListProps> = memo<ApiOperationsSearchListProps>(
+  ({ value, searchText, isNextPageFetching, hasNextPage, fetchNextPage }) => {
+    const ref = useRef<HTMLDivElement>(null)
+    useIntersectionObserver(ref, isNextPageFetching, hasNextPage, fetchNextPage)
 
-  return (
-    <Box width={CONTENT_WIDTH} position="relative">
-      {value.map(({
-        packageKey,
-        name,
-        parentPackages,
-        version,
-        title,
-        status,
-        operationKey,
-        path,
-        method,
-        apiType,
-        type,
-      }) => {
-        const { versionKey } = getSplittedVersionKey(version)
-        return (
-          <Box mb={2} key={crypto.randomUUID()} data-testid="SearchResultRow">
-            <ResultCommonHeader
-              url={getOperationsPath({
-                packageKey: packageKey,
-                versionKey: versionKey,
-                operationKey: operationKey,
-                apiType: apiType,
-              })}
-              icon={apiType}
-              breadCrumbsStatus={status !== RELEASE_VERSION_STATUS ? status : undefined}
-              title={title}
-              parents={[...parentPackages, name, versionKey]}
-              searchText={searchText}
-            />
-
-            <Marker mark={searchText}>
-              <Box display="flex" gap={1} alignItems="center" maxWidth={CONTENT_WIDTH}>
-                <CustomChip
-                  sx={{ mr: 1 }}
-                  value={API_TYPE_CHIP_VALUE_MAP[apiType](method, type)}
-                  variant="outlined"
-                  data-testid="OperationTypeChip"
+    return (
+      <Box width={CONTENT_WIDTH} position="relative">
+        {value.map(
+          ({ packageKey, name, parentPackages, version, title, status, operationKey, path, method, apiType, type }) => {
+            const { versionKey } = getSplittedVersionKey(version)
+            return (
+              <Box mb={2} key={crypto.randomUUID()} data-testid="SearchResultRow">
+                <ResultCommonHeader
+                  url={getOperationsPath({
+                    packageKey: packageKey,
+                    versionKey: versionKey,
+                    operationKey: operationKey,
+                    apiType: apiType,
+                  })}
+                  icon={apiType}
+                  breadCrumbsStatus={status !== RELEASE_VERSION_STATUS ? status : undefined}
+                  title={title}
+                  parents={[...parentPackages, name, versionKey]}
+                  searchText={searchText}
                 />
-                <OverflowTooltip title={path}>
-                  <Typography
-                    overflow="hidden"
-                    textOverflow="ellipsis"
-                    variant="subtitle2"
-                    data-testid="OperationEndpoint"
-                  >
-                    {path}
-                  </Typography>
-                </OverflowTooltip>
-              </Box>
-            </Marker>
-          </Box>
-        )
-      })}
 
-      {hasNextPage && (
-        <Box
-          ref={ref}
-          height="100px"
-        >
-          <LoadingIndicator/>
-        </Box>
-      )}
-    </Box>
-  )
-})
+                <Marker mark={searchText}>
+                  <Box display="flex" gap={1} alignItems="center" maxWidth={CONTENT_WIDTH}>
+                    <CustomChip
+                      sx={{ mr: 1 }}
+                      value={API_TYPE_CHIP_VALUE_MAP[apiType](method, type)}
+                      variant="outlined"
+                      data-testid="OperationTypeChip"
+                    />
+                    <OverflowTooltip title={path}>
+                      <Typography
+                        overflow="hidden"
+                        textOverflow="ellipsis"
+                        variant="subtitle2"
+                        data-testid="OperationEndpoint"
+                      >
+                        {path}
+                      </Typography>
+                    </OverflowTooltip>
+                  </Box>
+                </Marker>
+              </Box>
+            )
+          },
+        )}
+
+        {hasNextPage && (
+          <Box ref={ref} height="100px">
+            <LoadingIndicator />
+          </Box>
+        )}
+      </Box>
+    )
+  },
+)
 
 type ChipValueCallback = (method: MethodType | undefined, type: GraphQlOperationTypes | undefined) => string
 const API_TYPE_CHIP_VALUE_MAP: Record<ApiType, ChipValueCallback> = {

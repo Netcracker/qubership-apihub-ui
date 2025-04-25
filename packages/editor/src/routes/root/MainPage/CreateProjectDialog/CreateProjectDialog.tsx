@@ -50,16 +50,17 @@ import { usePackages } from '@netcracker/qubership-apihub-ui-shared/hooks/packag
 import { calculatePackagePath } from '@netcracker/qubership-apihub-ui-shared/utils/packages'
 
 export const CreateProjectDialog: FC = memo(() => {
-  return (
-    <PopupDelegate
-      type={SHOW_CREATE_PROJECT_DIALOG}
-      render={props => <CreateProjectContent {...props}/>}
-    />
-  )
+  return <PopupDelegate type={SHOW_CREATE_PROJECT_DIALOG} render={(props) => <CreateProjectContent {...props} />} />
 })
 
 const CreateProjectContent: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }) => {
-  const { handleSubmit, control, setValue, reset, formState: { errors } } = useForm<Project & { group: Package }>({
+  const {
+    handleSubmit,
+    control,
+    setValue,
+    reset,
+    formState: { errors },
+  } = useForm<Project & { group: Package }>({
     defaultValues: {
       ...EMPTY_PROJECT,
       group: EMPTY_GROUP,
@@ -70,8 +71,14 @@ const CreateProjectContent: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }
   const [selectedPackage, setSelectedPackage] = useState<Package>()
   const [selectedGroup, setSelectedGroup] = useState<Package>()
   const [repositoryNamePart, setRepositoryNamePart] = useState('')
-  const onRepositoryNamePartChange = useCallback((_: SyntheticEvent, value: string): void => setRepositoryNamePart(value), [])
-  const debouncedOnRepositoryNamePartChange = useMemo(() => debounce(onRepositoryNamePartChange, DEFAULT_DEBOUNCE), [onRepositoryNamePartChange])
+  const onRepositoryNamePartChange = useCallback(
+    (_: SyntheticEvent, value: string): void => setRepositoryNamePart(value),
+    [],
+  )
+  const debouncedOnRepositoryNamePartChange = useMemo(
+    () => debounce(onRepositoryNamePartChange, DEFAULT_DEBOUNCE),
+    [onRepositoryNamePartChange],
+  )
   const repositories = useIntegrationRepositories(repositoryNamePart)
 
   const [packagesTextFilter, setPackagesTextFilter] = useState<string>('')
@@ -95,7 +102,9 @@ const CreateProjectContent: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }
   const branches = useIntegrationBranches(repositoryKey)
   const [createProject, isLoading, error] = useCreateProject()
 
-  useEffect(() => {!open && reset()}, [open, reset])
+  useEffect(() => {
+    !open && reset()
+  }, [open, reset])
 
   return (
     <DialogForm
@@ -121,15 +130,13 @@ const CreateProjectContent: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }
         createProject({ project: newProject, packageKey: packageKey })
       })}
     >
-      <DialogTitle>
-        Create New Project
-      </DialogTitle>
+      <DialogTitle>Create New Project</DialogTitle>
 
       <DialogContent>
         <Controller
           name="name"
           control={control}
-          render={({ field }) => <TextField {...field} autoFocus required label="Project name"/>}
+          render={({ field }) => <TextField {...field} autoFocus required label="Project name" />}
         />
         <Controller
           name="alias"
@@ -141,7 +148,7 @@ const CreateProjectContent: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }
               required
               label="Alias"
               error={!!errors.alias || !!error}
-              helperText={!!errors.alias && errors.alias?.message || !!error && error.message}
+              helperText={(!!errors.alias && errors.alias?.message) || (!!error && error.message)}
               inputProps={{ style: { textTransform: 'uppercase' } }}
             />
           )}
@@ -149,26 +156,27 @@ const CreateProjectContent: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }
         <Controller
           name="groupKey"
           control={control}
-          render={({ field }) =>
+          render={({ field }) => (
             <Autocomplete
               loading={areGroupsLoading}
               value={selectedGroup}
               options={groups}
               filterOptions={disableAutocompleteSearch}
               getOptionLabel={(parent: Package) => calculatePackagePath(parent, true)}
-              renderOption={(props, parent) =>
+              renderOption={(props, parent) => (
                 <ListItem {...props} key={parent.key}>
                   {calculatePackagePath(parent, true)}
                 </ListItem>
-              }
+              )}
               isOptionEqualToValue={(option, value) => option.key === value.key}
               onInputChange={debouncedOnGroupInputChange}
-              renderInput={(params) => <TextField {...field} {...params} required label="Parent group"/>}
+              renderInput={(params) => <TextField {...field} {...params} required label="Parent group" />}
               onChange={(_, value) => {
                 setValue('groupKey', value?.key ?? '')
                 setSelectedGroup(value)
               }}
-            />}
+            />
+          )}
         />
         <Controller
           name="packageKey"
@@ -181,8 +189,12 @@ const CreateProjectContent: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }
               filterOptions={disableAutocompleteSearch}
               getOptionLabel={({ name }: Package) => name ?? ''}
               isOptionEqualToValue={(option, value) => option.key === value.key}
-              renderOption={(props, { key, name }) => <ListItem {...props} key={key}>{name}</ListItem>}
-              renderInput={(params) => <TextField {...params} label="Package"/>}
+              renderOption={(props, { key, name }) => (
+                <ListItem {...props} key={key}>
+                  {name}
+                </ListItem>
+              )}
+              renderInput={(params) => <TextField {...params} label="Package" />}
               onInputChange={debouncedOnPackageInputChange}
               onChange={(_, value) => {
                 setValue('packageKey', value?.key ?? '')
@@ -194,43 +206,44 @@ const CreateProjectContent: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }
         <Controller
           name="integration.repositoryKey"
           control={control}
-          render={({ field }) => <Autocomplete
-            options={repositories}
-            getOptionLabel={({ name }: IntegrationRepository) => name}
-            isOptionEqualToValue={({ key: optionKey }, { key: valueKey }) => optionKey === valueKey}
-            onChange={(_, value) => {
-              const key = value?.key ?? ''
-              setRepositoryKey(key)
-              setValue('integration.repositoryKey', key)
-            }}
-            onInputChange={debouncedOnRepositoryNamePartChange}
-            renderInput={(params) => <TextField {...field} {...params} required label="Git repository"/>}
-          />}
+          render={({ field }) => (
+            <Autocomplete
+              options={repositories}
+              getOptionLabel={({ name }: IntegrationRepository) => name}
+              isOptionEqualToValue={({ key: optionKey }, { key: valueKey }) => optionKey === valueKey}
+              onChange={(_, value) => {
+                const key = value?.key ?? ''
+                setRepositoryKey(key)
+                setValue('integration.repositoryKey', key)
+              }}
+              onInputChange={debouncedOnRepositoryNamePartChange}
+              renderInput={(params) => <TextField {...field} {...params} required label="Git repository" />}
+            />
+          )}
         />
         <Controller
           name="integration.defaultBranch"
           control={control}
           render={({ field }) => (
-            <TextField{...field} required select label="Default branch">
-              {branches.map(({ name }) => <MenuItem key={name} value={name}>{name}</MenuItem>)}
+            <TextField {...field} required select label="Default branch">
+              {branches.map(({ name }) => (
+                <MenuItem key={name} value={name}>
+                  {name}
+                </MenuItem>
+              ))}
             </TextField>
           )}
         />
         <Controller
           name="integration.defaultFolder"
           control={control}
-          render={({ field }) => <TextField {...field} required type="text" label="Default folder"/>}
+          render={({ field }) => <TextField {...field} required type="text" label="Default folder" />}
         />
         <Controller
           name="description"
           control={control}
           render={({ field }) => (
-            <TextField
-              {...field}
-              multiline
-              rows="4"
-              type="text"
-              label="Description of the project"/>
+            <TextField {...field} multiline rows="4" type="text" label="Description of the project" />
           )}
         />
       </DialogContent>

@@ -31,63 +31,60 @@ export type ZoomPanelProps = {
   onFitToScreen?: () => void
 }
 
-export const ZoomPanel: FC<ZoomPanelProps> = memo<ZoomPanelProps>(({
-  value,
-  specificOptions,
-  onChange,
-  onFitToScreen,
-}) => {
-  const manualChangeZoom = useCallback((valuesStep: number): void => {
-    let index = valuesStep > 0 ? 0 : MANUAL_ZOOM_VALUES.length - 1
-    const keepSearching = valuesStep > 0
-      ? (zoom: number) => zoom <= value && zoom < ZOOM_MAX_VALUE
-      : (zoom: number) => zoom >= value && zoom > ZOOM_MIN_VALUE
+export const ZoomPanel: FC<ZoomPanelProps> = memo<ZoomPanelProps>(
+  ({ value, specificOptions, onChange, onFitToScreen }) => {
+    const manualChangeZoom = useCallback(
+      (valuesStep: number): void => {
+        let index = valuesStep > 0 ? 0 : MANUAL_ZOOM_VALUES.length - 1
+        const keepSearching =
+          valuesStep > 0
+            ? (zoom: number) => zoom <= value && zoom < ZOOM_MAX_VALUE
+            : (zoom: number) => zoom >= value && zoom > ZOOM_MIN_VALUE
 
-    while (keepSearching(MANUAL_ZOOM_VALUES[index])) {
-      index += valuesStep
-    }
-
-    onChange?.(MANUAL_ZOOM_VALUES[index])
-  }, [value, onChange])
-
-  const minusDisabled = useMemo(() => value <= ZOOM_MIN_VALUE, [value])
-  const plusDisabled = useMemo(() => value >= ZOOM_MAX_VALUE, [value])
-
-  return (
-    <Box display="flex" flexDirection="row">
-      <Button
-        sx={sideButtonStyle}
-        variant="outlined"
-        startIcon={<MinusIcon color={minusDisabled ? DISABLE_COLOR : DEFAULT_TEXT_COLOR}/>}
-        onClick={() => manualChangeZoom(-1)}
-        disabled={minusDisabled}
-      />
-      <MultiButton
-        buttonGroupProps={{ variant: 'outlined', sx: { marginRight: 1, marginLeft: 1 } }}
-        primary={<Button sx={selectButtonStyle}>{zoomRenderer(value)}</Button>}
-        secondary={
-          <Box>
-            {specificOptions.map(option => (
-              <MenuItem onClick={() => onChange?.(option)}>
-                {zoomRenderer(option)}
-              </MenuItem>
-            ))}
-            <MenuItem onClick={() => onFitToScreen?.()}>
-              Fit to Screen
-            </MenuItem>
-          </Box>
+        while (keepSearching(MANUAL_ZOOM_VALUES[index])) {
+          index += valuesStep
         }
-      />
-      <Button
-        sx={sideButtonStyle}
-        variant="outlined"
-        startIcon={<AddIcon color={plusDisabled ? DISABLE_COLOR : DEFAULT_TEXT_COLOR}/>}
-        onClick={() => manualChangeZoom(1)}
-        disabled={plusDisabled}
-      />
-    </Box>
-  )
-})
+
+        onChange?.(MANUAL_ZOOM_VALUES[index])
+      },
+      [value, onChange],
+    )
+
+    const minusDisabled = useMemo(() => value <= ZOOM_MIN_VALUE, [value])
+    const plusDisabled = useMemo(() => value >= ZOOM_MAX_VALUE, [value])
+
+    return (
+      <Box display="flex" flexDirection="row">
+        <Button
+          sx={sideButtonStyle}
+          variant="outlined"
+          startIcon={<MinusIcon color={minusDisabled ? DISABLE_COLOR : DEFAULT_TEXT_COLOR} />}
+          onClick={() => manualChangeZoom(-1)}
+          disabled={minusDisabled}
+        />
+        <MultiButton
+          buttonGroupProps={{ variant: 'outlined', sx: { marginRight: 1, marginLeft: 1 } }}
+          primary={<Button sx={selectButtonStyle}>{zoomRenderer(value)}</Button>}
+          secondary={
+            <Box>
+              {specificOptions.map((option) => (
+                <MenuItem onClick={() => onChange?.(option)}>{zoomRenderer(option)}</MenuItem>
+              ))}
+              <MenuItem onClick={() => onFitToScreen?.()}>Fit to Screen</MenuItem>
+            </Box>
+          }
+        />
+        <Button
+          sx={sideButtonStyle}
+          variant="outlined"
+          startIcon={<AddIcon color={plusDisabled ? DISABLE_COLOR : DEFAULT_TEXT_COLOR} />}
+          onClick={() => manualChangeZoom(1)}
+          disabled={plusDisabled}
+        />
+      </Box>
+    )
+  },
+)
 
 const MANUAL_ZOOM_VALUES = [0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.85, 1.0, 1.2, 1.45, 1.75, 2.1, 2.5]
 
@@ -102,7 +99,7 @@ function zoomRenderer(value: number): string {
 const sideButtonStyle = {
   p: 0,
   minWidth: 32,
-  'span': { m: 0 },
+  span: { m: 0 },
   backgroundColor: 'white',
 }
 

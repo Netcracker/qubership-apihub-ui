@@ -26,12 +26,13 @@ export default {
   title: 'Infinity Scrollable Matrix',
 } as Meta
 
-const InfinityScrollableMatrixFn: StoryFn<InfinityScrollableMatrixProps<HorizontalItem, VerticalItem, MatrixItem>> =
-  (args) => (
-    <>
-      <InfinityScrollableMatrix {...args}/>
-    </>
-  )
+const InfinityScrollableMatrixFn: StoryFn<InfinityScrollableMatrixProps<HorizontalItem, VerticalItem, MatrixItem>> = (
+  args,
+) => (
+  <>
+    <InfinityScrollableMatrix {...args} />
+  </>
+)
 
 export const InfinityScrollableMatrixStory = InfinityScrollableMatrixFn.bind({})
 
@@ -47,25 +48,12 @@ InfinityScrollableMatrixStory.args = {
     </TableCell>
   ),
   horizontalItemRender: (item) => (
-    <TableCell
-      sx={{ width: '100px' }}
-      key={item.title}
-    >
+    <TableCell sx={{ width: '100px' }} key={item.title}>
       <Typography noWrap variant="subtitle2" sx={{ pl: 0 }}>
         {item.title}
       </Typography>
     </TableCell>
   ),
-  verticalItemRender: (item) => (
-    <TableCell
-      key={item.name}
-    >
-      {item.name}
-    </TableCell>
-  ),
-  matrixCellRender: (key) => (
-    <TableCell key={key}>
-      {key}
-    </TableCell>
-  ),
+  verticalItemRender: (item) => <TableCell key={item.name}>{item.name}</TableCell>,
+  matrixCellRender: (key) => <TableCell key={key}>{key}</TableCell>,
 }

@@ -60,97 +60,80 @@ export type CompareRevisionsDialogFormProps = CompareRevisionsDialogData & {
 }
 
 // First Order Component //
-export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = memo(({
-  open,
-  setOpen,
-  setValue,
-  control,
-  onSubmit,
-  onSwap,
-  isApiTypeFetching,
-  originalRevisions,
-  changedRevisions,
-  isRevisionsLoading,
-}) => {
-  return (
-    <DialogForm
-      open={open}
-      onClose={() => setOpen(false)}
-      onSubmit={onSubmit}
-      maxWidth="md"
-    >
-      <DialogTitle>
-        Select Revisions To Compare
-      </DialogTitle>
+export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = memo(
+  ({
+    open,
+    setOpen,
+    setValue,
+    control,
+    onSubmit,
+    onSwap,
+    isApiTypeFetching,
+    originalRevisions,
+    changedRevisions,
+    isRevisionsLoading,
+  }) => {
+    return (
+      <DialogForm open={open} onClose={() => setOpen(false)} onSubmit={onSubmit} maxWidth="md">
+        <DialogTitle>Select Revisions To Compare</DialogTitle>
 
-      <DialogContent sx={DIALOG_CONTENT_STYLES}>
-        <Typography
-          sx={{ gridArea: 'originalTitle' }}
-          variant="button"
-        >
-          Previous
-        </Typography>
+        <DialogContent sx={DIALOG_CONTENT_STYLES}>
+          <Typography sx={{ gridArea: 'originalTitle' }} variant="button">
+            Previous
+          </Typography>
 
-        <Controller
-          name="originalRevision"
-          control={control}
-          render={({ field: { value, onChange } }) => (
-            <RevisionAutocomplete
-              value={value}
-              onChange={onChange}
-              controllerName="originalRevision"
-              revisions={originalRevisions}
-              isLoading={isRevisionsLoading}
-              setValue={() => setValue('originalRevision', null)}
-              dataTestId="PreviousRevisionAutocomplete"
-            />
-          )}
-        />
+          <Controller
+            name="originalRevision"
+            control={control}
+            render={({ field: { value, onChange } }) => (
+              <RevisionAutocomplete
+                value={value}
+                onChange={onChange}
+                controllerName="originalRevision"
+                revisions={originalRevisions}
+                isLoading={isRevisionsLoading}
+                setValue={() => setValue('originalRevision', null)}
+                dataTestId="PreviousRevisionAutocomplete"
+              />
+            )}
+          />
 
-        <Box sx={{ gridArea: 'swapper', alignSelf: 'center' }}>
-          <Swapper onSwap={onSwap}/>
-        </Box>
+          <Box sx={{ gridArea: 'swapper', alignSelf: 'center' }}>
+            <Swapper onSwap={onSwap} />
+          </Box>
 
-        <Typography
-          sx={{ gridArea: 'changedTitle' }}
-          variant="button"
-        >
-          Current
-        </Typography>
+          <Typography sx={{ gridArea: 'changedTitle' }} variant="button">
+            Current
+          </Typography>
 
-        <Controller
-          name="changedRevision"
-          control={control}
-          render={({ field: { value, onChange } }) => (
-            <RevisionAutocomplete
-              value={value}
-              onChange={onChange}
-              controllerName="changedRevision"
-              revisions={changedRevisions}
-              isLoading={isRevisionsLoading}
-              setValue={() => setValue('changedRevision', null)}
-              dataTestId="CurrentRevisionAutocomplete"
-            />
-          )}
-        />
-
-      </DialogContent>
-      <DialogActions>
-        <LoadingButton
-          variant="contained"
-          type="submit"
-          loading={isApiTypeFetching}
-          data-testid="CompareButton"
-        >
-          Compare
-        </LoadingButton>
-        <Button variant="outlined" onClick={() => setOpen(false)} data-testid="CancelButton">
-          Cancel
-        </Button>
-      </DialogActions>
-    </DialogForm>
-  )
-})
+          <Controller
+            name="changedRevision"
+            control={control}
+            render={({ field: { value, onChange } }) => (
+              <RevisionAutocomplete
+                value={value}
+                onChange={onChange}
+                controllerName="changedRevision"
+                revisions={changedRevisions}
+                isLoading={isRevisionsLoading}
+                setValue={() => setValue('changedRevision', null)}
+                dataTestId="CurrentRevisionAutocomplete"
+              />
+            )}
+          />
+        </DialogContent>
+        <DialogActions>
+          <LoadingButton variant="contained" type="submit" loading={isApiTypeFetching} data-testid="CompareButton">
+            Compare
+          </LoadingButton>
+          <Button variant="outlined" onClick={() => setOpen(false)} data-testid="CancelButton">
+            Cancel
+          </Button>
+        </DialogActions>
+      </DialogForm>
+    )
+  },
+)
 
 type RevisionAutocompleteProps = {
   value: Revision | null
@@ -162,33 +145,27 @@ type RevisionAutocompleteProps = {
   dataTestId: string
 }
 
-const RevisionAutocomplete: FC<RevisionAutocompleteProps> = memo<RevisionAutocompleteProps>(({
-  value,
-  onChange,
-  controllerName,
-  revisions,
-  isLoading,
-  setValue,
-  dataTestId,
-}) => {
-  return (
-    <Autocomplete
-      sx={{ gridArea: controllerName }}
-      value={value ?? null}
-      loading={isLoading}
-      options={isLoading ? [] : revisions}
-      getOptionLabel={(revision) => `${REVISION_DELIMITER}${revision.revision}`}
-      isOptionEqualToValue={(option, value) => option.revision === value.revision}
-      renderOption={(props, revision) => <AutocompleteOption revision={revision} props={props}/>}
-      renderInput={(params) => <TextField {...params} required label="Revision"/>}
-      onChange={(_, value) => {
-        setValue()
-        onChange(value)
-      }}
-      data-testid={dataTestId}
-    />
-  )
-})
+const RevisionAutocomplete: FC<RevisionAutocompleteProps> = memo<RevisionAutocompleteProps>(
+  ({ value, onChange, controllerName, revisions, isLoading, setValue, dataTestId }) => {
+    return (
+      <Autocomplete
+        sx={{ gridArea: controllerName }}
+        value={value ?? null}
+        loading={isLoading}
+        options={isLoading ? [] : revisions}
+        getOptionLabel={(revision) => `${REVISION_DELIMITER}${revision.revision}`}
+        isOptionEqualToValue={(option, value) => option.revision === value.revision}
+        renderOption={(props, revision) => <AutocompleteOption revision={revision} props={props} />}
+        renderInput={(params) => <TextField {...params} required label="Revision" />}
+        onChange={(_, value) => {
+          setValue()
+          onChange(value)
+        }}
+        data-testid={dataTestId}
+      />
+    )
+  },
+)
 
 type AutocompleteOptionProps = {
   revision: Revision
@@ -196,18 +173,14 @@ type AutocompleteOptionProps = {
 }
 
 const AutocompleteOption: FC<AutocompleteOptionProps> = memo<AutocompleteOptionProps>(({ revision, props }) => {
-
   return (
-    <ListItem
-      {...props}
-      key={revision.revision}
-    >
+    <ListItem {...props} key={revision.revision}>
       <Box width="100%" display="flex" justifyContent="space-between">
         <Box display="flex" gap="4px" alignItems="center">
           {`${REVISION_DELIMITER}${revision.revision}`}
-          <LatestRevisionMark latest={revision.latestRevision}/>
+          <LatestRevisionMark latest={revision.latestRevision} />
         </Box>
-        <CustomChip value={revision.status}/>
+        <CustomChip value={revision.status} />
       </Box>
     </ListItem>
   )

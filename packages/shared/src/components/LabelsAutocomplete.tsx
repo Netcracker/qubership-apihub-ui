@@ -34,15 +34,7 @@ export const LabelsAutocomplete: FC<LabelsAutocompleteProps> = memo<LabelsAutoco
       autoSelect
       multiple
       freeSolo
-      renderInput={(params) => (
-        <TextField
-          multiline
-          maxRows={Infinity}
-          autoComplete="on"
-          {...params}
-          label="Labels"
-        />
-      )}
+      renderInput={(params) => <TextField multiline maxRows={Infinity} autoComplete="on" {...params} label="Labels" />}
       onChange={onChange}
       data-testid="LabelsAutocomplete"
     />
@@ -55,4 +47,3 @@ const AUTOCOMPLETE_STYLE = {
     marginTop: '4px',
   },
 }
-

@@ -35,9 +35,7 @@ import { useOperationNavigationDetails } from '../../../OperationNavigationDataP
 import type { OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { useSystemInfo } from '@netcracker/qubership-apihub-ui-shared/features/system-info'
-import {
-  useSeverityFiltersSearchParam,
-} from '@netcracker/qubership-apihub-ui-shared/hooks/change-severities/useSeverityFiltersSearchParam'
+import { useSeverityFiltersSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/change-severities/useSeverityFiltersSearchParam'
 import { GRAPH_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
 import { FILE_FORMAT_VIEW, YAML_FILE_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/entities/file-format-view'
 import { useOperationsPairAsStrings } from '@netcracker/qubership-apihub-ui-shared/hooks/operations/useOperationsPairAsStrings'
@@ -45,9 +43,7 @@ import {
   useIsDocOperationViewMode,
   useIsRawOperationViewMode,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/operations/useOperationMode'
-import {
-  useCustomServersContext,
-} from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/Playground/CustomServersProvider'
+import { useCustomServersContext } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/Playground/CustomServersProvider'
 import { getFileDetails } from '@apihub/utils/file-details'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import {
@@ -76,7 +72,7 @@ export type OperationContentProps = {
   operationModels?: OpenApiData
 }
 
-export const OperationContent: FC<OperationContentProps> = memo<OperationContentProps>(props => {
+export const OperationContent: FC<OperationContentProps> = memo<OperationContentProps>((props) => {
   const {
     changedOperation,
     originOperation,
@@ -101,7 +97,10 @@ export const OperationContent: FC<OperationContentProps> = memo<OperationContent
   const { mode, schemaViewMode } = useOperationViewMode()
   const [fileViewMode = YAML_FILE_VIEW_MODE, setFileViewMode] = useFileViewMode()
 
-  const [changedOperationContent, originOperationContent] = useOperationsPairAsStrings(changedOperation, originOperation)
+  const [changedOperationContent, originOperationContent] = useOperationsPairAsStrings(
+    changedOperation,
+    originOperation,
+  )
   const [, setPlaygroundViewMode] = useSidebarPlaygroundViewMode()
   const [navigationDetails] = useOperationNavigationDetails()
 
@@ -116,11 +115,14 @@ export const OperationContent: FC<OperationContentProps> = memo<OperationContent
   const isExamplesMode = useIsExamplesMode()
   const isPlaygroundSidebarOpen = useIsPlaygroundSidebarOpen()
 
-  const graphItemSelect = useCallback((isSelected: boolean) => {
-    if (isSelected) {
-      setPlaygroundViewMode(undefined)
-    }
-  }, [setPlaygroundViewMode])
+  const graphItemSelect = useCallback(
+    (isSelected: boolean) => {
+      if (isSelected) {
+        setPlaygroundViewMode(undefined)
+      }
+    },
+    [setPlaygroundViewMode],
+  )
 
   const customServersPackageMap = useCustomServersContext()
   const currentServers = customServersPackageMap?.[packageId]
@@ -131,44 +133,33 @@ export const OperationContent: FC<OperationContentProps> = memo<OperationContent
     type,
   } = getFileDetails(apiType, fileViewMode, originOperationContent, changedOperationContent)
 
-  const rawViewActions = useMemo(() =>
-      API_TYPE_RAW_VIEW_ACTIONS_MAP[apiType](fileViewMode, setFileViewMode),
+  const rawViewActions = useMemo(
+    () => API_TYPE_RAW_VIEW_ACTIONS_MAP[apiType](fileViewMode, setFileViewMode),
     [apiType, fileViewMode, setFileViewMode],
   )
 
   const apiDiffResult = useApiDiffResult()
   const isApiDiffResultLoading = useIsApiDiffResultLoading()
 
-  const mergedDocument = useMemo(
-    () => {
-      if (!changedOperation?.data && !originOperation?.data) {
-        return undefined
-      }
+  const mergedDocument = useMemo(() => {
+    if (!changedOperation?.data && !originOperation?.data) {
+      return undefined
+    }
 
-      //todo separate to OperationView and OperationDiffView components
-      if (!comparisonMode) {
-        const existingData = changedOperation?.data ?? originOperation?.data
-        const existingOperation = removeComponents(existingData)
-        return existingOperation
-          ? normalizeOpenApiDocument(existingOperation, existingData)
-          : undefined
-      }
+    //todo separate to OperationView and OperationDiffView components
+    if (!comparisonMode) {
+      const existingData = changedOperation?.data ?? originOperation?.data
+      const existingOperation = removeComponents(existingData)
+      return existingOperation ? normalizeOpenApiDocument(existingOperation, existingData) : undefined
+    }
 
-      return apiDiffResult?.merged
-    },
-    [changedOperation?.data, comparisonMode, originOperation?.data, apiDiffResult?.merged],
-  )
+    return apiDiffResult?.merged
+  }, [changedOperation?.data, comparisonMode, originOperation?.data, apiDiffResult?.merged])
 
   if (isLoading || isApiDiffResultLoading) {
-    operationContentElement = <LoadingIndicator/>
+    operationContentElement = <LoadingIndicator />
   } else if (!changedOperationContent && !originOperationContent) {
-    return (
-      <Placeholder
-        invisible={false}
-        area={CONTENT_PLACEHOLDER_AREA}
-        message="Please select an operation"
-      />
-    )
+    return <Placeholder invisible={false} area={CONTENT_PLACEHOLDER_AREA} message="Please select an operation" />
   } else if (!isOperationExist) {
     return (
       <Placeholder
@@ -179,112 +170,96 @@ export const OperationContent: FC<OperationContentProps> = memo<OperationContent
       />
     )
   } else {
-    operationContentElement = (
-      comparisonMode
-        ? <Box pl={3} pr={2} height="inherit">
-          <OperationsSwapper
+    operationContentElement = comparisonMode ? (
+      <Box pl={3} pr={2} height="inherit">
+        <OperationsSwapper
+          displayMode={displayMode}
+          breadcrumbsData={breadcrumbsData}
+          actions={isRawViewMode && rawViewActions}
+        />
+        {isDocViewMode && (
+          <OperationView
+            apiType={apiType as ApiType}
+            originOperation={originOperation}
+            changedOperation={changedOperation}
             displayMode={displayMode}
-            breadcrumbsData={breadcrumbsData}
-            actions={isRawViewMode && rawViewActions}
+            comparisonMode={comparisonMode}
+            productionMode={productionMode}
+            mergedDocument={mergedDocument}
+            // diffs specific
+            filters={filters}
           />
-          {isDocViewMode && (
-            <OperationView
-              apiType={apiType as ApiType}
-              originOperation={originOperation}
-              changedOperation={changedOperation}
-              displayMode={displayMode}
-              comparisonMode={comparisonMode}
-              productionMode={productionMode}
-              mergedDocument={mergedDocument}
-              // diffs specific
-              filters={filters}
-            />
-          )}
-          {isRawViewMode && (
-            <RawSpecDiffView
-              beforeValue={originalValue}
-              afterValue={changedValue}
-              extension={extension}
-              type={type}
-            />
-          )}
-        </Box>
-        : (
-          <OperationWithPlayground
-            changedOperationContent={changedOperationContent}
-            customServers={JSON.stringify(currentServers)}
-            operationComponent={
+        )}
+        {isRawViewMode && (
+          <RawSpecDiffView beforeValue={originalValue} afterValue={changedValue} extension={extension} type={type} />
+        )}
+      </Box>
+    ) : (
+      <OperationWithPlayground
+        changedOperationContent={changedOperationContent}
+        customServers={JSON.stringify(currentServers)}
+        operationComponent={
+          <Box position="relative" pt={isRawViewMode || isGraphViewMode ? 0 : 1} height="100%">
+            {isDocViewMode && (
+              <OperationView
+                apiType={apiType as ApiType}
+                changedOperation={changedOperation}
+                schemaViewMode={schemaViewMode}
+                hideTryIt
+                hideExamples
+                comparisonMode={comparisonMode}
+                productionMode={productionMode}
+                navigationDetails={navigationDetails}
+                operationModels={operationModels}
+                mergedDocument={mergedDocument}
+              />
+            )}
+            {isRawViewMode && (
               <Box
-                position="relative"
-                pt={isRawViewMode || isGraphViewMode ? 0 : 1}
-                height="100%"
+                display={isRawViewMode ? 'grid' : 'inherit'}
+                height={isRawViewMode ? 'inherit' : '100%'}
+                overflow="scroll"
               >
-                {isDocViewMode && (
-                  <OperationView
-                    apiType={apiType as ApiType}
-                    changedOperation={changedOperation}
-                    schemaViewMode={schemaViewMode}
-                    hideTryIt
-                    hideExamples
-                    comparisonMode={comparisonMode}
-                    productionMode={productionMode}
-                    navigationDetails={navigationDetails}
-                    operationModels={operationModels}
-                    mergedDocument={mergedDocument}
-                  />
-                )}
-                {isRawViewMode && (
-                  <Box
-                    display={isRawViewMode ? 'grid' : 'inherit'}
-                    height={isRawViewMode ? 'inherit' : '100%'}
-                    overflow="scroll"
-                  >
-                    {!!rawViewActions && (
-                      <OperationSubheader actions={rawViewActions}/>
-                    )}
-                    <RawSpecView
-                      value={changedValue}
-                      extension={extension}
-                      type={type}
-                    />
-                  </Box>
-                )}
-                {isGraphViewMode && (
-                  <OperationModelsGraph
-                    operationData={changedOperation}
-                    onSelect={graphItemSelect}
-                    hideContextPanel={isPlaygroundSidebarOpen}
-                  />
-                )}
+                {!!rawViewActions && <OperationSubheader actions={rawViewActions} />}
+                <RawSpecView value={changedValue} extension={extension} type={type} />
               </Box>
-            }
-            isPlaygroundMode={isPlaygroundMode}
-            isExamplesMode={isExamplesMode}
-            isPlaygroundSidebarOpen={isPlaygroundSidebarOpen}
-          />
-        )
+            )}
+            {isGraphViewMode && (
+              <OperationModelsGraph
+                operationData={changedOperation}
+                onSelect={graphItemSelect}
+                hideContextPanel={isPlaygroundSidebarOpen}
+              />
+            )}
+          </Box>
+        }
+        isPlaygroundMode={isPlaygroundMode}
+        isExamplesMode={isExamplesMode}
+        isPlaygroundSidebarOpen={isPlaygroundSidebarOpen}
+      />
     )
   }
 
   return (
-    <Box sx={{
-      height: '100%',
-      overflow: 'hidden',
-      pb: paddingBottom ? paddingBottom : 0,
-      position: 'relative',
-    }}>
+    <Box
+      sx={{
+        height: '100%',
+        overflow: 'hidden',
+        pb: paddingBottom ? paddingBottom : 0,
+        position: 'relative',
+      }}
+    >
       {operationContentElement}
     </Box>
   )
 })
 
-const API_TYPE_RAW_VIEW_ACTIONS_MAP: Record<ApiType, (fileViewMode: string, setFileViewMode: (value: string) => void) => ReactNode | null> = {
+const API_TYPE_RAW_VIEW_ACTIONS_MAP: Record<
+  ApiType,
+  (fileViewMode: string, setFileViewMode: (value: string) => void) => ReactNode | null
+> = {
   [API_TYPE_REST]: (fileViewMode, setFileViewMode) => (
-    <Toggler
-      modes={FILE_FORMAT_VIEW}
-      mode={fileViewMode}
-      onChange={setFileViewMode}
-    />
+    <Toggler modes={FILE_FORMAT_VIEW} mode={fileViewMode} onChange={setFileViewMode} />
   ),
   [API_TYPE_GRAPHQL]: () => null,
 }

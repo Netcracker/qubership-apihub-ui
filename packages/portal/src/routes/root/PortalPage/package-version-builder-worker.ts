@@ -61,15 +61,7 @@ to specific directory ('@netcracker/qubership-apihub-ui-shared/utils' for exampl
 export type Filename = string
 
 async function exportOperations(options: ExportOperationsOptions): Promise<[Blob, Filename]> {
-  const {
-    packageKey,
-    versionKey,
-    apiType,
-    groupName,
-    format,
-    buildType,
-    authorization,
-  } = options
+  const { packageKey, versionKey, apiType, groupName, format, buildType, authorization } = options
 
   const packageId = encodeURIComponent(packageKey)
   const versionId = encodeURIComponent(versionKey)
@@ -85,17 +77,19 @@ async function exportOperations(options: ExportOperationsOptions): Promise<[Blob
     {
       method: 'GET',
       headers: { authorization },
-    }, {
-    basePath: API_V3,
-    customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-  },
+    },
+    {
+      basePath: API_V3,
+      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+    },
   )
 
-  const getFilename = (): string => response.headers
-    .get('content-disposition')!
-    .split('filename=')[1]
-    .split(';')[0]
-    .replace(/@\d+\./, '.')
+  const getFilename = (): string =>
+    response.headers
+      .get('content-disposition')!
+      .split('filename=')[1]
+      .split(';')[0]
+      .replace(/@\d+\./, '.')
 
   return [await response.blob(), getFilename()]
 }
@@ -135,16 +129,15 @@ async function startDocumentTransformation(options: TransformDocumentOptions): P
     {
       method: 'POST',
       headers: { authorization },
-    }, {
-    basePath: API_V3,
-    customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-  },
+    },
+    {
+      basePath: API_V3,
+      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+    },
   )
 }
 
-function isDocumentsTransformationCompletedSuccessfully(
-  value: TransformDocumentResponse,
-): boolean {
+function isDocumentsTransformationCompletedSuccessfully(value: TransformDocumentResponse): boolean {
   return !value
 }
 
@@ -161,7 +154,7 @@ function isDocumentsTransformationCreatedSuccessfully(
 }
 
 type TransformDocumentResponse =
-  null
+  | null
   | DocumentsTransformationSuccessfulCreationResponse
   | DocumentsTransformationStatusResponse
 
@@ -191,11 +184,13 @@ async function handleNotFound(transformDocumentOptions: TransformDocumentOptions
   const { packageKey, authorization, builderId } = transformDocumentOptions
   const result = await startDocumentTransformation(transformDocumentOptions)
 
-  if (isDocumentsTransformationCompletedSuccessfully(result)) { // handle 200
+  if (isDocumentsTransformationCompletedSuccessfully(result)) {
+    // handle 200
     return
   }
 
-  if (isDocumentsTransformationRunningOrFailed(result)) { // handle 202
+  if (isDocumentsTransformationRunningOrFailed(result)) {
+    // handle 202
     const { status, message } = result
     if (status === RUNNING_PUBLISH_STATUS) {
       // Wait for 200
@@ -207,7 +202,8 @@ async function handleNotFound(transformDocumentOptions: TransformDocumentOptions
     }
   }
 
-  if (isDocumentsTransformationCreatedSuccessfully(result)) { // handle 201
+  if (isDocumentsTransformationCreatedSuccessfully(result)) {
+    // handle 201
     const builderResolvers = {
       fileResolver: async () => null,
       versionResolver: await packageVersionResolver(authorization),
@@ -217,10 +213,7 @@ async function handleNotFound(transformDocumentOptions: TransformDocumentOptions
       versionDocumentsResolver: await versionDocumentsResolver(authorization),
       templateResolver: await templateResolver(authorization),
     }
-    const builder = new PackageVersionBuilder(
-      { ...result as BuildConfig },
-      { resolvers: builderResolvers },
-    )
+    const builder = new PackageVersionBuilder({ ...(result as BuildConfig) }, { resolvers: builderResolvers })
 
     const abortController = new AbortController()
     const intervalId = setInterval(() => {
@@ -286,10 +279,7 @@ export type PackageVersionBuilderWorker = {
   exportOperations: (options: ExportOperationsOptions) => Promise<[Blob, Filename]>
   buildChangelogPackage: (options: BuilderOptions) => Promise<[VersionsComparison[], Blob]>
   buildGroupChangelogPackage: (options: BuilderOptions) => Promise<[VersionsComparison[], Blob]>
-  publishPackage: (
-    options: PublishOptions,
-    authorization: string,
-  ) => Promise<PublishDetails>
+  publishPackage: (options: PublishOptions, authorization: string) => Promise<PublishDetails>
 }
 
 const worker: PackageVersionBuilderWorker = {
@@ -360,23 +350,29 @@ const worker: PackageVersionBuilderWorker = {
   publishPackage: async (options, authorization): Promise<PublishDetails> => {
     const { packageId, sources } = options
     const builderId = crypto.randomUUID()
-    const sourcesZip = sources && await packToZip(sources)
-    const {
-      publishId,
-      config: buildConfig,
-    } = await startPackageVersionPublication(options, authorization, builderId, sourcesZip)
+    const sourcesZip = sources && (await packToZip(sources))
+    const { publishId, config: buildConfig } = await startPackageVersionPublication(
+      options,
+      authorization,
+      builderId,
+      sourcesZip,
+    )
 
     const fileSources = sources && toFileSourceMap(sources)
 
-    const builder = new PackageVersionBuilder(buildConfig, {
-      resolvers: {
-        fileResolver: async (fileId: FileId) => fileSources?.[fileId] ?? null,
-        versionResolver: await packageVersionResolver(authorization),
-        versionReferencesResolver: await versionReferencesResolver(authorization),
-        versionOperationsResolver: await versionOperationsResolver(authorization),
-        versionDeprecatedResolver: await versionDeprecatedResolver(authorization),
+    const builder = new PackageVersionBuilder(
+      buildConfig,
+      {
+        resolvers: {
+          fileResolver: async (fileId: FileId) => fileSources?.[fileId] ?? null,
+          versionResolver: await packageVersionResolver(authorization),
+          versionReferencesResolver: await versionReferencesResolver(authorization),
+          versionOperationsResolver: await versionOperationsResolver(authorization),
+          versionDeprecatedResolver: await versionDeprecatedResolver(authorization),
+        },
       },
-    }, fileSources)
+      fileSources,
+    )
 
     const abortController = new AbortController()
     const intervalId = setInterval(() => {

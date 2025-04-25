@@ -32,8 +32,7 @@ import type { Service } from '@apihub/entities/services'
 import { usePromoteVersionStepStatus } from './usePromoteVersionStepStatus'
 import { useBaselineOptions } from '../../../useBaselineOptions'
 import { useVersionOptions } from '../../../AutomationPage/useVersionOptions'
-import type {
-  VersionStatus} from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 import {
   DRAFT_VERSION_STATUS,
   RELEASE_VERSION_STATUS,
@@ -90,7 +89,7 @@ export const PromoteVersionStep: FC = memo(() => {
   const filteredServices = useMemo(() => {
     const filteredData = filterServices(searchValue, services)
     return showOnlyPromotable
-      ? filteredData.filter(service => service.availablePromoteStatuses?.includes(status))
+      ? filteredData.filter((service) => service.availablePromoteStatuses?.includes(status))
       : filteredData
   }, [status, searchValue, services, showOnlyPromotable])
 
@@ -100,11 +99,7 @@ export const PromoteVersionStep: FC = memo(() => {
   )
 
   return (
-    <Box
-      height="100%"
-      component="form"
-      onSubmit={onSubmit}
-    >
+    <Box height="100%" component="form" onSubmit={onSubmit}>
       <Box
         sx={{
           gap: 2,
@@ -121,8 +116,10 @@ export const PromoteVersionStep: FC = memo(() => {
             validate: {
               checkSpaces: (version) => {
                 if (status === RELEASE_VERSION_STATUS) {
-                  return /^[1-9][0-9]{3}\.[1-4]{1}$/ig.test(version) ||
+                  return (
+                    /^[1-9][0-9]{3}\.[1-4]{1}$/gi.test(version) ||
                     'The release version must have the format: YYYY.Q, where YYYY is the year, Q is the quarter of the year'
+                  )
                 }
               },
               restrictedSymbols: checkVersionRestrictedSymbols,
@@ -182,7 +179,8 @@ export const PromoteVersionStep: FC = memo(() => {
             <TextField
               {...field}
               data-testid="StatusSelect"
-              select required
+              select
+              required
               type="select"
               disabled={areControlsDisabled}
               label="Status"
@@ -208,27 +206,19 @@ export const PromoteVersionStep: FC = memo(() => {
         </Box>
 
         <Box sx={{ alignSelf: 'center', ml: 'auto' }}>
-          <SearchBar
-            value={searchValue}
-            onValueChange={setSearchValue}
-          />
+          <SearchBar value={searchValue} onValueChange={setSearchValue} />
         </Box>
       </Box>
 
       <Box height="100%">
-        <Typography
-          data-testid="VersionFormatErrorTypography"
-          noWrap
-          variant="subtitle2"
-          color="#FF5260"
-        >
+        <Typography data-testid="VersionFormatErrorTypography" noWrap variant="subtitle2" color="#FF5260">
           {formErrors.version?.message}
         </Typography>
 
         <FormControlLabel
           data-testid="OnlyPromotableCheckbox"
           label="Show only available services"
-          control={<Checkbox onChange={(_, checked) => setShowOnlyPromotable(checked)}/>}
+          control={<Checkbox onChange={(_, checked) => setShowOnlyPromotable(checked)} />}
         />
 
         <Controller
@@ -282,31 +272,37 @@ function useToolbarData(
   IsPromoteAvailable,
   VersionStatus,
   FormData['previousVersion'],
-  FieldErrors<FormData>
+  FieldErrors<FormData>,
 ] {
-  const { createSnapshotPublicationOptions: { baseline, name } } = useCreateSnapshotPublicationOptions()
   const {
-    promotePublicationOptions: {
-      previousVersion,
-      serviceKeys,
-      status,
-      version,
-    },
+    createSnapshotPublicationOptions: { baseline, name },
+  } = useCreateSnapshotPublicationOptions()
+  const {
+    promotePublicationOptions: { previousVersion, serviceKeys, status, version },
   } = usePromoteVersionPublicationOptions()
 
-  const defaultValues: FormData = useMemo(() => ({
-    version: version || name,
-    previousVersion: previousVersion || baseline,
-    status: status,
-    serviceKeys: serviceKeys,
-  }), [baseline, name, previousVersion, serviceKeys, status, version])
+  const defaultValues: FormData = useMemo(
+    () => ({
+      version: version || name,
+      previousVersion: previousVersion || baseline,
+      status: status,
+      serviceKeys: serviceKeys,
+    }),
+    [baseline, name, previousVersion, serviceKeys, status, version],
+  )
 
-  const { reset, handleSubmit, watch, control, formState: { errors } } = useForm<FormData>({ defaultValues })
+  const {
+    reset,
+    handleSubmit,
+    watch,
+    control,
+    formState: { errors },
+  } = useForm<FormData>({ defaultValues })
 
   useEffect(() => reset(defaultValues), [defaultValues, reset])
 
   const onSubmit = useMemo(
-    () => handleSubmit(promotionOptions => promoteVersion(promotionOptions)),
+    () => handleSubmit((promotionOptions) => promoteVersion(promotionOptions)),
     [handleSubmit, promoteVersion],
   )
 
@@ -315,10 +311,14 @@ function useToolbarData(
 
   const [, setPromoteVersionStep] = usePromoteVersionStep()
   const stepStatus = usePromoteVersionStepStatus()
-  useEffect(() => setPromoteVersionStep(prevState => ({
-    ...prevState,
-    status: stepStatus,
-  })), [setPromoteVersionStep, stepStatus])
+  useEffect(
+    () =>
+      setPromoteVersionStep((prevState) => ({
+        ...prevState,
+        status: stepStatus,
+      })),
+    [setPromoteVersionStep, stepStatus],
+  )
 
   const {
     previousVersion: previousVersionForm,
@@ -327,7 +327,8 @@ function useToolbarData(
     serviceKeys: serviceKeysForm,
   } = watch()
 
-  const isPromoteVersionAvailable = !!previousVersionForm && !!versionForm && !!statusForm && isNotEmpty(serviceKeysForm)
+  const isPromoteVersionAvailable =
+    !!previousVersionForm && !!versionForm && !!statusForm && isNotEmpty(serviceKeysForm)
 
   return [
     control,

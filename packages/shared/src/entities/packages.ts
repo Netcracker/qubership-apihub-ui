@@ -24,11 +24,7 @@ export const PACKAGE_KIND = 'package'
 export const WORKSPACE_KIND = 'workspace'
 export const DASHBOARD_KIND = 'dashboard'
 
-export type PackageKind =
-  | typeof GROUP_KIND
-  | typeof PACKAGE_KIND
-  | typeof WORKSPACE_KIND
-  | typeof DASHBOARD_KIND
+export type PackageKind = typeof GROUP_KIND | typeof PACKAGE_KIND | typeof WORKSPACE_KIND | typeof DASHBOARD_KIND
 
 export type BwcErrors = Readonly<{
   type: StatusMarkerVariant
@@ -148,9 +144,7 @@ export type InvalidatePackagesProps = {
 export const PUBLIC_PACKAGE_ROLE = 'viewer'
 
 export const PRIVATE_PACKAGE_ROLE = 'none'
-export type DefaultPackageRoleType =
-  | typeof PUBLIC_PACKAGE_ROLE
-  | typeof PRIVATE_PACKAGE_ROLE
+export type DefaultPackageRoleType = typeof PUBLIC_PACKAGE_ROLE | typeof PRIVATE_PACKAGE_ROLE
 
 export const EMPTY_PACKAGE: Package = {
   key: '',

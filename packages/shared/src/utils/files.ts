@@ -55,7 +55,10 @@ export type FileExtension =
   | typeof PROTO_FILE_EXTENSION
   | typeof CSV_FILE_EXTENSION
 
-export function calculateSpecType(extension: Exclude<FileExtension, typeof YML_FILE_EXTENSION>, content: string): SpecType {
+export function calculateSpecType(
+  extension: Exclude<FileExtension, typeof YML_FILE_EXTENSION>,
+  content: string,
+): SpecType {
   if (extension === JSON_FILE_EXTENSION) {
     const schema = toJsonSchema(content)
     if (isFastJsonSchema(schema)) {
@@ -195,11 +198,11 @@ export function getFileFormat(fileName: string): FileFormat {
 
 export function toFileFormats(fileExtensions: FileExtension[]): FileFormat[] {
   // Both .yaml and .yml extensions are getting transformed to the same yaml format in getFileFormat, so have to use uniq to filter out duplicates
-  return uniq(fileExtensions.map(type => getFileFormat(type)))
+  return uniq(fileExtensions.map((type) => getFileFormat(type)))
 }
 
 export function createFileFormatEnumeration(acceptableExtensions: FileExtension[]): string {
-  return toFormattedEnumeration(toFileFormats(acceptableExtensions).map(ext => ext.toString().toUpperCase()))
+  return toFormattedEnumeration(toFileFormats(acceptableExtensions).map((ext) => ext.toString().toUpperCase()))
 }
 
 // Copy-pasted from `apihub-builder`
@@ -214,7 +217,9 @@ export const slugify = (text: string, slugs: string[] = []): string => {
     .replace(/--+/g, '-')
   let suffix: string = ''
   // add suffix if not unique
-  while (slugs.includes(slug + suffix)) { suffix = String(+suffix + 1) }
+  while (slugs.includes(slug + suffix)) {
+    suffix = String(+suffix + 1)
+  }
   return slug + suffix
 }
 
@@ -228,7 +233,7 @@ export const transformFileListToFileArray = (fileList: FileList): File[] => {
 
 export const packToZip = (files: File[]): Promise<Blob> => {
   const zip = new JSZip()
-  files.forEach(file => zip.file(file.name, file))
+  files.forEach((file) => zip.file(file.name, file))
   return zip.generateAsync({
     type: 'blob',
     compression: 'DEFLATE',

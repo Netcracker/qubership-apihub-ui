@@ -20,12 +20,18 @@ import { memo } from 'react'
 export const ProtobufIcon: FC = memo(() => {
   return (
     <div style={{ display: 'flex' }}>
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"
-           xlinkHref="http://www.w3.org/1999/xlink">
-        <rect x="1" y="5" width="18" height="9.99294" fill="url(#pattern0_62660_526)"/>
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        xlinkHref="http://www.w3.org/1999/xlink"
+      >
+        <rect x="1" y="5" width="18" height="9.99294" fill="url(#pattern0_62660_526)" />
         <defs>
           <pattern id="pattern0_62660_526" patternContentUnits="objectBoundingBox" width="1" height="1">
-            <use xlinkHref="#image0_62660_526" transform="scale(0.000882613 0.00158983)"/>
+            <use xlinkHref="#image0_62660_526" transform="scale(0.000882613 0.00158983)" />
           </pattern>
           <image
             id="image0_62660_526"

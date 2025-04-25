@@ -80,27 +80,26 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
   const breadcrumbsContext = useBreadcrumbsData()
   const commonLinkedBreadcrumbs = breadcrumbsContext?.common.filter(isLinkedComparedBreadcrumbPathItem)
 
-  const isOperationsComparison = [COMPARE_SAME_OPERATIONS_MODE, COMPARE_DIFFERENT_OPERATIONS_MODE].includes(compareToolbarMode)
+  const isOperationsComparison = [COMPARE_SAME_OPERATIONS_MODE, COMPARE_DIFFERENT_OPERATIONS_MODE].includes(
+    compareToolbarMode,
+  )
   const isPackagesComparison = compareToolbarMode === COMPARE_PACKAGES_MODE
 
   const { mode } = useOperationViewMode()
 
   const isDashboardsComparison = compareToolbarMode === COMPARE_DASHBOARDS_MODE
   const changesSummary = useChangesSummaryFromContext()
-  const showApiTypeSelector = useMemo(
-    () => {
-      if (!changesSummary || !isDashboardComparisonSummary(changesSummary)) {
-        return false
-      }
+  const showApiTypeSelector = useMemo(() => {
+    if (!changesSummary || !isDashboardComparisonSummary(changesSummary)) {
+      return false
+    }
 
-      const allPackagesApiTypes = changesSummary
-        .map(({ operationTypes }) => operationTypes.map(typeSummary => typeSummary.apiType))
-        .flat()
-      const apiTypeSet = new Set(allPackagesApiTypes)
-      return isApiTypeSelectorShown(Array.from(apiTypeSet))
-    },
-    [changesSummary],
-  )
+    const allPackagesApiTypes = changesSummary
+      .map(({ operationTypes }) => operationTypes.map((typeSummary) => typeSummary.apiType))
+      .flat()
+    const apiTypeSet = new Set(allPackagesApiTypes)
+    return isApiTypeSelectorShown(Array.from(apiTypeSet))
+  }, [changesSummary])
 
   const handleBackClick = useCallback(() => {
     let target = getOverviewPath({ packageKey: mainPackageId!, versionKey: mainVersionId! })
@@ -112,51 +111,61 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
       backwardLocation.fromDocumentsComparison && (target = { ...backwardLocation.fromDocumentsComparison })
     }
     navigate(target)
-  }, [backwardLocation.fromDocumentsComparison, backwardLocation.fromOperationsComparison, backwardLocation.fromPackagesComparison, isOperationsComparison, isPackagesComparison, mainPackageId, mainVersionId, navigate])
+  }, [
+    backwardLocation.fromDocumentsComparison,
+    backwardLocation.fromOperationsComparison,
+    backwardLocation.fromPackagesComparison,
+    isOperationsComparison,
+    isPackagesComparison,
+    mainPackageId,
+    mainVersionId,
+    navigate,
+  ])
 
   const changesLoadingStatus = useChangesLoadingStatus()
 
-  const title = useMemo(() => (
-    isOperationsComparison
-      ? `${TITLE_BY_COMPARE_MODE[compareToolbarMode]} ${API_TYPE_TITLE_MAP[operationApiType as ApiType]}`
-      : group
-        ? COMPARE_API_BY_GROUPS
-        : TITLE_BY_COMPARE_MODE[compareToolbarMode]
-  ), [compareToolbarMode, group, isOperationsComparison, operationApiType])
+  const title = useMemo(
+    () =>
+      isOperationsComparison
+        ? `${TITLE_BY_COMPARE_MODE[compareToolbarMode]} ${API_TYPE_TITLE_MAP[operationApiType as ApiType]}`
+        : group
+          ? COMPARE_API_BY_GROUPS
+          : TITLE_BY_COMPARE_MODE[compareToolbarMode],
+    [compareToolbarMode, group, isOperationsComparison, operationApiType],
+  )
 
   return (
     <Box sx={COMPARISON_PAGE_TOOLBAR_STYLES} data-testid="ComparisonToolbar">
       <Box display="flex" flexDirection="column">
         <Typography variant="body2">
-          <ComparedPackagesBreadcrumbs data={commonLinkedBreadcrumbs}/>
+          <ComparedPackagesBreadcrumbs data={commonLinkedBreadcrumbs} />
         </Typography>
         <Box display="flex" alignItems="center">
           <IconButton color="primary" onClick={handleBackClick} data-testid="BackButton">
-            <ArrowBackIcon/>
+            <ArrowBackIcon />
           </IconButton>
-          <Typography sx={COMPARISON_PAGE_TOOLBAR_TEXT_STYLES}>
-            {title}
-          </Typography>
-          {isPackageFromDashboard && compareToolbarMode !== COMPARE_DIFFERENT_OPERATIONS_MODE && <PackageSelector/>}
+          <Typography sx={COMPARISON_PAGE_TOOLBAR_TEXT_STYLES}>{title}</Typography>
+          {isPackageFromDashboard && compareToolbarMode !== COMPARE_DIFFERENT_OPERATIONS_MODE && <PackageSelector />}
         </Box>
       </Box>
       <Box sx={COMPARISON_PAGE_TOOLBAR_ACTIONS_STYLES}>
-        {!changesLoadingStatus && (
-          isOperationsComparison
-            ? <>
+        {!changesLoadingStatus &&
+          (isOperationsComparison ? (
+            <>
               {mode !== RAW_OPERATION_VIEW_MODE && (
-                <ComparisonOperationChangeSeverityFilters isChangelogAvailable={isChangelogAvailable}/>
+                <ComparisonOperationChangeSeverityFilters isChangelogAvailable={isChangelogAvailable} />
               )}
-              <OperationViewModeSelector modes={OPERATION_COMPARE_VIEW_MODES}/>
+              <OperationViewModeSelector modes={OPERATION_COMPARE_VIEW_MODES} />
             </>
-            : <>
+          ) : (
+            <>
               <ComparisonChangeSeverityFilters
                 category={getChangeSeverityCategory(isDashboardsComparison, isPackagesComparison)}
-                apiType={operationApiType ?? API_TYPES.find(type => type.toString() === apiTypeSearchParam)}
+                apiType={operationApiType ?? API_TYPES.find((type) => type.toString() === apiTypeSearchParam)}
               />
-              {isDashboardsComparison && showApiTypeSelector && <ApiTypeSegmentedSelector/>}
+              {isDashboardsComparison && showApiTypeSelector && <ApiTypeSegmentedSelector />}
             </>
-        )}
+          ))}
       </Box>
     </Box>
   )
@@ -207,4 +216,3 @@ const TITLE_BY_COMPARE_MODE = {
 }
 
 const COMPARE_API_BY_GROUPS = 'Compare API by Groups'
-

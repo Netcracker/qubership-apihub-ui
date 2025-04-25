@@ -25,10 +25,8 @@ export function useGroupingNamesByApiType(
   return useMemo(() => {
     const groupNameMap = new Map<ApiType, ReadonlyArray<string>>()
 
-    apiTypes.forEach(apiType => {
-      const typeGroupNames = (groups ?? [])
-        .filter(group => apiType === group.apiType)
-        .map(group => group.groupName)
+    apiTypes.forEach((apiType) => {
+      const typeGroupNames = (groups ?? []).filter((group) => apiType === group.apiType).map((group) => group.groupName)
       groupNameMap.set(apiType, typeGroupNames)
     })
 

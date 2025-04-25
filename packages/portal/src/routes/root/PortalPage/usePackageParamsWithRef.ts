@@ -27,8 +27,8 @@ export function usePackageParamsWithRef(refKey?: string): [Key | undefined, Key 
   const ref = useSearchParam(REF_SEARCH_PARAM)
   const [packageRef, isLoading] = usePackageRef(packageId!, versionId!, ref ?? refKey)
 
-  const [packageKey, versionKey] = useMemo(() =>
-      ((ref || refKey) ? [packageRef?.key, packageRef?.version] : [packageId, versionId]),
+  const [packageKey, versionKey] = useMemo(
+    () => (ref || refKey ? [packageRef?.key, packageRef?.version] : [packageId, versionId]),
     [ref, refKey, packageRef?.key, packageRef?.version, packageId, versionId],
   )
 

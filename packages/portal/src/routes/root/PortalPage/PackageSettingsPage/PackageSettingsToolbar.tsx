@@ -26,41 +26,35 @@ import { Toolbar } from '@netcracker/qubership-apihub-ui-shared/components/Toolb
 import { ToolbarTitle } from '@netcracker/qubership-apihub-ui-shared/components/ToolbarTitle'
 import { ExitIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ExitIcon'
 
-export const PackageSettingsToolbar: FC<PackageSettingsTabProps> = memo<PackageSettingsTabProps>(({
-  packageObject,
-}) => {
-  const navigate = useNavigate()
-  const backwardLocation = useBackwardLocationContext()
+export const PackageSettingsToolbar: FC<PackageSettingsTabProps> = memo<PackageSettingsTabProps>(
+  ({ packageObject }) => {
+    const navigate = useNavigate()
+    const backwardLocation = useBackwardLocationContext()
 
-  const previousPageLocation = useMemo(() => {
-    return backwardLocation.fromPackageSettings ?? { pathname: '/portal' }
-  }, [backwardLocation])
+    const previousPageLocation = useMemo(() => {
+      return backwardLocation.fromPackageSettings ?? { pathname: '/portal' }
+    }, [backwardLocation])
 
-  const navigateToPrevPage = useCallback(() => {
-    navigate(previousPageLocation)
-  }, [previousPageLocation, navigate])
+    const navigateToPrevPage = useCallback(() => {
+      navigate(previousPageLocation)
+    }, [previousPageLocation, navigate])
 
-  const title = `${packageObject.name}: Manage ${PACKAGE_KINDS_NAMES_MAP[packageObject.kind]}`
+    const title = `${packageObject.name}: Manage ${PACKAGE_KINDS_NAMES_MAP[packageObject.kind]}`
 
-  return (
-    <>
-      {packageObject && (
-        <Toolbar
-          breadcrumbs={<PackageBreadcrumbs packageObject={packageObject}/>}
-          header={<ToolbarTitle value={title}/>}
-          action={(
-            <Button
-              startIcon={<ExitIcon/>}
-              variant="outlined"
-              onClick={navigateToPrevPage}
-              data-testid="ExitButton"
-            >
-              Exit
-            </Button>
-          )}
-        />
-      )}
-    </>
-  )
-})
-
+    return (
+      <>
+        {packageObject && (
+          <Toolbar
+            breadcrumbs={<PackageBreadcrumbs packageObject={packageObject} />}
+            header={<ToolbarTitle value={title} />}
+            action={
+              <Button startIcon={<ExitIcon />} variant="outlined" onClick={navigateToPrevPage} data-testid="ExitButton">
+                Exit
+              </Button>
+            }
+          />
+        )}
+      </>
+    )
+  },
+)

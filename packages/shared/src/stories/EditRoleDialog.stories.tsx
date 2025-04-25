@@ -32,7 +32,8 @@ export const CreateStory: Story = {
     open: true,
     detail: {
       permissions: PERMISSIONS_LIST,
-      isRoleUnique: (roleName: string) => !ROLES_LIST?.some(({ role }) => role.toLowerCase() === roleName.toLowerCase()),
+      isRoleUnique: (roleName: string) =>
+        !ROLES_LIST?.some(({ role }) => role.toLowerCase() === roleName.toLowerCase()),
     },
   },
 }

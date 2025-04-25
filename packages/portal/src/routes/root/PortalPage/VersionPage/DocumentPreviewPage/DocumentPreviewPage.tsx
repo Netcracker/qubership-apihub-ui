@@ -21,10 +21,5 @@ import { DocumentPreviewCard } from './DocumentPreviewCard'
 import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
 
 export const DocumentPreviewPage: FC = memo(() => {
-  return (
-    <PageLayout
-      toolbar={<SpecToolbar/>}
-      body={<DocumentPreviewCard/>}
-    />
-  )
+  return <PageLayout toolbar={<SpecToolbar />} body={<DocumentPreviewCard />} />
 })

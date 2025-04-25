@@ -42,12 +42,7 @@ const StoryComponent = (args: CompareRestGroupsDialogFormProps): ReactElement =>
 
   const { control } = useForm<CompareRestGroupsDialogFormData>({ defaultValues })
 
-  return (
-    <CompareRestGroupsDialogForm
-      {...args}
-      control={control}
-    />
-  )
+  return <CompareRestGroupsDialogForm {...args} control={control} />
 }
 
 export const DefaultStory: Story = {

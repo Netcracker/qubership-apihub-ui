@@ -20,8 +20,5 @@ import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/ut
 
 export function useVersionOptions(): string[] {
   const [{ snapshots }] = useSnapshots()
-  return useMemo(
-    () => snapshots.map(({ versionKey }) => getSplittedVersionKey(versionKey).versionKey),
-    [snapshots],
-  )
+  return useMemo(() => snapshots.map(({ versionKey }) => getSplittedVersionKey(versionKey).versionKey), [snapshots])
 }

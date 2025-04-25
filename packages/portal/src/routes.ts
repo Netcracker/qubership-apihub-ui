@@ -112,8 +112,7 @@ export type VersionPageRoute =
   | typeof DEPRECATED_PAGE
   | typeof DOCUMENTS_PAGE
 
-export type PackageVersionPageRoute =
-  | typeof CONFIGURATION_PAGE
+export type PackageVersionPageRoute = typeof CONFIGURATION_PAGE
 
 export type OverviewPageRoute =
   | typeof SUMMARY_PAGE
@@ -138,8 +137,7 @@ export type SettingsPageRoute =
   | typeof SYSTEM_ADMINISTRATORS_PAGE
   | typeof SYSTEM_TOKENS_PAGE
 
-export type ProfilePageRoute =
-  | typeof PERSONAL_ACCESS_TOKENS_PAGE
+export type ProfilePageRoute = typeof PERSONAL_ACCESS_TOKENS_PAGE
 
 export const PORTAL_PATH_PATTERNS: string[] = [
   WORKSPACES_PAGE_PATH_PATTERN,

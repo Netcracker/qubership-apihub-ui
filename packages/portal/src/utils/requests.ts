@@ -20,7 +20,13 @@ import type {
   RequestTextExtraOptions,
   RequestVoidExtraOptions,
 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
-import { API_V2, requestBlob, requestJson, requestText, requestVoid } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import {
+  API_V2,
+  requestBlob,
+  requestJson,
+  requestText,
+  requestVoid,
+} from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 
 export function portalRequestJson<T extends object | null>(
   input: RequestInfo | URL,
@@ -55,14 +61,10 @@ export function portalRequestText(
   init?: RequestInit,
   options: RequestTextExtraOptions = {},
 ): Promise<string> {
-  return requestText(
-    input,
-    init,
-    {
-      basePath: API_V2,
-      ...options,
-    },
-  )
+  return requestText(input, init, {
+    basePath: API_V2,
+    ...options,
+  })
 }
 
 export function portalRequestBlob(
@@ -70,12 +72,8 @@ export function portalRequestBlob(
   init?: RequestInit,
   options: RequestBlobExtraOptions = {},
 ): Promise<Response> {
-  return requestBlob(
-    input,
-    init,
-    {
-      basePath: API_V2,
-      ...options,
-    },
-  )
+  return requestBlob(input, init, {
+    basePath: API_V2,
+    ...options,
+  })
 }

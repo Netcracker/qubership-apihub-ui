@@ -36,27 +36,30 @@ export const LayoutWithToolbar: FC<LayoutWithToolbarProps> = memo<LayoutWithTool
         gridTemplateAreas: `${createGridAreas({ toolbar })}`,
       }}
     >
-      <Box sx={{
-        gridArea: TOOLBAR_GRID_AREA,
-        overflow: 'hidden',
-        mb: DEFAULT_PAGE_LAYOUT_GAP,
-        backgroundColor: '#FFFFFF',
-        borderRadius: '0 0 10px 10px',
-        boxShadow: DEFAULT_PAPER_SHADOW,
-      }}>
+      <Box
+        sx={{
+          gridArea: TOOLBAR_GRID_AREA,
+          overflow: 'hidden',
+          mb: DEFAULT_PAGE_LAYOUT_GAP,
+          backgroundColor: '#FFFFFF',
+          borderRadius: '0 0 10px 10px',
+          boxShadow: DEFAULT_PAPER_SHADOW,
+        }}
+      >
         {toolbar}
       </Box>
 
-      <Box sx={{
-        gridArea: BODY_GRID_AREA,
-        overflow: 'hidden',
-        backgroundColor: '#FFFFFF',
-        borderRadius: '10px 10px 0 0',
-        boxShadow: 'rgb(4 10 21 / 4%) 0px 1px 1px, rgb(4 12 29 / 9%) 0px 3px 14px, rgb(7 13 26 / 27%) 0px 0px 1px',
-      }}>
+      <Box
+        sx={{
+          gridArea: BODY_GRID_AREA,
+          overflow: 'hidden',
+          backgroundColor: '#FFFFFF',
+          borderRadius: '10px 10px 0 0',
+          boxShadow: 'rgb(4 10 21 / 4%) 0px 1px 1px, rgb(4 12 29 / 9%) 0px 3px 14px, rgb(7 13 26 / 27%) 0px 0px 1px',
+        }}
+      >
         {body}
       </Box>
     </Box>
   )
 })
-

@@ -42,12 +42,7 @@ import ErrorOutlinedIcon from '@mui/icons-material/ErrorOutlined'
 import { READ_PERMISSION } from '../entities/package-permissions'
 
 export const EditRoleDialog: FC = memo(() => {
-  return (
-    <PopupDelegate
-      type={SHOW_EDIT_ROLE_DIALOG}
-      render={props => <EditRolePopup {...props}/>}
-    />
-  )
+  return <PopupDelegate type={SHOW_EDIT_ROLE_DIALOG} render={(props) => <EditRolePopup {...props} />} />
 })
 
 export const SHOW_EDIT_ROLE_DIALOG = 'show-edit-role-dialog'
@@ -70,103 +65,111 @@ export const EditRolePopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, 
     return [permissions, role, onConfirm, isRoleUnique]
   }, [detail])
 
-  const { handleSubmit, control, formState: { errors, isDirty } } = useForm<EditRoleForm>({
+  const {
+    handleSubmit,
+    control,
+    formState: { errors, isDirty },
+  } = useForm<EditRoleForm>({
     defaultValues: {
-      permissions: permissions.filter(({ permission }) =>
-        role?.permissions.includes(permission) || permission === READ_PERMISSION,
+      permissions: permissions.filter(
+        ({ permission }) => role?.permissions.includes(permission) || permission === READ_PERMISSION,
       ),
       role: role?.role,
     },
   })
 
-  const onConfirmCallback = useCallback((value: EditRoleForm): void => {
-    setOpen(false)
-    onConfirm({
-      key: role?.key || '',
-      role: value.role,
-      permissions: value.permissions.map((p) => p.permission),
-    })
-  }, [onConfirm, role?.key, setOpen])
+  const onConfirmCallback = useCallback(
+    (value: EditRoleForm): void => {
+      setOpen(false)
+      onConfirm({
+        key: role?.key || '',
+        role: value.role,
+        permissions: value.permissions.map((p) => p.permission),
+      })
+    },
+    [onConfirm, role?.key, setOpen],
+  )
 
   const onClose = useCallback(() => {
     setOpen(false)
   }, [setOpen])
 
-  const renderPermissions = useCallback(({ field: { value, onChange } }: {
-    field: ControllerRenderProps<EditRoleForm, 'permissions'>
-  }) => {
-    const onToggleCheckbox = (checked: boolean, permission: Permission): void => {
-      if (checked) {
-        return onChange([...value, permission])
+  const renderPermissions = useCallback(
+    ({ field: { value, onChange } }: { field: ControllerRenderProps<EditRoleForm, 'permissions'> }) => {
+      const onToggleCheckbox = (checked: boolean, permission: Permission): void => {
+        if (checked) {
+          return onChange([...value, permission])
+        }
+        onChange(value.filter((value) => value.permission !== permission.permission))
       }
-      onChange(value.filter((value) => value.permission !== permission.permission))
-    }
-    return <>
-      {permissions.map(
-        (permission) => <PermissionControl
-          key={permission.permission}
-          permission={permission}
-          onToggleCheckbox={onToggleCheckbox}
-          checked={value.some((existingValue) => existingValue.permission === permission.permission)}
-        />,
-      )}
-    </>
-  }, [permissions])
+      return (
+        <>
+          {permissions.map((permission) => (
+            <PermissionControl
+              key={permission.permission}
+              permission={permission}
+              onToggleCheckbox={onToggleCheckbox}
+              checked={value.some((existingValue) => existingValue.permission === permission.permission)}
+            />
+          ))}
+        </>
+      )
+    },
+    [permissions],
+  )
 
   const confirmButtonName = role ? 'Update' : 'Create'
   const dialogTitle = role ? 'Edit Role' : 'Create Role'
 
   return (
-    <DialogForm
-      open={open}
-      onClose={onClose}
-      onSubmit={handleSubmit(onConfirmCallback)}
-      width="440px"
-    >
+    <DialogForm open={open} onClose={onClose} onSubmit={handleSubmit(onConfirmCallback)} width="440px">
       <DialogTitle>
         {dialogTitle}
-        <IconButton
-          sx={{ position: 'absolute', right: 8, top: 8, color: '#626D82' }}
-          onClick={onClose}
-        >
-          <CloseOutlinedIcon fontSize="small"/>
+        <IconButton sx={{ position: 'absolute', right: 8, top: 8, color: '#626D82' }} onClick={onClose}>
+          <CloseOutlinedIcon fontSize="small" />
         </IconButton>
       </DialogTitle>
-      <DialogContent sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        width: 'auto',
-        minWidth: 'unset',
-      }}>
+      <DialogContent
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          width: 'auto',
+          minWidth: 'unset',
+        }}
+      >
         <Controller
           name="role"
           rules={{
             required: 'The field must be filled',
-            validate: role ? {} : {
-              alreadyExists: (role) => isRoleUnique?.(role) || 'Role already exists',
-            },
+            validate: role
+              ? {}
+              : {
+                  alreadyExists: (role) => isRoleUnique?.(role) || 'Role already exists',
+                },
           }}
           control={control}
-          render={({ field }) => <TextField
-            {...field}
-            sx={{ mt: '4px', mb: '12px' }}
-            required
-            inputProps={{ required: false }} // disables "please fill out this field" prompt
-            value={field.value}
-            disabled={!!role}
-            label="Role Name"
-            error={!!errors.role}
-            helperText={errors.role?.message}
-            InputProps={errors.role ? { endAdornment: <ErrorOutlinedIcon color="error" data-testid="ErrorIcon"/> } : {}}
-            data-testid="RoleNameTextField"
-          />}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              sx={{ mt: '4px', mb: '12px' }}
+              required
+              inputProps={{ required: false }} // disables "please fill out this field" prompt
+              value={field.value}
+              disabled={!!role}
+              label="Role Name"
+              error={!!errors.role}
+              helperText={errors.role?.message}
+              InputProps={
+                errors.role ? { endAdornment: <ErrorOutlinedIcon color="error" data-testid="ErrorIcon" /> } : {}
+              }
+              data-testid="RoleNameTextField"
+            />
+          )}
         />
-        <InputLabel required sx={{ fontWeight: 500, color: '#000000' }}>Select permissions</InputLabel>
-        <Controller
-          name="permissions"
-          control={control}
-          render={renderPermissions}
-        />
+        <InputLabel required sx={{ fontWeight: 500, color: '#000000' }}>
+          Select permissions
+        </InputLabel>
+        <Controller name="permissions" control={control} render={renderPermissions} />
       </DialogContent>
       <DialogActions>
         <Button
@@ -177,11 +180,7 @@ export const EditRolePopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, 
         >
           {confirmButtonName}
         </Button>
-        <Button
-          variant="outlined"
-          onClick={onClose}
-          data-testid="CancelButton"
-        >
+        <Button variant="outlined" onClick={onClose} data-testid="CancelButton">
           Cancel
         </Button>
       </DialogActions>
@@ -212,7 +211,7 @@ export const PermissionControl: FC<{
           disabled={disabled}
           checked={checked}
           onChange={handleToggle}
-          checkedIcon={disabled ? <CheckboxDisabledCheckedIcon/> : <CheckboxCheckedIcon/>}
+          checkedIcon={disabled ? <CheckboxDisabledCheckedIcon /> : <CheckboxCheckedIcon />}
           data-testid={`${permission.permission}Checkbox`}
         />
       }

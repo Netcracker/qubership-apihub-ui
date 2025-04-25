@@ -38,14 +38,14 @@ export const Router: FC = memo(() => {
       <BrowserRouter>
         <NavigationProvider>
           <Routes>
-            <Route path="/login" element={<LoginPage applicationName={'APIHUB Editor'}/>}/>
-            <Route path="/" element={auth ? <BasePage/> : <AuthPage/>}>
-              <Route index element={<Navigate to="editor" replace/>}/>
+            <Route path="/login" element={<LoginPage applicationName={'APIHUB Editor'} />} />
+            <Route path="/" element={auth ? <BasePage /> : <AuthPage />}>
+              <Route index element={<Navigate to="editor" replace />} />
               <Route path="editor">
-                <Route index element={<MainPage/>}/>
-                <Route path="projects/:projectId" element={<ProjectEditorPage/>}/>
+                <Route index element={<MainPage />} />
+                <Route path="projects/:projectId" element={<ProjectEditorPage />} />
               </Route>
-              <Route path="*" element={<ErrorPage title={NOT_FOUND_TITLE} homePath="/editor"/>}/>
+              <Route path="*" element={<ErrorPage title={NOT_FOUND_TITLE} homePath="/editor" />} />
             </Route>
           </Routes>
         </NavigationProvider>

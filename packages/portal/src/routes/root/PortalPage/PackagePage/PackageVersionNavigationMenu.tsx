@@ -20,9 +20,7 @@ import type { To } from 'react-router-dom'
 import { useNavigate, useParams } from 'react-router-dom'
 import { CONFIGURATION_PAGE } from '../../../../routes'
 import { getVersionPath } from '../../../NavigationProvider'
-import {
-  useExpandNavigationMenuSearchParam,
-} from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useExpandNavigationMenuSearchParam'
+import { useExpandNavigationMenuSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useExpandNavigationMenuSearchParam'
 import { useActiveTabs } from '@netcracker/qubership-apihub-ui-shared/hooks/pathparams/useActiveTabs'
 import { NavigationMenu } from '@netcracker/qubership-apihub-ui-shared/components/NavigationMenu'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
@@ -37,10 +35,13 @@ export const PackageVersionNavigationMenu: FC = memo(() => {
   const [currentMenuItem] = useActiveTabs()
   const pagePathsMap = useMemo(() => getPagePathsMap(packageId!, versionId!), [packageId, versionId])
 
-  const navigateAndSelect = useCallback((menuItemId: string): void => {
-    const pathToNavigate = pagePathsMap[menuItemId]
-    pathToNavigate && navigate(pathToNavigate)
-  }, [navigate, pagePathsMap])
+  const navigateAndSelect = useCallback(
+    (menuItemId: string): void => {
+      const pathToNavigate = pagePathsMap[menuItemId]
+      pathToNavigate && navigate(pathToNavigate)
+    },
+    [navigate, pagePathsMap],
+  )
 
   return (
     <NavigationMenu
@@ -53,11 +54,7 @@ export const PackageVersionNavigationMenu: FC = memo(() => {
   )
 })
 
-const getPagePathsMap = (
-  packageKey: Key,
-  versionKey: Key,
-): Record<string, To> => {
-
+const getPagePathsMap = (packageKey: Key, versionKey: Key): Record<string, To> => {
   return {
     [CONFIGURATION_PAGE]: getVersionPath({
       packageKey: packageKey,
@@ -72,7 +69,7 @@ const SIDEBAR_MENU_ITEMS = [
     id: CONFIGURATION_PAGE,
     title: 'Configuration',
     tooltip: 'Configuration',
-    icon: <ConfigureIcon/>,
+    icon: <ConfigureIcon />,
     testId: 'ConfigurePackageButton',
   },
 ]

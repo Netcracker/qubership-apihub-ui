@@ -37,8 +37,8 @@ export type OperationChangeCellProps = {
   mainPackageKind?: PackageKind
 }
 
-export const OperationChangeCell: FC<OperationChangeCellProps> = memo<OperationChangeCellProps>((
-  {
+export const OperationChangeCell: FC<OperationChangeCellProps> = memo<OperationChangeCellProps>(
+  ({
     value: {
       original: { change },
       getCanExpand,
@@ -47,36 +47,37 @@ export const OperationChangeCell: FC<OperationChangeCellProps> = memo<OperationC
     },
     mainPackageKind,
   }) => {
-  const { packageId, versionId, apiType } = useParams()
-  const { operationKey, packageRef, previousPackageRef } = change
+    const { packageId, versionId, apiType } = useParams()
+    const { operationKey, packageRef, previousPackageRef } = change
 
-  const isDashboard = mainPackageKind === DASHBOARD_KIND
+    const isDashboard = mainPackageKind === DASHBOARD_KIND
 
-  const previousReleaseVersion = usePreviousReleaseVersion()
-  const previousReleasePackageKey = usePreviousReleasePackageKey()
+    const previousReleaseVersion = usePreviousReleaseVersion()
+    const previousReleasePackageKey = usePreviousReleasePackageKey()
 
-  const searchParams = optionalSearchParams({
-    [VERSION_SEARCH_PARAM]: { value: previousReleaseVersion },
-    [PACKAGE_SEARCH_PARAM]: { value: packageId !== previousReleasePackageKey ? previousReleasePackageKey : '' },
-    [REF_SEARCH_PARAM]: { value: isDashboard ? packageRef?.refId ?? previousPackageRef?.refId : undefined },
-  })
+    const searchParams = optionalSearchParams({
+      [VERSION_SEARCH_PARAM]: { value: previousReleaseVersion },
+      [PACKAGE_SEARCH_PARAM]: { value: packageId !== previousReleasePackageKey ? previousReleasePackageKey : '' },
+      [REF_SEARCH_PARAM]: { value: isDashboard ? (packageRef?.refId ?? previousPackageRef?.refId) : undefined },
+    })
 
-  const link = useMemo(() => ({
-    pathname: `/portal/packages/${packageId}/${versionId}/compare/${apiType}/${operationKey}`,
-    search: `${searchParams}`,
-  }), [apiType, operationKey, packageId, searchParams, versionId])
+    const link = useMemo(
+      () => ({
+        pathname: `/portal/packages/${packageId}/${versionId}/compare/${apiType}/${operationKey}`,
+        search: `${searchParams}`,
+      }),
+      [apiType, operationKey, packageId, searchParams, versionId],
+    )
 
-  const expandable = useMemo(() => getCanExpand(), [getCanExpand])
-  const isExpanded = useMemo(() => getIsExpanded(), [getIsExpanded])
+    const expandable = useMemo(() => getCanExpand(), [getCanExpand])
+    const isExpanded = useMemo(() => getIsExpanded(), [getIsExpanded])
 
-  return (
-    <Box>
-      <ExpandableItem expanded={isExpanded} showToggler={expandable} onToggle={getToggleExpandedHandler()}>
-        <OperationTitleWithMeta
-          operation={change}
-          link={link}
-        />
-      </ExpandableItem>
-    </Box>
-  )
-})
+    return (
+      <Box>
+        <ExpandableItem expanded={isExpanded} showToggler={expandable} onToggle={getToggleExpandedHandler()}>
+          <OperationTitleWithMeta operation={change} link={link} />
+        </ExpandableItem>
+      </Box>
+    )
+  },
+)

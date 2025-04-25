@@ -36,9 +36,16 @@ export type SelectorWithIconsProps<T extends string> = {
 
 function renderSelector<T extends string>(props: SelectorWithIconsProps<T>): JSX.Element {
   const {
-    mode, onChange,
-    firstIcon, firstValue, firstTooltip, firstTestId,
-    secondIcon, secondValue, secondTooltip, secondTestId,
+    mode,
+    onChange,
+    firstIcon,
+    firstValue,
+    firstTooltip,
+    firstTestId,
+    secondIcon,
+    secondValue,
+    secondTooltip,
+    secondTestId,
   } = props
 
   return (
@@ -50,14 +57,7 @@ function renderSelector<T extends string>(props: SelectorWithIconsProps<T>): JSX
         flexWrap: 'wrap',
       }}
     >
-      <ToggleButtonGroup
-        sx={{ height: 32 }}
-        size="small"
-        value={mode}
-        exclusive
-        onChange={onChange}
-      >
-
+      <ToggleButtonGroup sx={{ height: 32 }} size="small" value={mode} exclusive onChange={onChange}>
         <ToggleButton value={firstValue} data-testid={firstTestId}>
           <Tooltip title={firstTooltip}>
             <Box>{firstIcon}</Box>

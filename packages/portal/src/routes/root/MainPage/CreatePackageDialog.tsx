@@ -33,12 +33,7 @@ import { toTitleCase } from '@netcracker/qubership-apihub-ui-shared/utils/string
 import { PackageDialogForm } from '@netcracker/qubership-apihub-ui-shared/components/Forms/PackageDialogForm'
 
 export const CreatePackageDialog: FC = memo(() => {
-  return (
-    <PopupDelegate
-      type={SHOW_CREATE_PACKAGE_DIALOG}
-      render={props => <CreatePackagePopup {...props}/>}
-    />
-  )
+  return <PopupDelegate type={SHOW_CREATE_PACKAGE_DIALOG} render={(props) => <CreatePackagePopup {...props} />} />
 })
 
 const CreatePackagePopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, detail }) => {

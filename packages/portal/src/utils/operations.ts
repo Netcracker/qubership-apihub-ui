@@ -26,7 +26,7 @@ export function groupOperationsByTags<T extends Operation>(operations: ReadonlyA
   for (const operation of operations) {
     const operationTagsSet = handleOperationTags(operation.tags)
 
-    operationTagsSet.forEach(tag => {
+    operationTagsSet.forEach((tag) => {
       if (!newOperationsGroupedByTag[tag]) {
         newOperationsGroupedByTag[tag] = []
       }
@@ -38,18 +38,14 @@ export function groupOperationsByTags<T extends Operation>(operations: ReadonlyA
 }
 
 export const getActionForOperation = (change: OperationChanges, actionType: string): string => {
-  return !isFullyAddedOrRemovedOperationChange(change)
-    ? actionType
-    : change?.diffs?.[0]?.action ?? ''
+  return !isFullyAddedOrRemovedOperationChange(change) ? actionType : (change?.diffs?.[0]?.action ?? '')
 }
 
 export function handleOperationTags(tags: readonly string[] | undefined): Set<string> {
   const operationTagsSet = new Set<string>()
-  const operationTags = isEmpty(tags) || tags?.includes(EMPTY_TAG)
-    ? [DEFAULT_TAG]
-    : tags!
+  const operationTags = isEmpty(tags) || tags?.includes(EMPTY_TAG) ? [DEFAULT_TAG] : tags!
 
-  operationTags.forEach(tag => operationTagsSet.add(tag ?? DEFAULT_TAG))
+  operationTags.forEach((tag) => operationTagsSet.add(tag ?? DEFAULT_TAG))
 
   return operationTagsSet
 }
@@ -66,7 +62,8 @@ export function isFullyAddedOrRemovedOperationChange(change: OperationChanges): 
   return false
 }
 
-function isOperationChange(paths: JsonPath[]): boolean { //check
+function isOperationChange(paths: JsonPath[]): boolean {
+  //check
   return !!matchPaths(paths, [[OPEN_API_PROPERTY_PATHS, PREDICATE_UNCLOSED_END]])
 }
 

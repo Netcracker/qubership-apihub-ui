@@ -33,76 +33,62 @@ export type MultiButtonProps = {
   arrowButtonProps?: ButtonProps
 }
 
-export const MultiButton: FC<MultiButtonProps> = memo<MultiButtonProps>(({
-  primary,
-  secondary,
-  buttonGroupProps,
-  sx,
-  hint,
-  disableHint,
-  arrowButtonProps,
-}) => {
-  const [open, setOpen] = useState(false)
-  const anchorRef = useRef(null)
-  const onClick = useCallback(() => secondary && setOpen(prevOpen => !prevOpen), [secondary])
-  const variant = buttonGroupProps?.variant ?? 'contained'
+export const MultiButton: FC<MultiButtonProps> = memo<MultiButtonProps>(
+  ({ primary, secondary, buttonGroupProps, sx, hint, disableHint, arrowButtonProps }) => {
+    const [open, setOpen] = useState(false)
+    const anchorRef = useRef(null)
+    const onClick = useCallback(() => secondary && setOpen((prevOpen) => !prevOpen), [secondary])
+    const variant = buttonGroupProps?.variant ?? 'contained'
 
-  // think about correct button styling by props
-  const arrowButton = useMemo(() => {
-    const backgroundColor = variant === 'outlined' ? 'white' : '#0068FF'
-    return (
-      <Button
-        sx={{ width: 48, backgroundColor: backgroundColor }}
-        variant={variant}
-        onClick={onClick}
-        {...arrowButtonProps}
-      >
-        <KeyboardArrowDownOutlinedIcon fontSize="small"/>
-      </Button>
-    )
-  }, [arrowButtonProps, onClick, variant])
-
-  return (
-    <Tooltip
-      disableHoverListener={disableHint}
-      title={hint}
-    >
-      <Box sx={sx}>
-        <ButtonGroup
-          {...buttonGroupProps}
+    // think about correct button styling by props
+    const arrowButton = useMemo(() => {
+      const backgroundColor = variant === 'outlined' ? 'white' : '#0068FF'
+      return (
+        <Button
+          sx={{ width: 48, backgroundColor: backgroundColor }}
           variant={variant}
-          ref={anchorRef}
+          onClick={onClick}
+          {...arrowButtonProps}
         >
-          {primary}
-          {arrowButton}
-        </ButtonGroup>
-        {secondary && (
-          <Popper
-            open={open}
-            anchorEl={anchorRef.current}
-            transition
-          >
-            {({ TransitionProps, placement }) => (
-              <Grow {...TransitionProps}
-                    style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}>
-                <Paper
-                  sx={({ palette: { grey, mode }, spacing }) => ({
-                    borderRadius: '6px',
-                    marginTop: spacing(1),
-                    minWidth: 90,
-                    color: mode === 'light' ? 'rgb(55, 65, 81)' : grey[300],
-                    boxShadow: 'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
-                  })}
+          <KeyboardArrowDownOutlinedIcon fontSize="small" />
+        </Button>
+      )
+    }, [arrowButtonProps, onClick, variant])
+
+    return (
+      <Tooltip disableHoverListener={disableHint} title={hint}>
+        <Box sx={sx}>
+          <ButtonGroup {...buttonGroupProps} variant={variant} ref={anchorRef}>
+            {primary}
+            {arrowButton}
+          </ButtonGroup>
+          {secondary && (
+            <Popper open={open} anchorEl={anchorRef.current} transition>
+              {({ TransitionProps, placement }) => (
+                <Grow
+                  {...TransitionProps}
+                  style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
                 >
-                  <ClickAwayListener onClickAway={onClick}>
-                    <MenuList autoFocusItem children={secondary} onClick={onClick} disablePadding={false}/>
-                  </ClickAwayListener>
-                </Paper>
-              </Grow>
-            )}
-          </Popper>
-        )}
-      </Box>
-    </Tooltip>
-  )
-})
+                  <Paper
+                    sx={({ palette: { grey, mode }, spacing }) => ({
+                      borderRadius: '6px',
+                      marginTop: spacing(1),
+                      minWidth: 90,
+                      color: mode === 'light' ? 'rgb(55, 65, 81)' : grey[300],
+                      boxShadow:
+                        'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
+                    })}
+                  >
+                    <ClickAwayListener onClickAway={onClick}>
+                      <MenuList autoFocusItem children={secondary} onClick={onClick} disablePadding={false} />
+                    </ClickAwayListener>
+                  </Paper>
+                </Grow>
+              )}
+            </Popper>
+          )}
+        </Box>
+      </Tooltip>
+    )
+  },
+)

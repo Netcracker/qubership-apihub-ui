@@ -47,14 +47,17 @@ export const NamespaceNavigationMenu: FC = memo(() => {
 
   const [currentMenuItem] = useActiveTabs()
 
-  const navigateAndSelect = useCallback((menuItemId: string): void => {
-    navigateToNamespace({
-      agentId: agentId!,
-      namespaceKey: namespaceId!,
-      mode: menuItemId,
-      search: { [WORKSPACE_SEARCH_PARAM]: { value: workspace } },
-    })
-  }, [agentId, namespaceId, navigateToNamespace, workspace])
+  const navigateAndSelect = useCallback(
+    (menuItemId: string): void => {
+      navigateToNamespace({
+        agentId: agentId!,
+        namespaceKey: namespaceId!,
+        mode: menuItemId,
+        search: { [WORKSPACE_SEARCH_PARAM]: { value: workspace } },
+      })
+    },
+    [agentId, namespaceId, navigateToNamespace, workspace],
+  )
 
   return (
     <NavigationMenu
@@ -72,28 +75,28 @@ const MENU_ITEMS: SidebarMenu[] = [
     id: SERVICES_PAGE,
     title: 'Cloud services',
     tooltip: 'Cloud services',
-    icon: <CloudSettingsIcon/>,
+    icon: <CloudSettingsIcon />,
     testId: 'ServicesTabButton',
   },
   {
     id: SNAPSHOTS_PAGE,
     title: 'Snapshots',
     tooltip: 'Snapshots',
-    icon: <SnapshotsIcon/>,
+    icon: <SnapshotsIcon />,
     testId: 'SnapshotsTabButton',
   },
   {
     id: AUTOMATION_PAGE,
     title: 'Automation',
     tooltip: 'Automation',
-    icon: <AutomationIcon/>,
+    icon: <AutomationIcon />,
     testId: 'AutomationTabButton',
   },
   {
     id: `${SECURITY_REPORTS_PAGE}/${AUTHENTICATION_REPORTS_PAGE}`,
     title: 'Security Reports',
     tooltip: 'Security Reports',
-    icon: <LockOpenIcon/>,
+    icon: <LockOpenIcon />,
     testId: 'SecurityReportsTabButton',
   },
 ]

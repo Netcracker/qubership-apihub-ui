@@ -54,9 +54,7 @@ export const WORKSPACE_1_DTO: PackageDto = {
   defaultVersionDetails: {
     previousVersion: VERSION_2_2,
     status: DRAFT_VERSION_STATUS,
-    versionLabels: [
-      'version-label',
-    ],
+    versionLabels: ['version-label'],
     summary: {
       breaking: 0,
       semiBreaking: 0,
@@ -97,11 +95,7 @@ export const PACKAGE_NISK_DTO: PackageDto = {
   defaultReleaseVersion: '',
   releaseVersionPattern: '',
   restGroupingPrefix: '',
-  permissions: [
-    READ_PERMISSION,
-    DELETE_PACKAGE_PERMISSION,
-    CREATE_AND_UPDATE_PACKAGE_PERMISSION,
-  ],
+  permissions: [READ_PERMISSION, DELETE_PACKAGE_PERMISSION, CREATE_AND_UPDATE_PACKAGE_PERMISSION],
   userRole: 'editor',
   parents: [],
 }
@@ -119,9 +113,7 @@ export const GROUP_1_DTO: PackageDto = {
   defaultReleaseVersion: '',
   releaseVersionPattern: '',
   restGroupingPrefix: '',
-  permissions: [
-    READ_PERMISSION,
-  ],
+  permissions: [READ_PERMISSION],
   userRole: VIEWER_USER_ROLE_ID,
 }
 
@@ -135,9 +127,7 @@ export const GROUP_2_DTO: PackageDto = {
   defaultVersion: VERSION_2_2,
   defaultVersionDetails: PUBLISHED_VERSION_CONTENTS[VERSION_2_2],
   isFavorite: true,
-  permissions: [
-    READ_PERMISSION,
-  ],
+  permissions: [READ_PERMISSION],
   defaultRole: PUBLIC_PACKAGE_ROLE,
   defaultReleaseVersion: '',
   releaseVersionPattern: '',
@@ -158,9 +148,7 @@ export const GROUP_3_DTO: PackageDto = {
   defaultReleaseVersion: '',
   releaseVersionPattern: '',
   restGroupingPrefix: '',
-  permissions: [
-    READ_PERMISSION,
-  ],
+  permissions: [READ_PERMISSION],
   userRole: VIEWER_USER_ROLE_ID,
   parents: [],
 }
@@ -178,9 +166,7 @@ export const GROUP_4_DTO: PackageDto = {
   defaultReleaseVersion: '',
   releaseVersionPattern: '',
   restGroupingPrefix: '',
-  permissions: [
-    READ_PERMISSION,
-  ],
+  permissions: [READ_PERMISSION],
   userRole: VIEWER_USER_ROLE_ID,
 }
 
@@ -194,11 +180,7 @@ export const PACKAGE_0_DTO: PackageDto = {
   defaultVersion: undefined,
   defaultVersionDetails: undefined,
   isFavorite: false,
-  permissions: [
-    READ_PERMISSION,
-    DELETE_PACKAGE_PERMISSION,
-    CREATE_AND_UPDATE_PACKAGE_PERMISSION,
-  ],
+  permissions: [READ_PERMISSION, DELETE_PACKAGE_PERMISSION, CREATE_AND_UPDATE_PACKAGE_PERMISSION],
   defaultRole: PUBLIC_PACKAGE_ROLE,
   defaultReleaseVersion: '',
   releaseVersionPattern: '',
@@ -222,11 +204,7 @@ export const PACKAGE_1_DTO: PackageDto = {
   defaultReleaseVersion: '',
   releaseVersionPattern: '',
   restGroupingPrefix: '/api/{group}/',
-  permissions: [
-    READ_PERMISSION,
-    DELETE_PACKAGE_PERMISSION,
-    CREATE_AND_UPDATE_PACKAGE_PERMISSION,
-  ],
+  permissions: [READ_PERMISSION, DELETE_PACKAGE_PERMISSION, CREATE_AND_UPDATE_PACKAGE_PERMISSION],
   userRole: VIEWER_USER_ROLE_ID,
 }
 
@@ -277,9 +255,7 @@ export const PACKAGE_3_DTO: PackageDto = {
   defaultVersion: VERSION_1_0,
   defaultVersionDetails: PUBLISHED_VERSION_CONTENTS[VERSION_1_0],
   isFavorite: true,
-  permissions: [
-    READ_PERMISSION,
-  ],
+  permissions: [READ_PERMISSION],
   defaultRole: PUBLIC_PACKAGE_ROLE,
   defaultReleaseVersion: '',
   releaseVersionPattern: '',
@@ -299,9 +275,7 @@ export const PACKAGE_4_DTO: PackageDto = {
   defaultVersion: VERSION_1_0,
   defaultVersionDetails: PUBLISHED_VERSION_CONTENTS[VERSION_1_0],
   isFavorite: false,
-  permissions: [
-    READ_PERMISSION,
-  ],
+  permissions: [READ_PERMISSION],
   defaultRole: PUBLIC_PACKAGE_ROLE,
   defaultReleaseVersion: '',
   releaseVersionPattern: '',
@@ -320,9 +294,7 @@ export const PACKAGE_5_DTO: PackageDto = {
   defaultVersion: VERSION_2_6_3,
   defaultVersionDetails: PUBLISHED_VERSION_CONTENTS[VERSION_2_6_1],
   isFavorite: false,
-  permissions: [
-    READ_PERMISSION,
-  ],
+  permissions: [READ_PERMISSION],
   defaultRole: PUBLIC_PACKAGE_ROLE,
   defaultReleaseVersion: '',
   releaseVersionPattern: '',
@@ -340,9 +312,7 @@ export const PACKAGE_6_DTO: PackageDto = {
   defaultVersion: VERSION_2_2,
   defaultVersionDetails: PUBLISHED_VERSION_CONTENTS[VERSION_2_2],
   isFavorite: false,
-  permissions: [
-    READ_PERMISSION,
-  ],
+  permissions: [READ_PERMISSION],
   defaultRole: PUBLIC_PACKAGE_ROLE,
   defaultReleaseVersion: '',
   releaseVersionPattern: '',
@@ -491,8 +461,5 @@ export const RJ5678_MEMBER: PackageMember = {
 }
 
 export const PACKAGE_MEMBERS: Writeable<PackageMembers> = {
-  members: [
-    JW1234_MEMBER,
-    RJ5678_MEMBER,
-  ],
+  members: [JW1234_MEMBER, RJ5678_MEMBER],
 }

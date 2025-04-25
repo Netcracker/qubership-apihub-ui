@@ -22,9 +22,7 @@ export const ActivityHistoryFiltersProvider: FC<PropsWithChildren> = memo<PropsW
   const [content, setContent] = useState({})
   return (
     <ActivityHistoryFilters.Provider value={content}>
-      <SetActivityHistoryFilters.Provider value={setContent}>
-        {children}
-      </SetActivityHistoryFilters.Provider>
+      <SetActivityHistoryFilters.Provider value={setContent}>{children}</SetActivityHistoryFilters.Provider>
     </ActivityHistoryFilters.Provider>
   )
 })

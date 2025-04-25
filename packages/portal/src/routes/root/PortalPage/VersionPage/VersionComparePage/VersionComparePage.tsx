@@ -54,26 +54,28 @@ export const VersionComparePage: FC = memo(() => {
   const [originComparisonObject, changedComparisonObject] = useComparisonObjects(versionsComparisonParams)
   const mergedBreadcrumbsData = useCompareBreadcrumbs(originComparisonObject, changedComparisonObject)
 
-  const [compareToolbarMode, compareContentComponent, sidebarComponent]: [CompareToolbarMode, ReactNode, ReactNode] = useMemo(
-    () => (isDashboardsComparison
-      ? [COMPARE_DASHBOARDS_MODE, <DashboardsCompareContent/>, undefined]
-      : [COMPARE_PACKAGES_MODE, <VersionCompareContent/>, <VersionCompareSidebar/>]),
-    [isDashboardsComparison],
-  )
+  const [compareToolbarMode, compareContentComponent, sidebarComponent]: [CompareToolbarMode, ReactNode, ReactNode] =
+    useMemo(
+      () =>
+        isDashboardsComparison
+          ? [COMPARE_DASHBOARDS_MODE, <DashboardsCompareContent />, undefined]
+          : [COMPARE_PACKAGES_MODE, <VersionCompareContent />, <VersionCompareSidebar />],
+      [isDashboardsComparison],
+    )
 
   return (
     <ChangesLoadingStatusProvider>
       <VersionsComparisonGlobalParamsContext.Provider value={versionsComparisonParams}>
         <BreadcrumbsDataContext.Provider value={mergedBreadcrumbsData}>
           <PageLayout
-            toolbar={<ComparisonToolbar compareToolbarMode={compareToolbarMode}/>}
+            toolbar={<ComparisonToolbar compareToolbarMode={compareToolbarMode} />}
             body={compareContentComponent}
             navigation={sidebarComponent}
           />
         </BreadcrumbsDataContext.Provider>
       </VersionsComparisonGlobalParamsContext.Provider>
-      <CompareVersionsDialog/>
-      <CompareRevisionsDialog/>
+      <CompareVersionsDialog />
+      <CompareRevisionsDialog />
     </ChangesLoadingStatusProvider>
   )
 })

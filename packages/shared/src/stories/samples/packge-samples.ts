@@ -29,9 +29,7 @@ export const PACKAGE_OPTIONS: Packages = [
     description: '',
     defaultReleaseVersion: '',
     restGroupingPrefix: '',
-    permissions: [
-      READ_PERMISSION,
-    ],
+    permissions: [READ_PERMISSION],
   },
   {
     key: 'package-2',
@@ -40,9 +38,7 @@ export const PACKAGE_OPTIONS: Packages = [
     alias: 'package2',
     parents: [],
     isFavorite: true,
-    permissions: [
-      READ_PERMISSION,
-    ],
+    permissions: [READ_PERMISSION],
     defaultReleaseVersion: '',
     restGroupingPrefix: '',
     description: '',
@@ -55,8 +51,6 @@ export const PACKAGE_OPTIONS: Packages = [
     isFavorite: false,
     description: '',
     restGroupingPrefix: '',
-    permissions: [
-      READ_PERMISSION,
-    ],
+    permissions: [READ_PERMISSION],
   },
 ]

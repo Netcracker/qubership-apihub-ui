@@ -36,7 +36,7 @@ export const OperationWithMetaList: FC<OperationWithMetaListProps> = memo<Operat
 
   return (
     <Box>
-      {operations?.map(operation => {
+      {operations?.map((operation) => {
         const link = prepareLinkFn(operation)
 
         return (
@@ -50,7 +50,7 @@ export const OperationWithMetaList: FC<OperationWithMetaListProps> = memo<Operat
                 openLinkInNewTab={openLinkInNewTab}
               />
             </Box>
-            <Divider orientation="horizontal" variant="fullWidth" sx={{ pt: 1 }}/>
+            <Divider orientation="horizontal" variant="fullWidth" sx={{ pt: 1 }} />
           </Box>
         )
       })}

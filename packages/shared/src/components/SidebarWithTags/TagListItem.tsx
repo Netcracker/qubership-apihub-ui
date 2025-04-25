@@ -31,9 +31,7 @@ export const TagListItem: FC<{
   }, [onClick, selected, tag])
 
   return (
-    <ListItem
-      sx={{ p: 0 }}
-    >
+    <ListItem sx={{ p: 0 }}>
       <ListItemButton
         sx={{
           height: '36px',
@@ -42,7 +40,7 @@ export const TagListItem: FC<{
         selected={selected}
         onClick={handleTagClick}
       >
-        <ListItemText primary={tag} primaryTypographyProps={{ sx: { mt: 1 } }}/>
+        <ListItemText primary={tag} primaryTypographyProps={{ sx: { mt: 1 } }} />
       </ListItemButton>
     </ListItem>
   )

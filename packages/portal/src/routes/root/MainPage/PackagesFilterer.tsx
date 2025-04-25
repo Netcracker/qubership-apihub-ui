@@ -29,7 +29,12 @@ import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { useSuperAdminCheck } from '@netcracker/qubership-apihub-ui-shared/hooks/user-roles/useSuperAdminCheck'
 import { useSetSearchParams } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSetSearchParams'
 import { useEventBus } from '@apihub/routes/EventBusProvider'
-import { DASHBOARD_KIND, GROUP_KIND, PACKAGE_KIND, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import {
+  DASHBOARD_KIND,
+  GROUP_KIND,
+  PACKAGE_KIND,
+  WORKSPACE_KIND,
+} from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { CREATE_AND_UPDATE_PACKAGE_PERMISSION } from '@netcracker/qubership-apihub-ui-shared/entities/package-permissions'
 import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
 import { PackageSettingsButton } from '@apihub/components/PackageSettingsButton'
@@ -43,96 +48,111 @@ type PackagesFiltererProps = Readonly<{
   rootPackageKey?: Key
 }>
 
-export const PackagesFilterer: FC<PackagesFiltererProps> = memo<PackagesFiltererProps>(({
-  rootPackageKey,
-  hideViewSelector = false,
-  hideSearchBar = false,
-}) => {
-  const isSuperAdmin = useSuperAdminCheck()
-  const isWorkspacesPage = useIsWorkspacesPage()
-  const isPrivatePage = useIsPrivateMainPage()
-  const setSearchParams = useSetSearchParams()
-  const [textFilter] = useTextSearchParam()
+export const PackagesFilterer: FC<PackagesFiltererProps> = memo<PackagesFiltererProps>(
+  ({ rootPackageKey, hideViewSelector = false, hideSearchBar = false }) => {
+    const isSuperAdmin = useSuperAdminCheck()
+    const isWorkspacesPage = useIsWorkspacesPage()
+    const isPrivatePage = useIsPrivateMainPage()
+    const setSearchParams = useSetSearchParams()
+    const [textFilter] = useTextSearchParam()
 
-  const [packageObject] = usePackage({ packageKey: rootPackageKey })
-  const { showCreatePackageDialog } = useEventBus()
-  const isWorkspace = packageObject?.kind === WORKSPACE_KIND
-  const isGroup = packageObject?.kind === GROUP_KIND
+    const [packageObject] = usePackage({ packageKey: rootPackageKey })
+    const { showCreatePackageDialog } = useEventBus()
+    const isWorkspace = packageObject?.kind === WORKSPACE_KIND
+    const isGroup = packageObject?.kind === GROUP_KIND
 
-  const [workspaceId] = usePrivateWorkspace()
-  const isPrivateWorkspace = useMemo(() =>
-      workspaceId === packageObject?.key || isPrivatePage,
-    [isPrivatePage, packageObject?.key, workspaceId],
-  )
+    const [workspaceId] = usePrivateWorkspace()
+    const isPrivateWorkspace = useMemo(
+      () => workspaceId === packageObject?.key || isPrivatePage,
+      [isPrivatePage, packageObject?.key, workspaceId],
+    )
 
-  const showCreateWorkspaceDialogHandle = useCallback(() => showCreatePackageDialog({
-    kind: WORKSPACE_KIND,
-    parentPackageKey: rootPackageKey!,
-  }), [rootPackageKey, showCreatePackageDialog])
-  const showCreateGroupDialogHandle = useCallback(() => showCreatePackageDialog({
-    kind: GROUP_KIND,
-    parentPackageKey: rootPackageKey!,
-  }), [rootPackageKey, showCreatePackageDialog])
-  const showCreatePackageDialogHandle = useCallback(() => showCreatePackageDialog({
-    kind: PACKAGE_KIND,
-    parentPackageKey: rootPackageKey!,
-  }), [rootPackageKey, showCreatePackageDialog])
-  const showCreateDashboardDialogHandle = useCallback(() => showCreatePackageDialog({
-    kind: DASHBOARD_KIND,
-    parentPackageKey: rootPackageKey!,
-  }), [rootPackageKey, showCreatePackageDialog])
+    const showCreateWorkspaceDialogHandle = useCallback(
+      () =>
+        showCreatePackageDialog({
+          kind: WORKSPACE_KIND,
+          parentPackageKey: rootPackageKey!,
+        }),
+      [rootPackageKey, showCreatePackageDialog],
+    )
+    const showCreateGroupDialogHandle = useCallback(
+      () =>
+        showCreatePackageDialog({
+          kind: GROUP_KIND,
+          parentPackageKey: rootPackageKey!,
+        }),
+      [rootPackageKey, showCreatePackageDialog],
+    )
+    const showCreatePackageDialogHandle = useCallback(
+      () =>
+        showCreatePackageDialog({
+          kind: PACKAGE_KIND,
+          parentPackageKey: rootPackageKey!,
+        }),
+      [rootPackageKey, showCreatePackageDialog],
+    )
+    const showCreateDashboardDialogHandle = useCallback(
+      () =>
+        showCreatePackageDialog({
+          kind: DASHBOARD_KIND,
+          parentPackageKey: rootPackageKey!,
+        }),
+      [rootPackageKey, showCreatePackageDialog],
+    )
 
-  const CREATE_BUTTON_OPTIONS = [
-    { key: GROUP_KIND, label: 'Group', method: showCreateGroupDialogHandle, testId: 'GroupMenuItem' },
-    { key: PACKAGE_KIND, label: 'Package', method: showCreatePackageDialogHandle, testId: 'PackageMenuItem' },
-    { key: DASHBOARD_KIND, label: 'Dashboard', method: showCreateDashboardDialogHandle, testId: 'DashboardMenuItem' },
-  ]
+    const CREATE_BUTTON_OPTIONS = [
+      { key: GROUP_KIND, label: 'Group', method: showCreateGroupDialogHandle, testId: 'GroupMenuItem' },
+      { key: PACKAGE_KIND, label: 'Package', method: showCreatePackageDialogHandle, testId: 'PackageMenuItem' },
+      { key: DASHBOARD_KIND, label: 'Dashboard', method: showCreateDashboardDialogHandle, testId: 'DashboardMenuItem' },
+    ]
 
-  const hasCreatePackagePermission = useMemo(
-    () => !!packageObject?.permissions?.includes(CREATE_AND_UPDATE_PACKAGE_PERMISSION),
-    [packageObject],
-  )
+    const hasCreatePackagePermission = useMemo(
+      () => !!packageObject?.permissions?.includes(CREATE_AND_UPDATE_PACKAGE_PERMISSION),
+      [packageObject],
+    )
 
-  return (
-    <>
-      {!hideSearchBar && <SearchBar
-        placeholder="Search package"
-        value={textFilter}
-        onValueChange={text => {
-          if (!text) {
-            setSearchParams({ text: text }, { replace: true })
-          } else {
-            setSearchParams({ text: text, view: FLAT_TABLE_MODE }, { replace: true })
-          }
-        }}
-        data-testid="SearchPackages"
-      />
-      }
-      {!hideViewSelector && <TableViewSelector/>}
-      {(isWorkspace || isGroup) && (!isPrivateWorkspace || isSuperAdmin) && rootPackageKey && (
-        <Box>
-          <PackageSettingsButton packageKey={rootPackageKey} packageKind={packageObject?.kind}/>
-        </Box>
-      )}
-      {rootPackageKey && (
-        <DropdownButton
-          disabled={!hasCreatePackagePermission}
-          disableHint={hasCreatePackagePermission}
-          hint="You do not have permission to create packages"
-          label="Create"
-          options={CREATE_BUTTON_OPTIONS}
-          testId="CreatePackageMenuButton"
-        />
-      )}
-      {isWorkspacesPage && isSuperAdmin && (
-        <Button variant="contained" onClick={showCreateWorkspaceDialogHandle} data-testid="CreateWorkspaceButton">
-          Create
-        </Button>
-      )}
-      <CreatePackageDialog/>
-    </>
-  )
-})
+    return (
+      <>
+        {!hideSearchBar && (
+          <SearchBar
+            placeholder="Search package"
+            value={textFilter}
+            onValueChange={(text) => {
+              if (!text) {
+                setSearchParams({ text: text }, { replace: true })
+              } else {
+                setSearchParams({ text: text, view: FLAT_TABLE_MODE }, { replace: true })
+              }
+            }}
+            data-testid="SearchPackages"
+          />
+        )}
+        {!hideViewSelector && <TableViewSelector />}
+        {(isWorkspace || isGroup) && (!isPrivateWorkspace || isSuperAdmin) && rootPackageKey && (
+          <Box>
+            <PackageSettingsButton packageKey={rootPackageKey} packageKind={packageObject?.kind} />
+          </Box>
+        )}
+        {rootPackageKey && (
+          <DropdownButton
+            disabled={!hasCreatePackagePermission}
+            disableHint={hasCreatePackagePermission}
+            hint="You do not have permission to create packages"
+            label="Create"
+            options={CREATE_BUTTON_OPTIONS}
+            testId="CreatePackageMenuButton"
+          />
+        )}
+        {isWorkspacesPage && isSuperAdmin && (
+          <Button variant="contained" onClick={showCreateWorkspaceDialogHandle} data-testid="CreateWorkspaceButton">
+            Create
+          </Button>
+        )}
+        <CreatePackageDialog />
+      </>
+    )
+  },
+)
 
 const TableViewSelector: FC = memo(() => {
   const [viewMode, setViewMode] = useTableMode(TREE_TABLE_MODE)
@@ -141,10 +161,10 @@ const TableViewSelector: FC = memo(() => {
   return (
     <SelectorWithIcons<TableMode>
       mode={viewMode}
-      firstIcon={<TreeIcon/>}
+      firstIcon={<TreeIcon />}
       firstValue={TREE_TABLE_MODE}
       firstTooltip="Tree view"
-      secondIcon={<ListOutlinedIcon/>}
+      secondIcon={<ListOutlinedIcon />}
       secondValue={FLAT_TABLE_MODE}
       secondTooltip="List view"
       firstTestId="TreeTableModeButton"

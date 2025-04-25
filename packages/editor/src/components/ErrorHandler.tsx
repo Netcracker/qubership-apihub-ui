@@ -31,9 +31,7 @@ export const ErrorHandler: FC<PropsWithChildren> = memo<PropsWithChildren>(({ ch
   return children as ReactElement
 })
 
-async function storeLogs(
-  error: Error,
-): Promise<void> {
+async function storeLogs(error: Error): Promise<void> {
   const data = {
     name: error?.name,
     message: error?.message,

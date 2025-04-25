@@ -18,7 +18,11 @@ const getTooltipTitle = (extension: OasSettingsExtension): React.ReactNode => {
 
   if (inheritances.length === 1) {
     const [{ packageName, packageKind }] = inheritances
-    return <Typography variant="body2">The {name} extension is inherited from {packageName} {packageKind}</Typography>
+    return (
+      <Typography variant="body2">
+        The {name} extension is inherited from {packageName} {packageKind}
+      </Typography>
+    )
   }
 
   return (

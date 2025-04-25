@@ -51,69 +51,96 @@ export const VersionConfigurationSubPage: FC = memo(() => {
 
   const sortedFiles = sortFilesRecord(filesWithLabels, searchValue)
 
-  const handleAdd = useCallback((files: File[]): void => {
-    addFiles(files)
-  }, [addFiles])
-
-  const handleOnChange = useCallback(({ target: { files } }: ChangeEvent<HTMLInputElement>) => {
-    if (files !== null) {
-      handleAdd(transformFileListToFileArray(files))
-    }
-  }, [handleAdd])
-
-  const handleDelete = useCallback((file: File): void => {
-    showDeleteFileDialog({
-      file: file,
-      onConfirm: () => deleteFile(file.name),
-    })
-  }, [deleteFile, showDeleteFileDialog])
-
-  const handleEdit = useCallback((file: File): void => {
-    showEditFileLabelsDialog({
-      file: file,
-      labels: sortedFiles[file.name].labels,
-      onConfirm: (file, updatedLabels) => editFile(file.name, updatedLabels),
-    })
-  }, [editFile, sortedFiles, showEditFileLabelsDialog])
-
-  const handleRestore = useCallback((file: File): void => {
-    restoreFile(file.name)
-  }, [restoreFile])
-
-  const getFileIcon = useCallback((file: File) => <SpecLogo value={fileTypesMap.get(file.name)}/>,
-    [fileTypesMap],
+  const handleAdd = useCallback(
+    (files: File[]): void => {
+      addFiles(files)
+    },
+    [addFiles],
   )
 
-  const handleClick = useCallback((file: File): void => {
-    file.text().then(value => {
-      showSpecificationDialog({
-        spec: {
-          key: file.name,
-          name: file.name,
-          extension: getFileExtension(file.name),
-          type: fileTypesMap.get(file.name)!,
-        },
-        value: value,
+  const handleOnChange = useCallback(
+    ({ target: { files } }: ChangeEvent<HTMLInputElement>) => {
+      if (files !== null) {
+        handleAdd(transformFileListToFileArray(files))
+      }
+    },
+    [handleAdd],
+  )
+
+  const handleDelete = useCallback(
+    (file: File): void => {
+      showDeleteFileDialog({
+        file: file,
+        onConfirm: () => deleteFile(file.name),
       })
-    })
-  }, [fileTypesMap, showSpecificationDialog])
+    },
+    [deleteFile, showDeleteFileDialog],
+  )
 
-  const getFileClickHandler = useCallback((file: File): ((file: File) => void) | null => {
-    return PREVIEWABLE_FILE_TYPES.includes(fileTypesMap.get(file.name)!) ? handleClick : null
-  }, [fileTypesMap, handleClick])
+  const handleEdit = useCallback(
+    (file: File): void => {
+      showEditFileLabelsDialog({
+        file: file,
+        labels: sortedFiles[file.name].labels,
+        onConfirm: (file, updatedLabels) => editFile(file.name, updatedLabels),
+      })
+    },
+    [editFile, sortedFiles, showEditFileLabelsDialog],
+  )
 
-  const getFileActions = useCallback((file: File): ReactNode => {
-    return <FileActions
-      file={file}
-      onDeleteAction={handleDelete}
-      onEditAction={handleEdit}
-      onRestoreAction={find(replacedFiles, ['name', file.name]) ? handleRestore : null}
-    />
-  }, [handleDelete, handleEdit, replacedFiles, handleRestore])
+  const handleRestore = useCallback(
+    (file: File): void => {
+      restoreFile(file.name)
+    },
+    [restoreFile],
+  )
 
-  const getFileInfoIcon = useCallback(({ name }: File): ReactNode => {
-    return find(replacedFiles, { name }) ? <FileInfoIcon/> : null
-  }, [replacedFiles])
+  const getFileIcon = useCallback((file: File) => <SpecLogo value={fileTypesMap.get(file.name)} />, [fileTypesMap])
+
+  const handleClick = useCallback(
+    (file: File): void => {
+      file.text().then((value) => {
+        showSpecificationDialog({
+          spec: {
+            key: file.name,
+            name: file.name,
+            extension: getFileExtension(file.name),
+            type: fileTypesMap.get(file.name)!,
+          },
+          value: value,
+        })
+      })
+    },
+    [fileTypesMap, showSpecificationDialog],
+  )
+
+  const getFileClickHandler = useCallback(
+    (file: File): ((file: File) => void) | null => {
+      return PREVIEWABLE_FILE_TYPES.includes(fileTypesMap.get(file.name)!) ? handleClick : null
+    },
+    [fileTypesMap, handleClick],
+  )
+
+  const getFileActions = useCallback(
+    (file: File): ReactNode => {
+      return (
+        <FileActions
+          file={file}
+          onDeleteAction={handleDelete}
+          onEditAction={handleEdit}
+          onRestoreAction={find(replacedFiles, ['name', file.name]) ? handleRestore : null}
+        />
+      )
+    },
+    [handleDelete, handleEdit, replacedFiles, handleRestore],
+  )
+
+  const getFileInfoIcon = useCallback(
+    ({ name }: File): ReactNode => {
+      return find(replacedFiles, { name }) ? <FileInfoIcon /> : null
+    },
+    [replacedFiles],
+  )
 
   useEffect(() => {
     if (!hasChanges) {
@@ -127,11 +154,13 @@ export const VersionConfigurationSubPage: FC = memo(() => {
   return (
     <BodyCard
       header={
-        <Box sx={{
-          gap: '4px',
-          display: 'flex',
-          alignItems: 'center',
-        }}>
+        <Box
+          sx={{
+            gap: '4px',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
           Configure Package Version
           <Tooltip
             title="Drag and drop files onto the page or click Browse Files button"
@@ -139,19 +168,21 @@ export const VersionConfigurationSubPage: FC = memo(() => {
               sx: { '.MuiTooltip-tooltip': { maxWidth: 'unset' } },
             }}
           >
-            <InfoContextIcon/>
+            <InfoContextIcon />
           </Tooltip>
         </Box>
       }
       action={
         <Box display="flex" gap={2}>
-          {isNotEmptyRecord(filesWithLabels) && <SearchBar
-            placeholder="Search file"
-            value={searchValue}
-            onValueChange={setSearchValue}
-            sx={{ width: '240px' }}
-            data-testid="SearchFile"
-          />}
+          {isNotEmptyRecord(filesWithLabels) && (
+            <SearchBar
+              placeholder="Search file"
+              value={searchValue}
+              onValueChange={setSearchValue}
+              sx={{ width: '240px' }}
+              data-testid="SearchFile"
+            />
+          )}
           <UploadButton
             multiple
             onUpload={handleOnChange}

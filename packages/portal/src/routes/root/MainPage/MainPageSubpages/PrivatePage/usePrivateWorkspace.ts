@@ -44,9 +44,7 @@ export function useCreatePersonalPackage(): [CreatePersonalPackage, IsLoading, I
   return [mutate, isLoading, isSuccess, error]
 }
 
-export async function createPersonalPackage(
-  userId: Key,
-): Promise<PackageDto> {
+export async function createPersonalPackage(userId: Key): Promise<PackageDto> {
   return await portalRequestJson<PackageDto>(`/users/${userId}/space`, {
     method: 'POST',
   })

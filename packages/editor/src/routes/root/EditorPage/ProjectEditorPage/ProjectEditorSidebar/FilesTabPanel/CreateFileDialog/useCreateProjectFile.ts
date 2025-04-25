@@ -30,8 +30,8 @@ export function useCreateProjectFile(): [CreateProjectFile, IsLoading, IsSuccess
   const [, setSelectedFile] = useFileSearchParam()
 
   const { mutate, isLoading, isSuccess } = useMutation<Key[], Error, FileCandidate>({
-    mutationFn: file => createProjectFile(projectId!, selectedBranch!, file),
-    onSuccess: fileIds => setSelectedFile(fileIds[0]),
+    mutationFn: (file) => createProjectFile(projectId!, selectedBranch!, file),
+    onSuccess: (fileIds) => setSelectedFile(fileIds[0]),
   })
 
   return [mutate, isLoading, isSuccess]
@@ -45,17 +45,19 @@ async function createProjectFile(
   const projectId = encodeURIComponent(projectKey)
   const branch = encodeURIComponent(branchName)
 
-  return (await editorRequestJson<{ fileIds: Key[] }>(`/projects/${projectId}/branches/${branch}/integration/files`, {
-    method: 'POST',
-    body: JSON.stringify({
-      source: 'new',
-      data: {
-        name: `${name}${extension}`,
-        type: type,
-        path: path,
-      },
-    }),
-  })).fileIds
+  return (
+    await editorRequestJson<{ fileIds: Key[] }>(`/projects/${projectId}/branches/${branch}/integration/files`, {
+      method: 'POST',
+      body: JSON.stringify({
+        source: 'new',
+        data: {
+          name: `${name}${extension}`,
+          type: type,
+          path: path,
+        },
+      }),
+    })
+  ).fileIds
 }
 
 type CreateProjectFile = (file: FileCandidate) => void

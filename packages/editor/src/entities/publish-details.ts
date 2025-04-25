@@ -64,13 +64,9 @@ export type PublishOptions = {
   sources?: FileSourceMap
 }
 
-export async function fetchAllFiles(
-  projectKey: Key,
-  branchKey: Key,
-  authorization: string,
-): Promise<FileSourceMap> {
+export async function fetchAllFiles(projectKey: Key, branchKey: Key, authorization: string): Promise<FileSourceMap> {
   try {
-    const data = await fetchAllFilesBlob(projectKey, branchKey, authorization) as Blob
+    const data = (await fetchAllFilesBlob(projectKey, branchKey, authorization)) as Blob
 
     return getSourcesFromZip(data)
   } catch (error) {
@@ -93,19 +89,17 @@ export async function getSourcesFromZip(data: Blob): Promise<FileSourceMap> {
   return result
 }
 
-export async function fetchAllFilesBlob(
-  projectKey: Key,
-  branchKey: Key,
-  authorization: string,
-): Promise<Blob | null> {
+export async function fetchAllFilesBlob(projectKey: Key, branchKey: Key, authorization: string): Promise<Blob | null> {
   try {
-    return await (await requestBlob(
-      `/api/v1/projects/${encodeURIComponent(projectKey)}/branches/${encodeURIComponent(branchKey)}/allfiles`,
-      {
-        headers: { authorization },
-        method: 'GET',
-      },
-    )).blob()
+    return await (
+      await requestBlob(
+        `/api/v1/projects/${encodeURIComponent(projectKey)}/branches/${encodeURIComponent(branchKey)}/allfiles`,
+        {
+          headers: { authorization },
+          method: 'GET',
+        },
+      )
+    ).blob()
   } catch (error) {
     return null
   }

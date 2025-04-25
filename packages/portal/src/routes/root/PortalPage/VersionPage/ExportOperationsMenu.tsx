@@ -21,9 +21,7 @@ import { useDownloadOperationsAsExcel } from './useDownloadOperationsAsExcel'
 import { useFullMainVersion } from '../FullMainVersionProvider'
 import type { ApiAudience, ApiKind } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import {
-  useResolvedOperationGroupParameters,
-} from '@netcracker/qubership-apihub-ui-shared/hooks/operation-groups/useResolvedOperationGroupParameters'
+import { useResolvedOperationGroupParameters } from '@netcracker/qubership-apihub-ui-shared/hooks/operation-groups/useResolvedOperationGroupParameters'
 import { ExportMenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ExportMenuButton'
 
 export type ExportOperationsMenuProps = {
@@ -39,57 +37,50 @@ export type ExportOperationsMenuProps = {
   title?: string
 }
 
-export const ExportOperationsMenu: FC<ExportOperationsMenuProps> = memo(({
-  textFilter,
-  kind,
-  apiAudience,
-  tag,
-  group,
-  disabled,
-  refPackageId,
-  emptyTag,
-  onlyDeprecated = false,
-  title,
-}) => {
-  const { packageId, apiType = DEFAULT_API_TYPE } = useParams()
+export const ExportOperationsMenu: FC<ExportOperationsMenuProps> = memo(
+  ({ textFilter, kind, apiAudience, tag, group, disabled, refPackageId, emptyTag, onlyDeprecated = false, title }) => {
+    const { packageId, apiType = DEFAULT_API_TYPE } = useParams()
 
-  const [downloadOperationsAsExcel] = useDownloadOperationsAsExcel()
-  const fullVersion = useFullMainVersion()
+    const [downloadOperationsAsExcel] = useDownloadOperationsAsExcel()
+    const fullVersion = useFullMainVersion()
 
-  const { resolvedGroupName, resolvedEmptyGroup } = useResolvedOperationGroupParameters(group)
+    const { resolvedGroupName, resolvedEmptyGroup } = useResolvedOperationGroupParameters(group)
 
-  const onDownloadAllOperations = (): void => {
-    downloadOperationsAsExcel({
-      packageKey: packageId!,
-      version: fullVersion!,
-      apiType: apiType!,
-      onlyDeprecated: onlyDeprecated!,
-    })
-  }
+    const onDownloadAllOperations = (): void => {
+      downloadOperationsAsExcel({
+        packageKey: packageId!,
+        version: fullVersion!,
+        apiType: apiType!,
+        onlyDeprecated: onlyDeprecated!,
+      })
+    }
 
-  const onDownloadFilteredOperations = (): void => {
-    downloadOperationsAsExcel({
-      packageKey: packageId!,
-      version: fullVersion!,
-      apiType: apiType!,
-      textFilter: textFilter!,
-      kind: kind!,
-      apiAudience: apiAudience,
-      tag: tag!,
-      group: resolvedGroupName!,
-      emptyGroup: resolvedEmptyGroup,
-      refPackageId: refPackageId!,
-      emptyTag: emptyTag!,
-      onlyDeprecated: onlyDeprecated!,
-    })
-  }
+    const onDownloadFilteredOperations = (): void => {
+      downloadOperationsAsExcel({
+        packageKey: packageId!,
+        version: fullVersion!,
+        apiType: apiType!,
+        textFilter: textFilter!,
+        kind: kind!,
+        apiAudience: apiAudience,
+        tag: tag!,
+        group: resolvedGroupName!,
+        emptyGroup: resolvedEmptyGroup,
+        refPackageId: refPackageId!,
+        emptyTag: emptyTag!,
+        onlyDeprecated: onlyDeprecated!,
+      })
+    }
 
-  return <ExportMenuButton
-    disabled={disabled}
-    title={title ?? 'Export Operations to Excel'}
-    allDownloadText="All operations"
-    filteredDownloadText="Filtered operations"
-    downloadAll={onDownloadAllOperations}
-    downloadFiltered={onDownloadFilteredOperations}
-  />
-})
+    return (
+      <ExportMenuButton
+        disabled={disabled}
+        title={title ?? 'Export Operations to Excel'}
+        allDownloadText="All operations"
+        filteredDownloadText="Filtered operations"
+        downloadAll={onDownloadAllOperations}
+        downloadFiltered={onDownloadFilteredOperations}
+      />
+    )
+  },
+)

@@ -34,10 +34,12 @@ const SERVICE_PUBLISH_DETAILS_QUERY_KEY = 'service-publish-details-query-key'
 // TODO: Move to context?
 const { publishService } = wrap<PackageVersionBuilderWorker>(new Worker())
 
-export function useServicePublishDetails(options?: Partial<{
-  serviceConfig: ServiceConfig
-  builderId: string
-}>): [PublishDetails, IsLoading] {
+export function useServicePublishDetails(
+  options?: Partial<{
+    serviceConfig: ServiceConfig
+    builderId: string
+  }>,
+): [PublishDetails, IsLoading] {
   const { agentId, namespaceKey } = useParams()
   const { serviceConfig, builderId } = options ?? {}
   const workspaceKey = useSearchParam(WORKSPACE_SEARCH_PARAM)
@@ -60,10 +62,7 @@ export function useServicePublishDetails(options?: Partial<{
     enabled: !!serviceConfig,
   })
 
-  return [
-    data ?? EMPTY_PUBLISH_DETAILS,
-    isLoading,
-  ]
+  return [data ?? EMPTY_PUBLISH_DETAILS, isLoading]
 }
 
 export function useIsRunningServicePublishDetailsCount(): number {

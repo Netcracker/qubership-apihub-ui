@@ -31,31 +31,25 @@ export type CollapsibleNavPanelProps = {
   type?: SpecType
 }
 
-export const CollapsibleNavPanel: FC<CollapsibleNavPanelProps> = memo<CollapsibleNavPanelProps>(({
-  content,
-  type,
-}) => {
+export const CollapsibleNavPanel: FC<CollapsibleNavPanelProps> = memo<CollapsibleNavPanelProps>(({ content, type }) => {
   const [open, setOpen] = useState<boolean>(false)
   const [, setSpecItemUri] = useSpecItemUriHashParam()
 
   return (
     <>
-      <Divider orientation="horizontal" variant="fullWidth"/>
+      <Divider orientation="horizontal" variant="fullWidth" />
       <Button
         sx={{ my: 1, justifyContent: 'left', px: 2 }}
         variant="text"
         disabled={!isOpenApiSpecType(type)}
-        startIcon={open ? <ExpandLessOutlinedIcon/> : <ExpandMoreOutlinedIcon/>}
+        startIcon={open ? <ExpandLessOutlinedIcon /> : <ExpandMoreOutlinedIcon />}
         onClick={() => setOpen(!open)}
       >
         {open ? 'Close' : 'Open'} navigation
       </Button>
       <Card sx={{ borderRadius: 0 }}>
         <Collapse in={open} timeout="auto" unmountOnExit>
-          <SpecNavigation
-            content={content}
-            onSelect={setSpecItemUri}
-          />
+          <SpecNavigation content={content} onSelect={setSpecItemUri} />
         </Collapse>
       </Card>
     </>

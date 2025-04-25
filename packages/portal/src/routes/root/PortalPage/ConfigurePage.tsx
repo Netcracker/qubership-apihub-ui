@@ -25,5 +25,5 @@ export const ConfigurePage: FC = memo(() => {
   const { packageObj } = usePackage({ showParents: true })
   const isDashboard = packageObj?.kind === DASHBOARD_KIND
 
-  return isDashboard ? <ConfigureDashboardPage/> : <ConfigurePackageVersionPage/>
+  return isDashboard ? <ConfigureDashboardPage /> : <ConfigurePackageVersionPage />
 })

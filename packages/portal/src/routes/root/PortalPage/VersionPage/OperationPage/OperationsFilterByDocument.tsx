@@ -36,16 +36,9 @@ export type OperationsFilterByDocumentProps = {
 const INPUT_FIELD_ID = 'filter-by-document'
 const DEFAULT_FILTER_BY_DOCUMENT_LABEL = 'Filter by Document'
 
-export const OperationsFilterByDocument: FC<OperationsFilterByDocumentProps> =
-  memo<OperationsFilterByDocumentProps>((props) => {
-    const {
-      labelText,
-      packageKey,
-      versionKey,
-      defaultDocumentSlug,
-      apiTypeFilter,
-      onDocumentSelect,
-    } = props
+export const OperationsFilterByDocument: FC<OperationsFilterByDocumentProps> = memo<OperationsFilterByDocumentProps>(
+  (props) => {
+    const { labelText, packageKey, versionKey, defaultDocumentSlug, apiTypeFilter, onDocumentSelect } = props
     const { documents, isLoading: isDocumentsLoading } = useDocuments({
       packageKey: packageKey,
       versionKey: versionKey,
@@ -58,24 +51,22 @@ export const OperationsFilterByDocument: FC<OperationsFilterByDocumentProps> =
       if (isDocumentsLoading) {
         return
       }
-      const newSelectedDocument = defaultDocumentSlug ? documents.find(doc => doc.slug === defaultDocumentSlug) : EMPTY_DOC
+      const newSelectedDocument = defaultDocumentSlug
+        ? documents.find((doc) => doc.slug === defaultDocumentSlug)
+        : EMPTY_DOC
       newSelectedDocument ? setSelectedDocument(newSelectedDocument) : onDocumentSelect(EMPTY_DOC)
     }, [defaultDocumentSlug, documents, isDocumentsLoading, onDocumentSelect])
 
     return (
       <Box sx={{ my: '4px' }}>
-        <InputLabel htmlFor={INPUT_FIELD_ID}>
-          {labelText ?? DEFAULT_FILTER_BY_DOCUMENT_LABEL}
-        </InputLabel>
+        <InputLabel htmlFor={INPUT_FIELD_ID}>{labelText ?? DEFAULT_FILTER_BY_DOCUMENT_LABEL}</InputLabel>
         <Autocomplete
           autoSelect
           loading={isDocumentsLoading}
           options={documents}
           value={selectedDocument}
           renderOption={(props, { key, title }: Document) => {
-            return (
-              <OptionItem key={key} props={props} title={title!}/>
-            )
+            return <OptionItem key={key} props={props} title={title!} />
           }}
           getOptionLabel={(option) => (option as Document).title ?? ''}
           isOptionEqualToValue={(option, value) => option.key === value.key}
@@ -92,4 +83,5 @@ export const OperationsFilterByDocument: FC<OperationsFilterByDocumentProps> =
         />
       </Box>
     )
-  })
+  },
+)

@@ -37,18 +37,15 @@ export const EMPTY_PUBLISH_DETAILS: PublishDetails = {
   status: NONE_PUBLISH_STATUS,
 }
 
-export const EMPTY_ALL_PUBLISH_DETAILS: PublishDetails[] = [
-  EMPTY_PUBLISH_DETAILS,
-]
+export const EMPTY_ALL_PUBLISH_DETAILS: PublishDetails[] = [EMPTY_PUBLISH_DETAILS]
 
-export async function getPublishDetails(
-  packageKey: PackageKey,
-  publishKeys: PublishKey[],
-): Promise<PublishDetails[]> {
+export async function getPublishDetails(packageKey: PackageKey, publishKeys: PublishKey[]): Promise<PublishDetails[]> {
   const packageId = encodeURIComponent(packageKey)
 
   const pathPattern = '/packages/:packageId/publish/statuses'
-  return await ncCustomAgentsRequestJson<PublishDetails[]>(generatePath(pathPattern, { packageId }), {
+  return await ncCustomAgentsRequestJson<PublishDetails[]>(
+    generatePath(pathPattern, { packageId }),
+    {
       method: 'post',
       body: JSON.stringify({
         publishIds: publishKeys,
@@ -66,16 +63,7 @@ export async function getPublishDetails(
 type SetPublicationDetailsOptionsForAgent = Omit<SetPublicationDetailsOptions, 'builderId'> & { builderId?: string }
 
 export async function setPublicationDetails(options: SetPublicationDetailsOptionsForAgent): Promise<void> {
-  const {
-    packageKey,
-    publishKey,
-    status,
-    authorization,
-    builderId,
-    abortController,
-    data,
-    errors,
-  } = options
+  const { packageKey, publishKey, status, authorization, builderId, abortController, data, errors } = options
   const packageId = encodeURIComponent(packageKey)
   const publishId = encodeURIComponent(publishKey)
 
@@ -87,7 +75,9 @@ export async function setPublicationDetails(options: SetPublicationDetailsOption
 
   const signal = abortController?.signal
   const pathPattern = '/packages/:packageId/publish/:publishId/status'
-  return await ncCustomAgentsRequestVoid(generatePath(pathPattern, { packageId, publishId }), {
+  return await ncCustomAgentsRequestVoid(
+    generatePath(pathPattern, { packageId, publishId }),
+    {
       method: 'post',
       body: formData,
       headers: { authorization },

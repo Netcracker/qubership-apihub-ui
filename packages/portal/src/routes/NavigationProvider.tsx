@@ -404,23 +404,74 @@ export const NavigationProvider: FC<PropsWithChildren> = memo<PropsWithChildren>
   const navigate = useNavigate()
 
   /* eslint-disable react-hooks/exhaustive-deps */
-  const handleNavigateToOverview = useCallback(({ detail }: CustomEvent<OverviewDetail>) => navigate(getOverviewPath(detail)), [])
-  const handleNavigateToOperations = useCallback(({ detail }: CustomEvent<OperationsDetail>) => navigate(getOperationsPath(detail)), [])
-  const handleNavigateToVersionsComparison = useCallback(({ detail }: CustomEvent<ComparisonDetail>) => navigate(getComparisonPath(detail)), [])
-  const handleNavigateToOperationsComparison = useCallback(({ detail }: CustomEvent<OperationsComparisonDetail>) => navigate(getOperationsComparisonPath(detail)), [])
-  const handleNavigateToGroupsOperationsComparison = useCallback(({ detail }: CustomEvent<GroupsOperationsComparisonDetail>) => navigate(getGroupsOperationsPath(detail)), [])
-  const handleNavigateToFirstGroupOperation = useCallback(({ detail }: CustomEvent<FirstGroupOperationDetail>) => navigate(getFirstGroupOperationPath(detail)), [])
-  const handleNavigateToGroup = useCallback(({ detail }: CustomEvent<GroupDetail>) => navigate(getGroupPath(detail)), [])
-  const handleNavigateToGroupsOperationsSwapper = useCallback(({ detail }: CustomEvent<GroupsOperationsSwapperDetail>) => navigate(getGroupsOperationsSwapperPath(detail)), [])
-  const handleNavigateToOperationsSwapper = useCallback(({ detail }: CustomEvent<OperationsSwapperDetail>) => navigate(getOperationsSwapperPath(detail)), [])
-  const handleNavigateToComparison = useCallback(({ detail }: CustomEvent<ComparisonDetail>) => navigate(getComparisonPath(detail)), [])
-  const handleNavigateToGroupCompareContent = useCallback(({ detail }: CustomEvent<GroupCompareContentDetail>) => navigate(getGroupCompareContentPath(detail)), [])
-  const handleNavigateToWorkspace = useCallback(({ detail }: CustomEvent<WorkspaceDetail>) => navigate(getWorkspacePath(detail)), [])
-  const handleNavigateToDocuments = useCallback(({ detail }: CustomEvent<DocumentsDetail>) => navigate(getDocumentPath(detail)), [])
-  const handleNavigateToDocumentPreview = useCallback(({ detail }: CustomEvent<DocumentPreviewDetail>) => navigate(getDocumentPreviewPath(detail)), [])
-  const handleNavigateToPackage = useCallback(({ detail }: CustomEvent<PackageDetail>) => navigate(getPackagePath(detail)), [])
-  const handleNavigateToVersion = useCallback(({ detail }: CustomEvent<VersionDetail>) => navigate(getVersionPath(detail)), [])
-  const handleNavigateToSettings = useCallback(({ detail }: CustomEvent<SettingsDetail>) => navigate(getSettingsPath(detail)), [])
+  const handleNavigateToOverview = useCallback(
+    ({ detail }: CustomEvent<OverviewDetail>) => navigate(getOverviewPath(detail)),
+    [],
+  )
+  const handleNavigateToOperations = useCallback(
+    ({ detail }: CustomEvent<OperationsDetail>) => navigate(getOperationsPath(detail)),
+    [],
+  )
+  const handleNavigateToVersionsComparison = useCallback(
+    ({ detail }: CustomEvent<ComparisonDetail>) => navigate(getComparisonPath(detail)),
+    [],
+  )
+  const handleNavigateToOperationsComparison = useCallback(
+    ({ detail }: CustomEvent<OperationsComparisonDetail>) => navigate(getOperationsComparisonPath(detail)),
+    [],
+  )
+  const handleNavigateToGroupsOperationsComparison = useCallback(
+    ({ detail }: CustomEvent<GroupsOperationsComparisonDetail>) => navigate(getGroupsOperationsPath(detail)),
+    [],
+  )
+  const handleNavigateToFirstGroupOperation = useCallback(
+    ({ detail }: CustomEvent<FirstGroupOperationDetail>) => navigate(getFirstGroupOperationPath(detail)),
+    [],
+  )
+  const handleNavigateToGroup = useCallback(
+    ({ detail }: CustomEvent<GroupDetail>) => navigate(getGroupPath(detail)),
+    [],
+  )
+  const handleNavigateToGroupsOperationsSwapper = useCallback(
+    ({ detail }: CustomEvent<GroupsOperationsSwapperDetail>) => navigate(getGroupsOperationsSwapperPath(detail)),
+    [],
+  )
+  const handleNavigateToOperationsSwapper = useCallback(
+    ({ detail }: CustomEvent<OperationsSwapperDetail>) => navigate(getOperationsSwapperPath(detail)),
+    [],
+  )
+  const handleNavigateToComparison = useCallback(
+    ({ detail }: CustomEvent<ComparisonDetail>) => navigate(getComparisonPath(detail)),
+    [],
+  )
+  const handleNavigateToGroupCompareContent = useCallback(
+    ({ detail }: CustomEvent<GroupCompareContentDetail>) => navigate(getGroupCompareContentPath(detail)),
+    [],
+  )
+  const handleNavigateToWorkspace = useCallback(
+    ({ detail }: CustomEvent<WorkspaceDetail>) => navigate(getWorkspacePath(detail)),
+    [],
+  )
+  const handleNavigateToDocuments = useCallback(
+    ({ detail }: CustomEvent<DocumentsDetail>) => navigate(getDocumentPath(detail)),
+    [],
+  )
+  const handleNavigateToDocumentPreview = useCallback(
+    ({ detail }: CustomEvent<DocumentPreviewDetail>) => navigate(getDocumentPreviewPath(detail)),
+    [],
+  )
+  const handleNavigateToPackage = useCallback(
+    ({ detail }: CustomEvent<PackageDetail>) => navigate(getPackagePath(detail)),
+    [],
+  )
+  const handleNavigateToVersion = useCallback(
+    ({ detail }: CustomEvent<VersionDetail>) => navigate(getVersionPath(detail)),
+    [],
+  )
+  const handleNavigateToSettings = useCallback(
+    ({ detail }: CustomEvent<SettingsDetail>) => navigate(getSettingsPath(detail)),
+    [],
+  )
   const handleNavigateToAgent = useCallback(() => navigateToApplication(AGENT_ROUTE), [])
   const handleNavigateToEditor = useCallback(() => navigateToApplication(EDITOR_ROUTE), [])
   /* eslint-enable */
@@ -445,20 +496,11 @@ export const NavigationProvider: FC<PropsWithChildren> = memo<PropsWithChildren>
   useEvent(NAVIGATE_TO_AGENT, handleNavigateToAgent)
   useEvent(NAVIGATE_TO_EDITOR, handleNavigateToEditor)
 
-  return (
-    <EventBusContext.Provider value={navigationEventBus}>
-      {children}
-    </EventBusContext.Provider>
-  )
+  return <EventBusContext.Provider value={navigationEventBus}>{children}</EventBusContext.Provider>
 })
 
 //all pathnames in these functions should use PATH_PATTERNS from 'routes.ts'
-export function getOverviewPath({
-  packageKey,
-  versionKey,
-  tab = SUMMARY_PAGE,
-  search,
-}: OverviewDetail): Partial<Path> {
+export function getOverviewPath({ packageKey, versionKey, tab = SUMMARY_PAGE, search }: OverviewDetail): Partial<Path> {
   const packageId = encodeURIComponent(packageKey)
   const versionId = encodeURIComponent(versionKey)
   return {
@@ -478,10 +520,7 @@ export function getOperationsPath({
   const versionId = encodeURIComponent(versionKey)
   const operationId = operationKey ? encodeURIComponent(operationKey) : ''
   return {
-    pathname: generatePath(
-      `${OPERATIONS_PAGE_PATH_PATTERN}${operationId}`,
-      { packageId, versionId, apiType },
-    ),
+    pathname: generatePath(`${OPERATIONS_PAGE_PATH_PATTERN}${operationId}`, { packageId, versionId, apiType }),
     ...(search ? { search: `${optionalSearchParams(search)}` } : {}),
   }
 }
@@ -499,10 +538,13 @@ export function getGroupsOperationsPath({
   const groupId = encodeURIComponent(groupKey)
   const operationId = encodeURIComponent(operationKey)
   return {
-    pathname: generatePath(
-      GROUPS_OPERATIONS_COMPARE_PAGE_PATH_PATTERN,
-      { packageId, versionId, groupId, apiType, operationId },
-    ),
+    pathname: generatePath(GROUPS_OPERATIONS_COMPARE_PAGE_PATH_PATTERN, {
+      packageId,
+      versionId,
+      groupId,
+      apiType,
+      operationId,
+    }),
     ...(search ? { search: `${optionalSearchParams(search)}` } : {}),
   }
 }
@@ -520,37 +562,27 @@ export function getFirstGroupOperationPath({
   const groupId = encodeURIComponent(groupKey)
   const operationId = encodeURIComponent(operationKey)
   return {
-    pathname: generatePath(
-      GROUPS_OPERATIONS_COMPARE_PAGE_PATH_PATTERN,
-      { packageId, versionId, groupId, apiType, operationId },
-    ),
+    pathname: generatePath(GROUPS_OPERATIONS_COMPARE_PAGE_PATH_PATTERN, {
+      packageId,
+      versionId,
+      groupId,
+      apiType,
+      operationId,
+    }),
     search: search ? `${optionalSearchParams(search)}` : undefined,
   }
 }
 
-export function getApiChangesPath({
-  packageKey,
-  versionKey,
-  apiType,
-  search,
-}: ApiChangesDetail): Partial<Path> {
+export function getApiChangesPath({ packageKey, versionKey, apiType, search }: ApiChangesDetail): Partial<Path> {
   const packageId = encodeURIComponent(packageKey)
   const versionId = encodeURIComponent(versionKey)
   return {
-    pathname: generatePath(
-      API_CHANGES_PAGE_PATH_PATTERN,
-      { packageId, versionId, apiType },
-    ),
+    pathname: generatePath(API_CHANGES_PAGE_PATH_PATTERN, { packageId, versionId, apiType }),
     search: search ? `${optionalSearchParams(search)}` : undefined,
   }
 }
 
-export function getDeprecatedPath({
-  packageKey,
-  versionKey,
-  apiType,
-  search,
-}: DeprecatedDetail): Partial<Path> {
+export function getDeprecatedPath({ packageKey, versionKey, apiType, search }: DeprecatedDetail): Partial<Path> {
   const packageId = encodeURIComponent(packageKey)
   const versionId = encodeURIComponent(versionKey)
   return {
@@ -559,12 +591,7 @@ export function getDeprecatedPath({
   }
 }
 
-export function getDocumentPath({
-  packageKey,
-  versionKey,
-  documentKey,
-  search,
-}: DocumentsDetail): Partial<Path> {
+export function getDocumentPath({ packageKey, versionKey, documentKey, search }: DocumentsDetail): Partial<Path> {
   const packageId = encodeURIComponent(packageKey)
   const versionId = encodeURIComponent(versionKey)
   const documentId = documentKey ? encodeURIComponent(documentKey) : ''
@@ -618,10 +645,13 @@ export function getGroupsOperationsSwapperPath({
   const groupId = encodeURIComponent(previousGroup!)
   const operationId = encodeURIComponent(originOperationKey)
   return {
-    pathname: generatePath(
-      GROUPS_OPERATIONS_COMPARE_PAGE_PATH_PATTERN,
-      { packageId, versionId, groupId, operationId, apiType },
-    ),
+    pathname: generatePath(GROUPS_OPERATIONS_COMPARE_PAGE_PATH_PATTERN, {
+      packageId,
+      versionId,
+      groupId,
+      operationId,
+      apiType,
+    }),
     ...(search ? { search: `${optionalSearchParams(search)}` } : {}),
   }
 }
@@ -637,19 +667,12 @@ export function getOperationsSwapperPath({
   const versionId = encodeURIComponent(versionKey!)
   const operationId = encodeURIComponent(originOperationKey)
   return {
-    pathname: generatePath(
-      OPERATION_COMPARE_PAGE_PATH_PATTERN,
-      { packageId, versionId, operationId, apiType },
-    ),
+    pathname: generatePath(OPERATION_COMPARE_PAGE_PATH_PATTERN, { packageId, versionId, operationId, apiType }),
     ...(search ? { search: `${optionalSearchParams(search)}` } : {}),
   }
 }
 
-export function getComparisonPath({
-  packageKey,
-  versionKey,
-  search,
-}: ComparisonDetail): Partial<Path> {
+export function getComparisonPath({ packageKey, versionKey, search }: ComparisonDetail): Partial<Path> {
   const packageId = encodeURIComponent(packageKey)
   const versionId = encodeURIComponent(versionKey)
   return {
@@ -673,75 +696,59 @@ export function getGroupCompareContentPath({
   }
 }
 
-export function getPackageSettingsPath({
-  packageKey,
-  tab = GENERAL_PAGE,
-}: PackageSettingsDetail): Partial<Path> {
+export function getPackageSettingsPath({ packageKey, tab = GENERAL_PAGE }: PackageSettingsDetail): Partial<Path> {
   const packageId = encodeURIComponent(packageKey)
   return {
     pathname: generatePath(`${PACKAGE_SETTINGS_PAGE_PATH_PATTERN}${tab}`, { packageId }),
   }
 }
 
-export function getSettingsPath({
-  tab,
-}: SettingsDetail = {
-  tab: USER_ROLES_PAGE,
-}): Partial<Path> {
+export function getSettingsPath(
+  { tab }: SettingsDetail = {
+    tab: USER_ROLES_PAGE,
+  },
+): Partial<Path> {
   return {
     pathname: `${SETTINGS_PAGE_PATH_PATTERN}${tab}`,
   }
 }
 
-export function getProfilePath({
-  tab,
-}: ProfileDetail = {
-  tab: PERSONAL_ACCESS_TOKENS_PAGE,
-}): Partial<Path> {
+export function getProfilePath(
+  { tab }: ProfileDetail = {
+    tab: PERSONAL_ACCESS_TOKENS_PAGE,
+  },
+): Partial<Path> {
   return {
     pathname: `${PROFILE_PAGE_PATH_PATTERN}${tab}`,
   }
 }
 
-export function getWorkspacePath({
-  workspaceKey,
-}: { workspaceKey: Key }): Partial<Path> {
+export function getWorkspacePath({ workspaceKey }: { workspaceKey: Key }): Partial<Path> {
   const workspaceId = encodeURIComponent(workspaceKey)
   return {
     pathname: generatePath(WORKSPACES_PAGE_PATH_PATTERN, { workspaceId }),
   }
 }
 
-export function getGroupPath({
-  groupKey,
-}: GroupDetail): Partial<Path> {
+export function getGroupPath({ groupKey }: GroupDetail): Partial<Path> {
   const groupId = encodeURIComponent(groupKey)
   return {
     pathname: generatePath(GROUPS_PAGE_PATH_PATTERN, { groupId }),
   }
 }
 
-export function getPackagePath({
-  packageKey,
-}: PackageDetail): Partial<Path> {
+export function getPackagePath({ packageKey }: PackageDetail): Partial<Path> {
   const packageId = encodeURIComponent(packageKey)
   return {
     pathname: generatePath(PACKAGE_PAGE_PATH_PATTERN, { packageId }),
   }
 }
 
-export function getVersionPath({
-  packageKey,
-  versionKey,
-  edit,
-}: VersionDetail): Partial<Path> {
+export function getVersionPath({ packageKey, versionKey, edit }: VersionDetail): Partial<Path> {
   const packageId = encodeURIComponent(packageKey)
   const versionId = encodeURIComponent(versionKey)
   return {
-    pathname: generatePath(
-      `${VERSION_PAGE_PATH_PATTERN}${edit ? CONFIGURATION_PAGE : ''}`,
-      { packageId, versionId },
-    ),
+    pathname: generatePath(`${VERSION_PAGE_PATH_PATTERN}${edit ? CONFIGURATION_PAGE : ''}`, { packageId, versionId }),
   }
 }
 

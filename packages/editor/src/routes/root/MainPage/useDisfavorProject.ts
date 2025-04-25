@@ -23,16 +23,14 @@ export function useDisfavorProject(): DisfavorProject {
   const invalidateProjects = useInvalidateProjects()
 
   const { mutate } = useMutation<void, Error, Key>({
-    mutationFn: key => disfavorProject(key),
+    mutationFn: (key) => disfavorProject(key),
     onSuccess: invalidateProjects,
   })
 
   return mutate
 }
 
-async function disfavorProject(
-  projectKey: Key,
-): Promise<void> {
+async function disfavorProject(projectKey: Key): Promise<void> {
   const projectId = encodeURIComponent(projectKey)
 
   await editorRequestVoid(`/projects/${projectId}/disfavor`, {

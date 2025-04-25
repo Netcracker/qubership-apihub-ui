@@ -37,10 +37,7 @@ type DashboardPackagesQueryState = {
   isLoading: IsLoading
 }
 
-export function useDashboardPackages(
-  packageKey: Key,
-  version: Key,
-): DashboardPackagesQueryState {
+export function useDashboardPackages(packageKey: Key, version: Key): DashboardPackagesQueryState {
   const { data, isLoading } = useQuery<CountPackageInDashboardMap, Error>({
     queryKey: [DASHBOARD_PACKAGES_QUERY_KEY, packageKey, version],
     enabled: false,
@@ -65,9 +62,12 @@ export function useAddDashboardPackages(): [AddDashboardPackages, IsLoading] {
     onSuccess: (_, { versionReferences, parentKey }) => {
       const dashboardPackagesMap = createCountPackageInDashboardMap(versionReferences, parentKey)
 
-      client.setQueryData<CountPackageInDashboardMap>([DASHBOARD_PACKAGES_QUERY_KEY, packageId, versionId], (oldDashboardPackagesMap) => {
-        return addToMap(dashboardPackagesMap, oldDashboardPackagesMap!)
-      })
+      client.setQueryData<CountPackageInDashboardMap>(
+        [DASHBOARD_PACKAGES_QUERY_KEY, packageId, versionId],
+        (oldDashboardPackagesMap) => {
+          return addToMap(dashboardPackagesMap, oldDashboardPackagesMap!)
+        },
+      )
     },
   })
   return [mutate, isLoading]
@@ -85,9 +85,12 @@ export function useRemoveDashboardPackages(): [RemoveDashboardPackages, IsLoadin
         versionReferences = toVersionReferences(await getReferences(key, versionKey))
       }
       const dashboardPackagesMap = createCountPackageInDashboardMap(versionReferences, key)
-      client.setQueryData<CountPackageInDashboardMap>([DASHBOARD_PACKAGES_QUERY_KEY, packageId, versionId], (oldDashboardPackagesMap) => {
-        return removeFromMap(oldDashboardPackagesMap!, dashboardPackagesMap)
-      })
+      client.setQueryData<CountPackageInDashboardMap>(
+        [DASHBOARD_PACKAGES_QUERY_KEY, packageId, versionId],
+        (oldDashboardPackagesMap) => {
+          return removeFromMap(oldDashboardPackagesMap!, dashboardPackagesMap)
+        },
+      )
     },
   })
   return [mutate, isLoading]
@@ -108,7 +111,10 @@ export function useResetDashboardPackages(): [ResetDashboardPackages, IsLoading]
   return [mutate, isLoading]
 }
 
-function createCountPackageInDashboardMap(versionReferences: VersionReferences, parentKey?: Key): CountPackageInDashboardMap {
+function createCountPackageInDashboardMap(
+  versionReferences: VersionReferences,
+  parentKey?: Key,
+): CountPackageInDashboardMap {
   const dashboardPackagesMap = new Map<PackageKey, CountInDashboard>()
   const dashboardPackages: Key[] = []
   if (versionReferences.packages) {
@@ -120,7 +126,7 @@ function createCountPackageInDashboardMap(versionReferences: VersionReferences, 
   if (parentKey) {
     dashboardPackages.push(parentKey)
   }
-  dashboardPackages.forEach(key => {
+  dashboardPackages.forEach((key) => {
     const value = dashboardPackagesMap.get(key) ?? 0
     dashboardPackagesMap.set(key, value + 1)
   })

@@ -33,7 +33,9 @@ import type { Revisions, RevisionsDto } from '@netcracker/qubership-apihub-ui-sh
 import { toRevisions } from '@netcracker/qubership-apihub-ui-shared/entities/revisions'
 
 const REVISIONS_QUERY_KEY = 'revisions-query-key'
-export type FetchNextRevisionList = (options?: FetchNextPageOptions) => Promise<InfiniteQueryObserverResult<Revisions, Error>>
+export type FetchNextRevisionList = (
+  options?: FetchNextPageOptions,
+) => Promise<InfiniteQueryObserverResult<Revisions, Error>>
 
 type PagedRevisionsQueryState = {
   data: Revisions
@@ -55,14 +57,7 @@ export function usePagedRevisions(options: {
   page?: number
   limit?: number
 }): PagedRevisionsQueryState {
-
-  const {
-    data,
-    isLoading,
-    fetchNextPage,
-    isFetchingNextPage,
-    hasNextPage,
-  } = useRevisions(options)
+  const { data, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } = useRevisions(options)
 
   return {
     data: data,
@@ -78,12 +73,7 @@ export function useAllRevisions(options: {
   versionKey: Key | undefined
   textFilter?: string
 }): AllRevisionsQueryState {
-  const {
-    data,
-    fetchNextPage,
-    isFetchingNextPage,
-    hasNextPage,
-  } = useRevisions(options)
+  const { data, fetchNextPage, isFetchingNextPage, hasNextPage } = useRevisions(options)
 
   useEffect(() => {
     if (hasNextPage && !isFetchingNextPage) {
@@ -106,13 +96,11 @@ function useRevisions(options: {
 }): PagedRevisionsQueryState {
   const { packageKey, versionKey, textFilter, page = 1, limit = 100 } = options
 
-  const {
-    data,
-    isInitialLoading,
-    fetchNextPage,
-    isFetchingNextPage,
-    hasNextPage,
-  } = useInfiniteQuery<Revisions, Error, Revisions>({
+  const { data, isInitialLoading, fetchNextPage, isFetchingNextPage, hasNextPage } = useInfiniteQuery<
+    Revisions,
+    Error,
+    Revisions
+  >({
     queryKey: [REVISIONS_QUERY_KEY, packageKey, versionKey, limit, textFilter, page],
     queryFn: ({ pageParam = page, signal }) =>
       getRevisions(packageKey!, versionKey!, pageParam - 1, limit, textFilter, signal),
@@ -145,7 +133,7 @@ export async function getRevisions(
 ): Promise<Revisions> {
   const queryParams = optionalSearchParams({
     limit: { value: limit },
-    page: { value: page, toStringValue: page => `${page}` },
+    page: { value: page, toStringValue: (page) => `${page}` },
     textFilter: { value: textFilter },
   })
 
@@ -172,4 +160,3 @@ export function useInvalidateRevisions(): InvalidateQuery<void> {
     client.invalidateQueries([REVISIONS_QUERY_KEY]).then()
   }
 }
-

@@ -30,8 +30,8 @@ export function useSetSearchParams(): (
     (param, navigateOptions): void => {
       for (const key in param) {
         param[key]
-          // TODO: Check do we need to `encodeURIComponent` for `param[key]`
-          ? searchParams.set(key, param[key])
+          ? // TODO: Check do we need to `encodeURIComponent` for `param[key]`
+            searchParams.set(key, param[key])
           : searchParams.delete(key)
       }
       setSearchParams(searchParams, navigateOptions)

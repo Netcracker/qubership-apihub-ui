@@ -24,21 +24,23 @@ export function getCustomServersPackageMapFromLocalStorage(): CustomServersPacka
 }
 
 export function useCustomServersPackageMap(): [CustomServersPackageMap, SetCustomServersPackageMap] {
-  const [customServers, setCustomServers] = useState<CustomServersPackageMap>(getCustomServersPackageMapFromLocalStorage)
+  const [customServers, setCustomServers] = useState<CustomServersPackageMap>(
+    getCustomServersPackageMapFromLocalStorage,
+  )
   const setCustomServersMap = useSetCustomServersContext()
 
-  const updateCustomServers = useCallback((key: string, value: CustomServer[]) => {
-    const data = { ...customServers, [key]: value }
+  const updateCustomServers = useCallback(
+    (key: string, value: CustomServer[]) => {
+      const data = { ...customServers, [key]: value }
 
-    localStorage.setItem(CUSTOM_SERVERS_KEY, JSON.stringify(data))
-    setCustomServers(data)
-    setCustomServersMap(data)
-  }, [customServers, setCustomServersMap])
+      localStorage.setItem(CUSTOM_SERVERS_KEY, JSON.stringify(data))
+      setCustomServers(data)
+      setCustomServersMap(data)
+    },
+    [customServers, setCustomServersMap],
+  )
 
-  return [
-    customServers,
-    updateCustomServers,
-  ]
+  return [customServers, updateCustomServers]
 }
 
 export const CUSTOM_SERVERS_KEY = 'custom-servers'

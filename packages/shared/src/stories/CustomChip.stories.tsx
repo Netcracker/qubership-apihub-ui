@@ -50,5 +50,3 @@ export const ExtraSmallChip: Story = {
     onDelete: undefined,
   },
 }
-
-

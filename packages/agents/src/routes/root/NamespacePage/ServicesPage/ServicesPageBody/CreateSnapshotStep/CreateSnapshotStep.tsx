@@ -32,7 +32,9 @@ import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-share
 import { useCreateSnapshotPublicationOptions } from '../../ServicesPageProvider/ServicesPublicationOptionsProvider'
 import {
   ERROR_STEP_STATUS,
-  INITIAL_STEP_STATUS, RUNNING_STEP_STATUS, SUCCESS_STEP_STATUS,
+  INITIAL_STEP_STATUS,
+  RUNNING_STEP_STATUS,
+  SUCCESS_STEP_STATUS,
   useCreateSnapshotStep,
   usePromoteVersionStep,
   useValidationResultsStep,
@@ -66,11 +68,7 @@ export const CreateSnapshotStep: FC = memo(() => {
   const [searchValue, setSearchValue] = useState('')
 
   return (
-    <Box
-      height="100%"
-      component="form"
-      onSubmit={onSubmit}
-    >
+    <Box height="100%" component="form" onSubmit={onSubmit}>
       <Box
         sx={{
           gap: 2,
@@ -85,7 +83,8 @@ export const CreateSnapshotStep: FC = memo(() => {
           control={control}
           rules={{
             validate: {
-              notEqualToBaseline: (snapshotName) => snapshotName !== baseline || 'Snapshot name must not be the same as baseline',
+              notEqualToBaseline: (snapshotName) =>
+                snapshotName !== baseline || 'Snapshot name must not be the same as baseline',
             },
           }}
           render={({ field: { value, onChange } }) => (
@@ -96,13 +95,7 @@ export const CreateSnapshotStep: FC = memo(() => {
               value={value}
               options={nameOptions}
               renderInput={(params) => (
-                <TextField
-                  {...params}
-                  required
-                  label="Snapshot Name"
-                  variant="outlined"
-                  onChange={onChange}
-                />
+                <TextField {...params} required label="Snapshot Name" variant="outlined" onChange={onChange} />
               )}
               onChange={(_, value) => onChange(value)}
             />
@@ -163,18 +156,10 @@ export const CreateSnapshotStep: FC = memo(() => {
         </Box>
 
         <Box sx={{ alignSelf: 'center', ml: 'auto' }}>
-          <SearchBar
-            value={searchValue}
-            onValueChange={setSearchValue}
-          />
+          <SearchBar value={searchValue} onValueChange={setSearchValue} />
         </Box>
       </Box>
-      <Typography
-        data-testid="SnapshotNameErrorTypography"
-        noWrap
-        variant="subtitle2"
-        color="#FF5260"
-      >
+      <Typography data-testid="SnapshotNameErrorTypography" noWrap variant="subtitle2" color="#FF5260">
         {formErrors.name?.message}
       </Typography>
 
@@ -222,16 +207,17 @@ function useToolbarData(
   FormData['baseline'],
   FieldErrors<FormData>,
 ] {
-  const {
-    createSnapshotPublicationOptions,
-    resetCreateSnapshotPublicationOptions,
-  } = useCreateSnapshotPublicationOptions()
+  const { createSnapshotPublicationOptions, resetCreateSnapshotPublicationOptions } =
+    useCreateSnapshotPublicationOptions()
 
-  const defaultValues: FormData = useMemo(() => ({
-    name: createSnapshotPublicationOptions.name,
-    baseline: createSnapshotPublicationOptions.baseline,
-    serviceKeys: createSnapshotPublicationOptions.serviceKeys,
-  }), [createSnapshotPublicationOptions])
+  const defaultValues: FormData = useMemo(
+    () => ({
+      name: createSnapshotPublicationOptions.name,
+      baseline: createSnapshotPublicationOptions.baseline,
+      serviceKeys: createSnapshotPublicationOptions.serviceKeys,
+    }),
+    [createSnapshotPublicationOptions],
+  )
 
   const form = useForm<FormData>({ defaultValues })
 
@@ -241,11 +227,12 @@ function useToolbarData(
   const [, setPromoteVersionStep] = usePromoteVersionStep()
 
   const onSubmit = useMemo(
-    () => form.handleSubmit(publishOptions => {
-      setValidationResultsStep(prevState => ({ ...prevState, status: INITIAL_STEP_STATUS }))
-      setPromoteVersionStep(prevState => ({ ...prevState, status: INITIAL_STEP_STATUS }))
-      createSnapshot(publishOptions)
-    }),
+    () =>
+      form.handleSubmit((publishOptions) => {
+        setValidationResultsStep((prevState) => ({ ...prevState, status: INITIAL_STEP_STATUS }))
+        setPromoteVersionStep((prevState) => ({ ...prevState, status: INITIAL_STEP_STATUS }))
+        createSnapshot(publishOptions)
+      }),
     [form, createSnapshot, setPromoteVersionStep, setValidationResultsStep],
   )
 
@@ -254,7 +241,7 @@ function useToolbarData(
 
   const [, setCreateSnapshotStep] = useCreateSnapshotStep()
   const status = useCreateSnapshotStepStatus()
-  useEffect(() => setCreateSnapshotStep(prevState => ({ ...prevState, status })), [setCreateSnapshotStep, status])
+  useEffect(() => setCreateSnapshotStep((prevState) => ({ ...prevState, status })), [setCreateSnapshotStep, status])
 
   const onReset = useCallback(() => {
     form.reset({
@@ -263,8 +250,8 @@ function useToolbarData(
       serviceKeys: [],
     })
     resetCreateSnapshotPublicationOptions()
-    setValidationResultsStep(prevState => ({ ...prevState, status: INITIAL_STEP_STATUS }))
-    setPromoteVersionStep(prevState => ({ ...prevState, status: INITIAL_STEP_STATUS }))
+    setValidationResultsStep((prevState) => ({ ...prevState, status: INITIAL_STEP_STATUS }))
+    setPromoteVersionStep((prevState) => ({ ...prevState, status: INITIAL_STEP_STATUS }))
   }, [form, resetCreateSnapshotPublicationOptions, setPromoteVersionStep, setValidationResultsStep])
 
   const { name, baseline, serviceKeys } = form.watch()

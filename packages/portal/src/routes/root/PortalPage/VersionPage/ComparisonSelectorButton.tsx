@@ -48,9 +48,9 @@ export const ComparisonSelectorButton: FC<ComparisonSelectorButtonProps> = memo(
       <MenuButton
         title="Compare"
         variant="outlined"
-        startIcon={<CompareArrowsOutlinedIcon/>}
+        startIcon={<CompareArrowsOutlinedIcon />}
         onClick={onGetOperationGroup}
-        endIcon={<KeyboardArrowDownOutlinedIcon/>}
+        endIcon={<KeyboardArrowDownOutlinedIcon />}
         sx={{
           '&.MuiButton-root': {
             width: '145px',
@@ -75,11 +75,10 @@ export const ComparisonSelectorButton: FC<ComparisonSelectorButtonProps> = memo(
         <MenuItem onClick={showCompareRevisionsDialog} data-testid="RevisionsMenuItem">
           Revisions
         </MenuItem>
-        {!operationId && showCompareGroups && (disableCompareGroup ? (
-            <Tooltip
-              placement="right"
-              title="Comparison is not available since there are less than 2 groups"
-            >
+        {!operationId &&
+          showCompareGroups &&
+          (disableCompareGroup ? (
+            <Tooltip placement="right" title="Comparison is not available since there are less than 2 groups">
               <Box width="100%">
                 <MenuItem disabled={disableCompareGroup} data-testid="RestGroupsMenuItem">
                   REST Groups
@@ -90,14 +89,13 @@ export const ComparisonSelectorButton: FC<ComparisonSelectorButtonProps> = memo(
             <MenuItem onClick={showCompareRestGroupsDialog} data-testid="RestGroupsMenuItem">
               REST Groups
             </MenuItem>
-          )
-        )}
+          ))}
       </MenuButton>
 
-      <CompareVersionsDialog/>
-      <CompareRevisionsDialog/>
-      <CompareOperationPathsDialog/>
-      <CompareRestGroupsDialog/>
+      <CompareVersionsDialog />
+      <CompareRevisionsDialog />
+      <CompareOperationPathsDialog />
+      <CompareRestGroupsDialog />
     </>
   )
 })

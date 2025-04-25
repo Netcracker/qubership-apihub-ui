@@ -79,23 +79,32 @@ export const OperationList: FC<OperationListProps> = (props) => {
     onToggleAllOperationsCheckbox(checkedOperations, operations)
   }, [checkedOperations, onToggleAllOperationsCheckbox, operations])
 
-  const prepareLinkFn = useCallback(({ operationKey, apiType, packageRef }: OperationData) => getOperationsPath({
-    packageKey: packageContext.packageKey!,
-    versionKey: packageContext.version!,
-    apiType: apiType ?? DEFAULT_API_TYPE,
-    operationKey: operationKey,
-    search: {
-      [REF_SEARCH_PARAM]: { value: packageContext.isDashboard ? packageContext.refPackageKey ?? packageRef?.key : undefined },
-    },
-  }), [packageContext.isDashboard, packageContext.packageKey, packageContext.refPackageKey, packageContext.version])
+  const prepareLinkFn = useCallback(
+    ({ operationKey, apiType, packageRef }: OperationData) =>
+      getOperationsPath({
+        packageKey: packageContext.packageKey!,
+        versionKey: packageContext.version!,
+        apiType: apiType ?? DEFAULT_API_TYPE,
+        operationKey: operationKey,
+        search: {
+          [REF_SEARCH_PARAM]: {
+            value: packageContext.isDashboard ? (packageContext.refPackageKey ?? packageRef?.key) : undefined,
+          },
+        },
+      }),
+    [packageContext.isDashboard, packageContext.packageKey, packageContext.refPackageKey, packageContext.version],
+  )
 
   const loadMoreItems = useCallback(() => {
     fetchNextPage?.()
   }, [fetchNextPage])
 
-  const isItemLoaded = useCallback((index: number): boolean => {
-    return !hasNextPage || index < operations.length
-  }, [hasNextPage, operations.length])
+  const isItemLoaded = useCallback(
+    (index: number): boolean => {
+      return !hasNextPage || index < operations.length
+    },
+    [hasNextPage, operations.length],
+  )
 
   const checkedOperationsKeysCount = Object.keys(checkedOperations).length
   const noOperations = isEmpty(operations)
@@ -122,93 +131,91 @@ export const OperationList: FC<OperationListProps> = (props) => {
         subheader="Name / Path"
       />
       <Box sx={{ flexGrow: 1, overflow: 'hidden' }}>
-        {loading
-          ? <OperationListSkeleton/>
-          : (
-            <>
-              <Placeholder
-                invisible={isNotEmpty(operations)}
-                area={NAVIGATION_PLACEHOLDER_AREA}
-                message="No operations"
-                testId="NoOperationsPlaceholder"
-              />
-              <AutoSizer>
-                {({ height, width }: Size) => (
-                  <InfiniteLoader
-                    isItemLoaded={isItemLoaded}
-                    itemCount={itemCountWithSkeleton}
-                    loadMoreItems={loadMoreItems}
-                  >
-                    {({ onItemsRendered, ref }) => (
-                      <FixedSizeList
-                        height={height}
-                        width={width}
-                        itemSize={OPERATION_LIST_ITEM_HEIGHT}
-                        itemCount={itemCountWithSkeleton}
-                        onItemsRendered={onItemsRendered}
-                        ref={ref}
-                        itemData={{
-                          operations,
-                          checkedOperations,
-                          onToggleOperationCheckbox,
-                          prepareLinkFn,
-                          onClickLink,
-                          hasNextPage,
-                          isNextPageFetching,
-                          isItemLoaded,
-                        }}
-                      >
-                        {Row}
-                      </FixedSizeList>
-                    )}
-                  </InfiniteLoader>
-                )}
-              </AutoSizer>
-            </>
-          )
-        }
+        {loading ? (
+          <OperationListSkeleton />
+        ) : (
+          <>
+            <Placeholder
+              invisible={isNotEmpty(operations)}
+              area={NAVIGATION_PLACEHOLDER_AREA}
+              message="No operations"
+              testId="NoOperationsPlaceholder"
+            />
+            <AutoSizer>
+              {({ height, width }: Size) => (
+                <InfiniteLoader
+                  isItemLoaded={isItemLoaded}
+                  itemCount={itemCountWithSkeleton}
+                  loadMoreItems={loadMoreItems}
+                >
+                  {({ onItemsRendered, ref }) => (
+                    <FixedSizeList
+                      height={height}
+                      width={width}
+                      itemSize={OPERATION_LIST_ITEM_HEIGHT}
+                      itemCount={itemCountWithSkeleton}
+                      onItemsRendered={onItemsRendered}
+                      ref={ref}
+                      itemData={{
+                        operations,
+                        checkedOperations,
+                        onToggleOperationCheckbox,
+                        prepareLinkFn,
+                        onClickLink,
+                        hasNextPage,
+                        isNextPageFetching,
+                        isItemLoaded,
+                      }}
+                    >
+                      {Row}
+                    </FixedSizeList>
+                  )}
+                </InfiniteLoader>
+              )}
+            </AutoSizer>
+          </>
+        )}
       </Box>
     </Box>
   )
 }
 
-export const Row: FC<ListChildComponentProps<{
-  operations: OperationsData
-  checkedOperations: Operations
-  prepareLinkFn: (operation: OperationData) => Partial<Path>
-  onToggleOperationCheckbox: (value: Operation) => void
-  onClickLink: () => void
-  hasNextPage?: boolean
-  isNextPageFetching?: boolean
-  isItemLoaded: (index: number) => boolean
-}>> = (props) => {
+export const Row: FC<
+  ListChildComponentProps<{
+    operations: OperationsData
+    checkedOperations: Operations
+    prepareLinkFn: (operation: OperationData) => Partial<Path>
+    onToggleOperationCheckbox: (value: Operation) => void
+    onClickLink: () => void
+    hasNextPage?: boolean
+    isNextPageFetching?: boolean
+    isItemLoaded: (index: number) => boolean
+  }>
+> = (props) => {
   const {
-    index, style, data: {
-      operations,
-      checkedOperations,
-      onToggleOperationCheckbox,
-      prepareLinkFn,
-      onClickLink,
-      hasNextPage,
-    },
+    index,
+    style,
+    data: { operations, checkedOperations, onToggleOperationCheckbox, prepareLinkFn, onClickLink, hasNextPage },
   } = props
   const operation = operations[index]
 
   if (hasNextPage && operations.length === index) {
     return (
       <div style={style} key="operation-skeleton">
-        <OperationSkeleton/>
+        <OperationSkeleton />
       </div>
     )
   }
 
-  return <OperationListItem
-    key={operation.operationKey}
-    style={style}
-    operation={operation}
-    isChecked={checkedOperations.includes(operation)}
-    onToggleOperationCheckbox={onToggleOperationCheckbox}
-    prepareLinkFn={prepareLinkFn}
-    onClickLink={onClickLink}
-  />
+  return (
+    <OperationListItem
+      key={operation.operationKey}
+      style={style}
+      operation={operation}
+      isChecked={checkedOperations.includes(operation)}
+      onToggleOperationCheckbox={onToggleOperationCheckbox}
+      prepareLinkFn={prepareLinkFn}
+      onClickLink={onClickLink}
+    />
+  )
 }

@@ -54,111 +54,121 @@ export type OperationWithMetaClickableListProps = {
 }
 
 // First Order Component //
-export const OperationWithMetaClickableList: FC<OperationWithMetaClickableListProps> = memo<OperationWithMetaClickableListProps>((props) => {
-  const {
-    operations,
-    prepareLinkFn,
-    onRowClick,
-    onLinkClick,
-    hasNextPage,
-    isNextPageFetching,
-    fetchNextPage,
-    isLoading = false,
-    previewComponent,
-    selectedOperationKey,
-    initialSize,
-    handleResize,
-    maxWidth,
-    isExpandableItem,
-    SubComponent,
-  } = props
+export const OperationWithMetaClickableList: FC<OperationWithMetaClickableListProps> =
+  memo<OperationWithMetaClickableListProps>((props) => {
+    const {
+      operations,
+      prepareLinkFn,
+      onRowClick,
+      onLinkClick,
+      hasNextPage,
+      isNextPageFetching,
+      fetchNextPage,
+      isLoading = false,
+      previewComponent,
+      selectedOperationKey,
+      initialSize,
+      handleResize,
+      maxWidth,
+      isExpandableItem,
+      SubComponent,
+    } = props
 
-  const handleRowClick = useCallback((operation: OperationData) => {
-    onRowClick?.(operation.operationKey, operation.packageRef)
-  }, [onRowClick])
+    const handleRowClick = useCallback(
+      (operation: OperationData) => {
+        onRowClick?.(operation.operationKey, operation.packageRef)
+      },
+      [onRowClick],
+    )
 
-  const ref = useRef<HTMLDivElement>(null)
-  useIntersectionObserver(ref, isNextPageFetching, hasNextPage, fetchNextPage)
+    const ref = useRef<HTMLDivElement>(null)
+    useIntersectionObserver(ref, isNextPageFetching, hasNextPage, fetchNextPage)
 
-  const operationsList = useMemo(
-    () => operations?.map(operation => {
-      const link = prepareLinkFn?.(operation) ?? {}
-      const { operationKey, deprecated } = operation
-      const expandable = isExpandableItem?.(operation) ?? false
-      const title = <OperationTitle
-        operation={operation}
-        link={link}
-        badgeText={deprecated ? 'Deprecated' : undefined}
-        onLinkClick={onLinkClick}
-      />
+    const operationsList = useMemo(
+      () =>
+        operations?.map((operation) => {
+          const link = prepareLinkFn?.(operation) ?? {}
+          const { operationKey, deprecated } = operation
+          const expandable = isExpandableItem?.(operation) ?? false
+          const title = (
+            <OperationTitle
+              operation={operation}
+              link={link}
+              badgeText={deprecated ? 'Deprecated' : undefined}
+              onLinkClick={onLinkClick}
+            />
+          )
 
-      return (
-        <OperationItemButton
-          title={title}
-          operation={operation}
-          expandable={expandable}
-          SubComponent={SubComponent}
-          onClick={handleRowClick}
-          selected={selectedOperationKey === operationKey}
-        />
-      )
-    }),
-    [SubComponent, handleRowClick, isExpandableItem, onLinkClick, operations, prepareLinkFn, selectedOperationKey],
-  )
+          return (
+            <OperationItemButton
+              title={title}
+              operation={operation}
+              expandable={expandable}
+              SubComponent={SubComponent}
+              onClick={handleRowClick}
+              selected={selectedOperationKey === operationKey}
+            />
+          )
+        }),
+      [SubComponent, handleRowClick, isExpandableItem, onLinkClick, operations, prepareLinkFn, selectedOperationKey],
+    )
 
-  return (
-    <Box display="grid" gridTemplateColumns="1fr auto" height="inherit">
-      <ListBox>
-        <Placeholder
-          sx={{ width: 'inherit' }}
-          invisible={isNotEmpty(operations) || isLoading}
-          area={NAVIGATION_PLACEHOLDER_AREA}
-          message="No operations"
-          testId="NoOperationsPlaceholder"
+    return (
+      <Box display="grid" gridTemplateColumns="1fr auto" height="inherit">
+        <ListBox>
+          <Placeholder
+            sx={{ width: 'inherit' }}
+            invisible={isNotEmpty(operations) || isLoading}
+            area={NAVIGATION_PLACEHOLDER_AREA}
+            message="No operations"
+            testId="NoOperationsPlaceholder"
+          >
+            <Box overflow="auto" height="inherit">
+              {operationsList}
+
+              {isLoading && <ListSkeleton />}
+              {hasNextPage && (
+                <Box ref={ref}>
+                  <Skeleton variant="rectangular" width="100%" />
+                </Box>
+              )}
+            </Box>
+          </Placeholder>
+        </ListBox>
+
+        <Resizable
+          style={{
+            borderLeft: '1px solid #D5DCE3',
+            backgroundColor: '#FFFFFF',
+            overflowY: 'scroll',
+          }}
+          enable={{
+            top: false,
+            right: false,
+            bottom: false,
+            left: true,
+            topRight: false,
+            bottomRight: false,
+            bottomLeft: false,
+            topLeft: false,
+          }}
+          boundsByDirection={true}
+          size={{ width: initialSize, height: '100%' }}
+          maxWidth={maxWidth}
+          onResizeStop={handleResize}
         >
-          <Box overflow="auto" height="inherit">
-            {operationsList}
-
-            {isLoading && <ListSkeleton/>}
-            {hasNextPage && <Box ref={ref}><Skeleton variant="rectangular" width="100%"/></Box>}
-          </Box>
-        </Placeholder>
-      </ListBox>
-
-      <Resizable
-        style={{
-          borderLeft: '1px solid #D5DCE3',
-          backgroundColor: '#FFFFFF',
-          overflowY: 'scroll',
-        }}
-
-        enable={{
-          top: false,
-          right: false,
-          bottom: false,
-          left: true,
-          topRight: false,
-          bottomRight: false,
-          bottomLeft: false,
-          topLeft: false,
-        }}
-        boundsByDirection={true}
-        size={{ width: initialSize, height: '100%' }}
-        maxWidth={maxWidth}
-        onResizeStop={handleResize}
-      >
-        {previewComponent}
-      </Resizable>
-    </Box>
-  )
-})
+          {previewComponent}
+        </Resizable>
+      </Box>
+    )
+  })
 
 const ListSkeleton: FC = memo(() => {
   return (
     <Box>
       {[...Array(5)].map((_, index) => (
         <Box key={index} mb={2}>
-          <Skeleton variant="rectangular" height={20} width="100%"/>
+          <Skeleton variant="rectangular" height={20} width="100%" />
         </Box>
       ))}
     </Box>
@@ -174,14 +184,8 @@ type OperationItemButtonProps = {
   selected: boolean
 }
 
-const OperationItemButton: FC<OperationItemButtonProps> = memo<OperationItemButtonProps>(({
-    title,
-    operation,
-    expandable,
-    onClick,
-    SubComponent,
-    selected,
-  }) => {
+const OperationItemButton: FC<OperationItemButtonProps> = memo<OperationItemButtonProps>(
+  ({ title, operation, expandable, onClick, SubComponent, selected }) => {
     const [expanded, setExpanded] = useState<boolean>(false)
 
     return (
@@ -189,17 +193,19 @@ const OperationItemButton: FC<OperationItemButtonProps> = memo<OperationItemButt
         <CustomListItemButton<OperationData>
           keyProp={operation.operationKey}
           data={operation}
-          itemComponent={<ExpandableItem showToggler={expandable} onToggle={setExpanded}>{title}</ExpandableItem>}
+          itemComponent={
+            <ExpandableItem showToggler={expandable} onToggle={setExpanded}>
+              {title}
+            </ExpandableItem>
+          }
           onClick={onClick}
           size={LIST_ITEM_SIZE_BIG}
           isSelected={selected}
           testId="Cell-endpoints"
         />
-        <Divider orientation="horizontal" variant="fullWidth"/>
+        <Divider orientation="horizontal" variant="fullWidth" />
 
-        {expanded && SubComponent && (
-          <SubComponent operation={operation}/>
-        )}
+        {expanded && SubComponent && <SubComponent operation={operation} />}
       </>
     )
   },

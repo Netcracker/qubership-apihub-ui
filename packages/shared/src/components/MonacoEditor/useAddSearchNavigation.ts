@@ -55,9 +55,7 @@ export function useAddSearchNavigation(
 function getFindControllerState(
   editor: MutableRefObject<Editor.IStandaloneCodeEditor | undefined>,
 ): FindControllerState {
-  return (editor.current
-    ?.getContribution('editor.contrib.findController') as unknown as FindController)
-    ?.getState()
+  return (editor.current?.getContribution('editor.contrib.findController') as unknown as FindController)?.getState()
 }
 
 type FindController = {

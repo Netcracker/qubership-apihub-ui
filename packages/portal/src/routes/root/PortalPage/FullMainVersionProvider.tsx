@@ -26,9 +26,7 @@ export const FullMainVersionProvider: FC<PropsWithChildren> = memo<PropsWithChil
     <FullVersionContext.Provider value={version}>
       <SetFullVersionContext.Provider value={setVersion}>
         <IsLatestRevisionContext.Provider value={latest}>
-          <SetIsLatestRevisionContext.Provider value={setLatest}>
-            {children}
-          </SetIsLatestRevisionContext.Provider>
+          <SetIsLatestRevisionContext.Provider value={setLatest}>{children}</SetIsLatestRevisionContext.Provider>
         </IsLatestRevisionContext.Provider>
       </SetFullVersionContext.Provider>
     </FullVersionContext.Provider>

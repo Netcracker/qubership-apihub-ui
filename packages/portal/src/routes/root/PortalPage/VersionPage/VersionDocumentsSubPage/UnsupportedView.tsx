@@ -34,9 +34,6 @@ export const UnsupportedView: FC<UnsupportedViewProps> = memo<UnsupportedViewPro
   })
 
   return (
-    <UnsupportedFilePlaceholder
-      message="Preview is not available"
-      onDownload={() => downloadPublishedDocument()}
-    />
+    <UnsupportedFilePlaceholder message="Preview is not available" onDownload={() => downloadPublishedDocument()} />
   )
 })

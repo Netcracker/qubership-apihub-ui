@@ -23,29 +23,26 @@ import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/uti
 import { editorRequestJson } from '@apihub/utils/requests'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 
-export type FetchNextProjects = (options?: FetchNextPageOptions) => Promise<InfiniteQueryObserverResult<Projects, Error>>
+export type FetchNextProjects = (
+  options?: FetchNextPageOptions,
+) => Promise<InfiniteQueryObserverResult<Projects, Error>>
 
-export function usePagedProjects(options?: Partial<{
-  textFilter: string | null
-  onlyFavorite: boolean
-  page: number
-  limit: number
-}>): [Projects, IsLoading, FetchNextProjects, IsFetchingNextPage, HasNextPage] {
+export function usePagedProjects(
+  options?: Partial<{
+    textFilter: string | null
+    onlyFavorite: boolean
+    page: number
+    limit: number
+  }>,
+): [Projects, IsLoading, FetchNextProjects, IsFetchingNextPage, HasNextPage] {
   const onlyPublished = false
-  const {
-    onlyFavorite = false,
-    textFilter = null,
-    limit,
-    page,
-  } = options ?? {}
+  const { onlyFavorite = false, textFilter = null, limit, page } = options ?? {}
 
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-  } = useInfiniteQuery<Projects, Error, Projects>({
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteQuery<
+    Projects,
+    Error,
+    Projects
+  >({
     queryKey: [PROJECTS_QUERY_KEY, onlyPublished, onlyFavorite, textFilter],
     queryFn: ({ pageParam = page }) => {
       return getProjects({
@@ -69,13 +66,7 @@ export function usePagedProjects(options?: Partial<{
     refetchOnMount: false,
   })
 
-  return [
-    data?.pages.flat() ?? [],
-    isLoading,
-    fetchNextPage,
-    isFetchingNextPage,
-    hasNextPage,
-  ]
+  return [data?.pages.flat() ?? [], isLoading, fetchNextPage, isFetchingNextPage, hasNextPage]
 }
 
 const PROJECTS_QUERY_KEY = 'projects-query-key'
@@ -88,14 +79,7 @@ async function getProjects(options: {
   page: number
   limit?: number
 }): Promise<Projects> {
-  const {
-    onlyPublished = false,
-    onlyFavorite = false,
-    textFilter = null,
-    groupKey,
-    page = 0,
-    limit,
-  } = options ?? {}
+  const { onlyPublished = false, onlyFavorite = false, textFilter = null, groupKey, page = 0, limit } = options ?? {}
 
   const queryParams = optionalSearchParams({
     groupId: { value: groupKey },
@@ -103,7 +87,7 @@ async function getProjects(options: {
     onlyPublished: { value: onlyPublished },
     textFilter: { value: textFilter },
     limit: { value: limit },
-    page: { value: page, toStringValue: page => `${page}` },
+    page: { value: page, toStringValue: (page) => `${page}` },
   })
   const respons = await editorRequestJson<ProjectsDto>(`/projects?${queryParams}`, {
     method: 'GET',

@@ -36,9 +36,7 @@ export const ApiChangesNavigation: FC = () => {
   const isLoading = !changesSummary
 
   const tags = useTagsFromChangesSummary(apiType as ApiType, changesSummary)
-  const filteredTags = searchValue
-    ? tags.filter(tag => isAppliedSearchValueForTag(tag, searchValue))
-    : tags
+  const filteredTags = searchValue ? tags.filter((tag) => isAppliedSearchValueForTag(tag, searchValue)) : tags
 
   const [packageKind] = usePackageKind()
   const isDashboard = packageKind === DASHBOARD_KIND
@@ -72,5 +70,3 @@ export const ApiChangesNavigation: FC = () => {
     />
   )
 }
-
-

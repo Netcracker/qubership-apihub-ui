@@ -44,51 +44,37 @@ export type SpecLogoProps = {
 // todo fix usages value type to SpecType and change here
 export const SpecLogo: FC<SpecLogoProps> = memo<SpecLogoProps>(({ value }) => {
   if (!value) {
-    return (
-      <FileIcon/>
-    )
+    return <FileIcon />
   }
 
   if (value === MARKDOWN_SPEC_TYPE) {
-    return (
-      <MarkdownIcon/>
-    )
+    return <MarkdownIcon />
   }
 
   if (value === PROTOBUF_3_SPEC_TYPE) {
-    return (
-      <ProtobufIcon/>
-    )
+    return <ProtobufIcon />
   }
 
   if (value === JSON_SCHEMA_SPEC_TYPE) {
-    return (
-      <JsonSchemaIcon/>
-    )
+    return <JsonSchemaIcon />
   }
 
   if (value === OPENAPI_2_0_SPEC_TYPE) {
-    return (
-      <SwaggerIcon/>
-    )
+    return <SwaggerIcon />
   }
 
   if (isOpenApiSpecType(value as SpecType)) {
-    return (
-      <OpenapiIcon/>
-    )
+    return <OpenapiIcon />
   }
 
   if (isGraphQlSpecType(value as SpecType)) {
-    return (
-      <GraphqlIcon/>
-    )
+    return <GraphqlIcon />
   }
 
-  return API_TYPE_ICON_MAP[value as ApiType] ?? <FileIcon/>
+  return API_TYPE_ICON_MAP[value as ApiType] ?? <FileIcon />
 })
 
 const API_TYPE_ICON_MAP: Record<ApiType, ReactElement | null> = {
-  [API_TYPE_REST]: <RestApiIcon/>,
+  [API_TYPE_REST]: <RestApiIcon />,
   [API_TYPE_GRAPHQL]: null,
 }

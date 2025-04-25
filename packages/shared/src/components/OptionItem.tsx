@@ -32,44 +32,38 @@ export type OptionItemProps = {
   tooltipProps?: Omit<TooltipProps, 'children'>
 } & TestableProps
 
-export const OptionItem: FC<OptionItemProps> = memo<OptionItemProps>(({
-  props,
-  title,
-  disabled,
-  subtitle,
-  chipValue,
-  testId,
-  tooltipProps: { title: tooltipTitle, ...rest } = {},
-}) => {
-  return (
-    <Tooltip
-      placement="right"
-      title={tooltipTitle}
-      {...rest}
-    >
-      <Box>
-        <ListItem
-          {...props}
-          data-testid={testId}
-          // todo 'disabled' prop is deprecated and does not work properly, transition to ListItemButton is required
-          sx={{ pointerEvents: disabled ? 'none' : 'auto' }}
-          disabled={disabled}
-        >
-          <Box width="100%" display="flex" alignItems="center">
-            <Box width="100%" maxWidth="300px">
-              <OverflowTooltip placement="right" title={title}>
-                <Typography variant="body2" noWrap>{title}</Typography>
-              </OverflowTooltip>
-              {subtitle && (
-                <OverflowTooltip placement="right" title={subtitle}>
-                  <Typography variant="body2" noWrap color="#626D82">{subtitle}</Typography>
+export const OptionItem: FC<OptionItemProps> = memo<OptionItemProps>(
+  ({ props, title, disabled, subtitle, chipValue, testId, tooltipProps: { title: tooltipTitle, ...rest } = {} }) => {
+    return (
+      <Tooltip placement="right" title={tooltipTitle} {...rest}>
+        <Box>
+          <ListItem
+            {...props}
+            data-testid={testId}
+            // todo 'disabled' prop is deprecated and does not work properly, transition to ListItemButton is required
+            sx={{ pointerEvents: disabled ? 'none' : 'auto' }}
+            disabled={disabled}
+          >
+            <Box width="100%" display="flex" alignItems="center">
+              <Box width="100%" maxWidth="300px">
+                <OverflowTooltip placement="right" title={title}>
+                  <Typography variant="body2" noWrap>
+                    {title}
+                  </Typography>
                 </OverflowTooltip>
-              )}
+                {subtitle && (
+                  <OverflowTooltip placement="right" title={subtitle}>
+                    <Typography variant="body2" noWrap color="#626D82">
+                      {subtitle}
+                    </Typography>
+                  </OverflowTooltip>
+                )}
+              </Box>
+              {chipValue && <CustomChip sx={{ marginLeft: 'auto' }} variant="outlined" value={chipValue} />}
             </Box>
-            {chipValue && <CustomChip sx={{ marginLeft: 'auto' }} variant="outlined" value={chipValue}/>}
-          </Box>
-        </ListItem>
-      </Box>
-    </Tooltip>
-  )
-})
+          </ListItem>
+        </Box>
+      </Tooltip>
+    )
+  },
+)

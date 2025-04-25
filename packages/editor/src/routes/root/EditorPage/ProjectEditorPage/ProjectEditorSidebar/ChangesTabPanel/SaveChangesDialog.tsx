@@ -47,7 +47,13 @@ export const SaveChangesDialog: FC = memo(() => {
     setOpen(true)
   })
 
-  const { handleSubmit, control, reset, watch, formState: { errors } } = useForm<SaveChangesDetail>({
+  const {
+    handleSubmit,
+    control,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm<SaveChangesDetail>({
     defaultValues: {
       newBranchName: '',
       createMergeRequest: false,
@@ -59,33 +65,26 @@ export const SaveChangesDialog: FC = memo(() => {
   const users = useConnectedUsers()
   const isNewBranchAlreadyExists = useIsBranchExists(watch().newBranchName)
 
-  useEffect(() => {!isLoading && setOpen(false)}, [isLoading])
-  useEffect(() => {!open && reset()}, [open, reset])
+  useEffect(() => {
+    !isLoading && setOpen(false)
+  }, [isLoading])
+  useEffect(() => {
+    !open && reset()
+  }, [open, reset])
 
   return (
-    <DialogForm
-      open={open}
-      onClose={() => setOpen(false)}
-      onSubmit={handleSubmit(saveChanges)}
-    >
-      <DialogTitle>
-        Save
-      </DialogTitle>
+    <DialogForm open={open} onClose={() => setOpen(false)} onSubmit={handleSubmit(saveChanges)}>
+      <DialogTitle>Save</DialogTitle>
 
       <DialogContent sx={{ width: 440 }}>
-        {
-          users.length > 1 && <Alert
-            sx={{ mb: 1 }}
-            severity="warning"
-          >
+        {users.length > 1 && (
+          <Alert sx={{ mb: 1 }} severity="warning">
             Other users are editing the branch. All changes will be saved.
           </Alert>
-        }
-        {
-          saveToNewBranch && <>
-            <Typography variant="subtitle1">
-              Branch name
-            </Typography>
+        )}
+        {saveToNewBranch && (
+          <>
+            <Typography variant="subtitle1">Branch name</Typography>
             <Controller
               name="newBranchName"
               control={control}
@@ -94,42 +93,31 @@ export const SaveChangesDialog: FC = memo(() => {
                   alreadyExists: () => !isNewBranchAlreadyExists || 'Branch already exists',
                 },
               }}
-              render={({ field }) => <TextField
-                {...field}
-                required
-                label="New branch"
-                error={!!errors.newBranchName}
-                helperText={errors.newBranchName?.message}
-              />}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  required
+                  label="New branch"
+                  error={!!errors.newBranchName}
+                  helperText={errors.newBranchName?.message}
+                />
+              )}
             />
             <Controller
               name="createMergeRequest"
               control={control}
               render={({ field }) => (
-                <FormControlLabel
-                  {...field}
-                  control={<Checkbox/>}
-                  label="Create merge request"
-                />
+                <FormControlLabel {...field} control={<Checkbox />} label="Create merge request" />
               )}
             />
           </>
-        }
-        <Typography variant="subtitle1">
-          Commit message
-        </Typography>
+        )}
+        <Typography variant="subtitle1">Commit message</Typography>
         <Controller
           name="message"
           control={control}
           render={({ field }) => (
-            <TextField
-              {...field}
-              multiline required
-              autoComplete="on"
-              rows="4"
-              type="text"
-              label="Message"
-            />
+            <TextField {...field} multiline required autoComplete="on" rows="4" type="text" label="Message" />
           )}
         />
       </DialogContent>

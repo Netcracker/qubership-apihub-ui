@@ -21,10 +21,12 @@ import type { OperationDisplayMode } from './OperationDisplayMode'
 import type { OpenAPIV3 } from 'openapi-types'
 import type { OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import type {
-  VisitorNavigationDetails,
-} from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView/oasToClassDiagramService'
-import { OPEN_API_SECTION_PARAMETERS, OPEN_API_SECTION_REQUESTS, OPEN_API_SECTION_RESPONSES } from '@apihub/entities/operation-structure'
+import type { VisitorNavigationDetails } from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView/oasToClassDiagramService'
+import {
+  OPEN_API_SECTION_PARAMETERS,
+  OPEN_API_SECTION_REQUESTS,
+  OPEN_API_SECTION_RESPONSES,
+} from '@apihub/entities/operation-structure'
 import type { OpenApiData } from '@apihub/entities/operation-structure'
 import { GraphQlOperationViewer } from '@apihub/components/GraphQlOperationViewer'
 import { SchemaContextPanel } from '@apihub/components/SchemaContextPanel'
@@ -63,7 +65,7 @@ export type OperationViewProps = PropsWithChildren<{
   filters?: ChangeSeverity[]
 }>
 
-export const OperationView: FC<OperationViewProps> = memo<OperationViewProps>(props => {
+export const OperationView: FC<OperationViewProps> = memo<OperationViewProps>((props) => {
   const {
     apiType = DEFAULT_API_TYPE,
     selectedUri,
@@ -86,16 +88,19 @@ export const OperationView: FC<OperationViewProps> = memo<OperationViewProps>(pr
 
   const indexedModels = useMemo(() => {
     return [
-      ...Object.values(operationModels?.[OPEN_API_SECTION_RESPONSES] ?? {}).flatMap(responses => Object.values(responses)),
+      ...Object.values(operationModels?.[OPEN_API_SECTION_RESPONSES] ?? {}).flatMap((responses) =>
+        Object.values(responses),
+      ),
       ...Object.values(operationModels?.[OPEN_API_SECTION_REQUESTS] ?? {}),
       ...(operationModels?.[OPEN_API_SECTION_PARAMETERS] ? [operationModels?.[OPEN_API_SECTION_PARAMETERS]] : []),
-    ].flatMap(section => section.data)
+    ].flatMap((section) => section.data)
   }, [operationModels])
 
   useEffect(() => {
     //refResolver cannot resolve ref to parameter
     const contextParameter = indexedModels?.find(
-      (model) => joinedJsonPath(model.scopeDeclarationPath) === joinedJsonPath(navigationDetails?.scopeDeclarationPath ?? []) &&
+      (model) =>
+        joinedJsonPath(model.scopeDeclarationPath) === joinedJsonPath(navigationDetails?.scopeDeclarationPath ?? []) &&
         joinedJsonPath(model.declarationPath) === joinedJsonPath(navigationDetails?.declarationPath ?? []),
     )?.schemaObject as OpenAPIV3.SchemaObject | undefined
     setContextParameter(contextParameter ?? {})
@@ -178,23 +183,18 @@ type ApiTypeViewerCallback = (
 ) => ReactNode
 
 const API_TYPE_VIEWER_MAP: Record<ApiType, ApiTypeViewerCallback> = {
-  [API_TYPE_REST]: (ref) => (
-    <Box ref={ref} />
-  ),
-  [API_TYPE_GRAPHQL]: (_, comparisonMode, mergedDocument, schemaViewMode, filters) => (
+  [API_TYPE_REST]: (ref) => <Box ref={ref} />,
+  [API_TYPE_GRAPHQL]: (_, comparisonMode, mergedDocument, schemaViewMode, filters) =>
     //todo need separate it to operationView and operationDiffView
-    !comparisonMode
-      ? <GraphQlOperationViewer
-        source={mergedDocument}
-        displayMode={schemaViewMode as SchemaViewMode}
-      />
-      : <GraphQLOperationDiffViewer
+    !comparisonMode ? (
+      <GraphQlOperationViewer source={mergedDocument} displayMode={schemaViewMode as SchemaViewMode} />
+    ) : (
+      <GraphQLOperationDiffViewer
         source={mergedDocument}
         displayMode={schemaViewMode as SchemaViewMode}
         filters={filters ?? []}
         diffMetaKey={GLOBAL_DIFF_META_KEY}
         layoutMode={SIDE_BY_SIDE_DIFFS_LAYOUT_MODE}
       />
-  ),
+    ),
 }
-

@@ -26,14 +26,8 @@ export type SwapperProps = {
 export const Swapper: FC<SwapperProps> = memo<SwapperProps>(({ onSwap }) => {
   return (
     <Tooltip title="Swap">
-      <IconButton
-        sx={{ alignSelf: 'center' }}
-        size="small"
-        color="primary"
-        onClick={onSwap}
-        data-testid="SwapButton"
-      >
-        <SwapHorizOutlinedIcon/>
+      <IconButton sx={{ alignSelf: 'center' }} size="small" color="primary" onClick={onSwap} data-testid="SwapButton">
+        <SwapHorizOutlinedIcon />
       </IconButton>
     </Tooltip>
   )

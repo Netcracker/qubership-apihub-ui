@@ -50,5 +50,5 @@ export function toUser(value: UserDto): User {
 }
 
 export function toUsers(value: UsersDto): Users {
-  return { users: value?.users.map(user => toUser(user)) }
+  return { users: value?.users.map((user) => toUser(user)) }
 }

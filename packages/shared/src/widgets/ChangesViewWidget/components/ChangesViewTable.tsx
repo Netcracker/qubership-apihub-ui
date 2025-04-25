@@ -54,9 +54,17 @@ import type { ChangesViewTableData } from '../const/table'
 import { CHANGES_COLUMN_ID, COLUMNS_MODELS } from '../const/table'
 import { useResizeObserver } from '../../../hooks/common/useResizeObserver'
 import type { ApiType } from '../../../entities/api-types'
-import { API_AUDIENCE_COLUMN_ID, API_KIND_COLUMN_ID, ENDPOINT_COLUMN_ID, PACKAGE_COLUMN_ID, TAGS_COLUMN_ID } from '../../../entities/table-columns'
+import {
+  API_AUDIENCE_COLUMN_ID,
+  API_KIND_COLUMN_ID,
+  ENDPOINT_COLUMN_ID,
+  PACKAGE_COLUMN_ID,
+  TAGS_COLUMN_ID,
+} from '../../../entities/table-columns'
 
-export type FetchNextPage = (options?: FetchNextPageOptions) => Promise<InfiniteQueryObserverResult<VersionChangesData, Error>>
+export type FetchNextPage = (
+  options?: FetchNextPageOptions,
+) => Promise<InfiniteQueryObserverResult<VersionChangesData, Error>>
 
 export type SubTableComponentProps = {
   value: Row<ChangesViewTableData>
@@ -80,8 +88,8 @@ export type ChangeViewTableProps = {
   isLoading: boolean
 }
 
-export const ChangesViewTable: FC<ChangeViewTableProps> = memo<ChangeViewTableProps>((
-  {
+export const ChangesViewTable: FC<ChangeViewTableProps> = memo<ChangeViewTableProps>(
+  ({
     value,
     packageKey,
     versionKey,
@@ -94,204 +102,232 @@ export const ChangesViewTable: FC<ChangeViewTableProps> = memo<ChangeViewTablePr
     SubTableComponent,
     isLoading,
   }) => {
-  const isDashboardType = useMemo(() => packageObject?.kind === DASHBOARD_KIND, [packageObject?.kind])
+    const isDashboardType = useMemo(() => packageObject?.kind === DASHBOARD_KIND, [packageObject?.kind])
 
-  const [containerWidth, setContainerWidth] = useState(DEFAULT_CONTAINER_WIDTH)
-  const [columnSizingInfo, setColumnSizingInfo] = useState<ColumnSizingInfoState>()
-  const [, setHandlingColumnSizing] = useState<ColumnSizingState>()
+    const [containerWidth, setContainerWidth] = useState(DEFAULT_CONTAINER_WIDTH)
+    const [columnSizingInfo, setColumnSizingInfo] = useState<ColumnSizingInfoState>()
+    const [, setHandlingColumnSizing] = useState<ColumnSizingState>()
 
-  const tableContainerRef = useRef<HTMLDivElement>(null)
-  useResizeObserver(tableContainerRef, setContainerWidth)
+    const tableContainerRef = useRef<HTMLDivElement>(null)
+    useResizeObserver(tableContainerRef, setContainerWidth)
 
-  const actualColumnSizing = useColumnsSizing({
-    containerWidth: containerWidth,
-    columnModels: COLUMNS_MODELS,
-    columnSizingInfo: columnSizingInfo,
-    defaultMinColumnSize: 60,
-  })
+    const actualColumnSizing = useColumnsSizing({
+      containerWidth: containerWidth,
+      columnModels: COLUMNS_MODELS,
+      columnSizingInfo: columnSizingInfo,
+      defaultMinColumnSize: 60,
+    })
 
-  const columns: ColumnDef<ChangesViewTableData>[] = useMemo(() => {
-    const result: ColumnDef<ChangesViewTableData>[] = [
-      {
-        id: ENDPOINT_COLUMN_ID,
-        header: () => <CustomTableHeadCell title="Endpoint / Path" />,
-        cell: ({ row }) => (
-          <TextWithOverflowTooltip>
-            <OperationChangeCell value={row} mainPackageKind={mainPackageKind} />
-          </TextWithOverflowTooltip>
-        ),
-      },
-      {
-        id: TAGS_COLUMN_ID,
-        header: () => <CustomTableHeadCell title="Tags" />,
-        cell: ({ row: { original: { change } } }) => {
-          const content = (change?.tags ?? []).join(', ')
-          return (
-            <TextWithOverflowTooltip tooltipText={content}>
-              {content || DEFAULT_TAG}
+    const columns: ColumnDef<ChangesViewTableData>[] = useMemo(() => {
+      const result: ColumnDef<ChangesViewTableData>[] = [
+        {
+          id: ENDPOINT_COLUMN_ID,
+          header: () => <CustomTableHeadCell title="Endpoint / Path" />,
+          cell: ({ row }) => (
+            <TextWithOverflowTooltip>
+              <OperationChangeCell value={row} mainPackageKind={mainPackageKind} />
             </TextWithOverflowTooltip>
-          )
+          ),
         },
-      },
-      {
-        id: CHANGES_COLUMN_ID,
-        header: () => <CustomTableHeadCell title="Changes summary" />,
-        cell: ({ row: { original: { change } } }) => {
-          const changeSummary = change?.changeSummary
-          if (changeSummary) {
-            return (
-              <Changes value={changeSummary} mode="compact" />
-            )
-          }
+        {
+          id: TAGS_COLUMN_ID,
+          header: () => <CustomTableHeadCell title="Tags" />,
+          cell: ({
+            row: {
+              original: { change },
+            },
+          }) => {
+            const content = (change?.tags ?? []).join(', ')
+            return <TextWithOverflowTooltip tooltipText={content}>{content || DEFAULT_TAG}</TextWithOverflowTooltip>
+          },
         },
-      },
-      {
-        id: API_AUDIENCE_COLUMN_ID,
-        header: 'Audience',
-        cell: ({ row: { original: { change } } }) => {
-          const currentApiAudience = change?.currentOperation?.apiAudience
-          const previousApiAudience = change?.previousOperation?.apiAudience
-          if (currentApiAudience && previousApiAudience && currentApiAudience !== previousApiAudience) {
-            return (<>{currentApiAudience} <span style={{ textDecoration: 'line-through' }}>{previousApiAudience}</span></>)
-          }
-          if (currentApiAudience) {
-            return (currentApiAudience)
-          }
-          if (previousApiAudience) {
-            return (previousApiAudience)
-          }
+        {
+          id: CHANGES_COLUMN_ID,
+          header: () => <CustomTableHeadCell title="Changes summary" />,
+          cell: ({
+            row: {
+              original: { change },
+            },
+          }) => {
+            const changeSummary = change?.changeSummary
+            if (changeSummary) {
+              return <Changes value={changeSummary} mode="compact" />
+            }
+          },
         },
-      },
-      {
-        id: API_KIND_COLUMN_ID,
-        header: 'Kind',
-        cell: ({ row: { original: { change } } }) => change.apiKind,
-      },
-    ]
-
-    if (isDashboardType) {
-      insertIntoArrayByIndex(result, {
-        id: PACKAGE_COLUMN_ID,
-        header: () => <CustomTableHeadCell title="Package" />,
-        cell: ({ row: { original: { change: { packageRef, previousPackageRef } } } }) => {
-          const ref = packageRef ?? previousPackageRef
-          if (ref) {
-            return (
-              <TextWithOverflowTooltip tooltipText={ref.name}>
-                {ref.name}
-              </TextWithOverflowTooltip>
-            )
-          }
+        {
+          id: API_AUDIENCE_COLUMN_ID,
+          header: 'Audience',
+          cell: ({
+            row: {
+              original: { change },
+            },
+          }) => {
+            const currentApiAudience = change?.currentOperation?.apiAudience
+            const previousApiAudience = change?.previousOperation?.apiAudience
+            if (currentApiAudience && previousApiAudience && currentApiAudience !== previousApiAudience) {
+              return (
+                <>
+                  {currentApiAudience} <span style={{ textDecoration: 'line-through' }}>{previousApiAudience}</span>
+                </>
+              )
+            }
+            if (currentApiAudience) {
+              return currentApiAudience
+            }
+            if (previousApiAudience) {
+              return previousApiAudience
+            }
+          },
         },
-      }, 2)
-    }
+        {
+          id: API_KIND_COLUMN_ID,
+          header: 'Kind',
+          cell: ({
+            row: {
+              original: { change },
+            },
+          }) => change.apiKind,
+        },
+      ]
 
-    return result
-  }, [isDashboardType, mainPackageKind])
+      if (isDashboardType) {
+        insertIntoArrayByIndex(
+          result,
+          {
+            id: PACKAGE_COLUMN_ID,
+            header: () => <CustomTableHeadCell title="Package" />,
+            cell: ({
+              row: {
+                original: {
+                  change: { packageRef, previousPackageRef },
+                },
+              },
+            }) => {
+              const ref = packageRef ?? previousPackageRef
+              if (ref) {
+                return <TextWithOverflowTooltip tooltipText={ref.name}>{ref.name}</TextWithOverflowTooltip>
+              }
+            },
+          },
+          2,
+        )
+      }
 
-  const data: ChangesViewTableData[] = useMemo(() => value.map(change => {
-    const {
-      action,
-      changeSummary: {
-        breaking = 0,
-        [RISKY_CHANGE_SEVERITY]: risky = 0,
-        deprecated = 0,
-        [NON_BREAKING_CHANGE_SEVERITY]: nonBreaking = 0,
-        annotation = 0,
-        unclassified = 0,
-      } = {},
-    } = change
-    return {
-      change: change,
-      canExpand: action === REPLACE_ACTION_TYPE && (breaking > 0 || risky > 0 || deprecated > 0 || nonBreaking > 0 || annotation > 0 || unclassified > 0),
-    }
-  }), [value])
+      return result
+    }, [isDashboardType, mainPackageKind])
 
-  const [expanded, setExpanded] = useState<ExpandedState>({})
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+    const data: ChangesViewTableData[] = useMemo(
+      () =>
+        value.map((change) => {
+          const {
+            action,
+            changeSummary: {
+              breaking = 0,
+              [RISKY_CHANGE_SEVERITY]: risky = 0,
+              deprecated = 0,
+              [NON_BREAKING_CHANGE_SEVERITY]: nonBreaking = 0,
+              annotation = 0,
+              unclassified = 0,
+            } = {},
+          } = change
+          return {
+            change: change,
+            canExpand:
+              action === REPLACE_ACTION_TYPE &&
+              (breaking > 0 || risky > 0 || deprecated > 0 || nonBreaking > 0 || annotation > 0 || unclassified > 0),
+          }
+        }),
+      [value],
+    )
 
-  const { getHeaderGroups, getRowModel, setColumnSizing } = useReactTable({
-    data: data,
-    columns: columns,
-    state: { expanded, columnVisibility },
-    getRowCanExpand: (row) => row.original.canExpand,
-    onExpandedChange: setExpanded,
-    onColumnVisibilityChange: setColumnVisibility,
-    getCoreRowModel: getCoreRowModel(),
-    getExpandedRowModel: getExpandedRowModel(),
-    columnResizeMode: 'onChange',
-    onColumnSizingChange: setHandlingColumnSizing as OnChangeFn<ColumnSizingState>,
-    onColumnSizingInfoChange: setColumnSizingInfo as OnChangeFn<ColumnSizingInfoState>,
-  })
+    const [expanded, setExpanded] = useState<ExpandedState>({})
+    const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 
-  useEffect(
-    () => setColumnSizing(actualColumnSizing),
-    [setColumnSizing, actualColumnSizing],
-  )
+    const { getHeaderGroups, getRowModel, setColumnSizing } = useReactTable({
+      data: data,
+      columns: columns,
+      state: { expanded, columnVisibility },
+      getRowCanExpand: (row) => row.original.canExpand,
+      onExpandedChange: setExpanded,
+      onColumnVisibilityChange: setColumnVisibility,
+      getCoreRowModel: getCoreRowModel(),
+      getExpandedRowModel: getExpandedRowModel(),
+      columnResizeMode: 'onChange',
+      onColumnSizingChange: setHandlingColumnSizing as OnChangeFn<ColumnSizingState>,
+      onColumnSizingInfoChange: setColumnSizingInfo as OnChangeFn<ColumnSizingInfoState>,
+    })
 
-  const ref = useRef<HTMLDivElement>(null)
-  useIntersectionObserver(ref, isNextPageFetching, hasNextPage, fetchNextPage)
+    useEffect(() => setColumnSizing(actualColumnSizing), [setColumnSizing, actualColumnSizing])
 
-  const rowSkeleton = useMemo(() => (
-    packageObject?.kind === DASHBOARD_KIND
-      ? <DashboardRowSkeleton refObject={ref} />
-      : <PackageRowSkeleton refObject={ref} />),
-    [packageObject?.kind],
-  )
+    const ref = useRef<HTMLDivElement>(null)
+    useIntersectionObserver(ref, isNextPageFetching, hasNextPage, fetchNextPage)
 
-  return (
-    <TableContainer ref={tableContainerRef} sx={{ mt: 1 }}>
-      <Table sx={{ minWidth: 700 }}>
-        <TableHead>
-          {getHeaderGroups().map(headerGroup => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((headerColumn, index) => (
-                <TableCell
-                  key={headerColumn.id}
-                  align="left"
-                  width={actualColumnSizing ? actualColumnSizing[headerColumn.id] : headerColumn.getSize()}
-                  sx={{
-                    '&:hover': {
-                      borderRight: '2px solid rgba(224, 224, 224, 1)',
-                    },
-                  }}
-                >
-                  {flexRender(headerColumn.column.columnDef.header, headerColumn.getContext())}
-                  {index !== headerGroup.headers.length - 1 &&
-                    <ColumnDelimiter header={headerColumn} resizable={true} />}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableHead>
-        <TableBody>
-          {getRowModel().rows.map(row => (
-            <Fragment key={crypto.randomUUID()}>
-              <TableRow key={row.id} sx={{ backgroundColor: ACTION_TYPE_COLOR_MAP[row.original.change?.action] }}>
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} data-testid={`Cell-${cell.column.id}`}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+    const rowSkeleton = useMemo(
+      () =>
+        packageObject?.kind === DASHBOARD_KIND ? (
+          <DashboardRowSkeleton refObject={ref} />
+        ) : (
+          <PackageRowSkeleton refObject={ref} />
+        ),
+      [packageObject?.kind],
+    )
+
+    return (
+      <TableContainer ref={tableContainerRef} sx={{ mt: 1 }}>
+        <Table sx={{ minWidth: 700 }}>
+          <TableHead>
+            {getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((headerColumn, index) => (
+                  <TableCell
+                    key={headerColumn.id}
+                    align="left"
+                    width={actualColumnSizing ? actualColumnSizing[headerColumn.id] : headerColumn.getSize()}
+                    sx={{
+                      '&:hover': {
+                        borderRight: '2px solid rgba(224, 224, 224, 1)',
+                      },
+                    }}
+                  >
+                    {flexRender(headerColumn.column.columnDef.header, headerColumn.getContext())}
+                    {index !== headerGroup.headers.length - 1 && (
+                      <ColumnDelimiter header={headerColumn} resizable={true} />
+                    )}
                   </TableCell>
                 ))}
               </TableRow>
-              {row.getIsExpanded() && (
-                <SubTableComponent
-                  value={row}
-                  packageKey={isDashboardType ? row.original.change.packageRef?.key : packageKey}
-                  versionKey={isDashboardType ? row.original.change.packageRef?.version : versionKey}
-                  apiType={apiType}
-                  packageKind={packageObject?.kind}
-                />
-              )}
-            </Fragment>
-          ))}
-          {isLoading && <TableSkeleton isDashboard={packageObject?.kind === DASHBOARD_KIND} />}
-          {hasNextPage && rowSkeleton}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  )
-})
+            ))}
+          </TableHead>
+          <TableBody>
+            {getRowModel().rows.map((row) => (
+              <Fragment key={crypto.randomUUID()}>
+                <TableRow key={row.id} sx={{ backgroundColor: ACTION_TYPE_COLOR_MAP[row.original.change?.action] }}>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id} data-testid={`Cell-${cell.column.id}`}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+                {row.getIsExpanded() && (
+                  <SubTableComponent
+                    value={row}
+                    packageKey={isDashboardType ? row.original.change.packageRef?.key : packageKey}
+                    versionKey={isDashboardType ? row.original.change.packageRef?.version : versionKey}
+                    apiType={apiType}
+                    packageKind={packageObject?.kind}
+                  />
+                )}
+              </Fragment>
+            ))}
+            {isLoading && <TableSkeleton isDashboard={packageObject?.kind === DASHBOARD_KIND} />}
+            {hasNextPage && rowSkeleton}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    )
+  },
+)
 
 type TableSkeletonProps = {
   isDashboard: boolean

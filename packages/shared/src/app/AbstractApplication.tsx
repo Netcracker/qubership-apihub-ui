@@ -49,9 +49,7 @@ export const CheckAuthorization: FC<PropsWithChildren> = memo<PropsWithChildren>
   const location = useLocation()
   const isLoginPage = location.pathname?.startsWith('/login') // This is done for new routing approach, refactor it
 
-  return auth || isLoginPage
-    ? <>{children}</>
-    : <AuthPage/>
+  return auth || isLoginPage ? <>{children}</> : <AuthPage />
 })
 
 export const AbstractApplication: FC<ApplicationProps> = memo<ApplicationProps>(({ isSecure, routing }) => {
@@ -59,17 +57,16 @@ export const AbstractApplication: FC<ApplicationProps> = memo<ApplicationProps>(
     <StrictMode>
       <QueryClientProvider client={client}>
         <ThemeProvider theme={theme}>
-          <CssBaseline/>
-          {isSecure
-            ? (
-              <CheckAuthorization>
-                <RouterProvider router={routing}/>
-              </CheckAuthorization>
-            )
-            : <RouterProvider router={routing}/>
-          }
+          <CssBaseline />
+          {isSecure ? (
+            <CheckAuthorization>
+              <RouterProvider router={routing} />
+            </CheckAuthorization>
+          ) : (
+            <RouterProvider router={routing} />
+          )}
         </ThemeProvider>
-        <ReactQueryDevtools initialIsOpen={false}/>
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </StrictMode>
   )

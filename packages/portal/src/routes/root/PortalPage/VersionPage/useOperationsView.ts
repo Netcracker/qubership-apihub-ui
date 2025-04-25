@@ -28,7 +28,7 @@ export function useOperationsView(defaultValue: OperationsViewMode): [Operations
   return useMemo(
     () => [
       param !== defaultValue ? param : defaultValue,
-      value => setSearchParams({ [OPERATIONS_VIEW_MODE_PARAM]: value }, { replace: true }),
+      (value) => setSearchParams({ [OPERATIONS_VIEW_MODE_PARAM]: value }, { replace: true }),
     ],
     [defaultValue, param, setSearchParams],
   )

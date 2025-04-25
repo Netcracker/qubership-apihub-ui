@@ -51,7 +51,15 @@ export const ApiChangesCard: FC<ApiChangesCardProps> = memo<ApiChangesCardProps>
       setPreviousReleaseVersion(previousVersion)
       setPreviousReleasePackage(previousVersionPackageId)
     }
-  }, [error, isLoading, previousVersion, previousVersionPackageId, setPreviousReleasePackage, setPreviousReleaseVersion, versionContent])
+  }, [
+    error,
+    isLoading,
+    previousVersion,
+    previousVersionPackageId,
+    setPreviousReleasePackage,
+    setPreviousReleaseVersion,
+    versionContent,
+  ])
 
   useCompareVersions({
     changedPackageKey: changedPackageKey,
@@ -60,10 +68,5 @@ export const ApiChangesCard: FC<ApiChangesCardProps> = memo<ApiChangesCardProps>
     originPackageKey: previousReleasePackage,
   })
 
-  return (
-    <BodyCard
-      body={<ApiChangesTab searchValue={searchValue}/>}
-    />
-  )
+  return <BodyCard body={<ApiChangesTab searchValue={searchValue} />} />
 })
-

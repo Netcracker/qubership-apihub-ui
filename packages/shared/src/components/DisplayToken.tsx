@@ -36,18 +36,18 @@ export type DisplayTokenProps = {
 }
 
 //First Order Component
-export const DisplayToken: FC<DisplayTokenProps> = memo(({
-  generatedApiKey,
-  showSuccessNotification,
-}) => {
+export const DisplayToken: FC<DisplayTokenProps> = memo(({ generatedApiKey, showSuccessNotification }) => {
   const [, copyToClipboard] = useCopyToClipboard()
 
-  const handleCopyToClipboard = useCallback((event: React.MouseEvent) => {
-    // prevents the Notification from closing by avoiding the Snackbar's "clickaway" event handling
-    event.stopPropagation()
-    copyToClipboard(generatedApiKey ?? '')
-    showSuccessNotification({ message: 'Access token copied' })
-  }, [copyToClipboard, showSuccessNotification, generatedApiKey])
+  const handleCopyToClipboard = useCallback(
+    (event: React.MouseEvent) => {
+      // prevents the Notification from closing by avoiding the Snackbar's "clickaway" event handling
+      event.stopPropagation()
+      copyToClipboard(generatedApiKey ?? '')
+      showSuccessNotification({ message: 'Access token copied' })
+    },
+    [copyToClipboard, showSuccessNotification, generatedApiKey],
+  )
 
   return (
     <Box>
@@ -57,20 +57,22 @@ export const DisplayToken: FC<DisplayTokenProps> = memo(({
         value={generatedApiKey}
         InputProps={{
           readOnly: true,
-          endAdornment: <ContentCopyIcon
-            sx={{
-              cursor: 'pointer',
-              '&:hover': { color: '#0068FF' },
-              '&:active': { color: '#003AB8' },
-            }}
-            onClick={handleCopyToClipboard}
-            data-testid="CopyIcon"
-          />,
+          endAdornment: (
+            <ContentCopyIcon
+              sx={{
+                cursor: 'pointer',
+                '&:hover': { color: '#0068FF' },
+                '&:active': { color: '#003AB8' },
+              }}
+              onClick={handleCopyToClipboard}
+              data-testid="CopyIcon"
+            />
+          ),
         }}
         data-testid="AccessTokenTextField"
       />
       <Box display="flex" alignItems="center" marginTop="4px" data-testid="TokenWarning">
-        <InfoContextIcon/>
+        <InfoContextIcon />
         <Typography sx={{ ml: '4px', fontSize: '12px', color: '#626D82' }}>
           Copy and save this token because it won’t be saved
         </Typography>

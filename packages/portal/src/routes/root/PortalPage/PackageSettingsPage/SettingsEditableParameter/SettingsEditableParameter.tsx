@@ -57,54 +57,38 @@ const BUTTON_SX: SxProps<Theme> = {
   height: '20px',
 }
 
-export const SettingsEditableParameter = memo<SettingsEditableParameterProps>(({
-  title,
-  packageObject,
-  onEdit,
-  isLoading,
-  children,
-  ...props
-}) => {
-  const canEditPackage = useMemo(
-    () => !!packageObject.permissions?.includes(CREATE_AND_UPDATE_PACKAGE_PERMISSION),
-    [packageObject],
-  )
+export const SettingsEditableParameter = memo<SettingsEditableParameterProps>(
+  ({ title, packageObject, onEdit, isLoading, children, ...props }) => {
+    const canEditPackage = useMemo(
+      () => !!packageObject.permissions?.includes(CREATE_AND_UPDATE_PACKAGE_PERMISSION),
+      [packageObject],
+    )
 
-  const onClick = useCallback(() => {
-    if (!canEditPackage || isLoading) {
-      return
-    }
-    onEdit()
-  }, [canEditPackage, isLoading, onEdit])
+    const onClick = useCallback(() => {
+      if (!canEditPackage || isLoading) {
+        return
+      }
+      onEdit()
+    }, [canEditPackage, isLoading, onEdit])
 
-  return (
-    <Box data-testid={'SettingsParameter'} width="100%" {...props}>
-      <Typography variant="subtitle2" sx={TITLE_SX} data-testid="SettingsParameterTitle">{title}</Typography>
-      <Box sx={CONTENT_CONTAINER_SX}>
-        <Box
-          sx={CONTENT_SX}
-          data-testid="SettingsParameterContent"
-        >
-          {children}
+    return (
+      <Box data-testid={'SettingsParameter'} width="100%" {...props}>
+        <Typography variant="subtitle2" sx={TITLE_SX} data-testid="SettingsParameterTitle">
+          {title}
+        </Typography>
+        <Box sx={CONTENT_CONTAINER_SX}>
+          <Box sx={CONTENT_SX} data-testid="SettingsParameterContent">
+            {children}
+          </Box>
+          <Tooltip title={!canEditPackage ? NO_PERMISSION_TO_EDIT_PACKAGE : ''} placement="top">
+            <IconButton sx={BUTTON_SX} className="hoverable" onClick={onClick} data-testid="EditButton">
+              <EditIcon color={!canEditPackage || isLoading ? DISABLED_BUTTON_COLOR : ENABLED_BUTTON_COLOR} />
+            </IconButton>
+          </Tooltip>
         </Box>
-        <Tooltip
-          title={!canEditPackage ? NO_PERMISSION_TO_EDIT_PACKAGE : ''}
-          placement="top"
-        >
-          <IconButton
-            sx={BUTTON_SX}
-            className="hoverable"
-            onClick={onClick}
-            data-testid="EditButton"
-          >
-            <EditIcon
-              color={!canEditPackage || isLoading ? DISABLED_BUTTON_COLOR : ENABLED_BUTTON_COLOR}
-            />
-          </IconButton>
-        </Tooltip>
       </Box>
-    </Box>
-  )
-})
+    )
+  },
+)
 
 SettingsEditableParameter.displayName = 'SettingsEditableParameter'

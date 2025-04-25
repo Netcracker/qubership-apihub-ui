@@ -24,7 +24,7 @@ export function useSettingSearchParam(): [SettingsTab | undefined, SetSettingSea
   const setSetting = useSetSearchParams()
 
   return useMemo(
-    () => [setting, value => setSetting({ setting: value ?? '' }, { replace: true })],
+    () => [setting, (value) => setSetting({ setting: value ?? '' }, { replace: true })],
     [setting, setSetting],
   )
 }

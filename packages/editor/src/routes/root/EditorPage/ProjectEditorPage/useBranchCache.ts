@@ -43,18 +43,19 @@ export function useBranchCache(): [BranchCache, IsLoading, RefetchQuery<BranchCa
 
   const { data, isLoading, refetch } = useQuery<BranchCache, Error, BranchCache>({
     queryKey: [BRANCH_CACHE_QUERY_KEY, projectId, branchName],
-    queryFn: async () => getBranchCache({
-      packageKey: projectId!,
-      versionKey: VERSION_CANDIDATE,
-      previousVersionKey: '',
-      previousPackageKey: projectId!,
-      authorization: getAuthorization(),
-      branchName: branchName!,
-      files: branchConfig?.files ?? [],
-      // branchFiles serialization is an expensive operation, so it is not suitable for use as part of a queryKey, so
-      // get the data from react-query cache directly instead of using a hook to avoid stale closure issue
-      sources: client.getQueryData<FileSourceMap>([ALL_BRANCH_FILES_QUERY_KEY, projectId, branchName]),
-    }),
+    queryFn: async () =>
+      getBranchCache({
+        packageKey: projectId!,
+        versionKey: VERSION_CANDIDATE,
+        previousVersionKey: '',
+        previousPackageKey: projectId!,
+        authorization: getAuthorization(),
+        branchName: branchName!,
+        files: branchConfig?.files ?? [],
+        // branchFiles serialization is an expensive operation, so it is not suitable for use as part of a queryKey, so
+        // get the data from react-query cache directly instead of using a hook to avoid stale closure issue
+        sources: client.getQueryData<FileSourceMap>([ALL_BRANCH_FILES_QUERY_KEY, projectId, branchName]),
+      }),
     enabled: !!projectId && !!branchName && !isBranchConfigLoading,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
@@ -101,25 +102,25 @@ export function useUpdateBranchCache(): [UpdateFileInBranchCache, IsLoading] {
     mutationFn: async (fileKey) => {
       const branchConfig = client.getQueryData<BranchConfig>([BRANCH_CONFIG_QUERY_KEY, projectId, branchName])
 
-      return await PackageVersionBuilder.updateCache({
-        packageKey: projectId!,
-        versionKey: VERSION_CANDIDATE,
-        previousVersionKey: '',
-        previousPackageKey: projectId!,
-        authorization: getAuthorization(),
-        branchName: branchName!,
-        files: branchConfig?.files ?? [],
-        sources: branchFiles,
-      }, fileKey)
+      return await PackageVersionBuilder.updateCache(
+        {
+          packageKey: projectId!,
+          versionKey: VERSION_CANDIDATE,
+          previousVersionKey: '',
+          previousPackageKey: projectId!,
+          authorization: getAuthorization(),
+          branchName: branchName!,
+          files: branchConfig?.files ?? [],
+          sources: branchFiles,
+        },
+        fileKey,
+      )
     },
     onSuccess: async (updatedFileCache, fileKey) => {
-      client.setQueryData<BranchCache>(
-        [BRANCH_CACHE_QUERY_KEY, projectId, branchName],
-        (oldBranchCache) => ({
-          ...oldBranchCache,
-          ...updatedFileCache,
-        }),
-      )
+      client.setQueryData<BranchCache>([BRANCH_CACHE_QUERY_KEY, projectId, branchName], (oldBranchCache) => ({
+        ...oldBranchCache,
+        ...updatedFileCache,
+      }))
 
       invalidateValidationMessages(fileKey)
       invalidateDereferencedSpec(fileKey)
@@ -155,15 +156,11 @@ export function useUpdateExistingFileInBranchCache(): [UpdateFileInBranchCache, 
       })
     },
     onSuccess: async (fileData, fileKey) => {
-
-      client.setQueryData<BranchCache>(
-        [BRANCH_CACHE_QUERY_KEY, projectId, branchName],
-        (oldBranchCache) => {
-          const branchCache = oldBranchCache as BranchCache
-          branchCache[fileKey] = fileData
-          return branchCache
-        },
-      )
+      client.setQueryData<BranchCache>([BRANCH_CACHE_QUERY_KEY, projectId, branchName], (oldBranchCache) => {
+        const branchCache = oldBranchCache as BranchCache
+        branchCache[fileKey] = fileData
+        return branchCache
+      })
 
       invalidateValidationMessages(fileKey)
       invalidateDereferencedSpec(fileKey)
@@ -175,9 +172,7 @@ export function useUpdateExistingFileInBranchCache(): [UpdateFileInBranchCache, 
 
 type UpdateFileInBranchCache = (fileKey: FileKey) => void
 
-async function getBranchCache(
-  options: BuilderOptions,
-): Promise<BranchCache> {
+async function getBranchCache(options: BuilderOptions): Promise<BranchCache> {
   return await scheduleInBackground(async () => {
     await PackageVersionBuilder.init(options)
     return await PackageVersionBuilder.getBranchCache()

@@ -36,11 +36,7 @@ export function useDownloadPublicationReport(): [DownloadPublicationReportFuncti
   return [mutate, isLoading]
 }
 
-export const downloadPublicationReport = async ({
-  packageKey,
-  versionKey,
-  publishKey,
-}: Options): Promise<void> => {
+export const downloadPublicationReport = async ({ packageKey, versionKey, publishKey }: Options): Promise<void> => {
   const packageId = encodeURIComponent(packageKey)
   const publishId = encodeURIComponent(publishKey)
 
@@ -49,7 +45,8 @@ export const downloadPublicationReport = async ({
     generatePath(pathPattern, { packageId, publishId }),
     {
       method: 'GET',
-    }, {
+    },
+    {
       basePath: API_V1,
     },
   )

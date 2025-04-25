@@ -30,10 +30,7 @@ export type ExamplesDialogProps = {
 
 export const ExamplesDialog: FC<ExamplesDialogProps> = memo<ExamplesDialogProps>(({ document }) => {
   return (
-    <PopupDelegate
-      type={SHOW_EXAMPLES_DIALOG}
-      render={props => <ExamplesPopup {...props} document={document}/>}
-    />
+    <PopupDelegate type={SHOW_EXAMPLES_DIALOG} render={(props) => <ExamplesPopup {...props} document={document} />} />
   )
 })
 
@@ -42,22 +39,14 @@ export const ExamplesPopup: FC<ExamplesPopupProps> = memo<ExamplesPopupProps>(({
   const onClose = useCallback(() => setOpen(false), [setOpen])
 
   return (
-    <Dialog
-      fullWidth
-      maxWidth={false}
-      open={open}
-      onClose={onClose}
-    >
+    <Dialog fullWidth maxWidth={false} open={open} onClose={onClose}>
       <DialogTitle sx={{ height: '12px', marginLeft: 'auto' }}>
-        <IconButton
-          sx={{ color: '#353C4E' }}
-          onClick={onClose}
-        >
-          <CloseOutlinedIcon/>
+        <IconButton sx={{ color: '#353C4E' }} onClick={onClose}>
+          <CloseOutlinedIcon />
         </IconButton>
       </DialogTitle>
       <DialogContent sx={{ width: '100%', height: '100vh', overflow: 'hidden', paddingBottom: '16px' }}>
-        <Examples document={document} fullScreenAvailable={false}/>
+        <Examples document={document} fullScreenAvailable={false} />
       </DialogContent>
     </Dialog>
   )

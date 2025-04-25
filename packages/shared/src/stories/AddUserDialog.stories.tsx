@@ -27,7 +27,7 @@ const meta: Meta<typeof AddUserPopup> = {
   decorators: [
     (Story) => (
       <ThemeProvider theme={theme}>
-        <Story/>
+        <Story />
       </ThemeProvider>
     ),
   ],

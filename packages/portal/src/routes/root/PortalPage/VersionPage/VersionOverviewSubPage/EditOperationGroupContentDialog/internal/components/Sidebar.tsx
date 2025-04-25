@@ -69,8 +69,8 @@ export const Sidebar: FC<SidebarProps> = (props) => {
       onSelectPackage={
         packageKind === DASHBOARD_KIND
           ? (newSelectedRefPackage) => {
-            onRefPackageSelected(newSelectedRefPackage)
-          }
+              onRefPackageSelected(newSelectedRefPackage)
+            }
           : undefined
       }
       selectedApiAudience={selectedApiAudience}

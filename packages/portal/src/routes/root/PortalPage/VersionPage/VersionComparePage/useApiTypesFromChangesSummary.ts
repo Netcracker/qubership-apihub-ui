@@ -20,7 +20,10 @@ import { isDashboardComparisonSummary } from '@netcracker/qubership-apihub-ui-sh
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 
-export function useApiTypesFromChangesSummary(versionChangesSummary?: VersionChangesSummary, refPackageKey?: Key): ApiType[] {
+export function useApiTypesFromChangesSummary(
+  versionChangesSummary?: VersionChangesSummary,
+  refPackageKey?: Key,
+): ApiType[] {
   return useMemo(
     // todo change PackageComparisonSummary.operationTypes to Record
     () => {
@@ -29,10 +32,10 @@ export function useApiTypesFromChangesSummary(versionChangesSummary?: VersionCha
       }
 
       const operationTypes = isDashboardComparisonSummary(versionChangesSummary)
-        ? versionChangesSummary.find(refSummary => refSummary.refKey === refPackageKey)?.operationTypes
+        ? versionChangesSummary.find((refSummary) => refSummary.refKey === refPackageKey)?.operationTypes
         : versionChangesSummary.operationTypes
 
-      return operationTypes?.map(type => type.apiType) ?? []
+      return operationTypes?.map((type) => type.apiType) ?? []
     },
     [refPackageKey, versionChangesSummary],
   )

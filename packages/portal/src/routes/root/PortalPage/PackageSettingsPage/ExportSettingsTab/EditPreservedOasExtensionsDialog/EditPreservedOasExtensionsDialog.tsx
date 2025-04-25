@@ -28,11 +28,8 @@ const EditPreservedOasExtensionsDialogPopup: FC<PopupProps> = memo(({ open, setO
   const typedDetail = detail as ShowEditPreservedOasExtensionsDetail
   const { packageKey, oasExtensions } = typedDetail
 
-  const {
-    updateOasExtensions,
-    isOasExtensionsUpdating,
-    isOasExtensionsUpdatingSuccess,
-  } = useUpdateAllowedOasExtensions()
+  const { updateOasExtensions, isOasExtensionsUpdating, isOasExtensionsUpdatingSuccess } =
+    useUpdateAllowedOasExtensions()
 
   const [isFocused, setIsFocused] = useState(false)
   const [isInputText, setIsInputText] = useState(false)
@@ -44,33 +41,25 @@ const EditPreservedOasExtensionsDialogPopup: FC<PopupProps> = memo(({ open, setO
     }
   }, [isOasExtensionsUpdatingSuccess, setOpen])
 
-  const {
-    control,
-    handleSubmit,
-    setValue,
-    processExtensionsUpdate,
-  } = useOasExtensionsManager(oasExtensions)
+  const { control, handleSubmit, setValue, processExtensionsUpdate } = useOasExtensionsManager(oasExtensions)
 
-  const handleSaveExtensions = useCallback((formData: EditOasExtensionsForm): void => {
-    if (!formData.oasExtensions || !packageKey) {
-      return
-    }
+  const handleSaveExtensions = useCallback(
+    (formData: EditOasExtensionsForm): void => {
+      if (!formData.oasExtensions || !packageKey) {
+        return
+      }
 
-    const directExtensions = formData.oasExtensions.filter(ext => ext.kind !== OAS_EXTENSION_KIND_INHERITED)
-    updateOasExtensions(packageKey, directExtensions)
-  }, [packageKey, updateOasExtensions])
+      const directExtensions = formData.oasExtensions.filter((ext) => ext.kind !== OAS_EXTENSION_KIND_INHERITED)
+      updateOasExtensions(packageKey, directExtensions)
+    },
+    [packageKey, updateOasExtensions],
+  )
 
   const handleCloseDialog = useCallback((): void => setOpen(false), [setOpen])
 
   return (
-    <DialogForm
-      open={open}
-      onClose={handleCloseDialog}
-      onSubmit={handleSubmit(handleSaveExtensions)}
-    >
-      <DialogTitle>
-        Edit List of OAS Extensions Preserved on Export
-      </DialogTitle>
+    <DialogForm open={open} onClose={handleCloseDialog} onSubmit={handleSubmit(handleSaveExtensions)}>
+      <DialogTitle>Edit List of OAS Extensions Preserved on Export</DialogTitle>
 
       <DialogContent>
         <Controller

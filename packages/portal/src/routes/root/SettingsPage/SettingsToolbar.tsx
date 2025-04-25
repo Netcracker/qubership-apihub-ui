@@ -37,17 +37,13 @@ export const SettingsToolbar: FC = memo(() => {
 
   return (
     <Toolbar
-      header={<ToolbarTitle value="APIHUB Portal Settings"/>}
+      header={<ToolbarTitle value="APIHUB Portal Settings" />}
       size={LARGE_TOOLBAR_SIZE}
-      action={(
-        <Button
-          startIcon={<ExitIcon/>}
-          variant="outlined"
-          onClick={navigateToPrevPage}
-        >
+      action={
+        <Button startIcon={<ExitIcon />} variant="outlined" onClick={navigateToPrevPage}>
           Exit
         </Button>
-      )}
+      }
     />
   )
 })

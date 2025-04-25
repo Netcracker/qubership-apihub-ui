@@ -28,9 +28,12 @@ export const SettingsNavigation: FC = memo(() => {
   const activeTab = useActiveTabContentContext()
   const setActiveTab = useSetActiveTabContentContext()
   const navigate = useNavigate()
-  const navigateAndSelect = useCallback((pathToNavigate: To): void => {
-    navigate(pathToNavigate)
-  }, [navigate])
+  const navigateAndSelect = useCallback(
+    (pathToNavigate: To): void => {
+      navigate(pathToNavigate)
+    },
+    [navigate],
+  )
 
   return (
     <Box display="flex" height="100%" width="100%" flexDirection="column" overflow="hidden">
@@ -59,8 +62,8 @@ export const SettingsNavigation: FC = memo(() => {
             }}
           >
             <Box>
-              <ListItemText primary={label}/>
-              <ListItemText primary={description} primaryTypographyProps={{ color: '#626D82' }}/>
+              <ListItemText primary={label} />
+              <ListItemText primary={description} primaryTypographyProps={{ color: '#626D82' }} />
             </Box>
           </ListItemButton>
         ))}

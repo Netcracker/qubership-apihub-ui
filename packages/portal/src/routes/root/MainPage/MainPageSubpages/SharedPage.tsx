@@ -44,11 +44,7 @@ export const SharedPage: FC = memo(() => {
 
   return (
     <Box display="flex" width="100%">
-      <MainPageCard
-        title="Shared"
-        hideViewSelector
-        pageKey={SHARED_PAGE_REFERER}
-      />
+      <MainPageCard title="Shared" hideViewSelector pageKey={SHARED_PAGE_REFERER} />
       <ActivityHistoryCard
         useActivity={useActivity}
         types={types}

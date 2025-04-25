@@ -65,7 +65,7 @@ export function deletePackage(router: Router): void {
 
 export function updatePackage(router: Router): void {
   router.patch('/:packageKey/', (req, res) => {
-    PACKAGES.packages = PACKAGES.packages.map(packageObject => {
+    PACKAGES.packages = PACKAGES.packages.map((packageObject) => {
       if (packageObject.packageId === req.params.packageKey) {
         return {
           ...packageObject,
@@ -89,7 +89,7 @@ export function updatePackage(router: Router): void {
       return packageObject
     })
 
-    res.status(200).json(PACKAGES.packages.find(packageObject => packageObject.packageId === req.params.packageKey))
+    res.status(200).json(PACKAGES.packages.find((packageObject) => packageObject.packageId === req.params.packageKey))
   })
 }
 
@@ -158,7 +158,7 @@ export function deletePackageMember(router: Router): void {
 
 export function changePackageMemberRole(router: Router): void {
   router.patch('/:packageKey/members/:userId', (req, res) => {
-    PACKAGE_MEMBERS.members = PACKAGE_MEMBERS.members.map(member => {
+    PACKAGE_MEMBERS.members = PACKAGE_MEMBERS.members.map((member) => {
       if (member?.user?.id === req.params.userId) {
         return {
           ...member,
@@ -171,7 +171,7 @@ export function changePackageMemberRole(router: Router): void {
       return member
     })
 
-    res.status(200).json(PACKAGE_MEMBERS.members.find(member => member?.user?.id === req.params.userId))
+    res.status(200).json(PACKAGE_MEMBERS.members.find((member) => member?.user?.id === req.params.userId))
   })
 }
 
@@ -183,7 +183,7 @@ export function getVersions(router: Router): void {
     if (queryStatus) {
       const result = versions
         .filter(({ status }) => status === queryStatus)
-        .filter(value => value.version.includes(textFilter as string))
+        .filter((value) => value.version.includes(textFilter as string))
 
       res.status(200).json({ versions: result })
       return
@@ -217,8 +217,7 @@ export function getVersion(router: Router): void {
 export function getVersionReferences(router: Router): void {
   router.get('/:id/versions/:versionId/references/', (req, res) => {
     res.status(200).json({
-      references: VERSION_REFERENCES.get(req.params.versionId)
-        ?.filter((ref) => ref.kind === req.query.kind),
+      references: VERSION_REFERENCES.get(req.params.versionId)?.filter((ref) => ref.kind === req.query.kind),
     })
   })
 }
@@ -238,10 +237,9 @@ export function getDocument(router: Router): void {
       return
     }
     res.status(200).send({
-        ...VERSION_DOCUMENTS.get(req.params.versionId)?.documents.find((doc) => doc.slug === req.params.specId),
-        operations: OPENAPI_SPEC.operations,
-      },
-    )
+      ...VERSION_DOCUMENTS.get(req.params.versionId)?.documents.find((doc) => doc.slug === req.params.specId),
+      operations: OPENAPI_SPEC.operations,
+    })
   })
 }
 
@@ -269,25 +267,20 @@ export function getPackages(router: Router): void {
 
 export function getPackage(router: Router): void {
   router.get('/:id/', (req, res) => {
-    setTimeout(
-      () => res.status(200).json(PACKAGES.packages.find(({ packageId }) => packageId === req.params.id)),
-      1000,
-    )
+    setTimeout(() => res.status(200).json(PACKAGES.packages.find(({ packageId }) => packageId === req.params.id)), 1000)
   })
 }
 
 export function recalculatePackageVersionGroups(router: Router): void {
   router.post('/:packageKey/', (req, res) => {
-    res.status(200).json(PACKAGES.packages.find(packageObject => packageObject.packageId === req.params.packageKey))
+    res.status(200).json(PACKAGES.packages.find((packageObject) => packageObject.packageId === req.params.packageKey))
   })
 }
 
 export function favorPackage(router: Router): void {
   router.post('/:id/favor/', (req, res) => {
-    PACKAGES.packages = PACKAGES.packages.map(pack => {
-      return pack.packageId === req.params.id
-        ? { ...pack, isFavorite: true }
-        : pack
+    PACKAGES.packages = PACKAGES.packages.map((pack) => {
+      return pack.packageId === req.params.id ? { ...pack, isFavorite: true } : pack
     })
     res.status(200).json()
   })
@@ -295,10 +288,8 @@ export function favorPackage(router: Router): void {
 
 export function disfavorPackage(router: Router): void {
   router.post('/:id/disfavor/', (req, res) => {
-    PACKAGES.packages = PACKAGES.packages.map(pack => {
-      return pack.packageId === req.params.id
-        ? { ...pack, isFavorite: false }
-        : pack
+    PACKAGES.packages = PACKAGES.packages.map((pack) => {
+      return pack.packageId === req.params.id ? { ...pack, isFavorite: false } : pack
     })
     res.status(200).json()
   })
@@ -309,24 +300,25 @@ export function getOperations(router: Router): void {
     const { tag, kind } = req.query
     const { packageId, versionId } = req.params
 
-    const packageObject = PACKAGES.packages.find(p => p.packageId === packageId)
+    const packageObject = PACKAGES.packages.find((p) => p.packageId === packageId)
     const packageKind = packageObject?.kind
     const isDashboard = packageKind === 'dashboard'
 
     if (isDashboard) {
       const refs = VERSION_REFERENCES.get(versionId) ?? []
       const filteredOperations = OPERATIONS.operations.filter(
-        (operation) => operation.packageRef && refs.some(ref => `${ref.refId}@${ref.version}` === operation.packageRef),
+        (operation) =>
+          operation.packageRef && refs.some((ref) => `${ref.refId}@${ref.version}` === operation.packageRef),
       )
       return res.status(200).json({ operations: filteredOperations })
     }
 
     if (tag) {
-      const operationsWithTag = OPERATIONS.operations.filter(operation => operation.tags?.includes(tag as string))
+      const operationsWithTag = OPERATIONS.operations.filter((operation) => operation.tags?.includes(tag as string))
       return res.status(200).json({ operations: operationsWithTag })
     }
     if (kind && kind !== 'all') {
-      const operationsWithTag = OPERATIONS.operations.filter(operation => operation?.apiKind === kind)
+      const operationsWithTag = OPERATIONS.operations.filter((operation) => operation?.apiKind === kind)
       return res.status(200).json({ operations: operationsWithTag })
     }
 
@@ -337,7 +329,9 @@ export function getOperations(router: Router): void {
 export function getDeprecatedOperations(router: Router): void {
   router.get('/:id/versions/:id/rest/deprecated', (req, res) => {
     if (req.query.tag) {
-      const operationsWithTag = DEPRECATED_OPERATIONS.operations.filter(operation => operation.tags?.includes(req.query.tag as string))
+      const operationsWithTag = DEPRECATED_OPERATIONS.operations.filter((operation) =>
+        operation.tags?.includes(req.query.tag as string),
+      )
       return res.status(200).json({ operations: operationsWithTag })
     }
 
@@ -385,12 +379,14 @@ export function publishProjectVersion(router: Router & WithWebsocketMethod, wss:
     const { version, status } = req.body
 
     wss.clients.forEach((s: Socket) => {
-      s.send(JSON.stringify({
-        type: 'branch:published',
-        userId: s.id,
-        version: version,
-        status: status,
-      }))
+      s.send(
+        JSON.stringify({
+          type: 'branch:published',
+          userId: s.id,
+          version: version,
+          status: status,
+        }),
+      )
     })
     res.status(200).json()
   })
@@ -420,7 +416,7 @@ export function deleteProject(router: Router): void {
 export function updateProject(router: Router): void {
   router.put('/:id/', (req, res) => {
     const projects = [...PROJECTS.projects]
-    PROJECTS.projects = projects.map(project => {
+    PROJECTS.projects = projects.map((project) => {
       if (project.projectId === req.params.id) {
         project = { ...req.body }
       }
@@ -442,11 +438,11 @@ export function getChangesSummary(router: Router): void {
   router.get('/:packageKey/versions/:versionKey/changes/summary', (req, res) => {
     const { packageKey, versionKey } = req.params
     const { previousVersion } = req.query
-    const packageDto = PACKAGES.packages.find(packageDto => packageDto.packageId === packageKey)
+    const packageDto = PACKAGES.packages.find((packageDto) => packageDto.packageId === packageKey)
     if (packageDto?.kind === 'dashboard') {
-      res.status(200).json(getDashboardChangesSummary([
-        generateVersionChanges(packageKey, previousVersion as string, versionKey),
-      ]))
+      res
+        .status(200)
+        .json(getDashboardChangesSummary([generateVersionChanges(packageKey, previousVersion as string, versionKey)]))
     } else {
       res.status(200).json(getPackageChangesSummary(PACKAGE1_CHANGES))
     }
@@ -473,38 +469,39 @@ export function getFileContent(fileId: string): Buffer {
 
 function getPackageChangesSummary(versionChanges: VersionChangesDto): PackageComparisonSummaryDto {
   return {
-    operationTypes: [{
-      apiType: REST_API_TYPE,
-      changesSummary: sumChanges(versionChanges!.operations!.map(operation => operation.changeSummary)),
-      tags: versionChanges.operations!
-        .map(operation => operation.tags ?? [])
-        .reduce((result, currentTags) => [...result, ...currentTags]) as string[],
-    }],
+    operationTypes: [
+      {
+        apiType: REST_API_TYPE,
+        changesSummary: sumChanges(versionChanges!.operations!.map((operation) => operation.changeSummary)),
+        tags: versionChanges
+          .operations!.map((operation) => operation.tags ?? [])
+          .reduce((result, currentTags) => [...result, ...currentTags]) as string[],
+      },
+    ],
   }
 }
 
 function getDashboardChangesSummary(versionChanges: VersionChangesDto[]): DashboardComparisonSummaryDto {
-  const refs = versionChanges.map(changes => ({
+  const refs = versionChanges.map((changes) => ({
     packageRef: changes.operations![0].packageRef,
     previousPackageRef: changes.operations![0].previousVersionPackageRef,
-    operationTypes: [{
-      apiType: REST_API_TYPE as ApiType,
-      changesSummary: sumChanges(
-        changes.operations!
-          .filter(isRestOperationChanges)
-          .map(operation => operation.changeSummary),
-      ),
-    }, {
-      apiType: GRAPHQL_API_TYPE as ApiType,
-      changesSummary: sumChanges(
-        changes.operations!
-          .filter(isGraphQlOperationChanges)
-          .map(operation => operation.changeSummary),
-      ),
-    }],
+    operationTypes: [
+      {
+        apiType: REST_API_TYPE as ApiType,
+        changesSummary: sumChanges(
+          changes.operations!.filter(isRestOperationChanges).map((operation) => operation.changeSummary),
+        ),
+      },
+      {
+        apiType: GRAPHQL_API_TYPE as ApiType,
+        changesSummary: sumChanges(
+          changes.operations!.filter(isGraphQlOperationChanges).map((operation) => operation.changeSummary),
+        ),
+      },
+    ],
   }))
   const packages = versionChanges
-    .map(changes => changes.packages!)
+    .map((changes) => changes.packages!)
     .reduce((result, currentPackage) => ({
       ...result,
       ...currentPackage,

@@ -39,16 +39,12 @@ import {
   JSON_SCHEMA_SPEC_TYPE,
   OPENAPI_2_0_SPEC_TYPE,
   OPENAPI_3_0_SPEC_TYPE,
-  OPENAPI_3_1_SPEC_TYPE, UNKNOWN_SPEC_TYPE,
+  OPENAPI_3_1_SPEC_TYPE,
+  UNKNOWN_SPEC_TYPE,
 } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 
 export const CreateFileDialog: FC = memo(() => {
-  return (
-    <PopupDelegate
-      type={SHOW_CREATE_FILE_DIALOG}
-      render={props => <CreateFilePopup {...props}/>}
-    />
-  )
+  return <PopupDelegate type={SHOW_CREATE_FILE_DIALOG} render={(props) => <CreateFilePopup {...props} />} />
 })
 
 const CreateFilePopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, detail }) => {
@@ -59,7 +55,13 @@ const CreateFilePopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, detai
     return (detail as CreateFileDialogDetail).path
   }, [detail])
 
-  const { handleSubmit, control, watch, reset, formState: { errors } } = useForm<FileCandidate>({
+  const {
+    handleSubmit,
+    control,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm<FileCandidate>({
     defaultValues: {
       extension: YAML_FILE_EXTENSION,
     },
@@ -70,18 +72,16 @@ const CreateFilePopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, detai
 
   const [createProjectFile, isLoading, isSuccess] = useCreateProjectFile()
 
-  useEffect(() => {isSuccess && setOpen(false)}, [isSuccess, setOpen])
-  useEffect(() => {!open && reset()}, [open, reset])
+  useEffect(() => {
+    isSuccess && setOpen(false)
+  }, [isSuccess, setOpen])
+  useEffect(() => {
+    !open && reset()
+  }, [open, reset])
 
   return (
-    <DialogForm
-      open={open}
-      onClose={() => setOpen(false)}
-      onSubmit={handleSubmit(createProjectFile)}
-    >
-      <DialogTitle>
-        Create New File
-      </DialogTitle>
+    <DialogForm open={open} onClose={() => setOpen(false)} onSubmit={handleSubmit(createProjectFile)}>
+      <DialogTitle>Create New File</DialogTitle>
 
       <DialogContent>
         <Box display="grid" gridTemplateColumns="5fr 2fr" gap={1}>
@@ -93,7 +93,8 @@ const CreateFilePopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, detai
             render={({ field }) => (
               <TextField
                 {...field}
-                autoFocus required
+                autoFocus
+                required
                 type="text"
                 label="Name"
                 error={!!errors.name}
@@ -106,12 +107,7 @@ const CreateFilePopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, detai
             control={control}
             defaultValue={YAML_FILE_EXTENSION}
             render={({ field }) => (
-              <TextField
-                {...field}
-                select required
-                type="select"
-                label="Extension"
-              >
+              <TextField {...field} select required type="select" label="Extension">
                 <MenuItem value={YAML_FILE_EXTENSION}>{YAML_FILE_EXTENSION}</MenuItem>
                 <MenuItem value={JSON_FILE_EXTENSION}>{JSON_FILE_EXTENSION}</MenuItem>
                 <MenuItem value={GRAPHQL_FILE_EXTENSION}>{GRAPHQL_FILE_EXTENSION}</MenuItem>
@@ -124,13 +120,7 @@ const CreateFilePopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, detai
           name="type"
           control={control}
           render={({ field }) => (
-            <TextField
-              {...field}
-              value={field.value ?? ''}
-              select required
-              type="select"
-              label="Type"
-            >
+            <TextField {...field} value={field.value ?? ''} select required type="select" label="Type">
               {openApiTypeAvailable && <MenuItem value={OPENAPI_3_1_SPEC_TYPE}>OpenApi 3.1</MenuItem>}
               {openApiTypeAvailable && <MenuItem value={OPENAPI_3_0_SPEC_TYPE}>OpenApi 3.0</MenuItem>}
               {openApiTypeAvailable && <MenuItem value={OPENAPI_2_0_SPEC_TYPE}>OpenApi 2.0</MenuItem>}
@@ -145,7 +135,7 @@ const CreateFilePopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, detai
           name="path"
           control={control}
           defaultValue={path}
-          render={({ field }) => <TextField {...field} label="Folder"/>}
+          render={({ field }) => <TextField {...field} label="Folder" />}
         />
       </DialogContent>
 

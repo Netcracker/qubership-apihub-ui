@@ -77,84 +77,97 @@ export type DeprecatedOperationsTabProps = {
   hasNextPage: HasNextPage
 }
 
-export const DeprecatedOperationsTable: FC<DeprecatedOperationsTabProps> = memo<DeprecatedOperationsTabProps>(({
-  operations,
-  hasNextPage,
-  fetchNextPage,
-  isFetchingNextPage,
-  isLoading,
-}) => {
-  const currentPackage = useCurrentPackage()
-  const isDashboard = currentPackage?.kind === DASHBOARD_KIND
+export const DeprecatedOperationsTable: FC<DeprecatedOperationsTabProps> = memo<DeprecatedOperationsTabProps>(
+  ({ operations, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading }) => {
+    const currentPackage = useCurrentPackage()
+    const isDashboard = currentPackage?.kind === DASHBOARD_KIND
 
-  const deprecatedInfoColumns: ColumnDef<OpenApiTableData>[] = useMemo(() => [
-    {
-      id: DETAILS_COLUMN_ID,
-      header: () => <CustomTableHeadCell title="Details"/>,
-      cell: ({ row: { original: { operation } } }) => {
-        const { deprecatedCount, deprecatedInfo } = operation as OperationWithDeprecations
-        if (deprecatedCount) {
-          return (
-            <Box display="flex" alignItems="center">
-              <Box component="span" sx={{ background: '#FFB02E', width: 12, height: 12, borderRadius: '50%', mr: 1 }}/>
-              <Typography noWrap component="span" sx={{ fontSize: 12, fontWeight: 500, color: '#353C4E', mr: 1.5 }}>
-                {deprecatedCount}
-              </Typography>
+    const deprecatedInfoColumns: ColumnDef<OpenApiTableData>[] = useMemo(
+      () => [
+        {
+          id: DETAILS_COLUMN_ID,
+          header: () => <CustomTableHeadCell title="Details" />,
+          cell: ({
+            row: {
+              original: { operation },
+            },
+          }) => {
+            const { deprecatedCount, deprecatedInfo } = operation as OperationWithDeprecations
+            if (deprecatedCount) {
+              return (
+                <Box display="flex" alignItems="center">
+                  <Box
+                    component="span"
+                    sx={{ background: '#FFB02E', width: 12, height: 12, borderRadius: '50%', mr: 1 }}
+                  />
+                  <Typography noWrap component="span" sx={{ fontSize: 12, fontWeight: 500, color: '#353C4E', mr: 1.5 }}>
+                    {deprecatedCount}
+                  </Typography>
 
-              {deprecatedInfo && (
-                <Tooltip
-                  disableHoverListener={false}
-                  title={<DeprecatedInfo info={deprecatedInfo}/>}
-                  placement="right"
-                >
-                  <InfoContextIcon sx={{ visibility: 'hidden' }} className="visible-on-hover"/>
-                </Tooltip>
-              )}
-            </Box>
-          )
-        }
-      },
-    },
-    {
-      id: DEPRECATED_SINCE_COLUMN_ID,
-      header: () => <CustomTableHeadCell title="Deprecated Since"/>,
-      cell: ({ row: { original: { operation } } }) => {
-        const [deprecatedSince] = (operation as OperationWithDeprecations)?.deprecatedInPreviousVersions ?? []
-        if (deprecatedSince) {
-          const { versionKey: versionToDisplay } = getSplittedVersionKey(deprecatedSince)
+                  {deprecatedInfo && (
+                    <Tooltip
+                      disableHoverListener={false}
+                      title={<DeprecatedInfo info={deprecatedInfo} />}
+                      placement="right"
+                    >
+                      <InfoContextIcon sx={{ visibility: 'hidden' }} className="visible-on-hover" />
+                    </Tooltip>
+                  )}
+                </Box>
+              )
+            }
+          },
+        },
+        {
+          id: DEPRECATED_SINCE_COLUMN_ID,
+          header: () => <CustomTableHeadCell title="Deprecated Since" />,
+          cell: ({
+            row: {
+              original: { operation },
+            },
+          }) => {
+            const [deprecatedSince] = (operation as OperationWithDeprecations)?.deprecatedInPreviousVersions ?? []
+            if (deprecatedSince) {
+              const { versionKey: versionToDisplay } = getSplittedVersionKey(deprecatedSince)
 
-          return <TextWithOverflowTooltip tooltipText={versionToDisplay}>
-            {versionToDisplay}
-          </TextWithOverflowTooltip>
-        }
-      },
-    },
-  ], [])
+              return (
+                <TextWithOverflowTooltip tooltipText={versionToDisplay}>{versionToDisplay}</TextWithOverflowTooltip>
+              )
+            }
+          },
+        },
+      ],
+      [],
+    )
 
-  const isDeprecatedItemsShown = useCallback(({ original: { operation } }: Row<OpenApiTableData>) => {
-    const operationWithDeprecations = (operation as OperationWithDeprecations)
-    const onlyDeprecatedOperationItem = operationWithDeprecations.deprecated && Number(operationWithDeprecations?.deprecatedCount ?? 0) === 1
-    return !onlyDeprecatedOperationItem
-  }, [])
+    const isDeprecatedItemsShown = useCallback(({ original: { operation } }: Row<OpenApiTableData>) => {
+      const operationWithDeprecations = operation as OperationWithDeprecations
+      const onlyDeprecatedOperationItem =
+        operationWithDeprecations.deprecated && Number(operationWithDeprecations?.deprecatedCount ?? 0) === 1
+      return !onlyDeprecatedOperationItem
+    }, [])
 
-  return (
-    <OpenApiTable
-      value={operations}
-      fetchNextPage={fetchNextPage}
-      isNextPageFetching={isFetchingNextPage}
-      hasNextPage={hasNextPage}
-      additionalColumns={deprecatedInfoColumns}
-      isExpandableRow={isDeprecatedItemsShown}
-      SubTableComponent={DeprecatedItemsSubTable}
-      columnSizes={isDashboard ? DASHBOARD_COLUMNS_MODELS : PACKAGE_COLUMNS_MODELS}
-      tableMinWidth={700}
-      isLoading={isLoading}
-    />
-  )
-})
-
-export const DeprecatedInfo: FC<{ info: string }> = memo<{ info: string }>(({ info }) =>
-  <Box>
-    <Typography component="span" variant="body2">{info}</Typography>
-  </Box>,
+    return (
+      <OpenApiTable
+        value={operations}
+        fetchNextPage={fetchNextPage}
+        isNextPageFetching={isFetchingNextPage}
+        hasNextPage={hasNextPage}
+        additionalColumns={deprecatedInfoColumns}
+        isExpandableRow={isDeprecatedItemsShown}
+        SubTableComponent={DeprecatedItemsSubTable}
+        columnSizes={isDashboard ? DASHBOARD_COLUMNS_MODELS : PACKAGE_COLUMNS_MODELS}
+        tableMinWidth={700}
+        isLoading={isLoading}
+      />
+    )
+  },
 )
+
+export const DeprecatedInfo: FC<{ info: string }> = memo<{ info: string }>(({ info }) => (
+  <Box>
+    <Typography component="span" variant="body2">
+      {info}
+    </Typography>
+  </Box>
+))

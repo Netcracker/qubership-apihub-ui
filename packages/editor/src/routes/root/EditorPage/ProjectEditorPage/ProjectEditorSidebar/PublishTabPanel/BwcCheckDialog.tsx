@@ -45,37 +45,37 @@ export const BwcCheckDialog: FC = memo(() => {
   const bwcVersionKey = useBwcVersionKey()
   const setBwcVersionKey = useSetBwcVersionKey()
   const [selectedPreviousVersion, setSelectedPreviousVersion] = useState<VersionKey | undefined>(() => bwcVersionKey)
-  useEffect(() => {bwcVersionKey && setSelectedPreviousVersion(bwcVersionKey)}, [bwcVersionKey])
+  useEffect(() => {
+    bwcVersionKey && setSelectedPreviousVersion(bwcVersionKey)
+  }, [bwcVersionKey])
 
   return (
-    <DialogForm
-      open={open}
-      onClose={() => setOpen(false)}
-    >
-      <DialogTitle>
-        Check Backward Compatibility
-      </DialogTitle>
+    <DialogForm open={open} onClose={() => setOpen(false)}>
+      <DialogTitle>Check Backward Compatibility</DialogTitle>
 
       <DialogContent sx={{ width: 440 }}>
         <Autocomplete
           value={selectedPreviousVersion ?? null}
-          options={versions.filter(versionKey => versionKey !== NO_PREVIOUS_RELEASE_VERSION_OPTION)}
-          getOptionLabel={value => getSplittedVersionKey(value).versionKey}
+          options={versions.filter((versionKey) => versionKey !== NO_PREVIOUS_RELEASE_VERSION_OPTION)}
+          getOptionLabel={(value) => getSplittedVersionKey(value).versionKey}
           renderOption={(props, value) => (
             <ListItem {...props}>
               <ListItemText>{getSplittedVersionKey(value).versionKey}</ListItemText>
             </ListItem>
           )}
-          renderInput={(params) => <TextField {...params} required label="Previous release version"/>}
+          renderInput={(params) => <TextField {...params} required label="Previous release version" />}
           onChange={(_, value) => value && setSelectedPreviousVersion(value)}
         />
       </DialogContent>
 
       <DialogActions>
-        <Button variant="contained" onClick={() => {
-          setOpen(false)
-          setBwcVersionKey(selectedPreviousVersion)
-        }}>
+        <Button
+          variant="contained"
+          onClick={() => {
+            setOpen(false)
+            setBwcVersionKey(selectedPreviousVersion)
+          }}
+        >
           Check
         </Button>
         <Button variant="outlined" onClick={() => setOpen(false)}>

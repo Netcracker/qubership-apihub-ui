@@ -50,9 +50,9 @@ declare module '@mui/material/styles' {
 
   interface Components {
     MuiTabPanel?: {
-      defaultProps?: ComponentsProps['MuiTabPanel'];
-      styleOverrides?: ComponentsOverrides<Theme>['MuiTabPanel'];
-      variants?: ComponentsVariants['MuiTabPanel'];
+      defaultProps?: ComponentsProps['MuiTabPanel']
+      styleOverrides?: ComponentsOverrides<Theme>['MuiTabPanel']
+      variants?: ComponentsVariants['MuiTabPanel']
     }
   }
 
@@ -97,12 +97,12 @@ declare module '@mui/material/Chip' {
 
 declare module '@mui/material/Typography' {
   interface TypographyPropsVariantOverrides {
-    subtitle3: true;
+    subtitle3: true
   }
 }
 
 interface CustomEventMap {
-  'fetch-error': CustomEvent<FetchErrorDetails>,
+  'fetch-error': CustomEvent<FetchErrorDetails>
   'fetch-redirect': CustomEvent<FetchRedirectDetails>
 }
 
@@ -112,9 +112,15 @@ declare global {
     TaskController: TaskController
     TaskPriorityChangeEvent: TaskPriorityChangeEvent
 
-    addEventListener<K extends keyof CustomEventMap>(type: K, listener: (this: Document, ev: CustomEventMap[K]) => void): void
+    addEventListener<K extends keyof CustomEventMap>(
+      type: K,
+      listener: (this: Document, ev: CustomEventMap[K]) => void,
+    ): void
 
-    removeEventListener<K extends keyof CustomEventMap>(type: K, listener: (this: Document, ev: CustomEventMap[K]) => void): void
+    removeEventListener<K extends keyof CustomEventMap>(
+      type: K,
+      listener: (this: Document, ev: CustomEventMap[K]) => void,
+    ): void
   }
 }
 
@@ -124,42 +130,33 @@ declare class Scheduler {
   postTask<T>(
     callback: () => T,
     options: Partial<{
-      signal: AbortSignal,
-      priority: Priority,
-      delay: number,
+      signal: AbortSignal
+      priority: Priority
+      delay: number
     }>,
   ): Promise<T>
 }
 
-declare type Priority =
-  | 'user-blocking'
-  | 'user-visible'
-  | 'background'
+declare type Priority = 'user-blocking' | 'user-visible' | 'background'
 
 declare class TaskController extends AbortController {
-  constructor(
-    init: {
-      priority: Priority,
-    },
-  )
+  constructor(init: { priority: Priority })
 
-  setPriority(
-    priority: Priority,
-  ): void
+  setPriority(priority: Priority): void
 }
 
 declare class TaskPriorityChangeEvent extends Event {
   constructor(
     typeArg: string,
     init: {
-      previousPriority: Priority,
+      previousPriority: Priority
     },
   )
 }
 
 declare module '@mui/material/SvgIcon' {
   interface SvgIconPropsColorOverrides {
-    'muted': true
+    muted: true
   }
 
   interface SvgIconPropsSizeOverrides {

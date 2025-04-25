@@ -27,13 +27,13 @@ export function useOperationGroupSearchFilter(): [OperationGroupName, SetOperati
     const group = param ?? ALL_OPERATION_GROUPS
     return [
       group,
-      value => setSearchParams(
-        { [OPERATION_GROUP_SEARCH_PARAM]: (value === ALL_OPERATION_GROUPS ? '' : value) ?? '' },
-        { replace: true },
-      ),
+      (value) =>
+        setSearchParams(
+          { [OPERATION_GROUP_SEARCH_PARAM]: (value === ALL_OPERATION_GROUPS ? '' : value) ?? '' },
+          { replace: true },
+        ),
     ]
   }, [param, setSearchParams])
-
 }
 
 const OPERATION_GROUP_SEARCH_PARAM = 'group'

@@ -23,7 +23,11 @@ export function getOptionalBody(obj: object): object | undefined {
       if (childObject === undefined) {
         delete obj[key as keyof typeof obj]
       }
-    } else if (obj[key as keyof typeof obj] === '' || obj[key as keyof typeof obj] === null || obj[key as keyof typeof obj] === undefined) {
+    } else if (
+      obj[key as keyof typeof obj] === '' ||
+      obj[key as keyof typeof obj] === null ||
+      obj[key as keyof typeof obj] === undefined
+    ) {
       delete obj[key as keyof typeof obj]
     }
   })

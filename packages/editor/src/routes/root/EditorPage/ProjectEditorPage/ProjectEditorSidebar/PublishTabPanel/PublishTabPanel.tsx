@@ -76,56 +76,62 @@ export const PublishTabPanel: FC = memo(() => {
     return null
   }
 
-  return (<>
-    <SidebarTabPanel
-      value={PUBLISH_PROJECT_EDITOR_MODE}
-      header={
-        <Box display="flex" width="100%" alignItems="center" flexGrow={1} gap={1}>
-          <Typography variant="h3" noWrap>Publish preview</Typography>
-          {isNotEmpty(conflicts) && <WarningMarker/>}
-          {isPublishAvailable && !isBranchCacheLoading && <PublishButton isValidating={isFetching}/>}
-        </Box>
-      }
-      body={
-        isBranchCacheLoading
-          ? <LoadingIndicator/>
-          : <Placeholder
-            invisible={isNotEmpty(publishableFileKeys)}
-            area={NAVIGATION_PLACEHOLDER_AREA}
-            message="Nothing to publish"
-          >
-            <BwcStatusBar/>
-            <List>
-              {publishableFileKeys.map((fileKey) => {
-                const fileData = branchCache[fileKey]
-                if (!fileData) {
-                  return null
-                }
-                return (
-                  <PublishTabItem
-                    key={fileKey}
-                    fileKey={fileKey}
-                    fileType={fileData.type}
-                    fileTitle={fileData.title}
-                    problems={fileProblemsMap[fileKey]}
-                  />
-                )
-              })}
-            </List>
-          </Placeholder>
-      }
-    />
+  return (
+    <>
+      <SidebarTabPanel
+        value={PUBLISH_PROJECT_EDITOR_MODE}
+        header={
+          <Box display="flex" width="100%" alignItems="center" flexGrow={1} gap={1}>
+            <Typography variant="h3" noWrap>
+              Publish preview
+            </Typography>
+            {isNotEmpty(conflicts) && <WarningMarker />}
+            {isPublishAvailable && !isBranchCacheLoading && <PublishButton isValidating={isFetching} />}
+          </Box>
+        }
+        body={
+          isBranchCacheLoading ? (
+            <LoadingIndicator />
+          ) : (
+            <Placeholder
+              invisible={isNotEmpty(publishableFileKeys)}
+              area={NAVIGATION_PLACEHOLDER_AREA}
+              message="Nothing to publish"
+            >
+              <BwcStatusBar />
+              <List>
+                {publishableFileKeys.map((fileKey) => {
+                  const fileData = branchCache[fileKey]
+                  if (!fileData) {
+                    return null
+                  }
+                  return (
+                    <PublishTabItem
+                      key={fileKey}
+                      fileKey={fileKey}
+                      fileType={fileData.type}
+                      fileTitle={fileData.title}
+                      problems={fileProblemsMap[fileKey]}
+                    />
+                  )
+                })}
+              </List>
+            </Placeholder>
+          )
+        }
+      />
 
-    <BwcPublishProjectVersionDialog/>
-    <BwcCheckDialog/>
-  </>)
+      <BwcPublishProjectVersionDialog />
+      <BwcCheckDialog />
+    </>
+  )
 })
 
 type PublishButtonProps = {
   isValidating: boolean
 }
 
-const PublishButton: FC<PublishButtonProps> = memo(({isValidating}) => {
+const PublishButton: FC<PublishButtonProps> = memo(({ isValidating }) => {
   const saveAvailable = useBranchChangeCount() > 0
   const [onStartPublish, isLoading] = useOnStartPublish()
   const [branch] = useBranchSearchParam()
@@ -138,9 +144,8 @@ const PublishButton: FC<PublishButtonProps> = memo(({isValidating}) => {
   const hasSavePermission = !hasPublishPermission && saveAvailable
 
   const hasPublishPermissions = useMemo(
-    () => MANAGE_STATUS_VERSION_PERMISSIONS.some(managePermission =>
-      packageObj?.permissions?.includes(managePermission),
-    ),
+    () =>
+      MANAGE_STATUS_VERSION_PERMISSIONS.some((managePermission) => packageObj?.permissions?.includes(managePermission)),
     [packageObj],
   )
 
@@ -149,7 +154,9 @@ const PublishButton: FC<PublishButtonProps> = memo(({isValidating}) => {
       Please attach package in settings
       <Link
         component={NavLink}
-        to={{ search: `branch=${encodeURIComponent(branch ?? '')}&mode=${SETTINGS_PROJECT_EDITOR_MODE}&setting=${GENERAL_SETTINGS_TAB}` }}
+        to={{
+          search: `branch=${encodeURIComponent(branch ?? '')}&mode=${SETTINGS_PROJECT_EDITOR_MODE}&setting=${GENERAL_SETTINGS_TAB}`,
+        }}
       >
         Go to settings
       </Link>
@@ -161,15 +168,9 @@ const PublishButton: FC<PublishButtonProps> = memo(({isValidating}) => {
     </Box>
   )
   const noGrantTooltipTitle = !hasPublishPermissions && (
-    <Box display="grid">
-      {`You don't have grants to publish to package ${packageObj?.key}`}
-    </Box>
+    <Box display="grid">{`You don't have grants to publish to package ${packageObj?.key}`}</Box>
   )
-  const isValidatingTooltipTitle = isValidating && (
-    <Box display="grid">
-      Files are validating
-    </Box>
-  )
+  const isValidatingTooltipTitle = isValidating && <Box display="grid">Files are validating</Box>
 
   return (
     <Box sx={{ marginLeft: 'auto', marginRight: 4, minWidth: 'max-content' }}>
@@ -177,7 +178,9 @@ const PublishButton: FC<PublishButtonProps> = memo(({isValidating}) => {
         variant="contained"
         disabled={!packageKey || hasSavePermission || !hasPublishPermissions || isValidating}
         disableHint={!!packageKey && hasPublishPermissions && !isValidating}
-        hint={noPackageKeyTooltipTitle || noPublishPermissionTooltipTitle || noGrantTooltipTitle || isValidatingTooltipTitle}
+        hint={
+          noPackageKeyTooltipTitle || noPublishPermissionTooltipTitle || noGrantTooltipTitle || isValidatingTooltipTitle
+        }
         isLoading={isLoading}
         onClick={onStartPublish}
         title={saveAvailable ? 'Save & Publish' : 'Publish'}
@@ -190,29 +193,25 @@ const BwcStatusBar: FC = memo(() => {
   const { showBwcCheckDialog } = useEventBus()
   const previousVersionKey = useBwcVersionKey()
   const [, , isBwcChecking, checkBwcProblems] = useBwcProblems(previousVersionKey)
-  useEffect(() => {previousVersionKey && checkBwcProblems()}, [checkBwcProblems, previousVersionKey])
+  useEffect(() => {
+    previousVersionKey && checkBwcProblems()
+  }, [checkBwcProblems, previousVersionKey])
 
   const { versionKey: previousVersion } = getSplittedVersionKey(previousVersionKey)
 
   return (
     <ListItem
       sx={{ display: 'flex', flexDirection: 'row', backgroundColor: '#F8F9FA', px: 2, py: 1 }}
-      secondaryAction={
-        isBwcChecking
-          ? <CircularProgress size={16}/>
-          : <BwcCheckStatus/>
-      }
+      secondaryAction={isBwcChecking ? <CircularProgress size={16} /> : <BwcCheckStatus />}
       disablePadding
     >
       <ListItemText
         primary="Backward Compatibility Status"
         secondary={
-          <Link
-            variant="subtitle1"
-            underline="none"
-            onClick={showBwcCheckDialog}
-          >
-            {!previousVersionKey ? 'No previous release version selected' : `Previous release version: ${previousVersion}`}
+          <Link variant="subtitle1" underline="none" onClick={showBwcCheckDialog}>
+            {!previousVersionKey
+              ? 'No previous release version selected'
+              : `Previous release version: ${previousVersion}`}
           </Link>
         }
         secondaryTypographyProps={{ noWrap: true }}
@@ -246,11 +245,7 @@ const BwcCheckStatus: FC = memo(() => {
   }
 
   return (
-    <StatusMarker
-      value={SUCCESS_STATUS_MARKER_VARIANT}
-      title="No backward compatibility problems"
-      placement="right"
-    />
+    <StatusMarker value={SUCCESS_STATUS_MARKER_VARIANT} title="No backward compatibility problems" placement="right" />
   )
 })
 
@@ -279,10 +274,7 @@ function useOnStartPublish(): [OnPublish, IsFetching] {
     showPublishProjectVersionDialog()
   }, [branch, getBranchConflicts, saveAvailable, navigateToProject, showPublishProjectVersionDialog])
 
-  return [
-    onPublish,
-    isFetching,
-  ]
+  return [onPublish, isFetching]
 }
 
 const calculateFileKeysHash = (fileKeys: Key[]): string => {

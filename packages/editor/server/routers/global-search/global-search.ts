@@ -21,15 +21,14 @@ import type { PackageSearchResultDto } from '../../mocks/global-search/types'
 
 export function performSearch(router: Router): void {
   router.post('/', (req, res) => {
-
     const { searchString, packageIds, searchLevel } = req.body
 
     if (searchString && searchLevel) {
       const data = PROJECTS.projects
-        .filter(project => project.name.toLowerCase().includes(searchString.toLowerCase()))
-        .filter(project => (packageIds?.[0] ? project.projectId === packageIds[0] : true))
+        .filter((project) => project.name.toLowerCase().includes(searchString.toLowerCase()))
+        .filter((project) => (packageIds?.[0] ? project.projectId === packageIds[0] : true))
 
-      const packages: PackageSearchResultDto[] = data.map(value => ({
+      const packages: PackageSearchResultDto[] = data.map((value) => ({
         packageId: value.projectId,
         name: value.name,
         parentPackages: [],

@@ -25,7 +25,7 @@ export type TableCellSkeletonProps = {
 export const TableCellSkeleton: FC<TableCellSkeletonProps> = memo<TableCellSkeletonProps>(({ maxWidth }) => {
   return (
     <TableCell>
-      <Skeleton variant="rectangular" width={'80%'} sx={{ maxWidth: maxWidth }}/>
+      <Skeleton variant="rectangular" width={'80%'} sx={{ maxWidth: maxWidth }} />
     </TableCell>
   )
 })

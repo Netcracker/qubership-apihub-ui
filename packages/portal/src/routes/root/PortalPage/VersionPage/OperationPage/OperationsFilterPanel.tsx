@@ -45,15 +45,18 @@ export const OperationsFilterPanel: FC<OperationsFilterPanelProps> = (props) => 
 
   const [expanded, setExpanded] = useState<boolean>(!!documentSlug || !!refKey)
 
-  const onDocumentSelect = useCallback((newDocument: Document | null) => {
-    setDocument(newDocument?.slug)
-  }, [setDocument])
+  const onDocumentSelect = useCallback(
+    (newDocument: Document | null) => {
+      setDocument(newDocument?.slug)
+    },
+    [setDocument],
+  )
 
   return (
     <Accordion expanded={expanded} onChange={() => setExpanded(!expanded)}>
       <AccordionSummary
         sx={ACCORDION_SUMMARY_STYLE}
-        expandIcon={<ExpandMoreIcon/>}
+        expandIcon={<ExpandMoreIcon />}
         data-testid="FiltersAccordionButton"
       >
         <Typography width="100%" noWrap variant="button">

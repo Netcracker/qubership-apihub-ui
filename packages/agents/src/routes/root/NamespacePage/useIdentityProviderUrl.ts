@@ -37,18 +37,12 @@ export function useNamespaceIdentityProviderUrl(options: {
     select: idpToString,
   })
 
-  return [
-    data ?? null,
-    isLoading,
-  ]
+  return [data ?? null, isLoading]
 }
 
 const IDENTITY_PROVIDER_URL_QUERY_KEY = 'identity-provider-url-query-key'
 
-async function fetchIdpUrl(
-  agentKey: string,
-  namespaceKey: string,
-): Promise<IdpUrlDto> {
+async function fetchIdpUrl(agentKey: string, namespaceKey: string): Promise<IdpUrlDto> {
   const agentId = encodeURIComponent(agentKey)
   const namespaceId = encodeURIComponent(namespaceKey)
 

@@ -27,11 +27,7 @@ import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-share
 
 const PACKAGE_VERSION_CONFIG_QUERY_KEY = 'package-version-config-query-key'
 
-export function usePackageVersionConfig(
-  packageKey?: Key,
-  versionKey?: Key,
-): [PackageVersionConfig | null, IsLoading] {
-
+export function usePackageVersionConfig(packageKey?: Key, versionKey?: Key): [PackageVersionConfig | null, IsLoading] {
   const { fullVersion, isInitialLoading: isFullVersionLoading } = useVersionWithRevision(versionKey, packageKey)
   const { data, isInitialLoading } = useQuery<PackageVersionConfigDto, Error, PackageVersionConfig>({
     queryKey: [PACKAGE_VERSION_CONFIG_QUERY_KEY, packageKey, fullVersion],
@@ -43,11 +39,7 @@ export function usePackageVersionConfig(
   return [data ?? null, isInitialLoading || isFullVersionLoading]
 }
 
-async function getConfig(
-  packageKey: Key,
-  versionKey: Key,
-  signal?: AbortSignal,
-): Promise<PackageVersionConfigDto> {
+async function getConfig(packageKey: Key, versionKey: Key, signal?: AbortSignal): Promise<PackageVersionConfigDto> {
   const packageId = encodeURIComponent(packageKey)
   const versionId = encodeURIComponent(versionKey)
 

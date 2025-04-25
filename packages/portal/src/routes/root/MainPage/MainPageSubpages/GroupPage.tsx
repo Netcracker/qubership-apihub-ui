@@ -59,7 +59,7 @@ export const GroupPage: FC = memo(() => {
   const title = useMemo(
     () => (
       <Box>
-        <PackageBreadcrumbs packageObject={groupPackage}/>
+        <PackageBreadcrumbs packageObject={groupPackage} />
         <Box display="flex" gap={1}>
           <IconButton
             sx={{ padding: 0 }}
@@ -68,9 +68,9 @@ export const GroupPage: FC = memo(() => {
             }}
             data-testid="FavoriteButton"
           >
-            {isBoolean(isFavorite) && <FavoriteIconButton isFavorite={isFavorite}/>}
+            {isBoolean(isFavorite) && <FavoriteIconButton isFavorite={isFavorite} />}
           </IconButton>
-          <ToolbarTitle value={groupPackage?.name}/>
+          <ToolbarTitle value={groupPackage?.name} />
         </Box>
       </Box>
     ),
@@ -79,10 +79,7 @@ export const GroupPage: FC = memo(() => {
 
   return (
     <Box display="flex" width="100%">
-      <MainPageCard
-        rootPackageKey={groupKey}
-        title={title}
-      />
+      <MainPageCard rootPackageKey={groupKey} title={title} />
       <ActivityHistoryCard
         useActivity={useActivity}
         types={types}

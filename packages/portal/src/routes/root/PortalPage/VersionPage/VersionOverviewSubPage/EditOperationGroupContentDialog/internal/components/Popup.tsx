@@ -64,13 +64,7 @@ export const Popup: FC<PopupProps> = (props) => {
   const {
     packageKey,
     versionKey,
-    groupInfo: {
-      apiType,
-      groupName,
-      description,
-      operationsCount,
-      template,
-    },
+    groupInfo: { apiType, groupName, description, operationsCount, template },
   } = groupContext
 
   useEvent(REF_PACKAGE_SELECTED, (e) => {
@@ -112,25 +106,41 @@ export const Popup: FC<PopupProps> = (props) => {
   })
 
   const [packageKind] = usePackageKind()
-  const packageContext: PackageContext = useMemo(() => ({
-    isDashboard: packageKind === DASHBOARD_KIND,
-    packageKey: packageKey,
-    version: versionKey,
-    refPackageKey: selectedRefPackage?.key,
-    refVersion: selectedRefPackage?.version,
-  }), [packageKey, packageKind, selectedRefPackage?.key, selectedRefPackage?.version, versionKey])
+  const packageContext: PackageContext = useMemo(
+    () => ({
+      isDashboard: packageKind === DASHBOARD_KIND,
+      packageKey: packageKey,
+      version: versionKey,
+      refPackageKey: selectedRefPackage?.key,
+      refVersion: selectedRefPackage?.version,
+    }),
+    [packageKey, packageKind, selectedRefPackage?.key, selectedRefPackage?.version, versionKey],
+  )
 
-  const pagedOperationsHookOptions = useMemo(() => ({
-    apiType: apiType,
-    packageKey: packageContext.packageKey,
-    versionKey: packageContext.version,
-    refPackageKey: packageContext.refPackageKey,
-    kind: selectedApiKind,
-    apiAudience: selectedApiAudience,
-    tag: selectedTag,
-    textFilter: operationTextFilter,
-    excludedGroupName: groupName,
-  }), [apiType, groupName, operationTextFilter, packageContext.packageKey, packageContext.refPackageKey, packageContext.version, selectedApiAudience, selectedApiKind, selectedTag])
+  const pagedOperationsHookOptions = useMemo(
+    () => ({
+      apiType: apiType,
+      packageKey: packageContext.packageKey,
+      versionKey: packageContext.version,
+      refPackageKey: packageContext.refPackageKey,
+      kind: selectedApiKind,
+      apiAudience: selectedApiAudience,
+      tag: selectedTag,
+      textFilter: operationTextFilter,
+      excludedGroupName: groupName,
+    }),
+    [
+      apiType,
+      groupName,
+      operationTextFilter,
+      packageContext.packageKey,
+      packageContext.refPackageKey,
+      packageContext.version,
+      selectedApiAudience,
+      selectedApiKind,
+      selectedTag,
+    ],
+  )
 
   const {
     pagedData: pagedOperations,
@@ -217,7 +227,7 @@ export const Popup: FC<PopupProps> = (props) => {
 
   const onToggleOperationCheckbox = useCallback((value: Operation) => {
     setAllCheckedOperations((allCheckedOperations) => {
-      const currentIndex = allCheckedOperations.findIndex(checkedOperation => value === checkedOperation)
+      const currentIndex = allCheckedOperations.findIndex((checkedOperation) => value === checkedOperation)
       const newCheckedOperations = [...allCheckedOperations]
 
       if (currentIndex === -1) {
@@ -233,7 +243,9 @@ export const Popup: FC<PopupProps> = (props) => {
     setAllCheckedOperations((allCheckedOperations) => {
       let newAllCheckedOperations: Operations
       if (isNotEmpty(checkedOperations) && checkedOperations.length === operations.length) {
-        newAllCheckedOperations = allCheckedOperations.filter(operation => !deepIncludes(checkedOperations, operation))
+        newAllCheckedOperations = allCheckedOperations.filter(
+          (operation) => !deepIncludes(checkedOperations, operation),
+        )
       } else {
         newAllCheckedOperations = Array.from(new Set([...allCheckedOperations, ...operations]))
       }
@@ -256,15 +268,9 @@ export const Popup: FC<PopupProps> = (props) => {
     setOpen(false)
   }, [invalidatePagedGroupOperations, setOpen])
 
-  const {
-    mutate: updateOperationGroup,
-    isLoading: operationGroupUpdating,
-  } = useUpdateOperationGroup(
-    groupContext,
-    {
-      onSuccess: onClose,
-    },
-  )
+  const { mutate: updateOperationGroup, isLoading: operationGroupUpdating } = useUpdateOperationGroup(groupContext, {
+    onSuccess: onClose,
+  })
 
   const dialogTitle = `Edit ${groupName} Group of ${API_TYPE_TITLE_MAP[apiType!]} Operations`
   const operationsTitle = `${API_TYPE_TITLE_MAP[apiType!]} Operations`
@@ -272,12 +278,7 @@ export const Popup: FC<PopupProps> = (props) => {
   const allOperationsMovedToTheRight = operationsNextPageFetching && isEmpty(filteredOperations)
 
   return (
-    <Dialog
-      fullWidth
-      maxWidth={false}
-      open={open}
-      onClose={onClose}
-    >
+    <Dialog fullWidth maxWidth={false} open={open} onClose={onClose}>
       <DialogTitle
         sx={{
           '&.MuiDialogTitle-root': {
@@ -307,7 +308,8 @@ export const Popup: FC<PopupProps> = (props) => {
               disabled={groupOperationsLoading || groupOperationsFetching || groupOperationsNextPageFetching}
               loading={operationGroupUpdating}
               onClick={() => {
-                const updatingOperations = filteredInitialGroupOperations && toUpdatingOperations(filteredInitialGroupOperations)
+                const updatingOperations =
+                  filteredInitialGroupOperations && toUpdatingOperations(filteredInitialGroupOperations)
                 if (updatingOperations) {
                   updateOperationGroup({
                     groupName: groupName,
@@ -321,11 +323,7 @@ export const Popup: FC<PopupProps> = (props) => {
             >
               Save
             </LoadingButton>
-            <Button
-              variant="outlined"
-              onClick={onClose}
-              data-testid="CancelButton"
-            >
+            <Button variant="outlined" onClick={onClose} data-testid="CancelButton">
               Cancel
             </Button>
           </Box>
@@ -345,7 +343,7 @@ export const Popup: FC<PopupProps> = (props) => {
         }}
       >
         <PopupLayout
-          navigation={(
+          navigation={
             <Sidebar
               apiType={apiType as ApiType}
               selectedRefPackage={selectedRefPackage}
@@ -353,9 +351,9 @@ export const Popup: FC<PopupProps> = (props) => {
               selectedApiAudience={selectedApiAudience}
               selectedTag={selectedTag}
             />
-          )}
+          }
           leftHeader={operationsTitle}
-          leftBody={(
+          leftBody={
             <OperationList
               packageContext={packageContext}
               operations={filteredOperations}
@@ -367,7 +365,7 @@ export const Popup: FC<PopupProps> = (props) => {
               onToggleOperationCheckbox={onToggleOperationCheckbox}
               onToggleAllOperationsCheckbox={onToggleAllOperationsCheckbox}
             />
-          )}
+          }
           exchangerParameters={{
             toLeftArrow: {
               disabled: isEmpty(checkedGroupOperations),
@@ -379,7 +377,7 @@ export const Popup: FC<PopupProps> = (props) => {
                 : undefined,
             },
           }}
-          rightHeader={(
+          rightHeader={
             <TextWithOverflowTooltip
               sx={{
                 maxWidth: '100%',
@@ -389,8 +387,8 @@ export const Popup: FC<PopupProps> = (props) => {
             >
               {groupOperationsTitle}
             </TextWithOverflowTooltip>
-          )}
-          rightBody={(
+          }
+          rightBody={
             <OperationList
               packageContext={packageContext}
               operations={filteredGroupOperations}
@@ -399,7 +397,7 @@ export const Popup: FC<PopupProps> = (props) => {
               onToggleOperationCheckbox={onToggleOperationCheckbox}
               onToggleAllOperationsCheckbox={onToggleAllOperationsCheckbox}
             />
-          )}
+          }
           rightCount={groupOperationsActualCount}
         />
       </DialogContent>

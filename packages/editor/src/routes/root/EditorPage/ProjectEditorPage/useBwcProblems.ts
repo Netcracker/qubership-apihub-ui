@@ -29,20 +29,21 @@ import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { IsFetched, IsFetching, RefetchQuery } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { getAuthorization } from '@netcracker/qubership-apihub-ui-shared/utils/storages'
 import { groupBy } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import { calculateAction, EMPTY_CHANGE_SUMMARY } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
+import {
+  calculateAction,
+  EMPTY_CHANGE_SUMMARY,
+} from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
 import type { ChangesSummary } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
 import { getMajorSeverity } from '@netcracker/qubership-apihub-ui-shared/utils/change-severities'
 import type { FileProblem, FileProblemType } from '@apihub/entities/file-problems'
-import {
-  ERROR_FILE_PROBLEM_TYPE,
-  INFO_FILE_PROBLEM_TYPE,
-  WARN_FILE_PROBLEM_TYPE,
-} from '@apihub/entities/file-problems'
+import { ERROR_FILE_PROBLEM_TYPE, INFO_FILE_PROBLEM_TYPE, WARN_FILE_PROBLEM_TYPE } from '@apihub/entities/file-problems'
 import { calculateTotalChangeSummary } from '@netcracker/qubership-apihub-api-processor'
 
 const BWC_PROBLEMS_QUERY_KEY = 'bwc-problems-query-key'
 
-export function useBwcProblems(previousVersionKey?: Key): [BwcProblems, IsFetched, IsFetching, RefetchQuery<BwcProblems, Error>] {
+export function useBwcProblems(
+  previousVersionKey?: Key,
+): [BwcProblems, IsFetched, IsFetching, RefetchQuery<BwcProblems, Error>] {
   const { projectId } = useParams()
   const [branchName] = useBranchSearchParam()
   const [branchConfig] = useBranchConfig()
@@ -54,16 +55,17 @@ export function useBwcProblems(previousVersionKey?: Key): [BwcProblems, IsFetche
 
   const { data, isFetched, isFetching, refetch } = useQuery<BwcProblems, Error, BwcProblems>({
     queryKey: [BWC_PROBLEMS_QUERY_KEY, packageKey, branchName, previousVersionKey!],
-    queryFn: () => getBwcProblems({
-      packageKey: packageKey!,
-      branchName: branchName!,
-      versionKey: VERSION_CANDIDATE,
-      previousPackageKey: packageKey!,
-      previousVersionKey: previousVersionKey!,
-      authorization: getAuthorization(),
-      files: branchConfig?.files ?? [],
-      sources: branchFiles,
-    }),
+    queryFn: () =>
+      getBwcProblems({
+        packageKey: packageKey!,
+        branchName: branchName!,
+        versionKey: VERSION_CANDIDATE,
+        previousPackageKey: packageKey!,
+        previousVersionKey: previousVersionKey!,
+        authorization: getAuthorization(),
+        files: branchConfig?.files ?? [],
+        sources: branchFiles,
+      }),
     enabled: false,
     onSuccess: (bwcFileProblems) => {
       for (const [fileKey, bwcProblems] of bwcFileProblems) {
@@ -75,33 +77,27 @@ export function useBwcProblems(previousVersionKey?: Key): [BwcProblems, IsFetche
   return [data ?? new Map(), isFetched, isFetching, refetch]
 }
 
-async function getBwcProblems(
-  options: BuilderOptions,
-): Promise<BwcProblems> {
+async function getBwcProblems(options: BuilderOptions): Promise<BwcProblems> {
   const bwcReport = await PackageVersionBuilder.checkBwc(options)
 
   const bwcProblems = groupBy(bwcReport, 'comparisonFileId')
   return new Map(
-    Object.entries(bwcProblems)
-      .map(
-        ([fileKey, comparisonsWithBwcProblems]) => [
-          fileKey,
-          comparisonsWithBwcProblems.map(
-            comparison => {
-              const action = calculateAction(comparison.version, comparison.previousVersion)
-              const changesSummary: ChangesSummary[] =
-                comparison.operationTypes.map(operationType => operationType.changesSummary ?? EMPTY_CHANGE_SUMMARY)
-              const severity = getMajorSeverity(calculateTotalChangeSummary(changesSummary))
+    Object.entries(bwcProblems).map(([fileKey, comparisonsWithBwcProblems]) => [
+      fileKey,
+      comparisonsWithBwcProblems.map((comparison) => {
+        const action = calculateAction(comparison.version, comparison.previousVersion)
+        const changesSummary: ChangesSummary[] = comparison.operationTypes.map(
+          (operationType) => operationType.changesSummary ?? EMPTY_CHANGE_SUMMARY,
+        )
+        const severity = getMajorSeverity(calculateTotalChangeSummary(changesSummary))
 
-              return {
-                type: toFileProblemType(severity ?? ''), // TODO: Need to check
-                filePath: fileKey,
-                text: action,
-              }
-            },
-          ),
-        ],
-      ),
+        return {
+          type: toFileProblemType(severity ?? ''), // TODO: Need to check
+          filePath: fileKey,
+          text: action,
+        }
+      }),
+    ]),
   )
 }
 

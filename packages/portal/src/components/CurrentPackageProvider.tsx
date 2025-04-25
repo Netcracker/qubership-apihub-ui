@@ -29,9 +29,5 @@ export function useCurrentPackage(): Package | null {
 }
 
 export const CurrentPackageProvider: FC<CurrentPackageProviderProps> = ({ children, value }) => {
-  return (
-    <CurrentPackageContext.Provider value={value}>
-      {children}
-    </CurrentPackageContext.Provider>
-  )
+  return <CurrentPackageContext.Provider value={value}>{children}</CurrentPackageContext.Provider>
 }

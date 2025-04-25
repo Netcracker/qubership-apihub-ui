@@ -27,33 +27,32 @@ export type SidebarPanelProps = {
 }
 
 // First Order Component //
-export const SidebarPanel: FC<SidebarPanelProps> = memo<SidebarPanelProps>(({
-  header,
-  body,
-  withDivider,
-  headerFullWidth,
-}) => {
-  const headerStyles = useMemo(
-    () => (!headerFullWidth ? { display: 'flex', gap: 2, marginX: 2, marginY: 2 } : {}),
-    [headerFullWidth],
-  )
+export const SidebarPanel: FC<SidebarPanelProps> = memo<SidebarPanelProps>(
+  ({ header, body, withDivider, headerFullWidth }) => {
+    const headerStyles = useMemo(
+      () => (!headerFullWidth ? { display: 'flex', gap: 2, marginX: 2, marginY: 2 } : {}),
+      [headerFullWidth],
+    )
 
-  return (
-    <Box display="flex" height="100%" width="100%" flexDirection="column" overflow="hidden" data-testid="SidebarPanel">
-      {header && (
-        <>
-          <Box
-            alignItems="center"
-            justifyContent="space-between"
-            width="100%"
-            sx={headerStyles}
-          >
-            {header}
-          </Box>
-          {withDivider && <Divider orientation="horizontal" variant="fullWidth"/>}
-        </>
-      )}
-      {body}
-    </Box>
-  )
-})
+    return (
+      <Box
+        display="flex"
+        height="100%"
+        width="100%"
+        flexDirection="column"
+        overflow="hidden"
+        data-testid="SidebarPanel"
+      >
+        {header && (
+          <>
+            <Box alignItems="center" justifyContent="space-between" width="100%" sx={headerStyles}>
+              {header}
+            </Box>
+            {withDivider && <Divider orientation="horizontal" variant="fullWidth" />}
+          </>
+        )}
+        {body}
+      </Box>
+    )
+  },
+)

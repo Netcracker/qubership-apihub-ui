@@ -25,7 +25,7 @@ export function useUpdateBranchEditingMode(): [UpdateBranchEditingMode, IsLoadin
   const [selectedBranch] = useBranchSearchParam()
 
   const { mutate, isLoading } = useMutation<void, Error, boolean>({
-    mutationFn: mode => updateBranchEditingMode(projectId!, selectedBranch!, mode),
+    mutationFn: (mode) => updateBranchEditingMode(projectId!, selectedBranch!, mode),
   })
 
   return [mutate, isLoading]

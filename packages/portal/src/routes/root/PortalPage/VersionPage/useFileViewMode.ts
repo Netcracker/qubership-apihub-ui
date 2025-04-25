@@ -30,17 +30,20 @@ export function useFileViewMode(): [string | undefined, SetFileViewModeParam] {
 
   return [
     mode ?? YAML_FILE_VIEW_MODE,
-    useCallback(value => {
-      if (value === YAML_FILE_VIEW_MODE) {
-        searchParams.delete(FILE_VIEW_MODE_PARAM_KEY)
-      } else {
-        searchParams.set(FILE_VIEW_MODE_PARAM_KEY, value ?? '')
-      }
-      navigate({
-        search: `${searchParams}`,
-        hash: hashParam,
-      })
-    }, [hashParam, navigate, searchParams]),
+    useCallback(
+      (value) => {
+        if (value === YAML_FILE_VIEW_MODE) {
+          searchParams.delete(FILE_VIEW_MODE_PARAM_KEY)
+        } else {
+          searchParams.set(FILE_VIEW_MODE_PARAM_KEY, value ?? '')
+        }
+        navigate({
+          search: `${searchParams}`,
+          hash: hashParam,
+        })
+      },
+      [hashParam, navigate, searchParams],
+    ),
   ]
 }
 

@@ -41,9 +41,5 @@ export const AuthPage: FC = memo(() => {
     }
   }, [auth, systemConfiguration])
 
-  return (
-    <Box>
-      Authentication is in progress...
-    </Box>
-  )
+  return <Box>Authentication is in progress...</Box>
 })

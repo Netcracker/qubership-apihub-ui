@@ -26,12 +26,7 @@ import { isNotEmpty } from '../../utils/arrays'
 import type { Spec } from '../../entities/specs'
 
 export const SpecificationDialog: FC = memo(() => {
-  return (
-    <PopupDelegate
-      type={SHOW_SPECIFICATION_DIALOG}
-      render={props => <SpecificationPopup {...props}/>}
-    />
-  )
+  return <PopupDelegate type={SHOW_SPECIFICATION_DIALOG} render={(props) => <SpecificationPopup {...props} />} />
 })
 
 export const SHOW_SPECIFICATION_DIALOG = 'show-specification-dialog'
@@ -47,52 +42,28 @@ export type SpecificationDialogDetail = {
 }
 
 export const SpecificationPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, detail }) => {
-  const {
-    spec,
-    viewer,
-    viewModes,
-    viewMode,
-    setViewMode,
-    disableSpecViewToggler,
-    headerComponent,
-  } = detail as SpecificationDialogDetail
+  const { spec, viewer, viewModes, viewMode, setViewMode, disableSpecViewToggler, headerComponent } =
+    detail as SpecificationDialogDetail
 
   const onClose = useCallback(() => {
     setOpen(false)
   }, [setOpen])
 
-  const defaultHeaderComponent = useMemo(() => (
-      <CardHeader
-        sx={{ p: 0 }}
-        title={spec?.name}
-        subheader={spec?.serviceKey}
-      />
-    ),
+  const defaultHeaderComponent = useMemo(
+    () => <CardHeader sx={{ p: 0 }} title={spec?.name} subheader={spec?.serviceKey} />,
     [spec?.name, spec?.serviceKey],
   )
 
   return (
-    <Dialog
-      maxWidth={false}
-      fullWidth
-      open={open}
-      onClose={onClose}
-    >
+    <Dialog maxWidth={false} fullWidth open={open} onClose={onClose}>
       <DialogTitle display="flex">
         {headerComponent ?? defaultHeaderComponent}
         <Box display="flex" marginLeft="auto" alignItems="flex-start" gap={3}>
           {!disableSpecViewToggler && isNotEmpty(viewModes) && (
-            <SpecViewToggler
-              mode={viewMode}
-              modes={viewModes!}
-              onChange={setViewMode}
-            />
+            <SpecViewToggler mode={viewMode} modes={viewModes!} onChange={setViewMode} />
           )}
-          <IconButton
-            sx={{ color: '#353C4E' }}
-            onClick={onClose}
-          >
-            <CloseOutlinedIcon/>
+          <IconButton sx={{ color: '#353C4E' }} onClick={onClose}>
+            <CloseOutlinedIcon />
           </IconButton>
         </Box>
       </DialogTitle>
@@ -105,9 +76,7 @@ export const SpecificationPopup: FC<PopupProps> = memo<PopupProps>(({ open, setO
           height: '100vh',
         }}
       >
-        <Box width="100%">
-          {viewer}
-        </Box>
+        <Box width="100%">{viewer}</Box>
       </DialogContent>
     </Dialog>
   )

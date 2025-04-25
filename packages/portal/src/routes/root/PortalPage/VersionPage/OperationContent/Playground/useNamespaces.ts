@@ -31,10 +31,7 @@ export function useNamespaces(agentKey: Key): [Namespaces, IsLoading] {
     enabled: !!agentKey,
   })
 
-  return [
-    data ?? EMPTY_NAMESPACES,
-    isLoading,
-  ]
+  return [data ?? EMPTY_NAMESPACES, isLoading]
 }
 
 export async function getNamespaces(agentKey: Key): Promise<NamespacesDto> {

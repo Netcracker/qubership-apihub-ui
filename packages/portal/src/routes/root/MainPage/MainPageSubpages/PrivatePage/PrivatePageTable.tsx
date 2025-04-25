@@ -69,9 +69,9 @@ export const PrivatePageTable: FC<PrivatePageTable> = memo(({ workspaceId, isIdL
             !isFavorite ? favorPackage(workspaceId) : disfavorPackage(workspaceId)
           }}
         >
-          {isBoolean(isFavorite) && <FavoriteIconButton isFavorite={isFavorite}/>}
+          {isBoolean(isFavorite) && <FavoriteIconButton isFavorite={isFavorite} />}
         </IconButton>
-        <ToolbarTitle value={workspace?.name}/>
+        <ToolbarTitle value={workspace?.name} />
       </Box>
     ),
     [disfavorPackage, favorPackage, isFavorite, workspace?.name, workspaceId],
@@ -79,16 +79,10 @@ export const PrivatePageTable: FC<PrivatePageTable> = memo(({ workspaceId, isIdL
 
   if (isIdLoading) {
     return (
-      <Placeholder
-        invisible={isIdLoading}
-        area={CONTENT_PLACEHOLDER_AREA}
-        message={''}
-      >
+      <Placeholder invisible={isIdLoading} area={CONTENT_PLACEHOLDER_AREA} message={''}>
         <TableContainer>
           <Table>
-            <TableBody>
-              {isIdLoading && <TableSkeleton/>}
-            </TableBody>
+            <TableBody>{isIdLoading && <TableSkeleton />}</TableBody>
           </Table>
         </TableContainer>
       </Placeholder>
@@ -97,11 +91,7 @@ export const PrivatePageTable: FC<PrivatePageTable> = memo(({ workspaceId, isIdL
 
   return (
     <Box display="flex" width="100%">
-      <MainPageCard
-        rootPackageKey={workspaceId}
-        title={title}
-        pageKey={workspaceId}
-      />
+      <MainPageCard rootPackageKey={workspaceId} title={title} pageKey={workspaceId} />
       <ActivityHistoryCard
         useActivity={useActivity}
         types={types}
@@ -111,6 +101,3 @@ export const PrivatePageTable: FC<PrivatePageTable> = memo(({ workspaceId, isIdL
     </Box>
   )
 })
-
-
-

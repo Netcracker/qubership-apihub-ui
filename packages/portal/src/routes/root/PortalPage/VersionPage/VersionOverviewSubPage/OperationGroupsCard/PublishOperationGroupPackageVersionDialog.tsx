@@ -21,10 +21,18 @@ import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components
 import type { PublishOperationGroupPackageVersionDetail } from '@apihub/routes/EventBusProvider'
 import { SHOW_PUBLISH_OPERATION_GROUP_PACKAGE_VERSION_DIALOG } from '@apihub/routes/EventBusProvider'
 import type { VersionFormData } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
-import { replaceEmptyPreviousVersion, usePreviousVersionOptions, VersionDialogForm } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
+import {
+  replaceEmptyPreviousVersion,
+  usePreviousVersionOptions,
+  VersionDialogForm,
+} from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
 import { useForm } from 'react-hook-form'
 import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import { DRAFT_VERSION_STATUS, NO_PREVIOUS_RELEASE_VERSION_OPTION, RELEASE_VERSION_STATUS } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import {
+  DRAFT_VERSION_STATUS,
+  NO_PREVIOUS_RELEASE_VERSION_OPTION,
+  RELEASE_VERSION_STATUS,
+} from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 import type { Package } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { PACKAGE_KIND, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { usePackages } from '@apihub/routes/root/usePackages'
@@ -41,7 +49,7 @@ export const PublishOperationGroupPackageVersionDialog: FC = memo(() => {
   return (
     <PopupDelegate
       type={SHOW_PUBLISH_OPERATION_GROUP_PACKAGE_VERSION_DIALOG}
-      render={props => <PublishOperationGroupPackageVersionPopup {...props} />}
+      render={(props) => <PublishOperationGroupPackageVersionPopup {...props} />}
     />
   )
 })
@@ -95,7 +103,10 @@ const PublishOperationGroupPackageVersionPopup: FC<PopupProps> = memo<PopupProps
   const onVersionsFilter = useCallback((value: Key) => setVersionsFilter(value), [setVersionsFilter])
 
   const targetPackagePermissions = useMemo(() => targetPackage?.permissions ?? [], [targetPackage?.permissions])
-  const targetReleaseVersionPattern = useMemo(() => targetPackage?.releaseVersionPattern, [targetPackage?.releaseVersionPattern])
+  const targetReleaseVersionPattern = useMemo(
+    () => targetPackage?.releaseVersionPattern,
+    [targetPackage?.releaseVersionPattern],
+  )
 
   const defaultValues = useMemo(() => {
     return {
@@ -109,29 +120,46 @@ const PublishOperationGroupPackageVersionPopup: FC<PopupProps> = memo<PopupProps
 
   const { handleSubmit, control, reset, setValue, formState } = useForm<VersionFormData>({ defaultValues })
 
-  const { publishId, publishOperationGroupPackageVersion, isLoading: isPublishStarting, isSuccess: isPublishStartedSuccessfully } = usePublishOperationGroupPackageVersion()
-  const [isPublishing, isPublished] = useOperationGroupPublicationStatuses(targetPackage?.key ?? '', targetVersion, group.groupName, publishId ?? '')
+  const {
+    publishId,
+    publishOperationGroupPackageVersion,
+    isLoading: isPublishStarting,
+    isSuccess: isPublishStartedSuccessfully,
+  } = usePublishOperationGroupPackageVersion()
+  const [isPublishing, isPublished] = useOperationGroupPublicationStatuses(
+    targetPackage?.key ?? '',
+    targetVersion,
+    group.groupName,
+    publishId ?? '',
+  )
 
-  useEffect(() => { isPublishStartedSuccessfully && isPublished && setOpen(false) }, [isPublishStartedSuccessfully, isPublished, setOpen])
-  useEffect(() => { reset(defaultValues) }, [defaultValues, reset])
+  useEffect(() => {
+    isPublishStartedSuccessfully && isPublished && setOpen(false)
+  }, [isPublishStartedSuccessfully, isPublished, setOpen])
+  useEffect(() => {
+    reset(defaultValues)
+  }, [defaultValues, reset])
 
-  const onPublish = useCallback(async (data: PublishInfo): Promise<void> => {
-    const previousVersion = replaceEmptyPreviousVersion(data.previousVersion)
-    setTargetVersion(data.version)
-    publishOperationGroupPackageVersion({
-      packageKey: currentPackage?.key ?? '',
-      versionKey: currentVersionId!,
-      groupName: group.groupName,
-      apiType: REST_API_TYPE,
-      value: {
-        targetPackageKey: data.package!.key,
-        targetVersionKey: data.version,
-        status: data.status,
-        previousVersion: previousVersion,
-        versionLabels: data.labels,
-      },
-    })
-  }, [currentPackage?.key, currentVersionId, group.groupName, publishOperationGroupPackageVersion])
+  const onPublish = useCallback(
+    async (data: PublishInfo): Promise<void> => {
+      const previousVersion = replaceEmptyPreviousVersion(data.previousVersion)
+      setTargetVersion(data.version)
+      publishOperationGroupPackageVersion({
+        packageKey: currentPackage?.key ?? '',
+        versionKey: currentVersionId!,
+        groupName: group.groupName,
+        apiType: REST_API_TYPE,
+        value: {
+          targetPackageKey: data.package!.key,
+          targetVersionKey: data.version,
+          status: data.status,
+          previousVersion: previousVersion,
+          versionLabels: data.labels,
+        },
+      })
+    },
+    [currentPackage?.key, currentVersionId, group.groupName, publishOperationGroupPackageVersion],
+  )
 
   return (
     <VersionDialogForm
@@ -142,29 +170,23 @@ const PublishOperationGroupPackageVersionPopup: FC<PopupProps> = memo<PopupProps
       control={control}
       setValue={setValue}
       formState={formState}
-
       workspaces={workspaces}
       onSetWorkspace={onSetWorkspace}
       onWorkspacesFilter={onWorkspacesFilter}
       areWorkspacesLoading={areWorkspacesLoading}
-
       packages={packages}
       onPackagesFilter={onPackagesFilter}
       arePackagesLoading={arePackagesLoading}
       onSetTargetPackage={onSetTargetPackage}
-      packagesTitle='Package'
-
+      packagesTitle="Package"
       versions={versions}
       onVersionsFilter={onVersionsFilter}
       areVersionsLoading={areVersionsLoading}
       getVersionLabels={getVersionLabels}
       previousVersions={targetVersionsPreviousVersionOptions}
-
       packagePermissions={targetPackagePermissions}
       releaseVersionPattern={targetReleaseVersionPattern}
-
       isPublishing={isPublishStarting || isPublishing}
-
       hideDescriptorField
       hideDescriptorVersionField
       hideSaveMessageField

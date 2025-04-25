@@ -28,8 +28,8 @@ const preview: Preview = {
     (Story) => (
       <MemoryRouter>
         <ThemeProvider theme={theme}>
-          <CssBaseline/>
-          <Story/>
+          <CssBaseline />
+          <Story />
         </ThemeProvider>
       </MemoryRouter>
     ),

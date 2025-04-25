@@ -33,7 +33,11 @@ import { READ_PERMISSION } from '@netcracker/qubership-apihub-ui-shared/entities
 import { isBoolean } from '@netcracker/qubership-apihub-ui-shared/utils/types'
 import { ToolbarTitle } from '@netcracker/qubership-apihub-ui-shared/components/ToolbarTitle'
 import { MainPageCard } from '@apihub/routes/root/MainPage/MainPageCard'
-import { CONTENT_PLACEHOLDER_AREA, NO_PERMISSION, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
+import {
+  CONTENT_PLACEHOLDER_AREA,
+  NO_PERMISSION,
+  Placeholder,
+} from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 
 export const WorkspacePage: FC = memo(() => {
   const { workspaceKey = '' } = useParams()
@@ -69,35 +73,28 @@ export const WorkspacePage: FC = memo(() => {
           }}
           data-testid="FavoriteButton"
         >
-          {isBoolean(isFavorite) && <FavoriteIconButton isFavorite={isFavorite}/>}
+          {isBoolean(isFavorite) && <FavoriteIconButton isFavorite={isFavorite} />}
         </IconButton>
-        <ToolbarTitle value={workspace?.name}/>
+        <ToolbarTitle value={workspace?.name} />
       </Box>
     ),
     [disfavorPackage, favorPackage, isFavorite, workspace?.name, workspaceKey],
   )
 
   if (!hasReedPermissionWorkspace && !isLoadingWorkspace) {
-    return <MainPageCard
-      title=""
-      hideSearchBar
-      hideViewSelector
-      content={
-        <Placeholder
-          invisible={false}
-          area={CONTENT_PLACEHOLDER_AREA}
-          message={NO_PERMISSION}
-        />
-      }
-    />
+    return (
+      <MainPageCard
+        title=""
+        hideSearchBar
+        hideViewSelector
+        content={<Placeholder invisible={false} area={CONTENT_PLACEHOLDER_AREA} message={NO_PERMISSION} />}
+      />
+    )
   }
 
   return (
     <Box display="flex" width="100%">
-      <MainPageCard
-        rootPackageKey={workspaceKey}
-        title={title}
-      />
+      <MainPageCard rootPackageKey={workspaceKey} title={title} />
       <ActivityHistoryCard
         useActivity={useActivity}
         types={types}

@@ -48,31 +48,27 @@ export const ChangesModeBody: FC = memo(() => {
   const extension = getFileExtension(selectedChange?.name ?? '')
 
   return (
-    <Placeholder
-      invisible={!!selectedChangeKey}
-      area={CONTENT_PLACEHOLDER_AREA}
-      message="No change to show"
-    >
+    <Placeholder invisible={!!selectedChangeKey} area={CONTENT_PLACEHOLDER_AREA} message="No change to show">
       <BodyCard
         header={`${selectedChange?.name} ${selectedConflictedBlobKey ? '(conflict)' : ''}`}
         subheader={`${selectedChange?.path} ${selectedChange?.oldPath ? `moved from ${selectedChange?.oldPath}` : ''}`}
         body={
-          isLoading
-            ? <LoadingIndicator/>
-            : before === after
-              ? (
-                <Alert severity="success">
-                  <AlertTitle>No Difference</AlertTitle>
-                  Files are equal
-                </Alert>
-              )
-              : <RawSpecDiffView
-                beforeValue={before}
-                afterValue={after}
-                selectedUri={specItemUri}
-                type={specType}
-                extension={extension}
-              />
+          isLoading ? (
+            <LoadingIndicator />
+          ) : before === after ? (
+            <Alert severity="success">
+              <AlertTitle>No Difference</AlertTitle>
+              Files are equal
+            </Alert>
+          ) : (
+            <RawSpecDiffView
+              beforeValue={before}
+              afterValue={after}
+              selectedUri={specItemUri}
+              type={specType}
+              extension={extension}
+            />
+          )
         }
       />
     </Placeholder>
@@ -88,43 +84,36 @@ function useDifferences(
 
   const configChangeSelected = useConfigChangeSelected()
 
-  const [beforeBranchGitConfig, isBeforeBranchGitConfigLoading] = useRawBranchConfig(
-    true,
-    configChangeSelected,
-  )
-  const [afterBranchGitConfig, isAfterBranchGitConfigLoading] = useRawBranchConfig(
-    false,
-    configChangeSelected,
-  )
+  const [beforeBranchGitConfig, isBeforeBranchGitConfigLoading] = useRawBranchConfig(true, configChangeSelected)
+  const [afterBranchGitConfig, isAfterBranchGitConfigLoading] = useRawBranchConfig(false, configChangeSelected)
 
   const selectedChange = changes.find(({ fileId }) => fileId === selectedChangeKey)
   const [beforeFileContent, isBeforeFileContentLoading] = useProjectFileContentByBlobId(
     selectedConflictedBlobKey ?? selectedChange?.blobId ?? NONE_COMMIT_KEY,
   )
-  const [afterFileContent, isAfterFileContentLoading] = useProjectFileContent(
-    selectedChangeKey ?? '',
-    DRAFT_COMMIT_KEY,
-  )
+  const [afterFileContent, isAfterFileContentLoading] = useProjectFileContent(selectedChangeKey ?? '', DRAFT_COMMIT_KEY)
 
   const afterSpecType = useSpecType(selectedChangeKey, afterFileContent)
 
   const beforeContent = beforeFileContent
     ? beforeFileContent
-    : selectedChange?.movedFrom ? afterFileContent ?? '' : ''
+    : selectedChange?.movedFrom
+      ? (afterFileContent ?? '')
+      : ''
 
   return configChangeSelected
     ? [
-      beforeBranchGitConfig,
-      afterBranchGitConfig,
-      isBeforeBranchGitConfigLoading || isAfterBranchGitConfigLoading,
-      isOpenApiSpecType(afterSpecType),
-    ]
+        beforeBranchGitConfig,
+        afterBranchGitConfig,
+        isBeforeBranchGitConfigLoading || isAfterBranchGitConfigLoading,
+        isOpenApiSpecType(afterSpecType),
+      ]
     : [
-      beforeContent,
-      afterFileContent ?? '',
-      isBeforeFileContentLoading || isAfterFileContentLoading,
-      isOpenApiSpecType(afterSpecType),
-    ]
+        beforeContent,
+        afterFileContent ?? '',
+        isBeforeFileContentLoading || isAfterFileContentLoading,
+        isOpenApiSpecType(afterSpecType),
+      ]
 }
 
 type IsCodeViewAvailable = boolean

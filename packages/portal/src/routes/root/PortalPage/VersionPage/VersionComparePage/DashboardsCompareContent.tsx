@@ -33,9 +33,7 @@ import { useIsPackageFromDashboard } from '../../useIsPackageFromDashboard'
 import { useNavigation } from '../../../../NavigationProvider'
 import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
 import { useEventBus } from '@apihub/routes/EventBusProvider'
-import {
-  useSeverityFiltersSearchParam,
-} from '@netcracker/qubership-apihub-ui-shared/hooks/change-severities/useSeverityFiltersSearchParam'
+import { useSeverityFiltersSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/change-severities/useSeverityFiltersSearchParam'
 import {
   API_TYPE_SEARCH_PARAM,
   FILTERS_SEARCH_PARAM,
@@ -74,13 +72,8 @@ export const DashboardsCompareContent: FC = memo(() => {
 
   const { isPackageFromDashboard, refPackageKey } = useIsPackageFromDashboard()
 
-  const {
-    originPackageKey,
-    originVersionKey,
-    changedPackageKey,
-    changedVersionKey,
-    apiType,
-  } = useVersionsComparisonGlobalParams()
+  const { originPackageKey, originVersionKey, changedPackageKey, changedVersionKey, apiType } =
+    useVersionsComparisonGlobalParams()
 
   const { showCompareVersionsDialog, showCompareRevisionsDialog } = useEventBus()
 
@@ -110,7 +103,9 @@ export const DashboardsCompareContent: FC = memo(() => {
   const handleSwap = useCallback(() => {
     const searchParams = {
       [VERSION_SEARCH_PARAM]: { value: changedVersionKey },
-      [PACKAGE_SEARCH_PARAM]: { value: originPackageKey !== changedPackageKey ? encodeURIComponent(changedPackageKey!) : '' },
+      [PACKAGE_SEARCH_PARAM]: {
+        value: originPackageKey !== changedPackageKey ? encodeURIComponent(changedPackageKey!) : '',
+      },
       [REF_SEARCH_PARAM]: { value: isPackageFromDashboard ? refPackageKey : undefined },
       [API_TYPE_SEARCH_PARAM]: { value: apiType },
       [FILTERS_SEARCH_PARAM]: { value: filters.join() },
@@ -121,12 +116,20 @@ export const DashboardsCompareContent: FC = memo(() => {
       versionKey: originVersionKey!,
       search: searchParams,
     })
-  }, [apiType, changedPackageKey, changedVersionKey, filters, isPackageFromDashboard, navigateToComparison, originPackageKey, originVersionKey, refPackageKey])
+  }, [
+    apiType,
+    changedPackageKey,
+    changedVersionKey,
+    filters,
+    isPackageFromDashboard,
+    navigateToComparison,
+    originPackageKey,
+    originVersionKey,
+    refPackageKey,
+  ])
 
   if (isLoading) {
-    return (
-      <LoadingIndicator/>
-    )
+    return <LoadingIndicator />
   }
 
   return (
@@ -140,7 +143,8 @@ export const DashboardsCompareContent: FC = memo(() => {
         invisible={isNotEmpty(filteredDashboardChanges)}
         area={CONTENT_PLACEHOLDER_AREA}
         message="No differences"
-        testId="NoDifferencesPlaceholder">
+        testId="NoDifferencesPlaceholder"
+      >
         <CardContent
           sx={{
             display: 'flex',
@@ -152,110 +156,120 @@ export const DashboardsCompareContent: FC = memo(() => {
         >
           {/*todo think about unification changes list */}
           <Box pt={2}>
-            {
-              filteredDashboardChanges.map(refChangesSummary => {
-                const {
-                  refKey,
-                  version,
-                  previousVersion,
-                  status,
-                  previousStatus,
-                  name: title,
-                  operationTypes,
-                  parentPackages = [],
-                  latestRevision,
-                } = refChangesSummary
+            {filteredDashboardChanges.map((refChangesSummary) => {
+              const {
+                refKey,
+                version,
+                previousVersion,
+                status,
+                previousStatus,
+                name: title,
+                operationTypes,
+                parentPackages = [],
+                latestRevision,
+              } = refChangesSummary
 
-                const changeSummary = calculateTotalChangeSummary(operationTypes.map(type => type.changesSummary ?? EMPTY_CHANGE_SUMMARY))
-                const path = parentPackages.join(' / ')
-                const currentAction = calculateAction(version, previousVersion)
-                const severity = getMajorSeverity(changeSummary)
-                const comparingSearchParams = optionalSearchParams({
-                  [PACKAGE_SEARCH_PARAM]: { value: changedPackageKey === originPackageKey ? '' : originPackageKey! },
-                  [VERSION_SEARCH_PARAM]: { value: originVersionKey! },
-                  [API_TYPE_SEARCH_PARAM]: { value: getDefaultApiType(operationTypes.map(type => type.apiType)) },
-                  [REF_SEARCH_PARAM]: { value: refKey },
-                })
+              const changeSummary = calculateTotalChangeSummary(
+                operationTypes.map((type) => type.changesSummary ?? EMPTY_CHANGE_SUMMARY),
+              )
+              const path = parentPackages.join(' / ')
+              const currentAction = calculateAction(version, previousVersion)
+              const severity = getMajorSeverity(changeSummary)
+              const comparingSearchParams = optionalSearchParams({
+                [PACKAGE_SEARCH_PARAM]: { value: changedPackageKey === originPackageKey ? '' : originPackageKey! },
+                [VERSION_SEARCH_PARAM]: { value: originVersionKey! },
+                [API_TYPE_SEARCH_PARAM]: { value: getDefaultApiType(operationTypes.map((type) => type.apiType)) },
+                [REF_SEARCH_PARAM]: { value: refKey },
+              })
 
-                return (
+              return (
+                <Grid
+                  key={crypto.randomUUID()}
+                  component={NavLink}
+                  container
+                  spacing={0}
+                  sx={{ textDecoration: 'none', color: '#353C4E', marginBottom: '8px', position: 'relative' }}
+                  to={{
+                    pathname: format(
+                      '/portal/packages/{}/{}/compare',
+                      encodeURIComponent(changedPackageKey!),
+                      encodeURIComponent(changedVersionKey!),
+                    ),
+                    search: `${comparingSearchParams}`,
+                  }}
+                  onClick={onPackageChangeClick}
+                  data-testid="ComparisonRow"
+                >
                   <Grid
-                    key={crypto.randomUUID()}
-                    component={NavLink}
-                    container
-                    spacing={0}
-                    sx={{ textDecoration: 'none', color: '#353C4E', marginBottom: '8px', position: 'relative' }}
-                    to={{
-                      pathname: format(
-                        '/portal/packages/{}/{}/compare',
-                        encodeURIComponent(changedPackageKey!),
-                        encodeURIComponent(changedVersionKey!),
-                      ),
-                      search: `${comparingSearchParams}`,
+                    item
+                    xs={6}
+                    sx={{
+                      borderRight: '1px solid #D5DCE3',
+                      background: ACTION_TYPE_COLOR_MAP[currentAction] ?? '#F2F3F5',
                     }}
-                    onClick={onPackageChangeClick}
-                    data-testid="ComparisonRow"
+                    data-testid="LeftComparisonSummary"
                   >
-                    <Grid
-                      item
-                      xs={6}
+                    <Box
                       sx={{
-                        borderRight: '1px solid #D5DCE3',
-                        background: ACTION_TYPE_COLOR_MAP[currentAction] ?? '#F2F3F5',
-                      }}
-                      data-testid="LeftComparisonSummary"
-                    >
-                      <Box sx={{
                         display: 'flex',
                         flexDirection: 'row',
-                      }}>
-                        <ChangeSeverityIndicator
-                          severity={severity as ChangeSeverity}
-                          sx={{
-                            alignItems: 'center',
-                            display: 'flex',
-                            overflow: 'hidden',
-                            zIndex: '1',
-                            '&:hover': {
-                              color: '#FFFFFF',
-                              padding: '5px',
-                              width: '105px',
-                            },
-                          }}
-                        />
-                        <Package
-                          key={refKey}
-                          value={title && currentAction !== ADD_ACTION_TYPE ? {
-                            title: title,
-                            version: previousVersion,
-                            status: previousStatus,
-                            path: path,
-                          } : undefined}
-                        />
-                      </Box>
-                    </Grid>
-
-                    <Grid
-                      item
-                      xs={6}
-                      sx={{ background: ACTION_TYPE_COLOR_MAP[currentAction] ?? '#F2F3F5' }}
-                      data-testid="RightComparisonSummary"
+                      }}
                     >
-                      <Package
-                        key={`changed-${refKey}`}
-                        value={title && currentAction !== REMOVE_ACTION_TYPE ? {
-                          title: title,
-                          version: version,
-                          latestRevision: latestRevision,
-                          status: status,
-                          path: path,
-                        } : undefined}
-                        operationTypes={operationTypes}
+                      <ChangeSeverityIndicator
+                        severity={severity as ChangeSeverity}
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                          overflow: 'hidden',
+                          zIndex: '1',
+                          '&:hover': {
+                            color: '#FFFFFF',
+                            padding: '5px',
+                            width: '105px',
+                          },
+                        }}
                       />
-                    </Grid>
+                      <Package
+                        key={refKey}
+                        value={
+                          title && currentAction !== ADD_ACTION_TYPE
+                            ? {
+                                title: title,
+                                version: previousVersion,
+                                status: previousStatus,
+                                path: path,
+                              }
+                            : undefined
+                        }
+                      />
+                    </Box>
                   </Grid>
-                )
-              })
-            }
+
+                  <Grid
+                    item
+                    xs={6}
+                    sx={{ background: ACTION_TYPE_COLOR_MAP[currentAction] ?? '#F2F3F5' }}
+                    data-testid="RightComparisonSummary"
+                  >
+                    <Package
+                      key={`changed-${refKey}`}
+                      value={
+                        title && currentAction !== REMOVE_ACTION_TYPE
+                          ? {
+                              title: title,
+                              version: version,
+                              latestRevision: latestRevision,
+                              status: status,
+                              path: path,
+                            }
+                          : undefined
+                      }
+                      operationTypes={operationTypes}
+                    />
+                  </Grid>
+                </Grid>
+              )
+            })}
           </Box>
         </CardContent>
       </Placeholder>
@@ -280,9 +294,12 @@ const Package: FC<PackageProps> = memo<PackageProps>(({ value, operationTypes })
 
   const primary = (
     <Box component="span" sx={{ display: 'flex', alignItems: 'center' }}>
-      {title && <Typography component="span" noWrap variant="inherit"
-                            data-testid="PackageVersionTitle">{title} / {versionKey}</Typography>}
-      {status && <CustomChip sx={{ ml: 1 }} value={status} data-testid="PackageVersionStatus"/>}
+      {title && (
+        <Typography component="span" noWrap variant="inherit" data-testid="PackageVersionTitle">
+          {title} / {versionKey}
+        </Typography>
+      )}
+      {status && <CustomChip sx={{ ml: 1 }} value={status} data-testid="PackageVersionStatus" />}
     </Box>
   )
   return (
@@ -300,31 +317,33 @@ const Package: FC<PackageProps> = memo<PackageProps>(({ value, operationTypes })
       <Box>
         {path && (
           <OverflowTooltip title={path}>
-            <Typography component="span" noWrap variant="subtitle2" data-testid="DashboardPath">{path}</Typography>
+            <Typography component="span" noWrap variant="subtitle2" data-testid="DashboardPath">
+              {path}
+            </Typography>
           </OverflowTooltip>
         )}
       </Box>
       <Box display="flex" gap={1}>
-        <ListItemText
-          primary={primary}
-        />
+        <ListItemText primary={primary} />
       </Box>
-      {operationTypes?.map(operationTypeChange =>
-        <Box component="span" gap={1} sx={{ display: 'flex', alignItems: 'center' }}
-             data-testid={`ChangesApiType-${operationTypeChange.apiType}`}>
+      {operationTypes?.map((operationTypeChange) => (
+        <Box
+          component="span"
+          gap={1}
+          sx={{ display: 'flex', alignItems: 'center' }}
+          data-testid={`ChangesApiType-${operationTypeChange.apiType}`}
+        >
           <Typography component="span" noWrap variant="subtitle2">
             {API_TYPE_TITLE_MAP[operationTypeChange.apiType]}:
           </Typography>
-          <Changes value={operationTypeChange.changesSummary} mode="compact"/>
-        </Box>,
-      )}
+          <Changes value={operationTypeChange.changesSummary} mode="compact" />
+        </Box>
+      ))}
     </ListItem>
   )
 })
 
 // handle specific dashboard comparison value
 function getApiTypeFilter(apiTypeParameter: string): ApiType | undefined {
-  return apiTypeParameter === 'all' ? undefined : apiTypeParameter as ApiType
+  return apiTypeParameter === 'all' ? undefined : (apiTypeParameter as ApiType)
 }
-
-

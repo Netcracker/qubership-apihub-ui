@@ -20,7 +20,7 @@ const customConfig = Object.assign({}, libConfig)
 
 customConfig.connect.defaultViewport = {
   width: 1800,
-  height: 1000
+  height: 1000,
 }
-customConfig.chromiumFlags = ourConfig.launch.args.filter(arg => !arg.startsWith('--window-size'))
+customConfig.chromiumFlags = ourConfig.launch.args.filter((arg) => !arg.startsWith('--window-size'))
 module.exports = customConfig

@@ -27,23 +27,11 @@ type SubtitleProps = {
 export const Subtitle: FC<SubtitleProps> = memo<SubtitleProps>(({ label, value }) => {
   return (
     <Box display="flex" gap="2px">
-      <Typography
-        variant="caption"
-        fontWeight="bold"
-        flexShrink={0}
-        minWidth="50px"
-      >
+      <Typography variant="caption" fontWeight="bold" flexShrink={0} minWidth="50px">
         {label}:
       </Typography>
       <OverflowTooltip title={value}>
-        <Typography
-          variant="caption"
-          textOverflow="ellipsis"
-          overflow="hidden"
-          noWrap
-          flexShrink={3}
-          maxWidth="18vw"
-        >
+        <Typography variant="caption" textOverflow="ellipsis" overflow="hidden" noWrap flexShrink={3} maxWidth="18vw">
           {value}
         </Typography>
       </OverflowTooltip>

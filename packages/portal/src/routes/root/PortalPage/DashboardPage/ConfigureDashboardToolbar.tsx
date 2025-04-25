@@ -53,10 +53,12 @@ export const ConfigureDashboardToolbar: FC<ConfigureDashboardToolbarProps> = mem
   const { showPublishPackageVersionDialog } = useEventBus()
 
   const navigateToMainPage = useCallback(() => {
-    versionId !== SPECIAL_VERSION_KEY ? navigateToVersion({
-      packageKey: packageId!,
-      versionKey: getSplittedVersionKey(version, latestRevision).versionKey,
-    }) : navigateToPackage({ packageKey: packageId! })
+    versionId !== SPECIAL_VERSION_KEY
+      ? navigateToVersion({
+          packageKey: packageId!,
+          versionKey: getSplittedVersionKey(version, latestRevision).versionKey,
+        })
+      : navigateToPackage({ packageKey: packageId! })
   }, [versionId, navigateToVersion, packageId, version, latestRevision, navigateToPackage])
 
   const dashboardContent = useDashboardReferences()
@@ -68,10 +70,16 @@ export const ConfigureDashboardToolbar: FC<ConfigureDashboardToolbarProps> = mem
       return [true, 'Add at least one package/dashboard to publish dashboard version.']
     }
     if (isNotEmptyMap(deletedReferences)) {
-      return [true, 'The dashboard references deleted package or dashboard version. Remove deleted versions from the dashboard before publishing.']
+      return [
+        true,
+        'The dashboard references deleted package or dashboard version. Remove deleted versions from the dashboard before publishing.',
+      ]
     }
     if (recursiveDashboardName) {
-      return [true, `Included dashboard versions form a cycle: ${packageObject?.name} -> ${recursiveDashboardName} -> ${packageObject?.name}. Eliminate the cycle before publishing.`]
+      return [
+        true,
+        `Included dashboard versions form a cycle: ${packageObject?.name} -> ${recursiveDashboardName} -> ${packageObject?.name}. Eliminate the cycle before publishing.`,
+      ]
     }
     return [false, '']
   }, [dashboardContent, deletedReferences, recursiveDashboardName, packageObject?.name])
@@ -79,10 +87,10 @@ export const ConfigureDashboardToolbar: FC<ConfigureDashboardToolbarProps> = mem
   return (
     <>
       <Toolbar
-        breadcrumbs={<PackageBreadcrumbs packageObject={packageObject}/>}
+        breadcrumbs={<PackageBreadcrumbs packageObject={packageObject} />}
         header={
           <>
-            <ToolbarTitle value={toolbarTitle}/>
+            <ToolbarTitle value={toolbarTitle} />
             {isEditingVersion && (
               <Box display="flex" gap={1} alignItems="center" sx={{ ml: 2 }}>
                 <VersionTitle
@@ -91,7 +99,7 @@ export const ConfigureDashboardToolbar: FC<ConfigureDashboardToolbarProps> = mem
                   latestRevision={latestRevision}
                   subtitleVariant
                 />
-                <CustomChip value={status!} data-testid="VersionStatusChip"/>
+                <CustomChip value={status!} data-testid="VersionStatusChip" />
               </Box>
             )}
           </>
@@ -107,12 +115,7 @@ export const ConfigureDashboardToolbar: FC<ConfigureDashboardToolbarProps> = mem
               title="Publish"
               testId="PublishButton"
             />
-            <Button
-              startIcon={<ExitIcon/>}
-              variant="outlined"
-              onClick={navigateToMainPage}
-              data-testid="ExitButton"
-            >
+            <Button startIcon={<ExitIcon />} variant="outlined" onClick={navigateToMainPage} data-testid="ExitButton">
               Exit
             </Button>
           </Box>
@@ -121,5 +124,3 @@ export const ConfigureDashboardToolbar: FC<ConfigureDashboardToolbarProps> = mem
     </>
   )
 })
-
-

@@ -25,11 +25,11 @@ import { OPERATION_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/u
 export const OperationsComparisonPage: FC = memo(() => {
   const operation = useSearchParam(OPERATION_SEARCH_PARAM)
 
-  return operation
-    ? <DifferentOperationsComparisonPage/>
-    : (
-      <ChangesSummaryProvider>
-        <DifferentOperationVersionsComparisonPage/>
-      </ChangesSummaryProvider>
-    )
+  return operation ? (
+    <DifferentOperationsComparisonPage />
+  ) : (
+    <ChangesSummaryProvider>
+      <DifferentOperationVersionsComparisonPage />
+    </ChangesSummaryProvider>
+  )
 })

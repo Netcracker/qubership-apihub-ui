@@ -57,12 +57,7 @@ export function useDocument(
   return [data ?? EMPTY_DOC, isLoading]
 }
 
-async function getDocument(
-  packageKey: Key,
-  versionKey: Key,
-  slug: Key,
-  signal?: AbortSignal,
-): Promise<DocumentDto> {
+async function getDocument(packageKey: Key, versionKey: Key, slug: Key, signal?: AbortSignal): Promise<DocumentDto> {
   const packageId = encodeURIComponent(packageKey)
   const versionId = encodeURIComponent(versionKey)
   const docId = encodeURIComponent(slug)
@@ -80,5 +75,5 @@ async function getDocument(
 }
 
 function isEnabledByQueryKey(queryKey: QueryKey): boolean {
-  return queryKey.every(keyItem => !!keyItem)
+  return queryKey.every((keyItem) => !!keyItem)
 }

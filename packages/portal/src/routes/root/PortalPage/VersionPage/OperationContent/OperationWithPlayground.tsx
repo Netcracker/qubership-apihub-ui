@@ -16,9 +16,7 @@
 
 import { Examples } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/Playground/Examples/Examples'
 import { Playground } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/Playground/Playground'
-import {
-  usePlaygroundEvents,
-} from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/Playground/usePlaygroundEvents'
+import { usePlaygroundEvents } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/Playground/usePlaygroundEvents'
 import { Box } from '@mui/material'
 import { ModuleFetchingErrorBoundary } from '@netcracker/qubership-apihub-ui-shared/components/ModuleFetchingErrorBoundary/ModuleFetchingErrorBoundary'
 import { NAVIGATION_MAX_WIDTH } from '@netcracker/qubership-apihub-ui-shared/utils/page-layouts'

@@ -17,19 +17,12 @@
 import { editor as Editor } from 'monaco-editor/esm/vs/editor/editor.api'
 import { useEffect } from 'react'
 
-export function useUpdateModel(
-  editor: Editor.IStandaloneCodeEditor | null,
-  filename: string,
-  language?: string,
-): void {
-  useEffect(
-    () => {
-      const model = editor?.getModel()
-      if (model) {
-        language && Editor.setModelLanguage(model, language)
-        editor?.setModel(model)
-      }
-    },
-    [editor, filename, language],
-  )
+export function useUpdateModel(editor: Editor.IStandaloneCodeEditor | null, filename: string, language?: string): void {
+  useEffect(() => {
+    const model = editor?.getModel()
+    if (model) {
+      language && Editor.setModelLanguage(model, language)
+      editor?.setModel(model)
+    }
+  }, [editor, filename, language])
 }

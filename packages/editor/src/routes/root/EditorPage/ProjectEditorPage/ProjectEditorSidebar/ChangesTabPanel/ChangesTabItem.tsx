@@ -44,123 +44,104 @@ export type ChangesTabItemProps = {
   conflictedBlobId: string | undefined
 }
 
-export const ChangesTabItem: FC<ChangesTabItemProps> = memo<ChangesTabItemProps>(({
-  fileId,
-  status,
-  conflictedBlobId,
-}) => {
-  const [actionMenuOpen, setActionMenuOpen] = useState(false)
+export const ChangesTabItem: FC<ChangesTabItemProps> = memo<ChangesTabItemProps>(
+  ({ fileId, status, conflictedBlobId }) => {
+    const [actionMenuOpen, setActionMenuOpen] = useState(false)
 
-  const [resetFile] = useResetFile()
+    const [resetFile] = useResetFile()
 
-  const setSearchParams = useSetSearchParams()
-  const setSelectedConflictedCommitKey = useSetSelectedConflictedBlobKey()
-  const [selectedChangeKey, setSelectedChangeKey] = useChangeSearchParam()
-  const [conflicts] = useBranchConflicts()
+    const setSearchParams = useSetSearchParams()
+    const setSelectedConflictedCommitKey = useSetSelectedConflictedBlobKey()
+    const [selectedChangeKey, setSelectedChangeKey] = useChangeSearchParam()
+    const [conflicts] = useBranchConflicts()
 
-  return (
-    <ListItem
-      key={fileId}
-      sx={{
-        borderLeft: `2px solid ${STATUS_COLORS[status!]}`,
-        maxHeight: 48,
-        cursor: 'pointer',
-        '&:hover': {
-          backgroundColor: '#ECEDEF',
-          '& .MuiButtonBase-root': {
-            visibility: 'visible',
-            '& .MuiListItem-secondaryAction': {
+    return (
+      <ListItem
+        key={fileId}
+        sx={{
+          borderLeft: `2px solid ${STATUS_COLORS[status!]}`,
+          maxHeight: 48,
+          cursor: 'pointer',
+          '&:hover': {
+            backgroundColor: '#ECEDEF',
+            '& .MuiButtonBase-root': {
               visibility: 'visible',
-              backgroundColor: '#ECEDEF',
+              '& .MuiListItem-secondaryAction': {
+                visibility: 'visible',
+                backgroundColor: '#ECEDEF',
+              },
             },
           },
-        },
-      }}
-      selected={selectedChangeKey === fileId}
-      secondaryAction={
-        <MenuButton
-          sx={{
-            ml: 1,
-            visibility: actionMenuOpen ? 'visible' : 'hidden',
-            backgroundColor: actionMenuOpen ? '#E8E8E8' : 'transparent',
-            '&:hover': {
-              backgroundColor: '#ECEDEF',
-            },
-            width: 24,
-            minWidth: 24,
-            height: 24,
-          }}
-          size="small"
-          icon={<MoreVertIcon sx={{ color: '#626D82' }} fontSize="small"/>}
-          onClick={event => {
-            event.stopPropagation()
-            setActionMenuOpen(true)
-          }}
-          onItemClick={event => event.stopPropagation()}
-          onClose={() => setActionMenuOpen(false)}
-        >
-          <Box>
-            <MenuItem onClick={() => setSearchParams({ file: fileId, mode: FILES_PROJECT_EDITOR_MODE })}>Edit
-              file</MenuItem>
-            {
-              RESETTABLE_STATUSES.includes(status!) && <MenuItem
-                onClick={() => resetFile(fileId)}>
-                Reset to last saved
+        }}
+        selected={selectedChangeKey === fileId}
+        secondaryAction={
+          <MenuButton
+            sx={{
+              ml: 1,
+              visibility: actionMenuOpen ? 'visible' : 'hidden',
+              backgroundColor: actionMenuOpen ? '#E8E8E8' : 'transparent',
+              '&:hover': {
+                backgroundColor: '#ECEDEF',
+              },
+              width: 24,
+              minWidth: 24,
+              height: 24,
+            }}
+            size="small"
+            icon={<MoreVertIcon sx={{ color: '#626D82' }} fontSize="small" />}
+            onClick={(event) => {
+              event.stopPropagation()
+              setActionMenuOpen(true)
+            }}
+            onItemClick={(event) => event.stopPropagation()}
+            onClose={() => setActionMenuOpen(false)}
+          >
+            <Box>
+              <MenuItem onClick={() => setSearchParams({ file: fileId, mode: FILES_PROJECT_EDITOR_MODE })}>
+                Edit file
               </MenuItem>
-            }
-            {
-              conflictedBlobId && <MenuItem
-                onClick={() => {
-                  setSelectedChangeKey(fileId)
-                  setSelectedConflictedCommitKey(conflictedBlobId)
-                }}
-              >
-                View conflict
-              </MenuItem>
-            }
+              {RESETTABLE_STATUSES.includes(status!) && (
+                <MenuItem onClick={() => resetFile(fileId)}>Reset to last saved</MenuItem>
+              )}
+              {conflictedBlobId && (
+                <MenuItem
+                  onClick={() => {
+                    setSelectedChangeKey(fileId)
+                    setSelectedConflictedCommitKey(conflictedBlobId)
+                  }}
+                >
+                  View conflict
+                </MenuItem>
+              )}
+            </Box>
+          </MenuButton>
+        }
+        onClick={() => {
+          setSelectedChangeKey(fileId)
+          setSelectedConflictedCommitKey(null)
+        }}
+      >
+        <Box display="flex" alignItems="end" width="100%">
+          <Box
+            sx={{
+              overflow: 'hidden',
+              padding: 0,
+              margin: 0,
+              flexDirection: 'column',
+            }}
+          >
+            <Box display={'flex'}>
+              <ListItemIcon sx={{ minWidth: 24 }}>
+                {conflicts.includes(fileId) ? <WarningRoundedIcon fontSize="small" color="warning" /> : <FileIcon />}
+              </ListItemIcon>
+              <ListItemText primary={getFileName(fileId)} primaryTypographyProps={{ color: STATUS_COLORS[status!] }} />
+            </Box>
+            <ListItemText primary={fileId} primaryTypographyProps={{ color: '#626D82' }} />
           </Box>
-        </MenuButton>
-      }
-      onClick={() => {
-        setSelectedChangeKey(fileId)
-        setSelectedConflictedCommitKey(null)
-      }}
-    >
-      <Box display="flex" alignItems="end" width="100%">
-        <Box
-          sx={{
-            overflow: 'hidden',
-            padding: 0,
-            margin: 0,
-            flexDirection: 'column',
-          }}
-        >
-          <Box display={'flex'}>
-            <ListItemIcon sx={{ minWidth: 24 }}>
-              {
-                conflicts.includes(fileId)
-                  ? <WarningRoundedIcon fontSize="small" color="warning"/>
-                  : <FileIcon/>
-              }
-            </ListItemIcon>
-            <ListItemText
-              primary={getFileName(fileId)}
-              primaryTypographyProps={{ color: STATUS_COLORS[status!] }}
-            />
-          </Box>
-          <ListItemText
-            primary={fileId}
-            primaryTypographyProps={{ color: '#626D82' }}
-          />
         </Box>
-      </Box>
-    </ListItem>
-  )
-})
+      </ListItem>
+    )
+  },
+)
 
-const RESETTABLE_STATUSES = [
-  ADDED_CHANGE_STATUS,
-  DELETED_CHANGE_STATUS,
-  MODIFIED_CHANGE_STATUS,
-  MOVED_CHANGE_STATUS,
-]
+const RESETTABLE_STATUSES = [ADDED_CHANGE_STATUS, DELETED_CHANGE_STATUS, MODIFIED_CHANGE_STATUS, MOVED_CHANGE_STATUS]

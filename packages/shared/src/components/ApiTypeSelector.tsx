@@ -28,27 +28,19 @@ export type ApiTypeSelectorProps = {
 }
 
 // First Order Component //
-export const ApiTypeSelector: FC<ApiTypeSelectorProps> = memo<ApiTypeSelectorProps>(({
-  standard = false,
-  apiType,
-  onChange,
-}) => {
+export const ApiTypeSelector: FC<ApiTypeSelectorProps> = memo<ApiTypeSelectorProps>(
+  ({ standard = false, apiType, onChange }) => {
+    const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent): void => {
+      onChange?.(event.target.value as ApiType)
+    }
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent): void => {
-    onChange?.(event.target.value as ApiType)
-  }
+    const options = API_TYPES.map((apiType) => (
+      <MenuItem value={apiType} data-testid={`MenuItem-${apiType}`}>
+        {API_TYPE_TITLE_MAP[apiType]}
+      </MenuItem>
+    ))
 
-  const options = API_TYPES.map(apiType => (
-    <MenuItem
-      value={apiType}
-      data-testid={`MenuItem-${apiType}`}
-    >
-      {API_TYPE_TITLE_MAP[apiType]}
-    </MenuItem>
-  ))
-
-  return standard
-    ? (
+    return standard ? (
       <Select
         sx={{ ml: 2, mt: 0.5 }}
         variant="standard"
@@ -59,8 +51,7 @@ export const ApiTypeSelector: FC<ApiTypeSelectorProps> = memo<ApiTypeSelectorPro
       >
         {options}
       </Select>
-    )
-    : (
+    ) : (
       <TextField
         sx={{ height: '32px', m: 0 }}
         select
@@ -73,4 +64,5 @@ export const ApiTypeSelector: FC<ApiTypeSelectorProps> = memo<ApiTypeSelectorPro
         {options}
       </TextField>
     )
-})
+  },
+)

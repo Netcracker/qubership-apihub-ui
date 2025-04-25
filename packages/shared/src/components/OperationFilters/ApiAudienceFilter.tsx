@@ -32,13 +32,11 @@ export const ApiAudienceFilter: FC<ApiAudienceFilterProps> = memo<ApiAudienceFil
   const { value, onSelectApiAudience } = props
   return (
     <>
-      <InputLabel>
-        {FILTER_API_AUDIENCE_LABEL}
-      </InputLabel>
+      <InputLabel>{FILTER_API_AUDIENCE_LABEL}</InputLabel>
       <Autocomplete
         forcePopupIcon={true}
         value={value}
-        options={Object.keys(API_AUDIENCES).map(apiAudience => apiAudience as ApiAudience)}
+        options={Object.keys(API_AUDIENCES).map((apiAudience) => apiAudience as ApiAudience)}
         renderOption={(props, apiAudience) => (
           <OptionItem
             key={apiAudience}

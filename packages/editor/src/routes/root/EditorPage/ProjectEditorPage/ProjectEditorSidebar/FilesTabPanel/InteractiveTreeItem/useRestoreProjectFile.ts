@@ -30,7 +30,7 @@ export function useRestoreProjectFile(): [RestoreProjectFile, IsLoading] {
   const showNotification = useShowSuccessNotification()
 
   const { mutate, isLoading } = useMutation<void, Error, Key>({
-    mutationFn: fileId => restoreProjectFile(projectId!, selectedBranch!, fileId),
+    mutationFn: (fileId) => restoreProjectFile(projectId!, selectedBranch!, fileId),
     onSuccess: () => {
       showNotification({ message: 'File has been restored' })
     },
@@ -39,11 +39,7 @@ export function useRestoreProjectFile(): [RestoreProjectFile, IsLoading] {
   return [mutate, isLoading]
 }
 
-async function restoreProjectFile(
-  projectKey: string,
-  branchName: string,
-  fileKey: Key,
-): Promise<void> {
+async function restoreProjectFile(projectKey: string, branchName: string, fileKey: Key): Promise<void> {
   const projectId = encodeURIComponent(projectKey)
   const branch = encodeURIComponent(branchName)
   const fileId = encodeURIComponent(fileKey)

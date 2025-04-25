@@ -36,65 +36,47 @@ export type OpenApiSpecViewerProps = {
 
 export const OPEN_API_VIEW_MODES: SpecViewMode[] = [DOC_SPEC_VIEW_MODE, RAW_SPEC_VIEW_MODE]
 
-export const OpenApiSpecViewer: FC<OpenApiSpecViewerProps> = /* @__PURE__ */ memo<OpenApiSpecViewerProps>(({
-  view,
-  spec,
-  value,
-  proxyServer,
-}) => {
-  const [specItemUri, setSpecItemUri] = useSpecItemUriHashParam()
+export const OpenApiSpecViewer: FC<OpenApiSpecViewerProps> = /* @__PURE__ */ memo<OpenApiSpecViewerProps>(
+  ({ view, spec, value, proxyServer }) => {
+    const [specItemUri, setSpecItemUri] = useSpecItemUriHashParam()
 
-  if (view === DOC_SPEC_VIEW_MODE) {
+    if (view === DOC_SPEC_VIEW_MODE) {
+      return <ApispecView apiDescriptionDocument={value} sidebarEnabled proxyServer={proxyServer} />
+    }
+
     return (
-      <ApispecView
-        apiDescriptionDocument={value}
-        sidebarEnabled
-        proxyServer={proxyServer}
-      />
-    )
-  }
-
-  return (
-    <Box display="flex" height="100%">
-      <Resizable
-        style={{
-          display: 'inline',
-          overflow: 'hidden',
-          position: 'relative',
-          borderRight: '1px solid #D5DCE3',
-        }}
-        handleStyles={{ right: { cursor: 'ew-resize' } }}
-        defaultSize={{ width: SPEC_NAVIGATION_DEFAULT_WIDTH, height: '100%' }}
-        maxWidth={SPEC_NAVIGATION_MAX_WIDTH}
-        minWidth={SPEC_NAVIGATION_MIN_WIDTH}
-        enable={{
-          top: false,
-          right: true,
-          bottom: false,
-          left: false,
-          topRight: false,
-          bottomRight: false,
-          bottomLeft: false,
-          topLeft: false,
-        }}
-      >
-        <SpecNavigation
-          content={value}
-          selectedUri={specItemUri}
-          onSelect={setSpecItemUri}
-        />
-      </Resizable>
-      <Box width="100%" height="100%" overflow="hidden">
-        <RawSpecView
-          sx={{ px: 4, height: '100%' }}
-          value={value}
-          selectedUri={specItemUri}
-          {...spec}
-        />
+      <Box display="flex" height="100%">
+        <Resizable
+          style={{
+            display: 'inline',
+            overflow: 'hidden',
+            position: 'relative',
+            borderRight: '1px solid #D5DCE3',
+          }}
+          handleStyles={{ right: { cursor: 'ew-resize' } }}
+          defaultSize={{ width: SPEC_NAVIGATION_DEFAULT_WIDTH, height: '100%' }}
+          maxWidth={SPEC_NAVIGATION_MAX_WIDTH}
+          minWidth={SPEC_NAVIGATION_MIN_WIDTH}
+          enable={{
+            top: false,
+            right: true,
+            bottom: false,
+            left: false,
+            topRight: false,
+            bottomRight: false,
+            bottomLeft: false,
+            topLeft: false,
+          }}
+        >
+          <SpecNavigation content={value} selectedUri={specItemUri} onSelect={setSpecItemUri} />
+        </Resizable>
+        <Box width="100%" height="100%" overflow="hidden">
+          <RawSpecView sx={{ px: 4, height: '100%' }} value={value} selectedUri={specItemUri} {...spec} />
+        </Box>
       </Box>
-    </Box>
-  )
-})
+    )
+  },
+)
 
 const SPEC_NAVIGATION_MIN_WIDTH = 300
 const SPEC_NAVIGATION_DEFAULT_WIDTH = SPEC_NAVIGATION_MIN_WIDTH

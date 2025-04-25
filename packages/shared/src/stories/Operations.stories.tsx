@@ -28,18 +28,16 @@ export default {
   title: 'Operations',
 } as Meta
 
-const OperationWithMetaClickableListFn: StoryFn<OperationWithMetaClickableListProps> = (args) =>
+const OperationWithMetaClickableListFn: StoryFn<OperationWithMetaClickableListProps> = (args) => (
   <OperationWithMetaClickableList {...args} />
+)
 
 export const OperationWithMetaClickableListStory = OperationWithMetaClickableListFn.bind({})
 OperationWithMetaClickableListStory.args = {
   operations: restDeprecatedOperations,
   isExpandableItem: (operation: OperationData) => operation.deprecated,
   SubComponent: () => (
-    <Box
-      sx={{ backgroundColor: 'red' }}
-      textAlign="center"
-    >
+    <Box sx={{ backgroundColor: 'red' }} textAlign="center">
       Sub Component
     </Box>
   ),
@@ -47,8 +45,7 @@ OperationWithMetaClickableListStory.args = {
 
 OperationWithMetaClickableListStory.storyName = 'Operation With Meta Clickable List'
 
-const OperationTitleWithMetaFn: StoryFn<OperationTitleWithMetaProps> = (args) =>
-  <OperationTitleWithMeta {...args} />
+const OperationTitleWithMetaFn: StoryFn<OperationTitleWithMetaProps> = (args) => <OperationTitleWithMeta {...args} />
 
 export const OperationTitleWithMetaStory = OperationTitleWithMetaFn.bind({})
 OperationTitleWithMetaStory.args = {

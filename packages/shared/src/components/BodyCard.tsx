@@ -45,14 +45,7 @@ const DEFAULT_BODY_SX: SxProps<Theme> = {
 }
 
 export const BodyCard: FC<BodyCardProps> = memo<BodyCardProps>((props) => {
-  const {
-    header,
-    subheader,
-    action,
-    body,
-    overrideHeaderSx = {},
-    overrideBodySx = {},
-  } = props
+  const { header, subheader, action, body, overrideHeaderSx = {}, overrideBodySx = {} } = props
   return (
     <Card
       sx={{
@@ -69,7 +62,12 @@ export const BodyCard: FC<BodyCardProps> = memo<BodyCardProps>((props) => {
             ...overrideHeaderSx,
           }}
           title={header}
-          titleTypographyProps={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', 'data-testid': 'CardHeaderTitle' }}
+          titleTypographyProps={{
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+            'data-testid': 'CardHeaderTitle',
+          }}
           subheader={subheader}
           subheaderTypographyProps={{
             fontSize: 13,

@@ -64,11 +64,14 @@ export function useUpdateProject(): [UpdateProject, IsLoading, IsSuccess] {
     mutationFn: ({ project }) => updateProject(project),
     onSuccess: (_, { project, withNotification }) => {
       if (withNotification) {
-        setSearchParams({
-          mode: FILES_PROJECT_EDITOR_MODE,
-          change: '',
-          branch: project?.integration?.defaultBranch ?? '',
-        }, { replace: true })
+        setSearchParams(
+          {
+            mode: FILES_PROJECT_EDITOR_MODE,
+            change: '',
+            branch: project?.integration?.defaultBranch ?? '',
+          },
+          { replace: true },
+        )
         showNotification({ message: 'Project has been updated' })
       }
       invalidateBranches()
@@ -87,9 +90,7 @@ type UpdateProjectOptions = {
   withNotification?: boolean
 }
 
-export async function getProject(
-  projectKey: Key,
-): Promise<ProjectDto> {
+export async function getProject(projectKey: Key): Promise<ProjectDto> {
   const projectId = encodeURIComponent(projectKey)
 
   return await editorRequestJson<ProjectDto>(`/projects/${projectId}`, {
@@ -97,9 +98,7 @@ export async function getProject(
   })
 }
 
-async function updateProject(
-  project: Project,
-): Promise<void> {
+async function updateProject(project: Project): Promise<void> {
   await editorRequestVoid(`/projects/${project.key}`, {
     method: 'PUT',
     body: JSON.stringify(toProjectDto(project)),

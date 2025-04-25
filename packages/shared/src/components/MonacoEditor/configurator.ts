@@ -20,7 +20,7 @@ import { JSON_FILE_EXTENSION, YAML_FILE_EXTENSION, YML_FILE_EXTENSION } from '..
 
 export function preconfigureMonaco(): void {
   const getFileMasks = (schema: string, ...extensions: string[]): string[] => {
-    return extensions.map(extension => `${schema}/*${extension}`)
+    return extensions.map((extension) => `${schema}/*${extension}`)
   }
 
   setDiagnosticsOptions({

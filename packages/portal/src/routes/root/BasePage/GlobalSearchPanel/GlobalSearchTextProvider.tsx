@@ -60,7 +60,4 @@ export const PACKAGES_TAB = 'packages'
 export const OPERATIONS_TAB = 'operations'
 export const DOCUMENTS_TAB = 'documents'
 
-export type SearchResultTab =
-  | typeof PACKAGES_TAB
-  | typeof OPERATIONS_TAB
-  | typeof DOCUMENTS_TAB
+export type SearchResultTab = typeof PACKAGES_TAB | typeof OPERATIONS_TAB | typeof DOCUMENTS_TAB

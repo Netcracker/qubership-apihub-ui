@@ -52,11 +52,11 @@ export const IdpUrlContextProvider: FC<PropsWithChildren> = ({ children }) => {
     }
   }, [idpUrl, isLoading])
 
-  return <IdpUrlContext.Provider value={currentIdpUrl}>
-    <SetIdpUrlContext.Provider value={setCurrentIdpUrl}>
-      {children}
-    </SetIdpUrlContext.Provider>
-  </IdpUrlContext.Provider>
+  return (
+    <IdpUrlContext.Provider value={currentIdpUrl}>
+      <SetIdpUrlContext.Provider value={setCurrentIdpUrl}>{children}</SetIdpUrlContext.Provider>
+    </IdpUrlContext.Provider>
+  )
 }
 
 const DEFAULT_IDP_URL = ''

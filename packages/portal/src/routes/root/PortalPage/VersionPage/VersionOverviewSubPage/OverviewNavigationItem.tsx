@@ -31,50 +31,44 @@ type OverviewNavigationItemProps = Readonly<{
   id: string
   sidebarItem: string
   deletedReferences: Map<Key, number> | undefined
-}> & TestableProps
+}> &
+  TestableProps
 
-export const OverviewNavigationItem: FC<OverviewNavigationItemProps> = memo<OverviewNavigationItemProps>(({
-  url,
-  title,
-  id,
-  testId,
-  sidebarItem,
-  deletedReferences,
-}) => {
-  const navigate = useNavigate()
+export const OverviewNavigationItem: FC<OverviewNavigationItemProps> = memo<OverviewNavigationItemProps>(
+  ({ url, title, id, testId, sidebarItem, deletedReferences }) => {
+    const navigate = useNavigate()
 
-  return (
-    <ListItem
-      key={crypto.randomUUID()}
-      sx={{ p: 0 }}
-    >
-      <ListItemButton
-        sx={{
-          backgroundColor: id === sidebarItem ? '#F5F5FA' : 'transparent',
-          height: '36px',
-          alignItems: 'center',
-        }}
-        selected={id === sidebarItem}
-        onClick={() => url && navigate(url)}
-        data-testid={testId}
-      >
-        <ListItemText
-          primaryTypographyProps={{ sx: { mt: 1 } }}
-          primary={
-            <Box sx={{ display: 'flex' }}>
-              {title}
-              <Box sx={{ ml: '5px' }}>
-                {id === PACKAGES_PAGE && isNotEmptyMap(deletedReferences) &&
-                  <Tooltip title="Some included package/dashboard versions no longer exist" placement="right">
-                    <Box data-testid="NotExistAlert">
-                      <RedWarningIcon/>
-                    </Box>
-                  </Tooltip>
-                }
+    return (
+      <ListItem key={crypto.randomUUID()} sx={{ p: 0 }}>
+        <ListItemButton
+          sx={{
+            backgroundColor: id === sidebarItem ? '#F5F5FA' : 'transparent',
+            height: '36px',
+            alignItems: 'center',
+          }}
+          selected={id === sidebarItem}
+          onClick={() => url && navigate(url)}
+          data-testid={testId}
+        >
+          <ListItemText
+            primaryTypographyProps={{ sx: { mt: 1 } }}
+            primary={
+              <Box sx={{ display: 'flex' }}>
+                {title}
+                <Box sx={{ ml: '5px' }}>
+                  {id === PACKAGES_PAGE && isNotEmptyMap(deletedReferences) && (
+                    <Tooltip title="Some included package/dashboard versions no longer exist" placement="right">
+                      <Box data-testid="NotExistAlert">
+                        <RedWarningIcon />
+                      </Box>
+                    </Tooltip>
+                  )}
+                </Box>
               </Box>
-            </Box>
-          }/>
-      </ListItemButton>
-    </ListItem>
-  )
-})
+            }
+          />
+        </ListItemButton>
+      </ListItem>
+    )
+  },
+)

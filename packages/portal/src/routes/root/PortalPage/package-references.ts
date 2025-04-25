@@ -34,7 +34,10 @@ export type PackageItem = {
   deleted?: boolean
 }
 
-export function addToMap(newMap: CountPackageInDashboardMap, oldMap?: CountPackageInDashboardMap): CountPackageInDashboardMap {
+export function addToMap(
+  newMap: CountPackageInDashboardMap,
+  oldMap?: CountPackageInDashboardMap,
+): CountPackageInDashboardMap {
   if (!oldMap) {
     oldMap = new Map<PackageKey, CountInDashboard>()
   }
@@ -45,7 +48,10 @@ export function addToMap(newMap: CountPackageInDashboardMap, oldMap?: CountPacka
   return new Map(oldMap)
 }
 
-export function removeFromMap(map: CountPackageInDashboardMap, dataMap: CountPackageInDashboardMap): CountPackageInDashboardMap {
+export function removeFromMap(
+  map: CountPackageInDashboardMap,
+  dataMap: CountPackageInDashboardMap,
+): CountPackageInDashboardMap {
   const newMap = new Map(map)
   dataMap?.forEach((value, key) => {
     const oldValue = newMap?.get(key)
@@ -62,7 +68,11 @@ export function removeFromMap(map: CountPackageInDashboardMap, dataMap: CountPac
   return newMap
 }
 
-export function markParentPackages(parentKey: Key, markedPackages: Key[] | Set<Key>, versionReferences: VersionReferences): void {
+export function markParentPackages(
+  parentKey: Key,
+  markedPackages: Key[] | Set<Key>,
+  versionReferences: VersionReferences,
+): void {
   if (!parentKey) {
     return
   }
@@ -70,6 +80,8 @@ export function markParentPackages(parentKey: Key, markedPackages: Key[] | Set<K
   markedPackages instanceof Set ? markedPackages.add(packageByRef.key!) : markedPackages.push(packageByRef.key!)
   const parentReferences = versionReferences.references!.filter(({ packageRef }) => packageRef === parentKey)
   if (isNotEmpty(parentReferences)) {
-    parentReferences.forEach(({ parentPackageRef }) => markParentPackages(parentPackageRef!, markedPackages, versionReferences))
+    parentReferences.forEach(({ parentPackageRef }) =>
+      markParentPackages(parentPackageRef!, markedPackages, versionReferences),
+    )
   }
 }

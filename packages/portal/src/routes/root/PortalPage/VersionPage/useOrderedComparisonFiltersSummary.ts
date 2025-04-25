@@ -53,8 +53,8 @@ export function useOrderedComparisonFiltersSummary(options: {
     }
 
     const refChangesSummaries = versionChangesSummary.operationTypes
-      .filter(type => type.apiType === apiType)
-      .map(type => type.numberOfImpactedOperations ?? EMPTY_CHANGE_SUMMARY)
+      .filter((type) => type.apiType === apiType)
+      .map((type) => type.numberOfImpactedOperations ?? EMPTY_CHANGE_SUMMARY)
 
     return calculateTotalChangeSummary(refChangesSummaries)
   }, [apiType, isDashboardsComparison, versionChangesSummary])
@@ -82,17 +82,18 @@ function calculateDashboardChangesSummary(
     return calculateTotalImpactedSummary(
       versionChangesSummary.map(({ operationTypes }) => {
         const refChangesSummaries = operationTypes
-          .filter(type => (apiType ? type.apiType === apiType : true))
-          .map(type => type.changesSummary ?? EMPTY_CHANGE_SUMMARY)
+          .filter((type) => (apiType ? type.apiType === apiType : true))
+          .map((type) => type.changesSummary ?? EMPTY_CHANGE_SUMMARY)
 
         return calculateImpactedSummary(refChangesSummaries)
       }),
     )
   }
-  const refChangesSummaries = versionChangesSummary
-    .flatMap(({ operationTypes }) => operationTypes
-      .filter(type => type.apiType === apiType)
-      .map(type => type.numberOfImpactedOperations ?? EMPTY_CHANGE_SUMMARY))
+  const refChangesSummaries = versionChangesSummary.flatMap(({ operationTypes }) =>
+    operationTypes
+      .filter((type) => type.apiType === apiType)
+      .map((type) => type.numberOfImpactedOperations ?? EMPTY_CHANGE_SUMMARY),
+  )
 
   return calculateTotalChangeSummary(refChangesSummaries)
 }

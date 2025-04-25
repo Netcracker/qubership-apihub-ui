@@ -26,7 +26,10 @@ import { useAsyncInvalidateVersionSources } from '../useVersionSources'
 import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { useAuthorization } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
 import type { PublishDetails } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
-import { COMPLETE_PUBLISH_STATUS, ERROR_PUBLISH_STATUS } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
+import {
+  COMPLETE_PUBLISH_STATUS,
+  ERROR_PUBLISH_STATUS,
+} from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
 import { getAuthorization } from '@netcracker/qubership-apihub-ui-shared/utils/storages'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { PackageReference } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
@@ -43,7 +46,7 @@ export function usePublishPackageVersion(): [PublishPackageVersion, IsLoading, I
   const showErrorNotification = useShowErrorNotification()
 
   const { mutate, isLoading, isSuccess } = useMutation<PublishDetails, Error, Options>({
-    mutationFn: options => {
+    mutationFn: (options) => {
       return PackageVersionBuilder.publishPackage(
         toPublishOptions(packageId!, options, authorization!.user.key),
         getAuthorization(),

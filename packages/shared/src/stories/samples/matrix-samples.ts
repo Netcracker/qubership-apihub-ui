@@ -38,6 +38,6 @@ export const VERTICAL_ITEMS: VerticalItem[] = Array.from({ length: VERTICAL }, (
   name: `user-${index}`,
 }))
 
-export const MATRIX: MatrixItem[][] = Array.from({ length: VERTICAL }, () => (
-  Array.from({ length: HORIZONTAL }, () => ({ checked: true, disabled: false }))
-))
+export const MATRIX: MatrixItem[][] = Array.from({ length: VERTICAL }, () =>
+  Array.from({ length: HORIZONTAL }, () => ({ checked: true, disabled: false })),
+)

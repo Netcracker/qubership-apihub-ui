@@ -20,11 +20,7 @@ export function areDefaultTags(tags: readonly string[] | undefined): boolean {
   return !tags || tags.includes(EMPTY_TAG) || tags.includes(DEFAULT_TAG)
 }
 
-export function containsTag(
-  tags: readonly string[] | undefined,
-  tag?: string,
-): boolean | undefined {
-
+export function containsTag(tags: readonly string[] | undefined, tag?: string): boolean | undefined {
   return tags?.includes(tag ?? EMPTY_TAG)
 }
 

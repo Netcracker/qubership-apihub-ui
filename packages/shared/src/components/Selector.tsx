@@ -46,82 +46,78 @@ export type SelectorOption = {
   badge?: string
 }
 
-export const Selector: FC<SelectorProps> = memo<SelectorProps>(({
-  options,
-  value,
-  onChange,
-  title,
-  onSearch,
-  isSearching,
-  disabled = false,
-  testId = 'Select',
-}) => {
-  const [searchValue, setSearchValue] = useState('')
-  const [anchor, setAnchor] = useState<HTMLElement>()
+export const Selector: FC<SelectorProps> = memo<SelectorProps>(
+  ({ options, value, onChange, title, onSearch, isSearching, disabled = false, testId = 'Select' }) => {
+    const [searchValue, setSearchValue] = useState('')
+    const [anchor, setAnchor] = useState<HTMLElement>()
 
-  useEffect(() => onSearch?.(searchValue), [onSearch, searchValue])
+    useEffect(() => onSearch?.(searchValue), [onSearch, searchValue])
 
-  return (
-    <Box data-testid={testId} display="flex" alignItems="center" gap={2} overflow="hidden">
-      <Typography variant="subtitle3" color={disabled ? TEXT_DISABLED_COLOR : 'default'}>{title}</Typography>
+    return (
+      <Box data-testid={testId} display="flex" alignItems="center" gap={2} overflow="hidden">
+        <Typography variant="subtitle3" color={disabled ? TEXT_DISABLED_COLOR : 'default'}>
+          {title}
+        </Typography>
 
-      <Button
-        sx={{ p: 0 }}
-        variant="text"
-        disabled={disabled}
-        onClick={({ currentTarget }) => setAnchor(currentTarget)}
-        endIcon={<KeyboardArrowDownOutlinedIcon/>}
-      >
-        {value?.value}
-        <MenuButtonItems
-          anchorEl={anchor}
-          open={!!anchor}
-          onClick={event => event.stopPropagation()}
-          onClose={() => setAnchor(undefined)}
+        <Button
+          sx={{ p: 0 }}
+          variant="text"
+          disabled={disabled}
+          onClick={({ currentTarget }) => setAnchor(currentTarget)}
+          endIcon={<KeyboardArrowDownOutlinedIcon />}
         >
-          <Box
-            sx={{ p: 2 }}
-            overflow="hidden"
-            display="grid"
-            gap={2}
-            gridTemplateRows="max-content max-content"
-            gridTemplateColumns="256px"
-            gridTemplateAreas="
+          {value?.value}
+          <MenuButtonItems
+            anchorEl={anchor}
+            open={!!anchor}
+            onClick={(event) => event.stopPropagation()}
+            onClose={() => setAnchor(undefined)}
+          >
+            <Box
+              sx={{ p: 2 }}
+              overflow="hidden"
+              display="grid"
+              gap={2}
+              gridTemplateRows="max-content max-content"
+              gridTemplateColumns="256px"
+              gridTemplateAreas="
               'searchbar'
               'content'
             "
-          >
-            <Box gridArea="searchbar" overflow="hidden">
-              <SearchBar onValueChange={setSearchValue}/>
+            >
+              <Box gridArea="searchbar" overflow="hidden">
+                <SearchBar onValueChange={setSearchValue} />
+              </Box>
+              <Box gridArea="content" overflow="auto" maxHeight={400}>
+                {isSearching ? (
+                  <Skeleton variant="text" width={'100%'} />
+                ) : (
+                  <Placeholder
+                    invisible={isNotEmpty(options)}
+                    area={NAVIGATION_PLACEHOLDER_AREA}
+                    message={NO_SEARCH_RESULTS}
+                  >
+                    {options?.map((option) => (
+                      <MenuItem
+                        key={crypto.randomUUID()}
+                        onClick={() => {
+                          onChange?.(option)
+                          setAnchor(undefined)
+                        }}
+                      >
+                        <Box display="flex" width="100%" gap={2}>
+                          <Box flex={1}>{option.value}</Box>
+                          {option.badge && <CustomChip value={option.badge} />}
+                        </Box>
+                      </MenuItem>
+                    ))}
+                  </Placeholder>
+                )}
+              </Box>
             </Box>
-            <Box gridArea="content" overflow="auto" maxHeight={400}>
-              {isSearching
-                ? <Skeleton variant="text" width={'100%'}/>
-                : <Placeholder
-                  invisible={isNotEmpty(options)}
-                  area={NAVIGATION_PLACEHOLDER_AREA}
-                  message={NO_SEARCH_RESULTS}
-                >
-                  {options?.map((option) => (
-                    <MenuItem
-                      key={crypto.randomUUID()}
-                      onClick={() => {
-                        onChange?.(option)
-                        setAnchor(undefined)
-                      }}
-                    >
-                      <Box display="flex" width="100%" gap={2}>
-                        <Box flex={1}>{option.value}</Box>
-                        {option.badge && <CustomChip value={option.badge}/>}
-                      </Box>
-                    </MenuItem>
-                  ))}
-                </Placeholder>
-              }
-            </Box>
-          </Box>
-        </MenuButtonItems>
-      </Button>
-    </Box>
-  )
-})
+          </MenuButtonItems>
+        </Button>
+      </Box>
+    )
+  },
+)

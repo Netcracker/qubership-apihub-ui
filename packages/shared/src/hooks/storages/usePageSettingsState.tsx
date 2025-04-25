@@ -32,13 +32,11 @@ export const COMMON_PAGE_SETTINGS_DEFAULTS = {
 export const PAGE_SETTINGS_LOCAL_STORAGE_KEY = 'page-settings'
 
 export function usePageSettingsState(): ExtendedPageSettingsState {
-  const [pageSettings, setPageSettings] = useState<ExtendedPageSettings>(
-    () => {
-      const saved = localStorage.getItem(PAGE_SETTINGS_LOCAL_STORAGE_KEY)
-      const initial = saved && JSON.parse(saved)
-      return initial || COMMON_PAGE_SETTINGS_DEFAULTS
-    },
-  )
+  const [pageSettings, setPageSettings] = useState<ExtendedPageSettings>(() => {
+    const saved = localStorage.getItem(PAGE_SETTINGS_LOCAL_STORAGE_KEY)
+    const initial = saved && JSON.parse(saved)
+    return initial || COMMON_PAGE_SETTINGS_DEFAULTS
+  })
 
   const {
     hideFiltersPanel,
@@ -53,33 +51,45 @@ export function usePageSettingsState(): ExtendedPageSettingsState {
     localStorage.setItem(PAGE_SETTINGS_LOCAL_STORAGE_KEY, JSON.stringify(pageSettings))
   }, [pageSettings])
 
-  const toggleHideFiltersPanel = useCallback((value: boolean) => {
-    setPageSettings({
-      ...pageSettings,
-      hideFiltersPanel: value,
-    })
-  }, [pageSettings])
+  const toggleHideFiltersPanel = useCallback(
+    (value: boolean) => {
+      setPageSettings({
+        ...pageSettings,
+        hideFiltersPanel: value,
+      })
+    },
+    [pageSettings],
+  )
 
-  const toggleHideGeneralFilters = useCallback((value: boolean) => {
-    setPageSettings({
-      ...pageSettings,
-      hideGeneralFilters: value,
-    })
-  }, [pageSettings])
+  const toggleHideGeneralFilters = useCallback(
+    (value: boolean) => {
+      setPageSettings({
+        ...pageSettings,
+        hideGeneralFilters: value,
+      })
+    },
+    [pageSettings],
+  )
 
-  const togglePreviewSize = useCallback((value: number) => {
-    setPageSettings({
-      ...pageSettings,
-      previewSize: value,
-    })
-  }, [pageSettings])
+  const togglePreviewSize = useCallback(
+    (value: number) => {
+      setPageSettings({
+        ...pageSettings,
+        previewSize: value,
+      })
+    },
+    [pageSettings],
+  )
 
-  const toggleExpandMainMenu = useCallback((value: boolean) => {
-    setPageSettings({
-      ...pageSettings,
-      expandMainMenu: value,
-    })
-  }, [pageSettings])
+  const toggleExpandMainMenu = useCallback(
+    (value: boolean) => {
+      setPageSettings({
+        ...pageSettings,
+        expandMainMenu: value,
+      })
+    },
+    [pageSettings],
+  )
 
   const toggleExpandActivityHistoryPanel = useCallback(() => {
     setPageSettings({
@@ -88,12 +98,15 @@ export function usePageSettingsState(): ExtendedPageSettingsState {
     })
   }, [pageSettings, expandActivityHistoryPanel])
 
-  const toggleOperationsViewMode = useCallback((value: string) => {
-    setPageSettings({
-      ...pageSettings,
-      operationsViewMode: value,
-    })
-  }, [pageSettings])
+  const toggleOperationsViewMode = useCallback(
+    (value: string) => {
+      setPageSettings({
+        ...pageSettings,
+        operationsViewMode: value,
+      })
+    },
+    [pageSettings],
+  )
 
   return {
     operationsViewMode,

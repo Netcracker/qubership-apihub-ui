@@ -26,15 +26,9 @@ export type UnsupportedViewerProps = {
 }
 
 export const UnsupportedViewer: FC<UnsupportedViewerProps> = memo<UnsupportedViewerProps>(({ value, spec }) => {
-
   const downloadSpec = useCallback(() => {
     fileDownload(value, spec.name + spec.extension)
   }, [spec, value])
 
-  return (
-    <UnsupportedFilePlaceholder
-      message="Preview is not available"
-      onDownload={downloadSpec}
-    />
-  )
+  return <UnsupportedFilePlaceholder message="Preview is not available" onDownload={downloadSpec} />
 })

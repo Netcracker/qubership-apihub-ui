@@ -31,7 +31,7 @@ export const LoadingIndicator: FC = memo(() => {
         justifyContent: 'center',
       }}
     >
-      <CircularProgress/>
+      <CircularProgress />
     </Box>
   )
 })

@@ -37,12 +37,13 @@ export type ButtonWithHintProps = {
   tooltipPlacement?: TooltipPlacement
   handleClose?: (event: React.SyntheticEvent | Event) => void
   handleOpen?: (event: React.SyntheticEvent | Event) => void
-} & ButtonProps & TestableProps
+} & ButtonProps &
+  TestableProps
 
 const DISABLED_COLOR = '#00000026'
 
-export const ButtonWithHint: FC<ButtonWithHintProps> = memo<ButtonWithHintProps>((
-  {
+export const ButtonWithHint: FC<ButtonWithHintProps> = memo<ButtonWithHintProps>(
+  ({
     title,
     isLoading,
     hint,
@@ -56,72 +57,50 @@ export const ButtonWithHint: FC<ButtonWithHintProps> = memo<ButtonWithHintProps>
     testId,
     ...buttonProps
   }) => {
-
-  const disabledIcon = useMemo(
-    () => startIcon && React.cloneElement(startIcon, { color: DISABLED_COLOR }),
-    [startIcon],
-  )
-
-  const icon = useMemo(
-    () => (disabled ? disabledIcon : startIcon),
-    [disabled, startIcon, disabledIcon],
-  )
-
-  const button = useMemo(() => {
-    if (isLoading !== undefined) {
-      return (
-        <LoadingButton
-          loading={isLoading}
-          startIcon={icon}
-          disabled={disabled}
-          {...buttonProps}
-          data-testid={testId}
-        >
-          {title}
-        </LoadingButton>
-      )
-    }
-
-    if (!title && icon) {
-      return (
-        <IconButton
-          aria-label="delete-icon"
-          disabled={disabled}
-          {...buttonProps}
-          data-testid={testId}
-        >
-          {icon}
-        </IconButton>
-      )
-    }
-
-    return (
-      <Button
-        startIcon={icon}
-        disabled={disabled}
-        {...buttonProps}
-        data-testid={testId}
-      >
-        {title}
-      </Button>
+    const disabledIcon = useMemo(
+      () => startIcon && React.cloneElement(startIcon, { color: DISABLED_COLOR }),
+      [startIcon],
     )
 
-  }, [buttonProps, disabled, icon, isLoading, title, testId])
+    const icon = useMemo(() => (disabled ? disabledIcon : startIcon), [disabled, startIcon, disabledIcon])
 
-  return (
-    <Tooltip
-      disableHoverListener={disableHint}
-      title={hint}
-      onClose={handleClose}
-      onOpen={handleOpen}
-      PopperProps={{
-        sx: { '.MuiTooltip-tooltip': { maxWidth: tooltipMaxWidth } },
-      }}
-      placement={tooltipPlacement}
-    >
-      <Box sx={{ display: 'inline' }}>
-        {button}
-      </Box>
-    </Tooltip>
-  )
-})
+    const button = useMemo(() => {
+      if (isLoading !== undefined) {
+        return (
+          <LoadingButton loading={isLoading} startIcon={icon} disabled={disabled} {...buttonProps} data-testid={testId}>
+            {title}
+          </LoadingButton>
+        )
+      }
+
+      if (!title && icon) {
+        return (
+          <IconButton aria-label="delete-icon" disabled={disabled} {...buttonProps} data-testid={testId}>
+            {icon}
+          </IconButton>
+        )
+      }
+
+      return (
+        <Button startIcon={icon} disabled={disabled} {...buttonProps} data-testid={testId}>
+          {title}
+        </Button>
+      )
+    }, [buttonProps, disabled, icon, isLoading, title, testId])
+
+    return (
+      <Tooltip
+        disableHoverListener={disableHint}
+        title={hint}
+        onClose={handleClose}
+        onOpen={handleOpen}
+        PopperProps={{
+          sx: { '.MuiTooltip-tooltip': { maxWidth: tooltipMaxWidth } },
+        }}
+        placement={tooltipPlacement}
+      >
+        <Box sx={{ display: 'inline' }}>{button}</Box>
+      </Tooltip>
+    )
+  },
+)

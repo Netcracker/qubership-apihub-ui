@@ -88,10 +88,7 @@ export function useMonacoDiffEditorElement(options: {
   return ref
 }
 
-function navigateTo(
-  editor: Editor.IStandaloneDiffEditor,
-  lineNumber: number,
-): void {
+function navigateTo(editor: Editor.IStandaloneDiffEditor, lineNumber: number): void {
   editor.revealLineNearTop(lineNumber, Editor.ScrollType.Smooth)
   editor.setPosition({ lineNumber: lineNumber, column: 0 })
   editor.focus()

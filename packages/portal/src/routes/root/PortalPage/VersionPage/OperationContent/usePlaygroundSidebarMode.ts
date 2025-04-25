@@ -31,5 +31,3 @@ export function useIsPlaygroundSidebarOpen(): boolean {
   const [playgroundSidebarMode] = useSidebarPlaygroundViewMode()
   return playgroundSidebarMode === PLAYGROUND_VIEW_MODE || playgroundSidebarMode === EXAMPLES_VIEW_MODE
 }
-
-

@@ -51,14 +51,14 @@ export const App: FC = memo(() => {
     <StrictMode>
       <QueryClientProvider client={client}>
         <ThemeProvider theme={theme}>
-          <CssBaseline/>
+          <CssBaseline />
           <ErrorHandler>
             <EventBusProvider>
-              {auth || isLoginPage ? <RouterProvider router={router}/> : <AuthPage/>}
+              {auth || isLoginPage ? <RouterProvider router={router} /> : <AuthPage />}
             </EventBusProvider>
           </ErrorHandler>
         </ThemeProvider>
-        <ReactQueryDevtools initialIsOpen={false}/>
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </StrictMode>
   )

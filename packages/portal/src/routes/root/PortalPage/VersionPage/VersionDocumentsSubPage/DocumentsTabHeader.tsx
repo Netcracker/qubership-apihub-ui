@@ -70,28 +70,14 @@ const DocumentsSubPageSelector = memo(() => {
 })
 
 export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
-  const {
-    title,
-    version,
-    slug,
-    type,
-    format,
-    searchValue,
-    setSearchValue,
-    isLoading = true,
-  } = props
+  const { title, version, slug, type, format, searchValue, setSearchValue, isLoading = true } = props
 
   const selectedSubPage = useSelectedSubPage()
 
-  const HeaderLayout = useCallback(({ left, right }: {
-    left: ReactNode
-    right: ReactNode
-  }): ReactJSXElement => {
+  const HeaderLayout = useCallback(({ left, right }: { left: ReactNode; right: ReactNode }): ReactJSXElement => {
     return (
       <Grid container data-testid="DocumentToolbar">
-        <Grid xs={4}>
-          {left}
-        </Grid>
+        <Grid xs={4}>{left}</Grid>
         <Grid xs={8} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
           {right}
         </Grid>
@@ -102,20 +88,20 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
   if (isLoading) {
     return (
       <HeaderLayout
-        left={(
+        left={
           <Box display="flex" flexDirection="column">
-            <Skeleton sx={{ width: 200 }}/>
-            <Skeleton sx={{ width: 100 }}/>
+            <Skeleton sx={{ width: 200 }} />
+            <Skeleton sx={{ width: 100 }} />
           </Box>
-        )}
-        right={<Skeleton sx={{ width: 170 }}/>}
+        }
+        right={<Skeleton sx={{ width: 170 }} />}
       />
     )
   }
 
   return (
     <HeaderLayout
-      left={(
+      left={
         <TextWithOverflowTooltip tooltipText={title} variant="inherit">
           <Box display="flex" alignItems="center" gap={1} data-testid="DocumentToolbarTitle">
             {title}
@@ -124,8 +110,8 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
             </Typography>
           </Box>
         </TextWithOverflowTooltip>
-      )}
-      right={(
+      }
+      right={
         <Box display="flex" gap={1}>
           {(isOpenApiSpecType(type) || isGraphQlSpecType(type)) && (
             <>
@@ -137,7 +123,7 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
                   data-testid="SearchOperations"
                 />
               )}
-              <DocumentsSubPageSelector/>
+              <DocumentsSubPageSelector />
             </>
           )}
           <DocumentActionsButton
@@ -150,7 +136,7 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
             }}
           />
         </Box>
-      )}
+      }
     />
   )
 }

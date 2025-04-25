@@ -49,7 +49,7 @@ export type RevisionsDto = Readonly<{
 }>
 
 export function toRevisions(value: RevisionsDto): Revisions {
-  return value.revisions.map(revision => {
+  return value.revisions.map((revision) => {
     const { publishMeta } = revision
     const isPublishMetaNotEmpty = publishMeta && isNotEmpty(Object.keys(publishMeta))
 

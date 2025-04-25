@@ -29,7 +29,9 @@ function useHasBranchPermission(permission: BranchPermission): boolean {
   const [branchConfig] = useBranchConfig()
 
   const hasBranchPermission = useMemo(
-    () => (branchConfig?.permissions?.includes(ALL_BRANCH_PERMISSION_TYPE) || branchConfig?.permissions?.includes(permission)),
+    () =>
+      branchConfig?.permissions?.includes(ALL_BRANCH_PERMISSION_TYPE) ||
+      branchConfig?.permissions?.includes(permission),
     [branchConfig?.permissions, permission],
   )
 

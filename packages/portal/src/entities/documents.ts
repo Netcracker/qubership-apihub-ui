@@ -82,9 +82,7 @@ export function toDocument(value: DocumentDto, packagesRefs?: PackagesRefs): Doc
     description: value.description,
     info: value.info,
     externalDocs: value.externalDocs,
-    operations: value.operations?.map(
-      operation => toOperation(operation, value.packages),
-    ) ?? [],
+    operations: value.operations?.map((operation) => toOperation(operation, value.packages)) ?? [],
     packageRef: toPackageRef(value.packageRef, packagesRefs),
   }
 }

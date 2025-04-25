@@ -46,11 +46,7 @@ export function useTokens(packageKey?: Key): [Tokens, IsLoading, Error | null] {
     select: toSystemTokens,
   })
 
-  return [
-    useMemo(() => data ?? [], [data]),
-    isLoading,
-    error,
-  ]
+  return [useMemo(() => data ?? [], [data]), isLoading, error]
 }
 
 export function useGenerateApiKey(): [Key, GenerateApiKey, IsLoading] {
@@ -84,25 +80,20 @@ export function useAvailablePackageRoles(packageKey: Key, userId?: Key): [Roles,
     select: toRoles,
   })
 
-  return [
-    useMemo(() => data ?? [], [data]),
-    isLoading,
-    error,
-  ]
+  return [useMemo(() => data ?? [], [data]), isLoading, error]
 }
 
 export function useInvalidateTokens(): InvalidateQuery<void> {
   const client = useQueryClient()
 
-  return () => client.invalidateQueries({
-    queryKey: [ACCESS_TOKENS_QUERY_KEY],
-    refetchType: 'all',
-  })
+  return () =>
+    client.invalidateQueries({
+      queryKey: [ACCESS_TOKENS_QUERY_KEY],
+      refetchType: 'all',
+    })
 }
 
-export async function getTokens(
-  packageKey?: Key,
-): Promise<SystemTokensDto> {
+export async function getTokens(packageKey?: Key): Promise<SystemTokensDto> {
   const packageId = encodeURIComponent(packageKey ?? SYSTEM_TOKENS_PACKAGE_KEY)
   const pathPattern = '/packages/:packageId/apiKeys'
 
@@ -113,10 +104,7 @@ export async function getTokens(
   )
 }
 
-export async function getAvailableRoles(
-  packageKey: Key,
-  userKey?: Key,
-): Promise<RolesDto> {
+export async function getAvailableRoles(packageKey: Key, userKey?: Key): Promise<RolesDto> {
   const packageId = encodeURIComponent(packageKey)
   const userId = encodeURIComponent(userKey ?? '')
 
@@ -126,17 +114,10 @@ export async function getAvailableRoles(
 
   const pathPattern = `/packages/:packageId/availableRoles?${queryParams}`
 
-  return await requestJson<RolesDto>(
-    generatePath(pathPattern, { packageId }),
-    { method: 'GET' },
-    { basePath: API_V2 },
-  )
+  return await requestJson<RolesDto>(generatePath(pathPattern, { packageId }), { method: 'GET' }, { basePath: API_V2 })
 }
 
-export async function generateApiKey(
-  value: GenerateApiKeyValue,
-  packageKey?: Key,
-): Promise<SystemTokenDto> {
+export async function generateApiKey(value: GenerateApiKeyValue, packageKey?: Key): Promise<SystemTokenDto> {
   const packageId = encodeURIComponent(packageKey ?? SYSTEM_TOKENS_PACKAGE_KEY)
   const pathPattern = '/packages/:packageId/apiKeys'
 
@@ -150,23 +131,16 @@ export async function generateApiKey(
   )
 }
 
-export async function deleteApiKey(
-  key: Key,
-  packageKey: Key,
-): Promise<void> {
+export async function deleteApiKey(key: Key, packageKey: Key): Promise<void> {
   const packageId = encodeURIComponent(packageKey)
   const id = encodeURIComponent(key)
   const pathPattern = '/packages/:packageId/apiKeys/:id'
 
-  return await requestVoid(
-    generatePath(pathPattern, { packageId, id }),
-    { method: 'DELETE' },
-    { basePath: API_V2 },
-  )
+  return await requestVoid(generatePath(pathPattern, { packageId, id }), { method: 'DELETE' }, { basePath: API_V2 })
 }
 
 export function toSystemTokens(value: SystemTokensDto): Tokens {
-  return value?.apiKeys.map(apiKey => toSystemToken(apiKey))
+  return value?.apiKeys.map((apiKey) => toSystemToken(apiKey))
 }
 
 export function toSystemToken(value: SystemTokenDto): SystemToken {

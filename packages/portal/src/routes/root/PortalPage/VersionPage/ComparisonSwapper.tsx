@@ -29,36 +29,34 @@ export type ComparisonSwapper = {
   showCompareDialog: () => void
 }
 
-export const ComparisonSwapper: FC<ComparisonSwapper> = memo<ComparisonSwapper>(({
-  breadcrumbsData,
-  handleSwap,
-  showCompareDialog,
-}) => {
-  return (
-    <Box sx={SWAPPER_STYLES}>
-      <Box sx={SWAPPER_HEADER_STYLES} data-testid="LeftSwapperHeader">
-        <SwapperBreadcrumbs side="before" data={breadcrumbsData}/>
-      </Box>
-      <Box sx={SWAPPER_DELIMITER_STYLES}>
-        <Box sx={SWAPPER_ARROW_STYLES}>
-          <Swapper onSwap={handleSwap}/>
+export const ComparisonSwapper: FC<ComparisonSwapper> = memo<ComparisonSwapper>(
+  ({ breadcrumbsData, handleSwap, showCompareDialog }) => {
+    return (
+      <Box sx={SWAPPER_STYLES}>
+        <Box sx={SWAPPER_HEADER_STYLES} data-testid="LeftSwapperHeader">
+          <SwapperBreadcrumbs side="before" data={breadcrumbsData} />
+        </Box>
+        <Box sx={SWAPPER_DELIMITER_STYLES}>
+          <Box sx={SWAPPER_ARROW_STYLES}>
+            <Swapper onSwap={handleSwap} />
+          </Box>
+        </Box>
+        <Box sx={SECOND_SWAPPER_HEADER_STYLES}>
+          <Box gridArea="data" data-testid="RightSwapperHeader">
+            <SwapperBreadcrumbs side="after" data={breadcrumbsData} />
+          </Box>
+          <IconButton
+            sx={{ gridArea: 'action', marginLeft: 'auto', alignItems: 'center' }}
+            onClick={showCompareDialog}
+            data-testid="EditButton"
+          >
+            <EditIcon />
+          </IconButton>
         </Box>
       </Box>
-      <Box sx={SECOND_SWAPPER_HEADER_STYLES}>
-        <Box gridArea="data" data-testid="RightSwapperHeader">
-          <SwapperBreadcrumbs side="after" data={breadcrumbsData}/>
-        </Box>
-        <IconButton
-          sx={{ gridArea: 'action', marginLeft: 'auto', alignItems: 'center' }}
-          onClick={showCompareDialog}
-          data-testid="EditButton"
-        >
-          <EditIcon/>
-        </IconButton>
-      </Box>
-    </Box>
-  )
-})
+    )
+  },
+)
 
 const SWAPPER_STYLES = {
   borderBottom: '1px solid #D9D9D9',

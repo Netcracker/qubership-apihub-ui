@@ -33,54 +33,39 @@ export type OperationsByTagListProps = {
   setExpanded: Dispatch<SetStateAction<readonly string[]>>
   onOperationClick: (key: Key) => void
 }
-export const OperationsByTagList: FC<OperationsByTagListProps> = memo<OperationsByTagListProps>(props => {
-  const {
-    tag,
-    operationsGroupedByTag,
-    isLoading = true,
-    expanded,
-    setExpanded,
-  } = props
+export const OperationsByTagList: FC<OperationsByTagListProps> = memo<OperationsByTagListProps>((props) => {
+  const { tag, operationsGroupedByTag, isLoading = true, expanded, setExpanded } = props
   const operationsList = operationsGroupedByTag[tag]
 
   const group = useSearchParam(GROUP_SEARCH_PARAM)
 
-  const handleTagSelection = useCallback((tag: string) => {
-    setExpanded(prevState => (
-      !prevState.includes(tag)
-        ? [...prevState, tag]
-        : prevState.filter(key => key !== tag)
-    ))
-  }, [setExpanded])
+  const handleTagSelection = useCallback(
+    (tag: string) => {
+      setExpanded((prevState) =>
+        !prevState.includes(tag) ? [...prevState, tag] : prevState.filter((key) => key !== tag),
+      )
+    },
+    [setExpanded],
+  )
 
   const isTagExpanded = useMemo(() => expanded.includes(tag), [expanded, tag])
   const onChange = useCallback(() => handleTagSelection(tag), [handleTagSelection, tag])
 
   return (
     <Accordion expanded={isTagExpanded} onChange={onChange}>
-      <AccordionSummary
-        sx={ACCORDION_SUMMARY_STYLE}
-        expandIcon={<ExpandMoreIcon/>}
-        data-testid="TagAccordionButton"
-      >
-        <Typography width="100%" noWrap variant="button">{tag}</Typography>
+      <AccordionSummary sx={ACCORDION_SUMMARY_STYLE} expandIcon={<ExpandMoreIcon />} data-testid="TagAccordionButton">
+        <Typography width="100%" noWrap variant="button">
+          {tag}
+        </Typography>
       </AccordionSummary>
       <AccordionDetails>
-        {
-          isTagExpanded && (
-            group ? (
-                <OperationsListOnComparison
-                  changedOperations={operationsList}
-                />
-              )
-              : (
-                <OperationsListOnComparison
-                  changedOperations={operationsList}
-                />
-              )
-          )
-        }
-        {isLoading && <Skeleton sx={{ ml: 4, mr: 1 }}/>}
+        {isTagExpanded &&
+          (group ? (
+            <OperationsListOnComparison changedOperations={operationsList} />
+          ) : (
+            <OperationsListOnComparison changedOperations={operationsList} />
+          ))}
+        {isLoading && <Skeleton sx={{ ml: 4, mr: 1 }} />}
       </AccordionDetails>
     </Accordion>
   )

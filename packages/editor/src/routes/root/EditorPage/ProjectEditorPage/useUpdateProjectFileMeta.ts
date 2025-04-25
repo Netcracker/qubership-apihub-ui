@@ -38,20 +38,25 @@ export function useUpdateProjectFileMeta(): [UpdateProjectFileMeta, IsLoading] {
   const client = useQueryClient()
 
   const { mutate, isLoading } = useMutation<void, Error, FileMeta>({
-    mutationFn: meta => updateProjectFileMeta(projectId!, selectedBranch!, meta),
+    mutationFn: (meta) => updateProjectFileMeta(projectId!, selectedBranch!, meta),
     onSuccess: async (_, meta) => {
-      const { files } = client.getQueryData<BranchConfig>([BRANCH_CONFIG_QUERY_KEY, projectId, branchName]) ?? { files: [] }
+      const { files } = client.getQueryData<BranchConfig>([BRANCH_CONFIG_QUERY_KEY, projectId, branchName]) ?? {
+        files: [],
+      }
 
-      await PackageVersionBuilder.updateCache({
-        packageKey: projectId!,
-        versionKey: VERSION_CANDIDATE,
-        previousVersionKey: '',
-        previousPackageKey: projectId!,
-        authorization: getAuthorization(),
-        branchName: branchName!,
-        files: files,
-        sources: branchFiles,
-      }, meta.key)
+      await PackageVersionBuilder.updateCache(
+        {
+          packageKey: projectId!,
+          versionKey: VERSION_CANDIDATE,
+          previousVersionKey: '',
+          previousPackageKey: projectId!,
+          authorization: getAuthorization(),
+          branchName: branchName!,
+          files: files,
+          sources: branchFiles,
+        },
+        meta.key,
+      )
     },
   })
 

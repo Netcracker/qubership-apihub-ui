@@ -30,14 +30,14 @@ export type DocumentListProps = {
 
 export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({ isLoading, documents }) => {
   if (isLoading) {
-    return (
-      <LoadingIndicator/>
-    )
+    return <LoadingIndicator />
   }
 
   if (isEmpty(documents)) {
     return (
-      <Typography noWrap variant="body2" mt={2}>No documents</Typography>
+      <Typography noWrap variant="body2" mt={2}>
+        No documents
+      </Typography>
     )
   }
 
@@ -45,10 +45,7 @@ export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({ is
     <List>
       {documents.map(({ key, version, kind, name }, index) => (
         <Box key={index}>
-          <ListItem
-            key={`${key}-${version}`}
-            sx={{ px: 0 }}
-          >
+          <ListItem key={`${key}-${version}`} sx={{ px: 0 }}>
             <ListItemText
               sx={{ m: 0 }}
               primary={
@@ -62,15 +59,15 @@ export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({ is
                   {name}
                 </Link>
               }
-              secondary={<Typography noWrap variant="subtitle2">{key} • {version}</Typography>}
+              secondary={
+                <Typography noWrap variant="subtitle2">
+                  {key} • {version}
+                </Typography>
+              }
             />
           </ListItem>
           <Box marginLeft={1} marginTop={-1}>
-            <RefSpecList
-              kind={kind}
-              refKey={key}
-              versionKey={version}
-            />
+            <RefSpecList kind={kind} refKey={key} versionKey={version} />
           </Box>
         </Box>
       ))}

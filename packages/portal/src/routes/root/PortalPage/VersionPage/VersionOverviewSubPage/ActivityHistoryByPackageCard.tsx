@@ -50,14 +50,7 @@ export const ActivityHistoryByPackageCard: FC = memo(() => {
           onChangeFilters={setActivityHistoryFilters}
         />
       }
-      body={
-        <ActivityListBody
-          activities={activities}
-          types={types}
-          textFilter={textFilter}
-          isLoading={isLoading}
-        />
-      }
+      body={<ActivityListBody activities={activities} types={types} textFilter={textFilter} isLoading={isLoading} />}
     />
   )
 })
@@ -65,32 +58,22 @@ export const ActivityHistoryByPackageCard: FC = memo(() => {
 type ActivityHistoryByPackageCardHeaderProps = Partial<{
   textFilter: string
   types: ReadonlyArray<ActivityType>
-  onChangeFilters: (filters: {
-    textFilter?: string
-    types?: ReadonlyArray<ActivityType>
-  }) => void
+  onChangeFilters: (filters: { textFilter?: string; types?: ReadonlyArray<ActivityType> }) => void
 }>
 
-const ActivityHistoryByPackageCardHeader: FC<ActivityHistoryByPackageCardHeaderProps> = memo<ActivityHistoryByPackageCardHeaderProps>(({
-  textFilter,
-  types,
-  onChangeFilters,
-}) => {
-  return (
-    <Box
-      sx={{
-        display: 'grid',
-        gap: 1,
-        gridTemplateColumns: '1fr auto',
-        alignItems: 'center',
-      }}
-    >
-      <Typography variant="inherit">Activity History</Typography>
-      <ActivityListFilters
-        text={textFilter}
-        types={types}
-        onChangeFilters={onChangeFilters}
-      />
-    </Box>
-  )
-})
+const ActivityHistoryByPackageCardHeader: FC<ActivityHistoryByPackageCardHeaderProps> =
+  memo<ActivityHistoryByPackageCardHeaderProps>(({ textFilter, types, onChangeFilters }) => {
+    return (
+      <Box
+        sx={{
+          display: 'grid',
+          gap: 1,
+          gridTemplateColumns: '1fr auto',
+          alignItems: 'center',
+        }}
+      >
+        <Typography variant="inherit">Activity History</Typography>
+        <ActivityListFilters text={textFilter} types={types} onChangeFilters={onChangeFilters} />
+      </Box>
+    )
+  })

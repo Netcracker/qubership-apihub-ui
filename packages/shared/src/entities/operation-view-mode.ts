@@ -50,7 +50,10 @@ export const OPERATION_VIEW_MODES = new Map<ApiType, ReadonlyArray<OperationView
   [API_TYPE_REST, REST_OPERATION_VIEW_MODES],
 ])
 
-export const OPERATION_COMPARE_VIEW_MODES: ReadonlyArray<OperationViewMode> = [DOC_OPERATION_VIEW_MODE, RAW_OPERATION_VIEW_MODE]
+export const OPERATION_COMPARE_VIEW_MODES: ReadonlyArray<OperationViewMode> = [
+  DOC_OPERATION_VIEW_MODE,
+  RAW_OPERATION_VIEW_MODE,
+]
 
 export const OPERATION_PREVIEW_VIEW_MODES: ReadonlyArray<OperationViewMode> = [
   DOC_OPERATION_VIEW_MODE,

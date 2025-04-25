@@ -35,59 +35,49 @@ export type PackageBreadcrumbsProps = Partial<{
 }>
 
 // TODO: Make FoC
-export const PackageBreadcrumbs: FC<PackageBreadcrumbsProps> = memo<PackageBreadcrumbsProps>(({
-  packageObject,
-  versionKey,
-  showPackagePath,
-}) => {
-  const location = useBackwardLocation()
-  const backwardLocation = useBackwardLocationContext()
-  const setBackwardLocation = useSetBackwardLocationContext()
+export const PackageBreadcrumbs: FC<PackageBreadcrumbsProps> = memo<PackageBreadcrumbsProps>(
+  ({ packageObject, versionKey, showPackagePath }) => {
+    const location = useBackwardLocation()
+    const backwardLocation = useBackwardLocationContext()
+    const setBackwardLocation = useSetBackwardLocationContext()
 
-  const { fullVersion, latestRevision } = useVersionWithRevision(versionKey, packageObject?.key)
-  const { versionKey: splittedVersionKey } = getSplittedVersionKey(fullVersion, latestRevision)
+    const { fullVersion, latestRevision } = useVersionWithRevision(versionKey, packageObject?.key)
+    const { versionKey: splittedVersionKey } = getSplittedVersionKey(fullVersion, latestRevision)
 
-  const packageSettingsLinkHandle = useCallback(() => {
-    setBackwardLocation({ ...backwardLocation, fromPackageSettings: location })
-  }, [backwardLocation, location, setBackwardLocation])
+    const packageSettingsLinkHandle = useCallback(() => {
+      setBackwardLocation({ ...backwardLocation, fromPackageSettings: location })
+    }, [backwardLocation, location, setBackwardLocation])
 
-  const links = useMemo(() => {
-    const parentLinks = packageObject?.parents?.map(parent => {
-      const isWorkspace = parent.kind === WORKSPACE_KIND
-      const linkTo = isWorkspace
-        ? getWorkspacePath({ workspaceKey: parent.key })
-        : getGroupPath({ groupKey: parent.key })
-      return (
-        <Link
-          key={parent.key}
-          component={NavLink}
-          to={linkTo}
-          onClick={packageSettingsLinkHandle}
-        >
-          {parent.name}
-        </Link>
-      )
-    }) ?? []
+    const links = useMemo(() => {
+      const parentLinks =
+        packageObject?.parents?.map((parent) => {
+          const isWorkspace = parent.kind === WORKSPACE_KIND
+          const linkTo = isWorkspace
+            ? getWorkspacePath({ workspaceKey: parent.key })
+            : getGroupPath({ groupKey: parent.key })
+          return (
+            <Link key={parent.key} component={NavLink} to={linkTo} onClick={packageSettingsLinkHandle}>
+              {parent.name}
+            </Link>
+          )
+        }) ?? []
 
-    if (showPackagePath && packageObject && fullVersion) {
-      const packageLink = (
-        <Link
-          key={packageObject.key}
-          component={NavLink}
-          to={getOverviewPath({ packageKey: packageObject.key, versionKey: fullVersion })}
-        >
-          {packageObject.name} / {splittedVersionKey}
-        </Link>
-      )
-      parentLinks.push(packageLink)
-    }
+      if (showPackagePath && packageObject && fullVersion) {
+        const packageLink = (
+          <Link
+            key={packageObject.key}
+            component={NavLink}
+            to={getOverviewPath({ packageKey: packageObject.key, versionKey: fullVersion })}
+          >
+            {packageObject.name} / {splittedVersionKey}
+          </Link>
+        )
+        parentLinks.push(packageLink)
+      }
 
-    return parentLinks
-  }, [fullVersion, packageObject, packageSettingsLinkHandle, showPackagePath, splittedVersionKey])
+      return parentLinks
+    }, [fullVersion, packageObject, packageSettingsLinkHandle, showPackagePath, splittedVersionKey])
 
-  return (
-    <Breadcrumbs data-testid="PackageBreadcrumbs">
-      {links}
-    </Breadcrumbs>
-  )
-})
+    return <Breadcrumbs data-testid="PackageBreadcrumbs">{links}</Breadcrumbs>
+  },
+)

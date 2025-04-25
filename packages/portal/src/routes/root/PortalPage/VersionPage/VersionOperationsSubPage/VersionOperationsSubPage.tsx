@@ -42,7 +42,11 @@ import { useApiAudienceSearchFilter } from '../useApiAudienceSearchFilters'
 // High Order Component //
 export const VersionOperationsSubPage: FC = memo(() => {
   const [searchValue, setSearchValue] = useState('')
-  const { packageId, versionId, apiType = DEFAULT_API_TYPE } = useParams<{
+  const {
+    packageId,
+    versionId,
+    apiType = DEFAULT_API_TYPE,
+  } = useParams<{
     packageId: Key
     versionId: Key
     apiType: ApiType
@@ -75,9 +79,7 @@ export const VersionOperationsSubPage: FC = memo(() => {
   })
 
   useEffect(() => {
-    isNotEmpty(operations)
-      ? setPreviewOperation(operations[0])
-      : setPreviewOperation(undefined)
+    isNotEmpty(operations) ? setPreviewOperation(operations[0]) : setPreviewOperation(undefined)
   }, [operations, setPreviewOperation])
 
   const {
@@ -92,7 +94,9 @@ export const VersionOperationsSubPage: FC = memo(() => {
   const onResize = useCallback(
     (_: MouseEvent | TouchEvent, __: ResizeDirection, ___: HTMLElement, delta: NumberSize) => {
       togglePreviewSize(previewSize + delta.width)
-    }, [previewSize, togglePreviewSize])
+    },
+    [previewSize, togglePreviewSize],
+  )
 
   const maxPreviewWidth = useMemo(() => {
     if (bodyRef.current?.clientWidth) {
@@ -112,28 +116,32 @@ export const VersionOperationsSubPage: FC = memo(() => {
       toggleHideFiltersPanel={toggleHideFiltersPanel}
       operationsViewMode={operationsViewMode}
       toggleOperationsViewMode={toggleOperationsViewMode}
-      table={<OpenApiTable
-        value={operations}
-        fetchNextPage={fetchNextPage}
-        isNextPageFetching={isFetchingNextPage}
-        hasNextPage={hasNextPage}
-        isLoading={isLoading}
-        apiType={apiType}
-        textFilter={searchValue}
-      />}
-      list={<OperationListWithPreview
-        operations={operations}
-        fetchNextPage={fetchNextPage}
-        hasNextPage={hasNextPage}
-        isListLoading={isLoading}
-        isNextPageFetching={isFetchingNextPage}
-        packageKey={packageId!}
-        versionKey={versionId!}
-        apiType={apiType}
-        initialSize={previewSize}
-        handleResize={onResize}
-        maxPreviewWidth={maxPreviewWidth}
-      />}
+      table={
+        <OpenApiTable
+          value={operations}
+          fetchNextPage={fetchNextPage}
+          isNextPageFetching={isFetchingNextPage}
+          hasNextPage={hasNextPage}
+          isLoading={isLoading}
+          apiType={apiType}
+          textFilter={searchValue}
+        />
+      }
+      list={
+        <OperationListWithPreview
+          operations={operations}
+          fetchNextPage={fetchNextPage}
+          hasNextPage={hasNextPage}
+          isListLoading={isLoading}
+          isNextPageFetching={isFetchingNextPage}
+          packageKey={packageId!}
+          versionKey={versionId!}
+          apiType={apiType}
+          initialSize={previewSize}
+          handleResize={onResize}
+          maxPreviewWidth={maxPreviewWidth}
+        />
+      }
       filters={<OperationsNavigation />}
       exportButton={
         <ExportOperationsMenu
@@ -145,7 +153,8 @@ export const VersionOperationsSubPage: FC = memo(() => {
           group={operationGroup}
           refPackageId={refKey}
           emptyTag={emptyTag}
-        />}
+        />
+      }
       testId="OperationsTab"
     />
   )

@@ -24,25 +24,23 @@ export function useBranchChanges(): [BranchChanges, IsLoading] {
   const [branchConfig, isBranchConfigLoading] = useBranchConfig()
 
   const changes = useMemo(
-    () => branchConfig?.files
-      .filter(({ changeType, movedFrom }) => changeType && changeType !== NONE_CHANGE_TYPE || movedFrom)
-      .map(({ changeType, blobKey, conflictedBlobKey, key, labels, movedFrom, publish, status }) => ({
-        fileId: key,
-        publish: publish,
-        labels: labels,
-        status: status,
-        blobId: blobKey,
-        changeType: changeType,
-        movedFrom: movedFrom,
-        conflictedBlobId: conflictedBlobKey,
-      })) ?? [],
+    () =>
+      branchConfig?.files
+        .filter(({ changeType, movedFrom }) => (changeType && changeType !== NONE_CHANGE_TYPE) || movedFrom)
+        .map(({ changeType, blobKey, conflictedBlobKey, key, labels, movedFrom, publish, status }) => ({
+          fileId: key,
+          publish: publish,
+          labels: labels,
+          status: status,
+          blobId: blobKey,
+          changeType: changeType,
+          movedFrom: movedFrom,
+          conflictedBlobId: conflictedBlobKey,
+        })) ?? [],
     [branchConfig?.files],
   )
 
-  return [
-    changes,
-    isBranchConfigLoading,
-  ]
+  return [changes, isBranchConfigLoading]
 }
 
 type BranchChanges = BranchFilesContent[]
@@ -51,7 +49,5 @@ export function useBranchChangeCount(): number {
   const [branchChanges] = useBranchChanges()
   const [branchConfig] = useBranchConfig()
 
-  return branchConfig?.changeType !== NONE_CHANGE_TYPE
-    ? branchChanges.length + 1
-    : branchChanges.length
+  return branchConfig?.changeType !== NONE_CHANGE_TYPE ? branchChanges.length + 1 : branchChanges.length
 }

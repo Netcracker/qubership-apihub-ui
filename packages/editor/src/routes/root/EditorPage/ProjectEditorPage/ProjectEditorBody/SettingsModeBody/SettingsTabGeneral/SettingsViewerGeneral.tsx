@@ -23,7 +23,7 @@ import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/Body
 import { ProjectDetails } from '@apihub/components/ProjectDetails'
 import { calculateProjectPath } from '@apihub/utils/projects'
 
-export const SettingsViewerGeneral: FC<SettingsGeneralProps> = memo(props => {
+export const SettingsViewerGeneral: FC<SettingsGeneralProps> = memo((props) => {
   const { project, packageObj } = props
   const { name, alias, description, integration } = project
 
@@ -39,10 +39,7 @@ export const SettingsViewerGeneral: FC<SettingsGeneralProps> = memo(props => {
       header="General"
       subheader="Project information"
       action={
-        <Button
-          variant="outlined"
-          onClick={() => setEditable(true)}
-        >
+        <Button variant="outlined" onClick={() => setEditable(true)}>
           Edit
         </Button>
       }

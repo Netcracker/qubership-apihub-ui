@@ -15,18 +15,11 @@
  */
 
 import { useQuery } from '@tanstack/react-query'
-import type {
-  SystemInfo,
-  SystemInfoDto} from '@netcracker/qubership-apihub-ui-shared/utils/system-info'
-import {
-  EMPTY_SYSTEM_INFO,
-  getSystemInfoOptions,
-} from '@netcracker/qubership-apihub-ui-shared/utils/system-info'
+import type { SystemInfo, SystemInfoDto } from '@netcracker/qubership-apihub-ui-shared/utils/system-info'
+import { EMPTY_SYSTEM_INFO, getSystemInfoOptions } from '@netcracker/qubership-apihub-ui-shared/utils/system-info'
 
 export function useSystemInfo(): SystemInfo {
-  const { data } = useQuery<SystemInfoDto, Error, SystemInfo>(
-    getSystemInfoOptions(),
-  )
+  const { data } = useQuery<SystemInfoDto, Error, SystemInfo>(getSystemInfoOptions())
 
   return data ?? EMPTY_SYSTEM_INFO
 }

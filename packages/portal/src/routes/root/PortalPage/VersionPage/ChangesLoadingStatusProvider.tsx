@@ -33,10 +33,7 @@ export const ChangesLoadingStatusProvider: FC<PropsWithChildren> = ({ children }
 
   return (
     <ChangesLoadingStatusContext.Provider value={isLoading}>
-      <SetChangesLoadingStatusContext.Provider value={setIsLoading}>
-        {children}
-      </SetChangesLoadingStatusContext.Provider>
+      <SetChangesLoadingStatusContext.Provider value={setIsLoading}>{children}</SetChangesLoadingStatusContext.Provider>
     </ChangesLoadingStatusContext.Provider>
   )
-
 }

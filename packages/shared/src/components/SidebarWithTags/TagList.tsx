@@ -53,9 +53,7 @@ export const TagList: FC<TagListProps> = memo<TagListProps>((props) => {
   useIntersectionObserver(ref, isNextTagsPageFetching, hasNextTagsPage, fetchNextTagsPage)
 
   if (areTagsLoading) {
-    return (
-      <TagListSkeleton/>
-    )
+    return <TagListSkeleton />
   }
 
   return (
@@ -66,16 +64,9 @@ export const TagList: FC<TagListProps> = memo<TagListProps>((props) => {
     >
       <List>
         {tags.map((tag) => {
-          return (
-            <TagListItem
-              key={tag}
-              tag={tag}
-              selected={tag === selectedTag}
-              onClick={onSelectTag}
-            />
-          )
+          return <TagListItem key={tag} tag={tag} selected={tag === selectedTag} onClick={onSelectTag} />
         })}
-        {hasNextTagsPage && <TagSkeleton key="tag-skeleton" refObject={ref}/>}
+        {hasNextTagsPage && <TagSkeleton key="tag-skeleton" refObject={ref} />}
       </List>
     </Placeholder>
   )

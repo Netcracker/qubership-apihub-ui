@@ -23,7 +23,11 @@ import { flexRender, getCoreRowModel, getFilteredRowModel, useReactTable } from 
 import { EndpointTableCell } from './EndpointTableCell'
 import { COLUMNS_SIZES_MAP } from './openapi-table'
 import type { OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import { API_AUDIENCE_COLUMN_ID, API_KIND_COLUMN_ID, ENDPOINT_COLUMN_ID } from '@netcracker/qubership-apihub-ui-shared/entities/table-columns'
+import {
+  API_AUDIENCE_COLUMN_ID,
+  API_KIND_COLUMN_ID,
+  ENDPOINT_COLUMN_ID,
+} from '@netcracker/qubership-apihub-ui-shared/entities/table-columns'
 
 export type SubOpenApiTableProps = {
   documentSlug: string
@@ -31,43 +35,52 @@ export type SubOpenApiTableProps = {
 }
 
 export const SubOpenApiTable: FC<SubOpenApiTableProps> = memo(({ documentSlug, operations }) => {
-  const columns: ColumnDef<TableData>[] = useMemo(() => [
-    {
-      id: ENDPOINT_COLUMN_ID,
-      header: 'Endpoints',
-      cell: ({ row }) => (
-        <EndpointTableCell
-          value={row}
-          documentSlug={documentSlug}
-          isSubTable
-        />
-      ),
-    },
-    {
-      id: API_AUDIENCE_COLUMN_ID,
-      header: 'Audience',
-      cell: ({ row: { original: { operation } } }) => {
-        if (operation?.apiAudience) {
-          return operation.apiAudience
-        }
+  const columns: ColumnDef<TableData>[] = useMemo(
+    () => [
+      {
+        id: ENDPOINT_COLUMN_ID,
+        header: 'Endpoints',
+        cell: ({ row }) => <EndpointTableCell value={row} documentSlug={documentSlug} isSubTable />,
       },
-    },
-    {
-      id: API_KIND_COLUMN_ID,
-      header: 'Type',
-      cell: ({ row: { original: { operation } } }) => {
-        if (operation?.apiKind) {
-          return operation.apiKind
-        }
+      {
+        id: API_AUDIENCE_COLUMN_ID,
+        header: 'Audience',
+        cell: ({
+          row: {
+            original: { operation },
+          },
+        }) => {
+          if (operation?.apiAudience) {
+            return operation.apiAudience
+          }
+        },
       },
-    },
-  ], [documentSlug])
+      {
+        id: API_KIND_COLUMN_ID,
+        header: 'Type',
+        cell: ({
+          row: {
+            original: { operation },
+          },
+        }) => {
+          if (operation?.apiKind) {
+            return operation.apiKind
+          }
+        },
+      },
+    ],
+    [documentSlug],
+  )
 
-  const data: TableData[] = useMemo(() => operations.map(operation => {
-    return ({
-      operation: operation,
-    })
-  }), [operations])
+  const data: TableData[] = useMemo(
+    () =>
+      operations.map((operation) => {
+        return {
+          operation: operation,
+        }
+      }),
+    [operations],
+  )
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -84,7 +97,7 @@ export const SubOpenApiTable: FC<SubOpenApiTableProps> = memo(({ documentSlug, o
 
   return (
     <>
-      {getRowModel().rows.map(row => (
+      {getRowModel().rows.map((row) => (
         <TableRow key={row.id}>
           {row.getVisibleCells().map((cell) => (
             <TableCell

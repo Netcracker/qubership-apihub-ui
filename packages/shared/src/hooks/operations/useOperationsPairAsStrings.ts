@@ -18,9 +18,9 @@ import { useMemo } from 'react'
 import type { OperationData } from '../../entities/operations'
 import { stringifyOperation } from '../../utils/operations'
 
-export function useOperationsPairAsStrings(left?: OperationData | null, right?: OperationData | null): [string, string] {
-  return useMemo(
-    () => [stringifyOperation(left), stringifyOperation(right)],
-    [left, right],
-  )
+export function useOperationsPairAsStrings(
+  left?: OperationData | null,
+  right?: OperationData | null,
+): [string, string] {
+  return useMemo(() => [stringifyOperation(left), stringifyOperation(right)], [left, right])
 }

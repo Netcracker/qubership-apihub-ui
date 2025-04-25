@@ -99,105 +99,109 @@ export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({ do
 
   const navigate = useNavigate()
 
-  const navigateToSelectedDocument = useCallback((pathToNavigate: To): void => {
-    navigate(pathToNavigate)
-  }, [navigate])
+  const navigateToSelectedDocument = useCallback(
+    (pathToNavigate: To): void => {
+      navigate(pathToNavigate)
+    },
+    [navigate],
+  )
 
   const groupedDocuments = useMemo(() => {
     const groupedDocuments = groupBy(documents, ({ type }) => getGroupNameBySpecType(type))
     return Object.entries(groupedDocuments)
-      .sort(([groupNameA], [groupNameB]) => GROUPS_DISPLAY_ORDER.indexOf(groupNameA) - GROUPS_DISPLAY_ORDER.indexOf(groupNameB))
-      .map(([groupName, documents]) => [groupName, documents.sort((it, that) => alphabeticallyBy('title', it, that))] as [GroupName, Document[]])
+      .sort(
+        ([groupNameA], [groupNameB]) =>
+          GROUPS_DISPLAY_ORDER.indexOf(groupNameA) - GROUPS_DISPLAY_ORDER.indexOf(groupNameB),
+      )
+      .map(
+        ([groupName, documents]) =>
+          [groupName, documents.sort((it, that) => alphabeticallyBy('title', it, that))] as [GroupName, Document[]],
+      )
   }, [documents])
 
   if (isLoading) {
     return (
       <Box mt={1}>
-        <SidebarSkeleton/>
+        <SidebarSkeleton />
       </Box>
     )
   } else if (isEmpty(documents)) {
-    return (
-      <Placeholder
-        invisible={isNotEmpty(documents)}
-        area={NAVIGATION_PLACEHOLDER_AREA}
-        message="No documents"
-      />
-    )
+    return <Placeholder invisible={isNotEmpty(documents)} area={NAVIGATION_PLACEHOLDER_AREA} message="No documents" />
   }
 
   return (
-    <List sx={{
-      paddingBottom: '30px',
-      gap: '16px',
-      display: 'flex',
-      flexDirection: 'column',
-    }} data-testid="DocumentsList"
+    <List
+      sx={{
+        paddingBottom: '30px',
+        gap: '16px',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+      data-testid="DocumentsList"
     >
-      {groupedDocuments.map(([groupName, documents]) => <Box key={groupName}>
-        <ListSubheader
-          sx={{
-            fontSize: 12,
-            lineHeight: '24px',
-          }}
-        >
-          {groupName}
-        </ListSubheader>
-        {documents.map(({ key, type, title, slug, version, format }) => {
-          const displayTitle = version ? `${title} ${version}` : title
-          return (
-            <ListItem
-              key={key}
-              sx={{ p: 0 }}
-            >
-              {/*TODO: Check flexDirection in theme*/}
-              <ListItemButton
-                sx={{
-                  flexDirection: 'unset',
-                  backgroundColor: documentId === slug ? '#ECEDEF' : 'transparent',
-                  height: '36px',
-                  alignItems: 'center',
-                  '&:hover': {
-                    '& .MuiButtonBase-root': {
-                      visibility: 'visible',
-                    },
-                  },
-                }}
-                selected={documentId === slug}
-                onClick={() => {
-                  navigateToSelectedDocument({
-                    pathname: `/portal/packages/${packageKey}/${escapedVersionKey}/documents/${slug}`,
-                    search: `${search}`,
-                  })
-                }}
-                data-testid="DocumentButton"
-              >
-                <ListItemIcon sx={{ minWidth: 2, mt: 0, mr: 1 }}>
-                  <SpecLogo value={type}/>
-                </ListItemIcon>
-                <ListItemText primary={displayTitle} primaryTypographyProps={{ sx: { mt: 0.25 } }}/>
-                <DocumentActionsButton
-                  slug={slug}
-                  docType={type}
-                  format={format}
+      {groupedDocuments.map(([groupName, documents]) => (
+        <Box key={groupName}>
+          <ListSubheader
+            sx={{
+              fontSize: 12,
+              lineHeight: '24px',
+            }}
+          >
+            {groupName}
+          </ListSubheader>
+          {documents.map(({ key, type, title, slug, version, format }) => {
+            const displayTitle = version ? `${title} ${version}` : title
+            return (
+              <ListItem key={key} sx={{ p: 0 }}>
+                {/*TODO: Check flexDirection in theme*/}
+                <ListItemButton
                   sx={{
-                    ml: 1,
-                    visibility: 'visible',
-                    backgroundColor: 'transparent',
+                    flexDirection: 'unset',
+                    backgroundColor: documentId === slug ? '#ECEDEF' : 'transparent',
+                    height: '36px',
+                    alignItems: 'center',
                     '&:hover': {
-                      backgroundColor: '#ECEDEF',
+                      '& .MuiButtonBase-root': {
+                        visibility: 'visible',
+                      },
                     },
-                    width: 24,
-                    minWidth: 24,
-                    height: 24,
                   }}
-                  icon={<MoreVertIcon sx={{ color: '#626D82' }} fontSize="small"/>}
-                />
-              </ListItemButton>
-            </ListItem>
-          )
-        })}
-      </Box>)}
+                  selected={documentId === slug}
+                  onClick={() => {
+                    navigateToSelectedDocument({
+                      pathname: `/portal/packages/${packageKey}/${escapedVersionKey}/documents/${slug}`,
+                      search: `${search}`,
+                    })
+                  }}
+                  data-testid="DocumentButton"
+                >
+                  <ListItemIcon sx={{ minWidth: 2, mt: 0, mr: 1 }}>
+                    <SpecLogo value={type} />
+                  </ListItemIcon>
+                  <ListItemText primary={displayTitle} primaryTypographyProps={{ sx: { mt: 0.25 } }} />
+                  <DocumentActionsButton
+                    slug={slug}
+                    docType={type}
+                    format={format}
+                    sx={{
+                      ml: 1,
+                      visibility: 'visible',
+                      backgroundColor: 'transparent',
+                      '&:hover': {
+                        backgroundColor: '#ECEDEF',
+                      },
+                      width: 24,
+                      minWidth: 24,
+                      height: 24,
+                    }}
+                    icon={<MoreVertIcon sx={{ color: '#626D82' }} fontSize="small" />}
+                  />
+                </ListItemButton>
+              </ListItem>
+            )
+          })}
+        </Box>
+      ))}
     </List>
   )
 })

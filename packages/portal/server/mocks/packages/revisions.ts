@@ -32,9 +32,7 @@ export const REVISIONS: RevisionsDto = {
         avatarUrl: 'string',
       },
       createdAt: '2023-10-06T14:33:44.550622Z',
-      revisionLabels: [
-        'revision-label',
-      ],
+      revisionLabels: ['revision-label'],
       publishMeta: {
         commitId: 'a5d45af7',
         repositoryUrl: 'https://git.example.com/APIHUB/apihub-registry',
@@ -54,9 +52,7 @@ export const REVISIONS: RevisionsDto = {
         avatarUrl: 'string',
       },
       createdAt: '2023-10-05T14:33:44.550622Z',
-      revisionLabels: [
-        'revision-label',
-      ],
+      revisionLabels: ['revision-label'],
       publishMeta: {
         commitId: 'a5d45af7',
         repositoryUrl: 'https://git.example.com/APIHUB/apihub-registry',

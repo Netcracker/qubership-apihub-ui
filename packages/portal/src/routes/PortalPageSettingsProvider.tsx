@@ -22,11 +22,7 @@ import type { ExtendedPageSettingsState } from '@netcracker/qubership-apihub-ui-
 export const PortalPageSettingsProvider: FC<PropsWithChildren> = memo<PropsWithChildren>(({ children }) => {
   const content = usePortalPageSettings()
 
-  return (
-    <PortalPageSettings.Provider value={content}>
-      {children}
-    </PortalPageSettings.Provider>
-  )
+  return <PortalPageSettings.Provider value={content}>{children}</PortalPageSettings.Provider>
 })
 
 export function usePortalPageSettingsContext(): ExtendedPageSettingsState {

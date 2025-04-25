@@ -35,13 +35,13 @@ export const DiscoverServicesStep: FC = memo(() => {
 
   return (
     <>
-      <DiscoverServicesStepToolbar onSearch={setSearchValue}/>
+      <DiscoverServicesStepToolbar onSearch={setSearchValue} />
       <Placeholder
         invisible={isNotEmpty(filteredServices) || isLoading}
         area={CONTENT_PLACEHOLDER_AREA}
-        message={searchValue ? NO_SEARCH_RESULTS: 'No services'}
+        message={searchValue ? NO_SEARCH_RESULTS : 'No services'}
       >
-        <DiscoverServicesStepTable value={filteredServices} isLoading={isLoading}/>
+        <DiscoverServicesStepTable value={filteredServices} isLoading={isLoading} />
       </Placeholder>
     </>
   )

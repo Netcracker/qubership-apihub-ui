@@ -22,15 +22,17 @@ export function useUpdateRecentOperations(operation: OperationData | undefined):
   const setRecentOperations = useSetRecentOperations()
 
   useEffect(() => {
-    setRecentOperations(previousOperations => {
-      const result = (operation ? [operation, ...previousOperations] : [...previousOperations])
-        .reduce((acc: OperationData[], item: OperationData) => {
+    setRecentOperations((previousOperations) => {
+      const result = (operation ? [operation, ...previousOperations] : [...previousOperations]).reduce(
+        (acc: OperationData[], item: OperationData) => {
           if (!acc.find(({ operationKey: key }) => key === item.operationKey)) {
             acc.push(item)
           }
 
           return acc
-        }, [])
+        },
+        [],
+      )
 
       // limit value is 5 and 1 current opened operation
       if (previousOperations.length === 6) {

@@ -28,8 +28,8 @@ export function useLoginUser(): [LoginUser, IsLoading, IsError] {
   const redirectUri = useSearchParam('redirectUri')
 
   const { mutate, isLoading, isError } = useMutation<AuthorizationDto, Error, Credentials>({
-    mutationFn: credentials => loginUser(credentials),
-    onSuccess: authorization => {
+    mutationFn: (credentials) => loginUser(credentials),
+    onSuccess: (authorization) => {
       setAuthorization(toAuthorization(authorization))
       location.replace(redirectUri ?? location.origin)
     },
@@ -41,9 +41,7 @@ export function useLoginUser(): [LoginUser, IsLoading, IsError] {
   return [mutate, isLoading, isError]
 }
 
-async function loginUser(
-  { username, password }: Credentials,
-): Promise<AuthorizationDto> {
+async function loginUser({ username, password }: Credentials): Promise<AuthorizationDto> {
   const basic = window.btoa(`${username}:${password}`)
 
   return await requestJson<AuthorizationDto>('/api/v2/auth/local', {
