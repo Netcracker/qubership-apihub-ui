@@ -27,7 +27,6 @@ import { type Package, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-sh
 import {
   getSplittedVersionKey,
   getVersionLabelsMap,
-  getVersions,
 } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
@@ -36,7 +35,8 @@ import {
   NO_PREVIOUS_RELEASE_VERSION_OPTION,
   RELEASE_VERSION_STATUS,
 } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import type { VersionFormData } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
+import type { VersionFormData} from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
+import {getVersionOptions} from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
 import {
   replaceEmptyPreviousVersion,
   usePreviousVersionOptions,
@@ -95,7 +95,7 @@ const PublishDashboardVersionFromCSVPopup: FC<PopupProps> = memo<PopupProps>(({ 
       [currentVersions, currentVersionId],
   )
   const versionLabelsMap = useMemo(() => getVersionLabelsMap(filteredVersions), [filteredVersions])
-  const versions = useMemo(() => getVersions(versionLabelsMap, targetVersion), [targetVersion, versionLabelsMap])
+  const versions = useMemo(() => getVersionOptions(versionLabelsMap, targetVersion), [targetVersion, versionLabelsMap])
   const defaultValues: VersionFormData = useMemo(() => {
     return {
       workspace: targetWorkspace,
