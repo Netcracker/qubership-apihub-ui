@@ -64,7 +64,7 @@ const PublishOperationGroupPackageVersionPopup: FC<PopupProps> = memo<PopupProps
     kind: WORKSPACE_KIND,
     textFilter: workspacesFilter,
   })
-  const { versions: targetPackagePreviousVersions } = usePackageVersions({
+  const { versions: targetPreviousVersions } = usePackageVersions({
     packageKey: targetPackage?.key,
     enabled: !!targetPackage,
     status: RELEASE_VERSION_STATUS,
@@ -87,7 +87,7 @@ const PublishOperationGroupPackageVersionPopup: FC<PopupProps> = memo<PopupProps
     textFilter: versionsFilter,
   })
 
-  const targetVersionsPreviousVersionOptions = usePreviousVersionOptions(targetPackagePreviousVersions)
+  const targetPreviousVersionOptions = usePreviousVersionOptions(targetPreviousVersions)
   const { publishId, publishOperationGroupPackageVersion, isLoading: isPublishStarting, isSuccess: isPublishStartedSuccessfully } = usePublishOperationGroupPackageVersion()
   const [isPublishing, isPublished] = useOperationGroupPublicationStatuses(targetPackage?.key ?? '', targetVersion, group.groupName, publishId ?? '')
 
@@ -185,7 +185,7 @@ const PublishOperationGroupPackageVersionPopup: FC<PopupProps> = memo<PopupProps
       onVersionsFilter={onVersionsFilter}
       areVersionsLoading={areCurrentVersionsLoading || areFilteredVersionsLoading}
       getVersionLabels={getVersionLabels}
-      previousVersions={targetVersionsPreviousVersionOptions}
+      previousVersions={targetPreviousVersionOptions}
       onSetTargetVersion={onSetTargetVersion}
       onSetTargetStatus={onSetTargetStatus}
       onSetTargetLabels={onSetTargetLabels}

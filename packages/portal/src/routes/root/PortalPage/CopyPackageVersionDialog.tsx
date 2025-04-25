@@ -94,13 +94,13 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     enabled: !!targetPackage,
     textFilter: versionsFilter,
   })
-  const { versions: targetPackagePreviousVersions } = usePackageVersions({
+  const { versions: targetPreviousVersions } = usePackageVersions({
     packageKey: targetPackage?.key,
     enabled: !!targetPackage,
     status: RELEASE_VERSION_STATUS,
   })
 
-  const targetVersionsPreviousVersionOptions = usePreviousVersionOptions(targetPackagePreviousVersions)
+  const targetPreviousVersionOptions = usePreviousVersionOptions(targetPreviousVersions)
   const [copyPackage, publishId, isCopyStarting, isCopyingStartedSuccessfully] = useCopyPackageVersion()
   const [isPublishing, isPublished] = usePublicationStatuses(targetPackage?.key ?? '', publishId, targetVersion)
 
@@ -200,7 +200,7 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       onSetTargetLabels={onSetTargetLabels}
       packagesTitle={kindTitle}
       versions={versions}
-      previousVersions={targetVersionsPreviousVersionOptions}
+      previousVersions={targetPreviousVersionOptions}
       getVersionLabels={getVersionLabels}
       packagePermissions={targetPackagePermissions}
       releaseVersionPattern={targetReleaseVersionPattern}
