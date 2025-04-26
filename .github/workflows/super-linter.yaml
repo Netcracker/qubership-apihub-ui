@@ -1,0 +1,47 @@
+name: Lint Code Base
+
+on:
+  push:
+    branches:
+      - release
+      - hotfix
+      - develop
+      - feature/*
+      - bugfix/*
+    paths-ignore:
+      - 'docs/**'
+  pull_request:
+    types: [opened, reopened, synchronize]
+    paths-ignore:
+      - 'docs/**'
+  workflow_dispatch:
+    inputs:
+      full_scan:
+        type: boolean
+        default: false
+        required: false
+        description: 'Lint all codebase'
+
+permissions:
+  contents: read
+
+jobs:
+  super-linter:
+    name: Super Linter
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Full git history is needed to get a proper list of changed files
+          fetch-depth: 0
+
+      - name: Load super-linter configuration
+        run: cat .github/super-linter.env | grep -v '^#' >> "$GITHUB_ENV"
+
+      - name: Run Super Linter
+        uses: super-linter/super-linter@v7.3.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BRANCH: 'develop'
+          VALIDATE_ALL_CODEBASE: ${{ inputs.full_scan || false }}

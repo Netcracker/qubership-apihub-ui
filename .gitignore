@@ -20,3 +20,6 @@ dist-showcase/
 # bundle analyzer
 stats.html
 /http-client.private.env.json
+
+# linting reports
+super-linter-reports/

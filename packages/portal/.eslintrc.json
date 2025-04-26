@@ -1,5 +1,7 @@
 {
-  "extends": ["../../.eslintrc.json"],
+  "extends": [
+    "../../.eslintrc"
+  ],
   "settings": {
     "import/resolver": {
       "typescript": {
@@ -25,12 +27,20 @@
         "message": "${file.type} MUST NOT import from ${dependency.type}",
         "rules": [
           {
-            "from": ["portal-local-dev-server"],
-            "allow": ["portal-local-dev-server"]
+            "from": [
+              "portal-local-dev-server"
+            ],
+            "allow": [
+              "portal-local-dev-server"
+            ]
           },
           {
-            "from": ["portal-source-code"],
-            "allow": ["portal-source-code"]
+            "from": [
+              "portal-source-code"
+            ],
+            "allow": [
+              "portal-source-code"
+            ]
           }
         ]
       }

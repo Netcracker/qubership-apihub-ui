@@ -1,5 +1,7 @@
 {
-  "extends": ["../../.eslintrc.json"],
+  "extends": [
+    "../../.eslintrc"
+  ],
   "settings": {
     "import/resolver": {
       "typescript": {
@@ -25,12 +27,20 @@
         "message": "${file.type} MUST NOT import from ${dependency.type}",
         "rules": [
           {
-            "from": ["editor-local-dev-server"],
-            "allow": ["editor-local-dev-server"]
+            "from": [
+              "editor-local-dev-server"
+            ],
+            "allow": [
+              "editor-local-dev-server"
+            ]
           },
           {
-            "from": ["editor-source-code"],
-            "allow": ["editor-source-code"]
+            "from": [
+              "editor-source-code"
+            ],
+            "allow": [
+              "editor-source-code"
+            ]
           }
         ]
       }

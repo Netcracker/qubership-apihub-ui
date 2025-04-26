@@ -1,5 +1,7 @@
 {
-  "extends": ["../../.eslintrc.json"],
+  "extends": [
+    "../../.eslintrc"
+  ],
   "settings": {
     "import/resolver": {
       "typescript": {
@@ -25,12 +27,20 @@
         "message": "${file.type} MUST NOT import from ${dependency.type}",
         "rules": [
           {
-            "from": ["agents-local-dev-server"],
-            "allow": ["agents-local-dev-server"]
+            "from": [
+              "agents-local-dev-server"
+            ],
+            "allow": [
+              "agents-local-dev-server"
+            ]
           },
           {
-            "from": ["agents-source-code"],
-            "allow": ["agents-source-code"]
+            "from": [
+              "agents-source-code"
+            ],
+            "allow": [
+              "agents-source-code"
+            ]
           }
         ]
       }

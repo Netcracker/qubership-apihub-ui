@@ -2,12 +2,11 @@
   "root": true,
   "extends": [
     "eslint:recommended",
-    "plugin:json/recommended",
+    "plugin:jsonc/recommended-with-json",
     "plugin:@typescript-eslint/recommended",
     "plugin:react-hooks/recommended",
     "plugin:storybook/recommended",
-    "plugin:boundaries/recommended",
-    "prettier"
+    "plugin:boundaries/recommended"
   ],
   "env": {
     "es6": true,
@@ -26,13 +25,22 @@
         "functions": "always-multiline"
       }
     ],
-    "eol-last": ["error", "always"],
-    "eqeqeq": ["error", "always"],
+    "eol-last": [
+      "error",
+      "always"
+    ],
+    "eqeqeq": [
+      "error",
+      "always"
+    ],
     "no-confusing-arrow": "error",
     "no-useless-rename": "error",
     "no-unexpected-multiline": "error",
     "no-case-declarations": "off",
-    "object-shorthand": ["error", "consistent"],
+    "object-shorthand": [
+      "error",
+      "consistent"
+    ],
     "operator-linebreak": "error",
     "prefer-arrow-callback": "error",
     "prefer-const": "error",
@@ -41,8 +49,14 @@
     "prefer-spread": "error",
     "prefer-template": "error",
     "prefer-destructuring": "error",
-    "quotes": ["error", "single"],
-    "semi": ["error", "never"],
+    "quotes": [
+      "error",
+      "single"
+    ],
+    "semi": [
+      "error",
+      "never"
+    ],
     "@typescript-eslint/consistent-type-imports": "error",
     "@typescript-eslint/member-delimiter-style": [
       "error",
@@ -52,7 +66,10 @@
         }
       }
     ],
-    "@typescript-eslint/semi": ["error", "never"],
+    "@typescript-eslint/semi": [
+      "error",
+      "never"
+    ],
     "@typescript-eslint/explicit-member-accessibility": [
       "error",
       {
@@ -80,12 +97,14 @@
   },
   "overrides": [
     {
-      "files": ["**/src/**/*.ts(x)"],
+      "files": [
+        "**/src/**/*.ts(x)"
+      ],
       "parserOptions": {
         "parser": "@typescript-eslint/parser",
         "project": "./tsconfig.json"
       },
-      "plugins": ["@typescript-eslint", "filenames"],
+      "plugins": ["filenames"],
       "globals": {
         "browser": true
       },
@@ -102,27 +121,44 @@
               "parameters": "first"
             },
             "SwitchCase": 1,
-            "ignoredNodes": ["Decorator"]
+            "ignoredNodes": [
+              "Decorator"
+            ]
           }
         ],
         "@typescript-eslint/array-type": "error"
       }
     },
     {
-      "files": ["*.json"],
-      "plugins": ["json"],
+      "files": [
+        "*.json"
+      ],
       "rules": {
-        "indent": ["error", 2],
+        "indent": [
+          "error",
+          2
+        ],
+        "quotes": "off",
+        "comma-dangle": "off",
         "@typescript-eslint/indent": "off"
       }
     },
     {
-      "files": ["index.ts"],
-      "plugins": ["sort-exports"],
+      "files": [
+        "index.ts"
+      ],
+      "plugins": [
+        "sort-exports"
+      ],
       "rules": {
-        "sort-exports/sort-exports": ["error"]
+        "sort-exports/sort-exports": [
+          "error"
+        ]
       }
     }
   ],
-  "ignorePatterns": ["*.d.ts", "vite.config.ts"]
+  "ignorePatterns": [
+    "*.d.ts",
+    "vite.config.ts"
+  ]
 }
