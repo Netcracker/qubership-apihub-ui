@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import type {OperationChange, OperationChanges} from '@netcracker/qubership-apihub-ui-shared/entities/operation-changelog'
 import type {
     ChangeSeverity} from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
