@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-    import type {OperationChange, OperationChanges} from '@netcracker/qubership-apihub-ui-shared/entities/operation-changelog'
+import type {OperationChange, OperationChanges} from '@netcracker/qubership-apihub-ui-shared/entities/operation-changelog'
 import type {
     ChangeSeverity} from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
 import {
