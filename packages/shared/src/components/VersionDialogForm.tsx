@@ -62,7 +62,7 @@ import type { Package, Packages } from '../entities/packages'
 import { OptionItem } from './OptionItem'
 import { disableAutocompleteSearch } from '../utils/mui'
 import { DEFAULT_DEBOUNCE } from '../utils/constants'
-import { InfoIcon } from '../icons/InfoIcon'
+import { InfoContextIcon } from '../icons/InfoContextIcon'
 import { CSV_FILE_EXTENSION } from '../utils/files'
 import { FileUploadField } from './FileUploadField'
 
@@ -178,8 +178,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
   const debouncedOnVersionsChange = useMemo(() => debounce(onVersionsChange, DEFAULT_DEBOUNCE), [onVersionsChange])
 
   const [descriptorContent, setDescriptorContent] = useState<string | null>(null)
-  const [isFileReading, setIsFileReading] = useState<boolean>(false)
-
+  const [isFileReading, setIsFileReading] = useState<boolean>(false)  
   const onFileContentLoaded = useCallback((event: ProgressEvent<FileReader>): void => {
     setDescriptorContent(event?.target?.result ? String(event.target.result) : null)
     setIsFileReading(false)
@@ -339,9 +338,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
                   sx: { '.MuiTooltip-tooltip': { maxWidth: '600px' } },
                 }}
               >
-                <Box sx={{ cursor: 'pointer' }}>
-                  <InfoIcon/>
-                </Box>
+                <InfoContextIcon fontSize="extra-small"/>
               </Tooltip>
             </Box>
 
@@ -373,9 +370,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
                   sx: { '.MuiTooltip-tooltip': { maxWidth: '600px' } },
                 }}
               >
-                <Box sx={{ cursor: 'pointer' }}>
-                  <InfoIcon/>
-                </Box>
+                <InfoContextIcon fontSize="extra-small"/>
               </Tooltip>
             </Box>
 
@@ -418,8 +413,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
 
         {!hideCopyPackageFields && (
           <>
-            <Typography sx={{ mb: 1 }} variant="body2">Target Package</Typography>
-
+            <Typography sx={{ mb: 1 }} variant="body2">Target {packagesTitle}</Typography>
             <Controller
               name="workspace"
               control={control}
