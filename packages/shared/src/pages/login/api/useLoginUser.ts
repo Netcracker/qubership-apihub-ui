@@ -16,14 +16,13 @@
 
 import { useMutation } from '@tanstack/react-query'
 import { useSearchParam } from 'react-use'
-import type { AuthorizationDto } from '../../../types/authorization'
 import type { IsError, IsLoading } from '../../../utils/aliases'
-import { API_V2, requestJson } from '../../../utils/requests'
+import { API_V3, requestVoid } from '../../../utils/requests'
 
 export function useLoginUser(): [LoginUser, IsLoading, IsError] {
   const redirectUri = useSearchParam('redirectUri')
 
-  const { mutate, isLoading, isError } = useMutation<AuthorizationDto, Error, Credentials>({
+  const { mutate, isLoading, isError } = useMutation<void, Error, Credentials>({
     mutationFn: credentials => loginUser(credentials),
     onSuccess: () => {
       location.replace(redirectUri ?? location.origin)
@@ -38,13 +37,13 @@ export function useLoginUser(): [LoginUser, IsLoading, IsError] {
 
 async function loginUser(
   { username, password }: Credentials,
-): Promise<AuthorizationDto> {
+): Promise<void> {
   const basic = window.btoa(`${username}:${password}`)
 
-  return await requestJson<AuthorizationDto>('/auth/local', {
+  return await requestVoid('/auth/local', {
     method: 'post',
     headers: { authorization: `Basic ${basic}` },
-  }, { basePath: API_V2 })
+  }, { basePath: API_V3 })
 }
 
 type LoginUser = (credentials: Credentials) => void
