@@ -27,7 +27,7 @@ export type IdentityProviderDto = Readonly<{
   id: Key
   type: IdentityProviderType
   displayName: string
-  url?: string
+  loginStartEndpoint?: string
   imageSvg?: string
 }>
 

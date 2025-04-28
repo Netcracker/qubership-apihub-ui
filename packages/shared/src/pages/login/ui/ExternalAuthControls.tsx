@@ -31,7 +31,7 @@ export const ExternalAuthControls: FC<ExternalAuthControlsProps> = memo(({ provi
                 />
               )
             }
-            onClick={() => idp.url && redirectTo(idp.url)}
+            onClick={() => idp.loginStartEndpoint && redirectTo(idp.loginStartEndpoint)}
           >
             {idp.displayName}
           </Button>
