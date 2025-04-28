@@ -24,10 +24,7 @@ import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components
 import { SHOW_PUBLISH_PACKAGE_VERSION_DIALOG } from '@apihub/routes/EventBusProvider'
 import { SPECIAL_VERSION_KEY } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
 import { type Package, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import {
-  getSplittedVersionKey,
-  getVersionLabelsMap,
-} from '@netcracker/qubership-apihub-ui-shared/utils/versions'
+import { getVersionLabelsMap } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 import {
@@ -47,6 +44,7 @@ import { usePublishDashboardVersionFromCSV } from '@apihub/routes/root/PortalPag
 import { usePackages } from '@apihub/routes/root/usePackages'
 import { usePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
 import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
+import {usePackageVersionConfig} from '@apihub/routes/root/PortalPage/usePackageVersionConfig'
 
 export const PublishDashboardVersionFromCSVDialog: FC = memo(() => {
   return (
@@ -65,9 +63,9 @@ const PublishDashboardVersionFromCSVPopup: FC<PopupProps> = memo<PopupProps>(({ 
   const releaseVersionPattern = useMemo(() => packageObj?.releaseVersionPattern, [packageObj])
   const isEditingVersion = !!currentVersionId && currentVersionId !== SPECIAL_VERSION_KEY
 
+  const [currentVersionConfig] = usePackageVersionConfig(currentPackage?.key, currentVersionId)
   const [targetWorkspace, setTargetWorkspace] = useState<Package | null>(currentPackage?.parents?.[0] ?? null)
   const [workspacesFilter, setWorkspacesFilter] = useState('')
-  const [versionId] = useState(getSplittedVersionKey(currentVersionId).versionKey)
   const [targetVersion, setTargetVersion] = useState<Key>(isEditingVersion ? currentVersionId ?? '' : '')
   const [versionsFilter, setVersionsFilter] = useState('')
   const [targetStatus, setTargetStatus] = useState(DRAFT_VERSION_STATUS as VersionStatus)
@@ -77,11 +75,6 @@ const PublishDashboardVersionFromCSVPopup: FC<PopupProps> = memo<PopupProps>(({ 
     kind: WORKSPACE_KIND,
     textFilter: workspacesFilter,
   })
-  const {versions: currentVersions} = usePackageVersions({
-    packageKey: currentPackage?.key,
-    enabled: !!currentPackage,
-    textFilter: versionId,
-  })
   const {versions: filteredVersions, areVersionsLoading: areFilteredVersionsLoading} = usePackageVersions({
     textFilter: versionsFilter,
   })
@@ -89,11 +82,6 @@ const PublishDashboardVersionFromCSVPopup: FC<PopupProps> = memo<PopupProps>(({ 
     status: RELEASE_VERSION_STATUS,
   })
   const previousVersionOptions = usePreviousVersionOptions(targetPreviousVersions)
-
-  const currentVersion = useMemo(
-      () => (currentVersions.find(({ key }) => getSplittedVersionKey(key).versionKey === currentVersionId)),
-      [currentVersions, currentVersionId],
-  )
   const versionLabelsMap = useMemo(() => getVersionLabelsMap(filteredVersions), [filteredVersions])
   const versions = useMemo(() => getVersionOptions(versionLabelsMap, targetVersion), [targetVersion, versionLabelsMap])
   const defaultValues: VersionFormData = useMemo(() => {
@@ -126,11 +114,11 @@ const PublishDashboardVersionFromCSVPopup: FC<PopupProps> = memo<PopupProps>(({ 
   useEffect(() => { defaultValues && reset(defaultValues) }, [defaultValues, reset])
   useEffect(() => {reset(defaultValues)}, [defaultValues, reset])
   useEffect(() => {
-    if (currentVersion) {
-      setTargetStatus(currentVersion.status as VersionStatus || DRAFT_VERSION_STATUS)
-      setTargetLabels(currentVersion.versionLabels ?? [])
+    if (currentVersionConfig) {
+      setTargetStatus(currentVersionConfig.status as VersionStatus || DRAFT_VERSION_STATUS)
+      setTargetLabels(currentVersionConfig.metaData?.versionLabels ?? [])
     }
-  }, [currentVersion])
+  }, [currentVersionConfig])
 
   const onPublish = useCallback(async ({
     version,
