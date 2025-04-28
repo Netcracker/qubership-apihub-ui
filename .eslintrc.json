@@ -2,7 +2,7 @@
   "root": true,
   "extends": [
     "eslint:recommended",
-    "plugin:json/recommended",
+    "plugin:jsonc/recommended-with-json",
     "plugin:@typescript-eslint/recommended",
     "plugin:react-hooks/recommended",
     "plugin:storybook/recommended",
@@ -104,10 +104,7 @@
         "parser": "@typescript-eslint/parser",
         "project": "./tsconfig.json"
       },
-      "plugins": [
-        "@typescript-eslint",
-        "filenames"
-      ],
+      "plugins": ["filenames"],
       "globals": {
         "browser": true
       },
@@ -136,14 +133,13 @@
       "files": [
         "*.json"
       ],
-      "plugins": [
-        "json"
-      ],
       "rules": {
         "indent": [
           "error",
           2
         ],
+        "quotes": "off",
+        "comma-dangle": "off",
         "@typescript-eslint/indent": "off"
       }
     },
