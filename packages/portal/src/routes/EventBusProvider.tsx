@@ -17,6 +17,9 @@
 import type { ExportedEntityKind } from '@apihub/components/ExportSettingsDialog/api/useExport'
 import { SHOW_EXPORT_SETTINGS_DIALOG } from '@apihub/components/ExportSettingsDialog/ui/ExportSettingsDialog'
 import type { SearchCriteria } from '@apihub/entities/global-search'
+import type {
+  OasSettingsExtension,
+} from '@netcracker/qubership-apihub-ui-portal/src/routes/root/PortalPage/PackageSettingsPage/ExportSettingsTab/package-export-config'
 import { SHOW_ADD_SYSTEM_ADMINISTRATOR_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/AddSystemAdministratorDialog'
 import type { ShowDeleteRoleDetail } from '@netcracker/qubership-apihub-ui-shared/components/DeleteRoleDialog'
 import { SHOW_DELETE_ROLE_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/DeleteRoleDialog'
@@ -26,20 +29,19 @@ import type { ShowEmptyPackageDetail } from '@netcracker/qubership-apihub-ui-sha
 import { SHOW_EMPTY_PACKAGE_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/EmptyPackageDialog'
 import type { ShowDeleteFileDetail } from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/DeleteFileDialog'
 import { SHOW_DELETE_FILE_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/DeleteFileDialog'
-import type {
-  ShowEditFileLabelsDetail,
-} from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/EditFileLabelsDialog'
+import type { ShowEditFileLabelsDetail } from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/EditFileLabelsDialog'
 import { SHOW_EDIT_FILE_LABELS_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/EditFileLabelsDialog'
-import type {
-  SpecificationDialogDetail,
-} from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/SpecificationDialog'
-import {
-  SHOW_SPECIFICATION_DIALOG,
-} from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/SpecificationDialog'
+import type { SpecificationDialogDetail } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/SpecificationDialog'
+import { SHOW_SPECIFICATION_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/SpecificationDialog'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { Key, PackageKey, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { OperationGroup } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
-import type { ApiAudience, ApiKind, OperationData, OperationsGroupedByTag } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import type {
+  ApiAudience,
+  ApiKind,
+  OperationData,
+  OperationsGroupedByTag,
+} from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { PackagePermissions } from '@netcracker/qubership-apihub-ui-shared/entities/package-permissions'
 import type { PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import type { Spec } from '@netcracker/qubership-apihub-ui-shared/entities/specs'
@@ -71,6 +73,7 @@ export const APPLY_GLOBAL_SEARCH_FILTERS = 'apply-global-search-filters'
 export const SHOW_EDIT_WORKSPACES_LIST_DIALOG = 'show-edit-workspaces-list-dialog'
 export const SHOW_EDIT_PACKAGE_VERSION_DIALOG = 'show-edit-package-version-dialog'
 export const SHOW_EDIT_PACKAGE_PREFIX_DIALOG = 'show-edit-package-prefix-dialog'
+export const SHOW_EDIT_PRESERVED_OAS_EXTENSIONS_DIALOG = 'show-edit-preserved-oas-extensions-dialog'
 export const SHOW_ADD_PACKAGE_DIALOG = 'show-add-package-dialog'
 export const SHOW_PUBLISH_PACKAGE_VERSION_DIALOG = 'show-publish-package-version-dialog'
 export const SHOW_PUBLISH_OPERATION_GROUP_PACKAGE_VERSION_DIALOG = 'show-publish-operation-group-package-version-dialog'
@@ -163,6 +166,12 @@ export type OperationsMovementDetails =
 
 export type ShowEditPackagePrefixDetail = {
   packageKey?: string
+  existingPrefix?: string
+}
+
+export type ShowEditPreservedOasExtensionsDetail = {
+  packageKey: string
+  oasExtensions: OasSettingsExtension[]
 }
 
 export type ExportSettingsPopupDetail = {
@@ -198,6 +207,7 @@ type EventBus = {
   showEditWorkspacesListDialog: () => void
   showEditPackageVersionDialog: (detail: ShowEditPackageVersionDetail) => void
   showEditPackagePrefixDialog: (detail: ShowEditPackagePrefixDetail) => void
+  showEditPreservedOasExtensionsDialog: (detail: ShowEditPreservedOasExtensionsDetail) => void
   showAddPackageDialog: () => void
   showPublishPackageVersionDialog: () => void
   showPublishOperationGroupPackageVersionDialog: (detail: PublishOperationGroupPackageVersionDetail) => void
@@ -252,6 +262,7 @@ function eventBusProvider(): EventBus {
       showEditWorkspacesListDialog: slot(),
       showEditPackageVersionDialog: slot<ShowEditPackageVersionDetail>(),
       showEditPackagePrefixDialog: slot<ShowEditPackagePrefixDetail>(),
+      showEditPreservedOasExtensionsDialog: slot<ShowEditPreservedOasExtensionsDetail>(),
       showAddPackageDialog: slot(),
       showPublishPackageVersionDialog: slot(),
       showPublishOperationGroupPackageVersionDialog: slot<PublishOperationGroupPackageVersionDetail>(),
@@ -336,6 +347,9 @@ function eventBusProvider(): EventBus {
   })
   eventBus.showEditPackagePrefixDialog.on((detail: ShowEditPackagePrefixDetail) => {
     dispatchEvent(new CustomEvent(SHOW_EDIT_PACKAGE_PREFIX_DIALOG, { detail }))
+  })
+  eventBus.showEditPreservedOasExtensionsDialog.on((detail: ShowEditPreservedOasExtensionsDetail) => {
+    dispatchEvent(new CustomEvent(SHOW_EDIT_PRESERVED_OAS_EXTENSIONS_DIALOG, { detail }))
   })
   eventBus.showAddPackageDialog.on(() => {
     dispatchEvent(new CustomEvent(SHOW_ADD_PACKAGE_DIALOG))

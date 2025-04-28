@@ -24,7 +24,7 @@ export type ExportConfig = Readonly<{
   allowedOasExtensions: ReadonlyArray<OasExtension>
 }>
 
-const QUERY_KEY_EXPORT_CONFIG = 'query-key-export-config'
+export const QUERY_KEY_EXPORT_CONFIG = 'query-key-export-config'
 
 const DEFAULT_EXPORT_CONFIG: ExportConfig = { allowedOasExtensions: [] }
 

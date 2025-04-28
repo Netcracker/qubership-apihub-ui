@@ -3,17 +3,18 @@ import { LoadingButton } from '@mui/lab'
 import { Box, Button, DialogActions, DialogContent, DialogTitle, FormControlLabel, Radio, RadioGroup, Tooltip, Typography } from '@mui/material'
 import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 import type { PackageKey, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoContextIcon'
 import type { FC } from 'react'
 import { memo, useMemo } from 'react'
 import type { Control, UseFormSetValue } from 'react-hook-form'
 import { Controller, useForm } from 'react-hook-form'
-import { InfoIcon } from '../../../../../shared/src/icons/InfoIcon'
 import type { ExportConfig } from '../../../routes/root/PortalPage/useExportConfig'
 import type { ExportedEntityTransformation, ExportedFileFormat, IRequestDataExport } from '../api/useExport'
 import { ExportedEntityKind, RequestDataExportRestDocument, RequestDataExportRestOperationsGroup, RequestDataExportVersion } from '../api/useExport'
-import { EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE, type ExportSettingsFormData } from '../entities/export-settings-form'
-import { ExportSettingsFormFieldKind, ExportSettingsFormFieldOptionOasExtensions } from '../entities/export-settings-form-field'
+import type { ExportSettingsFormData } from '../entities/export-settings-form'
+import { EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE } from '../entities/export-settings-form'
 import type { ExportSettingsFormField } from '../entities/export-settings-form-field'
+import { ExportSettingsFormFieldKind, ExportSettingsFormFieldOptionOasExtensions } from '../entities/export-settings-form-field'
 import { useLocalExportSettings } from '../storage/useLocalExportSettings'
 
 interface ExportSettingsFormFieldsProps {
@@ -60,7 +61,7 @@ const ExportSettingsFormFields: FC<ExportSettingsFormFieldsProps> = memo(props =
                       placement="right"
                     >
                       <Box height={20}>
-                        <InfoIcon />
+                        <InfoContextIcon />
                       </Box>
                     </Tooltip>
                   )}
