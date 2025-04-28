@@ -49,12 +49,16 @@ export const RateResults: FC<RateResultsProps> = memo<RateResultsProps>(({
       </OverflowTooltip>
     )
   }
-  if (labels && labels.some(label => hasSearchText(label, searchText))) {
-    return (
-      <>
-        {labels.map((label, index) => <CustomChip sx={{ mr: 1 }} key={`rate-results-custom-chip-${index}-${label}`} value={label}/>)}
-      </>
-    )
+  if (labels?.some(label => hasSearchText(label, searchText))) {
+    return <>
+      {labels.map(label => (
+        <CustomChip
+          key={`rate-results-custom-chip-${label}`}
+          sx={{ mr: 1 }}
+          value={label}
+        />
+      ))}
+    </>
   }
 
   return null

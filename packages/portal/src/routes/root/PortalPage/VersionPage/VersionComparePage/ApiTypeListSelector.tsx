@@ -26,10 +26,10 @@ export const ApiTypeListSelector: FC = memo(() => {
   return (
     <Box paddingTop={2} paddingBottom={1}>
       <List>
-        {API_TYPES.map((apiType, index) => {
+        {API_TYPES.map(apiType => {
           return (
             <ListItem
-              key={`api-type-list-selector-list-item-${index}-${apiType}`}
+              key={`api-type-list-selector-list-item-${apiType}`}
               sx={{ p: 0 }}
             >
               <ListItemButton
@@ -41,7 +41,7 @@ export const ApiTypeListSelector: FC = memo(() => {
                 onClick={() => setApiTypeSearchParam(apiType)}
                 data-testid={`ApiTypeButton-${apiType}`}
               >
-                <ListItemText primary={API_TYPE_TITLE_MAP[apiType]} primaryTypographyProps={{ sx: { mt: 1 } }}/>
+                <ListItemText primary={API_TYPE_TITLE_MAP[apiType]} primaryTypographyProps={{ sx: { mt: 1 } }} />
               </ListItemButton>
             </ListItem>
           )

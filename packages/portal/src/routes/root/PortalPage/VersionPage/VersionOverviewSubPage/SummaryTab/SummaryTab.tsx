@@ -101,10 +101,10 @@ export const SummaryTab: FC = memo(() => {
       {versionLabels && (
         <Box display="flex" gap={1} alignItems="center" width="100%">
           <Box sx={{ whiteSpace: 'break-spaces', width: 'calc(100% - 60px)' }} data-testid="VersionLabels">
-            {versionLabels?.map((label, index) => (
+            {versionLabels?.map(label => (
               <CustomChip
                 sx={{ mr: 1, mt: 0.5 }}
-                key={`summary-tab-custom-chip-${index}-${label}`}
+                key={`summary-tab-custom-chip-${label}`}
                 value={label}
                 label={
                   <OverflowTooltip title={label}>
