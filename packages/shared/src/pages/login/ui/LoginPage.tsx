@@ -21,10 +21,9 @@ import { memo, useEffect } from 'react'
 import { useSearchParam } from 'react-use'
 import { useUser } from '../../../hooks/authorization'
 import { useSystemConfiguration } from '../../../hooks/authorization/useSystemConfiguration'
-import type { IdentityProviderDto } from '../../../types/system-configuration'
-import { IdentityProviderTypes, isExternalIdentityProvider } from '../../../types/system-configuration'
-import { InternalAuthForm } from './InternalAuthForm'
+import { isExternalIdentityProvider, isInternalIdentityProvider } from '../../../types/system-configuration'
 import { ExternalAuthControls } from './ExternalAuthControls'
+import { InternalAuthForm } from './InternalAuthForm'
 
 export type LoginPageComponentProps = {
   applicationName: string
@@ -39,9 +38,8 @@ export const LoginPage: FC<LoginPageComponentProps> = memo(({ applicationName })
 
   const identityProviders = systemConfiguration?.authConfig.identityProviders ?? []
   const externalIdentityProviders = identityProviders.filter(isExternalIdentityProvider)
-  const internalAuthEnabled = identityProviders.some(
-    (idp: IdentityProviderDto) => idp.type === IdentityProviderTypes.INTERNAL,
-  )
+  const internalIdentityProvider = identityProviders.find(isInternalIdentityProvider)
+  const internalAuthEnabled = !!internalIdentityProvider
   const externalAuthEnabled = !isEmpty(externalIdentityProviders)
   const externalAuthControls = (
     externalAuthEnabled
@@ -83,7 +81,10 @@ export const LoginPage: FC<LoginPageComponentProps> = memo(({ applicationName })
               Log in to {applicationName}
             </Typography>
             {internalAuthEnabled ? (
-              <InternalAuthForm additionalControls={externalAuthControls} />
+              <InternalAuthForm
+                provider={internalIdentityProvider!}
+                additionalControls={externalAuthControls}
+              />
             ) : externalAuthControls}
           </Box>
         </Grid>

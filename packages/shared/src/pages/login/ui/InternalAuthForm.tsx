@@ -6,13 +6,15 @@ import type { FC, ReactNode } from 'react'
 import { memo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useLoginUser } from '../api/useLoginUser'
+import type { InternalIdentityProvider } from '../../../types/system-configuration'
 
 type InternalAuthFormProps = {
+  provider: InternalIdentityProvider
   additionalControls?: ReactNode
 }
 
 export const InternalAuthForm: FC<InternalAuthFormProps> = memo(props => {
-  const { additionalControls } = props
+  const { provider, additionalControls } = props
 
   const [loginWithLocalUser, isLoading, isError] = useLoginUser()
 
@@ -94,7 +96,7 @@ export const InternalAuthForm: FC<InternalAuthFormProps> = memo(props => {
           loading={isLoading}
           data-testid="SignInButton"
         >
-          Log in
+          {provider.displayName}
         </LoadingButton>
         {additionalControls}
       </Box>
