@@ -65,7 +65,7 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const isPackage = packageKind === PACKAGE_KIND
   const kindTitle = isPackage ? 'Package' : 'Dashboard'
 
-  const [currentVersionConfig] = usePackageVersionConfig(currentPackage?.key, currentVersionId)
+  const [currentVersionConfig, isCurrentVersionLoading] = usePackageVersionConfig(currentPackage?.key, currentVersionId)
   const [targetWorkspace, setTargetWorkspace] = useState<Package | null>(currentPackage?.parents?.[0] ?? null)
   const [workspacesFilter, setWorkspacesFilter] = useState('')
   const [targetPackage, setTargetPackage] = useState<Package | null>(null)
@@ -171,6 +171,7 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   return (
     <VersionDialogForm
       title={`Copy ${kindTitle} Version`}
+      initLoading={isCurrentVersionLoading}
       open={open}
       setOpen={setOpen}
       onSubmit={handleSubmit(onCopy)}
