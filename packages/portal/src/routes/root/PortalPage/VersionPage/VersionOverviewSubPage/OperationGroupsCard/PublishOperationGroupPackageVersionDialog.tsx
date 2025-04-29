@@ -20,7 +20,13 @@ import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/componen
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import type { PublishOperationGroupPackageVersionDetail } from '@apihub/routes/EventBusProvider'
 import { SHOW_PUBLISH_OPERATION_GROUP_PACKAGE_VERSION_DIALOG } from '@apihub/routes/EventBusProvider'
-import type { VersionFormData } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
+import type {
+  VersionFormData,
+} from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
+import {
+  getPackageOptions,
+  getVersionOptions,
+} from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
 import { replaceEmptyPreviousVersion, usePreviousVersionOptions, VersionDialogForm } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
 import { useForm } from 'react-hook-form'
 import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
@@ -53,10 +59,10 @@ const PublishOperationGroupPackageVersionPopup: FC<PopupProps> = memo<PopupProps
   const currentVersionId = useFullMainVersion()
   
   const [currentVersionConfig] = usePackageVersionConfig(currentPackage?.key, currentVersionId)
-  
-  const [workspace, setWorkspace] = useState<Package | null>(currentPackage?.parents?.[0] ?? null)
+
+  const [targetWorkspace, setTargetWorkspace] = useState<Package | null>(currentPackage?.parents?.[0] ?? null)
   const [workspacesFilter, setWorkspacesFilter] = useState('')
-  const [targetPackage, setTargetPackage] = useState<Package | null>()
+  const [targetPackage, setTargetPackage] = useState<Package | null>(null)
   const [packagesFilter, setPackagesFilter] = useState('')
   const [targetVersion, setTargetVersion] = useState<Key>(getSplittedVersionKey(currentVersionId).versionKey)
   const [versionsFilter, setVersionsFilter] = useState('')
@@ -75,7 +81,7 @@ const PublishOperationGroupPackageVersionPopup: FC<PopupProps> = memo<PopupProps
 
   const [packages, arePackagesLoading] = usePackages({
     kind: PACKAGE_KIND,
-    parentId: workspace?.key,
+    parentId: targetWorkspace?.key,
     showAllDescendants: true,
     textFilter: packagesFilter,
   })
@@ -94,23 +100,25 @@ const PublishOperationGroupPackageVersionPopup: FC<PopupProps> = memo<PopupProps
       [ versionsFilter, filteredVersions],
   )
   const versionLabelsMap = useMemo(() => getVersionLabelsMap(filteredVersions), [filteredVersions])
-  const versions = useMemo(() => Object.keys(versionLabelsMap), [versionLabelsMap])
+  const versionOptions = useMemo(() => getVersionOptions(versionLabelsMap, targetVersion), [targetVersion, versionLabelsMap])
+  const packageOptions = useMemo(() => getPackageOptions(packages, targetPackage), [targetPackage, packages])
+  const workspaceOptions = useMemo(() => getPackageOptions(workspaces, targetWorkspace), [targetWorkspace, workspaces])
   const targetPackagePermissions = useMemo(() => targetPackage?.permissions ?? [], [targetPackage?.permissions])
   const targetReleaseVersionPattern = useMemo(() => targetPackage?.releaseVersionPattern, [targetPackage?.releaseVersionPattern])
   const defaultValues = useMemo(() => {
     return {
       package: targetPackage,
-      workspace: workspace,
+      workspace: targetWorkspace,
       version: targetVersion,
       status: targetStatus,
       labels: targetLabels,
       previousVersion: NO_PREVIOUS_RELEASE_VERSION_OPTION,
     }
-  }, [targetPackage, workspace, targetVersion, targetStatus, targetLabels])
+  }, [targetPackage, targetWorkspace, targetVersion, targetStatus, targetLabels])
 
   const getVersionLabels = useCallback((version: Key) => versionLabelsMap[version] ?? [], [versionLabelsMap])
   const onWorkspacesFilter = useCallback((value: Key) => setWorkspacesFilter(value), [setWorkspacesFilter])
-  const onSetWorkspace = useCallback((workspace: Package | null) => setWorkspace(workspace), [])
+  const onSetWorkspace = useCallback((workspace: Package | null) => setTargetWorkspace(workspace), [])
   const onPackagesFilter = useCallback((value: Key) => setPackagesFilter(value), [setPackagesFilter])
   const onSetTargetPackage = useCallback((pack: Package | null) => setTargetPackage(pack), [])
   const onVersionsFilter = useCallback((value: Key) => setVersionsFilter(value), [setVersionsFilter])
@@ -124,11 +132,11 @@ const PublishOperationGroupPackageVersionPopup: FC<PopupProps> = memo<PopupProps
   useEffect(() => { filteredVersion && defaultValues && reset(defaultValues) }, [filteredVersion, defaultValues, reset])
   useEffect(() => { reset(defaultValues) }, [defaultValues, reset])
   useEffect(() =>{
-    if(!workspace){
+    if(!targetWorkspace){
       setTargetPackage(null)
       setValue('package', null)
     }
-  }, [workspace, setValue])
+  }, [targetWorkspace, setValue])
   useEffect(() => {
     if (currentVersionConfig) {
       setTargetStatus(currentVersionConfig.status as VersionStatus || DRAFT_VERSION_STATUS)
@@ -164,18 +172,18 @@ const PublishOperationGroupPackageVersionPopup: FC<PopupProps> = memo<PopupProps
       setValue={setValue}
       formState={formState}
 
-      workspaces={workspaces}
+      workspaces={workspaceOptions}
       onSetWorkspace={onSetWorkspace}
       onWorkspacesFilter={onWorkspacesFilter}
       areWorkspacesLoading={areWorkspacesLoading}
 
-      packages={packages}
+      packages={packageOptions}
       onPackagesFilter={onPackagesFilter}
       arePackagesLoading={arePackagesLoading}
       onSetTargetPackage={onSetTargetPackage}
       packagesTitle='Package'
 
-      versions={versions}
+      versions={versionOptions}
       onVersionsFilter={onVersionsFilter}
       areVersionsLoading={areFilteredVersionsLoading}
       getVersionLabels={getVersionLabels}

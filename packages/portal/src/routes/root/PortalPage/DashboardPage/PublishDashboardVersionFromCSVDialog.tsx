@@ -33,6 +33,7 @@ import {
   RELEASE_VERSION_STATUS,
 } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 import type { VersionFormData} from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
+import {getPackageOptions} from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
 import {getVersionOptions} from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
 import {
   replaceEmptyPreviousVersion,
@@ -83,7 +84,8 @@ const PublishDashboardVersionFromCSVPopup: FC<PopupProps> = memo<PopupProps>(({ 
   })
   const previousVersionOptions = usePreviousVersionOptions(targetPreviousVersions)
   const versionLabelsMap = useMemo(() => getVersionLabelsMap(filteredVersions), [filteredVersions])
-  const versions = useMemo(() => getVersionOptions(versionLabelsMap, targetVersion), [targetVersion, versionLabelsMap])
+  const versionOptions = useMemo(() => getVersionOptions(versionLabelsMap, targetVersion), [targetVersion, versionLabelsMap])
+  const workspaceOptions = useMemo(() => getPackageOptions(workspaces, targetWorkspace), [targetWorkspace, workspaces])
   const defaultValues: VersionFormData = useMemo(() => {
     return {
       workspace: targetWorkspace,
@@ -153,11 +155,11 @@ const PublishDashboardVersionFromCSVPopup: FC<PopupProps> = memo<PopupProps>(({ 
       control={control}
       setValue={setValue}
       formState={formState}
-      workspaces={workspaces}
+      workspaces={workspaceOptions}
       onSetWorkspace={onSetWorkspace}
       onWorkspacesFilter={onWorkspacesFilter}
       areWorkspacesLoading={areWorkspacesLoading}
-      versions={versions}
+      versions={versionOptions}
       onVersionsFilter={onVersionsFilter}
       areVersionsLoading={areFilteredVersionsLoading}
       previousVersions={previousVersionOptions}

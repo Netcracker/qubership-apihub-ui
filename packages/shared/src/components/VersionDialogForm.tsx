@@ -710,6 +710,13 @@ export function getVersionOptions(versionLabelsMap: Record<string, string[]>, ta
   return versions
 }
 
+export function getPackageOptions(packages: Packages, targetPackage: Package | null): Packages {
+  if(targetPackage && packages && !packages.some(existPackage=> existPackage.key === targetPackage.key)){
+    return  [targetPackage, ...packages]
+  }
+  return packages
+}
+
 export const EMPTY_VERSION_KEY: Key = ''
 
 function checkFileUpload(descriptorContent: string | null): boolean {
