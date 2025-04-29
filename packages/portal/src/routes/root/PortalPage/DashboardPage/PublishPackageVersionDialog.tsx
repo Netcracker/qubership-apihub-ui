@@ -82,7 +82,7 @@ const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
   const dashboardRefs = useDashboardReferences()
   
   const versionLabelsMap = useMemo(() => getVersionLabelsMap(filteredVersions), [filteredVersions])
-  const versions = useMemo(() => getVersionOptions(versionLabelsMap, targetVersion), [targetVersion, versionLabelsMap])
+  const versionOptions = useMemo(() => getVersionOptions(versionLabelsMap, targetVersion), [targetVersion, versionLabelsMap])
   const packagePermissions = useMemo(() => currentPackage?.permissions ?? [], [currentPackage])
   const releaseVersionPattern = useMemo(() => currentPackage?.releaseVersionPattern, [currentPackage])
   const defaultValues = useMemo(() => {
@@ -142,7 +142,7 @@ const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
       control={control}
       setValue={setValue}
       formState={formState}
-      versions={versions}
+      versions={versionOptions}
       onVersionsFilter={onVersionsFilter}
       areVersionsLoading={areFilteredVersionsLoading}
       previousVersions={previousVersionOptions}

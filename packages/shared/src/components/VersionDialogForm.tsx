@@ -141,7 +141,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
     onSetTargetPackage,
     onSetTargetVersion,
     onSetTargetStatus,
-      onSetTargetLabels,
+    onSetTargetLabels,
     onWorkspacesFilter,
     arePackagesLoading,
     areVersionsLoading,
@@ -694,6 +694,13 @@ export function getVersionOptions(versionLabelsMap: Record<string, string[]>, ta
     versions.unshift(targetVersion)
   }
   return versions
+}
+
+export function getPackageOptions(packages: Packages, targetPackage: Package | null): Packages {
+  if(targetPackage && packages && !packages.some(existPackage=> existPackage.key === targetPackage.key)){
+    return  [targetPackage, ...packages]
+  }
+  return packages
 }
 
 export const EMPTY_VERSION_KEY: Key = ''

@@ -35,6 +35,7 @@ import {
   RELEASE_VERSION_STATUS,
 } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 import type { VersionFormData} from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
+import {getPackageOptions} from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
 import {getVersionOptions} from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
 import {
   replaceEmptyPreviousVersion,
@@ -104,7 +105,9 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const targetPackagePermissions = useMemo(() => targetPackage?.permissions ?? [], [targetPackage?.permissions])
   const targetReleaseVersionPattern = useMemo(() => targetPackage?.releaseVersionPattern, [targetPackage?.releaseVersionPattern])
   const versionLabelsMap = useMemo(() => getVersionLabelsMap(filteredVersions), [filteredVersions])
-  const versions = useMemo(() => getVersionOptions(versionLabelsMap, targetVersion), [targetVersion, versionLabelsMap])
+  const versionOptions = useMemo(() => getVersionOptions(versionLabelsMap, targetVersion), [targetVersion, versionLabelsMap])
+  const packageOptions = useMemo(() => getPackageOptions(packages, targetPackage), [targetPackage, packages])
+  const workspaceOptions = useMemo(() => getPackageOptions(workspaces, targetWorkspace), [targetWorkspace, workspaces])
   const defaultValues: VersionFormData = useMemo(() => {
     return {
       package: targetPackage,
@@ -178,11 +181,11 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       setValue={setValue}
       formState={formState}
       selectedWorkspace={targetWorkspace}
-      workspaces={workspaces}
+      workspaces={workspaceOptions}
       onSetWorkspace={onSetWorkspace}
       onWorkspacesFilter={onWorkspacesFilter}
       areWorkspacesLoading={areWorkspacesLoading}
-      packages={packages}
+      packages={packageOptions}
       onVersionsFilter={onVersionsFilter}
       onPackagesFilter={onPackagesFilter}
       areVersionsLoading={areFilteredVersionsLoading}
@@ -192,7 +195,7 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       onSetTargetStatus={onSetTargetStatus}
       onSetTargetLabels={onSetTargetLabels}
       packagesTitle={kindTitle}
-      versions={versions}
+      versions={versionOptions}
       previousVersions={targetPreviousVersionOptions}
       getVersionLabels={getVersionLabels}
       packagePermissions={targetPackagePermissions}
