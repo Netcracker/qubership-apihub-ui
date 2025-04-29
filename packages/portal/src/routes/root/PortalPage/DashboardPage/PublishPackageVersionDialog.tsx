@@ -60,7 +60,7 @@ const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
   const { versionId: currentVersionId } = useParams()
   const [currentPackage, isPackageLoading] = usePackage()
   
-  const [currentVersionConfig] = usePackageVersionConfig(currentPackage?.key, currentVersionId)
+  const [currentVersionConfig, isCurrentVersionLoading] = usePackageVersionConfig(currentPackage?.key, currentVersionId)
   
   const isEditingVersion = !!currentVersionId && currentVersionId !== SPECIAL_VERSION_KEY
   const packageKind = currentPackage?.kind
@@ -136,6 +136,7 @@ const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
 
   return (
     <VersionDialogForm
+      initLoading={isPackageLoading || isCurrentVersionLoading}
       open={open}
       setOpen={setOpen}
       onSubmit={handleSubmit(onPublish)}
