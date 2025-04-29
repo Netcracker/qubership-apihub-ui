@@ -1,4 +1,4 @@
-name: Linting
+name: Lint Code Base
 
 on:
   push:

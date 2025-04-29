@@ -29,7 +29,7 @@ import {
 
 function getFirstValidPath(change: OperationChange): string[] {
   const validPath = (change.currentDeclarationJsonPaths || change.previousDeclarationJsonPaths || [])
-    .find(path => path?.length > 0)
+    .find(path => path?.length > 0);
   return validPath?.map(String) || []
 }
 
