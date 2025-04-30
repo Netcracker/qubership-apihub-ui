@@ -28,6 +28,7 @@ export function useUser(enabled: boolean = true): [User | undefined, IsLoading, 
     queryFn: getUser,
     select: toUser,
     enabled: enabled,
+    refetchOnWindowFocus: true,
   })
 
   return [data, isLoading, error]

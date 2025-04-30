@@ -15,7 +15,6 @@
  */
 
 import { CssBaseline, ThemeProvider } from '@mui/material'
-import { useInitializeAuth } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
 import { theme } from '@netcracker/qubership-apihub-ui-shared/themes/theme'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
@@ -34,8 +33,6 @@ const client = new QueryClient({
 })
 
 export const App: FC = memo(() => {
-  useInitializeAuth()
-
   return (
     <StrictMode>
       <QueryClientProvider client={client}>

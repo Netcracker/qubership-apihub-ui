@@ -18,7 +18,6 @@ import { ErrorHandler } from '@apihub/components/ErrorHandler'
 import { EventBusProvider } from '@apihub/routes/EventBusProvider'
 import { router } from '@apihub/routes/Router'
 import { CssBaseline, ThemeProvider } from '@mui/material'
-import { useInitializeAuth } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
 import { theme } from '@netcracker/qubership-apihub-ui-shared/themes/theme'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
@@ -37,27 +36,19 @@ const client = new QueryClient({
   },
 })
 
-const AppProtected: FC = memo(() => {
-  useInitializeAuth()
-
-  return <>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <ErrorHandler>
-        <EventBusProvider>
-          <RouterProvider router={router} />
-        </EventBusProvider>
-      </ErrorHandler>
-    </ThemeProvider>
-    <ReactQueryDevtools initialIsOpen={false} />
-  </>
-})
-
 export const App: FC = memo(() => {
   return (
     <StrictMode>
       <QueryClientProvider client={client}>
-        <AppProtected />
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <ErrorHandler>
+            <EventBusProvider>
+              <RouterProvider router={router} />
+            </EventBusProvider>
+          </ErrorHandler>
+        </ThemeProvider>
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </StrictMode>
   )
