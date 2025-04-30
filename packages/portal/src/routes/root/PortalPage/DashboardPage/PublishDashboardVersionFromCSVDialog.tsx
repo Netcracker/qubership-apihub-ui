@@ -32,10 +32,10 @@ import {
   NO_PREVIOUS_RELEASE_VERSION_OPTION,
   RELEASE_VERSION_STATUS,
 } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import type { VersionFormData} from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
-import {getPackageOptions} from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
-import {getVersionOptions} from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
+import type { VersionFormData } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
 import {
+  getPackageOptions,
+  getVersionOptions,
   replaceEmptyPreviousVersion,
   usePreviousVersionOptions,
   VersionDialogForm,
@@ -45,7 +45,7 @@ import { usePublishDashboardVersionFromCSV } from '@apihub/routes/root/PortalPag
 import { usePackages } from '@apihub/routes/root/usePackages'
 import { usePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
 import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
-import {usePackageVersionConfig} from '@apihub/routes/root/PortalPage/usePackageVersionConfig'
+import { usePackageVersionConfig } from '@apihub/routes/root/PortalPage/usePackageVersionConfig'
 
 export const PublishDashboardVersionFromCSVDialog: FC = memo(() => {
   return (
@@ -76,7 +76,7 @@ const PublishDashboardVersionFromCSVPopup: FC<PopupProps> = memo<PopupProps>(({ 
     kind: WORKSPACE_KIND,
     textFilter: workspacesFilter,
   })
-  const {versions: filteredVersions, areVersionsLoading: areFilteredVersionsLoading} = usePackageVersions({
+  const { versions: filteredVersions, areVersionsLoading: areFilteredVersionsLoading } = usePackageVersions({
     textFilter: versionsFilter,
   })
   const { versions: targetPreviousVersions } = usePackageVersions({
@@ -113,7 +113,6 @@ const PublishDashboardVersionFromCSVPopup: FC<PopupProps> = memo<PopupProps>(({ 
     isPublishing
 
   useEffect(() => { isPublishStartedSuccessfully && isPublished && setOpen(false) }, [isPublishStartedSuccessfully, isPublished, setOpen])
-  useEffect(() => { defaultValues && reset(defaultValues) }, [defaultValues, reset])
   useEffect(() => {reset(defaultValues)}, [defaultValues, reset])
   useEffect(() => {
     if (currentVersionConfig) {
