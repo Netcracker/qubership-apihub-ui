@@ -20,7 +20,7 @@ import { MenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Bu
 import { UserAvatar } from '@netcracker/qubership-apihub-ui-shared/components/Users/UserAvatar'
 import { useLogoutUser } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
 import { useUser } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useUser'
-import { redirectTo } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
+import { redirectToLogin } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
 import type { FC } from 'react'
 import { memo } from 'react'
 
@@ -50,7 +50,7 @@ export const UserPanel: FC = memo(() => {
           data-testid="LogoutMenuItem"
           onClick={() => {
             logout()
-            redirectTo('/login', new URLSearchParams({ noAuth: 'true', redirectUri: location.href }))
+            redirectToLogin()
           }}
         >
           Logout

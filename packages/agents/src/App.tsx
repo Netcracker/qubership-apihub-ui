@@ -15,7 +15,6 @@
  */
 
 import { CssBaseline, ThemeProvider } from '@mui/material'
-import { AppPlaceholder } from '@netcracker/qubership-apihub-ui-shared/components/AppPlaceholder'
 import { useInitializeAuth } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
 import { theme } from '@netcracker/qubership-apihub-ui-shared/themes/theme'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -35,18 +34,14 @@ const client = new QueryClient({
 })
 
 export const App: FC = memo(() => {
-  const [auth, isLoginPage] = useInitializeAuth()
+  useInitializeAuth()
 
   return (
     <StrictMode>
       <QueryClientProvider client={client}>
         <ThemeProvider theme={theme}>
-          {auth || isLoginPage
-            ? <>
-              <CssBaseline />
-              <Router />
-            </>
-            : <AppPlaceholder />}
+          <CssBaseline />
+          <Router />
         </ThemeProvider>
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>

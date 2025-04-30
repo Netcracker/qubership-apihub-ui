@@ -1,14 +1,10 @@
 import { useEffect, useState } from 'react'
-import { useLocation } from 'react-use'
+import { SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION } from '../../utils/constants'
 import { useSystemConfiguration } from './useSystemConfiguration'
 import { useUser } from './useUser'
-import { SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION } from '../../utils/constants'
 
-type IsAuthenticated = boolean
-type IsLoginPage = boolean
-
-export function useInitializeAuth(): [IsAuthenticated, IsLoginPage] {
-  const [auth, setAuth] = useState<boolean>(false)
+export function useInitializeAuth(): void {
+  const [, setAuth] = useState<boolean>(false)
 
   // first, load config
   const [systemConfiguration] = useSystemConfiguration()
@@ -28,9 +24,4 @@ export function useInitializeAuth(): [IsAuthenticated, IsLoginPage] {
   useEffect(() => {
     setAuth(!!user)
   }, [user])
-
-  const location = useLocation()
-  const isLoginPage = location.pathname?.startsWith('/login') ?? false // This is done for new routing approach, refactor it
-
-  return [auth, isLoginPage]
 }

@@ -16,7 +16,7 @@
 
 import type { SystemConfigurationDto } from '../types/system-configuration'
 import { isInternalIdentityProvider } from '../types/system-configuration'
-import { SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION } from './constants'
+import { LAST_LOGIN_START_ENDPOINT_SESSION_STORAGE_KEY, SEARCH_PARAM_NO_AUTO_LOGIN, SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION } from './constants'
 import type { ErrorMessage } from './packages-builder'
 import { redirectTo, redirectToLogin } from './redirects'
 import { HttpError } from './responses'
@@ -156,20 +156,35 @@ export async function requestVoid(
 }
 
 function handleAuthentication(response: Response): void {
-  if (response.status === 401 && !location.pathname.startsWith('/login')) {
+  const searchParams = new URLSearchParams(location.search)
+  // noAutoLogin = true in 2 cases:
+  // 1. user manually logged out just now
+  // 2. user logged in just now and automatically redirect to login page
+  const autoLogin = !searchParams.get(SEARCH_PARAM_NO_AUTO_LOGIN)
+
+  if (response.status === 401 && autoLogin) {
     const systemConfigurationFromStorage = sessionStorage.getItem(SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION)
-    const systemConfiguration: SystemConfigurationDto | null =
-      systemConfigurationFromStorage
-        ? JSON.parse(systemConfigurationFromStorage) as SystemConfigurationDto
-        : null
+    // must be always present,
+    // because protected API is not fetched until system configuration is loaded
+    const systemConfiguration: SystemConfigurationDto = JSON.parse(systemConfigurationFromStorage!) as SystemConfigurationDto
 
-    if (!systemConfiguration) { return }
+    const { authConfig } = systemConfiguration
+    const { defaultProviderId } = authConfig
+    const defaultProvider = authConfig.identityProviders.find(idp => idp.id === defaultProviderId)
 
-    const { defaultAuthKind } = systemConfiguration
-    if (isInternalIdentityProvider(defaultAuthKind)) {
-      redirectToLogin()
-    } else if (defaultAuthKind.url) {
-      redirectTo(defaultAuthKind.url)
+    // default identity provider is configured
+    if (defaultProvider) {
+      if (isInternalIdentityProvider(defaultProvider)) {
+        redirectToLogin()
+      } else if (defaultProvider.loginStartEndpoint) {
+        redirectTo(defaultProvider.loginStartEndpoint)
+      }
+    }
+
+    // default identity provider is NOT configured
+    const lastLoginStartEndpoint = localStorage.getItem(LAST_LOGIN_START_ENDPOINT_SESSION_STORAGE_KEY)
+    if (lastLoginStartEndpoint) {
+      redirectTo(lastLoginStartEndpoint)
     }
   }
 }

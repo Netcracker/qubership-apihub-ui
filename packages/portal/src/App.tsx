@@ -18,7 +18,6 @@ import { ErrorHandler } from '@apihub/components/ErrorHandler'
 import { EventBusProvider } from '@apihub/routes/EventBusProvider'
 import { router } from '@apihub/routes/Router'
 import { CssBaseline, ThemeProvider } from '@mui/material'
-import { AppPlaceholder } from '@netcracker/qubership-apihub-ui-shared/components/AppPlaceholder'
 import { useInitializeAuth } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
 import { theme } from '@netcracker/qubership-apihub-ui-shared/themes/theme'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -39,16 +38,14 @@ const client = new QueryClient({
 })
 
 const AppProtected: FC = memo(() => {
-  const [auth, isLoginPage] = useInitializeAuth()
+  useInitializeAuth()
 
   return <>
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <ErrorHandler>
         <EventBusProvider>
-          {auth || isLoginPage
-            ? <RouterProvider router={router} />
-            : <AppPlaceholder />}
+          <RouterProvider router={router} />
         </EventBusProvider>
       </ErrorHandler>
     </ThemeProvider>

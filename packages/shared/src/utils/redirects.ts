@@ -16,8 +16,10 @@
 
 import type { PathMatch } from 'react-router'
 import { matchPath } from 'react-router-dom'
+import { SEARCH_PARAM_NO_AUTO_LOGIN } from './constants'
 import type { FetchRedirectDetails } from './requests'
 import { API_BASE_PATH_PATTERN, FETCH_REDIRECT_TYPE_PACKAGE } from './requests'
+import { optionalSearchParams } from './search-params'
 import { format } from './strings'
 
 export function redirectToSaml(): void {
@@ -29,7 +31,10 @@ export function redirectToGitlab(): void {
 }
 
 export function redirectToLogin(): void {
-  redirectTo('/login', new URLSearchParams({ noAuth: 'true' }))
+  redirectTo('/login', optionalSearchParams({
+    [SEARCH_PARAM_NO_AUTO_LOGIN]: { value: true },
+    redirectUri: { value: location.href },
+  }))
 }
 
 export function redirectTo(path: string, searchParams: URLSearchParams = new URLSearchParams()): void {

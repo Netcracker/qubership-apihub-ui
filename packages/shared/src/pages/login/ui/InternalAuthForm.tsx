@@ -5,8 +5,9 @@ import { Box, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput
 import type { FC, ReactNode } from 'react'
 import { memo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { useLoginUser } from '../api/useLoginUser'
 import type { InternalIdentityProvider } from '../../../types/system-configuration'
+import { LAST_LOGIN_START_ENDPOINT_SESSION_STORAGE_KEY } from '../../../utils/constants'
+import { useLoginUser } from '../api/useLoginUser'
 
 type InternalAuthFormProps = {
   provider: InternalIdentityProvider
@@ -36,7 +37,10 @@ export const InternalAuthForm: FC<InternalAuthFormProps> = memo(props => {
     <Box
       component="form"
       sx={{ width: 1 }}
-      onSubmit={handleSubmit(loginWithLocalUser)}
+      onSubmit={event => {
+        localStorage.removeItem(LAST_LOGIN_START_ENDPOINT_SESSION_STORAGE_KEY)
+        handleSubmit(loginWithLocalUser)(event)
+      }}
     >
       <Controller
         name="username"
@@ -81,7 +85,9 @@ export const InternalAuthForm: FC<InternalAuthFormProps> = memo(props => {
               endAdornment={
                 <InputAdornment position="end">
                   <IconButton edge="end" onClick={() => setPasswordVisible(!passwordVisible)}>
-                    {passwordVisible ? <VisibilityOffOutlinedIcon /> : <VisibilityOutlinedIcon />}
+                    {passwordVisible
+                      ? <VisibilityOffOutlinedIcon />
+                      : <VisibilityOutlinedIcon />}
                   </IconButton>
                 </InputAdornment>
               }

@@ -16,7 +16,6 @@
 
 import { ErrorHandler } from '@apihub/components/ErrorHandler'
 import { CssBaseline, ThemeProvider } from '@mui/material'
-import { AppPlaceholder } from '@netcracker/qubership-apihub-ui-shared/components/AppPlaceholder'
 import { useInitializeAuth } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
 import { theme } from '@netcracker/qubership-apihub-ui-shared/themes/theme'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -37,7 +36,7 @@ const client = new QueryClient({
 })
 
 export const App: FC = memo(() => {
-  const [auth, isLoginPage] = useInitializeAuth()
+  useInitializeAuth()
 
   return (
     <StrictMode>
@@ -45,9 +44,7 @@ export const App: FC = memo(() => {
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <ErrorHandler>
-            {auth || isLoginPage
-              ? <Router />
-              : <AppPlaceholder />}
+            <Router />
           </ErrorHandler>
         </ThemeProvider>
         <ReactQueryDevtools initialIsOpen={false} />
