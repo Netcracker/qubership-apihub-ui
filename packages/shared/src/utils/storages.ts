@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { AUTHORIZATION_LOCAL_STORAGE_KEY } from './constants'
+import { LOCAL_STORAGE_KEY_AUTHORIZATION } from './constants'
 import type { Authorization } from '../types/authorization'
 
 export function getToken(): string {
   let authData: Authorization | null = null
   try {
-    authData = JSON.parse(localStorage.getItem(AUTHORIZATION_LOCAL_STORAGE_KEY)!)
+    authData = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY_AUTHORIZATION)!)
   } catch (e) {
     // do nothing
   }

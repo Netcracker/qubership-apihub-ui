@@ -18,7 +18,7 @@ export const DEFAULT_DEBOUNCE = 500
 
 export const DEFAULT_NUMBER_SKELETON_ROWS = 5
 
-export const AUTHORIZATION_LOCAL_STORAGE_KEY = 'authorization'
+export const LOCAL_STORAGE_KEY_AUTHORIZATION = 'authorization'
 export const SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION = 'systemConfiguration'
 export const LAST_LOGIN_START_ENDPOINT_SESSION_STORAGE_KEY = 'lastLoginStartEndpoint'
 export const SEARCH_PARAM_NO_AUTO_LOGIN = 'noAutoLogin'

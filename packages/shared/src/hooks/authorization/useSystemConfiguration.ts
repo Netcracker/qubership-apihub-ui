@@ -15,8 +15,11 @@
  */
 
 import { useQuery } from '@tanstack/react-query'
-import { IdentityProviderTypes, type IdentityProviderType, type SystemConfiguration, type SystemConfigurationDto } from '../../types/system-configuration'
+import { useEffect } from 'react'
+import type { IdentityProviderType, SystemConfiguration, SystemConfigurationDto } from '../../types/system-configuration'
+import { IdentityProviderTypes } from '../../types/system-configuration'
 import type { IsLoading } from '../../utils/aliases'
+import { SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION } from '../../utils/constants'
 import { requestJson } from '../../utils/requests'
 
 const SYSTEM_CONGIGURATION_QUERY_KEY = 'system-configuration-query-key'
@@ -28,6 +31,14 @@ export function useSystemConfiguration(): [SystemConfiguration | null, IsLoading
     enabled: true,
     select: toSystemConfiguration,
   })
+
+  useEffect(() => {
+    if (data) {
+      sessionStorage.setItem(SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION, JSON.stringify(data))
+    } else {
+      sessionStorage.removeItem(SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION)
+    }
+  }, [data])
 
   return [data ?? null, isLoading, error]
 }
