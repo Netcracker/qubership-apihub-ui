@@ -551,6 +551,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
           control={control}
           render={({ field: { value } }) => (
             <Autocomplete
+              disableClearable
               value={value ?? null}
               options={VERSION_STATUSES}
               getOptionDisabled={(option) => !packagePermissions.includes(VERSION_STATUS_MANAGE_PERMISSIONS[option])}
