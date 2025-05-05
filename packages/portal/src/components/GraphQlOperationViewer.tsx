@@ -29,7 +29,6 @@ export const GraphQlOperationViewer: FC<GraphQlOperationViewerProps> = memo<Grap
   return (
     <Box lineHeight={1.5} height="100%">
       <GraphQLOperationViewer
-        key={crypto.randomUUID()}
         source={source}
         displayMode={displayMode}
       />
