@@ -27,7 +27,6 @@ import { useProject } from '../../useProject'
 import { VERSION_CANDIDATE } from './consts'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { IsFetched, IsFetching, RefetchQuery } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { getAuthorization } from '@netcracker/qubership-apihub-ui-shared/utils/storages'
 import { groupBy } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import { calculateAction, EMPTY_CHANGE_SUMMARY } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
 import type { ChangesSummary } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
@@ -60,7 +59,6 @@ export function useBwcProblems(previousVersionKey?: Key): [BwcProblems, IsFetche
       versionKey: VERSION_CANDIDATE,
       previousPackageKey: packageKey!,
       previousVersionKey: previousVersionKey!,
-      authorization: getAuthorization(),
       files: branchConfig?.files ?? [],
       sources: branchFiles,
     }),

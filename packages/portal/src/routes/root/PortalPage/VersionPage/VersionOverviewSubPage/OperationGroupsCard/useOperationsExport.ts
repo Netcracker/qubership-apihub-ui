@@ -21,7 +21,6 @@ import { PackageVersionBuilder } from '../../../package-version-builder'
 import type { Filename } from '../../../package-version-builder-worker'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { getAuthorization } from '@netcracker/qubership-apihub-ui-shared/utils/storages'
 import type { BuildType, OperationsGroupExportFormat } from '@netcracker/qubership-apihub-api-processor'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 
@@ -48,7 +47,6 @@ export function useOperationsExport(): [ExportOperations, IsLoading] {
         apiType: apiType,
         buildType: buildType,
         format: format,
-        authorization: getAuthorization(),
       })
     },
     onSuccess: ([blob, filename]) => {

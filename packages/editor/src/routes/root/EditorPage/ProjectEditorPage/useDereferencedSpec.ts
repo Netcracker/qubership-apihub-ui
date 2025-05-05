@@ -23,7 +23,6 @@ import { PackageVersionBuilder } from './package-version-builder'
 import { VERSION_CANDIDATE } from './consts'
 import type { FileKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { InvalidateQuery, IsFetching } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { getAuthorization } from '@netcracker/qubership-apihub-ui-shared/utils/storages'
 
 const DEREFERENCED_SPEC_QUERY_KEY = 'dereferenced-spec-query-key'
 
@@ -44,7 +43,6 @@ export function useDereferencedSpec(
       versionKey: VERSION_CANDIDATE,
       previousVersionKey: VERSION_CANDIDATE,
       previousPackageKey: projectId!,
-      authorization: getAuthorization(),
       branchName: branchName!,
       files: branchConfig?.files ?? [],
       sources: branchFiles,

@@ -33,9 +33,9 @@ import type {
 } from '@netcracker/qubership-apihub-api-processor'
 import { NotFoundError } from './requests'
 
-export async function packageVersionResolver(authorization: string): Promise<VersionResolver> {
+export async function packageVersionResolver(): Promise<VersionResolver> {
   return async (packageId, version, includeOperations = false) => {
-    const versionConfig = await getPackageVersionContent(packageId, version, includeOperations, authorization)
+    const versionConfig = await getPackageVersionContent(packageId, version, includeOperations)
     if (!versionConfig) {
       return null
     }
@@ -47,9 +47,9 @@ export async function packageVersionResolver(authorization: string): Promise<Ver
   }
 }
 
-export async function versionReferencesResolver(authorization: string): Promise<VersionReferencesResolver> {
+export async function versionReferencesResolver(): Promise<VersionReferencesResolver> {
   return async (version, packageId) => {
-    const references = await getVersionReferences(packageId, version, authorization)
+    const references = await getVersionReferences(packageId, version)
 
     if (!references) {
       return null
@@ -59,7 +59,7 @@ export async function versionReferencesResolver(authorization: string): Promise<
   }
 }
 
-export async function versionOperationsResolver(authorization: string): Promise<VersionOperationsResolver> {
+export async function versionOperationsResolver(): Promise<VersionOperationsResolver> {
   return async (apiType, version, packageId, operationsIds, includeData) => {
     const EMPTY_OPERATIONS = { operations: [] }
     const limit = includeData ? 100 : 1000
@@ -75,7 +75,6 @@ export async function versionOperationsResolver(authorization: string): Promise<
           version,
           operationsIds,
           includeData,
-          authorization,
           page,
           limit,
         ) ?? EMPTY_OPERATIONS
@@ -91,14 +90,14 @@ export async function versionOperationsResolver(authorization: string): Promise<
   }
 }
 
-export async function versionDeprecatedResolver(authorization: string): Promise<VersionDeprecatedResolver> {
+export async function versionDeprecatedResolver(): Promise<VersionDeprecatedResolver> {
   return async (apiType, version, packageId, operationsIds) => {
-    return await fetchDeprecatedItems(apiType, packageId, version, operationsIds, authorization)
+    return await fetchDeprecatedItems(apiType, packageId, version, operationsIds)
   }
 }
 
 // TODO: Use for documentGroup buildType transformation. Provide to builder
-export async function versionDocumentsResolver(authorization: string): Promise<VersionDocumentsResolver> {
+export async function versionDocumentsResolver(): Promise<VersionDocumentsResolver> {
   return async (apiType, version, packageId, filterByOperationGroup) => {
     const EMPTY_DOCUMENTS = { documents: [] }
     const LIMIT = 100
@@ -109,7 +108,6 @@ export async function versionDocumentsResolver(authorization: string): Promise<V
       packageId,
       version,
       filterByOperationGroup,
-      authorization,
       page,
       LIMIT,
     )
@@ -127,7 +125,6 @@ export async function versionDocumentsResolver(authorization: string): Promise<V
         packageId,
         version,
         filterByOperationGroup,
-        authorization,
         page,
         LIMIT,
       ) ?? EMPTY_DOCUMENTS
@@ -141,10 +138,10 @@ export async function versionDocumentsResolver(authorization: string): Promise<V
   }
 }
 
-export async function templateResolver(authorization: string): Promise<TemplateResolver> {
+export async function templateResolver(): Promise<TemplateResolver> {
   return async (apiType, version, packageId, filterByOperationGroup) => {
     try {
-      const [content] = await fetchExportTemplate(packageId, version, apiType, filterByOperationGroup, authorization)
+      const [content] = await fetchExportTemplate(packageId, version, apiType, filterByOperationGroup)
       return content
     } catch (error) {
       if (error instanceof NotFoundError) {

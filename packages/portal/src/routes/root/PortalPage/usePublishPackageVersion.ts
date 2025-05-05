@@ -22,7 +22,6 @@ import { useAsyncInvalidatePackageVersions } from '@netcracker/qubership-apihub-
 import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import type { PublishDetails } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
 import { COMPLETE_PUBLISH_STATUS, ERROR_PUBLISH_STATUS } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
-import { getAuthorization } from '@netcracker/qubership-apihub-ui-shared/utils/storages'
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import { useMutation } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
@@ -46,7 +45,6 @@ export function usePublishPackageVersion(): [PublishPackageVersion, IsLoading, I
     mutationFn: options => {
       return PackageVersionBuilder.publishPackage(
         toPublishOptions(packageId!, options, user!.key),
-        getAuthorization(),
       )
     },
     onSuccess: async ({ status, message }, { version, sources }) => {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { expose } from 'comlink'
+import { portalRequestBlob, portalRequestJson } from '@apihub/utils/requests'
 import type {
   BuildConfig,
   BuildType,
@@ -25,7 +25,8 @@ import type {
   VersionStatus,
 } from '@netcracker/qubership-apihub-api-processor'
 import { BUILD_TYPE, PackageVersionBuilder, VERSION_STATUS } from '@netcracker/qubership-apihub-api-processor'
-import type { BuilderOptions } from './package-version-builder'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import {
   packageVersionResolver,
   templateResolver,
@@ -34,11 +35,7 @@ import {
   versionOperationsResolver,
   versionReferencesResolver,
 } from '@netcracker/qubership-apihub-ui-shared/utils/builder-resolvers'
-import type { PublishOptions } from './usePublishPackageVersion'
-import { generatePath } from 'react-router-dom'
-import { portalRequestBlob, portalRequestJson } from '@apihub/utils/requests'
-import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
+import { packToZip } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import type { PublishDetails, PublishStatus } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
 import {
   COMPLETE_PUBLISH_STATUS,
@@ -48,11 +45,14 @@ import {
   setPublicationDetails,
   startPackageVersionPublication,
 } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
 import { API_V3, NotFoundError } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
-import { packToZip } from '@netcracker/qubership-apihub-ui-shared/utils/files'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { expose } from 'comlink'
+import { generatePath } from 'react-router-dom'
 import { v4 as uuidv4 } from 'uuid'
+import type { BuilderOptions } from './package-version-builder'
+import type { PublishOptions } from './usePublishPackageVersion'
 
 /*
 For using worker in proxy mode you need to change common apihub-shared import
@@ -69,7 +69,6 @@ async function exportOperations(options: ExportOperationsOptions): Promise<[Blob
     groupName,
     format,
     buildType,
-    authorization,
   } = options
 
   const packageId = encodeURIComponent(packageKey)
@@ -83,10 +82,7 @@ async function exportOperations(options: ExportOperationsOptions): Promise<[Blob
   const pathPattern = '/packages/:packageId/versions/:versionId/:apiType/export/groups/:name/buildType/:buildType'
   const response = await portalRequestBlob(
     `${generatePath(pathPattern, { packageId, versionId, apiType, name, buildType })}?${searchParams}`,
-    {
-      method: 'GET',
-      headers: { authorization },
-    }, {
+    { method: 'GET' }, {
     basePath: API_V3,
     customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
   },
@@ -112,7 +108,6 @@ async function startDocumentTransformation(options: TransformDocumentOptions): P
     versionKey,
     apiType,
     groupName,
-    authorization,
     builderId,
     buildType,
     format,
@@ -133,10 +128,7 @@ async function startDocumentTransformation(options: TransformDocumentOptions): P
   const pathPattern = '/packages/:packageId/versions/:versionId/:apiType/build/groups/:name/buildType/:buildType'
   return await portalRequestJson<TransformDocumentResponse>(
     `${generatePath(pathPattern, { packageId, versionId, apiType, name, buildType })}?${searchParams}`,
-    {
-      method: 'POST',
-      headers: { authorization },
-    }, {
+    { method: 'POST' }, {
     basePath: API_V3,
     customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
   },
@@ -189,7 +181,7 @@ const RETRY_DOCUMENT_TRANSFORMATION_INTERVAL = 5000
 const SET_PUBLICATION_DETAILS_INTERVAL = 15000
 
 async function handleNotFound(transformDocumentOptions: TransformDocumentOptions): Promise<void> {
-  const { packageKey, authorization, builderId } = transformDocumentOptions
+  const { packageKey, builderId } = transformDocumentOptions
   const result = await startDocumentTransformation(transformDocumentOptions)
 
   if (isDocumentsTransformationCompletedSuccessfully(result)) { // handle 200
@@ -211,12 +203,12 @@ async function handleNotFound(transformDocumentOptions: TransformDocumentOptions
   if (isDocumentsTransformationCreatedSuccessfully(result)) { // handle 201
     const builderResolvers = {
       fileResolver: async () => null,
-      versionResolver: await packageVersionResolver(authorization),
-      versionReferencesResolver: await versionReferencesResolver(authorization),
-      versionOperationsResolver: await versionOperationsResolver(authorization),
-      versionDeprecatedResolver: await versionDeprecatedResolver(authorization),
-      versionDocumentsResolver: await versionDocumentsResolver(authorization),
-      templateResolver: await templateResolver(authorization),
+      versionResolver: await packageVersionResolver(),
+      versionReferencesResolver: await versionReferencesResolver(),
+      versionOperationsResolver: await versionOperationsResolver(),
+      versionDeprecatedResolver: await versionDeprecatedResolver(),
+      versionDocumentsResolver: await versionDocumentsResolver(),
+      templateResolver: await templateResolver(),
     }
     const builder = new PackageVersionBuilder(
       { ...result as BuildConfig },
@@ -229,7 +221,6 @@ async function handleNotFound(transformDocumentOptions: TransformDocumentOptions
         packageKey: packageKey,
         publishKey: result.buildId,
         status: RUNNING_PUBLISH_STATUS,
-        authorization: authorization,
         builderId: builderId,
         abortController: abortController,
       })
@@ -242,7 +233,6 @@ async function handleNotFound(transformDocumentOptions: TransformDocumentOptions
         packageKey: packageKey,
         publishKey: result.buildId,
         status: COMPLETE_PUBLISH_STATUS,
-        authorization: authorization,
         builderId: builderId,
         abortController: null,
         data: data,
@@ -252,7 +242,6 @@ async function handleNotFound(transformDocumentOptions: TransformDocumentOptions
         packageKey: packageKey,
         publishKey: result.buildId,
         status: ERROR_PUBLISH_STATUS,
-        authorization: authorization,
         builderId: builderId,
         abortController: null,
         errors: `${error instanceof Error ? error.message : error}`,
@@ -280,17 +269,13 @@ type ExportOperationsOptions = {
   apiType: ApiType
   buildType: BuildType
   format: OperationsGroupExportFormat
-  authorization: string
 }
 
 export type PackageVersionBuilderWorker = {
   exportOperations: (options: ExportOperationsOptions) => Promise<[Blob, Filename]>
   buildChangelogPackage: (options: BuilderOptions) => Promise<[VersionsComparison[], Blob]>
   buildGroupChangelogPackage: (options: BuilderOptions) => Promise<[VersionsComparison[], Blob]>
-  publishPackage: (
-    options: PublishOptions,
-    authorization: string,
-  ) => Promise<PublishDetails>
+  publishPackage: (options: PublishOptions) => Promise<PublishDetails>
 }
 
 const worker: PackageVersionBuilderWorker = {
@@ -306,13 +291,13 @@ const worker: PackageVersionBuilderWorker = {
       throw error
     }
   },
-  buildChangelogPackage: async ({ authorization, packageKey, versionKey, previousPackageKey, previousVersionKey }) => {
+  buildChangelogPackage: async ({ packageKey, versionKey, previousPackageKey, previousVersionKey }) => {
     const builderResolvers = {
       fileResolver: async () => null,
-      versionResolver: await packageVersionResolver(authorization),
-      versionReferencesResolver: await versionReferencesResolver(authorization),
-      versionOperationsResolver: await versionOperationsResolver(authorization),
-      versionDeprecatedResolver: await versionDeprecatedResolver(authorization),
+      versionResolver: await packageVersionResolver(),
+      versionReferencesResolver: await versionReferencesResolver(),
+      versionOperationsResolver: await versionOperationsResolver(),
+      versionDeprecatedResolver: await versionDeprecatedResolver(),
     }
     const builder = new PackageVersionBuilder(
       {
@@ -332,13 +317,13 @@ const worker: PackageVersionBuilderWorker = {
 
     return [builder.buildResult.comparisons, await builder.createVersionPackage({ type: 'blob' })]
   },
-  buildGroupChangelogPackage: async ({ authorization, packageKey, versionKey, currentGroup, previousGroup }) => {
+  buildGroupChangelogPackage: async ({ packageKey, versionKey, currentGroup, previousGroup }) => {
     const builderResolvers = {
       fileResolver: async () => null,
-      versionResolver: await packageVersionResolver(authorization),
-      versionReferencesResolver: await versionReferencesResolver(authorization),
-      versionOperationsResolver: await versionOperationsResolver(authorization),
-      versionDeprecatedResolver: await versionDeprecatedResolver(authorization),
+      versionResolver: await packageVersionResolver(),
+      versionReferencesResolver: await versionReferencesResolver(),
+      versionOperationsResolver: await versionOperationsResolver(),
+      versionDeprecatedResolver: await versionDeprecatedResolver(),
     }
     const builder = new PackageVersionBuilder(
       {
@@ -358,24 +343,24 @@ const worker: PackageVersionBuilderWorker = {
 
     return [builder.buildResult.comparisons, await builder.createVersionPackage({ type: 'blob' })]
   },
-  publishPackage: async (options, authorization): Promise<PublishDetails> => {
+  publishPackage: async (options): Promise<PublishDetails> => {
     const { packageId, sources } = options
     const builderId = uuidv4()
     const sourcesZip = sources && await packToZip(sources)
     const {
       publishId,
       config: buildConfig,
-    } = await startPackageVersionPublication(options, authorization, builderId, sourcesZip)
+    } = await startPackageVersionPublication(options, builderId, sourcesZip)
 
     const fileSources = sources && toFileSourceMap(sources)
 
     const builder = new PackageVersionBuilder(buildConfig, {
       resolvers: {
         fileResolver: async (fileId: FileId) => fileSources?.[fileId] ?? null,
-        versionResolver: await packageVersionResolver(authorization),
-        versionReferencesResolver: await versionReferencesResolver(authorization),
-        versionOperationsResolver: await versionOperationsResolver(authorization),
-        versionDeprecatedResolver: await versionDeprecatedResolver(authorization),
+        versionResolver: await packageVersionResolver(),
+        versionReferencesResolver: await versionReferencesResolver(),
+        versionOperationsResolver: await versionOperationsResolver(),
+        versionDeprecatedResolver: await versionDeprecatedResolver(),
       },
     }, fileSources)
 
@@ -385,7 +370,6 @@ const worker: PackageVersionBuilderWorker = {
         packageKey: packageId,
         publishKey: publishId,
         status: RUNNING_PUBLISH_STATUS,
-        authorization: authorization,
         builderId: builderId,
         abortController: abortController,
       })
@@ -411,7 +395,6 @@ const worker: PackageVersionBuilderWorker = {
         packageKey: packageId,
         publishKey: publishId,
         status: publicationStatus,
-        authorization: authorization,
         builderId: builderId,
         abortController: null,
         data: data,
@@ -425,7 +408,6 @@ const worker: PackageVersionBuilderWorker = {
         packageKey: packageId,
         publishKey: publishId,
         status: publicationStatus,
-        authorization: authorization,
         builderId: builderId,
         abortController: null,
         errors: `${error}`,

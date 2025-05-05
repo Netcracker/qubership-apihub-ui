@@ -24,7 +24,6 @@ import type { ServiceConfig } from '@apihub/entities/publish-config'
 import type { PublishDetails, PublishDetailsDto } from '@apihub/entities/publish-details'
 import { EMPTY_PUBLISH_DETAILS } from '@apihub/entities/publish-details'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { getAuthorization } from '@netcracker/qubership-apihub-ui-shared/utils/storages'
 import { calculatePreviousVersion } from '@apihub/entities/snapshots'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
@@ -53,7 +52,6 @@ export function useServicePublishDetails(options?: Partial<{
           ...serviceConfig!,
           previousVersion: calculatePreviousVersion(serviceConfig!.previousVersion),
         }!,
-        authorization: getAuthorization(),
         builderId: builderId,
       })
     },
