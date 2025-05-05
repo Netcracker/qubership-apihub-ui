@@ -78,6 +78,7 @@ export const FileEditingWebSocketProvider: FC<PropsWithChildren> = memo<PropsWit
       if (isSocketClosed(websocket.current) && fileId) {
         setConnecting(true)
 
+        // TODO 05.05.2025 // Token in WebSocket URI
         websocket.current = new WebSocket(
           `${protocol === 'https:' ? 'wss:' : 'ws:'}//${host}/ws/v1/projects/${encodeURIComponent(projectId!)}/branches/${encodeURIComponent(branch!)}/files/${encodeURIComponent(fileId)}?token=${getToken()}`,
         )

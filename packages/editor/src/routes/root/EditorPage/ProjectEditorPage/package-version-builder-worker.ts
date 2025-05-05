@@ -71,7 +71,6 @@ export type PackageVersionBuilderWorker = {
   ) => Promise<BranchCache>
   publishPackage: (
     options: PublishOptions,
-    authorization: string,
   ) => Promise<PublishDetails>
 }
 

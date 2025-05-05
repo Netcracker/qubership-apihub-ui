@@ -26,13 +26,3 @@ export function getToken(): string {
   }
   return authData?.token ?? ''
 }
-
-export function getAuthorization(token?: string): string {
-  const auth = token ?? getToken()
-
-  if (!auth) {
-    return ''
-  }
-
-  return `Bearer ${auth}`
-}

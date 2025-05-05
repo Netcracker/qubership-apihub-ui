@@ -199,6 +199,7 @@ export const BranchEditingWebSocketProvider: FC<PropsWithChildren> = memo<PropsW
       if (isSocketClosed(websocket.current)) {
         setConnecting(true)
 
+        // TODO 05.05.2025 // Token in WebSocket URI
         websocket.current = new WebSocket(
           `${protocol === 'https:' ? 'wss:' : 'ws:'}//${host}/ws/v1/projects/${encodeURIComponent(projectId!)}/branches/${encodeURIComponent(branch!)}?token=${getToken()}`,
         )

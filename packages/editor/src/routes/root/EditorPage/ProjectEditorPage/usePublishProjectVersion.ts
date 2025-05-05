@@ -31,7 +31,6 @@ import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { useUser } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useUser'
 import { useInvalidatePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
 import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { getAuthorization } from '@netcracker/qubership-apihub-ui-shared/utils/storages'
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import { useBranchSearchParam } from '../../useBranchSearchParam'
 import { PackageVersionBuilder } from './package-version-builder'
@@ -58,7 +57,6 @@ export function usePublishProjectVersion(): [PublishProjectVersion, IsLoading, I
 
       return PackageVersionBuilder.publishPackage(
         toPublishOptions(project!, branchName!, options, config?.files ?? [], sources, user!.key),
-        getAuthorization(),
       )
     },
     onSuccess: (details) => {
