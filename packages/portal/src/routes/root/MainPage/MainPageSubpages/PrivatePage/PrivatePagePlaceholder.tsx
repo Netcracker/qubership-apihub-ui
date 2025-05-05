@@ -45,8 +45,8 @@ export const PrivatePagePlaceholder: FC = memo(() => {
               </Typography>
               <Button
                 sx={{ mt: 2 }}
-                variant={'contained'}
-                children={'Create Private Workspace'}
+                variant='contained'
+                children='Create Private Workspace'
                 onClick={onCreatePrivatePackage}
                 data-testid="CreatePrivateWorkspaceButton"
               />
