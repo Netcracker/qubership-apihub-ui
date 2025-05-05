@@ -39,7 +39,7 @@ export const ActivityListItem: FC<ActivitiesListItemProps> = ({ activity }) => {
   })
 
   const renderTextAsHTML = useCallback((text: string): ReactNode => {
-    return <div style={{ display: 'inline' }} dangerouslySetInnerHTML={{ __html: text }}/>
+    return <span dangerouslySetInnerHTML={{ __html: text }}/>
   }, [])
 
   const activityMessageElement = useMemo(() => {
