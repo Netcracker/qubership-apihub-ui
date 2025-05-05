@@ -117,35 +117,87 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   }, [targetPackage, targetWorkspace, targetVersion, targetStatus, targetLabels])
 
   const { handleSubmit, control, reset, setValue, formState } = useForm<VersionFormData>({ defaultValues })
+  const [isInitialized, setIsInitialized] = useState(false)
 
-  const onVersionsFilter = useCallback((value: Key) => setVersionsFilter(value), [setVersionsFilter])
-  const onPackagesFilter = useCallback((value: Key) => setPackagesFilter(value), [setPackagesFilter])
-  const onWorkspacesFilter = useCallback((value: Key) => setWorkspacesFilter(value), [setWorkspacesFilter])
-  const onSetWorkspace = useCallback((workspace: Package | null) => setTargetWorkspace(workspace), [])
-  const onSetTargetPackage = useCallback((pack: Package | null) => setTargetPackage(pack), [])
-  const onSetTargetVersion = useCallback((version: string) => setTargetVersion(version), [])
-  const onSetTargetStatus = useCallback((status: VersionStatus) => setTargetStatus(status), [])
-  const onSetTargetLabels = useCallback((labels: string[]) => setTargetLabels(labels), [])
+  // Universal function for updating filters
+  const createFilterHandler = useCallback(<T, >(setter: (value: T) => void) => {
+    return (value: T) => setter(value)
+  }, [])
+
+  // Universal function for updating state and form value
+  const createStateAndFormUpdater = useCallback(<T, >(setter: (value: T) => void, formField: string) => {
+    return (value: T) => {
+      setter(value)
+      if (isInitialized) {
+        setValue(formField as keyof VersionFormData, value as VersionFormData[keyof VersionFormData])
+      }
+    }
+  }, [isInitialized, setValue])
+
+  const onVersionsFilter = createFilterHandler(setVersionsFilter)
+  const onPackagesFilter = createFilterHandler(setPackagesFilter)
+  const onWorkspacesFilter = createFilterHandler(setWorkspacesFilter)
+
+  const onSetWorkspace = createStateAndFormUpdater(setTargetWorkspace, 'workspace')
+  const onSetTargetPackage = createStateAndFormUpdater(setTargetPackage, 'package')
+  const onSetTargetVersion = createStateAndFormUpdater(setTargetVersion, 'version')
+  const onSetTargetStatus = createStateAndFormUpdater(setTargetStatus, 'status')
+  const onSetTargetLabels = createStateAndFormUpdater(setTargetLabels, 'labels')
   const getVersionLabels = useCallback((version: Key) => versionLabelsMap[version] ?? [], [versionLabelsMap])
 
+  // Effect for initializing and resetting the form
   useEffect(() => {
+    if (open && !isInitialized) {
+      reset(defaultValues)
+      setIsInitialized(true)
+    } else if (!open) {
+      setIsInitialized(false)
+    }
+  }, [open, reset, defaultValues, isInitialized])
+
+  // Effect for handling successful copying and closing the dialog
+  useEffect(() => {
+    if (isCopyingStartedSuccessfully && isPublished) {
+      setOpen(false)
+    }
+  }, [setOpen, isCopyingStartedSuccessfully, isPublished])
+
+  // Effect for setting the workspace and updating the form
+  useEffect(() => {
+    // Setting the workspace from the current package
     const workspace = currentPackage?.parents?.find(pack => pack.kind === WORKSPACE_KIND)
     setTargetWorkspace(workspace ?? null)
-  }, [currentPackage?.parents])
-  useEffect(() => {isCopyingStartedSuccessfully && isPublished && setOpen(false)}, [setOpen, isCopyingStartedSuccessfully, isPublished])
-  useEffect(() => {reset(defaultValues)}, [defaultValues, reset])
+
+    if (isInitialized && workspace) {
+      setValue('workspace', workspace)
+    }
+  }, [currentPackage?.parents, setValue, isInitialized])
+
+  // Effect for handling workspace changes
   useEffect(() => {
     if (!targetWorkspace) {
       setTargetPackage(null)
       setValue('package', null)
+    } else if (isInitialized) {
+      setValue('workspace', targetWorkspace)
     }
-  }, [targetWorkspace, setValue])
+  }, [targetWorkspace, setValue, isInitialized])
+
+  // Effect for updating status and version labels from configuration
   useEffect(() => {
     if (currentVersionConfig) {
-      setTargetStatus(currentVersionConfig.status as VersionStatus || DRAFT_VERSION_STATUS)
-      setTargetLabels(currentVersionConfig.metaData?.versionLabels ?? [])
+      const status = currentVersionConfig.status as VersionStatus || DRAFT_VERSION_STATUS
+      const labels = currentVersionConfig.metaData?.versionLabels ?? []
+
+      setTargetStatus(status)
+      setTargetLabels(labels)
+
+      if (isInitialized) {
+        setValue('status', status)
+        setValue('labels', labels)
+      }
     }
-  }, [currentVersionConfig])
+  }, [currentVersionConfig, setValue, isInitialized])
 
   const onCopy = useCallback(async (data: CopyInfo): Promise<void> => {
     const { package: targetPackage, version, status, labels, previousVersion } = data
