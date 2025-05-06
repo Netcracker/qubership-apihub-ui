@@ -6,7 +6,7 @@ import type { FC, ReactNode } from 'react'
 import { memo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import type { InternalIdentityProvider } from '../../../types/system-configuration'
-import { LAST_LOGIN_START_ENDPOINT_SESSION_STORAGE_KEY } from '../../../utils/constants'
+import { SESSION_STORAGE_KEY_LAST_IDENTITY_PROVIDER_ID } from '../../../utils/constants'
 import { useLoginUser } from '../api/useLoginUser'
 
 type InternalAuthFormProps = {
@@ -38,7 +38,7 @@ export const InternalAuthForm: FC<InternalAuthFormProps> = memo(props => {
       component="form"
       sx={{ width: 1 }}
       onSubmit={event => {
-        localStorage.removeItem(LAST_LOGIN_START_ENDPOINT_SESSION_STORAGE_KEY)
+        localStorage.setItem(SESSION_STORAGE_KEY_LAST_IDENTITY_PROVIDER_ID, provider.id)
         handleSubmit(loginWithLocalUser)(event)
       }}
     >

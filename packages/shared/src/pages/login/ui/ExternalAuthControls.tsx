@@ -2,7 +2,7 @@ import { Box, Button } from '@mui/material'
 import type { FC } from 'react'
 import { memo } from 'react'
 import type { ExternalIdentityProvider } from '../../../types/system-configuration'
-import { LAST_LOGIN_START_ENDPOINT_SESSION_STORAGE_KEY } from '../../../utils/constants'
+import { SESSION_STORAGE_KEY_LAST_IDENTITY_PROVIDER_ID } from '../../../utils/constants'
 import { redirectTo } from '../../../utils/redirects'
 
 type ExternalAuthControlsProps = {
@@ -35,7 +35,7 @@ export const ExternalAuthControls: FC<ExternalAuthControlsProps> = memo(({ provi
             onClick={() => {
               const { loginStartEndpoint } = idp
               if (loginStartEndpoint) {
-                localStorage.setItem(LAST_LOGIN_START_ENDPOINT_SESSION_STORAGE_KEY, loginStartEndpoint)
+                localStorage.setItem(SESSION_STORAGE_KEY_LAST_IDENTITY_PROVIDER_ID, idp.id)
                 redirectTo(loginStartEndpoint)
               }
             }}

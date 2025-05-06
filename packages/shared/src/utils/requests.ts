@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { SystemConfigurationDto } from '../types/system-configuration'
+import type { IdentityProviderDto, SystemConfigurationDto } from '../types/system-configuration'
 import { isInternalIdentityProvider } from '../types/system-configuration'
-import { LAST_LOGIN_START_ENDPOINT_SESSION_STORAGE_KEY, SEARCH_PARAM_NO_AUTO_LOGIN, SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION } from './constants'
+import { SEARCH_PARAM_NO_AUTO_LOGIN, SESSION_STORAGE_KEY_LAST_IDENTITY_PROVIDER_ID, SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION } from './constants'
 import type { ErrorMessage } from './packages-builder'
-import { redirectTo, redirectToLogin } from './redirects'
+import { redirectToLogin } from './redirects'
 import { HttpError } from './responses'
 import type { Key } from './types'
 
@@ -55,10 +55,10 @@ export async function requestJson<T extends object | null>(
     signal: signal,
     credentials: 'include',
   })
-  if (!response.ok) {
-    handleAuthentication(response)
 
-    await handleFetchError(response, ignoreNotFound, customErrorHandler)
+  if (!response.ok) {
+    await handleAuthentication(response)
+    await handleFetchError(response, { 401: true, 404: ignoreNotFound }, customErrorHandler)
     return null as T
   }
 
@@ -84,10 +84,10 @@ export async function requestText(
     ...init,
     credentials: 'include',
   })
-  if (!response.ok) {
-    handleAuthentication(response)
 
-    await handleFetchError(response, false, customErrorHandler)
+  if (!response.ok) {
+    await handleAuthentication(response)
+    await handleFetchError(response, { 401: true }, customErrorHandler)
     return ''
   }
 
@@ -114,7 +114,7 @@ export async function requestBlob(
   })
 
   if (!response.ok) {
-    handleAuthentication(response)
+    await handleAuthentication(response)
 
     if (customErrorHandler) {
       customErrorHandler(response)
@@ -145,17 +145,17 @@ export async function requestVoid(
     ...init,
     credentials: 'include',
   })
-  if (!response.ok) {
-    handleAuthentication(response)
 
-    await handleFetchError(response, ignoreNotFound, customErrorHandler)
+  if (!response.ok) {
+    await handleAuthentication(response)
+    await handleFetchError(response, { 401: true, 404: ignoreNotFound }, customErrorHandler)
   }
 
   await handleFetchRedirect(response, customRedirectHandler)
   return
 }
 
-function handleAuthentication(response: Response): void {
+async function handleAuthentication(response: Response): Promise<void> {
   const searchParams = new URLSearchParams(location.search)
   // noAutoLogin = true in 2 cases:
   // 1. user manually logged out just now
@@ -169,28 +169,47 @@ function handleAuthentication(response: Response): void {
     const systemConfiguration: SystemConfigurationDto = JSON.parse(systemConfigurationFromStorage!) as SystemConfigurationDto
 
     const { authConfig } = systemConfiguration
+
     const { defaultProviderId } = authConfig
     const defaultProvider = authConfig.identityProviders.find(idp => idp.id === defaultProviderId)
 
     // default identity provider is configured
-    if (defaultProvider) {
-      if (isInternalIdentityProvider(defaultProvider)) {
-        redirectToLogin()
-      } else if (defaultProvider.loginStartEndpoint) {
-        redirectTo(defaultProvider.loginStartEndpoint)
-      }
-    }
+    await handleUnauthorizedByProvider(defaultProvider)
 
-    // default identity provider is NOT configured
-    const lastLoginStartEndpoint = localStorage.getItem(LAST_LOGIN_START_ENDPOINT_SESSION_STORAGE_KEY)
-    if (lastLoginStartEndpoint) {
-      redirectTo(lastLoginStartEndpoint)
+    const lastProviderId = localStorage.getItem(SESSION_STORAGE_KEY_LAST_IDENTITY_PROVIDER_ID)
+    const lastProvider = lastProviderId
+      ? authConfig.identityProviders.find(idp => idp.id === lastProviderId)
+      : undefined
+
+    // last identity provider is saved
+    await handleUnauthorizedByProvider(lastProvider)
+  }
+}
+
+async function handleUnauthorizedByProvider(
+  identityProvider: IdentityProviderDto | undefined,
+): Promise<void> {
+  if (identityProvider) {
+    if (isInternalIdentityProvider(identityProvider)) {
+      redirectToLogin()
+    } else if (identityProvider.loginStartEndpoint) {
+      await fetch(
+        identityProvider.loginStartEndpoint,
+        {
+          credentials: 'include',
+          method: 'GET',
+        },
+      )
     }
   }
 }
 
-async function handleFetchError(response: Response, ignoreNotFound: boolean, customErrorHandler?: CustomErrorHandler): Promise<void> {
-  if (ignoreNotFound && response.status === 404) {
+async function handleFetchError(
+  response: Response,
+  ignoredStatuses: Record<number, boolean>,
+  customErrorHandler?: CustomErrorHandler,
+): Promise<void> {
+  if (ignoredStatuses[response.status]) {
     return Promise.reject()
   }
 
