@@ -98,6 +98,8 @@ export async function publishSnapshot(
   builderId: string,
   status?: VersionStatus,
 ): Promise<PublishConfigDto> {
+  version = encodeURIComponent(version)
+  previousVersion = encodeURIComponent(previousVersion)
   return await ncCustomAgentsRequestJson<PublishConfigDto>(`/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/snapshots?clientBuild=${clientBuild}&promote=${promote}`, {
       method: 'post',
       body: JSON.stringify(<PublishSnapshotRequestDto>{
