@@ -33,6 +33,8 @@ import {
 } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 import type { VersionFormData } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
 import {
+  getPackageOptions,
+  getVersionOptions,
   replaceEmptyPreviousVersion,
   usePreviousVersionOptions,
   VersionDialogForm,
@@ -40,9 +42,9 @@ import {
 import { usePackages } from '@apihub/routes/root/usePackages'
 import { useCopyPackageVersion } from '@apihub/routes/root/PortalPage/useCopyPackageVersion'
 import { usePublicationStatuses } from '@apihub/routes/root/PortalPage/usePublicationStatus'
-import { usePackageVersionConfig } from '@apihub/routes/root/PortalPage/usePackageVersionConfig'
 import { useFullMainVersion } from '@apihub/routes/root/PortalPage/FullMainVersionProvider'
 import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
+import { usePackageVersionConfig } from '@apihub/routes/root/PortalPage/usePackageVersionConfig'
 
 export const CopyPackageVersionDialog: FC = memo(() => {
   return (
@@ -62,83 +64,88 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const kindTitle = isPackage ? 'Package' : 'Dashboard'
 
   const [currentVersionConfig] = usePackageVersionConfig(currentPackage?.key, currentVersionId)
-
-  const [workspace, setWorkspace] = useState<Package | null>()
+  const [targetWorkspace, setTargetWorkspace] = useState<Package | null>(currentPackage?.parents?.[0] ?? null)
   const [workspacesFilter, setWorkspacesFilter] = useState('')
+  const [targetPackage, setTargetPackage] = useState<Package | null>(null)
+  const [packagesFilter, setPackagesFilter] = useState('')
+  const [versionId] = useState(getSplittedVersionKey(currentVersionId).versionKey)
+  const [targetVersion, setTargetVersion] = useState<Key>(versionId)
+  const [versionsFilter, setVersionsFilter] = useState('')
+  const [targetStatus, setTargetStatus] = useState(DRAFT_VERSION_STATUS as VersionStatus)
+  const [targetLabels, setTargetLabels] = useState([] as string[])
+
   const [workspaces, areWorkspacesLoading] = usePackages({
     kind: WORKSPACE_KIND,
     textFilter: workspacesFilter,
   })
-
-  const [targetPackage, setTargetPackage] = useState<Package | null>()
-  const [targetVersion, setTargetVersion] = useState<Key>('')
-
-  const [versionsFilter, setVersionsFilter] = useState('')
-  const { versions: versionsWithRevisions, areVersionsLoading } = usePackageVersions({
+  const [packages, arePackagesLoading] = usePackages({
+    kind: isPackage ? PACKAGE_KIND : DASHBOARD_KIND,
+    parentId: targetWorkspace?.key,
+    showAllDescendants: true,
+    textFilter: packagesFilter,
+  })
+  const { versions: filteredVersions, areVersionsLoading: areFilteredVersionsLoading } = usePackageVersions({
     packageKey: targetPackage?.key,
     enabled: !!targetPackage,
     textFilter: versionsFilter,
   })
-
-  const [packagesFilter, setPackagesFilter] = useState('')
-  const [packages, arePackagesLoading] = usePackages({
-    kind: isPackage ? PACKAGE_KIND : DASHBOARD_KIND,
-    parentId: workspace?.key,
-    showAllDescendants: true,
-    textFilter: packagesFilter,
-  })
-
-  const targetPackagePermissions = useMemo(() => targetPackage?.permissions ?? [], [targetPackage?.permissions])
-  const targetReleaseVersionPattern = useMemo(() => targetPackage?.releaseVersionPattern, [targetPackage?.releaseVersionPattern])
-
-  const onVersionsFilter = useCallback((value: Key) => setVersionsFilter(value), [setVersionsFilter])
-  const onPackagesFilter = useCallback((value: Key) => setPackagesFilter(value), [setPackagesFilter])
-  const onWorkspacesFilter = useCallback((value: Key) => setWorkspacesFilter(value), [setWorkspacesFilter])
-  const onSetWorkspace = useCallback((workspace: Package | null) => setWorkspace(workspace), [])
-  const onSetTargetPackage = useCallback((workspace: Package | null) => {
-    setTargetPackage(workspace)
-  }, [])
-
-  const versionLabelsMap = useMemo(() => getVersionLabelsMap(versionsWithRevisions), [versionsWithRevisions])
-  const versions = useMemo(() => Object.keys(versionLabelsMap), [versionLabelsMap])
-  const getVersionLabels = useCallback((version: Key) => versionLabelsMap[version] ?? [], [versionLabelsMap])
-
-  const defaultValues: VersionFormData = useMemo(() => {
-    const { version, status, metaData } = currentVersionConfig || {}
-    return {
-      workspace: currentPackage?.parents?.[0] ?? null,
-      version: getSplittedVersionKey(version).versionKey || '',
-      status: status || DRAFT_VERSION_STATUS,
-      labels: metaData?.versionLabels ?? [],
-      previousVersion: NO_PREVIOUS_RELEASE_VERSION_OPTION,
-    }
-  }, [currentVersionConfig, currentPackage?.parents])
-
-  const { versions: targetPackagePreviousVersions } = usePackageVersions({
+  const { versions: targetPreviousVersions } = usePackageVersions({
     packageKey: targetPackage?.key,
     enabled: !!targetPackage,
     status: RELEASE_VERSION_STATUS,
   })
-  const targetVersionsPreviousVersionOptions = usePreviousVersionOptions(targetPackagePreviousVersions)
 
-  const { handleSubmit, control, reset, setValue, formState } = useForm<VersionFormData>({ defaultValues })
-
+  const targetPreviousVersionOptions = usePreviousVersionOptions(targetPreviousVersions)
   const [copyPackage, publishId, isCopyStarting, isCopyingStartedSuccessfully] = useCopyPackageVersion()
   const [isPublishing, isPublished] = usePublicationStatuses(targetPackage?.key ?? '', publishId, targetVersion)
 
+  const targetPackagePermissions = useMemo(() => targetPackage?.permissions ?? [], [targetPackage?.permissions])
+  const targetReleaseVersionPattern = useMemo(() => targetPackage?.releaseVersionPattern, [targetPackage?.releaseVersionPattern])
+  const versionLabelsMap = useMemo(() => getVersionLabelsMap(filteredVersions), [filteredVersions])
+  const versionOptions = useMemo(() => getVersionOptions(versionLabelsMap, targetVersion), [targetVersion, versionLabelsMap])
+  const packageOptions = useMemo(() => getPackageOptions(packages, targetPackage), [targetPackage, packages])
+  const workspaceOptions = useMemo(() => getPackageOptions(workspaces, targetWorkspace), [targetWorkspace, workspaces])
+  const defaultValues: VersionFormData = useMemo(() => {
+    return {
+      package: targetPackage,
+      workspace: targetWorkspace,
+      version: targetVersion,
+      status: targetStatus,
+      labels: targetLabels,
+      previousVersion: NO_PREVIOUS_RELEASE_VERSION_OPTION,
+    }
+  }, [targetPackage, targetWorkspace, targetVersion, targetStatus, targetLabels])
+
+  const { handleSubmit, control, reset, setValue, formState } = useForm<VersionFormData>({ defaultValues })
+
+  const onVersionsFilter = useCallback((value: Key) => setVersionsFilter(value), [setVersionsFilter])
+  const onPackagesFilter = useCallback((value: Key) => setPackagesFilter(value), [setPackagesFilter])
+  const onWorkspacesFilter = useCallback((value: Key) => setWorkspacesFilter(value), [setWorkspacesFilter])
+  const onSetWorkspace = useCallback((workspace: Package | null) => setTargetWorkspace(workspace), [])
+  const onSetTargetPackage = useCallback((pack: Package | null) => setTargetPackage(pack), [])
+  const onSetTargetVersion = useCallback((version: string) => setTargetVersion(version), [])
+  const onSetTargetStatus = useCallback((status: VersionStatus) => setTargetStatus(status), [])
+  const onSetTargetLabels = useCallback((labels: string[]) => setTargetLabels(labels), [])
+  const getVersionLabels = useCallback((version: Key) => versionLabelsMap[version] ?? [], [versionLabelsMap])
+
   useEffect(() => {
     const workspace = currentPackage?.parents?.find(pack => pack.kind === WORKSPACE_KIND)
-    setWorkspace(workspace)
+    setTargetWorkspace(workspace ?? null)
   }, [currentPackage?.parents])
-
   useEffect(() => {isCopyingStartedSuccessfully && isPublished && setOpen(false)}, [setOpen, isCopyingStartedSuccessfully, isPublished])
   useEffect(() => {reset(defaultValues)}, [defaultValues, reset])
-  useEffect(() =>{
-    if(!workspace){
+  useEffect(() => {
+    if (!targetWorkspace) {
       setTargetPackage(null)
       setValue('package', null)
     }
-  }, [workspace, setValue])
+  }, [targetWorkspace, setValue])
+  useEffect(() => {
+    if (currentVersionConfig) {
+      setTargetStatus(currentVersionConfig.status as VersionStatus || DRAFT_VERSION_STATUS)
+      setTargetLabels(currentVersionConfig.metaData?.versionLabels ?? [])
+    }
+  }, [currentVersionConfig])
 
   const onCopy = useCallback(async (data: CopyInfo): Promise<void> => {
     const { package: targetPackage, version, status, labels, previousVersion } = data
@@ -170,20 +177,23 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       control={control}
       setValue={setValue}
       formState={formState}
-      selectedWorkspace={workspace}
-      workspaces={workspaces}
+      selectedWorkspace={targetWorkspace}
+      workspaces={workspaceOptions}
       onSetWorkspace={onSetWorkspace}
       onWorkspacesFilter={onWorkspacesFilter}
       areWorkspacesLoading={areWorkspacesLoading}
-      packages={packages}
+      packages={packageOptions}
       onVersionsFilter={onVersionsFilter}
       onPackagesFilter={onPackagesFilter}
-      areVersionsLoading={areVersionsLoading}
+      areVersionsLoading={areFilteredVersionsLoading}
       arePackagesLoading={arePackagesLoading}
       onSetTargetPackage={onSetTargetPackage}
+      onSetTargetVersion={onSetTargetVersion}
+      onSetTargetStatus={onSetTargetStatus}
+      onSetTargetLabels={onSetTargetLabels}
       packagesTitle={kindTitle}
-      versions={versions}
-      previousVersions={targetVersionsPreviousVersionOptions}
+      versions={versionOptions}
+      previousVersions={targetPreviousVersionOptions}
       getVersionLabels={getVersionLabels}
       packagePermissions={targetPackagePermissions}
       releaseVersionPattern={targetReleaseVersionPattern}
