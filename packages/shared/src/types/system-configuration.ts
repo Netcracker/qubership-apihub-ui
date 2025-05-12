@@ -35,8 +35,6 @@ export type InternalIdentityProvider = Omit<IdentityProviderDto, 'type'> & { typ
 export type ExternalIdentityProvider = Omit<IdentityProviderDto, 'type'> & { type: typeof IdentityProviderTypes.EXTERNAL }
 
 export type SystemConfigurationDto = Readonly<{
-  ssoIntegrationEnabled: boolean
-  autoRedirect: boolean
   defaultWorkspaceId: string
   authConfig: {
     identityProviders: ReadonlyArray<IdentityProviderDto>

@@ -25,9 +25,8 @@ import ignoreDotsOnDevServer from 'vite-plugin-rewrite-all'
 import { VitePluginFonts } from 'vite-plugin-fonts'
 import { visualizer as bundleVisualizer } from 'rollup-plugin-visualizer'
 
-const proxyServer = ''
+const proxyServer = 'http://host.docker.internal:8081'
 const devServer = 'http://localhost:3004'
-const userView = ''
 
 export default defineConfig(({ mode }) => {
   const isProxyMode = mode === 'proxy'
@@ -117,7 +116,7 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       port: 8000,
-      open: `/login?userView=${userView}`,
+      open: '/login',
       proxy: {
         '/api': {
           target: isProxyMode ? `${proxyServer}/api` : devServer,

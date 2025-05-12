@@ -20,7 +20,7 @@ import type { IdentityProviderType, SystemConfiguration, SystemConfigurationDto 
 import { IdentityProviderTypes } from '../../types/system-configuration'
 import type { IsLoading } from '../../utils/aliases'
 import { SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION } from '../../utils/constants'
-import { requestJson } from '../../utils/requests'
+import { API_V2, requestJson } from '../../utils/requests'
 
 const SYSTEM_CONGIGURATION_QUERY_KEY = 'system-configuration-query-key'
 
@@ -44,15 +44,15 @@ export function useSystemConfiguration(): [SystemConfiguration | null, IsLoading
 }
 
 export async function systemConfiguration(): Promise<SystemConfigurationDto> {
-  return await requestJson<SystemConfigurationDto>('/api/v1/system/configuration', {
-    method: 'GET',
-  })
+  return await requestJson<SystemConfigurationDto>(
+    '/system/configuration',
+    { method: 'GET' },
+    { basePath: API_V2 },
+  )
 }
 
 export function toSystemConfiguration(value: SystemConfigurationDto): SystemConfiguration {
   return {
-    ssoIntegrationEnabled: value.ssoIntegrationEnabled,
-    autoRedirect: value.autoRedirect,
     defaultWorkspaceId: value.defaultWorkspaceId,
     authConfig: {
       ...value.authConfig,
