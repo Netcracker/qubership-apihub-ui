@@ -18,7 +18,7 @@ import type { IdentityProviderDto, SystemConfigurationDto } from '../types/syste
 import { isInternalIdentityProvider } from '../types/system-configuration'
 import { SEARCH_PARAM_NO_AUTO_LOGIN, SESSION_STORAGE_KEY_LAST_IDENTITY_PROVIDER_ID, SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION } from './constants'
 import type { ErrorMessage } from './packages-builder'
-import { redirectTo, redirectToLogin } from './redirects'
+import { redirectTo } from './redirects'
 import { HttpError } from './responses'
 import { optionalSearchParams } from './search-params'
 import type { Key } from './types'
@@ -187,31 +187,29 @@ async function handleAuthentication(response: Response): Promise<void> {
   }
 }
 
-async function handleUnauthorizedByProvider(
-  identityProvider: IdentityProviderDto | undefined,
-  enforceRedirect: boolean = false,
-): Promise<void> {
+async function handleUnauthorizedByProvider(identityProvider: IdentityProviderDto | undefined): Promise<void> {
   if (!identityProvider) {
     return
   }
+
+  let requestEndpoint = ''
   if (isInternalIdentityProvider(identityProvider)) {
-    enforceRedirect && redirectToLogin()
-    const response = await fetch(
-      `${API_V3}/auth/local/refresh`,
-      { method: 'GET' },
-    )
-    if (response.status === 401) {
-      handleUnauthorizedByProvider(identityProvider, true)
-    }
+    requestEndpoint = `${API_V3}/auth/local/refresh`
   } else if (identityProvider.loginStartEndpoint) {
-    enforceRedirect && redirectTo(identityProvider.loginStartEndpoint)
-    const response = await fetch(
-      `${identityProvider.loginStartEndpoint}?${optionalSearchParams({ redirectUri: { value: location.href } })}`,
-      { method: 'GET' },
-    )
-    if (response.status === 401) {
-      handleUnauthorizedByProvider(identityProvider, true)
-    }
+    requestEndpoint = `${identityProvider.loginStartEndpoint}?${optionalSearchParams({ redirectUri: { value: location.href } })}`
+  } else {
+    return
+  }
+  const response = await fetch(
+    requestEndpoint,
+    {
+      method: 'GET',
+      redirect: 'manual',
+    },
+  )
+  if (response.type === 'opaqueredirect') {
+    const url = response.url.replace(location.origin, '')
+    redirectTo(url)
   }
 }
 
