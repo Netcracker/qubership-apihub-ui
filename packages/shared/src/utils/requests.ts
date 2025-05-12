@@ -36,6 +36,14 @@ export const DEFAULT_REFETCH_INTERVAL = 5 * (60 * 1000) // five minutes
 export type CustomErrorHandler = (response: Response) => void
 export type CustomRedirectHandler = (response: Response) => FetchRedirectDetails | null
 
+const TokenRefreshResults = {
+  NO_PROVIDER: 'no-provider',
+  NO_ENDPOINT: 'no-endpoint',
+  TOKEN_REFRESHED: 'token-refreshed',
+  UNKNOWN: 'unknown',
+} as const
+type TokenRefreshResult = typeof TokenRefreshResults[keyof typeof TokenRefreshResults]
+
 export type RequestJsonExtraOptions = {
   basePath?: string
   customErrorHandler?: CustomErrorHandler
@@ -58,7 +66,11 @@ export async function requestJson<T extends object | null>(
   })
 
   if (!response.ok) {
-    await handleAuthentication(response)
+    const tokenRefreshResult = await handleAuthentication(response)
+    if (tokenRefreshResult === TokenRefreshResults.TOKEN_REFRESHED) {
+      return requestJson(input, init, options, signal)
+    }
+
     await handleFetchError(response, { 401: true, 404: ignoreNotFound }, customErrorHandler)
     return null as T
   }
@@ -87,7 +99,11 @@ export async function requestText(
   })
 
   if (!response.ok) {
-    await handleAuthentication(response)
+    const tokenRefreshResult = await handleAuthentication(response)
+    if (tokenRefreshResult === TokenRefreshResults.TOKEN_REFRESHED) {
+      return requestText(input, init, options)
+    }
+
     await handleFetchError(response, { 401: true }, customErrorHandler)
     return ''
   }
@@ -115,7 +131,10 @@ export async function requestBlob(
   })
 
   if (!response.ok) {
-    await handleAuthentication(response)
+    const tokenRefreshResult = await handleAuthentication(response)
+    if (tokenRefreshResult === TokenRefreshResults.TOKEN_REFRESHED) {
+      return requestBlob(input, init, options)
+    }
 
     if (customErrorHandler) {
       customErrorHandler(response)
@@ -148,7 +167,11 @@ export async function requestVoid(
   })
 
   if (!response.ok) {
-    await handleAuthentication(response)
+    const tokenRefreshResult = await handleAuthentication(response)
+    if (tokenRefreshResult === TokenRefreshResults.TOKEN_REFRESHED) {
+      return requestVoid(input, init, options)
+    }
+    
     await handleFetchError(response, { 401: true, 404: ignoreNotFound }, customErrorHandler)
   }
 
@@ -156,12 +179,14 @@ export async function requestVoid(
   return
 }
 
-async function handleAuthentication(response: Response): Promise<void> {
+async function handleAuthentication(response: Response): Promise<TokenRefreshResult | undefined> {
   const searchParams = new URLSearchParams(location.search)
   // noAutoLogin = true in 2 cases:
   // 1. user manually logged out just now
   // 2. user logged in just now and automatically redirect to login page
   const autoLogin = !searchParams.get(SEARCH_PARAM_NO_AUTO_LOGIN)
+
+  let tokenRefreshResult: TokenRefreshResult | undefined
 
   if (response.status === 401 && autoLogin) {
     const systemConfigurationFromStorage = sessionStorage.getItem(SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION)
@@ -175,7 +200,7 @@ async function handleAuthentication(response: Response): Promise<void> {
     const defaultProvider = authConfig.identityProviders.find(idp => idp.id === defaultProviderId)
 
     // default identity provider is configured
-    await handleUnauthorizedByProvider(defaultProvider)
+    tokenRefreshResult = await handleUnauthorizedByProvider(defaultProvider)
 
     const lastProviderId = localStorage.getItem(SESSION_STORAGE_KEY_LAST_IDENTITY_PROVIDER_ID)
     const lastProvider = lastProviderId
@@ -183,13 +208,15 @@ async function handleAuthentication(response: Response): Promise<void> {
       : undefined
 
     // last identity provider is saved
-    await handleUnauthorizedByProvider(lastProvider)
+    tokenRefreshResult = await handleUnauthorizedByProvider(lastProvider)
   }
+
+  return tokenRefreshResult
 }
 
-async function handleUnauthorizedByProvider(identityProvider: IdentityProviderDto | undefined): Promise<void> {
+async function handleUnauthorizedByProvider(identityProvider: IdentityProviderDto | undefined): Promise<TokenRefreshResult> {
   if (!identityProvider) {
-    return
+    return TokenRefreshResults.NO_PROVIDER
   }
 
   let requestEndpoint = ''
@@ -198,7 +225,7 @@ async function handleUnauthorizedByProvider(identityProvider: IdentityProviderDt
   } else if (identityProvider.loginStartEndpoint) {
     requestEndpoint = `${identityProvider.loginStartEndpoint}?${optionalSearchParams({ redirectUri: { value: location.href } })}`
   } else {
-    return
+    return TokenRefreshResults.NO_ENDPOINT
   }
   const response = await fetch(
     requestEndpoint,
@@ -207,10 +234,15 @@ async function handleUnauthorizedByProvider(identityProvider: IdentityProviderDt
       redirect: 'manual',
     },
   )
+  if (response.ok) {
+    return TokenRefreshResults.TOKEN_REFRESHED
+  }
   if (response.type === 'opaqueredirect') {
     const url = response.url.replace(location.origin, '')
     redirectTo(url)
   }
+  console.error('Unknown token refresh result. Response:', response)
+  return TokenRefreshResults.UNKNOWN
 }
 
 async function handleFetchError(
