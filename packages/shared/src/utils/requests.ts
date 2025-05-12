@@ -221,7 +221,7 @@ async function handleUnauthorizedByProvider(identityProvider: IdentityProviderDt
 
   let requestEndpoint = ''
   if (isInternalIdentityProvider(identityProvider)) {
-    const searchParamsLoginPage = optionalSearchParams({ noAutoLogin: { value: 'true' } })
+    const searchParamsLoginPage = optionalSearchParams({ noAutoLogin: { value: true } })
     const searchParamsAuthLocalRefresh = optionalSearchParams({ redirectUri: { value: `/login?${searchParamsLoginPage}` } })
     requestEndpoint = `${API_V3}/auth/local/refresh?${searchParamsAuthLocalRefresh}`
   } else if (identityProvider.loginStartEndpoint) {
