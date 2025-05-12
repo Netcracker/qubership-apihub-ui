@@ -221,8 +221,8 @@ async function handleUnauthorizedByProvider(identityProvider: IdentityProviderDt
 
   let requestEndpoint = ''
   if (isInternalIdentityProvider(identityProvider)) {
-    const searchParamsLoginPage = optionalSearchParams({ noAutoLogin: { value: true } })
-    const searchParamsAuthLocalRefresh = optionalSearchParams({ redirectUri: { value: `/login?${searchParamsLoginPage}` } })
+    const searchParamsLoginPage = optionalSearchParams({ noAutoLogin: { value: true }, redirectUri: { value: location.href } })
+    const searchParamsAuthLocalRefresh = optionalSearchParams({ redirectUri: { value: `${location.origin}/login?${searchParamsLoginPage}` } })
     requestEndpoint = `${API_V3}/auth/local/refresh?${searchParamsAuthLocalRefresh}`
   } else if (identityProvider.loginStartEndpoint) {
     const searchParamsAuthWithStartEndpoint = optionalSearchParams({ redirectUri: { value: location.href } })
@@ -244,7 +244,7 @@ async function handleUnauthorizedByProvider(identityProvider: IdentityProviderDt
     const url = response.url.replace(location.origin, '')
     redirectTo(url)
   }
-  console.error('Unknown token refresh result. Response:', response)
+  console.error('Can\'t refresh token. Response:', response)
   return TokenRefreshResults.UNKNOWN
 }
 

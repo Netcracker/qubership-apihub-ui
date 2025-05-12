@@ -20,11 +20,6 @@ import { SEARCH_PARAM_NO_AUTO_LOGIN } from './constants'
 import type { FetchRedirectDetails } from './requests'
 import { API_BASE_PATH_PATTERN, FETCH_REDIRECT_TYPE_PACKAGE } from './requests'
 import { optionalSearchParams } from './search-params'
-import { format } from './strings'
-
-export function redirectToSaml(): void {
-  redirectTo('/api/v2/auth/saml')
-}
 
 export function redirectToGitlab(): void {
   redirectTo('/login/gitlab')
@@ -41,10 +36,12 @@ export function redirectTo(path: string, searchParams: URLSearchParams = new URL
   const redirectUri = searchParams.get('redirectUri') ?? location.href
   searchParams.set('redirectUri', redirectUri)
 
-  const url = format(
-    `{}{}?${searchParams}`,
-    location.origin, path,
-  );
+  let url = location.origin
+  if (path.includes('?')) {
+    url = `${url}${path}&${searchParams}`
+  } else {
+    url = `${url}${path}?${searchParams}`
+  }
 
   (() => {
     window.stop()
