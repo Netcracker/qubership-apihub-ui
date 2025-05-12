@@ -687,16 +687,16 @@ export function usePreviousVersionOptions(versions: PackageVersions): VersionKey
   ]), [versionsWithoutRevision])
 }
 
-export function getVersionOptions(versionLabelsMap: Record<string, string[]>, targetVersion: string): VersionKey[] {
+export function getVersionOptions(versionLabelsMap: Record<string, string[]>, targetVersion: string, isFiltered: boolean): VersionKey[] {
   const versions: string[] = Object.keys(versionLabelsMap)
-  if (targetVersion && !versions.includes(targetVersion)) {
+  if (isFiltered && targetVersion && !versions.includes(targetVersion)) {
     versions.unshift(targetVersion)
   }
   return versions
 }
 
-export function getPackageOptions(packages: Packages, existingPackage: Package | null): Packages {
-  if (existingPackage && packages && !packages.some(existPackage => existPackage.key === existingPackage.key)) {
+export function getPackageOptions(packages: Packages, existingPackage: Package | null, isFiltered: boolean): Packages {
+  if (!isFiltered && existingPackage && packages && !packages.some(existPackage => existPackage.key === existingPackage.key)) {
     return [existingPackage, ...packages]
   }
   return packages

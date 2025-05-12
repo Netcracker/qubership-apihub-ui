@@ -68,12 +68,9 @@ const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
   const isPackage = packageKind === PACKAGE_KIND
 
   const { filesWithLabels } = useFiles()
-
+  const [versionId] = useState(isEditingVersion ? currentVersionId ?? '' : '')
   const [targetVersion, setTargetVersion] = useState<Key>(isEditingVersion ? currentVersionId ?? '' : '')
   const [versionsFilter, setVersionsFilter] = useState('')
-  const [targetStatus, setTargetStatus] = useState(DRAFT_VERSION_STATUS as VersionStatus)
-  const [targetLabels, setTargetLabels] = useState([] as string[])
-  const [targetPreviousVersion, setTargetPreviousVersion] = useState(NO_PREVIOUS_RELEASE_VERSION_OPTION)
 
   const {
     versions: filteredVersions,
@@ -85,36 +82,33 @@ const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
   const dashboardRefs = useDashboardReferences()
 
   const versionLabelsMap = useMemo(() => getVersionLabelsMap(filteredVersions), [filteredVersions])
-  const versionOptions = useMemo(() => getVersionOptions(versionLabelsMap, targetVersion), [targetVersion, versionLabelsMap])
+  const versionOptions = useMemo(() => getVersionOptions(versionLabelsMap, targetVersion, !!versionsFilter), [targetVersion, versionLabelsMap, versionsFilter])
   const packagePermissions = useMemo(() => currentPackage?.permissions ?? [], [currentPackage])
   const releaseVersionPattern = useMemo(() => currentPackage?.releaseVersionPattern, [currentPackage])
-  const defaultValues = useMemo(() => {
-    return {
-      version: targetVersion,
-      status: targetStatus,
-      labels: targetLabels,
-      previousVersion: targetPreviousVersion,
-    }
-  }, [targetVersion, targetStatus, targetLabels, targetPreviousVersion])
 
+  const defaultValues: VersionFormData = useMemo(() => {
+    return {
+      version: versionId,
+      status: DRAFT_VERSION_STATUS,
+      labels: [],
+      previousVersion: NO_PREVIOUS_RELEASE_VERSION_OPTION,
+    }
+  }, [versionId])
   const { handleSubmit, control, setValue, formState, reset } = useForm<VersionFormData>({ defaultValues })
 
   const onVersionsFilter = useCallback((value: Key) => setVersionsFilter(value), [setVersionsFilter])
   const getVersionLabels = useCallback((version: Key) => versionLabelsMap[version] ?? [], [versionLabelsMap])
   const onSetTargetVersion = useCallback((version: string) => setTargetVersion(version), [])
-  const onSetTargetStatus = useCallback((status: VersionStatus) => setTargetStatus(status), [])
-  const onSetTargetLabels = useCallback((labels: string[]) => setTargetLabels(labels), [])
-  const onSetTargetPreviousVersion = useCallback((version: Key) => setTargetPreviousVersion(version), [])
 
   useEffect(() => {isPublishSuccess && setOpen(false)}, [setOpen, isPublishSuccess])
   useEffect(() => {reset(defaultValues)}, [defaultValues, reset])
   useEffect(() => {
     if (currentVersionConfig) {
-      setTargetStatus(currentVersionConfig.status as VersionStatus || DRAFT_VERSION_STATUS)
-      setTargetLabels(currentVersionConfig.metaData?.versionLabels ?? [])
-      setTargetPreviousVersion(currentVersionConfig.previousVersion || NO_PREVIOUS_RELEASE_VERSION_OPTION)
+      setValue('status', currentVersionConfig.status as VersionStatus || DRAFT_VERSION_STATUS)
+      setValue('labels', currentVersionConfig.metaData?.versionLabels ?? [])
+      setValue('previousVersion', currentVersionConfig.previousVersion || NO_PREVIOUS_RELEASE_VERSION_OPTION)
     }
-  }, [currentVersionConfig])
+  }, [currentVersionConfig, setValue])
 
   const onPublish = useCallback(async (data: PublishInfo): Promise<void> => {
     const previousVersion = replaceEmptyPreviousVersion(data.previousVersion)
@@ -152,9 +146,6 @@ const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
       packagePermissions={packagePermissions}
       releaseVersionPattern={releaseVersionPattern}
       onSetTargetVersion={onSetTargetVersion}
-      onSetTargetStatus={onSetTargetStatus}
-      onSetTargetLabels={onSetTargetLabels}
-      setSelectedPreviousVersion={onSetTargetPreviousVersion}
       isPublishing={isPublishLoading}
       hideDescriptorField
       hideCopyPackageFields
