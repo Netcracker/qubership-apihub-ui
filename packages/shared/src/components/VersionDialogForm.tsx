@@ -668,7 +668,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
         <LoadingButton
           variant="contained"
           type="submit"
-          loading={isPublishing || initLoading}
+          loading={isPublishing}
           disabled={isFileReading || publishButtonDisabled || initLoading}
           data-testid={submitButtonTittle ? `${submitButtonTittle}Button` : 'PublishButton'}
         >
