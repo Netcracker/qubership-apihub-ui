@@ -18,7 +18,7 @@
     "dev:portal": "npx lerna run dev:backend,dev:frontend --stream --scope=@netcracker/qubership-apihub-ui-portal",
     "update-lock-file": "update-lock-file @netcracker"
   },
-  "dependencies": {
+  "dependencies": { 
     "@emotion/react": "11.10.6",
     "@emotion/styled": "11.10.6",
     "@graphiql/plugin-explorer": "1.0.3",
