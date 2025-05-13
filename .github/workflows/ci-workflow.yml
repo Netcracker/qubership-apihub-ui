@@ -40,8 +40,9 @@ jobs:
     with:
       postman-collections-run: false
       apihub-ui-image-tag: ${{ needs.build-docker-image.outputs.image_tag }}      
+      playwright-repository-branch: ${{ github.head_ref }}  # will default to develop if corresponding branch for playwright tests is not found
       # apihub-backend-image-tag: dev
-      # apihub-build-task-consumer-image-tag: dev
+      # apihub-build-task-consumer-image-tag: dev      
     secrets:
       APIHUB_ACCESS_TOKEN: ${{ secrets.APIHUB_ACCESS_TOKEN }}
       APIHUB_ADMIN_EMAIL: ${{ secrets.APIHUB_ADMIN_EMAIL }}
