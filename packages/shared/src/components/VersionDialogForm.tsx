@@ -39,13 +39,13 @@ import { DialogForm } from './DialogForm'
 import { CustomChip } from './CustomChip'
 import type { Key, VersionKey } from '../entities/keys'
 import type { PackagePermissions } from '../entities/package-permissions'
-import type { VersionStatus} from '../entities/version-status'
+import type { VersionStatus } from '../entities/version-status'
 import {
+  DRAFT_VERSION_STATUS,
   NO_PREVIOUS_RELEASE_VERSION_OPTION,
   RELEASE_VERSION_STATUS,
   VERSION_STATUS_MANAGE_PERMISSIONS,
   VERSION_STATUSES,
-  DRAFT_VERSION_STATUS,
 } from '../entities/version-status'
 import {
   checkFileType,
@@ -66,7 +66,7 @@ import { DEFAULT_DEBOUNCE } from '../utils/constants'
 import { InfoContextIcon } from '../icons/InfoContextIcon'
 import { CSV_FILE_EXTENSION } from '../utils/files'
 import { FileUploadField } from './FileUploadField'
-import type {AutocompleteInputChangeReason} from '@mui/base/AutocompleteUnstyled/useAutocomplete'
+import type { AutocompleteInputChangeReason } from '@mui/base/AutocompleteUnstyled/useAutocomplete'
 
 export type VersionFormData = {
   message?: string
@@ -194,8 +194,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
   const debouncedOnVersionsChange = useMemo(() => debounce(onVersionsChange, DEFAULT_DEBOUNCE), [onVersionsChange])
 
   const [descriptorContent, setDescriptorContent] = useState<string | null>(null)
-  const [isFileReading, setIsFileReading] = useState<boolean>(false)
-
+  const [isFileReading, setIsFileReading] = useState<boolean>(false)  
   const onFileContentLoaded = useCallback((event: ProgressEvent<FileReader>): void => {
     setDescriptorContent(event?.target?.result ? String(event.target.result) : null)
     setIsFileReading(false)
@@ -416,7 +415,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
                   onSetWorkspace?.(value)
                 }}
                 onInputChange={createOnInputChange(debouncedOnWorkspacesChange)}
-                onClose={cleanFilter(onWorkspacesFilter)}
+                onClose={clearFilter(onWorkspacesFilter)}
                 renderInput={(params) =>
                   <TextField
                     required
@@ -435,8 +434,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
 
         {!hideCopyPackageFields && (
           <>
-            <Typography sx={{ mb: 1 }} variant="body2">Target Package</Typography>
-
+            <Typography sx={{ mb: 1 }} variant="body2">Target {packagesTitle}</Typography>
             <Controller
               name="workspace"
               control={control}
@@ -457,7 +455,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
                   setValue('package', null)
                   onSetWorkspace?.(value)
                 }}
-                onClose={cleanFilter(onWorkspacesFilter)}
+                onClose={clearFilter(onWorkspacesFilter)}
                 onInputChange={createOnInputChange(debouncedOnWorkspacesChange)}
                 renderInput={(params) =>
                   <TextField
@@ -498,7 +496,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
                   setValue('package', value)
                   onSetTargetPackage?.(value)
                 }}
-                onClose={cleanFilter(onPackagesFilter)}
+                onClose={clearFilter(onPackagesFilter)}
                 data-testid="PackageAutocomplete"
               />}
             />
@@ -548,7 +546,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
                 setValue('version', value ?? '')
                 onSetTargetVersion?.(value ?? '')
               }}
-              onClose={cleanFilter(onVersionsFilter)}
+              onClose={clearFilter(onVersionsFilter)}
               data-testid="VersionAutocomplete"
             />
           )}
@@ -559,6 +557,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
           control={control}
           render={({ field: { value } }) => (
             <Autocomplete
+              disableClearable
               value={value ?? null}
               options={VERSION_STATUSES}
               getOptionDisabled={(option) => !packagePermissions.includes(VERSION_STATUS_MANAGE_PERMISSIONS[option])}
@@ -573,7 +572,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
                 </ListItem>
               }
               onChange={(_, value) => {
-                onStatusChange(_,value as VersionStatus || DRAFT_VERSION_STATUS)
+                onStatusChange(_, value as VersionStatus || DRAFT_VERSION_STATUS)
                 setValue('status', value as VersionStatus)
               }}
               renderInput={(params) => (
@@ -613,7 +612,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
             <LabelsAutocomplete
               disabled={isPublishFieldsDisabled}
               onChange={(_, value) => {
-                onLabelsChange(_,value)
+                onLabelsChange(_, value)
                 setValue('labels', value ?? [])
               }}
               value={field.value}
@@ -704,15 +703,15 @@ export function usePreviousVersionOptions(versions: PackageVersions): VersionKey
 
 export function getVersionOptions(versionLabelsMap: Record<string, string[]>, targetVersion: string): VersionKey[] {
   const versions: string[] = Object.keys(versionLabelsMap)
-  if(targetVersion && !versions.includes(targetVersion)){
+  if (targetVersion && !versions.includes(targetVersion)) {
     versions.unshift(targetVersion)
   }
   return versions
 }
 
-export function getPackageOptions(packages: Packages, targetPackage: Package | null): Packages {
-  if(targetPackage && packages && !packages.some(existPackage=> existPackage.key === targetPackage.key)){
-    return  [targetPackage, ...packages]
+export function getPackageOptions(packages: Packages, existingPackage: Package | null): Packages {
+  if (existingPackage && packages && !packages.some(existingPackage => existingPackage.key === existingPackage.key)) {
+    return [existingPackage, ...packages]
   }
   return packages
 }
@@ -726,15 +725,15 @@ function checkFileUpload(descriptorContent: string | null): boolean {
 const DASHBOARD_VERSION_CONFIG_TITLE = 'CSV file must have the following information: "serviceName" and "serviceVersion". Published dashboard version will include package release versions (from selected workspace) for specified services. Additionally, "method" and "path" of REST API operations for services can be defined in the file. In this case, the system will create operations group with the operations for specified method and path.'
 const PACKAGE_SEARCH_SCOPE_TITLE = 'The workspace in which package versions for services from the CSV configuration will be searched. The package versions found in this workspace will be included into the dashboard version.'
 
-function createOnInputChange(change: (_: SyntheticEvent, value: string) => void) {
+function createOnInputChange(onChange: (_: SyntheticEvent, value: string) => void) {
   return (event: SyntheticEvent, value: string, reason: AutocompleteInputChangeReason) => {
     if (reason === 'input') {
-      change(event, value)
+      onChange(event, value)
     }
   }
 }
 
-function cleanFilter(onFilter?: (value: string) => void) {
+function clearFilter(onFilter?: (value: string) => void) {
   return () => {
     onFilter?.('')
   }

@@ -20,18 +20,22 @@ import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/componen
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import type { PublishOperationGroupPackageVersionDetail } from '@apihub/routes/EventBusProvider'
 import { SHOW_PUBLISH_OPERATION_GROUP_PACKAGE_VERSION_DIALOG } from '@apihub/routes/EventBusProvider'
-import type {
-  VersionFormData,
-} from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
+import type { VersionFormData } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
 import {
   getPackageOptions,
   getVersionOptions,
+  replaceEmptyPreviousVersion,
+  usePreviousVersionOptions,
+  VersionDialogForm,
 } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
-import { replaceEmptyPreviousVersion, usePreviousVersionOptions, VersionDialogForm } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
 import { useForm } from 'react-hook-form'
 import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import { DRAFT_VERSION_STATUS, NO_PREVIOUS_RELEASE_VERSION_OPTION, RELEASE_VERSION_STATUS } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import type {Package} from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import {
+  DRAFT_VERSION_STATUS,
+  NO_PREVIOUS_RELEASE_VERSION_OPTION,
+  RELEASE_VERSION_STATUS,
+} from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import type { Package } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { PACKAGE_KIND, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { usePackages } from '@apihub/routes/root/usePackages'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
@@ -42,7 +46,7 @@ import { usePublishOperationGroupPackageVersion } from '../../../usePublishOpera
 import { useOperationGroupPublicationStatuses } from '../../../usePublicationStatus'
 import { useFullMainVersion } from '../../../FullMainVersionProvider'
 import { REST_API_TYPE } from '@netcracker/qubership-apihub-api-processor'
-import {usePackageVersionConfig} from '@apihub/routes/root/PortalPage/usePackageVersionConfig'
+import { usePackageVersionConfig } from '@apihub/routes/root/PortalPage/usePackageVersionConfig'
 
 export const PublishOperationGroupPackageVersionDialog: FC = memo(() => {
   return (
@@ -57,7 +61,7 @@ const PublishOperationGroupPackageVersionPopup: FC<PopupProps> = memo<PopupProps
   const { group } = detail as PublishOperationGroupPackageVersionDetail
   const currentPackage = useCurrentPackage()
   const currentVersionId = useFullMainVersion()
-  
+
   const [currentVersionConfig] = usePackageVersionConfig(currentPackage?.key, currentVersionId)
 
   const [targetWorkspace, setTargetWorkspace] = useState<Package | null>(currentPackage?.parents?.[0] ?? null)
@@ -92,13 +96,14 @@ const PublishOperationGroupPackageVersionPopup: FC<PopupProps> = memo<PopupProps
   })
 
   const targetPreviousVersionOptions = usePreviousVersionOptions(targetPreviousVersions)
-  const { publishId, publishOperationGroupPackageVersion, isLoading: isPublishStarting, isSuccess: isPublishStartedSuccessfully } = usePublishOperationGroupPackageVersion()
+  const {
+    publishId,
+    publishOperationGroupPackageVersion,
+    isLoading: isPublishStarting,
+    isSuccess: isPublishStartedSuccessfully,
+  } = usePublishOperationGroupPackageVersion()
   const [isPublishing, isPublished] = useOperationGroupPublicationStatuses(targetPackage?.key ?? '', targetVersion, group.groupName, publishId ?? '')
 
-  const filteredVersion = useMemo(
-      () => (filteredVersions.find(({ key }) => getSplittedVersionKey(key).versionKey === versionsFilter)),
-      [ versionsFilter, filteredVersions],
-  )
   const versionLabelsMap = useMemo(() => getVersionLabelsMap(filteredVersions), [filteredVersions])
   const versionOptions = useMemo(() => getVersionOptions(versionLabelsMap, targetVersion), [targetVersion, versionLabelsMap])
   const packageOptions = useMemo(() => getPackageOptions(packages, targetPackage), [targetPackage, packages])
@@ -129,10 +134,9 @@ const PublishOperationGroupPackageVersionPopup: FC<PopupProps> = memo<PopupProps
   const { handleSubmit, control, reset, setValue, formState } = useForm<VersionFormData>({ defaultValues })
 
   useEffect(() => { isPublishStartedSuccessfully && isPublished && setOpen(false) }, [isPublishStartedSuccessfully, isPublished, setOpen])
-  useEffect(() => { filteredVersion && defaultValues && reset(defaultValues) }, [filteredVersion, defaultValues, reset])
   useEffect(() => { reset(defaultValues) }, [defaultValues, reset])
-  useEffect(() =>{
-    if(!targetWorkspace){
+  useEffect(() => {
+    if (!targetWorkspace) {
       setTargetPackage(null)
       setValue('package', null)
     }
@@ -181,7 +185,7 @@ const PublishOperationGroupPackageVersionPopup: FC<PopupProps> = memo<PopupProps
       onPackagesFilter={onPackagesFilter}
       arePackagesLoading={arePackagesLoading}
       onSetTargetPackage={onSetTargetPackage}
-      packagesTitle='Package'
+      packagesTitle="Package"
 
       versions={versionOptions}
       onVersionsFilter={onVersionsFilter}

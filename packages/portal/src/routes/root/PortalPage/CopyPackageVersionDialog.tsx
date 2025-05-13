@@ -23,10 +23,7 @@ import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components
 import { SHOW_COPY_PACKAGE_VERSION_DIALOG } from '@apihub/routes/EventBusProvider'
 import type { Package } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { DASHBOARD_KIND, PACKAGE_KIND, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import {
-  getSplittedVersionKey,
-  getVersionLabelsMap,
-} from '@netcracker/qubership-apihub-ui-shared/utils/versions'
+import { getSplittedVersionKey, getVersionLabelsMap } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 import {
@@ -34,10 +31,10 @@ import {
   NO_PREVIOUS_RELEASE_VERSION_OPTION,
   RELEASE_VERSION_STATUS,
 } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import type { VersionFormData} from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
-import {getPackageOptions} from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
-import {getVersionOptions} from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
+import type { VersionFormData } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
 import {
+  getPackageOptions,
+  getVersionOptions,
   replaceEmptyPreviousVersion,
   usePreviousVersionOptions,
   VersionDialogForm,
@@ -47,7 +44,7 @@ import { useCopyPackageVersion } from '@apihub/routes/root/PortalPage/useCopyPac
 import { usePublicationStatuses } from '@apihub/routes/root/PortalPage/usePublicationStatus'
 import { useFullMainVersion } from '@apihub/routes/root/PortalPage/FullMainVersionProvider'
 import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
-import {usePackageVersionConfig} from '@apihub/routes/root/PortalPage/usePackageVersionConfig'
+import { usePackageVersionConfig } from '@apihub/routes/root/PortalPage/usePackageVersionConfig'
 
 export const CopyPackageVersionDialog: FC = memo(() => {
   return (
@@ -87,7 +84,7 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     showAllDescendants: true,
     textFilter: packagesFilter,
   })
-  const {versions: filteredVersions, areVersionsLoading: areFilteredVersionsLoading} = usePackageVersions({
+  const { versions: filteredVersions, areVersionsLoading: areFilteredVersionsLoading } = usePackageVersions({
     packageKey: targetPackage?.key,
     enabled: !!targetPackage,
     textFilter: versionsFilter,
@@ -101,7 +98,7 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const targetPreviousVersionOptions = usePreviousVersionOptions(targetPreviousVersions)
   const [copyPackage, publishId, isCopyStarting, isCopyingStartedSuccessfully] = useCopyPackageVersion()
   const [isPublishing, isPublished] = usePublicationStatuses(targetPackage?.key ?? '', publishId, targetVersion)
-  
+
   const targetPackagePermissions = useMemo(() => targetPackage?.permissions ?? [], [targetPackage?.permissions])
   const targetReleaseVersionPattern = useMemo(() => targetPackage?.releaseVersionPattern, [targetPackage?.releaseVersionPattern])
   const versionLabelsMap = useMemo(() => getVersionLabelsMap(filteredVersions), [filteredVersions])
@@ -137,8 +134,8 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   }, [currentPackage?.parents])
   useEffect(() => {isCopyingStartedSuccessfully && isPublished && setOpen(false)}, [setOpen, isCopyingStartedSuccessfully, isPublished])
   useEffect(() => {reset(defaultValues)}, [defaultValues, reset])
-  useEffect(() =>{
-    if(!targetWorkspace){
+  useEffect(() => {
+    if (!targetWorkspace) {
       setTargetPackage(null)
       setValue('package', null)
     }
