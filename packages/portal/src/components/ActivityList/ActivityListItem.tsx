@@ -40,7 +40,7 @@ export const ActivityListItem: FC<ActivitiesListItemProps> = ({ activity }) => {
   const activityMessageElement = useMemo(() => {
     const { messageTemplate, links } = content
     if (!links) {
-      return <>messageTemplate</>
+      return messageTemplate
     }
 
     const templateAsArray = messageTemplate.split(LINK_PLACEHOLDER)
