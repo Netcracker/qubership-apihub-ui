@@ -30,6 +30,7 @@ export type User = Readonly<{
   name: string
   email?: string
   avatarUrl: Url
+  gitlabIntegration: boolean
 }>
 
 export type UserDto = Readonly<{
@@ -37,6 +38,7 @@ export type UserDto = Readonly<{
   name: string
   email?: string
   avatarUrl: Url
+  gitIntegrationStatus: boolean
 }>
 
 // TODO: Think about new place for this converter
@@ -46,6 +48,7 @@ export function toUser(value: UserDto): User {
     name: value?.name,
     email: value?.email,
     avatarUrl: value?.avatarUrl,
+    gitlabIntegration: value?.gitIntegrationStatus,
   }
 }
 

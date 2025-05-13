@@ -24,8 +24,7 @@ export function useGitlabIntegrationCheck(): boolean {
   }
 
   try {
-    return true // TODO 28.03.25 // Fix it or get rid of it
-    // return getTokenPayload(user.token).extensions.gitIntegration
+    return user.gitlabIntegration
   } catch (e) {/*do nothing*/}
 
   return false

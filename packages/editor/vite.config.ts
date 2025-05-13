@@ -115,7 +115,6 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
-      port: 8000,
       open: '/login',
       proxy: {
         '/api': {
