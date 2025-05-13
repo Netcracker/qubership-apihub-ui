@@ -22,6 +22,7 @@ import { useSearchParam } from 'react-use'
 import { useUser } from '../../../hooks/authorization'
 import { useSystemConfiguration } from '../../../hooks/authorization/useSystemConfiguration'
 import { isExternalIdentityProvider, isInternalIdentityProvider } from '../../../types/system-configuration'
+import { SEARCH_PARAM_NO_AUTO_LOGIN, SEARCH_PARAM_REDIRECT_URI } from '../../../utils/constants'
 import { ExternalAuthControls } from './ExternalAuthControls'
 import { InternalAuthForm } from './InternalAuthForm'
 
@@ -30,17 +31,23 @@ export type LoginPageComponentProps = {
 }
 
 export const LoginPage: FC<LoginPageComponentProps> = memo(({ applicationName }) => {
-  const noAuth = useSearchParam('noAuth')
-  const redirectUri = useSearchParam('redirectUri')
+  const noAutoLogin = useSearchParam(SEARCH_PARAM_NO_AUTO_LOGIN)
+  const redirectUri = useSearchParam(SEARCH_PARAM_REDIRECT_URI)
 
-  const [user] = useUser(noAuth !== 'true')
+  const [user] = useUser()
   const [systemConfiguration] = useSystemConfiguration()
 
   const identityProviders = systemConfiguration?.authConfig.identityProviders ?? []
+  const defaultProviderId = systemConfiguration?.authConfig.defaultProviderId
   const externalIdentityProviders = identityProviders.filter(isExternalIdentityProvider)
   const internalIdentityProvider = identityProviders.find(isInternalIdentityProvider)
   const internalAuthEnabled = !!internalIdentityProvider
   const externalAuthEnabled = !isEmpty(externalIdentityProviders)
+  const hideLoginPage =
+    noAutoLogin !== 'true' &&
+    defaultProviderId &&
+    externalAuthEnabled &&
+    externalIdentityProviders.some(idp => idp.id === defaultProviderId)
   const externalAuthControls = (
     externalAuthEnabled
       ? <ExternalAuthControls providers={externalIdentityProviders} />
@@ -77,15 +84,21 @@ export const LoginPage: FC<LoginPageComponentProps> = memo(({ applicationName })
               alignItems: 'flex-start',
             }}
           >
-            <Typography component="h1" variant="h1" data-testid="ApihubLoginHeaderTypography">
-              Log in to {applicationName}
-            </Typography>
-            {internalAuthEnabled ? (
-              <InternalAuthForm
-                provider={internalIdentityProvider!}
-                additionalControls={externalAuthControls}
-              />
-            ) : externalAuthControls}
+            {hideLoginPage ? (
+              <Typography component="h1" variant="h1" data-testid="ApihubLoginHeaderTypography">
+                Logging in to {applicationName}...
+              </Typography>
+            ) : <>
+              <Typography component="h1" variant="h1" data-testid="ApihubLoginHeaderTypography">
+                Log in to {applicationName}
+              </Typography>
+              {internalAuthEnabled ? (
+                <InternalAuthForm
+                  provider={internalIdentityProvider!}
+                  additionalControls={externalAuthControls}
+                />
+              ) : externalAuthControls}
+            </>}
           </Box>
         </Grid>
       </Grid>
