@@ -696,7 +696,7 @@ export function getVersionOptions(versionLabelsMap: Record<string, string[]>, ta
 }
 
 export function getPackageOptions(packages: Packages, existingPackage: Package | null): Packages {
-  if (existingPackage && packages && !packages.some(existPackage => existPackage.key === existingPackage.key)) {
+  if (existingPackage && packages && !packages.some(existingPackage => existingPackage.key === existingPackage.key)) {
     return [existingPackage, ...packages]
   }
   return packages
