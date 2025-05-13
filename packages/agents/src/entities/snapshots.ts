@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { AgentKey, NamespaceKey, PackageKey, ServiceKey, SnapshotKey, VersionKey, WorkspaceKey } from './keys'
+import type { AgentKey, NamespaceKey, PackageKey, ServiceKey, VersionKey, WorkspaceKey } from './keys'
 import type { PublishConfigDto } from './publish-config'
 import { ncCustomAgentsRequestJson } from '@apihub/utils/requests'
 import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
@@ -98,8 +98,6 @@ export async function publishSnapshot(
   builderId: string,
   status?: VersionStatus,
 ): Promise<PublishConfigDto> {
-  version = encodeURIComponent(version)
-  previousVersion = encodeURIComponent(previousVersion)
   return await ncCustomAgentsRequestJson<PublishConfigDto>(`/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/snapshots?clientBuild=${clientBuild}&promote=${promote}`, {
       method: 'post',
       body: JSON.stringify(<PublishSnapshotRequestDto>{
