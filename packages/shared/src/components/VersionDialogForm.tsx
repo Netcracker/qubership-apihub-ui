@@ -83,7 +83,6 @@ export type VersionFormData = {
 
 export type VersionDialogFormProps<T extends VersionFormData = VersionFormData> = {
   open: boolean
-  initLoading?: boolean
   setOpen: (value: boolean) => void
   onSubmit: () => void
   control: Control<T>
@@ -125,12 +124,12 @@ export type VersionDialogFormProps<T extends VersionFormData = VersionFormData> 
   hideCopyPackageFields?: boolean
   hidePreviousVersionField?: boolean
   publishButtonDisabled?: boolean
+  publishFieldsDisabled?: boolean
 }
 
 export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogFormProps>((props) => {
   const {
     open,
-    initLoading,
     setOpen,
     onSubmit,
     control,
@@ -170,6 +169,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
     hidePreviousVersionField,
     hideCopyPackageFields,
     publishButtonDisabled,
+    publishFieldsDisabled,
   } = props
 
   const { errors } = formState
@@ -222,10 +222,12 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
     () => !hideSaveMessageField || !hideDescriptorVersionField || !hideDescriptorField,
     [hideDescriptorField, hideDescriptorVersionField, hideSaveMessageField],
   )
-  const isPublishFieldsDisabled = useMemo(
-      () => initLoading || (!hideCopyPackageFields && !targetPackage) || (!hideCSVRelatedFields && !workspace),
-      [initLoading, hideCopyPackageFields, targetPackage, hideCSVRelatedFields, workspace],
-  )
+  const isPublishFieldsDisabled = useMemo(() => {
+    const isCopyPackageEmpty = !hideCopyPackageFields && !targetPackage
+    const isCSVWorkspaceEmpty = !hideCSVRelatedFields && !workspace
+
+    return publishFieldsDisabled || isCopyPackageEmpty || isCSVWorkspaceEmpty
+  }, [publishFieldsDisabled, hideCopyPackageFields, targetPackage, hideCSVRelatedFields, workspace])
 
   /* todo move upload file text field to separated component */
   return (
@@ -669,7 +671,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
           variant="contained"
           type="submit"
           loading={isPublishing}
-          disabled={isFileReading || publishButtonDisabled || initLoading}
+          disabled={isFileReading || publishButtonDisabled || publishFieldsDisabled}
           data-testid={submitButtonTittle ? `${submitButtonTittle}Button` : 'PublishButton'}
         >
           {submitButtonTittle ?? 'Publish'}

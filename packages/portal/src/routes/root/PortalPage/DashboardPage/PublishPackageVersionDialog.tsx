@@ -138,7 +138,6 @@ const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
 
   return (
     <VersionDialogForm
-      initLoading={isPackageLoading || isCurrentVersionLoading}
       open={open}
       setOpen={setOpen}
       onSubmit={handleSubmit(onPublish)}
@@ -162,6 +161,7 @@ const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
       hideDescriptorVersionField
       hideSaveMessageField
       publishButtonDisabled={isPackageLoading}
+      publishFieldsDisabled={isPackageLoading || isCurrentVersionLoading}
     />
   )
 })

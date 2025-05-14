@@ -146,7 +146,6 @@ const PublishDashboardVersionFromCSVPopup: FC<PopupProps> = memo<PopupProps>(({ 
 
   return (
     <VersionDialogForm
-      initLoading={isPackageLoading || isCurrentVersionLoading}
       open={open}
       title="Publish Dashboard Version"
       setOpen={setOpen}
@@ -175,6 +174,7 @@ const PublishDashboardVersionFromCSVPopup: FC<PopupProps> = memo<PopupProps>(({ 
       hideDescriptorVersionField
       hideSaveMessageField
       publishButtonDisabled={isPackageLoading}
+      publishFieldsDisabled={isPackageLoading || isCurrentVersionLoading}
     />
   )
 })

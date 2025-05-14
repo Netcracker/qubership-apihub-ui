@@ -171,7 +171,6 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   return (
     <VersionDialogForm
       title={`Copy ${kindTitle} Version`}
-      initLoading={isCurrentVersionLoading}
       open={open}
       setOpen={setOpen}
       onSubmit={handleSubmit(onCopy)}
@@ -204,6 +203,7 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       hideDescriptorVersionField
       hideSaveMessageField
       publishButtonDisabled={!currentPackage}
+      publishFieldsDisabled={isCurrentVersionLoading}
     />
   )
 })
