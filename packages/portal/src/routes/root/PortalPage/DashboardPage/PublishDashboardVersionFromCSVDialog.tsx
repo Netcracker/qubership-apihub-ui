@@ -85,7 +85,7 @@ const PublishDashboardVersionFromCSVPopup: FC<PopupProps> = memo<PopupProps>(({ 
   })
   const previousVersionOptions = usePreviousVersionOptions(targetPreviousVersions)
   const versionLabelsMap = useMemo(() => getVersionLabelsMap(filteredVersions), [filteredVersions])
-  const versionOptions = useMemo(() => getVersionOptions(versionLabelsMap, targetVersion, !!versionsFilter), [targetVersion, versionLabelsMap, versionsFilter])
+  const versionOptions = useMemo(() => getVersionOptions(versionLabelsMap, targetVersion), [targetVersion, versionLabelsMap])
   const workspaceOptions = useMemo(() => getPackageOptions(workspaces, targetWorkspace, !!workspacesFilter), [targetWorkspace, workspaces, workspacesFilter])
   const defaultValues: VersionFormData = useMemo(() => {
     return {

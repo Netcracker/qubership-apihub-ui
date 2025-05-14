@@ -687,9 +687,9 @@ export function usePreviousVersionOptions(versions: PackageVersions): VersionKey
   ]), [versionsWithoutRevision])
 }
 
-export function getVersionOptions(versionLabelsMap: Record<string, string[]>, targetVersion: string, isFiltered: boolean): VersionKey[] {
+export function getVersionOptions(versionLabelsMap: Record<string, string[]>, targetVersion: string): VersionKey[] {
   const versions: string[] = Object.keys(versionLabelsMap)
-  if (isFiltered && targetVersion && !versions.includes(targetVersion)) {
+  if (targetVersion && !versions.includes(targetVersion)) {
     versions.unshift(targetVersion)
   }
   return versions

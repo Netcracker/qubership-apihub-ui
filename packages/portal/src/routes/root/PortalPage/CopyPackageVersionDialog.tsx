@@ -102,7 +102,7 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const targetPackagePermissions = useMemo(() => targetPackage?.permissions ?? [], [targetPackage?.permissions])
   const targetReleaseVersionPattern = useMemo(() => targetPackage?.releaseVersionPattern, [targetPackage?.releaseVersionPattern])
   const versionLabelsMap = useMemo(() => getVersionLabelsMap(filteredVersions), [filteredVersions])
-  const versionOptions = useMemo(() => getVersionOptions(versionLabelsMap, targetVersion, !!versionsFilter), [targetVersion, versionLabelsMap, versionsFilter])
+  const versionOptions = useMemo(() => getVersionOptions(versionLabelsMap, targetVersion), [targetVersion, versionLabelsMap])
   const packageOptions = useMemo(() => getPackageOptions(packages, targetPackage, !!packagesFilter), [packages, packagesFilter, targetPackage])
   const workspaceOptions = useMemo(() => getPackageOptions(workspaces, targetWorkspace, !!workspacesFilter), [targetWorkspace, workspaces, workspacesFilter])
 

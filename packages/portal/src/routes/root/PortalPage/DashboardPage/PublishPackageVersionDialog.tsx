@@ -82,7 +82,7 @@ const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
   const dashboardRefs = useDashboardReferences()
 
   const versionLabelsMap = useMemo(() => getVersionLabelsMap(filteredVersions), [filteredVersions])
-  const versionOptions = useMemo(() => getVersionOptions(versionLabelsMap, targetVersion, !!versionsFilter), [targetVersion, versionLabelsMap, versionsFilter])
+  const versionOptions = useMemo(() => getVersionOptions(versionLabelsMap, targetVersion), [targetVersion, versionLabelsMap])
   const packagePermissions = useMemo(() => currentPackage?.permissions ?? [], [currentPackage])
   const releaseVersionPattern = useMemo(() => currentPackage?.releaseVersionPattern, [currentPackage])
 

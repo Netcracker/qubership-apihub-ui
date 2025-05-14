@@ -105,7 +105,7 @@ const PublishOperationGroupPackageVersionPopup: FC<PopupProps> = memo<PopupProps
   const [isPublishing, isPublished] = useOperationGroupPublicationStatuses(targetPackage?.key ?? '', targetVersion, group.groupName, publishId ?? '')
 
   const versionLabelsMap = useMemo(() => getVersionLabelsMap(filteredVersions), [filteredVersions])
-  const versionOptions = useMemo(() => getVersionOptions(versionLabelsMap, targetVersion, !!versionsFilter), [targetVersion, versionLabelsMap, versionsFilter])
+  const versionOptions = useMemo(() => getVersionOptions(versionLabelsMap, targetVersion), [targetVersion, versionLabelsMap])
   const packageOptions = useMemo(() => getPackageOptions(packages, targetPackage, !!packagesFilter), [packages, packagesFilter, targetPackage])
   const workspaceOptions = useMemo(() => getPackageOptions(workspaces, targetWorkspace, !!workspacesFilter), [targetWorkspace, workspaces, workspacesFilter])
   const targetPackagePermissions = useMemo(() => targetPackage?.permissions ?? [], [targetPackage?.permissions])
