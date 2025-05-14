@@ -56,7 +56,7 @@ jobs:
       apihub-ui-image-tag: ${{ needs.build-docker-image.outputs.image_tag }}      
       apihub-build-task-consumer-image-tag: ${{ needs.calculate-build-task-consumer-tag.outputs.tag }}
       apihub-backend-image-tag: ${{ needs.calculate-backend-tag.outputs.tag }}
-      # pass PR source branch, will default to develop if corresponding branch for Playwright tests is not found
+      # pass PR source branch, will default to develop if corresponding branch for Playwright tests is not found 
       playwright-repository-branch: ${{ github.head_ref }}
       # pass PR source branch, will default to develop if corresponding branch for Postman tests is not found
       postman-repository-branch: ${{ github.head_ref }}
