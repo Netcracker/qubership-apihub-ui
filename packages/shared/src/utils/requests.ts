@@ -18,7 +18,7 @@ import type { IdentityProviderDto, SystemConfigurationDto } from '../types/syste
 import { isInternalIdentityProvider } from '../types/system-configuration'
 import { SEARCH_PARAM_NO_AUTO_LOGIN, SESSION_STORAGE_KEY_LAST_IDENTITY_PROVIDER_ID, SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION } from './constants'
 import type { ErrorMessage } from './packages-builder'
-import { redirectTo } from './redirects'
+import { redirectTo, redirectToLogin } from './redirects'
 import { HttpError } from './responses'
 import { optionalSearchParams } from './search-params'
 import type { Key } from './types'
@@ -209,6 +209,10 @@ async function handleAuthentication(response: Response): Promise<TokenRefreshRes
 
     // last identity provider is saved
     tokenRefreshResult = await handleUnauthorizedByProvider(lastProvider)
+
+    if (tokenRefreshResult === TokenRefreshResults.NO_PROVIDER) {
+      redirectToLogin()
+    }
   }
 
   return tokenRefreshResult
