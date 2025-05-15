@@ -117,6 +117,12 @@ export default defineConfig(({ mode }) => {
     server: {
       open: '/login',
       proxy: {
+        '/login/gitlab': {
+          target: isProxyMode ? `${proxyServer}/login/gitlab` : devServer,
+          rewrite: isProxyMode ? path => path.replace(/^\/login\/gitlab/, '') : undefined,
+          changeOrigin: true,
+          secure: false,
+        },
         '/api': {
           target: isProxyMode ? `${proxyServer}/api` : devServer,
           rewrite: isProxyMode ? path => path.replace(/^\/api/, '') : undefined,

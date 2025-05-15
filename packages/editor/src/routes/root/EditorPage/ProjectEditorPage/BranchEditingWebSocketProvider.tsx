@@ -68,7 +68,6 @@ import {
   isSocketClosed,
   NORMAL_CLOSURE_CODE,
 } from '@netcracker/qubership-apihub-ui-shared/utils/sockets'
-import { getToken } from '@netcracker/qubership-apihub-ui-shared/utils/storages'
 import { useParams } from 'react-router-dom'
 import { useShowInfoNotification } from '../../BasePage/Notification'
 import { useBranchSearchParam } from '../../useBranchSearchParam'
@@ -201,7 +200,7 @@ export const BranchEditingWebSocketProvider: FC<PropsWithChildren> = memo<PropsW
 
         // TODO 05.05.2025 // Token in WebSocket URI
         websocket.current = new WebSocket(
-          `${protocol === 'https:' ? 'wss:' : 'ws:'}//${host}/ws/v1/projects/${encodeURIComponent(projectId!)}/branches/${encodeURIComponent(branch!)}?token=${getToken()}`,
+          `${protocol === 'https:' ? 'wss:' : 'ws:'}//${host}/ws/v1/projects/${encodeURIComponent(projectId!)}/branches/${encodeURIComponent(branch!)}`,
         )
 
         websocket.current.onopen = () => {
