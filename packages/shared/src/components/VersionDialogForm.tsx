@@ -695,8 +695,8 @@ export function getVersionOptions(versionLabelsMap: Record<string, string[]>, ta
   return versions
 }
 
-export function getPackageOptions(packages: Packages, existingPackage: Package | null, isFiltered: boolean): Packages {
-  if (!isFiltered && existingPackage && packages && !packages.some(existPackage => existPackage.key === existingPackage.key)) {
+export function getPackageOptions(packages: Packages, existingPackage: Package | null): Packages {
+  if (existingPackage && packages && !packages.some(existingPackage => existingPackage.key === existingPackage.key)) {
     return [existingPackage, ...packages]
   }
   return packages
