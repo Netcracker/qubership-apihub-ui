@@ -64,7 +64,7 @@ const PublishDashboardVersionFromCSVPopup: FC<PopupProps> = memo<PopupProps>(({ 
   const releaseVersionPattern = useMemo(() => packageObj?.releaseVersionPattern, [packageObj])
   const isEditingVersion = !!currentVersionId && currentVersionId !== SPECIAL_VERSION_KEY
 
-  const [currentVersionConfig] = usePackageVersionConfig(currentPackage?.key, currentVersionId)
+  const [currentVersionConfig, isCurrentVersionLoading] = usePackageVersionConfig(currentPackage?.key, currentVersionId)
   const [currentWorkspace] = useState(currentPackage?.parents?.[0] ?? null)
   const [versionId] = useState(isEditingVersion ? currentVersionId ?? '' : '')
 
@@ -172,6 +172,7 @@ const PublishDashboardVersionFromCSVPopup: FC<PopupProps> = memo<PopupProps>(({ 
       hideDescriptorVersionField
       hideSaveMessageField
       publishButtonDisabled={isPackageLoading}
+      publishFieldsDisabled={isPackageLoading || isCurrentVersionLoading}
     />
   )
 })

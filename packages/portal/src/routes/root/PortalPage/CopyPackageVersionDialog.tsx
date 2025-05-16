@@ -63,7 +63,7 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const isPackage = packageKind === PACKAGE_KIND
   const kindTitle = isPackage ? 'Package' : 'Dashboard'
 
-  const [currentVersionConfig] = usePackageVersionConfig(currentPackage?.key, currentVersionId)
+  const [currentVersionConfig, isCurrentVersionLoading] = usePackageVersionConfig(currentPackage?.key, currentVersionId)
   const [currentWorkspace] = useState(currentPackage?.parents?.[0] ?? null)
 
   const [targetWorkspace, setTargetWorkspace] = useState<Package | null>(currentWorkspace)
@@ -199,6 +199,7 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       hideDescriptorVersionField
       hideSaveMessageField
       publishButtonDisabled={!currentPackage}
+      publishFieldsDisabled={isCurrentVersionLoading}
     />
   )
 })

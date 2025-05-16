@@ -59,9 +59,9 @@ export const PublishPackageVersionDialog: FC = memo(() => {
 const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }) => {
   const { versionId: currentVersionId } = useParams()
   const [currentPackage, isPackageLoading] = usePackage()
-
-  const [currentVersionConfig] = usePackageVersionConfig(currentPackage?.key, currentVersionId)
-
+  
+  const [currentVersionConfig, isCurrentVersionLoading] = usePackageVersionConfig(currentPackage?.key, currentVersionId)
+  
   const isEditingVersion = !!currentVersionId && currentVersionId !== SPECIAL_VERSION_KEY
   const packageKind = currentPackage?.kind
   const isDashboard = packageKind === DASHBOARD_KIND
@@ -152,6 +152,7 @@ const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
       hideDescriptorVersionField
       hideSaveMessageField
       publishButtonDisabled={isPackageLoading}
+      publishFieldsDisabled={isPackageLoading || isCurrentVersionLoading}
     />
   )
 })

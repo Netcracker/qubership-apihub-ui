@@ -124,6 +124,7 @@ export type VersionDialogFormProps<T extends VersionFormData = VersionFormData> 
   hideCopyPackageFields?: boolean
   hidePreviousVersionField?: boolean
   publishButtonDisabled?: boolean
+  publishFieldsDisabled?: boolean
 }
 
 export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogFormProps>((props) => {
@@ -168,11 +169,13 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
     hidePreviousVersionField,
     hideCopyPackageFields,
     publishButtonDisabled,
+    publishFieldsDisabled,
   } = props
 
   const { errors } = formState
 
   const workspace = useWatch({ control: control, name: 'workspace' })
+  const targetPackage = useWatch({ control: control, name: 'package' })
   const status = useWatch({ control: control, name: 'status' })
   const previousVersion = useWatch({ control: control, name: 'previousVersion' })
   const descriptorFile = useWatch({ control: control, name: 'descriptorFile' })
@@ -219,6 +222,13 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
     () => !hideSaveMessageField || !hideDescriptorVersionField || !hideDescriptorField,
     [hideDescriptorField, hideDescriptorVersionField, hideSaveMessageField],
   )
+  const isPublishFieldsDisabled = useMemo(() => {
+    const isCopyPackageEmpty = !hideCopyPackageFields && !targetPackage
+    const isCSVWorkspaceEmpty = !hideCSVRelatedFields && !workspace
+
+    return publishFieldsDisabled || isCopyPackageEmpty || isCSVWorkspaceEmpty
+  }, [publishFieldsDisabled, hideCopyPackageFields, targetPackage, hideCSVRelatedFields, workspace])
+
   /* todo move upload file text field to separated component */
   return (
     <DialogForm
@@ -518,7 +528,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
           render={({ field }) => (
             <Autocomplete
               freeSolo
-              disabled={!field || !getVersionLabels}
+              disabled={!field || !getVersionLabels || isPublishFieldsDisabled}
               value={field.value || ''}
               options={versions ?? []}
               loading={areVersionsLoading}
@@ -553,6 +563,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
               value={value ?? null}
               options={VERSION_STATUSES}
               getOptionDisabled={(option) => !packagePermissions.includes(VERSION_STATUS_MANAGE_PERMISSIONS[option])}
+              disabled={isPublishFieldsDisabled}
               renderOption={(props, option) =>
                 <ListItem
                   {...props}
@@ -583,6 +594,9 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
                           color: 'transparent',
                         },
                       },
+                      ['& .Mui-disabled']: {
+                        WebkitTextFillColor: 'transparent',
+                      },
                     },
                     startAdornment: status ? <CustomChip sx={{ height: 16, mb: 1 }} value={status}/> : null,
                   }}
@@ -598,6 +612,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
           control={control}
           render={({ field }) => (
             <LabelsAutocomplete
+              disabled={isPublishFieldsDisabled}
               onChange={(_, value) => {
                 onLabelsChange(_, value)
                 setValue('labels', value ?? [])
@@ -615,6 +630,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
               control={control}
               render={({ field }) => (
                 <Autocomplete
+                  disabled={isPublishFieldsDisabled}
                   value={field.value ?? null}
                   options={previousVersions ?? []}
                   getOptionLabel={value => getSplittedVersionKey(value).versionKey}
@@ -655,7 +671,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
           variant="contained"
           type="submit"
           loading={isPublishing}
-          disabled={isFileReading || publishButtonDisabled}
+          disabled={isFileReading || publishButtonDisabled || publishFieldsDisabled}
           data-testid={submitButtonTittle ? `${submitButtonTittle}Button` : 'PublishButton'}
         >
           {submitButtonTittle ?? 'Publish'}
