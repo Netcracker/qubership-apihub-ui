@@ -27,6 +27,7 @@ import {
   setPublicationDetails,
 } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
 import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { onQueryUnauthorized } from '@netcracker/qubership-apihub-ui-shared/utils/security'
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
@@ -146,6 +147,9 @@ export function useVersionsComparisons(options?: {
       }
 
       return []
+    },
+    onError: (error: Error) => {
+      onQueryUnauthorized<VersionsComparison[] | undefined, Error>(refetch)(error)
     },
   })
 

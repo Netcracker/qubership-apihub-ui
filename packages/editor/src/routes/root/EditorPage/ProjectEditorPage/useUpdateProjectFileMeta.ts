@@ -21,6 +21,7 @@ import { editorRequestVoid } from '@apihub/utils/requests'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { onMutationUnauthorized } from '@netcracker/qubership-apihub-ui-shared/utils/security'
 import { useParams } from 'react-router-dom'
 import { useBranchSearchParam } from '../../useBranchSearchParam'
 import { VERSION_CANDIDATE } from './consts'
@@ -50,6 +51,9 @@ export function useUpdateProjectFileMeta(): [UpdateProjectFileMeta, IsLoading] {
         files: files,
         sources: branchFiles,
       }, meta.key)
+    },
+    onError: (error: Error, variables: FileMeta, context: unknown) => {
+      onMutationUnauthorized<void, Error, FileMeta>(mutate)(error, variables, context)
     },
   })
 

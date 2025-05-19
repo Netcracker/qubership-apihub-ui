@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-import type { IdentityProviderDto, SystemConfigurationDto } from '../types/system-configuration'
-import { isInternalIdentityProvider } from '../types/system-configuration'
-import { SEARCH_PARAM_NO_AUTO_LOGIN, SESSION_STORAGE_KEY_LAST_IDENTITY_PROVIDER_ID, SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION } from './constants'
 import type { ErrorMessage } from './packages-builder'
-import { redirectTo, redirectToLogin } from './redirects'
 import { HttpError } from './responses'
-import { optionalSearchParams } from './search-params'
+import { handleAuthentication, isTokenRefreshed, TokenRefreshResults } from './security'
 import type { Key } from './types'
 
 export const API_V1 = '/api/v1'
@@ -35,14 +31,6 @@ export const DEFAULT_REFETCH_INTERVAL = 5 * (60 * 1000) // five minutes
 
 export type CustomErrorHandler = (response: Response) => void
 export type CustomRedirectHandler = (response: Response) => FetchRedirectDetails | null
-
-const TokenRefreshResults = {
-  NO_PROVIDER: 'no-provider',
-  NO_ENDPOINT: 'no-endpoint',
-  TOKEN_REFRESHED: 'token-refreshed',
-  UNKNOWN: 'unknown',
-} as const
-type TokenRefreshResult = typeof TokenRefreshResults[keyof typeof TokenRefreshResults]
 
 export type RequestJsonExtraOptions = {
   basePath?: string
@@ -66,7 +54,7 @@ export async function requestJson<T extends object | null>(
   })
 
   if (!response.ok) {
-    const tokenRefreshResult = await handleAuthentication(response)
+    const tokenRefreshResult = await handleAuthentication(response.status)
     if (tokenRefreshResult === TokenRefreshResults.TOKEN_REFRESHED) {
       return requestJson(input, init, options, signal)
     }
@@ -99,7 +87,7 @@ export async function requestText(
   })
 
   if (!response.ok) {
-    const tokenRefreshResult = await handleAuthentication(response)
+    const tokenRefreshResult = await handleAuthentication(response.status)
     if (tokenRefreshResult === TokenRefreshResults.TOKEN_REFRESHED) {
       return requestText(input, init, options)
     }
@@ -131,8 +119,8 @@ export async function requestBlob(
   })
 
   if (!response.ok) {
-    const tokenRefreshResult = await handleAuthentication(response)
-    if (tokenRefreshResult === TokenRefreshResults.TOKEN_REFRESHED) {
+    const tokenRefreshResult = await handleAuthentication(response.status)
+    if (isTokenRefreshed(tokenRefreshResult)) {
       return requestBlob(input, init, options)
     }
 
@@ -167,89 +155,16 @@ export async function requestVoid(
   })
 
   if (!response.ok) {
-    const tokenRefreshResult = await handleAuthentication(response)
-    if (tokenRefreshResult === TokenRefreshResults.TOKEN_REFRESHED) {
+    const tokenRefreshResult = await handleAuthentication(response.status)
+    if (isTokenRefreshed(tokenRefreshResult)) {
       return requestVoid(input, init, options)
     }
-    
+
     await handleFetchError(response, { 401: true, 404: ignoreNotFound }, customErrorHandler)
   }
 
   await handleFetchRedirect(response, customRedirectHandler)
   return
-}
-
-async function handleAuthentication(response: Response): Promise<TokenRefreshResult | undefined> {
-  const searchParams = new URLSearchParams(location.search)
-  // noAutoLogin = true in 2 cases:
-  // 1. user manually logged out just now
-  // 2. user logged in just now and automatically redirect to login page
-  const autoLogin = !searchParams.get(SEARCH_PARAM_NO_AUTO_LOGIN)
-
-  let tokenRefreshResult: TokenRefreshResult | undefined
-
-  if (response.status === 401 && autoLogin) {
-    const systemConfigurationFromStorage = sessionStorage.getItem(SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION)
-    // must be always present,
-    // because protected API is not fetched until system configuration is loaded
-    const systemConfiguration: SystemConfigurationDto = JSON.parse(systemConfigurationFromStorage!) as SystemConfigurationDto
-
-    const { authConfig } = systemConfiguration
-
-    const { defaultProviderId } = authConfig
-    const defaultProvider = authConfig.identityProviders.find(idp => idp.id === defaultProviderId)
-
-    // default identity provider is configured
-    tokenRefreshResult = await handleUnauthorizedByProvider(defaultProvider)
-
-    const lastProviderId = localStorage.getItem(SESSION_STORAGE_KEY_LAST_IDENTITY_PROVIDER_ID)
-    const lastProvider = lastProviderId
-      ? authConfig.identityProviders.find(idp => idp.id === lastProviderId)
-      : undefined
-
-    // last identity provider is saved
-    tokenRefreshResult = await handleUnauthorizedByProvider(lastProvider)
-
-    if (tokenRefreshResult === TokenRefreshResults.NO_PROVIDER) {
-      redirectToLogin()
-    }
-  }
-
-  return tokenRefreshResult
-}
-
-async function handleUnauthorizedByProvider(identityProvider: IdentityProviderDto | undefined): Promise<TokenRefreshResult> {
-  if (!identityProvider) {
-    return TokenRefreshResults.NO_PROVIDER
-  }
-
-  let requestEndpoint = ''
-  if (isInternalIdentityProvider(identityProvider)) {
-    const searchParamsLoginPage = optionalSearchParams({ noAutoLogin: { value: true }, redirectUri: { value: location.href } })
-    const searchParamsAuthLocalRefresh = optionalSearchParams({ redirectUri: { value: `${location.origin}/login?${searchParamsLoginPage}` } })
-    requestEndpoint = `${API_V3}/auth/local/refresh?${searchParamsAuthLocalRefresh}`
-  } else if (identityProvider.loginStartEndpoint) {
-    const searchParamsAuthWithStartEndpoint = optionalSearchParams({ redirectUri: { value: location.href } })
-    requestEndpoint = `${identityProvider.loginStartEndpoint}?${searchParamsAuthWithStartEndpoint}`
-  } else {
-    return TokenRefreshResults.NO_ENDPOINT
-  }
-  const response = await fetch(
-    requestEndpoint,
-    {
-      method: 'GET',
-      redirect: 'manual',
-    },
-  )
-  if (response.ok) {
-    return TokenRefreshResults.TOKEN_REFRESHED
-  }
-  if (response.type === 'opaqueredirect') {
-    const url = response.url.replace(location.origin, '')
-    redirectTo(url)
-  }
-  console.error('Can\'t refresh token. Response:', response)
-  return TokenRefreshResults.UNKNOWN
 }
 
 async function handleFetchError(

@@ -31,6 +31,7 @@ import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { useUser } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useUser'
 import { useInvalidatePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
 import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { isTokenRefreshed, onMutationUnauthorized } from '@netcracker/qubership-apihub-ui-shared/utils/security'
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import { useBranchSearchParam } from '../../useBranchSearchParam'
 import { PackageVersionBuilder } from './package-version-builder'
@@ -69,8 +70,12 @@ export function usePublishProjectVersion(): [PublishProjectVersion, IsLoading, I
       invalidateProjectVersions()
       return invalidateFileHistory()
     },
-    onError: ({ message }) => {
-      showErrorNotification({ message: message })
+    onError: async (error: Error, variables: Options, context: unknown) => {
+      const tokenRefreshResult = await onMutationUnauthorized<PublishDetails, Error, Options>(mutate)(error, variables, context)
+      if (!isTokenRefreshed(tokenRefreshResult)) {
+        const { message } = error
+        showErrorNotification({ message: message })
+      }
     },
   })
 

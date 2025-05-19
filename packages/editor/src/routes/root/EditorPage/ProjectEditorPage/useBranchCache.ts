@@ -23,6 +23,7 @@ import type { FileSourceMap } from '@netcracker/qubership-apihub-api-processor'
 import type { FileKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { IsLoading, RefetchQuery } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { scheduleInBackground } from '@netcracker/qubership-apihub-ui-shared/utils/scheduler'
+import { onMutationUnauthorized } from '@netcracker/qubership-apihub-ui-shared/utils/security'
 import { useParams } from 'react-router-dom'
 import { useBranchSearchParam } from '../../useBranchSearchParam'
 import { VERSION_CANDIDATE } from './consts'
@@ -151,7 +152,6 @@ export function useUpdateExistingFileInBranchCache(): [UpdateFileInBranchCache, 
       })
     },
     onSuccess: async (fileData, fileKey) => {
-
       client.setQueryData<BranchCache>(
         [BRANCH_CACHE_QUERY_KEY, projectId, branchName],
         (oldBranchCache) => {
@@ -163,6 +163,9 @@ export function useUpdateExistingFileInBranchCache(): [UpdateFileInBranchCache, 
 
       invalidateValidationMessages(fileKey)
       invalidateDereferencedSpec(fileKey)
+    },
+    onError: (error, vars, context): void => {
+      onMutationUnauthorized<FileData, Error, FileKey>(mutate)(error, vars, context)
     },
   })
 

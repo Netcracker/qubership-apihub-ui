@@ -48,7 +48,8 @@ import {
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
 import { API_V3, NotFoundError } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { expose } from 'comlink'
+import { WorkerUnauthorizedError } from '@netcracker/qubership-apihub-ui-shared/utils/security'
+import { expose, transferHandlers } from 'comlink'
 import { generatePath } from 'react-router-dom'
 import { v4 as uuidv4 } from 'uuid'
 import type { BuilderOptions } from './package-version-builder'
@@ -421,5 +422,37 @@ const worker: PackageVersionBuilderWorker = {
     }
   },
 }
+
+// Override default handlers for thrown values from worker
+// This is necessary to handle custom errors from worker in the calling thread
+transferHandlers.set('throw', {
+  canHandle: transferHandlers.get('throw')!.canHandle,
+  serialize: ({ value }) => {
+    let serialized
+    if (value instanceof Error) {
+      serialized = {
+        isError: true,
+        value: {
+          message: value.message,
+          name: value.name,
+          stack: value.stack,
+          responseStatus: (value as WorkerUnauthorizedError).responseStatus,
+        },
+      }
+    } else {
+      serialized = {
+        isError: false,
+        value: value,
+      }
+    }
+    return [serialized, []]
+  },
+  deserialize: (serialized: { isError: boolean; value: { message: string; name: string; stack: string; responseStatus: number } }) => {
+    if (serialized.isError) {
+      throw new WorkerUnauthorizedError()
+    }
+    throw serialized.value
+  },
+})
 
 expose(worker)

@@ -21,6 +21,7 @@ import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/ali
 import type { PublishDetails, PublishDetailsDto } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
 import { RUNNING_PUBLISH_STATUS } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
 import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { onQueryUnauthorized } from '@netcracker/qubership-apihub-ui-shared/utils/security'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { wrap } from 'comlink'
 import { useParams } from 'react-router-dom'
@@ -38,7 +39,7 @@ export function useServicePromoteDetails(options?: Partial<{
   const { agentId, namespaceKey } = useParams()
   const workspaceKey = useSearchParam(WORKSPACE_SEARCH_PARAM)
 
-  const { data, isLoading } = useQuery<PublishDetailsDto, Error, PublishDetails>({
+  const { data, isLoading, refetch } = useQuery<PublishDetailsDto, Error, PublishDetails>({
     queryKey: [SERVICE_PROMOTE_DETAILS_QUERY_KEY, serviceConfig, builderId],
     queryFn: () => publishService({
       agentId: agentId!,
@@ -48,6 +49,9 @@ export function useServicePromoteDetails(options?: Partial<{
       builderId: builderId,
     }),
     enabled: !!serviceConfig,
+    onError: (error) => {
+      onQueryUnauthorized(refetch)(error)
+    },
   })
 
   return [

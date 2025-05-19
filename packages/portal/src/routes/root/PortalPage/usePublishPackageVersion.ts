@@ -22,6 +22,7 @@ import { useAsyncInvalidatePackageVersions } from '@netcracker/qubership-apihub-
 import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import type { PublishDetails } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
 import { COMPLETE_PUBLISH_STATUS, ERROR_PUBLISH_STATUS } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
+import { isTokenRefreshed, onMutationUnauthorized } from '@netcracker/qubership-apihub-ui-shared/utils/security'
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import { useMutation } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
@@ -66,8 +67,12 @@ export function usePublishPackageVersion(): [PublishPackageVersion, IsLoading, I
         showErrorNotification({ message: message! })
       }
     },
-    onError: ({ message }) => {
-      showErrorNotification({ message: message })
+    onError: async (error, variables, context) => {
+      const tokenRefreshResult = await onMutationUnauthorized<PublishDetails, Error, Options>(mutate)(error, variables, context)
+      if (!isTokenRefreshed(tokenRefreshResult)) {
+        const { message } = error
+        showErrorNotification({ message: message })
+      }
     },
   })
 

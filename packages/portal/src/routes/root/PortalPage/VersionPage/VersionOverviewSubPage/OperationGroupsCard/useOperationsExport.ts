@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
+import type { BuildType, OperationsGroupExportFormat } from '@netcracker/qubership-apihub-api-processor'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { isTokenRefreshed, onMutationUnauthorized } from '@netcracker/qubership-apihub-ui-shared/utils/security'
 import { useMutation } from '@tanstack/react-query'
 import fileDownload from 'js-file-download'
 import { useShowErrorNotification } from '../../../../BasePage/Notification'
 import { PackageVersionBuilder } from '../../../package-version-builder'
 import type { Filename } from '../../../package-version-builder-worker'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import type { BuildType, OperationsGroupExportFormat } from '@netcracker/qubership-apihub-api-processor'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 
 type ExportOperations = (options: Options) => void
 
@@ -52,8 +53,12 @@ export function useOperationsExport(): [ExportOperations, IsLoading] {
     onSuccess: ([blob, filename]) => {
       fileDownload(blob, filename)
     },
-    onError: (error) => {
-      showErrorNotification({ message: error.message })
+    onError: async (error, variables, context) => {
+      const tokenRefreshResult = await onMutationUnauthorized<[Blob, Filename], Error, Options>(mutate)(error, variables, context)
+      if (!isTokenRefreshed(tokenRefreshResult)) {
+        const { message } = error
+        showErrorNotification({ message })
+      }
     },
   })
 
