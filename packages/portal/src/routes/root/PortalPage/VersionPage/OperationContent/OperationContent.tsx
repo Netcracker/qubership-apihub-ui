@@ -194,13 +194,12 @@ export const OperationContent: FC<OperationContentProps> = memo<OperationContent
     operationContentElement = (
       comparisonMode
         ? <Box pl={3} pr={2} height="inherit">
-          <>
             <OperationsSwapper
               displayMode={displayMode}
               breadcrumbsData={breadcrumbsData}
               actions={isRawViewMode && rawViewActions}
             />
-            {isDocViewMode && mergedDocument && (
+            {isDocViewMode && !!mergedDocument && (
               <OperationView
                 apiType={apiType as ApiType}
                 originOperation={originOperation}
@@ -221,7 +220,6 @@ export const OperationContent: FC<OperationContentProps> = memo<OperationContent
                 type={type}
               />
             )}
-          </>
         </Box>
         : (
           <OperationWithPlayground
