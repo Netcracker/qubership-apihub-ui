@@ -194,32 +194,32 @@ export const OperationContent: FC<OperationContentProps> = memo<OperationContent
     operationContentElement = (
       comparisonMode
         ? <Box pl={3} pr={2} height="inherit">
-            <OperationsSwapper
+          <OperationsSwapper
+            displayMode={displayMode}
+            breadcrumbsData={breadcrumbsData}
+            actions={isRawViewMode && rawViewActions}
+          />
+          {isDocViewMode && !!mergedDocument && (
+            <OperationView
+              apiType={apiType as ApiType}
+              originOperation={originOperation}
+              changedOperation={changedOperation}
               displayMode={displayMode}
-              breadcrumbsData={breadcrumbsData}
-              actions={isRawViewMode && rawViewActions}
+              comparisonMode={comparisonMode}
+              productionMode={productionMode}
+              mergedDocument={mergedDocument}
+              // diffs specific
+              filters={filters}
             />
-            {isDocViewMode && !!mergedDocument && (
-              <OperationView
-                apiType={apiType as ApiType}
-                originOperation={originOperation}
-                changedOperation={changedOperation}
-                displayMode={displayMode}
-                comparisonMode={comparisonMode}
-                productionMode={productionMode}
-                mergedDocument={mergedDocument}
-                // diffs specific
-                filters={filters}
-              />
-            )}
-            {isRawViewMode && (
-              <RawSpecDiffView
-                beforeValue={originalValue}
-                afterValue={changedValue}
-                extension={extension}
-                type={type}
-              />
-            )}
+          )}
+          {isRawViewMode && (
+            <RawSpecDiffView
+              beforeValue={originalValue}
+              afterValue={changedValue}
+              extension={extension}
+              type={type}
+            />
+          )}
         </Box>
         : (
           <OperationWithPlayground
