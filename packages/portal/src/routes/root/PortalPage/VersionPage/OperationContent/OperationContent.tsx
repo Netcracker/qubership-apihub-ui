@@ -158,10 +158,13 @@ export const OperationContent: FC<OperationContentProps> = memo<OperationContent
     },
     [changedOperation?.data, comparisonMode, originOperation?.data, apiDiffResult?.merged],
   )
-
+  console.log(isLoading, isApiDiffResultLoading, changedOperationContent, originOperationContent)
   if (isLoading || isApiDiffResultLoading) {
     operationContentElement = <LoadingIndicator />
+    console.log('load')
   } else if (!changedOperationContent && !originOperationContent) {
+    console.log('select')
+    // return <></>
     return (
       <Placeholder
         invisible={false}
@@ -179,6 +182,7 @@ export const OperationContent: FC<OperationContentProps> = memo<OperationContent
       />
     )
   } else {
+    console.log('view')
     operationContentElement = (
       comparisonMode
         ? <Box pl={3} pr={2} height="inherit">
