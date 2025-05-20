@@ -52,20 +52,29 @@ export async function handleAuthentication(responseStatus: number): Promise<Toke
 
     const { authConfig } = systemConfiguration
 
+    // trying to refresh token by default provider
     const { defaultProviderId } = authConfig
-    const defaultProvider = authConfig.identityProviders.find(idp => idp.id === defaultProviderId)
+    const defaultProvider = defaultProviderId 
+      ? authConfig.identityProviders.find(idp => idp.id === defaultProviderId)
+      : undefined
 
-    // default identity provider is configured
     tokenRefreshResult = await handleUnauthorizedByProvider(defaultProvider)
+    if (isTokenRefreshed(tokenRefreshResult)) {
+      return tokenRefreshResult
+    }
 
+    // trying to refresh token by last used provider
     const lastProviderId = localStorage.getItem(SESSION_STORAGE_KEY_LAST_IDENTITY_PROVIDER_ID)
     const lastProvider = lastProviderId
       ? authConfig.identityProviders.find(idp => idp.id === lastProviderId)
       : undefined
 
-    // last identity provider is saved
     tokenRefreshResult = await handleUnauthorizedByProvider(lastProvider)
+    if (isTokenRefreshed(tokenRefreshResult)) {
+      return tokenRefreshResult
+    }
 
+    // the first login in clear browser
     if (tokenRefreshResult === TokenRefreshResults.NO_PROVIDER) {
       redirectToLogin()
     }
@@ -104,6 +113,7 @@ async function handleUnauthorizedByProvider(identityProvider: IdentityProviderDt
     const url = response.url.replace(location.origin, '')
     redirectTo(url)
   }
+  // this message will be visible even if user was redirected
   console.error('Can\'t refresh token. Response:', response)
   return TokenRefreshResults.UNKNOWN
 }

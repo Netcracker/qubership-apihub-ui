@@ -16,7 +16,7 @@
 
 import type { ErrorMessage } from './packages-builder'
 import { HttpError } from './responses'
-import { handleAuthentication, isTokenRefreshed, TokenRefreshResults } from './security'
+import { handleAuthentication, isTokenRefreshed } from './security'
 import type { Key } from './types'
 
 export const API_V1 = '/api/v1'
@@ -55,7 +55,7 @@ export async function requestJson<T extends object | null>(
 
   if (!response.ok) {
     const tokenRefreshResult = await handleAuthentication(response.status)
-    if (tokenRefreshResult === TokenRefreshResults.TOKEN_REFRESHED) {
+    if (isTokenRefreshed(tokenRefreshResult)) {
       return requestJson(input, init, options, signal)
     }
 
@@ -88,7 +88,7 @@ export async function requestText(
 
   if (!response.ok) {
     const tokenRefreshResult = await handleAuthentication(response.status)
-    if (tokenRefreshResult === TokenRefreshResults.TOKEN_REFRESHED) {
+    if (isTokenRefreshed(tokenRefreshResult)) {
       return requestText(input, init, options)
     }
 
