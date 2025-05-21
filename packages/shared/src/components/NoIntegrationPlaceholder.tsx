@@ -32,7 +32,6 @@ export const NoIntegrationPlaceholder: FC = memo(() => {
             size="medium"
             variant="contained"
             onClick={() => {
-              // TODO 28.03.25 // Fix it or get rid of it
               redirectToGitlab()
             }}
             style={{

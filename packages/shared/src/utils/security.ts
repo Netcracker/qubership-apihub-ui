@@ -4,6 +4,7 @@ import { isInternalIdentityProvider } from '../types/system-configuration'
 import { SEARCH_PARAM_NO_AUTO_LOGIN, SESSION_STORAGE_KEY_LAST_IDENTITY_PROVIDER_ID, SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION } from './constants'
 import { redirectTo, redirectToLogin } from './redirects'
 import { optionalSearchParams } from './search-params'
+import { stopThread } from './threads'
 
 // TODO 16.05.25 // Temporarily copy-pasted from ./requests.ts
 // Get rid of copy-pasting these constants
@@ -54,7 +55,7 @@ export async function handleAuthentication(responseStatus: number): Promise<Toke
 
     // trying to refresh token by default provider
     const { defaultProviderId } = authConfig
-    const defaultProvider = defaultProviderId 
+    const defaultProvider = defaultProviderId
       ? authConfig.identityProviders.find(idp => idp.id === defaultProviderId)
       : undefined
 
@@ -112,8 +113,23 @@ async function handleUnauthorizedByProvider(identityProvider: IdentityProviderDt
   if (response.type === 'opaqueredirect') {
     const url = response.url.replace(location.origin, '')
     redirectTo(url)
+    /**
+     * TL;DR: Redirections are asyncronous global tasks
+     * Details:
+     * - https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate
+     * - Some part of navigation algorithm is run synchronously until the point 8 from specs.
+     * - Since this moment, if surrounding (!) code is running, it will be finished first.
+     * - Continuing navigation will be planned as a global task.
+     * - When surrounding code is finished:
+     *   1) microtasks from their queue will be executed
+     *   2) macrotasks (events, timeouts) from their queue will be executed
+     *   3) navigation will be executed
+     *   BUT:
+     *   If a microtask will never be resolved, navigation will be executed anyway.
+     * - So, as the result, we can stop thread to wait for the redirection with infinite promise.
+     */
+    await stopThread('Waiting for redirection...')
   }
-  // this message will be visible even if user was redirected
   console.error('Can\'t refresh token. Response:', response)
   return TokenRefreshResults.UNKNOWN
 }
