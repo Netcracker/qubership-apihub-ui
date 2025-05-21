@@ -119,13 +119,12 @@ async function handleUnauthorizedByProvider(identityProvider: IdentityProviderDt
      * - https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate
      * - Some part of navigation algorithm is run synchronously until the point 8 from specs.
      * - Since this moment, if surrounding (!) code is running, it will be finished first.
+     * - Surrounding code includes both synchronous and asynchronous code.
      * - Continuing navigation will be planned as a global task.
-     * - When surrounding code is finished:
-     *   1) microtasks from their queue will be executed
-     *   2) macrotasks (events, timeouts) from their queue will be executed
-     *   3) navigation will be executed
+     * - After surrounding code is finished, navigation will be executed,
      *   BUT:
-     *   If a microtask will never be resolved, navigation will be executed anyway.
+     *   If any microtask will never be resolved, navigation will be executed anyway
+     *   after the last reached surrounding code is executed.
      * - So, as the result, we can stop thread to wait for the redirection with infinite promise.
      */
     await stopThread('Waiting for redirection...')
