@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ReactNode} from 'react'
 import { useCallback, useState } from 'react'
 import { safeParse } from '@stoplight/json'
 import { useSetCustomServersContext } from './CustomServersProvider'
@@ -23,7 +24,7 @@ export function getCustomServersPackageMapFromLocalStorage(): CustomServersPacka
   return safeParse(localStorage.getItem(CUSTOM_SERVERS_KEY) ?? '') ?? {}
 }
 
-export function useCustomServersPackageMap(): [CustomServersPackageMap, SetCustomServersPackageMap] {
+export function useCustomServersPackageMap(): [CustomServersPackageMap, SetCustomServersPackageMap, (key: string, urlToDelete: string) => void]  {
   const [customServers, setCustomServers] = useState<CustomServersPackageMap>(getCustomServersPackageMapFromLocalStorage)
   const setCustomServersMap = useSetCustomServersContext()
 
@@ -35,9 +36,26 @@ export function useCustomServersPackageMap(): [CustomServersPackageMap, SetCusto
     setCustomServersMap(data)
   }, [customServers, setCustomServersMap])
 
+  const deleteCustomServer = useCallback((key: string, urlToDelete: string) => {
+    const current = customServers[key] ?? []
+    const updated = current.filter(server => server.url !== urlToDelete)
+     if (updated.length > 0) {
+      updateCustomServers(key, updated)
+    } else {
+      // remove the whole key if no servers left
+      const updatedMap = { ...customServers }
+      delete updatedMap[key]
+      localStorage.setItem(CUSTOM_SERVERS_KEY, JSON.stringify(updatedMap))
+      setCustomServers(updatedMap)
+      setCustomServersMap(updatedMap)
+    }
+  }, [customServers, updateCustomServers, setCustomServersMap])
+
   return [
     customServers,
     updateCustomServers,
+    deleteCustomServer,
+    
   ]
 }
 
@@ -46,6 +64,8 @@ export type CustomServersPackageMap = Record<Key, CustomServer[]>
 export type SetCustomServersPackageMap = (key: string, value: CustomServer[]) => void
 
 export type CustomServer = {
+  // origin: string
+  // caption: ReactNode
   url: string
   description?: string
 }
