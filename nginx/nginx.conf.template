@@ -122,7 +122,7 @@ http {
 
         location ~* ^/agents/.*\.(?:js|css|woff2?|ttf|eot|svg|png|jpg|jpeg|gif)$ {
           add_header Cache-Control "public, max-age=31536000, immutable";
-          root /usr/share/nginx/html/agents;
+          root /usr/share/nginx/html;
         }
 
         location /agents {
@@ -140,7 +140,7 @@ http {
 
         location ~* ^/editor/.*\.(?:js|css|woff2?|ttf|eot|svg|png|jpg|jpeg|gif)$ {
           add_header Cache-Control "public, max-age=31536000, immutable";
-          root /usr/share/nginx/html/editor;
+          root /usr/share/nginx/html;
         }
 
         location /editor {
