@@ -1,0 +1,2 @@
+import{r,i as a,a as t}from"./jsx-runtime_commonjs-proxy-350e4ed0.js";var e={},u=a;Object.defineProperty(e,"__esModule",{value:!0});var i=e.default=void 0,o=u(r()),v=t,d=(0,o.default)((0,v.jsx)("path",{d:"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"}),"ErrorOutlined");i=e.default=d;export{i as d};
+//# sourceMappingURL=ErrorOutlined-024f29d1.js.map
