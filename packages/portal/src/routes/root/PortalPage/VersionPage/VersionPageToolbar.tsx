@@ -70,7 +70,7 @@ export const VersionPageToolbar: FC = memo(() => {
     versionKey: versionId,
     includeSummary: true,
   })
-  const { version, status, latestRevision, operationTypes } = versionContent ?? {}
+  const { version: fullVersion, status, latestRevision, operationTypes } = versionContent ?? {}
   const { restGroupingPrefix, permissions } = currentPackage ?? {}
   const defaultApiType = useEffectiveApiType(operationTypes)
 
@@ -82,9 +82,9 @@ export const VersionPageToolbar: FC = memo(() => {
   }, [config?.files, isConfigLoading])
 
   useEffect(() => {
-    setFullMainVersion(version)
+    setFullMainVersion(fullVersion)
     setIsLatestRevision(latestRevision)
-  }, [latestRevision, setBackwardLocation, setFullMainVersion, setIsLatestRevision, version])
+  }, [latestRevision, setBackwardLocation, setFullMainVersion, setIsLatestRevision, fullVersion])
 
   const showCompareGroups = useMemo(
     () => (
@@ -146,7 +146,7 @@ export const VersionPageToolbar: FC = memo(() => {
         action={
           <Box display="flex" gap={2}>
             <CopyPackageVersionButton />
-            {!isDashboard && version && (
+            {!isDashboard && fullVersion && (
               <Button
                 variant="outlined"
                 onClick={() => {
@@ -155,10 +155,10 @@ export const VersionPageToolbar: FC = memo(() => {
                     showExportSettingsDialog({
                       exportedEntity: ExportedEntityKind.VERSION,
                       packageId: packageId!,
-                      version: version,
+                      version: fullVersion,
                     })
                   } else {
-                    downloadVersionDocumentation({ packageKey: packageId!, version: version })
+                    downloadVersionDocumentation({ packageKey: packageId!, version: fullVersion })
                   }
                 }}
                 data-testid="ExportVersionButton"

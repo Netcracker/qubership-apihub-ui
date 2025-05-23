@@ -43,6 +43,7 @@ import { useShowSuccessNotification } from '../../../BasePage/Notification'
 import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
 import { useDownloadPublishedDocument } from '../useDownloadPublishedDocument'
 import { useGetSharedKey } from './useGetSharedKey'
+import { useFullMainVersion } from '@apihub/routes/root/PortalPage/FullMainVersionProvider'
 
 export type DocumentActionsButtonProps = {
   slug: Key
@@ -64,7 +65,7 @@ const DEFAULT_ACTION_BUTTON_STYLE = {
 
 type ActionParams = {
   packageId: string
-  versionId: string
+  fullVersion: string
   slug: Key
   ref?: string
   protocol: string | undefined
@@ -90,10 +91,10 @@ const DOCUMENT_MENU_CONFIG: MenuItemConfig[] = [
     id: 'preview',
     label: 'Preview',
     condition: (isOpenApiSpec) => isOpenApiSpec,
-    action: ({ navigateToDocumentPreview, packageId, versionId, slug, ref }) => {
+    action: ({ navigateToDocumentPreview, packageId, fullVersion, slug, ref }) => {
       navigateToDocumentPreview({
         packageKey: packageId,
-        versionKey: versionId,
+        versionKey: fullVersion,
         documentKey: slug,
         search: {
           [REF_SEARCH_PARAM]: { value: ref },
@@ -105,11 +106,11 @@ const DOCUMENT_MENU_CONFIG: MenuItemConfig[] = [
     id: 'export',
     label: 'Export',
     condition: (isOpenApiSpec) => isOpenApiSpec,
-    action: ({ showExportSettingsDialog, packageId, versionId, slug }) => {
+    action: ({ showExportSettingsDialog, packageId, fullVersion, slug }) => {
       showExportSettingsDialog({
         exportedEntity: ExportedEntityKind.REST_DOCUMENT,
         packageId: packageId,
-        version: versionId,
+        version: fullVersion,
         documentId: slug,
       })
     },
@@ -155,7 +156,8 @@ const DOCUMENT_MENU_CONFIG: MenuItemConfig[] = [
 export const DocumentActionsButton: FC<DocumentActionsButtonProps> = memo<DocumentActionsButtonProps>((props) => {
   const { slug, docType, format, sx, customProps, startIcon, openedIcon, icon } = props
 
-  const { packageId, versionId } = useParams()
+  const { packageId } = useParams()
+  const fullVersion = useFullMainVersion()
   const ref = useSearchParam(REF_SEARCH_PARAM)
 
   const { host, protocol } = useLocation()
@@ -191,7 +193,7 @@ export const DocumentActionsButton: FC<DocumentActionsButtonProps> = memo<Docume
 
   const actionParams: ActionParams = {
     packageId: packageId!,
-    versionId: versionId!,
+    fullVersion: fullVersion!,
     slug: slug,
     ref: ref,
     protocol: protocol,
