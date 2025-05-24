@@ -100,6 +100,7 @@ export function useUpdateEditorsInBranchConfig(): UpdateEditorsInBranchConfig {
           key: userId,
           name: '',
           avatarUrl: '',
+          gitlabIntegration: false,
         }]
       }
 
