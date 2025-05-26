@@ -56,6 +56,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import { useShowSuccessNotification } from '@apihub/routes/root/BasePage/Notification'
 import { DeleteIcon } from '@netcracker/qubership-apihub-ui-shared/icons/DeleteIcon'
 import axios from 'axios'
+import { requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 
 const CLOUD_KEY = 'cloudKey'
 const NAMESPACE_KEY = 'namespaceKey'
@@ -75,7 +76,7 @@ export const CreateCustomServerDialog: FC = memo(() => {
   return (
     <PopupDelegate
       type={SHOW_CREATE_CUSTOM_SERVER_DIALOG}
-      render={props => <CreateCustomServerPopup {...props}/>}
+      render={props => <CreateCustomServerPopup {...props} />}
     />
   )
 })
@@ -101,7 +102,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const [mode, setMode] = useState<'custom' | 'proxy'>('custom')
   const [serverUrlError, setServerUrlError] = useState<string | null>(null)
   const [serverUrlWarning, setServerUrlWarning] = useState<string | null>(null)
-  const [apiSpec, setApiSpec] = useState<any>(null)
+  const [apiSpec, setApiSpec] = useState<unknown>(null)
   const [showWarning, setShowWarning] = useState(false)
   const [urlInput, setUrlInput] = useState('')
   const [cloud, setCloud] = useState<string[]>([])
@@ -114,24 +115,29 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     [agents],
   )
   useEffect(
-    () => {selectedCloud && cloudAgentIdMap.has(selectedCloud) && setSelectedAgent(cloudAgentIdMap.get(selectedCloud) ?? '')},
+    () => { selectedCloud && cloudAgentIdMap.has(selectedCloud) && setSelectedAgent(cloudAgentIdMap.get(selectedCloud) ?? '') },
     [cloudAgentIdMap, selectedCloud],
   )
   const [namespaces] = useNamespaces(selectedAgent!)
   const [serviceNames] = useServiceNames(selectedAgent!, selectedNamespace?.namespaceKey)
 
   useEffect(() => {
-    fetch(`/api/packages/${packageId}/spec`)
-      .then(res => res.json())
-      .then(setApiSpec)
-      .catch(console.error)
+    requestJson<any>(`/api/packages/${packageId}/spec`)
+      .then((spec) => {
+        if (spec) {
+          setApiSpec(spec)
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to load API spec', err)
+      })
   }, [packageId])
 
   const baseUrl = window.location.origin
-  
-const generatedUrl = `${baseUrl}/apihub-nc/agents/${selectedCloud}/namespaces/${selectedNamespace}/services/${selectedService}/proxy`
-  
-// Form initializing
+
+  const generatedUrl = `${baseUrl}/apihub-nc/agents/${selectedCloud}/namespaces/${selectedNamespace}/services/${selectedService}/proxy`
+
+  // Form initializing
   const defaultFormData = useMemo<CreateCustomServerForm>(() => ({
     cloudKey: '',
     namespaceKey: '',
@@ -149,7 +155,7 @@ const generatedUrl = `${baseUrl}/apihub-nc/agents/${selectedCloud}/namespaces/${
   const isUrlGenerationAvailable = isServiceNameExist && selectedAgent && selectedNamespace
 
   useEffect(
-    () => {isUrlGenerationAvailable && setSelectedCustomUrl(`/apihub-nc/agents/${selectedAgent}/namespaces/${namespaceKey}/services/${selectedService}/proxy/`)},
+    () => { isUrlGenerationAvailable && setSelectedCustomUrl(`/apihub-nc/agents/${selectedAgent}/namespaces/${namespaceKey}/services/${selectedService}/proxy/`) },
     [isUrlGenerationAvailable, namespaceKey, selectedAgent, selectedNamespace, selectedService],
   )
 
@@ -159,56 +165,56 @@ const generatedUrl = `${baseUrl}/apihub-nc/agents/${selectedCloud}/namespaces/${
   )
 
   const apiSpecServerUrls = useMemo(() => {
-    const servers = apiSpec?.servers ?? []
+    const servers = (apiSpec as { servers?: { url: string }[] })?.servers ?? []
     return servers.map((s: { url: string }) => s.url).filter(Boolean)
   }, [apiSpec])
 
-  const firstSubPath = useMemo(() => {  
-  const match = apiSpecServerUrls.find((url:string) => {
-    try {
-      const { pathname } = new URL(url)
-      return pathname !== '/' && pathname !== ''
-    } catch {
-      return url.startsWith('/') 
-    }
-  })
-
-  if (!match) return ''
-
-  try {
-    const { pathname } = new URL(match)
-    return pathname
-  } catch {
-    return match 
-  }
-}, [apiSpecServerUrls])
-
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-function useUrlPathWarning(url: string, delay = 700) {  
-
-  useEffect(() => {
-    if (!url) return setShowWarning(false)
-
-    const timeout = setTimeout(() => {
+  const firstSubPath = useMemo(() => {
+    const match = apiSpecServerUrls.find((url: string) => {
       try {
-        const parsed = new URL(url)
-        const isRootPath = parsed.pathname === '/' || parsed.pathname === ''
-        setShowWarning(isRootPath)
+        const { pathname } = new URL(url)
+        return pathname !== '/' && pathname !== ''
       } catch {
-        setShowWarning(false) // Invalid URL
+        return url.startsWith('/')
       }
-    }, delay)
+    })
 
-    return () => clearTimeout(timeout)
-  }, [url, delay])
+    if (!match) return ''
 
-  return showWarning
-}
+    try {
+      const { pathname } = new URL(match)
+      return pathname
+    } catch {
+      return match
+    }
+  }, [apiSpecServerUrls])
 
-const showPathWarning = useUrlPathWarning(urlInput)
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  function useUrlPathWarning(url: string, delay = 700) {
+
+    useEffect(() => {
+      if (!url) return setShowWarning(false)
+
+      const timeout = setTimeout(() => {
+        try {
+          const parsed = new URL(url)
+          const isRootPath = parsed.pathname === '/' || parsed.pathname === ''
+          setShowWarning(isRootPath)
+        } catch {
+          setShowWarning(false) // Invalid URL
+        }
+      }, delay)
+
+      return () => clearTimeout(timeout)
+    }, [url, delay])
+
+    return showWarning
+  }
+
+  const showPathWarning = useUrlPathWarning(urlInput)
 
   const updateSelectedCustomUrl = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    const {value} = event.target
+    const { value } = event.target
     setUrlInput(value)
     setSelectedCustomUrl(value)
     setServerUrlError(null)
@@ -219,16 +225,16 @@ const showPathWarning = useUrlPathWarning(urlInput)
       return
     }
     const pathMatch = apiSpecServerUrls
-    ?.map((url: string | URL) => {
-      try {
-        const parsed = new URL(url, 'http://dummy-base') // for relative paths
-        return parsed.pathname
-      } catch {
-        return ''
-      }
-    })
-    .find((path: string) => path && path !== '/')
-  
+      ?.map((url: string | URL) => {
+        try {
+          const parsed = new URL(url, 'http://dummy-base') // for relative paths
+          return parsed.pathname
+        } catch {
+          return ''
+        }
+      })
+      .find((path: string) => path && path !== '/')
+
     if (!hasPath(value) && firstSubPath) {
       setServerUrlWarning(`Servers specified directly in the OpenAPI specification contain a path to a specific resource. Make sure the URL you enter is correct and does not contain an additional path (e.g. ${firstSubPath})`)
     }
@@ -238,8 +244,6 @@ const showPathWarning = useUrlPathWarning(urlInput)
 
   // Storing data in local storage
   const [customServersPackageMap, setCustomServersPackageMap] = useCustomServersPackageMap()
-  
-
 
   const server = useMemo(() => ({
     url: selectedCustomUrl ?? '',
@@ -256,29 +260,29 @@ const showPathWarning = useUrlPathWarning(urlInput)
   const showSuccessNotification = useShowSuccessNotification()
 
   const onAddCustomServer = useCallback(() => {
-    
+
     const url = server?.url
     if (serverUrlError || !isServiceNameValid || !url) return
-      
-      const caption = server?.description?.trim() || '-'
-      const newServer = {
-        url: url,
-        caption: caption,
-        origin: 'custom',
-      }
-      const servers = [...customServersPackageMap?.[packageId] ?? [], newServer]
-      setCustomServersPackageMap(packageId, servers)
-      
-      setSelectedCustomUrl(server.url)
-      
-      localStorage.setItem('customServers', JSON.stringify(servers))
 
-      showSuccessNotification?.({
-        title: 'Success',
-        message: 'Server has been added',
-      })
-      setTimeout(() => setOpen(false), 50)
-    
+    const caption = server?.description?.trim() || '-'
+    const newServer = {
+      url: url,
+      caption: caption,
+      origin: 'custom',
+    }
+    const servers = [...customServersPackageMap?.[packageId] ?? [], newServer]
+    setCustomServersPackageMap(packageId, servers)
+
+    setSelectedCustomUrl(server.url)
+
+    localStorage.setItem('customServers', JSON.stringify(servers))
+
+    showSuccessNotification?.({
+      title: 'Success',
+      message: 'Server has been added',
+    })
+    setTimeout(() => setOpen(false), 50)
+
   }, [isServiceNameValid, showSuccessNotification, serverUrlError, setCustomServersPackageMap, packageId, customServersPackageMap, server, setOpen, setSelectedCustomUrl])
 
   useEffect(() => {
@@ -293,7 +297,7 @@ const showPathWarning = useUrlPathWarning(urlInput)
               .filter((cloud: any): cloud is string => typeof cloud === 'string'),
           ),
         )
-        
+
       } catch (error) {
         console.error('Failed to fetch cloud list:', error)
       }
@@ -301,26 +305,25 @@ const showPathWarning = useUrlPathWarning(urlInput)
 
     fetchClouds()
   }, [])
-  
+
   // Rendering functions
   const renderSelectCloud = useCallback(({ field }: ControllerRenderFunctionProps<typeof CLOUD_KEY>) => (
     <Autocomplete
       key="cloudAutocomplete"
-      
       options={cloud}
       value={selectedCloud}
       renderOption={(props, cloud) => (
-        <ListItem {...props} 
-        key={crypto.randomUUID()}>
+        <ListItem {...props}
+          key={typeof cloud === 'string' ? cloud : crypto.randomUUID()}>
           {cloud}
         </ListItem>
       )}
       isOptionEqualToValue={(option, value) => option === value}
       renderInput={(params) => (
-        <TextField {...field} {...params} 
-        label="Cloud"
-        required
-        
+        <TextField {...field} {...params}
+          label="Cloud"
+          required
+
         />
       )}
       onChange={(_, value) => {
@@ -349,12 +352,12 @@ const showPathWarning = useUrlPathWarning(urlInput)
         <TextField
           {...field}
           {...params}
-          
-           label={
-          <span>
-            Namespace<span style={{ color: 'red' }}>&nbsp;*</span>
-          </span>
-        }
+
+          label={
+            <span>
+              Namespace<span style={{ color: 'red' }}>&nbsp;*</span>
+            </span>
+          }
           error={!isServiceNameValid}
           helperText={!isServiceNameValid && `Service with ${serviceName} not found in selected namespace`}
         />
@@ -369,41 +372,41 @@ const showPathWarning = useUrlPathWarning(urlInput)
   ), [isServiceNameValid, namespaces, selectedNamespace, serviceName, setValue])
 
   const renderSelectService = useCallback((
-      { field }: ControllerRenderFunctionProps<typeof SERVICE_KEY>) => (
-      <Autocomplete
-        disabled={true}
-        key="serviceAutocomplete"
-        options={[serviceName]}
-        value={selectedService}
-        renderOption={(props, serviceName) => (
-          <ListItem {...props} key={crypto.randomUUID()}>
-            {serviceName}
-          </ListItem>
-        )}
-        renderInput={(params) => (
-          <TextField {...field} {...params} label="Service*"/>
-        )}
-        data-testid="ServiceAutocomplete"
-      />
-    ),
+    { field }: ControllerRenderFunctionProps<typeof SERVICE_KEY>) => (
+    <Autocomplete
+      disabled={true}
+      key="serviceAutocomplete"
+      options={[serviceName]}
+      value={selectedService}
+      renderOption={(props, serviceName) => (
+        <ListItem {...props} key={crypto.randomUUID()}>
+          {serviceName}
+        </ListItem>
+      )}
+      renderInput={(params) => (
+        <TextField {...field} {...params} label="Service*" />
+      )}
+      data-testid="ServiceAutocomplete"
+    />
+  ),
     [selectedService, serviceName],
   )
 
   const renderSelectUrl = useCallback((
-      { field,fieldState }: ControllerRenderFunctionProps<typeof CUSTOM_SERVER_URL_KEY>) => (
-      <TextField
-        {...field}
-        value={selectedCustomUrl ?? ''}
-        onChange={updateSelectedCustomUrl}
-        required
-        label="Server URL"
-        
-        error={!!fieldState.error || !!serverUrlError}
+    { field, fieldState }: ControllerRenderFunctionProps<typeof CUSTOM_SERVER_URL_KEY>) => (
+    <TextField
+      {...field}
+      value={selectedCustomUrl ?? ''}
+      onChange={updateSelectedCustomUrl}
+      required
+      label="Server URL"
+
+      error={!!fieldState.error || !!serverUrlError}
       helperText={serverUrlError || serverUrlWarning || fieldState.error?.message}
       fullWidth
-        data-testid="ServerUrlTextInput"
-      />
-    ),
+      data-testid="ServerUrlTextInput"
+    />
+  ),
     [selectedCustomUrl, updateSelectedCustomUrl, serverUrlError, serverUrlWarning],
   )
 
@@ -427,131 +430,131 @@ const showPathWarning = useUrlPathWarning(urlInput)
       return false
     }
   }
-  
+
   const hasPath = (url: string): boolean => {
     try {
       const { pathname } = new URL(url)
-      return pathname!=='' && pathname !== '/' // indicates subdirectory
+      return pathname !== '' && pathname !== '/' // indicates subdirectory
     } catch {
       return false
     }
-  } 
+  }
 
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const renderCustomServerOption = (props: any, server: { url: string; caption: string; origin: string }) => (
-  <ListItem
-    {...props}
-    key={server.url}
-    secondaryAction={
-      server.origin === 'custom' && (
-        <IconButton
-          edge="end"
-          aria-label="delete"
-          onClick={e => {
-            e.stopPropagation() // prevent selecting this option on icon click
-            handleDeleteServer(server)
-          }}
-          size="small"
-          data-testid={`delete-server-${server.url}`}
-        >
-          <DeleteIcon  />
-        </IconButton>
-      )
-    }
-  >
-    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-      <Typography variant="body2" noWrap>
-        {server.url}
-      </Typography>
-      <Typography variant="caption" color="text.secondary" noWrap>
-        {server.caption || '-'}
-      </Typography>
-    </Box>
-  </ListItem>
-)
+    <ListItem
+      {...props}
+      key={server.url}
+      secondaryAction={
+        server.origin === 'custom' && (
+          <IconButton
+            edge="end"
+            aria-label="delete"
+            onClick={e => {
+              e.stopPropagation() // prevent selecting this option on icon click
+              handleDeleteServer(server)
+            }}
+            size="small"
+            data-testid={`delete-server-${server.url}`}
+          >
+            <DeleteIcon />
+          </IconButton>
+        )
+      }
+    >
+      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+        <Typography variant="body2" noWrap>
+          {server.url}
+        </Typography>
+        <Typography variant="caption" color="text.secondary" noWrap>
+          {server.caption || '-'}
+        </Typography>
+      </Box>
+    </ListItem>
+  )
 
   return (
     <DialogForm
       open={open}
       onClose={() => setOpen(false)}
       onSubmit={handleSubmit(onAddCustomServer)}
-      >
-      
-    <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pr: 1 }}>
-       Add Custom Server
-      <IconButton
-      onClick={() => setOpen(false)}
-      size="small"
-      data-testid="CloseButton"
-      aria-label="close"
-     >
-      <CloseIcon />
-    </IconButton>
-    </DialogTitle>
+    >
+
+      <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pr: 1 }}>
+        Add Custom Server
+        <IconButton
+          onClick={() => setOpen(false)}
+          size="small"
+          data-testid="CloseButton"
+          aria-label="close"
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
 
       <DialogContent>
-      <FormControl component="fieldset">
-      <RadioGroup
-        value={mode}
-        onChange={(e) => setMode(e.target.value as 'custom' | 'proxy')}
-      >
-        <FormControlLabel value="custom" control={<Radio />} label="Add Custom Server URL" />
-        <FormControlLabel value="proxy" control={<Radio />} label="Use Agent Proxy" />
-      </RadioGroup>
-    </FormControl>
+        <FormControl component="fieldset">
+          <RadioGroup
+            value={mode}
+            onChange={(e) => setMode(e.target.value as 'custom' | 'proxy')}
+          >
+            <FormControlLabel value="custom" control={<Radio />} label="Add Custom Server URL" />
+            <FormControlLabel value="proxy" control={<Radio />} label="Use Agent Proxy" />
+          </RadioGroup>
+        </FormControl>
 
         {mode === 'proxy' && (
           <>
-          <Typography>Server URL:</Typography>
-          
-        {generatedUrl ? (
-          <Typography variant="body2" >{generatedUrl}</Typography>) : (
-              <Typography variant="body2"  sx={{ mt: 0.5 }}>
-                   {`https://apihub.example.com/apihub-nc/agents/${selectedCloud}/namespaces/${selectedNamespace}/services/${selectedService}/proxy`}
+            <Typography>Server URL:</Typography>
+
+            {generatedUrl ? (
+              <Typography variant="body2" >{generatedUrl}</Typography>) : (
+              <Typography variant="body2" sx={{ mt: 0.5 }}>
+                {`https://${baseUrl}/apihub-nc/agents/${selectedCloud}/namespaces/${selectedNamespace}/services/${selectedService}/proxy`}
               </Typography>
-          )}
-          <Controller
-            name={CLOUD_KEY}
-            control={control}
-            render={renderSelectCloud}
-          />
-          <Controller
-            name={NAMESPACE_KEY}
-            control={control}
-            render={renderSelectNamespace}
-          />
-          <Controller
-            name={SERVICE_KEY}
-            control={control}
-            render={renderSelectService}
-          />
+            )}
+            <Controller
+              name={CLOUD_KEY}
+              control={control}
+              render={renderSelectCloud}
+            />
+            <Controller
+              name={NAMESPACE_KEY}
+              control={control}
+              render={renderSelectNamespace}
+            />
+            <Controller
+              name={SERVICE_KEY}
+              control={control}
+              render={renderSelectService}
+            />
           </>
-        )}       
-       {mode === 'custom' &&(       
-        <Controller
-          name={CUSTOM_SERVER_URL_KEY}
-          control={control}
-          render={renderSelectUrl}
-          
-        />
-       )}
+        )}
+        {mode === 'custom' && (
+          <Controller
+            name={CUSTOM_SERVER_URL_KEY}
+            control={control}
+            render={renderSelectUrl}
+
+          />
+        )}
         <Controller
           name={DESCRIPTION_KEY}
           control={control}
           render={renderDescriptionInput}
         />
-        
-      {showPathWarning && <Alert severity="warning" sx={{ mt: 2 }}>
-    Servers specified directly in the OpenAPI specification contain a path to a specific resource.
-    Make sure the URL you enter is correct and does not contain an additional path (e.g. <code>/api/v1</code>).
-      </Alert>
-      }
+
+        {showPathWarning && <Alert severity="warning" sx={{ mt: 2 }}>
+          Servers specified directly in the OpenAPI specification contain a path to a specific resource.
+          Make sure the URL you enter is correct and does not contain an additional path (e.g. <code>/api/v1</code>).
+        </Alert>
+        }
       </DialogContent>
-      
+
       <DialogActions>
-        <LoadingButton variant="contained" type="submit" loading={false} data-testid="AddButton" >
+        <Button variant="contained" type="submit" data-testid="AddButton" >
           Add
-        </LoadingButton>
+        </Button>
         <Button variant="outlined" onClick={() => setOpen(false)} data-testid="CancelButton">
           Cancel
         </Button>

@@ -42,7 +42,7 @@ export function useCustomServersPackageMap(): [CustomServersPackageMap, SetCusto
      if (updated.length > 0) {
       updateCustomServers(key, updated)
     } else {
-      // remove the whole key if no servers left
+      
       const updatedMap = { ...customServers }
       delete updatedMap[key]
       localStorage.setItem(CUSTOM_SERVERS_KEY, JSON.stringify(updatedMap))
