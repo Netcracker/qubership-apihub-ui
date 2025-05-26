@@ -14,23 +14,17 @@
  * limitations under the License.
  */
 
-import { useSearchParam } from 'react-use'
 import { useMutation } from '@tanstack/react-query'
-import type { Credentials, LoginUser } from '../../../hooks/authorization'
-import { useAuthorization } from '../../../hooks/authorization'
-import type { Authorization, AuthorizationDto } from '../../../types/authorization'
-import { requestJson } from '../../../utils/requests'
-import { toUser } from '../../../types/user'
+import { useSearchParam } from 'react-use'
 import type { IsError, IsLoading } from '../../../utils/aliases'
+import { API_V3, requestVoid } from '../../../utils/requests'
 
 export function useLoginUser(): [LoginUser, IsLoading, IsError] {
-  const [, setAuthorization] = useAuthorization()
   const redirectUri = useSearchParam('redirectUri')
 
-  const { mutate, isLoading, isError } = useMutation<AuthorizationDto, Error, Credentials>({
+  const { mutate, isLoading, isError } = useMutation<void, Error, Credentials>({
     mutationFn: credentials => loginUser(credentials),
-    onSuccess: authorization => {
-      setAuthorization(toAuthorization(authorization))
+    onSuccess: () => {
       location.replace(redirectUri ?? location.origin)
     },
     onError: () => {
@@ -43,19 +37,18 @@ export function useLoginUser(): [LoginUser, IsLoading, IsError] {
 
 async function loginUser(
   { username, password }: Credentials,
-): Promise<AuthorizationDto> {
+): Promise<void> {
   const basic = window.btoa(`${username}:${password}`)
 
-  return await requestJson<AuthorizationDto>('/api/v2/auth/local', {
+  return await requestVoid('/auth/local', {
     method: 'post',
     headers: { authorization: `Basic ${basic}` },
-  })
+  }, { basePath: API_V3 })
 }
 
-function toAuthorization(value: AuthorizationDto): Authorization {
-  return {
-    token: value.token,
-    renewToken: value.renewToken,
-    user: toUser(value.user),
-  }
-}
+type LoginUser = (credentials: Credentials) => void
+
+type Credentials = Readonly<{
+  username: string
+  password: string
+}>

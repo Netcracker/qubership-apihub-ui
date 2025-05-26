@@ -203,4 +203,5 @@ const EMPTY_USER: User = {
   key: '',
   name: '',
   avatarUrl: '',
+  gitlabIntegration: false,
 }
