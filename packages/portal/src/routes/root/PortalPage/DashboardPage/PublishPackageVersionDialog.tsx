@@ -68,7 +68,12 @@ const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
   const isPackage = packageKind === PACKAGE_KIND
 
   const { filesWithLabels } = useFiles()
-  const [versionId] = useState(isEditingVersion ? getSplittedVersionKey(currentVersionId).versionKey ?? '' : '')
+  const versionId = useMemo(() => {
+    return isEditingVersion
+      ? getSplittedVersionKey(currentVersionId).versionKey ?? ''
+      : ''
+  }, [isEditingVersion, currentVersionId])
+
   const [targetVersion, setTargetVersion] = useState<Key>(versionId)
   const [versionsFilter, setVersionsFilter] = useState('')
 
