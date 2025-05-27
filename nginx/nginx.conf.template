@@ -120,7 +120,7 @@ http {
             proxy_redirect off;
         }
 
-        location ~* ^/agents/.*\.(?:js|css|woff2?|ttf|eot|svg|png|jpg|jpeg|gif)$ {
+        location ~* ^/agents/.*\.(?:js|css|woff2?|ttf|svg|png)$ {
           add_header Cache-Control "public, max-age=604800, immutable";
           root /usr/share/nginx/html;
         }
@@ -138,7 +138,7 @@ http {
           add_header Referrer-Policy "strict-origin-when-cross-origin";
         }
 
-        location ~* ^/editor/.*\.(?:js|css|woff2?|ttf|eot|svg|png|jpg|jpeg|gif)$ {
+        location ~* ^/editor/.*\.(?:js|css|woff2?|ttf|svg|png)$ {
           add_header Cache-Control "public, max-age=604800, immutable";
           root /usr/share/nginx/html;
         }
@@ -156,7 +156,7 @@ http {
           add_header Referrer-Policy "strict-origin-when-cross-origin";
         }
 
-        location ~* ^/portal/.*\.(?:js|css|woff2?|ttf|eot|svg|png|jpg|jpeg|gif)$ {
+        location ~* ^/portal/.*\.(?:js|css|woff2?|ttf|svg|png)$ {
           add_header Cache-Control "public, max-age=604800, immutable";
           root /usr/share/nginx/html/portal;
         }
@@ -174,7 +174,7 @@ http {
           add_header Referrer-Policy "strict-origin-when-cross-origin";
         }
 
-        location ~* \.(?:js|css|woff2?|ttf|eot|svg|png|jpg|jpeg|gif)$ {
+        location ~* \.(?:js|css|woff2?|ttf|svg|png)$ {
           add_header Cache-Control "public, max-age=604800, immutable";
           root /usr/share/nginx/html/portal;
         }
