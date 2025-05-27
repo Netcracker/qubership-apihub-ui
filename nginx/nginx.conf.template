@@ -120,6 +120,11 @@ http {
             proxy_redirect off;
         }
 
+        location ~* ^/agents/.*\.(?:js|css|woff2?|ttf|eot|svg|png|jpg|jpeg|gif)$ {
+          add_header Cache-Control "public, max-age=31536000, immutable";
+          root /usr/share/nginx/html;
+        }
+
         location /agents {
           root /usr/share/nginx/html;
           index /agents/index.html;
@@ -131,9 +136,11 @@ http {
           add_header X-XSS-Protection "0";
           add_header Strict-Transport-Security "max-age=15768000; includeSubdomains; preload;";
           add_header Referrer-Policy "strict-origin-when-cross-origin";
-          location ~* \.(?:js|css|woff2?|ttf|eot|svg|png|jpg|jpeg|gif)$ {
-            add_header Cache-Control "public, max-age=31536000, immutable";
-          }
+        }
+
+        location ~* ^/editor/.*\.(?:js|css|woff2?|ttf|eot|svg|png|jpg|jpeg|gif)$ {
+          add_header Cache-Control "public, max-age=31536000, immutable";
+          root /usr/share/nginx/html;
         }
 
         location /editor {
@@ -147,9 +154,11 @@ http {
           add_header X-XSS-Protection "0";
           add_header Strict-Transport-Security "max-age=15768000; includeSubdomains; preload;";
           add_header Referrer-Policy "strict-origin-when-cross-origin";
-          location ~* \.(?:js|css|woff2?|ttf|eot|svg|png|jpg|jpeg|gif)$ {
-            add_header Cache-Control "public, max-age=31536000, immutable";
-          }
+        }
+
+        location ~* ^/portal/.*\.(?:js|css|woff2?|ttf|eot|svg|png|jpg|jpeg|gif)$ {
+          add_header Cache-Control "public, max-age=31536000, immutable";
+          root /usr/share/nginx/html/portal;
         }
 
         location /portal {
@@ -163,9 +172,11 @@ http {
           add_header X-XSS-Protection "0";
           add_header Strict-Transport-Security "max-age=15768000; includeSubdomains; preload;";
           add_header Referrer-Policy "strict-origin-when-cross-origin";
-          location ~* \.(?:js|css|woff2?|ttf|eot|svg|png|jpg|jpeg|gif)$ {
-            add_header Cache-Control "public, max-age=31536000, immutable";
-          }
+        }
+
+        location ~* \.(?:js|css|woff2?|ttf|eot|svg|png|jpg|jpeg|gif)$ {
+          add_header Cache-Control "public, max-age=31536000, immutable";
+          root /usr/share/nginx/html/portal;
         }
 
         location / {
@@ -179,9 +190,6 @@ http {
           add_header X-XSS-Protection "0";
           add_header Strict-Transport-Security "max-age=15768000; includeSubdomains; preload;";
           add_header Referrer-Policy "strict-origin-when-cross-origin";
-          location ~* \.(?:js|css|woff2?|ttf|eot|svg|png|jpg|jpeg|gif)$ {
-            add_header Cache-Control "public, max-age=31536000, immutable";
-          }
         }
 
         location /health {
