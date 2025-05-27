@@ -1,0 +1,173 @@
+// JSON with Comments (JSONC) Formatting Example
+// This file demonstrates specific formatting rules for JSONC applied by dprint and eslint
+
+{
+  // ==========================================
+  // 1. Object Curly Spacing
+  // ==========================================
+  // Rule: jsonc/object-curly-spacing = "always"
+  // Description: Requires spaces inside of curly braces
+
+  // Before formatting: Inconsistent spacing inside curly braces
+  "objectCurlySpacing": {
+    "withSpaces":{  "name": "John", "age": 30  },
+    "withoutSpaces":{"name":"Jane","age":25},
+    "inconsistent":{ "name":"Bob","age": 35}
+  },
+
+  // ==========================================
+  // 2. Object Curly Newline
+  // ==========================================
+  // Rule: jsonc/object-curly-newline = "always"
+  // Description: Requires line breaks inside of curly braces
+
+  // Before formatting: Inconsistent line breaks inside curly braces
+  "objectCurlyNewline": {
+    "singleLine": { "name": "John", "age": 30 },
+    "multiLine": {
+      "name": "Jane",
+      "age": 25
+    },
+    "inconsistent": { "name": "Bob",
+      "age": 35
+    }
+  },
+
+  // ==========================================
+  // 3. Array Bracket Spacing
+  // ==========================================
+  // Rule: jsonc/array-bracket-spacing = "never"
+  // Description: Disallows spaces inside of array brackets
+
+  // Before formatting: Inconsistent spacing inside array brackets
+  "arrayBracketSpacing": {
+    "withSpaces": [ 1, 2, 3 ],
+    "withoutSpaces": [1, 2, 3],
+    "inconsistent": [1, 2, 3 ]
+  },
+
+  // ==========================================
+  // 4. Array Bracket Newline
+  // ==========================================
+  // Rule: jsonc/array-bracket-newline = "always"
+  // Description: Requires line breaks inside of array brackets
+
+  // Before formatting: Inconsistent line breaks inside array brackets
+  "arrayBracketNewline": {
+    "singleLine": [1, 2, 3],
+    "multiLine": [
+      1,
+      2,
+      3
+    ],
+    "inconsistent": [1,
+      2,
+      3]
+  },
+
+  // ==========================================
+  // 5. Comma Dangle
+  // ==========================================
+  // Rule: jsonc/comma-dangle = "never"
+  // Description: Disallows trailing commas
+
+  // Before formatting: Inconsistent trailing commas
+  "commaDangle": {
+    "withoutComma": {
+      "a": 1,
+      "b": 2
+    },
+    "withComma": {
+      "a": 1,
+      "b": 2,
+    },
+    "arrayWithoutComma": [
+      1,
+      2
+    ],
+    "arrayWithComma": [
+      1,
+      2,
+    ]
+  },
+
+  // ==========================================
+  // 6. Key Spacing
+  // ==========================================
+  // Rule: jsonc/key-spacing = ["error", { "beforeColon": false, "afterColon": true }]
+  // Description: Enforces consistent spacing between keys and values in object literals
+
+  // Before formatting: Inconsistent spacing around colons
+  "keySpacing": {
+    "noSpaceAfter":"value1",
+    "spaceAfter": "value2",
+    "spaceBeforeAndAfter" : "value3",
+    "noSpaces":"value4"
+  },
+
+  // ==========================================
+  // 7. Comma Spacing
+  // ==========================================
+  // Rule: jsonc/comma-spacing = ["error", { "before": false, "after": true }]
+  // Description: Enforces consistent spacing before and after commas
+
+  // Before formatting: Inconsistent spacing around commas
+  "commaSpacing": {
+    "array1": [1,2, 3 ,4 , 5],
+    "array2": [1 ,2,3, 4,5]
+  },
+
+  // ==========================================
+  // 8. Indentation
+  // ==========================================
+  // Rule: jsonc/indent = ["error", 2]
+  // Description: Enforces consistent indentation (2 spaces)
+
+  // Before formatting: Inconsistent indentation
+  "indentation": {
+    "level1": {
+  "level2": {
+      "level3": {
+    "level4": "value"
+        }
+    }
+  }
+  },
+
+  // ==========================================
+  // 9. Quote Style
+  // ==========================================
+  // Rule: jsonc/quotes = ["error", "double"]
+  // Description: Enforces the consistent use of double quotes
+
+  // Before formatting: Inconsistent quote styles
+  "quoteStyle": {
+    "doubleQuotes": "value with double quotes",
+    "singleQuotes": 'value with single quotes',
+  },
+
+  // ==========================================
+  // 10. Line Length
+  // ==========================================
+  // Rule: dprint.json.lineWidth = 120
+  // Description: Maximum line length is 120 characters
+
+  // Before formatting: Long line that exceeds the limit
+  "lineLength": "This is a very long string value that will likely exceed the line width limit of 120 characters and demonstrate how dprint handles line wrapping for long string values in JSON files",
+
+  // ==========================================
+  // 11. Nested Structures
+  // ==========================================
+  // Rule: Various JSON formatting rules combined
+  // Description: Demonstrates formatting of complex nested structures
+
+  // Before formatting: Complex nested structure with inconsistent formatting
+  "nestedStructure": {
+    "config": {"environment": {"production": {
+      "features": {"analytics": true, "darkMode": true, "notifications": {"email": true, "push": true, "sms": false}}
+    }, "development": {"features": {"analytics": false, "darkMode": true, "notifications": {"email": false, "push": true, "sms": false}}}}},
+    "dependencies": [{"name": "react", "version": "^18.2.0"}, {"name": "typescript", "version": "^5.0.0"}, {"name": "dprint", "version": "^0.40.0"}]
+  }
+
+}
+
