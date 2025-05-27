@@ -8,7 +8,7 @@ const ENCODING: BufferEncoding = 'utf-8'
 
 function generateFileHash(stats: Stats): string {
   const data = `${stats.size}-${stats.birthtimeMs}`
-  return createHash('sha256').update(data).digest('hex').slice(0, 10) // сократим до 10 символов
+  return createHash('sha256').update(data).digest('hex').slice(0, 10)
 }
 
 export interface IMonacoHashOpts {
@@ -16,7 +16,20 @@ export interface IMonacoHashOpts {
   htmlPath: string
 }
 
-export default function monacoHashPlugin(options: IMonacoHashOpts): Plugin {
+/**
+ * Vite plugin to append a content-based hash to Monaco Editor worker filenames.
+ *
+ * `vite-plugin-monaco-editor` generates worker files with static names,
+ * which causes problems with HTTP caching — updated worker code might be ignored
+ * by the browser due to long-term cache.
+ *
+ * This plugin runs **after** `vite-plugin-monaco-editor` and rewrites the
+ * worker file names to include a unique hash, ensuring proper cache invalidation
+ * when the content changes.
+ *
+ * Intended for local use in projects that integrate Monaco Editor with Vite.
+ */
+export default function monacoWorkerHashPlugin(options: IMonacoHashOpts): Plugin {
   const { monacoDir, htmlPath } = options
 
   return {

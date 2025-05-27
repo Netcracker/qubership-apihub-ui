@@ -24,7 +24,7 @@ import copy from 'rollup-plugin-copy'
 import ignoreDotsOnDevServer from 'vite-plugin-rewrite-all'
 import { VitePluginFonts } from 'vite-plugin-fonts'
 import { visualizer as bundleVisualizer } from 'rollup-plugin-visualizer'
-import monacoHashPlugin from '../../vite.monaco-hash'
+import monacoWorkerHashPlugin from '../../vite-monaco-worker-hash'
 
 const proxyServer = ''
 const devServer = 'http://localhost:3004'
@@ -52,7 +52,7 @@ export default defineConfig(({ mode }) => {
           entry: 'monaco-graphql/dist/graphql.worker',
         }],
       }),
-      monacoHashPlugin({monacoDir: 'dist/monacoeditorwork', htmlPath: 'dist/index.html'}),
+      monacoWorkerHashPlugin({monacoDir: 'dist/monacoeditorwork', htmlPath: 'dist/index.html'}),
       copy({
         targets: [
           {
