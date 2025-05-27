@@ -121,7 +121,7 @@ http {
         }
 
         location ~* ^/agents/.*\.(?:js|css|woff2?|ttf|eot|svg|png|jpg|jpeg|gif)$ {
-          add_header Cache-Control "public, max-age=31536000, immutable";
+          add_header Cache-Control "public, max-age=604800, immutable";
           root /usr/share/nginx/html;
         }
 
@@ -139,7 +139,7 @@ http {
         }
 
         location ~* ^/editor/.*\.(?:js|css|woff2?|ttf|eot|svg|png|jpg|jpeg|gif)$ {
-          add_header Cache-Control "public, max-age=31536000, immutable";
+          add_header Cache-Control "public, max-age=604800, immutable";
           root /usr/share/nginx/html;
         }
 
@@ -157,7 +157,7 @@ http {
         }
 
         location ~* ^/portal/.*\.(?:js|css|woff2?|ttf|eot|svg|png|jpg|jpeg|gif)$ {
-          add_header Cache-Control "public, max-age=31536000, immutable";
+          add_header Cache-Control "public, max-age=604800, immutable";
           root /usr/share/nginx/html/portal;
         }
 
@@ -175,7 +175,7 @@ http {
         }
 
         location ~* \.(?:js|css|woff2?|ttf|eot|svg|png|jpg|jpeg|gif)$ {
-          add_header Cache-Control "public, max-age=31536000, immutable";
+          add_header Cache-Control "public, max-age=604800, immutable";
           root /usr/share/nginx/html/portal;
         }
 
