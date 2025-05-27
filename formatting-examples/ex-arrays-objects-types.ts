@@ -1,8 +1,21 @@
 // Arrays
 
-const array1 = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh', 'twelfth']
+const array1 = [
+  'first',
+  'second',
+  'third',
+  'fourth',
+  'fifth',
+  'sixth',
+  'seventh',
+  'eighth',
+  'ninth',
+  'tenth',
+  'eleventh',
+  'twelfth',
+]
 
-const array2 = ['first',  'second',  'third',  'fourth']
+const array2 = ['first', 'second', 'third', 'fourth']
 
 const array3 = [
   'first',
@@ -11,17 +24,22 @@ const array3 = [
   'fourth',
 ]
 
-const array4 = ['first', 'second',
-  'third', 'fourth']
+const array4 = ['first', 'second', 'third', 'fourth']
 
 // Objects
 
-const object1 = { name: 'John', age: 20, role: 'admin', email: 'john.doe@example.com', address: '1234 Main St, Springfield, USA', phone: '+1-555-1234' }
+const object1 = {
+  name: 'John',
+  age: 20,
+  role: 'admin',
+  email: 'john.doe@example.com',
+  address: '1234 Main St, Springfield, USA',
+  phone: '+1-555-1234',
+}
 
 const object2 = { name: 'John', age: 20, role: 'admin' }
 
-const object3 = { name: 'John', age: 20,
-  role: 'admin' }
+const object3 = { name: 'John', age: 20, role: 'admin' }
 
 const object4 = {
   name: 'John',
@@ -48,16 +66,24 @@ type VersionStatus =
 
 const versionStatus: VersionStatus = 'draft'
 
-type IsEqualFunction<A> = ((one: A, another: A) => boolean)
+type IsEqualFunction<A> =
+  & ((one: A, another: A) => boolean)
   & ((one: A[], another: A[]) => boolean)
   & ((one: Set<A>, another: Set<A>) => boolean)
 
-type IsEqualFunction2<A> = ((
-  one: A, another: A) => boolean)
+type IsEqualFunction2<A> =
   & ((
-    one: A[], another: A[]) => boolean)
+    one: A,
+    another: A,
+  ) => boolean)
   & ((
-    one: Set<A>, another: Set<A>) => boolean)
+    one: A[],
+    another: A[],
+  ) => boolean)
+  & ((
+    one: Set<A>,
+    another: Set<A>,
+  ) => boolean)
 
 type NodeTitleDataOptions<T> = {
   node: T | null
@@ -66,14 +92,16 @@ type NodeTitleDataOptions<T> = {
   titleMappings?: Record<string, string>
 }
 
-type NodeTypeDataOptions<S,
-  N,V> = Partial<S> & {
+type NodeTypeDataOptions<S, N, V> = Partial<S> & {
   node: N | null
   nodeValue?: V | null
 }
 
 type NodeTypeDataOptions2<
-  S,N,V> = Partial<S> & {
+  S,
+  N,
+  V,
+> = Partial<S> & {
   node: N | null
   nodeValue?: V | null
 }

@@ -11,12 +11,12 @@
 indentation:
   level1:
     level2:
-          level3:
-             level4: value
+      level3:
+        level4: value
   misaligned-properties:
     property1: value1
-    property2:    value2
-    property3:  value3
+    property2: value2
+    property3: value3
 
 # ==========================================
 # 2. Sequence Style
@@ -48,13 +48,13 @@ mapping-styles:
   block-style:
     key1: value1
     key2: value2
-  flow-style: {key1: value1, key2: value2}
+  flow-style: { key1: value1, key2: value2 }
   mixed-style:
     key1: value1
-    nested: {key1: nestedValue1, key2: nestedValue2}
+    nested: { key1: nestedValue1, key2: nestedValue2 }
     another:
       key1: value1
-      key2: {deeplyNested: value}
+      key2: { deeplyNested: value }
 
 # ==========================================
 # 4. Line Width
@@ -64,8 +64,34 @@ mapping-styles:
 
 # Long lines
 long-lines:
-  single-line-array: [item1, item2, item3, item4, item5, item6, item7, item8, item9, item10, item11, item12, item13, item14, item15]
-  single-line-object: {key1: value1, key2: value2, key3: value3, key4: value4, key5: value5, key6: value6, key7: value7, key8: value8, key9: value9}
+  single-line-array: [
+    item1,
+    item2,
+    item3,
+    item4,
+    item5,
+    item6,
+    item7,
+    item8,
+    item9,
+    item10,
+    item11,
+    item12,
+    item13,
+    item14,
+    item15,
+  ]
+  single-line-object: {
+    key1: value1,
+    key2: value2,
+    key3: value3,
+    key4: value4,
+    key5: value5,
+    key6: value6,
+    key7: value7,
+    key8: value8,
+    key9: value9,
+  }
   long-string: "This is a very long string that exceeds the default line width and should be wrapped or formatted differently by the pretty_yaml formatter to improve readability"
 
 # ==========================================
@@ -77,7 +103,7 @@ long-lines:
 # Inconsistent quote styles
 quote-styles:
   double-quotes: "This string uses double quotes"
-  single-quotes: 'This string uses single quotes'
+  single-quotes: "This string uses single quotes"
   no-quotes: This string has no quotes
   mixed-quotes: "This string has mixed quote styles"
   quotes-needed: "String: with special characters, needs quotes"
@@ -91,7 +117,7 @@ quote-styles:
 # Different scalar styles
 scalar-styles:
   plain: A plain scalar without quotes
-  single-quoted: 'A single-quoted scalar'
+  single-quoted: "A single-quoted scalar"
   double-quoted: "A double-quoted scalar"
   literal-block: |
     This is a literal block scalar.
@@ -112,12 +138,12 @@ scalar-styles:
 # Inconsistent sequence indentation
 sequence-indentation:
   - first item
-  -  second item with extra space
-  -   third item with more extra space
+  - second item with extra space
+  - third item with more extra space
   - nested sequence:
-    - nested item 1
-    - nested item 2
-    - nested item 3
+      - nested item 1
+      - nested item 2
+      - nested item 3
 
 # ==========================================
 # 8. Mapping Indentation
@@ -129,12 +155,12 @@ sequence-indentation:
 mapping-indentation:
   first:
     nested: value
-    wrongly-indented:     value
+    wrongly-indented: value
   another:
-        over-indented: value
-        mixed-indentation:
-          very-indented: value
-          less-indented: value
+    over-indented: value
+    mixed-indentation:
+      very-indented: value
+      less-indented: value
 
 # ==========================================
 # 9. Comments
@@ -156,12 +182,12 @@ comments:
 
 # Inconsistent spacing in flow style
 flow-spacing:
-  tight-array: [1,2,3,4,5]
-  spaced-array: [ 1, 2, 3, 4, 5 ]
-  inconsistent-array: [1, 2,3 ,4 , 5]
-  tight-object: {key1:value1,key2:value2}
+  tight-array: [1, 2, 3, 4, 5]
+  spaced-array: [1, 2, 3, 4, 5]
+  inconsistent-array: [1, 2, 3, 4, 5]
+  tight-object: { key1:value1, key2:value2 }
   spaced-object: { key1: value1, key2: value2 }
-  inconsistent-object: {key1: value1,key2:value2 , key3 :value3}
+  inconsistent-object: { key1: value1, key2:value2, key3 :value3 }
 
 # ==========================================
 # 11. Document Markers
@@ -202,24 +228,24 @@ anchors:
 # Poorly formatted complex structure
 complex:
   arrays:
-    - [1,2,3]
-    - [{key: value},{key: value}]
+    - [1, 2, 3]
+    - [{ key: value }, { key: value }]
     - - - deeply
         - nested
       - array
   objects:
-    first: {nested: {deeply: {value: 1}}}
+    first: { nested: { deeply: { value: 1 } } }
     second:
-      nested: {deeply: {value: 2}}
+      nested: { deeply: { value: 2 } }
     third:
       nested:
-        deeply: {value: 3}
+        deeply: { value: 3 }
   mixed:
     - key: value
-      array: [1,2,3]
-    - {key: value, array: [1,2,3]}
+      array: [1, 2, 3]
+    - { key: value, array: [1, 2, 3] }
     - - item
-      - {key: value}
+      - { key: value }
 
 # ==========================================
 # 14. Key Order
