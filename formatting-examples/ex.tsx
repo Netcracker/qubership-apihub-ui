@@ -11,7 +11,8 @@ const Button2: React.FC = () => (
   <Button
     variant="contained"
     color="primary"
-    size="large">
+    size="large"
+  >
     Click Me
   </Button>
 )
@@ -23,10 +24,13 @@ const Button3: React.FC = () => (
 )
 
 const Button4: React.FC = () => (
-  <Button variant="contained"
-          color="primary" size="large">
+  <Button
+    variant="contained"
+    color="primary"
+    size="large"
+  >
     Click Me
   </Button>
 )
 
-console.log( Button1, Button2, Button3)
+console.log(Button1, Button2, Button3)

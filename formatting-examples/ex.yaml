@@ -15,8 +15,8 @@ indentation:
              level4: value
   misaligned-properties:
     property1: value1
-    property2:    value2
-    property3:  value3
+    property2: value2
+    property3: value3
 
 # ==========================================
 # 2. Sequence Style
@@ -112,8 +112,8 @@ scalar-styles:
 # Inconsistent sequence indentation
 sequence-indentation:
   - first item
-  -  second item with extra space
-  -   third item with more extra space
+  - second item with extra space
+  - third item with more extra space
   - nested sequence:
     - nested item 1
     - nested item 2
@@ -129,7 +129,7 @@ sequence-indentation:
 mapping-indentation:
   first:
     nested: value
-    wrongly-indented:     value
+    wrongly-indented: value
   another:
         over-indented: value
         mixed-indentation:
@@ -143,9 +143,9 @@ mapping-indentation:
 
 # Inconsistent comment formatting
 comments:
-  #No space after hash
+  #N          o space after hash
   #  Extra spaces after hash
-  key1: value1 #Inline comment without space
+  key1: value1 #I          nline comment without space
   key2: value2 # Inline comment with space
   key3: value3#Attached comment
 
@@ -156,12 +156,12 @@ comments:
 
 # Inconsistent spacing in flow style
 flow-spacing:
-  tight-array: [1,2,3,4,5]
+  tight-array: [1, 2, 3, 4, 5]
   spaced-array: [ 1, 2, 3, 4, 5 ]
-  inconsistent-array: [1, 2,3 ,4 , 5]
-  tight-object: {key1:value1,key2:value2}
+  inconsistent-array: [1, 2, 3, 4, 5]
+  tight-object: {key1:value1, key2:value2}
   spaced-object: { key1: value1, key2: value2 }
-  inconsistent-object: {key1: value1,key2:value2 , key3 :value3}
+  inconsistent-object: {key1: value1, key2:value2, key3 :value3}
 
 # ==========================================
 # 11. Document Markers
@@ -202,8 +202,8 @@ anchors:
 # Poorly formatted complex structure
 complex:
   arrays:
-    - [1,2,3]
-    - [{key: value},{key: value}]
+    - [1, 2, 3]
+    - [{key: value}, {key: value}]
     - - - deeply
         - nested
       - array
@@ -216,8 +216,8 @@ complex:
         deeply: {value: 3}
   mixed:
     - key: value
-      array: [1,2,3]
-    - {key: value, array: [1,2,3]}
+      array: [1, 2, 3]
+    - {key: value, array: [1, 2, 3]}
     - - item
       - {key: value}
 

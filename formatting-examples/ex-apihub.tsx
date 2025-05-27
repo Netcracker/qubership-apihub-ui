@@ -49,20 +49,22 @@ function groupBy<T extends ReadonlyArray<any>>(
 
 const NEWLY_PUBLISHED_SNAPSHOT_PUBLISH_INFO_DTO: SnapshotPublishInfoDto = {
   // TODO: Ideally here we should use published services from request instead of `COMPLETE_SERVICES_DTO`
-  services: COMPLETE_SERVICES_DTO.services.map((service) => ({
+  services: COMPLETE_SERVICES_DTO.services.map(service => ({
     id: service.id,
     packageId: 'MYPKG',
     viewChangesUrl: service.specs.length !== 0 ? 'https://apihub.example.com' : undefined,
     viewSnapshotUrl: 'https://apihub.example.com',
     viewBaselineUrl: 'https://apihub.example.com',
-    changes: service.specs.length !== 0 ? {
-      breaking: generateRandomDigit(),
-      semiBreaking: generateRandomDigit(),
-      deprecate: generateRandomDigit(),
-      nonBreaking: generateRandomDigit(),
-      annotation: generateRandomDigit(),
-      unclassified: generateRandomDigit(),
-    } : undefined,
+    changes: service.specs.length !== 0
+      ? {
+          breaking: generateRandomDigit(),
+          semiBreaking: generateRandomDigit(),
+          deprecate: generateRandomDigit(),
+          nonBreaking: generateRandomDigit(),
+          annotation: generateRandomDigit(),
+          unclassified: generateRandomDigit(),
+        }
+      : undefined,
   })),
 }
 
@@ -74,8 +76,8 @@ const UserPanel: FC = memo(() => {
       <IconButton data-testid="AppUserAvatar" size="large" color="inherit">
         {
           authorization?.user.avatarUrl
-            ? <Avatar src={authorization.user.avatarUrl}/>
-            : <UserAvatar size="medium" name={authorization?.user.name ?? ''}/>
+            ? <Avatar src={authorization.user.avatarUrl} />
+            : <UserAvatar size="medium" name={authorization?.user.name ?? ''} />
         }
       </IconButton>
 
@@ -84,7 +86,7 @@ const UserPanel: FC = memo(() => {
         variant="text"
         color="inherit"
         title={authorization?.user.name ?? ''}
-        icon={<KeyboardArrowDownOutlinedIcon/>}
+        icon={<KeyboardArrowDownOutlinedIcon />}
         data-testid="UserMenuButton"
       >
         <MenuItem
@@ -178,27 +180,27 @@ function useMergedGraphQlSpec(options: {
 const i = 1
 const message =
   i % 3 === 0 && i % 5 === 0
-    ? "fizzbuzz"
+    ? 'fizzbuzz'
     : i % 3 === 0
-      ? "fizz"
+      ? 'fizz'
       : i % 5 === 0
-        ? "buzz"
+        ? 'buzz'
         : String(i)
 
 const message2 =
   i % 3 === 0 && i % 5 === 0
-  ? "fizzbuzz"
-  : i % 3 === 0
-  ? "fizz"
-  : i % 5 === 0
-  ? "buzz"
-  : String(i)
+    ? 'fizzbuzz'
+    : i % 3 === 0
+      ? 'fizz'
+      : i % 5 === 0
+        ? 'buzz'
+        : String(i)
 
 const operstors =
-  1 +
-  2 - 3
+  1
+  + 2 - 3
 
-const boolExp =   true
+const boolExp = true
   || true
   || true
   || true
@@ -208,7 +210,7 @@ const boolExp2 = true || true || true || true || true || true || true || true ||
 
 const templStr = 'some text some text some text some text some text some text some text some text some text some text some text some text some text some text some text'
 
-const templStr2 = `some text some ${message} text some text some text some ${message+message2} text some text some text some ${message} text some text some ${message} text some text some text some text some text some text`
+const templStr2 = `some text some ${message} text some text some text some ${message + message2} text some text some text some ${message} text some text some ${message} text some text some text some text some text some text`
 
 // prettier-ignore
 const routersMap = new Map([
