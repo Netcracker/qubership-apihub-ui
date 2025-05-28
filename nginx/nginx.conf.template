@@ -64,67 +64,115 @@ http {
         }
 
         # API endpoints proxifying to backend
-        location ~ ^/(api|ws|saml|login/gitlab|login/sso|debug|playground)$ {
-            add_header Cache-Control "no-cache" always;
+        location ~ ^/(?:api|ws|saml|login/gitlab|login/sso|debug|playground)(?:/.*)?$ {
+            add_header Cache-Control "no-store" always;
             proxy_pass http://${APIHUB_BACKEND_ADDRESS};
         }
+
         # Special section for apihub-nc (rewrite required)
         location ^~ /apihub-nc {
-            add_header Cache-Control "no-cache" always;
+            add_header Cache-Control "no-store" always;
             rewrite ^/apihub-nc/(.*)$ /$1 break;
             proxy_pass http://${APIHUB_NC_SERVICE_ADDRESS};
         }
 
-        # UI sites - agents, editor, portal
-        location ~ ^/(agents|editor|portal)(?:$|/.*) {
-            root /usr/share/nginx/html;
-            index $1/index.html;
-            try_files $uri $uri/ /$1/index.html;
+        location ~* ^/agents/.*\.(?:js|css|woff2?|ttf|svg|png)$ {
+          add_header Cache-Control "public, max-age=604800, immutable";
+          root /usr/share/nginx/html;
+        }
 
-            proxy_cookie_path / "/; secure; HttpOnly";
-            add_header Cache-Control "no-cache"                 always;
-            add_header X-Frame-Options "DENY"                   always;
-            add_header Content-Security-Policy "
+        location /agents {
+          root /usr/share/nginx/html;
+          index /agents/index.html;
+          try_files $uri $uri/ /agents/index.html;
+
+          proxy_cookie_path / "/; secure; HttpOnly";
+          add_header Cache-Control             "no-cache"                                      always;
+          add_header Strict-Transport-Security "max-age=15768000; includeSubdomains; preload;" always;
+          add_header X-Frame-Options           "DENY"                                          always;
+          add_header Content-Security-Policy "
                 default-src 'self';
                 script-src  'self' 'unsafe-inline';
                 style-src   'self' 'unsafe-inline';
                 img-src     'self' data:;
-                font-src    'self';
+                font-src    'self' data:;
                 connect-src 'self'
-            "                                                   always;
+            "                                                                                   always;
         }
 
-        # Main SPA - Portal
-        location = / {
-            root /usr/share/nginx/html/portal;
-            index index.html;
-            try_files $uri $uri/ /index.html;
+        location ~* ^/editor/.*\.(?:js|css|woff2?|ttf|svg|png)$ {
+          add_header Cache-Control "public, max-age=604800, immutable";
+          root /usr/share/nginx/html;
+        }
 
-            proxy_cookie_path / "/; secure; HttpOnly";
-            add_header Cache-Control "no-cache"                 always;
-            add_header X-Frame-Options "DENY"                   always;
-            add_header Content-Security-Policy "
+        location /editor {
+          root /usr/share/nginx/html;
+          index /editor/index.html;
+          try_files $uri $uri/ /editor/index.html;
+          proxy_cookie_path / "/; secure; HttpOnly";
+
+          add_header Cache-Control             "no-cache"                                      always;
+          add_header Strict-Transport-Security "max-age=15768000; includeSubdomains; preload;" always;
+          add_header X-Frame-Options           "DENY"                                          always;
+          add_header Content-Security-Policy "
                 default-src 'self';
                 script-src  'self' 'unsafe-inline';
                 style-src   'self' 'unsafe-inline';
                 img-src     'self' data:;
-                font-src    'self';
+                font-src    'self' data:;
                 connect-src 'self'
-            "                                                   always;
+            "                                                                                   always;
         }
 
-        # Static assets
+        location ~* ^/portal/.*\.(?:js|css|woff2?|ttf|svg|png)$ {
+          add_header Cache-Control "public, max-age=604800, immutable";
+          root /usr/share/nginx/html/portal;
+        }
+
+        location /portal {
+          root /usr/share/nginx/html;
+          index /portal/index.html;
+          try_files $uri $uri/ /portal/index.html;
+          proxy_cookie_path / "/; secure; HttpOnly";
+
+          add_header Cache-Control             "no-cache"                                      always;
+          add_header Strict-Transport-Security "max-age=15768000; includeSubdomains; preload;" always;
+          add_header X-Frame-Options           "DENY"                                          always;
+          add_header Content-Security-Policy "
+                default-src 'self';
+                script-src  'self' 'unsafe-inline';
+                style-src   'self' 'unsafe-inline';
+                img-src     'self' data:;
+                font-src    'self' data:;
+                connect-src 'self'
+            "                                                                                   always;
+        }
+
         location ~* \.(?:js|css|woff2?|ttf|svg|png)$ {
-            root /usr/share/nginx/html/portal;
-            add_header Cache-Control "public, max-age=604800, immutable";
+          add_header Cache-Control "public, max-age=604800, immutable";
+          root /usr/share/nginx/html/portal;
         }
 
-        location ~* ^/(agents|editor)/.*\.(?:js|css|woff2?|ttf|svg|png)$ {
-            root /usr/share/nginx/html;
-            add_header Cache-Control "public, max-age=604800, immutable";
+        location / {
+          root /usr/share/nginx/html/portal;
+          index /index.html;
+          try_files $uri $uri/ /index.html;
+          proxy_cookie_path / "/; secure; HttpOnly";
+
+          add_header Cache-Control             "no-cache"                                      always;
+          add_header Strict-Transport-Security "max-age=15768000; includeSubdomains; preload;" always;
+          add_header X-Frame-Options           "DENY"                                          always;
+          add_header Content-Security-Policy "
+                default-src 'self';
+                script-src  'self' 'unsafe-inline';
+                style-src   'self' 'unsafe-inline';
+                img-src     'self' data:;
+                font-src    'self' data:;
+                connect-src 'self'
+            "                                                                                   always;
         }
 
-        # Health-checks & error pages
+        # Health-checks
         location /health             { default_type application/json; return 200 '{"status":"UP"}'; }
         location /probes/live        { default_type application/json; return 200 '{"status":"UP"}'; }
         location /probes/ready       { default_type application/json; return 200 '{"status":"UP"}'; }
