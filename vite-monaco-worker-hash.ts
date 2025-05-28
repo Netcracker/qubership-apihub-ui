@@ -1,13 +1,11 @@
-import { createHash } from 'crypto'
 import type { Plugin } from 'vite'
 import * as path from 'path'
-import type { Stats } from 'fs'
 import * as fs from 'fs'
+import { createHash } from 'node:crypto'
 
 const ENCODING: BufferEncoding = 'utf-8'
 
-function generateFileHash(stats: Stats): string {
-  const data = `${stats.size}-${stats.birthtimeMs}`
+function generateFileHash(data: Buffer): string {
   return createHash('sha256').update(data).digest('hex').slice(0, 10)
 }
 
@@ -43,8 +41,8 @@ export default function monacoWorkerHashPlugin(options: IMonacoHashOpts): Plugin
         const fullPath = path.join(dirPath, entry.name)
 
         if (entry.isFile()) {
-          const stats = fs.statSync(fullPath)
-          const hash = generateFileHash(stats)
+          const data: Buffer = fs.readFileSync(fullPath)
+          const hash = generateFileHash(data)
 
           const ext = path.extname(entry.name)
           const baseName = path.basename(entry.name, ext)
