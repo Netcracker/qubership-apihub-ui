@@ -1,0 +1,2 @@
+import{r as f,a as s}from"./index-76fb7be0.js";function r(){return r=Object.assign?Object.assign.bind():function(n){for(var a=1;a<arguments.length;a++){var t=arguments[a];for(var e in t)({}).hasOwnProperty.call(t,e)&&(n[e]=t[e])}return n},r.apply(null,arguments)}var u=function(a){return a()},c=s["useInsertionEffect"]?s["useInsertionEffect"]:!1,l=c||u,i=c||f.useLayoutEffect;export{r as _,l as a,i as u};
+//# sourceMappingURL=emotion-use-insertion-effect-with-fallbacks.browser.esm-aa53f5e3.js.map
