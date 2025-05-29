@@ -1,17 +1,17 @@
 // eslint.config.mjs
-import globals from 'globals'
-import js from '@eslint/js'
-import tseslint from 'typescript-eslint'
-import { FlatCompat } from '@eslint/eslintrc'
 import { fixupPluginRules } from '@eslint/compat'
-import path from 'path'
-import { fileURLToPath } from 'url'
+import { FlatCompat } from '@eslint/eslintrc'
+import js from '@eslint/js'
 import reactHooks from 'eslint-plugin-react-hooks'
+import globals from 'globals'
+import path from 'path'
+import tseslint from 'typescript-eslint'
+import { fileURLToPath } from 'url'
 // import filenamesSimplePlugin from "eslint-plugin-filenames-simple"; // Removed
-import jsoncPlugin from 'eslint-plugin-jsonc'
-import eslintPluginYml from 'eslint-plugin-yml' // Import directly
 import stylisticPlugin from '@stylistic/eslint-plugin'
 import boundaries from 'eslint-plugin-boundaries' // Added import
+import jsoncPlugin from 'eslint-plugin-jsonc'
+import eslintPluginYml from 'eslint-plugin-yml' // Import directly
 // eslint-plugin-react is often extended or its rules used directly.
 // For this config, we'll assume it's mostly covered by typescript-eslint for JSX/TSX,
 // but if specific React rules are needed beyond what @typescript-eslint provides for JSX,
@@ -41,22 +41,18 @@ export default tseslint.config(
     quoteProps: 'as-needed',
     severity: 'warn',
   }),
-
   // Apply type-checked configurations from TypeScript ESLint ONLY to relevant files
   ...tseslint.configs.recommendedTypeChecked.map(config => ({
     ...config,
     files: ['**/*.{ts,tsx,mts,cts,js,jsx,mjs,cjs}'], // Restrict to JS/TS-like files
   })),
-
   // Apply type-checked configurations from TypeScript ESLint ONLY to relevant files
   ...tseslint.configs.stylisticTypeChecked.map(config => ({
     ...config,
     files: ['**/*.{ts,tsx,mts,cts,js,jsx,mjs,cjs}'], // Restrict to JS/TS-like files
   })),
-
   ...jsoncPlugin.configs['flat/recommended-with-jsonc'],
   ...eslintPluginYml.configs['flat/recommended'],
-
   // Global plugins and language options setup for JS/TS files
   {
     files: ['**/*.{ts,tsx,mts,cts,js,jsx,mjs,cjs}'], // Restrict this block to JS/TS-like files
@@ -77,7 +73,6 @@ export default tseslint.config(
       },
     },
   },
-
   // Config for root TS/JS files (if any, not in packages)
   {
     files: ['*.{js,mjs,cjs,ts,tsx}', 'code-style-demo/**/*.{js,mjs,cjs,ts,tsx}'], // Adjust glob as needed for root files
@@ -88,13 +83,11 @@ export default tseslint.config(
       },
     },
   },
-
   // ESLint Plugin Storybook (using FlatCompat)
   ...compat.extends('plugin:storybook/recommended').map(config => ({
     ...config,
     files: ['**/*.stories.{js,jsx,ts,tsx}', '**/*.story.{js,jsx,ts,tsx}'], // Target story files
   })),
-
   // ESLint Plugin Boundaries (using FlatCompat)
   // This needs careful translation as it had settings and rules.
   // We'll first apply the recommended set and then layer package-specific rules.
@@ -112,7 +105,6 @@ export default tseslint.config(
       },
     },
   }).map(config => ({ ...config, files: ['packages/**/src/**/*.{js,jsx,ts,tsx}'] })), // Apply broadly to packages
-
   // ESLint Plugin Filenames (using FlatCompat and @eslint/compat)
   ...compat.config({
     plugins: ['filenames'], // Keep as array of strings for FlatCompat
@@ -120,7 +112,6 @@ export default tseslint.config(
       // 'filenames/no-index': 'error', // Temporarily disabled due to compatibility issues
     },
   }).map(config => ({ ...config, files: ['**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'] })),
-
   {
     files: ['**/*.json', '**/*.jsonc'],
     ignores: ['**/tsconfig.json', '**/tsconfig.node.json'], // IMPORTANT: Exclude tsconfig files
@@ -136,7 +127,6 @@ export default tseslint.config(
       'jsonc/comma-dangle': ['warn', 'never'],
     },
   },
-
   // Configuration for YAML files (Manually specifying rules)
   {
     files: ['**/*.yaml', '**/*.yml'],
@@ -148,7 +138,6 @@ export default tseslint.config(
       '@stylistic/spaced-comment': ['warn', 'always', { markers: ['#'] }],
     },
   },
-
   // Overrides for specific file patterns (like index.ts for sort-exports)
   // ESLint Plugin Sort Exports (using FlatCompat)
   ...compat.config({
@@ -157,7 +146,6 @@ export default tseslint.config(
       'sort-exports/sort-exports': ['error', { sortDir: 'asc', ignoreCase: true }],
     },
   }).map(config => ({ ...config, files: ['**/index.ts', '**/index.tsx'] })),
-
   // Main JS/TS rules (ensure this is after global plugins but before package overrides)
   {
     files: ['**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'],
@@ -193,8 +181,14 @@ export default tseslint.config(
 
       // TypeScript ESLint rules
       '@typescript-eslint/consistent-type-imports': 'error',
-      '@typescript-eslint/explicit-member-accessibility': ['error', { accessibility: 'no-public', overrides: { parameterProperties: 'off' } }],
-      '@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true, allowTypedFunctionExpressions: true }],
+      '@typescript-eslint/explicit-member-accessibility': ['error', {
+        accessibility: 'no-public',
+        overrides: { parameterProperties: 'off' },
+      }],
+      '@typescript-eslint/explicit-function-return-type': ['error', {
+        allowExpressions: true,
+        allowTypedFunctionExpressions: true,
+      }],
       '@typescript-eslint/no-non-null-assertion': 'off',
       '@typescript-eslint/no-inferrable-types': 'off',
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
@@ -210,6 +204,19 @@ export default tseslint.config(
 
       '@stylistic/quote-props': ['warn', 'as-needed'],
 
+      // Arrays
+      '@stylistic/array-element-newline': ['warn', 'consistent'],
+      '@stylistic/array-bracket-newline': ['warn', 'consistent'],
+
+      // Objects
+      '@stylistic/object-curly-newline': ['warn', {
+        multiline: true,
+        consistent: true,
+      }],
+      '@stylistic/object-property-newline': ['warn', {
+        allowAllPropertiesOnSameLine: true,
+      }],
+
       // Operators
       // '@stylistic/operator-linebreak': ['warn', 'after', { overrides: { '?': 'before', ':': 'before' } }],
       '@stylistic/operator-linebreak': ['warn', 'before', { overrides: { '=': 'after' } }],
@@ -220,7 +227,6 @@ export default tseslint.config(
       // '@stylistic/jsx-one-expression-per-line': ['warn', { allow: 'single-child' }],
     },
   },
-
   // Package-specific configurations
   // PORTAL
   {
@@ -245,8 +251,16 @@ export default tseslint.config(
         default: 'disallow',
         message: '${file.type} (${file.path}) MUST NOT import from ${dependency.type} (${dependency.path})',
         rules: [
-          { from: ['portal-local-dev-server'], allow: ['portal-local-dev-server'], message: 'Server code can import from itself.' },
-          { from: ['portal-source-code'], allow: ['portal-source-code'], message: 'Portal src code can import from itself.' },
+          {
+            from: ['portal-local-dev-server'],
+            allow: ['portal-local-dev-server'],
+            message: 'Server code can import from itself.',
+          },
+          {
+            from: ['portal-source-code'],
+            allow: ['portal-source-code'],
+            message: 'Portal src code can import from itself.',
+          },
         ],
       }],
     },
@@ -263,14 +277,32 @@ export default tseslint.config(
     rules: {
       'no-restricted-imports': ['error', {
         paths: [
-          { name: '@netcracker/qubership-apihub-ui-agents', message: 'You are not allowed to import APIHUB Agents components in APIHUB Shared.' },
-          { name: '@netcracker/qubership-apihub-ui-editor', message: 'You are not allowed to import APIHUB Editor components in APIHUB Shared.' },
-          { name: '@netcracker/qubership-apihub-ui-portal', message: 'You are not allowed to import APIHUB Portal components in APIHUB Shared.' },
+          {
+            name: '@netcracker/qubership-apihub-ui-agents',
+            message: 'You are not allowed to import APIHUB Agents components in APIHUB Shared.',
+          },
+          {
+            name: '@netcracker/qubership-apihub-ui-editor',
+            message: 'You are not allowed to import APIHUB Editor components in APIHUB Shared.',
+          },
+          {
+            name: '@netcracker/qubership-apihub-ui-portal',
+            message: 'You are not allowed to import APIHUB Portal components in APIHUB Shared.',
+          },
         ],
         patterns: [
-          { group: ['@netcracker/qubership-apihub-ui-agents/**'], message: 'You are not allowed to import APIHUB Agents components in APIHUB Shared.' },
-          { group: ['@netcracker/qubership-apihub-ui-editor/**'], message: 'You are not allowed to import APIHUB Editor components in APIHUB Shared.' },
-          { group: ['@netcracker/qubership-apihub-ui-portal/**'], message: 'You are not allowed to import APIHUB Portal components in APIHUB Shared.' },
+          {
+            group: ['@netcracker/qubership-apihub-ui-agents/**'],
+            message: 'You are not allowed to import APIHUB Agents components in APIHUB Shared.',
+          },
+          {
+            group: ['@netcracker/qubership-apihub-ui-editor/**'],
+            message: 'You are not allowed to import APIHUB Editor components in APIHUB Shared.',
+          },
+          {
+            group: ['@netcracker/qubership-apihub-ui-portal/**'],
+            message: 'You are not allowed to import APIHUB Portal components in APIHUB Shared.',
+          },
         ],
       }],
     },
