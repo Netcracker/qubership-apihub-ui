@@ -37,7 +37,8 @@ function groupBy<T extends ReadonlyArray<any>>(
 }
 
 const NEWLY_PUBLISHED_SNAPSHOT_PUBLISH_INFO_DTO: SnapshotPublishInfoDto = { // TODO: Ideally here we should use published services from request instead of `COMPLETE_SERVICES_DTO`
-  services: COMPLETE_SERVICES_DTO.services.map(service => ({ id: service.id, packageId: 'MYPKG', viewChangesUrl: service.specs.length !== 0 ? 'https://apihub.example.com' : undefined, viewSnapshotUrl: 'https://apihub.example.com', viewBaselineUrl: 'https://apihub.example.com', changes: service.specs.length !== 0 ? { breaking: generateRandomDigit(), semiBreaking: generateRandomDigit(), deprecate: generateRandomDigit(), nonBreaking: generateRandomDigit(), annotation: generateRandomDigit(), unclassified: generateRandomDigit() } : undefined })) }
+  services: COMPLETE_SERVICES_DTO.services.map(service => ({ id: service.id, packageId: 'MYPKG', viewChangesUrl: service.specs.length !== 0 ? 'https://apihub.example.com' : undefined, viewSnapshotUrl: 'https://apihub.example.com', viewBaselineUrl: 'https://apihub.example.com', changes: service.specs.length !== 0 ? { breaking: generateRandomDigit(), semiBreaking: generateRandomDigit(), deprecate: generateRandomDigit(), nonBreaking: generateRandomDigit(), annotation: generateRandomDigit(), unclassified: generateRandomDigit() } : undefined })),
+}
 
 const UserPanel: FC = memo(() => {
   const [authorization, , removeAuthorization] = useAuthorization()

@@ -11,8 +11,10 @@ const array3 = [
   'fourth',
 ]
 
-const array4 = ['first', 'second',
-  'third', 'fourth']
+const array4 = ['first',
+  'second',
+  'third',
+  'fourth']
 
 // Objects
 
@@ -20,8 +22,11 @@ const object1 = { name: 'John', age: 20, role: 'admin', email: 'john.doe@example
 
 const object2 = { name: 'John', age: 20, role: 'admin' }
 
-const object3 = { name: 'John', age: 20,
-  role: 'admin' }
+const object3 = {
+  name: 'John',
+  age: 20,
+  role: 'admin',
+}
 
 const object4 = {
   name: 'John',
