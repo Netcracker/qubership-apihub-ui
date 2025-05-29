@@ -1,2 +1,0 @@
-import{j as r}from"./createTheme-c79a82be.js";import{r as t}from"./index-76fb7be0.js";import{B as e}from"./Box-5be9d6da.js";import{C as a}from"./CircularProgress-81e0b845.js";const o=t.memo(()=>r(e,{sx:{width:"100%",height:"100%",p:1,display:"flex",alignItems:"center",justifyContent:"center"},children:r(a,{})}));try{o.displayName="LoadingIndicator",o.__docgenInfo={description:"",displayName:"LoadingIndicator",props:{}}}catch{}export{o as L};
-//# sourceMappingURL=LoadingIndicator-e9b08a8b.js.map
