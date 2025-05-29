@@ -10,9 +10,18 @@
 
   // Before formatting: Inconsistent spacing inside curly braces
   "objectCurlySpacing": {
-    "withSpaces":{  "name": "John", "age": 30  },
-    "withoutSpaces":{"name":"Jane","age":25},
-    "inconsistent":{ "name":"Bob","age": 35}
+    "withSpaces": {
+      "name": "John",
+      "age": 30
+    },
+    "withoutSpaces": {
+      "name": "Jane",
+      "age": 25
+    },
+    "inconsistent": {
+      "name": "Bob",
+      "age": 35
+    }
   },
 
   // ==========================================
@@ -23,12 +32,16 @@
 
   // Before formatting: Inconsistent line breaks inside curly braces
   "objectCurlyNewline": {
-    "singleLine": { "name": "John", "age": 30 },
+    "singleLine": {
+      "name": "John",
+      "age": 30
+    },
     "multiLine": {
       "name": "Jane",
       "age": 25
     },
-    "inconsistent": { "name": "Bob",
+    "inconsistent": {
+      "name": "Bob",
       "age": 35
     }
   },
@@ -41,9 +54,21 @@
 
   // Before formatting: Inconsistent spacing inside array brackets
   "arrayBracketSpacing": {
-    "withSpaces": [ 1, 2, 3 ],
-    "withoutSpaces": [1, 2, 3],
-    "inconsistent": [1, 2, 3 ]
+    "withSpaces": [
+      1,
+      2,
+      3
+    ],
+    "withoutSpaces": [
+      1,
+      2,
+      3
+    ],
+    "inconsistent": [
+      1,
+      2,
+      3
+    ]
   },
 
   // ==========================================
@@ -54,15 +79,21 @@
 
   // Before formatting: Inconsistent line breaks inside array brackets
   "arrayBracketNewline": {
-    "singleLine": [1, 2, 3],
+    "singleLine": [
+      1,
+      2,
+      3
+    ],
     "multiLine": [
       1,
       2,
       3
     ],
-    "inconsistent": [1,
+    "inconsistent": [
+      1,
       2,
-      3]
+      3
+    ]
   },
 
   // ==========================================
@@ -79,7 +110,7 @@
     },
     "withComma": {
       "a": 1,
-      "b": 2,
+      "b": 2
     },
     "arrayWithoutComma": [
       1,
@@ -87,7 +118,7 @@
     ],
     "arrayWithComma": [
       1,
-      2,
+      2
     ]
   },
 
@@ -99,10 +130,10 @@
 
   // Before formatting: Inconsistent spacing around colons
   "keySpacing": {
-    "noSpaceAfter":"value1",
+    "noSpaceAfter": "value1",
     "spaceAfter": "value2",
-    "spaceBeforeAndAfter" : "value3",
-    "noSpaces":"value4"
+    "spaceBeforeAndAfter": "value3",
+    "noSpaces": "value4"
   },
 
   // ==========================================
@@ -113,8 +144,20 @@
 
   // Before formatting: Inconsistent spacing around commas
   "commaSpacing": {
-    "array1": [1,2, 3 ,4 , 5],
-    "array2": [1 ,2,3, 4,5]
+    "array1": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "array2": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ]
   },
 
   // ==========================================
@@ -126,12 +169,12 @@
   // Before formatting: Inconsistent indentation
   "indentation": {
     "level1": {
-  "level2": {
-      "level3": {
-    "level4": "value"
+      "level2": {
+        "level3": {
+          "level4": "value"
         }
+      }
     }
-  }
   },
 
   // ==========================================
@@ -143,7 +186,7 @@
   // Before formatting: Inconsistent quote styles
   "quoteStyle": {
     "doubleQuotes": "value with double quotes",
-    "singleQuotes": 'value with single quotes',
+    "singleQuotes": "value with single quotes"
   },
 
   // ==========================================
@@ -163,11 +206,46 @@
 
   // Before formatting: Complex nested structure with inconsistent formatting
   "nestedStructure": {
-    "config": {"environment": {"production": {
-      "features": {"analytics": true, "darkMode": true, "notifications": {"email": true, "push": true, "sms": false}}
-    }, "development": {"features": {"analytics": false, "darkMode": true, "notifications": {"email": false, "push": true, "sms": false}}}}},
-    "dependencies": [{"name": "react", "version": "^18.2.0"}, {"name": "typescript", "version": "^5.0.0"}, {"name": "dprint", "version": "^0.40.0"}]
+    "config": {
+      "environment": {
+        "production": {
+          "features": {
+            "analytics": true,
+            "darkMode": true,
+            "notifications": {
+              "email": true,
+              "push": true,
+              "sms": false
+            }
+          }
+        },
+        "development": {
+          "features": {
+            "analytics": false,
+            "darkMode": true,
+            "notifications": {
+              "email": false,
+              "push": true,
+              "sms": false
+            }
+          }
+        }
+      }
+    },
+    "dependencies": [
+      {
+        "name": "react",
+        "version": "^18.2.0"
+      },
+      {
+        "name": "typescript",
+        "version": "^5.0.0"
+      },
+      {
+        "name": "dprint",
+        "version": "^0.40.0"
+      }
+    ]
   }
 
 }
-
