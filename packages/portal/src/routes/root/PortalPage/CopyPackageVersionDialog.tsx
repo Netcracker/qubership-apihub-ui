@@ -70,7 +70,8 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const [workspacesFilter, setWorkspacesFilter] = useState('')
   const [targetPackage, setTargetPackage] = useState<Package | null>(null)
   const [packagesFilter, setPackagesFilter] = useState('')
-  const [versionId] = useState(getSplittedVersionKey(currentVersionId).versionKey)
+  const versionId = useMemo(() => getSplittedVersionKey(currentVersionId).versionKey, [currentVersionId])
+
   const [targetVersion, setTargetVersion] = useState<Key>(versionId)
   const [versionsFilter, setVersionsFilter] = useState('')
 
