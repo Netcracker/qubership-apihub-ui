@@ -2,6 +2,9 @@
 /.idea
 !/.idea/icon.png
 /.vscode
+/.cursor
+/.trae
+/.junie
 *.iml
 
 # dependencies
