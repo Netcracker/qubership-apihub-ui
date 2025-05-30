@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useCallback } from 'react'
-import { useParams } from 'react-router-dom'
-import { useDownloadSecurityReport } from './useDownloadSecurityReport'
-import { SECURITY_REPORT_TYPE_GATEWAY_ROUTING, useSecurityReports } from './useSecurityReports'
 import type { Key } from '@apihub/entities/keys'
-import { Box } from '@mui/material'
 import { LoadingButton } from '@mui/lab'
-import { RunRoutingReportDialog } from './RunRoutingReportDialog'
-import { useEventBus } from '../../../EventBusProvider'
-import { useDownloadRoutingReportSources } from './useDownloadRoutingReportSources'
-import type { DownloadType, ReportDownloadOption } from '@netcracker/qubership-apihub-ui-shared/components/SecurityReportsTable'
+import { Box } from '@mui/material'
+import type {
+  DownloadType,
+  ReportDownloadOption,
+} from '@netcracker/qubership-apihub-ui-shared/components/SecurityReportsTable'
 import {
   DOWNLOAD_REPORT,
   DOWNLOAD_SOURCES,
@@ -33,6 +28,14 @@ import {
 } from '@netcracker/qubership-apihub-ui-shared/components/SecurityReportsTable'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import type { FC } from 'react'
+import { memo, useCallback } from 'react'
+import { useParams } from 'react-router-dom'
+import { useEventBus } from '../../../EventBusProvider'
+import { RunRoutingReportDialog } from './RunRoutingReportDialog'
+import { useDownloadRoutingReportSources } from './useDownloadRoutingReportSources'
+import { useDownloadSecurityReport } from './useDownloadSecurityReport'
+import { SECURITY_REPORT_TYPE_GATEWAY_ROUTING, useSecurityReports } from './useSecurityReports'
 
 // High Order Component //
 export const RoutingReports: FC = memo(() => {
@@ -104,7 +107,7 @@ export const RoutingReports: FC = memo(() => {
         />
       </Box>
 
-      <RunRoutingReportDialog/>
+      <RunRoutingReportDialog />
     </Box>
   )
 })
@@ -113,7 +116,8 @@ const downloadOptions: ReportDownloadOption[] = [
   {
     value: DOWNLOAD_REPORT,
     text: 'Download report',
-  }, {
+  },
+  {
     value: DOWNLOAD_SOURCES,
     text: 'Download sources',
   },

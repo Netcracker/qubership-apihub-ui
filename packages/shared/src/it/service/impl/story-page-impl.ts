@@ -16,17 +16,21 @@
 
 import type { ElementHandle, NodeFor, Page, WaitForSelectorOptions } from 'puppeteer'
 import type { StoryPage } from '../story-page'
-import { ViewComponentImpl } from './view-component-impl'
 import type { ViewComponent } from '../view-component'
+import { ViewComponentImpl } from './view-component-impl'
 
 interface SelectorLookup {
-  waitForSelector<Selector extends string>(selector: Selector, options?: WaitForSelectorOptions): Promise<ElementHandle<NodeFor<Selector>> | null>
+  waitForSelector<Selector extends string>(
+    selector: Selector,
+    options?: WaitForSelectorOptions,
+  ): Promise<ElementHandle<NodeFor<Selector>> | null>
 }
 
 export class StoryPageImpl implements StoryPage {
   constructor(
     private readonly _page: Page,
-    private readonly _root: SelectorLookup) {
+    private readonly _root: SelectorLookup,
+  ) {
   }
 
   async viewComponent(): Promise<ViewComponent> {

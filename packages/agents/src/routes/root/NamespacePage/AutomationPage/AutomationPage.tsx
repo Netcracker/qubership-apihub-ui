@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useEffect, useMemo } from 'react'
-import type { UpdateSettings } from './useUpdateSettings'
-import { useUpdateSettings } from './useUpdateSettings'
-import { useSettings } from './useSettings'
+import { LoadingButton } from '@mui/lab'
 import {
   Alert,
   Autocomplete,
@@ -31,28 +27,28 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
-import type { Control, FieldNamesMarkedBoolean } from 'react-hook-form'
-import { Controller, useForm } from 'react-hook-form'
 import { DesktopTimePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
+import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import type { Dayjs } from 'dayjs'
 import dayjs from 'dayjs'
-import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
-import { LoadingButton } from '@mui/lab'
-import { EmailNotificationList } from './EmailNotificationList'
-import { useBaselineOptions } from '../useBaselineOptions'
-import { useVersionOptions } from './useVersionOptions'
-import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
-import type {
-  AutodiscoveryStatus} from '../../../../entities/statuses'
-import {
-  NONE_AUTODISCOVERY_STATUS,
-  SCHEDULE_AUTODISCOVERY_STATUS,
-} from '../../../../entities/statuses'
+import utc from 'dayjs/plugin/utc'
+import type { FC } from 'react'
+import { memo, useEffect, useMemo } from 'react'
+import type { Control, FieldNamesMarkedBoolean } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import type { VersionKey } from '../../../../entities/keys'
 import type { Emails, Schedules } from '../../../../entities/settings'
-import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import type { AutodiscoveryStatus } from '../../../../entities/statuses'
+import { NONE_AUTODISCOVERY_STATUS, SCHEDULE_AUTODISCOVERY_STATUS } from '../../../../entities/statuses'
+import { useBaselineOptions } from '../useBaselineOptions'
+import { EmailNotificationList } from './EmailNotificationList'
+import { useSettings } from './useSettings'
+import type { UpdateSettings } from './useUpdateSettings'
+import { useUpdateSettings } from './useUpdateSettings'
+import { useVersionOptions } from './useVersionOptions'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -60,12 +56,21 @@ dayjs.extend(timezone)
 export const AutomationPage: FC = memo(() => {
   const [, isSettingsLoading] = useSettings()
   const [updateSettings, areUpdateSettingsLoading, isSuccess, isError] = useUpdateSettings()
-  const [control, versionOptions, previousVersionOptions, autoDiscoveryStatus, emailNotificationsEnabled, onSubmit, formChanges] = useDialogData(updateSettings)
+  const [
+    control,
+    versionOptions,
+    previousVersionOptions,
+    autoDiscoveryStatus,
+    emailNotificationsEnabled,
+    onSubmit,
+    formChanges,
+  ] = useDialogData(updateSettings)
 
   const isLoading = isSettingsLoading || areUpdateSettingsLoading
   const isFormDisabled = isLoading || autoDiscoveryStatus !== SCHEDULE_AUTODISCOVERY_STATUS
-  const isSaveAvailable = formChanges.autodiscoveryStatus || autoDiscoveryStatus === SCHEDULE_AUTODISCOVERY_STATUS &&
-    (formChanges.previousVersionKey || formChanges.versionKey || formChanges.discoveryTime || formChanges.emailNotificationsEnabled || formChanges.emailNotificationList)
+  const isSaveAvailable = formChanges.autodiscoveryStatus || autoDiscoveryStatus === SCHEDULE_AUTODISCOVERY_STATUS
+      && (formChanges.previousVersionKey || formChanges.versionKey || formChanges.discoveryTime
+        || formChanges.emailNotificationsEnabled || formChanges.emailNotificationList)
 
   return (
     <Box component="form" overflow="auto" onSubmit={onSubmit}>
@@ -99,18 +104,18 @@ export const AutomationPage: FC = memo(() => {
                     disabled={isLoading}
                     value={NONE_AUTODISCOVERY_STATUS}
                     label="None"
-                    control={<Radio/>}
+                    control={<Radio />}
                   />
                   <FormControlLabel
                     disabled={isLoading}
                     value={SCHEDULE_AUTODISCOVERY_STATUS}
                     label="On schedule"
-                    control={<Radio/>}
+                    control={<Radio />}
                   />
                   <FormControlLabel
                     disabled
                     label="On any service update"
-                    control={<Radio/>}
+                    control={<Radio />}
                   />
                 </RadioGroup>
               )}
@@ -125,12 +130,14 @@ export const AutomationPage: FC = memo(() => {
                     disabled={isFormDisabled}
                     value={value}
                     options={versionOptions}
-                    renderInput={(params) => <TextField
-                      {...params}
-                      onChange={onChange}
-                      required
-                      label="Snapshot Name"
-                    />}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        onChange={onChange}
+                        required
+                        label="Snapshot Name"
+                      />
+                    )}
                     onChange={(_, value) => onChange(value)}
                   />
                 )}
@@ -144,12 +151,14 @@ export const AutomationPage: FC = memo(() => {
                     disabled={isFormDisabled}
                     value={value}
                     options={previousVersionOptions}
-                    renderInput={(params) => <TextField
-                      {...params}
-                      onChange={onChange}
-                      required
-                      label="Baseline (Release Version)"
-                    />}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        onChange={onChange}
+                        required
+                        label="Baseline (Release Version)"
+                      />
+                    )}
                     onChange={(_, value) => onChange(value)}
                   />
                 )}
@@ -203,14 +212,17 @@ export const AutomationPage: FC = memo(() => {
                     )
                   }}
                 />
-                {emailNotificationsEnabled && (<Box sx={{ width: '410px' }}>
+                {emailNotificationsEnabled && (
+                  <Box sx={{ width: '410px' }}>
                     <Controller
                       name="emailNotificationList"
                       control={control}
-                      render={({ field: { value, onChange } }) => <EmailNotificationList
-                        value={value}
-                        onChange={onChange}
-                      />}
+                      render={({ field: { value, onChange } }) => (
+                        <EmailNotificationList
+                          value={value}
+                          onChange={onChange}
+                        />
+                      )}
                     />
                   </Box>
                 )}
@@ -247,7 +259,7 @@ function useDialogData(
   AutodiscoveryStatus,
   EmailNotificationEnablement,
   OnSubmit,
-  Partial<Readonly<FieldNamesMarkedBoolean<FormData>>>
+  Partial<Readonly<FieldNamesMarkedBoolean<FormData>>>,
 ] {
   const [{
     autodiscoveryStatus,
@@ -265,7 +277,14 @@ function useDialogData(
     discoveryTime: toDiscoveryTime(schedules),
     emailNotificationsEnabled: emailNotificationsEnabled,
     emailNotificationList: emailNotificationList,
-  }), [autodiscoveryStatus, previousVersionKey, schedules, versionKey, emailNotificationList, emailNotificationsEnabled])
+  }), [
+    autodiscoveryStatus,
+    previousVersionKey,
+    schedules,
+    versionKey,
+    emailNotificationList,
+    emailNotificationsEnabled,
+  ])
 
   const form = useForm<FormData>({ defaultValues })
   useEffect(() => form.reset(defaultValues), [defaultValues, form])
@@ -280,7 +299,7 @@ function useDialogData(
           schedules: toSchedules(value.discoveryTime),
           emailNotificationsEnabled: value.emailNotificationsEnabled,
           emailNotificationList: value.emailNotificationList!,
-        }),
+        })
       ),
     [form, updateSettings],
   )

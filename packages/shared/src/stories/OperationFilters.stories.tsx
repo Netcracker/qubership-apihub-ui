@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryFn } from '@storybook/react'
 import { useArgs } from '@storybook/preview-api'
+import type { Meta, StoryFn } from '@storybook/react'
 import { useCallback } from 'react'
 import type { OperationFiltersProps } from '../components/OperationFilters/OperationFilters'
 import { OperationFilters } from '../components/OperationFilters/OperationFilters'
-import { operationTags } from './samples/tags-samples'
-import { references } from './samples/reference-samples'
-import { versionContent } from './samples/version-content-samples'
 import { API_TYPE_REST } from '../entities/api-types'
+import { references } from './samples/reference-samples'
+import { operationTags } from './samples/tags-samples'
+import { versionContent } from './samples/version-content-samples'
 
 const meta: Meta<OperationFiltersProps> = {
   title: 'Operation Filters',

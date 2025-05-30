@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { useAddDeletedReferences, useRemoveDeletedReferences } from './useDeletedReferences'
-import { useAddDashboardPackages, useRemoveDashboardPackages } from './useDashboardPackages'
-import { useAddConflictedReferences, useResetConflictedReferences } from './useConflictedReferences'
-import type { PackageItem } from './package-references'
-import type { VersionReferences } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
 import type { PackageKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { VersionReferences } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
+import type { PackageItem } from './package-references'
+import { useAddConflictedReferences, useResetConflictedReferences } from './useConflictedReferences'
+import { useAddDashboardPackages, useRemoveDashboardPackages } from './useDashboardPackages'
+import { useAddDeletedReferences, useRemoveDeletedReferences } from './useDeletedReferences'
 
 export function useHandleAddedReferences(): HandleAddedReferences {
   const [addDeletedReferences] = useAddDeletedReferences()
@@ -43,7 +43,6 @@ export function useHandleAddedReferences(): HandleAddedReferences {
 }
 
 export function useHandleRemovedReferences(): HandleRemoveReferences {
-
   const [removeDeletedReferences] = useRemoveDeletedReferences()
   const [removeDashboardPackages] = useRemoveDashboardPackages()
   const [resetConflictedReferences] = useResetConflictedReferences()

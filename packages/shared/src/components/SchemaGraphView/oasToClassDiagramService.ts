@@ -14,17 +14,6 @@
  * limitations under the License.
  */
 
-import type { OpenAPIV3 } from 'openapi-types'
-import type { CombinerType } from '@netcracker/qubership-apihub-api-visitor'
-import { OpenApiWalker, PROPERTY_ALIAS_ADDITIONAL_PROPERTIES } from '@netcracker/qubership-apihub-api-visitor'
-import {
-  SCHEMA_TYPE,
-  type SchemaClass,
-  type SchemaGraphContent,
-  type SchemaIncludeGroupRelation,
-  type SchemaProperty,
-  type SchemaRelation,
-} from './schema-graph-content'
 import type {
   DeferredHash,
   DenormalizeOptions,
@@ -50,9 +39,21 @@ import {
   OPEN_API_PROPERTY_SCHEMAS,
   pathItemToFullPath,
 } from '@netcracker/qubership-apihub-api-unifier'
+import type { CombinerType } from '@netcracker/qubership-apihub-api-visitor'
+import { OpenApiWalker, PROPERTY_ALIAS_ADDITIONAL_PROPERTIES } from '@netcracker/qubership-apihub-api-visitor'
 import { PROPERTY_TYPE_LEAF, RELATION_TYPE_PROPERTY_TO_CLASS_REFERENCE } from '@netcracker/qubership-apihub-class-view'
 import type { JsonPath } from '@netcracker/qubership-apihub-json-crawl'
 import { isArray } from 'lodash-es'
+import type { OpenAPIV3 } from 'openapi-types'
+import {
+  SCHEMA_TYPE,
+  type SchemaClass,
+  type SchemaGraphContent,
+  type SchemaIncludeGroupRelation,
+  type SchemaProperty,
+  type SchemaRelation,
+} from './schema-graph-content'
+import type { NavigationFailReason } from './SchemaGraphView'
 import {
   resolveSharedSchemaNames,
   VISITOR_FLAG_DEFAULTS,
@@ -61,7 +62,6 @@ import {
   VISITOR_FLAG_ORIGINS,
   VISITOR_FLAG_TITLE,
 } from './visitor-utils'
-import type { NavigationFailReason } from './SchemaGraphView'
 
 export type VisitorNavigationDetails = {
   scopeDeclarationPath: JsonPath
@@ -71,12 +71,13 @@ export type VisitorNavigationDetails = {
 }
 
 const walker = new OpenApiWalker()
-const declarationPathsToString: (origins: OriginLeafs) => string = (origins) => origins.map(origin => pathItemToFullPath(origin).join('/')).join(',')
+const declarationPathsToString: (origins: OriginLeafs) => string = (origins) =>
+  origins.map(origin => pathItemToFullPath(origin).join('/')).join(',')
 
 const hasCombiners: (schema: OpenAPIV3.SchemaObject) => boolean = (schema) => {
-  return JSON_SCHEMA_PROPERTY_ANY_OF in schema ||
-    JSON_SCHEMA_PROPERTY_ONE_OF in schema ||
-    JSON_SCHEMA_PROPERTY_ALL_OF in schema
+  return JSON_SCHEMA_PROPERTY_ANY_OF in schema
+    || JSON_SCHEMA_PROPERTY_ONE_OF in schema
+    || JSON_SCHEMA_PROPERTY_ALL_OF in schema
 }
 
 const extractTargetValue: (schema: OpenAPIV3.SchemaObject | undefined, path?: OpenAPIV3.SchemaObject[]) => {
@@ -87,7 +88,7 @@ const extractTargetValue: (schema: OpenAPIV3.SchemaObject | undefined, path?: Op
     const emptySchema: OpenAPIV3.SchemaObject = {}
     Object.assign(emptySchema, { type: JSON_SCHEMA_NODE_SYNTHETIC_TYPE_ANY })
     return {
-      //abuse. for better solution we should remove denormalize from visitor and manually skip defaults
+      // abuse. for better solution we should remove denormalize from visitor and manually skip defaults
       schema: emptySchema,
       depth: path.length,
     }
@@ -110,15 +111,18 @@ const extractTargetValue: (schema: OpenAPIV3.SchemaObject | undefined, path?: Op
 
 const collectCombinerNames: (schema: OpenAPIV3.SchemaObject) => string | undefined = (schema) => {
   const schemaRecord = schema as Record<PropertyKey, unknown>
-  const combs = [JSON_SCHEMA_PROPERTY_ONE_OF, JSON_SCHEMA_PROPERTY_ANY_OF].flatMap(com => (com in schemaRecord && isArray(schemaRecord[com]) ? [com] : []))
+  const combs = [JSON_SCHEMA_PROPERTY_ONE_OF, JSON_SCHEMA_PROPERTY_ANY_OF].flatMap(
+    com => (com in schemaRecord && isArray(schemaRecord[com]) ? [com] : []),
+  )
   return combs.length !== 0 ? combs.join(', ') : undefined
 }
 
-const typeNmr: (schema: OpenAPIV3.SchemaObject, alternativeTitle?: string) => string =
-  (schema, alternativeTitle) => schema.title ?? alternativeTitle ?? collectCombinerNames(schema) ?? schema.type ?? 'unknown'
+const typeNmr: (schema: OpenAPIV3.SchemaObject, alternativeTitle?: string) => string = (schema, alternativeTitle) =>
+  schema.title ?? alternativeTitle ?? collectCombinerNames(schema) ?? schema.type ?? 'unknown'
 
-const propertyTypeNmr: (schema: OpenAPIV3.SchemaObject) => string =
-  (schema) => schema.title ?? collectCombinerNames(schema) ?? (schema.format && schema.type ? `${schema.type}<${schema.format}>` : undefined) ?? (schema.type) ?? 'unknown'
+const propertyTypeNmr: (schema: OpenAPIV3.SchemaObject) => string = (schema) =>
+  schema.title ?? collectCombinerNames(schema)
+    ?? (schema.format && schema.type ? `${schema.type}<${schema.format}>` : undefined) ?? (schema.type) ?? 'unknown'
 
 export function calculateTolerantHash(schema: OpenAPIV3.SchemaObject | OpenAPIV3.ParameterObject): string {
   if (!(VISITOR_FLAG_HASH in schema)) {
@@ -165,7 +169,7 @@ class GraphBuilder {
   private readonly rollbackStack: (() => void)[] = []
   private readonly combinerStack: CombinerType[] = []
 
-  constructor(private readonly cycledJso: Record<PropertyKey, unknown>) { }
+  constructor(private readonly cycledJso: Record<PropertyKey, unknown>) {}
 
   get root(): boolean {
     return this.propertyStack.length === 0
@@ -174,9 +178,8 @@ class GraphBuilder {
   private fillSharedSchemas(schema: OpenAPIV3.SchemaObject, sharedSchemas: OpenAPIV3.SchemaObject[]): void {
     const sharedSchemaObjectNames = resolveSharedSchemaNames(schema)
     sharedSchemaObjectNames?.forEach(sharedSchemaName => {
-      const sharedSchema =
-        (this.cycledJso[OPEN_API_PROPERTY_COMPONENTS] as OpenAPIV3.ComponentsObject)
-          ?.[OPEN_API_PROPERTY_SCHEMAS]?.[sharedSchemaName] as OpenAPIV3.SchemaObject
+      const sharedSchema = (this.cycledJso[OPEN_API_PROPERTY_COMPONENTS] as OpenAPIV3.ComponentsObject)
+        ?.[OPEN_API_PROPERTY_SCHEMAS]?.[sharedSchemaName] as OpenAPIV3.SchemaObject
       if (sharedSchema && !sharedSchemas.includes(sharedSchema)) {
         sharedSchemas.push(sharedSchema)
       }
@@ -212,7 +215,9 @@ class GraphBuilder {
         key: this.createPropertyKey(newNode, this.fooRootPropertyKey),
         name: this.propertyNameForPrimitives,
         fooName: true,
-        propertyType: schema === targetSchema ? targetSchema.type! : typeNmr(targetSchema) + (depth === Number.POSITIVE_INFINITY ? '[]...' : '[]'.repeat(depth)),
+        propertyType: schema === targetSchema
+          ? targetSchema.type!
+          : typeNmr(targetSchema) + (depth === Number.POSITIVE_INFINITY ? '[]...' : '[]'.repeat(depth)),
         propertyTypeDeprecated: !!targetSchema.deprecated,
         deprecated: !resolveSharedSchemaNames(targetSchema) && !!targetSchema.deprecated,
         kind: PROPERTY_TYPE_LEAF,
@@ -277,8 +282,16 @@ class GraphBuilder {
     })
   }
 
-  createAlternativeCombinerPropertyAndConnection(combinerIndex: number, schema: OpenAPIV3.SchemaObject): BuildPropertyResult {
-    return this.createPropertyAndConnection(this.propertyNameForNonObjectProperties, `${this.combinerStack.at(-1)}-${combinerIndex.toString()}`, schema, true)
+  createAlternativeCombinerPropertyAndConnection(
+    combinerIndex: number,
+    schema: OpenAPIV3.SchemaObject,
+  ): BuildPropertyResult {
+    return this.createPropertyAndConnection(
+      this.propertyNameForNonObjectProperties,
+      `${this.combinerStack.at(-1)}-${combinerIndex.toString()}`,
+      schema,
+      true,
+    )
   }
 
   createRootArrayPropertyAndConnection(schema: OpenAPIV3.SchemaObject): BuildPropertyResult {
@@ -289,18 +302,25 @@ class GraphBuilder {
     return this.createPropertyAndConnection(this.propertyNameForPrimitives, this.fooRootPropertyKey, schema, true, true)
   }
 
-  createPropertyAndConnection(propertyName: string, propertyKey: string, schema: OpenAPIV3.SchemaObject, foo: boolean, extraDepth = false): BuildPropertyResult {
+  createPropertyAndConnection(
+    propertyName: string,
+    propertyKey: string,
+    schema: OpenAPIV3.SchemaObject,
+    foo: boolean,
+    extraDepth = false,
+  ): BuildPropertyResult {
     let nestedResult: BuildPropertyResult = { hasDeepSchema: schema.type === JSON_SCHEMA_NODE_TYPE_ARRAY }
     const propertiesContainer = this.propertiesContainerStack.at(-1)
     const lastSchema = this.lastAvailableSchema
-    let rollback: () => void = () => {/*nothing*/ }
+    let rollback: () => void = () => {/*nothing*/}
     if (propertiesContainer && lastSchema) {
       const { schema: valueForTests, depth } = extractTargetValue(schema)
       const propertyNode: SchemaProperty = {
         key: this.createPropertyKey(propertiesContainer, propertyKey),
         name: propertyName,
         fooName: foo,
-        propertyType: propertyTypeNmr(valueForTests) + (depth === Number.POSITIVE_INFINITY ? '[]...' : '[]'.repeat(depth + (extraDepth ? 1 : 0))),
+        propertyType: propertyTypeNmr(valueForTests)
+          + (depth === Number.POSITIVE_INFINITY ? '[]...' : '[]'.repeat(depth + (extraDepth ? 1 : 0))),
         required: lastSchema.sameHashObjects.some(s => (s.required ?? []).includes(propertyName)),
         propertyTypeDeprecated: !!schema.deprecated || !!valueForTests.deprecated,
         deprecated: !resolveSharedSchemaNames(schema) && !!schema.deprecated,
@@ -323,10 +343,15 @@ class GraphBuilder {
   }
 
   createNestedSchemaAndConnection(schema: OpenAPIV3.SchemaObject): BuildPropertyResult {
-    let rollback: () => void = () => {/*nothing*/ }
-    let nestedResult: BuildPropertyResult = { hasDeepSchema: schema.type === JSON_SCHEMA_NODE_TYPE_ARRAY || schema.type === JSON_SCHEMA_NODE_TYPE_OBJECT }
+    let rollback: () => void = () => {/*nothing*/}
+    let nestedResult: BuildPropertyResult = {
+      hasDeepSchema: schema.type === JSON_SCHEMA_NODE_TYPE_ARRAY || schema.type === JSON_SCHEMA_NODE_TYPE_OBJECT,
+    }
     const lastProperty = this.propertyStack.at(-1)
-    if (lastProperty && (resolveSharedSchemaNames(schema) || schema.type === JSON_SCHEMA_NODE_TYPE_OBJECT || hasCombiners(schema))) {
+    if (
+      lastProperty
+      && (resolveSharedSchemaNames(schema) || schema.type === JSON_SCHEMA_NODE_TYPE_OBJECT || hasCombiners(schema))
+    ) {
       const { schema: schemaNode, primitive, isNew } = this.getOrCreateSchema(schema)
       this.propertiesContainerStack.push(schemaNode)
       if (primitive) {
@@ -346,7 +371,7 @@ class GraphBuilder {
       }
       nestedResult = { hasDeepSchema: isNew }
     }
-    //else is a problem cause if object have nesting owner will we wrong
+    // else is a problem cause if object have nesting owner will we wrong
     this.rollbackStack.push(rollback)
     return nestedResult
   }
@@ -441,7 +466,12 @@ export function transformOasToEffectiveClassDiagram(
     },
     schemaRootEnd: () => builder.back(),
     schemaPropertyStart: ({ propertyName, value }) => {
-      const { hasDeepSchema } = builder.createPropertyAndConnection(propertyName === PROPERTY_ALIAS_ADDITIONAL_PROPERTIES ? 'additionalProperties' : propertyName, `'${propertyName}'`, value, propertyName === PROPERTY_ALIAS_ADDITIONAL_PROPERTIES)
+      const { hasDeepSchema } = builder.createPropertyAndConnection(
+        propertyName === PROPERTY_ALIAS_ADDITIONAL_PROPERTIES ? 'additionalProperties' : propertyName,
+        `'${propertyName}'`,
+        value,
+        propertyName === PROPERTY_ALIAS_ADDITIONAL_PROPERTIES,
+      )
       return hasDeepSchema
     },
     schemaPropertyEnd: () => builder.back(),
@@ -472,7 +502,6 @@ export function transformOasToEffectiveClassDiagram(
       return hasDeepSchema
     },
     combinerItemEnd: () => builder.back(),
-
   }, { originsFlag: VISITOR_FLAG_ORIGINS })
   return builder.build()
 }

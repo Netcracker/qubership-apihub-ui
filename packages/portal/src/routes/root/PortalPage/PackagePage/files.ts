@@ -23,7 +23,8 @@ export function createFilesRecord(files: File[], filesWithLabels: FileLabelsReco
     (acc, file) => ({
       ...acc,
       [file.name]: { file: file, labels: filesWithLabels[file.name]?.labels ?? [] },
-    }), {} as FileLabelsRecord,
+    }),
+    {} as FileLabelsRecord,
   )
 }
 

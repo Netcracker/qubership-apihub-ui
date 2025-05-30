@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import { DiffAction } from '@netcracker/qubership-apihub-api-diff'
 import type { OperationChanges } from '@netcracker/qubership-apihub-api-processor'
+import { matchPaths, OPEN_API_PROPERTY_PATHS, PREDICATE_UNCLOSED_END } from '@netcracker/qubership-apihub-api-unifier'
 import type {
   Operation,
   OperationPair,
@@ -23,8 +25,6 @@ import type {
 } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { DEFAULT_TAG, EMPTY_TAG } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import { matchPaths, OPEN_API_PROPERTY_PATHS, PREDICATE_UNCLOSED_END } from '@netcracker/qubership-apihub-api-unifier'
-import { DiffAction } from '@netcracker/qubership-apihub-api-diff'
 
 export function groupOperationsByTags<T extends Operation>(
   operations: ReadonlyArray<T>,
@@ -107,7 +107,7 @@ export function isFullyAddedOperationChange(change: OperationChanges): boolean {
   return change.diffs?.[0]?.action === DiffAction.add && isOperationChange(change.diffs[0].afterDeclarationPaths)
 }
 
-function isOperationChange(paths: JsonPath[]): boolean { //check
+function isOperationChange(paths: JsonPath[]): boolean { // check
   return !!matchPaths(paths, [[OPEN_API_PROPERTY_PATHS, PREDICATE_UNCLOSED_END]])
 }
 

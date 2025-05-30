@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
+import { Button, DialogActions, DialogContent, DialogTitle, TextField, Typography } from '@mui/material'
 import type { FC } from 'react'
 import { memo, useCallback, useEffect, useState } from 'react'
-import { Button, DialogActions, DialogContent, DialogTitle, TextField, Typography } from '@mui/material'
 import { useEvent } from 'react-use'
 import { SHOW_UPLOAD_DIALOG } from '../../../../../../EventBusProvider'
 
-import { LoadingButton } from '@mui/lab'
-import { useProject } from '../../../../../useProject'
-import { Controller, useForm } from 'react-hook-form'
-import { useUploadProjectFiles } from './useUploadProjectFiles'
-import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 import { FileListPreview } from '@apihub/components/FileListPreview'
+import { LoadingButton } from '@mui/lab'
+import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 import { FileUpload } from '@netcracker/qubership-apihub-ui-shared/components/FileUpload'
 import { UploadButton } from '@netcracker/qubership-apihub-ui-shared/components/UploadButton'
+import { Controller, useForm } from 'react-hook-form'
+import { useProject } from '../../../../../useProject'
+import { useUploadProjectFiles } from './useUploadProjectFiles'
 
 export const UploadFileDialog: FC = memo(() => {
   const [open, setOpen] = useState(false)

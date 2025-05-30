@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import type { BranchConflictsDto } from '@apihub/entities/branches'
+import { editorRequestJson } from '@apihub/utils/requests'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { IsFetching, RefetchQuery } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import { useBranchSearchParam } from '../../useBranchSearchParam'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { editorRequestJson } from '@apihub/utils/requests'
-import type { BranchConflictsDto } from '@apihub/entities/branches'
-import type { IsFetching, RefetchQuery } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 
 const BRANCH_CONFLICTS_QUERY_KEY = 'branch-conflicts-query-key'
 
@@ -49,4 +49,3 @@ async function getBranchConflicts(
   })
   return data.files
 }
-

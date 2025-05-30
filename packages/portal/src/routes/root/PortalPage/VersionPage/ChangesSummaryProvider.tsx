@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import type { VersionChangesSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
 import type { Dispatch, FC, PropsWithChildren, SetStateAction } from 'react'
 import { createContext, useContext, useMemo, useState } from 'react'
 import type { UseCompareVersionsOptions } from '../useCompareVersions'
-import type { VersionChangesSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
 
 const ChangesSummaryContext = createContext<VersionChangesSummary | undefined>()
 const SetChangesSummaryContext = createContext<Dispatch<SetStateAction<VersionChangesSummary | undefined>>>()
@@ -38,12 +38,12 @@ function useIsChangesSummaryContextValid(
     () => {
       const actual = actualComparisonOptions
       const saved = comparisonOptionsFromContext
-      return actual.changedPackageKey === saved?.changedPackageKey &&
-        actual.changedVersionKey === saved?.changedVersionKey &&
-        actual.originPackageKey === saved?.originPackageKey &&
-        actual.originVersionKey === saved?.originVersionKey &&
-        actual.currentGroup === saved?.currentGroup &&
-        actual.previousGroup === saved?.previousGroup
+      return actual.changedPackageKey === saved?.changedPackageKey
+        && actual.changedVersionKey === saved?.changedVersionKey
+        && actual.originPackageKey === saved?.originPackageKey
+        && actual.originVersionKey === saved?.originVersionKey
+        && actual.currentGroup === saved?.currentGroup
+        && actual.previousGroup === saved?.previousGroup
     },
     [actualComparisonOptions, comparisonOptionsFromContext],
   )
@@ -77,7 +77,13 @@ export function useChangesSummaryContext(
       return clearedChangesSummary
     }
     return changesSummaryFromContext
-  }, [actualComparisonOptions, changesSummaryFromContext, isContextValid, setChangesSummary, setVersionsComparisonOptions])
+  }, [
+    actualComparisonOptions,
+    changesSummaryFromContext,
+    isContextValid,
+    setChangesSummary,
+    setVersionsComparisonOptions,
+  ])
 
   return [changesSummary, isContextValid, useSetChangesSummaryContext()]
 }

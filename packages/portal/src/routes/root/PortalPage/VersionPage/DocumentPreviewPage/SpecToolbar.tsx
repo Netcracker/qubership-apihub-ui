@@ -14,29 +14,32 @@
  * limitations under the License.
  */
 
+import { useBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
+import { Box, IconButton, MenuItem } from '@mui/material'
+import { MenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
+import { SpecViewToggler } from '@netcracker/qubership-apihub-ui-shared/components/SpecViewToggler'
+import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'
+import { Toolbar } from '@netcracker/qubership-apihub-ui-shared/components/Toolbar'
+import { ToolbarTitle } from '@netcracker/qubership-apihub-ui-shared/components/ToolbarTitle'
+import {
+  DETAILED_SCHEMA_VIEW_MODE,
+  SCHEMA_VIEW_MODES,
+} from '@netcracker/qubership-apihub-ui-shared/entities/schema-view-mode'
+import { JSON_FILE_EXTENSION, YAML_FILE_EXTENSION } from '@netcracker/qubership-apihub-ui-shared/utils/files'
+import { isOpenApiSpecType, UNKNOWN_SPEC_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import type { FC } from 'react'
 import { memo, useCallback } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Box, IconButton, MenuItem } from '@mui/material'
-import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
-import ArrowBackIcon from '@mui/icons-material/ArrowBack'
-import { INTERACTIVE_DOC_TYPE, RAW_DOC_TYPE, useDownloadPublishedDocument } from '../useDownloadPublishedDocument'
-import { useDocument } from '../useDocument'
+import { useNavigation } from '../../../../NavigationProvider'
 import { PackageBreadcrumbs } from '../../../PackageBreadcrumbs'
 import { usePackage } from '../../../usePackage'
 import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
-import { useNavigation } from '../../../../NavigationProvider'
-import { useSpecViewMode } from './useSpecViewMode'
+import { useDocument } from '../useDocument'
+import { INTERACTIVE_DOC_TYPE, RAW_DOC_TYPE, useDownloadPublishedDocument } from '../useDownloadPublishedDocument'
 import { useSchemaViewMode } from './useSchemaViewMode'
-import { DETAILED_SCHEMA_VIEW_MODE, SCHEMA_VIEW_MODES } from '@netcracker/qubership-apihub-ui-shared/entities/schema-view-mode'
-import { useBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
-import { Toolbar } from '@netcracker/qubership-apihub-ui-shared/components/Toolbar'
-import { ToolbarTitle } from '@netcracker/qubership-apihub-ui-shared/components/ToolbarTitle'
-import { isOpenApiSpecType, UNKNOWN_SPEC_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'
-import { SpecViewToggler } from '@netcracker/qubership-apihub-ui-shared/components/SpecViewToggler'
-import { MenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
-import { JSON_FILE_EXTENSION, YAML_FILE_EXTENSION } from '@netcracker/qubership-apihub-ui-shared/utils/files'
+import { useSpecViewMode } from './useSpecViewMode'
 
 export const DOC_SPEC_VIEW_MODE = 'doc'
 export const RAW_SPEC_VIEW_MODE = 'raw'
@@ -81,14 +84,15 @@ export const SpecToolbar: FC = memo(() => {
       header={
         <Box sx={{ alignItems: 'center', display: 'flex', gap: '8px' }}>
           <IconButton color="primary" onClick={handleBackClick} data-testid="BackButton">
-            <ArrowBackIcon/>
+            <ArrowBackIcon />
           </IconButton>
-          <ToolbarTitle value={title}/>
+          <ToolbarTitle value={title} />
         </Box>
       }
-      action={
-        type !== UNKNOWN_SPEC_TYPE && <>
-          {specViewMode === DOC_SPEC_VIEW_MODE && (<>
+      action={type !== UNKNOWN_SPEC_TYPE && (
+        <>
+          {specViewMode === DOC_SPEC_VIEW_MODE && (
+            <>
               {DOC_VIEW_COMPATIBLE_TYPES.includes(type ?? '') && (
                 <Toggler
                   modes={SCHEMA_VIEW_MODES}
@@ -109,64 +113,70 @@ export const SpecToolbar: FC = memo(() => {
           <MenuButton
             variant="outlined"
             title="Export"
-            icon={<KeyboardArrowDownOutlinedIcon/>}
+            icon={<KeyboardArrowDownOutlinedIcon />}
             data-testid="ExportDocumentMenuButton"
           >
-            {isOpenApiSpecType(type) ? (
-              <Box component="div">
+            {isOpenApiSpecType(type)
+              ? (
+                <Box component="div">
+                  <MenuItem
+                    onClick={() =>
+                      downloadPublishedFileDoc({
+                        docType: RAW_DOC_TYPE,
+                        rawOptions: { resultFileExtension: YAML_FILE_EXTENSION, inlineRefs: false },
+                      })}
+                    data-testid="DownloadYamlMenuItem"
+                  >
+                    Download as YAML
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() =>
+                      downloadPublishedFileDoc({
+                        docType: RAW_DOC_TYPE,
+                        rawOptions: { resultFileExtension: JSON_FILE_EXTENSION, inlineRefs: false },
+                      })}
+                    data-testid="DownloadJsonMenuItem"
+                  >
+                    Download as JSON
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() =>
+                      downloadPublishedFileDoc({
+                        docType: RAW_DOC_TYPE,
+                        rawOptions: { resultFileExtension: YAML_FILE_EXTENSION, inlineRefs: true },
+                      })}
+                    data-testid="DownloadYamlInlineRefsMenuItem"
+                  >
+                    Download as YAML (inline refs)
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() =>
+                      downloadPublishedFileDoc({
+                        docType: RAW_DOC_TYPE,
+                        rawOptions: { resultFileExtension: JSON_FILE_EXTENSION, inlineRefs: true },
+                      })}
+                    data-testid="DownloadJsonInlineRefsMenuItem"
+                  >
+                    Download as JSON (inline refs)
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => downloadPublishedFileDoc({ docType: INTERACTIVE_DOC_TYPE })}
+                    data-testid="InteractiveHtmlMenuItem"
+                  >
+                    HTML interactive
+                  </MenuItem>
+                </Box>
+              )
+              : (
                 <MenuItem
-                  onClick={() => downloadPublishedFileDoc({
-                    docType: RAW_DOC_TYPE,
-                    rawOptions: { resultFileExtension: YAML_FILE_EXTENSION, inlineRefs: false },
-                  })}
-                  data-testid="DownloadYamlMenuItem"
+                  onClick={() => downloadPublishedFileDoc()}
                 >
-                  Download as YAML
+                  Download
                 </MenuItem>
-                <MenuItem
-                  onClick={() => downloadPublishedFileDoc({
-                    docType: RAW_DOC_TYPE,
-                    rawOptions: { resultFileExtension: JSON_FILE_EXTENSION, inlineRefs: false },
-                  })}
-                  data-testid="DownloadJsonMenuItem"
-                >
-                  Download as JSON
-                </MenuItem>
-                <MenuItem
-                  onClick={() => downloadPublishedFileDoc({
-                    docType: RAW_DOC_TYPE,
-                    rawOptions: { resultFileExtension: YAML_FILE_EXTENSION, inlineRefs: true },
-                  })}
-                  data-testid="DownloadYamlInlineRefsMenuItem"
-                >
-                  Download as YAML (inline refs)
-                </MenuItem>
-                <MenuItem
-                  onClick={() => downloadPublishedFileDoc({
-                    docType: RAW_DOC_TYPE,
-                    rawOptions: { resultFileExtension: JSON_FILE_EXTENSION, inlineRefs: true },
-                  })}
-                  data-testid="DownloadJsonInlineRefsMenuItem"
-                >
-                  Download as JSON (inline refs)
-                </MenuItem>
-                <MenuItem
-                  onClick={() => downloadPublishedFileDoc({ docType: INTERACTIVE_DOC_TYPE })}
-                  data-testid="InteractiveHtmlMenuItem"
-                >
-                  HTML interactive
-                </MenuItem>
-              </Box>
-            ) : (
-              <MenuItem
-                onClick={() => downloadPublishedFileDoc()}
-              >
-                Download
-              </MenuItem>
-            )}
+              )}
           </MenuButton>
         </>
-      }
+      )}
     />
   )
 })

@@ -16,13 +16,13 @@
 
 import { useMutation } from '@tanstack/react-query'
 
+import { editorRequestVoid } from '@apihub/utils/requests'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { useParams } from 'react-router-dom'
+import { useShowSuccessNotification } from '../../../../BasePage/Notification'
 import { useBranchSearchParam } from '../../../../useBranchSearchParam'
 import { useChangeSearchParam } from '../../../../useChangeSearchParam'
-import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { useShowSuccessNotification } from '../../../../BasePage/Notification'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { editorRequestVoid } from '@apihub/utils/requests'
 
 export function useResetFile(): [ResetFile, IsLoading] {
   const { projectId } = useParams()

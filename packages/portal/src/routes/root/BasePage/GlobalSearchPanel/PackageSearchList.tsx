@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
+import type { PackageSearchResult } from '@apihub/entities/global-search'
+import { Box, Typography } from '@mui/material'
+import { FormattedDate } from '@netcracker/qubership-apihub-ui-shared/components/FormattedDate'
+import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
+import { useIntersectionObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useIntersectionObserver'
+import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import type { FC } from 'react'
 import { memo, useRef } from 'react'
-import { Box, Typography } from '@mui/material'
-import { ResultCommonHeader } from './ResultCommonHeader'
+import { Marker } from 'react-mark.js'
+import { getOverviewPath } from '../../../NavigationProvider'
+import type { FetchNextSearchResultList } from './global-search'
 import { CONTENT_WIDTH } from './GlobalSearchPanel'
 import { RateResults } from './RateResults'
-import { Marker } from 'react-mark.js'
-import type { FetchNextSearchResultList } from './global-search'
-import { getOverviewPath } from '../../../NavigationProvider'
-import { useIntersectionObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useIntersectionObserver'
-import type { PackageSearchResult } from '@apihub/entities/global-search'
-import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
-import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
-import { FormattedDate } from '@netcracker/qubership-apihub-ui-shared/components/FormattedDate'
+import { ResultCommonHeader } from './ResultCommonHeader'
 
 export type PackageSearchListProps = {
   value: PackageSearchResult[]
@@ -64,7 +64,7 @@ export const PackageSearchList: FC<PackageSearchListProps> = memo<PackageSearchL
                   variant="subtitle2"
                   data-testid="PublicationDateValue"
                 >
-                  <FormattedDate value={createdAt}/>
+                  <FormattedDate value={createdAt} />
                 </Typography>
               </Box>
 
@@ -84,10 +84,9 @@ export const PackageSearchList: FC<PackageSearchListProps> = memo<PackageSearchL
           ref={ref}
           height="100px"
         >
-          <LoadingIndicator/>
+          <LoadingIndicator />
         </Box>
       )}
     </Box>
   )
 })
-

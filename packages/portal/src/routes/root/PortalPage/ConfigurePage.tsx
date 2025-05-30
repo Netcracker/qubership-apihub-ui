@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
+import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { usePackage } from '@netcracker/qubership-apihub-ui-shared/hooks/packages/usePackage'
 import type { FC } from 'react'
 import { memo } from 'react'
-import { ConfigurePackageVersionPage } from './PackagePage/ConfigurePackageVersionPage'
 import { ConfigureDashboardPage } from './DashboardPage/ConfigureDashboardPage'
-import { usePackage } from '@netcracker/qubership-apihub-ui-shared/hooks/packages/usePackage'
-import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { ConfigurePackageVersionPage } from './PackagePage/ConfigurePackageVersionPage'
 
 export const ConfigurePage: FC = memo(() => {
   const { packageObj } = usePackage({ showParents: true })
   const isDashboard = packageObj?.kind === DASHBOARD_KIND
 
-  return isDashboard ? <ConfigureDashboardPage/> : <ConfigurePackageVersionPage/>
+  return isDashboard ? <ConfigureDashboardPage /> : <ConfigurePackageVersionPage />
 })

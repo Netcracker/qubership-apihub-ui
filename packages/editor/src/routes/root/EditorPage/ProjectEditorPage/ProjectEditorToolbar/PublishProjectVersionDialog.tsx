@@ -21,32 +21,35 @@ import type { PublishProjectVersionDialogDetails } from '../../../../EventBusPro
 import { SHOW_PUBLISH_PROJECT_VERSION_DIALOG, useEventBus } from '../../../../EventBusProvider'
 
 import { useForm } from 'react-hook-form'
-import { useSaveChanges } from '../useSaveChanges'
-import { useBranchChangeCount } from '../useBranchChanges'
 import { useBwcVersionKey, useSetBwcVersionKey } from '../BwcVersionKeyProvider'
-import { usePublishProjectVersion } from '../usePublishProjectVersion'
+import { useBranchChangeCount } from '../useBranchChanges'
 import type { BwcProblems } from '../useBwcProblems'
 import { NO_BWC_PROBLEMS, useBwcProblems } from '../useBwcProblems'
+import { usePublishProjectVersion } from '../usePublishProjectVersion'
+import { useSaveChanges } from '../useSaveChanges'
 
+import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
+import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
+import type { VersionFormData } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
+import {
+  EMPTY_VERSION_KEY,
+  VersionDialogForm,
+} from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
+import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import { DRAFT_VERSION_STATUS } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import { usePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
+import { waitForSocketEvent } from '@netcracker/qubership-apihub-ui-shared/utils/sockets'
+import { getVersionLabelsMap } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import { usePackage, usePackageKey } from '../../../usePackage'
 import { useProject } from '../../../useProject'
 import { NO_PREVIOUS_RELEASE_VERSION_OPTION, usePreviousVersionOptions } from '../usePreviousVersionOptions'
-import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import { DRAFT_VERSION_STATUS } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { getVersionLabelsMap } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
-import { waitForSocketEvent } from '@netcracker/qubership-apihub-ui-shared/utils/sockets'
-import type { VersionFormData } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
-import { EMPTY_VERSION_KEY, VersionDialogForm } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
-import { usePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
 
 export const PublishProjectVersionDialog: FC = memo(() => {
   return (
     <PopupDelegate
       type={SHOW_PUBLISH_PROJECT_VERSION_DIALOG}
-      render={props => <PublishProjectVersionPopup {...props}/>}
+      render={props => <PublishProjectVersionPopup {...props} />}
     />
   )
 })
@@ -77,16 +80,23 @@ const PublishProjectVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
 
   const defaultPackageKey = usePackageKey()
   const [versionsFilter, setVersionsFilter] = useState('')
-  const { versions, areVersionsLoading } = usePackageVersions({ packageKey: defaultPackageKey, textFilter: versionsFilter })
+  const { versions, areVersionsLoading } = usePackageVersions({
+    packageKey: defaultPackageKey,
+    textFilter: versionsFilter,
+  })
 
   const previousVersionOptions = usePreviousVersionOptions()
 
   const { handleSubmit, control, reset, setValue, formState } = useForm<VersionFormData>({ defaultValues })
   const bwcVersionKey = useBwcVersionKey()
   const setBwcVersionKey = useSetBwcVersionKey()
-  const [selectedPreviousVersion, setSelectedPreviousVersion] = useState<VersionKey>(() => bwcVersionKey ?? NO_PREVIOUS_RELEASE_VERSION_OPTION)
+  const [selectedPreviousVersion, setSelectedPreviousVersion] = useState<VersionKey>(() =>
+    bwcVersionKey ?? NO_PREVIOUS_RELEASE_VERSION_OPTION
+  )
   const [bwcProblems, , isBwcChecking, checkBwcProblems] = useBwcProblems(selectedPreviousVersion)
-  useEffect(() => {bwcVersionKey && setSelectedPreviousVersion(bwcVersionKey)}, [bwcVersionKey])
+  useEffect(() => {
+    bwcVersionKey && setSelectedPreviousVersion(bwcVersionKey)
+  }, [bwcVersionKey])
   const bwcProblemsMassage = useMemo(
     () => (bwcProblems.size !== 0 && !isBwcChecking ? BWC_PROBLEMS_MASSAGE : null),
     [bwcProblems.size, isBwcChecking],
@@ -96,18 +106,25 @@ const PublishProjectVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
   const [saveChanges, isSaveLoading, isSaveSuccess] = useSaveChanges()
   const [publishProject, isPublishLoading, isPublishSuccess] = usePublishProjectVersion()
 
-  useEffect(() => {isSaveSuccess && setOpen(false)}, [setOpen, isSaveSuccess])
-  useEffect(() => {isPublishSuccess && setOpen(false)}, [setOpen, isPublishSuccess])
-  useEffect(() => {reset(defaultValues)}, [defaultValues, reset])
+  useEffect(() => {
+    isSaveSuccess && setOpen(false)
+  }, [setOpen, isSaveSuccess])
+  useEffect(() => {
+    isPublishSuccess && setOpen(false)
+  }, [setOpen, isPublishSuccess])
+  useEffect(() => {
+    reset(defaultValues)
+  }, [defaultValues, reset])
 
   // todo sync between shared and editor PackageVersion types until dont changes all places in Editor
-  const versionLabelsMap = useMemo(() => getVersionLabelsMap(versions.map((version) => ({
-    key: version.key,
-    status: version.status,
-    versionLabels: version.versionLabels,
-    latestRevision: version.latestRevision,
-    createdBy: version.createdBy,
-  }))), [versions])
+  const versionLabelsMap = useMemo(() =>
+    getVersionLabelsMap(versions.map((version) => ({
+      key: version.key,
+      status: version.status,
+      versionLabels: version.versionLabels,
+      latestRevision: version.latestRevision,
+      createdBy: version.createdBy,
+    }))), [versions])
   const getVersionLabels = useCallback((version: Key) => versionLabelsMap[version] ?? [], [versionLabelsMap])
 
   const onVersionsFilter = useCallback((value: Key) => setVersionsFilter(value), [setVersionsFilter])
@@ -153,7 +170,17 @@ const PublishProjectVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
       labels: data.labels,
       previousVersion: previousVersion,
     })
-  }, [selectedPreviousVersion, saveAvailable, version, publishProject, setBwcVersionKey, checkBwcProblems, setOpen, showBwcPublishProjectVersionDialog, saveChanges])
+  }, [
+    selectedPreviousVersion,
+    saveAvailable,
+    version,
+    publishProject,
+    setBwcVersionKey,
+    checkBwcProblems,
+    setOpen,
+    showBwcPublishProjectVersionDialog,
+    saveChanges,
+  ])
 
   return (
     <VersionDialogForm

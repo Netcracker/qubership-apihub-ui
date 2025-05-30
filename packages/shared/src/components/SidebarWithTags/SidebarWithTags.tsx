@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
+import { Box, Typography } from '@mui/material'
 import type { FC } from 'react'
 import * as React from 'react'
 import { memo, useEffect, useState } from 'react'
-import { Box, Typography } from '@mui/material'
-import { TagList } from './TagList'
-import { SearchBar } from '../SearchBar'
 import type { Tags } from '../../entities/operations'
 import type { HasNextPage, IsFetchingNextPage } from '../../utils/aliases'
+import { SearchBar } from '../SearchBar'
+import { TagList } from './TagList'
 
 export type SidebarWithTagsProps = {
   tags: Tags
@@ -37,8 +37,14 @@ export type SidebarWithTagsProps = {
 // First Order Component //
 export const SidebarWithTags: FC<SidebarWithTagsProps> = memo<SidebarWithTagsProps>((props) => {
   const {
-    tags, areTagsLoading, fetchNextTagsPage, hasNextTagsPage, isNextTagsPageFetching,
-    onSearch, selectedTag, onSelectTag,
+    tags,
+    areTagsLoading,
+    fetchNextTagsPage,
+    hasNextTagsPage,
+    isNextTagsPageFetching,
+    onSearch,
+    selectedTag,
+    onSelectTag,
   } = props
 
   const [searchValue, setSearchValue] = useState('')

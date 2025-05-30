@@ -14,11 +14,39 @@
  * limitations under the License.
  */
 
-import type { FC, RefObject } from 'react'
-import * as React from 'react'
-import { Fragment, memo, useEffect, useMemo, useRef, useState } from 'react'
-import type { ColumnDef } from '@tanstack/table-core'
+import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
 import { Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
+import { ColumnDelimiter } from '@netcracker/qubership-apihub-ui-shared/components/ColumnDelimiter'
+import { CustomMetadataCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomMetadataCell'
+import { CustomTableHeadCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomTableHeadCell'
+import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
+import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { API_TYPE_GRAPHQL, API_TYPE_REST } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type {
+  FetchNextOperationList,
+  JSONValue,
+  OperationData,
+} from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import { DEFAULT_API_TYPE, DEFAULT_TAG } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import {
+  API_AUDIENCE_COLUMN_ID,
+  API_KIND_COLUMN_ID,
+  ENDPOINT_COLUMN_ID,
+  PACKAGE_COLUMN_ID,
+  TAGS_COLUMN_ID,
+} from '@netcracker/qubership-apihub-ui-shared/entities/table-columns'
+import { useIntersectionObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useIntersectionObserver'
+import { useResizeObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useResizeObserver'
+import type { ColumnModel } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
+import {
+  DEFAULT_CONTAINER_WIDTH,
+  useColumnsSizing,
+} from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
+import { insertIntoArrayByIndex, isEmpty, isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { createComponents } from '@netcracker/qubership-apihub-ui-shared/utils/components'
+import { DEFAULT_NUMBER_SKELETON_ROWS } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
 import type {
   ColumnSizingInfoState,
   ColumnSizingState,
@@ -28,30 +56,12 @@ import type {
   VisibilityState,
 } from '@tanstack/react-table'
 import { flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from '@tanstack/react-table'
+import type { ColumnDef } from '@tanstack/table-core'
+import type { FC, RefObject } from 'react'
+import * as React from 'react'
+import { Fragment, memo, useEffect, useMemo, useRef, useState } from 'react'
 import { EndpointTableCell } from './EndpointTableCell'
 import { CUSTOM_METADATA_COLUMN_ID } from './openapi-table'
-import { CustomMetadataCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomMetadataCell'
-import type { FetchNextOperationList, JSONValue, OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import { DEFAULT_API_TYPE, DEFAULT_TAG } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import type { ColumnModel } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
-import {
-  DEFAULT_CONTAINER_WIDTH,
-  useColumnsSizing,
-} from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
-import { insertIntoArrayByIndex, isEmpty, isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import { CustomTableHeadCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomTableHeadCell'
-import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
-import { useIntersectionObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useIntersectionObserver'
-import { ColumnDelimiter } from '@netcracker/qubership-apihub-ui-shared/components/ColumnDelimiter'
-import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
-import { createComponents } from '@netcracker/qubership-apihub-ui-shared/utils/components'
-import { DEFAULT_NUMBER_SKELETON_ROWS } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
-import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
-import { useResizeObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useResizeObserver'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { API_TYPE_GRAPHQL, API_TYPE_REST } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { API_AUDIENCE_COLUMN_ID, API_KIND_COLUMN_ID, ENDPOINT_COLUMN_ID, PACKAGE_COLUMN_ID, TAGS_COLUMN_ID } from '@netcracker/qubership-apihub-ui-shared/entities/table-columns'
 
 export type OpenApiTableData = {
   operation: OperationData
@@ -71,7 +81,8 @@ const DASHBOARD_COLUMNS_MODELS: ColumnModel[] = [
 ]
 
 const minDashboardTableWidth = DASHBOARD_COLUMNS_MODELS.reduce(
-  (sum, { width, fixedWidth }) => sum + (width || fixedWidth || 0), 0,
+  (sum, { width, fixedWidth }) => sum + (width || fixedWidth || 0),
+  0,
 )
 
 const PACKAGE_COLUMNS_MODELS: ColumnModel[] = [
@@ -83,7 +94,8 @@ const PACKAGE_COLUMNS_MODELS: ColumnModel[] = [
 ]
 
 const minPackageTableWidth = PACKAGE_COLUMNS_MODELS.reduce(
-  (sum, { width, fixedWidth }) => sum + (width || fixedWidth || 0), 0,
+  (sum, { width, fixedWidth }) => sum + (width || fixedWidth || 0),
+  0,
 )
 
 export type OpenApiTableProps = {
@@ -117,7 +129,6 @@ export const OpenApiTable: FC<OpenApiTableProps> = memo<OpenApiTableProps>((
     apiType,
   },
 ) => {
-
   const currentPackage = useCurrentPackage()
   const isDashboard = currentPackage?.kind === DASHBOARD_KIND
   const defaultMinWidth = isDashboard ? minDashboardTableWidth : minPackageTableWidth
@@ -194,11 +205,12 @@ export const OpenApiTable: FC<OpenApiTableProps> = memo<OpenApiTableProps>((
     return result
   }, [additionalColumns, apiType, isDashboard, textFilter])
 
-  const data: OpenApiTableData[] = useMemo(() => value.map(operation => {
-    return ({
-      operation: operation,
-    })
-  }), [value])
+  const data: OpenApiTableData[] = useMemo(() =>
+    value.map(operation => {
+      return ({
+        operation: operation,
+      })
+    }), [value])
 
   const strictColumnWidths = useMemo(() => {
     if (columnSizes) {
@@ -272,8 +284,8 @@ export const OpenApiTable: FC<OpenApiTableProps> = memo<OpenApiTableProps>((
                   }}
                 >
                   {flexRender(headerColumn.column.columnDef.header, headerColumn.getContext())}
-                  {index !== headerGroup.headers.length - 1 &&
-                    <ColumnDelimiter header={headerColumn} resizable={true} />}
+                  {index !== headerGroup.headers.length - 1
+                    && <ColumnDelimiter header={headerColumn} resizable={true} />}
                 </TableCell>
               ))}
             </TableRow>
@@ -289,7 +301,7 @@ export const OpenApiTable: FC<OpenApiTableProps> = memo<OpenApiTableProps>((
                   </TableCell>
                 ))}
               </TableRow>
-              {row.getIsExpanded() && SubTableComponent && (<SubTableComponent value={row} />)}
+              {row.getIsExpanded() && SubTableComponent && <SubTableComponent value={row} />}
             </Fragment>
           ))}
           {isLoading && <TableSkeleton isDashboard={isDashboard} />}
@@ -297,14 +309,14 @@ export const OpenApiTable: FC<OpenApiTableProps> = memo<OpenApiTableProps>((
         </TableBody>
       </Table>
       {isLoading || isEmpty(value) && (
-        <Placeholder
-          sx={{ width: 'inherit' }}
-          invisible={isNotEmpty(value)}
-          area={CONTENT_PLACEHOLDER_AREA}
-          message="No operations"
-          testId="NoOperationsPlaceholder"
-        />
-      )}
+            <Placeholder
+              sx={{ width: 'inherit' }}
+              invisible={isNotEmpty(value)}
+              area={CONTENT_PLACEHOLDER_AREA}
+              message="No operations"
+              testId="NoOperationsPlaceholder"
+            />
+          )}
     </TableContainer>
   )
 })
@@ -341,21 +353,25 @@ const RowSkeleton: FC<RowSkeletonProps> = memo<RowSkeletonProps>(({ refObject, c
   )
 })
 
-type ColumnModelCallback = (tableColumns: ColumnDef<OpenApiTableData, unknown>[], textFilter: string | undefined) => void
+type ColumnModelCallback = (
+  tableColumns: ColumnDef<OpenApiTableData, unknown>[],
+  textFilter: string | undefined,
+) => void
 const API_TYPE_COLUMNS_MAP: Record<ApiType, ColumnModelCallback> = {
-  [API_TYPE_REST]: (tableColumns, textFilter) => tableColumns.push({
-    id: CUSTOM_METADATA_COLUMN_ID,
-    header: () => <CustomTableHeadCell title="Custom Metadata" />,
-    cell: ({ row: { original: { operation } } }) => {
-      if (operation?.customTags) {
-        return (
-          <CustomMetadataCell
-            metaData={operation.customTags as { [key: string]: JSONValue }}
-            textFilter={textFilter}
-          />
-        )
-      }
-    },
-  }),
+  [API_TYPE_REST]: (tableColumns, textFilter) =>
+    tableColumns.push({
+      id: CUSTOM_METADATA_COLUMN_ID,
+      header: () => <CustomTableHeadCell title="Custom Metadata" />,
+      cell: ({ row: { original: { operation } } }) => {
+        if (operation?.customTags) {
+          return (
+            <CustomMetadataCell
+              metaData={operation.customTags as { [key: string]: JSONValue }}
+              textFilter={textFilter}
+            />
+          )
+        }
+      },
+    }),
   [API_TYPE_GRAPHQL]: () => null,
 }

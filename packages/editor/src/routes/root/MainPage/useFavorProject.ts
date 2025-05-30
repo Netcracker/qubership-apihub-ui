@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { editorRequestVoid } from '@apihub/utils/requests'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { useMutation } from '@tanstack/react-query'
 import { useInvalidateProjects } from '../useProjects'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { editorRequestVoid } from '@apihub/utils/requests'
 
 export function useFavorProject(): FavorProject {
   const invalidateProjects = useInvalidateProjects()

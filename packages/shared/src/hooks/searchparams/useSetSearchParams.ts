@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { useSearchParams } from 'react-router-dom'
 import { useCallback } from 'react'
+import { useSearchParams } from 'react-router-dom'
 
 export function useSetSearchParams(): (
   param: Record<string, string>,

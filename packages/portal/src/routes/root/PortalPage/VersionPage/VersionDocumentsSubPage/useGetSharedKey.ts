@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { useQuery } from '@tanstack/react-query'
 import type { Key } from '@apihub/entities/keys'
-import { useParams } from 'react-router-dom'
-import type { RefetchQuery } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { portalRequestJson } from '@apihub/utils/requests'
+import type { RefetchQuery } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { useQuery } from '@tanstack/react-query'
+import { useParams } from 'react-router-dom'
 
 const SHARED_KEY_QUERY_KEY = 'shared-key-query-key'
 

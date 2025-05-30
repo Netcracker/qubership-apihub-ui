@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-import { useMutation, useQuery } from '@tanstack/react-query'
-import fileDownload from 'js-file-download'
-import { generatePath, useParams } from 'react-router-dom'
-import { safeParse } from '@stoplight/json'
-import { useVersionWithRevision } from '../../useVersionWithRevision'
+import { portalRequestBlob } from '@apihub/utils/requests'
+import { resolveRefs } from '@apihub/utils/specifications'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { portalRequestBlob } from '@apihub/utils/requests'
-import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
 import type { FileExtension, YML_FILE_EXTENSION } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import {
   getFileExtension,
@@ -31,9 +25,15 @@ import {
   JSON_FILE_EXTENSION,
   YAML_FILE_EXTENSION,
 } from '@netcracker/qubership-apihub-ui-shared/utils/files'
-import { resolveRefs } from '@apihub/utils/specifications'
-import { toFormattedJsonString } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
+import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
+import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { toJsonSchema, toYaml } from '@netcracker/qubership-apihub-ui-shared/utils/specifications'
+import { toFormattedJsonString } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
+import { safeParse } from '@stoplight/json'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import fileDownload from 'js-file-download'
+import { generatePath, useParams } from 'react-router-dom'
+import { useVersionWithRevision } from '../../useVersionWithRevision'
 
 export function useDownloadPublishedDocument(options: {
   packageKey?: Key
@@ -97,7 +97,8 @@ async function getPublishedDocumentRaw(
     `${generatePath(pathPattern, { packageId, versionId, docId })}?${searchParams}`,
     {
       method: 'get',
-    }, {
+    },
+    {
       customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
     },
   )
@@ -122,7 +123,8 @@ async function downloadPublishedDocument(
     `${generatePath(pathPattern, { packageId, versionId, docId })}?docType=${options?.docType?.toUpperCase()}`,
     {
       method: 'get',
-    }, {
+    },
+    {
       customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
     },
   )
@@ -131,7 +133,12 @@ async function downloadPublishedDocument(
 
   const data = await response.blob()
   if (options?.docType === RAW_DOC_TYPE && options.rawOptions) {
-    return downloadPublishedDocumentRaw(data, getFilename, options.rawOptions.resultFileExtension, options.rawOptions.inlineRefs)
+    return downloadPublishedDocumentRaw(
+      data,
+      getFilename,
+      options.rawOptions.resultFileExtension,
+      options.rawOptions.inlineRefs,
+    )
   }
 
   return fileDownload(data, getFilename())
@@ -158,7 +165,6 @@ async function downloadPublishedDocumentRaw(
     return inlineRefs
       ? fileDownload(toFormattedJsonString(resolvedContent), resultFileName)
       : fileDownload(toFormattedJsonString(toJsonSchema(rawText) ?? {}), resultFileName)
-
   }
   if (jsonToYaml) {
     return inlineRefs

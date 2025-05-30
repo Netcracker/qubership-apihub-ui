@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import { Box, List, ListItemButton, ListItemText, Typography } from '@mui/material'
 import type { FC } from 'react'
 import { memo, useCallback } from 'react'
-import { Box, List, ListItemButton, ListItemText, Typography } from '@mui/material'
-import { useActiveTabContentContext, useSetActiveTabContentContext } from './PackageSettingsPage'
 import type { To } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
-import { useSidebarItems } from './useSidebarItems'
 import type { PackageSettingsTabProps } from './package-settings'
 import { PACKAGE_KINDS_NAMES_MAP } from './package-settings'
+import { useActiveTabContentContext, useSetActiveTabContentContext } from './PackageSettingsPage'
+import { useSidebarItems } from './useSidebarItems'
 
 export const PackageSettingsNavigation: FC<PackageSettingsTabProps> = memo<PackageSettingsTabProps>(({
   packageObject,
@@ -64,8 +64,8 @@ export const PackageSettingsNavigation: FC<PackageSettingsTabProps> = memo<Packa
             data-testid={`TabButton-${value}`}
           >
             <Box>
-              <ListItemText primary={label}/>
-              <ListItemText primary={description} primaryTypographyProps={{ color: '#626D82' }}/>
+              <ListItemText primary={label} />
+              <ListItemText primary={description} primaryTypographyProps={{ color: '#626D82' }} />
             </Box>
           </ListItemButton>
         ))}

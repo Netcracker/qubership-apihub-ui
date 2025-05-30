@@ -18,6 +18,16 @@ import type { FC } from 'react'
 import { memo, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 
+import type { SidebarMenu } from '@netcracker/qubership-apihub-ui-shared/components/NavigationMenu'
+import { NavigationMenu } from '@netcracker/qubership-apihub-ui-shared/components/NavigationMenu'
+import { useActiveTabs } from '@netcracker/qubership-apihub-ui-shared/hooks/pathparams/useActiveTabs'
+import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
+import { AutomationIcon } from '@netcracker/qubership-apihub-ui-shared/icons/AutomationIcon'
+import { CloudSettingsIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CloudSettingsIcon'
+import { LockOpenIcon } from '@netcracker/qubership-apihub-ui-shared/icons/LockOpenIcon'
+import { SnapshotsIcon } from '@netcracker/qubership-apihub-ui-shared/icons/SnapshotsIcon'
+import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { useNavigation } from '../../NavigationProvider'
 import {
   AUTHENTICATION_REPORTS_PAGE,
   AUTOMATION_PAGE,
@@ -25,17 +35,7 @@ import {
   SERVICES_PAGE,
   SNAPSHOTS_PAGE,
 } from '../../routes'
-import { useNavigation } from '../../NavigationProvider'
 import { useNcAgentsPageSettings } from '../../useNcAgentsPageSettings'
-import { useActiveTabs } from '@netcracker/qubership-apihub-ui-shared/hooks/pathparams/useActiveTabs'
-import type { SidebarMenu } from '@netcracker/qubership-apihub-ui-shared/components/NavigationMenu'
-import { NavigationMenu } from '@netcracker/qubership-apihub-ui-shared/components/NavigationMenu'
-import { CloudSettingsIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CloudSettingsIcon'
-import { SnapshotsIcon } from '@netcracker/qubership-apihub-ui-shared/icons/SnapshotsIcon'
-import { AutomationIcon } from '@netcracker/qubership-apihub-ui-shared/icons/AutomationIcon'
-import { LockOpenIcon } from '@netcracker/qubership-apihub-ui-shared/icons/LockOpenIcon'
-import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 
 export const NamespaceNavigationMenu: FC = memo(() => {
   const { agentId, namespaceKey: namespaceId } = useParams()
@@ -72,28 +72,28 @@ const MENU_ITEMS: SidebarMenu[] = [
     id: SERVICES_PAGE,
     title: 'Cloud services',
     tooltip: 'Cloud services',
-    icon: <CloudSettingsIcon/>,
+    icon: <CloudSettingsIcon />,
     testId: 'ServicesTabButton',
   },
   {
     id: SNAPSHOTS_PAGE,
     title: 'Snapshots',
     tooltip: 'Snapshots',
-    icon: <SnapshotsIcon/>,
+    icon: <SnapshotsIcon />,
     testId: 'SnapshotsTabButton',
   },
   {
     id: AUTOMATION_PAGE,
     title: 'Automation',
     tooltip: 'Automation',
-    icon: <AutomationIcon/>,
+    icon: <AutomationIcon />,
     testId: 'AutomationTabButton',
   },
   {
     id: `${SECURITY_REPORTS_PAGE}/${AUTHENTICATION_REPORTS_PAGE}`,
     title: 'Security Reports',
     tooltip: 'Security Reports',
-    icon: <LockOpenIcon/>,
+    icon: <LockOpenIcon />,
     testId: 'SecurityReportsTabButton',
   },
 ]

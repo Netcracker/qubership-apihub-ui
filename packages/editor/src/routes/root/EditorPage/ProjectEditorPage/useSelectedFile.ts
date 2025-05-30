@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { useBranchConfig } from './useBranchConfig'
-import { useFileSearchParam } from '../../useFileSearchParam'
-import { useMemo } from 'react'
 import type { ProjectFile } from '@apihub/entities/project-files'
+import { useMemo } from 'react'
+import { useFileSearchParam } from '../../useFileSearchParam'
+import { useBranchConfig } from './useBranchConfig'
 
 export function useSelectedFile(): ProjectFile | null {
   const [fileKey] = useFileSearchParam()

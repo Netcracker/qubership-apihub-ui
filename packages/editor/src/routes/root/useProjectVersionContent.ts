@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import { useQuery } from '@tanstack/react-query'
-import { useParams } from 'react-router-dom'
-import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { ProjectVersionContent, ProjectVersionContentDto } from '@apihub/entities/version-contents'
-import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { editorRequestJson } from '@apihub/utils/requests'
 import { toPublishedSpec } from '@apihub/entities/published-specs'
-import { alphabeticallyBy } from '@netcracker/qubership-apihub-ui-shared/utils/comparers'
 import { toRef } from '@apihub/entities/refs'
-import type { DiffTypeDto} from '@netcracker/qubership-apihub-api-processor'
+import type { ProjectVersionContent, ProjectVersionContentDto } from '@apihub/entities/version-contents'
+import { editorRequestJson } from '@apihub/utils/requests'
+import type { DiffTypeDto } from '@netcracker/qubership-apihub-api-processor'
 import { replacePropertyInChangesSummary } from '@netcracker/qubership-apihub-api-processor'
 import type { ChangesSummary } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
+import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { alphabeticallyBy } from '@netcracker/qubership-apihub-ui-shared/utils/comparers'
+import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { useQuery } from '@tanstack/react-query'
+import { useParams } from 'react-router-dom'
 
 const PROJECT_VERSION_CONTENT_QUERY_KEY = 'project-version-content'
 
@@ -66,9 +66,12 @@ export async function getProjectVersionContent(
     dependFiles: { value: dependFiles },
     importFiles: { value: importFiles },
   })
-  return await editorRequestJson<ProjectVersionContentDto>(`/projects/${projectId}/versions/${versionId}?${searchParams}`, {
-    method: 'GET',
-  })
+  return await editorRequestJson<ProjectVersionContentDto>(
+    `/projects/${projectId}/versions/${versionId}?${searchParams}`,
+    {
+      method: 'GET',
+    },
+  )
 }
 
 function toProjectVersionContent(value: ProjectVersionContentDto): ProjectVersionContent {

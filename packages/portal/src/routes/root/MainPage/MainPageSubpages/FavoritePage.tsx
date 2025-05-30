@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
+import { FAVORITE_PAGE_REFERER } from '@apihub/entities/referer-pages-names'
+import { MainPageCard } from '@apihub/routes/root/MainPage/MainPageCard'
+import { Box } from '@mui/material'
+import { DASHBOARD_KIND, GROUP_KIND, PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import type { FC } from 'react'
 import React, { memo } from 'react'
-import { Box } from '@mui/material'
 import type { ActivityHistoryQueryResult } from '../../useActivityHistory'
 import { useActivityHistory } from '../../useActivityHistory'
-import { ActivityHistoryCard } from './ActivityHistoryCard'
 import {
   useActivityHistoryFiltersContext,
   useSetActivityHistoryFiltersContext,
 } from '../ActivityHistoryFiltersProvider'
-import { MainPageCard } from '@apihub/routes/root/MainPage/MainPageCard'
-import { DASHBOARD_KIND, GROUP_KIND, PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { FAVORITE_PAGE_REFERER } from '@apihub/entities/referer-pages-names'
+import { ActivityHistoryCard } from './ActivityHistoryCard'
 
 export const FavoritePage: FC = memo(() => {
   const { textFilter, types } = useActivityHistoryFiltersContext()

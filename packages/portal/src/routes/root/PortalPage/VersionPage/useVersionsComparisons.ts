@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-import { useQuery } from '@tanstack/react-query'
 import type { Key, VersionKey } from '@apihub/entities/keys'
-import { useParams } from 'react-router-dom'
-import type { BuildType, VersionsComparison } from '@netcracker/qubership-apihub-api-processor'
-import { PackageVersionBuilder } from '../package-version-builder'
-import { useVersionWithRevision } from '../../useVersionWithRevision'
-import { useState } from 'react'
-import { useShowErrorNotification } from '../../BasePage/Notification'
 import { portalRequestJson } from '@apihub/utils/requests'
+import type { BuildType, VersionsComparison } from '@netcracker/qubership-apihub-api-processor'
 import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import type { PublishStatus } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
 import {
@@ -32,9 +26,15 @@ import {
   RUNNING_PUBLISH_STATUS,
   setPublicationDetails,
 } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
-import { getAuthorization } from '@netcracker/qubership-apihub-ui-shared/utils/storages'
 import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { getAuthorization } from '@netcracker/qubership-apihub-ui-shared/utils/storages'
+import { useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
+import { useParams } from 'react-router-dom'
 import { v4 as uuidv4 } from 'uuid'
+import { useShowErrorNotification } from '../../BasePage/Notification'
+import { useVersionWithRevision } from '../../useVersionWithRevision'
+import { PackageVersionBuilder } from '../package-version-builder'
 
 const VERSION_CHANGES_QUERY_KEY = 'version-changes-query-key'
 
@@ -55,16 +55,19 @@ export function useVersionsComparisons(options?: {
 
   const changedPackageKey = options?.changedPackageKey ?? packageKey ?? NO_VERSION_TO_COMPARE
   const changedVersionKey = options?.changedVersionKey ?? versionKey ?? NO_VERSION_TO_COMPARE
-  const { fullVersion: changedVersion = changedVersionKey } = useVersionWithRevision(changedVersionKey, changedPackageKey)
+  const { fullVersion: changedVersion = changedVersionKey } = useVersionWithRevision(
+    changedVersionKey,
+    changedPackageKey,
+  )
 
   const originPackageKey = options?.originPackageKey ?? changedPackageKey
   const originVersionKey = options?.originVersionKey ?? NO_VERSION_TO_COMPARE
   const { fullVersion: originVersion = originVersionKey } = useVersionWithRevision(originVersionKey, originPackageKey)
 
-  const allComparisonParamsProvided = changedPackageKey !== NO_VERSION_TO_COMPARE &&
-    changedVersionKey !== NO_VERSION_TO_COMPARE &&
-    originPackageKey !== NO_VERSION_TO_COMPARE &&
-    originVersionKey !== NO_VERSION_TO_COMPARE
+  const allComparisonParamsProvided = changedPackageKey !== NO_VERSION_TO_COMPARE
+    && changedVersionKey !== NO_VERSION_TO_COMPARE
+    && originPackageKey !== NO_VERSION_TO_COMPARE
+    && originVersionKey !== NO_VERSION_TO_COMPARE
 
   const { data, isLoading, isSuccess, refetch } = useQuery<VersionsComparison[] | undefined, Error>({
     queryKey: [VERSION_CHANGES_QUERY_KEY, originPackageKey!, originVersion, changedPackageKey, changedVersion],
@@ -111,9 +114,9 @@ export function useVersionsComparisons(options?: {
 
         try {
           const [versionsComparisons, data] = await PackageVersionBuilder.buildChangelogPackage({
-            packageKey: changedPackageKey!, //from path param
+            packageKey: changedPackageKey!, // from path param
             versionKey: changedVersion!,
-            previousPackageKey: originPackageKey!, //from search param
+            previousPackageKey: originPackageKey!, // from search param
             previousVersionKey: originVersion!,
             authorization: getAuthorization(),
           })
@@ -166,7 +169,9 @@ type GetVersionChangelogOrBuildResponseOptions = {
   reCalculate?: boolean
 }
 
-async function getVersionChangelogOrBuildResponse(options: GetVersionChangelogOrBuildResponseOptions): Promise<CompareViaBuilderResponse> {
+async function getVersionChangelogOrBuildResponse(
+  options: GetVersionChangelogOrBuildResponseOptions,
+): Promise<CompareViaBuilderResponse> {
   const {
     builderId,
     version,
@@ -209,16 +214,18 @@ export function isChangelogBuildRunningOrFailed(
 
 export type CompareViaBuilderResponse = null | ChangelogBuildSuccessfulCreationResponse | ChangelogBuildStatusResponse
 
-export type ChangelogBuildSuccessfulCreationResponse = {
-  buildId: string
-} & Partial<{
-  packageId: string
-  version: string
-  previousVersion: string
-  previousVersionPackageId: string
-  buildType: BuildType
-  createdBy: string
-}>
+export type ChangelogBuildSuccessfulCreationResponse =
+  & {
+    buildId: string
+  }
+  & Partial<{
+    packageId: string
+    version: string
+    previousVersion: string
+    previousVersionPackageId: string
+    buildType: BuildType
+    createdBy: string
+  }>
 
 export type ChangelogBuildStatusResponse = {
   status?: Exclude<PublishStatus, 'none' | 'complete'>

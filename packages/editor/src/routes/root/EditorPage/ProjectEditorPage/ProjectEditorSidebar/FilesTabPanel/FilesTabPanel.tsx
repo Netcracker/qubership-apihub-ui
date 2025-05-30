@@ -17,42 +17,42 @@
 import type { Dispatch, FC, SetStateAction, SyntheticEvent } from 'react'
 import { memo, useEffect, useMemo, useState } from 'react'
 
-import { useEventBus } from '../../../../../EventBusProvider'
-import { useBranchConfig } from '../../useBranchConfig'
-import { useHasAllBranchPermission } from '../../useHasBranchPermission'
-import { useFileSearchParam } from '../../../../useFileSearchParam'
-import { TreeView } from '@mui/lab'
 import ChevronRightOutlinedIcon from '@mui/icons-material/ChevronRightOutlined'
 import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined'
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
+import { TreeView } from '@mui/lab'
 import { Box, MenuItem, Tooltip, Typography } from '@mui/material'
+import { useEventBus } from '../../../../../EventBusProvider'
+import { useFileSearchParam } from '../../../../useFileSearchParam'
+import { useBranchConfig } from '../../useBranchConfig'
+import { useHasAllBranchPermission } from '../../useHasBranchPermission'
 
-import { FilesTabPanelSidebarSkeleton } from './FilesTabPanelSidebarSkeleton'
-import { InteractiveTreeItem } from './InteractiveTreeItem/InteractiveTreeItem'
 import { useIsFilesProjectEditorMode } from '../../useProjectEditorMode'
 import { useSelectedFile } from '../../useSelectedFile'
 import { CollapsibleNavPanel } from '../CollapsibleNavPanel'
-import { ImportFromGitDialog } from './ImportFromGitDialog/ImportFromGitDialog'
-import { UploadFileDialog } from './UploadFileDialog/UploadFileDialog'
-import { ImportByUrlDialog } from './ImportByUrlDialog/ImportByUrlDialog'
 import { CreateFileDialog } from './CreateFileDialog/CreateFileDialog'
-import { RenameFileDialog } from './RenameFileDialog/RenameFileDialog'
+import { FilesTabPanelSidebarSkeleton } from './FilesTabPanelSidebarSkeleton'
+import { ImportByUrlDialog } from './ImportByUrlDialog/ImportByUrlDialog'
+import { ImportFromGitDialog } from './ImportFromGitDialog/ImportFromGitDialog'
+import { InteractiveTreeItem } from './InteractiveTreeItem/InteractiveTreeItem'
 import { MoveFileDialog } from './MoveFileDialog'
+import { RenameFileDialog } from './RenameFileDialog/RenameFileDialog'
+import { UploadFileDialog } from './UploadFileDialog/UploadFileDialog'
 
-import { useDereferencedSpec } from '../../useDereferencedSpec'
-import { buildProjectFileTree, getRelatives } from '@apihub/utils/trees'
-import { useSetSearchParams } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSetSearchParams'
-import { FILES_PROJECT_EDITOR_MODE } from '@apihub/entities/editor-modes'
-import { NAVIGATION_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
-import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import { MenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
-import { DeleteContentDialog } from './DeleteContentDialog/DeleteContentDialog'
-import { EMPTY_GIT_FILE } from '@apihub/entities/git-files'
-import { UNKNOWN_FILE_FORMAT } from '@netcracker/qubership-apihub-ui-shared/utils/files'
-import { UNMODIFIED_CHANGE_STATUS } from '@netcracker/qubership-apihub-ui-shared/entities/change-statuses'
 import { SidebarTabPanel } from '@apihub/components/SidebarTabPanel'
-import { useBranchCacheDocument } from '../../useBranchCache'
+import { FILES_PROJECT_EDITOR_MODE } from '@apihub/entities/editor-modes'
+import { EMPTY_GIT_FILE } from '@apihub/entities/git-files'
+import { buildProjectFileTree, getRelatives } from '@apihub/utils/trees'
+import { MenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
+import { NAVIGATION_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
+import { UNMODIFIED_CHANGE_STATUS } from '@netcracker/qubership-apihub-ui-shared/entities/change-statuses'
+import { useSetSearchParams } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSetSearchParams'
+import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { UNKNOWN_FILE_FORMAT } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import { UNKNOWN_SPEC_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import { useBranchCacheDocument } from '../../useBranchCache'
+import { useDereferencedSpec } from '../../useDereferencedSpec'
+import { DeleteContentDialog } from './DeleteContentDialog/DeleteContentDialog'
 
 export const FilesTabPanel: FC = memo(() => {
   const visible = useIsFilesProjectEditorMode()
@@ -74,15 +74,13 @@ export const FilesTabPanel: FC = memo(() => {
     <>
       <SidebarTabPanel
         value={FILES_PROJECT_EDITOR_MODE}
-        header={
-          <Typography variant="h3" noWrap>Files</Typography>
-        }
+        header={<Typography variant="h3" noWrap>Files</Typography>}
         body={
           <>
-            {
-              isLoading
-                ? <FilesTabPanelSidebarSkeleton count={6}/>
-                : <Placeholder
+            {isLoading
+              ? <FilesTabPanelSidebarSkeleton count={6} />
+              : (
+                <Placeholder
                   invisible={isNotEmpty(fileTree)}
                   area={NAVIGATION_PLACEHOLDER_AREA}
                   message="No files"
@@ -96,8 +94,8 @@ export const FilesTabPanel: FC = memo(() => {
                       py: 2,
                       p: 0,
                     }}
-                    defaultCollapseIcon={<ExpandMoreOutlinedIcon/>}
-                    defaultExpandIcon={<ChevronRightOutlinedIcon/>}
+                    defaultCollapseIcon={<ExpandMoreOutlinedIcon />}
+                    defaultExpandIcon={<ChevronRightOutlinedIcon />}
                     selected={selectedFileKey}
                     expanded={expanded}
                     onNodeToggle={(_: SyntheticEvent, nodeIds: string[]) => setExpanded(nodeIds)}
@@ -108,42 +106,58 @@ export const FilesTabPanel: FC = memo(() => {
                       }
                     }}
                   >
-                    {
-                      fileTree.map(file => (
-                        <InteractiveTreeItem key={file.key} nodeId={file.key} file={file} level={1}/>
-                      ))
-                    }
+                    {fileTree.map(file => (
+                      <InteractiveTreeItem key={file.key} nodeId={file.key} file={file} level={1} />
+                    ))}
                   </TreeView>
                 </Placeholder>
-            }
-            {!isLoading &&
-              <Tooltip
-                title={!hasAllPermission ? 'You do not have permissions to commit to the current branch in GitLab' : ''}
-                placement={'right'}
-              >
-                <Box sx={{ mb: 2, mx: 2 }}>
-                  <MenuButton
-                    sx={{
-                      '&.MuiButtonBase-root.MuiButton-root.Mui-disabled': {
-                        color: 'white',
-                        backgroundColor: 'rgba(0, 187, 91, 0.4)',
-                      },
-                      width: '100%',
+              )}
+            {!isLoading
+              && (
+                <Tooltip
+                  title={!hasAllPermission
+                    ? 'You do not have permissions to commit to the current branch in GitLab'
+                    : ''}
+                  placement={'right'}
+                >
+                  <Box sx={{ mb: 2, mx: 2 }}>
+                    <MenuButton
+                      sx={{
+                        '&.MuiButtonBase-root.MuiButton-root.Mui-disabled': {
+                          color: 'white',
+                          backgroundColor: 'rgba(0, 187, 91, 0.4)',
+                        },
+                        width: '100%',
                       }}
-                    disabled={!hasAllPermission}
-                    variant="added"
-                    title="Add"
-                    icon={<KeyboardArrowDownOutlinedIcon/>}
-                    alignItems="center"
-                  >
-                    <MenuItem onClick={() => showImportFromGitDialog()}>Import from GIT</MenuItem>
-                    <MenuItem onClick={() => showUploadDialog()}>Upload</MenuItem>
-                    <MenuItem onClick={() => showImportByUrlDialog()}>Import by URL</MenuItem>
-                    <MenuItem onClick={() => showCreateFileDialog()}>Create</MenuItem>
-                  </MenuButton>
-                </Box>
-              </Tooltip>
-            }
+                      disabled={!hasAllPermission}
+                      variant="added"
+                      title="Add"
+                      icon={<KeyboardArrowDownOutlinedIcon />}
+                      alignItems="center"
+                    >
+                      <MenuItem
+                        onClick={() =>
+                          showImportFromGitDialog()}
+                      >
+                        Import from GIT
+                      </MenuItem>
+                      <MenuItem
+                        onClick={() =>
+                          showUploadDialog()}
+                      >
+                        Upload
+                      </MenuItem>
+                      <MenuItem
+                        onClick={() =>
+                          showImportByUrlDialog()}
+                      >
+                        Import by URL
+                      </MenuItem>
+                      <MenuItem onClick={() => showCreateFileDialog()}>Create</MenuItem>
+                    </MenuButton>
+                  </Box>
+                </Tooltip>
+              )}
           </>
         }
       />
@@ -154,13 +168,13 @@ export const FilesTabPanel: FC = memo(() => {
         type={type}
       />
 
-      <ImportFromGitDialog/>
-      <UploadFileDialog/>
-      <ImportByUrlDialog/>
-      <CreateFileDialog/>
-      <RenameFileDialog/>
-      <MoveFileDialog/>
-      <DeleteContentDialog/>
+      <ImportFromGitDialog />
+      <UploadFileDialog />
+      <ImportByUrlDialog />
+      <CreateFileDialog />
+      <RenameFileDialog />
+      <MoveFileDialog />
+      <DeleteContentDialog />
     </>
   )
 })

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import type { PackageId, VersionStatus } from '@netcracker/qubership-apihub-api-processor'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
+import { API_V1, requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { useMutation } from '@tanstack/react-query'
 import { generatePath } from 'react-router-dom'
 import { useShowErrorNotification } from '../BasePage/Notification'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { API_V1, requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
-import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
-import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import type { PackageId, VersionStatus } from '@netcracker/qubership-apihub-api-processor'
-import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 
 type PublishDashboardVersionFromCSVData = {
   packageKey: Key

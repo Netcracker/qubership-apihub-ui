@@ -16,14 +16,14 @@
 
 import type { FC } from 'react'
 import React, { memo } from 'react'
-import { usePrivateWorkspace } from './usePrivateWorkspaceUser'
 import { PrivatePagePlaceholder } from './PrivatePagePlaceholder'
 import { PrivatePageTable } from './PrivatePageTable'
+import { usePrivateWorkspace } from './usePrivateWorkspaceUser'
 
 export const PrivatePage: FC = memo(() => {
   const [workspaceId, isLoading] = usePrivateWorkspace()
 
   return workspaceId
-    ? <PrivatePageTable workspaceId={workspaceId} isIdLoading={isLoading}/>
-    : <PrivatePagePlaceholder/>
+    ? <PrivatePageTable workspaceId={workspaceId} isIdLoading={isLoading} />
+    : <PrivatePagePlaceholder />
 })

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useState } from 'react'
 import Tooltip from '@mui/material/Tooltip'
 import type { TooltipProps } from '@mui/material/Tooltip/Tooltip'
+import type { FC } from 'react'
+import { memo, useState } from 'react'
 
 type OverflowTooltipProps = {
   checkOverflow?: (currentTarget: EventTarget & HTMLDivElement) => boolean

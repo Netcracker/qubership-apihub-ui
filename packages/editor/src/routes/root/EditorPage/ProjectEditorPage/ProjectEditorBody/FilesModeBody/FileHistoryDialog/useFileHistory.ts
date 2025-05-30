@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
+import type { ProjectFileHistory, ProjectFileHistoryDto } from '@apihub/entities/project-file-history'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { toUser } from '@netcracker/qubership-apihub-ui-shared/types/user'
+import type { InvalidateQuery, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import { useBranchSearchParam } from '../../../../../useBranchSearchParam'
 import { getFileHistory } from '../../../useProjectFileContent'
-import type { ProjectFileHistory, ProjectFileHistoryDto } from '@apihub/entities/project-file-history'
-import type { InvalidateQuery, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { toUser } from '@netcracker/qubership-apihub-ui-shared/types/user'
 
 const FILE_HISTORY_QUERY_KEY = 'file-history-query-key'
 

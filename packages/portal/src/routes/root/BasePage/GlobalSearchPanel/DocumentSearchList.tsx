@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useRef } from 'react'
-import { Box, Typography } from '@mui/material'
-import { ResultCommonHeader } from './ResultCommonHeader'
-import { CONTENT_WIDTH } from './GlobalSearchPanel'
-import { RateResults } from './RateResults'
-import { Marker } from 'react-mark.js'
-import type { FetchNextSearchResultList } from './global-search'
-import { getDocumentPath } from '../../../NavigationProvider'
 import type { DocumentSearchResult } from '@apihub/entities/global-search'
+import { Box, Typography } from '@mui/material'
+import { FormattedDate } from '@netcracker/qubership-apihub-ui-shared/components/FormattedDate'
+import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import { useIntersectionObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useIntersectionObserver'
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
-import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
-import { FormattedDate } from '@netcracker/qubership-apihub-ui-shared/components/FormattedDate'
+import type { FC } from 'react'
+import { memo, useRef } from 'react'
+import { Marker } from 'react-mark.js'
+import { getDocumentPath } from '../../../NavigationProvider'
+import type { FetchNextSearchResultList } from './global-search'
+import { CONTENT_WIDTH } from './GlobalSearchPanel'
+import { RateResults } from './RateResults'
+import { ResultCommonHeader } from './ResultCommonHeader'
 
 export type DocumentSearchListProps = {
   value: DocumentSearchResult[]
@@ -74,25 +74,26 @@ export const DocumentSearchList: FC<DocumentSearchListProps> = memo<DocumentSear
                 <Box display="flex" gap={1} alignItems="center">
                   <Typography variant="body2">Publication date</Typography>
                   <Typography variant="subtitle2" data-testid="PublicationDateValue">
-                    <FormattedDate value={createdAt}/>
+                    <FormattedDate value={createdAt} />
                   </Typography>
                 </Box>
 
-                <RateResults searchText={searchText} labels={labels}/>
+                <RateResults searchText={searchText} labels={labels} />
                 <Typography noWrap variant="body2" data-testid="DocumentContent">
                   {content ?? 'No content'}
                 </Typography>
               </Marker>
             </Box>
           )
-        })}
+        },
+      )}
 
       {hasNextPage && (
         <Box
           ref={ref}
           height="100px"
         >
-          <LoadingIndicator/>
+          <LoadingIndicator />
         </Box>
       )}
     </Box>

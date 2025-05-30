@@ -14,32 +14,32 @@
  * limitations under the License.
  */
 
+import { Autocomplete, Box, Button, debounce, Grid, ListItem, MenuItem, Stack, TextField } from '@mui/material'
 import type { FC, SyntheticEvent } from 'react'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { Autocomplete, Box, Button, debounce, Grid, ListItem, MenuItem, Stack, TextField } from '@mui/material'
-import { useUpdateProject } from '../../../../../useProject'
-import { useIntegrationRepositories } from '../../../../../useIntegrationRepositories'
-import { useIntegrationBranches } from '../../../../../useIntegrationBranches'
 import { Controller, useForm } from 'react-hook-form'
+import { useIntegrationBranches } from '../../../../../useIntegrationBranches'
+import { useIntegrationRepositories } from '../../../../../useIntegrationRepositories'
+import { useUpdateProject } from '../../../../../useProject'
 
-import { LoadingButton } from '@mui/lab'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
+import { LoadingButton } from '@mui/lab'
 
-import { useSetEditableSettingsTabContent } from '../SettingsModeBody'
-import { useDeleteProject } from './useDeleteProject'
-import { usePackages } from '../../../../../usePackages'
-import type { SettingsGeneralProps } from './SettingsGeneralProps'
+import { ConfirmationDialog } from '@apihub/components/ConfirmationDialog'
+import { TitledValue } from '@apihub/components/TitledValue'
 import type { IntegrationRepository } from '@apihub/entities/integration-repository'
-import type { Package } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { EMPTY_PACKAGE, PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import type { Project } from '@apihub/entities/projects'
 import { EMPTY_PROJECT } from '@apihub/entities/projects'
+import { calculateProjectPath } from '@apihub/utils/projects'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
-import { TitledValue } from '@apihub/components/TitledValue'
+import type { Package } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { EMPTY_PACKAGE, PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { DEFAULT_DEBOUNCE } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
 import { disableAutocompleteSearch } from '@netcracker/qubership-apihub-ui-shared/utils/mui'
-import { ConfirmationDialog } from '@apihub/components/ConfirmationDialog'
-import { calculateProjectPath } from '@apihub/utils/projects'
+import { usePackages } from '../../../../../usePackages'
+import { useSetEditableSettingsTabContent } from '../SettingsModeBody'
+import type { SettingsGeneralProps } from './SettingsGeneralProps'
+import { useDeleteProject } from './useDeleteProject'
 
 // TODO: Return the ability to change group and alias when BE will be ready
 export const SettingsEditorGeneral: FC<SettingsGeneralProps> = memo(props => {
@@ -57,7 +57,10 @@ export const SettingsEditorGeneral: FC<SettingsGeneralProps> = memo(props => {
   } = project
 
   const [repositoryNamePart, setRepositoryNamePart] = useState('')
-  const onRepositoryNamePartChange = useCallback((_: SyntheticEvent, value: string): void => setRepositoryNamePart(value), [])
+  const onRepositoryNamePartChange = useCallback(
+    (_: SyntheticEvent, value: string): void => setRepositoryNamePart(value),
+    [],
+  )
   const repositories = useIntegrationRepositories(repositoryNamePart)
 
   const [packagesTextFilter, setPackagesTextFilter] = useState<string>('')
@@ -73,9 +76,11 @@ export const SettingsEditorGeneral: FC<SettingsGeneralProps> = memo(props => {
     },
   }), [integration?.defaultBranch, integration?.repositoryKey, integration?.repositoryName, packageKey, project])
 
-  const { handleSubmit, control, setValue, reset, watch } = useForm<Project & {
-    repository: IntegrationRepository
-  }>({ defaultValues })
+  const { handleSubmit, control, setValue, reset, watch } = useForm<
+    Project & {
+      repository: IntegrationRepository
+    }
+  >({ defaultValues })
 
   const branches = useIntegrationBranches(watch().repository?.key ?? '')
   const [packages, arePackagesLoading] = usePackages({
@@ -92,7 +97,9 @@ export const SettingsEditorGeneral: FC<SettingsGeneralProps> = memo(props => {
   const [updateProject, isUpdateLoading, isUpdateSuccess] = useUpdateProject()
   const [deleteProject, isDeleteLoading] = useDeleteProject()
 
-  useEffect(() => {isUpdateSuccess && setEditable(false)}, [isUpdateSuccess, setEditable])
+  useEffect(() => {
+    isUpdateSuccess && setEditable(false)
+  }, [isUpdateSuccess, setEditable])
   useEffect(() => reset(defaultValues), [defaultValues, reset])
 
   return (
@@ -110,33 +117,31 @@ export const SettingsEditorGeneral: FC<SettingsGeneralProps> = memo(props => {
                 <Controller
                   name="name"
                   control={control}
-                  render={({ field }) => <TextField {...field} sx={{ m: 0 }} required label="Project name"/>}
+                  render={({ field }) => <TextField {...field} sx={{ m: 0 }} required label="Project name" />}
                 />
               </Grid>
               <Grid item xs={6}>
                 <Controller
                   name="integration.defaultBranch"
                   control={control}
-                  render={({ field }) => <TextField {...field} sx={{ m: 0 }} required select label="Default Branch">
-                    {
-                      branches.map(({ name }) => (
-                        <MenuItem key={name} value={name}>{name}</MenuItem>
-                      ))
-                    }
-                  </TextField>}
+                  render={({ field }) => (
+                    <TextField {...field} sx={{ m: 0 }} required select label="Default Branch">
+                      {branches.map(({ name }) => <MenuItem key={name} value={name}>{name}</MenuItem>)}
+                    </TextField>
+                  )}
                 />
               </Grid>
               <Grid item xs={6}>
-                <TitledValue title="Parent group" value={calculateProjectPath(project)}/>
+                <TitledValue title="Parent group" value={calculateProjectPath(project)} />
               </Grid>
               <Grid item xs={6}>
-                <TitledValue title="Alias" value={alias}/>
+                <TitledValue title="Alias" value={alias} />
               </Grid>
               <Grid item xs={12}>
                 <Controller
                   name="integration.defaultFolder"
                   control={control}
-                  render={({ field }) => <TextField {...field} sx={{ m: 0 }} required label="Default Folder"/>}
+                  render={({ field }) => <TextField {...field} sx={{ m: 0 }} required label="Default Folder" />}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -157,7 +162,7 @@ export const SettingsEditorGeneral: FC<SettingsGeneralProps> = memo(props => {
                         onChange(value)
                       }}
                       onInputChange={debounce(onRepositoryNamePartChange, DEFAULT_DEBOUNCE)}
-                      renderInput={(params) => <TextField {...params} required label="Git repository"/>}
+                      renderInput={(params) => <TextField {...params} required label="Git repository" />}
                     />
                   )}
                 />
@@ -166,8 +171,9 @@ export const SettingsEditorGeneral: FC<SettingsGeneralProps> = memo(props => {
                 <Controller
                   name="description"
                   control={control}
-                  render={({ field }) => <TextField {...field} sx={{ m: 0 }} multiline maxRows={5}
-                                                    label="Description"/>}
+                  render={({ field }) => (
+                    <TextField {...field} sx={{ m: 0 }} multiline maxRows={5} label="Description" />
+                  )}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -183,7 +189,7 @@ export const SettingsEditorGeneral: FC<SettingsGeneralProps> = memo(props => {
                       getOptionLabel={({ name }: Package) => name ?? ''}
                       isOptionEqualToValue={({ key: optionKey }, { key: valueKey }) => optionKey === valueKey}
                       renderOption={(props, { key, name }) => <ListItem {...props} key={key}>{name}</ListItem>}
-                      renderInput={(params) => <TextField {...params} label="Package"/>}
+                      renderInput={(params) => <TextField {...params} label="Package" />}
                       onChange={(_, value) => {
                         setValue('packageKey', value?.key ?? '')
                         setSelectedPackage(value)
@@ -201,7 +207,7 @@ export const SettingsEditorGeneral: FC<SettingsGeneralProps> = memo(props => {
                 color="error"
                 onClick={() => setConfirmationOpen(true)}
               >
-                <DeleteOutlinedIcon/>
+                <DeleteOutlinedIcon />
                 Delete Project
               </Button>
             </Grid>

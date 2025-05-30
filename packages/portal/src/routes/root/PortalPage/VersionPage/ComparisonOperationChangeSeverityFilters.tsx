@@ -14,31 +14,30 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useEffect, useMemo, useState } from 'react'
-import { useComparedOperationsPair } from './ComparedOperationsContext'
-import { DEFAULT_CHANGE_SEVERITY_MAP } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
-import { ChangeSeverityFilters } from '@netcracker/qubership-apihub-ui-shared/components/ChangeSeverityFilters'
-import { useRiskyChanges } from '@apihub/routes/root/PortalPage/VersionPage/useRiskyChanges'
-import {
-  getApiDiffResult,
-  handleRiskyChanges,
-} from '@netcracker/qubership-apihub-ui-shared/utils/api-diff-result'
-import { GLOBAL_DIFF_META_KEY } from '@netcracker/qubership-apihub-ui-shared/utils/api-diffs'
-import { BREAKING_CHANGE_TYPE } from '@netcracker/qubership-apihub-api-processor'
-import type { Diff } from '@netcracker/qubership-apihub-api-diff'
-import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import {
   useIsApiDiffResultLoading,
   useSetApiDiffResult,
   useSetIsApiDiffResultLoading,
 } from '@apihub/routes/root/ApiDiffResultProvider'
 import type { ChangelogAvailable } from '@apihub/routes/root/PortalPage/VersionPage/common-props'
+import { useRiskyChanges } from '@apihub/routes/root/PortalPage/VersionPage/useRiskyChanges'
+import type { Diff } from '@netcracker/qubership-apihub-api-diff'
+import { BREAKING_CHANGE_TYPE } from '@netcracker/qubership-apihub-api-processor'
+import { ChangeSeverityFilters } from '@netcracker/qubership-apihub-ui-shared/components/ChangeSeverityFilters'
+import { DEFAULT_CHANGE_SEVERITY_MAP } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
+import { getApiDiffResult, handleRiskyChanges } from '@netcracker/qubership-apihub-ui-shared/utils/api-diff-result'
+import { GLOBAL_DIFF_META_KEY } from '@netcracker/qubership-apihub-ui-shared/utils/api-diffs'
+import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import type { FC } from 'react'
+import { memo, useEffect, useMemo, useState } from 'react'
+import { useComparedOperationsPair } from './ComparedOperationsContext'
 
 type ChangesSummary = typeof DEFAULT_CHANGE_SEVERITY_MAP
 
 export type ComparisonOperationChangeSeverityFiltersProps = ChangelogAvailable
-export const ComparisonOperationChangeSeverityFilters: FC<ComparisonOperationChangeSeverityFiltersProps> = memo<ComparisonOperationChangeSeverityFiltersProps>(props => {
+export const ComparisonOperationChangeSeverityFilters: FC<ComparisonOperationChangeSeverityFiltersProps> = memo<
+  ComparisonOperationChangeSeverityFiltersProps
+>(props => {
   const { isChangelogAvailable } = props
 
   const {
@@ -86,9 +85,18 @@ export const ComparisonOperationChangeSeverityFilters: FC<ComparisonOperationCha
       setApiDiffResultContext(apiDiffResult)
       setChanges(apiDiffResult?.diffs.reduce(changesSummaryReducer, { ...DEFAULT_CHANGE_SEVERITY_MAP }))
     }
-  }, [apiDiffLoading, apiDiffResult, isOperationsLoading, isRiskyChangesLoading, isSuccess, riskyChanges, setApiDiffResultContext, setChanges])
+  }, [
+    apiDiffLoading,
+    apiDiffResult,
+    isOperationsLoading,
+    isRiskyChangesLoading,
+    isSuccess,
+    riskyChanges,
+    setApiDiffResultContext,
+    setChanges,
+  ])
 
-  //todo return after resolve
+  // todo return after resolve
   /*const [filters, setFilters] = useSeverityFiltersSearchParam()
 
   const handleFilters = useCallback((selectedFilters: ChangeSeverity[]): void => {

@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import React, { memo, useMemo, useState } from 'react'
-import type { ColumnDef } from '@tanstack/table-core'
 import { Box, Skeleton, TableCell, TableRow, Tooltip } from '@mui/material'
+import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { DeprecatedItem } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoContextIcon'
+import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import type { ColumnFiltersState, VisibilityState } from '@tanstack/react-table'
 import { flexRender, getCoreRowModel, getFilteredRowModel, useReactTable } from '@tanstack/react-table'
-import type { SubTableProps } from '../OpenApiViewer/OpenApiTable'
+import type { ColumnDef } from '@tanstack/table-core'
+import type { FC } from 'react'
+import React, { memo, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { useOperationDeprecatedItems } from './useOperationDeprecatedItems'
+import type { SubTableProps } from '../OpenApiViewer/OpenApiTable'
 import { DEPRECATED_SINCE_COLUMN_ID, DeprecatedInfo, DETAILS_COLUMN_ID } from './DeprecatedOperationsTable'
-import type { DeprecatedItem } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
-import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoContextIcon'
+import { useOperationDeprecatedItems } from './useOperationDeprecatedItems'
 
 const DESCRIPTION_COLUMN_ID = 'description'
 
@@ -66,9 +66,11 @@ export const DeprecatedItemsSubTable: FC<SubTableProps> = memo<SubTableProps>((
         if (deprecatedSince) {
           const { versionKey: versionToDisplay } = getSplittedVersionKey(deprecatedSince)
 
-          return <TextWithOverflowTooltip tooltipText={versionToDisplay}>
-            {versionToDisplay}
-          </TextWithOverflowTooltip>
+          return (
+            <TextWithOverflowTooltip tooltipText={versionToDisplay}>
+              {versionToDisplay}
+            </TextWithOverflowTooltip>
+          )
         }
       },
     },
@@ -76,7 +78,8 @@ export const DeprecatedItemsSubTable: FC<SubTableProps> = memo<SubTableProps>((
 
   const data: DeprecatedItem[] = useMemo(
     () => [...deprecatedItems],
-    [deprecatedItems])
+    [deprecatedItems],
+  )
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -96,7 +99,7 @@ export const DeprecatedItemsSubTable: FC<SubTableProps> = memo<SubTableProps>((
       <TableRow>
         {getVisibleCells().map(({ column: { id } }) => (
           <TableCell key={id}>
-            <Skeleton variant="text"/>
+            <Skeleton variant="text" />
           </TableCell>
         ))}
       </TableRow>
@@ -113,13 +116,11 @@ export const DeprecatedItemsSubTable: FC<SubTableProps> = memo<SubTableProps>((
         const cellsToRender = row.getVisibleCells().map((cell) => (
           <TableCell
             key={cell.id}
-            colSpan={
-              cell.column.id === DESCRIPTION_COLUMN_ID
-                ? hasDeprecatedInfo
-                  ? isDashboard ? 4 : 3
-                  : 5
-                : undefined
-            }
+            colSpan={cell.column.id === DESCRIPTION_COLUMN_ID
+              ? hasDeprecatedInfo
+                ? isDashboard ? 4 : 3
+                : 5
+              : undefined}
             data-testid={`Cell-${cell.column.id}`}
           >
             {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -133,10 +134,10 @@ export const DeprecatedItemsSubTable: FC<SubTableProps> = memo<SubTableProps>((
                 {deprecatedInfo && (
                   <Tooltip
                     disableHoverListener={false}
-                    title={<DeprecatedInfo info={deprecatedInfo}/>}
+                    title={<DeprecatedInfo info={deprecatedInfo} />}
                     placement="right"
                   >
-                    <InfoContextIcon sx={{ visibility: 'hidden' }} className="visible-on-hover"/>
+                    <InfoContextIcon sx={{ visibility: 'hidden' }} className="visible-on-hover" />
                   </Tooltip>
                 )}
               </Box>

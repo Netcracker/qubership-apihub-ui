@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo } from 'react'
 import type { SxProps } from '@mui/material'
 import { Box } from '@mui/material'
-import { MonacoEditor } from '../MonacoEditor'
-import type { SpecType } from '../../utils/specs'
-import type { FileExtension } from '../../utils/files'
+import type { FC } from 'react'
+import { memo } from 'react'
 import { EXTENSION_TO_TYPE_LANGUAGE_MAP } from '../../types/languages'
+import type { FileExtension } from '../../utils/files'
+import type { SpecType } from '../../utils/specs'
 import { ModuleFetchingErrorBoundary } from '../ModuleFetchingErrorBoundary/ModuleFetchingErrorBoundary'
+import { MonacoEditor } from '../MonacoEditor'
 
 export type RawSpecViewProps = {
   value: SpecContent

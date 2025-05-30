@@ -14,31 +14,31 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import * as React from 'react'
-import { memo, useCallback, useMemo, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { OperationGroupTable } from './OperationGroupTable'
-import { usePackageVersionContent } from '../../../../usePackageVersionContent'
-import { CreateOperationGroupDialog } from './CreateOperationGroupDialog'
-import { EditOperationGroupDialog } from './EditOperationGroupDialog'
-import { useDeleteOperationGroup } from './useManageOperationGroup'
-import { useGroupingNamesByApiType } from './useGroupingNamesByApiType'
-import { EditOperationGroupContentDialog } from '../EditOperationGroupContentDialog/EditOperationGroupContentDialog'
-import { useFullMainVersion } from '../../../FullMainVersionProvider'
-import type { OperationGroup } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
+import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
 import { useEventBus } from '@apihub/routes/EventBusProvider'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
-import { PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
+import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
 import { ConfirmationDialog } from '@netcracker/qubership-apihub-ui-shared/components/ConfirmationDialog'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { OperationGroup } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
+import { PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import {
   DRAFT_VERSION_STATUS,
   VERSION_STATUS_MANAGE_PERMISSIONS,
 } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { FC } from 'react'
+import * as React from 'react'
+import { memo, useCallback, useMemo, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import { usePackageVersionContent } from '../../../../usePackageVersionContent'
+import { useFullMainVersion } from '../../../FullMainVersionProvider'
+import { EditOperationGroupContentDialog } from '../EditOperationGroupContentDialog/EditOperationGroupContentDialog'
+import { CreateOperationGroupDialog } from './CreateOperationGroupDialog'
+import { EditOperationGroupDialog } from './EditOperationGroupDialog'
+import { OperationGroupTable } from './OperationGroupTable'
 import { PublishOperationGroupPackageVersionDialog } from './PublishOperationGroupPackageVersionDialog'
+import { useGroupingNamesByApiType } from './useGroupingNamesByApiType'
+import { useDeleteOperationGroup } from './useManageOperationGroup'
 
 export const OperationGroupsCard: FC = memo(() => {
   const { packageId: packageKey } = useParams()
@@ -69,9 +69,13 @@ export const OperationGroupsCard: FC = memo(() => {
 
   const groupNamesByApiTypes = useGroupingNamesByApiType(apiTypes, versionContent?.operationGroups)
 
-  const hasCreatePermissions = useMemo(() =>
-    !!currentPackage?.permissions?.includes(VERSION_STATUS_MANAGE_PERMISSIONS[versionContent?.status ?? DRAFT_VERSION_STATUS]),
-    [currentPackage?.permissions, versionContent?.status])
+  const hasCreatePermissions = useMemo(
+    () =>
+      !!currentPackage?.permissions?.includes(
+        VERSION_STATUS_MANAGE_PERMISSIONS[versionContent?.status ?? DRAFT_VERSION_STATUS],
+      ),
+    [currentPackage?.permissions, versionContent?.status],
+  )
 
   const onCreateButton = useCallback(() => {
     showCreateOperationGroupDialog({
@@ -149,12 +153,13 @@ export const OperationGroupsCard: FC = memo(() => {
             ${groupToDelete?.groupName} group from the dashboard?`}
             loading={isDeleteLoading}
             confirmButtonName="Delete"
-            onConfirm={() => deleteOperationGroup({
-              packageKey: packageKey!,
-              versionKey: fullVersion!,
-              groupName: groupToDelete!.groupName,
-              apiType: groupToDelete!.apiType!,
-            })}
+            onConfirm={() =>
+              deleteOperationGroup({
+                packageKey: packageKey!,
+                versionKey: fullVersion!,
+                groupName: groupToDelete!.groupName,
+                apiType: groupToDelete!.apiType!,
+              })}
             onCancel={() => setDeleteConfirmationOpen(false)}
           />
         </>

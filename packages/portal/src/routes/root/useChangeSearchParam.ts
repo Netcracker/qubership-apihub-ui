@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import { useSetSearchParams } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSetSearchParams'
+import { useMemo } from 'react'
 
 export function useChangeSearchParam(): [Key | undefined, SetEditorSelectedChangeKey] {
   const param = useSearchParam<Key>('change')

@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-import { useMutation } from '@tanstack/react-query'
-import fileDownload from 'js-file-download'
 import type { Key } from '@apihub/entities/keys'
-import { useShowErrorNotification } from '../../BasePage/Notification'
-import { generatePath } from 'react-router-dom'
 import { portalRequestBlob } from '@apihub/utils/requests'
-import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { type DiffType } from '@netcracker/qubership-apihub-api-diff'
 import type { ApiAudience, ApiKind } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { ALL_API_KIND, API_AUDIENCE_ALL } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import { API_V3 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
+import { API_V3 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import {
   replaceStringDiffTypeForDTO,
 } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget/api/getOperationChangelog'
-import { type DiffType } from '@netcracker/qubership-apihub-api-diff'
+import { useMutation } from '@tanstack/react-query'
+import fileDownload from 'js-file-download'
+import { generatePath } from 'react-router-dom'
+import { useShowErrorNotification } from '../../BasePage/Notification'
 
 export function useDownloadChangesAsExcel(): [DownloadChangesAsExcelFunction, IsLoading] {
   const showErrorNotification = useShowErrorNotification()
@@ -72,7 +72,7 @@ export const downloadChangesAsExcel = async (
     apiKind: { value: apiKind !== ALL_API_KIND ? apiKind : undefined },
     apiAudience: { value: apiAudience },
     tag: { value: tag },
-    severity: { value: severityDto},
+    severity: { value: severityDto },
     group: { value: group },
     emptyGroup: { value: emptyGroup },
     refPackageId: { value: refPackageId },
@@ -86,16 +86,18 @@ export const downloadChangesAsExcel = async (
     `${generatePath(pathPattern, { packageId, versionId, apiType })}?${queryParams}`,
     {
       method: 'GET',
-    }, {
-    basePath: API_V3,
-    customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-  },
+    },
+    {
+      basePath: API_V3,
+      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+    },
   )
 
-  const getFilename = (): string => response.headers
-    .get('content-disposition')!
-    .split('filename=')[1]
-    .split(';')[0]
+  const getFilename = (): string =>
+    response.headers
+      .get('content-disposition')!
+      .split('filename=')[1]
+      .split(';')[0]
 
   fileDownload(await response.blob(), getFilename())
 }

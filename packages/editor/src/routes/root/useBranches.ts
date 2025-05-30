@@ -16,13 +16,13 @@
 
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
-import { useParams } from 'react-router-dom'
-import { useMemo } from 'react'
 import type { Branches, BranchesDto } from '@apihub/entities/branches'
-import type { InvalidateQuery } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { editorRequestJson } from '@apihub/utils/requests'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { InvalidateQuery } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { useMemo } from 'react'
+import { useParams } from 'react-router-dom'
 
 const BRANCHES_QUERY_KEY = 'branches-query-key'
 

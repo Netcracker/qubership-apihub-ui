@@ -47,7 +47,8 @@ export const OperationChangeCell: FC<OperationChangeCellProps> = memo<OperationC
       getToggleExpandedHandler,
     },
     mainPackageKind,
-  }) => {
+  },
+) => {
   const { packageId, versionId, apiType } = useParams()
 
   const { currentOperation, previousOperation } = change

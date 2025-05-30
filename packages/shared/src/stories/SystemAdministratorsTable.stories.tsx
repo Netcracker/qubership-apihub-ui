@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react'
 import { Box, ThemeProvider } from '@mui/material'
-import { theme } from '../themes/theme'
+import type { Meta, StoryObj } from '@storybook/react'
 import { SystemAdministratorsTable } from '../components/SystemAdministratorsTable'
+import { theme } from '../themes/theme'
 import { SYSTEM_ADMINISTRATORS } from './samples/system-administrators-samples'
 
 const meta: Meta<typeof SystemAdministratorsTable> = {
@@ -27,7 +27,7 @@ const meta: Meta<typeof SystemAdministratorsTable> = {
     (Story) => (
       <ThemeProvider theme={theme}>
         <Box sx={{ width: '1200px' }}>
-          <Story/>
+          <Story />
         </Box>
       </ThemeProvider>
     ),

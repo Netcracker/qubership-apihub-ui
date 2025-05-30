@@ -16,8 +16,8 @@
 
 import type { UserDto } from '../auth/types'
 import type { FileFormat } from '../global-search/types'
-import type { VersionStatus } from './version-statuses'
 import type { Principal } from './principal'
+import type { VersionStatus } from './version-statuses'
 
 export const GROUP_KIND = 'group'
 export const PACKAGE_KIND = 'package'
@@ -185,7 +185,7 @@ export type BwcErrors = Readonly<{
 
 export const PUBLIC_PACKAGE_ROLE = 'viewer'
 export const PRIVATE_PACKAGE_ROLE = 'none'
-export type  DefaultPackageRoleType = | typeof PUBLIC_PACKAGE_ROLE | typeof PRIVATE_PACKAGE_ROLE
+export type DefaultPackageRoleType = typeof PUBLIC_PACKAGE_ROLE | typeof PRIVATE_PACKAGE_ROLE
 
 export type OperationsDto = Readonly<{
   operations: ReadonlyArray<OperationDto>
@@ -205,15 +205,19 @@ type OperationMetadata = Readonly<{
   tags?: string[]
 }>
 
-export type RestOperationMetadata = OperationMetadata & Readonly<{
-  method: MethodType
-  path: string
-}>
+export type RestOperationMetadata =
+  & OperationMetadata
+  & Readonly<{
+    method: MethodType
+    path: string
+  }>
 
-export type GraphQlOperationMetadata = OperationMetadata & Readonly<{
-  method: string
-  type: GraphQlOperationType
-}>
+export type GraphQlOperationMetadata =
+  & OperationMetadata
+  & Readonly<{
+    method: string
+    type: GraphQlOperationType
+  }>
 
 export type OperationsWithDeprecatedDto = Readonly<{
   operations: ReadonlyArray<OperationWithDeprecatedDto>
@@ -228,12 +232,14 @@ export type DeprecatedItemDto = Readonly<{
 }>
 export type DeprecatedItemsDto = ReadonlyArray<DeprecatedItemDto>
 
-export type OperationWithDeprecatedDto = Omit<OperationDto, 'dataHash' | 'data'> & Readonly<{
-  deprecatedCount?: string
-  deprecatedInfo?: object
-  deprecatedItems?: DeprecatedItemsDto
-  deprecatedInPreviousVersions?: string[]
-}>
+export type OperationWithDeprecatedDto =
+  & Omit<OperationDto, 'dataHash' | 'data'>
+  & Readonly<{
+    deprecatedCount?: string
+    deprecatedInfo?: object
+    deprecatedItems?: DeprecatedItemsDto
+    deprecatedInPreviousVersions?: string[]
+  }>
 
 export type Operations = ReadonlyArray<Operation>
 export type Operation = Readonly<{
@@ -298,12 +304,14 @@ export type OperationTypeSummaryDto = Readonly<{
   operations?: object
 }>
 
-export type VersionChangesDto = Partial<Readonly<{
-  previousVersion: string
-  previousVersionPackageId: string
-  operations: ReadonlyArray<OperationChangesDto>
-  packages: PackagesRefs
-}>>
+export type VersionChangesDto = Partial<
+  Readonly<{
+    previousVersion: string
+    previousVersionPackageId: string
+    operations: ReadonlyArray<OperationChangesDto>
+    packages: PackagesRefs
+  }>
+>
 
 export type ChangesSummaryDto = Readonly<{
   breaking: number
@@ -328,15 +336,19 @@ export type OperationChangesMetadata = Readonly<{
   tags?: readonly string[]
 }>
 
-export type RestOperationChangesMetadata = OperationChangesMetadata & Readonly<{
-  method: MethodType
-  path: string
-}>
+export type RestOperationChangesMetadata =
+  & OperationChangesMetadata
+  & Readonly<{
+    method: MethodType
+    path: string
+  }>
 
-export type GraphQlOperationChangesMetadata = OperationChangesMetadata & Readonly<{
-  method: string
-  type: GraphQlOperationType
-}>
+export type GraphQlOperationChangesMetadata =
+  & OperationChangesMetadata
+  & Readonly<{
+    method: string
+    type: GraphQlOperationType
+  }>
 
 export type VersionChangesSummaryDto = PackageComparisonSummaryDto | DashboardComparisonSummaryDto
 
@@ -373,7 +385,7 @@ export type RestMetaData = {
   tags: string[]
 }
 
-//todo unification with graphql
+// todo unification with graphql
 export type DocumentOperationDto = Omit<RestOperationMetadata, 'method' | 'path'> & { metadata: RestMetaData }
 
 export type DocumentDto = Readonly<{
@@ -491,7 +503,7 @@ export const MUTATION_OPERATION_TYPE = 'mutation'
 export const SUBSCRIPTION_OPERATION_TYPE = 'subscription'
 
 export type GraphQlOperationType =
-  typeof QUERY_OPERATION_TYPE
+  | typeof QUERY_OPERATION_TYPE
   | typeof MUTATION_OPERATION_TYPE
   | typeof SUBSCRIPTION_OPERATION_TYPE
 
@@ -502,18 +514,20 @@ const EXPERIMENTAL_API_KIND = 'experimental'
 const ALL_API_KIND = 'all'
 
 export type ApiKind =
-  typeof BWC_API_KIND
+  | typeof BWC_API_KIND
   | typeof NO_BWC_API_KIND
   | typeof DEBUG_API_KIND
   | typeof EXPERIMENTAL_API_KIND
   | typeof ALL_API_KIND
 
 export function isRestOperationChanges(operation: OperationChangesDto): operation is RestOperationChangesMetadata {
-  const asRestOperation = (operation as RestOperationChangesMetadata)
+  const asRestOperation = operation as RestOperationChangesMetadata
   return asRestOperation.path !== undefined
 }
 
-export function isGraphQlOperationChanges(operation: OperationChangesDto): operation is GraphQlOperationChangesMetadata {
-  const asGraphQlOperation = (operation as GraphQlOperationChangesMetadata)
+export function isGraphQlOperationChanges(
+  operation: OperationChangesDto,
+): operation is GraphQlOperationChangesMetadata {
+  const asGraphQlOperation = operation as GraphQlOperationChangesMetadata
   return asGraphQlOperation.type !== undefined
 }

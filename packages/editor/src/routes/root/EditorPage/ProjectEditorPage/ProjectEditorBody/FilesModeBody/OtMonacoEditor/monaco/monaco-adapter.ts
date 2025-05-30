@@ -24,9 +24,6 @@
 
 /* eslint-disable */
 
-import * as monaco from 'monaco-editor'
-import type { Emitter, Handler } from 'mitt'
-import mitt from 'mitt'
 import type { IPlainTextOperation, ITextOperation } from '@otjs/plaintext'
 import { PlainTextOperation } from '@otjs/plaintext'
 import type {
@@ -36,6 +33,9 @@ import type {
   TEditorAdapterEventArgs,
 } from '@otjs/plaintext-editor'
 import { Cursor, EditorAdapterEvent } from '@otjs/plaintext-editor'
+import type { Emitter, Handler } from 'mitt'
+import mitt from 'mitt'
+import * as monaco from 'monaco-editor'
 import type { IDisposable, IDisposableCollection } from '../monaco-types'
 import { addStyleRule, assert, Disposable, DisposableCollection, EndOfLineSequence } from '../utils'
 import type { TMonacoAdapterConstructionOptions } from './api'
@@ -48,8 +48,7 @@ import type { ITextModelWithUndoRedo } from './text-model'
  * @param constructorOptions - A Configuration Object consisting Monaco Editor Instance.
  */
 export class MonacoAdapter implements IEditorAdapter {
-  protected readonly _toDispose: IDisposableCollection =
-    new DisposableCollection()
+  protected readonly _toDispose: IDisposableCollection = new DisposableCollection()
 
   protected _announcementDuration: number
   protected _bindEvents: boolean
@@ -242,9 +241,9 @@ export class MonacoAdapter implements IEditorAdapter {
     )
 
     assert(
-      typeof clientId === 'string' &&
-      typeof cursorColor === 'string' &&
-      (userName == null || typeof userName === 'string'),
+      typeof clientId === 'string'
+        && typeof cursorColor === 'string'
+        && (userName == null || typeof userName === 'string'),
       'Client Id, User Name and User Color must be strings.',
     )
 
@@ -281,10 +280,9 @@ export class MonacoAdapter implements IEditorAdapter {
     )
 
     /** Add decoration to the Editor */
-    const decorationClassName =
-      position === selectionEnd
-        ? `${className}-cursor`
-        : `${className}-selection`
+    const decorationClassName = position === selectionEnd
+      ? `${className}-cursor`
+      : `${className}-selection`
     const decorations = this._monaco.deltaDecorations(
       [],
       [
@@ -293,8 +291,7 @@ export class MonacoAdapter implements IEditorAdapter {
           options: {
             className: decorationClassName,
             isWholeLine: false,
-            stickiness:
-            monaco.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
+            stickiness: monaco.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
           },
         },
       ],
@@ -371,8 +368,10 @@ export class MonacoAdapter implements IEditorAdapter {
       return
     }
 
-    const changes: monaco.editor.IIdentifiedSingleEditOperation[] =
-      this._transformOpsIntoMonacoChanges(operation.entries(), model)
+    const changes: monaco.editor.IIdentifiedSingleEditOperation[] = this._transformOpsIntoMonacoChanges(
+      operation.entries(),
+      model,
+    )
 
     /* istanbul ignore else */
     if (changes.length) {
@@ -666,18 +665,16 @@ export class MonacoAdapter implements IEditorAdapter {
     let skippedChars = 0
 
     for (const change of changes) {
-      const { range, text, rangeOffset, rangeLength } = <
-        Omit<monaco.editor.IModelContentChange, 'range'> & {
+      const { range, text, rangeOffset, rangeLength } = <Omit<monaco.editor.IModelContentChange, 'range'> & {
         range: monaco.Range
-      }
-        >change
+      }> change
       const retain = rangeOffset - skippedChars
 
       try {
         mainOp = mainOp.retain(retain)
         reverseOp = reverseOp.retain(retain)
-      } catch (err) /* istanbul ignore next */ {
-        this._trigger(EditorAdapterEvent.Error, {
+      } catch (err) {
+        /* istanbul ignore next */ this._trigger(EditorAdapterEvent.Error, {
           err: err as Error,
           operation: mainOp.toString(),
           retain,
@@ -704,8 +701,8 @@ export class MonacoAdapter implements IEditorAdapter {
     try {
       mainOp = mainOp.retain(contentLength - skippedChars)
       reverseOp = reverseOp.retain(contentLength - skippedChars)
-    } catch (err) /* istanbul ignore next */ {
-      this._trigger(EditorAdapterEvent.Error, {
+    } catch (err) {
+      /* istanbul ignore next */ this._trigger(EditorAdapterEvent.Error, {
         err: err as Error,
         operation: mainOp.toString(),
         contentLength,

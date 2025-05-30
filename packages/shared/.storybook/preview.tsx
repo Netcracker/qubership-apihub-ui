@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import type { Preview } from '@storybook/react'
-import { MemoryRouter } from 'react-router-dom'
 import { CssBaseline, ThemeProvider } from '@mui/material'
+import type { Preview } from '@storybook/react'
+import React from 'react'
+import { MemoryRouter } from 'react-router-dom'
 import { theme } from '../src/themes/theme'
 
 const preview: Preview = {
@@ -28,8 +28,8 @@ const preview: Preview = {
     (Story) => (
       <MemoryRouter>
         <ThemeProvider theme={theme}>
-          <CssBaseline/>
-          <Story/>
+          <CssBaseline />
+          <Story />
         </ThemeProvider>
       </MemoryRouter>
     ),

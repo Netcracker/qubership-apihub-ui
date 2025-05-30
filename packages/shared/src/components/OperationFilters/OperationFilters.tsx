@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import { Accordion, AccordionDetails, AccordionSummary, Box, Typography } from '@mui/material'
 import type { FC, SyntheticEvent } from 'react'
 import { memo, useCallback } from 'react'
-import { Accordion, AccordionDetails, AccordionSummary, Box, Typography } from '@mui/material'
-import { DashboardPackageSelector } from './DashboardPackageSelector'
-import { OperationGroupFilter } from './OperationGroupFilter'
-import { ApiKindFilter } from './ApiKindFilter'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import type { PackageReference } from '../../entities/version-references'
+import type { ApiType } from '../../entities/api-types'
 import type { OperationGroupName } from '../../entities/operation-groups'
 import type { ApiAudience, ApiKind, Tags } from '../../entities/operations'
 import type { PackageVersionContent } from '../../entities/version-contents'
-import { SidebarWithTags } from '../SidebarWithTags/SidebarWithTags'
-import type { ApiType } from '../../entities/api-types'
-import { ApiAudienceFilter } from './ApiAudienceFilter'
+import type { PackageReference } from '../../entities/version-references'
 import type { HasNextPage, IsFetchingNextPage } from '../../utils/aliases'
+import { SidebarWithTags } from '../SidebarWithTags/SidebarWithTags'
+import { ApiAudienceFilter } from './ApiAudienceFilter'
+import { ApiKindFilter } from './ApiKindFilter'
+import { DashboardPackageSelector } from './DashboardPackageSelector'
+import { OperationGroupFilter } from './OperationGroupFilter'
 
 export type OperationFiltersProps = {
   selectedPackageKey?: string
@@ -59,12 +59,29 @@ export type OperationFiltersProps = {
 // First Order Component //
 export const OperationFilters: FC<OperationFiltersProps> = memo<OperationFiltersProps>(props => {
   const {
-    selectedPackageKey, selectedOperationGroupName, selectedApiAudience, selectedApiKind,
-    onSelectPackage, onSelectOperationGroup, onSelectApiAudience, onSelectApiKind, onClickExpandCollapseButton,
-    areTagsLoading, fetchNextTagsPage, hasNextTagsPage, isNextTagsPageFetching,
-    isReferencesLoading, isPackageVersionContentLoading, hiddenGeneralFilters,
-    tags, references, versionContent, apiType,
-    onSelectTag, onTagSearch, selectedTag,
+    selectedPackageKey,
+    selectedOperationGroupName,
+    selectedApiAudience,
+    selectedApiKind,
+    onSelectPackage,
+    onSelectOperationGroup,
+    onSelectApiAudience,
+    onSelectApiKind,
+    onClickExpandCollapseButton,
+    areTagsLoading,
+    fetchNextTagsPage,
+    hasNextTagsPage,
+    isNextTagsPageFetching,
+    isReferencesLoading,
+    isPackageVersionContentLoading,
+    hiddenGeneralFilters,
+    tags,
+    references,
+    versionContent,
+    apiType,
+    onSelectTag,
+    onTagSearch,
+    selectedTag,
   } = props
 
   const onChange = useCallback(

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react'
+import type { ReactJSXElement } from '@emotion/react/types/jsx-namespace'
 import { Box } from '@mui/material'
 import type { Header, RowData } from '@tanstack/react-table'
-import type { ReactJSXElement } from '@emotion/react/types/jsx-namespace'
+import { useMemo } from 'react'
 
 export function ColumnDelimiter<TData extends RowData>(props: {
   header: Header<TData, unknown>

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { API_V1, requestVoid } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import type { FC, PropsWithChildren, ReactElement } from 'react'
 import { memo, useEffect } from 'react'
-import { API_V1, requestVoid } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 
 export const ErrorHandler: FC<PropsWithChildren> = memo<PropsWithChildren>(({ children }) => {
   useEffect(() => {

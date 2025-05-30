@@ -28,7 +28,6 @@ type State = {
 }
 
 export class ModuleFetchingErrorBoundary extends Component<Props, State> {
-
   state: State = {
     error: null,
     errorInfo: null,
@@ -52,14 +51,13 @@ export class ModuleFetchingErrorBoundary extends Component<Props, State> {
 
     return this.props.children
   }
-
 }
 
 function isFailedFetchDynamicImport(errorBoundaryState: State): boolean {
   const { error } = errorBoundaryState
   return (
-    !!error &&
-    error instanceof TypeError &&
-    error.message.startsWith('Failed to fetch dynamically imported module')
+    !!error
+    && error instanceof TypeError
+    && error.message.startsWith('Failed to fetch dynamically imported module')
   )
 }

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { useMemo } from 'react'
 import { useBranchConfig } from './useBranchConfig'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 
 export function usePublishableBranchFileKeys(): Key[] {
   const [branchConfig] = useBranchConfig()

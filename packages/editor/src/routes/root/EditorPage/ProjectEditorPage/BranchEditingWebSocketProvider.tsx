@@ -18,20 +18,14 @@ import type { FC, PropsWithChildren } from 'react'
 import { createContext, memo, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useEffectOnce, useInterval, useLocation } from 'react-use'
 
-import { useParams } from 'react-router-dom'
+import type { ChangeType } from '@apihub/entities/branches'
 import {
-  toBranchConfig,
-  useUpdateBranchConfig,
-  useUpdateChangeStatusInBranchConfig,
-  useUpdateEditorsInBranchConfig,
-  useUpdateFilesInBranchConfig,
-  useUpdateRefsInBranchConfig,
-} from './useBranchConfig'
-import { useBranchSearchParam } from '../../useBranchSearchParam'
-import { useShowInfoNotification } from '../../BasePage/Notification'
-import { useBranchConflicts } from './useBranchConflicts'
-import { useUpdateBranchCache, useUpdateExistingFileInBranchCache } from './useBranchCache'
-import { useAuthorization } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
+  ADDED_CHANGE_TYPE,
+  DELETED_CHANGE_TYPE,
+  NONE_CHANGE_TYPE,
+  UPDATED_CHANGE_TYPE,
+} from '@apihub/entities/branches'
+import { ADD_OPERATION, PATCH_OPERATION, REMOVE_OPERATION } from '@apihub/entities/operations'
 import type {
   BranchConfigSnapshotEventData,
   BranchConfigUpdatedEventData,
@@ -57,15 +51,6 @@ import {
   isUserConnectedEventData,
   isUserDisconnectedEventData,
 } from '@apihub/entities/ws-branch-events'
-import { toUser } from '@netcracker/qubership-apihub-ui-shared/types/user'
-import type { ChangeType } from '@apihub/entities/branches'
-import {
-  ADDED_CHANGE_TYPE,
-  DELETED_CHANGE_TYPE,
-  NONE_CHANGE_TYPE,
-  UPDATED_CHANGE_TYPE,
-} from '@apihub/entities/branches'
-import { ADD_OPERATION, PATCH_OPERATION, REMOVE_OPERATION } from '@apihub/entities/operations'
 import type { ChangeStatus } from '@netcracker/qubership-apihub-ui-shared/entities/change-statuses'
 import {
   ADDED_CHANGE_STATUS,
@@ -76,12 +61,27 @@ import {
   MOVED_CHANGE_STATUS,
   UNMODIFIED_CHANGE_STATUS,
 } from '@netcracker/qubership-apihub-ui-shared/entities/change-statuses'
+import { useAuthorization } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
+import { toUser } from '@netcracker/qubership-apihub-ui-shared/types/user'
 import {
   DEFAULT_RECONNECT_INTERVAL,
   isSocketClosed,
   NORMAL_CLOSURE_CODE,
 } from '@netcracker/qubership-apihub-ui-shared/utils/sockets'
 import { getToken } from '@netcracker/qubership-apihub-ui-shared/utils/storages'
+import { useParams } from 'react-router-dom'
+import { useShowInfoNotification } from '../../BasePage/Notification'
+import { useBranchSearchParam } from '../../useBranchSearchParam'
+import { useUpdateBranchCache, useUpdateExistingFileInBranchCache } from './useBranchCache'
+import {
+  toBranchConfig,
+  useUpdateBranchConfig,
+  useUpdateChangeStatusInBranchConfig,
+  useUpdateEditorsInBranchConfig,
+  useUpdateFilesInBranchConfig,
+  useUpdateRefsInBranchConfig,
+} from './useBranchConfig'
+import { useBranchConflicts } from './useBranchConflicts'
 
 export const BranchEditingWebSocketProvider: FC<PropsWithChildren> = memo<PropsWithChildren>(({ children }) => {
   const { projectId } = useParams()
@@ -160,7 +160,9 @@ export const BranchEditingWebSocketProvider: FC<PropsWithChildren> = memo<PropsW
 
         if (newData.changeType && newData.changeType !== NONE_CHANGE_TYPE) {
           showNotification({
-            message: `${username} ${CHANGE_TYPE_MAP[newData.changeType]} "${newData.fileId}" ${fileId && newData.fileId && fileId !== newData.fileId ? `with "${newData.fileId}"` : ''}`,
+            message: `${username} ${CHANGE_TYPE_MAP[newData.changeType]} "${newData.fileId}" ${
+              fileId && newData.fileId && fileId !== newData.fileId ? `with "${newData.fileId}"` : ''
+            }`,
           })
         }
       }
@@ -184,15 +186,30 @@ export const BranchEditingWebSocketProvider: FC<PropsWithChildren> = memo<PropsW
         const { comment, branch, mrUrl }: BranchSavedEventData = eventData
         isNotCurrentUser && showNotification({
           message: `${username} saved changes: "${comment}" ${branch ? `to "${branch}" branch` : ''}`,
-          link: mrUrl ? {
-            name: 'See MR',
-            href: mrUrl,
-          } : undefined,
+          link: mrUrl
+            ? {
+              name: 'See MR',
+              href: mrUrl,
+            }
+            : undefined,
         })
         getBranchConflicts()
       }
     }
-  }, [connectedUsers, authorization?.user.key, updateEditorsInBranchConfig, showNotification, getBranchConflicts, updateBranchConfig, updateChangeTypeInBranchConfig, updateFilesInBranchConfig, updateBranchCache, updateExistingFileInBranchCache, updateRefsInBranchConfig, branch])
+  }, [
+    connectedUsers,
+    authorization?.user.key,
+    updateEditorsInBranchConfig,
+    showNotification,
+    getBranchConflicts,
+    updateBranchConfig,
+    updateChangeTypeInBranchConfig,
+    updateFilesInBranchConfig,
+    updateBranchCache,
+    updateExistingFileInBranchCache,
+    updateRefsInBranchConfig,
+    branch,
+  ])
 
   const openWebsocket = useCallback(
     () => {
@@ -200,7 +217,9 @@ export const BranchEditingWebSocketProvider: FC<PropsWithChildren> = memo<PropsW
         setConnecting(true)
 
         websocket.current = new WebSocket(
-          `${protocol === 'https:' ? 'wss:' : 'ws:'}//${host}/ws/v1/projects/${encodeURIComponent(projectId!)}/branches/${encodeURIComponent(branch!)}?token=${getToken()}`,
+          `${protocol === 'https:' ? 'wss:' : 'ws:'}//${host}/ws/v1/projects/${
+            encodeURIComponent(projectId!)
+          }/branches/${encodeURIComponent(branch!)}?token=${getToken()}`,
         )
 
         websocket.current.onopen = () => {
@@ -278,7 +297,8 @@ function needAddToBranchCache(event: BranchFilesUpdatedEventData): boolean {
   const isFileToAdd = !!event.data?.fileId && event.operation === ADD_OPERATION
   const isUpdatedFileToAdd = !!event.fileId && (
     event.operation === PATCH_OPERATION && (
-      event.data?.status === MOVED_CHANGE_STATUS || event.data?.status === MODIFIED_CHANGE_STATUS || event.data?.status === INCLUDED_CHANGE_STATUS || event.data?.status === UNMODIFIED_CHANGE_STATUS
+      event.data?.status === MOVED_CHANGE_STATUS || event.data?.status === MODIFIED_CHANGE_STATUS
+      || event.data?.status === INCLUDED_CHANGE_STATUS || event.data?.status === UNMODIFIED_CHANGE_STATUS
     )
   )
   return isFileToAdd || isUpdatedFileToAdd
@@ -288,7 +308,8 @@ function needRemoveFromBranchCache(event: BranchFilesUpdatedEventData): boolean 
   const isFileToRemove = !!event.fileId && event.operation === REMOVE_OPERATION
   const isUpdatedFileToRemove = !!event.fileId && (
     event.operation === REMOVE_OPERATION || (
-      event.operation === PATCH_OPERATION && (event.data?.status === EXCLUDED_CHANGE_STATUS || event.data?.status === DELETED_CHANGE_STATUS)
+      event.operation === PATCH_OPERATION
+      && (event.data?.status === EXCLUDED_CHANGE_STATUS || event.data?.status === DELETED_CHANGE_STATUS)
     )
   )
   return isFileToRemove || isUpdatedFileToRemove

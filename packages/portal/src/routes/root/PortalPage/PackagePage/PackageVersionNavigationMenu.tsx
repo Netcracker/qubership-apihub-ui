@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
+import { NavigationMenu } from '@netcracker/qubership-apihub-ui-shared/components/NavigationMenu'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { SPECIAL_VERSION_KEY } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
+import { useActiveTabs } from '@netcracker/qubership-apihub-ui-shared/hooks/pathparams/useActiveTabs'
+import {
+  useExpandNavigationMenuSearchParam,
+} from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useExpandNavigationMenuSearchParam'
+import { ConfigureIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ConfigureIcon'
 import type { FC } from 'react'
 import { memo, useCallback, useMemo } from 'react'
 import type { To } from 'react-router-dom'
 import { useNavigate, useParams } from 'react-router-dom'
 import { CONFIGURATION_PAGE } from '../../../../routes'
 import { getVersionPath } from '../../../NavigationProvider'
-import {
-  useExpandNavigationMenuSearchParam,
-} from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useExpandNavigationMenuSearchParam'
-import { useActiveTabs } from '@netcracker/qubership-apihub-ui-shared/hooks/pathparams/useActiveTabs'
-import { NavigationMenu } from '@netcracker/qubership-apihub-ui-shared/components/NavigationMenu'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { SPECIAL_VERSION_KEY } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
-import { ConfigureIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ConfigureIcon'
 
 export const PackageVersionNavigationMenu: FC = memo(() => {
   const navigate = useNavigate()
@@ -57,7 +57,6 @@ const getPagePathsMap = (
   packageKey: Key,
   versionKey: Key,
 ): Record<string, To> => {
-
   return {
     [CONFIGURATION_PAGE]: getVersionPath({
       packageKey: packageKey,
@@ -72,7 +71,7 @@ const SIDEBAR_MENU_ITEMS = [
     id: CONFIGURATION_PAGE,
     title: 'Configuration',
     tooltip: 'Configuration',
-    icon: <ConfigureIcon/>,
+    icon: <ConfigureIcon />,
     testId: 'ConfigurePackageButton',
   },
 ]

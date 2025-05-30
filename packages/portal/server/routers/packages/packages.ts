@@ -15,12 +15,13 @@
  */
 
 import type { Router } from 'express'
+import type { WithWebsocketMethod } from 'express-ws'
+import fs from 'fs'
+import path from 'path'
+import type { Server } from 'ws'
 import { ACCESS_TOKENS_LIST } from '../../mocks/packages/access-tokens'
-import { PACKAGE_MEMBERS, PACKAGES } from '../../mocks/packages/packages'
-import { VERSIONS } from '../../mocks/projects/versions'
-import { DEPRECATED_ITEMS, DEPRECATED_OPERATIONS, OPERATIONS, TAGS } from '../../mocks/packages/operations'
-import { PUBLISHED_VERSION_CONTENTS } from '../../mocks/packages/version-contents'
-import { VERSION_DOCUMENTS } from '../../mocks/packages/documents'
+import { ACTIVITIES_LIST } from '../../mocks/packages/activities'
+import { DEFAULT_CHANGES, generateVersionChanges, PACKAGE1_CHANGES } from '../../mocks/packages/changes'
 import {
   DOC_SPEC,
   GRAPHQLAPI_SPEC,
@@ -29,16 +30,12 @@ import {
   OPENAPI_3_0_SPEC_RAW,
   OPENAPI_SPEC,
 } from '../../mocks/packages/document-contents'
-import fs from 'fs'
-import path from 'path'
-import type { WithWebsocketMethod } from 'express-ws'
-import type { Server } from 'ws'
-import type { Socket } from '../../types'
-import { PROJECTS } from '../../mocks/projects/projects'
+import { VERSION_DOCUMENTS } from '../../mocks/packages/documents'
 import { GRAPHQLAPI_SPEC_RAW } from '../../mocks/packages/graphql'
+import { DEPRECATED_ITEMS, DEPRECATED_OPERATIONS, OPERATIONS, TAGS } from '../../mocks/packages/operations'
+import { PACKAGE_MEMBERS, PACKAGES } from '../../mocks/packages/packages'
 import { VERSION_REFERENCES } from '../../mocks/packages/references'
-import { ACTIVITIES_LIST } from '../../mocks/packages/activities'
-import { DEFAULT_CHANGES, generateVersionChanges, PACKAGE1_CHANGES } from '../../mocks/packages/changes'
+import { REVISIONS } from '../../mocks/packages/revisions'
 import type {
   ApiType,
   ChangesSummaryDto,
@@ -52,8 +49,11 @@ import {
   isRestOperationChanges,
   REST_API_TYPE,
 } from '../../mocks/packages/types'
-import { REVISIONS } from '../../mocks/packages/revisions'
+import { PUBLISHED_VERSION_CONTENTS } from '../../mocks/packages/version-contents'
+import { PROJECTS } from '../../mocks/projects/projects'
+import { VERSIONS } from '../../mocks/projects/versions'
 import { ROLES_LIST } from '../../mocks/roles/roles'
+import type { Socket } from '../../types'
 
 export function deletePackage(router: Router): void {
   router.delete('/:packageKey/', (req, res) => {
@@ -238,10 +238,9 @@ export function getDocument(router: Router): void {
       return
     }
     res.status(200).send({
-        ...VERSION_DOCUMENTS.get(req.params.versionId)?.documents.find((doc) => doc.slug === req.params.specId),
-        operations: OPENAPI_SPEC.operations,
-      },
-    )
+      ...VERSION_DOCUMENTS.get(req.params.versionId)?.documents.find((doc) => doc.slug === req.params.specId),
+      operations: OPENAPI_SPEC.operations,
+    })
   })
 }
 
@@ -337,7 +336,9 @@ export function getOperations(router: Router): void {
 export function getDeprecatedOperations(router: Router): void {
   router.get('/:id/versions/:id/rest/deprecated', (req, res) => {
     if (req.query.tag) {
-      const operationsWithTag = DEPRECATED_OPERATIONS.operations.filter(operation => operation.tags?.includes(req.query.tag as string))
+      const operationsWithTag = DEPRECATED_OPERATIONS.operations.filter(operation =>
+        operation.tags?.includes(req.query.tag as string)
+      )
       return res.status(200).json({ operations: operationsWithTag })
     }
 

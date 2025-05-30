@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react'
+import type { Ref } from '@apihub/entities/refs'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import { useSetSearchParams } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSetSearchParams'
-import type { Ref } from '@apihub/entities/refs'
+import { useMemo } from 'react'
 import { useBranchConfig } from './useBranchConfig'
 
 export function useRefSearchParam(): [Key | undefined, SetEditorSelectedRefKey] {

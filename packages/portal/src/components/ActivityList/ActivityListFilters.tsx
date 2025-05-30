@@ -18,10 +18,10 @@ import type { FC } from 'react'
 import { useCallback, useMemo, useState } from 'react'
 
 import { Box } from '@mui/material'
-import { ActivityType } from '../../entities/activity-enums'
 import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
-import { DropdownButton } from '../DropdownButton'
 import { FilterIcon } from '@netcracker/qubership-apihub-ui-shared/icons/FilterIcon'
+import { ActivityType } from '../../entities/activity-enums'
+import { DropdownButton } from '../DropdownButton'
 
 export type ActivityListFiltersProps = Partial<{
   text: string
@@ -38,7 +38,6 @@ export const ActivityListFilters: FC<ActivityListFiltersProps> = ({
   types,
   onChangeFilters,
 }: ActivityListFiltersProps) => {
-
   const [selectedFilters, setSelectedFilters] = useState<ReadonlyArray<ActivityType>>(types ?? [])
 
   const setNewSelectedFilters = useCallback((filter: string) => {
@@ -78,7 +77,7 @@ export const ActivityListFilters: FC<ActivityListFiltersProps> = ({
         data-testid="SearchInHistory"
       />
       <DropdownButton
-        icon={<FilterIcon/>}
+        icon={<FilterIcon />}
         disabled={false}
         disableHint={true}
         options={filterButtonOptions}

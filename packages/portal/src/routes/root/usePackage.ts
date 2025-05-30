@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useShowErrorNotification, useShowSuccessNotification } from './BasePage/Notification'
-import { useRefetchPackages } from './usePackages'
-import { generatePath, useParams } from 'react-router-dom'
-import { useNavigation } from '../NavigationProvider'
 import { portalRequestJson, portalRequestVoid } from '@apihub/utils/requests'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type {
@@ -36,23 +31,30 @@ import {
   PUBLIC_PACKAGE_ROLE,
   WORKSPACE_KIND,
 } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { MAIN_PAGE_REFERER } from '@netcracker/qubership-apihub-ui-shared/entities/referer-pages-names'
+import { toPackage } from '@netcracker/qubership-apihub-ui-shared/hooks/packages/usePackage'
 import type {
   InvalidateQuery,
   IsLoading,
   IsSuccess,
   OptionInvalidateQuery,
 } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { toPackage } from '@netcracker/qubership-apihub-ui-shared/hooks/packages/usePackage'
-import { MAIN_PAGE_REFERER } from '@netcracker/qubership-apihub-ui-shared/entities/referer-pages-names'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { generatePath, useParams } from 'react-router-dom'
+import { useNavigation } from '../NavigationProvider'
+import { useShowErrorNotification, useShowSuccessNotification } from './BasePage/Notification'
+import { useRefetchPackages } from './usePackages'
 
 const PACKAGE_QUERY_KEY = 'package-query-key'
 
-export function usePackage(options?: Partial<{
-  packageKey: Key
-  showParents: boolean
-  hideError: boolean
-}>): [Package | null, IsLoading, Error | null] {
+export function usePackage(
+  options?: Partial<{
+    packageKey: Key
+    showParents: boolean
+    hideError: boolean
+  }>,
+): [Package | null, IsLoading, Error | null] {
   const { packageId: paramPackageId } = useParams()
   const { packageKey, showParents = false, hideError = false } = options ?? {}
   const key = packageKey ?? paramPackageId
@@ -276,7 +278,9 @@ export function toPackageDto(value: Partial<Package>): Partial<PackageDto> {
   }
 }
 
-export function toLastReleaseVersionDetailsDto(value?: LastReleaseVersionDetails): LastReleaseVersionDetailsDto | undefined {
+export function toLastReleaseVersionDetailsDto(
+  value?: LastReleaseVersionDetails,
+): LastReleaseVersionDetailsDto | undefined {
   if (!value) {
     return undefined
   }

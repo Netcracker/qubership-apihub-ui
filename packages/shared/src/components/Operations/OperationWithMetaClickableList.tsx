@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-import type { FC, ReactNode } from 'react'
-import React, { memo, useCallback, useMemo, useRef, useState } from 'react'
-import { OperationTitleWithMeta as OperationTitle } from './OperationTitleWithMeta'
-import type { Path } from '@remix-run/router/history'
-import Box from '@mui/material/Box'
-import { CustomListItemButton, LIST_ITEM_SIZE_BIG } from '../CustomListItemButton'
 import { Divider, Skeleton } from '@mui/material'
-import { NAVIGATION_PLACEHOLDER_AREA, Placeholder } from '../Placeholder'
+import Box from '@mui/material/Box'
+import type { Path } from '@remix-run/router/history'
 import type { ResizeCallback } from 're-resizable'
 import { Resizable } from 're-resizable'
-import { ExpandableItem } from '../ExpandableItem'
+import type { FC, ReactNode } from 'react'
+import React, { memo, useCallback, useMemo, useRef, useState } from 'react'
+import type { Key } from '../../entities/keys'
 import type { FetchNextOperationList, OperationData, OperationsData, PackageRef } from '../../entities/operations'
 import { useIntersectionObserver } from '../../hooks/common/useIntersectionObserver'
-import { ListBox } from '../Panels/ListBox'
 import { isNotEmpty } from '../../utils/arrays'
-import type { Key } from '../../entities/keys'
+import { CustomListItemButton, LIST_ITEM_SIZE_BIG } from '../CustomListItemButton'
+import { ExpandableItem } from '../ExpandableItem'
+import { ListBox } from '../Panels/ListBox'
+import { NAVIGATION_PLACEHOLDER_AREA, Placeholder } from '../Placeholder'
+import { OperationTitleWithMeta as OperationTitle } from './OperationTitleWithMeta'
 
 export type OperationListSubComponentProps = {
   operation: OperationData
@@ -54,7 +54,9 @@ export type OperationWithMetaClickableListProps = {
 }
 
 // First Order Component //
-export const OperationWithMetaClickableList: FC<OperationWithMetaClickableListProps> = memo<OperationWithMetaClickableListProps>((props) => {
+export const OperationWithMetaClickableList: FC<OperationWithMetaClickableListProps> = memo<
+  OperationWithMetaClickableListProps
+>((props) => {
   const {
     operations,
     prepareLinkFn,
@@ -81,28 +83,31 @@ export const OperationWithMetaClickableList: FC<OperationWithMetaClickableListPr
   useIntersectionObserver(ref, isNextPageFetching, hasNextPage, fetchNextPage)
 
   const operationsList = useMemo(
-    () => operations?.map(operation => {
-      const link = prepareLinkFn?.(operation) ?? {}
-      const { operationKey, deprecated } = operation
-      const expandable = isExpandableItem?.(operation) ?? false
-      const title = <OperationTitle
-        operation={operation}
-        link={link}
-        badgeText={deprecated ? 'Deprecated' : undefined}
-        onLinkClick={onLinkClick}
-      />
+    () =>
+      operations?.map(operation => {
+        const link = prepareLinkFn?.(operation) ?? {}
+        const { operationKey, deprecated } = operation
+        const expandable = isExpandableItem?.(operation) ?? false
+        const title = (
+          <OperationTitle
+            operation={operation}
+            link={link}
+            badgeText={deprecated ? 'Deprecated' : undefined}
+            onLinkClick={onLinkClick}
+          />
+        )
 
-      return (
-        <OperationItemButton
-          title={title}
-          operation={operation}
-          expandable={expandable}
-          SubComponent={SubComponent}
-          onClick={handleRowClick}
-          selected={selectedOperationKey === operationKey}
-        />
-      )
-    }),
+        return (
+          <OperationItemButton
+            title={title}
+            operation={operation}
+            expandable={expandable}
+            SubComponent={SubComponent}
+            onClick={handleRowClick}
+            selected={selectedOperationKey === operationKey}
+          />
+        )
+      }),
     [SubComponent, handleRowClick, isExpandableItem, onLinkClick, operations, prepareLinkFn, selectedOperationKey],
   )
 
@@ -119,8 +124,12 @@ export const OperationWithMetaClickableList: FC<OperationWithMetaClickableListPr
           <Box overflow="auto" height="inherit">
             {operationsList}
 
-            {isLoading && <ListSkeleton/>}
-            {hasNextPage && <Box ref={ref}><Skeleton variant="rectangular" width="100%"/></Box>}
+            {isLoading && <ListSkeleton />}
+            {hasNextPage && (
+              <Box ref={ref}>
+                <Skeleton variant="rectangular" width="100%" />
+              </Box>
+            )}
           </Box>
         </Placeholder>
       </ListBox>
@@ -131,7 +140,6 @@ export const OperationWithMetaClickableList: FC<OperationWithMetaClickableListPr
           backgroundColor: '#FFFFFF',
           overflowY: 'scroll',
         }}
-
         enable={{
           top: false,
           right: false,
@@ -158,7 +166,7 @@ const ListSkeleton: FC = memo(() => {
     <Box>
       {[...Array(5)].map((_, index) => (
         <Box key={index} mb={2}>
-          <Skeleton variant="rectangular" height={20} width="100%"/>
+          <Skeleton variant="rectangular" height={20} width="100%" />
         </Box>
       ))}
     </Box>
@@ -175,32 +183,29 @@ type OperationItemButtonProps = {
 }
 
 const OperationItemButton: FC<OperationItemButtonProps> = memo<OperationItemButtonProps>(({
-    title,
-    operation,
-    expandable,
-    onClick,
-    SubComponent,
-    selected,
-  }) => {
-    const [expanded, setExpanded] = useState<boolean>(false)
+  title,
+  operation,
+  expandable,
+  onClick,
+  SubComponent,
+  selected,
+}) => {
+  const [expanded, setExpanded] = useState<boolean>(false)
 
-    return (
-      <>
-        <CustomListItemButton<OperationData>
-          keyProp={operation.operationKey}
-          data={operation}
-          itemComponent={<ExpandableItem showToggler={expandable} onToggle={setExpanded}>{title}</ExpandableItem>}
-          onClick={onClick}
-          size={LIST_ITEM_SIZE_BIG}
-          isSelected={selected}
-          testId="Cell-endpoints"
-        />
-        <Divider orientation="horizontal" variant="fullWidth"/>
+  return (
+    <>
+      <CustomListItemButton<OperationData>
+        keyProp={operation.operationKey}
+        data={operation}
+        itemComponent={<ExpandableItem showToggler={expandable} onToggle={setExpanded}>{title}</ExpandableItem>}
+        onClick={onClick}
+        size={LIST_ITEM_SIZE_BIG}
+        isSelected={selected}
+        testId="Cell-endpoints"
+      />
+      <Divider orientation="horizontal" variant="fullWidth" />
 
-        {expanded && SubComponent && (
-          <SubComponent operation={operation}/>
-        )}
-      </>
-    )
-  },
-)
+      {expanded && SubComponent && <SubComponent operation={operation} />}
+    </>
+  )
+})

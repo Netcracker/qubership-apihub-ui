@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { useModeSearchParam } from '../../useModeSearchParam'
 import {
   CHANGES_PROJECT_EDITOR_MODE,
   FILES_PROJECT_EDITOR_MODE,
-  PUBLISH_PROJECT_EDITOR_MODE, SETTINGS_PROJECT_EDITOR_MODE,
+  PUBLISH_PROJECT_EDITOR_MODE,
+  SETTINGS_PROJECT_EDITOR_MODE,
 } from '@apihub/entities/editor-modes'
+import { useModeSearchParam } from '../../useModeSearchParam'
 
 export function useIsFilesProjectEditorMode(): boolean {
   const [mode] = useModeSearchParam()

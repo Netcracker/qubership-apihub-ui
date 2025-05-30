@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { usePackageKind } from './usePackageKind'
-import { useRefSearchParam } from './useRefSearchParam'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { usePackageKind } from './usePackageKind'
+import { useRefSearchParam } from './useRefSearchParam'
 
 export type IsPackageFromDashboard = boolean
 export type RefPackageKey = Key
@@ -32,7 +32,9 @@ export function useIsPackageFromDashboard(strict: boolean = false): {
   const [mainPackageKind] = usePackageKind()
   const [refPackageKey] = useRefSearchParam()
   return {
-    isPackageFromDashboard: !strict ? mainPackageKind === DASHBOARD_KIND || !!refPackageKey : mainPackageKind === DASHBOARD_KIND && !!refPackageKey,
+    isPackageFromDashboard: !strict
+      ? mainPackageKind === DASHBOARD_KIND || !!refPackageKey
+      : mainPackageKind === DASHBOARD_KIND && !!refPackageKey,
     mainPackageKind: mainPackageKind,
     refPackageKey: refPackageKey,
   }

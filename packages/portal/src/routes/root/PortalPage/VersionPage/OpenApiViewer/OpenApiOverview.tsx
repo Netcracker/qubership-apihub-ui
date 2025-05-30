@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
+import type { Document } from '@apihub/entities/documents'
+import { Box, Link } from '@mui/material'
+import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
+import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
+import { MarkdownViewer } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/MarkdownViewer'
 import type { FC } from 'react'
 import { memo, useMemo } from 'react'
-import { Box, Link } from '@mui/material'
-import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
-import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
-import { MarkdownViewer } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/MarkdownViewer'
-import type { Document } from '@apihub/entities/documents'
 
 export type OpenApiOverviewProps = Pick<Document, 'labels' | 'description' | 'info' | 'externalDocs'>
 
 export const OpenApiOverview: FC<OpenApiOverviewProps> = memo<OpenApiOverviewProps>((
   { labels, description, info, externalDocs },
 ) => {
-
   const contactLinks = useMemo(() => {
     if (!info?.contact) {
       return null
@@ -48,15 +47,17 @@ export const OpenApiOverview: FC<OpenApiOverviewProps> = memo<OpenApiOverviewPro
       links = [{ title: 'Email', url: contact.email, mail: true }]
     }
 
-    return <>
-      {links.map(({ title, url, mail }, index) =>
-        <>
-          {index !== 0 && <> | </>}
-          <span>{title}: </span>
-          <Link href={mail ? `mailto:${url}` : url}>{url}</Link>
-        </>,
-      )}
-    </>
+    return (
+      <>
+        {links.map(({ title, url, mail }, index) => (
+          <>
+            {index !== 0 && <>|</>}
+            <span>{title}:</span>
+            <Link href={mail ? `mailto:${url}` : url}>{url}</Link>
+          </>
+        ))}
+      </>
+    )
   }, [info])
 
   const license = useMemo(() => {
@@ -66,10 +67,12 @@ export const OpenApiOverview: FC<OpenApiOverviewProps> = memo<OpenApiOverviewPro
 
     const { name, url } = info.license
 
-    return <>
-      <span>License: </span>
-      {url ? <Link href={url}>{name}</Link> : <span>{name}</span>}
-    </>
+    return (
+      <>
+        <span>License:</span>
+        {url ? <Link href={url}>{name}</Link> : <span>{name}</span>}
+      </>
+    )
   }, [info])
 
   return (
@@ -92,7 +95,7 @@ export const OpenApiOverview: FC<OpenApiOverviewProps> = memo<OpenApiOverviewPro
         )}
         <Box sx={blockStyle}>
           {contactLinks}
-          {contactLinks && license && (<> | </>)}
+          {contactLinks && license && <>|</>}
           {license}
         </Box>
         {description && (

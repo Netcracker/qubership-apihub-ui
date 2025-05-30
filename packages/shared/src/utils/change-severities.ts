@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-import { isEmpty } from './arrays'
 import type { ChangeSummary } from '@netcracker/qubership-apihub-api-processor'
+import type { StatusMarkerVariant } from '../components/StatusMarker'
+import {
+  ERROR_STATUS_MARKER_VARIANT,
+  SUCCESS_STATUS_MARKER_VARIANT,
+  WARNING_STATUS_MARKER_VARIANT,
+} from '../components/StatusMarker'
 import type { ChangeSeverity, ChangesSummary } from '../entities/change-severities'
 import {
   ANNOTATION_CHANGE_SEVERITY,
@@ -25,13 +30,8 @@ import {
   RISKY_CHANGE_SEVERITY,
   UNCLASSIFIED_CHANGE_SEVERITY,
 } from '../entities/change-severities'
-import type { StatusMarkerVariant } from '../components/StatusMarker'
-import {
-  ERROR_STATUS_MARKER_VARIANT,
-  SUCCESS_STATUS_MARKER_VARIANT,
-  WARNING_STATUS_MARKER_VARIANT,
-} from '../components/StatusMarker'
 import type { PackageSummary } from '../entities/packages'
+import { isEmpty } from './arrays'
 
 export function countVersionDifferences(
   changes: ChangesSummary | undefined,
@@ -71,7 +71,7 @@ export function countVersionDifferencesBySeverity(
 }
 
 export function filterChangesBySeverity(filters: ChangeSeverity[], changes: ChangesSummary | undefined): boolean {
-  return isEmpty(filters) || !!filters.find((filterItem => countVersionDifferencesBySeverity(changes, filterItem) !== 0))
+  return isEmpty(filters) || !!filters.find(filterItem => countVersionDifferencesBySeverity(changes, filterItem) !== 0)
 }
 
 export function getMajorSeverity(changes: ChangeSummary): ChangeSeverity {
@@ -127,4 +127,3 @@ export function getBwcData(summary: PackageSummary | undefined): BwcData {
 
   return { type: SUCCESS_STATUS_MARKER_VARIANT, count: 0 }
 }
-

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { FileKey, ServiceKey, SpecKey } from './keys'
 import type { FileExtension } from '../utils/files'
 import type { SpecType } from '../utils/specs'
+import type { FileKey, ServiceKey, SpecKey } from './keys'
 
 export type Spec = Readonly<{
   key: SpecKey

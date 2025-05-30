@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { memo, useCallback, useState } from 'react'
-import { useTags } from './useTags'
 import { useParams } from 'react-router-dom'
+import { usePackageKind } from '../usePackageKind'
 import { SelfManagedOperationFilters } from './SelfManagedOperationFilters'
 import { useDefaultOperationFilterControllers } from './useDefaultOperationFilterControllers'
-import { usePackageKind } from '../usePackageKind'
+import { useTags } from './useTags'
 import { useTagSearchFilter } from './useTagSearchFilter'
-import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 
 export const OperationsNavigation = memo(() => {
   const { apiType } = useParams()

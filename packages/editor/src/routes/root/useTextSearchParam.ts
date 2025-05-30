@@ -16,10 +16,10 @@
 
 import { useCallback } from 'react'
 
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useHash } from 'react-use'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useHash } from 'react-use'
 
 const SEARCH_TEXT_PARAM_KEY = 'text'
 

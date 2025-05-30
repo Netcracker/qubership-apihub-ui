@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import type { QueryKey } from '@tanstack/react-query'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { PackageKind, Packages } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import type { InvalidateQuery, IsFetching, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { EMPTY_PAGE_REFERER } from '@netcracker/qubership-apihub-ui-shared/entities/referer-pages-names'
 import { getPackages } from '@netcracker/qubership-apihub-ui-shared/hooks/packages/usePackages'
+import type { InvalidateQuery, IsFetching, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import type { QueryKey } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 const PACKAGES_QUERY_KEY = 'packages-query-key'
 
@@ -54,20 +54,47 @@ export function usePackages(options: {
     refererPageKey = EMPTY_PAGE_REFERER,
   } = options ?? {}
 
-  const queryKey = [PACKAGES_QUERY_KEY, refererPageKey, kind, parentId, page, limit, onlyFavorite, textFilter, onlyShared, showAllDescendants, lastReleaseVersionDetails]
+  const queryKey = [
+    PACKAGES_QUERY_KEY,
+    refererPageKey,
+    kind,
+    parentId,
+    page,
+    limit,
+    onlyFavorite,
+    textFilter,
+    onlyShared,
+    showAllDescendants,
+    lastReleaseVersionDetails,
+  ]
   const { data, isLoading, isFetching, error } = useQuery<Packages, Error, Packages>({
     queryKey: queryKey,
-    queryFn: () => getPackages(kind, limit, onlyFavorite, page, parentId, showParents, textFilter, onlyShared, lastReleaseVersionDetails, versionLabel, showAllDescendants),
+    queryFn: () =>
+      getPackages(
+        kind,
+        limit,
+        onlyFavorite,
+        page,
+        parentId,
+        showParents,
+        textFilter,
+        onlyShared,
+        lastReleaseVersionDetails,
+        versionLabel,
+        showAllDescendants,
+      ),
     enabled: enabled,
   })
 
   return [data ?? [], isLoading, isFetching, error]
 }
 
-export function useRefetchPackages(options: Partial<{
-  queryKey: QueryKey
-  refererPageName: string
-}>): InvalidateQuery<void> {
+export function useRefetchPackages(
+  options: Partial<{
+    queryKey: QueryKey
+    refererPageName: string
+  }>,
+): InvalidateQuery<void> {
   const {
     refererPageName = EMPTY_PAGE_REFERER,
     queryKey = [PACKAGES_QUERY_KEY, refererPageName],

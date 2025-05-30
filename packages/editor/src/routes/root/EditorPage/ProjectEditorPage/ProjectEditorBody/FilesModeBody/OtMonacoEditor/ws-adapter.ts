@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import type { Emitter, Handler } from 'mitt'
-import mitt from 'mitt'
-import type { IPlainTextOperation } from '@otjs/plaintext'
-import { PlainTextOperation } from '@otjs/plaintext'
-import type { ICursor, IDatabaseAdapter, TDatabaseAdapterEventArgs } from '@otjs/plaintext-editor'
-import { DatabaseAdapterEvent } from '@otjs/plaintext-editor'
+import type { UserConnectedEventData } from '@apihub/entities/ws-branch-events'
+import { isUserConnectedEventData, isUserDisconnectedEventData } from '@apihub/entities/ws-branch-events'
 import type {
   DocumentSnapshotEventData,
   UserCursorEventData,
   UserOperationEventData,
 } from '@apihub/entities/ws-file-events'
 import { isUserCursorEventData, isUserOperationEventData } from '@apihub/entities/ws-file-events'
-import type { UserConnectedEventData } from '@apihub/entities/ws-branch-events'
-import { isUserConnectedEventData, isUserDisconnectedEventData } from '@apihub/entities/ws-branch-events'
+import type { IPlainTextOperation } from '@otjs/plaintext'
+import { PlainTextOperation } from '@otjs/plaintext'
+import type { ICursor, IDatabaseAdapter, TDatabaseAdapterEventArgs } from '@otjs/plaintext-editor'
+import { DatabaseAdapterEvent } from '@otjs/plaintext-editor'
+import type { Emitter, Handler } from 'mitt'
+import mitt from 'mitt'
 
 export type TWSAdapterConstructionOptions = {
   /** Firebase Database Reference. */
@@ -235,7 +235,7 @@ export class WSAdapter implements IDatabaseAdapter {
    * @param cursor - Cursor of Current User.
    */
   async sendCursor(cursor: ICursor | null): Promise<void> {
-    if (!this.ws || this.ws.readyState !== WebSocket.OPEN || !cursor) { return }
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN || !cursor) return
     const { position = -1, selectionEnd = -1 } = cursor ? cursor.toJSON() : {}
     this.ws?.send(JSON.stringify({
       type: 'cursor',

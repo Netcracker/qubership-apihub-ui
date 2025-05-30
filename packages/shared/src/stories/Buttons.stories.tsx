@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
+import MoreVertIcon from '@mui/icons-material/MoreVert'
+import { Button, MenuItem } from '@mui/material'
 import type { Meta, StoryFn } from '@storybook/react'
 import React from 'react'
-import { Button, MenuItem } from '@mui/material'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
-import type { MenuButtonProps } from '../components/Buttons/MenuButton'
-import { MenuButton } from '../components/Buttons/MenuButton'
-import type { FilterButtonProps } from '../components/Buttons/FilterButton'
-import { FilterButton } from '../components/Buttons/FilterButton'
-import type { MultiButtonProps } from '../components/Buttons/MultiButton'
-import { MultiButton } from '../components/Buttons/MultiButton'
 import type { ExportMenuButtonProps } from '../components/Buttons/ExportMenuButton'
 import { ExportMenuButton } from '../components/Buttons/ExportMenuButton'
+import type { FilterButtonProps } from '../components/Buttons/FilterButton'
+import { FilterButton } from '../components/Buttons/FilterButton'
+import type { MenuButtonProps } from '../components/Buttons/MenuButton'
+import { MenuButton } from '../components/Buttons/MenuButton'
+import type { MultiButtonProps } from '../components/Buttons/MultiButton'
+import { MultiButton } from '../components/Buttons/MultiButton'
 
 export default {
   title: 'Buttons',
@@ -66,14 +66,13 @@ MenuButtonStory.argTypes = {
 
 MenuButtonStory.args = {
   title: 'Title',
-  icon: <MoreVertIcon/>,
+  icon: <MoreVertIcon />,
   alignItems: 'normal',
   children: [
     <MenuItem>Option 1</MenuItem>,
     <MenuItem>Option 2</MenuItem>,
     <MenuItem>Option 3</MenuItem>,
   ],
-
 }
 MenuButtonStory.storyName = 'Menu Button'
 

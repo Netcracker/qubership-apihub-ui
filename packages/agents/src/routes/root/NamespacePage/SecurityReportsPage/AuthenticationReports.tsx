@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useCallback } from 'react'
-import { Box } from '@mui/material'
-import { LoadingButton } from '@mui/lab'
-import { SECURITY_REPORT_TYPE_AUTH_CHECK, useSecurityReports } from './useSecurityReports'
 import type { Key } from '@apihub/entities/keys'
-import { useParams } from 'react-router-dom'
-import { useCheckSecurity } from './useCheckSecurity'
-import { useDownloadSecurityReport } from './useDownloadSecurityReport'
+import { LoadingButton } from '@mui/lab'
+import { Box } from '@mui/material'
 import { SecurityReportsTable } from '@netcracker/qubership-apihub-ui-shared/components/SecurityReportsTable'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import type { FC } from 'react'
+import { memo, useCallback } from 'react'
+import { useParams } from 'react-router-dom'
+import { useCheckSecurity } from './useCheckSecurity'
+import { useDownloadSecurityReport } from './useDownloadSecurityReport'
+import { SECURITY_REPORT_TYPE_AUTH_CHECK, useSecurityReports } from './useSecurityReports'
 
 // High Order Component //
 export const AuthenticationReports: FC = memo(() => {
@@ -47,10 +47,11 @@ export const AuthenticationReports: FC = memo(() => {
     type: SECURITY_REPORT_TYPE_AUTH_CHECK,
   })
 
-  const onDownloadSecurityReport = useCallback((processId: Key) => downloadSecurityReport({
-    processKey: processId,
-    type: SECURITY_REPORT_TYPE_AUTH_CHECK,
-  }), [downloadSecurityReport])
+  const onDownloadSecurityReport = useCallback((processId: Key) =>
+    downloadSecurityReport({
+      processKey: processId,
+      type: SECURITY_REPORT_TYPE_AUTH_CHECK,
+    }), [downloadSecurityReport])
 
   const onStartSecurityCheck = useCallback(() => {
     startSecurityCheck()

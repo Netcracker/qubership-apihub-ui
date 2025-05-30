@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { useMutation } from '@tanstack/react-query'
 import type { Key } from '@apihub/entities/keys'
 import { portalRequestJson } from '@apihub/utils/requests'
 import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { generatePath } from 'react-router-dom'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
+import { useMutation } from '@tanstack/react-query'
+import { generatePath } from 'react-router-dom'
 
 export function useCopyPackageVersion(): [CopyPackageVersion, Key | undefined, IsLoading, IsSuccess] {
   const {

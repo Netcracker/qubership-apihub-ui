@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo } from 'react'
 import { Breadcrumbs, Link } from '@mui/material'
-import { NavLink, useParams } from 'react-router-dom'
-import { useProject } from '../root/useProject'
-import { getEditorPath } from '../NavigationProvider'
 import { usePackage } from '@netcracker/qubership-apihub-ui-shared/hooks/packages/usePackage'
 import { calculatePackagePath } from '@netcracker/qubership-apihub-ui-shared/utils/packages'
+import type { FC } from 'react'
+import { memo } from 'react'
+import { NavLink, useParams } from 'react-router-dom'
+import { getEditorPath } from '../NavigationProvider'
+import { useProject } from '../root/useProject'
 
 export type BreadcrumbNavigationProps = {
   relativePath?: ReadonlyArray<{
@@ -30,23 +30,23 @@ export type BreadcrumbNavigationProps = {
   }>
 }
 
-export const BreadcrumbNavigation: FC<BreadcrumbNavigationProps> = memo<BreadcrumbNavigationProps>(({ relativePath }) => {
-  const { groupId } = useParams()
+export const BreadcrumbNavigation: FC<BreadcrumbNavigationProps> = memo<BreadcrumbNavigationProps>(
+  ({ relativePath }) => {
+    const { groupId } = useParams()
 
-  const [project] = useProject()
-  const { packageObj: group } = usePackage({ packageKey: project?.groupKey ?? groupId, showParents: true })
-  const path = calculatePackagePath(group, true, '•')
+    const [project] = useProject()
+    const { packageObj: group } = usePackage({ packageKey: project?.groupKey ?? groupId, showParents: true })
+    const path = calculatePackagePath(group, true, '•')
 
-  return (
-    <Breadcrumbs>
-      <Link
-        component={NavLink}
-        to={getEditorPath()}
-      >
-        {`${path}`}
-      </Link>
-      {
-        relativePath?.map(({ name, to }, index) => (
+    return (
+      <Breadcrumbs>
+        <Link
+          component={NavLink}
+          to={getEditorPath()}
+        >
+          {`${path}`}
+        </Link>
+        {relativePath?.map(({ name, to }, index) => (
           <Link
             key={`${name}-${to}-${index}`}
             component={NavLink}
@@ -54,8 +54,8 @@ export const BreadcrumbNavigation: FC<BreadcrumbNavigationProps> = memo<Breadcru
           >
             {name}
           </Link>
-        ))
-      }
-    </Breadcrumbs>
-  )
-})
+        ))}
+      </Breadcrumbs>
+    )
+  },
+)

@@ -1,12 +1,12 @@
-import type { To } from 'react-router-dom'
-import { useNavigate } from 'react-router-dom'
-import { useActiveTabContentContext, useSetActiveTabContentContext } from './ProfilePage'
+import { getProfilePath } from '@apihub/routes/NavigationProvider'
+import { Box, List, ListItemButton, ListItemText, Typography } from '@mui/material'
 import type { FC } from 'react'
 import { memo, useCallback } from 'react'
-import { Box, List, ListItemButton, ListItemText, Typography } from '@mui/material'
+import type { To } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import type { ProfilePageRoute } from '../../../routes'
 import { PERSONAL_ACCESS_TOKENS_PAGE } from '../../../routes'
-import { getProfilePath } from '@apihub/routes/NavigationProvider'
+import { useActiveTabContentContext, useSetActiveTabContentContext } from './ProfilePage'
 
 export const ProfileNavigation: FC = memo(() => {
   const activeTab = useActiveTabContentContext()

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { useServices } from './useServices'
-import { useMemo } from 'react'
 import { NO_PREVIOUS_VERSION_OPTION } from '@apihub/entities/snapshots'
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
+import { useMemo } from 'react'
+import { useServices } from './useServices'
 
 export function useBaselineOptions(withDefaultOption = false): string[] {
   const [{ services }] = useServices()

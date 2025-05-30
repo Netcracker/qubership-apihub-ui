@@ -14,20 +14,24 @@
  * limitations under the License.
  */
 
-import { useCookie, useDebounce, useLocalStorage } from 'react-use'
 import { safeParse } from '@stoplight/json'
 import type { Dispatch, SetStateAction } from 'react'
-import type { Authorization, AuthorizationDto } from '../../types/authorization'
-import { AUTHORIZATION_COOKIE_KEY, AUTHORIZATION_LOCAL_STORAGE_KEY } from '../../utils/constants'
+import { useCookie, useDebounce, useLocalStorage } from 'react-use'
 import { isTokenExpired } from '../../entities/token-payload'
+import type { Authorization, AuthorizationDto } from '../../types/authorization'
 import { toUser } from '../../types/user'
+import { AUTHORIZATION_COOKIE_KEY, AUTHORIZATION_LOCAL_STORAGE_KEY } from '../../utils/constants'
 
 export const DEFAULT_AUTHORIZATION_DEBOUNCE = 1500
 
 export type AuthorizationOptions = { cookie?: string | null; setLogin?: Dispatch<SetStateAction<boolean>> }
 
-export function useAuthorization(options?: AuthorizationOptions): [Authorization | undefined, SetAuthorization, RemoveAuthorization] {
-  const [localStorageAuthorization, setLocalStorageAuthorization, removeLocalStorageAuthorization] = useLocalStorage<Authorization>(AUTHORIZATION_LOCAL_STORAGE_KEY)
+export function useAuthorization(
+  options?: AuthorizationOptions,
+): [Authorization | undefined, SetAuthorization, RemoveAuthorization] {
+  const [localStorageAuthorization, setLocalStorageAuthorization, removeLocalStorageAuthorization] = useLocalStorage<
+    Authorization
+  >(AUTHORIZATION_LOCAL_STORAGE_KEY)
   const [cookieAuthorization, , removeCookieAuthorization] = useCookie(AUTHORIZATION_COOKIE_KEY)
 
   useDebounce(() => {
@@ -41,7 +45,9 @@ export function useAuthorization(options?: AuthorizationOptions): [Authorization
   }
 
   if (!localStorageAuthorization) {
-    const authorizationDto = safeParse(window.atob(options?.cookie ?? cookieAuthorization ?? '')) as AuthorizationDto | null
+    const authorizationDto = safeParse(window.atob(options?.cookie ?? cookieAuthorization ?? '')) as
+      | AuthorizationDto
+      | null
     const authorization = authorizationDto && { ...authorizationDto, user: toUser(authorizationDto!.user!) }
     authorization && !isTokenExpired(authorization.token) && setLocalStorageAuthorization(authorization)
   }

@@ -17,15 +17,15 @@
 import { Box, Button, IconButton, Tooltip, Typography } from '@mui/material'
 import type { ChangeEvent, DragEvent, FC, PropsWithChildren, ReactNode } from 'react'
 import { memo, useCallback, useMemo, useState } from 'react'
-import borderSvg from './border.svg'
 import { ClockBackwardIcon } from '../../icons/ClockBackwardIcon'
-import { InfoContextIcon } from '../../icons/InfoContextIcon'
 import { CloudUploadIcon } from '../../icons/CloudUploadIcon'
-import { transformFileListToFileArray } from '../../utils/files'
 import { DeleteIcon } from '../../icons/DeleteIcon'
-import { isNotEmptyRecord } from '../../utils/arrays'
-import { FileTable } from './FileTable'
 import { EditIcon } from '../../icons/EditIcon'
+import { InfoContextIcon } from '../../icons/InfoContextIcon'
+import { isNotEmptyRecord } from '../../utils/arrays'
+import { transformFileListToFileArray } from '../../utils/files'
+import borderSvg from './border.svg'
+import { FileTable } from './FileTable'
 
 export type FileLabelsRecord = Record<string, { file: File; labels: string[] }>
 
@@ -91,22 +91,29 @@ export const FileTableUpload: FC<FileTableUploadProps> = memo<FileTableUploadPro
   }, [onAddFiles])
 
   const filesTable = useMemo(() => (
-      <>
-        {showTable && (
-          <FileTable
-            isLoading={isLoading}
-            showPlaceholder={showPlaceholder}
-            filesMap={uploadFilesMap}
-            getFileClickHandler={getFileClickHandler}
-            getFileActions={getFileActions}
-            getFileLeftIcon={getFileLeftIcon}
-            getFileRightIcon={getFileRightIcon}
-          />
-        )}
-      </>
-    ),
-    [showTable, isLoading, showPlaceholder, uploadFilesMap, getFileClickHandler, getFileActions, getFileLeftIcon, getFileRightIcon],
-  )
+    <>
+      {showTable && (
+        <FileTable
+          isLoading={isLoading}
+          showPlaceholder={showPlaceholder}
+          filesMap={uploadFilesMap}
+          getFileClickHandler={getFileClickHandler}
+          getFileActions={getFileActions}
+          getFileLeftIcon={getFileLeftIcon}
+          getFileRightIcon={getFileRightIcon}
+        />
+      )}
+    </>
+  ), [
+    showTable,
+    isLoading,
+    showPlaceholder,
+    uploadFilesMap,
+    getFileClickHandler,
+    getFileActions,
+    getFileLeftIcon,
+    getFileRightIcon,
+  ])
 
   if (!isDragOver && showTable) {
     return (
@@ -159,19 +166,20 @@ export const FileTableUpload: FC<FileTableUploadProps> = memo<FileTableUploadPro
         }}
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px' }}>
-          <CloudUploadIcon sx={{ fontSize: 56, color: '#626D82' }}/>
+          <CloudUploadIcon sx={{ fontSize: 56, color: '#626D82' }} />
           <Box sx={{ display: 'flex', gap: 0.5, width: 'fit-content', alignItems: 'center' }}>
             <Typography variant="h2" color="#626D82">
               {hasFiles ? 'Drop files here to attach' : 'Drop files here to attach or'}
             </Typography>
-            {!hasFiles &&
-              <Button
-                sx={{ p: 0, lineHeight: '22px', fontSize: '15px', minWidth: 'fit-content' }}
-                data-testid="BrowseButton"
-              >
-                browse
-              </Button>
-            }
+            {!hasFiles
+              && (
+                <Button
+                  sx={{ p: 0, lineHeight: '22px', fontSize: '15px', minWidth: 'fit-content' }}
+                  data-testid="BrowseButton"
+                >
+                  browse
+                </Button>
+              )}
           </Box>
         </Box>
       </Box>
@@ -213,17 +221,19 @@ export const FileActions: FC<{
         justifyContent: 'flex-end',
       }}
     >
-      {onRestoreAction && <Tooltip title="Restore previous file">
-        <IconButton
-          size="small"
-          sx={{ visibility: 'hidden', p: 0 }}
-          className="hoverable"
-          onClick={handleRestore}
-          data-testid="RestoreButton"
-        >
-          <ClockBackwardIcon sx={{ color: '#626D82', fontSize: 20 }}/>
-        </IconButton>
-      </Tooltip>}
+      {onRestoreAction && (
+        <Tooltip title="Restore previous file">
+          <IconButton
+            size="small"
+            sx={{ visibility: 'hidden', p: 0 }}
+            className="hoverable"
+            onClick={handleRestore}
+            data-testid="RestoreButton"
+          >
+            <ClockBackwardIcon sx={{ color: '#626D82', fontSize: 20 }} />
+          </IconButton>
+        </Tooltip>
+      )}
       <Tooltip title="Remove">
         <IconButton
           sx={{ visibility: 'hidden', p: 0 }}
@@ -231,7 +241,7 @@ export const FileActions: FC<{
           onClick={handleDelete}
           data-testid="RemoveButton"
         >
-          <DeleteIcon color="#626D82"/>
+          <DeleteIcon color="#626D82" />
         </IconButton>
       </Tooltip>
       <Tooltip title="Edit">
@@ -241,7 +251,7 @@ export const FileActions: FC<{
           onClick={handleEdit}
           data-testid="EditButton"
         >
-          <EditIcon color="#626D82"/>
+          <EditIcon color="#626D82" />
         </IconButton>
       </Tooltip>
     </Box>
@@ -249,17 +259,19 @@ export const FileActions: FC<{
 })
 
 export const FileInfoIcon: FC = memo(() => {
-  return <Tooltip
-    title={
-      <>
-        This file has replaced one with the same name.<br/>
-        You can restore previous file in place of the new one by clicking Restore icon.
-      </>
-    }
-    PopperProps={{
-      sx: { '.MuiTooltip-tooltip': { maxWidth: 'unset' } },
-    }}
-  >
-    <InfoContextIcon sx={{ ml: '6px' }}/>
-  </Tooltip>
+  return (
+    <Tooltip
+      title={
+        <>
+          This file has replaced one with the same name.<br />
+          You can restore previous file in place of the new one by clicking Restore icon.
+        </>
+      }
+      PopperProps={{
+        sx: { '.MuiTooltip-tooltip': { maxWidth: 'unset' } },
+      }}
+    >
+      <InfoContextIcon sx={{ ml: '6px' }} />
+    </Tooltip>
+  )
 })

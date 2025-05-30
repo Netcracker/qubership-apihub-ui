@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
+import Box from '@mui/material/Box'
 import type { Meta, StoryFn } from '@storybook/react'
 import type { PropsWithChildren } from 'react'
 import React from 'react'
-import Box from '@mui/material/Box'
-import { fullHeight } from './commons/decorators'
+import { ListBox } from '../components/Panels/ListBox'
 import type { SidebarPanelProps } from '../components/Panels/SidebarPanel'
 import { SidebarPanel } from '../components/Panels/SidebarPanel'
-import { BLUE_SECTION_COLOR, GREEN_SECTION_COLOR, RED_SECTION_COLOR } from './commons/placeholder-colors'
-import { ListBox } from '../components/Panels/ListBox'
 import type { TabsPanelProps } from '../components/Panels/TabsPanel'
 import { TabsPanel } from '../components/Panels/TabsPanel'
+import { fullHeight } from './commons/decorators'
+import { BLUE_SECTION_COLOR, GREEN_SECTION_COLOR, RED_SECTION_COLOR } from './commons/placeholder-colors'
 
 export default {
   title: 'Panels',
@@ -62,7 +62,7 @@ TabsPanelStory.args = {
   tabs: [{
     key: 'tab-1',
     name: 'Tab Name 1',
-    info: <Box sx={{ backgroundColor: GREEN_SECTION_COLOR, width: '20px', height: '20px' }}/>,
+    info: <Box sx={{ backgroundColor: GREEN_SECTION_COLOR, width: '20px', height: '20px' }} />,
   }, {
     key: 'tab-2',
     name: 'Tab Name 2',
@@ -79,8 +79,11 @@ TabsPanelStory.args = {
     content: <Box sx={{ backgroundColor: RED_SECTION_COLOR, width: '100%', height: '500px' }}>Tab 2 Content</Box>,
   }, {
     key: 'tab-3',
-    content: <Box sx={{ backgroundColor: BLUE_SECTION_COLOR, width: '100%', height: '2000px' }}>Tab 3 Content with
-      scroll</Box>,
+    content: (
+      <Box sx={{ backgroundColor: BLUE_SECTION_COLOR, width: '100%', height: '2000px' }}>
+        Tab 3 Content with scroll
+      </Box>
+    ),
   }],
   activeTab: 'tab-1',
   separator: false,

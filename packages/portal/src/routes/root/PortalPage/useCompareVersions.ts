@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo, useState } from 'react'
-import { useChangesSummary, useRefetchChangesSummary } from './VersionPage/VersionComparePage/useChangesSummary'
-import { useVersionsComparisons } from './VersionPage/useVersionsComparisons'
+import { useChangesSummaryContext } from '@apihub/routes/root/PortalPage/VersionPage/ChangesSummaryProvider'
+import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { VersionChangesSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
 import { hasNoContent } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
-import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { useChangesSummaryContext } from '@apihub/routes/root/PortalPage/VersionPage/ChangesSummaryProvider'
+import { useEffect, useMemo, useState } from 'react'
+import { useVersionsComparisons } from './VersionPage/useVersionsComparisons'
+import { useChangesSummary, useRefetchChangesSummary } from './VersionPage/VersionComparePage/useChangesSummary'
 
 export type UseCompareVersionsOptions = Partial<{
   changedPackageKey: Key
@@ -79,12 +79,12 @@ export function useCompareVersions(options: UseCompareVersionsOptions): [Version
   })
 
   if (
-    refetchCounter < MAX_CHANGES_SUMMARY_REFETCHES &&
-    !cachedChangesSummary &&
-    !areChangesSummaryLoading &&
-    versionsComparisons &&
-    !areVersionChangesLoading &&
-    isSuccess
+    refetchCounter < MAX_CHANGES_SUMMARY_REFETCHES
+    && !cachedChangesSummary
+    && !areChangesSummaryLoading
+    && versionsComparisons
+    && !areVersionChangesLoading
+    && isSuccess
   ) {
     refetchChangesSummary()
     setRefetchCounter(refetchCounter + 1)

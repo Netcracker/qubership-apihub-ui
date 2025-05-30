@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
+import type { TreeProjectFile } from '@apihub/utils/trees'
+import { LoadingButton } from '@mui/lab'
 import { Button, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material'
+import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 import type { FC } from 'react'
 import { memo, useEffect, useState } from 'react'
-import { useEvent } from 'react-use'
 import { Controller, useForm } from 'react-hook-form'
-import { LoadingButton } from '@mui/lab'
+import { useEvent } from 'react-use'
 import { SHOW_MOVE_FILE_DIALOG } from '../../../../../EventBusProvider'
-import type { TreeProjectFile } from '@apihub/utils/trees'
 import { useRenameProjectFile } from './RenameFileDialog/useRenameProjectFile'
-import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 
 export const MoveFileDialog: FC = memo(() => {
   const [open, setOpen] = useState(false)
@@ -39,17 +39,23 @@ export const MoveFileDialog: FC = memo(() => {
   // TODO: Create `useMoveProjectFile` and use it when backend will provide move API
   const [renameProjectFile, isLoading] = useRenameProjectFile()
 
-  useEffect(() => {!isLoading && setOpen(false)}, [isLoading])
-  useEffect(() => {file && reset()}, [file, reset])
+  useEffect(() => {
+    !isLoading && setOpen(false)
+  }, [isLoading])
+  useEffect(() => {
+    file && reset()
+  }, [file, reset])
 
   return (
     <DialogForm
       open={open}
       onClose={() => setOpen(false)}
-      onSubmit={handleSubmit(({ newFileId }) => renameProjectFile({
-        fileId: file?.key ?? '',
-        newFileId: move(newFileId, file),
-      }))}
+      onSubmit={handleSubmit(({ newFileId }) =>
+        renameProjectFile({
+          fileId: file?.key ?? '',
+          newFileId: move(newFileId, file),
+        })
+      )}
     >
       <DialogTitle>
         Move
@@ -63,7 +69,8 @@ export const MoveFileDialog: FC = memo(() => {
           render={({ field }) => (
             <TextField
               {...field}
-              autoFocus required
+              autoFocus
+              required
               label="Path"
             />
           )}

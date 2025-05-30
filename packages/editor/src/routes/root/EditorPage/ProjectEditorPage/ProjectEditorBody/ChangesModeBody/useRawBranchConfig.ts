@@ -16,12 +16,12 @@
 
 import { useQuery } from '@tanstack/react-query'
 
+import { editorRequestText } from '@apihub/utils/requests'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { useParams } from 'react-router-dom'
 import { useBranchSearchParam } from '../../../../useBranchSearchParam'
-import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { editorRequestText } from '@apihub/utils/requests'
 
 const RAW_BRANCH_CONFIG_QUERY_KEY = 'raw-branch-config-query-key'
 

@@ -42,5 +42,5 @@ export enum ActivityType {
   PACKAGE_VERSION = 'Package version',
   PACKAGE_SECURITY = 'Package security',
   PACKAGE_MEMBERS = 'Package members',
-  OPERATIONS_GROUP = 'Operations groups'
+  OPERATIONS_GROUP = 'Operations groups',
 }

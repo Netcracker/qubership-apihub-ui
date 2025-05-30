@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import { Box, List, ListItemButton, ListItemText, Typography } from '@mui/material'
 import type { FC } from 'react'
 import { memo, useCallback } from 'react'
-import { Box, List, ListItemButton, ListItemText, Typography } from '@mui/material'
-import { useActiveTabContentContext, useSetActiveTabContentContext } from './SettingsPage'
 import type { To } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import type { SettingsPageRoute } from '../../../routes'
 import { ROLES_HIERARCHY_PAGE, SYSTEM_ADMINISTRATORS_PAGE, SYSTEM_TOKENS_PAGE, USER_ROLES_PAGE } from '../../../routes'
 import { getSettingsPath } from '../../NavigationProvider'
+import { useActiveTabContentContext, useSetActiveTabContentContext } from './SettingsPage'
 
 export const SettingsNavigation: FC = memo(() => {
   const activeTab = useActiveTabContentContext()
@@ -59,8 +59,8 @@ export const SettingsNavigation: FC = memo(() => {
             }}
           >
             <Box>
-              <ListItemText primary={label}/>
-              <ListItemText primary={description} primaryTypographyProps={{ color: '#626D82' }}/>
+              <ListItemText primary={label} />
+              <ListItemText primary={description} primaryTypographyProps={{ color: '#626D82' }} />
             </Box>
           </ListItemButton>
         ))}

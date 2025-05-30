@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import { useParams } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
-import { useBranchSearchParam } from '../../useBranchSearchParam'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { ConfigFileKey } from '@apihub/entities/branches'
 import { CONFIG_FILE_KEY_PREFIX } from '@apihub/entities/branches'
 import type { CommitKey } from '@apihub/entities/commits'
 import { DRAFT_COMMIT_KEY, LATEST_COMMIT_KEY, NONE_COMMIT_KEY } from '@apihub/entities/commits'
-import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import type { ProjectFileHistoryDto } from '@apihub/entities/project-file-history'
 import type { FileContent } from '@apihub/entities/project-files'
 import { editorRequestJson, editorRequestText } from '@apihub/utils/requests'
-import type { ProjectFileHistoryDto } from '@apihub/entities/project-file-history'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { useQuery } from '@tanstack/react-query'
+import { useParams } from 'react-router-dom'
+import { useBranchSearchParam } from '../../useBranchSearchParam'
 
 const PROJECT_FILE_CONTENT_QUERY_KEY = 'project-file-content-query-key'
 
@@ -96,7 +96,10 @@ export async function getFileHistory(
   const branch = encodeURIComponent(branchName)
   const fileId = encodeURIComponent(fileKey)
 
-  return await editorRequestJson<ProjectFileHistoryDto>(`/projects/${projectId}/branches/${branch}/files/${fileId}/history`, {
-    method: 'GET',
-  })
+  return await editorRequestJson<ProjectFileHistoryDto>(
+    `/projects/${projectId}/branches/${branch}/files/${fileId}/history`,
+    {
+      method: 'GET',
+    },
+  )
 }

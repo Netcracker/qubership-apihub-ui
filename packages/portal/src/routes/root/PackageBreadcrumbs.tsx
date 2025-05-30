@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
+import { Breadcrumbs, Link } from '@mui/material'
 import type { FC } from 'react'
 import { memo, useCallback, useMemo } from 'react'
 import { NavLink } from 'react-router-dom'
-import { Breadcrumbs, Link } from '@mui/material'
 
-import { useBackwardLocation } from './useBackwardLocation'
-import { useVersionWithRevision } from './useVersionWithRevision'
-import { getGroupPath, getOverviewPath, getWorkspacePath } from '../NavigationProvider'
+import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { Package } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
+import { getGroupPath, getOverviewPath, getWorkspacePath } from '../NavigationProvider'
+import { useBackwardLocation } from './useBackwardLocation'
+import { useVersionWithRevision } from './useVersionWithRevision'
 
 export type PackageBreadcrumbsProps = Partial<{
   packageObject: Package | null

@@ -23,7 +23,6 @@ export function useIntersectionObserver(
   hasNextPage?: boolean,
   fetchNextPage?: () => void,
 ): void {
-
   const onIntersection = useCallback((entries: IntersectionObserverEntry[]) => {
     const [firstEntry] = entries
     if (firstEntry.isIntersecting && hasNextPage && !isNextPageFetching) {

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import type { OperationLocation } from '@apihub/entities/operation-location'
+import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 
 export function useOperationLocation(): OperationLocation {
   const packageId = useSearchParam('package')!
@@ -27,5 +27,3 @@ export function useOperationLocation(): OperationLocation {
     operationKey: operationId,
   }
 }
-
-

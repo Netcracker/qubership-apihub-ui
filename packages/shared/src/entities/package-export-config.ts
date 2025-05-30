@@ -1,6 +1,6 @@
+import { groupBy, isNotEmpty, sortByProperty } from '../utils/arrays'
 import type { Key } from './keys'
 import type { PackageKind } from './packages'
-import { groupBy, isNotEmpty, sortByProperty } from '../utils/arrays'
 
 export type PackageExportConfigDto = {
   allowedOasExtensions: ReadonlyArray<OasExtensionDto>
@@ -23,9 +23,9 @@ export const OAS_EXTENSION_KIND_MIXED = 'mixed' as const
 export const OAS_EXTENSION_KIND_DIRECT = 'direct' as const
 
 export type OasExtensionKinds =
-  typeof OAS_EXTENSION_KIND_INHERITED |
-  typeof OAS_EXTENSION_KIND_MIXED |
-  typeof OAS_EXTENSION_KIND_DIRECT
+  | typeof OAS_EXTENSION_KIND_INHERITED
+  | typeof OAS_EXTENSION_KIND_MIXED
+  | typeof OAS_EXTENSION_KIND_DIRECT
 
 export type OasExtension = {
   key: Key
@@ -127,7 +127,9 @@ const categorizeExtensionsBySource = (
 } => {
   return extensionDtos.reduce((result, extension) => {
     const mappedExtension = toOasExtension(extension, packageId)
-    const categoryKey = mappedExtension.kind === OAS_EXTENSION_KIND_INHERITED ? OAS_EXTENSION_KIND_INHERITED : OAS_EXTENSION_KIND_DIRECT
+    const categoryKey = mappedExtension.kind === OAS_EXTENSION_KIND_INHERITED
+      ? OAS_EXTENSION_KIND_INHERITED
+      : OAS_EXTENSION_KIND_DIRECT
 
     return {
       ...result,
@@ -165,9 +167,7 @@ const combineInheritedExtensions = (
  * Collects all inheritance sources from multiple extensions
  */
 const collectInheritanceSources = (extensions: OasExtensions): InheritanceSources => {
-  return extensions.flatMap(extension =>
-    (hasInheritances(extension) ? extension.inheritances : []),
-  )
+  return extensions.flatMap(extension => (hasInheritances(extension) ? extension.inheritances : []))
 }
 
 const hasInheritances = (extension: OasExtension): extension is OasExtension & {

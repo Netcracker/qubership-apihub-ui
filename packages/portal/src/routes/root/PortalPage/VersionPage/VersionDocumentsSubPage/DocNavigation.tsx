@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { Box } from '@mui/material'
-import { DocumentList } from './DocumentList'
-import { useParams } from 'react-router-dom'
-import { useDocuments } from '../useDocuments'
-import { usePackageKind } from '../../usePackageKind'
-import { useFilteredPackageRefs, usePackageRef } from '../../../useRefPackage'
-import { useSetCurrentDocumentsList } from './CurrentDocumentsListProvider'
-import { useNavigation } from '../../../../NavigationProvider'
-import { REF_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
-import { DASHBOARD_KIND, PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import type { PackageReference } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import {
   DashboardPackageSelector,
 } from '@netcracker/qubership-apihub-ui-shared/components/OperationFilters/DashboardPackageSelector'
 import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
+import { DASHBOARD_KIND, PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import type { PackageReference } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
+import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
+import { REF_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import type { FC } from 'react'
+import { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import { useNavigation } from '../../../../NavigationProvider'
+import { useFilteredPackageRefs, usePackageRef } from '../../../useRefPackage'
+import { usePackageKind } from '../../usePackageKind'
+import { useDocuments } from '../useDocuments'
+import { useSetCurrentDocumentsList } from './CurrentDocumentsListProvider'
+import { DocumentList } from './DocumentList'
 
 export const DocNavigation: FC = memo(() => {
   const { packageId: packageKey, versionId: versionKey } = useParams()
@@ -103,19 +103,19 @@ export const DocNavigation: FC = memo(() => {
   })
 
   if (isPackageKindLoading) {
-    return (
-      <LoadingIndicator/>
-    )
+    return <LoadingIndicator />
   }
 
   return (
     <Box height="100%" display="contents">
       {isDashboard && (
-        <Box sx={{
-          borderTop: '1px solid #D9D9D9',
-          borderBottom: '1px solid #D9D9D9',
-          p: 2,
-        }}>
+        <Box
+          sx={{
+            borderTop: '1px solid #D9D9D9',
+            borderBottom: '1px solid #D9D9D9',
+            p: 2,
+          }}
+        >
           <DashboardPackageSelector
             defaultPackageKey={refKey}
             onSelectPackage={selectDashboardPackage}
@@ -126,7 +126,7 @@ export const DocNavigation: FC = memo(() => {
         </Box>
       )}
       <Box sx={{ p: 2 }}>
-        <SearchBar value={searchValue} onValueChange={setSearchValue} data-testid="SearchDocuments"/>
+        <SearchBar value={searchValue} onValueChange={setSearchValue} data-testid="SearchDocuments" />
       </Box>
       <DocumentList
         isLoading={isInitialLoading}

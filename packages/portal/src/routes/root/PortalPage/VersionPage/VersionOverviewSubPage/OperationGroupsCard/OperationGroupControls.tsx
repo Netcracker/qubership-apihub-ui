@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useCallback, useMemo, useState } from 'react'
-import { Box, Tooltip } from '@mui/material'
+import {
+  useOperationsExport,
+} from '@apihub/routes/root/PortalPage/VersionPage/VersionOverviewSubPage/OperationGroupsCard/useOperationsExport'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
-import { useParams } from 'react-router-dom'
-import { useFullMainVersion } from '../../../FullMainVersionProvider'
+import { Box, Tooltip } from '@mui/material'
 import type { BuildType, OperationsGroupExportFormat } from '@netcracker/qubership-apihub-api-processor'
 import {
   BUILD_TYPE,
@@ -27,6 +26,13 @@ import {
   JSON_EXPORT_GROUP_FORMAT,
   YAML_EXPORT_GROUP_FORMAT,
 } from '@netcracker/qubership-apihub-api-processor'
+import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
+import { MenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
+import {
+  MenuButtonContentWithSections,
+} from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButtonContentWithSections'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { API_TYPE_GRAPHQL, API_TYPE_REST } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { OperationGroup } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
 import {
   DISABLED_BUTTON_COLOR,
@@ -34,20 +40,14 @@ import {
   GROUP_TYPE_REST_PATH_PREFIX,
 } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
 import { AddSquareIcon } from '@netcracker/qubership-apihub-ui-shared/icons/AddSquareIcon'
 import { DeleteIcon } from '@netcracker/qubership-apihub-ui-shared/icons/DeleteIcon'
-import { MenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
 import { DownloadIcon } from '@netcracker/qubership-apihub-ui-shared/icons/DownloadIcon'
 import { PublishIcon } from '@netcracker/qubership-apihub-ui-shared/icons/PublishIcon'
-import {
-  MenuButtonContentWithSections,
-} from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButtonContentWithSections'
-import {
-  useOperationsExport,
-} from '@apihub/routes/root/PortalPage/VersionPage/VersionOverviewSubPage/OperationGroupsCard/useOperationsExport'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { API_TYPE_GRAPHQL, API_TYPE_REST } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { FC } from 'react'
+import { memo, useCallback, useMemo, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import { useFullMainVersion } from '../../../FullMainVersionProvider'
 
 export type OperationGroupControlsProps = {
   operationGroup: OperationGroup
@@ -71,16 +71,19 @@ export const OperationGroupControls: FC<OperationGroupControlsProps> = memo<Oper
   const [exportOperations, isExporting] = useOperationsExport()
   const fullVersion = useFullMainVersion()
 
-  const onExportButton = useCallback((group: OperationGroup, format: OperationsGroupExportFormat, buildType: BuildType) => {
-    exportOperations({
-      packageKey: packageKey!,
-      versionKey: fullVersion!,
-      groupName: group.groupName,
-      apiType: group.apiType ?? DEFAULT_API_TYPE,
-      format: format,
-      buildType: buildType,
-    })
-  }, [exportOperations, fullVersion, packageKey])
+  const onExportButton = useCallback(
+    (group: OperationGroup, format: OperationsGroupExportFormat, buildType: BuildType) => {
+      exportOperations({
+        packageKey: packageKey!,
+        versionKey: fullVersion!,
+        groupName: group.groupName,
+        apiType: group.apiType ?? DEFAULT_API_TYPE,
+        format: format,
+        buildType: buildType,
+      })
+    },
+    [exportOperations, fullVersion, packageKey],
+  )
 
   const isGraphQlGroup = apiType && API_TYPE_DISABLE_ACTION_MAP[apiType]
   const isDownloadButtonDisabled = isExporting || isGraphQlGroup || !operationsCount
@@ -117,7 +120,9 @@ export const OperationGroupControls: FC<OperationGroupControlsProps> = memo<Oper
         className="hoverable"
         disabled={isPrefixGroup}
         disableHint={false}
-        hint={isPrefixGroup ? `Operations cannot be changed in the ${GROUP_TYPE_REST_PATH_PREFIX} group` : 'Change operations in the group'}
+        hint={isPrefixGroup
+          ? `Operations cannot be changed in the ${GROUP_TYPE_REST_PATH_PREFIX} group`
+          : 'Change operations in the group'}
         startIcon={<AddSquareIcon />}
         sx={{ visibility: 'hidden', height: '20px' }}
         onClick={() => onEditContent(operationGroup)}
@@ -169,8 +174,11 @@ export const OperationGroupControls: FC<OperationGroupControlsProps> = memo<Oper
             disabled={isDownloadButtonDisabled}
             size="small"
             isLoading={isExporting}
-            icon={<DownloadIcon
-              color={isDownloadButtonDisabled ? DISABLED_BUTTON_COLOR : ENABLED_BUTTON_COLOR} />}
+            icon={
+              <DownloadIcon
+                color={isDownloadButtonDisabled ? DISABLED_BUTTON_COLOR : ENABLED_BUTTON_COLOR}
+              />
+            }
             onClick={() => setActionMenuOpen(true)}
             onItemClick={event => event.stopPropagation()}
             onClose={() => setActionMenuOpen(false)}
@@ -180,29 +188,46 @@ export const OperationGroupControls: FC<OperationGroupControlsProps> = memo<Oper
               content={{
                 'Download combined specification ': [
                   {
-                    onClick: () => onExportButton(operationGroup, YAML_EXPORT_GROUP_FORMAT, BUILD_TYPE.MERGED_SPECIFICATION),
+                    onClick: () =>
+                      onExportButton(operationGroup, YAML_EXPORT_GROUP_FORMAT, BUILD_TYPE.MERGED_SPECIFICATION),
                     title: 'Download as YAML',
                     testId: 'DownloadCombinedYamlMenuItem',
                   },
                   {
-                    onClick: () => onExportButton(operationGroup, JSON_EXPORT_GROUP_FORMAT, BUILD_TYPE.MERGED_SPECIFICATION),
+                    onClick: () =>
+                      onExportButton(operationGroup, JSON_EXPORT_GROUP_FORMAT, BUILD_TYPE.MERGED_SPECIFICATION),
                     title: 'Download as JSON',
                     testId: 'DownloadCombinedJsonMenuItem',
                   },
                 ],
                 'Download reduced source specifications': [
                   {
-                    onClick: () => onExportButton(operationGroup, YAML_EXPORT_GROUP_FORMAT, BUILD_TYPE.REDUCED_SOURCE_SPECIFICATIONS),
+                    onClick: () =>
+                      onExportButton(
+                        operationGroup,
+                        YAML_EXPORT_GROUP_FORMAT,
+                        BUILD_TYPE.REDUCED_SOURCE_SPECIFICATIONS,
+                      ),
                     title: 'Download as YAML',
                     testId: 'DownloadReducedYamlMenuItem',
                   },
                   {
-                    onClick: () => onExportButton(operationGroup, JSON_EXPORT_GROUP_FORMAT, BUILD_TYPE.REDUCED_SOURCE_SPECIFICATIONS),
+                    onClick: () =>
+                      onExportButton(
+                        operationGroup,
+                        JSON_EXPORT_GROUP_FORMAT,
+                        BUILD_TYPE.REDUCED_SOURCE_SPECIFICATIONS,
+                      ),
                     title: 'Download as JSON',
                     testId: 'DownloadReducedJsonMenuItem',
                   },
                   {
-                    onClick: () => onExportButton(operationGroup, HTML_EXPORT_GROUP_FORMAT, BUILD_TYPE.REDUCED_SOURCE_SPECIFICATIONS),
+                    onClick: () =>
+                      onExportButton(
+                        operationGroup,
+                        HTML_EXPORT_GROUP_FORMAT,
+                        BUILD_TYPE.REDUCED_SOURCE_SPECIFICATIONS,
+                      ),
                     title: 'Download as HTML',
                     testId: 'DownloadReducedHtmlMenuItem',
                   },

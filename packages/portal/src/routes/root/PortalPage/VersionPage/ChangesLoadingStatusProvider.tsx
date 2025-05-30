@@ -38,5 +38,4 @@ export const ChangesLoadingStatusProvider: FC<PropsWithChildren> = ({ children }
       </SetChangesLoadingStatusContext.Provider>
     </ChangesLoadingStatusContext.Provider>
   )
-
 }

@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import { useQuery } from '@tanstack/react-query'
-import { useVersionWithRevision } from '../../../useVersionWithRevision'
-import { generatePath } from 'react-router-dom'
+import { portalRequestJson } from '@apihub/utils/requests'
+import { toApiTypeMap } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { toPackageRef } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type {
   VersionDeprecatedSummary,
   VersionDeprecatedSummaryDto,
 } from '@netcracker/qubership-apihub-ui-shared/entities/version-contents'
 import { isDashboardDeprecatedSummaryDto } from '@netcracker/qubership-apihub-ui-shared/entities/version-contents'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { portalRequestJson } from '@apihub/utils/requests'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
-import { toPackageRef } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import { toApiTypeMap } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { useQuery } from '@tanstack/react-query'
+import { generatePath } from 'react-router-dom'
+import { useVersionWithRevision } from '../../../useVersionWithRevision'
 
 const DEPRECATED_SUMMARY_QUERY_KEY = 'deprecated-summary-query-key'
 
@@ -86,5 +86,3 @@ export function toDeprecatedSummary(value: VersionDeprecatedSummaryDto): Version
     }
   }
 }
-
-

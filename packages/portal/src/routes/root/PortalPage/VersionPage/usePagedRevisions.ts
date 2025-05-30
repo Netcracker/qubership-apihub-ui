@@ -14,26 +14,28 @@
  * limitations under the License.
  */
 
-import type { FetchNextPageOptions, InfiniteQueryObserverResult } from '@tanstack/react-query'
-import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
-import { useEffect, useMemo } from 'react'
 import { portalRequestJson } from '@apihub/utils/requests'
-import { generatePath } from 'react-router-dom'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { Revisions, RevisionsDto } from '@netcracker/qubership-apihub-ui-shared/entities/revisions'
+import { toRevisions } from '@netcracker/qubership-apihub-ui-shared/entities/revisions'
 import type {
   HasNextPage,
   InvalidateQuery,
   IsFetchingNextPage,
   IsLoading,
 } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
 import { API_V3 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
-import type { Revisions, RevisionsDto } from '@netcracker/qubership-apihub-ui-shared/entities/revisions'
-import { toRevisions } from '@netcracker/qubership-apihub-ui-shared/entities/revisions'
+import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import type { FetchNextPageOptions, InfiniteQueryObserverResult } from '@tanstack/react-query'
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
+import { useEffect, useMemo } from 'react'
+import { generatePath } from 'react-router-dom'
 
 const REVISIONS_QUERY_KEY = 'revisions-query-key'
-export type FetchNextRevisionList = (options?: FetchNextPageOptions) => Promise<InfiniteQueryObserverResult<Revisions, Error>>
+export type FetchNextRevisionList = (
+  options?: FetchNextPageOptions,
+) => Promise<InfiniteQueryObserverResult<Revisions, Error>>
 
 type PagedRevisionsQueryState = {
   data: Revisions
@@ -55,7 +57,6 @@ export function usePagedRevisions(options: {
   page?: number
   limit?: number
 }): PagedRevisionsQueryState {
-
   const {
     data,
     isLoading,
@@ -172,4 +173,3 @@ export function useInvalidateRevisions(): InvalidateQuery<void> {
     client.invalidateQueries([REVISIONS_QUERY_KEY]).then()
   }
 }
-

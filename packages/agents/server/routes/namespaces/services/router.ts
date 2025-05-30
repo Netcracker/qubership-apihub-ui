@@ -15,10 +15,10 @@
  */
 
 import { Router } from 'express'
-import { SERVICES_DTO } from './data'
 import type { State } from '../../../types'
 import { COMPLETE_DISCOVERY_STATUS, ERROR_DISCOVERY_STATUS, RUNNING_DISCOVERY_STATUS } from '../../../types'
 import type { SnapshotRouter } from '../snapshots/router'
+import { SERVICES_DTO } from './data'
 
 type ServiceRouter = Router
 

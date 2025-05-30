@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { useAuthorization } from '../authorization'
 import { getTokenPayload } from '../../entities/token-payload'
+import { useAuthorization } from '../authorization'
 
 type IsAdmin = boolean
 

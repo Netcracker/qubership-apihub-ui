@@ -17,6 +17,16 @@
 import type { FC, ReactElement } from 'react'
 import { memo } from 'react'
 
+import type { ApiType } from '../entities/api-types'
+import { API_TYPE_GRAPHQL, API_TYPE_REST } from '../entities/api-types'
+import { FileIcon } from '../icons/FileIcon'
+import { GraphqlIcon } from '../icons/GraphqlIcon'
+import { JsonSchemaIcon } from '../icons/JsonSchemaIcon'
+import { MarkdownIcon } from '../icons/MarkdownIcon'
+import { OpenapiIcon } from '../icons/OpenapiIcon'
+import { ProtobufIcon } from '../icons/ProtobufIcon'
+import { RestApiIcon } from '../icons/RestApiIcon'
+import { SwaggerIcon } from '../icons/SwaggerIcon'
 import type { SpecType } from '../utils/specs'
 import {
   isGraphQlSpecType,
@@ -26,16 +36,6 @@ import {
   OPENAPI_2_0_SPEC_TYPE,
   PROTOBUF_3_SPEC_TYPE,
 } from '../utils/specs'
-import { FileIcon } from '../icons/FileIcon'
-import { MarkdownIcon } from '../icons/MarkdownIcon'
-import { SwaggerIcon } from '../icons/SwaggerIcon'
-import { OpenapiIcon } from '../icons/OpenapiIcon'
-import { JsonSchemaIcon } from '../icons/JsonSchemaIcon'
-import { RestApiIcon } from '../icons/RestApiIcon'
-import { GraphqlIcon } from '../icons/GraphqlIcon'
-import type { ApiType } from '../entities/api-types'
-import { API_TYPE_GRAPHQL, API_TYPE_REST } from '../entities/api-types'
-import { ProtobufIcon } from '../icons/ProtobufIcon'
 
 export type SpecLogoProps = {
   value?: SpecType | ApiType | string
@@ -44,51 +44,37 @@ export type SpecLogoProps = {
 // todo fix usages value type to SpecType and change here
 export const SpecLogo: FC<SpecLogoProps> = memo<SpecLogoProps>(({ value }) => {
   if (!value) {
-    return (
-      <FileIcon/>
-    )
+    return <FileIcon />
   }
 
   if (value === MARKDOWN_SPEC_TYPE) {
-    return (
-      <MarkdownIcon/>
-    )
+    return <MarkdownIcon />
   }
 
   if (value === PROTOBUF_3_SPEC_TYPE) {
-    return (
-      <ProtobufIcon/>
-    )
+    return <ProtobufIcon />
   }
 
   if (value === JSON_SCHEMA_SPEC_TYPE) {
-    return (
-      <JsonSchemaIcon/>
-    )
+    return <JsonSchemaIcon />
   }
 
   if (value === OPENAPI_2_0_SPEC_TYPE) {
-    return (
-      <SwaggerIcon/>
-    )
+    return <SwaggerIcon />
   }
 
   if (isOpenApiSpecType(value as SpecType)) {
-    return (
-      <OpenapiIcon/>
-    )
+    return <OpenapiIcon />
   }
 
   if (isGraphQlSpecType(value as SpecType)) {
-    return (
-      <GraphqlIcon/>
-    )
+    return <GraphqlIcon />
   }
 
-  return API_TYPE_ICON_MAP[value as ApiType] ?? <FileIcon/>
+  return API_TYPE_ICON_MAP[value as ApiType] ?? <FileIcon />
 })
 
 const API_TYPE_ICON_MAP: Record<ApiType, ReactElement | null> = {
-  [API_TYPE_REST]: <RestApiIcon/>,
+  [API_TYPE_REST]: <RestApiIcon />,
   [API_TYPE_GRAPHQL]: null,
 }

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import { FILES_PROJECT_EDITOR_MODE } from '@apihub/entities/editor-modes'
+import { editorRequestVoid } from '@apihub/utils/requests'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { useSetSearchParams } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSetSearchParams'
+import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { useMutation } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
-import { useBranchSearchParam } from '../../useBranchSearchParam'
 import { useInvalidateBranches } from '../../useBranches'
-import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { useSetSearchParams } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSetSearchParams'
-import { FILES_PROJECT_EDITOR_MODE } from '@apihub/entities/editor-modes'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { editorRequestVoid } from '@apihub/utils/requests'
+import { useBranchSearchParam } from '../../useBranchSearchParam'
 
 export function useSaveChanges(): [SaveChanges, IsLoading, IsSuccess] {
   const { projectId } = useParams()

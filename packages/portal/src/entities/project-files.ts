@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { FileKey, Key } from './keys'
-import type { FileFormat } from './file-formats'
-import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import type { ChangeStatus } from '@netcracker/qubership-apihub-ui-shared/entities/change-statuses'
+import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import type { FileFormat } from './file-formats'
+import type { FileKey, Key } from './keys'
 
 export type FileData = {
   content: FileContent

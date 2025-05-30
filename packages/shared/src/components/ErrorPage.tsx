@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo } from 'react'
-import { CONTENT_PLACEHOLDER_AREA, Placeholder } from './Placeholder'
 import { Button, Typography } from '@mui/material'
 import Box from '@mui/material/Box'
-import { DEFAULT_PAGE_LAYOUT_GAP } from '../utils/page-layouts'
-import { DEFAULT_PAPER_SHADOW } from '../themes/palette'
+import type { FC } from 'react'
+import { memo } from 'react'
 import { HomeIcon } from '../icons/HomeIcon'
+import { DEFAULT_PAPER_SHADOW } from '../themes/palette'
+import { DEFAULT_PAGE_LAYOUT_GAP } from '../utils/page-layouts'
+import { CONTENT_PLACEHOLDER_AREA, Placeholder } from './Placeholder'
 
 export type ErrorPageProps = {
   title: string
@@ -41,12 +41,14 @@ export const ErrorPage: FC<ErrorPageProps> = memo<ErrorPageProps>(({
       height: '100%',
     }}
   >
-    <Box sx={{
-      height: '100%',
-      backgroundColor: '#FFFFFF',
-      borderRadius: '10px 10px 0 0',
-      boxShadow: DEFAULT_PAPER_SHADOW,
-    }}>
+    <Box
+      sx={{
+        height: '100%',
+        backgroundColor: '#FFFFFF',
+        borderRadius: '10px 10px 0 0',
+        boxShadow: DEFAULT_PAPER_SHADOW,
+      }}
+    >
       <Placeholder
         invisible={false}
         area={CONTENT_PLACEHOLDER_AREA}
@@ -56,7 +58,7 @@ export const ErrorPage: FC<ErrorPageProps> = memo<ErrorPageProps>(({
             {message && <Typography component="div" variant="h6" color="#626D82">{message}</Typography>}
             <Button
               size="medium"
-              startIcon={<HomeIcon/>}
+              startIcon={<HomeIcon />}
               variant="text"
               href={homePath}
               sx={{

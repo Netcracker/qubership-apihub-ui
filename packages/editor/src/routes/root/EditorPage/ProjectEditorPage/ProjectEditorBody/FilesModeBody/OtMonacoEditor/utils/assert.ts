@@ -36,8 +36,7 @@ export function assert(
   message: string | Error,
 ): void {
   if (statement == null || statement === false) {
-    const err =
-      typeof message === 'string' ? new AssertionError(message) : message
+    const err = typeof message === 'string' ? new AssertionError(message) : message
     throw err
   }
 }

@@ -16,22 +16,22 @@
 
 import type { FC } from 'react'
 import { memo } from 'react'
-import { ProjectEditorToolbar } from './ProjectEditorToolbar/ProjectEditorToolbar'
-import { ProjectEditorSidebar } from './ProjectEditorSidebar/ProjectEditorSidebar'
 import { ProjectEditorBody } from './ProjectEditorBody/ProjectEditorBody'
+import { ProjectEditorSidebar } from './ProjectEditorSidebar/ProjectEditorSidebar'
+import { ProjectEditorToolbar } from './ProjectEditorToolbar/ProjectEditorToolbar'
 
-import { ConflictedBlobKeyProvider } from './ConflictedBlobKeyProvider'
-import { BranchEditingWebSocketProvider } from './BranchEditingWebSocketProvider'
-import { FileEditingWebSocketProvider } from './FileEditingWebSocketProvider'
-import { MonacoContentProvider } from './MonacoContentProvider'
-import { useBranchSearchParam } from '../../useBranchSearchParam'
-import { BwcVersionKeyProvider } from './BwcVersionKeyProvider'
-import { useGitlabIntegrationCheck } from '../useGitlabIntegrationCheck'
-import { useBranchCache } from './useBranchCache'
-import { usePublishableBranchFileKeys } from './usePublishableBranchFileKeys'
-import { useFileProblemsMap } from './useFileProblems'
 import { NoIntegrationPlaceholder } from '@netcracker/qubership-apihub-ui-shared/components/NoIntegrationPlaceholder'
 import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
+import { useBranchSearchParam } from '../../useBranchSearchParam'
+import { useGitlabIntegrationCheck } from '../useGitlabIntegrationCheck'
+import { BranchEditingWebSocketProvider } from './BranchEditingWebSocketProvider'
+import { BwcVersionKeyProvider } from './BwcVersionKeyProvider'
+import { ConflictedBlobKeyProvider } from './ConflictedBlobKeyProvider'
+import { FileEditingWebSocketProvider } from './FileEditingWebSocketProvider'
+import { MonacoContentProvider } from './MonacoContentProvider'
+import { useBranchCache } from './useBranchCache'
+import { useFileProblemsMap } from './useFileProblems'
+import { usePublishableBranchFileKeys } from './usePublishableBranchFileKeys'
 
 export const ProjectEditorPage: FC = memo(() => {
   const integration = useGitlabIntegrationCheck()
@@ -43,7 +43,7 @@ export const ProjectEditorPage: FC = memo(() => {
   const isBranchIndexing = isBranchCacheLoading || isFileProblemsMapLoading
 
   if (!integration) {
-    return <NoIntegrationPlaceholder/>
+    return <NoIntegrationPlaceholder />
   }
 
   return (
@@ -53,9 +53,9 @@ export const ProjectEditorPage: FC = memo(() => {
           <BwcVersionKeyProvider key={branchSearchParam!}>
             <MonacoContentProvider>
               <PageLayout
-                toolbar={<ProjectEditorToolbar isBranchIndexing={isBranchIndexing}/>}
-                navigation={<ProjectEditorSidebar/>}
-                body={<ProjectEditorBody/>}
+                toolbar={<ProjectEditorToolbar isBranchIndexing={isBranchIndexing} />}
+                navigation={<ProjectEditorSidebar />}
+                body={<ProjectEditorBody />}
                 sx={{ navigation: { paddingBottom: '0' } }}
               />
             </MonacoContentProvider>

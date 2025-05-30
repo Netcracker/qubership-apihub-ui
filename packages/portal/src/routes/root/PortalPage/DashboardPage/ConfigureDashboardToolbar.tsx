@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
+import { useEventBus } from '@apihub/routes/EventBusProvider'
+import { useDeletedReferences } from '@apihub/routes/root/PortalPage/useDeletedReferences'
+import { Box, Button } from '@mui/material'
+import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
+import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
+import { VersionTitle } from '@netcracker/qubership-apihub-ui-shared/components/Titles/VersionTitle'
+import { Toolbar } from '@netcracker/qubership-apihub-ui-shared/components/Toolbar'
+import { ToolbarTitle } from '@netcracker/qubership-apihub-ui-shared/components/ToolbarTitle'
+import type { Package } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { SPECIAL_VERSION_KEY } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
+import { ExitIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ExitIcon'
+import { isEmpty, isNotEmptyMap } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import type { FC } from 'react'
 import { memo, useCallback, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
-import { PackageBreadcrumbs } from '../../PackageBreadcrumbs'
-import { Box, Button } from '@mui/material'
-import { useDashboardReferences } from './DashboardReferencesProvider'
-import { usePackageVersionContent } from '../../usePackageVersionContent'
 import { useNavigation } from '../../../NavigationProvider'
+import { PackageBreadcrumbs } from '../../PackageBreadcrumbs'
+import { usePackageVersionContent } from '../../usePackageVersionContent'
+import { useDashboardReferences } from './DashboardReferencesProvider'
 import { useRecursiveDashboardName } from './RecursiveDashboardNameContextProvider'
-import type { Package } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { SPECIAL_VERSION_KEY } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
-import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
-import { useEventBus } from '@apihub/routes/EventBusProvider'
-import { isEmpty, isNotEmptyMap } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import { Toolbar } from '@netcracker/qubership-apihub-ui-shared/components/Toolbar'
-import { ToolbarTitle } from '@netcracker/qubership-apihub-ui-shared/components/ToolbarTitle'
-import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
-import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
-import { ExitIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ExitIcon'
-import { useDeletedReferences } from '@apihub/routes/root/PortalPage/useDeletedReferences'
-import { VersionTitle } from '@netcracker/qubership-apihub-ui-shared/components/Titles/VersionTitle'
 
 type ConfigureDashboardToolbarProps = {
   packageObject: Package | null
@@ -53,10 +53,12 @@ export const ConfigureDashboardToolbar: FC<ConfigureDashboardToolbarProps> = mem
   const { showPublishPackageVersionDialog } = useEventBus()
 
   const navigateToMainPage = useCallback(() => {
-    versionId !== SPECIAL_VERSION_KEY ? navigateToVersion({
-      packageKey: packageId!,
-      versionKey: getSplittedVersionKey(version, latestRevision).versionKey,
-    }) : navigateToPackage({ packageKey: packageId! })
+    versionId !== SPECIAL_VERSION_KEY
+      ? navigateToVersion({
+        packageKey: packageId!,
+        versionKey: getSplittedVersionKey(version, latestRevision).versionKey,
+      })
+      : navigateToPackage({ packageKey: packageId! })
   }, [versionId, navigateToVersion, packageId, version, latestRevision, navigateToPackage])
 
   const dashboardContent = useDashboardReferences()
@@ -68,10 +70,16 @@ export const ConfigureDashboardToolbar: FC<ConfigureDashboardToolbarProps> = mem
       return [true, 'Add at least one package/dashboard to publish dashboard version.']
     }
     if (isNotEmptyMap(deletedReferences)) {
-      return [true, 'The dashboard references deleted package or dashboard version. Remove deleted versions from the dashboard before publishing.']
+      return [
+        true,
+        'The dashboard references deleted package or dashboard version. Remove deleted versions from the dashboard before publishing.',
+      ]
     }
     if (recursiveDashboardName) {
-      return [true, `Included dashboard versions form a cycle: ${packageObject?.name} -> ${recursiveDashboardName} -> ${packageObject?.name}. Eliminate the cycle before publishing.`]
+      return [
+        true,
+        `Included dashboard versions form a cycle: ${packageObject?.name} -> ${recursiveDashboardName} -> ${packageObject?.name}. Eliminate the cycle before publishing.`,
+      ]
     }
     return [false, '']
   }, [dashboardContent, deletedReferences, recursiveDashboardName, packageObject?.name])
@@ -79,10 +87,10 @@ export const ConfigureDashboardToolbar: FC<ConfigureDashboardToolbarProps> = mem
   return (
     <>
       <Toolbar
-        breadcrumbs={<PackageBreadcrumbs packageObject={packageObject}/>}
+        breadcrumbs={<PackageBreadcrumbs packageObject={packageObject} />}
         header={
           <>
-            <ToolbarTitle value={toolbarTitle}/>
+            <ToolbarTitle value={toolbarTitle} />
             {isEditingVersion && (
               <Box display="flex" gap={1} alignItems="center" sx={{ ml: 2 }}>
                 <VersionTitle
@@ -91,7 +99,7 @@ export const ConfigureDashboardToolbar: FC<ConfigureDashboardToolbarProps> = mem
                   latestRevision={latestRevision}
                   subtitleVariant
                 />
-                <CustomChip value={status!} data-testid="VersionStatusChip"/>
+                <CustomChip value={status!} data-testid="VersionStatusChip" />
               </Box>
             )}
           </>
@@ -108,7 +116,7 @@ export const ConfigureDashboardToolbar: FC<ConfigureDashboardToolbarProps> = mem
               testId="PublishButton"
             />
             <Button
-              startIcon={<ExitIcon/>}
+              startIcon={<ExitIcon />}
               variant="outlined"
               onClick={navigateToMainPage}
               data-testid="ExitButton"
@@ -121,5 +129,3 @@ export const ConfigureDashboardToolbar: FC<ConfigureDashboardToolbarProps> = mem
     </>
   )
 })
-
-

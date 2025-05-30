@@ -16,21 +16,11 @@
 
 import type { FC, ReactNode } from 'react'
 import { useMemo, useState } from 'react'
-import type { OpenApiSpecViewerProps } from './OpenApiSpecViewer'
-import { OPEN_API_VIEW_MODES, OpenApiSpecViewer } from './OpenApiSpecViewer'
-import type { GraphQlSpecViewerProps } from './GraphQlSpecViewer'
-import { GRAPHQL_VIEW_MODES, GraphQlSpecViewer } from './GraphQlSpecViewer'
-import type { UnsupportedViewerProps } from './UnsupportedViewer'
-import { UnsupportedViewer } from './UnsupportedViewer'
-import type { JsonSchemaSpecViewerProps } from './JsonSchemaSpecViewer'
-import { JSON_SCHEMA_VIEW_MODES, JsonSchemaSpecViewer } from './JsonSchemaSpecViewer'
-import { LoadingIndicator } from '../LoadingIndicator'
-import type { MarkdownViewerProps } from './MarkdownViewer'
-import { MarkdownViewer } from './MarkdownViewer'
-import type { SpecViewMode } from '../SpecViewToggler'
-import { DOC_SPEC_VIEW_MODE } from '../SpecViewToggler'
-import type { Spec } from '../../entities/specs'
 import type { ProxyServer } from '../../entities/services'
+import type { Spec } from '../../entities/specs'
+import type { FileExtension } from '../../utils/files'
+import { JSON_FILE_EXTENSION, YAML_FILE_EXTENSION } from '../../utils/files'
+import { isFastJsonSchema, toJsonSchema } from '../../utils/specifications'
 import type { SpecType } from '../../utils/specs'
 import {
   GRAPHAPI_SPEC_TYPE,
@@ -43,9 +33,19 @@ import {
   OPENAPI_3_1_SPEC_TYPE,
   OPENAPI_SPEC_TYPE,
 } from '../../utils/specs'
-import type { FileExtension } from '../../utils/files'
-import { JSON_FILE_EXTENSION, YAML_FILE_EXTENSION } from '../../utils/files'
-import { isFastJsonSchema, toJsonSchema } from '../../utils/specifications'
+import { LoadingIndicator } from '../LoadingIndicator'
+import type { SpecViewMode } from '../SpecViewToggler'
+import { DOC_SPEC_VIEW_MODE } from '../SpecViewToggler'
+import type { GraphQlSpecViewerProps } from './GraphQlSpecViewer'
+import { GRAPHQL_VIEW_MODES, GraphQlSpecViewer } from './GraphQlSpecViewer'
+import type { JsonSchemaSpecViewerProps } from './JsonSchemaSpecViewer'
+import { JSON_SCHEMA_VIEW_MODES, JsonSchemaSpecViewer } from './JsonSchemaSpecViewer'
+import type { MarkdownViewerProps } from './MarkdownViewer'
+import { MarkdownViewer } from './MarkdownViewer'
+import type { OpenApiSpecViewerProps } from './OpenApiSpecViewer'
+import { OPEN_API_VIEW_MODES, OpenApiSpecViewer } from './OpenApiSpecViewer'
+import type { UnsupportedViewerProps } from './UnsupportedViewer'
+import { UnsupportedViewer } from './UnsupportedViewer'
 
 export type SpecViewerResult = {
   viewer: ReactNode
@@ -75,11 +75,11 @@ export function useSpecViewer({
 
   const [viewer, viewModes] = useMemo(() => {
     if (isLoading) {
-      return [<LoadingIndicator/>, []]
+      return [<LoadingIndicator />, []]
     }
 
     const [Component, views] = specTypeViewers[spec.type] ?? getFormatViewer(spec.extension, value)
-    return [<Component view={viewMode} spec={spec} value={value} proxyServer={proxyServer} header={header}/>, views]
+    return [<Component view={viewMode} spec={spec} value={value} proxyServer={proxyServer} header={header} />, views]
   }, [header, isLoading, proxyServer, spec, value, viewMode])
 
   return { viewer, viewModes, viewMode, setViewMode }

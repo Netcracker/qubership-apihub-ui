@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useEffect, useMemo } from 'react'
-import type { Package, PackageKind } from '../../entities/packages'
-import { EMPTY_PACKAGE, WORKSPACE_KIND } from '../../entities/packages'
+import WorkspacesOutlinedIcon from '@mui/icons-material/WorkspacesOutlined'
+import { LoadingButton } from '@mui/lab'
 import {
   Autocomplete,
   Button,
@@ -30,16 +28,18 @@ import {
   ListItem,
   TextField,
 } from '@mui/material'
-import { DEFAULT_DEBOUNCE } from '../../utils/constants'
-import { Controller, useForm } from 'react-hook-form'
-import { DialogForm } from '../DialogForm'
-import { disableAutocompleteSearch } from '../../utils/mui'
-import { GroupIcon } from '../../icons/GroupIcon'
-import { ALIAS_VALIDATION_RULES } from '../../utils/validations'
-import { LoadingButton } from '@mui/lab'
 import ListItemIcon from '@mui/material/ListItemIcon'
-import WorkspacesOutlinedIcon from '@mui/icons-material/WorkspacesOutlined'
 import ListItemText from '@mui/material/ListItemText'
+import type { FC } from 'react'
+import { memo, useEffect, useMemo } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import type { Package, PackageKind } from '../../entities/packages'
+import { EMPTY_PACKAGE, WORKSPACE_KIND } from '../../entities/packages'
+import { GroupIcon } from '../../icons/GroupIcon'
+import { DEFAULT_DEBOUNCE } from '../../utils/constants'
+import { disableAutocompleteSearch } from '../../utils/mui'
+import { ALIAS_VALIDATION_RULES } from '../../utils/validations'
+import { DialogForm } from '../DialogForm'
 
 export type PackageDialogFormProps = {
   open: boolean
@@ -80,7 +80,8 @@ export const PackageDialogForm: FC<PackageDialogFormProps> = memo<PackageDialogF
     [onPackageSearch],
   )
 
-  const includeSelectedWorkspace = currentWorkspace && currentWorkspace.name.toLowerCase().includes(packageSearch.toLowerCase())
+  const includeSelectedWorkspace = currentWorkspace
+    && currentWorkspace.name.toLowerCase().includes(packageSearch.toLowerCase())
 
   const defaultValues: Partial<Package> = useMemo(() => ({
     ...EMPTY_PACKAGE,
@@ -106,34 +107,38 @@ export const PackageDialogForm: FC<PackageDialogFormProps> = memo<PackageDialogF
         <Controller
           name="name"
           control={control}
-          render={({ field }) => <TextField {...field} autoFocus required label="Name" data-testid="NameTextField"/>}
+          render={({ field }) => <TextField {...field} autoFocus required label="Name" data-testid="NameTextField" />}
         />
-        {!isWorkspace && <Controller
-          name="parentGroup"
-          control={control}
-          render={() => <Autocomplete<Package>
-            options={includeSelectedWorkspace ? [currentWorkspace, ...packages] : packages}
-            loading={arePackagesLoading}
-            filterOptions={disableAutocompleteSearch}
-            defaultValue={parentPackage}
-            getOptionLabel={({ name }) => name}
-            renderOption={(props, { key, name, kind }) => (
-              <ListItem {...props} key={key}>
-                <ListItemIcon sx={{ minWidth: 3, mr: 1 }}>
-                  {kind === WORKSPACE_KIND ? <WorkspaceIcon/> : <GroupIcon/>}
-                </ListItemIcon>
-                <ListItemText>
-                  {name}
-                </ListItemText>
-              </ListItem>
+        {!isWorkspace && (
+          <Controller
+            name="parentGroup"
+            control={control}
+            render={() => (
+              <Autocomplete<Package>
+                options={includeSelectedWorkspace ? [currentWorkspace, ...packages] : packages}
+                loading={arePackagesLoading}
+                filterOptions={disableAutocompleteSearch}
+                defaultValue={parentPackage}
+                getOptionLabel={({ name }) => name}
+                renderOption={(props, { key, name, kind }) => (
+                  <ListItem {...props} key={key}>
+                    <ListItemIcon sx={{ minWidth: 3, mr: 1 }}>
+                      {kind === WORKSPACE_KIND ? <WorkspaceIcon /> : <GroupIcon />}
+                    </ListItemIcon>
+                    <ListItemText>
+                      {name}
+                    </ListItemText>
+                  </ListItem>
+                )}
+                isOptionEqualToValue={(option, value) => option.key === value.key}
+                renderInput={(params) => <TextField {...params} required label="Workspace/Parent Group" />}
+                onChange={(_, value) => setValue('parentGroup', value?.key ?? '')}
+                onInputChange={debouncedOnPackageInputChange}
+                data-testid="ParentAutocomplete"
+              />
             )}
-            isOptionEqualToValue={(option, value) => option.key === value.key}
-            renderInput={(params) => <TextField {...params} required label="Workspace/Parent Group"/>}
-            onChange={(_, value) => setValue('parentGroup', value?.key ?? '')}
-            onInputChange={debouncedOnPackageInputChange}
-            data-testid="ParentAutocomplete"
-          />}
-        />}
+          />
+        )}
         <Controller
           name="alias"
           control={control}
@@ -152,7 +157,16 @@ export const PackageDialogForm: FC<PackageDialogFormProps> = memo<PackageDialogF
         <Controller
           name="description"
           control={control}
-          render={({ field }) => <TextField {...field} multiline rows="4" type="text" label="Description" data-testid="DescriptionTextField"/>}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              multiline
+              rows="4"
+              type="text"
+              label="Description"
+              data-testid="DescriptionTextField"
+            />
+          )}
         />
         <Controller
           name="packageVisibility"
@@ -160,7 +174,7 @@ export const PackageDialogForm: FC<PackageDialogFormProps> = memo<PackageDialogF
           render={({ field }) => (
             <FormControlLabel
               {...field}
-              control={<Checkbox data-testid="PackageVisibilityCheckbox"/>}
+              control={<Checkbox data-testid="PackageVisibilityCheckbox" />}
               label="Private"
             />
           )}

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { AUTHORIZATION_LOCAL_STORAGE_KEY } from './constants'
 import type { Authorization } from '../types/authorization'
+import { AUTHORIZATION_LOCAL_STORAGE_KEY } from './constants'
 
 export function getToken(): string {
   let authData: Authorization | null = null

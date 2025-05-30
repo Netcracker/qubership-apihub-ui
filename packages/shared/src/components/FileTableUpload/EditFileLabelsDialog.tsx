@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
+import { Button, DialogActions, DialogContent, DialogTitle, IconButton } from '@mui/material'
 import type { FC } from 'react'
 import { memo, useCallback, useMemo } from 'react'
-import { Button, DialogActions, DialogContent, DialogTitle, IconButton } from '@mui/material'
-import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
+import { Controller, useForm } from 'react-hook-form'
+import { DialogForm } from '../DialogForm'
+import { LabelsAutocomplete } from '../LabelsAutocomplete'
 import type { PopupProps } from '../PopupDelegate'
 import { PopupDelegate } from '../PopupDelegate'
-import { DialogForm } from '../DialogForm'
-import { Controller, useForm } from 'react-hook-form'
-import { LabelsAutocomplete } from '../LabelsAutocomplete'
 import { TextWithOverflowTooltip } from '../TextWithOverflowTooltip'
 
 export const EditFileLabelsDialog: FC = memo(() => {
   return (
     <PopupDelegate
       type={SHOW_EDIT_FILE_LABELS_DIALOG}
-      render={props => <EditFileLabelsPopup {...props}/>}
+      render={props => <EditFileLabelsPopup {...props} />}
     />
   )
 })
@@ -79,7 +79,7 @@ export const EditFileLabelsPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
           sx={{ position: 'absolute', right: 8, top: 8, color: '#626D82' }}
           onClick={onClose}
         >
-          <CloseOutlinedIcon fontSize="small"/>
+          <CloseOutlinedIcon fontSize="small" />
         </IconButton>
       </DialogTitle>
 
@@ -90,7 +90,9 @@ export const EditFileLabelsPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
           render={({ field: { onChange, value } }) => {
             return (
               <LabelsAutocomplete
-                onChange={(_, value) => {onChange(value)}}
+                onChange={(_, value) => {
+                  onChange(value)
+                }}
                 value={value}
               />
             )

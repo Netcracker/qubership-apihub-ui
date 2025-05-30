@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo } from 'react'
-import { FormatViewer } from './FormatViewer'
-import { OpenApiViewer } from '../OpenApiViewer/OpenApiViewer'
+import { EMPTY_DOC } from '@apihub/entities/documents'
 import { Box, Skeleton } from '@mui/material'
-import { useSelectedDocument } from './SelectedDocumentProvider'
+import type { FileFormat } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import { isGraphQlSpecType, isOpenApiSpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import type { FileFormat } from '@netcracker/qubership-apihub-ui-shared/utils/files'
-import { EMPTY_DOC } from '@apihub/entities/documents'
+import type { FC } from 'react'
+import { memo } from 'react'
+import { OpenApiViewer } from '../OpenApiViewer/OpenApiViewer'
+import { FormatViewer } from './FormatViewer'
+import { useSelectedDocument } from './SelectedDocumentProvider'
 
 export type DocumentsTabProps = {
   format: FileFormat
@@ -39,22 +39,20 @@ export const DocumentsTab: FC<DocumentsTabProps> = memo<DocumentsTabProps>((prop
       <Box sx={{ mt: 3 }}>
         {Array(5)
           .fill(0)
-          .map(() => <Skeleton sx={{ width: '70%' }}/>)}
+          .map(() => <Skeleton sx={{ width: '70%' }} />)}
       </Box>
     )
   }
 
-  //todo fix component naming
+  // todo fix component naming
   if (isOpenApiSpecType(type) || isGraphQlSpecType(type)) {
-    return <OpenApiViewerWrapper/>
+    return <OpenApiViewerWrapper />
   }
 
-  return <FormatViewer format={format}/>
+  return <FormatViewer format={format} />
 })
 
 const OpenApiViewerWrapper: FC = memo(() => {
   const content = useSelectedDocument()
-  return (
-    <OpenApiViewer value={content ?? EMPTY_DOC}/>
-  )
+  return <OpenApiViewer value={content ?? EMPTY_DOC} />
 })

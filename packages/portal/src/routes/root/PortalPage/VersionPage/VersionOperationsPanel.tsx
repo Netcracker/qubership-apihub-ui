@@ -14,28 +14,31 @@
  * limitations under the License.
  */
 
+import { isApiTypeSelectorShown } from '@apihub/utils/operation-types'
+import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined'
+import { RichFiltersLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/RichFiltersLayout'
+import { ListBox } from '@netcracker/qubership-apihub-ui-shared/components/Panels/ListBox'
+import type { TestableProps } from '@netcracker/qubership-apihub-ui-shared/components/Testable'
+import { PageTitle } from '@netcracker/qubership-apihub-ui-shared/components/Titles/PageTitle'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { SegmentItemIcon } from '@netcracker/qubership-apihub-ui-shared/icons/SegmentItemIcon'
+import type { OperationsViewMode } from '@netcracker/qubership-apihub-ui-shared/types/views'
+import {
+  DETAILED_OPERATIONS_VIEW_MODE,
+  LIST_OPERATIONS_VIEW_MODE,
+} from '@netcracker/qubership-apihub-ui-shared/types/views'
 import type { FC, MutableRefObject, ReactNode } from 'react'
 import { memo, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
-import { usePackageVersionApiTypes } from './usePackageVersionApiTypes'
-import { useFullMainVersion } from '../FullMainVersionProvider'
 import { usePackage } from '../../usePackage'
-import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined'
+import { useFullMainVersion } from '../FullMainVersionProvider'
 import { useSetSelectedPreviewOperation } from '../SelectedPreviewOperationProvider'
-import { useSetPathParam } from './useSetPathParam'
 import { useCheckOperationFiltersApplied } from './useCheckOperationFiltersApplied'
-import type { TestableProps } from '@netcracker/qubership-apihub-ui-shared/components/Testable'
-import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { RichFiltersLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/RichFiltersLayout'
-import { PageTitle } from '@netcracker/qubership-apihub-ui-shared/components/Titles/PageTitle'
-import { isApiTypeSelectorShown } from '@apihub/utils/operation-types'
-import { SegmentItemIcon } from '@netcracker/qubership-apihub-ui-shared/icons/SegmentItemIcon'
-import { ListBox } from '@netcracker/qubership-apihub-ui-shared/components/Panels/ListBox'
 import { useOperationsView } from './useOperationsView'
-import type { OperationsViewMode } from '@netcracker/qubership-apihub-ui-shared/types/views'
-import { DETAILED_OPERATIONS_VIEW_MODE, LIST_OPERATIONS_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/types/views'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { usePackageVersionApiTypes } from './usePackageVersionApiTypes'
+import { useSetPathParam } from './useSetPathParam'
 
 export type VersionOperationsProps = {
   title: string
@@ -92,12 +95,14 @@ export const VersionOperationsPanel: FC<VersionOperationsProps> = memo<VersionOp
 
   return (
     <RichFiltersLayout
-      title={<PageTitle
-        apiType={apiType}
-        title={title}
-        withApiSelector={isApiTypeSelectorShown(apiTypes)}
-        onApiTypeChange={onApiTypeChange}
-      />}
+      title={
+        <PageTitle
+          apiType={apiType}
+          title={title}
+          withApiSelector={isApiTypeSelectorShown(apiTypes)}
+          onApiTypeChange={onApiTypeChange}
+        />
+      }
       searchPlaceholder="Search Operations"
       setSearchValue={onContextSearch}
       viewMode={operationsView}
@@ -111,19 +116,18 @@ export const VersionOperationsPanel: FC<VersionOperationsProps> = memo<VersionOp
       bodyRef={bodyRef}
       body={operationsView === LIST_OPERATIONS_VIEW_MODE
         ? <ListBox>{table}</ListBox>
-        : list
-      }
+        : list}
       testId={testId}
     />
   )
 })
 
 const VIEW_OPTIONS = [{
-  icon: <MenuOutlinedIcon fontSize="small"/>,
+  icon: <MenuOutlinedIcon fontSize="small" />,
   value: LIST_OPERATIONS_VIEW_MODE,
   tooltip: 'List view',
 }, {
-  icon: <SegmentItemIcon/>,
+  icon: <SegmentItemIcon />,
   value: DETAILED_OPERATIONS_VIEW_MODE,
   tooltip: 'Detailed view',
 }]

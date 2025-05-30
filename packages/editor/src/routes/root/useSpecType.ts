@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react'
-import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import { calculateSpecType, getFileExtension } from '@netcracker/qubership-apihub-ui-shared/utils/files'
+import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import { useMemo } from 'react'
 
 // TODO: Check usages.
 //  Seems most places can use 'type' from branch cache instead of calculation

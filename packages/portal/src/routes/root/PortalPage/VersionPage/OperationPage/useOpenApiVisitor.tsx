@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-import type { JsonPath } from '@netcracker/qubership-apihub-json-crawl'
-import { OpenApiWalker, type VisitorCallbackArgument } from '@netcracker/qubership-apihub-api-visitor'
-import type { OpenAPIV3 } from 'openapi-types'
-import { useMemo } from 'react'
 import type {
   OpenApiCustomSchemaObject,
   OpenApiData,
@@ -38,6 +34,9 @@ import {
   OPEN_API_PROPERTY_SCHEMAS,
   pathItemToFullPath,
 } from '@netcracker/qubership-apihub-api-unifier'
+import { OpenApiWalker, type VisitorCallbackArgument } from '@netcracker/qubership-apihub-api-visitor'
+import type { JsonPath } from '@netcracker/qubership-apihub-json-crawl'
+import { schemaHashWithTitle } from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView/oasToClassDiagramService'
 import {
   resolveSharedSchemaNames,
   VISITOR_FLAG_DEFAULTS,
@@ -46,15 +45,16 @@ import {
   VISITOR_FLAG_ORIGINS,
   VISITOR_FLAG_TITLE,
 } from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView/visitor-utils'
-import { schemaHashWithTitle } from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView/oasToClassDiagramService'
+import type { OpenAPIV3 } from 'openapi-types'
+import { useMemo } from 'react'
 
 const walker = new OpenApiWalker()
 
 export function useOpenApiVisitor(operationData: object | undefined): OpenApiData | undefined {
   return useMemo(() => {
-    //ASSUMPTIONS. single operations specs can be here
+    // ASSUMPTIONS. single operations specs can be here
     const parameters: OpenApiVisitorDataWithSection = { data: [], scopeDeclarationPath: [], declarationPath: [] }
-    //ASSUMPTIONS. single operations can be here with only one media type in request specs can be here
+    // ASSUMPTIONS. single operations can be here with only one media type in request specs can be here
     const requests: Record<string, OpenApiVisitorDataWithSection> = {}
     const responses: Record<string, Record<string, OpenApiVisitorDataWithSection>> = {}
     const scopeDeclarationPathStack: JsonPath[] = []
@@ -94,7 +94,9 @@ export function useOpenApiVisitor(operationData: object | undefined): OpenApiDat
       const title = value?.title
       if (title && schemaObjectNames) {
         schemaObjectNames.forEach(schemaObjectName => {
-          let existingData: OpenApiVisitorData | undefined = activeDataCollection.find(i => i.schemaObjectName === schemaObjectName)
+          let existingData: OpenApiVisitorData | undefined = activeDataCollection.find(i =>
+            i.schemaObjectName === schemaObjectName
+          )
           if (!existingData) {
             const commonData = {
               scopeDeclarationPath: scopeDeclarationPathStack.at(-1)!,
@@ -103,9 +105,8 @@ export function useOpenApiVisitor(operationData: object | undefined): OpenApiDat
               derivedSchemas: [],
             }
 
-            const sharedSchema =
-              (normalizedSpec[OPEN_API_PROPERTY_COMPONENTS] as OpenAPIV3.ComponentsObject)
-                ?.[OPEN_API_PROPERTY_SCHEMAS]?.[schemaObjectName] as OpenAPIV3.SchemaObject
+            const sharedSchema = (normalizedSpec[OPEN_API_PROPERTY_COMPONENTS] as OpenAPIV3.ComponentsObject)
+              ?.[OPEN_API_PROPERTY_SCHEMAS]?.[schemaObjectName] as OpenAPIV3.SchemaObject
 
             if (!sharedSchema) {
               return activeDataCollection.push({
@@ -115,12 +116,14 @@ export function useOpenApiVisitor(operationData: object | undefined): OpenApiDat
               })
             }
 
-            activeDataCollection.push(existingData = {
-              ...commonData,
-              title: sharedSchema?.[JSON_SCHEMA_PROPERTY_TITLE] ?? title,
-              schemaObject: sharedSchema,
-              schemaTolerantHashWithTitle: schemaHashWithTitle(sharedSchema),
-            })
+            activeDataCollection.push(
+              existingData = {
+                ...commonData,
+                title: sharedSchema?.[JSON_SCHEMA_PROPERTY_TITLE] ?? title,
+                schemaObject: sharedSchema,
+                schemaTolerantHashWithTitle: schemaHashWithTitle(sharedSchema),
+              },
+            )
           }
           if (!existingData.derivedSchemas.includes(value)) {
             existingData.derivedSchemas.push(value)
@@ -174,7 +177,7 @@ export function useOpenApiVisitor(operationData: object | undefined): OpenApiDat
         }
         return false
       },
-      headerStart: () => false, //forgotten?
+      headerStart: () => false, // forgotten?
 
       mediaTypeStart: ({ mediaType, declarationPaths }) => {
         const path = pathItemToFullPath(declarationPaths[0])
@@ -214,10 +217,10 @@ export function useOpenApiVisitor(operationData: object | undefined): OpenApiDat
   }, [operationData])
 }
 
-//todo copy from ApiSpecView (httpOperationParamsToSchema), need to optimize
+// todo copy from ApiSpecView (httpOperationParamsToSchema), need to optimize
 // TODO 06.08.24 // Uncomment code fragments when it's ready to render parameter examples
 const paramToSchema = (value: OpenAPIV3.ParameterObject): OpenApiCustomSchemaObject => {
-  const { name, description, deprecated/*, examples*/, schema = {} } = value
+  const { name, description, deprecated, /*, examples*/ schema = {} } = value
 
   // const paramExamples =
   //   examples

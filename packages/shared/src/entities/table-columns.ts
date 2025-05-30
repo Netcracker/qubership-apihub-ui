@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-//todo: share recurring column constants
+// todo: share recurring column constants
 
 export const ENDPOINT_COLUMN_ID = 'endpoint-column'
 export const TAGS_COLUMN_ID = 'tags-column'

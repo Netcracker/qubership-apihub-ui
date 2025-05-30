@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { Key } from './types'
-import { API_V2, requestJson } from './requests'
 import { generatePath } from 'react-router-dom'
-import { getPackageRedirectDetails } from './redirects'
 import type { PackageVersion, PackageVersions } from '../entities/versions'
+import { getPackageRedirectDetails } from './redirects'
+import { API_V2, requestJson } from './requests'
+import type { Key } from './types'
 
 export function getSplittedVersionKey(version: Key | undefined, latestRevision: boolean = true): {
   versionKey: Key

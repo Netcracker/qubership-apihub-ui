@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react'
 import { ThemeProvider } from '@mui/material'
+import type { Meta, StoryObj } from '@storybook/react'
 import { DisplayToken } from '../components/DisplayToken'
 import { theme } from '../themes/theme'
 
@@ -25,7 +25,7 @@ const meta: Meta<typeof DisplayToken> = {
   decorators: [
     (Story) => (
       <ThemeProvider theme={theme}>
-        <Story/>
+        <Story />
       </ThemeProvider>
     ),
   ],

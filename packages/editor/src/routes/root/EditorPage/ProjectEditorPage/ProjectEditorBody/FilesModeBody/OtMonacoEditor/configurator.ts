@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-import { setDiagnosticsOptions } from 'monaco-yaml'
-import type { editor as Editor, IDisposable } from 'monaco-editor'
-import { Uri } from 'monaco-editor'
+import {
+  JSON_FILE_EXTENSION,
+  YAML_FILE_EXTENSION,
+  YML_FILE_EXTENSION,
+} from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import {
   OPENAPI_2_0_SPEC_TYPE,
   OPENAPI_3_0_SPEC_TYPE,
   OPENAPI_3_1_SPEC_TYPE,
 } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import { JSON_FILE_EXTENSION, YAML_FILE_EXTENSION, YML_FILE_EXTENSION } from '@netcracker/qubership-apihub-ui-shared/utils/files'
+import type { editor as Editor, IDisposable } from 'monaco-editor'
+import { Uri } from 'monaco-editor'
+import { setDiagnosticsOptions } from 'monaco-yaml'
 
 export function preconfigureOtMonaco(): void {
   const getFileMasks = (schema: string, ...extensions: string[]): string[] => {

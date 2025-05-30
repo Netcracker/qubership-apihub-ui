@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import type { TWSAdapterConstructionOptions } from './ws-adapter'
 import type { IDisposable, TMonacoAdapterConstructionOptions } from '@otjs/monaco'
 import type { EditorClientEvent, TEditorClientEventArgs } from '@otjs/plaintext-editor'
 import type { Handler } from 'mitt'
+import type { TWSAdapterConstructionOptions } from './ws-adapter'
 
-export type IWSMonacoEditorConstructionOptions = TWSAdapterConstructionOptions &
-  Omit<TMonacoAdapterConstructionOptions, 'bindEvents'>
+export type IWSMonacoEditorConstructionOptions =
+  & TWSAdapterConstructionOptions
+  & Omit<TMonacoAdapterConstructionOptions, 'bindEvents'>
 
 export interface IWSMonacoEditor extends IDisposable {
   /** Returns if the Editor has already been disposed. */

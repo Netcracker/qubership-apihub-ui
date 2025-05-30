@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { Box, Button } from '@mui/material'
 import type { FC } from 'react'
 import { memo } from 'react'
-import { Box, Button } from '@mui/material'
 
 export type UnsupportedFilePlaceholderProps = {
   onDownload?: () => void
@@ -29,24 +29,26 @@ export const UnsupportedFilePlaceholder: FC<UnsupportedFilePlaceholderProps> = m
 }) => {
   return (
     <Box height="100%" display="flex" alignItems="center" data-testid="UnsupportedFilePlaceholder">
-      <Box sx={{
-        display: 'grid',
-        justifyItems: 'center',
-        width: '100%',
-        gridTemplateAreas: `
+      <Box
+        sx={{
+          display: 'grid',
+          justifyItems: 'center',
+          width: '100%',
+          gridTemplateAreas: `
           'title'
           'button'
       `,
-      }}>
+        }}
+      >
         <Box sx={{ gridArea: 'title' }}>
           {message}
         </Box>
-        {
-          onDownload &&
-          <Button sx={{ gridArea: 'button' }} onClick={onDownload} data-testid="DownloadButton">
-            Download
-          </Button>
-        }
+        {onDownload
+          && (
+            <Button sx={{ gridArea: 'button' }} onClick={onDownload} data-testid="DownloadButton">
+              Download
+            </Button>
+          )}
       </Box>
     </Box>
   )

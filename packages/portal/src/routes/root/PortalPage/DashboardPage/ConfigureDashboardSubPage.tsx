@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
 import type { Dispatch, FC, SetStateAction } from 'react'
 import { createContext, memo, useContext, useState } from 'react'
-import { ConfigureDashboardBody } from './ConfigureDashboardBody'
-import { ConfigureDashboardSidebar } from './ConfigureDashboardSidebar'
 import type { ConfigureDashboardTabs } from './configure-dashboard'
 import { PACKAGES_CONFIGURE_DASHBOARD_TAB } from './configure-dashboard'
-import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
+import { ConfigureDashboardBody } from './ConfigureDashboardBody'
+import { ConfigureDashboardSidebar } from './ConfigureDashboardSidebar'
 
 export const ConfigureDashboardSubPage: FC = memo(() => {
   const [activeTab, setActiveTab] = useState<ConfigureDashboardTabs>(PACKAGES_CONFIGURE_DASHBOARD_TAB)
@@ -28,8 +28,8 @@ export const ConfigureDashboardSubPage: FC = memo(() => {
     <ActiveTabConfigureDashboard.Provider value={activeTab}>
       <SetActiveTabConfigureDashboard.Provider value={setActiveTab}>
         <PageLayout
-          navigation={<ConfigureDashboardSidebar/>}
-          body={<ConfigureDashboardBody/>}
+          navigation={<ConfigureDashboardSidebar />}
+          body={<ConfigureDashboardBody />}
           nestedPage
         />
       </SetActiveTabConfigureDashboard.Provider>

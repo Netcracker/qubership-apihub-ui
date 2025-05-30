@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { PackageSettingsButton } from '@apihub/components/PackageSettingsButton'
 import {
   Box,
   Link,
@@ -27,48 +28,47 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import type { FC, RefObject } from 'react'
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { NavLink } from 'react-router-dom'
-import { useFavorPackage } from './useFavorPackage'
-import { useDisfavorPackage } from './useDisfavorPackage'
-import { useTextSearchParam } from '../useTextSearchParam'
-import { useIsFavoritesMainPage, useIsSharedMainPage, useIsWorkspacesPage } from './useMainPage'
-import { FavoriteIconButton } from './FavoriteIconButton'
-import { useUpdatingPackageKeyWritableContext } from './UpdatingPackageKeyProvider'
-import type { ColumnDef, ColumnSizingInfoState, ColumnSizingState, OnChangeFn } from '@tanstack/react-table'
-import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
-import { usePagedPackages } from '../usePagedPackages'
-import { MAIN_PAGE_REFERER } from '@netcracker/qubership-apihub-ui-shared/entities/referer-pages-names'
-import type { Package, PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { GROUP_KIND, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { useIntersectionObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useIntersectionObserver'
-import type { ColumnModel } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
-import {
-  DEFAULT_CONTAINER_WIDTH,
-  useColumnsSizing,
-} from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
+import { ColumnDelimiter } from '@netcracker/qubership-apihub-ui-shared/components/ColumnDelimiter'
 import { CustomTableHeadCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomTableHeadCell'
 import { PackageKindLogo } from '@netcracker/qubership-apihub-ui-shared/components/PackageKindLogo'
-import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
-import { PackageSettingsButton } from '@apihub/components/PackageSettingsButton'
-import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
-import { StatusMarker } from '@netcracker/qubership-apihub-ui-shared/components/StatusMarker'
 import {
   CONTENT_PLACEHOLDER_AREA,
   NO_SEARCH_RESULTS,
   Placeholder,
 } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
-import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import { ColumnDelimiter } from '@netcracker/qubership-apihub-ui-shared/components/ColumnDelimiter'
+import { StatusMarker } from '@netcracker/qubership-apihub-ui-shared/components/StatusMarker'
+import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { format } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
+import type { Package, PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { GROUP_KIND, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { MAIN_PAGE_REFERER } from '@netcracker/qubership-apihub-ui-shared/entities/referer-pages-names'
+import { useIntersectionObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useIntersectionObserver'
+import { useResizeObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useResizeObserver'
+import type { ColumnModel } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
+import {
+  DEFAULT_CONTAINER_WIDTH,
+  useColumnsSizing,
+} from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
+import { useSuperAdminCheck } from '@netcracker/qubership-apihub-ui-shared/hooks/user-roles/useSuperAdminCheck'
+import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { getBwcData } from '@netcracker/qubership-apihub-ui-shared/utils/change-severities'
 import { createComponents } from '@netcracker/qubership-apihub-ui-shared/utils/components'
 import { DEFAULT_NUMBER_SKELETON_ROWS } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
-import { useSuperAdminCheck } from '@netcracker/qubership-apihub-ui-shared/hooks/user-roles/useSuperAdminCheck'
-import { useResizeObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useResizeObserver'
+import { format } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
 import { getTooltipMessage } from '@netcracker/qubership-apihub-ui-shared/utils/tooltip-message'
-import { getBwcData } from '@netcracker/qubership-apihub-ui-shared/utils/change-severities'
+import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
+import type { ColumnDef, ColumnSizingInfoState, ColumnSizingState, OnChangeFn } from '@tanstack/react-table'
+import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import type { FC, RefObject } from 'react'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { NavLink } from 'react-router-dom'
+import { usePagedPackages } from '../usePagedPackages'
+import { useTextSearchParam } from '../useTextSearchParam'
+import { FavoriteIconButton } from './FavoriteIconButton'
+import { useUpdatingPackageKeyWritableContext } from './UpdatingPackageKeyProvider'
+import { useDisfavorPackage } from './useDisfavorPackage'
+import { useFavorPackage } from './useFavorPackage'
+import { useIsFavoritesMainPage, useIsSharedMainPage, useIsWorkspacesPage } from './useMainPage'
 
 export type PackagesTableProps = {
   rootPackageKey?: Key
@@ -130,151 +130,165 @@ export const PackagesTable: FC<PackagesTableProps> = memo(({ rootPackageKey, pac
     defaultMinColumnSize: 60,
   })
 
-  const data: TableData[] = useMemo(() => packages.map(pack => ({
-    workspace: pack,
-  })), [packages])
+  const data: TableData[] = useMemo(() =>
+    packages.map(pack => ({
+      workspace: pack,
+    })), [packages])
 
   const columns: ColumnDef<TableData>[] = useMemo(() => [
-      {
-        id: FAVORITE_COLUMN_ID,
-        header: () => <CustomTableHeadCell title={''}/>,
-        cell: ({ row: { original: { workspace } } }) => {
-          return (
-            <Box
-              onClick={() => {
-                // TODO 11.08.23 // Has problems when user clicks on several buttons at the moment
-                if (!isFetching) {
-                  setUpdatingPackageKey(workspace.key)
-                  workspace.isFavorite ? disfavorPackage(workspace.key) : favorPackage(workspace.key)
-                }
-              }}
-            >
-              <FavoriteIconButton
-                isFetching={isFetching && updatingPackageKey === workspace.key}
-                isFavorite={workspace.isFavorite}
-              />
-            </Box>)
-        },
+    {
+      id: FAVORITE_COLUMN_ID,
+      header: () => <CustomTableHeadCell title={''} />,
+      cell: ({ row: { original: { workspace } } }) => {
+        return (
+          <Box
+            onClick={() => {
+              // TODO 11.08.23 // Has problems when user clicks on several buttons at the moment
+              if (!isFetching) {
+                setUpdatingPackageKey(workspace.key)
+                workspace.isFavorite ? disfavorPackage(workspace.key) : favorPackage(workspace.key)
+              }
+            }}
+          >
+            <FavoriteIconButton
+              isFetching={isFetching && updatingPackageKey === workspace.key}
+              isFavorite={workspace.isFavorite}
+            />
+          </Box>
+        )
       },
-      {
-        id: NAME_COLUMN_ID,
-        header: () => <CustomTableHeadCell title={'Name'}/>,
-        cell: ({ row: { original: { workspace } } }) => {
-          return (
-            <Box sx={{
+    },
+    {
+      id: NAME_COLUMN_ID,
+      header: () => <CustomTableHeadCell title={'Name'} />,
+      cell: ({ row: { original: { workspace } } }) => {
+        return (
+          <Box
+            sx={{
               display: 'flex',
               alignItems: 'center',
               width: '100%',
             }}
-            >
-              {withIcons && <PackageKindLogo kind={workspace.kind}/>}
-              <Box sx={{
+          >
+            {withIcons && <PackageKindLogo kind={workspace.kind} />}
+            <Box
+              sx={{
                 display: 'flex',
                 alignItems: 'center',
                 width: '100%',
                 pl: 0.5,
                 justifyContent: 'space-between',
-              }}>
-                <TextWithOverflowTooltip tooltipText={workspace.name} variant="body2">
-                  <Link
-                    component={NavLink}
-                    to={{ pathname: getNavigationLink(workspace.key, workspace.kind, workspace.defaultVersion) }}
-                  >
-                    {workspace.name}
-                  </Link>
-                </TextWithOverflowTooltip>
-                {(!isWorkspacesPage || isSuperAdmin) &&
-                  <PackageSettingsButton packageKey={workspace.key} isIconButton={true}/>}
-              </Box>
+              }}
+            >
+              <TextWithOverflowTooltip tooltipText={workspace.name} variant="body2">
+                <Link
+                  component={NavLink}
+                  to={{ pathname: getNavigationLink(workspace.key, workspace.kind, workspace.defaultVersion) }}
+                >
+                  {workspace.name}
+                </Link>
+              </TextWithOverflowTooltip>
+              {(!isWorkspacesPage || isSuperAdmin)
+                && <PackageSettingsButton packageKey={workspace.key} isIconButton={true} />}
             </Box>
-          )
-        },
+          </Box>
+        )
       },
-      {
-        id: ID_COLUMN_ID,
-        header: () => <CustomTableHeadCell title={'ID'}/>,
-        cell: ({ row: { original: { workspace } } }) => {
-          return (
-            <TextWithOverflowTooltip tooltipText={workspace.key}>
-              {workspace.key}
-            </TextWithOverflowTooltip>
-          )
-        },
+    },
+    {
+      id: ID_COLUMN_ID,
+      header: () => <CustomTableHeadCell title={'ID'} />,
+      cell: ({ row: { original: { workspace } } }) => {
+        return (
+          <TextWithOverflowTooltip tooltipText={workspace.key}>
+            {workspace.key}
+          </TextWithOverflowTooltip>
+        )
       },
-      {
-        id: DESCRIPTION_COLUMN_ID,
-        header: () => <CustomTableHeadCell title={'Description'}/>,
-        cell: ({ row: { original: { workspace } } }) => {
-          return (
-            <TextWithOverflowTooltip tooltipText={workspace.description}>
-              {workspace.description}
-            </TextWithOverflowTooltip>
-          )
-        },
+    },
+    {
+      id: DESCRIPTION_COLUMN_ID,
+      header: () => <CustomTableHeadCell title={'Description'} />,
+      cell: ({ row: { original: { workspace } } }) => {
+        return (
+          <TextWithOverflowTooltip tooltipText={workspace.description}>
+            {workspace.description}
+          </TextWithOverflowTooltip>
+        )
       },
-      {
-        id: GROUP_COLUMN_ID,
-        header: () => <CustomTableHeadCell title={'Group'}/>,
-        cell: ({ row: { original: { workspace } } }) => {
-          const groupPath = calculateGroup(workspace.parents)
-          return (
-            <TextWithOverflowTooltip tooltipText={groupPath}>
-              {groupPath}
-            </TextWithOverflowTooltip>
-          )
-        },
+    },
+    {
+      id: GROUP_COLUMN_ID,
+      header: () => <CustomTableHeadCell title={'Group'} />,
+      cell: ({ row: { original: { workspace } } }) => {
+        const groupPath = calculateGroup(workspace.parents)
+        return (
+          <TextWithOverflowTooltip tooltipText={groupPath}>
+            {groupPath}
+          </TextWithOverflowTooltip>
+        )
       },
-      {
-        id: SERVICE_NAME_COLUMN_ID,
-        header: () => <CustomTableHeadCell title={'Service Name'}/>,
-        cell: ({ row: { original: { workspace } } }) => {
-          return (
-            <TextWithOverflowTooltip tooltipText={workspace.serviceName}>
-              {workspace.serviceName}
-            </TextWithOverflowTooltip>
-          )
-        },
+    },
+    {
+      id: SERVICE_NAME_COLUMN_ID,
+      header: () => <CustomTableHeadCell title={'Service Name'} />,
+      cell: ({ row: { original: { workspace } } }) => {
+        return (
+          <TextWithOverflowTooltip tooltipText={workspace.serviceName}>
+            {workspace.serviceName}
+          </TextWithOverflowTooltip>
+        )
       },
-      {
-        id: LAST_VERSION_COLUMN_ID,
-        header: () => <CustomTableHeadCell title={'Latest Release'}/>,
-        cell: ({ row: { original: { workspace } } }) => {
-          const { versionKey: lastVersion } = getSplittedVersionKey(
-            workspace.lastReleaseVersionDetails?.version,
-            workspace.lastReleaseVersionDetails?.latestRevision,
-          ) || '―'
+    },
+    {
+      id: LAST_VERSION_COLUMN_ID,
+      header: () => <CustomTableHeadCell title={'Latest Release'} />,
+      cell: ({ row: { original: { workspace } } }) => {
+        const { versionKey: lastVersion } = getSplittedVersionKey(
+          workspace.lastReleaseVersionDetails?.version,
+          workspace.lastReleaseVersionDetails?.latestRevision,
+        ) || '―'
 
-          return (
-            <TextWithOverflowTooltip tooltipText={lastVersion}>
-              {lastVersion}
-            </TextWithOverflowTooltip>
-          )
-        },
+        return (
+          <TextWithOverflowTooltip tooltipText={lastVersion}>
+            {lastVersion}
+          </TextWithOverflowTooltip>
+        )
       },
-      {
-        id: BWC_ERRORS_COLUMN_ID,
-        header: () => <CustomTableHeadCell title={'BWC Status'}/>,
-        cell: ({ row: { original: { workspace } } }) => {
-          const bwcData = getBwcData(workspace.lastReleaseVersionDetails?.summary)
+    },
+    {
+      id: BWC_ERRORS_COLUMN_ID,
+      header: () => <CustomTableHeadCell title={'BWC Status'} />,
+      cell: ({ row: { original: { workspace } } }) => {
+        const bwcData = getBwcData(workspace.lastReleaseVersionDetails?.summary)
 
-          return (
-            <Tooltip placement={'right'} title={getTooltipMessage(bwcData)}>
-              <Box width={'min-content'}>
-                {bwcData && (
-                  <Box display="flex" gap={1}>
-                    <StatusMarker value={bwcData.type}/>
-                    <Typography noWrap variant="inherit">
-                      {bwcData.count}
-                    </Typography>
-                  </Box>
-                )}
-              </Box>
-            </Tooltip>
-          )
-        },
+        return (
+          <Tooltip placement={'right'} title={getTooltipMessage(bwcData)}>
+            <Box width={'min-content'}>
+              {bwcData && (
+                <Box display="flex" gap={1}>
+                  <StatusMarker value={bwcData.type} />
+                  <Typography noWrap variant="inherit">
+                    {bwcData.count}
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+          </Tooltip>
+        )
       },
-    ], [calculateGroup, disfavorPackage, favorPackage, isFetching, isSuperAdmin, isWorkspacesPage, setUpdatingPackageKey, updatingPackageKey, withIcons],
-  )
+    },
+  ], [
+    calculateGroup,
+    disfavorPackage,
+    favorPackage,
+    isFetching,
+    isSuperAdmin,
+    isWorkspacesPage,
+    setUpdatingPackageKey,
+    updatingPackageKey,
+    withIcons,
+  ])
 
   const { getHeaderGroups, getRowModel, setColumnSizing } = useReactTable({
     data: data,
@@ -316,8 +330,8 @@ export const PackagesTable: FC<PackagesTableProps> = memo(({ rootPackageKey, pac
                     }}
                   >
                     {flexRender(headerColumn.column.columnDef.header, headerColumn.getContext())}
-                    {index !== headerGroup.headers.length - 1 &&
-                      <ColumnDelimiter header={headerColumn} resizable={true}/>}
+                    {index !== headerGroup.headers.length - 1
+                      && <ColumnDelimiter header={headerColumn} resizable={true} />}
                   </TableCell>
                 ))}
               </TableRow>
@@ -337,8 +351,8 @@ export const PackagesTable: FC<PackagesTableProps> = memo(({ rootPackageKey, pac
                 ))}
               </TableRow>
             ))}
-            {hasNextPage && <RowSkeleton refObject={ref}/>}
-            {isLoading && <TableSkeleton/>}
+            {hasNextPage && <RowSkeleton refObject={ref} />}
+            {isLoading && <TableSkeleton />}
           </TableBody>
         </Table>
       </TableContainer>
@@ -399,7 +413,7 @@ function getNavigationLink(packageKey: Key, kind: PackageKind, defaultVersion?: 
 }
 
 export const TableSkeleton: FC = memo(() => {
-  return createComponents(<RowSkeleton/>, DEFAULT_NUMBER_SKELETON_ROWS)
+  return createComponents(<RowSkeleton />, DEFAULT_NUMBER_SKELETON_ROWS)
 })
 
 type RowSkeletonProps = {
@@ -409,18 +423,18 @@ type RowSkeletonProps = {
 const RowSkeleton: FC<RowSkeletonProps> = memo<RowSkeletonProps>(({ refObject }) => {
   return (
     <TableRow>
-      <TableCell/>
+      <TableCell />
       <TableCell ref={refObject}>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
-      <TableCell/>
-      <TableCell/>
-      <TableCell/>
-      <TableCell/>
-      <TableCell/>
+      <TableCell />
+      <TableCell />
+      <TableCell />
+      <TableCell />
+      <TableCell />
     </TableRow>
   )
 })

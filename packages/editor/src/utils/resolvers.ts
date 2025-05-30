@@ -25,7 +25,9 @@ export async function fetchFileContent(
 ): Promise<Blob | null> {
   try {
     return await (await requestBlob(
-      `/api/v1/projects/${encodeURIComponent(projectKey)}/branches/${encodeURIComponent(branchKey)}/files/${encodeURIComponent(fileKey)}`,
+      `/api/v1/projects/${encodeURIComponent(projectKey)}/branches/${encodeURIComponent(branchKey)}/files/${
+        encodeURIComponent(fileKey)
+      }`,
       {
         headers: { authorization },
         method: 'get',

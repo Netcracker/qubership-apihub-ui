@@ -14,7 +14,18 @@
  * limitations under the License.
  */
 
+import { useInvalidatePackage } from '@apihub/routes/root/usePackage'
+import { portalRequestJson, portalRequestVoid } from '@apihub/utils/requests'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type {
+  IsError,
+  IsLoading,
+  IsSuccess,
+  OptionInvalidateQuery,
+} from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { generatePath } from 'react-router-dom'
 import {
   useShowErrorNotification,
   useShowInfoNotification,
@@ -29,12 +40,6 @@ import type {
   PackageMembersDto,
 } from '../package-settings'
 import { ADD_CHANGE_ROLE_ACTION, REMOVE_CHANGE_ROLE_ACTION, toPackageMembers } from '../package-settings'
-import { generatePath } from 'react-router-dom'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { IsError, IsLoading, IsSuccess, OptionInvalidateQuery } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { portalRequestJson, portalRequestVoid } from '@apihub/utils/requests'
-import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
-import { useInvalidatePackage } from '@apihub/routes/root/usePackage'
 
 const USER_PACKAGE_ACCESS_QUERY_KEY = 'user-package-access-query-key'
 
@@ -76,7 +81,6 @@ export function usePackageMembers(packageKey: Key): [PackageMembers, IsLoading, 
 }
 
 export function useInvalidatePackageMembers(): OptionInvalidateQuery<Key | undefined> {
-
   const client = useQueryClient()
   return () => {
     client.refetchQueries({
@@ -138,29 +142,28 @@ export function useChangePackageMemberRole(): [ChangePackageMemberRole, IsLoadin
   const invalidatePackageMembers = useInvalidatePackageMembers()
 
   const { mutate, isLoading, isSuccess } = useMutation<void, Error, ChangePackageMemberRoleData>({
-      mutationFn: ({ packageKey, userId, roleId, action }) =>
-        changePackageMemberRole(packageKey, userId, toChangePackageMemberDto(roleId, action)),
-      onSuccess: async (_, { packageKey, userId, roleId, action }) => {
-        const oppositeAction = action === ADD_CHANGE_ROLE_ACTION ? REMOVE_CHANGE_ROLE_ACTION : ADD_CHANGE_ROLE_ACTION
-        showNotification({
-          message: 'The change has been saved',
-          button: {
-            title: 'Undo',
-            onClick: async () => {
-              await changePackageMemberRole(packageKey, userId, toChangePackageMemberDto(roleId, oppositeAction))
-              invalidatePackage()
-              invalidatePackageMembers()
-            },
+    mutationFn: ({ packageKey, userId, roleId, action }) =>
+      changePackageMemberRole(packageKey, userId, toChangePackageMemberDto(roleId, action)),
+    onSuccess: async (_, { packageKey, userId, roleId, action }) => {
+      const oppositeAction = action === ADD_CHANGE_ROLE_ACTION ? REMOVE_CHANGE_ROLE_ACTION : ADD_CHANGE_ROLE_ACTION
+      showNotification({
+        message: 'The change has been saved',
+        button: {
+          title: 'Undo',
+          onClick: async () => {
+            await changePackageMemberRole(packageKey, userId, toChangePackageMemberDto(roleId, oppositeAction))
+            invalidatePackage()
+            invalidatePackageMembers()
           },
-        })
-        invalidatePackage()
-        invalidatePackageMembers()
-      },
-      onError: (error) => {
-        showErrorNotification({ message: error?.message })
-      },
+        },
+      })
+      invalidatePackage()
+      invalidatePackageMembers()
     },
-  )
+    onError: (error) => {
+      showErrorNotification({ message: error?.message })
+    },
+  })
 
   return [mutate, isLoading, isSuccess]
 }

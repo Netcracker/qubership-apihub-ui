@@ -17,17 +17,17 @@
 import type { FC } from 'react'
 import { memo, useCallback } from 'react'
 
+import type { ServiceConfig } from '@apihub/entities/publish-config'
+import type { Service } from '@apihub/entities/services'
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import { Box, CardHeader, Dialog, DialogContent, DialogTitle, IconButton } from '@mui/material'
-import { ChangesViewAgentWidget } from './ChangesViewAgentWidget'
-import type { Service } from '@apihub/entities/services'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import {
   useCreateSnapshotPublicationOptions,
 } from '../../routes/root/NamespacePage/ServicesPage/ServicesPageProvider/ServicesPublicationOptionsProvider'
-import type { ServiceConfig } from '@apihub/entities/publish-config'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { ChangesViewAgentWidget } from './ChangesViewAgentWidget'
 
 export const SHOW_CHANGE_VIEW_DIALOG = 'show-change-view-dialog'
 
@@ -66,7 +66,7 @@ export const ChangeViewContent: FC<PopupProps> = memo<PopupProps>(({ open, setOp
             sx={{ color: '#353C4E' }}
             onClick={onClose}
           >
-            <CloseOutlinedIcon/>
+            <CloseOutlinedIcon />
           </IconButton>
         </Box>
       </DialogTitle>
@@ -86,7 +86,7 @@ export const ChangeViewDialog: FC = memo(() => {
   return (
     <PopupDelegate
       type={SHOW_CHANGE_VIEW_DIALOG}
-      render={props => <ChangeViewContent {...props}/>}
+      render={props => <ChangeViewContent {...props} />}
     />
   )
 })

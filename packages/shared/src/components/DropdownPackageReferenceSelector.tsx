@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
+import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
+import { Box, Button, List, ListItem, ListItemButton, ListItemText } from '@mui/material'
 import type { FC } from 'react'
 import { memo, useState } from 'react'
-import { Box, Button, List, ListItem, ListItemButton, ListItemText } from '@mui/material'
-import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
 import type { Key } from '../entities/keys'
+import type { PackageReference } from '../entities/version-references'
+import { isNotEmpty } from '../utils/arrays'
 import { MenuButtonItems } from './Buttons/MenuButton'
+import { LoadingIndicator } from './LoadingIndicator'
 import { NAVIGATION_PLACEHOLDER_AREA, NO_SEARCH_RESULTS, Placeholder } from './Placeholder'
 import { SearchBar } from './SearchBar'
-import { isNotEmpty } from '../utils/arrays'
-import { LoadingIndicator } from './LoadingIndicator'
-import type { PackageReference } from '../entities/version-references'
 
 export interface DropdownPackageReferenceSelectorProps {
   searchValue: string
@@ -65,14 +65,16 @@ export const DropdownPackageReferenceSelector: FC<DropdownPackageReferenceSelect
         }}
         variant="text"
         onClick={({ currentTarget }) => setAnchor(currentTarget)}
-        endIcon={<KeyboardArrowDownOutlinedIcon/>}
+        endIcon={<KeyboardArrowDownOutlinedIcon />}
       >
-        <span style={{
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          width: '100%',
-        }}>
+        <span
+          style={{
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            width: '100%',
+          }}
+        >
           {`${selectedPackage?.name ?? ''}`}
         </span>
         <MenuButtonItems
@@ -92,11 +94,11 @@ export const DropdownPackageReferenceSelector: FC<DropdownPackageReferenceSelect
             "
           >
             <Box gridArea="searchbar" overflow="hidden">
-              <SearchBar value={searchValue} onValueChange={onSearch} data-testid="SearchPackage"/>
+              <SearchBar value={searchValue} onValueChange={onSearch} data-testid="SearchPackage" />
             </Box>
             <Box gridArea="content">
               {loading
-                ? <LoadingIndicator/>
+                ? <LoadingIndicator />
                 : (
                   <Placeholder
                     invisible={isNotEmpty(references)}

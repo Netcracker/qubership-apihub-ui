@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
+import type { editor as Editor } from 'monaco-editor'
 import type { RefObject } from 'react'
 import { useRef } from 'react'
-import type { editor as Editor } from 'monaco-editor'
-import { useAddSelectionDecorator } from './useAddSelectionDecorator'
+import type { LanguageType } from '../../types/languages'
+import type { SpecItemUri } from '../../utils/specifications'
+import type { SpecType } from '../../utils/specs'
+import { preconfigureMonaco } from './configurator'
 import { useAddSearchNavigation } from './useAddSearchNavigation'
 import { useAddSelectedUriNavigation } from './useAddSelectedUriNavigation'
-import { useSetEditorModel } from './useSetEditorModel'
+import { useAddSelectionDecorator } from './useAddSelectionDecorator'
 import { useInitializeEditor } from './useInitializeEditor'
-import { preconfigureMonaco } from './configurator'
-import type { SpecType } from '../../utils/specs'
-import type { SpecItemUri } from '../../utils/specifications'
-import type { LanguageType } from '../../types/languages'
+import { useSetEditorModel } from './useSetEditorModel'
 
 preconfigureMonaco()
 

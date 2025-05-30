@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { Key } from './keys'
-import type { Operation } from './operations'
-import type { BranchConfigDto, ChangeType } from './branches'
-import type { RefDto } from './refs'
-import type { UserDto } from '@netcracker/qubership-apihub-ui-shared/types/user'
 import type { ChangeStatus } from '@netcracker/qubership-apihub-ui-shared/entities/change-statuses'
 import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import type { UserDto } from '@netcracker/qubership-apihub-ui-shared/types/user'
+import type { BranchConfigDto, ChangeType } from './branches'
+import type { Key } from './keys'
+import type { Operation } from './operations'
+import type { RefDto } from './refs'
 
 // branch
 export const BRANCH_RESET_EVENT_TYPE = 'branch:reset'

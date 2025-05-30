@@ -16,6 +16,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
+import type { Key } from '../../entities/keys'
 import type {
   CreateRoleDto,
   Role,
@@ -26,7 +27,6 @@ import type {
   RolesOrderDto,
   UpdateRoleDto,
 } from '../../types/roles'
-import type { Key } from '../../entities/keys'
 import type { InvalidateQuery, IsLoading, IsSuccess } from '../../utils/aliases'
 import { requestJson, requestVoid } from '../../utils/requests'
 
@@ -102,13 +102,17 @@ export function useRoles(): RolesQueryState {
 export function useInvalidateRoles(): InvalidateQuery<void> {
   const client = useQueryClient()
 
-  return () => client.invalidateQueries({
-    queryKey: [ROLES_QUERY_KEY],
-    refetchType: 'all',
-  })
+  return () =>
+    client.invalidateQueries({
+      queryKey: [ROLES_QUERY_KEY],
+      refetchType: 'all',
+    })
 }
 
-export function useCreateRole(onError: OnError, onSuccess: OnSuccess): [CreateRole, IsLoading, IsSuccess, Error | null] {
+export function useCreateRole(
+  onError: OnError,
+  onSuccess: OnSuccess,
+): [CreateRole, IsLoading, IsSuccess, Error | null] {
   const invalidateRoles = useInvalidateRoles()
   const { mutate, isLoading, isSuccess, error } = useMutation<CreateRoleDto, Error, Role>({
     mutationFn: value => createRole(toCreateRoleDto(value)),
@@ -122,7 +126,10 @@ export function useCreateRole(onError: OnError, onSuccess: OnSuccess): [CreateRo
   return [mutate, isLoading, isSuccess, error]
 }
 
-export function useUpdateRole(onError: OnError, onSuccess: OnSuccess): [UpdateRole, IsLoading, IsSuccess, Error | null] {
+export function useUpdateRole(
+  onError: OnError,
+  onSuccess: OnSuccess,
+): [UpdateRole, IsLoading, IsSuccess, Error | null] {
   const invalidateRoles = useInvalidateRoles()
 
   const { mutate, isLoading, isSuccess, error } = useMutation<void, Error, Role>({

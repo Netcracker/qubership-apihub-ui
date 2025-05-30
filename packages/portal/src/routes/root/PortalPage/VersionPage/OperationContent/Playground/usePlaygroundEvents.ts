@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { useEvent } from 'react-use'
 import { useEventBus } from '@apihub/routes/EventBusProvider'
+import { useEvent } from 'react-use'
 
 const CREATE_CUSTOM_SERVICE_EVENT = 'createCustomService'
 const OPEN_FULLSCREEN_EXAMPLES_POPUP_EVENT = 'openFullscreenExamplesPopup'

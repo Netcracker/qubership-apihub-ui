@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { Url } from './url'
 import type { Key } from '../entities/keys'
+import type { Url } from './url'
 
 export type SystemAdminsDto = Readonly<{
   admins: SystemAdminDto[]

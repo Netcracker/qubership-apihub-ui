@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import { editorRequestJson } from '@apihub/utils/requests'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import type { FileExtension, YML_FILE_EXTENSION } from '@netcracker/qubership-apihub-ui-shared/utils/files'
+import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import { useMutation } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import { useBranchSearchParam } from '../../../../../useBranchSearchParam'
 import { useFileSearchParam } from '../../../../../useFileSearchParam'
-import { useMutation } from '@tanstack/react-query'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { editorRequestJson } from '@apihub/utils/requests'
-import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import type { FileExtension, YML_FILE_EXTENSION } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 
 export function useCreateProjectFile(): [CreateProjectFile, IsLoading, IsSuccess] {
   const { projectId } = useParams()

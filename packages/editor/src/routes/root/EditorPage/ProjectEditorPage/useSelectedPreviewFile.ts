@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { useBranchConfig } from './useBranchConfig'
-import { useMemo } from 'react'
-import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import type { Key } from '@apihub/entities/keys'
-import { useSetSearchParams } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSetSearchParams'
 import type { ProjectFile } from '@apihub/entities/project-files'
+import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
+import { useSetSearchParams } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSetSearchParams'
+import { useMemo } from 'react'
+import { useBranchConfig } from './useBranchConfig'
 
 export function useSelectedPreviewFileKey(): [Key | undefined, SetEditorSelectedPreviewFileKey] {
   const file = useSearchParam<Key>('previewFile')

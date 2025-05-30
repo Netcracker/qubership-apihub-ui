@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { Key } from './keys'
 import type { GroupDto, Groups } from './groups'
 import { toGroupDto } from './groups'
 import type { Integration, IntegrationDto } from './integration'
+import type { Key } from './keys'
 
 export type Projects = Readonly<Project[]>
 

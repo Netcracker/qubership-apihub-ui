@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { isNotEmpty } from '../utils/arrays'
 import type { Key } from '../utils/types'
 import type { Principal } from './principals'
-import type { VersionStatus } from './version-status'
-import { isNotEmpty } from '../utils/arrays'
 import type { PublishMeta, PublishMetaDto } from './publish-meta'
+import type { VersionStatus } from './version-status'
 
 export type Revisions = Readonly<Revision[]>
 

@@ -14,23 +14,27 @@
  * limitations under the License.
  */
 
+import type { Projects, ProjectsDto } from '@apihub/entities/projects'
+import { editorRequestJson } from '@apihub/utils/requests'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { HasNextPage, IsFetchingNextPage, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import type { FetchNextPageOptions, InfiniteQueryObserverResult } from '@tanstack/react-query'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { toProjects } from '../useProjects'
-import type { Projects, ProjectsDto } from '@apihub/entities/projects'
-import type { HasNextPage, IsFetchingNextPage, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { editorRequestJson } from '@apihub/utils/requests'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 
-export type FetchNextProjects = (options?: FetchNextPageOptions) => Promise<InfiniteQueryObserverResult<Projects, Error>>
+export type FetchNextProjects = (
+  options?: FetchNextPageOptions,
+) => Promise<InfiniteQueryObserverResult<Projects, Error>>
 
-export function usePagedProjects(options?: Partial<{
-  textFilter: string | null
-  onlyFavorite: boolean
-  page: number
-  limit: number
-}>): [Projects, IsLoading, FetchNextProjects, IsFetchingNextPage, HasNextPage] {
+export function usePagedProjects(
+  options?: Partial<{
+    textFilter: string | null
+    onlyFavorite: boolean
+    page: number
+    limit: number
+  }>,
+): [Projects, IsLoading, FetchNextProjects, IsFetchingNextPage, HasNextPage] {
   const onlyPublished = false
   const {
     onlyFavorite = false,

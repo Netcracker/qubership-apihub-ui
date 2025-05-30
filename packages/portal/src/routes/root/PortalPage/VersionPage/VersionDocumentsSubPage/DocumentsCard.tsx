@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useMemo, useState } from 'react'
-import { DocumentsTab } from './DocumentsTab'
-import { useParams } from 'react-router-dom'
-import { useDocument } from '../useDocument'
-import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
-import { DocumentsTabHeader } from './DocumentsTabHeader'
-import { SelectedSubPageProvider } from './SelectedSubPageProvider'
-import { useCurrentDocumentsList } from './CurrentDocumentsListProvider'
-import { usePackageKind } from '../../usePackageKind'
-import { SelectedDocumentContext } from './SelectedDocumentProvider'
 import type { Document } from '@apihub/entities/documents'
+import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
+import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
+import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import { REF_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
-import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
+import type { FC } from 'react'
+import { memo, useMemo, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import { usePackageKind } from '../../usePackageKind'
+import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
+import { useDocument } from '../useDocument'
+import { useCurrentDocumentsList } from './CurrentDocumentsListProvider'
+import { DocumentsTab } from './DocumentsTab'
+import { DocumentsTabHeader } from './DocumentsTabHeader'
+import { SelectedDocumentContext } from './SelectedDocumentProvider'
+import { SelectedSubPageProvider } from './SelectedSubPageProvider'
 
 export const DocumentsCard: FC = memo(() => {
   const { documentId } = useParams()
@@ -81,7 +81,7 @@ export const DocumentsCard: FC = memo(() => {
     <SelectedDocumentContext.Provider value={filteredDocument}>
       <SelectedSubPageProvider>
         <BodyCard
-          header={(
+          header={
             <DocumentsTabHeader
               title={title}
               version={version}
@@ -92,7 +92,7 @@ export const DocumentsCard: FC = memo(() => {
               setSearchValue={setSearchValue}
               isLoading={isLoading}
             />
-          )}
+          }
           subheader={isDashboard ? packageRef?.name : ''}
           body={
             <DocumentsTab

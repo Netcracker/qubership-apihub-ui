@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { User } from '../../types/user'
 import type { SystemAdmins } from '../../types/system-admins'
+import type { User } from '../../types/user'
 
 export const USERS: User[] = [
   {

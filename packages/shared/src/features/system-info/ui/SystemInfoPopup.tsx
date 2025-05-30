@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useState } from 'react'
-import { Box, DialogContent, DialogTitle, Divider, IconButton, Link, Popover, Typography } from '@mui/material'
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
-import { useSystemInfo } from '../api/useSystemInfo'
+import { Box, DialogContent, DialogTitle, Divider, IconButton, Link, Popover, Typography } from '@mui/material'
+import type { FC } from 'react'
+import { memo, useState } from 'react'
 import { isNotEmpty } from '../../../utils/arrays'
+import { useSystemInfo } from '../api/useSystemInfo'
 
 type SystemInfoPopupProps = {
   frontendVersionKey: string
@@ -59,10 +59,12 @@ export const SystemInfoPopup: FC<SystemInfoPopupProps> = memo(({ frontendVersion
           </IconButton>
         </DialogTitle>
         <DialogContent data-testid="SystemInfoContent" sx={{ minWidth: 236, pb: 2 }}>
-          <Box sx={{
-            display: 'grid',
-            rowGap: 1,
-          }}>
+          <Box
+            sx={{
+              display: 'grid',
+              rowGap: 1,
+            }}
+          >
             <Typography variant="subtitle2">
               {`Backend v. ${backendVersionKey}`}
             </Typography>
@@ -71,18 +73,20 @@ export const SystemInfoPopup: FC<SystemInfoPopupProps> = memo(({ frontendVersion
               {`Frontend v. ${frontendVersionKey}`}
             </Typography>
 
-            {isNotEmpty(externalLinks) && <>
-              <Divider sx={{ mx: 0 }} orientation="horizontal" />
-              {externalLinks.map((link, index) => (
-                <Link
-                  key={index}
-                  variant="subtitle2"
-                  href={link.url}
-                >
-                  {link.title}
-                </Link>
-              ))}
-            </>}
+            {isNotEmpty(externalLinks) && (
+              <>
+                <Divider sx={{ mx: 0 }} orientation="horizontal" />
+                {externalLinks.map((link, index) => (
+                  <Link
+                    key={index}
+                    variant="subtitle2"
+                    href={link.url}
+                  >
+                    {link.title}
+                  </Link>
+                ))}
+              </>
+            )}
           </Box>
         </DialogContent>
       </Popover>

@@ -14,29 +14,10 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { usePackage } from '../../usePackage'
-import { usePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
-import { useParams } from 'react-router-dom'
-import { useFiles } from '../FilesProvider'
-import { usePublishPackageVersion } from '../usePublishPackageVersion'
-import { useDashboardReferences } from './DashboardReferencesProvider'
-import { filesRecordToArray } from '../PackagePage/files'
+import { SHOW_PUBLISH_PACKAGE_VERSION_DIALOG } from '@apihub/routes/EventBusProvider'
+import { usePackageVersionConfig } from '@apihub/routes/root/PortalPage/usePackageVersionConfig'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import { SHOW_PUBLISH_PACKAGE_VERSION_DIALOG } from '@apihub/routes/EventBusProvider'
-import { SPECIAL_VERSION_KEY } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
-import { DASHBOARD_KIND, PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { getSplittedVersionKey, getVersionLabelsMap } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import {
-  DRAFT_VERSION_STATUS,
-  NO_PREVIOUS_RELEASE_VERSION_OPTION,
-  RELEASE_VERSION_STATUS,
-} from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 import type { VersionFormData } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
 import {
   getVersionOptions,
@@ -44,14 +25,33 @@ import {
   usePreviousVersionOptions,
   VersionDialogForm,
 } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { DASHBOARD_KIND, PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import {
+  DRAFT_VERSION_STATUS,
+  NO_PREVIOUS_RELEASE_VERSION_OPTION,
+  RELEASE_VERSION_STATUS,
+} from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import { SPECIAL_VERSION_KEY } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
+import { usePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
 import { takeIf } from '@netcracker/qubership-apihub-ui-shared/utils/objects'
-import { usePackageVersionConfig } from '@apihub/routes/root/PortalPage/usePackageVersionConfig'
+import { getSplittedVersionKey, getVersionLabelsMap } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
+import type { FC } from 'react'
+import { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useParams } from 'react-router-dom'
+import { usePackage } from '../../usePackage'
+import { useFiles } from '../FilesProvider'
+import { filesRecordToArray } from '../PackagePage/files'
+import { usePublishPackageVersion } from '../usePublishPackageVersion'
+import { useDashboardReferences } from './DashboardReferencesProvider'
 
 export const PublishPackageVersionDialog: FC = memo(() => {
   return (
     <PopupDelegate
       type={SHOW_PUBLISH_PACKAGE_VERSION_DIALOG}
-      render={props => <PublishPackageVersionPopup {...props}/>}
+      render={props => <PublishPackageVersionPopup {...props} />}
     />
   )
 })
@@ -59,9 +59,9 @@ export const PublishPackageVersionDialog: FC = memo(() => {
 const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }) => {
   const { versionId: currentVersionId } = useParams()
   const [currentPackage, isPackageLoading] = usePackage()
-  
+
   const [currentVersionConfig, isCurrentVersionLoading] = usePackageVersionConfig(currentPackage?.key, currentVersionId)
-  
+
   const isEditingVersion = !!currentVersionId && currentVersionId !== SPECIAL_VERSION_KEY
   const packageKind = currentPackage?.kind
   const isDashboard = packageKind === DASHBOARD_KIND
@@ -87,7 +87,10 @@ const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
   const dashboardRefs = useDashboardReferences()
 
   const versionLabelsMap = useMemo(() => getVersionLabelsMap(filteredVersions), [filteredVersions])
-  const versionOptions = useMemo(() => getVersionOptions(versionLabelsMap, targetVersion), [targetVersion, versionLabelsMap])
+  const versionOptions = useMemo(() => getVersionOptions(versionLabelsMap, targetVersion), [
+    targetVersion,
+    versionLabelsMap,
+  ])
   const packagePermissions = useMemo(() => currentPackage?.permissions ?? [], [currentPackage])
   const releaseVersionPattern = useMemo(() => currentPackage?.releaseVersionPattern, [currentPackage])
 
@@ -105,8 +108,12 @@ const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
   const getVersionLabels = useCallback((version: Key) => versionLabelsMap[version] ?? [], [versionLabelsMap])
   const onSetTargetVersion = useCallback((version: string) => setTargetVersion(version), [])
 
-  useEffect(() => {isPublishSuccess && setOpen(false)}, [setOpen, isPublishSuccess])
-  useEffect(() => {reset(defaultValues)}, [defaultValues, reset])
+  useEffect(() => {
+    isPublishSuccess && setOpen(false)
+  }, [setOpen, isPublishSuccess])
+  useEffect(() => {
+    reset(defaultValues)
+  }, [defaultValues, reset])
   useEffect(() => {
     if (currentVersionConfig) {
       setValue('status', currentVersionConfig.status as VersionStatus || DRAFT_VERSION_STATUS)

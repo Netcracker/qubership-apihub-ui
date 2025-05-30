@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { useParams } from 'react-router-dom'
-import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { GroupVersionContent, GroupVersionContentDto } from '@apihub/entities/version-contents'
-import type { InvalidateQuery, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { editorRequestJson } from '@apihub/utils/requests'
 import { toPublishedSpec } from '@apihub/entities/published-specs'
 import { toRef } from '@apihub/entities/refs'
+import type { GroupVersionContent, GroupVersionContentDto } from '@apihub/entities/version-contents'
+import { editorRequestJson } from '@apihub/utils/requests'
+import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { InvalidateQuery, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { alphabeticallyBy } from '@netcracker/qubership-apihub-ui-shared/utils/comparers'
+import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useParams } from 'react-router-dom'
 
 const GROUP_VERSION_CONTENT_QUERY_KEY = 'group-version-content-query-key'
 

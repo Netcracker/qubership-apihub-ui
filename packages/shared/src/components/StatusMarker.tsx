@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import type { FC, ReactNode } from 'react'
-import { memo } from 'react'
+import CancelIcon from '@mui/icons-material/Cancel'
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
+import ErrorRoundedIcon from '@mui/icons-material/ErrorRounded'
 import type { SxProps } from '@mui/material'
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import Tooltip from '@mui/material/Tooltip'
-import ErrorRoundedIcon from '@mui/icons-material/ErrorRounded'
-import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
-import CancelIcon from '@mui/icons-material/Cancel'
 import type { TooltipProps } from '@mui/material/Tooltip/Tooltip'
+import type { FC, ReactNode } from 'react'
+import { memo } from 'react'
 
 export type StatusMarkerProps = {
   value?: StatusMarkerVariant
@@ -70,9 +70,9 @@ const STATUS_ICON_SX: SxProps = {
 }
 
 const STATUS_MARKER_VARIANT_TO_ICON_MAP: Record<StatusMarkerVariant, ReactNode> = {
-  [LOADING_STATUS_MARKER_VARIANT]: <CircularProgress size={16} sx={STATUS_ICON_SX}/>,
-  [DEFAULT_STATUS_MARKER_VARIANT]: <ErrorRoundedIcon color="info" sx={STATUS_ICON_SX}/>,
-  [SUCCESS_STATUS_MARKER_VARIANT]: <CheckCircleRoundedIcon color="success" sx={STATUS_ICON_SX}/>,
-  [WARNING_STATUS_MARKER_VARIANT]: <ErrorRoundedIcon color="warning" sx={STATUS_ICON_SX}/>,
-  [ERROR_STATUS_MARKER_VARIANT]: <CancelIcon color="error" sx={STATUS_ICON_SX}/>,
+  [LOADING_STATUS_MARKER_VARIANT]: <CircularProgress size={16} sx={STATUS_ICON_SX} />,
+  [DEFAULT_STATUS_MARKER_VARIANT]: <ErrorRoundedIcon color="info" sx={STATUS_ICON_SX} />,
+  [SUCCESS_STATUS_MARKER_VARIANT]: <CheckCircleRoundedIcon color="success" sx={STATUS_ICON_SX} />,
+  [WARNING_STATUS_MARKER_VARIANT]: <ErrorRoundedIcon color="warning" sx={STATUS_ICON_SX} />,
+  [ERROR_STATUS_MARKER_VARIANT]: <CancelIcon color="error" sx={STATUS_ICON_SX} />,
 }

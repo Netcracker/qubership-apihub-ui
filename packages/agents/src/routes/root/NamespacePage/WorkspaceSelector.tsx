@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useCallback, useEffect, useMemo } from 'react'
 import { Box } from '@mui/material'
-import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { PackageSelector } from '@netcracker/qubership-apihub-ui-shared/components/PackageSelector'
 import type { Package } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import { usePackagesLoader } from '@netcracker/qubership-apihub-ui-shared/hooks/packages/usePacakgesLoader'
-import { PackageSelector } from '@netcracker/qubership-apihub-ui-shared/components/PackageSelector'
 import { useActiveTabs } from '@netcracker/qubership-apihub-ui-shared/hooks/pathparams/useActiveTabs'
+import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
+import { useSetSearchParams } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSetSearchParams'
+import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import type { FC } from 'react'
+import { memo, useCallback, useEffect, useMemo } from 'react'
 import { SERVICES_PAGE } from '../../routes'
-import { useInvalidateServices } from './useServices'
+import { useShowErrorNotification } from '../BasePage/NotificationHandler'
+import { useRunDiscovery } from './ServicesPage/ServicesPageBody/DiscoverServicesStep/useRunDiscovery'
+import {
+  useCreateSnapshotPublicationOptions,
+} from './ServicesPage/ServicesPageProvider/ServicesPublicationOptionsProvider'
 import {
   INITIAL_STEP_STATUS,
   useCreateSnapshotStep,
@@ -33,13 +38,8 @@ import {
   usePromoteVersionStep,
   useValidationResultsStep,
 } from './ServicesPage/ServicesPageProvider/ServicesStepsProvider'
-import { useRunDiscovery } from './ServicesPage/ServicesPageBody/DiscoverServicesStep/useRunDiscovery'
-import {
-  useCreateSnapshotPublicationOptions,
-} from './ServicesPage/ServicesPageProvider/ServicesPublicationOptionsProvider'
-import { useSetSearchParams } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSetSearchParams'
 import { useSystemConfigurationContext } from './SystemConfigurationProvider'
-import { useShowErrorNotification } from '../BasePage/NotificationHandler'
+import { useInvalidateServices } from './useServices'
 
 const DEFAULT_WORKSPACE_ID = ''
 
@@ -90,7 +90,17 @@ export const WorkspaceSelector: FC = memo(() => {
         runDiscovery(workspaceId)
       }
     }
-  }, [activeTab, invalidateServices, resetCreateSnapshotPublicationOptions, runDiscovery, setCreateSnapshotStep, setDiscoverServicesStep, setPromoteVersionStep, setSearchParams, setValidationResultsStep])
+  }, [
+    activeTab,
+    invalidateServices,
+    resetCreateSnapshotPublicationOptions,
+    runDiscovery,
+    setCreateSnapshotStep,
+    setDiscoverServicesStep,
+    setPromoteVersionStep,
+    setSearchParams,
+    setValidationResultsStep,
+  ])
 
   const onSelectWorkspace = useCallback(
     (workspace: Package | null) => setWorkspace(workspace?.key),

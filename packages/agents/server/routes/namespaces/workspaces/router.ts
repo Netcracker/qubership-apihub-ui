@@ -32,4 +32,3 @@ function getWorkspaces(router: WorkspaceRouter): void {
     res.status(200).json(WORKSPACES_DTO)
   })
 }
-

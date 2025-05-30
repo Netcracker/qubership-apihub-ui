@@ -25,10 +25,10 @@ export function filterServices(
   }
   const lowerCaseValue = value.toLowerCase()
   return services.filter(({ key, baseline, labels }) => {
-    return key.includes(lowerCaseValue) ||
-      baseline?.name.toLowerCase().includes(lowerCaseValue) ||
-      baseline?.packageKey.toLowerCase().includes(lowerCaseValue) ||
-      Object.entries(labels ?? {})
+    return key.includes(lowerCaseValue)
+      || baseline?.name.toLowerCase().includes(lowerCaseValue)
+      || baseline?.packageKey.toLowerCase().includes(lowerCaseValue)
+      || Object.entries(labels ?? {})
         .some(([key, value]) => getFormattedLabel(key, value).toLowerCase().includes(lowerCaseValue))
   })
 }

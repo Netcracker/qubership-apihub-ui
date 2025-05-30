@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import type { OperationsMovementDetails } from '@apihub/routes/EventBusProvider'
 import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { Operation } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import type { OperationsMovementDetails } from '@apihub/routes/EventBusProvider'
 
 export type PackageContext = {
   isDashboard: boolean
@@ -30,4 +30,3 @@ export type OperationListsDelta = Array<{
   operation: Operation
   action: OperationsMovementDetails
 }>
-

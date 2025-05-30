@@ -14,25 +14,15 @@
  * limitations under the License.
  */
 
-import { expose } from 'comlink'
-import type {
-  BuildConfig,
-  BuildResult,
-  VersionsComparison,
-} from '@netcracker/qubership-apihub-api-processor'
+import type { BuildConfig, BuildResult, VersionsComparison } from '@netcracker/qubership-apihub-api-processor'
 import { PackageVersionBuilder } from '@netcracker/qubership-apihub-api-processor'
+import { expose } from 'comlink'
 
-import type { BuilderOptions } from './package-version-builder'
-import { safeStringify } from '@stoplight/yaml'
 import { VersionDocumentsCachingService } from '@apihub/services/VersionDocumentsCachingService'
+import { safeStringify } from '@stoplight/yaml'
+import type { BuilderOptions } from './package-version-builder'
 
-import {
-  packageVersionResolver,
-  versionDeprecatedResolver,
-  versionOperationsResolver,
-  versionReferencesResolver,
-} from '@netcracker/qubership-apihub-ui-shared/utils/builder-resolvers'
-import type { FileKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { NONE_CHANGE_TYPE } from '@apihub/entities/branches'
 import type { FileData } from '@apihub/entities/project-files'
 import type { PublishDetails, PublishOptions, PublishStatus } from '@apihub/entities/publish-details'
 import {
@@ -41,16 +31,22 @@ import {
   fetchAllFilesBlob,
   NONE_PUBLISH_STATUS,
 } from '@apihub/entities/publish-details'
+import { fetchFileContent } from '@apihub/utils/resolvers'
+import type { FileKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import {
+  packageVersionResolver,
+  versionDeprecatedResolver,
+  versionOperationsResolver,
+  versionReferencesResolver,
+} from '@netcracker/qubership-apihub-ui-shared/utils/builder-resolvers'
 import { getFileFormat } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import {
   RUNNING_PUBLISH_STATUS,
   setPublicationDetails,
   startPackageVersionPublication,
 } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
-import { NONE_CHANGE_TYPE } from '@apihub/entities/branches'
-import { fetchFileContent } from '@apihub/utils/resolvers'
+import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import { v4 as uuidv4 } from 'uuid'
 
 /*
@@ -96,12 +92,15 @@ function getBuilderCache(): Promise<BranchCache> {
 }
 
 function getFileDataFromCache(fileKey: string): FileData {
-  const cachingService =
-    VersionDocumentsCachingService.getInstance(BUILDER_WORKER_CACHING_SERVICE_TAG)
+  const cachingService = VersionDocumentsCachingService.getInstance(BUILDER_WORKER_CACHING_SERVICE_TAG)
 
   const updatedDocument = builder!.buildResult.documents.get(fileKey)!
   const {
-    fileId, type, title, data, dependencies,
+    fileId,
+    type,
+    title,
+    data,
+    dependencies,
   } = cachingService.eitherThisOrCache(updatedDocument)
 
   const fileSource = builder?.parsedFiles.get(fileId)?.source
@@ -135,7 +134,8 @@ const worker: PackageVersionBuilderWorker = {
     }
 
     return builder!.comparisons.filter(
-      comparison => comparison.operationTypes.some(({ changesSummary }) => changesSummary && changesSummary.breaking > 0),
+      comparison =>
+        comparison.operationTypes.some(({ changesSummary }) => changesSummary && changesSummary.breaking > 0),
     )
   },
   dereference: async (fileKey, options): Promise<FileData> => {
@@ -283,7 +283,8 @@ function toPackageVersionBuilderConfig(
     previousPackageKey,
     previousVersionKey,
     versionKey,
-  }: BuilderOptions): BuildConfig {
+  }: BuilderOptions,
+): BuildConfig {
   return {
     packageId: packageKey,
     version: versionKey,

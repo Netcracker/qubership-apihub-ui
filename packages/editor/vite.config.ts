@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import monacoEditor from 'vite-plugin-monaco-editor'
-import path, { resolve } from 'path'
-import NodeModulesPolyfill from '@esbuild-plugins/node-modules-polyfill'
 import NodeGlobalsPolyfill from '@esbuild-plugins/node-globals-polyfill'
+import NodeModulesPolyfill from '@esbuild-plugins/node-modules-polyfill'
+import react from '@vitejs/plugin-react'
+import path, { resolve } from 'path'
 import copy from 'rollup-plugin-copy'
-import ignoreDotsOnDevServer from 'vite-plugin-rewrite-all'
-import { VitePluginFonts } from 'vite-plugin-fonts'
 import { visualizer as bundleVisualizer } from 'rollup-plugin-visualizer'
+import { defineConfig } from 'vite'
+import { VitePluginFonts } from 'vite-plugin-fonts'
+import monacoEditor from 'vite-plugin-monaco-editor'
+import ignoreDotsOnDevServer from 'vite-plugin-rewrite-all'
 import monacoWorkerHashPlugin from '../../vite-monaco-worker-hash'
 
 const proxyServer = ''
@@ -52,7 +52,7 @@ export default defineConfig(({ mode }) => {
           entry: 'monaco-graphql/dist/graphql.worker',
         }],
       }),
-      monacoWorkerHashPlugin({monacoDir: 'dist/monacoeditorwork', htmlPath: 'dist/index.html'}),
+      monacoWorkerHashPlugin({ monacoDir: 'dist/monacoeditorwork', htmlPath: 'dist/index.html' }),
       copy({
         targets: [
           {

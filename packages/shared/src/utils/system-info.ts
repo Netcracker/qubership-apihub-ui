@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { Key } from './types'
-import { DEFAULT_REFETCH_INTERVAL, requestJson } from './requests'
 import type { UseQueryOptions } from '@tanstack/react-query'
+import { DEFAULT_REFETCH_INTERVAL, requestJson } from './requests'
+import type { Key } from './types'
 
 const SYSTEM_INFO_QUERY_KEY = 'system-info'
 

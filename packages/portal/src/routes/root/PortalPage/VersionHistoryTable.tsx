@@ -14,37 +14,37 @@
  * limitations under the License.
  */
 
-import type { FC, ReactNode, RefObject } from 'react'
-import { memo, useEffect, useMemo, useRef, useState } from 'react'
-import type { ColumnDef, ColumnSizingInfoState, ColumnSizingState, OnChangeFn } from '@tanstack/react-table'
-import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import { REVISION_DELIMITER } from '@apihub/entities/versions'
 import { Box, Link, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
-import { NavLink } from 'react-router-dom'
+import { ColumnDelimiter } from '@netcracker/qubership-apihub-ui-shared/components/ColumnDelimiter'
+import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
+import { CustomTableHeadCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomTableHeadCell'
+import { FormattedDate } from '@netcracker/qubership-apihub-ui-shared/components/FormattedDate'
+import { LabelsTableCell } from '@netcracker/qubership-apihub-ui-shared/components/LabelsTableCell'
+import { LatestRevisionMark } from '@netcracker/qubership-apihub-ui-shared/components/LatestRevisionMark'
+import { PrincipalView } from '@netcracker/qubership-apihub-ui-shared/components/PrincipalView'
+import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { Principal } from '@netcracker/qubership-apihub-ui-shared/entities/principals'
+import type { PublishMeta } from '@netcracker/qubership-apihub-ui-shared/entities/publish-meta'
+import type { Revision, Revisions } from '@netcracker/qubership-apihub-ui-shared/entities/revisions'
+import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 import type { PackageVersion, PackageVersions } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
+import { useResizeObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useResizeObserver'
 import type { ColumnModel } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
 import {
   DEFAULT_CONTAINER_WIDTH,
   useColumnsSizing,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
-import { CustomTableHeadCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomTableHeadCell'
-import { REVISION_DELIMITER } from '@apihub/entities/versions'
-import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
-import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
-import { format } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
-import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
-import { ColumnDelimiter } from '@netcracker/qubership-apihub-ui-shared/components/ColumnDelimiter'
-import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import { DEFAULT_NUMBER_SKELETON_ROWS } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
 import { createComponents } from '@netcracker/qubership-apihub-ui-shared/utils/components'
-import { useResizeObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useResizeObserver'
-import { LabelsTableCell } from '@netcracker/qubership-apihub-ui-shared/components/LabelsTableCell'
-import { FormattedDate } from '@netcracker/qubership-apihub-ui-shared/components/FormattedDate'
-import { LatestRevisionMark } from '@netcracker/qubership-apihub-ui-shared/components/LatestRevisionMark'
-import type { Principal } from '@netcracker/qubership-apihub-ui-shared/entities/principals'
-import { PrincipalView } from '@netcracker/qubership-apihub-ui-shared/components/PrincipalView'
-import type { Revision, Revisions } from '@netcracker/qubership-apihub-ui-shared/entities/revisions'
-import type { PublishMeta } from '@netcracker/qubership-apihub-ui-shared/entities/publish-meta'
+import { DEFAULT_NUMBER_SKELETON_ROWS } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
+import { format } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
+import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
+import type { ColumnDef, ColumnSizingInfoState, ColumnSizingState, OnChangeFn } from '@tanstack/react-table'
+import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import type { FC, ReactNode, RefObject } from 'react'
+import { memo, useEffect, useMemo, useRef, useState } from 'react'
+import { NavLink } from 'react-router-dom'
 
 export type VersionHistoryTableProps = {
   value: PackageVersions | Revisions
@@ -80,7 +80,7 @@ export const VersionHistoryTable: FC<VersionHistoryTableProps> = memo<VersionHis
   const baseColumns: ColumnDef<VersionHistoryItem>[] = useMemo(() => [
     {
       id: VERSION_COLUMN_ID,
-      header: () => <CustomTableHeadCell title={`${isVersionsHistoryContent ? 'Version' : 'Revision'}`}/>,
+      header: () => <CustomTableHeadCell title={`${isVersionsHistoryContent ? 'Version' : 'Revision'}`} />,
       cell: ({ row: { original: { version, revision, latest } } }) => {
         const value = isVersionsHistoryContent ? version : `${REVISION_DELIMITER}${revision}`
         const isLatestRevision = !isVersionsHistoryContent && latest
@@ -99,7 +99,7 @@ export const VersionHistoryTable: FC<VersionHistoryTableProps> = memo<VersionHis
               >
                 {value}
               </Link>
-              <LatestRevisionMark latest={isLatestRevision}/>
+              <LatestRevisionMark latest={isLatestRevision} />
             </Box>
           </TextWithOverflowTooltip>
         )
@@ -107,38 +107,34 @@ export const VersionHistoryTable: FC<VersionHistoryTableProps> = memo<VersionHis
     },
     {
       id: VERSION_STATUS_COLUMN_ID,
-      header: () => <CustomTableHeadCell title="Status"/>,
-      cell: ({ row: { original: { status } } }) => <CustomChip value={status}/>,
+      header: () => <CustomTableHeadCell title="Status" />,
+      cell: ({ row: { original: { status } } }) => <CustomChip value={status} />,
     },
     {
       id: LABELS_COLUMN_ID,
-      header: () => <CustomTableHeadCell title="Labels"/>,
+      header: () => <CustomTableHeadCell title="Labels" />,
       cell: ({ row: { original: { labels } } }) => {
         if (labels) {
-          return <LabelsTableCell labels={labels}/>
+          return <LabelsTableCell labels={labels} />
         }
         return null
       },
     },
     {
       id: PUBLICATION_DATE_COLUMN_ID,
-      header: () => <CustomTableHeadCell title="Publication Date"/>,
-      cell: ({ row: { original: { createdAt } } }) => (
-        <FormattedDate value={createdAt}/>
-      ),
+      header: () => <CustomTableHeadCell title="Publication Date" />,
+      cell: ({ row: { original: { createdAt } } }) => <FormattedDate value={createdAt} />,
     },
     {
       id: PUBLISHED_BY_COLUMN_ID,
-      header: () => <CustomTableHeadCell title="Published by"/>,
-      cell: ({ row: { original: { createdBy } } }) => (
-        <PrincipalView value={createdBy}/>
-      ),
+      header: () => <CustomTableHeadCell title="Published by" />,
+      cell: ({ row: { original: { createdBy } } }) => <PrincipalView value={createdBy} />,
     },
   ], [isVersionsHistoryContent, packageKey])
 
   const previousVersionColumn: ColumnDef<VersionHistoryItem> = useMemo(() => ({
     id: PREVIOUS_VERSION_COLUMN_ID,
-    header: () => <CustomTableHeadCell title="Previous Version"/>,
+    header: () => <CustomTableHeadCell title="Previous Version" />,
     cell: ({ row: { original: { previousValueKey } } }) => {
       const { versionKey: previousVersion } = getSplittedVersionKey(previousValueKey)
       return (
@@ -153,27 +149,26 @@ export const VersionHistoryTable: FC<VersionHistoryTableProps> = memo<VersionHis
     id: ACTIONS_COLUMN_ID,
     header: '',
     cell: ({ row: { original } }) => (
-      actionsCell?.(isVersionsHistoryContent
-        ? toPackageVersion(original)
-        : toRevision(original),
+      actionsCell?.(
+        isVersionsHistoryContent
+          ? toPackageVersion(original)
+          : toRevision(original),
       )
     ),
   }), [actionsCell, isVersionsHistoryContent])
 
   const columns: ColumnDef<VersionHistoryItem>[] = useMemo(() => (
-      isVersionsHistoryContent
-        ? [
-          ...baseColumns,
-          previousVersionColumn,
-          actionsColumn,
-        ]
-        : [
-          ...baseColumns,
-          actionsColumn,
-        ]
-    ),
-    [actionsColumn, baseColumns, isVersionsHistoryContent, previousVersionColumn],
-  )
+    isVersionsHistoryContent
+      ? [
+        ...baseColumns,
+        previousVersionColumn,
+        actionsColumn,
+      ]
+      : [
+        ...baseColumns,
+        actionsColumn,
+      ]
+  ), [actionsColumn, baseColumns, isVersionsHistoryContent, previousVersionColumn])
 
   const tableContent = useMemo(() => toVersionHistoryItems(value), [value])
   const { getHeaderGroups, getRowModel, setColumnSizing } = useReactTable({
@@ -217,8 +212,8 @@ export const VersionHistoryTable: FC<VersionHistoryTableProps> = memo<VersionHis
                     }}
                   >
                     {flexRender(headerColumn.column.columnDef.header, headerColumn.getContext())}
-                    {index !== headerGroup.headers.length - 1 &&
-                      <ColumnDelimiter header={headerColumn} resizable={true}/>}
+                    {index !== headerGroup.headers.length - 1
+                      && <ColumnDelimiter header={headerColumn} resizable={true} />}
                   </TableCell>
                 ))}
               </TableRow>
@@ -238,8 +233,8 @@ export const VersionHistoryTable: FC<VersionHistoryTableProps> = memo<VersionHis
                 ))}
               </TableRow>
             ))}
-            {isLoading && <TableSkeleton isVersionHistory={isVersionsHistoryContent}/>}
-            {hasNextPage && <RowSkeleton refObject={refObject} isVersionHistory={isVersionsHistoryContent}/>}
+            {isLoading && <TableSkeleton isVersionHistory={isVersionsHistoryContent} />}
+            {hasNextPage && <RowSkeleton refObject={refObject} isVersionHistory={isVersionsHistoryContent} />}
           </TableBody>
         </Table>
       </TableContainer>
@@ -352,7 +347,7 @@ type TableSkeletonProps = {
   isVersionHistory: boolean
 }
 const TableSkeleton: FC<TableSkeletonProps> = memo<TableSkeletonProps>(({ isVersionHistory }) => {
-  return createComponents(<RowSkeleton isVersionHistory={isVersionHistory}/>, DEFAULT_NUMBER_SKELETON_ROWS)
+  return createComponents(<RowSkeleton isVersionHistory={isVersionHistory} />, DEFAULT_NUMBER_SKELETON_ROWS)
 })
 
 type RowSkeletonProps = {
@@ -364,22 +359,20 @@ const RowSkeleton: FC<RowSkeletonProps> = memo<RowSkeletonProps>(({ refObject, i
   return (
     <TableRow>
       <TableCell ref={refObject}>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
       <TableCell ref={refObject}>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
-      <TableCell ref={refObject} width={'80'}/>
+      <TableCell ref={refObject} width={'80'} />
       <TableCell ref={refObject}>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
       <TableCell ref={refObject}>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
-      {isVersionHistory && (
-        <TableCell ref={refObject}/>
-      )}
-      <TableCell ref={refObject}/>
+      {isVersionHistory && <TableCell ref={refObject} />}
+      <TableCell ref={refObject} />
     </TableRow>
   )
 })

@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react'
-import { usePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
 import type { VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { RELEASE_VERSION_STATUS } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import { usePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
+import { useMemo } from 'react'
 import { usePackageKey } from '../../usePackage'
 
 export function usePreviousVersionOptions(): VersionKey[] {
   const defaultPackageKey = usePackageKey()
   const { versions } = usePackageVersions({ packageKey: defaultPackageKey, status: RELEASE_VERSION_STATUS })
 
-  return useMemo(() => ([
+  return useMemo(() => [
     NO_PREVIOUS_RELEASE_VERSION_OPTION,
     ...versions.map(({ key }) => key),
-  ]), [versions])
+  ], [versions])
 }
 
 export const NO_PREVIOUS_RELEASE_VERSION_OPTION: VersionKey = 'No previous release version'

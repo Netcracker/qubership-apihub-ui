@@ -30,9 +30,11 @@ export const API_TYPE_TITLE_MAP: Record<ApiType, string> = {
   [API_TYPE_GRAPHQL]: 'GraphQL API',
 }
 
-export function toApiTypeMap<T extends {
-  apiType: ApiType
-}>(operationTypes?: ReadonlyArray<T>): Record<ApiType, T> | undefined {
+export function toApiTypeMap<
+  T extends {
+    apiType: ApiType
+  },
+>(operationTypes?: ReadonlyArray<T>): Record<ApiType, T> | undefined {
   return isNotEmpty(operationTypes)
     ? (Object.fromEntries(
       operationTypes!.map(operationType => [operationType.apiType, operationType]),

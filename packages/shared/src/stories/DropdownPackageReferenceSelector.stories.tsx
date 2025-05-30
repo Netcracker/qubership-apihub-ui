@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { useArgs } from '@storybook/preview-api'
 import type { Meta, StoryFn } from '@storybook/react'
-import { fullHeight } from './commons/decorators'
+import { useCallback } from 'react'
 import type { DropdownPackageReferenceSelectorProps } from '../components/DropdownPackageReferenceSelector'
 import { DropdownPackageReferenceSelector } from '../components/DropdownPackageReferenceSelector'
+import { fullHeight } from './commons/decorators'
 import { references } from './samples/reference-samples'
-import { useArgs } from '@storybook/preview-api'
-import { useCallback } from 'react'
 
 const meta: Meta<typeof DropdownPackageReferenceSelector> = {
   title: 'Dropdown Package Reference Selector',
@@ -38,7 +38,11 @@ export const DefaultStory: StoryFn<DropdownPackageReferenceSelectorProps> = (arg
   const [, updateArgs] = useArgs()
 
   const onSearch = useCallback((value: string) => {
-    updateArgs({ references: references.filter(reference => reference?.name && reference.name.toLowerCase().includes(value.toLowerCase())) })
+    updateArgs({
+      references: references.filter(reference =>
+        reference?.name && reference.name.toLowerCase().includes(value.toLowerCase())
+      ),
+    })
   }, [updateArgs])
 
   const onSearchParam = useCallback((value: string | undefined) => {

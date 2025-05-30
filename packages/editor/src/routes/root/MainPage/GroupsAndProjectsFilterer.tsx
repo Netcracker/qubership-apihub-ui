@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo } from 'react'
-import { Paper, ToggleButton, ToggleButtonGroup } from '@mui/material'
 import ListOutlinedIcon from '@mui/icons-material/ListOutlined'
 import StarOutlineRoundedIcon from '@mui/icons-material/StarOutlineRounded'
-import { FAVORITE_MAIN_PAGE_MODE, FLAT_MAIN_PAGE_MODE, TREE_MAIN_PAGE_MODE, useMainPageMode } from './useMainPageMode'
-import { useTextSearchParam } from '../useTextSearchParam'
+import { Paper, ToggleButton, ToggleButtonGroup } from '@mui/material'
 import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
 import { useSetSearchParams } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSetSearchParams'
 import { TreeIcon } from '@netcracker/qubership-apihub-ui-shared/icons/TreeIcon'
+import type { FC } from 'react'
+import { memo } from 'react'
+import { useTextSearchParam } from '../useTextSearchParam'
+import { FAVORITE_MAIN_PAGE_MODE, FLAT_MAIN_PAGE_MODE, TREE_MAIN_PAGE_MODE, useMainPageMode } from './useMainPageMode'
 
 export const GroupsAndProjectsFilterer: FC = memo(() => {
   const [textFilter] = useTextSearchParam()
@@ -60,13 +60,13 @@ export const GroupsAndProjectsFilterer: FC = memo(() => {
           }}
         >
           <ToggleButton value={TREE_MAIN_PAGE_MODE}>
-            <TreeIcon/>
+            <TreeIcon />
           </ToggleButton>
           <ToggleButton value={FLAT_MAIN_PAGE_MODE}>
-            <ListOutlinedIcon/>
+            <ListOutlinedIcon />
           </ToggleButton>
           <ToggleButton value={FAVORITE_MAIN_PAGE_MODE}>
-            <StarOutlineRoundedIcon/>
+            <StarOutlineRoundedIcon />
           </ToggleButton>
         </ToggleButtonGroup>
       </Paper>

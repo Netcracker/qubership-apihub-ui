@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { TabContext, TabList, TabPanel } from '@mui/lab'
+import { Box, CircularProgress, Tab, Typography } from '@mui/material'
 import type { ReactNode } from 'react'
 import { type FC, memo, useMemo } from 'react'
-import { Box, CircularProgress, Tab, Typography } from '@mui/material'
-import { TabContext, TabList, TabPanel } from '@mui/lab'
 import type { Key } from '../../entities/keys'
 import { useStateWithExternal } from '../../hooks/common/useStateWithExternal'
 import { genericMemo } from '../../utils/components'
@@ -52,9 +52,8 @@ function TabsPanelRenderer<T extends Key>({
 }: TabsPanelProps<T>): JSX.Element {
   const [internalActiveTab, setInternalActiveTab] = useStateWithExternal(activeTab, activeTab, onChangeTab)
   const tabListStyles = useMemo(() => (separator
-      ? { borderBottom: 1, borderColor: 'divider' }
-      : undefined
-  ), [separator])
+    ? { borderBottom: 1, borderColor: 'divider' }
+    : undefined), [separator])
 
   return (
     <Box
@@ -67,29 +66,25 @@ function TabsPanelRenderer<T extends Key>({
           sx={tabListStyles}
           onChange={(_, value) => setInternalActiveTab(value)}
         >
-          {
-            tabs.map(({ key, name, isLoading, info }) => (
-              <Tab
-                value={key}
-                label={
-                  <TabLabel
-                    name={name}
-                    isLoading={isLoading}
-                    info={info}
-                  />
-                }
-                data-testid={`TabButton-${key}`}
-              />
-            ))
-          }
+          {tabs.map(({ key, name, isLoading, info }) => (
+            <Tab
+              value={key}
+              label={
+                <TabLabel
+                  name={name}
+                  isLoading={isLoading}
+                  info={info}
+                />
+              }
+              data-testid={`TabButton-${key}`}
+            />
+          ))}
         </TabList>
-        {
-          panels.map(({ key, content }) => (
-            <TabPanel value={key} sx={tabPanelStyle}>
-              {content}
-            </TabPanel>
-          ))
-        }
+        {panels.map(({ key, content }) => (
+          <TabPanel value={key} sx={tabPanelStyle}>
+            {content}
+          </TabPanel>
+        ))}
       </TabContext>
     </Box>
   )
@@ -111,7 +106,7 @@ const TabLabel: FC<TabLabelProps> = memo<TabLabelProps>(({
   return (
     <Box display="flex" alignItems="center" gap={1}>
       <Typography variant="subtitle1">{name}</Typography>
-      {isLoading ? <CircularProgress size={14}/> : info}
+      {isLoading ? <CircularProgress size={14} /> : info}
     </Box>
   )
 })

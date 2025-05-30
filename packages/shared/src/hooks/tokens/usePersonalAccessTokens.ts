@@ -2,7 +2,14 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { generatePath } from 'react-router'
 import type { Key } from '../../entities/keys'
-import type { DeletePersonalAccessTokenCallback, GeneratePersonalAccessTokenCallback, GeneratePersonalAccessTokenData, PersonalAccessTokenDto, PersonalAccessTokens, PersonalAccessTokensDto } from '../../types/tokens'
+import type {
+  DeletePersonalAccessTokenCallback,
+  GeneratePersonalAccessTokenCallback,
+  GeneratePersonalAccessTokenData,
+  PersonalAccessTokenDto,
+  PersonalAccessTokens,
+  PersonalAccessTokensDto,
+} from '../../types/tokens'
 import type { InvalidateQuery, IsLoading } from '../../utils/aliases'
 import { API_V1, requestJson, requestVoid } from '../../utils/requests'
 
@@ -11,10 +18,11 @@ const QUERY_KEY_PERSONAL_ACCESS_TOKENS = 'personal-access-tokens-query'
 export function useInvalidatePersonalAccessTokens(): InvalidateQuery<void> {
   const client = useQueryClient()
 
-  return () => client.invalidateQueries({
-    queryKey: [QUERY_KEY_PERSONAL_ACCESS_TOKENS],
-    refetchType: 'all',
-  })
+  return () =>
+    client.invalidateQueries({
+      queryKey: [QUERY_KEY_PERSONAL_ACCESS_TOKENS],
+      refetchType: 'all',
+    })
 }
 
 export function usePersonalAccessTokens(): [PersonalAccessTokens, IsLoading, Error | null] {
@@ -55,7 +63,9 @@ export function useDeletePersonalAccessToken(): [DeletePersonalAccessTokenCallba
   return [mutate, isLoading]
 }
 
-export async function generatePersonalAccessToken(value: GeneratePersonalAccessTokenData): Promise<PersonalAccessTokenDto> {
+export async function generatePersonalAccessToken(
+  value: GeneratePersonalAccessTokenData,
+): Promise<PersonalAccessTokenDto> {
   return await requestJson<PersonalAccessTokenDto>(
     '/personalAccessToken',
     {

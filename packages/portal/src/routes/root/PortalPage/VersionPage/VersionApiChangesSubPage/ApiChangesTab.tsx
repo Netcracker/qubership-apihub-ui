@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { FC } from 'react'
 import { memo } from 'react'
 import { useParams } from 'react-router-dom'
-import { ChangelogView } from './ChangelogView'
-import { useApiKindSearchFilter } from '../useApiKindSearchFilters'
-import { useTagSearchFilter } from '../useTagSearchFilter'
-import { useOperationGroupSearchFilter } from '../useOperationGroupSearchFilter'
-import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { useApiAudienceSearchFilter } from '../useApiAudienceSearchFilters'
+import { useApiKindSearchFilter } from '../useApiKindSearchFilters'
+import { useOperationGroupSearchFilter } from '../useOperationGroupSearchFilter'
+import { useTagSearchFilter } from '../useTagSearchFilter'
+import { ChangelogView } from './ChangelogView'
 
 export type ApiChangesTabProps = {
   searchValue: string

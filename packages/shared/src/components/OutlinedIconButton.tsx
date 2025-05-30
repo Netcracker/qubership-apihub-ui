@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-import type { FC, ReactNode } from 'react'
-import { memo } from 'react'
 import { Button } from '@mui/material'
+import Box from '@mui/material/Box'
 import type { ButtonProps } from '@mui/material/Button/Button'
 import Tooltip from '@mui/material/Tooltip'
-import Box from '@mui/material/Box'
 import type { Property } from 'csstype'
+import type { FC, ReactNode } from 'react'
+import { memo } from 'react'
 
-export type OutlinedIconButtonProps = ButtonProps & Partial<{
-  disabled: boolean
-  disableHint: boolean
-  hint: string | ReactNode
-  tooltipMaxWidth?: Property.MaxWidth
-}>
+export type OutlinedIconButtonProps =
+  & ButtonProps
+  & Partial<{
+    disabled: boolean
+    disableHint: boolean
+    hint: string | ReactNode
+    tooltipMaxWidth?: Property.MaxWidth
+  }>
 
 export const OutlinedIconButton: FC<OutlinedIconButtonProps> = memo(({
   startIcon,

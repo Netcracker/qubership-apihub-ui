@@ -1,3 +1,5 @@
+import { GROUP_KIND, PACKAGE_KIND, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import type { ExportConfig } from '../../useExportConfig'
 import {
   OAS_EXTENSION_KIND_DIRECT,
   OAS_EXTENSION_KIND_INHERITED,
@@ -7,8 +9,6 @@ import {
   toOasExtensionNames,
   toOasSettingsExtensions,
 } from './package-export-config'
-import { GROUP_KIND, PACKAGE_KIND, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import type { ExportConfig } from '../../useExportConfig'
 
 describe('toOasExtensions', () => {
   // Test direct extensions

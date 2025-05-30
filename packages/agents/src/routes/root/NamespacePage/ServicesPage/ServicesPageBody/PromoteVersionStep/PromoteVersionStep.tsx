@@ -14,42 +14,37 @@
  * limitations under the License.
  */
 
+import { LoadingButton } from '@mui/lab'
+import { Autocomplete, Box, Checkbox, FormControlLabel, MenuItem, TextField, Typography } from '@mui/material'
 import type { FC } from 'react'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { Autocomplete, Box, Checkbox, FormControlLabel, MenuItem, TextField, Typography } from '@mui/material'
-import { useServices } from '../../../useServices'
 import type { Control, FieldErrors } from 'react-hook-form'
 import { Controller, useForm } from 'react-hook-form'
-import { LoadingButton } from '@mui/lab'
+import { useServices } from '../../../useServices'
 
 import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 
-import { filterServices } from '../../services'
-import { PromoteVersionStepTable } from './PromoteVersionStepTable'
-import type { PromoteVersion } from './usePromoteVersion'
-import { usePromoteVersion } from './usePromoteVersion'
 import type { Service } from '@apihub/entities/services'
-import { usePromoteVersionStepStatus } from './usePromoteVersionStepStatus'
-import { useBaselineOptions } from '../../../useBaselineOptions'
-import { useVersionOptions } from '../../../AutomationPage/useVersionOptions'
-import type {
-  VersionStatus} from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import {
-  DRAFT_VERSION_STATUS,
-  RELEASE_VERSION_STATUS,
-} from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import {
-  checkVersionNotEqualToPrevious,
-  checkVersionRestrictedSymbols,
-} from '@netcracker/qubership-apihub-ui-shared/utils/validations'
-import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
 import {
   CONTENT_PLACEHOLDER_AREA,
   NO_SEARCH_RESULTS,
   Placeholder,
 } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
-import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
 import type { ServiceKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import {
+  DRAFT_VERSION_STATUS,
+  RELEASE_VERSION_STATUS,
+} from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import {
+  checkVersionNotEqualToPrevious,
+  checkVersionRestrictedSymbols,
+} from '@netcracker/qubership-apihub-ui-shared/utils/validations'
+import { useVersionOptions } from '../../../AutomationPage/useVersionOptions'
+import { useBaselineOptions } from '../../../useBaselineOptions'
+import { filterServices } from '../../services'
 import {
   useCreateSnapshotPublicationOptions,
   usePromoteVersionPublicationOptions,
@@ -59,6 +54,10 @@ import {
   SUCCESS_STEP_STATUS,
   usePromoteVersionStep,
 } from '../../ServicesPageProvider/ServicesStepsProvider'
+import { PromoteVersionStepTable } from './PromoteVersionStepTable'
+import type { PromoteVersion } from './usePromoteVersion'
+import { usePromoteVersion } from './usePromoteVersion'
+import { usePromoteVersionStepStatus } from './usePromoteVersionStepStatus'
 
 export const PromoteVersionStep: FC = memo(() => {
   const [promoteVersion, isLoading] = usePromoteVersion()
@@ -121,8 +120,8 @@ export const PromoteVersionStep: FC = memo(() => {
             validate: {
               checkSpaces: (version) => {
                 if (status === RELEASE_VERSION_STATUS) {
-                  return /^[1-9][0-9]{3}\.[1-4]{1}$/ig.test(version) ||
-                    'The release version must have the format: YYYY.Q, where YYYY is the year, Q is the quarter of the year'
+                  return /^[1-9][0-9]{3}\.[1-4]{1}$/ig.test(version)
+                    || 'The release version must have the format: YYYY.Q, where YYYY is the year, Q is the quarter of the year'
                 }
               },
               restrictedSymbols: checkVersionRestrictedSymbols,
@@ -182,7 +181,8 @@ export const PromoteVersionStep: FC = memo(() => {
             <TextField
               {...field}
               data-testid="StatusSelect"
-              select required
+              select
+              required
               type="select"
               disabled={areControlsDisabled}
               label="Status"
@@ -228,7 +228,7 @@ export const PromoteVersionStep: FC = memo(() => {
         <FormControlLabel
           data-testid="OnlyPromotableCheckbox"
           label="Show only available services"
-          control={<Checkbox onChange={(_, checked) => setShowOnlyPromotable(checked)}/>}
+          control={<Checkbox onChange={(_, checked) => setShowOnlyPromotable(checked)} />}
         />
 
         <Controller
@@ -282,7 +282,7 @@ function useToolbarData(
   IsPromoteAvailable,
   VersionStatus,
   FormData['previousVersion'],
-  FieldErrors<FormData>
+  FieldErrors<FormData>,
 ] {
   const { createSnapshotPublicationOptions: { baseline, name } } = useCreateSnapshotPublicationOptions()
   const {
@@ -315,10 +315,11 @@ function useToolbarData(
 
   const [, setPromoteVersionStep] = usePromoteVersionStep()
   const stepStatus = usePromoteVersionStepStatus()
-  useEffect(() => setPromoteVersionStep(prevState => ({
-    ...prevState,
-    status: stepStatus,
-  })), [setPromoteVersionStep, stepStatus])
+  useEffect(() =>
+    setPromoteVersionStep(prevState => ({
+      ...prevState,
+      status: stepStatus,
+    })), [setPromoteVersionStep, stepStatus])
 
   const {
     previousVersion: previousVersionForm,
@@ -327,7 +328,8 @@ function useToolbarData(
     serviceKeys: serviceKeysForm,
   } = watch()
 
-  const isPromoteVersionAvailable = !!previousVersionForm && !!versionForm && !!statusForm && isNotEmpty(serviceKeysForm)
+  const isPromoteVersionAvailable = !!previousVersionForm && !!versionForm && !!statusForm
+    && isNotEmpty(serviceKeysForm)
 
   return [
     control,

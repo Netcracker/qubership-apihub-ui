@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react'
 import { ThemeProvider } from '@mui/material'
+import type { Meta, StoryObj } from '@storybook/react'
 import { AddUserPopup } from '../components/Users/AddUserDialog'
 import { theme } from '../themes/theme'
-import { USERS } from './samples/system-administrators-samples'
 import { ROLES_LIST } from './samples/roles-samples'
+import { USERS } from './samples/system-administrators-samples'
 
 const meta: Meta<typeof AddUserPopup> = {
   title: 'Add User Dialog',
@@ -27,7 +27,7 @@ const meta: Meta<typeof AddUserPopup> = {
   decorators: [
     (Story) => (
       <ThemeProvider theme={theme}>
-        <Story/>
+        <Story />
       </ThemeProvider>
     ),
   ],

@@ -24,4 +24,4 @@ export function createComponents(component: React.ReactElement, count: number): 
   )
 }
 
-export const genericMemo: <T>  (component: T) => T = memo
+export const genericMemo: <T>(component: T) => T = memo

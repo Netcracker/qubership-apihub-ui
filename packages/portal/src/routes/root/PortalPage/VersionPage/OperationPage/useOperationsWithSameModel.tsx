@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import { useMutation } from '@tanstack/react-query'
-import { getOperations } from '../useOperations'
-import { generatePath } from 'react-router-dom'
+import { useEventBus } from '@apihub/routes/EventBusProvider'
+import { portalRequestJson } from '@apihub/utils/requests'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { OperationsData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { IsError, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { useEventBus } from '@apihub/routes/EventBusProvider'
-import { portalRequestJson } from '@apihub/utils/requests'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { useMutation } from '@tanstack/react-query'
+import { generatePath } from 'react-router-dom'
+import { getOperations } from '../useOperations'
 
 export type UseOperationChangelogOptions = {
   packageKey: Key
@@ -44,32 +44,31 @@ export function useOperationsWithSameModel(): [GetModelUsages, IsLoading, IsErro
     isError,
     error,
   } = useMutation<OperationsData, Error, UseOperationChangelogOptions>({
-      mutationFn: async ({
-        packageKey,
-        versionKey,
-        operationKey,
-        apiType,
-        modelName,
-      }: UseOperationChangelogOptions) => {
-        const modelUsages = await getModelUsages({
-          packageKey: packageKey,
-          versionKey: versionKey,
-          operationKey: operationKey!,
-          apiType: apiType as ApiType,
-          modelName: modelName,
-        })
-        return getOperations({
-          packageKey: packageKey,
-          versionKey: versionKey,
-          ids: modelUsages.map((usage) => usage.operationId),
-          apiType: apiType as ApiType,
-        })
-      },
-      onError: (error) => {
-        showErrorNotification({ message: error?.message })
-      },
+    mutationFn: async ({
+      packageKey,
+      versionKey,
+      operationKey,
+      apiType,
+      modelName,
+    }: UseOperationChangelogOptions) => {
+      const modelUsages = await getModelUsages({
+        packageKey: packageKey,
+        versionKey: versionKey,
+        operationKey: operationKey!,
+        apiType: apiType as ApiType,
+        modelName: modelName,
+      })
+      return getOperations({
+        packageKey: packageKey,
+        versionKey: versionKey,
+        ids: modelUsages.map((usage) => usage.operationId),
+        apiType: apiType as ApiType,
+      })
     },
-  )
+    onError: (error) => {
+      showErrorNotification({ message: error?.message })
+    },
+  })
 
   return [mutateAsync, isLoading, isError, error]
 }
@@ -87,12 +86,14 @@ async function getModelUsages(options: UseOperationChangelogOptions): Promise<Mo
   const versionId = encodeURIComponent(versionKey)
   const operationId = encodeURIComponent(operationKey)
 
-  const pathPattern = '/packages/:packageId/versions/:versionId/:apiType/operations/:operationId/models/:modelName/usages'
+  const pathPattern =
+    '/packages/:packageId/versions/:versionId/:apiType/operations/:operationId/models/:modelName/usages'
   const response = await portalRequestJson<ModelUsagesDto>(
     generatePath(pathPattern, { packageId, versionId, apiType, operationId, modelName }),
     {
       method: 'get',
-    }, {
+    },
+    {
       customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
     },
   )

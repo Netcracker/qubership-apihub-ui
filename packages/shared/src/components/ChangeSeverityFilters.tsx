@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { Box, ToggleButton } from '@mui/material'
 import type { FC } from 'react'
 import React, { memo } from 'react'
-import { Box, ToggleButton } from '@mui/material'
 import type { ChangeSeverity } from '../entities/change-severities'
 import { CHANGE_SEVERITIES, CHANGE_SEVERITY_COLOR_MAP } from '../entities/change-severities'
 import { CustomToggleButtonGroup } from './Buttons/CustomToggleButtonGroup'
@@ -40,29 +40,33 @@ export const ChangeSeverityFilters: FC<ChangeSeverityFiltersProps> = memo<Change
     category,
   },
 ) => {
-
   if (!changes) {
     return null
   }
 
   const filtersLayout = (Object.keys(changes) as Array<ChangeSeverity>).map(severity => {
-    return changeSeverities.has(severity) ? (
-      <ToggleButton key={severity} value={severity} data-testid={`ChangesFilterButton-${severity}`}>
-        <ChangesTooltip changeType={severity} category={category}>
-          <Box alignItems="center" display="flex">
-            <Box sx={{
-              borderRadius: '50%',
-              background: CHANGE_SEVERITY_COLOR_MAP[severity],
-              width: 12,
-              height: 12,
-              mr: '6px',
-            }}/>
-            <Box sx={{ fontSize: '13px' }}
-                 data-testid={`FilterButtonChangesCount-${severity}`}>{changes[severity]}</Box>
-          </Box>
-        </ChangesTooltip>
-      </ToggleButton>
-    ) : null
+    return changeSeverities.has(severity)
+      ? (
+        <ToggleButton key={severity} value={severity} data-testid={`ChangesFilterButton-${severity}`}>
+          <ChangesTooltip changeType={severity} category={category}>
+            <Box alignItems="center" display="flex">
+              <Box
+                sx={{
+                  borderRadius: '50%',
+                  background: CHANGE_SEVERITY_COLOR_MAP[severity],
+                  width: 12,
+                  height: 12,
+                  mr: '6px',
+                }}
+              />
+              <Box sx={{ fontSize: '13px' }} data-testid={`FilterButtonChangesCount-${severity}`}>
+                {changes[severity]}
+              </Box>
+            </Box>
+          </ChangesTooltip>
+        </ToggleButton>
+      )
+      : null
   })
 
   const isCustomLastButton = filtersLayout.reduce((count, item) => {

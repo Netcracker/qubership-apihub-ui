@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { ChangeEvent, FC } from 'react'
-import { memo } from 'react'
 import type { SelectChangeEvent } from '@mui/material'
 import { MenuItem, Select, TextField } from '@mui/material'
+import type { ChangeEvent, FC } from 'react'
+import { memo } from 'react'
 import type { ApiType } from '../entities/api-types'
 import { API_TYPE_TITLE_MAP, API_TYPES } from '../entities/api-types'
 
@@ -33,7 +33,6 @@ export const ApiTypeSelector: FC<ApiTypeSelectorProps> = memo<ApiTypeSelectorPro
   apiType,
   onChange,
 }) => {
-
   const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent): void => {
     onChange?.(event.target.value as ApiType)
   }

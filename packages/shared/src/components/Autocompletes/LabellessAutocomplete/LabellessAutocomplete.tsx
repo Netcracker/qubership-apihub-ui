@@ -1,5 +1,5 @@
-import React, { memo, type ReactElement } from 'react'
 import { Autocomplete, type AutocompleteProps } from '@mui/material'
+import React, { memo, type ReactElement } from 'react'
 
 export type LabellessAutocompleteProps<T> = {
   maxWidth?: React.CSSProperties['maxWidth']

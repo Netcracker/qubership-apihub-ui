@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useMemo, useState } from 'react'
-import type { ColumnDef } from '@tanstack/table-core'
 import { TableCell, TableRow } from '@mui/material'
+import type { OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import {
+  API_AUDIENCE_COLUMN_ID,
+  API_KIND_COLUMN_ID,
+  ENDPOINT_COLUMN_ID,
+} from '@netcracker/qubership-apihub-ui-shared/entities/table-columns'
 import type { ColumnFiltersState, VisibilityState } from '@tanstack/react-table'
 import { flexRender, getCoreRowModel, getFilteredRowModel, useReactTable } from '@tanstack/react-table'
+import type { ColumnDef } from '@tanstack/table-core'
+import type { FC } from 'react'
+import { memo, useMemo, useState } from 'react'
 import { EndpointTableCell } from './EndpointTableCell'
 import { COLUMNS_SIZES_MAP } from './openapi-table'
-import type { OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import { API_AUDIENCE_COLUMN_ID, API_KIND_COLUMN_ID, ENDPOINT_COLUMN_ID } from '@netcracker/qubership-apihub-ui-shared/entities/table-columns'
 
 export type SubOpenApiTableProps = {
   documentSlug: string
@@ -63,11 +67,12 @@ export const SubOpenApiTable: FC<SubOpenApiTableProps> = memo(({ documentSlug, o
     },
   ], [documentSlug])
 
-  const data: TableData[] = useMemo(() => operations.map(operation => {
-    return ({
-      operation: operation,
-    })
-  }), [operations])
+  const data: TableData[] = useMemo(() =>
+    operations.map(operation => {
+      return ({
+        operation: operation,
+      })
+    }), [operations])
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])

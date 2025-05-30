@@ -14,17 +14,24 @@
  * limitations under the License.
  */
 
+import type { PackageKind, Packages } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { EMPTY_PAGE_REFERER } from '@netcracker/qubership-apihub-ui-shared/entities/referer-pages-names'
+import { getPackages } from '@netcracker/qubership-apihub-ui-shared/hooks/packages/usePackages'
+import type {
+  HasNextPage,
+  IsFetching,
+  IsFetchingNextPage,
+  IsLoading,
+} from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import type { FetchNextPageOptions, InfiniteQueryObserverResult } from '@tanstack/react-query'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
-import type { PackageKind, Packages } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import type { HasNextPage, IsFetching, IsFetchingNextPage, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { EMPTY_PAGE_REFERER } from '@netcracker/qubership-apihub-ui-shared/entities/referer-pages-names'
-import { getPackages } from '@netcracker/qubership-apihub-ui-shared/hooks/packages/usePackages'
 
 const PACKAGES_QUERY_KEY = 'packages-query-key'
 
-export type FetchNextPackages = (options?: FetchNextPageOptions) => Promise<InfiniteQueryObserverResult<Packages, Error>>
+export type FetchNextPackages = (
+  options?: FetchNextPageOptions,
+) => Promise<InfiniteQueryObserverResult<Packages, Error>>
 
 export type PagedPackagesQueryState = {
   packages: Packages
@@ -66,7 +73,19 @@ export function usePagedPackages(options: {
     refererPageName = EMPTY_PAGE_REFERER,
   } = options ?? {}
 
-  const queryKey = [PACKAGES_QUERY_KEY, refererPageName, kind, parentId, page, limit, onlyFavorite, textFilter, onlyShared, showAllDescendants, lastReleaseVersionDetails]
+  const queryKey = [
+    PACKAGES_QUERY_KEY,
+    refererPageName,
+    kind,
+    parentId,
+    page,
+    limit,
+    onlyFavorite,
+    textFilter,
+    onlyShared,
+    showAllDescendants,
+    lastReleaseVersionDetails,
+  ]
   const {
     data,
     isLoading,
@@ -76,7 +95,20 @@ export function usePagedPackages(options: {
     hasNextPage,
   } = useInfiniteQuery<Packages, Error, Packages>({
     queryKey: queryKey,
-    queryFn: ({ pageParam = page }) => getPackages(kind, limit, onlyFavorite, pageParam - 1, parentId, showParents, textFilter, onlyShared, lastReleaseVersionDetails, versionLabel, showAllDescendants),
+    queryFn: ({ pageParam = page }) =>
+      getPackages(
+        kind,
+        limit,
+        onlyFavorite,
+        pageParam - 1,
+        parentId,
+        showParents,
+        textFilter,
+        onlyShared,
+        lastReleaseVersionDetails,
+        versionLabel,
+        showAllDescendants,
+      ),
     enabled: enabled,
     getNextPageParam: (lastPage, allPages) => {
       if (!limit) {

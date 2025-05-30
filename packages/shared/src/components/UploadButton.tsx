@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import type { ChangeEvent, FC } from 'react'
-import { memo } from 'react'
+import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined'
 import type { ButtonProps } from '@mui/material'
 import { Box, Button } from '@mui/material'
-import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined'
 import type { SxProps } from '@mui/system'
+import type { ChangeEvent, FC } from 'react'
+import { memo } from 'react'
 
 export type UploadButtonProps = {
   title: string
@@ -61,7 +61,7 @@ export const UploadButton: FC<UploadButtonProps> = memo<UploadButtonProps>(({
       <Button
         sx={buttonSxProp}
         component="span"
-        startIcon={withIcon ? <CloudUploadOutlinedIcon/> : undefined}
+        startIcon={withIcon ? <CloudUploadOutlinedIcon /> : undefined}
         {...buttonProps}
       >
         {title}

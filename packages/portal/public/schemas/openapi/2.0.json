@@ -978,12 +978,12 @@
           "minimum": 0
         },
         "minLength": {
-          "allOf": [ {
+          "allOf": [{
             "type": "integer",
             "minimum": 0
           }, {
             "default": 0
-          } ]
+          }]
         },
         "pattern": {
           "type": "string",
@@ -994,12 +994,12 @@
           "minimum": 0
         },
         "minItems": {
-          "allOf": [ {
+          "allOf": [{
             "type": "integer",
             "minimum": 0
           }, {
             "default": 0
-          } ]
+          }]
         },
         "uniqueItems": {
           "type": "boolean",
@@ -1010,12 +1010,12 @@
           "minimum": 0
         },
         "minProperties": {
-          "allOf": [ {
+          "allOf": [{
             "type": "integer",
             "minimum": 0
           }, {
             "default": 0
-          } ]
+          }]
         },
         "required": {
           "type": "array",
@@ -1040,16 +1040,16 @@
           "default": {}
         },
         "type": {
-          "anyOf": [ {
-            "enum": [ "array", "boolean", "integer", "null", "number", "object", "string" ]
+          "anyOf": [{
+            "enum": ["array", "boolean", "integer", "null", "number", "object", "string"]
           }, {
             "type": "array",
             "items": {
-              "enum": [ "array", "boolean", "integer", "null", "number", "object", "string" ]
+              "enum": ["array", "boolean", "integer", "null", "number", "object", "string"]
             },
             "minItems": 1,
             "uniqueItems": true
-          } ]
+          }]
         },
         "items": {
           "anyOf": [
@@ -1614,12 +1614,12 @@
       "minimum": 0
     },
     "minLength": {
-      "allOf": [ {
+      "allOf": [{
         "type": "integer",
         "minimum": 0
       }, {
         "default": 0
-      } ]
+      }]
     },
     "pattern": {
       "type": "string",
@@ -1630,12 +1630,12 @@
       "minimum": 0
     },
     "minItems": {
-      "allOf": [ {
+      "allOf": [{
         "type": "integer",
         "minimum": 0
       }, {
         "default": 0
-      } ]
+      }]
     },
     "uniqueItems": {
       "type": "boolean",

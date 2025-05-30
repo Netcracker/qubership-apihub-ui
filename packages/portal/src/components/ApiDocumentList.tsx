@@ -28,9 +28,7 @@ export type ApiDocumentListProps = {
 
 export const ApiDocumentList: FC<ApiDocumentListProps> = memo<ApiDocumentListProps>(({ value, isLoading }) => {
   if (isLoading) {
-    return (
-      <Skeleton variant="rectangular" width={150} />
-    )
+    return <Skeleton variant="rectangular" width={150} />
   }
 
   return (

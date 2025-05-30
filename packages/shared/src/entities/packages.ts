@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { PackagePermissions } from './package-permissions'
-import type { UserRole } from './user-roles'
 import type { StatusMarkerVariant } from '../components/StatusMarker'
 import type { Key, VersionKey } from './keys'
+import type { PackagePermissions } from './package-permissions'
+import type { UserRole } from './user-roles'
 
 export const GROUP_KIND = 'group'
 export const PACKAGE_KIND = 'package'

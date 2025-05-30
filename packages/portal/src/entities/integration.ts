@@ -14,23 +14,27 @@
  * limitations under the License.
  */
 
-import type { Key } from './keys'
 import type { Url } from '@netcracker/qubership-apihub-ui-shared/types/url'
+import type { Key } from './keys'
 
-export type Integration = Partial<Readonly<{
-  type: 'gitlab'
-  repositoryKey: Key
-  repositoryName: string
-  repositoryUrl: Url
-  defaultBranch: string
-  defaultFolder: string
-}>>
+export type Integration = Partial<
+  Readonly<{
+    type: 'gitlab'
+    repositoryKey: Key
+    repositoryName: string
+    repositoryUrl: Url
+    defaultBranch: string
+    defaultFolder: string
+  }>
+>
 
-export type IntegrationDto = Partial<Readonly<{
-  type: 'gitlab'
-  repositoryId: Key
-  repositoryName: string
-  repositoryUrl: Url
-  defaultBranch: string
-  defaultFolder: string
-}>>
+export type IntegrationDto = Partial<
+  Readonly<{
+    type: 'gitlab'
+    repositoryId: Key
+    repositoryName: string
+    repositoryUrl: Url
+    defaultBranch: string
+    defaultFolder: string
+  }>
+>

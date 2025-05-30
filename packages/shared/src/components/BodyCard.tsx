@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { FC, ReactNode } from 'react'
-import { memo } from 'react'
+import type { Theme } from '@mui/material'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import CardHeader from '@mui/material/CardHeader'
 import type { SxProps } from '@mui/system'
-import type { Theme } from '@mui/material'
+import type { FC, ReactNode } from 'react'
+import { memo } from 'react'
 
 export type BodyCardProps = {
   header?: ReactNode
@@ -69,7 +69,12 @@ export const BodyCard: FC<BodyCardProps> = memo<BodyCardProps>((props) => {
             ...overrideHeaderSx,
           }}
           title={header}
-          titleTypographyProps={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', 'data-testid': 'CardHeaderTitle' }}
+          titleTypographyProps={{
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+            'data-testid': 'CardHeaderTitle',
+          }}
           subheader={subheader}
           subheaderTypographyProps={{
             fontSize: 13,

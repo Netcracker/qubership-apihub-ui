@@ -1,6 +1,6 @@
-import { styled } from '@mui/material/styles'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import type { SvgIconProps } from '@mui/material'
+import { styled } from '@mui/material/styles'
 import type { TestableProps } from '../components/Testable'
 
 type InfoContextIconProps = SvgIconProps & TestableProps
@@ -13,4 +13,4 @@ InfoContextIcon.defaultProps = {
   'data-testid': 'InfoIcon',
 }
 
-InfoContextIcon.displayName = 'InfoContextIcon' 
+InfoContextIcon.displayName = 'InfoContextIcon'

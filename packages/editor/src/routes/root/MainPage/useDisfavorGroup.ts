@@ -16,9 +16,9 @@
 
 import { useMutation } from '@tanstack/react-query'
 
-import { useInvalidateGroups } from '../useGroups'
 import { editorRequestVoid } from '@apihub/utils/requests'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { useInvalidateGroups } from '../useGroups'
 
 export function useDisfavorGroup(): DisfavorGroup {
   const invalidateGroups = useInvalidateGroups()

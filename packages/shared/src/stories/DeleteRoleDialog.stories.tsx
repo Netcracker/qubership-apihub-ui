@@ -15,8 +15,8 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react'
-import { ROLES_LIST } from './samples/roles-samples'
 import { DeleteRolePopup } from '../components/DeleteRoleDialog'
+import { ROLES_LIST } from './samples/roles-samples'
 
 const meta: Meta<typeof DeleteRolePopup> = {
   title: 'Delete Role Dialog',

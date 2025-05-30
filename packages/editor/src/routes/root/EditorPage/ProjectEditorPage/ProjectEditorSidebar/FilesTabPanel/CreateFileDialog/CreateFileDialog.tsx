@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
+import { Box, Button, DialogActions, DialogContent, DialogTitle, MenuItem, TextField, Typography } from '@mui/material'
 import type { FC } from 'react'
 import { memo, useEffect, useMemo } from 'react'
-import { Box, Button, DialogActions, DialogContent, DialogTitle, MenuItem, TextField, Typography } from '@mui/material'
 
-import type { CreateFileDialogDetail } from '../../../../../../EventBusProvider'
-import { SHOW_CREATE_FILE_DIALOG } from '../../../../../../EventBusProvider'
 import { LoadingButton } from '@mui/lab'
-import { Controller, useForm } from 'react-hook-form'
-import type { FileCandidate } from './useCreateProjectFile'
-import { useCreateProjectFile } from './useCreateProjectFile'
+import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import {
@@ -32,21 +28,26 @@ import {
   MD_FILE_EXTENSION,
   YAML_FILE_EXTENSION,
 } from '@netcracker/qubership-apihub-ui-shared/utils/files'
-import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
-import { FILENAME_VALIDATION_RULES } from '@netcracker/qubership-apihub-ui-shared/utils/validations'
 import {
   GRAPHQL_SPEC_TYPE,
   JSON_SCHEMA_SPEC_TYPE,
   OPENAPI_2_0_SPEC_TYPE,
   OPENAPI_3_0_SPEC_TYPE,
-  OPENAPI_3_1_SPEC_TYPE, UNKNOWN_SPEC_TYPE,
+  OPENAPI_3_1_SPEC_TYPE,
+  UNKNOWN_SPEC_TYPE,
 } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import { FILENAME_VALIDATION_RULES } from '@netcracker/qubership-apihub-ui-shared/utils/validations'
+import { Controller, useForm } from 'react-hook-form'
+import type { CreateFileDialogDetail } from '../../../../../../EventBusProvider'
+import { SHOW_CREATE_FILE_DIALOG } from '../../../../../../EventBusProvider'
+import type { FileCandidate } from './useCreateProjectFile'
+import { useCreateProjectFile } from './useCreateProjectFile'
 
 export const CreateFileDialog: FC = memo(() => {
   return (
     <PopupDelegate
       type={SHOW_CREATE_FILE_DIALOG}
-      render={props => <CreateFilePopup {...props}/>}
+      render={props => <CreateFilePopup {...props} />}
     />
   )
 })
@@ -70,8 +71,12 @@ const CreateFilePopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, detai
 
   const [createProjectFile, isLoading, isSuccess] = useCreateProjectFile()
 
-  useEffect(() => {isSuccess && setOpen(false)}, [isSuccess, setOpen])
-  useEffect(() => {!open && reset()}, [open, reset])
+  useEffect(() => {
+    isSuccess && setOpen(false)
+  }, [isSuccess, setOpen])
+  useEffect(() => {
+    !open && reset()
+  }, [open, reset])
 
   return (
     <DialogForm
@@ -93,7 +98,8 @@ const CreateFilePopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, detai
             render={({ field }) => (
               <TextField
                 {...field}
-                autoFocus required
+                autoFocus
+                required
                 type="text"
                 label="Name"
                 error={!!errors.name}
@@ -108,7 +114,8 @@ const CreateFilePopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, detai
             render={({ field }) => (
               <TextField
                 {...field}
-                select required
+                select
+                required
                 type="select"
                 label="Extension"
               >
@@ -127,7 +134,8 @@ const CreateFilePopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, detai
             <TextField
               {...field}
               value={field.value ?? ''}
-              select required
+              select
+              required
               type="select"
               label="Type"
             >
@@ -145,7 +153,7 @@ const CreateFilePopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, detai
           name="path"
           control={control}
           defaultValue={path}
-          render={({ field }) => <TextField {...field} label="Folder"/>}
+          render={({ field }) => <TextField {...field} label="Folder" />}
         />
       </DialogContent>
 

@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react'
-import { useChangesSummaryFromContext } from './ChangesSummaryProvider'
+import {
+  calculateImpactedSummary,
+  calculateTotalChangeSummary,
+  calculateTotalImpactedSummary,
+  EMPTY_CHANGE_SUMMARY,
+} from '@netcracker/qubership-apihub-api-processor'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { ChangeSeverity, ChangesSummary } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
 import {
   ANNOTATION_CHANGE_SEVERITY,
@@ -27,13 +32,8 @@ import {
 } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
 import type { DashboardComparisonSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
 import { isDashboardComparisonSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
-import {
-  calculateImpactedSummary,
-  calculateTotalChangeSummary,
-  calculateTotalImpactedSummary,
-  EMPTY_CHANGE_SUMMARY,
-} from '@netcracker/qubership-apihub-api-processor'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { useMemo } from 'react'
+import { useChangesSummaryFromContext } from './ChangesSummaryProvider'
 
 export function useOrderedComparisonFiltersSummary(options: {
   isDashboardsComparison?: boolean
@@ -90,9 +90,11 @@ function calculateDashboardChangesSummary(
     )
   }
   const refChangesSummaries = versionChangesSummary
-    .flatMap(({ operationTypes }) => operationTypes
-      .filter(type => type.apiType === apiType)
-      .map(type => type.numberOfImpactedOperations ?? EMPTY_CHANGE_SUMMARY))
+    .flatMap(({ operationTypes }) =>
+      operationTypes
+        .filter(type => type.apiType === apiType)
+        .map(type => type.numberOfImpactedOperations ?? EMPTY_CHANGE_SUMMARY)
+    )
 
   return calculateTotalChangeSummary(refChangesSummaries)
 }

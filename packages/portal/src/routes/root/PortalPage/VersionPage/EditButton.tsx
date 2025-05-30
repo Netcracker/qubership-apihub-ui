@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
+import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
+import { OutlinedIconButton } from '@netcracker/qubership-apihub-ui-shared/components/OutlinedIconButton'
+import {
+  DISABLED_BUTTON_COLOR,
+  ENABLED_BUTTON_COLOR,
+} from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
+import { EditIcon } from '@netcracker/qubership-apihub-ui-shared/icons/EditIcon'
+import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import type { FC, ReactNode } from 'react'
 import { memo, useCallback, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import { useNavigation } from '../../../NavigationProvider'
-import { useFullMainVersion, useIsLatestRevision } from '../FullMainVersionProvider'
 import { useBackwardLocation } from '../../useBackwardLocation'
-import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
-import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
-import { OutlinedIconButton } from '@netcracker/qubership-apihub-ui-shared/components/OutlinedIconButton'
-import { EditIcon } from '@netcracker/qubership-apihub-ui-shared/icons/EditIcon'
-import { DISABLED_BUTTON_COLOR, ENABLED_BUTTON_COLOR } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
+import { useFullMainVersion, useIsLatestRevision } from '../FullMainVersionProvider'
 
 export type OperationsFilterByDocumentProps = {
   disabled: boolean
@@ -53,17 +56,34 @@ export const EditButton: FC<OperationsFilterByDocumentProps> = memo<OperationsFi
       setBackwardLocation({ ...backwardLocation, fromPackage: location })
       navigateToVersion({ packageKey: packageId!, versionKey: isDashboard ? version : fullMainVersion!, edit: true })
     },
-    [setBackwardLocation, backwardLocation, location, navigateToVersion, packageId, isDashboard, version, fullMainVersion],
+    [
+      setBackwardLocation,
+      backwardLocation,
+      location,
+      navigateToVersion,
+      packageId,
+      isDashboard,
+      version,
+      fullMainVersion,
+    ],
   )
 
-  const disabledValue = useMemo(() => (isDashboard ? disabled || !isLatestRevision : disabled), [disabled, isDashboard, isLatestRevision])
+  const disabledValue = useMemo(() => (isDashboard ? disabled || !isLatestRevision : disabled), [
+    disabled,
+    isDashboard,
+    isLatestRevision,
+  ])
   const hintValue = useMemo(() => (isDashboard ? hint || NOT_LATEST_REVISION : hint), [hint, isDashboard])
-  const disableHintValue = useMemo(() => (isDashboard ? !disabled && isLatestRevision : !disabled), [disabled, isDashboard, isLatestRevision])
+  const disableHintValue = useMemo(() => (isDashboard ? !disabled && isLatestRevision : !disabled), [
+    disabled,
+    isDashboard,
+    isLatestRevision,
+  ])
 
   return (
     <OutlinedIconButton
       onClick={handleEditVersionClick}
-      startIcon={<EditIcon color={disabled ? DISABLED_BUTTON_COLOR : ENABLED_BUTTON_COLOR}/>}
+      startIcon={<EditIcon color={disabled ? DISABLED_BUTTON_COLOR : ENABLED_BUTTON_COLOR} />}
       data-testid="EditButton"
       disabled={disabledValue}
       disableHint={disableHintValue}

@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useEffect } from 'react'
-import { ApiChangesTab } from './ApiChangesTab'
-import { usePackageVersionContent } from '../../../usePackageVersionContent'
-import { useCompareVersions } from '../../useCompareVersions'
+import { useComparisonParams } from '@apihub/routes/root/PortalPage/VersionPage/useComparisonParams'
+import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import {
   usePreviousReleasePackageKey,
   usePreviousReleaseVersion,
   useSetPreviousReleasePackageKey,
   useSetPreviousReleaseVersion,
 } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget/components/PreviousReleaseOptionsProvider'
-import { useComparisonParams } from '@apihub/routes/root/PortalPage/VersionPage/useComparisonParams'
-import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
+import type { FC } from 'react'
+import { memo, useEffect } from 'react'
+import { usePackageVersionContent } from '../../../usePackageVersionContent'
+import { useCompareVersions } from '../../useCompareVersions'
+import { ApiChangesTab } from './ApiChangesTab'
 
 export type ApiChangesCardProps = {
   searchValue: string
@@ -51,7 +51,15 @@ export const ApiChangesCard: FC<ApiChangesCardProps> = memo<ApiChangesCardProps>
       setPreviousReleaseVersion(previousVersion)
       setPreviousReleasePackage(previousVersionPackageId)
     }
-  }, [error, isLoading, previousVersion, previousVersionPackageId, setPreviousReleasePackage, setPreviousReleaseVersion, versionContent])
+  }, [
+    error,
+    isLoading,
+    previousVersion,
+    previousVersionPackageId,
+    setPreviousReleasePackage,
+    setPreviousReleaseVersion,
+    versionContent,
+  ])
 
   useCompareVersions({
     changedPackageKey: changedPackageKey,
@@ -62,8 +70,7 @@ export const ApiChangesCard: FC<ApiChangesCardProps> = memo<ApiChangesCardProps>
 
   return (
     <BodyCard
-      body={<ApiChangesTab searchValue={searchValue}/>}
+      body={<ApiChangesTab searchValue={searchValue} />}
     />
   )
 })
-

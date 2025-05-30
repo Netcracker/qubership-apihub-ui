@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
+import { Box, Button, CircularProgress, Divider, Tooltip, Typography } from '@mui/material'
 import type { FC } from 'react'
 import { memo, useCallback } from 'react'
-import { Box, Button, CircularProgress, Divider, Tooltip, Typography } from '@mui/material'
-import { useIsBranchReadonly } from '../useHasBranchPermission'
 import { useProject } from '../../../useProject'
-import { BranchSelector } from './BranchSelector'
-import { RedactorsBar } from '../RedactorsBar'
 import { useConnectedUsers, useConnecting } from '../BranchEditingWebSocketProvider'
+import { RedactorsBar } from '../RedactorsBar'
+import { useIsBranchReadonly } from '../useHasBranchPermission'
+import { BranchSelector } from './BranchSelector'
 import { CreateBranchDialog } from './CreateBranchDialog/CreateBranchDialog'
 
+import { Toolbar } from '@netcracker/qubership-apihub-ui-shared/components/Toolbar'
+import { ToolbarTitle } from '@netcracker/qubership-apihub-ui-shared/components/ToolbarTitle'
+import { BreadcrumbNavigation } from '../../../../shared/BreadcrumbNavigation'
 import { PublishProjectVersionDialog } from './PublishProjectVersionDialog'
 import { useBranchEditingMode } from './useBranchEditingMode'
 import { useUpdateBranchEditingMode } from './useUpdateBranchEditingMode'
-import { BreadcrumbNavigation } from '../../../../shared/BreadcrumbNavigation'
-import { Toolbar } from '@netcracker/qubership-apihub-ui-shared/components/Toolbar'
-import { ToolbarTitle } from '@netcracker/qubership-apihub-ui-shared/components/ToolbarTitle'
 
 export const ProjectEditorToolbar: FC<{ isBranchIndexing: boolean }> = memo(({ isBranchIndexing }) => {
   const [project] = useProject()
@@ -53,34 +53,31 @@ export const ProjectEditorToolbar: FC<{ isBranchIndexing: boolean }> = memo(({ i
   return (
     <>
       <Toolbar
-        breadcrumbs={<BreadcrumbNavigation/>}
+        breadcrumbs={<BreadcrumbNavigation />}
         header={
           <>
-            <ToolbarTitle value={project?.name}/>
+            <ToolbarTitle value={project?.name} />
             <Typography variant="subtitle3">
-              {
-                `${isBranchReadonly ? 'View' : 'Edit'} branch`
-              }
+              {`${isBranchReadonly ? 'View' : 'Edit'} branch`}
             </Typography>
-            <BranchSelector/>
-            {isBranchIndexing && <>
-              <Tooltip title="Branch files are indexing">
-                <CircularProgress sx={{ alignSelf: 'center' }} size={10}/>
-              </Tooltip>
-            </>}
+            <BranchSelector />
+            {isBranchIndexing && (
+              <>
+                <Tooltip title="Branch files are indexing">
+                  <CircularProgress sx={{ alignSelf: 'center' }} size={10} />
+                </Tooltip>
+              </>
+            )}
           </>
         }
         action={
           <Box display="flex" gap={1} alignItems="center">
             <Box display="flex" gap={1} alignItems="center">
-              {
-                connecting
-                  ? <CircularProgress sx={{ alignSelf: 'center' }} size={20}/>
-                  : <RedactorsBar redactors={connectedUsers}/>
-              }
-              <Divider/>
-              <Tooltip
-                title="To start the branch editing make any change after that you can finish the editing manually using this button">
+              {connecting
+                ? <CircularProgress sx={{ alignSelf: 'center' }} size={20} />
+                : <RedactorsBar redactors={connectedUsers} />}
+              <Divider />
+              <Tooltip title="To start the branch editing make any change after that you can finish the editing manually using this button">
                 <Box>
                   <Button
                     disabled={!branchEditingMode}
@@ -92,35 +89,36 @@ export const ProjectEditorToolbar: FC<{ isBranchIndexing: boolean }> = memo(({ i
                 </Box>
               </Tooltip>
 
-              {packageKey ? (
-                <Button
-                  variant="outlined"
-                  onClick={redirectToPortal}
-                  data-testid="ViewLinkedPackageButton"
-                >
-                  View Linked Package
-                </Button>
-              ) : (
-                <Tooltip
-                  title="You cannot go to the linked package in the APIHUB Portal because no package is specified for this project">
-                  <Box>
-                    <Button
-                      disabled
-                      variant="outlined"
-                      data-testid="ViewLinkedPackageButton"
-                    >
-                      View Linked Package
-                    </Button>
-                  </Box>
-                </Tooltip>
-              )}
+              {packageKey
+                ? (
+                  <Button
+                    variant="outlined"
+                    onClick={redirectToPortal}
+                    data-testid="ViewLinkedPackageButton"
+                  >
+                    View Linked Package
+                  </Button>
+                )
+                : (
+                  <Tooltip title="You cannot go to the linked package in the APIHUB Portal because no package is specified for this project">
+                    <Box>
+                      <Button
+                        disabled
+                        variant="outlined"
+                        data-testid="ViewLinkedPackageButton"
+                      >
+                        View Linked Package
+                      </Button>
+                    </Box>
+                  </Tooltip>
+                )}
             </Box>
           </Box>
         }
       />
 
-      <CreateBranchDialog/>
-      <PublishProjectVersionDialog/>
+      <CreateBranchDialog />
+      <PublishProjectVersionDialog />
     </>
   )
 })

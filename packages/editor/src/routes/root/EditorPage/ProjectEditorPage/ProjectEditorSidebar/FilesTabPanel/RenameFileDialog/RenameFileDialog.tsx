@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
+import { LoadingButton } from '@mui/lab'
 import { Button, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material'
 import type { FC } from 'react'
 import { memo, useEffect, useMemo, useState } from 'react'
-import { useEvent } from 'react-use'
 import { Controller, useForm } from 'react-hook-form'
-import { LoadingButton } from '@mui/lab'
+import { useEvent } from 'react-use'
 
-import { SHOW_RENAME_FILE_DIALOG } from '../../../../../../EventBusProvider'
-import { useRenameProjectFile } from './useRenameProjectFile'
 import type { TreeProjectFile } from '@apihub/utils/trees'
 import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
+import { SHOW_RENAME_FILE_DIALOG } from '../../../../../../EventBusProvider'
+import { useRenameProjectFile } from './useRenameProjectFile'
 
 export const RenameFileDialog: FC = memo(() => {
   const [open, setOpen] = useState(false)
@@ -39,8 +39,12 @@ export const RenameFileDialog: FC = memo(() => {
 
   const [renameProjectFile, isLoading] = useRenameProjectFile()
 
-  useEffect(() => {!isLoading && setOpen(false)}, [isLoading])
-  useEffect(() => {file && reset()}, [file, reset])
+  useEffect(() => {
+    !isLoading && setOpen(false)
+  }, [isLoading])
+  useEffect(() => {
+    file && reset()
+  }, [file, reset])
 
   const fileName = useMemo(
     () => {
@@ -53,10 +57,12 @@ export const RenameFileDialog: FC = memo(() => {
     <DialogForm
       open={open}
       onClose={() => setOpen(false)}
-      onSubmit={handleSubmit(({ newFileId }) => renameProjectFile({
-        fileId: file?.key ?? '',
-        newFileId: rename(newFileId, file),
-      }))}
+      onSubmit={handleSubmit(({ newFileId }) =>
+        renameProjectFile({
+          fileId: file?.key ?? '',
+          newFileId: rename(newFileId, file),
+        })
+      )}
     >
       <DialogTitle>
         Rename File
@@ -70,7 +76,8 @@ export const RenameFileDialog: FC = memo(() => {
           render={({ field }) => (
             <TextField
               {...field}
-              autoFocus required
+              autoFocus
+              required
               label="Name"
             />
           )}

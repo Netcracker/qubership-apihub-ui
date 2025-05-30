@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
+import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
+import { useEventBus } from '@apihub/routes/EventBusProvider'
+import { debounce } from '@mui/material'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { ApiAudience, ApiKind } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import type { PackageReference } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
+import { DEFAULT_DEBOUNCE } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
 import type { FC } from 'react'
 import { useCallback, useState } from 'react'
 import { SelfManagedOperationFilters } from '../../../../SelfManagedOperationFilters'
 import { useTags } from '../../../../useTags'
-import { debounce } from '@mui/material'
-import type { PackageReference } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
-import type { ApiAudience, ApiKind } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import { useEventBus } from '@apihub/routes/EventBusProvider'
-import { DEFAULT_DEBOUNCE } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
-import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
-import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 
 export type SidebarProps = {
   apiType: ApiType
@@ -66,13 +66,11 @@ export const Sidebar: FC<SidebarProps> = (props) => {
   return (
     <SelfManagedOperationFilters
       selectedPackageKey={selectedRefPackage?.key}
-      onSelectPackage={
-        packageKind === DASHBOARD_KIND
-          ? (newSelectedRefPackage) => {
-            onRefPackageSelected(newSelectedRefPackage)
-          }
-          : undefined
-      }
+      onSelectPackage={packageKind === DASHBOARD_KIND
+        ? (newSelectedRefPackage) => {
+          onRefPackageSelected(newSelectedRefPackage)
+        }
+        : undefined}
       selectedApiAudience={selectedApiAudience}
       onSelectApiAudience={onApiAudienceSelected}
       selectedApiKind={selectedApiKind}

@@ -17,13 +17,13 @@
 import type { FC } from 'react'
 import { memo } from 'react'
 import 'github-markdown-css/github-markdown-light.css'
-import { Box } from '@mui/material'
 import type { Document } from '@apihub/entities/documents'
-import { OpenApiTableTree } from './OpenApiTableTree'
-import { OpenApiOverview } from './OpenApiOverview'
 import {
   useSelectedSubPage,
 } from '@apihub/routes/root/PortalPage/VersionPage/VersionDocumentsSubPage/SelectedSubPageProvider'
+import { Box } from '@mui/material'
+import { OpenApiOverview } from './OpenApiOverview'
+import { OpenApiTableTree } from './OpenApiTableTree'
 
 export type OpenApiViewerProps = {
   value: Document

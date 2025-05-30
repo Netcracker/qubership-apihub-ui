@@ -16,12 +16,11 @@
 
 import type { Router } from 'express'
 import { RECENTLY_VISITED_PACKAGES } from '../../mocks/global-search/search-result'
-import { PROJECTS } from '../../mocks/projects/projects'
 import type { PackageSearchResultDto } from '../../mocks/global-search/types'
+import { PROJECTS } from '../../mocks/projects/projects'
 
 export function performSearch(router: Router): void {
   router.post('/', (req, res) => {
-
     const { searchString, packageIds, searchLevel } = req.body
 
     if (searchString && searchLevel) {

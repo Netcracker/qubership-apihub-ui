@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { ListItem, ListItemButton, ListItemText } from '@mui/material'
 import type { FC } from 'react'
 import * as React from 'react'
 import { memo, useCallback } from 'react'
-import { ListItem, ListItemButton, ListItemText } from '@mui/material'
 
 export const TagListItem: FC<{
   tag: string
@@ -42,7 +42,7 @@ export const TagListItem: FC<{
         selected={selected}
         onClick={handleTagClick}
       >
-        <ListItemText primary={tag} primaryTypographyProps={{ sx: { mt: 1 } }}/>
+        <ListItemText primary={tag} primaryTypographyProps={{ sx: { mt: 1 } }} />
       </ListItemButton>
     </ListItem>
   )

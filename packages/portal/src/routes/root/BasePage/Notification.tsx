@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined'
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
+import ErrorOutlinedIcon from '@mui/icons-material/ErrorOutlined'
+import InfoIcon from '@mui/icons-material/Info'
+import { Box, Button, IconButton, Link, Slide, Snackbar, SnackbarContent, Typography } from '@mui/material'
+import { YellowWarningIcon } from '@netcracker/qubership-apihub-ui-shared/icons/WarningIcon'
 import type { FC, ReactElement } from 'react'
 import * as React from 'react'
 import { memo, useState } from 'react'
@@ -26,12 +32,6 @@ import {
   SHOW_WARNING_NOTIFICATION,
   useEventBus,
 } from '../../EventBusProvider'
-import { Box, Button, IconButton, Link, Slide, Snackbar, SnackbarContent, Typography } from '@mui/material'
-import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined'
-import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
-import ErrorOutlinedIcon from '@mui/icons-material/ErrorOutlined'
-import InfoIcon from '@mui/icons-material/Info'
-import { YellowWarningIcon } from '@netcracker/qubership-apihub-ui-shared/icons/WarningIcon'
 
 export const Notification: FC = memo(() => {
   const [open, setOpen] = useState(false)
@@ -92,7 +92,7 @@ export const Notification: FC = memo(() => {
     <Snackbar
       open={open}
       anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      TransitionComponent={(props) => <Slide {...props} direction="up"/>}
+      TransitionComponent={(props) => <Slide {...props} direction="up" />}
       onClose={() => setOpen(false)}
       data-testid="Snackbar"
     >
@@ -109,24 +109,25 @@ export const Notification: FC = memo(() => {
                 {message}
               </Typography>
               {link && <Link variant="subtitle2" href={link.href}>{link.name}</Link>}
-              {button &&
-                <Button
-                  sx={{ p: 0, mr: 'auto', minWidth: 0, display: 'inline-block' }}
-                  onClick={() => {
-                    button.onClick()
-                    setOpen(false)
-                  }}
-                >
-                  {button.title}
-                </Button>
-              }
+              {button
+                && (
+                  <Button
+                    sx={{ p: 0, mr: 'auto', minWidth: 0, display: 'inline-block' }}
+                    onClick={() => {
+                      button.onClick()
+                      setOpen(false)
+                    }}
+                  >
+                    {button.title}
+                  </Button>
+                )}
             </Box>
 
             <IconButton
               sx={{ position: 'absolute', right: 8, top: 8, color: '#353C4E' }}
               onClick={() => setOpen(false)}
             >
-              <CloseOutlinedIcon fontSize="small"/>
+              <CloseOutlinedIcon fontSize="small" />
             </IconButton>
           </Box>
         }
@@ -167,8 +168,8 @@ export function useShowWarningNotification(): (detail: NotificationDetail) => vo
 }
 
 const NOTIFICATION_TYPE_ICON_MAP: Record<NotificationType, ReactElement> = {
-  [SUCCESS_NOTIFICATION_TYPE]: <CheckCircleOutlinedIcon color="secondary" data-testid="SuccessIcon"/>,
-  [ERROR_NOTIFICATION_TYPE]: <ErrorOutlinedIcon color="error" data-testid="ErrorIcon"/>,
-  [INFO_NOTIFICATION_TYPE]: <InfoIcon color="primary" data-testid="InfoIcon"/>,
-  [WARNING_NOTIFICATION_TYPE]: <YellowWarningIcon/>,
+  [SUCCESS_NOTIFICATION_TYPE]: <CheckCircleOutlinedIcon color="secondary" data-testid="SuccessIcon" />,
+  [ERROR_NOTIFICATION_TYPE]: <ErrorOutlinedIcon color="error" data-testid="ErrorIcon" />,
+  [INFO_NOTIFICATION_TYPE]: <InfoIcon color="primary" data-testid="InfoIcon" />,
+  [WARNING_NOTIFICATION_TYPE]: <YellowWarningIcon />,
 }

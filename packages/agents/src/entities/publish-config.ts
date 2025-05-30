@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { Key, PackageKey, PublishKey, ServiceKey, VersionKey } from './keys'
 import type { BuildConfigRef, ResolvedOperation, VersionStatus } from '@netcracker/qubership-apihub-api-processor'
+import type { Key, PackageKey, PublishKey, ServiceKey, VersionKey } from './keys'
 
 export type PublishConfig = Readonly<{
   snapshotConfig?: SnapshotConfig

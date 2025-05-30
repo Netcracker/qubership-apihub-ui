@@ -1,9 +1,9 @@
 import { Box, Chip, Typography } from '@mui/material'
+import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
+import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { NO_DATA_STRING } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
 import type { FC } from 'react'
 import React, { memo } from 'react'
-import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
-import { NO_DATA_STRING } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
-import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import type { OasSettingsExtension } from './package-export-config'
 
 const EXTENSION_NAME_STYLE = { textOverflow: 'ellipsis', overflow: 'hidden' }
@@ -20,7 +20,8 @@ export const OasExtensionsList: FC<{ extensions: ReadonlyArray<OasSettingsExtens
           label={
             <OverflowTooltip
               key={`tooltip-${extension.key}`}
-              title={extension.name}>
+              title={extension.name}
+            >
               <Box sx={EXTENSION_NAME_STYLE}>
                 {extension.name}
               </Box>

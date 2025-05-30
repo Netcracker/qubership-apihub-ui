@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
+import type { CommitKey, DRAFT_COMMIT_KEY, LATEST_COMMIT_KEY } from '@apihub/entities/commits'
+import type { SearchCriteria } from '@apihub/entities/global-search'
+import type { ProjectFile } from '@apihub/entities/project-files'
+import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 import type { FC, PropsWithChildren } from 'react'
 import { createContext, memo, useContext, useState } from 'react'
 import { createEventBus, slot } from 'ts-event-bus'
-import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import type { ProjectFile } from '@apihub/entities/project-files'
-import type { CommitKey, DRAFT_COMMIT_KEY, LATEST_COMMIT_KEY } from '@apihub/entities/commits'
-import type { SearchCriteria } from '@apihub/entities/global-search'
 
 // base
 export const SHOW_SUCCESS_NOTIFICATION = 'show-success-notification'
@@ -148,7 +148,6 @@ type EventBus = {
   showPublishPreviewDialog: () => void
   showAddGroupReferenceDialog: () => void
   showPublishGroupVersionDialog: () => void
-
 }
 
 function eventBusProvider(): EventBus {
@@ -183,7 +182,6 @@ function eventBusProvider(): EventBus {
       showPublishPreviewDialog: slot(),
       showAddGroupReferenceDialog: slot(),
       showPublishGroupVersionDialog: slot(),
-
     },
   })
 

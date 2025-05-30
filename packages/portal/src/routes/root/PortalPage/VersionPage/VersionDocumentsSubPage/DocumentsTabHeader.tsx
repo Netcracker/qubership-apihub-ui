@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-import type { Dispatch, FC, ReactNode, SetStateAction } from 'react'
-import { memo, useCallback } from 'react'
-import { Box, Grid, Skeleton, Typography } from '@mui/material'
-import { useSelectedSubPage, useSetSelectedSubPage } from './SelectedSubPageProvider'
-import type { ReactJSXElement } from '@emotion/react/types/jsx-namespace'
-import { DocumentActionsButton } from './DocumentActionsButton'
 import type { Key } from '@apihub/entities/keys'
-import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import { isGraphQlSpecType, isOpenApiSpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import type { FileFormat } from '@netcracker/qubership-apihub-ui-shared/utils/files'
-import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'
 import type { DocumentsTabSubPageKey } from '@apihub/routes/root/PortalPage/VersionPage/OpenApiViewer/OpenApiViewer'
 import {
   OPERATIONS_SUB_PAGE,
   OVERVIEW_SUB_PAGE,
 } from '@apihub/routes/root/PortalPage/VersionPage/OpenApiViewer/OpenApiViewer'
-import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
+import type { ReactJSXElement } from '@emotion/react/types/jsx-namespace'
+import { Box, Grid, Skeleton, Typography } from '@mui/material'
 import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
+import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
+import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'
+import type { FileFormat } from '@netcracker/qubership-apihub-ui-shared/utils/files'
+import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import { isGraphQlSpecType, isOpenApiSpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import type { Dispatch, FC, ReactNode, SetStateAction } from 'react'
+import { memo, useCallback } from 'react'
+import { DocumentActionsButton } from './DocumentActionsButton'
+import { useSelectedSubPage, useSetSelectedSubPage } from './SelectedSubPageProvider'
 
 export type DocumentsTabHeaderProps = {
   title: string
@@ -102,20 +102,20 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
   if (isLoading) {
     return (
       <HeaderLayout
-        left={(
+        left={
           <Box display="flex" flexDirection="column">
-            <Skeleton sx={{ width: 200 }}/>
-            <Skeleton sx={{ width: 100 }}/>
+            <Skeleton sx={{ width: 200 }} />
+            <Skeleton sx={{ width: 100 }} />
           </Box>
-        )}
-        right={<Skeleton sx={{ width: 170 }}/>}
+        }
+        right={<Skeleton sx={{ width: 170 }} />}
       />
     )
   }
 
   return (
     <HeaderLayout
-      left={(
+      left={
         <TextWithOverflowTooltip tooltipText={title} variant="inherit">
           <Box display="flex" alignItems="center" gap={1} data-testid="DocumentToolbarTitle">
             {title}
@@ -124,8 +124,8 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
             </Typography>
           </Box>
         </TextWithOverflowTooltip>
-      )}
-      right={(
+      }
+      right={
         <Box display="flex" gap={1}>
           {(isOpenApiSpecType(type) || isGraphQlSpecType(type)) && (
             <>
@@ -137,7 +137,7 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
                   data-testid="SearchOperations"
                 />
               )}
-              <DocumentsSubPageSelector/>
+              <DocumentsSubPageSelector />
             </>
           )}
           <DocumentActionsButton
@@ -150,7 +150,7 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
             }}
           />
         </Box>
-      )}
+      }
     />
   )
 }

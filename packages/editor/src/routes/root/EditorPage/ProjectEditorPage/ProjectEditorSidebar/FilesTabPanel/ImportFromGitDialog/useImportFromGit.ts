@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
+import type { GitFiles, GitFilesDto } from '@apihub/entities/git-files'
+import { editorRequestJson } from '@apihub/utils/requests'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { InvalidateQuery, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import type { FetchNextPageOptions, InfiniteQueryObserverResult } from '@tanstack/react-query'
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import { useBranchSearchParam } from '../../../../../useBranchSearchParam'
 import { useFileSearchParam } from '../../../../../useFileSearchParam'
-import type { FetchNextPageOptions, InfiniteQueryObserverResult } from '@tanstack/react-query'
-import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import type { InvalidateQuery, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import { editorRequestJson } from '@apihub/utils/requests'
-import type { GitFiles, GitFilesDto } from '@apihub/entities/git-files'
-import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 
 const GIT_FILES_QUERY_KEY = 'git-files-query-key'
 
@@ -107,9 +107,12 @@ async function getGitFiles(
     path: { value: `/${path}` },
     onlyAddable: { value: onlyAddable },
   })
-  const data = await editorRequestJson<GitFilesDto>(`/projects/${projectId}/branches/${branch}/integration/files?${searchParams}`, {
-    method: 'GET',
-  })
+  const data = await editorRequestJson<GitFilesDto>(
+    `/projects/${projectId}/branches/${branch}/integration/files?${searchParams}`,
+    {
+      method: 'GET',
+    },
+  )
   return toGitFiles(data, path)
 }
 

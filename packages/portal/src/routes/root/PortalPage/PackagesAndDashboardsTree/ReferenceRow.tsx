@@ -14,42 +14,45 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { Box, IconButton, TableCell, TableRow, Tooltip, Typography } from '@mui/material'
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
 import KeyboardArrowRightOutlinedIcon from '@mui/icons-material/KeyboardArrowRightOutlined'
-import {
-  useDashboardCollapsedReferenceKeys,
-  useSetDashboardCollapsedReferenceKeys,
-} from './CollapsedReferenceKeysContext'
-import { useDeletedReferences } from '../useDeletedReferences'
-import { useVersionReferences } from '../../useVersionReferences'
+import { Box, IconButton, TableCell, TableRow, Tooltip, Typography } from '@mui/material'
+import type { FC } from 'react'
+import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { useAddConflictedReferences, useConflictedReferences } from '../useConflictedReferences'
-import { useDashboardPackages } from '../useDashboardPackages'
+import { useVersionReferences } from '../../useVersionReferences'
 import {
   useRecursiveDashboardName,
   useSetRecursiveDashboardName,
 } from '../DashboardPage/RecursiveDashboardNameContextProvider'
+import { useAddConflictedReferences, useConflictedReferences } from '../useConflictedReferences'
+import { useDashboardPackages } from '../useDashboardPackages'
+import { useDeletedReferences } from '../useDeletedReferences'
+import {
+  useDashboardCollapsedReferenceKeys,
+  useSetDashboardCollapsedReferenceKeys,
+} from './CollapsedReferenceKeysContext'
 
-import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
-import { DASHBOARD_KIND, PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import { PackageKindLogo } from '@netcracker/qubership-apihub-ui-shared/components/PackageKindLogo'
-import { RedWarningCircleIcon, YellowWarningCircleIcon } from '@netcracker/qubership-apihub-ui-shared/icons/WarningCircleIcon'
-import { RedWarningIcon, YellowWarningIcon } from '@netcracker/qubership-apihub-ui-shared/icons/WarningIcon'
+import { ConfirmationDialog } from '@netcracker/qubership-apihub-ui-shared/components/ConfirmationDialog'
 import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
-import { DeleteIcon } from '@netcracker/qubership-apihub-ui-shared/icons/DeleteIcon'
+import { PackageKindLogo } from '@netcracker/qubership-apihub-ui-shared/components/PackageKindLogo'
+import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { DASHBOARD_KIND, PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import type {
   PackageReference,
   ReferenceKind,
   UnresolvedReference,
   VersionReferences,
 } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
-import { ConfirmationDialog } from '@netcracker/qubership-apihub-ui-shared/components/ConfirmationDialog'
+import { DeleteIcon } from '@netcracker/qubership-apihub-ui-shared/icons/DeleteIcon'
+import {
+  RedWarningCircleIcon,
+  YellowWarningCircleIcon,
+} from '@netcracker/qubership-apihub-ui-shared/icons/WarningCircleIcon'
+import { RedWarningIcon, YellowWarningIcon } from '@netcracker/qubership-apihub-ui-shared/icons/WarningIcon'
+import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 
 export type ReferenceRowProps = {
   reference: UnresolvedReference
@@ -118,11 +121,23 @@ export const ReferenceRow: FC<ReferenceRowProps> = memo<ReferenceRowProps>((
     if (recursiveDashboardName || !added) {
       return
     }
-    if (!addedVersionReferences.references?.some(({ packageRef }) => addedVersionReferences.packages![packageRef!].key === packageId)) {
+    if (
+      !addedVersionReferences.references?.some(({ packageRef }) =>
+        addedVersionReferences.packages![packageRef!].key === packageId
+      )
+    ) {
       return
     }
     setRecursiveDashboardName(name)
-  }, [added, addedVersionReferences.packages, addedVersionReferences.references, recursiveDashboardName, name, packageId, setRecursiveDashboardName])
+  }, [
+    added,
+    addedVersionReferences.packages,
+    addedVersionReferences.references,
+    recursiveDashboardName,
+    name,
+    packageId,
+    setRecursiveDashboardName,
+  ])
 
   const nextLevel = useMemo(() => level + 1, [level])
 
@@ -147,74 +162,91 @@ export const ReferenceRow: FC<ReferenceRowProps> = memo<ReferenceRowProps>((
           <TextWithOverflowTooltip tooltipText={name}>
             <Box sx={{ display: 'flex', alignItems: 'center', pl: (level * 3.5) }}>
               {(!open && !deletedAt && kind !== PACKAGE_KIND || isNotEmpty(descendants))
-                ? <IconButton
-                  sx={{ p: 0, mr: 1 }}
-                  onClick={() => updateCollapseKeys(key!)}
-                  data-testid={open ? 'CollapseButton' : 'ExpandButton'}
-                >
-                  {open
-                    ? <KeyboardArrowDownOutlinedIcon sx={{ fontSize: '16px' }}/>
-                    : <KeyboardArrowRightOutlinedIcon sx={{ fontSize: '16px' }}/>}
-                </IconButton>
+                ? (
+                  <IconButton
+                    sx={{ p: 0, mr: 1 }}
+                    onClick={() => updateCollapseKeys(key!)}
+                    data-testid={open ? 'CollapseButton' : 'ExpandButton'}
+                  >
+                    {open
+                      ? <KeyboardArrowDownOutlinedIcon sx={{ fontSize: '16px' }} />
+                      : <KeyboardArrowRightOutlinedIcon sx={{ fontSize: '16px' }} />}
+                  </IconButton>
+                )
                 : <IconButton sx={{ width: '24px' }}></IconButton>}
-              <PackageKindLogo kind={kind}/>
-              <Box sx={{
-                pl: 0.5,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                width: '100%',
-              }}>
+              <PackageKindLogo kind={kind} />
+              <Box
+                sx={{
+                  pl: 0.5,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  width: '100%',
+                }}
+              >
                 <Typography noWrap variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
                   <Box sx={{ display: 'flex', ml: '3px' }}>
                     {!readonly && excluded
-                      ? <Tooltip
-                        title="The package is not included in the dashboard because the same package is already included in the dashboard"
-                        placement="right">
-                        <Box sx={{ color: '#626D82', textDecoration: 'line-through' }} data-testid="ExcludedPackage">
-                          {name}
-                        </Box>
-                      </Tooltip>
-                      : name}
-                    {kind === DASHBOARD_KIND && deletedReferences?.get(key!) &&
-                      <Box sx={{ mr: '3px' }}>
+                      ? (
                         <Tooltip
-                          title="One of the child package/dashboard version no longer exists. Expand this dashboard to see deleted package/dashboard version"
-                          placement="right">
-                          <Box data-testid="NotExistIndicator">
-                            <RedWarningCircleIcon/>
+                          title="The package is not included in the dashboard because the same package is already included in the dashboard"
+                          placement="right"
+                        >
+                          <Box sx={{ color: '#626D82', textDecoration: 'line-through' }} data-testid="ExcludedPackage">
+                            {name}
                           </Box>
                         </Tooltip>
-                      </Box>
-                    }
-                    {readonly && kind === DASHBOARD_KIND && conflictedReferences?.has(key!) &&
-                      <Tooltip title="One of the child package/dashboard has conflict" placement="right">
-                        <Box data-testid="ConflictIndicator">
-                          <YellowWarningCircleIcon/>
+                      )
+                      : name}
+                    {kind === DASHBOARD_KIND && deletedReferences?.get(key!)
+                      && (
+                        <Box sx={{ mr: '3px' }}>
+                          <Tooltip
+                            title="One of the child package/dashboard version no longer exists. Expand this dashboard to see deleted package/dashboard version"
+                            placement="right"
+                          >
+                            <Box data-testid="NotExistIndicator">
+                              <RedWarningCircleIcon />
+                            </Box>
+                          </Tooltip>
                         </Box>
-                      </Tooltip>
-                    }
+                      )}
+                    {readonly && kind === DASHBOARD_KIND && conflictedReferences?.has(key!)
+                      && (
+                        <Tooltip title="One of the child package/dashboard has conflict" placement="right">
+                          <Box data-testid="ConflictIndicator">
+                            <YellowWarningCircleIcon />
+                          </Box>
+                        </Tooltip>
+                      )}
                   </Box>
                   <Box sx={{ ml: '8px', display: 'flex' }}>
-                    {readonly && conflicted &&
-                      <Tooltip
-                        title="There is a conflict because this package is included in the dashboard multiple times. The conflict will be resolved automatically after version publication and out of all identical packages only one package will be included in the dashboard"
-                        placement="right">
-                        <Box data-testid="ConflictAlert">
-                          <YellowWarningIcon/>
-                        </Box>
-                      </Tooltip>}
+                    {readonly && conflicted
+                      && (
+                        <Tooltip
+                          title="There is a conflict because this package is included in the dashboard multiple times. The conflict will be resolved automatically after version publication and out of all identical packages only one package will be included in the dashboard"
+                          placement="right"
+                        >
+                          <Box data-testid="ConflictAlert">
+                            <YellowWarningIcon />
+                          </Box>
+                        </Tooltip>
+                      )}
                     {deletedAt && (kind === PACKAGE_KIND
-                      ? <Tooltip title="The included package version no longer exists" placement="right">
-                        <Box data-testid="NotExistAlert">
-                          <RedWarningIcon/>
-                        </Box>
-                      </Tooltip>
-                      : <Tooltip title="The included dashboard version no longer exists" placement="right">
-                        <Box data-testid="NotExistAlert">
-                          <RedWarningIcon/>
-                        </Box>
-                      </Tooltip>)}
+                      ? (
+                        <Tooltip title="The included package version no longer exists" placement="right">
+                          <Box data-testid="NotExistAlert">
+                            <RedWarningIcon />
+                          </Box>
+                        </Tooltip>
+                      )
+                      : (
+                        <Tooltip title="The included dashboard version no longer exists" placement="right">
+                          <Box data-testid="NotExistAlert">
+                            <RedWarningIcon />
+                          </Box>
+                        </Tooltip>
+                      ))}
                   </Box>
                 </Typography>
               </Box>
@@ -227,7 +259,7 @@ export const ReferenceRow: FC<ReferenceRowProps> = memo<ReferenceRowProps>((
           </TextWithOverflowTooltip>
         </TableCell>
         <TableCell key="status" data-testid="StatusCell">
-          {status && <CustomChip value={status}/>}
+          {status && <CustomChip value={status} />}
         </TableCell>
         <TableCell key="remove" data-testid="RemoveCell">
           {onRemove && (
@@ -239,7 +271,7 @@ export const ReferenceRow: FC<ReferenceRowProps> = memo<ReferenceRowProps>((
                   onClick={() => setDeleteConfirmationOpen(true)}
                   data-testid="RemoveButton"
                 >
-                  <DeleteIcon color="#626D82"/>
+                  <DeleteIcon color="#626D82" />
                 </IconButton>
               </Tooltip>
               <ConfirmationDialog
@@ -265,7 +297,8 @@ export const ReferenceRow: FC<ReferenceRowProps> = memo<ReferenceRowProps>((
             level={nextLevel}
             added={false}
             readonly={readonly}
-          />)
+          />
+        )
       })}
     </>
   )

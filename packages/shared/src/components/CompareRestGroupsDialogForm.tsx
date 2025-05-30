@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-import type { FC, SyntheticEvent } from 'react'
-import * as React from 'react'
-import { memo } from 'react'
 import {
   Autocomplete,
   Box,
@@ -28,13 +25,16 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
+import type { FC, SyntheticEvent } from 'react'
+import * as React from 'react'
+import { memo } from 'react'
 import type { Control } from 'react-hook-form'
 import { Controller } from 'react-hook-form'
+import type { OperationGroup } from '../entities/operation-groups'
 import { DEFAULT_DEBOUNCE } from '../utils/constants'
 import { disableAutocompleteSearch } from '../utils/mui'
-import { OptionItem } from './OptionItem'
-import type { OperationGroup } from '../entities/operation-groups'
 import { DialogForm } from './DialogForm'
+import { OptionItem } from './OptionItem'
 import { Swapper } from './Swapper'
 
 export type CompareRestGroupsDialogFormData = {
@@ -101,14 +101,14 @@ export const CompareRestGroupsDialogForm: FC<CompareRestGroupsDialogFormProps> =
                 value={value}
                 options={originalGroupOptions}
                 getOptionLabel={({ groupName }) => groupName}
-                renderOption={(props, { groupName }) =>
+                renderOption={(props, { groupName }) => (
                   <OptionItem
                     key={groupName}
                     props={props}
                     title={groupName}
                   />
-                }
-                renderInput={(params) => <TextField {...params} required label="Group"/>}
+                )}
+                renderInput={(params) => <TextField {...params} required label="Group" />}
                 onChange={(_, value) => onChange(value)}
                 data-testid="OriginalGroupAutocomplete"
               />
@@ -117,7 +117,7 @@ export const CompareRestGroupsDialogForm: FC<CompareRestGroupsDialogFormProps> =
         />
 
         <Box sx={{ gridArea: 'swapper', alignSelf: 'center' }}>
-          <Swapper onSwap={onSwap}/>
+          <Swapper onSwap={onSwap} />
         </Box>
 
         <Typography variant="button" sx={{ gridArea: 'changedTitle' }}>
@@ -136,14 +136,14 @@ export const CompareRestGroupsDialogForm: FC<CompareRestGroupsDialogFormProps> =
               value={value}
               options={changedGroupOptions}
               getOptionLabel={({ groupName }) => groupName}
-              renderOption={(props, { groupName }) =>
+              renderOption={(props, { groupName }) => (
                 <OptionItem
                   key={groupName}
                   props={props}
                   title={groupName}
                 />
-              }
-              renderInput={(params) => <TextField {...params} required label="Group"/>}
+              )}
+              renderInput={(params) => <TextField {...params} required label="Group" />}
               onChange={(_, value) => onChange(value)}
               data-testid="ChangedGroupAutocomplete"
             />

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { createContext, useContext } from 'react'
 import type { Document } from '@apihub/entities/documents'
+import { createContext, useContext } from 'react'
 
 type NullableDocument = Document | null
 

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import { Box } from '@mui/material'
+import { JsonSchemaViewer } from '@netcracker/qubership-apihub-api-doc-viewer'
 import type { FC } from 'react'
 import { memo } from 'react'
-import { Box } from '@mui/material'
-import { RawSpecView } from './RawSpecView'
+import type { Spec } from '../../entities/specs'
+import { toJsonSchema } from '../../utils/specifications'
 import type { SpecViewMode } from '../SpecViewToggler'
 import { DOC_SPEC_VIEW_MODE, RAW_SPEC_VIEW_MODE } from '../SpecViewToggler'
-import { JsonSchemaViewer } from '@netcracker/qubership-apihub-api-doc-viewer'
-import { toJsonSchema } from '../../utils/specifications'
-import type { Spec } from '../../entities/specs'
+import { RawSpecView } from './RawSpecView'
 
 export const JSON_SCHEMA_VIEW_MODES: SpecViewMode[] = [DOC_SPEC_VIEW_MODE, RAW_SPEC_VIEW_MODE]
 
@@ -37,11 +37,10 @@ export const JsonSchemaSpecViewer: FC<JsonSchemaSpecViewerProps> = /* @__PURE__ 
   spec,
   value,
 }) => {
-
   if (view === DOC_SPEC_VIEW_MODE) {
     return (
       <Box height="100%" overflow="scroll">
-        <JsonSchemaViewer schema={toJsonSchema(value) as object}/>
+        <JsonSchemaViewer schema={toJsonSchema(value) as object} />
       </Box>
     )
   }

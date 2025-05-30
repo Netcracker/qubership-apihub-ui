@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import type { OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { useEffect } from 'react'
 import { useSetRecentOperations } from '../../../RecentOperationsProvider'
-import type { OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 
 export function useUpdateRecentOperations(operation: OperationData | undefined): void {
   const setRecentOperations = useSetRecentOperations()

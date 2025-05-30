@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-import type { FC, PropsWithChildren, ReactNode } from 'react'
-import { memo } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
+import type { SxProps } from '@mui/system/styleFunctionSx'
+import type { FC, PropsWithChildren, ReactNode } from 'react'
+import { memo } from 'react'
+import type { TestableProps } from '../Testable'
 import noDataSvg from './no-data.svg'
 import nothingFoundSvg from './nothing-found.svg'
-import type { SxProps } from '@mui/system/styleFunctionSx'
-import type { TestableProps } from '../Testable'
 
-export type PlaceholderProps = PropsWithChildren<{
-  invisible: boolean
-  area: PlaceholderArea
-  message: string | ReactNode
-  variant?: PlaceholderVariant
-  sx?: SxProps
-}> & TestableProps
+export type PlaceholderProps =
+  & PropsWithChildren<{
+    invisible: boolean
+    area: PlaceholderArea
+    message: string | ReactNode
+    variant?: PlaceholderVariant
+    sx?: SxProps
+  }>
+  & TestableProps
 
 export const Placeholder: FC<PlaceholderProps> = memo<PlaceholderProps>(({
   invisible,
@@ -41,9 +43,7 @@ export const Placeholder: FC<PlaceholderProps> = memo<PlaceholderProps>(({
   testId,
 }) => {
   if (invisible) {
-    return (
-      <>{children}</>
-    )
+    return <>{children}</>
   }
 
   return (

@@ -14,34 +14,36 @@
  * limitations under the License.
  */
 
+import type { ShowEditPackagePrefixDetail } from '@apihub/routes/EventBusProvider'
+import { SHOW_EDIT_PACKAGE_PREFIX_DIALOG } from '@apihub/routes/EventBusProvider'
+import { LoadingButton } from '@mui/lab'
+import { Button, Checkbox, DialogActions, DialogContent, DialogTitle, FormControlLabel, TextField } from '@mui/material'
+import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
+import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
+import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
+import type { Package } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import type { FC } from 'react'
 import * as React from 'react'
 import { memo, useCallback, useEffect, useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Button, Checkbox, DialogActions, DialogContent, DialogTitle, FormControlLabel, TextField } from '@mui/material'
-import { LoadingButton } from '@mui/lab'
 import { useRecalculatePackageVersionGroups, useUpdatePackage } from '../../../usePackage'
-import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import type { ShowEditPackagePrefixDetail } from '@apihub/routes/EventBusProvider'
-import { SHOW_EDIT_PACKAGE_PREFIX_DIALOG } from '@apihub/routes/EventBusProvider'
-import type { Package } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 
 export const EditGrouppingPrefixDialog: FC = memo(() => {
   return (
     <PopupDelegate
       type={SHOW_EDIT_PACKAGE_PREFIX_DIALOG}
-      render={props => <EditPrefixDialogPopup {...props}/>}
+      render={props => <EditPrefixDialogPopup {...props} />}
     />
   )
 })
 
 const EditPrefixDialogPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, detail }) => {
-  const { packageKey, existingPrefix = '' } = detail as ShowEditPackagePrefixDetail &  { existingPrefix?: string }
+  const { packageKey, existingPrefix = '' } = detail as ShowEditPackagePrefixDetail & { existingPrefix?: string }
   const [updatePackage, isUpdateLoading, isSuccess] = useUpdatePackage()
   const [recalculatePackageVersionGroups] = useRecalculatePackageVersionGroups()
-  useEffect(() => {isSuccess && setOpen(false)}, [isSuccess, setOpen])
+  useEffect(() => {
+    isSuccess && setOpen(false)
+  }, [isSuccess, setOpen])
 
   const defaultValues = useMemo(() => ({
     restGroupingPrefix: existingPrefix,
@@ -51,7 +53,9 @@ const EditPrefixDialogPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen,
   const { handleSubmit, control, formState: { errors }, watch } = useForm<FormData>({ defaultValues })
   const { recalculate } = watch()
 
-  useEffect(() => {isSuccess && packageKey && recalculate && recalculatePackageVersionGroups(packageKey)}, [isSuccess, packageKey, recalculate, recalculatePackageVersionGroups, setOpen])
+  useEffect(() => {
+    isSuccess && packageKey && recalculate && recalculatePackageVersionGroups(packageKey)
+  }, [isSuccess, packageKey, recalculate, recalculatePackageVersionGroups, setOpen])
 
   const onSubmit = useCallback(({ restGroupingPrefix }: FormData) => {
     updatePackage({
@@ -77,7 +81,8 @@ const EditPrefixDialogPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen,
           rules={{
             pattern: {
               value: /^\/.*{group}.*\/$/,
-              message: 'The value must begin and end with a "/" character and contain the {group} keyword, for example /api/{group}/.',
+              message:
+                'The value must begin and end with a "/" character and contain the {group} keyword, for example /api/{group}/.',
             },
           }}
           render={({ field }) => (
@@ -103,7 +108,7 @@ const EditPrefixDialogPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen,
           render={({ field }) => (
             <FormControlLabel
               {...field}
-              control={<Checkbox data-testid="RecalculateCheckbox"/>}
+              control={<Checkbox data-testid="RecalculateCheckbox" />}
               label="Recalculate groups in all published versions"
             />
           )}

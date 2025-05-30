@@ -16,6 +16,7 @@
 
 import { Router } from 'express'
 import type { WithWebsocketMethod } from 'express-ws'
+import type { Server } from 'ws'
 import {
   changePackageMemberRole,
   createPackage,
@@ -53,7 +54,6 @@ import {
   updatePackage,
   updateProject,
 } from './packages'
-import type { Server } from 'ws'
 
 export type PackagesRouter = Router & WithWebsocketMethod
 export type PackageTokensRouter = Router & WithWebsocketMethod

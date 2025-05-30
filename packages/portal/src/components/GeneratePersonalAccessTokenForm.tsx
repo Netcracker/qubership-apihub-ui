@@ -66,7 +66,6 @@ export const GeneratePersonalAccessTokenForm: FC<GeneratePersonalAccessTokenForm
     )
   }
 
-
   return (
     <Box component="form" marginBottom={1} onSubmit={handleSubmit(onConfirmCallback)}>
       <Typography variant="body2">
@@ -125,7 +124,7 @@ export const GeneratePersonalAccessTokenForm: FC<GeneratePersonalAccessTokenForm
                   {expirationDaysToLabel(option)}
                 </ListItem>
               )}
-              renderInput={(params) =>
+              renderInput={(params) => (
                 <TextField
                   {...params}
                   required
@@ -135,7 +134,7 @@ export const GeneratePersonalAccessTokenForm: FC<GeneratePersonalAccessTokenForm
                     readOnly: true,
                   }}
                 />
-              }
+              )}
               data-testid="ExpirationAutocomplete"
             />
           )}

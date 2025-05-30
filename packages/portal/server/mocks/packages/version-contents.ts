@@ -15,6 +15,7 @@
  */
 
 import { generateRandomDigit } from '../../utils'
+import { TOKEN_SAMPLE, USER_SAMPLE } from './principal'
 import type {
   ChangesSummaryDto,
   OperationGroupWithApiTypeDto,
@@ -23,7 +24,6 @@ import type {
 } from './types'
 import { GRAPHQL_API_TYPE, REST_API_TYPE } from './types'
 import { ARCHIVED_VERSION_STATUS, DRAFT_VERSION_STATUS, RELEASE_VERSION_STATUS } from './version-statuses'
-import { TOKEN_SAMPLE, USER_SAMPLE } from './principal'
 
 export const RELEASE_VERSION_2022_1 = '2022.1@1'
 export const RELEASE_VERSION_2022_2 = '2022.2@1'

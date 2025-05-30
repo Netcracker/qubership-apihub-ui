@@ -16,8 +16,8 @@
 
 import type { editor as Editor } from 'monaco-editor'
 import { editor, languages } from 'monaco-editor'
-import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { registerLinkOpener } from './configurator'
 import registerLinkProvider = languages.registerLinkProvider
 import ILinksList = languages.ILinksList
@@ -50,7 +50,9 @@ export function useRegisterLinks(
               .filter(({ matches }) => matches && !matches[1].startsWith('#/'))
               .map(({ matches, range }) => ({
                 range: range,
-                url: `${origin}${pathname}?branch=${encodeURIComponent(currentBranch)}&mode=${mode}&file=${encodeURIComponent(calculateAbsoluteFilePath(matches?.[1] ?? '', fileKey ?? ''))}`,
+                url: `${origin}${pathname}?branch=${encodeURIComponent(currentBranch)}&mode=${mode}&file=${
+                  encodeURIComponent(calculateAbsoluteFilePath(matches?.[1] ?? '', fileKey ?? ''))
+                }`,
               })),
           }
         },

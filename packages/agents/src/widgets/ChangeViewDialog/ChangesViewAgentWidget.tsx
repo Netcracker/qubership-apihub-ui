@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo } from 'react'
-import { ChangesViewWidget } from './ChangesViewWidget'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { useFlatVersionChangelog } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget'
 import {
   usePagedVersionChangelog,
 } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget/api/useCommonPagedVersionChangelog'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { FC } from 'react'
+import { memo } from 'react'
+import { ChangesViewWidget } from './ChangesViewWidget'
 
 export type ChangesViewAgentWidgetProps = {
   versionKey: Key

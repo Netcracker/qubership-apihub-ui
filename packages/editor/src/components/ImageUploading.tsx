@@ -15,10 +15,10 @@
  */
 
 import { IconButton, Typography } from '@mui/material'
+import { UploadImageIcon } from '@netcracker/qubership-apihub-ui-shared/icons/UploadImageIcon'
 import type { FC } from 'react'
 import React, { memo, useCallback } from 'react'
 import type { RefCallBack } from 'react-hook-form/dist/types'
-import { UploadImageIcon } from '@netcracker/qubership-apihub-ui-shared/icons/UploadImageIcon'
 
 export type ImageUploadingProps = Readonly<{
   title: string
@@ -33,7 +33,6 @@ export const ImageUploading: FC<ImageUploadingProps> = memo<ImageUploadingProps>
   inputFileRef,
   onChange,
 }) => {
-
   const setImage = useCallback((newImage: string) => {
     if (imageUrl) {
       onChange('')
@@ -54,7 +53,8 @@ export const ImageUploading: FC<ImageUploadingProps> = memo<ImageUploadingProps>
           if (newImage) {
             setImage(URL.createObjectURL(newImage))
           }
-        }}/>
+        }}
+      />
       <label htmlFor="avatar-image-upload">
         <Typography noWrap variant="subtitle2">{title}</Typography>
         <IconButton
@@ -67,10 +67,18 @@ export const ImageUploading: FC<ImageUploadingProps> = memo<ImageUploadingProps>
             }
           }}
         >
-          {imageUrl ? <img style={{
-            height: '44px',
-            width: '44px',
-          }} alt={title ?? 'Logo'} src={imageUrl}/> : <UploadImageIcon/>}
+          {imageUrl
+            ? (
+              <img
+                style={{
+                  height: '44px',
+                  width: '44px',
+                }}
+                alt={title ?? 'Logo'}
+                src={imageUrl}
+              />
+            )
+            : <UploadImageIcon />}
         </IconButton>
       </label>
     </div>

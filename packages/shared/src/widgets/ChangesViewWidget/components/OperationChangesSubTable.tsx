@@ -14,21 +14,26 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useMemo, useState } from 'react'
-import type { ColumnDef } from '@tanstack/table-core'
 import { Box, Skeleton, TableCell, TableRow, Typography } from '@mui/material'
 import type { ColumnFiltersState, VisibilityState } from '@tanstack/react-table'
 import { flexRender, getCoreRowModel, getFilteredRowModel, useReactTable } from '@tanstack/react-table'
+import type { ColumnDef } from '@tanstack/table-core'
+import type { FC } from 'react'
+import { memo, useMemo, useState } from 'react'
+import { ChangeSeverityIndicator } from '../../../components/ChangeSeverityIndicator'
+import { OverflowTooltip } from '../../../components/OverflowTooltip'
+import type { ChangeSeverity } from '../../../entities/change-severities'
+import type { OperationChange, OperationChanges } from '../../../entities/operation-changelog'
 import type { PackageKind } from '../../../entities/packages'
 import { DASHBOARD_KIND } from '../../../entities/packages'
-import type { OperationChange, OperationChanges } from '../../../entities/operation-changelog'
-import { ChangeSeverityIndicator } from '../../../components/ChangeSeverityIndicator'
-import type { ChangeSeverity } from '../../../entities/change-severities'
-import { OverflowTooltip } from '../../../components/OverflowTooltip'
+import {
+  API_KIND_COLUMN_ID,
+  ENDPOINT_COLUMN_ID,
+  PACKAGE_COLUMN_ID,
+  TAGS_COLUMN_ID,
+} from '../../../entities/table-columns'
 import { insertIntoArrayByIndex } from '../../../utils/arrays'
 import { CHANGES_COLUMN_ID } from '../const/table'
-import { API_KIND_COLUMN_ID, ENDPOINT_COLUMN_ID, PACKAGE_COLUMN_ID, TAGS_COLUMN_ID } from '../../../entities/table-columns'
 
 export type OperationChangesSubTableProps = {
   packageKind?: PackageKind
@@ -43,7 +48,6 @@ export const OperationChangesSubTable: FC<OperationChangesSubTableProps> = memo<
     isLoading,
   },
 ) => {
-
   const columns: ColumnDef<OperationChange>[] = useMemo(() => {
     const result: ColumnDef<OperationChange>[] = [
       {
@@ -89,7 +93,8 @@ export const OperationChangesSubTable: FC<OperationChangesSubTableProps> = memo<
 
   const data: OperationChange[] = useMemo(
     () => [...changes],
-    [changes])
+    [changes],
+  )
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])

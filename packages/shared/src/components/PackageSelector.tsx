@@ -14,28 +14,30 @@
  * limitations under the License.
  */
 
+import type { AutocompleteValue } from '@mui/base'
+import type { AutocompleteInputChangeReason } from '@mui/base/AutocompleteUnstyled/useAutocomplete'
+import { Autocomplete, Box, debounce, InputLabel, TextField } from '@mui/material'
 import type { FC, SyntheticEvent } from 'react'
 import * as React from 'react'
 import { memo, useCallback } from 'react'
-import { Autocomplete, Box, debounce, InputLabel, TextField } from '@mui/material'
-import type { AutocompleteValue } from '@mui/base'
-import type { TestableProps } from './Testable'
-import { OptionItem } from './OptionItem'
-import { DEFAULT_DEBOUNCE } from '../utils/constants'
 import type { Package, Packages } from '../entities/packages'
-import type { AutocompleteInputChangeReason } from '@mui/base/AutocompleteUnstyled/useAutocomplete'
+import { DEFAULT_DEBOUNCE } from '../utils/constants'
+import { OptionItem } from './OptionItem'
+import type { TestableProps } from './Testable'
 
-export type PackageSelectorProps = Readonly<{
-  key: string
-  title?: string
-  placeholder: string
-  value: Package | null
-  options: Packages
-  onInput: (text: string | undefined) => void
-  onSelect: (value: Package | null) => void
-  loading?: boolean
-  disabled?: boolean
-}> & TestableProps
+export type PackageSelectorProps =
+  & Readonly<{
+    key: string
+    title?: string
+    placeholder: string
+    value: Package | null
+    options: Packages
+    onInput: (text: string | undefined) => void
+    onSelect: (value: Package | null) => void
+    loading?: boolean
+    disabled?: boolean
+  }>
+  & TestableProps
 
 // First Order Component //
 export const PackageSelector: FC<PackageSelectorProps> = memo<PackageSelectorProps>(({
@@ -49,9 +51,11 @@ export const PackageSelector: FC<PackageSelectorProps> = memo<PackageSelectorPro
   disabled = false,
   testId,
 }) => {
-  const onInputChange = useCallback((_: SyntheticEvent, value: string, reason: AutocompleteInputChangeReason) =>
+  const onInputChange = useCallback(
+    (_: SyntheticEvent, value: string, reason: AutocompleteInputChangeReason) =>
       onInput(reason === 'input' ? value : ''),
-    [onInput])
+    [onInput],
+  )
 
   const onChange = useCallback(
     (_: SyntheticEvent, value: AutocompleteValue<Package, false, false, false>) => onSelect(value ?? null),

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo, useState } from 'react'
 import type { ColumnSizingInfoState } from '@tanstack/react-table'
+import { useEffect, useMemo, useState } from 'react'
 
 export type ColumnModel = {
   name: string
@@ -32,7 +32,10 @@ let MIN_COLUMN_SIZE: number
 function useDefaultColumnsSizing(containerWidth: number, columnModels: ColumnModel[]): Record<string, number> {
   return useMemo(() => {
     const flexibleColumnCount = columnModels.filter(model => !model.fixedWidth && !model.width).length
-    const fixedColumnsWidth = columnModels.reduce((result, current) => result + (current.fixedWidth ?? current.width ?? 0), 0)
+    const fixedColumnsWidth = columnModels.reduce(
+      (result, current) => result + (current.fixedWidth ?? current.width ?? 0),
+      0,
+    )
     const columnWidth = Math.floor((containerWidth - fixedColumnsWidth) / flexibleColumnCount)
     return columnModels.reduce<Record<string, number>>((result, current) => {
       result[current.name] = current.fixedWidth ?? current.width ?? columnWidth
@@ -69,10 +72,13 @@ function handleIncreaseColumn(
   containerWidth: number,
 ): Record<string, number> | null {
   const unselectedColumns = models.filter(model => model.name !== selectedColumn && !model.fixedWidth)
-  //TODO research this case
-  const shrinkableColumns = unselectedColumns.filter(model => Math.floor(values[model.name] - (delta / unselectedColumns.length)) > MIN_COLUMN_SIZE)
+  // TODO research this case
+  const shrinkableColumns = unselectedColumns.filter(model =>
+    Math.floor(values[model.name] - (delta / unselectedColumns.length)) > MIN_COLUMN_SIZE
+  )
   const fixedColumnsWidth = models.reduce((result, current) => result + (current.fixedWidth ?? current.width ?? 0), 0)
-  const maxNotReached = values[selectedColumn] + delta < (containerWidth - MIN_COLUMN_SIZE * unselectedColumns.length - fixedColumnsWidth)
+  const maxNotReached =
+    values[selectedColumn] + delta < (containerWidth - MIN_COLUMN_SIZE * unselectedColumns.length - fixedColumnsWidth)
   if (shrinkableColumns.length && maxNotReached) {
     const negativeDelta = -delta / shrinkableColumns.length
     const shrinkableColumnsNames = new Set(shrinkableColumns.map(model => model.name))

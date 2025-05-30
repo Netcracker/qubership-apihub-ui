@@ -17,8 +17,10 @@
 import type { InfiniteData } from '@tanstack/react-query'
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
 
-import { useVersionWithRevision } from '../../../../../../useVersionWithRevision'
-import { generatePath } from 'react-router-dom'
+import { portalRequestJson } from '@apihub/utils/requests'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { Key, PackageKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { OperationGroupName } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
 import type {
   ApiAudience,
   ApiKind,
@@ -37,18 +39,21 @@ import {
   EMPTY_TAG,
   toOperations,
 } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import type { HasNextPage, IsFetching, IsFetchingNextPage, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import type { OperationGroupName } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
-import type { Key, PackageKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import {
   useResolvedOperationGroupParameters,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/operation-groups/useResolvedOperationGroupParameters'
+import type {
+  HasNextPage,
+  IsFetching,
+  IsFetchingNextPage,
+  IsLoading,
+} from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
 import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { isEmptyTag } from '@netcracker/qubership-apihub-ui-shared/utils/tags'
-import { portalRequestJson } from '@apihub/utils/requests'
-import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { QueryKey } from '@tanstack/query-core/src/types'
+import { generatePath } from 'react-router-dom'
+import { useVersionWithRevision } from '../../../../../../useVersionWithRevision'
 
 const PAGED_GROUP_OPERATIONS_QUERY_KEY = 'paged-group-operations-query-key'
 const EMPTY_TAG_QUERY_PARAM_KEY = 'emptyTag'
@@ -94,7 +99,21 @@ function usePagedGroupOperationsQueryKey({
   groupName,
 }: PagedGroupOperationsOptions): QueryKey {
   const { fullVersion } = useVersionWithRevision(versionKey, packageKey)
-  return [PAGED_GROUP_OPERATIONS_QUERY_KEY, packageKey, fullVersion, refPackageKey, tag, kind, apiAudience, deprecated, textFilter, documentId, apiType, excludedGroupName, groupName]
+  return [
+    PAGED_GROUP_OPERATIONS_QUERY_KEY,
+    packageKey,
+    fullVersion,
+    refPackageKey,
+    tag,
+    kind,
+    apiAudience,
+    deprecated,
+    textFilter,
+    documentId,
+    apiType,
+    excludedGroupName,
+    groupName,
+  ]
 }
 
 // TODO 03.08.23 // Check is there any more optimal way to do it
@@ -134,23 +153,24 @@ export function usePagedGroupOperations(options: PagedGroupOperationsOptions): P
     hasNextPage,
   } = useInfiniteQuery<OperationsData, Error, OperationsData>({
     queryKey: queryKey,
-    queryFn: ({ pageParam = page }) => getOperations({
-      packageKey: packageKey!,
-      versionKey: fullVersion!,
-      refPackageKey: refPackageKey,
-      deprecated: deprecated,
-      kind: kind,
-      apiAudience: apiAudience,
-      limit: limit,
-      page: pageParam - 1,
-      tag: tag,
-      textFilter: textFilter,
-      documentId: documentId,
-      apiType: apiType,
-      excludedGroupName: resolvedExcludedGroupName,
-      groupName: resolvedGroupName!,
-      emptyGroup: resolvedEmptyGroup,
-    }),
+    queryFn: ({ pageParam = page }) =>
+      getOperations({
+        packageKey: packageKey!,
+        versionKey: fullVersion!,
+        refPackageKey: refPackageKey,
+        deprecated: deprecated,
+        kind: kind,
+        apiAudience: apiAudience,
+        limit: limit,
+        page: pageParam - 1,
+        tag: tag,
+        textFilter: textFilter,
+        documentId: documentId,
+        apiType: apiType,
+        excludedGroupName: resolvedExcludedGroupName,
+        groupName: resolvedGroupName!,
+        emptyGroup: resolvedEmptyGroup,
+      }),
     getNextPageParam: (lastPage, allPages) => {
       if (!limit) {
         return undefined
@@ -221,12 +241,24 @@ async function getOperations(options: {
     limit: { value: limit },
   })
 
-  let operations: OperationsData = await fetchOperations(packageKey, versionKey, queryParams, apiType, excludedGroupName || groupName)
+  let operations: OperationsData = await fetchOperations(
+    packageKey,
+    versionKey,
+    queryParams,
+    apiType,
+    excludedGroupName || groupName,
+  )
 
   if (tag === DEFAULT_TAG) {
     // It's possible to have operations with explicitly defined default tag, we've to load them
     queryParams.set(EMPTY_TAG_QUERY_PARAM_KEY, 'false')
-    const additionalOperations: OperationsData = await fetchOperations(packageKey, versionKey, queryParams, apiType, excludedGroupName || groupName)
+    const additionalOperations: OperationsData = await fetchOperations(
+      packageKey,
+      versionKey,
+      queryParams,
+      apiType,
+      excludedGroupName || groupName,
+    )
     operations = [...operations, ...additionalOperations]
   }
 
@@ -246,14 +278,17 @@ async function fetchOperations(
   const encodedGroupName = encodeURIComponent(groupName)
 
   const pathPattern = '/packages/:packageId/versions/:versionId/:encodedApiType/groups/:encodedGroupName'
-  return toOperations(await portalRequestJson<OperationsDto>(
-    `${generatePath(pathPattern, { packageId, versionId, encodedApiType, encodedGroupName })}?${queryParams}`,
-    {
-      method: 'get',
-    }, {
-      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-    },
-  ))
+  return toOperations(
+    await portalRequestJson<OperationsDto>(
+      `${generatePath(pathPattern, { packageId, versionId, encodedApiType, encodedGroupName })}?${queryParams}`,
+      {
+        method: 'get',
+      },
+      {
+        customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+      },
+    ),
+  )
 }
 
 export function useClearExcessivePagedGroupOperations(options: PagedGroupOperationsOptions): () => void {

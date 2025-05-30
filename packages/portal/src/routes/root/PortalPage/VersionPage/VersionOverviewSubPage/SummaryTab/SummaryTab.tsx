@@ -35,10 +35,12 @@ const SUMMARY_BOX_MARGIN_TOP = 4
 
 const OPERATION_TYPES_ORDER = [API_TYPE_REST, API_TYPE_GRAPHQL]
 
-const PreviousVersion: FC<Partial<{
-  packageKey: PackageKey
-  versionKey: VersionKey
-}>> = ({ packageKey, versionKey }) => {
+const PreviousVersion: FC<
+  Partial<{
+    packageKey: PackageKey
+    versionKey: VersionKey
+  }>
+> = ({ packageKey, versionKey }) => {
   let link: ReactNode | undefined
   if (packageKey && versionKey) {
     link = (
@@ -91,9 +93,7 @@ export const SummaryTab: FC = memo(() => {
   }, [operationTypes])
 
   if (isLoading) {
-    return (
-      <LoadingIndicator />
-    )
+    return <LoadingIndicator />
   }
 
   return (
@@ -180,7 +180,19 @@ export const SummaryTab: FC = memo(() => {
         </Box>
       </Box>
       {sortedOperationTypes
-        .map(({ apiType, changesSummary, numberOfImpactedOperations, operationsCount, deprecatedCount, noBwcOperationsCount, internalAudienceOperationsCount, unknownAudienceOperationsCount, apiAudienceTransitions }) =>
+        .map((
+          {
+            apiType,
+            changesSummary,
+            numberOfImpactedOperations,
+            operationsCount,
+            deprecatedCount,
+            noBwcOperationsCount,
+            internalAudienceOperationsCount,
+            unknownAudienceOperationsCount,
+            apiAudienceTransitions,
+          },
+        ) => (
           <OperationTypeChanges
             key={apiType}
             apiType={apiType}
@@ -192,9 +204,8 @@ export const SummaryTab: FC = memo(() => {
             internalAudienceOperationsCount={internalAudienceOperationsCount}
             unknownAudienceOperationsCount={unknownAudienceOperationsCount}
             apiAudienceTransitions={apiAudienceTransitions}
-          />,
-        )
-      }
+          />
+        ))}
     </Box>
   )
 })

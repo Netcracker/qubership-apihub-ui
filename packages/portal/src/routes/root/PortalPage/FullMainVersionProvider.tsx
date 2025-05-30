@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { Dispatch, FC, PropsWithChildren, SetStateAction } from 'react'
 import { createContext, memo, useContext, useState } from 'react'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 
 export const FullMainVersionProvider: FC<PropsWithChildren> = memo<PropsWithChildren>(({ children }) => {
   const [version, setVersion] = useState<Key | undefined>(undefined)

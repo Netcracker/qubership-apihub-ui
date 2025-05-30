@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { Badge } from '@mui/material'
+import Paper from '@mui/material/Paper'
+import ToggleButton from '@mui/material/ToggleButton'
+import Tooltip from '@mui/material/Tooltip'
 import type { FC } from 'react'
 import * as React from 'react'
 import { memo } from 'react'
-import ToggleButton from '@mui/material/ToggleButton'
-import Paper from '@mui/material/Paper'
-import { Badge } from '@mui/material'
-import Tooltip from '@mui/material/Tooltip'
 import { FilterIcon } from '../../icons/FilterIcon'
 
 export type FilterButtonProps = {
@@ -51,10 +51,10 @@ export const FilterButton: FC<FilterButtonProps> = memo<FilterButtonProps>(({ se
           {showBadge
             ? (
               <Badge variant="dot" color="primary">
-                <FilterIcon/>
+                <FilterIcon />
               </Badge>
             )
-            : <FilterIcon/>}
+            : <FilterIcon />}
         </ToggleButton>
       </Tooltip>
     </Paper>

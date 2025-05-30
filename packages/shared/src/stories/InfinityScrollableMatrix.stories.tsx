@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { TableCell, Typography } from '@mui/material'
 import type { Meta, StoryFn } from '@storybook/react'
+import * as React from 'react'
 import type { InfinityScrollableMatrixProps } from '../components/InfinityScrollableMatrix'
 import { InfinityScrollableMatrix } from '../components/InfinityScrollableMatrix'
-import { TableCell, Typography } from '@mui/material'
-import * as React from 'react'
 import type { HorizontalItem, MatrixItem, VerticalItem } from './samples/matrix-samples'
 import { HORIZONTAL_ITEMS, MATRIX, VERTICAL_ITEMS } from './samples/matrix-samples'
 
@@ -26,12 +26,13 @@ export default {
   title: 'Infinity Scrollable Matrix',
 } as Meta
 
-const InfinityScrollableMatrixFn: StoryFn<InfinityScrollableMatrixProps<HorizontalItem, VerticalItem, MatrixItem>> =
-  (args) => (
-    <>
-      <InfinityScrollableMatrix {...args}/>
-    </>
-  )
+const InfinityScrollableMatrixFn: StoryFn<InfinityScrollableMatrixProps<HorizontalItem, VerticalItem, MatrixItem>> = (
+  args,
+) => (
+  <>
+    <InfinityScrollableMatrix {...args} />
+  </>
+)
 
 export const InfinityScrollableMatrixStory = InfinityScrollableMatrixFn.bind({})
 

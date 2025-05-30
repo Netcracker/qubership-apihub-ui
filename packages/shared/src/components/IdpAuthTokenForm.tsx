@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import React, { memo, useCallback, useMemo, useState } from 'react'
-import { Box, IconButton, InputAdornment, TextField, Typography } from '@mui/material'
-import { LoadingButton } from '@mui/lab'
-import { Controller, useForm } from 'react-hook-form'
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined'
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
+import { LoadingButton } from '@mui/lab'
+import { Box, IconButton, InputAdornment, TextField, Typography } from '@mui/material'
+import type { FC } from 'react'
+import React, { memo, useCallback, useMemo, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 
 const DEFAULT_TENANT = 'cloud-common'
 
@@ -38,7 +38,7 @@ export type IdpAuthTokenForm = {
   onIdpChange?: (value: string) => void
 }
 
-//First Order Component
+// First Order Component
 export const IdpAuthTokenForm: FC<IdpAuthTokenForm> = memo<IdpAuthTokenForm>(({
   onGetUdpAuthToken,
   isLoading,
@@ -216,7 +216,7 @@ export const IdpAuthTokenForm: FC<IdpAuthTokenForm> = memo<IdpAuthTokenForm>(({
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton edge="end" onClick={() => setPasswordVisible(!passwordVisible)}>
-                      {passwordVisible ? <VisibilityOffOutlinedIcon/> : <VisibilityOutlinedIcon/>}
+                      {passwordVisible ? <VisibilityOffOutlinedIcon /> : <VisibilityOutlinedIcon />}
                     </IconButton>
                   </InputAdornment>
                 ),

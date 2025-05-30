@@ -14,18 +14,24 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo } from 'react'
-import { useApiTypeSearchParam } from '../useApiTypeSearchParam'
 import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { API_TYPE_TITLE_MAP, API_TYPES } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { FC } from 'react'
+import { memo } from 'react'
+import { useApiTypeSearchParam } from '../useApiTypeSearchParam'
 
 export const ApiTypeSegmentedSelector: FC = memo(() => {
   const { apiType, setApiTypeSearchParam } = useApiTypeSearchParam()
 
-  return <Toggler mode={apiType as ApiType} modes={SELECTOR_OPTIONS} onChange={setApiTypeSearchParam}
-                  modeToText={OPTION_DISPLAYS}/>
+  return (
+    <Toggler
+      mode={apiType as ApiType}
+      modes={SELECTOR_OPTIONS}
+      onChange={setApiTypeSearchParam}
+      modeToText={OPTION_DISPLAYS}
+    />
+  )
 })
 
 const SELECTOR_OPTIONS = ['all', ...API_TYPES]

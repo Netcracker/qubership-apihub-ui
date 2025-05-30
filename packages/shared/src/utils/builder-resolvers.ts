@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
+import type {
+  TemplateResolver,
+  VersionDeprecatedResolver,
+  VersionDocumentsResolver,
+  VersionOperationsResolver,
+  VersionReferencesResolver,
+  VersionResolver,
+} from '@netcracker/qubership-apihub-api-processor'
 import {
   fetchDeprecatedItems,
   fetchExportTemplate,
@@ -23,14 +31,6 @@ import {
   getVersionReferences,
   toVersionOperation,
 } from './packages-builder'
-import type {
-  TemplateResolver,
-  VersionDeprecatedResolver,
-  VersionDocumentsResolver,
-  VersionOperationsResolver,
-  VersionReferencesResolver,
-  VersionResolver,
-} from '@netcracker/qubership-apihub-api-processor'
 import { NotFoundError } from './requests'
 
 export async function packageVersionResolver(authorization: string): Promise<VersionResolver> {

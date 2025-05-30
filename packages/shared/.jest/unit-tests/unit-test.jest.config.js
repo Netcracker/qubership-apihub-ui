@@ -12,7 +12,8 @@ export default {
   ],
   transform: {
     '\\.ts?$': [
-      'ts-jest', { tsconfig: '<rootDir>/.jest/unit-tests/tsconfig.unit-test.json' },
+      'ts-jest',
+      { tsconfig: '<rootDir>/.jest/unit-tests/tsconfig.unit-test.json' },
     ],
   },
   moduleNameMapper: {

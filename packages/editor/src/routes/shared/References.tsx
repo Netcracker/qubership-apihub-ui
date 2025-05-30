@@ -16,10 +16,10 @@
 
 import type { FC } from 'react'
 import { memo } from 'react'
-import { ReferenceList } from './ReferenceList'
-import { useProjectVersionContent } from '../root/useProjectVersionContent'
 import { useParams } from 'react-router-dom'
 import { useProject } from '../root/useProject'
+import { useProjectVersionContent } from '../root/useProjectVersionContent'
+import { ReferenceList } from './ReferenceList'
 
 export const References: FC = memo(() => {
   const { versionId } = useParams()

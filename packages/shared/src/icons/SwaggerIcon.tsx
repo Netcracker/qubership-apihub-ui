@@ -20,8 +20,14 @@ import { memo } from 'react'
 export const SwaggerIcon: FC = memo(() => {
   return (
     <div style={{ display: 'flex' }}>
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"
-           data-testid="SwaggerIcon">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        data-testid="SwaggerIcon"
+      >
         <path
           d="M9.93388 18.9998C5.13794 18.9667 0.967862 14.9865 1.00019 9.92957C1.03126 5.06377 5.07473 0.967026 10.078 1.0002C14.9407 1.03251 19.0431 5.06876 18.9997 10.0137C19.0399 14.9137 14.9173 19.0344 9.93388 18.9998ZM9.93388 18.9998C5.13794 18.9667 0.967862 14.9865 1.00019 9.92957C1.03126 5.06377 5.07473 0.967026 10.078 1.0002C14.9407 1.03251 19.0431 5.06876 18.9997 10.0137C19.0399 14.9137 14.9173 19.0344 9.93388 18.9998Z"
           fill="#626D82"

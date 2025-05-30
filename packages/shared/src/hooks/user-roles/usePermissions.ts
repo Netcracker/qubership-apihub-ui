@@ -15,8 +15,8 @@
  */
 
 import { useQuery } from '@tanstack/react-query'
-import type { IsLoading } from '../../utils/aliases'
 import type { Permissions, PermissionsDto } from '../../types/permissions'
+import type { IsLoading } from '../../utils/aliases'
 import { requestJson } from '../../utils/requests'
 
 const PERMISSIONS_QUERY_KEY = 'permissions-query-key'

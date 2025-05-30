@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useState } from 'react'
-import { SHOW_PUBLISH_PREVIEW_DIALOG } from '../../../../../EventBusProvider'
-import { Box, Dialog, DialogContent, DialogTitle, IconButton } from '@mui/material'
+import { DocSpecView } from '@apihub/components/DocSpecView'
+import { PORTAL_SPEC_VIEW_MODES } from '@apihub/entities/spec-view-mode'
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
-import { useSelectedPreviewFile } from '../../useSelectedPreviewFile'
-import { Resizable } from 're-resizable'
-import { useBranchCache } from '../../useBranchCache'
-import { useDereferencedSpec } from '../../useDereferencedSpec'
-import { RawSpecView } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/RawSpecView'
+import { Box, Dialog, DialogContent, DialogTitle, IconButton } from '@mui/material'
+import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
+import { RawSpecView } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/RawSpecView'
+import { SpecNavigation } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/SpecNavigation'
 import type { SpecViewMode } from '@netcracker/qubership-apihub-ui-shared/components/SpecViewToggler'
 import {
   DOC_SPEC_VIEW_MODE,
@@ -33,22 +30,25 @@ import {
   SpecViewToggler,
 } from '@netcracker/qubership-apihub-ui-shared/components/SpecViewToggler'
 import { useSpecItemUriHashParam } from '@netcracker/qubership-apihub-ui-shared/hooks/hashparams/useSpecItemUriHashParam'
-import { UNKNOWN_SPEC_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import { getFileExtension, UNKNOWN_FILE_FORMAT } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import {
   NAVIGATION_DEFAULT_WIDTH,
   NAVIGATION_MAX_WIDTH,
   NAVIGATION_MIN_WIDTH,
 } from '@netcracker/qubership-apihub-ui-shared/utils/page-layouts'
-import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
-import { PORTAL_SPEC_VIEW_MODES } from '@apihub/entities/spec-view-mode'
-import { SpecNavigation } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/SpecNavigation'
-import { DocSpecView } from '@apihub/components/DocSpecView'
+import { UNKNOWN_SPEC_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import { Resizable } from 're-resizable'
+import type { FC } from 'react'
+import { memo, useState } from 'react'
+import { SHOW_PUBLISH_PREVIEW_DIALOG } from '../../../../../EventBusProvider'
+import { useBranchCache } from '../../useBranchCache'
+import { useDereferencedSpec } from '../../useDereferencedSpec'
+import { useSelectedPreviewFile } from '../../useSelectedPreviewFile'
 
 export const PublishPreviewDialog: FC = memo(() => (
   <PopupDelegate
     type={SHOW_PUBLISH_PREVIEW_DIALOG}
-    render={props => <PublishPreviewPopup {...props}/>}
+    render={props => <PublishPreviewPopup {...props} />}
   />
 ))
 
@@ -75,7 +75,7 @@ const PublishPreviewPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen })
             sx={{ color: '#353C4E' }}
             onClick={() => setOpen(false)}
           >
-            <CloseOutlinedIcon/>
+            <CloseOutlinedIcon />
           </IconButton>
         </Box>
       </DialogTitle>
@@ -143,13 +143,11 @@ const PublishPreviewDialogContent: FC<PublishPreviewDialogContentProps> = ({ mod
         />
       </Resizable>
       <Box width="100%" height="100%" px={4}>
-        {
-          isLoading
-            ? <LoadingIndicator/>
-            : mode === RAW_SPEC_VIEW_MODE
-              ? <RawSpecView extension={getFileExtension(name)} type={type} value={content} selectedUri={specItemUri}/>
-              : <DocSpecView type={type} format={format} value={dereferencedSpec} sidebarEnabled/>
-        }
+        {isLoading
+          ? <LoadingIndicator />
+          : mode === RAW_SPEC_VIEW_MODE
+          ? <RawSpecView extension={getFileExtension(name)} type={type} value={content} selectedUri={specItemUri} />
+          : <DocSpecView type={type} format={format} value={dereferencedSpec} sidebarEnabled />}
       </Box>
     </DialogContent>
   )

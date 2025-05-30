@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo } from 'react'
 import { TabPanel } from '@mui/lab'
 import type { SidebarPanelProps } from '@netcracker/qubership-apihub-ui-shared/components/Panels/SidebarPanel'
 import { SidebarPanel } from '@netcracker/qubership-apihub-ui-shared/components/Panels/SidebarPanel'
+import type { FC } from 'react'
+import { memo } from 'react'
 
 export type SidebarTabPanelProps = SidebarPanelProps & {
   value: string

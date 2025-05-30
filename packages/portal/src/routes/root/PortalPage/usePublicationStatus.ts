@@ -14,8 +14,17 @@
  * limitations under the License.
  */
 
-import { useQuery } from '@tanstack/react-query'
-import { generatePath } from 'react-router-dom'
+import { getVersionPath, useNavigation } from '@apihub/routes/NavigationProvider'
+import {
+  useShowErrorNotification,
+  useShowInfoNotification,
+  useShowWarningNotification,
+} from '@apihub/routes/root/BasePage/Notification'
+import { REST_API_TYPE } from '@netcracker/qubership-apihub-api-processor'
+import {
+  useAsyncInvalidatePackageVersions,
+} from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
+import type { IsError, IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import {
   API_V1,
   API_V2,
@@ -24,22 +33,13 @@ import {
   STATUS_REFETCH_INTERVAL,
 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/utils/types'
-import {
-  useShowErrorNotification,
-  useShowInfoNotification,
-  useShowWarningNotification,
-} from '@apihub/routes/root/BasePage/Notification'
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
-import { getVersionPath, useNavigation } from '@apihub/routes/NavigationProvider'
-import type { IsError, IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
-import { REST_API_TYPE } from '@netcracker/qubership-apihub-api-processor'
-import { useDownloadPublicationReport } from './useDownloadPublicationReport'
-import { useAsyncInvalidateVersionContent } from '../usePackageVersionContent'
-import {
-  useAsyncInvalidatePackageVersions,
-} from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
+import { generatePath } from 'react-router-dom'
 import { useAsyncInvalidatePackage } from '../usePackage'
+import { useAsyncInvalidateVersionContent } from '../usePackageVersionContent'
+import { useDownloadPublicationReport } from './useDownloadPublicationReport'
 
 const PUBLISH_STATUS_QUERY_KEY = 'publish-status-query-key'
 const OPERATION_GROUP_PUBLISH_STATUS_QUERY_KEY = 'operation-group-publish-status-query-key'
@@ -55,7 +55,9 @@ export function usePublicationStatuses(
   const { data } = useQuery<PublishStatusDto, Error, PublishStatusDto>({
     queryKey: [PUBLISH_STATUS_QUERY_KEY, packageId, publishId],
     queryFn: () => getPublishStatus(packageId, publishId!),
-    refetchInterval: data => (data?.status === RUNNING_PUBLISH_STATUS || data?.status === NONE_PUBLISH_STATUS ? STATUS_REFETCH_INTERVAL : false),
+    refetchInterval: data => (data?.status === RUNNING_PUBLISH_STATUS || data?.status === NONE_PUBLISH_STATUS
+      ? STATUS_REFETCH_INTERVAL
+      : false),
     onSuccess: (data) => {
       if (data.status === COMPLETE_PUBLISH_STATUS) {
         const linkToVersion = getVersionPath({
@@ -117,7 +119,9 @@ export function useOperationGroupPublicationStatuses(
   const { data } = useQuery<PublishStatusDto, Error, PublishStatusDto>({
     queryKey: [OPERATION_GROUP_PUBLISH_STATUS_QUERY_KEY, packageId, versionId, groupName, publishId],
     queryFn: () => getOperationGroupPublishStatus(packageId, versionId, groupName, publishId),
-    refetchInterval: data => (data?.status === RUNNING_PUBLISH_STATUS || data?.status === NONE_PUBLISH_STATUS ? STATUS_REFETCH_INTERVAL : false),
+    refetchInterval: data => (data?.status === RUNNING_PUBLISH_STATUS || data?.status === NONE_PUBLISH_STATUS
+      ? STATUS_REFETCH_INTERVAL
+      : false),
     onSuccess: (data) => {
       if (data.status === COMPLETE_PUBLISH_STATUS) {
         const linkToVersion = getVersionPath({
@@ -164,7 +168,8 @@ export async function getOperationGroupPublishStatus(
   const encodedGroupName = encodeURIComponent(groupName)
   const apiType = REST_API_TYPE
 
-  const pathPattern = '/packages/:packageId/versions/:versionId/:apiType/groups/:encodedGroupName/publish/:publishId/status'
+  const pathPattern =
+    '/packages/:packageId/versions/:versionId/:apiType/groups/:encodedGroupName/publish/:publishId/status'
   return await requestJson<PublishStatusDto>(
     generatePath(pathPattern, { packageId, versionId, encodedGroupName, apiType, publishId }),
     { method: 'GET' },
@@ -189,7 +194,9 @@ export function useDashboardVersionFromCSVPublicationStatuses(
   const { data: { status } = {} } = useQuery<PublishStatusDto, Error, PublishStatusDto>({
     queryKey: [PUBLISH_STATUS_QUERY_KEY, packageId, publishId],
     queryFn: () => getDashboardVersionFromCSVPublicationStatuses(packageId, publishId!),
-    refetchInterval: data => (data?.status === RUNNING_PUBLISH_STATUS || data?.status === NONE_PUBLISH_STATUS ? STATUS_REFETCH_INTERVAL : false),
+    refetchInterval: data => (data?.status === RUNNING_PUBLISH_STATUS || data?.status === NONE_PUBLISH_STATUS
+      ? STATUS_REFETCH_INTERVAL
+      : false),
     onSuccess: async ({ status, message }) => {
       if (status === ERROR_PUBLISH_STATUS) {
         return showErrorNotification({ message: message })
@@ -210,11 +217,12 @@ export function useDashboardVersionFromCSVPublicationStatuses(
           message: `The dashboard version was published.\n${message}`,
           button: {
             title: 'Download report result',
-            onClick: () => downloadPublicationReport({
-              packageKey: packageId,
-              versionKey: versionId,
-              publishKey: publishId!,
-            }),
+            onClick: () =>
+              downloadPublicationReport({
+                packageKey: packageId,
+                versionKey: versionId,
+                publishKey: publishId!,
+              }),
           },
         })
       }

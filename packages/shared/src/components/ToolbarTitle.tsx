@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { FC, ReactNode } from 'react'
-import { memo } from 'react'
 import type { TypographyProps } from '@mui/material'
 import Typography from '@mui/material/Typography'
+import type { FC, ReactNode } from 'react'
+import { memo } from 'react'
 import { OverflowTooltip } from './OverflowTooltip'
 
 export type ToolbarTitleProps = Partial<{

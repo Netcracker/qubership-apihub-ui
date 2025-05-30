@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { Box, Divider, Tooltip } from '@mui/material'
+import ListItem from '@mui/material/ListItem'
 import type { FC, PropsWithChildren } from 'react'
 import { memo } from 'react'
 import type { ChangeSeverity } from '../entities/change-severities'
@@ -22,8 +24,6 @@ import {
   CHANGE_SEVERITY_DESCRIPTION_MAP,
   CHANGE_SEVERITY_TOOLTIP_TITLE_MAP,
 } from '../entities/change-severities'
-import { Box, Divider, Tooltip } from '@mui/material'
-import ListItem from '@mui/material/ListItem'
 
 export type ChangesTooltipProps = PropsWithChildren<{
   changeType: ChangeSeverity
@@ -67,7 +67,9 @@ const ChangesTooltipContent: FC<ChangesTooltipContentProps> = memo<ChangesToolti
   category,
 }) => {
   const tooltipContent = CHANGE_SEVERITY_DESCRIPTION_MAP[changeType]
-  const categoryTitle = `${category ? `${TOOLTIP_TITLE_BY_CATEGORY[category]} with ` : ''}${CHANGE_SEVERITY_TOOLTIP_TITLE_MAP[changeType]}`
+  const categoryTitle = `${category ? `${TOOLTIP_TITLE_BY_CATEGORY[category]} with ` : ''}${
+    CHANGE_SEVERITY_TOOLTIP_TITLE_MAP[changeType]
+  }`
 
   return (
     <Box sx={{ p: '4px 4px' }}>
@@ -84,14 +86,15 @@ const ChangesTooltipContent: FC<ChangesTooltipContentProps> = memo<ChangesToolti
         />
         {categoryTitle}
       </Box>
-      <Divider sx={{ mx: 0, mt: 1, mb: 1 }} orientation="horizontal"/>
+      <Divider sx={{ mx: 0, mt: 1, mb: 1 }} orientation="horizontal" />
       <Box>
         {tooltipContent.text}
-        {tooltipContent.options && tooltipContent.options.map((item, index) => (
-          <ListItem sx={{ display: 'list-item', py: 0 }} key={index}>
-            {item}
-          </ListItem>
-        ))}
+        {tooltipContent.options
+          && tooltipContent.options.map((item, index) => (
+            <ListItem sx={{ display: 'list-item', py: 0 }} key={index}>
+              {item}
+            </ListItem>
+          ))}
       </Box>
     </Box>
   )

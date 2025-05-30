@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useMemo } from 'react'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type {
   AddSystemAdmin,
   SystemAdmin,
@@ -24,8 +23,9 @@ import type {
   SystemAdminsDto,
 } from '@netcracker/qubership-apihub-ui-shared/types/system-admins'
 import type { InvalidateQuery, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { requestJson, requestVoid } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMemo } from 'react'
 
 const SYSTEM_ADMINISTRATORS_QUERY_KEY = 'system-administrators-query-key'
 
@@ -46,10 +46,11 @@ export function useSystemAdmins(): [SystemAdmins | null, IsLoading, Error | null
 export function useInvalidateSystemAdmins(): InvalidateQuery<void> {
   const client = useQueryClient()
 
-  return () => client.invalidateQueries({
-    queryKey: [SYSTEM_ADMINISTRATORS_QUERY_KEY],
-    refetchType: 'all',
-  })
+  return () =>
+    client.invalidateQueries({
+      queryKey: [SYSTEM_ADMINISTRATORS_QUERY_KEY],
+      refetchType: 'all',
+    })
 }
 
 export function useAddSystemAdmin(): [AddSystemAdminFn, IsLoading, Error | null] {

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { useMutation } from '@tanstack/react-query'
-import { useInvalidateGroups } from '../useGroups'
 import { editorRequestVoid } from '@apihub/utils/requests'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { useMutation } from '@tanstack/react-query'
+import { useInvalidateGroups } from '../useGroups'
 
 export function useFavorGroup(): FavorGroup {
   const invalidateGroups = useInvalidateGroups()

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { Box, Grid, Typography } from '@mui/material'
 import type { FC } from 'react'
 import { memo } from 'react'
-import { Box, Grid, Typography } from '@mui/material'
 import { TitledValue } from './TitledValue'
 
 export type GroupDetails = Partial<{

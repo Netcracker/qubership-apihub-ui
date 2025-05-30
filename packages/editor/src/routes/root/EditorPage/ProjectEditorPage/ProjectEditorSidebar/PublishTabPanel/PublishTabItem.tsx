@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
+import { ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
 import type { FC } from 'react'
 import { memo, useMemo } from 'react'
-import { ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
 
-import { useSelectedPreviewFileKey } from '../../useSelectedPreviewFile'
-import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import { SpecLogo } from '@netcracker/qubership-apihub-ui-shared/components/SpecLogo'
 import type { FileProblem } from '@apihub/entities/file-problems'
 import { ERROR_FILE_PROBLEM_TYPE } from '@apihub/entities/file-problems'
+import { SpecLogo } from '@netcracker/qubership-apihub-ui-shared/components/SpecLogo'
 import {
   ERROR_STATUS_MARKER_VARIANT,
   LOADING_STATUS_MARKER_VARIANT,
@@ -32,6 +30,8 @@ import {
 } from '@netcracker/qubership-apihub-ui-shared/components/StatusMarker'
 import type { FileKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import { useSelectedPreviewFileKey } from '../../useSelectedPreviewFile'
 
 export type PublishTabItemProps = {
   fileKey: FileKey
@@ -51,7 +51,7 @@ export const PublishTabItem: FC<PublishTabItemProps> = memo<PublishTabItemProps>
   return (
     <ListItem
       key={fileKey}
-      secondaryAction={<PrepublishItemStatus problems={problems}/>}
+      secondaryAction={<PrepublishItemStatus problems={problems} />}
       disablePadding
     >
       <ListItemButton
@@ -61,7 +61,7 @@ export const PublishTabItem: FC<PublishTabItemProps> = memo<PublishTabItemProps>
         onClick={() => setSelectedPreviewFileKey(fileKey)}
       >
         <ListItemIcon sx={{ minWidth: 2, mt: 0, mr: 1 }}>
-          <SpecLogo value={fileType}/>
+          <SpecLogo value={fileType} />
         </ListItemIcon>
         <ListItemText
           primary={fileTitle}

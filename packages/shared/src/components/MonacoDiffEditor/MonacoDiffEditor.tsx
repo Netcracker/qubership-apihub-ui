@@ -16,11 +16,11 @@
 
 import type { FC } from 'react'
 import { lazy, memo, Suspense } from 'react'
-import type { MonacoDiffEditorElementProps } from './MonacoDiffEditorElement'
-import type { SpecType } from '../../utils/specs'
 import type { LanguageType } from '../../types/languages'
 import type { SpecItemUri } from '../../utils/specifications'
+import type { SpecType } from '../../utils/specs'
 import { LoadingIndicator } from '../LoadingIndicator'
+import type { MonacoDiffEditorElementProps } from './MonacoDiffEditorElement'
 
 export type MonacoDiffEditorProps = {
   before: string
@@ -40,7 +40,7 @@ export const MonacoDiffEditor: FC<MonacoDiffEditorProps> = memo<MonacoDiffEditor
   selectedUri,
 }) => {
   return (
-    <Suspense fallback={<LoadingIndicator/>}>
+    <Suspense fallback={<LoadingIndicator />}>
       <MonacoDiffEditorElement
         before={before}
         after={after}

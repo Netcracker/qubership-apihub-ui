@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
+import type { Meta, StoryObj } from '@storybook/react'
 import type { ReactElement } from 'react'
 import React, { useMemo } from 'react'
 import { useForm } from 'react-hook-form'
-import type { Meta, StoryObj } from '@storybook/react'
-import type { VersionStatus } from '../entities/version-status'
-import { DRAFT_VERSION_STATUS, NO_PREVIOUS_RELEASE_VERSION_OPTION } from '../entities/version-status'
 import type { VersionDialogFormProps, VersionFormData } from '../components/VersionDialogForm'
 import { VersionDialogForm } from '../components/VersionDialogForm'
+import type { VersionStatus } from '../entities/version-status'
+import { DRAFT_VERSION_STATUS, NO_PREVIOUS_RELEASE_VERSION_OPTION } from '../entities/version-status'
 
 const meta: Meta<typeof VersionDialogForm> = {
   component: VersionDialogForm,

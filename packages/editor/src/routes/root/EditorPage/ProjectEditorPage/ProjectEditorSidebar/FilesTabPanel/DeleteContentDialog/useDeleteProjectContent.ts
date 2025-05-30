@@ -16,13 +16,13 @@
 
 import { useParams } from 'react-router-dom'
 
-import { useMutation } from '@tanstack/react-query'
-import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { useBranchSearchParam } from '../../../../../useBranchSearchParam'
-import { useShowSuccessNotification } from '../../../../../BasePage/Notification'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { editorRequestVoid } from '@apihub/utils/requests'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { useMutation } from '@tanstack/react-query'
+import { useShowSuccessNotification } from '../../../../../BasePage/Notification'
+import { useBranchSearchParam } from '../../../../../useBranchSearchParam'
 
 export function useDeleteProjectContent(): [DeleteProjectContent, IsLoading] {
   const { projectId } = useParams()

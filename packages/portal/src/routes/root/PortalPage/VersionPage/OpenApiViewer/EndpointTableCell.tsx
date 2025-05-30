@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
+import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
+import { Box } from '@mui/material'
+import { ExpandableItem } from '@netcracker/qubership-apihub-ui-shared/components/ExpandableItem'
+import { OperationTitleWithMeta } from '@netcracker/qubership-apihub-ui-shared/components/Operations/OperationTitleWithMeta'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
+import { DOCUMENT_SEARCH_PARAM, REF_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import type { Path } from '@remix-run/router'
 import type { Row } from '@tanstack/react-table'
 import type { FC } from 'react'
 import { memo, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
-import { Box } from '@mui/material'
+import { getOperationsPath } from '../../../../NavigationProvider'
 import { useBackwardLocation } from '../../../useBackwardLocation'
 import { usePackageKind } from '../../usePackageKind'
-import type { Path } from '@remix-run/router'
-import { getOperationsPath } from '../../../../NavigationProvider'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
-import { ExpandableItem } from '@netcracker/qubership-apihub-ui-shared/components/ExpandableItem'
-import { OperationTitleWithMeta } from '@netcracker/qubership-apihub-ui-shared/components/Operations/OperationTitleWithMeta'
-import { DOCUMENT_SEARCH_PARAM, REF_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
-import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 
 export type EndpointTableCellProps = {
   value: Row<CellData>
@@ -86,16 +86,19 @@ function useOperationLink({ operationKey, apiType, packageRef }: OperationData, 
   const [kind] = usePackageKind()
 
   return useMemo(
-    () => getOperationsPath({
-      packageKey: packageId!,
-      versionKey: versionId!,
-      apiType: apiType ?? DEFAULT_API_TYPE,
-      operationKey: operationKey!,
-      search: {
-        [REF_SEARCH_PARAM]: { value: kind === DASHBOARD_KIND && (packageRef || ref) ? (packageRef?.key ?? ref!) : '' },
-        [DOCUMENT_SEARCH_PARAM]: { value: documentSlug },
-      },
-    }),
+    () =>
+      getOperationsPath({
+        packageKey: packageId!,
+        versionKey: versionId!,
+        apiType: apiType ?? DEFAULT_API_TYPE,
+        operationKey: operationKey!,
+        search: {
+          [REF_SEARCH_PARAM]: {
+            value: kind === DASHBOARD_KIND && (packageRef || ref) ? (packageRef?.key ?? ref!) : '',
+          },
+          [DOCUMENT_SEARCH_PARAM]: { value: documentSlug },
+        },
+      }),
     [apiType, documentSlug, kind, operationKey, packageId, packageRef, ref, versionId],
   )
 }

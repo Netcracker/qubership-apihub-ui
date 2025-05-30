@@ -15,8 +15,8 @@
  */
 
 import type { PackageKey, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { OperationKey } from '@netcracker/qubership-apihub-ui-shared/utils/types'
 import type { Operation, Operations } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import type { OperationKey } from '@netcracker/qubership-apihub-ui-shared/utils/types'
 
 export type UpdatingOperation = Readonly<{
   packageId?: PackageKey

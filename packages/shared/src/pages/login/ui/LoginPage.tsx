@@ -16,8 +16,8 @@
 
 import type { FC } from 'react'
 import { memo } from 'react'
-import { useLoginUser } from '../api/useLoginUser'
 import { CommonLoginPageComponent } from '../../CommonLoginPageComponent'
+import { useLoginUser } from '../api/useLoginUser'
 
 export type LoginPageComponentProps = {
   applicationName: string

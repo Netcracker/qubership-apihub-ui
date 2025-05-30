@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
+import { CssBaseline, ThemeProvider } from '@mui/material'
+import type { Router } from '@remix-run/router'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import type { FC, PropsWithChildren } from 'react'
 import { memo, StrictMode, useState } from 'react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { CssBaseline, ThemeProvider } from '@mui/material'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { useLocation } from 'react-use'
 import { RouterProvider } from 'react-router-dom'
-import type { Router } from '@remix-run/router'
-import { useAuthorization } from '../hooks/authorization'
+import { useLocation } from 'react-use'
 import { isTokenExpired } from '../entities/token-payload'
-import { getToken } from '../utils/storages'
-import { theme } from '../themes/theme'
+import { useAuthorization } from '../hooks/authorization'
 import { AuthPage } from '../pages/AuthPage'
+import { theme } from '../themes/theme'
+import { getToken } from '../utils/storages'
 
 const client = new QueryClient({
   defaultOptions: {
@@ -51,7 +51,7 @@ export const CheckAuthorization: FC<PropsWithChildren> = memo<PropsWithChildren>
 
   return auth || isLoginPage
     ? <>{children}</>
-    : <AuthPage/>
+    : <AuthPage />
 })
 
 export const AbstractApplication: FC<ApplicationProps> = memo<ApplicationProps>(({ isSecure, routing }) => {
@@ -59,17 +59,16 @@ export const AbstractApplication: FC<ApplicationProps> = memo<ApplicationProps>(
     <StrictMode>
       <QueryClientProvider client={client}>
         <ThemeProvider theme={theme}>
-          <CssBaseline/>
+          <CssBaseline />
           {isSecure
             ? (
               <CheckAuthorization>
-                <RouterProvider router={routing}/>
+                <RouterProvider router={routing} />
               </CheckAuthorization>
             )
-            : <RouterProvider router={routing}/>
-          }
+            : <RouterProvider router={routing} />}
         </ThemeProvider>
-        <ReactQueryDevtools initialIsOpen={false}/>
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </StrictMode>
   )

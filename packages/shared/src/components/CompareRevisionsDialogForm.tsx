@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import * as React from 'react'
-import { memo } from 'react'
+import { LoadingButton } from '@mui/lab'
 import {
   Autocomplete,
   Box,
@@ -28,15 +26,17 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
+import type { FC } from 'react'
+import * as React from 'react'
+import { memo } from 'react'
 import type { Control, UseFormSetValue } from 'react-hook-form'
 import { Controller } from 'react-hook-form'
-import { LoadingButton } from '@mui/lab'
-import { DialogForm } from './DialogForm'
-import { CustomChip } from './CustomChip'
-import { Swapper } from './Swapper'
-import { LatestRevisionMark } from './LatestRevisionMark'
 import type { Revision, Revisions } from '../entities/revisions'
 import { REVISION_DELIMITER } from '../entities/versions'
+import { CustomChip } from './CustomChip'
+import { DialogForm } from './DialogForm'
+import { LatestRevisionMark } from './LatestRevisionMark'
+import { Swapper } from './Swapper'
 
 export type CompareRevisionsDialogFormData = {
   originalRevision: Revision | null
@@ -108,7 +108,7 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
         />
 
         <Box sx={{ gridArea: 'swapper', alignSelf: 'center' }}>
-          <Swapper onSwap={onSwap}/>
+          <Swapper onSwap={onSwap} />
         </Box>
 
         <Typography
@@ -133,7 +133,6 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
             />
           )}
         />
-
       </DialogContent>
       <DialogActions>
         <LoadingButton
@@ -179,8 +178,8 @@ const RevisionAutocomplete: FC<RevisionAutocompleteProps> = memo<RevisionAutocom
       options={isLoading ? [] : revisions}
       getOptionLabel={(revision) => `${REVISION_DELIMITER}${revision.revision}`}
       isOptionEqualToValue={(option, value) => option.revision === value.revision}
-      renderOption={(props, revision) => <AutocompleteOption revision={revision} props={props}/>}
-      renderInput={(params) => <TextField {...params} required label="Revision"/>}
+      renderOption={(props, revision) => <AutocompleteOption revision={revision} props={props} />}
+      renderInput={(params) => <TextField {...params} required label="Revision" />}
       onChange={(_, value) => {
         setValue()
         onChange(value)
@@ -196,7 +195,6 @@ type AutocompleteOptionProps = {
 }
 
 const AutocompleteOption: FC<AutocompleteOptionProps> = memo<AutocompleteOptionProps>(({ revision, props }) => {
-
   return (
     <ListItem
       {...props}
@@ -205,9 +203,9 @@ const AutocompleteOption: FC<AutocompleteOptionProps> = memo<AutocompleteOptionP
       <Box width="100%" display="flex" justifyContent="space-between">
         <Box display="flex" gap="4px" alignItems="center">
           {`${REVISION_DELIMITER}${revision.revision}`}
-          <LatestRevisionMark latest={revision.latestRevision}/>
+          <LatestRevisionMark latest={revision.latestRevision} />
         </Box>
-        <CustomChip value={revision.status}/>
+        <CustomChip value={revision.status} />
       </Box>
     </ListItem>
   )

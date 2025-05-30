@@ -22,10 +22,10 @@ import {
   usePromoteVersionStep,
   useValidationResultsStep,
 } from '../ServicesPageProvider/ServicesStepsProvider'
-import { DiscoverServicesStep } from './DiscoverServicesStep/DiscoverServicesStep'
 import { CreateSnapshotStep } from './CreateSnapshotStep/CreateSnapshotStep'
-import { ValidationResultsStep } from './ValidationResultsStep/ValidationResultsStep'
+import { DiscoverServicesStep } from './DiscoverServicesStep/DiscoverServicesStep'
 import { PromoteVersionStep } from './PromoteVersionStep/PromoteVersionStep'
+import { ValidationResultsStep } from './ValidationResultsStep/ValidationResultsStep'
 
 export const ServicesPageBody: FC = memo(() => {
   const [discoverServicesStep] = useDiscoverServicesStep()
@@ -34,27 +34,19 @@ export const ServicesPageBody: FC = memo(() => {
   const [promoteVersionStep] = usePromoteVersionStep()
 
   if (discoverServicesStep.active) {
-    return (
-      <DiscoverServicesStep/>
-    )
+    return <DiscoverServicesStep />
   }
 
   if (createSnapshotStep.active) {
-    return (
-      <CreateSnapshotStep/>
-    )
+    return <CreateSnapshotStep />
   }
 
   if (validationResultsStep.active) {
-    return (
-      <ValidationResultsStep/>
-    )
+    return <ValidationResultsStep />
   }
 
   if (promoteVersionStep.active) {
-    return (
-      <PromoteVersionStep/>
-    )
+    return <PromoteVersionStep />
   }
 
   return null

@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-import { useQuery } from '@tanstack/react-query'
 import { portalRequestJson } from '@apihub/utils/requests'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { Users, UsersDto } from '@netcracker/qubership-apihub-ui-shared/types/user'
 import { toUsers } from '@netcracker/qubership-apihub-ui-shared/types/user'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { useQuery } from '@tanstack/react-query'
 
 const USERS_QUERY_KEY = 'users-query-key'
 
-export function useUsers(searchValue: string, packageKey?: Key, limit?: number, page?: number): [Users | null, IsLoading, Error | null] {
+export function useUsers(
+  searchValue: string,
+  packageKey?: Key,
+  limit?: number,
+  page?: number,
+): [Users | null, IsLoading, Error | null] {
   const { data, isLoading, error } = useQuery<UsersDto, Error, Users>({
     queryKey: [USERS_QUERY_KEY, packageKey, searchValue],
     queryFn: () => getUsersByFilter(searchValue, limit, page),

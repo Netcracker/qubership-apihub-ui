@@ -14,27 +14,17 @@
  * limitations under the License.
  */
 
-import type { FC, ReactNode } from 'react'
-import React, { memo, useCallback, useMemo } from 'react'
-import { useParams } from 'react-router-dom'
+import { useEventBus } from '@apihub/routes/EventBusProvider'
+import type { ComparedPackagesBreadcrumbsData } from '@apihub/routes/root/PortalPage/VersionPage/breadcrumbs'
 import { Box, IconButton } from '@mui/material'
-import { useOperationLocation } from '../useOperationLocation'
-import { useOperationViewMode } from '../useOperationViewMode'
-import type { OperationDisplayMode } from './OperationView/OperationDisplayMode'
-import {
-  COMPARE_DASHBOARDS_MODE,
-  COMPARE_DIFFERENT_OPERATIONS_MODE,
-  COMPARE_PACKAGES_MODE,
-} from './OperationView/OperationDisplayMode'
-import { useIsPackageFromDashboard } from '../../useIsPackageFromDashboard'
-import { useDocumentSearchParam } from '../useDocumentSearchParam'
-import { SwapperBreadcrumbs } from '../SwapperBreadcrumbs'
-import { useVersionsComparisonGlobalParams } from '../VersionsComparisonGlobalParams'
-import { VERSION_SWAPPER_HEIGHT } from '../shared-styles'
-import { useNavigation } from '../../../../NavigationProvider'
+import { Swapper } from '@netcracker/qubership-apihub-ui-shared/components/Swapper'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { DOC_OPERATION_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
 import {
   useSeverityFiltersSearchParam,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/change-severities/useSeverityFiltersSearchParam'
+import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
+import { EditIcon } from '@netcracker/qubership-apihub-ui-shared/icons/EditIcon'
 import {
   DOCUMENT_SEARCH_PARAM,
   FILTERS_SEARCH_PARAM,
@@ -44,13 +34,23 @@ import {
   REF_SEARCH_PARAM,
   VERSION_SEARCH_PARAM,
 } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
-import { useEventBus } from '@apihub/routes/EventBusProvider'
-import { DOC_OPERATION_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
-import { Swapper } from '@netcracker/qubership-apihub-ui-shared/components/Swapper'
-import { EditIcon } from '@netcracker/qubership-apihub-ui-shared/icons/EditIcon'
-import type { ComparedPackagesBreadcrumbsData } from '@apihub/routes/root/PortalPage/VersionPage/breadcrumbs'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { FC, ReactNode } from 'react'
+import React, { memo, useCallback, useMemo } from 'react'
+import { useParams } from 'react-router-dom'
+import { useNavigation } from '../../../../NavigationProvider'
+import { useIsPackageFromDashboard } from '../../useIsPackageFromDashboard'
+import { VERSION_SWAPPER_HEIGHT } from '../shared-styles'
+import { SwapperBreadcrumbs } from '../SwapperBreadcrumbs'
+import { useDocumentSearchParam } from '../useDocumentSearchParam'
+import { useOperationLocation } from '../useOperationLocation'
+import { useOperationViewMode } from '../useOperationViewMode'
+import { useVersionsComparisonGlobalParams } from '../VersionsComparisonGlobalParams'
+import type { OperationDisplayMode } from './OperationView/OperationDisplayMode'
+import {
+  COMPARE_DASHBOARDS_MODE,
+  COMPARE_DIFFERENT_OPERATIONS_MODE,
+  COMPARE_PACKAGES_MODE,
+} from './OperationView/OperationDisplayMode'
 
 export type OperationsSwapperProps = {
   displayMode: OperationDisplayMode
@@ -113,7 +113,24 @@ export const OperationsSwapper: FC<OperationsSwapperProps> = memo<OperationsSwap
         originOperationKey: originOperationKey!,
         search: searchParams,
       })
-  }, [mode, originPackageKey, changedPackageKey, originVersionKey, changedVersionKey, originOperationKey, changedOperationKey, isPackageFromDashboard, refPackageKey, documentSlug, group, filters, previousGroup, navigateToGroupsOperationsSwapper, apiType, navigateToOperationsSwapper])
+  }, [
+    mode,
+    originPackageKey,
+    changedPackageKey,
+    originVersionKey,
+    changedVersionKey,
+    originOperationKey,
+    changedOperationKey,
+    isPackageFromDashboard,
+    refPackageKey,
+    documentSlug,
+    group,
+    filters,
+    previousGroup,
+    navigateToGroupsOperationsSwapper,
+    apiType,
+    navigateToOperationsSwapper,
+  ])
 
   const isEditButtonEnabled = useMemo(() => (
     [
@@ -126,22 +143,26 @@ export const OperationsSwapper: FC<OperationsSwapperProps> = memo<OperationsSwap
   return (
     <Box sx={OPERATION_SWAPPER_STYLES}>
       <Box sx={OPERATION_SWAPPER_HEADER_STYLES} data-testid="LeftSwapperHeader">
-        {<SwapperBreadcrumbs
-          side="before"
-          data={breadcrumbsData}
-        />}
+        {
+          <SwapperBreadcrumbs
+            side="before"
+            data={breadcrumbsData}
+          />
+        }
       </Box>
       <Box sx={OPERATION_SWAPPER_DELIMITER_STYLES}>
         <Box sx={OPERATION_SWAPPER_ARROW_STYLES}>
-          <Swapper onSwap={handleSwap}/>
+          <Swapper onSwap={handleSwap} />
         </Box>
       </Box>
       <Box sx={OPERATION_SECOND_SWAPPER_HEADER_STYLES} data-testid="RightSwapperHeader">
         <Box sx={OPERATION_SECOND_SWAPPER_HEADER_BOX_STYLES}>
-          {<SwapperBreadcrumbs
-            side="after"
-            data={breadcrumbsData}
-          />}
+          {
+            <SwapperBreadcrumbs
+              side="after"
+              data={breadcrumbsData}
+            />
+          }
         </Box>
         <Box display="flex" flexDirection="row" gap={1} sx={OPERATION_ACTION_STYLES}>
           <Box py={1}>
@@ -152,12 +173,11 @@ export const OperationsSwapper: FC<OperationsSwapperProps> = memo<OperationsSwap
               onClick={showCompareOperationsDialog}
               data-testid="EditButton"
             >
-              <EditIcon/>
+              <EditIcon />
             </IconButton>
           )}
         </Box>
       </Box>
-
     </Box>
   )
 })
@@ -184,7 +204,7 @@ const OPERATION_SECOND_SWAPPER_HEADER_STYLES = {
   padding: '10px 0 10px 16px',
 }
 
-//32px icon
+// 32px icon
 const OPERATION_SECOND_SWAPPER_HEADER_BOX_STYLES = {
   width: 'calc(100% - 4px - 32px)',
 }

@@ -14,31 +14,32 @@
  * limitations under the License.
  */
 
+import { TabContext, TabList } from '@mui/lab'
+import { Box, Tab, Tooltip } from '@mui/material'
 import type { FC } from 'react'
 import { memo, useEffect } from 'react'
-import { Box, Tab, Tooltip } from '@mui/material'
-import { TabContext, TabList } from '@mui/lab'
 
-import { SettingsTabPanel } from './SettingsTabPanel'
-import { useModeSearchParam } from '../../../useModeSearchParam'
 import { useBranchSearchParam } from '../../../useBranchSearchParam'
+import { useModeSearchParam } from '../../../useModeSearchParam'
+import { SettingsTabPanel } from './SettingsTabPanel'
 
-import { useBranchChangeCount } from '../useBranchChanges'
-import { useNavigation } from '../../../../NavigationProvider'
+import { DottedBadge } from '@apihub/components/DottedBadge'
 import {
   CHANGES_PROJECT_EDITOR_MODE,
   FILES_PROJECT_EDITOR_MODE,
-  PUBLISH_PROJECT_EDITOR_MODE, SETTINGS_PROJECT_EDITOR_MODE,
+  PUBLISH_PROJECT_EDITOR_MODE,
+  SETTINGS_PROJECT_EDITOR_MODE,
 } from '@apihub/entities/editor-modes'
-import { BRANCH_SEARCH_PARAM, MODE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { FileIcon } from '@netcracker/qubership-apihub-ui-shared/icons/FileIcon'
 import { MergeIcon } from '@netcracker/qubership-apihub-ui-shared/icons/MergeIcon'
-import { ShareIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ShareIcon'
-import { DottedBadge } from '@apihub/components/DottedBadge'
 import { SettingIcon } from '@netcracker/qubership-apihub-ui-shared/icons/SettingIcon'
+import { ShareIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ShareIcon'
+import { BRANCH_SEARCH_PARAM, MODE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { useNavigation } from '../../../../NavigationProvider'
+import { useBranchChangeCount } from '../useBranchChanges'
+import { ChangesTabPanel } from './ChangesTabPanel/ChangesTabPanel'
 import { FilesTabPanel } from './FilesTabPanel/FilesTabPanel'
 import { PublishTabPanel } from './PublishTabPanel/PublishTabPanel'
-import { ChangesTabPanel } from './ChangesTabPanel/ChangesTabPanel'
 
 export const ProjectEditorSidebar: FC = memo(() => {
   const [mode, setMode] = useModeSearchParam()
@@ -69,31 +70,36 @@ export const ProjectEditorSidebar: FC = memo(() => {
           }}
           TabIndicatorProps={{ sx: { backgroundColor: '#FFFFFF' } }}
           orientation="vertical"
-          onChange={(_, value) => navigateToProject({
-            search: {
-              [BRANCH_SEARCH_PARAM]: { value: branch },
-              [MODE_SEARCH_PARAM]: { value },
-            },
-            replace: true,
-          })}
+          onChange={(_, value) =>
+            navigateToProject({
+              search: {
+                [BRANCH_SEARCH_PARAM]: { value: branch },
+                [MODE_SEARCH_PARAM]: { value },
+              },
+              replace: true,
+            })}
         >
           <Tooltip title="Files" placement="right" {...{ value: FILES_PROJECT_EDITOR_MODE }}>
             <Tab
-              icon={<FileIcon/>}
+              icon={<FileIcon />}
               value={FILES_PROJECT_EDITOR_MODE}
             />
           </Tooltip>
 
           <Tooltip title={`Changes (${changeCount})`} placement="right" {...{ value: CHANGES_PROJECT_EDITOR_MODE }}>
             <Tab
-              label={<DottedBadge color="primary" invisible={changeCount === 0}><MergeIcon/></DottedBadge>}
+              label={
+                <DottedBadge color="primary" invisible={changeCount === 0}>
+                  <MergeIcon />
+                </DottedBadge>
+              }
               value={CHANGES_PROJECT_EDITOR_MODE}
             />
           </Tooltip>
 
           <Tooltip title="Publish" placement="right" {...{ value: PUBLISH_PROJECT_EDITOR_MODE }}>
             <Tab
-              icon={<ShareIcon/>}
+              icon={<ShareIcon />}
               value={PUBLISH_PROJECT_EDITOR_MODE}
             />
           </Tooltip>
@@ -101,17 +107,17 @@ export const ProjectEditorSidebar: FC = memo(() => {
           <Tooltip title="Settings" placement="right" {...{ value: SETTINGS_PROJECT_EDITOR_MODE }}>
             <Tab
               sx={{ marginTop: 'auto' }}
-              icon={<SettingIcon/>}
+              icon={<SettingIcon />}
               value={SETTINGS_PROJECT_EDITOR_MODE}
             />
           </Tooltip>
         </TabList>
 
         <Box display="grid" gridTemplateRows="1fr" height="100%" width="100%">
-          <FilesTabPanel/>
-          {mode === PUBLISH_PROJECT_EDITOR_MODE && <PublishTabPanel/>}
-          <ChangesTabPanel/>
-          <SettingsTabPanel/>
+          <FilesTabPanel />
+          {mode === PUBLISH_PROJECT_EDITOR_MODE && <PublishTabPanel />}
+          <ChangesTabPanel />
+          <SettingsTabPanel />
         </Box>
       </TabContext>
     </Box>

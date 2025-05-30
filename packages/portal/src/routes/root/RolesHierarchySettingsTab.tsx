@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import * as React from 'react'
-import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { Box, Button } from '@mui/material'
-import { toRolesOrder, useRoles, useUpdateRolesOrder } from '@netcracker/qubership-apihub-ui-shared/hooks/user-roles/useRoles'
-import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import { RolesList } from '@netcracker/qubership-apihub-ui-shared/components/RolesList'
+import {
+  toRolesOrder,
+  useRoles,
+  useUpdateRolesOrder,
+} from '@netcracker/qubership-apihub-ui-shared/hooks/user-roles/useRoles'
+import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import type { FC } from 'react'
+import * as React from 'react'
+import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 
 export const RolesHierarchySettingsTab: FC = memo(() => {
   const { data: roles, isLoading: isRolesLoading } = useRoles()
@@ -56,47 +60,53 @@ export const RolesHierarchySettingsTab: FC = memo(() => {
     return false
   }, [roles, rolesOrder])
 
-  return <>
-    <BodyCard
-      header="Roles Hierarchy"
-      action={
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button
-            variant="contained"
-            onClick={handleSaveRolesOrder}
-            disabled={!isChanged}
-            sx={{ width: '100px' }}
-          >
-            Save
-          </Button>
-          <Button
-            variant="outlined"
-            onClick={handleCansel}
-            disabled={!isChanged}
-            sx={{ width: '100px' }}
-          >
-            Cancel
-          </Button>
-        </Box>
-      }
-      body={<>
-        <Box sx={{ fontSize: '12px' }}>
-          The role hierarchy is taken into account when the user generates or assigns a role to another user:
-          <Box sx={{ display: 'list-item', listStyle: 'disc', ml: 3 }}>a user cannot generate a token with role(s)
-            higher than his own</Box>
-          <Box sx={{ display: 'list-item', listStyle: 'disc', ml: 3 }}>a user cannot add a package member with role(s)
-            higher than his own</Box>
-        </Box>
-        {isRolesLoading
-          ? (<LoadingIndicator/>)
-          : (
-            <Box overflow="hidden">
-              <Box marginTop="8px" height="100%" overflow="hidden">
-                <RolesList roles={rolesOrder} setRoles={setRolesOrder}/>
+  return (
+    <>
+      <BodyCard
+        header="Roles Hierarchy"
+        action={
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Button
+              variant="contained"
+              onClick={handleSaveRolesOrder}
+              disabled={!isChanged}
+              sx={{ width: '100px' }}
+            >
+              Save
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={handleCansel}
+              disabled={!isChanged}
+              sx={{ width: '100px' }}
+            >
+              Cancel
+            </Button>
+          </Box>
+        }
+        body={
+          <>
+            <Box sx={{ fontSize: '12px' }}>
+              The role hierarchy is taken into account when the user generates or assigns a role to another user:
+              <Box sx={{ display: 'list-item', listStyle: 'disc', ml: 3 }}>
+                a user cannot generate a token with role(s) higher than his own
+              </Box>
+              <Box sx={{ display: 'list-item', listStyle: 'disc', ml: 3 }}>
+                a user cannot add a package member with role(s) higher than his own
               </Box>
             </Box>
-          )}
-      </>}
-    />
-  </>
+            {isRolesLoading
+              ? <LoadingIndicator />
+              : (
+                <Box overflow="hidden">
+                  <Box marginTop="8px" height="100%" overflow="hidden">
+                    <RolesList roles={rolesOrder} setRoles={setRolesOrder} />
+                  </Box>
+                </Box>
+              )}
+          </>
+        }
+      />
+    </>
+  )
 })

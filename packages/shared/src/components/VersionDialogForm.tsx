@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import type { ChangeEvent, FC, SyntheticEvent } from 'react'
-import * as React from 'react'
-import { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import type { Control, FormState, UseFormSetValue } from 'react-hook-form'
-import { Controller, useWatch } from 'react-hook-form'
+import type { AutocompleteInputChangeReason } from '@mui/base/AutocompleteUnstyled/useAutocomplete'
+import ErrorRoundedIcon from '@mui/icons-material/ErrorRounded'
+import { LoadingButton } from '@mui/lab'
 import {
   Autocomplete,
   Box,
@@ -33,12 +31,14 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import ErrorRoundedIcon from '@mui/icons-material/ErrorRounded'
-import { LoadingButton } from '@mui/lab'
-import { DialogForm } from './DialogForm'
-import { CustomChip } from './CustomChip'
+import type { ChangeEvent, FC, SyntheticEvent } from 'react'
+import * as React from 'react'
+import { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import type { Control, FormState, UseFormSetValue } from 'react-hook-form'
+import { Controller, useWatch } from 'react-hook-form'
 import type { Key, VersionKey } from '../entities/keys'
 import type { PackagePermissions } from '../entities/package-permissions'
+import type { Package, Packages } from '../entities/packages'
 import type { VersionStatus } from '../entities/version-status'
 import {
   DRAFT_VERSION_STATUS,
@@ -47,26 +47,26 @@ import {
   VERSION_STATUS_MANAGE_PERMISSIONS,
   VERSION_STATUSES,
 } from '../entities/version-status'
+import type { PackageVersions } from '../entities/versions'
+import { CloudUploadIcon } from '../icons/CloudUploadIcon'
+import { EditIcon } from '../icons/EditIcon'
+import { InfoContextIcon } from '../icons/InfoContextIcon'
+import { DEFAULT_DEBOUNCE } from '../utils/constants'
+import { CSV_FILE_EXTENSION } from '../utils/files'
+import { disableAutocompleteSearch } from '../utils/mui'
 import {
   checkFileType,
   checkReleaseVersionFormat,
   checkVersionNotEqualToPrevious,
   checkVersionRestrictedSymbols,
 } from '../utils/validations'
-import { EditIcon } from '../icons/EditIcon'
-import { CloudUploadIcon } from '../icons/CloudUploadIcon'
 import { getSplittedVersionKey, handleVersionsRevision } from '../utils/versions'
-import { ErrorTypography } from './Typography/ErrorTypography'
-import type { PackageVersions } from '../entities/versions'
-import { LabelsAutocomplete } from './LabelsAutocomplete'
-import type { Package, Packages } from '../entities/packages'
-import { OptionItem } from './OptionItem'
-import { disableAutocompleteSearch } from '../utils/mui'
-import { DEFAULT_DEBOUNCE } from '../utils/constants'
-import { InfoContextIcon } from '../icons/InfoContextIcon'
-import { CSV_FILE_EXTENSION } from '../utils/files'
+import { CustomChip } from './CustomChip'
+import { DialogForm } from './DialogForm'
 import { FileUploadField } from './FileUploadField'
-import type { AutocompleteInputChangeReason } from '@mui/base/AutocompleteUnstyled/useAutocomplete'
+import { LabelsAutocomplete } from './LabelsAutocomplete'
+import { OptionItem } from './OptionItem'
+import { ErrorTypography } from './Typography/ErrorTypography'
 
 export type VersionFormData = {
   message?: string
@@ -180,21 +180,31 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
   const previousVersion = useWatch({ control: control, name: 'previousVersion' })
   const descriptorFile = useWatch({ control: control, name: 'descriptorFile' })
   const isReleaseStatus = status === RELEASE_VERSION_STATUS
-  const onWorkspacesChange = useCallback((_: SyntheticEvent, value: string): void => onWorkspacesFilter?.(value), [onWorkspacesFilter])
-  const onPackagesChange = useCallback((_: SyntheticEvent, value: string): void => onPackagesFilter?.(value), [onPackagesFilter])
+  const onWorkspacesChange = useCallback((_: SyntheticEvent, value: string): void => onWorkspacesFilter?.(value), [
+    onWorkspacesFilter,
+  ])
+  const onPackagesChange = useCallback((_: SyntheticEvent, value: string): void => onPackagesFilter?.(value), [
+    onPackagesFilter,
+  ])
   const onVersionsChange = useCallback((_: SyntheticEvent, value: string): void => {
     onSetTargetVersion?.(value)
     onVersionsFilter?.(value)
   }, [onVersionsFilter, onSetTargetVersion])
-  const onLabelsChange = useCallback((_: SyntheticEvent, value: string[]): void => onSetTargetLabels?.(value), [onSetTargetLabels])
-  const onStatusChange = useCallback((_: SyntheticEvent, value: VersionStatus): void => onSetTargetStatus?.(value), [onSetTargetStatus])
+  const onLabelsChange = useCallback((_: SyntheticEvent, value: string[]): void => onSetTargetLabels?.(value), [
+    onSetTargetLabels,
+  ])
+  const onStatusChange = useCallback((_: SyntheticEvent, value: VersionStatus): void => onSetTargetStatus?.(value), [
+    onSetTargetStatus,
+  ])
 
-  const debouncedOnWorkspacesChange = useMemo(() => debounce(onWorkspacesChange, DEFAULT_DEBOUNCE), [onWorkspacesChange])
+  const debouncedOnWorkspacesChange = useMemo(() => debounce(onWorkspacesChange, DEFAULT_DEBOUNCE), [
+    onWorkspacesChange,
+  ])
   const debouncedOnPackagesChange = useMemo(() => debounce(onPackagesChange, DEFAULT_DEBOUNCE), [onPackagesChange])
   const debouncedOnVersionsChange = useMemo(() => debounce(onVersionsChange, DEFAULT_DEBOUNCE), [onVersionsChange])
 
   const [descriptorContent, setDescriptorContent] = useState<string | null>(null)
-  const [isFileReading, setIsFileReading] = useState<boolean>(false)  
+  const [isFileReading, setIsFileReading] = useState<boolean>(false)
   const onFileContentLoaded = useCallback((event: ProgressEvent<FileReader>): void => {
     setDescriptorContent(event?.target?.result ? String(event.target.result) : null)
     setIsFileReading(false)
@@ -241,30 +251,32 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
       </DialogTitle>
 
       <DialogContent sx={{ width: 440 }}>
-
-        {!hideSaveMessageField && <>
-          <Typography variant="button">
-            Save
-          </Typography>
-          <Controller
-            name="message"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                multiline required
-                autoComplete="on"
-                rows="4"
-                type="text"
-                label="Message"
-                data-testid="MessageTextField"
-              />
-            )}
-          />
-          <Typography variant="button">
-            Publish
-          </Typography>
-        </>}
+        {!hideSaveMessageField && (
+          <>
+            <Typography variant="button">
+              Save
+            </Typography>
+            <Controller
+              name="message"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  multiline
+                  required
+                  autoComplete="on"
+                  rows="4"
+                  type="text"
+                  label="Message"
+                  data-testid="MessageTextField"
+                />
+              )}
+            />
+            <Typography variant="button">
+              Publish
+            </Typography>
+          </>
+        )}
 
         {!hideDescriptorVersionField && (
           <Controller
@@ -326,8 +338,8 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
                   InputProps={{
                     endAdornment: (
                       <Box display="flex" flexDirection="row" sx={{ cursor: 'pointer' }}>
-                        {field.value ? <EditIcon/> : <CloudUploadIcon fontSize="small" sx={{ color: '#353C4E' }}/>}
-                        {!!errors.descriptorFile && <ErrorRoundedIcon color="error"/>}
+                        {field.value ? <EditIcon /> : <CloudUploadIcon fontSize="small" sx={{ color: '#353C4E' }} />}
+                        {!!errors.descriptorFile && <ErrorRoundedIcon color="error" />}
                       </Box>
                     ),
                     inputProps: {
@@ -341,9 +353,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
           />
         )}
 
-        {showTopDivider && (
-          <Divider sx={{ mx: 0, mt: 1, mb: 0.5 }} orientation="horizontal"/>
-        )}
+        {showTopDivider && <Divider sx={{ mx: 0, mt: 1, mb: 0.5 }} orientation="horizontal" />}
 
         {!hideCSVRelatedFields && (
           <>
@@ -360,7 +370,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
                   sx: { '.MuiTooltip-tooltip': { maxWidth: '600px' } },
                 }}
               >
-                <InfoContextIcon fontSize="extra-small"/>
+                <InfoContextIcon fontSize="extra-small" />
               </Tooltip>
             </Box>
 
@@ -373,13 +383,15 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
                 },
               }}
               control={control}
-              render={({ field: { value, onChange } }) => <FileUploadField
-                errorMessage={errors.file?.message}
-                uploadedFile={value}
-                setUploadedFile={value => onChange(value)}
-                downloadAvailable={false}
-                acceptableExtensions={[CSV_FILE_EXTENSION]}
-              />}
+              render={({ field: { value, onChange } }) => (
+                <FileUploadField
+                  errorMessage={errors.file?.message}
+                  uploadedFile={value}
+                  setUploadedFile={value => onChange(value)}
+                  downloadAvailable={false}
+                  acceptableExtensions={[CSV_FILE_EXTENSION]}
+                />
+              )}
             />
 
             <Box display="flex" gap={0.5} alignItems="center" pt={2}>
@@ -392,41 +404,45 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
                   sx: { '.MuiTooltip-tooltip': { maxWidth: '600px' } },
                 }}
               >
-                <InfoContextIcon fontSize="extra-small"/>
+                <InfoContextIcon fontSize="extra-small" />
               </Tooltip>
             </Box>
 
             <Controller
               name="workspace"
               control={control}
-              render={({ field: { value } }) => <Autocomplete
-                value={value}
-                options={workspaces ?? []}
-                loading={areWorkspacesLoading}
-                isOptionEqualToValue={(option, value) => option.key === value.key}
-                getOptionLabel={(option) => option?.name ?? ''}
-                renderOption={(props, { key, name }) => <OptionItem
-                  key={key}
-                  props={props}
-                  title={name}
-                  subtitle={key}
-                />}
-                onChange={(_, value) => {
-                  setValue('workspace', value ?? null)
-                  setValue('package', null)
-                  onSetWorkspace?.(value)
-                }}
-                onInputChange={createOnInputChange(debouncedOnWorkspacesChange)}
-                onClose={clearFilter(onWorkspacesFilter)}
-                renderInput={(params) =>
-                  <TextField
-                    required
-                    {...params}
-                    label="Workspace"
-                  />
-                }
-                data-testid="WorkspaceAutocomplete"
-              />}
+              render={({ field: { value } }) => (
+                <Autocomplete
+                  value={value}
+                  options={workspaces ?? []}
+                  loading={areWorkspacesLoading}
+                  isOptionEqualToValue={(option, value) => option.key === value.key}
+                  getOptionLabel={(option) => option?.name ?? ''}
+                  renderOption={(props, { key, name }) => (
+                    <OptionItem
+                      key={key}
+                      props={props}
+                      title={name}
+                      subtitle={key}
+                    />
+                  )}
+                  onChange={(_, value) => {
+                    setValue('workspace', value ?? null)
+                    setValue('package', null)
+                    onSetWorkspace?.(value)
+                  }}
+                  onInputChange={createOnInputChange(debouncedOnWorkspacesChange)}
+                  onClose={clearFilter(onWorkspacesFilter)}
+                  renderInput={(params) => (
+                    <TextField
+                      required
+                      {...params}
+                      label="Workspace"
+                    />
+                  )}
+                  data-testid="WorkspaceAutocomplete"
+                />
+              )}
             />
             <Box sx={{ lineHeight: 1 }} pt={2}>
               <Typography variant="button">Publish Info</Typography>
@@ -440,67 +456,76 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
             <Controller
               name="workspace"
               control={control}
-              render={({ field: { value } }) => <Autocomplete
-                value={value}
-                options={workspaces ?? []}
-                loading={areWorkspacesLoading}
-                isOptionEqualToValue={(option, value) => option.key === value.key}
-                getOptionLabel={(option) => option?.name ?? ''}
-                renderOption={(props, { key, name }) => <OptionItem
-                  key={key}
-                  props={props}
-                  title={name}
-                  subtitle={key}
-                />}
-                onChange={(_, value) => {
-                  setValue('workspace', value ?? null)
-                  setValue('package', null)
-                  onSetWorkspace?.(value)
-                }}
-                onClose={clearFilter(onWorkspacesFilter)}
-                onInputChange={createOnInputChange(debouncedOnWorkspacesChange)}
-                renderInput={(params) =>
-                  <TextField
-                    required
-                    {...params}
-                    label="Workspace"
-                  />
-                }
-                data-testid="WorkspaceAutocomplete"
-              />}
+              render={({ field: { value } }) => (
+                <Autocomplete
+                  value={value}
+                  options={workspaces ?? []}
+                  loading={areWorkspacesLoading}
+                  isOptionEqualToValue={(option, value) => option.key === value.key}
+                  getOptionLabel={(option) => option?.name ?? ''}
+                  renderOption={(props, { key, name }) => (
+                    <OptionItem
+                      key={key}
+                      props={props}
+                      title={name}
+                      subtitle={key}
+                    />
+                  )}
+                  onChange={(_, value) => {
+                    setValue('workspace', value ?? null)
+                    setValue('package', null)
+                    onSetWorkspace?.(value)
+                  }}
+                  onClose={clearFilter(onWorkspacesFilter)}
+                  onInputChange={createOnInputChange(debouncedOnWorkspacesChange)}
+                  renderInput={(params) => (
+                    <TextField
+                      required
+                      {...params}
+                      label="Workspace"
+                    />
+                  )}
+                  data-testid="WorkspaceAutocomplete"
+                />
+              )}
             />
 
             <Controller
               name="package"
               control={control}
-              render={({ field: { value } }) => <Autocomplete
-                value={value}
-                disabled={!workspace}
-                isOptionEqualToValue={(option, value) => option.key === value.key}
-                options={packages ?? []}
-                loading={arePackagesLoading}
-                filterOptions={disableAutocompleteSearch}
-                getOptionLabel={(option) => option?.name ?? ''}
-                renderOption={(props, { key, name }) => <OptionItem
-                  key={key}
-                  props={props}
-                  title={name}
-                  subtitle={key}
-                />}
-                onInputChange={createOnInputChange(debouncedOnPackagesChange)}
-                renderInput={(params) => <TextField
-                  {...params}
-                  required
-                  label={packagesTitle}
+              render={({ field: { value } }) => (
+                <Autocomplete
+                  value={value}
+                  disabled={!workspace}
+                  isOptionEqualToValue={(option, value) => option.key === value.key}
+                  options={packages ?? []}
+                  loading={arePackagesLoading}
+                  filterOptions={disableAutocompleteSearch}
+                  getOptionLabel={(option) => option?.name ?? ''}
+                  renderOption={(props, { key, name }) => (
+                    <OptionItem
+                      key={key}
+                      props={props}
+                      title={name}
+                      subtitle={key}
+                    />
+                  )}
+                  onInputChange={createOnInputChange(debouncedOnPackagesChange)}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      required
+                      label={packagesTitle}
+                    />
+                  )}
+                  onChange={(_, value) => {
+                    setValue('package', value)
+                    onSetTargetPackage?.(value)
+                  }}
+                  onClose={clearFilter(onPackagesFilter)}
+                  data-testid="PackageAutocomplete"
                 />
-                }
-                onChange={(_, value) => {
-                  setValue('package', value)
-                  onSetTargetPackage?.(value)
-                }}
-                onClose={clearFilter(onPackagesFilter)}
-                data-testid="PackageAutocomplete"
-              />}
+              )}
             />
 
             <Typography sx={{ mb: 1, mt: 2 }} variant="body2">Target Version Info</Typography>
@@ -522,7 +547,8 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
                 return checkReleaseVersionFormat(version, releaseVersionPattern)
               },
               restrictedSymbols: checkVersionRestrictedSymbols,
-              notEqualToPrevious: (version) => checkVersionNotEqualToPrevious(version, getSplittedVersionKey(previousVersion).versionKey),
+              notEqualToPrevious: (version) =>
+                checkVersionNotEqualToPrevious(version, getSplittedVersionKey(previousVersion).versionKey),
             },
           }}
           render={({ field }) => (
@@ -564,15 +590,15 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
               options={VERSION_STATUSES}
               getOptionDisabled={(option) => !packagePermissions.includes(VERSION_STATUS_MANAGE_PERMISSIONS[option])}
               disabled={isPublishFieldsDisabled}
-              renderOption={(props, option) =>
+              renderOption={(props, option) => (
                 <ListItem
                   {...props}
                   key={option}
                   data-testid={`Option-${option}`}
                 >
-                  <CustomChip value={option}/>
+                  <CustomChip value={option} />
                 </ListItem>
-              }
+              )}
               onChange={(_, value) => {
                 onStatusChange(_, value as VersionStatus || DRAFT_VERSION_STATUS)
                 setValue('status', value as VersionStatus)
@@ -598,7 +624,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
                         WebkitTextFillColor: 'transparent',
                       },
                     },
-                    startAdornment: status ? <CustomChip sx={{ height: 16, mb: 1 }} value={status}/> : null,
+                    startAdornment: status ? <CustomChip sx={{ height: 16, mb: 1 }} value={status} /> : null,
                   }}
                 />
               )}
@@ -624,7 +650,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
 
         {!hidePreviousVersionField && (
           <>
-            <Divider sx={{ mx: 0, mt: 1, mb: 0.5 }} orientation="horizontal"/>
+            <Divider sx={{ mx: 0, mt: 1, mb: 0.5 }} orientation="horizontal" />
             <Controller
               name="previousVersion"
               control={control}
@@ -697,10 +723,10 @@ export function replaceEmptyPreviousVersion(previousVersion: Key): Key {
 export function usePreviousVersionOptions(versions: PackageVersions): VersionKey[] {
   const versionsWithoutRevision = handleVersionsRevision(versions)
 
-  return useMemo(() => ([
+  return useMemo(() => [
     NO_PREVIOUS_RELEASE_VERSION_OPTION,
     ...versionsWithoutRevision.filter(({ status }) => status === RELEASE_VERSION_STATUS).map(({ key }) => key),
-  ]), [versionsWithoutRevision])
+  ], [versionsWithoutRevision])
 }
 
 export function getVersionOptions(versionLabelsMap: Record<string, string[]>, targetVersion: string): VersionKey[] {
@@ -712,7 +738,10 @@ export function getVersionOptions(versionLabelsMap: Record<string, string[]>, ta
 }
 
 export function getPackageOptions(packages: Packages, existingPackage: Package | null, isFiltered: boolean): Packages {
-  if (!isFiltered && existingPackage && packages && !packages.some(packageOption => packageOption.key === existingPackage.key)) {
+  if (
+    !isFiltered && existingPackage && packages
+    && !packages.some(packageOption => packageOption.key === existingPackage.key)
+  ) {
     return [existingPackage, ...packages]
   }
   return packages
@@ -724,8 +753,10 @@ function checkFileUpload(descriptorContent: string | null): boolean {
   return !!descriptorContent
 }
 
-const DASHBOARD_VERSION_CONFIG_TITLE = 'CSV file must have the following information: "serviceName" and "serviceVersion". Published dashboard version will include package release versions (from selected workspace) for specified services. Additionally, "method" and "path" of REST API operations for services can be defined in the file. In this case, the system will create operations group with the operations for specified method and path.'
-const PACKAGE_SEARCH_SCOPE_TITLE = 'The workspace in which package versions for services from the CSV configuration will be searched. The package versions found in this workspace will be included into the dashboard version.'
+const DASHBOARD_VERSION_CONFIG_TITLE =
+  'CSV file must have the following information: "serviceName" and "serviceVersion". Published dashboard version will include package release versions (from selected workspace) for specified services. Additionally, "method" and "path" of REST API operations for services can be defined in the file. In this case, the system will create operations group with the operations for specified method and path.'
+const PACKAGE_SEARCH_SCOPE_TITLE =
+  'The workspace in which package versions for services from the CSV configuration will be searched. The package versions found in this workspace will be included into the dashboard version.'
 
 function createOnInputChange(onChange: (_: SyntheticEvent, value: string) => void) {
   return (event: SyntheticEvent, value: string, reason: AutocompleteInputChangeReason) => {

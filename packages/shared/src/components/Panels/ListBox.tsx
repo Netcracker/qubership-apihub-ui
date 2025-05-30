@@ -27,7 +27,8 @@ export const ListBox: FC<PropsWithChildren> = memo(({ children }) => {
       boxSizing="border-box"
       height="100%"
       flexDirection="column"
-      p={2} pb="0"
+      p={2}
+      pb="0"
       overflow="auto"
     >
       {children}

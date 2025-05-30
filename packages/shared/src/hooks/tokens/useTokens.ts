@@ -94,10 +94,11 @@ export function useAvailablePackageRoles(packageKey: Key, userId?: Key): [Roles,
 export function useInvalidateTokens(): InvalidateQuery<void> {
   const client = useQueryClient()
 
-  return () => client.invalidateQueries({
-    queryKey: [ACCESS_TOKENS_QUERY_KEY],
-    refetchType: 'all',
-  })
+  return () =>
+    client.invalidateQueries({
+      queryKey: [ACCESS_TOKENS_QUERY_KEY],
+      refetchType: 'all',
+    })
 }
 
 export async function getTokens(

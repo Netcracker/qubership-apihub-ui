@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import type { FC, ReactNode } from 'react'
-import { memo } from 'react'
 import { CardHeader } from '@mui/material'
-import { Header } from './internal/Header'
-import { useSpecRaw } from '../../useSpecRaw'
-import { useSpecViewer } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/useSpecViewer'
 import type {
   SpecificationDialogDetail,
 } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/SpecificationDialog'
 import { SpecificationPopup } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/SpecificationDialog'
-import type { Spec } from '@netcracker/qubership-apihub-ui-shared/entities/specs'
+import { useSpecViewer } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/useSpecViewer'
 import type { ProxyServer } from '@netcracker/qubership-apihub-ui-shared/entities/services'
+import type { Spec } from '@netcracker/qubership-apihub-ui-shared/entities/specs'
 import { isGraphQlSpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import { APIHUB_NC_BASE_PATH } from '@netcracker/qubership-apihub-ui-shared/utils/urls'
+import type { FC, ReactNode } from 'react'
+import { memo } from 'react'
+import { useSpecRaw } from '../../useSpecRaw'
+import { Header } from './internal/Header'
 
 export type CommonSpecificationPopupProps = {
   spec: Spec
@@ -67,11 +67,13 @@ export const CommonSpecificationPopup: FC<CommonSpecificationPopupProps> = memo<
     description: spec?.serviceKey,
   }
 
-  const defaultHeaderComponent = <CardHeader
-    sx={{ p: 0 }}
-    title={spec?.name}
-    subheader={<Header agentId={agentId} namespaceKey={namespaceKey} specKey={spec?.serviceKey}/>}
-  />
+  const defaultHeaderComponent = (
+    <CardHeader
+      sx={{ p: 0 }}
+      title={spec?.name}
+      subheader={<Header agentId={agentId} namespaceKey={namespaceKey} specKey={spec?.serviceKey} />}
+    />
+  )
 
   const { viewer, viewModes, viewMode, setViewMode } = useSpecViewer({
     spec: spec,

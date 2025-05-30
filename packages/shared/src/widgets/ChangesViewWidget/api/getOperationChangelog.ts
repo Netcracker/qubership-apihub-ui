@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
+import type { DiffType } from '@netcracker/qubership-apihub-api-diff'
+import type { DiffTypeDto } from '@netcracker/qubership-apihub-api-processor'
+import { SEMI_BREAKING_CHANGE_TYPE } from '@netcracker/qubership-apihub-api-processor'
 import { generatePath } from 'react-router-dom'
+import type { ApiType } from '../../../entities/api-types'
+import { RISKY_CHANGE_SEVERITY } from '../../../entities/change-severities'
 import type { Key, VersionKey } from '../../../entities/keys'
 import type { OperationChangesDto } from '../../../entities/operation-changelog'
 import { DEFAULT_API_TYPE } from '../../../entities/operations'
-import { getFullVersion } from '../../../utils/versions'
-import { optionalSearchParams } from '../../../utils/search-params'
-import { API_V2, requestJson } from '../../../utils/requests'
 import { getPackageRedirectDetails } from '../../../utils/redirects'
-import { RISKY_CHANGE_SEVERITY } from '../../../entities/change-severities'
-import type { ApiType } from '../../../entities/api-types'
-import type { DiffType } from '@netcracker/qubership-apihub-api-diff'
-import type { DiffTypeDto} from '@netcracker/qubership-apihub-api-processor'
-import { SEMI_BREAKING_CHANGE_TYPE } from '@netcracker/qubership-apihub-api-processor'
+import { API_V2, requestJson } from '../../../utils/requests'
+import { optionalSearchParams } from '../../../utils/search-params'
+import { getFullVersion } from '../../../utils/versions'
 
 export type UseOperationChangelogOptions = {
   packageKey: Key
@@ -77,5 +77,7 @@ export async function getOperationChangeLog(
 }
 
 export function replaceStringDiffTypeForDTO(diff: DiffType[] | undefined): DiffTypeDto[] | undefined {
-  return diff?.map(diffValue => { return diffValue === RISKY_CHANGE_SEVERITY ? SEMI_BREAKING_CHANGE_TYPE : diffValue })
+  return diff?.map(diffValue => {
+    return diffValue === RISKY_CHANGE_SEVERITY ? SEMI_BREAKING_CHANGE_TYPE : diffValue
+  })
 }

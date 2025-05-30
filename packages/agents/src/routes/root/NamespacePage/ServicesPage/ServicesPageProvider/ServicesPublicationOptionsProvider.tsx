@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
+import type { PublishConfig } from '@apihub/entities/publish-config'
+import type { ServiceKey, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 import type { Dispatch, FC, PropsWithChildren, SetStateAction } from 'react'
 import { createContext, memo, useCallback, useContext, useState } from 'react'
-import type { ServiceKey, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { PublishConfig } from '@apihub/entities/publish-config'
-import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 
 export const ServicesPublicationOptionsProvider: FC<PropsWithChildren> = memo(({ children }) => {
-  const [createSnapshotPublicationOptions, setCreateSnapshotPublicationOptions] = useState<CreateSnapshotPublicationOptions>(EMPTY_CREATE_SNAPSHOT_PUBLICATION_OPTIONS)
-  const [promoteVersionPublicationOptions, setPromoteVersionPublicationOptions] = useState<PromoteVersionPublicationOptions>(EMPTY_PROMOTE_VERSION_PUBLICATION_OPTIONS)
+  const [createSnapshotPublicationOptions, setCreateSnapshotPublicationOptions] = useState<
+    CreateSnapshotPublicationOptions
+  >(EMPTY_CREATE_SNAPSHOT_PUBLICATION_OPTIONS)
+  const [promoteVersionPublicationOptions, setPromoteVersionPublicationOptions] = useState<
+    PromoteVersionPublicationOptions
+  >(EMPTY_PROMOTE_VERSION_PUBLICATION_OPTIONS)
 
   return (
     <CreateSnapshotPublicationOptionsContext.Provider value={createSnapshotPublicationOptions}>
@@ -66,7 +70,9 @@ const EMPTY_PROMOTE_VERSION_PUBLICATION_OPTIONS: PromoteVersionPublicationOption
 }
 
 const CreateSnapshotPublicationOptionsContext = createContext<CreateSnapshotPublicationOptions>()
-const SetCreateSnapshotPublicationOptionsContext = createContext<Dispatch<SetStateAction<CreateSnapshotPublicationOptions>>>()
+const SetCreateSnapshotPublicationOptionsContext = createContext<
+  Dispatch<SetStateAction<CreateSnapshotPublicationOptions>>
+>()
 
 type CreateSnapshotPublicationOptionsContext = {
   createSnapshotPublicationOptions: CreateSnapshotPublicationOptions
@@ -93,7 +99,9 @@ export function useCreateSnapshotPublicationOptions(): CreateSnapshotPublication
 }
 
 const PromoteVersionPublicationOptionsContext = createContext<PromoteVersionPublicationOptions>()
-const SetPromoteVersionPublicationOptionsContext = createContext<Dispatch<SetStateAction<PromoteVersionPublicationOptions>>>()
+const SetPromoteVersionPublicationOptionsContext = createContext<
+  Dispatch<SetStateAction<PromoteVersionPublicationOptions>>
+>()
 
 type PromotePublishOptionsContext = {
   promotePublicationOptions: PromoteVersionPublicationOptions

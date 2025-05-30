@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import { Button, MenuItem } from '@mui/material'
+import Box from '@mui/material/Box'
 import type { FC } from 'react'
 import { memo, useCallback, useMemo } from 'react'
-import Box from '@mui/material/Box'
-import { Button, MenuItem } from '@mui/material'
-import { MinusIcon } from '../icons/MinusIcon'
-import { MultiButton } from './Buttons/MultiButton'
-import { DEFAULT_TEXT_COLOR, DISABLE_COLOR } from '../themes/colors'
 import { AddIcon } from '../icons/AddIcon'
+import { MinusIcon } from '../icons/MinusIcon'
+import { DEFAULT_TEXT_COLOR, DISABLE_COLOR } from '../themes/colors'
 import { getLastItem } from '../utils/arrays'
+import { MultiButton } from './Buttons/MultiButton'
 
 export type ZoomPanelProps = {
   value: number
@@ -58,7 +58,7 @@ export const ZoomPanel: FC<ZoomPanelProps> = memo<ZoomPanelProps>(({
       <Button
         sx={sideButtonStyle}
         variant="outlined"
-        startIcon={<MinusIcon color={minusDisabled ? DISABLE_COLOR : DEFAULT_TEXT_COLOR}/>}
+        startIcon={<MinusIcon color={minusDisabled ? DISABLE_COLOR : DEFAULT_TEXT_COLOR} />}
         onClick={() => manualChangeZoom(-1)}
         disabled={minusDisabled}
       />
@@ -81,7 +81,7 @@ export const ZoomPanel: FC<ZoomPanelProps> = memo<ZoomPanelProps>(({
       <Button
         sx={sideButtonStyle}
         variant="outlined"
-        startIcon={<AddIcon color={plusDisabled ? DISABLE_COLOR : DEFAULT_TEXT_COLOR}/>}
+        startIcon={<AddIcon color={plusDisabled ? DISABLE_COLOR : DEFAULT_TEXT_COLOR} />}
         onClick={() => manualChangeZoom(1)}
         disabled={plusDisabled}
       />

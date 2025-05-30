@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo } from 'react'
-import { OperationChangesSubTableWrapper } from './OperationChangesSubTableWrapper'
-import type { OperationChangeBase } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { FetchNextPage } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget/components/ChangesViewTable'
-import { ChangesViewTable } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget/components/ChangesViewTable'
 import {
   CONTENT_PLACEHOLDER_AREA,
   NO_SEARCH_RESULTS,
   Placeholder,
 } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
-import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { OperationChangeBase } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
+import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import type { FetchNextPage } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget/components/ChangesViewTable'
+import { ChangesViewTable } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget/components/ChangesViewTable'
+import type { FC } from 'react'
+import { memo } from 'react'
+import { OperationChangesSubTableWrapper } from './OperationChangesSubTableWrapper'
 
 export type ChangesViewWidgetProps = {
   changes: ReadonlyArray<OperationChangeBase>
@@ -54,7 +54,6 @@ export const ChangesViewWidget: FC<ChangesViewWidgetProps> = memo<ChangesViewWid
     hasNextPage,
   },
 ) => {
-
   // TODO 18.07.23 // Check what we should do with 'packageObject'
   return (
     <Placeholder
@@ -77,4 +76,3 @@ export const ChangesViewWidget: FC<ChangesViewWidgetProps> = memo<ChangesViewWid
     </Placeholder>
   )
 })
-

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { DocumentDto } from './types'
 import { JSON_FILE_FORMAT } from '../global-search/types'
+import type { DocumentDto } from './types'
 
 export const OPENAPI_SPEC: DocumentDto = {
   fileId: 'openapi-sample.yaml',

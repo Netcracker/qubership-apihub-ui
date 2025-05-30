@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import * as React from 'react'
-import { memo, useState } from 'react'
 import {
   Box,
   IconButton,
@@ -29,13 +26,16 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import type { Permission } from '../types/permissions'
-import type { Role } from '../types/roles'
-import { DoneIcon } from '../icons/DoneIcon'
-import { MinusIcon } from '../icons/MinusIcon'
-import { EditIcon } from '../icons/EditIcon'
+import type { FC } from 'react'
+import * as React from 'react'
+import { memo, useState } from 'react'
 import { DISABLED_BUTTON_COLOR, ENABLED_BUTTON_COLOR } from '../entities/operation-groups'
 import { DeleteIcon } from '../icons/DeleteIcon'
+import { DoneIcon } from '../icons/DoneIcon'
+import { EditIcon } from '../icons/EditIcon'
+import { MinusIcon } from '../icons/MinusIcon'
+import type { Permission } from '../types/permissions'
+import type { Role } from '../types/roles'
 
 const HOVERABLE_COLUMN_OFFSET = 2
 
@@ -101,7 +101,12 @@ export const RolesTable: FC<RolesTableProps> = memo<RolesTableProps>(({ permissi
         <TableBody>
           {permissions.map(({ permission, name }) => (
             <TableRow key={permission}>
-              <TableCell key={permission} sx={{ width: '291px', px: '12px' }} className="sticky" data-testid={`Cell-${permission}`}>
+              <TableCell
+                key={permission}
+                sx={{ width: '291px', px: '12px' }}
+                className="sticky"
+                data-testid={`Cell-${permission}`}
+              >
                 {name}
               </TableCell>
               {roles.map((role, index) => {
@@ -115,66 +120,67 @@ export const RolesTable: FC<RolesTableProps> = memo<RolesTableProps>(({ permissi
                   >
                     <Box display="flex" alignItems="center" justifyContent="center">
                       {permissions.includes(permission)
-                        ? <DoneIcon color="#00BB5B"/>
-                        : <MinusIcon color="#626D82"/>
-                      }
+                        ? <DoneIcon color="#00BB5B" />
+                        : <MinusIcon color="#626D82" />}
                     </Box>
                   </TableCell>
                 )
               })}
             </TableRow>
           ))}
-          {onEdit && onDelete && <TableRow>
-            <TableCell sx={{ width: '291px', px: '12px' }} className="sticky" data-testid="ActionsRow"></TableCell>
-            {roles.map((role, index) => {
-              const { key, readOnly } = role
-              return (
-                <TableCell
-                  onMouseOver={() => handleColumnHover(index)}
-                  key={key}
-                  sx={{ textAlign: 'center' }}
-                  data-testid={`Cell-${role.role}`}
-                >
-                  <Box display="flex" justifyContent="center" gap="24px" className="hoverable2" visibility="hidden">
-                    <Tooltip
-                      title={`${role.role} role cannot be edited`}
-                      disableHoverListener={!readOnly}
-                      disableFocusListener={!readOnly}
-                      placement="right"
-                    >
-                      <Box>
-                        <IconButton
-                          sx={{ p: 0 }}
-                          disabled={readOnly}
-                          onClick={() => onEdit(role)}
-                          data-testid="EditButton"
-                        >
-                          <EditIcon color={readOnly ? DISABLED_BUTTON_COLOR : ENABLED_BUTTON_COLOR}/>
-                        </IconButton>
-                      </Box>
-                    </Tooltip>
-                    <Tooltip
-                      title={`${role.role} role cannot be deleted`}
-                      disableHoverListener={!readOnly}
-                      disableFocusListener={!readOnly}
-                      placement="right"
-                    >
-                      <Box>
-                        <IconButton
-                          sx={{ p: 0 }}
-                          disabled={readOnly}
-                          onClick={() => onDelete(role)}
-                          data-testid="EditButton"
-                        >
-                          <DeleteIcon color={readOnly ? DISABLED_BUTTON_COLOR : ENABLED_BUTTON_COLOR}/>
-                        </IconButton>
-                      </Box>
-                    </Tooltip>
-                  </Box>
-                </TableCell>
-              )
-            })}
-          </TableRow>}
+          {onEdit && onDelete && (
+            <TableRow>
+              <TableCell sx={{ width: '291px', px: '12px' }} className="sticky" data-testid="ActionsRow"></TableCell>
+              {roles.map((role, index) => {
+                const { key, readOnly } = role
+                return (
+                  <TableCell
+                    onMouseOver={() => handleColumnHover(index)}
+                    key={key}
+                    sx={{ textAlign: 'center' }}
+                    data-testid={`Cell-${role.role}`}
+                  >
+                    <Box display="flex" justifyContent="center" gap="24px" className="hoverable2" visibility="hidden">
+                      <Tooltip
+                        title={`${role.role} role cannot be edited`}
+                        disableHoverListener={!readOnly}
+                        disableFocusListener={!readOnly}
+                        placement="right"
+                      >
+                        <Box>
+                          <IconButton
+                            sx={{ p: 0 }}
+                            disabled={readOnly}
+                            onClick={() => onEdit(role)}
+                            data-testid="EditButton"
+                          >
+                            <EditIcon color={readOnly ? DISABLED_BUTTON_COLOR : ENABLED_BUTTON_COLOR} />
+                          </IconButton>
+                        </Box>
+                      </Tooltip>
+                      <Tooltip
+                        title={`${role.role} role cannot be deleted`}
+                        disableHoverListener={!readOnly}
+                        disableFocusListener={!readOnly}
+                        placement="right"
+                      >
+                        <Box>
+                          <IconButton
+                            sx={{ p: 0 }}
+                            disabled={readOnly}
+                            onClick={() => onDelete(role)}
+                            data-testid="EditButton"
+                          >
+                            <DeleteIcon color={readOnly ? DISABLED_BUTTON_COLOR : ENABLED_BUTTON_COLOR} />
+                          </IconButton>
+                        </Box>
+                      </Tooltip>
+                    </Box>
+                  </TableCell>
+                )
+              })}
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </TableContainer>

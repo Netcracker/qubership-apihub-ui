@@ -14,24 +14,26 @@
  * limitations under the License.
  */
 
+import { Box, ListItem, ListItemButton, ListItemText, Tooltip } from '@mui/material'
+import type { TestableProps } from '@netcracker/qubership-apihub-ui-shared/components/Testable'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { RedWarningIcon } from '@netcracker/qubership-apihub-ui-shared/icons/WarningIcon'
+import { isNotEmptyMap } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import type { FC } from 'react'
 import { memo } from 'react'
-import { Box, ListItem, ListItemButton, ListItemText, Tooltip } from '@mui/material'
-import { PACKAGES_PAGE } from '../../../../../routes'
 import type { To } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { TestableProps } from '@netcracker/qubership-apihub-ui-shared/components/Testable'
-import { isNotEmptyMap } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import { RedWarningIcon } from '@netcracker/qubership-apihub-ui-shared/icons/WarningIcon'
+import { PACKAGES_PAGE } from '../../../../../routes'
 
-type OverviewNavigationItemProps = Readonly<{
-  url: To | undefined
-  title: string
-  id: string
-  sidebarItem: string
-  deletedReferences: Map<Key, number> | undefined
-}> & TestableProps
+type OverviewNavigationItemProps =
+  & Readonly<{
+    url: To | undefined
+    title: string
+    id: string
+    sidebarItem: string
+    deletedReferences: Map<Key, number> | undefined
+  }>
+  & TestableProps
 
 export const OverviewNavigationItem: FC<OverviewNavigationItemProps> = memo<OverviewNavigationItemProps>(({
   url,
@@ -63,16 +65,18 @@ export const OverviewNavigationItem: FC<OverviewNavigationItemProps> = memo<Over
             <Box sx={{ display: 'flex' }}>
               {title}
               <Box sx={{ ml: '5px' }}>
-                {id === PACKAGES_PAGE && isNotEmptyMap(deletedReferences) &&
-                  <Tooltip title="Some included package/dashboard versions no longer exist" placement="right">
-                    <Box data-testid="NotExistAlert">
-                      <RedWarningIcon/>
-                    </Box>
-                  </Tooltip>
-                }
+                {id === PACKAGES_PAGE && isNotEmptyMap(deletedReferences)
+                  && (
+                    <Tooltip title="Some included package/dashboard versions no longer exist" placement="right">
+                      <Box data-testid="NotExistAlert">
+                        <RedWarningIcon />
+                      </Box>
+                    </Tooltip>
+                  )}
               </Box>
             </Box>
-          }/>
+          }
+        />
       </ListItemButton>
     </ListItem>
   )

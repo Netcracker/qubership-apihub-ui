@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
+import { Box } from '@mui/material'
+import { JsonSchemaViewer } from '@netcracker/qubership-apihub-ui-shared/components/JsonSchemaViewer'
+import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
+import { MarkdownViewer } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/MarkdownViewer'
+import type { FileFormat } from '@netcracker/qubership-apihub-ui-shared/utils/files'
+import { JSON_FILE_FORMAT, MD_FILE_FORMAT, YAML_FILE_FORMAT } from '@netcracker/qubership-apihub-ui-shared/utils/files'
+import { isFastJsonSchema, toJsonSchema } from '@netcracker/qubership-apihub-ui-shared/utils/specifications'
 import type { FC } from 'react'
 import { memo } from 'react'
 import { useParams } from 'react-router-dom'
-import { Box } from '@mui/material'
-import { usePublishedDocumentRaw } from '../usePublishedDocumentRaw'
 import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
+import { usePublishedDocumentRaw } from '../usePublishedDocumentRaw'
 import { UnsupportedView } from './UnsupportedView'
-import { JsonSchemaViewer } from '@netcracker/qubership-apihub-ui-shared/components/JsonSchemaViewer'
-import type { FileFormat } from '@netcracker/qubership-apihub-ui-shared/utils/files'
-import { JSON_FILE_FORMAT, MD_FILE_FORMAT, YAML_FILE_FORMAT } from '@netcracker/qubership-apihub-ui-shared/utils/files'
-import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
-import { MarkdownViewer } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/MarkdownViewer'
-import { isFastJsonSchema, toJsonSchema } from '@netcracker/qubership-apihub-ui-shared/utils/specifications'
 
 export type FormatViewerProps = {
   format: FileFormat
@@ -44,13 +44,13 @@ export const FormatViewer: FC<FormatViewerProps> = memo<FormatViewerProps>(({ fo
   })
 
   if (isLoading) {
-    return <LoadingIndicator/>
+    return <LoadingIndicator />
   }
 
   if (format === MD_FILE_FORMAT) {
     return (
       <Box height="100%" overflow="scroll">
-        <MarkdownViewer value={raw}/>
+        <MarkdownViewer value={raw} />
       </Box>
     )
   }
@@ -59,10 +59,9 @@ export const FormatViewer: FC<FormatViewerProps> = memo<FormatViewerProps>(({ fo
   if (format === JSON_FILE_FORMAT || format === YAML_FILE_FORMAT) {
     const schema = toJsonSchema(raw)
     if (isFastJsonSchema(schema)) {
-      return <JsonSchemaViewer schema={schema as object}/>
+      return <JsonSchemaViewer schema={schema as object} />
     }
   }
 
-  return <UnsupportedView documentId={documentId}/>
+  return <UnsupportedView documentId={documentId} />
 })
-

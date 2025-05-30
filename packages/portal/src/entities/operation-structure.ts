@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { OpenAPIV3 } from 'openapi-types'
 import type { JsonPath } from '@netcracker/qubership-apihub-json-crawl'
 import type { HashWithTitle } from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView/oasToClassDiagramService'
+import type { OpenAPIV3 } from 'openapi-types'
 
 export const OPEN_API_SECTION_PARAMETERS = 'parameters'
 export const OPEN_API_SECTION_REQUESTS = 'requests'

@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
-import { Box } from '@mui/material'
-import type { FC } from 'react'
-import { memo, useCallback, useMemo, useRef } from 'react'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
-import { VersionHistoryTable } from '../../VersionHistoryTable'
-import type { PackagePermissions } from '@netcracker/qubership-apihub-ui-shared/entities/package-permissions'
-import type { PackageVersion } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
-import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import { VERSION_STATUS_MANAGE_PERMISSIONS } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import { handleVersionsRevision } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
-import { useIntersectionObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useIntersectionObserver'
+import { Box } from '@mui/material'
+import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
 import {
   NAVIGATION_PLACEHOLDER_AREA,
   NO_SEARCH_RESULTS,
   Placeholder,
 } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
-import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
-import { DeleteIcon } from '@netcracker/qubership-apihub-ui-shared/icons/DeleteIcon'
+import type { PackagePermissions } from '@netcracker/qubership-apihub-ui-shared/entities/package-permissions'
+import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import { VERSION_STATUS_MANAGE_PERMISSIONS } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import type { PackageVersion } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
+import { useIntersectionObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useIntersectionObserver'
 import { usePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
+import { DeleteIcon } from '@netcracker/qubership-apihub-ui-shared/icons/DeleteIcon'
+import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { handleVersionsRevision } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
+import type { FC } from 'react'
+import { memo, useCallback, useMemo, useRef } from 'react'
+import { VersionHistoryTable } from '../../VersionHistoryTable'
 
 export type PackageVersionsTableProps = Readonly<{
   packageKey: string
@@ -45,8 +45,12 @@ export type PackageVersionsTableProps = Readonly<{
 }>
 export const PackageVersionsTable: FC<PackageVersionsTableProps> = memo<PackageVersionsTableProps>((props) => {
   const {
-    packageKey, permissions, status,
-    onDelete, onEdit, searchValue,
+    packageKey,
+    permissions,
+    status,
+    onDelete,
+    onEdit,
+    searchValue,
   } = props
 
   const { versions, areVersionsLoading, fetchNextPage, isFetchingNextPage, hasNextPage } = usePackageVersions({
@@ -71,12 +75,14 @@ export const PackageVersionsTable: FC<PackageVersionsTableProps> = memo<PackageV
       <VersionHistoryTable
         value={filteredVersions}
         packageKey={packageKey}
-        actionsCell={(item) => <VersionHistoryActions
-          version={item as PackageVersion}
-          permissions={permissions}
-          onEdit={onEdit}
-          onDelete={onDelete}
-        />}
+        actionsCell={(item) => (
+          <VersionHistoryActions
+            version={item as PackageVersion}
+            permissions={permissions}
+            onEdit={onEdit}
+            onDelete={onDelete}
+          />
+        )}
         hasNextPage={hasNextPage}
         refObject={ref}
         isLoading={areVersionsLoading}
@@ -111,7 +117,7 @@ export const VersionHistoryActions: FC<VersionHistoryActionsProps> = memo<Versio
         size="small"
         sx={{ visibility: 'hidden', height: '20px' }}
         className="hoverable"
-        startIcon={<EditOutlinedIcon sx={{ color: actionsDisabled ? '#00000026' : '#626D82' }}/>}
+        startIcon={<EditOutlinedIcon sx={{ color: actionsDisabled ? '#00000026' : '#626D82' }} />}
         onClick={() => onEdit(version)}
         testId="EditButton"
       />
@@ -123,11 +129,10 @@ export const VersionHistoryActions: FC<VersionHistoryActionsProps> = memo<Versio
         size="small"
         sx={{ visibility: 'hidden', height: '20px' }}
         className="hoverable"
-        startIcon={<DeleteIcon color="#626D82"/>}
+        startIcon={<DeleteIcon color="#626D82" />}
         onClick={() => onDelete(version)}
         testId="DeleteButton"
       />
     </Box>
   )
 })
-

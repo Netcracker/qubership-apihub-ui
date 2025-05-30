@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { Box, Typography } from '@mui/material'
+import type { Theme } from '@mui/material/styles'
+import type { SxProps } from '@mui/system'
 import type { FC, ReactNode } from 'react'
 import { memo } from 'react'
-import { Box, Typography } from '@mui/material'
-import type { SxProps } from '@mui/system'
-import type { Theme } from '@mui/material/styles'
 
 export type TitledValueProps = { sx?: SxProps<Theme> } & {
   title: string
@@ -26,8 +26,10 @@ export type TitledValueProps = { sx?: SxProps<Theme> } & {
 }
 
 export const TitledValue: FC<TitledValueProps> = memo<TitledValueProps>(({ title, value, sx }) => {
-  return <Box sx={sx}>
-    <Typography noWrap variant="subtitle2">{title}</Typography>
-    <Typography noWrap variant="body2">{value}</Typography>
-  </Box>
+  return (
+    <Box sx={sx}>
+      <Typography noWrap variant="subtitle2">{title}</Typography>
+      <Typography noWrap variant="body2">{value}</Typography>
+    </Box>
+  )
 })

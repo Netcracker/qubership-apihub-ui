@@ -14,25 +14,6 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Box, Button, debounce, Dialog, DialogContent, DialogTitle } from '@mui/material'
-import { LoadingButton } from '@mui/lab'
-import { PopupLayout } from './PopupLayout'
-import { Sidebar } from './Sidebar'
-import { useEvent } from 'react-use'
-import { OperationList } from './OperationList'
-import { usePackageKind } from '../../../../../usePackageKind'
-import type { OperationListsDelta, PackageContext } from '../types'
-import { useOperationMovedEvent } from '../hooks/useOperationMovedEvent'
-import { OPERATION_GROUP_LIMIT } from '../consts'
-import { useUpdateOperationGroup } from '../hooks/useUpdateOperationGroup'
-import { areFiltersApplied, deepIncludes, intersection } from '../utils'
-import { toUpdatingOperations } from '../entities'
-import { useRearrangedOperationsByDelta } from '../hooks/useRearrangedOperationsByDelta'
-import { useGroupOperationsActualCount } from '../hooks/useGroupOperationsActualCount'
-import { useClearExcessivePagedGroupOperations, usePagedGroupOperations } from './usePagedGroupOperations'
-import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import type { EditOperationGroupContentDetails } from '@apihub/routes/EventBusProvider'
 import {
   API_AUDIENCE_SELECTED,
@@ -42,7 +23,13 @@ import {
   REF_PACKAGE_SELECTED,
   TAG_SELECTED,
 } from '@apihub/routes/EventBusProvider'
-import type { PackageReference } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
+import { LoadingButton } from '@mui/lab'
+import { Box, Button, debounce, Dialog, DialogContent, DialogTitle } from '@mui/material'
+import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
+import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
+import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { API_TYPE_TITLE_MAP } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type {
   ApiAudience,
   ApiKind,
@@ -51,12 +38,25 @@ import type {
   OperationsData,
 } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import type { PackageReference } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
 import { isEmpty, isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
 import { DEFAULT_DEBOUNCE } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
-import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { API_TYPE_TITLE_MAP } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { FC } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useEvent } from 'react-use'
+import { usePackageKind } from '../../../../../usePackageKind'
+import { OPERATION_GROUP_LIMIT } from '../consts'
+import { toUpdatingOperations } from '../entities'
+import { useGroupOperationsActualCount } from '../hooks/useGroupOperationsActualCount'
+import { useOperationMovedEvent } from '../hooks/useOperationMovedEvent'
+import { useRearrangedOperationsByDelta } from '../hooks/useRearrangedOperationsByDelta'
+import { useUpdateOperationGroup } from '../hooks/useUpdateOperationGroup'
+import type { OperationListsDelta, PackageContext } from '../types'
+import { areFiltersApplied, deepIncludes, intersection } from '../utils'
+import { OperationList } from './OperationList'
+import { PopupLayout } from './PopupLayout'
+import { Sidebar } from './Sidebar'
+import { useClearExcessivePagedGroupOperations, usePagedGroupOperations } from './usePagedGroupOperations'
 
 export const Popup: FC<PopupProps> = (props) => {
   const { open, setOpen } = props
@@ -130,7 +130,17 @@ export const Popup: FC<PopupProps> = (props) => {
     tag: selectedTag,
     textFilter: operationTextFilter,
     excludedGroupName: groupName,
-  }), [apiType, groupName, operationTextFilter, packageContext.packageKey, packageContext.refPackageKey, packageContext.version, selectedApiAudience, selectedApiKind, selectedTag])
+  }), [
+    apiType,
+    groupName,
+    operationTextFilter,
+    packageContext.packageKey,
+    packageContext.refPackageKey,
+    packageContext.version,
+    selectedApiAudience,
+    selectedApiKind,
+    selectedTag,
+  ])
 
   const {
     pagedData: pagedOperations,
@@ -307,7 +317,8 @@ export const Popup: FC<PopupProps> = (props) => {
               disabled={groupOperationsLoading || groupOperationsFetching || groupOperationsNextPageFetching}
               loading={operationGroupUpdating}
               onClick={() => {
-                const updatingOperations = filteredInitialGroupOperations && toUpdatingOperations(filteredInitialGroupOperations)
+                const updatingOperations = filteredInitialGroupOperations
+                  && toUpdatingOperations(filteredInitialGroupOperations)
                 if (updatingOperations) {
                   updateOperationGroup({
                     groupName: groupName,
@@ -345,7 +356,7 @@ export const Popup: FC<PopupProps> = (props) => {
         }}
       >
         <PopupLayout
-          navigation={(
+          navigation={
             <Sidebar
               apiType={apiType as ApiType}
               selectedRefPackage={selectedRefPackage}
@@ -353,9 +364,9 @@ export const Popup: FC<PopupProps> = (props) => {
               selectedApiAudience={selectedApiAudience}
               selectedTag={selectedTag}
             />
-          )}
+          }
           leftHeader={operationsTitle}
-          leftBody={(
+          leftBody={
             <OperationList
               packageContext={packageContext}
               operations={filteredOperations}
@@ -367,7 +378,7 @@ export const Popup: FC<PopupProps> = (props) => {
               onToggleOperationCheckbox={onToggleOperationCheckbox}
               onToggleAllOperationsCheckbox={onToggleAllOperationsCheckbox}
             />
-          )}
+          }
           exchangerParameters={{
             toLeftArrow: {
               disabled: isEmpty(checkedGroupOperations),
@@ -379,7 +390,7 @@ export const Popup: FC<PopupProps> = (props) => {
                 : undefined,
             },
           }}
-          rightHeader={(
+          rightHeader={
             <TextWithOverflowTooltip
               sx={{
                 maxWidth: '100%',
@@ -389,8 +400,8 @@ export const Popup: FC<PopupProps> = (props) => {
             >
               {groupOperationsTitle}
             </TextWithOverflowTooltip>
-          )}
-          rightBody={(
+          }
+          rightBody={
             <OperationList
               packageContext={packageContext}
               operations={filteredGroupOperations}
@@ -399,7 +410,7 @@ export const Popup: FC<PopupProps> = (props) => {
               onToggleOperationCheckbox={onToggleOperationCheckbox}
               onToggleAllOperationsCheckbox={onToggleAllOperationsCheckbox}
             />
-          )}
+          }
           rightCount={groupOperationsActualCount}
         />
       </DialogContent>

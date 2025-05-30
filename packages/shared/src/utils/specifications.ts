@@ -16,8 +16,8 @@
 
 import type { JSONSchema } from '@stoplight/spectral-core'
 import type { ILocation } from '@stoplight/types'
-import { dump, type DumpOptions, load } from 'js-yaml'
 import { getLocationForJsonPath, parseWithPointers } from '@stoplight/yaml'
+import { dump, type DumpOptions, load } from 'js-yaml'
 import type { Key } from './types'
 
 export type SpecItemUri = Key
@@ -155,7 +155,10 @@ export function toJsonSchema(value: string): JSONSchema | null {
 }
 
 export function isFastJsonSchema(data: unknown | null): data is JSONSchema {
-  return !!data && typeof data === 'object' && ['object', 'array', 'string', 'number', 'boolean', 'integer', 'null'].includes((data as JSONSchema).type as string)
+  return !!data && typeof data === 'object'
+    && ['object', 'array', 'string', 'number', 'boolean', 'integer', 'null'].includes(
+      (data as JSONSchema).type as string,
+    )
 }
 
 export function toOpenApiSchema(value: string): OpenapiSchema | null {

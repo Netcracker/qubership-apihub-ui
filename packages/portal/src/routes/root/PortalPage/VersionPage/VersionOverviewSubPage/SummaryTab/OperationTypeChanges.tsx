@@ -14,21 +14,26 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import React, { memo, useMemo } from 'react'
 import { Box, Tooltip, Typography } from '@mui/material'
+import {
+  API_AUDIENCE_EXTERNAL,
+  API_AUDIENCE_INTERNAL,
+  API_AUDIENCE_UNKNOWN,
+  type ApiAudienceTransition,
+} from '@netcracker/qubership-apihub-api-processor'
+import { Changes } from '@netcracker/qubership-apihub-ui-shared/components/Changes'
+import { CATEGORY_OPERATION } from '@netcracker/qubership-apihub-ui-shared/components/ChangesTooltip'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { API_TYPE_TITLE_MAP } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { ChangesSummary } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
 import {
   BREAKING_CHANGE_SEVERITY,
   DEFAULT_CHANGE_SEVERITY_MAP,
 } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
-import { Changes } from '@netcracker/qubership-apihub-ui-shared/components/Changes'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { API_TYPE_TITLE_MAP } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { NumberOfImpactedOperations } from '@netcracker/qubership-apihub-ui-shared/entities/version-contents'
-import { CATEGORY_OPERATION } from '@netcracker/qubership-apihub-ui-shared/components/ChangesTooltip'
 import { DefaultWarningIcon } from '@netcracker/qubership-apihub-ui-shared/icons/WarningIcon'
-import { API_AUDIENCE_EXTERNAL, API_AUDIENCE_INTERNAL, API_AUDIENCE_UNKNOWN, type ApiAudienceTransition } from '@netcracker/qubership-apihub-api-processor'
+import type { FC } from 'react'
+import React, { memo, useMemo } from 'react'
 
 export type OperationTypeChangesProps = Readonly<{
   apiType: ApiType
@@ -53,16 +58,22 @@ export const OperationTypeChanges: FC<OperationTypeChangesProps> = memo<Operatio
   unknownAudienceOperationsCount,
   apiAudienceTransitions,
 }) => {
-
   const changeCounter = useMemo(() => changesSummary ?? DEFAULT_CHANGE_SEVERITY_MAP, [changesSummary])
-  const affectedOperationCounter = useMemo(() => numberOfImpactedOperations ?? DEFAULT_CHANGE_SEVERITY_MAP, [numberOfImpactedOperations])
+  const affectedOperationCounter = useMemo(() => numberOfImpactedOperations ?? DEFAULT_CHANGE_SEVERITY_MAP, [
+    numberOfImpactedOperations,
+  ])
   const internalAudienceCounter = useMemo(() => {
-    return apiAudienceTransitions?.find(({ previousAudience, currentAudience }) => previousAudience === API_AUDIENCE_EXTERNAL && currentAudience === API_AUDIENCE_INTERNAL)?.operationsCount ?? 0
+    return apiAudienceTransitions?.find(({ previousAudience, currentAudience }) =>
+      previousAudience === API_AUDIENCE_EXTERNAL && currentAudience === API_AUDIENCE_INTERNAL
+    )?.operationsCount ?? 0
   }, [apiAudienceTransitions])
 
   const unknownAudienceCounter = useMemo(() => {
     return apiAudienceTransitions?.reduce((counter, { previousAudience, currentAudience, operationsCount }) => {
-      if ((previousAudience === API_AUDIENCE_EXTERNAL || previousAudience === API_AUDIENCE_INTERNAL) && currentAudience === API_AUDIENCE_UNKNOWN) {
+      if (
+        (previousAudience === API_AUDIENCE_EXTERNAL || previousAudience === API_AUDIENCE_INTERNAL)
+        && currentAudience === API_AUDIENCE_UNKNOWN
+      ) {
         return counter + operationsCount
       }
       return counter
@@ -138,8 +149,12 @@ export const OperationTypeChanges: FC<OperationTypeChangesProps> = memo<Operatio
                 <Box display="flex">
                   {internalAudienceOperationsCount}
                   {internalAudienceCounter !== 0 && (
-                    <Tooltip title={`API audience changed from external to internal for ${internalAudienceCounter} operations`}>
-                      <Box><DefaultWarningIcon /></Box>
+                    <Tooltip
+                      title={`API audience changed from external to internal for ${internalAudienceCounter} operations`}
+                    >
+                      <Box>
+                        <DefaultWarningIcon />
+                      </Box>
                     </Tooltip>
                   )}
                 </Box>
@@ -158,8 +173,12 @@ export const OperationTypeChanges: FC<OperationTypeChangesProps> = memo<Operatio
                 <Box display="flex">
                   {unknownAudienceOperationsCount}
                   {unknownAudienceCounter !== 0 && (
-                    <Tooltip title={`API audience changed from external/internal to unknown for ${unknownAudienceCounter} operations`}>
-                      <Box><DefaultWarningIcon /></Box>
+                    <Tooltip
+                      title={`API audience changed from external/internal to unknown for ${unknownAudienceCounter} operations`}
+                    >
+                      <Box>
+                        <DefaultWarningIcon />
+                      </Box>
                     </Tooltip>
                   )}
                 </Box>

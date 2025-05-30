@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useEffect } from 'react'
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material'
 import { LoadingButton } from '@mui/lab'
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material'
 import type { ButtonPropsColorOverrides } from '@mui/material/Button/Button'
 import type { OverridableStringUnion } from '@mui/types'
+import type { FC } from 'react'
+import { memo, useEffect } from 'react'
 
 export type ConfirmationDialogProps = {
   open: boolean
@@ -89,7 +89,9 @@ function useCloseOnSuccess(
   onClose?: () => void,
 ): void {
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {loading === false && onClose?.()}, [loading])
+  useEffect(() => {
+    loading === false && onClose?.()
+  }, [loading])
 }
 
 type ButtonColor = OverridableStringUnion<

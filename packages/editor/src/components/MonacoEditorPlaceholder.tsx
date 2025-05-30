@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { Box, Skeleton, Typography } from '@mui/material'
 import type { FC } from 'react'
 import { memo } from 'react'
-import { Box, Skeleton, Typography } from '@mui/material'
 
 export const MonacoEditorPlaceholder: FC = memo(() => {
   return (
@@ -31,17 +31,15 @@ export const MonacoEditorPlaceholder: FC = memo(() => {
         py: 2,
       }}
     >
-      {
-        widths.map((width, index) => (
-          <Typography
-            key={index}
-            width={width}
-            variant="caption"
-          >
-            <Skeleton/>
-          </Typography>
-        ))
-      }
+      {widths.map((width, index) => (
+        <Typography
+          key={index}
+          width={width}
+          variant="caption"
+        >
+          <Skeleton />
+        </Typography>
+      ))}
     </Box>
   )
 })

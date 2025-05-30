@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { useGroupComparisons } from './VersionPage/useGroupComparisons'
-import type { VersionsComparison } from '@netcracker/qubership-apihub-api-processor'
-import { useVersionWithRevision } from '../useVersionWithRevision'
-import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { useChangesSummaryContext } from '@apihub/routes/root/PortalPage/VersionPage/ChangesSummaryProvider'
+import type { VersionsComparison } from '@netcracker/qubership-apihub-api-processor'
+import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { VersionChangesSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { useVersionWithRevision } from '../useVersionWithRevision'
+import { useGroupComparisons } from './VersionPage/useGroupComparisons'
 
 export type UseCompareGroupsOptions = Partial<{
   changedPackageKey: Key

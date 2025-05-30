@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
+import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
 import type { FC } from 'react'
 import { memo } from 'react'
+import { CurrentDocumentsListProvider } from './CurrentDocumentsListProvider'
 import { DocumentsCard } from './DocumentsCard'
 import { DocumentsSidebar } from './DocumentsSidebar'
-import { CurrentDocumentsListProvider } from './CurrentDocumentsListProvider'
-import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
 
 export const VersionDocumentsSubPage: FC = memo(() => {
   return (
     <CurrentDocumentsListProvider>
       <PageLayout
-        navigation={<DocumentsSidebar/>}
-        body={<DocumentsCard/>}
+        navigation={<DocumentsSidebar />}
+        body={<DocumentsCard />}
         nestedPage
         testId="DocumentsTab"
       />

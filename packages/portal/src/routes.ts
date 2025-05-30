@@ -37,7 +37,8 @@ export const VERSION_PAGE_PATH_PATTERN = '/portal/packages/:packageId/:versionId
 export const OVERVIEW_PATH_PATTERN = `/portal/packages/:packageId/:versionId/${OVERVIEW_PAGE}/`
 export const API_CHANGES_PAGE_PATH_PATTERN = `/portal/packages/:packageId/:versionId/${API_CHANGES_PAGE}/:apiType/`
 export const OPERATIONS_PAGE_PATH_PATTERN = `/portal/packages/:packageId/:versionId/${OPERATIONS_PAGE}/:apiType/`
-export const OPERATION_PAGE_PATH_PATTERN = `/portal/packages/:packageId/:versionId/${OPERATIONS_PAGE}/:apiType/:operationId`
+export const OPERATION_PAGE_PATH_PATTERN =
+  `/portal/packages/:packageId/:versionId/${OPERATIONS_PAGE}/:apiType/:operationId`
 export const DEPRECATED_PAGE_PATH_PATTERN = `/portal/packages/:packageId/:versionId/${DEPRECATED_PAGE}/:apiType`
 export const DOCUMENTS_PAGE_PATH_PATTERN = `/portal/packages/:packageId/:versionId/${DOCUMENTS_PAGE}/:documentId`
 
@@ -54,7 +55,8 @@ export const ACTIVITY_HISTORY_PAGE = 'activity-history'
 // Service tabs
 export const PACKAGE_SETTINGS_PAGE = 'settings'
 export const SETTINGS_PAGE = 'settings'
-export const PACKAGE_SETTINGS_PAGE_PATH_PATTERN = `/portal/packages/:packageId/${SPECIAL_VERSION_KEY}/${PACKAGE_SETTINGS_PAGE}/`
+export const PACKAGE_SETTINGS_PAGE_PATH_PATTERN =
+  `/portal/packages/:packageId/${SPECIAL_VERSION_KEY}/${PACKAGE_SETTINGS_PAGE}/`
 export const SETTINGS_PAGE_PATH_PATTERN = `/portal/${SETTINGS_PAGE}/`
 
 // Profile
@@ -82,15 +84,20 @@ export const PERSONAL_ACCESS_TOKENS_PAGE = 'personal-access-tokens'
 
 // Edit package page
 export const CONFIGURE_DASHBOARD_PAGE = 'edit'
-export const CONFIGURE_DASHBOARD_PAGE_PATH_PATTERN = `/portal/packages/:packageId/:versionId/${CONFIGURE_DASHBOARD_PAGE}`
+export const CONFIGURE_DASHBOARD_PAGE_PATH_PATTERN =
+  `/portal/packages/:packageId/:versionId/${CONFIGURE_DASHBOARD_PAGE}`
 
 export const PREVIEW_PAGE = 'preview'
-export const PREVIEW_PAGE_PATH_PATTERN = `/portal/packages/:packageId/:versionId/${DOCUMENTS_PAGE}/:documentId/${PREVIEW_PAGE}`
+export const PREVIEW_PAGE_PATH_PATTERN =
+  `/portal/packages/:packageId/:versionId/${DOCUMENTS_PAGE}/:documentId/${PREVIEW_PAGE}`
 export const COMPARE_PAGE = 'compare'
 export const VERSION_COMPARE_PAGE_PATH_PATTERN = `/portal/packages/:packageId/:versionId/${COMPARE_PAGE}`
-export const OPERATION_COMPARE_PAGE_PATH_PATTERN = `/portal/packages/:packageId/:versionId/${COMPARE_PAGE}/:apiType/:operationId`
-export const GROUPS_COMPARE_PAGE_PATH_PATTERN = `/portal/packages/:packageId/:versionId/${OPERATION_GROUPS_PAGE}/:groupId/${COMPARE_PAGE}`
-export const GROUPS_OPERATIONS_COMPARE_PAGE_PATH_PATTERN = `/portal/packages/:packageId/:versionId/${OPERATION_GROUPS_PAGE}/:groupId/${COMPARE_PAGE}/:apiType/:operationId`
+export const OPERATION_COMPARE_PAGE_PATH_PATTERN =
+  `/portal/packages/:packageId/:versionId/${COMPARE_PAGE}/:apiType/:operationId`
+export const GROUPS_COMPARE_PAGE_PATH_PATTERN =
+  `/portal/packages/:packageId/:versionId/${OPERATION_GROUPS_PAGE}/:groupId/${COMPARE_PAGE}`
+export const GROUPS_OPERATIONS_COMPARE_PAGE_PATH_PATTERN =
+  `/portal/packages/:packageId/:versionId/${OPERATION_GROUPS_PAGE}/:groupId/${COMPARE_PAGE}/:apiType/:operationId`
 
 // Expand/Collapse Sidebar Button
 export const TOGGLE_SIDEBAR_BUTTON = 'toggle-sidebar'
@@ -112,8 +119,7 @@ export type VersionPageRoute =
   | typeof DEPRECATED_PAGE
   | typeof DOCUMENTS_PAGE
 
-export type PackageVersionPageRoute =
-  | typeof CONFIGURATION_PAGE
+export type PackageVersionPageRoute = typeof CONFIGURATION_PAGE
 
 export type OverviewPageRoute =
   | typeof SUMMARY_PAGE
@@ -138,8 +144,7 @@ export type SettingsPageRoute =
   | typeof SYSTEM_ADMINISTRATORS_PAGE
   | typeof SYSTEM_TOKENS_PAGE
 
-export type ProfilePageRoute =
-  | typeof PERSONAL_ACCESS_TOKENS_PAGE
+export type ProfilePageRoute = typeof PERSONAL_ACCESS_TOKENS_PAGE
 
 export const PORTAL_PATH_PATTERNS: string[] = [
   WORKSPACES_PAGE_PATH_PATTERN,

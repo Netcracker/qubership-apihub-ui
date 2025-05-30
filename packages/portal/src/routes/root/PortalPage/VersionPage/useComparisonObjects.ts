@@ -23,10 +23,10 @@ import {
   COMPARISON_OBJECT_TYPE_PACKAGE_REVISION,
 } from '@apihub/routes/root/PortalPage/VersionPage/breadcrumbs'
 import { useVersionWithRevision } from '@apihub/routes/root/useVersionWithRevision'
-import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { Package, PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { DASHBOARD_KIND, PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 
 type UseComparisonObjectsOptions = Partial<{
   originPackage: Package | null
@@ -59,7 +59,6 @@ export function useComparisonObjects(
     currentGroup,
   }: UseComparisonObjectsOptions,
 ): [ComparisonObject | null, ComparisonObject | null] {
-
   const { fullVersion: fullOriginVersion } = useVersionWithRevision(originVersionKey, originPackageKey)
   const { fullVersion: fullChangedVersion } = useVersionWithRevision(changedVersionKey, changedPackageKey)
 
@@ -73,7 +72,10 @@ export function useComparisonObjects(
     revisionKey: changedRevisionKey,
   } = getSplittedVersionKey(fullChangedVersion)
 
-  if (!originPackage || !changedPackage || !originPackageKey || !changedPackageKey || !originSplittedVersionKey || !changedSplittedVersionKey) {
+  if (
+    !originPackage || !changedPackage || !originPackageKey || !changedPackageKey || !originSplittedVersionKey
+    || !changedSplittedVersionKey
+  ) {
     return [null, null]
   }
 

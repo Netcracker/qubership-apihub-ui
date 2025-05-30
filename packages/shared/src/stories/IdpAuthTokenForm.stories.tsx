@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react'
 import { ThemeProvider } from '@mui/material'
-import { theme } from '../themes/theme'
+import type { Meta, StoryObj } from '@storybook/react'
 import { IdpAuthTokenForm } from '../components/IdpAuthTokenForm'
+import { theme } from '../themes/theme'
 
 const meta: Meta<typeof IdpAuthTokenForm> = {
   title: 'Idp Auth Token Form',
@@ -25,7 +25,7 @@ const meta: Meta<typeof IdpAuthTokenForm> = {
   decorators: [
     (Story) => (
       <ThemeProvider theme={theme}>
-        <Story/>
+        <Story />
       </ThemeProvider>
     ),
   ],

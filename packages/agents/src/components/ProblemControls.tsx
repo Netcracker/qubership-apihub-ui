@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
+import { Box, ToggleButton, Typography } from '@mui/material'
 import type { Dispatch, FC, SetStateAction } from 'react'
 import { memo, useCallback, useMemo } from 'react'
-import { Box, ToggleButton, Typography } from '@mui/material'
 
-import { useSnapshotPublicationInfo } from '../routes/root/NamespacePage/useSnapshotPublicationInfo'
+import { CustomToggleButtonGroup } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/CustomToggleButtonGroup'
+import {
+  ERROR_STATUS_MARKER_VARIANT,
+  StatusMarker,
+  SUCCESS_STATUS_MARKER_VARIANT,
+  WARNING_STATUS_MARKER_VARIANT,
+} from '@netcracker/qubership-apihub-ui-shared/components/StatusMarker'
 import type {
   ValidationFilter,
 } from '../routes/root/NamespacePage/ServicesPage/ServicesPageBody/ValidationResultsStep/ValidationResultsStep'
@@ -27,12 +33,7 @@ import {
   NO_BASELINE_FILTER,
   NO_BWC_ERRORS_FILTER,
 } from '../routes/root/NamespacePage/ServicesPage/ServicesPageBody/ValidationResultsStep/ValidationResultsStep'
-import { CustomToggleButtonGroup } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/CustomToggleButtonGroup'
-import {
-  ERROR_STATUS_MARKER_VARIANT,
-  StatusMarker,
-  SUCCESS_STATUS_MARKER_VARIANT, WARNING_STATUS_MARKER_VARIANT,
-} from '@netcracker/qubership-apihub-ui-shared/components/StatusMarker'
+import { useSnapshotPublicationInfo } from '../routes/root/NamespacePage/useSnapshotPublicationInfo'
 
 export type ProblemsControlsProps = {
   filters: (ValidationFilter | null)[]
@@ -43,18 +44,21 @@ export const ProblemControls: FC<ProblemsControlsProps> = memo<ProblemsControlsP
   const { snapshotPublicationInfo } = useSnapshotPublicationInfo()
   const { services } = snapshotPublicationInfo
 
-  const withBwcErrorsCount = useMemo(() => services.filter(({
-    changeSummary,
-    baselineVersionFound,
-  }) => baselineVersionFound && changeSummary?.breaking).length, [services])
-  const withoutBwcErrorsCount = useMemo(() => services.filter(({
-    changeSummary,
-    baselineVersionFound,
-  }) => baselineVersionFound && changeSummary?.breaking === 0).length, [services])
-  const noBaselineCount = useMemo(() => services.filter(({
-    baselineFound,
-    baselineVersionFound,
-  }) => !baselineVersionFound || !baselineFound).length, [services])
+  const withBwcErrorsCount = useMemo(() =>
+    services.filter(({
+      changeSummary,
+      baselineVersionFound,
+    }) => baselineVersionFound && changeSummary?.breaking).length, [services])
+  const withoutBwcErrorsCount = useMemo(() =>
+    services.filter(({
+      changeSummary,
+      baselineVersionFound,
+    }) => baselineVersionFound && changeSummary?.breaking === 0).length, [services])
+  const noBaselineCount = useMemo(() =>
+    services.filter(({
+      baselineFound,
+      baselineVersionFound,
+    }) => !baselineVersionFound || !baselineFound).length, [services])
 
   const handleFilterClick = useCallback((value: Array<ValidationFilter | null>): void => {
     setFilters(value)

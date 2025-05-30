@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
+import { WORKSPACES_PAGE_REFERER } from '@apihub/entities/referer-pages-names'
 import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined'
-import StarOutlineRoundedIcon from '@mui/icons-material/StarOutlineRounded'
 import PermIdentityIcon from '@mui/icons-material/PermIdentity'
+import StarOutlineRoundedIcon from '@mui/icons-material/StarOutlineRounded'
+import WorkspacesOutlinedIcon from '@mui/icons-material/WorkspacesOutlined'
 import { Box, Divider, InputLabel, List } from '@mui/material'
+import { WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import type { Path } from '@remix-run/router'
 import type { FC } from 'react'
 import React, { memo } from 'react'
+import { useParams } from 'react-router'
+import { useDeepCompareEffect, useLocation } from 'react-use'
+import type { MainPageRoute } from '../../../../routes'
+import { FAVORITE_PAGE, PRIVATE_PAGE, SHARED_PAGE, WORKSPACES_PAGE } from '../../../../routes'
+import { getWorkspacePath } from '../../../NavigationProvider'
 import { usePackages } from '../../usePackages'
 import { useSelectedWorkspaceContexts, useWorkspacesContexts } from '../MainPageProvider'
 import { NavigationItem } from './NavigationItem'
-import WorkspacesOutlinedIcon from '@mui/icons-material/WorkspacesOutlined'
-import { useDeepCompareEffect, useLocation } from 'react-use'
-import { getWorkspacePath } from '../../../NavigationProvider'
-import type { MainPageRoute } from '../../../../routes'
-import { FAVORITE_PAGE, PRIVATE_PAGE, SHARED_PAGE, WORKSPACES_PAGE } from '../../../../routes'
-import { useParams } from 'react-router'
-import { WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { WORKSPACES_PAGE_REFERER } from '@apihub/entities/referer-pages-names'
 
 const DIVIDER_STYLES = {
   borderWidth: 0,
@@ -76,7 +76,7 @@ export const MainPageNavigation: FC = memo(() => {
             selected={pathname?.includes(id)}
           />
         ))}
-        <Divider flexItem sx={DIVIDER_STYLES}/>
+        <Divider flexItem sx={DIVIDER_STYLES} />
         <InputLabel sx={LABEL_STYLES}>
           Favorite workspaces
         </InputLabel>
@@ -107,28 +107,28 @@ const MAIN_PAGE_NAVIGATION_ITEMS: MainPageNavigationItem[] = [
     id: FAVORITE_PAGE,
     to: { pathname: 'favorite' },
     label: 'Favorite',
-    icon: <StarOutlineRoundedIcon fontSize="medium"/>,
+    icon: <StarOutlineRoundedIcon fontSize="medium" />,
     testId: 'FavoritesButton',
   },
   {
     id: SHARED_PAGE,
     to: { pathname: 'shared' },
     label: 'Shared',
-    icon: <GroupsOutlinedIcon fontSize="medium"/>,
+    icon: <GroupsOutlinedIcon fontSize="medium" />,
     testId: 'SharedButton',
   },
   {
     id: PRIVATE_PAGE,
     to: { pathname: 'private' },
     label: 'Private',
-    icon: <PermIdentityIcon fontSize="medium"/>,
+    icon: <PermIdentityIcon fontSize="medium" />,
     testId: 'PrivateButton',
   },
   {
     id: WORKSPACES_PAGE,
     to: { pathname: 'workspaces' },
     label: 'Workspaces',
-    icon: <WorkspacesOutlinedIcon/>,
+    icon: <WorkspacesOutlinedIcon />,
     testId: 'WorkspacesButton',
   },
 ]

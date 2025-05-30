@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import { FILES_PROJECT_EDITOR_MODE } from '@apihub/entities/editor-modes'
+import { editorRequestVoid } from '@apihub/utils/requests'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { useMutation } from '@tanstack/react-query'
 import type { Key } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useEventBus } from '../../../../../EventBusProvider'
 import { useShowSuccessNotification } from '../../../../BasePage/Notification'
 import { useInvalidateBranches } from '../../../../useBranches'
-import { FILES_PROJECT_EDITOR_MODE } from '@apihub/entities/editor-modes'
-import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { editorRequestVoid } from '@apihub/utils/requests'
 
 export function useCreateBranch(): [CreateBranch, IsLoading] {
   const { projectId } = useParams()

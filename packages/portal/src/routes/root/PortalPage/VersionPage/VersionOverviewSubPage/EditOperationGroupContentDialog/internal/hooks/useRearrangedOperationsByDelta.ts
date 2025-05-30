@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import type { OperationsMovementDetails } from '@apihub/routes/EventBusProvider'
+import type { Operations } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import { useMemo } from 'react'
 import type { OperationListsDelta } from '../types'
 import { deepIncludes, isOperationMovedWithAction } from '../utils'
-import { useMemo } from 'react'
-import type { Operations } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import type { OperationsMovementDetails } from '@apihub/routes/EventBusProvider'
 
 export type RearrangeOperationsOptions = {
   sourceOperations: Operations | undefined
@@ -70,7 +70,8 @@ export function rearrangeOperations(
       }),
     ...delta
       .filter(delta => {
-        const uiFiltersCriteria = !oppositeOperations || !filtersApplied || deepIncludes(oppositeOperations, delta.operation)
+        const uiFiltersCriteria = !oppositeOperations || !filtersApplied
+          || deepIncludes(oppositeOperations, delta.operation)
         return delta.action === includeToDeltaByAction && uiFiltersCriteria
       })
       .map(delta => delta.operation),

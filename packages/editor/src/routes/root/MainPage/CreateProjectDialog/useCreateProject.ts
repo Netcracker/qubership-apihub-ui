@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import { useShowSuccessNotification } from '../../BasePage/Notification'
-import { useMutation } from '@tanstack/react-query'
-import { useInvalidateProjects } from '../../useProjects'
-import { toProject, useUpdateProject } from '../../useProject'
-import { useNavigation } from '../../../NavigationProvider'
-import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { FILES_PROJECT_EDITOR_MODE } from '@apihub/entities/editor-modes'
 import type { Project, ProjectDto } from '@apihub/entities/projects'
 import { toProjectDto } from '@apihub/entities/projects'
-import { BRANCH_SEARCH_PARAM, MODE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { FILES_PROJECT_EDITOR_MODE } from '@apihub/entities/editor-modes'
 import { editorRequestJson } from '@apihub/utils/requests'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { BRANCH_SEARCH_PARAM, MODE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { useMutation } from '@tanstack/react-query'
+import { useNavigation } from '../../../NavigationProvider'
+import { useShowSuccessNotification } from '../../BasePage/Notification'
+import { toProject, useUpdateProject } from '../../useProject'
+import { useInvalidateProjects } from '../../useProjects'
 
 export function useCreateProject(): [CreateProject, IsLoading, Error | null] {
   const invalidateProjects = useInvalidateProjects()

@@ -16,8 +16,8 @@
 
 import type { FetchNextPageOptions, InfiniteQueryObserverResult } from '@tanstack/react-query'
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
-import { generatePath, useParams } from 'react-router-dom'
 import { useMemo } from 'react'
+import { generatePath, useParams } from 'react-router-dom'
 import type { Key } from '../../entities/keys'
 import type { VersionStatus } from '../../entities/version-status'
 import { PUBLISH_STATUSES } from '../../entities/version-status'
@@ -28,30 +28,34 @@ import type {
   PackageVersionsDto,
   PagedPackageVersions,
 } from '../../entities/versions'
+import type { PackageVersionsSortBy, SortOrder } from '../../types/sorting'
 import type { HasNextPage, InvalidateQuery, IsFetchingNextPage, IsInitialLoading, IsLoading } from '../../utils/aliases'
-import { optionalSearchParams } from '../../utils/search-params'
-import { API_V2, API_V3, requestJson, requestVoid } from '../../utils/requests'
 import { getPackageRedirectDetails } from '../../utils/redirects'
+import { getPatchedBody } from '../../utils/request-bodies'
+import { API_V2, API_V3, requestJson, requestVoid } from '../../utils/requests'
+import { optionalSearchParams } from '../../utils/search-params'
 import type { VersionKey } from '../../utils/types'
 import { handleVersionsRevision } from '../../utils/versions'
-import type { PackageVersionsSortBy, SortOrder } from '../../types/sorting'
-import { getPatchedBody } from '../../utils/request-bodies'
 
 const PACKAGE_VERSIONS_QUERY_KEY = 'package-versions-query-key'
 
-type FetchNextVersionsList = (options?: FetchNextPageOptions) => Promise<InfiniteQueryObserverResult<PackageVersions, Error>>
+type FetchNextVersionsList = (
+  options?: FetchNextPageOptions,
+) => Promise<InfiniteQueryObserverResult<PackageVersions, Error>>
 
 // TODO 13.07.23 // Is there any more optimal way to do paged/flatten result?
-export function usePagedPackageVersions(options?: Partial<{
-  packageKey: Key
-  status: VersionStatus
-  textFilter: string
-  sortBy: PackageVersionsSortBy
-  sortOrder: SortOrder
-  limit: number
-  page: number
-  reloadQuery: boolean
-}>): [PagedPackageVersions, IsLoading, FetchNextVersionsList, boolean | undefined] {
+export function usePagedPackageVersions(
+  options?: Partial<{
+    packageKey: Key
+    status: VersionStatus
+    textFilter: string
+    sortBy: PackageVersionsSortBy
+    sortOrder: SortOrder
+    limit: number
+    page: number
+    reloadQuery: boolean
+  }>,
+): [PagedPackageVersions, IsLoading, FetchNextVersionsList, boolean | undefined] {
   const { status, textFilter, limit, page, reloadQuery = false, sortBy, sortOrder } = options ?? {}
   const packageKey = options?.packageKey
 
@@ -75,16 +79,18 @@ export function usePagedPackageVersions(options?: Partial<{
   ]
 }
 
-export function usePackageVersions(options?: Partial<{
-  packageKey: Key
-  status: VersionStatus
-  textFilter: string
-  sortBy: PackageVersionsSortBy
-  sortOrder: SortOrder
-  limit: number
-  page: number
-  enabled: boolean
-}>): {
+export function usePackageVersions(
+  options?: Partial<{
+    packageKey: Key
+    status: VersionStatus
+    textFilter: string
+    sortBy: PackageVersionsSortBy
+    sortOrder: SortOrder
+    limit: number
+    page: number
+    enabled: boolean
+  }>,
+): {
   versions: PackageVersions
   areVersionsLoading: IsLoading
   areVersionsInitiallyLoading: IsInitialLoading
@@ -141,7 +147,6 @@ export async function getPackageVersionsList(
   page: number = 0,
   signal?: AbortSignal,
 ): Promise<PackageVersions> {
-
   const packageId = encodeURIComponent(packageKey)
 
   const queryParams = optionalSearchParams({
@@ -214,7 +219,7 @@ export async function editPackageVersion(
 }
 
 export function usePackageVersionKeys(): [VersionKey[], IsLoading] {
-  const {versions: versionsData, areVersionsLoading} = usePackageVersions()
+  const { versions: versionsData, areVersionsLoading } = usePackageVersions()
   const versions = handleVersionsRevision(versionsData)
   return useMemo(
     () => [versions.map(({ key }) => key), areVersionsLoading],

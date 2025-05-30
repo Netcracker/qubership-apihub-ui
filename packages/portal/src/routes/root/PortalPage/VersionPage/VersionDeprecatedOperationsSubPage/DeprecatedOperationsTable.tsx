@@ -21,24 +21,17 @@ import { memo, useCallback, useMemo } from 'react'
 import type { OpenApiTableData } from '../OpenApiViewer/OpenApiTable'
 import { OpenApiTable } from '../OpenApiViewer/OpenApiTable'
 
-import { DeprecatedItemsSubTable } from './DeprecatedItemsSubTable'
-import type { ColumnDef } from '@tanstack/table-core'
+import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
 import { Box, Typography } from '@mui/material'
 import Tooltip from '@mui/material/Tooltip'
-import type { Row } from '@tanstack/react-table'
-import type { ColumnModel } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
+import { CustomTableHeadCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomTableHeadCell'
+import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
 import type {
   FetchNextOperationList,
   OperationsData,
   OperationWithDeprecations,
 } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import type { HasNextPage, IsFetchingNextPage, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { CustomTableHeadCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomTableHeadCell'
-import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoContextIcon'
-import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
-import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import {
   API_AUDIENCE_COLUMN_ID,
   API_KIND_COLUMN_ID,
@@ -46,6 +39,13 @@ import {
   PACKAGE_COLUMN_ID,
   TAGS_COLUMN_ID,
 } from '@netcracker/qubership-apihub-ui-shared/entities/table-columns'
+import type { ColumnModel } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
+import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoContextIcon'
+import type { HasNextPage, IsFetchingNextPage, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
+import type { Row } from '@tanstack/react-table'
+import type { ColumnDef } from '@tanstack/table-core'
+import { DeprecatedItemsSubTable } from './DeprecatedItemsSubTable'
 
 export const DETAILS_COLUMN_ID = 'details'
 export const DEPRECATED_SINCE_COLUMN_ID = 'deprecated-since'
@@ -90,13 +90,13 @@ export const DeprecatedOperationsTable: FC<DeprecatedOperationsTabProps> = memo<
   const deprecatedInfoColumns: ColumnDef<OpenApiTableData>[] = useMemo(() => [
     {
       id: DETAILS_COLUMN_ID,
-      header: () => <CustomTableHeadCell title="Details"/>,
+      header: () => <CustomTableHeadCell title="Details" />,
       cell: ({ row: { original: { operation } } }) => {
         const { deprecatedCount, deprecatedInfo } = operation as OperationWithDeprecations
         if (deprecatedCount) {
           return (
             <Box display="flex" alignItems="center">
-              <Box component="span" sx={{ background: '#FFB02E', width: 12, height: 12, borderRadius: '50%', mr: 1 }}/>
+              <Box component="span" sx={{ background: '#FFB02E', width: 12, height: 12, borderRadius: '50%', mr: 1 }} />
               <Typography noWrap component="span" sx={{ fontSize: 12, fontWeight: 500, color: '#353C4E', mr: 1.5 }}>
                 {deprecatedCount}
               </Typography>
@@ -104,10 +104,10 @@ export const DeprecatedOperationsTable: FC<DeprecatedOperationsTabProps> = memo<
               {deprecatedInfo && (
                 <Tooltip
                   disableHoverListener={false}
-                  title={<DeprecatedInfo info={deprecatedInfo}/>}
+                  title={<DeprecatedInfo info={deprecatedInfo} />}
                   placement="right"
                 >
-                  <InfoContextIcon sx={{ visibility: 'hidden' }} className="visible-on-hover"/>
+                  <InfoContextIcon sx={{ visibility: 'hidden' }} className="visible-on-hover" />
                 </Tooltip>
               )}
             </Box>
@@ -117,23 +117,26 @@ export const DeprecatedOperationsTable: FC<DeprecatedOperationsTabProps> = memo<
     },
     {
       id: DEPRECATED_SINCE_COLUMN_ID,
-      header: () => <CustomTableHeadCell title="Deprecated Since"/>,
+      header: () => <CustomTableHeadCell title="Deprecated Since" />,
       cell: ({ row: { original: { operation } } }) => {
         const [deprecatedSince] = (operation as OperationWithDeprecations)?.deprecatedInPreviousVersions ?? []
         if (deprecatedSince) {
           const { versionKey: versionToDisplay } = getSplittedVersionKey(deprecatedSince)
 
-          return <TextWithOverflowTooltip tooltipText={versionToDisplay}>
-            {versionToDisplay}
-          </TextWithOverflowTooltip>
+          return (
+            <TextWithOverflowTooltip tooltipText={versionToDisplay}>
+              {versionToDisplay}
+            </TextWithOverflowTooltip>
+          )
         }
       },
     },
   ], [])
 
   const isDeprecatedItemsShown = useCallback(({ original: { operation } }: Row<OpenApiTableData>) => {
-    const operationWithDeprecations = (operation as OperationWithDeprecations)
-    const onlyDeprecatedOperationItem = operationWithDeprecations.deprecated && Number(operationWithDeprecations?.deprecatedCount ?? 0) === 1
+    const operationWithDeprecations = operation as OperationWithDeprecations
+    const onlyDeprecatedOperationItem = operationWithDeprecations.deprecated
+      && Number(operationWithDeprecations?.deprecatedCount ?? 0) === 1
     return !onlyDeprecatedOperationItem
   }, [])
 
@@ -153,8 +156,8 @@ export const DeprecatedOperationsTable: FC<DeprecatedOperationsTabProps> = memo<
   )
 })
 
-export const DeprecatedInfo: FC<{ info: string }> = memo<{ info: string }>(({ info }) =>
+export const DeprecatedInfo: FC<{ info: string }> = memo<{ info: string }>(({ info }) => (
   <Box>
     <Typography component="span" variant="body2">{info}</Typography>
-  </Box>,
-)
+  </Box>
+))

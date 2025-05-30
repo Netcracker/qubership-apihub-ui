@@ -15,22 +15,22 @@
  */
 
 // eslint-disable-next-line filenames/no-index
-import express from 'express'
 import bodyParser from 'body-parser'
 import cors from 'cors'
-import { ProjectsWsRouter } from './routers/websockets/websockets'
-import ws from 'ws'
+import express from 'express'
 import http from 'http'
-import { AuthRouter } from './routers/auth/router'
-import { IntegrationsRouter } from './routers/integrations/router'
-import { SystemRouter } from './routers/system/router'
-import { GlobalSearchRouter } from './routers/global-search/router'
-import { UsersRouter } from './routers/users/router'
-import { PackagesRouter, PackageTokensRouter } from './routers/packages/router'
+import ws from 'ws'
 import { ActivityRouter } from './routers/activity/router'
-import { RolesRouter } from './routers/roles/router'
+import { AuthRouter } from './routers/auth/router'
+import { GlobalSearchRouter } from './routers/global-search/router'
+import { IntegrationsRouter } from './routers/integrations/router'
+import { PackagesRouter, PackageTokensRouter } from './routers/packages/router'
 import { PermissionsRouter } from './routers/permissions/router'
+import { RolesRouter } from './routers/roles/router'
 import { SystemAdminsRouter } from './routers/system-admins/router'
+import { SystemRouter } from './routers/system/router'
+import { UsersRouter } from './routers/users/router'
+import { ProjectsWsRouter } from './routers/websockets/websockets'
 
 const app = express()
 const port = process.env.NODEJS_PORT || 3003

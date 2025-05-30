@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { USER } from '../../entities/principals'
 import type { Revisions } from '../../entities/revisions'
 import { DRAFT_VERSION_STATUS, RELEASE_VERSION_STATUS } from '../../entities/version-status'
-import { USER } from '../../entities/principals'
 
 export const revisions: Revisions = [
   {

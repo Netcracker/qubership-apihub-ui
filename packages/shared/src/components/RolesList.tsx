@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
+import type { DropResult } from '@hello-pangea/dnd'
+import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
 import type { FC } from 'react'
 import * as React from 'react'
 import { memo } from 'react'
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
-import type { DropResult } from '@hello-pangea/dnd'
-import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
-import type { Roles } from '../types/roles'
 import { DragIcon } from '../icons/DragIcon'
+import type { Roles } from '../types/roles'
 
 export type RolesListProps = {
   roles: Roles
   setRoles: (roles: Roles) => void
 }
 export const RolesList: FC<RolesListProps> = memo(({ roles, setRoles }) => {
-
   const reorder = (list: Roles, startIndex: number, endIndex: number): Roles => {
     const result = Array.from(list)
     const [removed] = result.splice(startIndex, 1)
@@ -81,7 +80,7 @@ export const RolesList: FC<RolesListProps> = memo(({ roles, setRoles }) => {
                         {...provided.dragHandleProps}
                       >
                         <TableCell key={index}>
-                          {!role.readOnly && <DragIcon/>}
+                          {!role.readOnly && <DragIcon />}
                         </TableCell>
                         <TableCell key={role.role}>
                           {role.role}

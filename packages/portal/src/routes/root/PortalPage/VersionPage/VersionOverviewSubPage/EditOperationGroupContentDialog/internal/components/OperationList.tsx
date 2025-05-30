@@ -14,16 +14,9 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import * as React from 'react'
-import { useCallback } from 'react'
+import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
 import { Box, CardHeader, Checkbox } from '@mui/material'
-import { useBackwardLocation } from '../../../../../../useBackwardLocation'
-import { BORDER } from '../consts'
-import type { PackageContext } from '../types'
-import { OperationListSkeleton, OperationSkeleton } from './OperationListSkeleton'
-import { OPERATION_LIST_ITEM_HEIGHT, OperationListItem } from './OperationListItem'
-import { getOperationsPath } from '../../../../../../../NavigationProvider'
+import { NAVIGATION_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import type {
   FetchNextOperationList,
   Operation,
@@ -32,16 +25,23 @@ import type {
   OperationsData,
 } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
 import { isEmpty, isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import { REF_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import type { ListChildComponentProps } from 'react-window'
-import { FixedSizeList } from 'react-window'
 import type { Path } from '@remix-run/router'
-import InfiniteLoader from 'react-window-infinite-loader'
+import type { FC } from 'react'
+import * as React from 'react'
+import { useCallback } from 'react'
 import type { Size } from 'react-virtualized-auto-sizer'
 import AutoSizer from 'react-virtualized-auto-sizer'
-import { NAVIGATION_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
+import type { ListChildComponentProps } from 'react-window'
+import { FixedSizeList } from 'react-window'
+import InfiniteLoader from 'react-window-infinite-loader'
+import { getOperationsPath } from '../../../../../../../NavigationProvider'
+import { useBackwardLocation } from '../../../../../../useBackwardLocation'
+import { BORDER } from '../consts'
+import type { PackageContext } from '../types'
+import { OPERATION_LIST_ITEM_HEIGHT, OperationListItem } from './OperationListItem'
+import { OperationListSkeleton, OperationSkeleton } from './OperationListSkeleton'
 
 export type OperationListProps = {
   packageContext: PackageContext
@@ -79,15 +79,18 @@ export const OperationList: FC<OperationListProps> = (props) => {
     onToggleAllOperationsCheckbox(checkedOperations, operations)
   }, [checkedOperations, onToggleAllOperationsCheckbox, operations])
 
-  const prepareLinkFn = useCallback(({ operationKey, apiType, packageRef }: OperationData) => getOperationsPath({
-    packageKey: packageContext.packageKey!,
-    versionKey: packageContext.version!,
-    apiType: apiType ?? DEFAULT_API_TYPE,
-    operationKey: operationKey,
-    search: {
-      [REF_SEARCH_PARAM]: { value: packageContext.isDashboard ? packageContext.refPackageKey ?? packageRef?.key : undefined },
-    },
-  }), [packageContext.isDashboard, packageContext.packageKey, packageContext.refPackageKey, packageContext.version])
+  const prepareLinkFn = useCallback(({ operationKey, apiType, packageRef }: OperationData) =>
+    getOperationsPath({
+      packageKey: packageContext.packageKey!,
+      versionKey: packageContext.version!,
+      apiType: apiType ?? DEFAULT_API_TYPE,
+      operationKey: operationKey,
+      search: {
+        [REF_SEARCH_PARAM]: {
+          value: packageContext.isDashboard ? packageContext.refPackageKey ?? packageRef?.key : undefined,
+        },
+      },
+    }), [packageContext.isDashboard, packageContext.packageKey, packageContext.refPackageKey, packageContext.version])
 
   const loadMoreItems = useCallback(() => {
     fetchNextPage?.()
@@ -123,7 +126,7 @@ export const OperationList: FC<OperationListProps> = (props) => {
       />
       <Box sx={{ flexGrow: 1, overflow: 'hidden' }}>
         {loading
-          ? <OperationListSkeleton/>
+          ? <OperationListSkeleton />
           : (
             <>
               <Placeholder
@@ -165,25 +168,28 @@ export const OperationList: FC<OperationListProps> = (props) => {
                 )}
               </AutoSizer>
             </>
-          )
-        }
+          )}
       </Box>
     </Box>
   )
 }
 
-export const Row: FC<ListChildComponentProps<{
-  operations: OperationsData
-  checkedOperations: Operations
-  prepareLinkFn: (operation: OperationData) => Partial<Path>
-  onToggleOperationCheckbox: (value: Operation) => void
-  onClickLink: () => void
-  hasNextPage?: boolean
-  isNextPageFetching?: boolean
-  isItemLoaded: (index: number) => boolean
-}>> = (props) => {
+export const Row: FC<
+  ListChildComponentProps<{
+    operations: OperationsData
+    checkedOperations: Operations
+    prepareLinkFn: (operation: OperationData) => Partial<Path>
+    onToggleOperationCheckbox: (value: Operation) => void
+    onClickLink: () => void
+    hasNextPage?: boolean
+    isNextPageFetching?: boolean
+    isItemLoaded: (index: number) => boolean
+  }>
+> = (props) => {
   const {
-    index, style, data: {
+    index,
+    style,
+    data: {
       operations,
       checkedOperations,
       onToggleOperationCheckbox,
@@ -197,18 +203,20 @@ export const Row: FC<ListChildComponentProps<{
   if (hasNextPage && operations.length === index) {
     return (
       <div style={style} key="operation-skeleton">
-        <OperationSkeleton/>
+        <OperationSkeleton />
       </div>
     )
   }
 
-  return <OperationListItem
-    key={operation.operationKey}
-    style={style}
-    operation={operation}
-    isChecked={checkedOperations.includes(operation)}
-    onToggleOperationCheckbox={onToggleOperationCheckbox}
-    prepareLinkFn={prepareLinkFn}
-    onClickLink={onClickLink}
-  />
+  return (
+    <OperationListItem
+      key={operation.operationKey}
+      style={style}
+      operation={operation}
+      isChecked={checkedOperations.includes(operation)}
+      onToggleOperationCheckbox={onToggleOperationCheckbox}
+      prepareLinkFn={prepareLinkFn}
+      onClickLink={onClickLink}
+    />
+  )
 }

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo } from 'react'
 import { Box, Typography } from '@mui/material'
 import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
+import type { FC } from 'react'
+import { memo } from 'react'
 
 type SubtitleProps = {
   label: string

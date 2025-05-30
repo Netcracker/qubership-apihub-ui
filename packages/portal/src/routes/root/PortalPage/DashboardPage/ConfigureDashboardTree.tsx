@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
+import {
+  PackagesAndDashboardsTree,
+} from '@apihub/routes/root/PortalPage/PackagesAndDashboardsTree/PackagesAndDashboardsTree'
+import { useSetReferences } from '@apihub/routes/root/PortalPage/PackagesAndDashboardsTree/useSetReferences'
+import type { ReferenceKind } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
 import type { FC } from 'react'
 import * as React from 'react'
 import { memo, useCallback, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { useDashboardReferences, useSetDashboardReferences } from './DashboardReferencesProvider'
 import { useHandleRemovedReferences } from '../useHandleReferences'
+import { useDashboardReferences, useSetDashboardReferences } from './DashboardReferencesProvider'
 import { useSetRecursiveDashboardName } from './RecursiveDashboardNameContextProvider'
-import type { ReferenceKind } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
-import { useSetReferences } from '@apihub/routes/root/PortalPage/PackagesAndDashboardsTree/useSetReferences'
-import {
-  PackagesAndDashboardsTree,
-} from '@apihub/routes/root/PortalPage/PackagesAndDashboardsTree/PackagesAndDashboardsTree'
 
 export const ConfigureDashboardTree: FC = memo(() => {
   const { packageId: packageKey, versionId: versionKey } = useParams()
@@ -55,5 +55,3 @@ export const ConfigureDashboardTree: FC = memo(() => {
     />
   )
 })
-
-

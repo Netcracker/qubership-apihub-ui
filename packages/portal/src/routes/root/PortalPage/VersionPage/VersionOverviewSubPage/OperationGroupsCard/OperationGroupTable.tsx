@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { Fragment, memo, useEffect, useMemo, useRef, useState } from 'react'
-import type { ColumnDef } from '@tanstack/table-core'
 import {
   Box,
   IconButton,
@@ -29,27 +26,33 @@ import {
   TableRow,
   Tooltip,
 } from '@mui/material'
-import type { ColumnSizingInfoState, ColumnSizingState, OnChangeFn } from '@tanstack/react-table'
-import { flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from '@tanstack/react-table'
-import { OperationGroupControls } from './OperationGroupControls'
+import { ColumnDelimiter } from '@netcracker/qubership-apihub-ui-shared/components/ColumnDelimiter'
+import { CustomTableHeadCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomTableHeadCell'
+import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
+import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
+import { API_TYPE_TITLE_MAP } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { OperationGroup } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
+import {
+  GROUP_TYPE_MANUAL,
+  GROUP_TYPE_REST_PATH_PREFIX,
+} from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
+import { useResizeObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useResizeObserver'
 import type { ColumnModel } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
 import {
   DEFAULT_CONTAINER_WIDTH,
   useColumnsSizing,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
-import type { OperationGroup } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
-import { GROUP_TYPE_MANUAL, GROUP_TYPE_REST_PATH_PREFIX } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
-import { API_TYPE_TITLE_MAP } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
+import { FileIcon } from '@netcracker/qubership-apihub-ui-shared/icons/FileIcon'
 import { insertIntoArrayByIndex, isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import { ColumnDelimiter } from '@netcracker/qubership-apihub-ui-shared/components/ColumnDelimiter'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { CustomTableHeadCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomTableHeadCell'
-import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
 import { createComponents } from '@netcracker/qubership-apihub-ui-shared/utils/components'
 import { DEFAULT_NUMBER_SKELETON_ROWS } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
-import { useResizeObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useResizeObserver'
-import { FileIcon } from '@netcracker/qubership-apihub-ui-shared/icons/FileIcon'
+import type { ColumnSizingInfoState, ColumnSizingState, OnChangeFn } from '@tanstack/react-table'
+import { flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from '@tanstack/react-table'
+import type { ColumnDef } from '@tanstack/table-core'
+import type { FC } from 'react'
+import { Fragment, memo, useEffect, useMemo, useRef, useState } from 'react'
+import { OperationGroupControls } from './OperationGroupControls'
 
 const GROUP_NAME_COLUMN_ID = 'group-name'
 const GROUP_TYPE_COLUMN_ID = 'group-type'
@@ -160,7 +163,9 @@ export const OperationGroupTable: FC<OperationGroupTableProps> = memo<OperationG
           GROUP_TYPE_COLUMN_ID,
           'Type',
           (group) => (group.isPrefixGroup ? GROUP_TYPE_REST_PATH_PREFIX : GROUP_TYPE_MANUAL),
-        ), 1)
+        ),
+        1,
+      )
     }
 
     return result
@@ -205,8 +210,8 @@ export const OperationGroupTable: FC<OperationGroupTableProps> = memo<OperationG
                     }}
                   >
                     {flexRender(headerColumn.column.columnDef.header, headerColumn.getContext())}
-                    {index !== headerGroup.headers.length - 1 &&
-                      <ColumnDelimiter header={headerColumn} resizable={true} />}
+                    {index !== headerGroup.headers.length - 1
+                      && <ColumnDelimiter header={headerColumn} resizable={true} />}
                   </TableCell>
                 ))}
               </TableRow>
@@ -215,7 +220,7 @@ export const OperationGroupTable: FC<OperationGroupTableProps> = memo<OperationG
           <TableBody>
             {getRowModel().rows.map((row) => (
               <Fragment key={row.id}>
-                <TableRow >
+                <TableRow>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} data-testid={`Cell-${cell.column.id}`}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -232,7 +237,11 @@ export const OperationGroupTable: FC<OperationGroupTableProps> = memo<OperationG
   )
 })
 
-function defineDefaultColumn(id: Key, title: string, getValue: (group: OperationGroup) => string): ColumnDef<OperationGroup> {
+function defineDefaultColumn(
+  id: Key,
+  title: string,
+  getValue: (group: OperationGroup) => string,
+): ColumnDef<OperationGroup> {
   return {
     id: id,
     header: () => <CustomTableHeadCell title={title} />,
@@ -276,4 +285,3 @@ const RowSkeleton: FC<SkeletonProps> = memo<SkeletonProps>(({ isPackage }) => {
     </TableRow>
   )
 })
-

@@ -27,10 +27,10 @@ export function takeIf(value: object, condition: boolean): object {
 
 export function takeIfDefined(value: object): object {
   const [propertyValue] = Object.values(value)
-  const valueIsNotDefined = !value ||
-    propertyValue === undefined ||
-    propertyValue === null ||
-    propertyValue === ''
+  const valueIsNotDefined = !value
+    || propertyValue === undefined
+    || propertyValue === null
+    || propertyValue === ''
 
   return {
     ...takeIf(value, !valueIsNotDefined),

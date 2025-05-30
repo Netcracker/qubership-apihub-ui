@@ -15,8 +15,8 @@
  */
 
 import { Router } from 'express'
-import { NEWLY_PUBLISHED_SNAPSHOT_PUBLISH_INFO_DTO, SNAPSHOT_PUBLISH_INFO_DTO, SNAPSHOTS_DTO } from './data'
 import { COMPLETE_SERVICES_DTO } from '../services/data'
+import { NEWLY_PUBLISHED_SNAPSHOT_PUBLISH_INFO_DTO, SNAPSHOT_PUBLISH_INFO_DTO, SNAPSHOTS_DTO } from './data'
 import type { PublishConfigDto, PublishSnapshotRequestDto } from './types'
 
 export type SnapshotRouter = Router
@@ -42,34 +42,36 @@ export function publishSnapshot(router: SnapshotRouter): void {
     const { version, previousVersion, services }: PublishSnapshotRequestDto = JSON.parse(req.body)
 
     setTimeout(() => {
-      res.status(202).send(<PublishConfigDto>{
-        snapshot: {
-          publishId: 'snapshot-publish-key',
-          packageId: 'MYPKG',
-        },
-        services: services.map(serviceId => {
-          const serviceDto = COMPLETE_SERVICES_DTO.services.find(service => service.id === serviceId)
-          return ({
-            serviceId: serviceId,
-            publishId: `publication-${serviceId}`,
+      res.status(202).send(
+        <PublishConfigDto> {
+          snapshot: {
+            publishId: 'snapshot-publish-key',
             packageId: 'MYPKG',
-            version: version,
-            previousVersion: previousVersion,
-            versionFolder: '',
-            status: 'draft',
-            refs: [],
-            files: serviceDto?.specs.map(spec => ({
-              fileId: spec.fileId,
-              publish: true,
-              labels: [],
-            })),
-            labels: [
-              'label-1',
-              'label-2',
-            ],
-          })
-        }),
-      })
+          },
+          services: services.map(serviceId => {
+            const serviceDto = COMPLETE_SERVICES_DTO.services.find(service => service.id === serviceId)
+            return ({
+              serviceId: serviceId,
+              publishId: `publication-${serviceId}`,
+              packageId: 'MYPKG',
+              version: version,
+              previousVersion: previousVersion,
+              versionFolder: '',
+              status: 'draft',
+              refs: [],
+              files: serviceDto?.specs.map(spec => ({
+                fileId: spec.fileId,
+                publish: true,
+                labels: [],
+              })),
+              labels: [
+                'label-1',
+                'label-2',
+              ],
+            })
+          }),
+        },
+      )
     }, 1000)
 
     setTimeout(() => {

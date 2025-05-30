@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import Box from '@mui/material/Box'
 import type { FC, ReactNode } from 'react'
 import { memo } from 'react'
-import Box from '@mui/material/Box'
 import { BODY_GRID_AREA, createGridAreas, TABS_GRID_AREA } from '../../utils/page-layouts'
 
 export type LayoutWithTabsProps = {
@@ -45,13 +45,14 @@ export const LayoutWithTabs: FC<LayoutWithTabsProps> = memo<LayoutWithTabsProps>
         {tabs}
       </Box>
 
-      <Box sx={{
-        gridArea: BODY_GRID_AREA,
-        overflow: 'hidden',
-      }}>
+      <Box
+        sx={{
+          gridArea: BODY_GRID_AREA,
+          overflow: 'hidden',
+        }}
+      >
         {body}
       </Box>
     </Box>
   )
 })
-

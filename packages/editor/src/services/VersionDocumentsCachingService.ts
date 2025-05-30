@@ -19,9 +19,10 @@ import type { FileId, VersionDocument } from '@netcracker/qubership-apihub-api-p
 type VersionDocumentsCache = Record<FileId, unknown>
 
 export class VersionDocumentsCachingService {
-
-  private static serviceInstances: Map<string, VersionDocumentsCachingService> =
-    new Map<string, VersionDocumentsCachingService>()
+  private static serviceInstances: Map<string, VersionDocumentsCachingService> = new Map<
+    string,
+    VersionDocumentsCachingService
+  >()
 
   private readonly cache: VersionDocumentsCache = {}
 
@@ -46,5 +47,4 @@ export class VersionDocumentsCachingService {
     }
     return versionDocument
   }
-
 }

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useMemo } from 'react'
 import { Box, Link, Typography } from '@mui/material'
 import { isUrl } from '@netcracker/qubership-apihub-ui-shared/utils/urls'
+import type { FC } from 'react'
+import { memo, useMemo } from 'react'
 
 export type MetaDataContentProps = {
   metaData: object | undefined
@@ -42,11 +42,12 @@ export const MetaDataContent: FC<MetaDataContentProps> = memo<MetaDataContentPro
             <Typography variant="subtitle1">{key}:</Typography>
             <Box sx={{ wordBreak: 'break-word' }}>
               {isUrl(value)
-                ? <Link href={value} target="_blank">
-                  {value}
-                </Link>
-                : <Typography variant="body2">{value}</Typography>
-              }
+                ? (
+                  <Link href={value} target="_blank">
+                    {value}
+                  </Link>
+                )
+                : <Typography variant="body2">{value}</Typography>}
             </Box>
           </Box>
         )

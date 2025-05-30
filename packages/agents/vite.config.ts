@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import monacoEditor from 'vite-plugin-monaco-editor'
-import path, { resolve } from 'path'
-import NodeModulesPolyfill from '@esbuild-plugins/node-modules-polyfill'
 import NodeGlobalsPolyfill from '@esbuild-plugins/node-globals-polyfill'
-import ignoreDotsOnDevServer from 'vite-plugin-rewrite-all'
-import { VitePluginFonts } from 'vite-plugin-fonts'
+import NodeModulesPolyfill from '@esbuild-plugins/node-modules-polyfill'
+import react from '@vitejs/plugin-react'
+import path, { resolve } from 'path'
 import { visualizer as bundleVisualizer } from 'rollup-plugin-visualizer'
+import { defineConfig } from 'vite'
+import { VitePluginFonts } from 'vite-plugin-fonts'
+import monacoEditor from 'vite-plugin-monaco-editor'
+import ignoreDotsOnDevServer from 'vite-plugin-rewrite-all'
 
 const proxyServer = ''
 const devServer = 'http://localhost:3003'

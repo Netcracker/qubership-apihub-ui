@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import type { Projects, ProjectsDto } from '@apihub/entities/projects'
+import { editorRequestJson } from '@apihub/utils/requests'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { InvalidateQuery, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { toProject } from './useProject'
-import type { Projects, ProjectsDto } from '@apihub/entities/projects'
-import type { InvalidateQuery, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { editorRequestJson } from '@apihub/utils/requests'
 
 const PROJECTS_QUERY_KEY = 'projects-query-key'
 

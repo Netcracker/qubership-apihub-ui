@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { Key } from './keys'
 import { requestJson } from '../utils/requests'
 import { APIHUB_NC_BASE_PATH } from '../utils/urls'
+import type { Key } from './keys'
 
 export type Namespaces = ReadonlyArray<Namespace>
 
@@ -48,10 +48,8 @@ export async function getNamespaces(agentKey: Key): Promise<NamespacesDto> {
   const agentId = encodeURIComponent(agentKey)
 
   return await requestJson<NamespacesDto>(`/api/v1/agents/${agentId}/namespaces`, {
-      method: 'get',
-    },
-    {
-      basePath: APIHUB_NC_BASE_PATH,
-    },
-  )
+    method: 'get',
+  }, {
+    basePath: APIHUB_NC_BASE_PATH,
+  })
 }

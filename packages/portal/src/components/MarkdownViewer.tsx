@@ -16,9 +16,9 @@
 
 import type { FC } from 'react'
 import { memo } from 'react'
-import remarkGfm from 'remark-gfm'
-import rehypeRaw from 'rehype-raw'
 import ReactMarkdown from 'react-markdown'
+import rehypeRaw from 'rehype-raw'
+import remarkGfm from 'remark-gfm'
 import 'github-markdown-css/github-markdown-light.css'
 
 export type MarkdownViewerProps = {

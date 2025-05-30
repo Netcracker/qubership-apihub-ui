@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
+import { Divider } from '@mui/material'
+import Box from '@mui/material/Box'
+import { Resizable } from 're-resizable'
 import type { FC, ReactNode } from 'react'
 import * as React from 'react'
 import { memo } from 'react'
-import Box from '@mui/material/Box'
-import { Resizable } from 're-resizable'
-import { Divider } from '@mui/material'
-import { MEDIUM_TOOLBAR_SIZE, Toolbar } from '../Toolbar'
-import type { TestableProps } from '../Testable'
 import {
   BODY_GRID_AREA,
   createGridAreas,
@@ -31,6 +29,8 @@ import {
   SIDEBAR_GRID_AREA,
   TOOLBAR_GRID_AREA,
 } from '../../utils/page-layouts'
+import type { TestableProps } from '../Testable'
+import { MEDIUM_TOOLBAR_SIZE, Toolbar } from '../Toolbar'
 
 export type LayoutWithSidebarProps = {
   header: ReactNode
@@ -56,18 +56,20 @@ export const LayoutWithSidebar: FC<LayoutWithSidebarProps> = memo<LayoutWithSide
       }}
       data-testid={testId}
     >
-      <Box sx={{
-        gridArea: TOOLBAR_GRID_AREA,
-        overflow: 'hidden',
-        backgroundColor: '#FFFFFF',
-      }}>
+      <Box
+        sx={{
+          gridArea: TOOLBAR_GRID_AREA,
+          overflow: 'hidden',
+          backgroundColor: '#FFFFFF',
+        }}
+      >
         <Box>
           <Toolbar
             size={MEDIUM_TOOLBAR_SIZE}
             header={header}
             action={action}
           />
-          <Divider orientation="horizontal" variant="fullWidth"/>
+          <Divider orientation="horizontal" variant="fullWidth" />
         </Box>
       </Box>
 
@@ -100,13 +102,14 @@ export const LayoutWithSidebar: FC<LayoutWithSidebarProps> = memo<LayoutWithSide
         </Resizable>
       )}
 
-      <Box sx={{
-        gridArea: BODY_GRID_AREA,
-        overflow: 'hidden',
-      }}>
+      <Box
+        sx={{
+          gridArea: BODY_GRID_AREA,
+          overflow: 'hidden',
+        }}
+      >
         {body}
       </Box>
     </Box>
   )
 })
-

@@ -16,13 +16,13 @@
 
 import type { Meta, StoryObj } from '@storybook/react'
 import { RawSpecDiffView } from '../components/RawSpecDiffView'
-import { toYaml } from '../utils/specifications'
-import { openapiChangedSample, openapiSample } from './samples/openapi-samples'
-import { GRAPHQL_SPEC_TYPE, OPENAPI_3_0_SPEC_TYPE } from '../utils/specs'
 import { GRAPHQL_FILE_EXTENSION, YAML_FILE_EXTENSION } from '../utils/files'
+import { toYaml } from '../utils/specifications'
+import { GRAPHQL_SPEC_TYPE, OPENAPI_3_0_SPEC_TYPE } from '../utils/specs'
+import { toFormattedJsonString } from '../utils/strings'
 import { fullHeight } from './commons/decorators'
 import { graphqlChangedSample, graphqlSample } from './samples/graphql-samples'
-import { toFormattedJsonString } from '../utils/strings'
+import { openapiChangedSample, openapiSample } from './samples/openapi-samples'
 
 const meta: Meta<typeof RawSpecDiffView> = {
   component: RawSpecDiffView,
@@ -78,4 +78,3 @@ export const FullyRemovedStory: Story = {
     extension: YAML_FILE_EXTENSION,
   },
 }
-

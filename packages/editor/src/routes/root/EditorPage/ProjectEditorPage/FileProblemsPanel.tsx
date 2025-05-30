@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import type { Dispatch, FC, SetStateAction } from 'react'
-import { memo, useCallback, useMemo, useState } from 'react'
 import {
   Box,
   Link,
@@ -28,43 +26,39 @@ import {
   ToggleButton,
   Typography,
 } from '@mui/material'
+import type { Dispatch, FC, SetStateAction } from 'react'
+import { memo, useCallback, useMemo, useState } from 'react'
 import type { Column } from 'react-table'
 import { useTable } from 'react-table'
 
-import { useBranchSearchParam } from '../../useBranchSearchParam'
-import { NavLink, useNavigate } from 'react-router-dom'
-import {
-  useErrorFileProblemCount,
-  useFileProblems,
-  useInfoFileProblemCount,
-  useWarnFileProblemCount,
-} from './useFileProblems'
-import type {
-  FileProblem,
-  FileProblemType,
-} from '@apihub/entities/file-problems'
-import {
-  ERROR_FILE_PROBLEM_TYPE, INFO_FILE_PROBLEM_TYPE,
-  WARN_FILE_PROBLEM_TYPE,
-} from '@apihub/entities/file-problems'
-import {
-  DEFAULT_STATUS_MARKER_VARIANT,
-  ERROR_STATUS_MARKER_VARIANT,
-  StatusMarker,
-  WARNING_STATUS_MARKER_VARIANT,
-} from '@netcracker/qubership-apihub-ui-shared/components/StatusMarker'
 import { FILES_PROJECT_EDITOR_MODE } from '@apihub/entities/editor-modes'
-import { includes } from '@netcracker/qubership-apihub-ui-shared/utils/filters'
+import type { FileProblem, FileProblemType } from '@apihub/entities/file-problems'
+import { ERROR_FILE_PROBLEM_TYPE, INFO_FILE_PROBLEM_TYPE, WARN_FILE_PROBLEM_TYPE } from '@apihub/entities/file-problems'
+import { CustomToggleButtonGroup } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/CustomToggleButtonGroup'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import {
   NAVIGATION_PLACEHOLDER_AREA,
   NO_SEARCH_RESULTS,
   Placeholder,
 } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
-import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import { CustomToggleButtonGroup } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/CustomToggleButtonGroup'
 import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
+import {
+  DEFAULT_STATUS_MARKER_VARIANT,
+  ERROR_STATUS_MARKER_VARIANT,
+  StatusMarker,
+  WARNING_STATUS_MARKER_VARIANT,
+} from '@netcracker/qubership-apihub-ui-shared/components/StatusMarker'
 import type { FileKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { includes } from '@netcracker/qubership-apihub-ui-shared/utils/filters'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { useBranchSearchParam } from '../../useBranchSearchParam'
+import {
+  useErrorFileProblemCount,
+  useFileProblems,
+  useInfoFileProblemCount,
+  useWarnFileProblemCount,
+} from './useFileProblems'
 
 export type ValidationProblemsPanelProps = {
   fileKey?: FileKey
@@ -123,12 +117,17 @@ export const FileProblemsPanel: FC<ValidationProblemsPanelProps> = memo<Validati
             return null
           }
           const to = {
-            search: `branch=${encodeURIComponent(branch ?? '')}&mode=${FILES_PROJECT_EDITOR_MODE}&file=${encodeURIComponent(filePath)}`,
+            search: `branch=${encodeURIComponent(branch ?? '')}&mode=${FILES_PROJECT_EDITOR_MODE}&file=${
+              encodeURIComponent(filePath)
+            }`,
             hash: `L${lineNumber}`,
           }
           return (
-            <Link sx={{ fontFamily: 'Inter', verticalAlign: 'text-top' }} component="button"
-                  onClick={() => handleLinkClick(to)}>
+            <Link
+              sx={{ fontFamily: 'Inter', verticalAlign: 'text-top' }}
+              component="button"
+              onClick={() => handleLinkClick(to)}
+            >
               {lineNumber}
             </Link>
           )
@@ -141,17 +140,19 @@ export const FileProblemsPanel: FC<ValidationProblemsPanelProps> = memo<Validati
         Cell: ({ value, row: { original: { externalFilePath, lineNumber } } }) => (
           <>
             <Box sx={{ wordBreak: 'break-word' }}>{value}</Box>
-            {
-              externalFilePath && <Link
+            {externalFilePath && (
+              <Link
                 component={NavLink}
                 to={{
-                  search: `branch=${encodeURIComponent(branch ?? '')}&mode=${FILES_PROJECT_EDITOR_MODE}&file=${encodeURIComponent(getFilePath(externalFilePath))}`,
+                  search: `branch=${encodeURIComponent(branch ?? '')}&mode=${FILES_PROJECT_EDITOR_MODE}&file=${
+                    encodeURIComponent(getFilePath(externalFilePath))
+                  }`,
                   hash: `L${lineNumber}`,
                 }}
               >
                 {externalFilePath}
               </Link>
-            }
+            )}
           </>
         ),
       },
@@ -172,22 +173,27 @@ export const FileProblemsPanel: FC<ValidationProblemsPanelProps> = memo<Validati
   const filteredProblems = useMemo(() => {
     return rows
       .filter(({ values }) => (filter.length > 0 ? filter?.includes(values.type) : true))
-      .filter(data => includes([data.values.text, data.values.lineNumber?.toString(), data.original.externalFilePath ?? ''], searchValue))
+      .filter(data =>
+        includes(
+          [data.values.text, data.values.lineNumber?.toString(), data.original.externalFilePath ?? ''],
+          searchValue,
+        )
+      )
   }, [filter, rows, searchValue])
 
   if (isValidating) {
-    return (
-      <LoadingIndicator/>
-    )
+    return <LoadingIndicator />
   }
 
   return (
-    <Box sx={{
-      height: '100%',
-      overflow: 'hidden',
-      display: 'flex',
-      flexFlow: 'column-reverse',
-    }}>
+    <Box
+      sx={{
+        height: '100%',
+        overflow: 'hidden',
+        display: 'flex',
+        flexFlow: 'column-reverse',
+      }}
+    >
       <ProblemsControls
         problems={problems}
         filter={filter}
@@ -200,18 +206,20 @@ export const FileProblemsPanel: FC<ValidationProblemsPanelProps> = memo<Validati
         message={searchValue ? NO_SEARCH_RESULTS : 'No problems'}
       >
         <TableContainer>
-          <Table {...getTableProps()} >
+          <Table {...getTableProps()}>
             <TableHead>
               {headerGroups.map(headerGroup => (
                 <TableRow {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroups.map(headerGroup => headerGroup.headers.map(column => (
-                    <TableCell
-                      {...column.getHeaderProps({ style: { width: column.width } })}
-                      key={column.id}
-                    >
-                      {column.render('Header')}
-                    </TableCell>
-                  )))}
+                  {headerGroups.map(headerGroup =>
+                    headerGroup.headers.map(column => (
+                      <TableCell
+                        {...column.getHeaderProps({ style: { width: column.width } })}
+                        key={column.id}
+                      >
+                        {column.render('Header')}
+                      </TableCell>
+                    ))
+                  )}
                 </TableRow>
               ))}
             </TableHead>

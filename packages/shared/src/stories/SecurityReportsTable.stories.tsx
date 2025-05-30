@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import type { Meta, StoryObj } from '@storybook/react'
 import { useArgs } from '@storybook/preview-api'
+import type { Meta, StoryObj } from '@storybook/react'
+import React from 'react'
 import type { SecurityReportsTableProps } from '../components/SecurityReportsTable'
 import { SecurityReportsTable } from '../components/SecurityReportsTable'
-import { fullTableData, longNameTableData } from './samples/table-samples'
 import { isEmpty } from '../utils/arrays'
+import { fullTableData, longNameTableData } from './samples/table-samples'
 
 const meta: Meta<SecurityReportsTableProps> = {
   title: 'Security Reports Table',
@@ -75,6 +75,6 @@ export const InfinityDataStory: Story = {
       return Promise.resolve(1)
     }
 
-    return <SecurityReportsTable {...args} fetchNextPage={onFetchNextPage} data={data}/>
+    return <SecurityReportsTable {...args} fetchNextPage={onFetchNextPage} data={data} />
   },
 }

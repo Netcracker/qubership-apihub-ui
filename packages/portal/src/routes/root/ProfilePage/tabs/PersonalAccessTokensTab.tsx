@@ -2,8 +2,12 @@ import { GeneratePersonalAccessTokenForm } from '@apihub/components/GeneratePers
 import { PersonalAccessTokensTable } from '@apihub/components/PersonalAccessTokensTable'
 import { useShowSuccessNotification } from '@apihub/routes/root/BasePage/Notification'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
-import { useDeletePersonalAccessToken, useGeneratePersonalAccessToken, usePersonalAccessTokens } from '@netcracker/qubership-apihub-ui-shared/hooks/tokens/usePersonalAccessTokens'
-import { useCallback, type FC } from 'react'
+import {
+  useDeletePersonalAccessToken,
+  useGeneratePersonalAccessToken,
+  usePersonalAccessTokens,
+} from '@netcracker/qubership-apihub-ui-shared/hooks/tokens/usePersonalAccessTokens'
+import { type FC, useCallback } from 'react'
 
 const EXPIRATION_VARIANTS = [-1, 7, 30, 60, 90, 180, 365]
 
@@ -17,26 +21,30 @@ export const PersonalAccessTokensTab: FC = () => {
     return personalAccessTokens.every(token => token.name !== name)
   }, [personalAccessTokens])
 
-  return <>
-    <BodyCard
-      header="Personal Access Tokens"
-      body={<>
-        <GeneratePersonalAccessTokenForm
-          validateTokenNameNonExistence={validateTokenNameNonExistence}
-          generateToken={generatePersonalAccessToken}
-          generatedToken={personalAccessToken}
-          disabled={personalAccessTokens.length >= 100}
-          loading={isTokenGenerating || areTokensLoading}
-          fieldExpirationVariants={EXPIRATION_VARIANTS}
-          showSuccessNotification={showSuccessNotification}
-        />
-        <PersonalAccessTokensTable
-          data={personalAccessTokens}
-          loading={areTokensLoading}
-          onDelete={deletePersonalAccessToken}
-          isTokenBeingDeleted={isTokenBeingDeleted}
-        />
-      </>}
-    />
-  </>
+  return (
+    <>
+      <BodyCard
+        header="Personal Access Tokens"
+        body={
+          <>
+            <GeneratePersonalAccessTokenForm
+              validateTokenNameNonExistence={validateTokenNameNonExistence}
+              generateToken={generatePersonalAccessToken}
+              generatedToken={personalAccessToken}
+              disabled={personalAccessTokens.length >= 100}
+              loading={isTokenGenerating || areTokensLoading}
+              fieldExpirationVariants={EXPIRATION_VARIANTS}
+              showSuccessNotification={showSuccessNotification}
+            />
+            <PersonalAccessTokensTable
+              data={personalAccessTokens}
+              loading={areTokensLoading}
+              onDelete={deletePersonalAccessToken}
+              isTokenBeingDeleted={isTokenBeingDeleted}
+            />
+          </>
+        }
+      />
+    </>
+  )
 }

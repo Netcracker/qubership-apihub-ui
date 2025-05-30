@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { ActivityEventType, EventType } from './activity-enums'
-import type { PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import type { Principal } from '@netcracker/qubership-apihub-ui-shared/entities/principals'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import type { Principal } from '@netcracker/qubership-apihub-ui-shared/entities/principals'
+import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import type { ActivityEventType, EventType } from './activity-enums'
 
 type Version = string
 

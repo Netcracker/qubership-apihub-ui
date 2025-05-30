@@ -15,11 +15,11 @@
  */
 
 import { ButtonBase, IconButton, TextField, Typography } from '@mui/material'
+import { FolderIcon } from '@netcracker/qubership-apihub-ui-shared/icons/FolderIcon'
+import { UploadImageIcon } from '@netcracker/qubership-apihub-ui-shared/icons/UploadImageIcon'
 import type { FC } from 'react'
 import { memo, useCallback, useState } from 'react'
 import type { RefCallBack } from 'react-hook-form/dist/types'
-import { FolderIcon } from '@netcracker/qubership-apihub-ui-shared/icons/FolderIcon'
-import { UploadImageIcon } from '@netcracker/qubership-apihub-ui-shared/icons/UploadImageIcon'
 
 export type ImageUploadingProps = Readonly<{
   title: string
@@ -60,8 +60,10 @@ export const ImageUploading: FC<ImageUploadingProps> = memo<ImageUploadingProps>
             setImageName(newImage?.name)
             setImage(URL.createObjectURL(newImage))
           }
-        }}/>
-      {isTextField ? (
+        }}
+      />
+      {isTextField
+        ? (
           <ButtonBase
             htmlFor="avatar-image-upload"
             sx={{
@@ -85,7 +87,7 @@ export const ImageUploading: FC<ImageUploadingProps> = memo<ImageUploadingProps>
               }}
               InputLabelProps={{ shrink: !!imageUrl }}
               label={title}
-              InputProps={{ endAdornment: <FolderIcon color="#353C4E"/> }}
+              InputProps={{ endAdornment: <FolderIcon color="#353C4E" /> }}
             />
           </ButtonBase>
         )
@@ -102,10 +104,18 @@ export const ImageUploading: FC<ImageUploadingProps> = memo<ImageUploadingProps>
                 }
               }}
             >
-              {imageUrl ? <img style={{
-                height: '44px',
-                width: '44px',
-              }} alt={title ?? 'Logo'} src={imageUrl}/> : <UploadImageIcon/>}
+              {imageUrl
+                ? (
+                  <img
+                    style={{
+                      height: '44px',
+                      width: '44px',
+                    }}
+                    alt={title ?? 'Logo'}
+                    src={imageUrl}
+                  />
+                )
+                : <UploadImageIcon />}
             </IconButton>
           </label>
         )}

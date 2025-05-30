@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { useBranchConfig } from '../../useBranchConfig'
-import { useMemo } from 'react'
 import { useAuthorization } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
 import type { User } from '@netcracker/qubership-apihub-ui-shared/types/user'
+import { useMemo } from 'react'
+import { useBranchConfig } from '../../useBranchConfig'
 
 export function useOtherEditors(): ReadonlyArray<User> {
   const [branchConfig] = useBranchConfig()

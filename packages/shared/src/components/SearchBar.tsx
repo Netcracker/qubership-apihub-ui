@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { IconButton, TextField } from '@mui/material'
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined'
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
+import { IconButton, TextField } from '@mui/material'
+import type { StandardTextFieldProps } from '@mui/material/TextField/TextField'
 import type { FC } from 'react'
 import { memo, useEffect, useState } from 'react'
-import type { StandardTextFieldProps } from '@mui/material/TextField/TextField'
 import { useDebounce } from 'react-use'
 
 export type SearchBarProps = StandardTextFieldProps & {
@@ -63,10 +63,10 @@ export const SearchBar: FC<SearchBarProps> = memo<SearchBarProps>(({
               sx={{ p: 0 }}
               onClick={() => setSearchValue('')}
             >
-              <CancelOutlinedIcon sx={ICON_STYLE}/>
+              <CancelOutlinedIcon sx={ICON_STYLE} />
             </IconButton>
           )
-          : <SearchOutlinedIcon sx={ICON_STYLE}/>,
+          : <SearchOutlinedIcon sx={ICON_STYLE} />,
       }}
       onChange={({ target: { value } }) => setSearchValue(value)}
     />

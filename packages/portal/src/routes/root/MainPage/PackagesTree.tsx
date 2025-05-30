@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import { PackageSettingsButton } from '@apihub/components/PackageSettingsButton'
+import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
+import KeyboardArrowRightOutlinedIcon from '@mui/icons-material/KeyboardArrowRightOutlined'
 import {
   Box,
   IconButton,
@@ -28,45 +31,42 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import type { FC } from 'react'
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { usePackages } from '../usePackages'
-import { useMainPageCollapsedGroupKeys, useSetMainPageCollapsedGroupKeys } from './MainPageProvider'
-import { useDisfavorPackage } from './useDisfavorPackage'
-import { useFavorPackage } from './useFavorPackage'
-import { useIsFavoritesMainPage, useIsSharedMainPage } from './useMainPage'
-import { FavoriteIconButton } from './FavoriteIconButton'
-import { useUpdatingPackageKeyWritableContext } from './UpdatingPackageKeyProvider'
-import type { ColumnDef, ColumnSizingInfoState, ColumnSizingState, OnChangeFn } from '@tanstack/react-table'
-import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
-import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
-import KeyboardArrowRightOutlinedIcon from '@mui/icons-material/KeyboardArrowRightOutlined'
-import { NavLink } from 'react-router-dom'
-import { getGroupPath } from '../../NavigationProvider'
+import { ColumnDelimiter } from '@netcracker/qubership-apihub-ui-shared/components/ColumnDelimiter'
+import { CustomTableHeadCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomTableHeadCell'
+import { PackageKindLogo } from '@netcracker/qubership-apihub-ui-shared/components/PackageKindLogo'
+import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
+import { StatusMarker } from '@netcracker/qubership-apihub-ui-shared/components/StatusMarker'
+import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { Package } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { DASHBOARD_KIND, GROUP_KIND, PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { MAIN_PAGE_REFERER } from '@netcracker/qubership-apihub-ui-shared/entities/referer-pages-names'
+import { useResizeObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useResizeObserver'
 import type { ColumnModel } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
 import {
   DEFAULT_CONTAINER_WIDTH,
   useColumnsSizing,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
-import { CustomTableHeadCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomTableHeadCell'
-import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import { ColumnDelimiter } from '@netcracker/qubership-apihub-ui-shared/components/ColumnDelimiter'
-import { PackageKindLogo } from '@netcracker/qubership-apihub-ui-shared/components/PackageKindLogo'
-import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
-import { format } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
-import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
-import { StatusMarker } from '@netcracker/qubership-apihub-ui-shared/components/StatusMarker'
+import { getBwcData } from '@netcracker/qubership-apihub-ui-shared/utils/change-severities'
 import { createComponents } from '@netcracker/qubership-apihub-ui-shared/utils/components'
 import { DEFAULT_NUMBER_SKELETON_ROWS } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
-import { PackageSettingsButton } from '@apihub/components/PackageSettingsButton'
-import { useResizeObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useResizeObserver'
+import { format } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
 import { getTooltipMessage } from '@netcracker/qubership-apihub-ui-shared/utils/tooltip-message'
-import { getBwcData } from '@netcracker/qubership-apihub-ui-shared/utils/change-severities'
+import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
+import type { ColumnDef, ColumnSizingInfoState, ColumnSizingState, OnChangeFn } from '@tanstack/react-table'
+import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import type { FC } from 'react'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { NavLink } from 'react-router-dom'
+import { getGroupPath } from '../../NavigationProvider'
+import { usePackages } from '../usePackages'
+import { FavoriteIconButton } from './FavoriteIconButton'
+import { useMainPageCollapsedGroupKeys, useSetMainPageCollapsedGroupKeys } from './MainPageProvider'
+import { useUpdatingPackageKeyWritableContext } from './UpdatingPackageKeyProvider'
+import { useDisfavorPackage } from './useDisfavorPackage'
+import { useFavorPackage } from './useFavorPackage'
+import { useIsFavoritesMainPage, useIsSharedMainPage } from './useMainPage'
 
 export type PackagesTreeProps = Readonly<{
   rootPackageKey?: Key
@@ -74,7 +74,7 @@ export type PackagesTreeProps = Readonly<{
 }>
 
 export const PackagesTree: FC<PackagesTreeProps> = memo<PackagesTreeProps>(({ rootPackageKey, refererPageName }) => {
-  //TODO: need to rewrite to lazy loading
+  // TODO: need to rewrite to lazy loading
   const onlyFavorite = useIsFavoritesMainPage()
   const onlyShared = useIsSharedMainPage()
 
@@ -137,8 +137,7 @@ export const PackagesTree: FC<PackagesTreeProps> = memo<PackagesTreeProps>(({ ro
       id: BWC_ERRORS_COLUMN_ID,
       header: () => <CustomTableHeadCell title={'BWC Status'} />,
     },
-  ], [],
-  )
+  ], [])
 
   const { getHeaderGroups, setColumnSizing } = useReactTable({
     data: [],
@@ -182,8 +181,8 @@ export const PackagesTree: FC<PackagesTreeProps> = memo<PackagesTreeProps>(({ ro
                     }}
                   >
                     {flexRender(headerColumn.column.columnDef.header, headerColumn.getContext())}
-                    {index !== headerGroup.headers.length - 1 &&
-                      <ColumnDelimiter header={headerColumn} resizable={true} />}
+                    {index !== headerGroup.headers.length - 1
+                      && <ColumnDelimiter header={headerColumn} resizable={true} />}
                   </TableCell>
                 ))}
               </TableRow>
@@ -286,116 +285,115 @@ const GroupRow: FC<GroupRowProps> = memo<GroupRowProps>(props => {
   return (
     <>
       <TableRow hover tabIndex={-1} key={key}>
-        {
-          columns.map(column => {
-            switch (column.key) {
-              case FAVORITE_COLUMN_ID: {
-                return (
-                  <TableCell
-                    sx={{ width: 32 }}
-                    key={column.key}
-                    data-testid={`Cell-${FAVORITE_COLUMN_ID}`}
-                    onClick={() => {
-                      // TODO 11.08.23 // Has problems when user clicks on several buttons at the moment
-                      if (!isFetching) {
-                        setUpdatingPackageKey(key)
-                        isFavorite ? disfavorPackage(key) : favorPackage(key)
-                      }
-                    }}
-                  >
-                    <FavoriteIconButton
-                      isFetching={isFetching && updatingPackageKey === key}
-                      isFavorite={isFavorite}
-                    />
-                  </TableCell>
-                )
-              }
-              case NAME_COLUMN_ID: {
-                const expandButtonSize = 16
-                const paddingLeft = (level * 3.5)
-                const entityIconSize = 10
-                const paddingSettingsButtonSize = 20
-                const totalIndent = `${expandButtonSize + paddingLeft + entityIconSize + paddingSettingsButtonSize}px`
-                return (
-                  <TableCell key={column.key} data-testid={`Cell-${NAME_COLUMN_ID}`}>
-                    <Box sx={{
+        {columns.map(column => {
+          switch (column.key) {
+            case FAVORITE_COLUMN_ID: {
+              return (
+                <TableCell
+                  sx={{ width: 32 }}
+                  key={column.key}
+                  data-testid={`Cell-${FAVORITE_COLUMN_ID}`}
+                  onClick={() => {
+                    // TODO 11.08.23 // Has problems when user clicks on several buttons at the moment
+                    if (!isFetching) {
+                      setUpdatingPackageKey(key)
+                      isFavorite ? disfavorPackage(key) : favorPackage(key)
+                    }
+                  }}
+                >
+                  <FavoriteIconButton
+                    isFetching={isFetching && updatingPackageKey === key}
+                    isFavorite={isFavorite}
+                  />
+                </TableCell>
+              )
+            }
+            case NAME_COLUMN_ID: {
+              const expandButtonSize = 16
+              const paddingLeft = level * 3.5
+              const entityIconSize = 10
+              const paddingSettingsButtonSize = 20
+              const totalIndent = `${expandButtonSize + paddingLeft + entityIconSize + paddingSettingsButtonSize}px`
+              return (
+                <TableCell key={column.key} data-testid={`Cell-${NAME_COLUMN_ID}`}>
+                  <Box
+                    sx={{
                       display: 'flex',
                       alignItems: 'center',
                       pl: paddingLeft,
                       width: '100%',
-                    }}>
-                      {(!open || isNotEmpty(groups) || isNotEmpty(packages))
-                        ? (
-                          <IconButton
-                            sx={{ p: 0, mr: 1 }}
-                            onClick={() => updateCollapseKeys(key)}
-                          >
-                            {
-                              open
-                                ? <KeyboardArrowDownOutlinedIcon sx={{ fontSize: expandButtonSize }} />
-                                : <KeyboardArrowRightOutlinedIcon sx={{ fontSize: expandButtonSize }} />
-                            }
-                          </IconButton>
-                        )
-                        : <Box sx={{ width: '24px' }} />
-                      }
-                      <PackageKindLogo kind={kind} />
-                      <Box sx={{
+                    }}
+                  >
+                    {(!open || isNotEmpty(groups) || isNotEmpty(packages))
+                      ? (
+                        <IconButton
+                          sx={{ p: 0, mr: 1 }}
+                          onClick={() => updateCollapseKeys(key)}
+                        >
+                          {open
+                            ? <KeyboardArrowDownOutlinedIcon sx={{ fontSize: expandButtonSize }} />
+                            : <KeyboardArrowRightOutlinedIcon sx={{ fontSize: expandButtonSize }} />}
+                        </IconButton>
+                      )
+                      : <Box sx={{ width: '24px' }} />}
+                    <PackageKindLogo kind={kind} />
+                    <Box
+                      sx={{
                         pl: 0.5,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         width: `calc(100% - ${totalIndent})`,
-                      }}>
-                        <TextWithOverflowTooltip tooltipText={name} variant="body2">
-                          <Link
-                            component={NavLink}
-                            to={getGroupPath({ groupKey: key })}
-                          >
-                            {name}
-                          </Link>
-                        </TextWithOverflowTooltip>
-                        <PackageSettingsButton packageKey={key} isIconButton={true} />
-                      </Box>
+                      }}
+                    >
+                      <TextWithOverflowTooltip tooltipText={name} variant="body2">
+                        <Link
+                          component={NavLink}
+                          to={getGroupPath({ groupKey: key })}
+                        >
+                          {name}
+                        </Link>
+                      </TextWithOverflowTooltip>
+                      <PackageSettingsButton packageKey={key} isIconButton={true} />
                     </Box>
-                  </TableCell>
-                )
-              }
-              case ID_COLUMN_ID: {
-                return (
-                  <TableCell key={column.key} data-testid={`Cell-${ID_COLUMN_ID}`}>
-                    <TextWithOverflowTooltip tooltipText={key}>
-                      {key}
-                    </TextWithOverflowTooltip>
-                  </TableCell>
-                )
-              }
-              case SERVICE_NAME_COLUMN_ID: {
-                return (
-                  <TableCell key={column.key} data-testid={`Cell-${SERVICE_NAME_COLUMN_ID}`}>
-                    <TextWithOverflowTooltip tooltipText={serviceName}>
-                      {serviceName}
-                    </TextWithOverflowTooltip>
-                  </TableCell>
-                )
-              }
-              case LAST_VERSION_COLUMN_ID: {
-                return (
-                  //Group doesn't have version, leave empty column
-                  <TableCell key={column.key} data-testid={`Cell-${LAST_VERSION_COLUMN_ID}`}>
-                  </TableCell>
-                )
-              }
-              case BWC_ERRORS_COLUMN_ID: {
-                return (
-                  //Group doesn't have bwc errors, leave empty column
-                  <TableCell key={column.key} data-testid={`Cell-${BWC_ERRORS_COLUMN_ID}`}>
-                  </TableCell>
-                )
-              }
+                  </Box>
+                </TableCell>
+              )
             }
-          })
-        }
+            case ID_COLUMN_ID: {
+              return (
+                <TableCell key={column.key} data-testid={`Cell-${ID_COLUMN_ID}`}>
+                  <TextWithOverflowTooltip tooltipText={key}>
+                    {key}
+                  </TextWithOverflowTooltip>
+                </TableCell>
+              )
+            }
+            case SERVICE_NAME_COLUMN_ID: {
+              return (
+                <TableCell key={column.key} data-testid={`Cell-${SERVICE_NAME_COLUMN_ID}`}>
+                  <TextWithOverflowTooltip tooltipText={serviceName}>
+                    {serviceName}
+                  </TextWithOverflowTooltip>
+                </TableCell>
+              )
+            }
+            case LAST_VERSION_COLUMN_ID: {
+              return (
+                // Group doesn't have version, leave empty column
+                <TableCell key={column.key} data-testid={`Cell-${LAST_VERSION_COLUMN_ID}`}>
+                </TableCell>
+              )
+            }
+            case BWC_ERRORS_COLUMN_ID: {
+              return (
+                // Group doesn't have bwc errors, leave empty column
+                <TableCell key={column.key} data-testid={`Cell-${BWC_ERRORS_COLUMN_ID}`}>
+                </TableCell>
+              )
+            }
+          }
+        })}
       </TableRow>
       {open && !isLoading && groups.map(group => (
         <GroupRow
@@ -451,118 +449,118 @@ const PackageRow: FC<PackageRowProps> = memo<PackageRowProps>(props => {
   return (
     <>
       <TableRow hover tabIndex={-1} key={key}>
-        {
-          columns.map(column => {
-            switch (column.key) {
-              case FAVORITE_COLUMN_ID: {
-                return (
-                  <TableCell
-                    sx={{ width: 32 }}
-                    key={column.key}
-                    onClick={() => {
-                      // TODO 11.08.23 // Has problems when user clicks on several buttons at the moment
-                      if (!isFetching) {
-                        setUpdatingPackageKey(key)
-                        isFavorite ? disfavorPackage(key) : favorPackage(key)
-                      }
-                    }}
-                    data-testid={`Cell-${FAVORITE_COLUMN_ID}`}
-                  >
-                    <FavoriteIconButton
-                      isFetching={isFetching && updatingPackageKey === key}
-                      isFavorite={isFavorite}
-                    />
-                  </TableCell>
-                )
-              }
-              case NAME_COLUMN_ID: {
-                return (
-                  <TableCell key={column.key} data-testid={`Cell-${NAME_COLUMN_ID}`}>
-                    <Box sx={{
+        {columns.map(column => {
+          switch (column.key) {
+            case FAVORITE_COLUMN_ID: {
+              return (
+                <TableCell
+                  sx={{ width: 32 }}
+                  key={column.key}
+                  onClick={() => {
+                    // TODO 11.08.23 // Has problems when user clicks on several buttons at the moment
+                    if (!isFetching) {
+                      setUpdatingPackageKey(key)
+                      isFavorite ? disfavorPackage(key) : favorPackage(key)
+                    }
+                  }}
+                  data-testid={`Cell-${FAVORITE_COLUMN_ID}`}
+                >
+                  <FavoriteIconButton
+                    isFetching={isFetching && updatingPackageKey === key}
+                    isFavorite={isFavorite}
+                  />
+                </TableCell>
+              )
+            }
+            case NAME_COLUMN_ID: {
+              return (
+                <TableCell key={column.key} data-testid={`Cell-${NAME_COLUMN_ID}`}>
+                  <Box
+                    sx={{
                       alignItems: 'center',
                       display: 'flex',
                       gap: '5px',
                       pl: (level * 3.5),
-                    }}>
-                      <Box ml="24px">
-                        <PackageKindLogo kind={kind} />
-                      </Box>
-                      <TextWithOverflowTooltip tooltipText={name}>
-                        <Link
-                          component={NavLink}
-                          to={{
-                            pathname: format(
-                              '/portal/packages/{}/{}',
-                              encodeURIComponent(key),
-                              defaultVersion ? encodeURIComponent(defaultVersion) : '',
-                            ),
-                          }}
-                        >
-                          {name}
-                        </Link>
-                      </TextWithOverflowTooltip>
-                      <Box ml="auto">
-                        <PackageSettingsButton packageKey={key} isIconButton={true} />
-                      </Box>
+                    }}
+                  >
+                    <Box ml="24px">
+                      <PackageKindLogo kind={kind} />
                     </Box>
-                  </TableCell>
-                )
-              }
-              case ID_COLUMN_ID: {
-                return (
-                  <TableCell key={column.key} data-testid={`Cell-${ID_COLUMN_ID}`}>
-                    <TextWithOverflowTooltip tooltipText={key}>
-                      {key}
+                    <TextWithOverflowTooltip tooltipText={name}>
+                      <Link
+                        component={NavLink}
+                        to={{
+                          pathname: format(
+                            '/portal/packages/{}/{}',
+                            encodeURIComponent(key),
+                            defaultVersion ? encodeURIComponent(defaultVersion) : '',
+                          ),
+                        }}
+                      >
+                        {name}
+                      </Link>
                     </TextWithOverflowTooltip>
-                  </TableCell>
-                )
-              }
-              case SERVICE_NAME_COLUMN_ID: {
-                return (
-                  <TableCell key={column.key} data-testid={`Cell-${SERVICE_NAME_COLUMN_ID}`}>
-                    <TextWithOverflowTooltip tooltipText={serviceName}>
-                      {serviceName}
-                    </TextWithOverflowTooltip>
-                  </TableCell>
-                )
-              }
-              case LAST_VERSION_COLUMN_ID: {
-                const { versionKey: lastVersion } = getSplittedVersionKey(
-                  lastReleaseVersionDetails?.version,
-                  lastReleaseVersionDetails?.latestRevision,
-                ) || '―'
-
-                return (
-                  <TableCell key={column.key} data-testid={`Cell-${LAST_VERSION_COLUMN_ID}`}>
-                    <TextWithOverflowTooltip tooltipText={lastVersion}>
-                      {lastVersion}
-                    </TextWithOverflowTooltip>
-                  </TableCell>
-                )
-              }
-              case BWC_ERRORS_COLUMN_ID: {
-                const bwcData = getBwcData(lastReleaseVersionDetails?.summary)
-
-                return (
-                  <TableCell key={column.key} data-testid={`Cell-${BWC_ERRORS_COLUMN_ID}`}>
-                    <Tooltip placement="right" title={getTooltipMessage(bwcData)}>
-                      <Box width={'min-content'}>
-                        {bwcData && (
-                          <Box display="flex" gap={1}>
-                            <StatusMarker value={bwcData.type} />
-                            <Typography noWrap variant="inherit">
-                              {bwcData.count}
-                            </Typography>
-                          </Box>
-                        )}
-                      </Box>
-                    </Tooltip>
-                  </TableCell>
-                )
-              }
+                    <Box ml="auto">
+                      <PackageSettingsButton packageKey={key} isIconButton={true} />
+                    </Box>
+                  </Box>
+                </TableCell>
+              )
             }
-          })
-        }
+            case ID_COLUMN_ID: {
+              return (
+                <TableCell key={column.key} data-testid={`Cell-${ID_COLUMN_ID}`}>
+                  <TextWithOverflowTooltip tooltipText={key}>
+                    {key}
+                  </TextWithOverflowTooltip>
+                </TableCell>
+              )
+            }
+            case SERVICE_NAME_COLUMN_ID: {
+              return (
+                <TableCell key={column.key} data-testid={`Cell-${SERVICE_NAME_COLUMN_ID}`}>
+                  <TextWithOverflowTooltip tooltipText={serviceName}>
+                    {serviceName}
+                  </TextWithOverflowTooltip>
+                </TableCell>
+              )
+            }
+            case LAST_VERSION_COLUMN_ID: {
+              const { versionKey: lastVersion } = getSplittedVersionKey(
+                lastReleaseVersionDetails?.version,
+                lastReleaseVersionDetails?.latestRevision,
+              ) || '―'
+
+              return (
+                <TableCell key={column.key} data-testid={`Cell-${LAST_VERSION_COLUMN_ID}`}>
+                  <TextWithOverflowTooltip tooltipText={lastVersion}>
+                    {lastVersion}
+                  </TextWithOverflowTooltip>
+                </TableCell>
+              )
+            }
+            case BWC_ERRORS_COLUMN_ID: {
+              const bwcData = getBwcData(lastReleaseVersionDetails?.summary)
+
+              return (
+                <TableCell key={column.key} data-testid={`Cell-${BWC_ERRORS_COLUMN_ID}`}>
+                  <Tooltip placement="right" title={getTooltipMessage(bwcData)}>
+                    <Box width={'min-content'}>
+                      {bwcData && (
+                        <Box display="flex" gap={1}>
+                          <StatusMarker value={bwcData.type} />
+                          <Typography noWrap variant="inherit">
+                            {bwcData.count}
+                          </Typography>
+                        </Box>
+                      )}
+                    </Box>
+                  </Tooltip>
+                </TableCell>
+              )
+            }
+          }
+        })}
       </TableRow>
     </>
   )

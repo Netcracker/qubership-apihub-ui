@@ -14,22 +14,26 @@
  * limitations under the License.
  */
 
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { useParams } from 'react-router-dom'
-import type {
-  SnapshotPublicationInfo,
-  SnapshotPublicationInfoDto} from '@apihub/entities/snapshot-publication-info'
+import type { SnapshotPublicationInfo, SnapshotPublicationInfoDto } from '@apihub/entities/snapshot-publication-info'
 import {
   EMPTY_SNAPSHOT_PUBLICATION_INFO,
-  getSnapshotPublicationInfo, toSnapshotPublicationInfo,
+  getSnapshotPublicationInfo,
+  toSnapshotPublicationInfo,
 } from '@apihub/entities/snapshot-publication-info'
-import type { InvalidateQuery, IsInitialLoading, IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import type { SnapshotKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
+import type {
+  InvalidateQuery,
+  IsInitialLoading,
+  IsLoading,
+  IsSuccess,
+} from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useParams } from 'react-router-dom'
 import {
   useCreateSnapshotPublicationOptions,
 } from './ServicesPage/ServicesPageProvider/ServicesPublicationOptionsProvider'
-import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 
 const SNAPSHOT_PUBLICATION_INFO_QUERY_KEY = 'snapshot-publish-info-query-key'
 
@@ -70,14 +74,17 @@ export function useSnapshotPublicationInfo(options?: {
   }
 }
 
-export function useInvalidateSnapshotPublicationInfo(): InvalidateQuery<Partial<{
-  snapshotPublicationName: string
-}>> {
+export function useInvalidateSnapshotPublicationInfo(): InvalidateQuery<
+  Partial<{
+    snapshotPublicationName: string
+  }>
+> {
   const { namespaceKey } = useParams()
   const client = useQueryClient()
 
-  return ({ snapshotPublicationName }) => client.invalidateQueries({
-    queryKey: [SNAPSHOT_PUBLICATION_INFO_QUERY_KEY, namespaceKey, snapshotPublicationName],
-    refetchType: 'all',
-  })
+  return ({ snapshotPublicationName }) =>
+    client.invalidateQueries({
+      queryKey: [SNAPSHOT_PUBLICATION_INFO_QUERY_KEY, namespaceKey, snapshotPublicationName],
+      refetchType: 'all',
+    })
 }

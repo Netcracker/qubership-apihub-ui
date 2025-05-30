@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
+import type { Key, PackageKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { VersionReferences } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
+import { toVersionReferences } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import { getReferences } from '../useVersionReferences'
 import type {
@@ -24,11 +29,6 @@ import type {
   VersionReferencesItem,
 } from './package-references'
 import { addToMap, markParentPackages, removeFromMap } from './package-references'
-import { useMemo } from 'react'
-import type { Key, PackageKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import type { VersionReferences } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
-import { toVersionReferences } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
 
 const DELETED_REFERENCE_QUERY_KEY = 'deleted-reference-query-key'
 
@@ -64,9 +64,12 @@ export function useAddDeletedReferences(): [AddDeletedReferences, IsLoading] {
     mutationFn: () => Promise.resolve(),
     onSuccess: (_, { versionReferences, parentKey }) => {
       const deletedReferencesMap = createDeletedReferencesMap(versionReferences, parentKey)
-      client.setQueryData<CountPackageInDashboardMap>([DELETED_REFERENCE_QUERY_KEY, packageId, versionId], (oldDeletedReferencesMap) => {
-        return addToMap(deletedReferencesMap, oldDeletedReferencesMap!)
-      })
+      client.setQueryData<CountPackageInDashboardMap>(
+        [DELETED_REFERENCE_QUERY_KEY, packageId, versionId],
+        (oldDeletedReferencesMap) => {
+          return addToMap(deletedReferencesMap, oldDeletedReferencesMap!)
+        },
+      )
     },
   })
   return [mutate, isLoading]
@@ -99,15 +102,22 @@ export function useRemoveDeletedReferences(): [RemoveDeletedReferences, IsLoadin
         versionReferences = toVersionReferences(await getReferences(key, versionKey))
       }
       const deletedReferencesMap = createDeletedReferencesMap(versionReferences, key, deleted)
-      client.setQueryData<CountPackageInDashboardMap>([DELETED_REFERENCE_QUERY_KEY, packageId, versionId], (oldDeletedReferencesMap) => {
-        return removeFromMap(oldDeletedReferencesMap!, deletedReferencesMap)
-      })
+      client.setQueryData<CountPackageInDashboardMap>(
+        [DELETED_REFERENCE_QUERY_KEY, packageId, versionId],
+        (oldDeletedReferencesMap) => {
+          return removeFromMap(oldDeletedReferencesMap!, deletedReferencesMap)
+        },
+      )
     },
   })
   return [mutate, isLoading]
 }
 
-function createDeletedReferencesMap(versionReferences: VersionReferences, parentKey?: Key, deleted?: boolean): CountPackageInDashboardMap {
+function createDeletedReferencesMap(
+  versionReferences: VersionReferences,
+  parentKey?: Key,
+  deleted?: boolean,
+): CountPackageInDashboardMap {
   const deletedPackages: Key[] = []
   let countDeletedPackage = 0
   versionReferences.references?.forEach(reference => {

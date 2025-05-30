@@ -22,10 +22,10 @@ import './index.css'
 
 import type { FC } from 'react'
 import { memo } from 'react'
-import { useMonacoEditorElement } from './useMonacoEditorElement'
-import type { SpecType } from '../../utils/specs'
-import type { SpecItemUri } from '../../utils/specifications'
 import type { LanguageType } from '../../types/languages'
+import type { SpecItemUri } from '../../utils/specifications'
+import type { SpecType } from '../../utils/specs'
+import { useMonacoEditorElement } from './useMonacoEditorElement'
 
 export type MonacoEditorElementProps = {
   value: string

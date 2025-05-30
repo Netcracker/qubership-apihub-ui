@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
+import type { ServiceConfig } from '@apihub/entities/publish-config'
 import type { Service } from '@apihub/entities/services'
-import type { FC } from 'react'
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { ColumnDef } from '@tanstack/table-core'
+import ArrowOutwardRoundedIcon from '@mui/icons-material/ArrowOutwardRounded'
 import {
   Box,
   Button,
@@ -31,6 +30,25 @@ import {
   TableRow,
   Typography,
 } from '@mui/material'
+import { Changes } from '@netcracker/qubership-apihub-ui-shared/components/Changes'
+import { ColumnDelimiter } from '@netcracker/qubership-apihub-ui-shared/components/ColumnDelimiter'
+import {
+  LOADING_STATUS_MARKER_VARIANT,
+  StatusMarker,
+} from '@netcracker/qubership-apihub-ui-shared/components/StatusMarker'
+import type { ChangesSummary } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
+import type { ServiceKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { Spec } from '@netcracker/qubership-apihub-ui-shared/entities/specs'
+import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import { useResizeObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useResizeObserver'
+import type { ColumnModel } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
+import {
+  DEFAULT_CONTAINER_WIDTH,
+  useColumnsSizing,
+} from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
+import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { createComponents } from '@netcracker/qubership-apihub-ui-shared/utils/components'
+import { DEFAULT_NUMBER_SKELETON_ROWS } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
 import type {
   ColumnSizingInfoState,
   ColumnSizingState,
@@ -46,36 +64,21 @@ import {
   getFilteredRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { ServiceOrDocumentationTableCell } from '../ServiceOrDocumentationTableCell'
-import { BaselinePackageTableCell } from '../BaselinePackageTableCell'
+import type { ColumnDef } from '@tanstack/table-core'
+import type { FC } from 'react'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { PUBLISH_STATUS_TO_STATUS_MARKER_VARIANT_MAP } from '../../../constants'
 import { useSnapshotPublicationInfo } from '../../../useSnapshotPublicationInfo'
-import { useServicePromoteDetails } from './useServicePromoteDetails'
-import ArrowOutwardRoundedIcon from '@mui/icons-material/ArrowOutwardRounded'
-import { useConfigureServiceSelection } from '../useConfigureServiceSelection'
-import { ServiceLabelsTableCell } from '../ServiceLabelsTableCell'
-import { usePromoteVersionStepStatus } from './usePromoteVersionStepStatus'
-import { BwcStatusTableCell } from '../BwcStatusTableCell'
-import { serviceFilter } from '../utils'
-import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import type { ServiceKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { ColumnModel } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
-import {
-  DEFAULT_CONTAINER_WIDTH,
-  useColumnsSizing,
-} from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
 import { usePromoteVersionPublicationOptions } from '../../ServicesPageProvider/ServicesPublicationOptionsProvider'
-import { Changes } from '@netcracker/qubership-apihub-ui-shared/components/Changes'
 import { SUCCESS_STEP_STATUS } from '../../ServicesPageProvider/ServicesStepsProvider'
-import { ColumnDelimiter } from '@netcracker/qubership-apihub-ui-shared/components/ColumnDelimiter'
-import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import type { ChangesSummary } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
-import type { Spec } from '@netcracker/qubership-apihub-ui-shared/entities/specs'
-import type { ServiceConfig } from '@apihub/entities/publish-config'
-import { LOADING_STATUS_MARKER_VARIANT, StatusMarker } from '@netcracker/qubership-apihub-ui-shared/components/StatusMarker'
-import { createComponents } from '@netcracker/qubership-apihub-ui-shared/utils/components'
-import { DEFAULT_NUMBER_SKELETON_ROWS } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
-import { useResizeObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useResizeObserver'
+import { BaselinePackageTableCell } from '../BaselinePackageTableCell'
+import { BwcStatusTableCell } from '../BwcStatusTableCell'
+import { ServiceLabelsTableCell } from '../ServiceLabelsTableCell'
+import { ServiceOrDocumentationTableCell } from '../ServiceOrDocumentationTableCell'
+import { useConfigureServiceSelection } from '../useConfigureServiceSelection'
+import { serviceFilter } from '../utils'
+import { usePromoteVersionStepStatus } from './usePromoteVersionStepStatus'
+import { useServicePromoteDetails } from './useServicePromoteDetails'
 
 export type PromoteVersionStepTableProps = {
   services: ReadonlyArray<Service>
@@ -157,32 +160,31 @@ export const PromoteVersionStepTable: FC<PromoteVersionStepTableProps> = memo<Pr
     {
       id: SERVICE_OR_DOCUMENTATION_COLUMN_ID,
       header: 'Service / Documentation',
-      cell: ({ row }) => <ServiceOrDocumentationTableCell value={row} isPromoteStep={true}
-                                                          promoteStatus={promoteStatus}/>,
+      cell: ({ row }) => (
+        <ServiceOrDocumentationTableCell value={row} isPromoteStep={true} promoteStatus={promoteStatus} />
+      ),
     },
     {
       id: SERVICE_LABELS_COLUMN_ID,
       header: 'Labels',
-      cell: ({ row }) => <ServiceLabelsTableCell value={row}/>,
+      cell: ({ row }) => <ServiceLabelsTableCell value={row} />,
     },
     {
       id: BASELINE_PACKAGE_COLUMN_ID,
       header: 'Baseline Package',
-      cell: ({ row }) => <BaselinePackageTableCell value={row}/>,
+      cell: ({ row }) => <BaselinePackageTableCell value={row} />,
     },
     {
       id: BWC_STATUS_COLUMN_ID,
       header: 'BWC Status',
-      cell: ({ row }) => <BwcStatusTableCell value={row}/>,
+      cell: ({ row }) => <BwcStatusTableCell value={row} />,
     },
     {
       id: CHANGES_COLUMN_ID,
       header: 'Changes',
       cell: ({ row: { original: { service, changeSummary } } }) => {
         if (service && changeSummary) {
-          return (
-            <Changes mode="compact" value={changeSummary}/>
-          )
+          return <Changes mode="compact" value={changeSummary} />
         }
 
         return null
@@ -191,53 +193,62 @@ export const PromoteVersionStepTable: FC<PromoteVersionStepTableProps> = memo<Pr
     {
       id: PUBLISH_STATUS_COLUMN_ID,
       header: 'Publish Status',
-      cell: ({ row: { original, getIsSelected } }) => getIsSelected() &&
-        <PromoteVersionDetailsTableCell value={original}/>,
+      cell: ({ row: { original, getIsSelected } }) =>
+        getIsSelected()
+        && <PromoteVersionDetailsTableCell value={original} />,
     },
     {
       id: VIEW_BASELINE_URL_COLUMN_ID,
-      cell: isSnapshotPublicationInfoSuccess ? ({ row: { original: { service, viewBaselineUrl, serviceConfig } } }) => {
-        if (service && serviceConfig?.apihubPackageUrl) {
-          return (
-            <Button
-              data-testid="PromotedVersionButton"
-              sx={{ visibility: 'hidden', p: 0, height: 10, whiteSpace: 'nowrap' }}
-              className="hoverable"
-              component="a"
-              variant="text"
-              href={stepStatus === SUCCESS_STEP_STATUS ? serviceConfig.apihubPackageUrl : viewBaselineUrl}
-              target="_blank"
-              startIcon={<ArrowOutwardRoundedIcon/>}
-            >
-              View Version
-            </Button>
-          )
-        }
+      cell: isSnapshotPublicationInfoSuccess
+        ? ({ row: { original: { service, viewBaselineUrl, serviceConfig } } }) => {
+          if (service && serviceConfig?.apihubPackageUrl) {
+            return (
+              <Button
+                data-testid="PromotedVersionButton"
+                sx={{ visibility: 'hidden', p: 0, height: 10, whiteSpace: 'nowrap' }}
+                className="hoverable"
+                component="a"
+                variant="text"
+                href={stepStatus === SUCCESS_STEP_STATUS ? serviceConfig.apihubPackageUrl : viewBaselineUrl}
+                target="_blank"
+                startIcon={<ArrowOutwardRoundedIcon />}
+              >
+                View Version
+              </Button>
+            )
+          }
 
-        return null
-      } : undefined,
+          return null
+        }
+        : undefined,
     },
   ], [availableVersionStatusFilter, isSnapshotPublicationInfoSuccess, stepStatus, promoteStatus, selectable])
 
-  const data: TableData[] = useMemo(() => services.filter(service => !!snapshotPublicationInfo.services.find(({ key }) => key === service.key && !!service.baseline)).map(service => {
-    const {
-      changeSummary,
-      viewBaselineUrl,
-      baselineFound,
-      baselineVersionFound,
-    } = snapshotPublicationInfo.services.find(({ key }) => key === service.key)!
-    return ({
-      service: service,
-      serviceConfig: config?.serviceConfigs.find(({ serviceId }) => serviceId === service.key),
-      bwcErrors: (baselineFound && baselineVersionFound) ? changeSummary?.breaking : undefined,
-      changeSummary: changeSummary,
-      children: service.specs?.map(spec => ({ spec })),
-      viewBaselineUrl: viewBaselineUrl,
-      baselineFound: baselineFound,
-      baselineVersionFound: baselineVersionFound,
-      builderId: config?.builderId,
-    })
-  }), [config?.builderId, config?.serviceConfigs, snapshotPublicationInfo.services, services])
+  const data: TableData[] = useMemo(
+    () =>
+      services.filter(service =>
+        !!snapshotPublicationInfo.services.find(({ key }) => key === service.key && !!service.baseline)
+      ).map(service => {
+        const {
+          changeSummary,
+          viewBaselineUrl,
+          baselineFound,
+          baselineVersionFound,
+        } = snapshotPublicationInfo.services.find(({ key }) => key === service.key)!
+        return ({
+          service: service,
+          serviceConfig: config?.serviceConfigs.find(({ serviceId }) => serviceId === service.key),
+          bwcErrors: (baselineFound && baselineVersionFound) ? changeSummary?.breaking : undefined,
+          changeSummary: changeSummary,
+          children: service.specs?.map(spec => ({ spec })),
+          viewBaselineUrl: viewBaselineUrl,
+          baselineFound: baselineFound,
+          baselineVersionFound: baselineVersionFound,
+          builderId: config?.builderId,
+        })
+      }),
+    [config?.builderId, config?.serviceConfigs, snapshotPublicationInfo.services, services],
+  )
 
   const globalFilter = useMemo(() => ({
     searchValue,
@@ -298,7 +309,7 @@ export const PromoteVersionStepTable: FC<PromoteVersionStepTableProps> = memo<Pr
                   }}
                 >
                   {flexRender(header.column.columnDef.header, header.getContext())}
-                  {index !== headerGroup.headers.length - 1 && <ColumnDelimiter header={header} resizable={true}/>}
+                  {index !== headerGroup.headers.length - 1 && <ColumnDelimiter header={header} resizable={true} />}
                 </TableCell>
               ))}
             </TableRow>
@@ -318,7 +329,7 @@ export const PromoteVersionStepTable: FC<PromoteVersionStepTableProps> = memo<Pr
               ))}
             </TableRow>
           ))}
-          {(isServicesLoading || isEmpty(data)) && <TableSkeleton/>}
+          {(isServicesLoading || isEmpty(data)) && <TableSkeleton />}
         </TableBody>
       </Table>
     </TableContainer>
@@ -361,7 +372,9 @@ type PromoteVersionDetailsTableCellProps = {
   value: TableData
 }
 
-const PromoteVersionDetailsTableCell: FC<PromoteVersionDetailsTableCellProps> = memo<PromoteVersionDetailsTableCellProps>(({
+const PromoteVersionDetailsTableCell: FC<PromoteVersionDetailsTableCellProps> = memo<
+  PromoteVersionDetailsTableCellProps
+>(({
   value: {
     serviceConfig,
     builderId,
@@ -374,41 +387,39 @@ const PromoteVersionDetailsTableCell: FC<PromoteVersionDetailsTableCellProps> = 
   }
 
   if (isLoading) {
-    return (
-      <StatusMarker value={LOADING_STATUS_MARKER_VARIANT}/>
-    )
+    return <StatusMarker value={LOADING_STATUS_MARKER_VARIANT} />
   }
 
   return (
     <Box display="flex" gap={1}>
-      <StatusMarker value={PUBLISH_STATUS_TO_STATUS_MARKER_VARIANT_MAP[promoteDetails.status]}/>
+      <StatusMarker value={PUBLISH_STATUS_TO_STATUS_MARKER_VARIANT_MAP[promoteDetails.status]} />
       <Typography noWrap variant="inherit">{promoteDetails.message}</Typography>
     </Box>
   )
 })
 
 const TableSkeleton: FC = memo(() => {
-  return createComponents(<RowSkeleton/>, DEFAULT_NUMBER_SKELETON_ROWS)
+  return createComponents(<RowSkeleton />, DEFAULT_NUMBER_SKELETON_ROWS)
 })
 
 const RowSkeleton: FC = memo(() => {
   return (
     <TableRow>
-      <TableCell/>
+      <TableCell />
       <TableCell>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
-      <TableCell/>
-      <TableCell/>
+      <TableCell />
+      <TableCell />
     </TableRow>
   )
 })

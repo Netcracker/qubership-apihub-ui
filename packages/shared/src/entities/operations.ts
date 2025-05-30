@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-import { API_AUDIENCE_EXTERNAL, API_AUDIENCE_INTERNAL, API_AUDIENCE_UNKNOWN } from '@netcracker/qubership-apihub-api-processor'
-import type { MethodType } from './method-types'
-import type { PackageKind } from './packages'
-import type { VersionStatus } from './version-status'
-import type { GraphQlOperationType } from './graphql-operation-types'
-import type { OperationChangeBase } from './version-changelog'
+import {
+  API_AUDIENCE_EXTERNAL,
+  API_AUDIENCE_INTERNAL,
+  API_AUDIENCE_UNKNOWN,
+} from '@netcracker/qubership-apihub-api-processor'
+import type { DeprecateItem } from '@netcracker/qubership-apihub-api-processor'
 import type { FetchNextPageOptions, InfiniteQueryObserverResult } from '@tanstack/react-query'
-import type { Key, VersionKey } from './keys'
+import type { IsLoading } from '../utils/aliases'
 import type { ApiType } from './api-types'
 import { API_TYPE_REST } from './api-types'
-import type { DeprecateItem } from '@netcracker/qubership-apihub-api-processor'
-import type { IsLoading } from '../utils/aliases'
+import type { GraphQlOperationType } from './graphql-operation-types'
+import type { Key, VersionKey } from './keys'
+import type { MethodType } from './method-types'
+import type { PackageKind } from './packages'
+import type { OperationChangeBase } from './version-changelog'
+import type { VersionStatus } from './version-status'
 
 export const DEFAULT_API_TYPE: ApiType = API_TYPE_REST
 
@@ -49,15 +53,19 @@ export type OperationMetadataDto = Readonly<{
   customTags?: CustomTags
 }>
 
-export type RestOperationDto = OperationMetadataDto & Readonly<{
-  method: MethodType
-  path: string
-}>
+export type RestOperationDto =
+  & OperationMetadataDto
+  & Readonly<{
+    method: MethodType
+    path: string
+  }>
 
-export type GraphQlOperationDto = OperationMetadataDto & Readonly<{
-  method: string
-  type: GraphQlOperationType
-}>
+export type GraphQlOperationDto =
+  & OperationMetadataDto
+  & Readonly<{
+    method: string
+    type: GraphQlOperationType
+  }>
 
 export type DeprecatedItem = DeprecateItem
 export type DeprecatedItems = ReadonlyArray<DeprecatedItem>
@@ -69,12 +77,14 @@ export type OperationsWithDeprecationsDto = Readonly<{
   operations: ReadonlyArray<OperationWithDeprecationsDto>
   packages: PackagesRefs
 }>
-export type OperationWithDeprecationsDto = Omit<OperationDto, 'dataHash' | 'data'> & Readonly<{
-  deprecatedCount?: string
-  deprecatedInfo?: object
-  deprecatedItems?: DeprecatedItemsDto
-  deprecatedInPreviousVersions?: string[]
-}>
+export type OperationWithDeprecationsDto =
+  & Omit<OperationDto, 'dataHash' | 'data'>
+  & Readonly<{
+    deprecatedCount?: string
+    deprecatedInfo?: object
+    deprecatedItems?: DeprecatedItemsDto
+    deprecatedInPreviousVersions?: string[]
+  }>
 
 export type OperationsGroupedByTag<T extends Operation = OperationData> = {
   [tag: string]: T[]
@@ -150,12 +160,14 @@ export type PackageRefDto = {
   parentPackages?: ReadonlyArray<string>
 }
 
-export type OperationWithDeprecations = OperationData & Readonly<{
-  deprecatedCount?: string
-  deprecatedInfo?: string
-  deprecatedItems?: DeprecatedItems
-  deprecatedInPreviousVersions?: string[]
-}>
+export type OperationWithDeprecations =
+  & OperationData
+  & Readonly<{
+    deprecatedCount?: string
+    deprecatedInfo?: string
+    deprecatedItems?: DeprecatedItems
+    deprecatedInPreviousVersions?: string[]
+  }>
 export type OperationsWithDeprecations = ReadonlyArray<OperationWithDeprecations>
 
 export type PackageRef = {
@@ -249,29 +261,31 @@ export function toPackageRef(packageRef: string | undefined, packages?: Packages
     return undefined
   }
   const relatedPackage = packages?.[packageRef]
-  return relatedPackage ? {
-    key: relatedPackage.refId,
-    refId: relatedPackage.refId,
-    version: relatedPackage.version,
-    status: relatedPackage.status,
-    name: relatedPackage.name,
-    parentPackages: relatedPackage.parentPackages,
-    latestRevision: !relatedPackage?.notLatestRevision,
-  } : undefined
+  return relatedPackage
+    ? {
+      key: relatedPackage.refId,
+      refId: relatedPackage.refId,
+      version: relatedPackage.version,
+      status: relatedPackage.status,
+      name: relatedPackage.name,
+      parentPackages: relatedPackage.parentPackages,
+      latestRevision: !relatedPackage?.notLatestRevision,
+    }
+    : undefined
 }
 
 export function isRestOperation(operation: Operation): operation is RestOperation {
-  const asRestOperation = (operation as RestOperation)
+  const asRestOperation = operation as RestOperation
   return asRestOperation.path !== undefined
 }
 
 export function isRestOperationDto(operation: OperationDto): operation is RestOperationDto {
-  const asRestOperation = (operation as RestOperationDto)
+  const asRestOperation = operation as RestOperationDto
   return asRestOperation.path !== undefined
 }
 
 export function isGraphQlOperation(operation: Operation): operation is GraphQlOperation {
-  const asGraphQlOperation = (operation as GraphQlOperation)
+  const asGraphQlOperation = operation as GraphQlOperation
   return asGraphQlOperation.type !== undefined
 }
 
@@ -295,7 +309,9 @@ export function isOperationChangeDataArray(value: unknown): value is OperationCh
   return !!value && Array.isArray(value) && value.every(isOperationChangeData)
 }
 
-export type FetchNextOperationList = (options?: FetchNextPageOptions) => Promise<InfiniteQueryObserverResult<OperationsData, Error>>
+export type FetchNextOperationList = (
+  options?: FetchNextPageOptions,
+) => Promise<InfiniteQueryObserverResult<OperationsData, Error>>
 
 export type SelectedPreviewOperationData = {
   operationKey: Key

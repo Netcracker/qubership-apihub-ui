@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import type { DiffTypeDto } from '@netcracker/qubership-apihub-api-processor'
+import type { ChangesSummary } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
+import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 import type { VersionKey } from './keys'
 import type { PublishedSpec, PublishedSpecDto } from './published-specs'
 import type { Ref, RefDto } from './refs'
-import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import type { ChangesSummary } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
-import type { DiffTypeDto } from '@netcracker/qubership-apihub-api-processor'
 
 export type ProjectVersionContent = Readonly<{
   status: VersionStatus

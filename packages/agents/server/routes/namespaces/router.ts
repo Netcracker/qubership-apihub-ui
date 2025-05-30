@@ -15,9 +15,9 @@
  */
 
 import { Router } from 'express'
-import { NAMESPACES_DTO } from './data'
 import type { State } from '../../types'
 import { COMPLETE_DISCOVERY_STATUS, ERROR_DISCOVERY_STATUS, RUNNING_DISCOVERY_STATUS } from '../../types'
+import { NAMESPACES_DTO } from './data'
 import type { SnapshotRouter } from './snapshots/router'
 
 type NamespaceRouter = Router

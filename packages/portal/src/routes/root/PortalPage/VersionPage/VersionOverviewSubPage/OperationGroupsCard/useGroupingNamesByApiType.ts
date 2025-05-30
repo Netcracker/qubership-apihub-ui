@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react'
-import type { OperationGroup } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { OperationGroup } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
+import { useMemo } from 'react'
 
 export function useGroupingNamesByApiType(
   apiTypes: ReadonlyArray<ApiType>,

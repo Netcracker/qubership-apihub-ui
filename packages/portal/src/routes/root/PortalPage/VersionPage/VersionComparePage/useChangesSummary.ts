@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { portalRequestJson } from '@apihub/utils/requests'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type {
   VersionChangesSummary,
   VersionChangesSummaryDto,
 } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
 import { toVersionChangesSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
-import { useVersionWithRevision } from '../../../useVersionWithRevision'
-import { generatePath } from 'react-router-dom'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { InvalidateQuery, IsFetching, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { portalRequestJson } from '@apihub/utils/requests'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { generatePath } from 'react-router-dom'
+import { useVersionWithRevision } from '../../../useVersionWithRevision'
 
 const CHANGES_SUMMARY_QUERY_KEY = 'changes-summary-query-key'
 
@@ -47,7 +47,14 @@ export function useChangesSummary(options: {
   const { fullVersion: fullPreviousVersion } = useVersionWithRevision(previousVersionKey, previousVersionPackageKey)
 
   const { data, isLoading, isFetching, error } = useQuery<VersionChangesSummaryDto, Error, VersionChangesSummary>({
-    queryKey: [CHANGES_SUMMARY_QUERY_KEY, packageKey, fullVersion, previousVersionPackageKey, previousVersionKey, fullPreviousVersion],
+    queryKey: [
+      CHANGES_SUMMARY_QUERY_KEY,
+      packageKey,
+      fullVersion,
+      previousVersionPackageKey,
+      previousVersionKey,
+      fullPreviousVersion,
+    ],
     enabled: !!packageKey && !!fullVersion && !!previousVersionPackageKey && !!fullPreviousVersion && enabled,
     retry: 1,
     queryFn: ({ signal }) =>
@@ -94,7 +101,8 @@ async function triggerBuilderBySummaryAbsence(response: Response): Promise<void>
 
 export function useRefetchChangesSummary(): InvalidateQuery<void> {
   const queryClient = useQueryClient()
-  return () => queryClient.refetchQueries({
-    queryKey: [CHANGES_SUMMARY_QUERY_KEY],
-  })
+  return () =>
+    queryClient.refetchQueries({
+      queryKey: [CHANGES_SUMMARY_QUERY_KEY],
+    })
 }

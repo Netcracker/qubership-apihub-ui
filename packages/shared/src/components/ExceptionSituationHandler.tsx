@@ -16,12 +16,8 @@
 
 import type { FC, PropsWithChildren } from 'react'
 import { memo, useCallback, useEffect, useState } from 'react'
-import { ErrorPage, NOT_FOUND_TITLE, SOMETHING_WENT_WRONG_TITLE } from './ErrorPage'
-import { useLocation } from 'react-use'
 import { useParams, useSearchParams } from 'react-router-dom'
-import { PackageRedirectPage } from './PackageRedirectPage'
-import type { LinkType } from './Notifications/Notification'
-import { replaceParam } from '../utils/urls'
+import { useLocation } from 'react-use'
 import type { ErrorStatus, FetchErrorDetails, FetchRedirectDetails, FetchRedirectType } from '../utils/requests'
 import {
   ERROR_CODE_IDP_URL_NOT_FOUND,
@@ -30,6 +26,10 @@ import {
   FETCH_REDIRECT_EVENT,
   FETCH_REDIRECT_TYPE_PACKAGE,
 } from '../utils/requests'
+import { replaceParam } from '../utils/urls'
+import { ErrorPage, NOT_FOUND_TITLE, SOMETHING_WENT_WRONG_TITLE } from './ErrorPage'
+import type { LinkType } from './Notifications/Notification'
+import { PackageRedirectPage } from './PackageRedirectPage'
 
 export type NotificationDetail = {
   title?: string
@@ -61,12 +61,11 @@ export const ExceptionSituationHandler: FC<ExceptionSituationHandlerProps> = mem
     }
 
     const redirectedPathname = redirectUrlFactory?.(location.pathname, searchParams, newPackageId)
-    if (redirectedPathname)
-
-      return redirectUrlFactory?.(location.pathname, searchParams, newPackageId) ??
-        replaceParam(location.pathname, params, 'packageId', newPackageId) ??
-        homePath
-
+    if (redirectedPathname) {
+      return redirectUrlFactory?.(location.pathname, searchParams, newPackageId)
+        ?? replaceParam(location.pathname, params, 'packageId', newPackageId)
+        ?? homePath
+    }
   }, [homePath, location.pathname, params, redirectUrlFactory, searchParams])
 
   useEffect(() => {
@@ -155,7 +154,3 @@ type RedirectDetails = AbstractExceptionDetails & {
 }
 
 type ExceptionDetails = ErrorDetails | RedirectDetails
-
-
-
-

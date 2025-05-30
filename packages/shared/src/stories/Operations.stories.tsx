@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
+import Box from '@mui/material/Box'
 import type { Meta, StoryFn } from '@storybook/react'
 import React from 'react'
-import Box from '@mui/material/Box'
-import { restDeprecatedOperations } from './samples/operations-samples'
-import type { OperationData } from '../entities/operations'
-import type { OperationWithMetaClickableListProps } from '../components/Operations/OperationWithMetaClickableList'
-import { OperationWithMetaClickableList } from '../components/Operations/OperationWithMetaClickableList'
 import type { OperationTitleWithMetaProps } from '../components/Operations/OperationTitleWithMeta'
 import { OperationTitleWithMeta } from '../components/Operations/OperationTitleWithMeta'
+import type { OperationWithMetaClickableListProps } from '../components/Operations/OperationWithMetaClickableList'
+import { OperationWithMetaClickableList } from '../components/Operations/OperationWithMetaClickableList'
+import type { OperationData } from '../entities/operations'
+import { restDeprecatedOperations } from './samples/operations-samples'
 
 export default {
   title: 'Operations',
 } as Meta
 
-const OperationWithMetaClickableListFn: StoryFn<OperationWithMetaClickableListProps> = (args) =>
+const OperationWithMetaClickableListFn: StoryFn<OperationWithMetaClickableListProps> = (args) => (
   <OperationWithMetaClickableList {...args} />
+)
 
 export const OperationWithMetaClickableListStory = OperationWithMetaClickableListFn.bind({})
 OperationWithMetaClickableListStory.args = {
@@ -47,8 +48,7 @@ OperationWithMetaClickableListStory.args = {
 
 OperationWithMetaClickableListStory.storyName = 'Operation With Meta Clickable List'
 
-const OperationTitleWithMetaFn: StoryFn<OperationTitleWithMetaProps> = (args) =>
-  <OperationTitleWithMeta {...args} />
+const OperationTitleWithMetaFn: StoryFn<OperationTitleWithMetaProps> = (args) => <OperationTitleWithMeta {...args} />
 
 export const OperationTitleWithMetaStory = OperationTitleWithMetaFn.bind({})
 OperationTitleWithMetaStory.args = {

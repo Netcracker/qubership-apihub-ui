@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import type { FC, ReactNode } from 'react'
-import { memo } from 'react'
 import Box from '@mui/material/Box'
 import { Resizable } from 're-resizable'
-import type { TestableProps } from './Testable'
+import type { FC, ReactNode } from 'react'
+import { memo } from 'react'
+import { DEFAULT_PAPER_SHADOW } from '../themes/palette'
 import {
   DEFAULT_PAGE_LAYOUT_GAP,
   NAVIGATION_DEFAULT_WIDTH,
   NAVIGATION_MAX_WIDTH,
   NAVIGATION_MIN_WIDTH,
 } from '../utils/page-layouts'
-import { DEFAULT_PAPER_SHADOW } from '../themes/palette'
+import type { TestableProps } from './Testable'
 
 export type PageLayoutSX = {
   toolbar?: Record<string, string>
@@ -69,14 +69,16 @@ export const PageLayout: FC<PageLayoutProps> = memo<PageLayoutProps>(({
       data-testid={testId}
     >
       {toolbar && (
-        <Box sx={{
-          gridArea: 'toolbar',
-          overflow: 'hidden',
-          mb: !nestedPage ? DEFAULT_PAGE_LAYOUT_GAP : 0,
-          backgroundColor: '#FFFFFF',
-          borderRadius: `${!nestedPage && '0 0 10px 10px'}`,
-          boxShadow: withShadow ? DEFAULT_PAPER_SHADOW : undefined,
-        }}>
+        <Box
+          sx={{
+            gridArea: 'toolbar',
+            overflow: 'hidden',
+            mb: !nestedPage ? DEFAULT_PAGE_LAYOUT_GAP : 0,
+            backgroundColor: '#FFFFFF',
+            borderRadius: `${!nestedPage && '0 0 10px 10px'}`,
+            boxShadow: withShadow ? DEFAULT_PAPER_SHADOW : undefined,
+          }}
+        >
           {toolbar}
         </Box>
       )}
@@ -125,15 +127,19 @@ export const PageLayout: FC<PageLayoutProps> = memo<PageLayoutProps>(({
           {menu}
         </Box>
       )}
-      <Box sx={{
-        mt: (toolbar || nestedPage) ? 0 : 2,
-        gridArea: 'body',
-        overflow: 'hidden',
-        backgroundColor: '#FFFFFF',
-        borderRadius: `${(navigation || menu || nestedPage) ? '0' : '10px'} 10px 0 0`,
-        boxShadow: withShadow ? 'rgb(4 10 21 / 4%) 0px 1px 1px, rgb(4 12 29 / 9%) 0px 3px 14px, rgb(7 13 26 / 27%) 0px 0px 1px' : undefined,
-        paddingBottom: nestedPage ? 3 : 0,
-      }}>
+      <Box
+        sx={{
+          mt: (toolbar || nestedPage) ? 0 : 2,
+          gridArea: 'body',
+          overflow: 'hidden',
+          backgroundColor: '#FFFFFF',
+          borderRadius: `${(navigation || menu || nestedPage) ? '0' : '10px'} 10px 0 0`,
+          boxShadow: withShadow
+            ? 'rgb(4 10 21 / 4%) 0px 1px 1px, rgb(4 12 29 / 9%) 0px 3px 14px, rgb(7 13 26 / 27%) 0px 0px 1px'
+            : undefined,
+          paddingBottom: nestedPage ? 3 : 0,
+        }}
+      >
         {body}
       </Box>
     </Box>

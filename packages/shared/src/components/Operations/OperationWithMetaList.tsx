@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { Divider } from '@mui/material'
+import Box from '@mui/material/Box'
+import type { Path } from '@remix-run/router'
 import type { FC } from 'react'
 import React, { memo } from 'react'
-import type { Path } from '@remix-run/router'
-import Box from '@mui/material/Box'
-import { Divider } from '@mui/material'
-import { OperationTitleWithMeta } from './OperationTitleWithMeta'
 import type { OperationData, OperationsData } from '../../entities/operations'
+import { OperationTitleWithMeta } from './OperationTitleWithMeta'
 
 export type OperationWithMetaListProps = {
   operations: OperationsData
@@ -50,7 +50,7 @@ export const OperationWithMetaList: FC<OperationWithMetaListProps> = memo<Operat
                 openLinkInNewTab={openLinkInNewTab}
               />
             </Box>
-            <Divider orientation="horizontal" variant="fullWidth" sx={{ pt: 1 }}/>
+            <Divider orientation="horizontal" variant="fullWidth" sx={{ pt: 1 }} />
           </Box>
         )
       })}

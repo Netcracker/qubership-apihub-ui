@@ -15,8 +15,9 @@
  */
 
 import { GRAPHQL_FILE_FORMAT } from '@netcracker/qubership-apihub-api-processor'
-import type { Key } from './types'
 import JSZip from 'jszip'
+import { uniq } from 'lodash-es'
+import { isFastJsonSchema, toJsonSchema } from './specifications'
 import type { SpecType } from './specs'
 import {
   GRAPHAPI_SPEC_TYPE,
@@ -30,9 +31,8 @@ import {
   PROTOBUF_3_SPEC_TYPE,
   UNKNOWN_SPEC_TYPE,
 } from './specs'
-import { isFastJsonSchema, toJsonSchema } from './specifications'
-import { uniq } from 'lodash-es'
 import { toFormattedEnumeration } from './strings'
+import type { Key } from './types'
 
 export const YAML_FILE_EXTENSION = '.yaml'
 export const YML_FILE_EXTENSION = '.yml'
@@ -55,7 +55,10 @@ export type FileExtension =
   | typeof PROTO_FILE_EXTENSION
   | typeof CSV_FILE_EXTENSION
 
-export function calculateSpecType(extension: Exclude<FileExtension, typeof YML_FILE_EXTENSION>, content: string): SpecType {
+export function calculateSpecType(
+  extension: Exclude<FileExtension, typeof YML_FILE_EXTENSION>,
+  content: string,
+): SpecType {
   if (extension === JSON_FILE_EXTENSION) {
     const schema = toJsonSchema(content)
     if (isFastJsonSchema(schema)) {
@@ -214,7 +217,7 @@ export const slugify = (text: string, slugs: string[] = []): string => {
     .replace(/--+/g, '-')
   let suffix: string = ''
   // add suffix if not unique
-  while (slugs.includes(slug + suffix)) { suffix = String(+suffix + 1) }
+  while (slugs.includes(slug + suffix)) suffix = String(+suffix + 1)
   return slug + suffix
 }
 

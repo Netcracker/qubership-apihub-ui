@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { useQuery } from '@tanstack/react-query'
 import type { IntegrationRepositories, IntegrationRepositoriesDto } from '@apihub/entities/integration-repository'
-import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { editorRequestJson } from '@apihub/utils/requests'
+import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { useQuery } from '@tanstack/react-query'
 
 const INTEGRATION_REPOSITORIES_QUERY_KEY = 'integration-repositories-query-key'
 

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { Box } from '@mui/material'
 import type { FC } from 'react'
 import { memo } from 'react'
 import { useParams } from 'react-router-dom'
-import { Box } from '@mui/material'
-import { DocumentPreviewContentBody } from './DocumentPreviewContentBody'
-import { usePublishedDocumentRaw } from '../usePublishedDocumentRaw'
 import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
+import { usePublishedDocumentRaw } from '../usePublishedDocumentRaw'
+import { DocumentPreviewContentBody } from './DocumentPreviewContentBody'
 
 export const DocumentPreviewCard: FC = memo(() => {
   const { documentId } = useParams()

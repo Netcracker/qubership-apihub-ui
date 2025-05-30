@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import type { OperationChange, OperationChanges } from '../entities/operation-changelog'
-import type {
-  ChangeSeverity,
-} from '../entities/change-severities'
+import type { ChangeSeverity } from '../entities/change-severities'
 import {
   ANNOTATION_CHANGE_SEVERITY,
   BREAKING_CHANGE_SEVERITY,
-  DEPRECATED_CHANGE_SEVERITY, NON_BREAKING_CHANGE_SEVERITY,
-  RISKY_CHANGE_SEVERITY, UNCLASSIFIED_CHANGE_SEVERITY,
+  DEPRECATED_CHANGE_SEVERITY,
+  NON_BREAKING_CHANGE_SEVERITY,
+  RISKY_CHANGE_SEVERITY,
+  UNCLASSIFIED_CHANGE_SEVERITY,
 } from '../entities/change-severities'
+import type { OperationChange, OperationChanges } from '../entities/operation-changelog'
 
 function getFirstValidPath(change: OperationChange): string[] {
   const validPath = (change.currentDeclarationJsonPaths || change.previousDeclarationJsonPaths || [])
@@ -45,7 +45,6 @@ function comparePaths(path1: string[], path2: string[]): number {
 
 export function sortChanges(changes: OperationChanges): OperationChange[] {
   return [...changes].sort((a, b) => {
-
     const severityA = severityOrder[a.severity]
     const severityB = severityOrder[b.severity]
     if (severityA !== severityB) return severityA - severityB

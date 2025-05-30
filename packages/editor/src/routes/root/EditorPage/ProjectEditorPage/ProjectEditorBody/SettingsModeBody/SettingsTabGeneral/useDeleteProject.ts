@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { useMutation } from '@tanstack/react-query'
-import { useInvalidateProjects } from '../../../../../useProjects'
-import { useNavigation } from '../../../../../../NavigationProvider'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { editorRequestVoid } from '@apihub/utils/requests'
-import { useShowSuccessNotification } from '../../../../../BasePage/Notification'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { useMutation } from '@tanstack/react-query'
+import { useNavigation } from '../../../../../../NavigationProvider'
+import { useShowSuccessNotification } from '../../../../../BasePage/Notification'
+import { useInvalidateProjects } from '../../../../../useProjects'
 
 export function useDeleteProject(): [DeleteProject, IsLoading] {
   const invalidateProjects = useInvalidateProjects()

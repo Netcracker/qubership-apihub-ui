@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react'
+import { ALL_OPERATION_GROUPS } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import { useSetSearchParams } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSetSearchParams'
-import { ALL_OPERATION_GROUPS } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
+import { useMemo } from 'react'
 
 export function useOperationGroupSearchFilter(): [OperationGroupName, SetOperationGroupName] {
   const param = useSearchParam<OperationGroupName>(OPERATION_GROUP_SEARCH_PARAM)
@@ -27,13 +27,13 @@ export function useOperationGroupSearchFilter(): [OperationGroupName, SetOperati
     const group = param ?? ALL_OPERATION_GROUPS
     return [
       group,
-      value => setSearchParams(
-        { [OPERATION_GROUP_SEARCH_PARAM]: (value === ALL_OPERATION_GROUPS ? '' : value) ?? '' },
-        { replace: true },
-      ),
+      value =>
+        setSearchParams(
+          { [OPERATION_GROUP_SEARCH_PARAM]: (value === ALL_OPERATION_GROUPS ? '' : value) ?? '' },
+          { replace: true },
+        ),
     ]
   }, [param, setSearchParams])
-
 }
 
 const OPERATION_GROUP_SEARCH_PARAM = 'group'

@@ -14,34 +14,37 @@
  * limitations under the License.
  */
 
+import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined'
+import WarningRoundedIcon from '@mui/icons-material/WarningRounded'
+import { Box, Tooltip, Typography } from '@mui/material'
 import type { FC } from 'react'
 import { memo } from 'react'
 import { useOtherEditors } from './ChangesTabPanel/useOtherEditors'
-import { Box, Tooltip, Typography } from '@mui/material'
-import WarningRoundedIcon from '@mui/icons-material/WarningRounded'
-import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined'
 
 export const WarningMarker: FC = memo(() => {
   const otherEditors = useOtherEditors()
 
   return (
-    <Tooltip title={<>
-      <Box sx={{ display: 'flex', gap: 0.5, pb: 1 }}>
-        <WarningRoundedIcon fontSize="small" color="warning"/>
-        <Typography variant="body2">There are some conflicts. Save your changes to a new branch or they will be
-          lost.</Typography>
-      </Box>
-      {
-        otherEditors.map(({ name }) => (
-          <Box sx={{ display: 'flex', gap: 0.5 }}>
-            <PersonOutlinedIcon fontSize="small"/>
-            <Typography variant="body2" color="#0068FF">{name}</Typography>
-            <Typography variant="body2">also editing this project.</Typography>
+    <Tooltip
+      title={
+        <>
+          <Box sx={{ display: 'flex', gap: 0.5, pb: 1 }}>
+            <WarningRoundedIcon fontSize="small" color="warning" />
+            <Typography variant="body2">
+              There are some conflicts. Save your changes to a new branch or they will be lost.
+            </Typography>
           </Box>
-        ))
+          {otherEditors.map(({ name }) => (
+            <Box sx={{ display: 'flex', gap: 0.5 }}>
+              <PersonOutlinedIcon fontSize="small" />
+              <Typography variant="body2" color="#0068FF">{name}</Typography>
+              <Typography variant="body2">also editing this project.</Typography>
+            </Box>
+          ))}
+        </>
       }
-    </>}>
-      <WarningRoundedIcon fontSize="small" color="warning"/>
+    >
+      <WarningRoundedIcon fontSize="small" color="warning" />
     </Tooltip>
   )
 })

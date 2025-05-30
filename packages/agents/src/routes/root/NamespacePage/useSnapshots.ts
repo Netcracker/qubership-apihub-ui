@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { useParams } from 'react-router-dom'
-import type { InvalidateQuery, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import type { Snapshots, SnapshotsDto } from '@apihub/entities/snapshots'
 import { EMPTY_SNAPSHOTS, getSnapshots, toSnapshots } from '@apihub/entities/snapshots'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
+import type { InvalidateQuery, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useParams } from 'react-router-dom'
 
 const SNAPSHOTS_QUERY_KEY = 'snapshots-query-key'
 
@@ -45,8 +45,9 @@ export function useInvalidateSnapshots(): InvalidateQuery<void> {
   const { namespaceKey, agentId } = useParams()
   const client = useQueryClient()
 
-  return () => client.invalidateQueries({
-    queryKey: [SNAPSHOTS_QUERY_KEY, agentId, namespaceKey],
-    refetchType: 'all',
-  })
+  return () =>
+    client.invalidateQueries({
+      queryKey: [SNAPSHOTS_QUERY_KEY, agentId, namespaceKey],
+      refetchType: 'all',
+    })
 }

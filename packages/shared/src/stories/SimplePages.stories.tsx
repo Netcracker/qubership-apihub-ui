@@ -18,9 +18,9 @@ import type { Meta, StoryFn } from '@storybook/react'
 import React from 'react'
 import type { ErrorPageProps } from '../components/ErrorPage'
 import { ErrorPage } from '../components/ErrorPage'
-import { fullHeight } from './commons/decorators'
 import type { PackageRedirectPageProps } from '../components/PackageRedirectPage'
 import { PackageRedirectPage } from '../components/PackageRedirectPage'
+import { fullHeight } from './commons/decorators'
 
 export default {
   title: 'Simple Pages',
@@ -48,4 +48,3 @@ PackageRedirectPageStory.args = {
   href: '/sameurl/newid',
 }
 PackageRedirectPageStory.storyName = 'Package Redirect Page'
-

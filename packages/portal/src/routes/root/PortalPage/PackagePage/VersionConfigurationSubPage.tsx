@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
-import type { ChangeEvent, FC, ReactNode } from 'react'
-import { memo, useCallback, useEffect, useState } from 'react'
+import { filesRecordToArray, sortFilesRecord } from '@apihub/routes/root/PortalPage/PackagePage/files'
 import { Box, Tooltip } from '@mui/material'
-import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoContextIcon'
-import { useEventBus } from '../../../EventBusProvider'
-import { useFileActions, useFiles, useFilesLoading } from '../FilesProvider'
-import { specTypeViewers } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/useSpecViewer'
-import { isEmpty, isNotEmpty, isNotEmptyRecord } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import { SpecLogo } from '@netcracker/qubership-apihub-ui-shared/components/SpecLogo'
-import { getFileExtension, transformFileListToFileArray } from '@netcracker/qubership-apihub-ui-shared/utils/files'
+import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import {
   FileActions,
   FileInfoIcon,
   FileTableUpload,
 } from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/FileTableUpload'
-import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
-import { filesRecordToArray, sortFilesRecord } from '@apihub/routes/root/PortalPage/PackagePage/files'
-import { find, xorBy } from 'lodash-es'
+import { specTypeViewers } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/useSpecViewer'
+import { SpecLogo } from '@netcracker/qubership-apihub-ui-shared/components/SpecLogo'
 import { UploadButton } from '@netcracker/qubership-apihub-ui-shared/components/UploadButton'
+import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoContextIcon'
+import { isEmpty, isNotEmpty, isNotEmptyRecord } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { getFileExtension, transformFileListToFileArray } from '@netcracker/qubership-apihub-ui-shared/utils/files'
+import { find, xorBy } from 'lodash-es'
+import type { ChangeEvent, FC, ReactNode } from 'react'
+import { memo, useCallback, useEffect, useState } from 'react'
+import { useEventBus } from '../../../EventBusProvider'
+import { useFileActions, useFiles, useFilesLoading } from '../FilesProvider'
 
 const PREVIEWABLE_FILE_TYPES = Object.keys(specTypeViewers)
 
@@ -80,9 +80,7 @@ export const VersionConfigurationSubPage: FC = memo(() => {
     restoreFile(file.name)
   }, [restoreFile])
 
-  const getFileIcon = useCallback((file: File) => <SpecLogo value={fileTypesMap.get(file.name)}/>,
-    [fileTypesMap],
-  )
+  const getFileIcon = useCallback((file: File) => <SpecLogo value={fileTypesMap.get(file.name)} />, [fileTypesMap])
 
   const handleClick = useCallback((file: File): void => {
     file.text().then(value => {
@@ -103,16 +101,18 @@ export const VersionConfigurationSubPage: FC = memo(() => {
   }, [fileTypesMap, handleClick])
 
   const getFileActions = useCallback((file: File): ReactNode => {
-    return <FileActions
-      file={file}
-      onDeleteAction={handleDelete}
-      onEditAction={handleEdit}
-      onRestoreAction={find(replacedFiles, ['name', file.name]) ? handleRestore : null}
-    />
+    return (
+      <FileActions
+        file={file}
+        onDeleteAction={handleDelete}
+        onEditAction={handleEdit}
+        onRestoreAction={find(replacedFiles, ['name', file.name]) ? handleRestore : null}
+      />
+    )
   }, [handleDelete, handleEdit, replacedFiles, handleRestore])
 
   const getFileInfoIcon = useCallback(({ name }: File): ReactNode => {
-    return find(replacedFiles, { name }) ? <FileInfoIcon/> : null
+    return find(replacedFiles, { name }) ? <FileInfoIcon /> : null
   }, [replacedFiles])
 
   useEffect(() => {
@@ -127,11 +127,13 @@ export const VersionConfigurationSubPage: FC = memo(() => {
   return (
     <BodyCard
       header={
-        <Box sx={{
-          gap: '4px',
-          display: 'flex',
-          alignItems: 'center',
-        }}>
+        <Box
+          sx={{
+            gap: '4px',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
           Configure Package Version
           <Tooltip
             title="Drag and drop files onto the page or click Browse Files button"
@@ -139,19 +141,21 @@ export const VersionConfigurationSubPage: FC = memo(() => {
               sx: { '.MuiTooltip-tooltip': { maxWidth: 'unset' } },
             }}
           >
-            <InfoContextIcon/>
+            <InfoContextIcon />
           </Tooltip>
         </Box>
       }
       action={
         <Box display="flex" gap={2}>
-          {isNotEmptyRecord(filesWithLabels) && <SearchBar
-            placeholder="Search file"
-            value={searchValue}
-            onValueChange={setSearchValue}
-            sx={{ width: '240px' }}
-            data-testid="SearchFile"
-          />}
+          {isNotEmptyRecord(filesWithLabels) && (
+            <SearchBar
+              placeholder="Search file"
+              value={searchValue}
+              onValueChange={setSearchValue}
+              sx={{ width: '240px' }}
+              data-testid="SearchFile"
+            />
+          )}
           <UploadButton
             multiple
             onUpload={handleOnChange}

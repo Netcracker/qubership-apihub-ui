@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useMemo } from 'react'
-import type { Row } from '@tanstack/react-table'
-import { Box, IconButton, Link, Tooltip, Typography } from '@mui/material'
+import type { Service } from '@apihub/entities/services'
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
 import KeyboardArrowRightOutlinedIcon from '@mui/icons-material/KeyboardArrowRightOutlined'
-import type { Service } from '@apihub/entities/services'
-import { useEventBus } from '../../../../EventBusProvider'
-import { useParams } from 'react-router-dom'
-import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import type { Spec } from '@netcracker/qubership-apihub-ui-shared/entities/specs'
-import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { Box, IconButton, Link, Tooltip, Typography } from '@mui/material'
 import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
-import { LockIcon } from '@netcracker/qubership-apihub-ui-shared/icons/LockIcon'
 import { SpecLogo } from '@netcracker/qubership-apihub-ui-shared/components/SpecLogo'
+import type { Spec } from '@netcracker/qubership-apihub-ui-shared/entities/specs'
+import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import { LockIcon } from '@netcracker/qubership-apihub-ui-shared/icons/LockIcon'
+import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import type { Row } from '@tanstack/react-table'
+import type { FC } from 'react'
+import { memo, useMemo } from 'react'
+import { useParams } from 'react-router-dom'
+import { useEventBus } from '../../../../EventBusProvider'
 
 export type ServiceOrDocumentationTableCellProps = {
   value: Row<CellData>
@@ -41,7 +41,9 @@ type CellData = Partial<{
   spec: Spec
 }>
 
-export const ServiceOrDocumentationTableCell: FC<ServiceOrDocumentationTableCellProps> = memo<ServiceOrDocumentationTableCellProps>((
+export const ServiceOrDocumentationTableCell: FC<ServiceOrDocumentationTableCellProps> = memo<
+  ServiceOrDocumentationTableCellProps
+>((
   {
     value: {
       depth,
@@ -76,38 +78,45 @@ export const ServiceOrDocumentationTableCell: FC<ServiceOrDocumentationTableCell
       {getCanExpand() && (
         <IconButton sx={{ p: 0, ml: -3 }} onClick={getToggleExpandedHandler()}>
           {getIsExpanded()
-            ? <KeyboardArrowDownOutlinedIcon sx={{ fontSize: '16px' }}/>
-            : <KeyboardArrowRightOutlinedIcon sx={{ fontSize: '16px' }}/>}
+            ? <KeyboardArrowDownOutlinedIcon sx={{ fontSize: '16px' }} />
+            : <KeyboardArrowRightOutlinedIcon sx={{ fontSize: '16px' }} />}
         </IconButton>
       )}
-      {service && (<>
+      {service && (
+        <>
           <OverflowTooltip title={service.key}>
-            <Typography noWrap color={isPromoteStep && !promotable ? '#8F9EB4' : 'inherit'}
-                        variant="inherit">{service.key}</Typography>
+            <Typography noWrap color={isPromoteStep && !promotable ? '#8F9EB4' : 'inherit'} variant="inherit">
+              {service.key}
+            </Typography>
           </OverflowTooltip>
           {isPromoteStep && !promotable && (
             <Tooltip title="No grants to publish the service">
-              <Box><LockIcon/></Box>
+              <Box>
+                <LockIcon />
+              </Box>
             </Tooltip>
           )}
         </>
       )}
-      {spec && <>
-        <SpecLogo value={spec.type}/>
-        <OverflowTooltip title={spec.name}>
-          <Link
-            noWrap
-            onClick={() => showSpecificationDialog({
-              spec: spec,
-              agentId: agentId,
-              namespaceKey: namespaceKey,
-              service: parentRow?.original.service,
-            })}
-          >
-            {spec.name}
-          </Link>
-        </OverflowTooltip>
-      </>}
+      {spec && (
+        <>
+          <SpecLogo value={spec.type} />
+          <OverflowTooltip title={spec.name}>
+            <Link
+              noWrap
+              onClick={() =>
+                showSpecificationDialog({
+                  spec: spec,
+                  agentId: agentId,
+                  namespaceKey: namespaceKey,
+                  service: parentRow?.original.service,
+                })}
+            >
+              {spec.name}
+            </Link>
+          </OverflowTooltip>
+        </>
+      )}
     </Box>
   )
 })

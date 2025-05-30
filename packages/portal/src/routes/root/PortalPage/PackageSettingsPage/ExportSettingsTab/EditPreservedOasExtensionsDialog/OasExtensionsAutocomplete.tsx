@@ -1,22 +1,21 @@
-import type { FC } from 'react'
-import React, { useCallback } from 'react'
-import { Box, Chip, TextField } from '@mui/material'
 import { ErrorRounded } from '@mui/icons-material'
+import { Box, Chip, TextField } from '@mui/material'
 import {
   LabellessAutocomplete,
 } from '@netcracker/qubership-apihub-ui-shared/components/Autocompletes/LabellessAutocomplete/LabellessAutocomplete'
-import { OasExtensionTooltip } from './OasExtensionTooltip'
-import {
-  OAS_EXTENSION_KIND_INHERITED,
-  OAS_EXTENSION_PREFIX,
-  type OasSettingsExtension,
-} from '../package-export-config'
 import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import type { FC } from 'react'
+import React, { useCallback } from 'react'
+import { OAS_EXTENSION_KIND_INHERITED, OAS_EXTENSION_PREFIX, type OasSettingsExtension } from '../package-export-config'
+import { OasExtensionTooltip } from './OasExtensionTooltip'
 
 interface OasExtensionsAutocompleteProps {
   value: OasSettingsExtension[]
   onChange: (newValue: OasSettingsExtension[]) => void
-  processExtensionsUpdate: (newValue: Array<string | OasSettingsExtension>, currentValue?: OasSettingsExtension[]) => OasSettingsExtension[]
+  processExtensionsUpdate: (
+    newValue: Array<string | OasSettingsExtension>,
+    currentValue?: OasSettingsExtension[],
+  ) => OasSettingsExtension[]
   isFocused: boolean
   setIsFocused: (isFocused: boolean) => void
   isInputText: boolean
@@ -93,21 +92,22 @@ export const OasExtensionsAutocomplete: FC<OasExtensionsAutocompleteProps> = ({
       options={[]}
       multiple
       freeSolo
-
       // Display error icon instead of standard clear icon when duplicate extension error occurs
-      clearIcon={duplicateErrorText ? <ErrorRounded color="error"/> : undefined}
+      clearIcon={duplicateErrorText ? <ErrorRounded color="error" /> : undefined}
       componentsProps={{
-        clearIndicator: duplicateErrorText ? {
-          onClick: (event) => {
-            event.preventDefault()
-            event.stopPropagation()
-          },
-          title: '',
-          sx: {
-            cursor: 'default',
-            visibility: 'visible',
-          },
-        } : undefined,
+        clearIndicator: duplicateErrorText
+          ? {
+            onClick: (event) => {
+              event.preventDefault()
+              event.stopPropagation()
+            },
+            title: '',
+            sx: {
+              cursor: 'default',
+              visibility: 'visible',
+            },
+          }
+          : undefined,
       }}
       renderInput={(params) => (
         <TextField
@@ -147,14 +147,13 @@ export const OasExtensionsAutocomplete: FC<OasExtensionsAutocompleteProps> = ({
               {...tagProps}
               key={extension.key}
               size="small"
-              label={<OasExtensionTooltip extension={extension}/>}
+              label={<OasExtensionTooltip extension={extension} />}
               onDelete={isInherited ? undefined : onDelete}
               variant={isInherited ? 'readonly' : undefined}
               data-testid="OasExtensionChip"
             />
           )
-        })
-      }
+        })}
       onChange={(_, value) => handleChange(_, Array.isArray(value) ? value : [])}
       data-testid="OasExtensionsAutocomplete"
     />

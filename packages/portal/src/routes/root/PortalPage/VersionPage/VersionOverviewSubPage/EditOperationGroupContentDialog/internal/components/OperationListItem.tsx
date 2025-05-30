@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import { Box, Checkbox, ListItem, ListItemIcon } from '@mui/material'
+import { OperationTitleWithMeta } from '@netcracker/qubership-apihub-ui-shared/components/Operations/OperationTitleWithMeta'
+import type { Operation, OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import type { Pixel } from '@netcracker/qubership-apihub-ui-shared/utils/types'
+import type { Path } from '@remix-run/router'
 import type { CSSProperties, FC } from 'react'
 import * as React from 'react'
 import { memo, useCallback, useMemo } from 'react'
-import type { Path } from '@remix-run/router'
-import { Box, Checkbox, ListItem, ListItemIcon } from '@mui/material'
 import { BORDER } from '../consts'
-import type { Operation, OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import { OperationTitleWithMeta } from '@netcracker/qubership-apihub-ui-shared/components/Operations/OperationTitleWithMeta'
-import type { Pixel } from '@netcracker/qubership-apihub-ui-shared/utils/types'
 
 export const OPERATION_LIST_ITEM_HEIGHT: Pixel = 64
 

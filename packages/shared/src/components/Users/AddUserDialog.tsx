@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
+import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
+import { Box, Button, Chip, DialogActions, DialogContent, DialogTitle, ListItem } from '@mui/material'
 import type { FC } from 'react'
 import React, { memo, useCallback, useState } from 'react'
-import type { Role, Roles } from '../../types/roles'
-import type { PopupProps } from '../PopupDelegate'
-import { PopupDelegate } from '../PopupDelegate'
-import { DialogForm } from '../DialogForm'
-import type { User } from '../../types/user'
-import { Box, Button, Chip, DialogActions, DialogContent, DialogTitle, ListItem } from '@mui/material'
 import { Controller, useForm } from 'react-hook-form'
 import { useDebounce } from 'react-use'
 import { CheckIcon } from '../../icons/CheckIcon'
-import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
-import { UserAvatar } from './UserAvatar'
-import { DEFAULT_DEBOUNCE } from '../../utils/constants'
-import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
-import { MultipleSelectorAutocomplete } from '../MultipleSelectorAutocomplete'
 import { SHOW_ADD_USER_DIALOG } from '../../types/dialogs'
+import type { Role, Roles } from '../../types/roles'
+import type { User } from '../../types/user'
+import { DEFAULT_DEBOUNCE } from '../../utils/constants'
+import { DialogForm } from '../DialogForm'
+import { MultipleSelectorAutocomplete } from '../MultipleSelectorAutocomplete'
+import type { PopupProps } from '../PopupDelegate'
+import { PopupDelegate } from '../PopupDelegate'
+import { UserAvatar } from './UserAvatar'
 
 export type AddUserDialogProps = {
   users: ReadonlyArray<User> | undefined
@@ -51,7 +51,7 @@ export const AddUserDialog: FC<AddUserDialogProps> = memo((props) => {
   return (
     <PopupDelegate
       type={SHOW_ADD_USER_DIALOG}
-      render={props =>
+      render={props => (
         <AddUserPopup
           {...props}
           users={users}
@@ -59,7 +59,8 @@ export const AddUserDialog: FC<AddUserDialogProps> = memo((props) => {
           onConfirm={onConfirm}
           setUserSearch={setUserSearch}
           isUsersLoading={isUsersLoading}
-        />}
+        />
+      )}
     />
   )
 })
@@ -110,13 +111,13 @@ export const AddUserPopup: FC<AddUserPopupProps> = memo<AddUserPopupProps>((prop
         <Controller
           name="users"
           control={control}
-          render={({ field: { value, onChange } }) =>
+          render={({ field: { value, onChange } }) => (
             <MultipleSelectorAutocomplete<User>
               id="user-selector"
               options={users ?? []}
               value={value}
               inputLabel="User"
-              icon={<SearchOutlinedIcon/>}
+              icon={<SearchOutlinedIcon />}
               isLoading={isUsersLoading}
               onChange={onChange}
               getOptionLabel={(option) => option.name ?? option}
@@ -125,7 +126,7 @@ export const AddUserPopup: FC<AddUserPopupProps> = memo<AddUserPopupProps>((prop
                 const selected = value?.some(user => user.key === key)
                 return (
                   <ListItem {...props} key={name} sx={{ pointerEvents: selected ? 'none' : '' }}>
-                    {selected ? <CheckIcon/> : null}
+                    {selected ? <CheckIcon /> : null}
                     <UserAvatar
                       sx={{
                         marginLeft: selected ? '6px' : '21px',
@@ -145,20 +146,21 @@ export const AddUserPopup: FC<AddUserPopupProps> = memo<AddUserPopupProps>((prop
                     variant="outlined"
                     size="small"
                     sx={DEFAULT_CHIP_STYLE}
-                    avatar={<CheckIcon/>}
-                    deleteIcon={<CloseOutlinedIcon/>}
-                    label={option?.name} {...getTagProps({ index })}
+                    avatar={<CheckIcon />}
+                    deleteIcon={<CloseOutlinedIcon />}
+                    label={option?.name}
+                    {...getTagProps({ index })}
                     data-testid="UserChip"
                   />
                 ))}
               testId="UsersAutocomplete"
             />
-          }
+          )}
         />
         <Controller
           name="roles"
           control={control}
-          render={({ field: { value, onChange } }) =>
+          render={({ field: { value, onChange } }) => (
             <MultipleSelectorAutocomplete<Role>
               id="roles-selector"
               options={roles ?? []}
@@ -169,8 +171,13 @@ export const AddUserPopup: FC<AddUserPopupProps> = memo<AddUserPopupProps>((prop
               renderOption={(props, { key, role }) => {
                 const selected = value?.some(role => role.key === key)
                 return (
-                  <ListItem {...props} key={role} sx={{ pointerEvents: selected ? 'none' : '' }} data-testid={`${role}ListItem`}>
-                    {selected ? <CheckIcon/> : null}
+                  <ListItem
+                    {...props}
+                    key={role}
+                    sx={{ pointerEvents: selected ? 'none' : '' }}
+                    data-testid={`${role}ListItem`}
+                  >
+                    {selected ? <CheckIcon /> : null}
                     <Box sx={{ marginLeft: selected ? '6px' : '21px' }}>
                       {role}
                     </Box>
@@ -183,15 +190,15 @@ export const AddUserPopup: FC<AddUserPopupProps> = memo<AddUserPopupProps>((prop
                     variant="outlined"
                     size="small"
                     sx={DEFAULT_CHIP_STYLE}
-                    avatar={<CheckIcon/>}
-                    deleteIcon={<CloseOutlinedIcon/>}
-                    label={option?.role} {...getTagProps({ index })}
+                    avatar={<CheckIcon />}
+                    deleteIcon={<CloseOutlinedIcon />}
+                    label={option?.role}
+                    {...getTagProps({ index })}
                   />
-                ))
-              }
+                ))}
               testId="RolesAutocomplete"
             />
-          }
+          )}
         />
       </DialogContent>
       <DialogActions>

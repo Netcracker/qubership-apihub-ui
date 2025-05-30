@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { wrap } from 'comlink'
-import Worker from './package-version-builder-worker?worker'
-import type { PackageVersionBuilderWorker } from './package-version-builder-worker'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { ProjectFile } from '@apihub/entities/project-files'
 import type { FileSourceMap } from '@netcracker/qubership-apihub-api-processor'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { wrap } from 'comlink'
+import type { PackageVersionBuilderWorker } from './package-version-builder-worker'
+import Worker from './package-version-builder-worker?worker'
 
 export type BuilderOptions = {
   packageKey: Key

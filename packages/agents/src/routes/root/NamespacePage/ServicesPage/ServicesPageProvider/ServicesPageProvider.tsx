@@ -16,8 +16,8 @@
 
 import type { FC, PropsWithChildren } from 'react'
 import { memo } from 'react'
-import { ServicesStepsProvider } from './ServicesStepsProvider'
 import { ServicesPublicationOptionsProvider } from './ServicesPublicationOptionsProvider'
+import { ServicesStepsProvider } from './ServicesStepsProvider'
 
 export const ServicesPageProvider: FC<PropsWithChildren> = memo(({ children }) => {
   return (

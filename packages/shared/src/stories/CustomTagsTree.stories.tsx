@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react'
 import { Box } from '@mui/material'
+import type { Meta, StoryObj } from '@storybook/react'
 import React from 'react'
 import { CustomTagsTree } from '../components/CustomTagsTree'
 import { tree } from './samples/tree-samples'
@@ -33,7 +33,7 @@ const meta: Meta<typeof CustomTagsTree> = {
           },
         }}
       >
-        <Story/>
+        <Story />
       </Box>
     ),
   ],

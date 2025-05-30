@@ -17,10 +17,10 @@
 import type { editor as Editor } from 'monaco-editor'
 import { editor, Range } from 'monaco-editor'
 import { useEffect, useState } from 'react'
-import { useContentLoading } from '../../../FileEditingWebSocketProvider'
-import { monacoEditorNavigateTo } from './useOtMonaco'
 import { useLocation } from 'react-use'
 import type { FileProblem } from '../../../../../../../entities/file-problems'
+import { useContentLoading } from '../../../FileEditingWebSocketProvider'
+import { monacoEditorNavigateTo } from './useOtMonaco'
 import IEditorDecorationsCollection = editor.IEditorDecorationsCollection
 
 export function useRegisterProblemDecorator(
@@ -58,7 +58,9 @@ export function useRegisterProblemDecorator(
         range: new Range(lineNumber ?? 0, 0, lineNumber ?? 0, 0),
         options: {
           isWholeLine: false,
-          glyphMarginClassName: `${type === 'error' ? 'MonacoErrorDecorator' : type === 'warn' ? 'MonacoWarnDecorator' : 'MonacoInfoDecorator'}`,
+          glyphMarginClassName: `${
+            type === 'error' ? 'MonacoErrorDecorator' : type === 'warn' ? 'MonacoWarnDecorator' : 'MonacoInfoDecorator'
+          }`,
           glyphMarginHoverMessage: {
             value: text,
           },

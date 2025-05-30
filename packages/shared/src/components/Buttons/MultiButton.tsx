@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { FC, ReactElement, ReactNode } from 'react'
-import { memo, useCallback, useMemo, useRef, useState } from 'react'
-import { Box, Button, ButtonGroup, ClickAwayListener, Grow, MenuList, Paper, Popper, Tooltip } from '@mui/material'
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
+import { Box, Button, ButtonGroup, ClickAwayListener, Grow, MenuList, Paper, Popper, Tooltip } from '@mui/material'
+import type { ButtonProps } from '@mui/material/Button/Button'
 import type { ButtonGroupProps } from '@mui/material/ButtonGroup/ButtonGroup'
 import type { SxProps } from '@mui/system'
-import type { ButtonProps } from '@mui/material/Button/Button'
+import type { FC, ReactElement, ReactNode } from 'react'
+import { memo, useCallback, useMemo, useRef, useState } from 'react'
 
 // TODO: Understand why styles break when moved to `shared` module (check in Editor)
 export type MultiButtonProps = {
@@ -57,7 +57,7 @@ export const MultiButton: FC<MultiButtonProps> = memo<MultiButtonProps>(({
         onClick={onClick}
         {...arrowButtonProps}
       >
-        <KeyboardArrowDownOutlinedIcon fontSize="small"/>
+        <KeyboardArrowDownOutlinedIcon fontSize="small" />
       </Button>
     )
   }, [arrowButtonProps, onClick, variant])
@@ -83,19 +83,22 @@ export const MultiButton: FC<MultiButtonProps> = memo<MultiButtonProps>(({
             transition
           >
             {({ TransitionProps, placement }) => (
-              <Grow {...TransitionProps}
-                    style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}>
+              <Grow
+                {...TransitionProps}
+                style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
+              >
                 <Paper
                   sx={({ palette: { grey, mode }, spacing }) => ({
                     borderRadius: '6px',
                     marginTop: spacing(1),
                     minWidth: 90,
                     color: mode === 'light' ? 'rgb(55, 65, 81)' : grey[300],
-                    boxShadow: 'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
+                    boxShadow:
+                      'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
                   })}
                 >
                   <ClickAwayListener onClickAway={onClick}>
-                    <MenuList autoFocusItem children={secondary} onClick={onClick} disablePadding={false}/>
+                    <MenuList autoFocusItem children={secondary} onClick={onClick} disablePadding={false} />
                   </ClickAwayListener>
                 </Paper>
               </Grow>

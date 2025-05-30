@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
+import { useVersionReferences } from '@apihub/routes/root/useVersionReferences'
+import { List } from '@mui/material'
+import type { SidebarMenu } from '@netcracker/qubership-apihub-ui-shared/components/NavigationMenu'
+import type { PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { useActiveTabs } from '@netcracker/qubership-apihub-ui-shared/hooks/pathparams/useActiveTabs'
 import type { FC } from 'react'
 import * as React from 'react'
 import { memo, useEffect } from 'react'
-import { List } from '@mui/material'
 import { useParams } from 'react-router-dom'
 import type { OverviewPageRoute } from '../../../../../routes'
 import {
@@ -27,15 +32,10 @@ import {
   REVISION_HISTORY_PAGE,
   SUMMARY_PAGE,
 } from '../../../../../routes'
+import { getOverviewPath } from '../../../../NavigationProvider'
 import { usePackage } from '../../../usePackage'
 import { useDeletedReferences, useUpdateDeletedReferences } from '../../useDeletedReferences'
 import { OverviewNavigationItem } from './OverviewNavigationItem'
-import { getOverviewPath } from '../../../../NavigationProvider'
-import { useActiveTabs } from '@netcracker/qubership-apihub-ui-shared/hooks/pathparams/useActiveTabs'
-import type { SidebarMenu } from '@netcracker/qubership-apihub-ui-shared/components/NavigationMenu'
-import type { PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { useVersionReferences } from '@apihub/routes/root/useVersionReferences'
 
 export const OverviewNavigation: FC = memo(() => {
   const { packageId, versionId } = useParams()
@@ -120,4 +120,3 @@ const OVERVIEW_SIDEBAR = (
 
   return commonSidebarMenu
 }
-

@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-import type { FC, ReactNode } from 'react'
-import { Fragment, memo, useEffect, useMemo, useRef, useState } from 'react'
-import type { ColumnDef } from '@tanstack/table-core'
+import { Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import type { ColumnSizingInfoState, ColumnSizingState, OnChangeFn, VisibilityState } from '@tanstack/react-table'
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
-import { Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
-import { ColumnDelimiter } from '../ColumnDelimiter'
-import { FileCellContent } from './FileCellContent'
-import { CustomTableHeadCell } from '../CustomTableHeadCell'
-import type { FileLabelsRecord } from './FileTableUpload'
-import { LabelsTableCell } from '../LabelsTableCell'
-import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '../Placeholder'
+import type { ColumnDef } from '@tanstack/table-core'
+import type { FC, ReactNode } from 'react'
+import { Fragment, memo, useEffect, useMemo, useRef, useState } from 'react'
+import { useResizeObserver } from '../../hooks/common/useResizeObserver'
 import type { ColumnModel } from '../../hooks/table-resizing/useColumnResizing'
 import { DEFAULT_CONTAINER_WIDTH, useColumnsSizing } from '../../hooks/table-resizing/useColumnResizing'
-import { useResizeObserver } from '../../hooks/common/useResizeObserver'
 import { isNotEmptyRecord } from '../../utils/arrays'
-import { DEFAULT_NUMBER_SKELETON_ROWS } from '../../utils/constants'
 import { createComponents } from '../../utils/components'
+import { DEFAULT_NUMBER_SKELETON_ROWS } from '../../utils/constants'
+import { ColumnDelimiter } from '../ColumnDelimiter'
+import { CustomTableHeadCell } from '../CustomTableHeadCell'
+import { LabelsTableCell } from '../LabelsTableCell'
+import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '../Placeholder'
+import { FileCellContent } from './FileCellContent'
+import type { FileLabelsRecord } from './FileTableUpload'
 
 export type FileTableData = {
   file: File
@@ -51,7 +51,8 @@ const COLUMNS_MODELS: ColumnModel[] = [
 ]
 
 const defaultMinWidth = COLUMNS_MODELS.reduce(
-  (sum, { width, fixedWidth }) => sum + (width || fixedWidth || 0), 0,
+  (sum, { width, fixedWidth }) => sum + (width || fixedWidth || 0),
+  0,
 )
 
 export type FileTableProps = {
@@ -79,7 +80,7 @@ export const FileTable: FC<FileTableProps> = memo<FileTableProps>(props => {
     const result: ColumnDef<FileTableData>[] = [
       {
         id: FILE_COLUMN_ID,
-        header: () => <CustomTableHeadCell title="File"/>,
+        header: () => <CustomTableHeadCell title="File" />,
         cell: ({ row: { original: { file, fileKey } } }) => (
           <FileCellContent
             fileKey={fileKey}
@@ -92,8 +93,8 @@ export const FileTable: FC<FileTableProps> = memo<FileTableProps>(props => {
       },
       {
         id: LABELS_COLUMN_ID,
-        header: () => <CustomTableHeadCell title="Labels"/>,
-        cell: ({ row: { original: { labels } } }) => <LabelsTableCell labels={labels}/>,
+        header: () => <CustomTableHeadCell title="Labels" />,
+        cell: ({ row: { original: { labels } } }) => <LabelsTableCell labels={labels} />,
       },
       {
         id: ACTIONS_COLUMN_ID,
@@ -110,7 +111,8 @@ export const FileTable: FC<FileTableProps> = memo<FileTableProps>(props => {
       file: file,
       fileActions: getFileActions(file),
       labels: labels,
-    }))), [filesMap, getFileActions])
+    }))
+  ), [filesMap, getFileActions])
 
   const [containerWidth, setContainerWidth] = useState(DEFAULT_CONTAINER_WIDTH)
   const [columnSizingInfo, setColumnSizingInfo] = useState<ColumnSizingInfoState>()
@@ -162,8 +164,8 @@ export const FileTable: FC<FileTableProps> = memo<FileTableProps>(props => {
                   }}
                 >
                   {flexRender(headerColumn.column.columnDef.header, headerColumn.getContext())}
-                  {index !== headerGroup.headers.length - 1 &&
-                    <ColumnDelimiter header={headerColumn} resizable={true}/>}
+                  {index !== headerGroup.headers.length - 1
+                    && <ColumnDelimiter header={headerColumn} resizable={true} />}
                 </TableCell>
               ))}
             </TableRow>
@@ -181,7 +183,7 @@ export const FileTable: FC<FileTableProps> = memo<FileTableProps>(props => {
               </TableRow>
             </Fragment>
           ))}
-          {isLoading && <TableSkeleton/>}
+          {isLoading && <TableSkeleton />}
         </TableBody>
       </Table>
       {!isNotEmptyRecord(filesMap) && showPlaceholder && (
@@ -197,21 +199,19 @@ export const FileTable: FC<FileTableProps> = memo<FileTableProps>(props => {
 })
 
 const TableSkeleton: FC = memo(() => {
-  return createComponents(<FileRowSkeleton/>, DEFAULT_NUMBER_SKELETON_ROWS)
+  return createComponents(<FileRowSkeleton />, DEFAULT_NUMBER_SKELETON_ROWS)
 })
 
 const FileRowSkeleton: FC = memo(() => {
   return (
     <TableRow>
       <TableCell>
-        <Skeleton variant="rectangular" width="80%"/>
+        <Skeleton variant="rectangular" width="80%" />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width="80%"/>
+        <Skeleton variant="rectangular" width="80%" />
       </TableCell>
-      <TableCell/>
+      <TableCell />
     </TableRow>
   )
 })
-
-

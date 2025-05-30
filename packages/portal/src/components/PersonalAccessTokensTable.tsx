@@ -8,9 +8,16 @@ import { TableCellSkeleton } from '@netcracker/qubership-apihub-ui-shared/compon
 import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
 import { useResizeObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useResizeObserver'
 import type { ColumnModel } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
-import { DEFAULT_CONTAINER_WIDTH, useColumnsSizing } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
+import {
+  DEFAULT_CONTAINER_WIDTH,
+  useColumnsSizing,
+} from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
 import { DeleteIcon } from '@netcracker/qubership-apihub-ui-shared/icons/DeleteIcon'
-import type { DeletePersonalAccessTokenCallback, PersonalAccessToken, PersonalAccessTokens } from '@netcracker/qubership-apihub-ui-shared/types/tokens'
+import type {
+  DeletePersonalAccessTokenCallback,
+  PersonalAccessToken,
+  PersonalAccessTokens,
+} from '@netcracker/qubership-apihub-ui-shared/types/tokens'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import { createComponents } from '@netcracker/qubership-apihub-ui-shared/utils/components'
@@ -102,7 +109,7 @@ export const PersonalAccessTokensTable: FC<TokensTableTableProps> = memo(props =
               {expiresAt
                 ? <FormattedDate value={expiresAt} />
                 : (
-                  <Typography component="span" variant="body2"                  >
+                  <Typography component="span" variant="body2">
                     No expiration date
                   </Typography>
                 )}
@@ -112,16 +119,12 @@ export const PersonalAccessTokensTable: FC<TokensTableTableProps> = memo(props =
         {
           id: STATUS_COLUMN_ID,
           header: 'Status',
-          cell: ({ row: { original: { status } } }) => (
-            <CustomChip value={status} label={status} />
-          ),
+          cell: ({ row: { original: { status } } }) => <CustomChip value={status} label={status} />,
         },
         {
           id: CREATED_AT_COLUMN_ID,
           header: 'Created At',
-          cell: ({ row: { original: { createdAt } } }) => (
-            <FormattedDate value={createdAt} />
-          ),
+          cell: ({ row: { original: { createdAt } } }) => <FormattedDate value={createdAt} />,
         },
         {
           id: DELETE_COLUMN_ID,
@@ -206,12 +209,11 @@ export const PersonalAccessTokensTable: FC<TokensTableTableProps> = memo(props =
             message="No personal access tokens"
           />
         )
-        : null
-      }
+        : null}
       <ConfirmationDialog
         open={deletionConfirmationDialog}
         title={`Delete token ${deletingTokenData?.name}?`}
-        message='Once a token is deleted, it can no longer be used to authenticate to APIHUB.'
+        message="Once a token is deleted, it can no longer be used to authenticate to APIHUB."
         loading={isTokenBeingDeleted}
         confirmButtonName="Delete"
         onConfirm={() => onDeletePersonalAccessToken(deletingTokenData!.id)}

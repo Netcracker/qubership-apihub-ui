@@ -14,23 +14,26 @@
  * limitations under the License.
  */
 
-import { useMutation } from '@tanstack/react-query'
-import { useParams } from 'react-router-dom'
-import { PackageVersionBuilder } from './package-version-builder'
-import { useShowErrorNotification } from '../BasePage/Notification'
-import { useAsyncInvalidatePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
 import type { BuildConfigFile, BuildConfigRef, VersionStatus } from '@netcracker/qubership-apihub-api-processor'
-import { useAsyncInvalidateVersionContent } from '../usePackageVersionContent'
-import { useNavigation } from '../../NavigationProvider'
-import { useAsyncInvalidateVersionSources } from '../useVersionSources'
-import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { useAuthorization } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
-import type { PublishDetails } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
-import { COMPLETE_PUBLISH_STATUS, ERROR_PUBLISH_STATUS } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
-import { getAuthorization } from '@netcracker/qubership-apihub-ui-shared/utils/storages'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { PackageReference } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
+import { useAuthorization } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
+import { useAsyncInvalidatePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
+import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import type { PublishDetails } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
+import {
+  COMPLETE_PUBLISH_STATUS,
+  ERROR_PUBLISH_STATUS,
+} from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
+import { getAuthorization } from '@netcracker/qubership-apihub-ui-shared/utils/storages'
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
+import { useMutation } from '@tanstack/react-query'
+import { useParams } from 'react-router-dom'
+import { useNavigation } from '../../NavigationProvider'
+import { useShowErrorNotification } from '../BasePage/Notification'
+import { useAsyncInvalidateVersionContent } from '../usePackageVersionContent'
+import { useAsyncInvalidateVersionSources } from '../useVersionSources'
+import { PackageVersionBuilder } from './package-version-builder'
 
 export function usePublishPackageVersion(): [PublishPackageVersion, IsLoading, IsSuccess] {
   const { packageId } = useParams()

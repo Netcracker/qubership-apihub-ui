@@ -16,14 +16,14 @@
 
 import { useMutation } from '@tanstack/react-query'
 
-import { useParams } from 'react-router-dom'
-import { useBranchSearchParam } from '../../../../useBranchSearchParam'
-import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { useSetSearchParams } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSetSearchParams'
-import { useShowSuccessNotification } from '../../../../BasePage/Notification'
 import { FILES_PROJECT_EDITOR_MODE } from '@apihub/entities/editor-modes'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { editorRequestVoid } from '@apihub/utils/requests'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { useSetSearchParams } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSetSearchParams'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { useParams } from 'react-router-dom'
+import { useShowSuccessNotification } from '../../../../BasePage/Notification'
+import { useBranchSearchParam } from '../../../../useBranchSearchParam'
 import { useAllBranchFiles, useBranchCache } from '../../useBranchCache'
 
 export function useResetBranch(onSuccess: () => void): [ResetBranch, IsLoading] {

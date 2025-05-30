@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo } from 'react'
-import type { Row } from '@tanstack/react-table'
 import type { Service } from '@apihub/entities/services'
 import { Box } from '@mui/material'
-import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
 import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
+import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
+import type { Row } from '@tanstack/react-table'
+import type { FC } from 'react'
+import { memo } from 'react'
 import { getFormattedLabel } from '../services'
 
 export type ServiceLabelsTableCellProps = {
@@ -31,11 +31,12 @@ type CellData = Partial<{
   service: Service
 }>
 
-export const ServiceLabelsTableCell: FC<ServiceLabelsTableCellProps> = memo<ServiceLabelsTableCellProps>(({ value: { original: { service } } }) => {
-  if (service && service.labels) {
-    const labels = Object.entries(service.labels)
+export const ServiceLabelsTableCell: FC<ServiceLabelsTableCellProps> = memo<ServiceLabelsTableCellProps>(
+  ({ value: { original: { service } } }) => {
+    if (service && service.labels) {
+      const labels = Object.entries(service.labels)
 
-    return (
+      return (
         <Box>
           {labels.map(([key, value]) => (
             <Box
@@ -55,8 +56,9 @@ export const ServiceLabelsTableCell: FC<ServiceLabelsTableCellProps> = memo<Serv
             </Box>
           ))}
         </Box>
-    )
-  }
+      )
+    }
 
-  return null
-})
+    return null
+  },
+)

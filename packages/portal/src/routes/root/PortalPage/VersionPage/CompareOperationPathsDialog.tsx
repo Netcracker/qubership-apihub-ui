@@ -14,34 +14,34 @@
  * limitations under the License.
  */
 
+import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
+import { SHOW_COMPARE_OPERATIONS_DIALOG } from '@apihub/routes/EventBusProvider'
+import type { CompareOperationPathsDialogData } from '@netcracker/qubership-apihub-ui-shared/components/CompareOperationPathsForm'
+import { CompareOperationPathsDialogForm } from '@netcracker/qubership-apihub-ui-shared/components/CompareOperationPathsForm'
+import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
+import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
+import { OPERATION_SEARCH_PARAM, REF_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import type { FC, SyntheticEvent } from 'react'
 import * as React from 'react'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { useLocation } from 'react-use'
 import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
-import { useOperations } from './useOperations'
-import { useOperationLocation } from './useOperationLocation'
+import { useLocation } from 'react-use'
+import { useNavigation } from '../../../NavigationProvider'
+import { useVersionWithRevision } from '../../useVersionWithRevision'
 import { usePackageParamsWithRef } from '../usePackageParamsWithRef'
 import { useOperation } from './useOperation'
-import { useVersionWithRevision } from '../../useVersionWithRevision'
-import { useNavigation } from '../../../NavigationProvider'
-import type { OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import { SHOW_COMPARE_OPERATIONS_DIALOG } from '@apihub/routes/EventBusProvider'
-import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
-import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
-import { OPERATION_SEARCH_PARAM, REF_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import type { CompareOperationPathsDialogData } from '@netcracker/qubership-apihub-ui-shared/components/CompareOperationPathsForm'
-import { CompareOperationPathsDialogForm } from '@netcracker/qubership-apihub-ui-shared/components/CompareOperationPathsForm'
+import { useOperationLocation } from './useOperationLocation'
+import { useOperations } from './useOperations'
 
 export const CompareOperationPathsDialog: FC = memo(() => {
   return (
     <PopupDelegate
       type={SHOW_COMPARE_OPERATIONS_DIALOG}
-      render={props => <CompareOperationPathsPopup {...props}/>}
+      render={props => <CompareOperationPathsPopup {...props} />}
     />
   )
 })
@@ -63,22 +63,24 @@ const CompareOperationPathsPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
   const onOriginalInputChange = useCallback((event: SyntheticEvent, value: string) => setOriginalInputValue(value), [])
   const onChangedInputChange = useCallback((event: SyntheticEvent, value: string) => setChangedInputValue(value), [])
 
-  return <CompareOperationPathsDialogForm
-    open={open}
-    setOpen={setOpen}
-    control={control}
-    originalOperationOptions={originalOperationOptions}
-    changedOperationOptions={changedOperationOptions}
-    onSwap={onSwap}
-    onSubmit={onSubmit}
-    isOriginalOperationsLoading={isOriginalOperationsLoading}
-    isChangedOperationsLoading={isChangedOperationsLoading}
-    onOriginalInputChange={onOriginalInputChange}
-    onChangedInputChange={onChangedInputChange}
-  />
+  return (
+    <CompareOperationPathsDialogForm
+      open={open}
+      setOpen={setOpen}
+      control={control}
+      originalOperationOptions={originalOperationOptions}
+      changedOperationOptions={changedOperationOptions}
+      onSwap={onSwap}
+      onSubmit={onSubmit}
+      isOriginalOperationsLoading={isOriginalOperationsLoading}
+      isChangedOperationsLoading={isChangedOperationsLoading}
+      onOriginalInputChange={onOriginalInputChange}
+      onChangedInputChange={onChangedInputChange}
+    />
+  )
 })
 
-//todo need retest (without nested value)
+// todo need retest (without nested value)
 type FormData = {
   originalOperation: OperationData | null
   changedOperation: OperationData | null
@@ -154,21 +156,34 @@ function useData(
     })
   }, [form])
 
-  const onSubmit = useMemo(() => form.handleSubmit(({ originalOperation, changedOperation }) => {
-    setBackwardLocation({ ...backwardLocation, fromOperationsComparison: { pathname: pathname!, search: search! } })
-    navigateToOperationsComparison({
-      packageKey: defaultPackageKey!,
-      versionKey: defaultVersionKey!,
-      apiType: apiType as ApiType,
-      operationKey: changedOperation!.operationKey,
-      search: {
-        [OPERATION_SEARCH_PARAM]: { value: originalOperation!.operationKey },
-        [REF_SEARCH_PARAM]: { value: ref ?? '' },
-      },
-    })
+  const onSubmit = useMemo(() =>
+    form.handleSubmit(({ originalOperation, changedOperation }) => {
+      setBackwardLocation({ ...backwardLocation, fromOperationsComparison: { pathname: pathname!, search: search! } })
+      navigateToOperationsComparison({
+        packageKey: defaultPackageKey!,
+        versionKey: defaultVersionKey!,
+        apiType: apiType as ApiType,
+        operationKey: changedOperation!.operationKey,
+        search: {
+          [OPERATION_SEARCH_PARAM]: { value: originalOperation!.operationKey },
+          [REF_SEARCH_PARAM]: { value: ref ?? '' },
+        },
+      })
 
-    setTimeout(() => setOpen(false), 1000)
-  }), [form, ref, setBackwardLocation, backwardLocation, pathname, search, navigateToOperationsComparison, defaultPackageKey, defaultVersionKey, apiType, setOpen])
+      setTimeout(() => setOpen(false), 1000)
+    }), [
+    form,
+    ref,
+    setBackwardLocation,
+    backwardLocation,
+    pathname,
+    search,
+    navigateToOperationsComparison,
+    defaultPackageKey,
+    defaultVersionKey,
+    apiType,
+    setOpen,
+  ])
 
   const { originalOperation, changedOperation } = form.watch()
 

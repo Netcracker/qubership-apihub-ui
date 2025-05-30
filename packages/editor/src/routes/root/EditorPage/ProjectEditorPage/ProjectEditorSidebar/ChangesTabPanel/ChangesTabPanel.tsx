@@ -14,41 +14,41 @@
  * limitations under the License.
  */
 
+import { LoadingButton } from '@mui/lab'
+import { Box, List, ListItemButton, ListItemIcon, ListItemText, MenuItem, Typography } from '@mui/material'
 import type { FC } from 'react'
 import { memo, useCallback, useState } from 'react'
 import { useEventBus } from '../../../../../EventBusProvider'
 import { useSetSelectedConflictedBlobKey } from '../../ConflictedBlobKeyProvider'
-import { LoadingButton } from '@mui/lab'
-import { Box, List, ListItemButton, ListItemIcon, ListItemText, MenuItem, Typography } from '@mui/material'
 
+import { useChangeSearchParam } from '../../../../useChangeSearchParam'
 import { useBranchConfig } from '../../useBranchConfig'
 import { useHasEditBranchPermission } from '../../useHasBranchPermission'
 import { useProjectFileContent } from '../../useProjectFileContent'
 import { useResetBranch } from './useResetBranch'
-import { useChangeSearchParam } from '../../../../useChangeSearchParam'
 
+import { ConfirmationDialog } from '@apihub/components/ConfirmationDialog'
+import { SidebarTabPanel } from '@apihub/components/SidebarTabPanel'
+import type { ChangeType } from '@apihub/entities/branches'
+import { NONE_CHANGE_TYPE } from '@apihub/entities/branches'
+import { DRAFT_COMMIT_KEY } from '@apihub/entities/commits'
+import { CHANGES_PROJECT_EDITOR_MODE } from '@apihub/entities/editor-modes'
+import { MultiButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MultiButton'
+import { NAVIGATION_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
+import { FileIcon } from '@netcracker/qubership-apihub-ui-shared/icons/FileIcon'
+import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { getFileName, getFilePath } from '@netcracker/qubership-apihub-ui-shared/utils/files'
+import { UNKNOWN_SPEC_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import { useBranchCacheDocument } from '../../useBranchCache'
+import { useBranchChangeCount, useBranchChanges } from '../../useBranchChanges'
+import { useBranchConflicts } from '../../useBranchConflicts'
 import { useIsChangesProjectEditorMode } from '../../useProjectEditorMode'
 import { useSelectedChange } from '../../useSelectedChange'
 import { CollapsibleNavPanel } from '../CollapsibleNavPanel'
-import { ChangesTabItem } from './ChangesTabItem'
-import { SaveChangesDialog } from './SaveChangesDialog'
-import { ForceSaveChangesDialog } from './ForceSaveChangesDialog'
-import { useBranchChangeCount, useBranchChanges } from '../../useBranchChanges'
-import { useBranchConflicts } from '../../useBranchConflicts'
 import { WarningMarker } from '../WarningMarker'
-import { SidebarTabPanel } from '@apihub/components/SidebarTabPanel'
-import { CHANGES_PROJECT_EDITOR_MODE } from '@apihub/entities/editor-modes'
-import { DRAFT_COMMIT_KEY } from '@apihub/entities/commits'
-import { NAVIGATION_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
-import type { ChangeType } from '@apihub/entities/branches'
-import { NONE_CHANGE_TYPE } from '@apihub/entities/branches'
-import { FileIcon } from '@netcracker/qubership-apihub-ui-shared/icons/FileIcon'
-import { getFileName, getFilePath } from '@netcracker/qubership-apihub-ui-shared/utils/files'
-import { MultiButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MultiButton'
-import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import { ConfirmationDialog } from '@apihub/components/ConfirmationDialog'
-import { useBranchCacheDocument } from '../../useBranchCache'
-import { UNKNOWN_SPEC_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import { ChangesTabItem } from './ChangesTabItem'
+import { ForceSaveChangesDialog } from './ForceSaveChangesDialog'
+import { SaveChangesDialog } from './SaveChangesDialog'
 
 export const ChangesTabPanel: FC = memo(() => {
   const visible = useIsChangesProjectEditorMode()
@@ -77,8 +77,8 @@ export const ChangesTabPanel: FC = memo(() => {
         header={
           <Box display="flex" width="100%" alignItems="center" flexGrow={1} gap={1}>
             <Typography variant="h3" noWrap>Changes</Typography>
-            {conflicts.length > 0 && <WarningMarker/>}
-            <SaveChangesButton visible={hasEditPermission && changeCount > 0}/>
+            {conflicts.length > 0 && <WarningMarker />}
+            <SaveChangesButton visible={hasEditPermission && changeCount > 0} />
           </Box>
         }
         body={
@@ -98,8 +98,8 @@ export const ChangesTabPanel: FC = memo(() => {
                 },
               }}
             >
-              {
-                branchConfig && branchConfig.changeType !== NONE_CHANGE_TYPE && <ListItemButton
+              {branchConfig && branchConfig.changeType !== NONE_CHANGE_TYPE && (
+                <ListItemButton
                   key={branchConfig.key}
                   sx={{ borderLeft: `2px solid ${CHANGE_TYPE_COLORS[branchConfig.changeType]}` }}
                   selected={selectedChangeKey === branchConfig.key}
@@ -110,7 +110,7 @@ export const ChangesTabPanel: FC = memo(() => {
                 >
                   <Box display="flex" alignItems="end" height={24} width="100%">
                     <ListItemIcon sx={{ minWidth: 24 }}>
-                      <FileIcon/>
+                      <FileIcon />
                     </ListItemIcon>
                     <ListItemText
                       primary={getFileName(branchConfig.key)}
@@ -122,12 +122,10 @@ export const ChangesTabPanel: FC = memo(() => {
                     primaryTypographyProps={{ color: '#626D82' }}
                   />
                 </ListItemButton>
-              }
-              {
-                changes.map(({ fileId, status, conflictedBlobId }) => (
-                  <ChangesTabItem key={fileId} fileId={fileId} status={status} conflictedBlobId={conflictedBlobId}/>
-                ))
-              }
+              )}
+              {changes.map(({ fileId, status, conflictedBlobId }) => (
+                <ChangesTabItem key={fileId} fileId={fileId} status={status} conflictedBlobId={conflictedBlobId} />
+              ))}
             </List>
           </Placeholder>
         }
@@ -139,8 +137,8 @@ export const ChangesTabPanel: FC = memo(() => {
         type={type}
       />
 
-      <SaveChangesDialog/>
-      <ForceSaveChangesDialog/>
+      <SaveChangesDialog />
+      <ForceSaveChangesDialog />
     </>
   )
 })
@@ -159,57 +157,68 @@ const SaveChangesButton: FC<SaveChangesButtonProps> = memo<SaveChangesButtonProp
   const [resetBranch, isLoading] = useResetBranch(closeConfirmation)
   const [, isFetching, getBranchConflicts] = useBranchConflicts()
 
-  return (<>
-    {visible && <MultiButton
-      sx={{ ml: 'auto' }}
-      buttonGroupProps={{ sx: { marginLeft: 'auto', marginRight: 4, minWidth: 'max-content' } }}
-      primary={
-        <LoadingButton
-          loading={isFetching}
-          variant="contained"
-          onClick={() => {
-            getBranchConflicts().then(({ data }) => {
-              if (isNotEmpty(data)) {
-                showForceSaveChangesDialog({ conflicts: data! })
-              } else {
-                showSaveChangesDialog()
-              }
-            })
-          }}>
-          Save
-        </LoadingButton>
-      }
-      secondary={
-        <Box>
-          <MenuItem onClick={() => {
-            showSaveChangesDialog({ saveToNewBranch: true })
-          }}>
-            Save in new branch
-          </MenuItem>
-          <MenuItem onClick={() => {
-            setConfirmationOpen(true)
-          }}>
-            Reset to last saved
-          </MenuItem>
-          <MenuItem onClick={() => {
-            getBranchConflicts()
-          }}>
-            Check conflicts
-          </MenuItem>
-        </Box>
-      }
-    />}
-    <ConfirmationDialog
-      open={confirmationOpen}
-      title="Reset branch"
-      message="Are you sure, you want to reset branch to last saved? All changes will be lost"
-      loading={isLoading}
-      confirmButtonName="Reset"
-      onConfirm={resetBranch}
-      onCancel={closeConfirmation}
-      shouldCloseOnLoadingFinish={false}
-    />
-  </>)
+  return (
+    <>
+      {visible && (
+        <MultiButton
+          sx={{ ml: 'auto' }}
+          buttonGroupProps={{ sx: { marginLeft: 'auto', marginRight: 4, minWidth: 'max-content' } }}
+          primary={
+            <LoadingButton
+              loading={isFetching}
+              variant="contained"
+              onClick={() => {
+                getBranchConflicts().then(({ data }) => {
+                  if (isNotEmpty(data)) {
+                    showForceSaveChangesDialog({ conflicts: data! })
+                  } else {
+                    showSaveChangesDialog()
+                  }
+                })
+              }}
+            >
+              Save
+            </LoadingButton>
+          }
+          secondary={
+            <Box>
+              <MenuItem
+                onClick={() => {
+                  showSaveChangesDialog({ saveToNewBranch: true })
+                }}
+              >
+                Save in new branch
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  setConfirmationOpen(true)
+                }}
+              >
+                Reset to last saved
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  getBranchConflicts()
+                }}
+              >
+                Check conflicts
+              </MenuItem>
+            </Box>
+          }
+        />
+      )}
+      <ConfirmationDialog
+        open={confirmationOpen}
+        title="Reset branch"
+        message="Are you sure, you want to reset branch to last saved? All changes will be lost"
+        loading={isLoading}
+        confirmButtonName="Reset"
+        onConfirm={resetBranch}
+        onCancel={closeConfirmation}
+        shouldCloseOnLoadingFinish={false}
+      />
+    </>
+  )
 })
 
 const CHANGE_TYPE_COLORS: Record<ChangeType, string> = {

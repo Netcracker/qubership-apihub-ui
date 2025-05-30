@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { TabPanel } from '@mui/lab'
 import type { FC } from 'react'
 import { memo } from 'react'
-import { TabPanel } from '@mui/lab'
 import type { SidebarPanelProps } from './SidebarPanel'
 import { SidebarPanel } from './SidebarPanel'
 

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import type { Group, GroupDto } from '@apihub/entities/groups'
+import { editorRequestJson } from '@apihub/utils/requests'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { InvalidateQuery, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import { toGroup } from './useGroups'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { Group, GroupDto } from '@apihub/entities/groups'
-import type { InvalidateQuery, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { editorRequestJson } from '@apihub/utils/requests'
 
 const GROUP_QUERY_KEY = 'group-query-key'
 

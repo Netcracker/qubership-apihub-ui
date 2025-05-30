@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import type { Dispatch, FC, PropsWithChildren, SetStateAction } from 'react'
-import { createContext, memo, useContext, useState } from 'react'
-import { ActivityHistoryFiltersProvider } from './ActivityHistoryFiltersProvider'
-import { RecentOperationsProvider } from '../RecentOperationsProvider'
-import { OperationNavigationDataProvider } from '../OperationNavigationDataProvider'
 import { BackwardLocationProvider } from '@apihub/routes/BackwardLocationProvider'
+import { PortalPageSettingsProvider } from '@apihub/routes/PortalPageSettingsProvider'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { Package, Packages } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { PortalPageSettingsProvider } from '@apihub/routes/PortalPageSettingsProvider'
+import type { Dispatch, FC, PropsWithChildren, SetStateAction } from 'react'
+import { createContext, memo, useContext, useState } from 'react'
 import { ApiDiffResultProvider } from '../ApiDiffResultProvider'
+import { OperationNavigationDataProvider } from '../OperationNavigationDataProvider'
+import { RecentOperationsProvider } from '../RecentOperationsProvider'
+import { ActivityHistoryFiltersProvider } from './ActivityHistoryFiltersProvider'
 
 export const MainPageProvider: FC<PropsWithChildren> = memo<PropsWithChildren>(({ children }) => {
   const [collapsedKeys, setCollapsedKeys] = useState<Key[]>([])

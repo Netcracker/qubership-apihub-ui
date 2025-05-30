@@ -24,7 +24,12 @@ import { useComparisonParams } from '@apihub/routes/root/PortalPage/VersionPage/
 import { groupOperationPairsByTags } from '@apihub/utils/operations'
 import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import type { OperationData, OperationPair, OperationPairsGroupedByTag, OptionalOperationPair } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import type {
+  OperationData,
+  OperationPair,
+  OperationPairsGroupedByTag,
+  OptionalOperationPair,
+} from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { OperationChangeBase } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
 import type {
   DashboardComparisonSummary,
@@ -58,18 +63,18 @@ import { useCompareVersions } from '../../useCompareVersions'
 import { useIsPackageFromDashboard } from '../../useIsPackageFromDashboard'
 import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
 import { useChangesSummaryContext } from '../ChangesSummaryProvider'
-import { CompareOperationPathsDialog } from '../CompareOperationPathsDialog'
 import { ComparedOperationsContext } from '../ComparedOperationsContext'
 import { BreadcrumbsDataContext } from '../ComparedPackagesBreadcrumbsProvider'
+import { CompareOperationPathsDialog } from '../CompareOperationPathsDialog'
 import { ComparisonToolbar } from '../ComparisonToolbar'
 import { SelectedOperationTagsProvider } from '../SelectedOperationTagsProvider'
-import { ShouldAutoExpandTagsProvider, useSetShouldAutoExpandTagsContext } from '../ShouldAutoExpandTagsProvider'
-import { VersionsComparisonGlobalParamsContext } from '../VersionsComparisonGlobalParams'
 import { VERSION_SWAPPER_HEIGHT } from '../shared-styles'
+import { ShouldAutoExpandTagsProvider, useSetShouldAutoExpandTagsContext } from '../ShouldAutoExpandTagsProvider'
 import { useDocumentSearchParam } from '../useDocumentSearchParam'
 import { useNavigateToOperation } from '../useNavigateToOperation'
 import { useOperation } from '../useOperation'
 import { useOperationSearchParam } from '../useOperationSearchParam'
+import { VersionsComparisonGlobalParamsContext } from '../VersionsComparisonGlobalParams'
 import { OperationsSidebarOnComparison } from './OperationsSidebarOnComparison'
 
 function getOperationPairsFromPackageChanges(
@@ -115,19 +120,20 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
     originPackageKey: originPackageKey,
     originVersionKey: originVersionKey,
   })
-  const [packageChangelog, arePackageChangesLoading, fetchNextPage, isNextPageFetching, hasNextPage] = usePagedVersionChangelog({
-    packageKey: changedPackageKey!,
-    versionKey: changedVersionKey!,
-    previousVersionPackageKey: originPackageKey,
-    previousVersionKey: originVersionKey,
-    documentSlug: selectedDocumentSlug,
-    searchValue: searchValue,
-    packageIdFilter: operationPackageKey ?? refPackageKey,
-    enabled: !!changesSummary && isContextValid,
-    apiType: apiType as ApiType,
-    page: 1,
-    limit: 100,
-  })
+  const [packageChangelog, arePackageChangesLoading, fetchNextPage, isNextPageFetching, hasNextPage] =
+    usePagedVersionChangelog({
+      packageKey: changedPackageKey!,
+      versionKey: changedVersionKey!,
+      previousVersionPackageKey: originPackageKey,
+      previousVersionKey: originVersionKey,
+      documentSlug: selectedDocumentSlug,
+      searchValue: searchValue,
+      packageIdFilter: operationPackageKey ?? refPackageKey,
+      enabled: !!changesSummary && isContextValid,
+      apiType: apiType as ApiType,
+      page: 1,
+      limit: 100,
+    })
   const flatPackageChangelog = useFlatVersionChangelog(packageChangelog)
   const packageChanges: ReadonlyArray<OperationChangeBase> = flatPackageChangelog.operations
 
@@ -172,11 +178,13 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
     apiType: apiType as ApiType,
   })
 
-  const areChangesAndOperationsLoading = (arePackageChangesLoading || isOriginOperationInitialLoading || isChangedOperationInitialLoading) && !hasNextPage
+  const areChangesAndOperationsLoading =
+    (arePackageChangesLoading || isOriginOperationInitialLoading || isChangedOperationInitialLoading) && !hasNextPage
 
   const filteredPackageChanges = useMemo(
     () => packageChanges.filter(item => filterChangesBySeverity(filters, item.changeSummary)),
-    [packageChanges, filters])
+    [packageChanges, filters],
+  )
 
   const operationsFromFilteredPackageChanges = useMemo(
     () => getOperationPairsFromPackageChanges(filteredPackageChanges),
@@ -192,15 +200,19 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
   )
 
   const firstOperationPair = useMemo(
-    () => (operationsFromFilteredPackageChanges.length && !searchValue ? operationsFromFilteredPackageChanges[0] : null),
+    () => (operationsFromFilteredPackageChanges.length && !searchValue
+      ? operationsFromFilteredPackageChanges[0]
+      : null),
     [operationsFromFilteredPackageChanges, searchValue],
   )
 
   const packageChangesHaveCurrentOperation = useMemo(
-    () => !!searchValue || operationsFromPackageChanges.some(operationPair =>
-      operationPair.currentOperation?.operationKey === operationKey ||
-      operationPair.previousOperation?.operationKey === operationKey,
-    ),
+    () =>
+      !!searchValue
+      || operationsFromPackageChanges.some(operationPair =>
+        operationPair.currentOperation?.operationKey === operationKey
+        || operationPair.previousOperation?.operationKey === operationKey
+      ),
     [operationKey, operationsFromPackageChanges, searchValue],
   )
 
@@ -209,7 +221,8 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
       const firstOperation = firstOperationPair.currentOperation ?? firstOperationPair.previousOperation!
       const firstOperationId = firstOperation.operationKey
 
-      const newPathName = `/portal/packages/${changedPackageKey}/${changedVersionKey}/compare/${apiType}/${firstOperationId}`
+      const newPathName =
+        `/portal/packages/${changedPackageKey}/${changedVersionKey}/compare/${apiType}/${firstOperationId}`
       const searchParams = optionalSearchParams({
         [PACKAGE_SEARCH_PARAM]: { value: originPackageKey },
         [VERSION_SEARCH_PARAM]: { value: originVersionKey },
@@ -217,10 +230,9 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
         [REF_SEARCH_PARAM]: { value: isPackageFromDashboard && firstOperation.packageRef?.key }, // Assumption that we can't compare operations from different packages
         [FILTERS_SEARCH_PARAM]: { value: filters.join() },
         [OPERATION_SEARCH_PARAM]: {
-          value:
-            firstOperationPair.currentOperation
-              ? firstOperationPair.previousOperation?.operationKey
-              : undefined,
+          value: firstOperationPair.currentOperation
+            ? firstOperationPair.previousOperation?.operationKey
+            : undefined,
         },
       })
       navigate({
@@ -228,7 +240,21 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
         search: `${searchParams}`,
       })
     }
-  }, [apiType, areChangesAndOperationsLoading, changedPackageKey, changedVersionKey, filters, firstOperationPair, packageChangesHaveCurrentOperation, isPackageFromDashboard, navigate, originPackageKey, originVersionKey, selectedDocumentSlug, hasNextPage])
+  }, [
+    apiType,
+    areChangesAndOperationsLoading,
+    changedPackageKey,
+    changedVersionKey,
+    filters,
+    firstOperationPair,
+    packageChangesHaveCurrentOperation,
+    isPackageFromDashboard,
+    navigate,
+    originPackageKey,
+    originVersionKey,
+    selectedDocumentSlug,
+    hasNextPage,
+  ])
 
   const comparedOperationsPair: OptionalOperationPair<OperationData> = {
     previousOperation: originOperation,
@@ -238,7 +264,10 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
 
   const setShouldAutoExpand = useSetShouldAutoExpandTagsContext()
   const handleOperationClick = useNavigateToOperation(
-    changedPackageKey!, changedVersionKey!, apiType as ApiType, setShouldAutoExpand,
+    changedPackageKey!,
+    changedVersionKey!,
+    apiType as ApiType,
+    setShouldAutoExpand,
   )
 
   // TODO 31.08.23 // Optimize it!

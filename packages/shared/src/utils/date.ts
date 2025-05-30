@@ -15,8 +15,8 @@
  */
 
 import dayjs from 'dayjs'
-import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
+import utc from 'dayjs/plugin/utc'
 
 const DEFAULT_DATE_FORMAT = 'DD MMM, YYYY'
 

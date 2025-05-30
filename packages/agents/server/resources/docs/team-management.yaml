@@ -178,7 +178,7 @@ paths:
       responses:
         "202":
           description: Success
-          content: { }
+          content: {}
         "500":
           $ref: "#/components/responses/internalServerError500"
   /namespaces/{name}/services/{serviceId}/specs/{specId}:

@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-import type { FC, ReactNode } from 'react'
-import * as React from 'react'
-import { memo, useCallback, useMemo } from 'react'
-import Box from '@mui/material/Box'
-import List from '@mui/material/List'
 import { Tooltip } from '@mui/material'
+import Box from '@mui/material/Box'
+import MuiDrawer from '@mui/material/Drawer'
+import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import type { CSSObject, Theme } from '@mui/material/styles'
 import { styled } from '@mui/material/styles'
-import MuiDrawer from '@mui/material/Drawer'
+import type { SxProps } from '@mui/system'
+import type { FC, ReactNode } from 'react'
+import * as React from 'react'
+import { memo, useCallback, useMemo } from 'react'
 import { KeyboardDoubleArrowLeftIcon } from '../icons/KeyboardDoubleArrowLeftIcon'
 import { KeyboardDoubleArrowRightIcon } from '../icons/KeyboardDoubleArrowRightIcon'
-import type { SxProps } from '@mui/system'
 
 // Expand/Collapse Sidebar Button
 export const TOGGLE_SIDEBAR_BUTTON = 'toggle-sidebar'
@@ -60,7 +60,6 @@ export const NavigationMenu: FC<NavigationMenuProps> = memo<NavigationMenuProps>
   sidebarServiceMenuItems,
   onSelectItem,
 }) => {
-
   const handleDrawerToggle = useCallback((): void => {
     setOpen(!open)
   }, [open, setOpen])
@@ -81,8 +80,8 @@ export const NavigationMenu: FC<NavigationMenuProps> = memo<NavigationMenuProps>
       tooltip: open ? '' : 'Expand',
       icon: (
         open
-          ? <KeyboardDoubleArrowLeftIcon/>
-          : <KeyboardDoubleArrowRightIcon/>
+          ? <KeyboardDoubleArrowLeftIcon />
+          : <KeyboardDoubleArrowRightIcon />
       ),
       testId: open ? 'CollapseButton' : 'ExpandButton',
     },
@@ -113,14 +112,15 @@ export const NavigationMenu: FC<NavigationMenuProps> = memo<NavigationMenuProps>
                 <ListItem key={id} disablePadding sx={{ display: 'block' }}>
                   <ListItemButton
                     sx={LIST_ITEM_BUTTON_STYLE(activeItem, id)}
-                    onClick={() => onClickItem(id)}
+                    onClick={() =>
+                      onClickItem(id)}
                     disabled={disabled}
                     data-testid={testId}
                   >
                     <ListItemIcon sx={LIST_ITEM_ICON_STYLE}>
                       {icon}
                     </ListItemIcon>
-                    {open ? <ListItemText primary={title}/> : null}
+                    {open ? <ListItemText primary={title} /> : null}
                   </ListItemButton>
                 </ListItem>
               </Tooltip>
@@ -135,14 +135,15 @@ export const NavigationMenu: FC<NavigationMenuProps> = memo<NavigationMenuProps>
                 <ListItem key={id} disablePadding sx={{ display: 'block' }}>
                   <ListItemButton
                     sx={LIST_ITEM_BUTTON_STYLE(activeItem, id)}
-                    onClick={() => onClickItem(id)}
+                    onClick={() =>
+                      onClickItem(id)}
                     disabled={disabled}
                     data-testid={testId}
                   >
                     <ListItemIcon sx={LIST_ITEM_ICON_STYLE}>
                       {icon}
                     </ListItemIcon>
-                    {open && <ListItemText primary={title}/>}
+                    {open && <ListItemText primary={title} />}
                   </ListItemButton>
                 </ListItem>
               </Tooltip>

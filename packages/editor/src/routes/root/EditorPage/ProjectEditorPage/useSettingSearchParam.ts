@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react'
-import type { SettingsTab } from './ProjectEditorSidebar/SettingsTabPanel'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import { useSetSearchParams } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSetSearchParams'
+import { useMemo } from 'react'
+import type { SettingsTab } from './ProjectEditorSidebar/SettingsTabPanel'
 
 export function useSettingSearchParam(): [SettingsTab | undefined, SetSettingSearchParam] {
   const setting = useSearchParam<SettingsTab>('setting')

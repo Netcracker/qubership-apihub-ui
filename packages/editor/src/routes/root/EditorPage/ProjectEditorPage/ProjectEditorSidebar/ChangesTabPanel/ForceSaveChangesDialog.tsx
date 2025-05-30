@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useState } from 'react'
+import WarningRoundedIcon from '@mui/icons-material/WarningRounded'
 import {
   Button,
   Dialog,
@@ -28,22 +27,26 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { getFileName } from '@netcracker/qubership-apihub-ui-shared/utils/files'
+import type { FC } from 'react'
+import { memo, useState } from 'react'
 import { useEvent } from 'react-use'
 import type { ForceSaveChangesDialogDetail } from '../../../../../EventBusProvider'
 import { SHOW_FORCE_SAVE_CHANGES_DIALOG, useEventBus } from '../../../../../EventBusProvider'
-import WarningRoundedIcon from '@mui/icons-material/WarningRounded'
-import { getFileName } from '@netcracker/qubership-apihub-ui-shared/utils/files'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 
 export const ForceSaveChangesDialog: FC = memo(() => {
   const [open, setOpen] = useState(false)
   const [conflicts, setConflicts] = useState<Key[]>([])
   const { showSaveChangesDialog } = useEventBus()
 
-  useEvent(SHOW_FORCE_SAVE_CHANGES_DIALOG, ({ detail: { conflicts: conflictFiles } }: CustomEvent<ForceSaveChangesDialogDetail>) => {
-    setConflicts(conflictFiles)
-    setOpen(true)
-  })
+  useEvent(
+    SHOW_FORCE_SAVE_CHANGES_DIALOG,
+    ({ detail: { conflicts: conflictFiles } }: CustomEvent<ForceSaveChangesDialogDetail>) => {
+      setConflicts(conflictFiles)
+      setOpen(true)
+    },
+  )
 
   return (
     <Dialog
@@ -63,7 +66,7 @@ export const ForceSaveChangesDialog: FC = memo(() => {
             {conflicts.map(conflict => (
               <ListItem key={conflict} sx={{ alignItems: 'start', pb: 0 }}>
                 <ListItemIcon sx={{ minWidth: 2 }}>
-                  <WarningRoundedIcon fontSize="small" color="warning" sx={{ mr: 1 }}/>
+                  <WarningRoundedIcon fontSize="small" color="warning" sx={{ mr: 1 }} />
                 </ListItemIcon>
                 <ListItemText
                   primary={getFileName(conflict)}
@@ -83,7 +86,8 @@ export const ForceSaveChangesDialog: FC = memo(() => {
           onClick={() => {
             setOpen(false)
             showSaveChangesDialog({ saveToNewBranch: true })
-          }}>
+          }}
+        >
           Save to New Branch
         </Button>
         <Button variant="outlined" onClick={() => setOpen(false)}>
@@ -95,7 +99,8 @@ export const ForceSaveChangesDialog: FC = memo(() => {
           onClick={() => {
             setOpen(false)
             showSaveChangesDialog()
-          }}>
+          }}
+        >
           Force Save
         </Button>
       </DialogActions>

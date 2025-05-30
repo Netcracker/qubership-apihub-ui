@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
+import { ProjectDetails } from '@apihub/components/ProjectDetails'
+import { calculateProjectPath } from '@apihub/utils/projects'
+import { Box, Button } from '@mui/material'
+import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import type { FC } from 'react'
 import { memo } from 'react'
 import { useEditableSettingsTabContent, useSetEditableSettingsTabContent } from '../SettingsModeBody'
-import { Box, Button } from '@mui/material'
 import type { SettingsGeneralProps } from './SettingsGeneralProps'
-import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
-import { ProjectDetails } from '@apihub/components/ProjectDetails'
-import { calculateProjectPath } from '@apihub/utils/projects'
 
 export const SettingsViewerGeneral: FC<SettingsGeneralProps> = memo(props => {
   const { project, packageObj } = props

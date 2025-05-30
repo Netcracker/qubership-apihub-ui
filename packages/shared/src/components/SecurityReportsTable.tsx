@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { ColumnDef } from '@tanstack/table-core'
 import {
   Box,
   MenuItem,
@@ -33,24 +30,27 @@ import {
 } from '@mui/material'
 import type { ColumnSizingInfoState, ColumnSizingState, OnChangeFn } from '@tanstack/react-table'
 import { flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from '@tanstack/react-table'
-import { TextWithOverflowTooltip } from './TextWithOverflowTooltip'
-import { ColumnDelimiter } from './ColumnDelimiter'
-import { CONTENT_PLACEHOLDER_AREA, Placeholder } from './Placeholder'
-import type { HasNextPage, IsFetchingNextPage, IsLoading } from '../utils/aliases'
+import type { ColumnDef } from '@tanstack/table-core'
+import type { FC } from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import type { Principal } from '../entities/principals'
+import { useIntersectionObserver } from '../hooks/common/useIntersectionObserver'
+import { useResizeObserver } from '../hooks/common/useResizeObserver'
 import type { ColumnModel } from '../hooks/table-resizing/useColumnResizing'
 import { DEFAULT_CONTAINER_WIDTH, useColumnsSizing } from '../hooks/table-resizing/useColumnResizing'
-import { useIntersectionObserver } from '../hooks/common/useIntersectionObserver'
-import { InfoContextIcon } from '../icons/InfoContextIcon'
-import { isEmpty } from '../utils/arrays'
-import { DEFAULT_NUMBER_SKELETON_ROWS } from '../utils/constants'
-import { createComponents } from '../utils/components'
 import { DownloadIcon } from '../icons/DownloadIcon'
-import { MenuButton } from './Buttons/MenuButton'
+import { InfoContextIcon } from '../icons/InfoContextIcon'
+import type { HasNextPage, IsFetchingNextPage, IsLoading } from '../utils/aliases'
+import { isEmpty } from '../utils/arrays'
+import { createComponents } from '../utils/components'
+import { DEFAULT_NUMBER_SKELETON_ROWS } from '../utils/constants'
 import { ButtonWithHint } from './Buttons/ButtonWithHint'
-import { useResizeObserver } from '../hooks/common/useResizeObserver'
+import { MenuButton } from './Buttons/MenuButton'
+import { ColumnDelimiter } from './ColumnDelimiter'
 import { FormattedDate } from './FormattedDate'
-import type { Principal } from '../entities/principals'
+import { CONTENT_PLACEHOLDER_AREA, Placeholder } from './Placeholder'
 import { PrincipalView } from './PrincipalView'
+import { TextWithOverflowTooltip } from './TextWithOverflowTooltip'
 
 export type ReportDownloadOption = {
   value: DownloadType
@@ -95,68 +95,62 @@ export const SecurityReportsTable: FC<SecurityReportsTableProps> = memo(({
   useIntersectionObserver(ref, isFetchingNextPage, hasNextPage, fetchNextPage)
 
   const columns: ColumnDef<SecurityReport>[] = useMemo(() => {
-      return [
-        {
-          id: DATE_COLUMN_ID,
-          header: 'Date',
-          cell: ({ row: { original: { createdAt } } }) => (
-            <FormattedDate value={createdAt}/>
-          ),
-        },
-        {
-          id: CREATED_BY_COLUMN_ID,
-          header: 'Created By',
-          cell: ({ row: { original: { createdBy } } }) => (
-            <PrincipalView value={createdBy}/>
-          ),
-        },
-        {
-          id: STATUS_COLUMN_ID,
-          header: 'Status',
-          cell: ({ row: { original: { status, details } } }) => (
-            <Box display="flex">
-              <Typography fontSize="13px">{status}</Typography>
-              {status !== RUNNING_SECURITY_REPORT_STATUS && details && (
-                <Tooltip title={details}>
-                  <InfoContextIcon fontSize="extra-small" sx={{ ml: 0.5 }}/>
-                </Tooltip>
-              )}
-            </Box>
-          ),
-        },
-        {
-          id: TOTAL_NUMBER_OF_SERVICES_COLUMN_ID,
-          header: 'Total Number of Services',
-          cell: ({ row: { original: { servicesTotal } } }) => (
-            <TextWithOverflowTooltip tooltipText={servicesTotal}>
-              <Typography variant="inherit">{servicesTotal}</Typography>
-            </TextWithOverflowTooltip>
-          ),
-        },
-        {
-          id: NUMBER_OF_PROCESSED_SERVICES_COLUMN_ID,
-          header: 'Number of Processed Services',
-          cell: ({ row: { original: { servicesProcessed } } }) => (
-            <TextWithOverflowTooltip tooltipText={servicesProcessed}>
-              <Typography variant="inherit">{servicesProcessed}</Typography>
-            </TextWithOverflowTooltip>
-          ),
-        },
-        {
-          id: ACTIONS_COLUMN_ID,
-          header: '',
-          cell: ({ row: { original: { processId } } }) => (
-            <DownloadButton
-              processId={processId}
-              onDownloadReport={downloadSecurityReport}
-              downloadOptions={downloadOptions}
-            />
-          ),
-        },
-      ]
-    },
-    [downloadOptions, downloadSecurityReport],
-  )
+    return [
+      {
+        id: DATE_COLUMN_ID,
+        header: 'Date',
+        cell: ({ row: { original: { createdAt } } }) => <FormattedDate value={createdAt} />,
+      },
+      {
+        id: CREATED_BY_COLUMN_ID,
+        header: 'Created By',
+        cell: ({ row: { original: { createdBy } } }) => <PrincipalView value={createdBy} />,
+      },
+      {
+        id: STATUS_COLUMN_ID,
+        header: 'Status',
+        cell: ({ row: { original: { status, details } } }) => (
+          <Box display="flex">
+            <Typography fontSize="13px">{status}</Typography>
+            {status !== RUNNING_SECURITY_REPORT_STATUS && details && (
+              <Tooltip title={details}>
+                <InfoContextIcon fontSize="extra-small" sx={{ ml: 0.5 }} />
+              </Tooltip>
+            )}
+          </Box>
+        ),
+      },
+      {
+        id: TOTAL_NUMBER_OF_SERVICES_COLUMN_ID,
+        header: 'Total Number of Services',
+        cell: ({ row: { original: { servicesTotal } } }) => (
+          <TextWithOverflowTooltip tooltipText={servicesTotal}>
+            <Typography variant="inherit">{servicesTotal}</Typography>
+          </TextWithOverflowTooltip>
+        ),
+      },
+      {
+        id: NUMBER_OF_PROCESSED_SERVICES_COLUMN_ID,
+        header: 'Number of Processed Services',
+        cell: ({ row: { original: { servicesProcessed } } }) => (
+          <TextWithOverflowTooltip tooltipText={servicesProcessed}>
+            <Typography variant="inherit">{servicesProcessed}</Typography>
+          </TextWithOverflowTooltip>
+        ),
+      },
+      {
+        id: ACTIONS_COLUMN_ID,
+        header: '',
+        cell: ({ row: { original: { processId } } }) => (
+          <DownloadButton
+            processId={processId}
+            onDownloadReport={downloadSecurityReport}
+            downloadOptions={downloadOptions}
+          />
+        ),
+      },
+    ]
+  }, [downloadOptions, downloadSecurityReport])
 
   const { getHeaderGroups, getRowModel, setColumnSizing } = useReactTable({
     data: data,
@@ -188,7 +182,7 @@ export const SecurityReportsTable: FC<SecurityReportsTableProps> = memo(({
                   }}
                 >
                   {flexRender(header.column.columnDef.header, header.getContext())}
-                  {index !== headerGroup.headers.length - 1 && <ColumnDelimiter header={header} resizable={true}/>}
+                  {index !== headerGroup.headers.length - 1 && <ColumnDelimiter header={header} resizable={true} />}
                 </TableCell>
               ))}
             </TableRow>
@@ -204,13 +198,13 @@ export const SecurityReportsTable: FC<SecurityReportsTableProps> = memo(({
               ))}
             </TableRow>
           ))}
-          {isLoading && <TableSkeleton/>}
+          {isLoading && <TableSkeleton />}
           <TableRow>
-            {hasNextPage && columns.map(cell =>
+            {hasNextPage && columns.map(cell => (
               <TableCell ref={ref} key={cell.id}>
-                <Skeleton variant="text"/>
-              </TableCell>,
-            )}
+                <Skeleton variant="text" />
+              </TableCell>
+            ))}
           </TableRow>
         </TableBody>
       </Table>
@@ -223,8 +217,8 @@ export const SecurityReportsTable: FC<SecurityReportsTableProps> = memo(({
             message="No reports"
             testId="NoReportsPlaceholder"
           />
-        ) : null
-      }
+        )
+        : null}
     </TableContainer>
   )
 })
@@ -246,29 +240,29 @@ const COLUMNS_MODELS: ColumnModel[] = [
 ]
 
 const TableSkeleton: FC = memo(() => {
-  return createComponents(<RowSkeleton/>, DEFAULT_NUMBER_SKELETON_ROWS)
+  return createComponents(<RowSkeleton />, DEFAULT_NUMBER_SKELETON_ROWS)
 })
 
 const RowSkeleton: FC = memo(() => {
   return (
     <TableRow>
       <TableCell>
-        <Skeleton variant="rectangular" width={'70%'}/>
+        <Skeleton variant="rectangular" width={'70%'} />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width={'35%'}/>
+        <Skeleton variant="rectangular" width={'35%'} />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width={'50%'}/>
+        <Skeleton variant="rectangular" width={'50%'} />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width={'20%'}/>
+        <Skeleton variant="rectangular" width={'20%'} />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width={'20%'}/>
+        <Skeleton variant="rectangular" width={'20%'} />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width={'50%'}/>
+        <Skeleton variant="rectangular" width={'50%'} />
       </TableCell>
     </TableRow>
   )
@@ -329,22 +323,26 @@ const DownloadButton: FC<DownloadButtonProps> = memo<DownloadButtonProps>(({
   )
 
   return downloadOptions
-    ? (<DownloadOptions
-      sx={{ visibility: 'hidden' }}
-      className="hoverable"
-      options={downloadOptions}
-      onClick={onDownloadOption}
-    />)
-    : (<ButtonWithHint
-      area-label="edit"
-      hint="Download report"
-      size="small"
-      sx={{ visibility: 'hidden', height: '20px' }}
-      className="hoverable"
-      startIcon={<DownloadIcon color="#626D82"/>}
-      onClick={onButtonCLick}
-      testId="DownloadReportButton"
-    />)
+    ? (
+      <DownloadOptions
+        sx={{ visibility: 'hidden' }}
+        className="hoverable"
+        options={downloadOptions}
+        onClick={onDownloadOption}
+      />
+    )
+    : (
+      <ButtonWithHint
+        area-label="edit"
+        hint="Download report"
+        size="small"
+        sx={{ visibility: 'hidden', height: '20px' }}
+        className="hoverable"
+        startIcon={<DownloadIcon color="#626D82" />}
+        onClick={onButtonCLick}
+        testId="DownloadReportButton"
+      />
+    )
 })
 
 const DownloadOptions: FC<DownloadOptionsProps> = memo<DownloadOptionsProps>(({ options, onClick, sx, className }) => {
@@ -353,7 +351,7 @@ const DownloadOptions: FC<DownloadOptionsProps> = memo<DownloadOptionsProps>(({ 
       <Box sx={{ display: 'inline' }}>
         <MenuButton
           sx={sx}
-          icon={<DownloadIcon color="#626D82"/>}
+          icon={<DownloadIcon color="#626D82" />}
           alignItems="center"
           className={className}
           data-testid="DownloadMenuButton"

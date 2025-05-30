@@ -17,9 +17,9 @@
 import { Box } from '@mui/material'
 import type { FC, PropsWithChildren } from 'react'
 import { memo, Suspense, useEffect, useMemo, useRef } from 'react'
+import type { ProxyServer } from '../../entities/services'
 import { LoadingIndicator } from '../LoadingIndicator'
 import { createApiSpecViewElement } from './ApispecViewElement'
-import type { ProxyServer } from '../../entities/services'
 import { useSetupApiSpecView } from './useSetupApiSpecView'
 
 // First Order Component //
@@ -73,9 +73,9 @@ export const ApispecView: FC<ApispecViewProps> = /* @__PURE__ */ memo<ApispecVie
   }, [apiSpecViewContainerRef, apiSpecViewElement])
 
   return (
-    <Suspense fallback={<LoadingIndicator/>}>
+    <Suspense fallback={<LoadingIndicator />}>
       <Box lineHeight={1.5} height="100%">
-        <Box ref={apiSpecViewContainerRef}/>
+        <Box ref={apiSpecViewContainerRef} />
       </Box>
     </Suspense>
   )

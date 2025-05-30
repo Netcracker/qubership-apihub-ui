@@ -1,3 +1,4 @@
+import { isEmpty, sortByProperty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import { useCallback } from 'react'
 import { type Control, useForm, type UseFormHandleSubmit, type UseFormSetValue } from 'react-hook-form'
 import {
@@ -8,7 +9,6 @@ import {
   type OasSettingsExtension,
   separateExtensionsByInheritance,
 } from '../package-export-config'
-import { isEmpty, sortByProperty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 
 export type EditOasExtensionsForm = {
   oasExtensions: OasSettingsExtension[] | undefined
@@ -18,7 +18,10 @@ type OasExtensionsManagerResult = {
   control: Control<EditOasExtensionsForm>
   handleSubmit: UseFormHandleSubmit<EditOasExtensionsForm>
   setValue: UseFormSetValue<EditOasExtensionsForm>
-  processExtensionsUpdate: (newExtensions: Array<string | OasSettingsExtension>, currentExtensions?: OasSettingsExtension[]) => OasSettingsExtension[]
+  processExtensionsUpdate: (
+    newExtensions: Array<string | OasSettingsExtension>,
+    currentExtensions?: OasSettingsExtension[],
+  ) => OasSettingsExtension[]
 }
 
 /**
@@ -32,7 +35,7 @@ type OasExtensionsManagerResult = {
  * @param initialExtensions - Optional array of initial OAS extensions to populate the form.
  * @returns An object containing `react-hook-form` control elements (`control`, `handleSubmit`, `setValue`)
  *          and a `processExtensionsUpdate` function to handle changes to the extensions list.
- **/
+ */
 export const useOasExtensionsManager = (initialExtensions?: OasSettingsExtension[]): OasExtensionsManagerResult => {
   const { control, handleSubmit, setValue } = useForm<EditOasExtensionsForm>({
     defaultValues: {
@@ -61,7 +64,6 @@ export const useOasExtensionsManager = (initialExtensions?: OasSettingsExtension
     newExtensions: OasSettingsExtension[],
     currentExtensions: OasSettingsExtension[],
   ): OasSettingsExtension[] => {
-
     // Track new extension keys for fast lookup
     const newExtensionKeys = new Set(newExtensions.map(ext => ext.key))
     return currentExtensions

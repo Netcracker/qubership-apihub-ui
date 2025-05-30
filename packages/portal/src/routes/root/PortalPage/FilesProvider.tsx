@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
+import type { PackageVersionConfig } from '@apihub/entities/package-version-config'
+import { createFilesRecord, filesRecordToArray } from '@apihub/routes/root/PortalPage/PackagePage/files'
+import type { FileLabelsRecord } from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/FileTableUpload'
+import { SPECIAL_VERSION_KEY } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { calculateSpecType, getFileExtension } from '@netcracker/qubership-apihub-ui-shared/utils/files'
+import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import { intersectionBy } from 'lodash-es'
 import type { FC, PropsWithChildren } from 'react'
 import { createContext, memo, useCallback, useContext, useEffect, useMemo, useReducer, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useVersionSources } from '../useVersionSources'
-import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import { SPECIAL_VERSION_KEY } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
-import { calculateSpecType, getFileExtension } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import { usePackageVersionConfig } from './usePackageVersionConfig'
-import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { createFilesRecord, filesRecordToArray } from '@apihub/routes/root/PortalPage/PackagePage/files'
-import type { PackageVersionConfig } from '@apihub/entities/package-version-config'
-import type { FileLabelsRecord } from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/FileTableUpload'
-import { intersectionBy } from 'lodash-es'
 
 export const INIT_FILES_ACTION = 'InitFilesAction'
 export const ADD_FILES_ACTION = 'AddFilesAction'
@@ -140,7 +140,7 @@ function reducer(state: State, action: StateActions): State {
 type Actions = {
   addFiles: (files: File[]) => void
   deleteFile: (fileName: string) => void
-  editFile: (fileName: string, labels: string []) => void
+  editFile: (fileName: string, labels: string[]) => void
   restoreFile: (fileName: string) => void
 }
 
@@ -164,37 +164,39 @@ export const FilesProvider: FC<FilesProviderProps> = memo<FilesProviderProps>(({
         sources: sources,
         fileTypesMap: fileTypesMap,
         filesWithLabels: filesWithLabels,
-      })).then(() => !isConfigLoading && !isSourcesLoading && setAreFilesProcessing(false))
+      })
+    ).then(() => !isConfigLoading && !isSourcesLoading && setAreFilesProcessing(false))
   }, [sources, config, isConfigLoading, isSourcesLoading])
 
   const addFiles = useCallback((files: File[]): void => {
-    getFileTypesAndLabels(files).then(([map, record]) => dispatch({
-      type: ADD_FILES_ACTION,
-      files: files,
-      fileTypesMap: new Map(map),
-      filesWithLabels: record,
-    }))
-    }, [],
-  )
+    getFileTypesAndLabels(files).then(([map, record]) =>
+      dispatch({
+        type: ADD_FILES_ACTION,
+        files: files,
+        fileTypesMap: new Map(map),
+        filesWithLabels: record,
+      })
+    )
+  }, [])
 
-  const deleteFile = useCallback((fileName: string): void => dispatch({
+  const deleteFile = useCallback((fileName: string): void =>
+    dispatch({
       type: DELETE_FILE_ACTION,
       fileName: fileName,
-    }), [],
-  )
+    }), [])
 
-  const editFile = useCallback((fileName: string, labels: string[]): void => dispatch({
+  const editFile = useCallback((fileName: string, labels: string[]): void =>
+    dispatch({
       type: EDIT_FILE_ACTION,
       fileName: fileName,
       labels: labels,
-    }), [],
-  )
+    }), [])
 
-  const restoreFile = useCallback((fileName: string): void => dispatch({
+  const restoreFile = useCallback((fileName: string): void =>
+    dispatch({
       type: RESTORE_FILE_ACTION,
       fileName: fileName,
-    }), [],
-  )
+    }), [])
 
   const actions: Actions = useMemo(
     () => ({
@@ -202,14 +204,16 @@ export const FilesProvider: FC<FilesProviderProps> = memo<FilesProviderProps>(({
       deleteFile,
       editFile,
       restoreFile,
-    }), [addFiles, deleteFile, editFile, restoreFile],
+    }),
+    [addFiles, deleteFile, editFile, restoreFile],
   )
 
   return (
     <FilesContext.Provider value={state}>
       <FileActionsContext.Provider value={actions}>
         <FilesLoadingContext.Provider
-          value={isSourcesLoading || !state.isInitialized || isConfigLoading || areFilesProcessing}>
+          value={isSourcesLoading || !state.isInitialized || isConfigLoading || areFilesProcessing}
+        >
           {children}
         </FilesLoadingContext.Provider>
       </FileActionsContext.Provider>
@@ -217,14 +221,19 @@ export const FilesProvider: FC<FilesProviderProps> = memo<FilesProviderProps>(({
   )
 })
 
-async function getFileTypesAndLabels(files: File[], config?: PackageVersionConfig | null): Promise<[Map<string, SpecType>, FileLabelsRecord]> {
+async function getFileTypesAndLabels(
+  files: File[],
+  config?: PackageVersionConfig | null,
+): Promise<[Map<string, SpecType>, FileLabelsRecord]> {
   let fileLabelsRecord = {}
 
-  const fileTypesMap = new Map(await Promise.all(files.map(file => {
-    return file.text().then(value => {
-      return [file.name, calculateSpecType(getFileExtension(file.name), value)] as [string, SpecType]
-    })
-  })))
+  const fileTypesMap = new Map(
+    await Promise.all(files.map(file => {
+      return file.text().then(value => {
+        return [file.name, calculateSpecType(getFileExtension(file.name), value)] as [string, SpecType]
+      })
+    })),
+  )
 
   if (config) {
     fileLabelsRecord = files.reduce((acc, file) => {

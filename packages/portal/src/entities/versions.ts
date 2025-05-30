@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { VersionKey } from './keys'
 import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import type { VersionKey } from './keys'
 
 export type PagedPackageVersions = Readonly<PackageVersions[]>
 

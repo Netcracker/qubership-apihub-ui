@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo } from 'react'
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
 import { Box, MenuItem, Paper, Typography } from '@mui/material'
-import { MenuButton } from './MenuButton'
-import { DownloadIcon } from '../../icons/DownloadIcon'
+import type { FC } from 'react'
+import { memo } from 'react'
 import { DISABLED_BUTTON_COLOR, ENABLED_BUTTON_COLOR } from '../../entities/operation-groups'
+import { DownloadIcon } from '../../icons/DownloadIcon'
+import { MenuButton } from './MenuButton'
 
 export type ExportMenuButtonProps = {
   title: string
@@ -45,8 +45,8 @@ export const ExportMenuButton: FC<ExportMenuButtonProps> = memo(({
       <MenuButton
         disabled={disabled}
         variant="outlined"
-        startIcon={<DownloadIcon color={disabled ? DISABLED_BUTTON_COLOR : ENABLED_BUTTON_COLOR}/>}
-        endIcon={<KeyboardArrowDownOutlinedIcon/>}
+        startIcon={<DownloadIcon color={disabled ? DISABLED_BUTTON_COLOR : ENABLED_BUTTON_COLOR} />}
+        endIcon={<KeyboardArrowDownOutlinedIcon />}
         sx={{
           '&.MuiButton-root': {
             width: '48px',

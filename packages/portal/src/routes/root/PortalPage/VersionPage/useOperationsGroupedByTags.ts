@@ -14,22 +14,28 @@
  * limitations under the License.
  */
 
-import { usePagedOperations } from './useOperations'
-import { useEffect, useState } from 'react'
-import { useVersionWithRevision } from '../../useVersionWithRevision'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { Operation, OperationPairsGroupedByTag, OperationsGroupedByTag } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { groupOperationsByTags } from '@apihub/utils/operations'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type {
+  Operation,
+  OperationPairsGroupedByTag,
+  OperationsGroupedByTag,
+} from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { useEffect, useState } from 'react'
+import { useVersionWithRevision } from '../../useVersionWithRevision'
+import { usePagedOperations } from './useOperations'
 
-export function useOperationsGroupedByTags(options?: Partial<{
-  operationPackageKey: Key
-  operationPackageVersion: Key
-  searchValue: string
-  documentId: string
-  apiType: ApiType
-}>): [OperationsGroupedByTag, IsLoading] {
+export function useOperationsGroupedByTags(
+  options?: Partial<{
+    operationPackageKey: Key
+    operationPackageVersion: Key
+    searchValue: string
+    documentId: string
+    apiType: ApiType
+  }>,
+): [OperationsGroupedByTag, IsLoading] {
   const { operationPackageKey, operationPackageVersion, searchValue, documentId, apiType } = options ?? {}
   const { fullVersion } = useVersionWithRevision(operationPackageVersion, operationPackageKey)
 
@@ -70,7 +76,10 @@ export function useOperationsGroupedByTags(options?: Partial<{
   ]
 }
 
-export function isOperationGrouped<T extends Operation>(operationsGroupedByTags: OperationsGroupedByTag<T>, operationKey?: Key): boolean {
+export function isOperationGrouped<T extends Operation>(
+  operationsGroupedByTags: OperationsGroupedByTag<T>,
+  operationKey?: Key,
+): boolean {
   if (!operationsGroupedByTags) {
     return false
   }

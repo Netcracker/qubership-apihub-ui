@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { Box } from '@mui/material'
 import type { FC } from 'react'
 import React, { memo } from 'react'
-import { Box } from '@mui/material'
-import { KeyIcon } from '../icons/KeyIcon'
-import { TextWithOverflowTooltip } from './TextWithOverflowTooltip'
 import type { Principal } from '../entities/principals'
 import { API_KEY } from '../entities/principals'
+import { KeyIcon } from '../icons/KeyIcon'
+import { TextWithOverflowTooltip } from './TextWithOverflowTooltip'
 import { UserView } from './Users/UserView'
 
 export type PrincipalViewProps = {
@@ -28,13 +28,12 @@ export type PrincipalViewProps = {
 }
 
 export const PrincipalView: FC<PrincipalViewProps> = memo<PrincipalViewProps>(({ value }) => {
-
   if (!value) {
     return null
   }
 
   if (value.type === API_KEY) {
-    return (<TokenView name={value.name}/>)
+    return <TokenView name={value.name} />
   }
 
   return (
@@ -53,7 +52,7 @@ const TokenView: FC<TokenViewProps> = memo<TokenViewProps>(({ name }) => {
   const tokenName = `API key: ${name}`
   return (
     <Box display="flex" alignItems="center" gap="4px" overflow="hidden" data-testid="TokenView">
-      <KeyIcon/>
+      <KeyIcon />
       <TextWithOverflowTooltip tooltipText={tokenName}>
         {tokenName}
       </TextWithOverflowTooltip>

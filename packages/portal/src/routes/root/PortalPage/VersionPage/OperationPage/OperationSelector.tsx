@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
+import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
+import { Box, Button, Typography } from '@mui/material'
+import { MenuButtonItems } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
+import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
+import { OperationWithMetaList } from '@netcracker/qubership-apihub-ui-shared/components/Operations/OperationWithMetaList'
+import { NAVIGATION_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
+import { TaggedOperationWithMetaList } from '@netcracker/qubership-apihub-ui-shared/components/TaggedOperationWithMetaList'
+import type { OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import type { Path } from '@remix-run/router'
 import type { FC } from 'react'
 import * as React from 'react'
 import { memo, useCallback, useState } from 'react'
-import { Box, Button, Typography } from '@mui/material'
-import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
-import type { Path } from '@remix-run/router'
-import type { OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import { MenuButtonItems } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
-import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
-import { NAVIGATION_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
-import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import { OperationWithMetaList } from '@netcracker/qubership-apihub-ui-shared/components/Operations/OperationWithMetaList'
-import { TaggedOperationWithMetaList } from '@netcracker/qubership-apihub-ui-shared/components/TaggedOperationWithMetaList'
 
 // First Order Component //
 export type OperationSelectorProps = {
@@ -54,7 +54,7 @@ export const OperationSelector: FC<OperationSelectorProps> = memo<OperationSelec
         sx={{ minWidth: 4, height: 20, p: 0, boxShadow: 'none', '&:hover': { boxShadow: 'none' } }}
         variant="text"
         onClick={({ currentTarget }) => setAnchor(currentTarget)}
-        endIcon={<KeyboardArrowDownOutlinedIcon/>}
+        endIcon={<KeyboardArrowDownOutlinedIcon />}
       >
         <MenuButtonItems
           anchorEl={anchor}
@@ -71,18 +71,20 @@ export const OperationSelector: FC<OperationSelectorProps> = memo<OperationSelec
             <Box data-testid="RecentOperationsSection">
               <Typography variant="subtitle2" fontSize={13} mb={1}>Recent Operations</Typography>
               {isRecentOperationsLoading
-                ? <LoadingIndicator/>
-                : <Placeholder
-                  invisible={isNotEmpty(recentOperations)}
-                  area={NAVIGATION_PLACEHOLDER_AREA}
-                  message="No operations"
-                >
-                  <OperationWithMetaList
-                    operations={recentOperations}
-                    prepareLinkFn={prepareLinkFn}
-                    onClick={onClose}
-                  />
-                </Placeholder>}
+                ? <LoadingIndicator />
+                : (
+                  <Placeholder
+                    invisible={isNotEmpty(recentOperations)}
+                    area={NAVIGATION_PLACEHOLDER_AREA}
+                    message="No operations"
+                  >
+                    <OperationWithMetaList
+                      operations={recentOperations}
+                      prepareLinkFn={prepareLinkFn}
+                      onClick={onClose}
+                    />
+                  </Placeholder>
+                )}
             </Box>
 
             <Box mt={2} data-testid="RelatedOperationsSection">

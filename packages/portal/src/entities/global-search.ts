@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { Labels } from './documents'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import type { MethodType } from '@netcracker/qubership-apihub-ui-shared/entities/method-types'
-import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { API_TYPE_GRAPHQL, API_TYPE_REST } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { MethodType } from '@netcracker/qubership-apihub-ui-shared/entities/method-types'
+import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import type { Labels } from './documents'
 
 export type SearchResults = Readonly<{
   packages: PackageSearchResult[]
@@ -71,11 +71,13 @@ export type DocumentSearchResult = Readonly<{
   createdAt: string
 }>
 
-export type SearchResultsDto = Readonly<Partial<{
-  packages: PackageSearchResultDto[]
-  operations: OperationSearchResultDto[]
-  documents: DocumentSearchResultDto[]
-}>>
+export type SearchResultsDto = Readonly<
+  Partial<{
+    packages: PackageSearchResultDto[]
+    operations: OperationSearchResultDto[]
+    documents: DocumentSearchResultDto[]
+  }>
+>
 
 export type PackageSearchResultDto = Readonly<{
   packageId: Key
@@ -201,9 +203,17 @@ export const API_TYPE_SCOPES_MAP: Record<ApiType, RestScope[] | GraphqlScope[]> 
   [API_TYPE_GRAPHQL]: GRAPHQL_SCOPES,
 }
 
-export const OPERATIONS_TYPES: GraphQlOperationTypes[] = [QUERY_OPERATION_TYPES, MUTATION_OPERATION_TYPES, SUBSCRIPTION_OPERATION_TYPES]
+export const OPERATIONS_TYPES: GraphQlOperationTypes[] = [
+  QUERY_OPERATION_TYPES,
+  MUTATION_OPERATION_TYPES,
+  SUBSCRIPTION_OPERATION_TYPES,
+]
 
-export const DETAILED_SCOPES: OptionRestDetailedScope[] = [PROPERTIES_AND_PARAMETER_DETAILED_SCOPE, ANNOTATION_DETAILED_SCOPE, EXAMPLES_DETAILED_SCOPE]
+export const DETAILED_SCOPES: OptionRestDetailedScope[] = [
+  PROPERTIES_AND_PARAMETER_DETAILED_SCOPE,
+  ANNOTATION_DETAILED_SCOPE,
+  EXAMPLES_DETAILED_SCOPE,
+]
 
 export const detailedScopeMapping: Record<OptionRestDetailedScope, RestDetailedScope> = {
   [PROPERTIES_AND_PARAMETER_DETAILED_SCOPE]: PROPERTIES_DETAILED_SCOPE,

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { useTagSearchFilter } from './useTagSearchFilter'
-import { useRefSearchParam } from '../useRefSearchParam'
-import { useApiKindSearchFilter } from './useApiKindSearchFilters'
-import { useCallback } from 'react'
-import type { OperationsFilterControllers } from './SelfManagedOperationFilters'
-import { useOperationGroupSearchFilter } from './useOperationGroupSearchFilter'
 import type { PackageReference } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
+import { useCallback } from 'react'
+import { useRefSearchParam } from '../useRefSearchParam'
+import type { OperationsFilterControllers } from './SelfManagedOperationFilters'
 import { useApiAudienceSearchFilter } from './useApiAudienceSearchFilters'
+import { useApiKindSearchFilter } from './useApiKindSearchFilters'
+import { useOperationGroupSearchFilter } from './useOperationGroupSearchFilter'
+import { useTagSearchFilter } from './useTagSearchFilter'
 
 export function useDefaultOperationFilterControllers(isDashboard: boolean): OperationsFilterControllers {
   const [, setTag] = useTagSearchFilter()

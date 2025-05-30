@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
+import { Skeleton, TableCell, TableRow, Typography } from '@mui/material'
+import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import type { Row } from '@tanstack/react-table'
 import { flexRender } from '@tanstack/react-table'
 import type { FC } from 'react'
 import { memo } from 'react'
 import { useSnapshotPublicationInfo } from '../useSnapshotPublicationInfo'
-import { Skeleton, TableCell, TableRow, Typography } from '@mui/material'
 import type { SnapshotsTableData } from './SnapshotsTable'
-import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 
 export type SnapshotsSubTableProps = {
   value: Row<SnapshotsTableData>
@@ -33,7 +33,8 @@ export const SnapshotsSubTable: FC<SnapshotsSubTableProps> = memo<SnapshotsSubTa
     id,
     original,
     getVisibleCells,
-  }, lastColumnId,
+  },
+  lastColumnId,
 }) => {
   const { snapshotPublicationInfo, isLoading: isSnapshotPublicationInfoLoading } = useSnapshotPublicationInfo({
     snapshotKey: original.snapshot!.versionKey,
@@ -44,7 +45,7 @@ export const SnapshotsSubTable: FC<SnapshotsSubTableProps> = memo<SnapshotsSubTa
       <TableRow key={id}>
         {getVisibleCells().map(({ column: { id } }) => (
           <TableCell key={id}>
-            <Skeleton variant="text"/>
+            <Skeleton variant="text" />
           </TableCell>
         ))}
       </TableRow>

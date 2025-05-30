@@ -43,12 +43,14 @@ import type {
 import { toPackageRef } from './operations'
 
 // DTO Types
-export type VersionChangesDto = Partial<Readonly<{
-  previousVersion: Key
-  previousVersionPackageId: Key
-  operations: ReadonlyArray<OperationChangeDataDto>
-  packages: PackagesRefs
-}>>
+export type VersionChangesDto = Partial<
+  Readonly<{
+    previousVersion: Key
+    previousVersionPackageId: Key
+    operations: ReadonlyArray<OperationChangeDataDto>
+    packages: PackagesRefs
+  }>
+>
 
 // Base DTO interface for operation info
 export interface OperationInfoDto {
@@ -174,8 +176,8 @@ export function calculateAction(current?: string, previous?: string): ActionType
   return current && previous
     ? REPLACE_ACTION_TYPE
     : previous
-      ? REMOVE_ACTION_TYPE
-      : ADD_ACTION_TYPE
+    ? REMOVE_ACTION_TYPE
+    : ADD_ACTION_TYPE
 }
 
 export const EMPTY_CHANGES = {

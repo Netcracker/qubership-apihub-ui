@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { useOperationViewMode } from './useOperationViewMode'
-import { useFileViewMode } from './useFileViewMode'
-import { useSidebarPlaygroundViewMode } from './useSidebarPlaygroundViewMode'
-import { useDocumentSearchParam } from './useDocumentSearchParam'
-import { useRefSearchParam } from '../useRefSearchParam'
 import { YAML_FILE_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/entities/file-format-view'
 import type { OperationViewMode } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
+import { useRefSearchParam } from '../useRefSearchParam'
+import { useDocumentSearchParam } from './useDocumentSearchParam'
+import { useFileViewMode } from './useFileViewMode'
+import { useOperationViewMode } from './useOperationViewMode'
+import { useSidebarPlaygroundViewMode } from './useSidebarPlaygroundViewMode'
 
 export function useOperationSearchParams(): OperationSearchParams {
   const { mode } = useOperationViewMode()

@@ -15,10 +15,10 @@
  */
 
 import { Paper, ToggleButton, ToggleButtonGroup } from '@mui/material'
+import Box from '@mui/material/Box'
+import Tooltip from '@mui/material/Tooltip'
 import type { ReactNode } from 'react'
 import React from 'react'
-import Tooltip from '@mui/material/Tooltip'
-import Box from '@mui/material/Box'
 import { genericMemo } from '../utils/components'
 
 export type SelectorWithIconsProps<T extends string> = {
@@ -36,9 +36,16 @@ export type SelectorWithIconsProps<T extends string> = {
 
 function renderSelector<T extends string>(props: SelectorWithIconsProps<T>): JSX.Element {
   const {
-    mode, onChange,
-    firstIcon, firstValue, firstTooltip, firstTestId,
-    secondIcon, secondValue, secondTooltip, secondTestId,
+    mode,
+    onChange,
+    firstIcon,
+    firstValue,
+    firstTooltip,
+    firstTestId,
+    secondIcon,
+    secondValue,
+    secondTooltip,
+    secondTestId,
   } = props
 
   return (
@@ -57,7 +64,6 @@ function renderSelector<T extends string>(props: SelectorWithIconsProps<T>): JSX
         exclusive
         onChange={onChange}
       >
-
         <ToggleButton value={firstValue} data-testid={firstTestId}>
           <Tooltip title={firstTooltip}>
             <Box>{firstIcon}</Box>

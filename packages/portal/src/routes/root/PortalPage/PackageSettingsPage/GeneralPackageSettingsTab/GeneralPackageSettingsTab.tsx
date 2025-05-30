@@ -16,27 +16,26 @@
 
 import type { Dispatch, FC, SetStateAction } from 'react'
 import { createContext, memo, useContext, useState } from 'react'
-import { GeneralPackageSettingsTabViewer } from './GeneralPackageSettingsTabViewer'
-import { GeneralPackageSettingsTabEditor } from './GeneralPackageSettingsTabEditor'
 import type { PackageSettingsTabProps } from '../package-settings'
+import { GeneralPackageSettingsTabEditor } from './GeneralPackageSettingsTabEditor'
+import { GeneralPackageSettingsTabViewer } from './GeneralPackageSettingsTabViewer'
 
 export const GeneralPackageSettingsTab: FC<PackageSettingsTabProps> = memo<PackageSettingsTabProps>(({
-    isPackageLoading,
+  isPackageLoading,
   packageObject,
-  }) => {
-    const [editable, setEditable] = useState(false)
+}) => {
+  const [editable, setEditable] = useState(false)
 
-    return (
-      <EditableGeneralPackageSettingsTabContentContext.Provider value={editable}>
-        <SetEditableGeneralPackageSettingsTabContentContext.Provider value={setEditable}>
-          <GeneralPackageSettingsTabViewer packageObject={packageObject}/>
-          {!!packageObject &&
-            <GeneralPackageSettingsTabEditor packageObject={packageObject} isPackageLoading={isPackageLoading}/>}
-        </SetEditableGeneralPackageSettingsTabContentContext.Provider>
-      </EditableGeneralPackageSettingsTabContentContext.Provider>
-    )
-  },
-)
+  return (
+    <EditableGeneralPackageSettingsTabContentContext.Provider value={editable}>
+      <SetEditableGeneralPackageSettingsTabContentContext.Provider value={setEditable}>
+        <GeneralPackageSettingsTabViewer packageObject={packageObject} />
+        {!!packageObject
+          && <GeneralPackageSettingsTabEditor packageObject={packageObject} isPackageLoading={isPackageLoading} />}
+      </SetEditableGeneralPackageSettingsTabContentContext.Provider>
+    </EditableGeneralPackageSettingsTabContentContext.Provider>
+  )
+})
 
 const EditableGeneralPackageSettingsTabContentContext = createContext<boolean>()
 const SetEditableGeneralPackageSettingsTabContentContext = createContext<Dispatch<SetStateAction<boolean>>>()

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { Key } from './keys'
 import type { Url } from '@netcracker/qubership-apihub-ui-shared/types/url'
+import type { Key } from './keys'
 
 export type IntegrationRepository = Readonly<{
   key: Key

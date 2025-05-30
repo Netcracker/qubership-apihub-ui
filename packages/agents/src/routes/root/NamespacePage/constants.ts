@@ -15,8 +15,7 @@
  */
 
 import type { PublishStatus } from '@apihub/entities/statuses'
-import type {
-  StatusMarkerVariant} from '@netcracker/qubership-apihub-ui-shared/components/StatusMarker'
+import type { StatusMarkerVariant } from '@netcracker/qubership-apihub-ui-shared/components/StatusMarker'
 import {
   ERROR_STATUS_MARKER_VARIANT,
   LOADING_STATUS_MARKER_VARIANT,
@@ -28,8 +27,7 @@ import {
   NONE_PUBLISH_STATUS,
   RUNNING_PUBLISH_STATUS,
 } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
-import type {
-  StepStatus} from './ServicesPage/ServicesPageProvider/ServicesStepsProvider'
+import type { StepStatus } from './ServicesPage/ServicesPageProvider/ServicesStepsProvider'
 import {
   ERROR_STEP_STATUS,
   INITIAL_STEP_STATUS,

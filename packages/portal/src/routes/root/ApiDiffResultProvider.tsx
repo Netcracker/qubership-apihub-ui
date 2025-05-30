@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import type { CompareResult } from '@netcracker/qubership-apihub-api-diff'
 import type { Dispatch, FC, PropsWithChildren, SetStateAction } from 'react'
 import { createContext, useContext, useState } from 'react'
-import type { CompareResult } from '@netcracker/qubership-apihub-api-diff'
 
 const ApiDiffResultContext = createContext<CompareResult | undefined>()
 const SetApiDiffResultContext = createContext<Dispatch<SetStateAction<CompareResult | undefined>>>()

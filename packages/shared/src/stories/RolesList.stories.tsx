@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react'
 import { Box, ThemeProvider } from '@mui/material'
-import { theme } from '../themes/theme'
+import type { Meta, StoryObj } from '@storybook/react'
 import { RolesList } from '../components/RolesList'
+import { theme } from '../themes/theme'
 import { ROLES_LIST } from './samples/roles-samples'
 
 const meta: Meta<typeof RolesList> = {
@@ -27,7 +27,7 @@ const meta: Meta<typeof RolesList> = {
     (Story) => (
       <ThemeProvider theme={theme}>
         <Box sx={{ width: '800px' }}>
-          <Story/>
+          <Story />
         </Box>
       </ThemeProvider>
     ),

@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useRef } from 'react'
-import { Box, Typography } from '@mui/material'
-import { ResultCommonHeader } from './ResultCommonHeader'
-import { CONTENT_WIDTH } from './GlobalSearchPanel'
-import { Marker } from 'react-mark.js'
-import type { FetchNextSearchResultList } from './global-search'
-import { getOperationsPath } from '../../../NavigationProvider'
 import type { GraphQlOperationTypes, OperationSearchResult } from '@apihub/entities/global-search'
-import { useIntersectionObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useIntersectionObserver'
-import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
-import { RELEASE_VERSION_STATUS } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import { Box, Typography } from '@mui/material'
 import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
-import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
+import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { API_TYPE_GRAPHQL, API_TYPE_REST } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { MethodType } from '@netcracker/qubership-apihub-ui-shared/entities/method-types'
+import { RELEASE_VERSION_STATUS } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import { useIntersectionObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useIntersectionObserver'
+import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
+import type { FC } from 'react'
+import { memo, useRef } from 'react'
+import { Marker } from 'react-mark.js'
+import { getOperationsPath } from '../../../NavigationProvider'
+import type { FetchNextSearchResultList } from './global-search'
+import { CONTENT_WIDTH } from './GlobalSearchPanel'
+import { ResultCommonHeader } from './ResultCommonHeader'
 
 export type ApiOperationsSearchListProps = {
   value: OperationSearchResult[]
@@ -50,21 +50,25 @@ export const ApiOperationsSearchList: FC<ApiOperationsSearchListProps> = memo<Ap
   return (
     <Box width={CONTENT_WIDTH} position="relative">
       {value.map(({
-          packageKey,
-          name,
-          parentPackages,
-          version,
-          title,
-          status,
-          operationKey,
-          path,
-          method,
-          apiType,
-          type,
-        }) => {
+        packageKey,
+        name,
+        parentPackages,
+        version,
+        title,
+        status,
+        operationKey,
+        path,
+        method,
+        apiType,
+        type,
+      }) => {
         const { versionKey } = getSplittedVersionKey(version)
         return (
-          <Box mb={2} key={`api-operations-search-list-box-${packageKey}-${operationKey}-${version}`} data-testid="SearchResultRow">
+          <Box
+            mb={2}
+            key={`api-operations-search-list-box-${packageKey}-${operationKey}-${version}`}
+            data-testid="SearchResultRow"
+          >
             <ResultCommonHeader
               url={getOperationsPath({
                 packageKey: packageKey,
@@ -108,7 +112,7 @@ export const ApiOperationsSearchList: FC<ApiOperationsSearchListProps> = memo<Ap
           ref={ref}
           height="100px"
         >
-          <LoadingIndicator/>
+          <LoadingIndicator />
         </Box>
       )}
     </Box>

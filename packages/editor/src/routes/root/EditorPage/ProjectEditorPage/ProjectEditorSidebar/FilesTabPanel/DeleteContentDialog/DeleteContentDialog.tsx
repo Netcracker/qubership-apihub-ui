@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useEffect, useState } from 'react'
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
+import { LoadingButton } from '@mui/lab'
 import {
   Button,
   Checkbox,
@@ -27,12 +27,12 @@ import {
   IconButton,
   Typography,
 } from '@mui/material'
-import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
-import { LoadingButton } from '@mui/lab'
-import { useDeleteProjectContent } from './useDeleteProjectContent'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { FC } from 'react'
+import { memo, useEffect, useState } from 'react'
 import { useEvent } from 'react-use'
 import { SHOW_DELETE_CONTENT_DIALOG } from '../../../../../../EventBusProvider'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { useDeleteProjectContent } from './useDeleteProjectContent'
 
 export const DeleteContentDialog: FC = memo(() => {
   const [open, setOpen] = useState(false)
@@ -43,8 +43,12 @@ export const DeleteContentDialog: FC = memo(() => {
   const [deleteFromGit, setDeleteFromGit] = useState(false)
   const [deleteProjectContent, isDeleteLoading] = useDeleteProjectContent()
 
-  const onClose = (): void => {setOpen(false)}
-  useEffect(() => {!isDeleteLoading && onClose()}, [isDeleteLoading])
+  const onClose = (): void => {
+    setOpen(false)
+  }
+  useEffect(() => {
+    !isDeleteLoading && onClose()
+  }, [isDeleteLoading])
 
   useEvent(SHOW_DELETE_CONTENT_DIALOG, ({ detail: { key, name, isFolder } }) => {
     setItemKey(key)
@@ -66,25 +70,25 @@ export const DeleteContentDialog: FC = memo(() => {
           sx={{ position: 'absolute', right: 8, top: 8, color: '#353C4E' }}
           onClick={onClose}
         >
-          <CloseOutlinedIcon fontSize="small"/>
+          <CloseOutlinedIcon fontSize="small" />
         </IconButton>
       </DialogTitle>
 
       <DialogContent>
-        {
-          isFolder
-            ? <>
+        {isFolder
+          ? (
+            <>
               <Typography variant="body2">{`Are you sure, you want to delete folder "${itemName}"?`}</Typography>
               <Typography variant="body2">{`All files and subdirectories in ${itemName} will be deleted.`}</Typography>
             </>
-            : <Typography variant="body2">{`Are you sure, you want to delete file "${itemName}"?`}</Typography>
-        }
+          )
+          : <Typography variant="body2">{`Are you sure, you want to delete file "${itemName}"?`}</Typography>}
       </DialogContent>
 
       <FormControlLabel
         sx={{ p: '8px 24px 0' }}
         label="Delete from GIT"
-        control={<Checkbox onChange={(_, checked) => setDeleteFromGit(checked)}/>}
+        control={<Checkbox onChange={(_, checked) => setDeleteFromGit(checked)} />}
       />
       <DialogActions>
         <LoadingButton

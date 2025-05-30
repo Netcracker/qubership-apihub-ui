@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { useInfiniteQuery } from '@tanstack/react-query'
-import type { FetchNextSearchResultList } from './global-search'
-import { getSearchResult } from './global-search'
-import { useMemo } from 'react'
 import type { SearchCriteria, SearchResults } from '@apihub/entities/global-search'
 import { DOCUMENT_LEVEL } from '@apihub/entities/global-search'
 import type { HasNextPage, IsFetchingNextPage, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { useInfiniteQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
+import type { FetchNextSearchResultList } from './global-search'
+import { getSearchResult } from './global-search'
 
 const GLOBAL_DOCUMENTS_SEARCH_RESULT_QUERY_KEY = 'global-documents-search-result-query-key'
 

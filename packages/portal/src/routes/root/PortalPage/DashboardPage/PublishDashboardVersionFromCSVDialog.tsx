@@ -14,24 +14,14 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { usePackage } from '../../usePackage'
-import { useParams } from 'react-router-dom'
+import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
+import { SHOW_PUBLISH_PACKAGE_VERSION_DIALOG } from '@apihub/routes/EventBusProvider'
+import { usePackageVersionConfig } from '@apihub/routes/root/PortalPage/usePackageVersionConfig'
+import { useDashboardVersionFromCSVPublicationStatuses } from '@apihub/routes/root/PortalPage/usePublicationStatus'
+import { usePublishDashboardVersionFromCSV } from '@apihub/routes/root/PortalPage/usePublishDashboardVersionFromCSV'
+import { usePackages } from '@apihub/routes/root/usePackages'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import { SHOW_PUBLISH_PACKAGE_VERSION_DIALOG } from '@apihub/routes/EventBusProvider'
-import { SPECIAL_VERSION_KEY } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
-import { type Package, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { getSplittedVersionKey, getVersionLabelsMap } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import {
-  DRAFT_VERSION_STATUS,
-  NO_PREVIOUS_RELEASE_VERSION_OPTION,
-  RELEASE_VERSION_STATUS,
-} from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 import type { VersionFormData } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
 import {
   getPackageOptions,
@@ -40,18 +30,28 @@ import {
   usePreviousVersionOptions,
   VersionDialogForm,
 } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
-import { useDashboardVersionFromCSVPublicationStatuses } from '@apihub/routes/root/PortalPage/usePublicationStatus'
-import { usePublishDashboardVersionFromCSV } from '@apihub/routes/root/PortalPage/usePublishDashboardVersionFromCSV'
-import { usePackages } from '@apihub/routes/root/usePackages'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { type Package, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import {
+  DRAFT_VERSION_STATUS,
+  NO_PREVIOUS_RELEASE_VERSION_OPTION,
+  RELEASE_VERSION_STATUS,
+} from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import { SPECIAL_VERSION_KEY } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
 import { usePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
-import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
-import { usePackageVersionConfig } from '@apihub/routes/root/PortalPage/usePackageVersionConfig'
+import { getSplittedVersionKey, getVersionLabelsMap } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
+import type { FC } from 'react'
+import { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useParams } from 'react-router-dom'
+import { usePackage } from '../../usePackage'
 
 export const PublishDashboardVersionFromCSVDialog: FC = memo(() => {
   return (
     <PopupDelegate
       type={SHOW_PUBLISH_PACKAGE_VERSION_DIALOG}
-      render={props => <PublishDashboardVersionFromCSVPopup {...props} open/>}
+      render={props => <PublishDashboardVersionFromCSVPopup {...props} open />}
     />
   )
 })
@@ -89,8 +89,15 @@ const PublishDashboardVersionFromCSVPopup: FC<PopupProps> = memo<PopupProps>(({ 
   })
   const previousVersionOptions = usePreviousVersionOptions(targetPreviousVersions)
   const versionLabelsMap = useMemo(() => getVersionLabelsMap(filteredVersions), [filteredVersions])
-  const versionOptions = useMemo(() => getVersionOptions(versionLabelsMap, targetVersion), [targetVersion, versionLabelsMap])
-  const workspaceOptions = useMemo(() => getPackageOptions(workspaces, targetWorkspace, !!workspacesFilter), [targetWorkspace, workspaces, workspacesFilter])
+  const versionOptions = useMemo(() => getVersionOptions(versionLabelsMap, targetVersion), [
+    targetVersion,
+    versionLabelsMap,
+  ])
+  const workspaceOptions = useMemo(() => getPackageOptions(workspaces, targetWorkspace, !!workspacesFilter), [
+    targetWorkspace,
+    workspaces,
+    workspacesFilter,
+  ])
   const defaultValues: VersionFormData = useMemo(() => {
     return {
       package: null,
@@ -103,7 +110,11 @@ const PublishDashboardVersionFromCSVPopup: FC<PopupProps> = memo<PopupProps>(({ 
   }, [currentWorkspace, versionId])
   const { handleSubmit, control, setValue, formState, reset } = useForm<VersionFormData>({ defaultValues })
   const { publishId, publish, isPublishStarting, isPublishStartedSuccessfully } = usePublishDashboardVersionFromCSV()
-  const [isPublishing, isPublished, isPublishError] = useDashboardVersionFromCSVPublicationStatuses(packageObj?.key ?? '', publishId ?? '', targetVersion)
+  const [isPublishing, isPublished, isPublishError] = useDashboardVersionFromCSVPublicationStatuses(
+    packageObj?.key ?? '',
+    publishId ?? '',
+    targetVersion,
+  )
 
   const onVersionsFilter = useCallback((value: Key) => setVersionsFilter(value), [setVersionsFilter])
   const getVersionLabels = useCallback((version: Key) => versionLabelsMap[version] ?? [], [versionLabelsMap])
@@ -111,13 +122,16 @@ const PublishDashboardVersionFromCSVPopup: FC<PopupProps> = memo<PopupProps>(({ 
   const onWorkspacesFilter = useCallback((value: Key) => setWorkspacesFilter(value), [setWorkspacesFilter])
   const onSetWorkspace = useCallback((workspace: Package | null) => setTargetWorkspace(workspace), [])
 
-  const isPublishInProgress =
-    isPublishStarting ||
-    isPublishStartedSuccessfully && !isPublished && !isPublishError ||
-    isPublishing
+  const isPublishInProgress = isPublishStarting
+    || isPublishStartedSuccessfully && !isPublished && !isPublishError
+    || isPublishing
 
-  useEffect(() => { isPublishStartedSuccessfully && isPublished && setOpen(false) }, [isPublishStartedSuccessfully, isPublished, setOpen])
-  useEffect(() => {reset(defaultValues)}, [defaultValues, reset])
+  useEffect(() => {
+    isPublishStartedSuccessfully && isPublished && setOpen(false)
+  }, [isPublishStartedSuccessfully, isPublished, setOpen])
+  useEffect(() => {
+    reset(defaultValues)
+  }, [defaultValues, reset])
   useEffect(() => {
     if (currentVersionConfig) {
       setValue('status', currentVersionConfig.status as VersionStatus || DRAFT_VERSION_STATUS)

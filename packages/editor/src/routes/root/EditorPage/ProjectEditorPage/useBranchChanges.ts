@@ -14,28 +14,29 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react'
-import { useBranchConfig } from './useBranchConfig'
-import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { NONE_CHANGE_TYPE } from '@apihub/entities/branches'
 import type { BranchFilesContent } from '@apihub/entities/ws-branch-events'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { useMemo } from 'react'
+import { useBranchConfig } from './useBranchConfig'
 
 export function useBranchChanges(): [BranchChanges, IsLoading] {
   const [branchConfig, isBranchConfigLoading] = useBranchConfig()
 
   const changes = useMemo(
-    () => branchConfig?.files
-      .filter(({ changeType, movedFrom }) => changeType && changeType !== NONE_CHANGE_TYPE || movedFrom)
-      .map(({ changeType, blobKey, conflictedBlobKey, key, labels, movedFrom, publish, status }) => ({
-        fileId: key,
-        publish: publish,
-        labels: labels,
-        status: status,
-        blobId: blobKey,
-        changeType: changeType,
-        movedFrom: movedFrom,
-        conflictedBlobId: conflictedBlobKey,
-      })) ?? [],
+    () =>
+      branchConfig?.files
+        .filter(({ changeType, movedFrom }) => changeType && changeType !== NONE_CHANGE_TYPE || movedFrom)
+        .map(({ changeType, blobKey, conflictedBlobKey, key, labels, movedFrom, publish, status }) => ({
+          fileId: key,
+          publish: publish,
+          labels: labels,
+          status: status,
+          blobId: blobKey,
+          changeType: changeType,
+          movedFrom: movedFrom,
+          conflictedBlobId: conflictedBlobKey,
+        })) ?? [],
     [branchConfig?.files],
   )
 

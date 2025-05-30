@@ -15,11 +15,11 @@
  */
 
 import { AUTHORIZATION_LOCAL_STORAGE_KEY } from './constants'
-import { getAuthorization } from './storages'
-import { redirectToSaml } from './redirects'
 import type { ErrorMessage } from './packages-builder'
-import type { Key } from './types'
+import { redirectToSaml } from './redirects'
 import { HttpError } from './responses'
+import { getAuthorization } from './storages'
+import type { Key } from './types'
 
 export const API_V1 = '/api/v1'
 export const API_V2 = '/api/v2'
@@ -175,7 +175,11 @@ function handleAuthentication(response: Response): void {
   }
 }
 
-async function handleFetchError(response: Response, ignoreNotFound: boolean, customErrorHandler?: CustomErrorHandler): Promise<void> {
+async function handleFetchError(
+  response: Response,
+  ignoreNotFound: boolean,
+  customErrorHandler?: CustomErrorHandler,
+): Promise<void> {
   if (ignoreNotFound && response.status === 404) {
     return Promise.reject()
   }
@@ -201,22 +205,26 @@ async function handleFetchRedirect(response: Response, customRedirectHandler?: C
 async function handleCustomError(response: Response): Promise<void> {
   const [message, code, status] = await getResponseError(response)
   const detail = { title: `Error ${response.status}`, message: message, code: code, status: status }
-  dispatchEvent(new CustomEvent<FetchErrorDetails>(FETCH_ERROR_EVENT, {
-    detail: detail,
-    bubbles: true,
-    composed: true,
-    cancelable: false,
-  }))
+  dispatchEvent(
+    new CustomEvent<FetchErrorDetails>(FETCH_ERROR_EVENT, {
+      detail: detail,
+      bubbles: true,
+      composed: true,
+      cancelable: false,
+    }),
+  )
   throw new HttpError(message, code, status)
 }
 
 async function handleCustomRedirect(details: FetchRedirectDetails): Promise<void> {
-  dispatchEvent(new CustomEvent<FetchRedirectDetails>(FETCH_REDIRECT_EVENT, {
-    detail: details,
-    bubbles: true,
-    composed: true,
-    cancelable: false,
-  }))
+  dispatchEvent(
+    new CustomEvent<FetchRedirectDetails>(FETCH_REDIRECT_EVENT, {
+      detail: details,
+      bubbles: true,
+      composed: true,
+      cancelable: false,
+    }),
+  )
   window.stop()
 }
 
@@ -247,7 +255,7 @@ export async function getResponseError(response: Response): Promise<[ErrorMessag
   ]
 }
 
-export class NotFoundError extends Error { }
+export class NotFoundError extends Error {}
 
 async function handleError(response: Response): Promise<void> {
   const [message] = await getResponseError(response)

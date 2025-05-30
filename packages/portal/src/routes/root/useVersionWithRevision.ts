@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react'
-import { usePackageVersionContent } from './usePackageVersionContent'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { useMemo } from 'react'
+import { usePackageVersionContent } from './usePackageVersionContent'
 
 export type VersionWithRevisionQueryState = {
   fullVersion: Key

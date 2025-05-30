@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
+import { ErrorPage, NOT_FOUND_TITLE } from '@netcracker/qubership-apihub-ui-shared/components/ErrorPage'
+import { isTokenExpired } from '@netcracker/qubership-apihub-ui-shared/entities/token-payload'
+import { useAuthorization } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
+import { AuthPage } from '@netcracker/qubership-apihub-ui-shared/pages/AuthPage'
+import { LoginPage } from '@netcracker/qubership-apihub-ui-shared/pages/login'
+import { getToken } from '@netcracker/qubership-apihub-ui-shared/utils/storages'
 import type { FC } from 'react'
 import { memo, useState } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { EventBusProvider } from './EventBusProvider'
 import { NavigationProvider } from './NavigationProvider'
-import { AUTHENTICATION_REPORTS_PAGE, SECURITY_REPORTS_PAGE, SERVICES_PAGE } from './routes'
-import { useAuthorization } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
-import { isTokenExpired } from '@netcracker/qubership-apihub-ui-shared/entities/token-payload'
-import { getToken } from '@netcracker/qubership-apihub-ui-shared/utils/storages'
-import { LoginPage } from '@netcracker/qubership-apihub-ui-shared/pages/login'
 import { BasePage } from './root/BasePage/BasePage'
-import { AuthPage } from '@netcracker/qubership-apihub-ui-shared/pages/AuthPage'
-import { WelcomePage } from './root/WelcomePage'
 import { NamespacePage } from './root/NamespacePage/NamespacePage'
-import { ErrorPage, NOT_FOUND_TITLE } from '@netcracker/qubership-apihub-ui-shared/components/ErrorPage'
 import { SystemConfigurationProvider } from './root/NamespacePage/SystemConfigurationProvider'
+import { WelcomePage } from './root/WelcomePage'
+import { AUTHENTICATION_REPORTS_PAGE, SECURITY_REPORTS_PAGE, SERVICES_PAGE } from './routes'
 
 export const Router: FC = memo(() => {
   const [auth, setAuth] = useState<boolean>(!isTokenExpired(getToken()))

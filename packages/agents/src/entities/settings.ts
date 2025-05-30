@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { ncCustomAgentsRequestJson, ncCustomAgentsRequestVoid } from '@apihub/utils/requests'
 import type { AgentKey, NamespaceKey, VersionKey, WorkspaceKey } from './keys'
 import type { AutodiscoveryStatus } from './statuses'
 import { NONE_DISCOVERY_STATUS } from './statuses'
-import { ncCustomAgentsRequestJson, ncCustomAgentsRequestVoid } from '@apihub/utils/requests'
 
 export type Settings = Readonly<{
   name: string
@@ -66,7 +66,9 @@ export async function getSettings(
   namespaceKey: NamespaceKey,
   workspaceKey: WorkspaceKey,
 ): Promise<SettingsDto> {
-  return await ncCustomAgentsRequestJson<SettingsDto>(`/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/settings`, {
+  return await ncCustomAgentsRequestJson<SettingsDto>(
+    `/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/settings`,
+    {
       method: 'get',
     },
   )
@@ -89,17 +91,21 @@ export async function updateSettings(
   emailNotificationEnabled: boolean,
   emailNotificationList: Emails,
 ): Promise<void> {
-  return await ncCustomAgentsRequestVoid(`/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/settings`, {
+  return await ncCustomAgentsRequestVoid(
+    `/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/settings`,
+    {
       method: 'post',
-      body: JSON.stringify(<UpdateSettingsRequestDto>{
-        name: namespaceKey,
-        version: versionKey,
-        previousVersion: previousVersionKey,
-        autoDiscovery: autodiscoveryStatus,
-        schedules: schedules,
-        emailNotificationsEnabled: emailNotificationEnabled,
-        emailNotificationList: emailNotificationList,
-      }),
+      body: JSON.stringify(
+        <UpdateSettingsRequestDto> {
+          name: namespaceKey,
+          version: versionKey,
+          previousVersion: previousVersionKey,
+          autoDiscovery: autodiscoveryStatus,
+          schedules: schedules,
+          emailNotificationsEnabled: emailNotificationEnabled,
+          emailNotificationList: emailNotificationList,
+        },
+      ),
     },
   )
 }

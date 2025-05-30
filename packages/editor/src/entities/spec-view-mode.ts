@@ -15,7 +15,10 @@
  */
 
 import type { SpecViewMode } from '@netcracker/qubership-apihub-ui-shared/components/SpecViewToggler'
-import { DOC_SPEC_VIEW_MODE, RAW_SPEC_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/components/SpecViewToggler'
+import {
+  DOC_SPEC_VIEW_MODE,
+  RAW_SPEC_VIEW_MODE,
+} from '@netcracker/qubership-apihub-ui-shared/components/SpecViewToggler'
 
 export const PORTAL_SPEC_VIEW_MODES: ReadonlyArray<SpecViewMode> = [
   DOC_SPEC_VIEW_MODE,

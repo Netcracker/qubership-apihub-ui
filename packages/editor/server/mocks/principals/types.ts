@@ -17,5 +17,4 @@ type User = Readonly<{
   avatarUrl?: Url
 }>
 
-
 export type Principal = User | Token

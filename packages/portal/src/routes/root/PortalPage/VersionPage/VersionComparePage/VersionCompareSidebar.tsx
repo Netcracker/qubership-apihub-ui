@@ -16,19 +16,19 @@
 
 import { memo, useEffect, useMemo, useState } from 'react'
 
-import { useChangesSummaryFromContext } from '../ChangesSummaryProvider'
-import { useTagsFromChangesSummary } from '../useTagsFromChangesSummary'
-import { useRefSearchParam } from '../../useRefSearchParam'
-import { useTagSearchFilter } from '../useTagSearchFilter'
-import { ApiTypeListSelector } from './ApiTypeListSelector'
-import { useApiTypeSearchParam } from '../useApiTypeSearchParam'
-import { useApiTypesFromChangesSummary } from './useApiTypesFromChangesSummary'
-import { isDashboardComparisonSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
 import { getDefaultApiType, isApiTypeSelectorShown } from '@apihub/utils/operation-types'
-import { isAppliedSearchValueForTag } from '@netcracker/qubership-apihub-ui-shared/utils/tags'
 import { SidebarPanel } from '@netcracker/qubership-apihub-ui-shared/components/Panels/SidebarPanel'
 import { SidebarWithTags } from '@netcracker/qubership-apihub-ui-shared/components/SidebarWithTags/SidebarWithTags'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { isDashboardComparisonSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
+import { isAppliedSearchValueForTag } from '@netcracker/qubership-apihub-ui-shared/utils/tags'
+import { useRefSearchParam } from '../../useRefSearchParam'
+import { useChangesSummaryFromContext } from '../ChangesSummaryProvider'
+import { useApiTypeSearchParam } from '../useApiTypeSearchParam'
+import { useTagSearchFilter } from '../useTagSearchFilter'
+import { useTagsFromChangesSummary } from '../useTagsFromChangesSummary'
+import { ApiTypeListSelector } from './ApiTypeListSelector'
+import { useApiTypesFromChangesSummary } from './useApiTypesFromChangesSummary'
 
 export const VersionCompareSidebar = memo(() => {
   const { apiType, setApiTypeSearchParam } = useApiTypeSearchParam()
@@ -61,7 +61,7 @@ export const VersionCompareSidebar = memo(() => {
 
   return (
     <SidebarPanel
-      header={isApiTypeSelectorShown(apiTypes) && <ApiTypeListSelector/>}
+      header={isApiTypeSelectorShown(apiTypes) && <ApiTypeListSelector />}
       headerFullWidth
       withDivider={isApiTypeSelectorShown(apiTypes)}
       body={

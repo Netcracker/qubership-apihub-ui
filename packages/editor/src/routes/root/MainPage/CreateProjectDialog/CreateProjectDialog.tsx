@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+import { EMPTY_GROUP } from '@apihub/entities/groups'
+import type { IntegrationRepository } from '@apihub/entities/integration-repository'
+import type { Project } from '@apihub/entities/projects'
+import { EMPTY_PROJECT } from '@apihub/entities/projects'
+import { LoadingButton } from '@mui/lab'
 import {
   Autocomplete,
   Button,
@@ -25,35 +30,30 @@ import {
   MenuItem,
   TextField,
 } from '@mui/material'
-import type { FC, SyntheticEvent } from 'react'
-import { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
-import { useIntegrationRepositories } from '../../useIntegrationRepositories'
-import { useIntegrationBranches } from '../../useIntegrationBranches'
-import { LoadingButton } from '@mui/lab'
-import { SHOW_CREATE_PROJECT_DIALOG } from '../../../EventBusProvider'
-import { useCreateProject } from './useCreateProject'
+import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import type { Project } from '@apihub/entities/projects'
-import { EMPTY_PROJECT } from '@apihub/entities/projects'
-import { EMPTY_GROUP } from '@apihub/entities/groups'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { Package } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { GROUP_KIND, PACKAGE_KIND, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { DEFAULT_DEBOUNCE } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
-import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
-import { ALIAS_VALIDATION_RULES } from '@netcracker/qubership-apihub-ui-shared/utils/validations'
-import { disableAutocompleteSearch } from '@netcracker/qubership-apihub-ui-shared/utils/mui'
-import type { IntegrationRepository } from '@apihub/entities/integration-repository'
 import { usePackages } from '@netcracker/qubership-apihub-ui-shared/hooks/packages/usePackages'
+import { DEFAULT_DEBOUNCE } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
+import { disableAutocompleteSearch } from '@netcracker/qubership-apihub-ui-shared/utils/mui'
 import { calculatePackagePath } from '@netcracker/qubership-apihub-ui-shared/utils/packages'
+import { ALIAS_VALIDATION_RULES } from '@netcracker/qubership-apihub-ui-shared/utils/validations'
+import type { FC, SyntheticEvent } from 'react'
+import { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { SHOW_CREATE_PROJECT_DIALOG } from '../../../EventBusProvider'
+import { useIntegrationBranches } from '../../useIntegrationBranches'
+import { useIntegrationRepositories } from '../../useIntegrationRepositories'
+import { useCreateProject } from './useCreateProject'
 
 export const CreateProjectDialog: FC = memo(() => {
   return (
     <PopupDelegate
       type={SHOW_CREATE_PROJECT_DIALOG}
-      render={props => <CreateProjectContent {...props}/>}
+      render={props => <CreateProjectContent {...props} />}
     />
   )
 })
@@ -70,8 +70,13 @@ const CreateProjectContent: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }
   const [selectedPackage, setSelectedPackage] = useState<Package>()
   const [selectedGroup, setSelectedGroup] = useState<Package>()
   const [repositoryNamePart, setRepositoryNamePart] = useState('')
-  const onRepositoryNamePartChange = useCallback((_: SyntheticEvent, value: string): void => setRepositoryNamePart(value), [])
-  const debouncedOnRepositoryNamePartChange = useMemo(() => debounce(onRepositoryNamePartChange, DEFAULT_DEBOUNCE), [onRepositoryNamePartChange])
+  const onRepositoryNamePartChange = useCallback(
+    (_: SyntheticEvent, value: string): void => setRepositoryNamePart(value),
+    [],
+  )
+  const debouncedOnRepositoryNamePartChange = useMemo(() => debounce(onRepositoryNamePartChange, DEFAULT_DEBOUNCE), [
+    onRepositoryNamePartChange,
+  ])
   const repositories = useIntegrationRepositories(repositoryNamePart)
 
   const [packagesTextFilter, setPackagesTextFilter] = useState<string>('')
@@ -95,7 +100,9 @@ const CreateProjectContent: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }
   const branches = useIntegrationBranches(repositoryKey)
   const [createProject, isLoading, error] = useCreateProject()
 
-  useEffect(() => {!open && reset()}, [open, reset])
+  useEffect(() => {
+    !open && reset()
+  }, [open, reset])
 
   return (
     <DialogForm
@@ -129,7 +136,7 @@ const CreateProjectContent: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }
         <Controller
           name="name"
           control={control}
-          render={({ field }) => <TextField {...field} autoFocus required label="Project name"/>}
+          render={({ field }) => <TextField {...field} autoFocus required label="Project name" />}
         />
         <Controller
           name="alias"
@@ -149,26 +156,27 @@ const CreateProjectContent: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }
         <Controller
           name="groupKey"
           control={control}
-          render={({ field }) =>
+          render={({ field }) => (
             <Autocomplete
               loading={areGroupsLoading}
               value={selectedGroup}
               options={groups}
               filterOptions={disableAutocompleteSearch}
               getOptionLabel={(parent: Package) => calculatePackagePath(parent, true)}
-              renderOption={(props, parent) =>
+              renderOption={(props, parent) => (
                 <ListItem {...props} key={parent.key}>
                   {calculatePackagePath(parent, true)}
                 </ListItem>
-              }
+              )}
               isOptionEqualToValue={(option, value) => option.key === value.key}
               onInputChange={debouncedOnGroupInputChange}
-              renderInput={(params) => <TextField {...field} {...params} required label="Parent group"/>}
+              renderInput={(params) => <TextField {...field} {...params} required label="Parent group" />}
               onChange={(_, value) => {
                 setValue('groupKey', value?.key ?? '')
                 setSelectedGroup(value)
               }}
-            />}
+            />
+          )}
         />
         <Controller
           name="packageKey"
@@ -182,7 +190,7 @@ const CreateProjectContent: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }
               getOptionLabel={({ name }: Package) => name ?? ''}
               isOptionEqualToValue={(option, value) => option.key === value.key}
               renderOption={(props, { key, name }) => <ListItem {...props} key={key}>{name}</ListItem>}
-              renderInput={(params) => <TextField {...params} label="Package"/>}
+              renderInput={(params) => <TextField {...params} label="Package" />}
               onInputChange={debouncedOnPackageInputChange}
               onChange={(_, value) => {
                 setValue('packageKey', value?.key ?? '')
@@ -194,24 +202,26 @@ const CreateProjectContent: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }
         <Controller
           name="integration.repositoryKey"
           control={control}
-          render={({ field }) => <Autocomplete
-            options={repositories}
-            getOptionLabel={({ name }: IntegrationRepository) => name}
-            isOptionEqualToValue={({ key: optionKey }, { key: valueKey }) => optionKey === valueKey}
-            onChange={(_, value) => {
-              const key = value?.key ?? ''
-              setRepositoryKey(key)
-              setValue('integration.repositoryKey', key)
-            }}
-            onInputChange={debouncedOnRepositoryNamePartChange}
-            renderInput={(params) => <TextField {...field} {...params} required label="Git repository"/>}
-          />}
+          render={({ field }) => (
+            <Autocomplete
+              options={repositories}
+              getOptionLabel={({ name }: IntegrationRepository) => name}
+              isOptionEqualToValue={({ key: optionKey }, { key: valueKey }) => optionKey === valueKey}
+              onChange={(_, value) => {
+                const key = value?.key ?? ''
+                setRepositoryKey(key)
+                setValue('integration.repositoryKey', key)
+              }}
+              onInputChange={debouncedOnRepositoryNamePartChange}
+              renderInput={(params) => <TextField {...field} {...params} required label="Git repository" />}
+            />
+          )}
         />
         <Controller
           name="integration.defaultBranch"
           control={control}
           render={({ field }) => (
-            <TextField{...field} required select label="Default branch">
+            <TextField {...field} required select label="Default branch">
               {branches.map(({ name }) => <MenuItem key={name} value={name}>{name}</MenuItem>)}
             </TextField>
           )}
@@ -219,7 +229,7 @@ const CreateProjectContent: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }
         <Controller
           name="integration.defaultFolder"
           control={control}
-          render={({ field }) => <TextField {...field} required type="text" label="Default folder"/>}
+          render={({ field }) => <TextField {...field} required type="text" label="Default folder" />}
         />
         <Controller
           name="description"
@@ -230,7 +240,8 @@ const CreateProjectContent: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }
               multiline
               rows="4"
               type="text"
-              label="Description of the project"/>
+              label="Description of the project"
+            />
           )}
         />
       </DialogContent>

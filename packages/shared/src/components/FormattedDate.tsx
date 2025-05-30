@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { Typography } from '@mui/material'
+import Tooltip from '@mui/material/Tooltip'
 import type { FC } from 'react'
 import { memo } from 'react'
-import Tooltip from '@mui/material/Tooltip'
 import { toDateFormat, toTimezone } from '../utils/date'
-import { Typography } from '@mui/material'
 
 export type FormattedDateProps = {
   value: string | undefined
@@ -27,7 +27,6 @@ export type FormattedDateProps = {
 }
 
 export const FormattedDate: FC<FormattedDateProps> = memo<FormattedDateProps>(({ value, format, color }) => {
-
   if (!value) {
     return null
   }

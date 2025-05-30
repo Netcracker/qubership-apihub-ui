@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { ElementType, FC, ReactNode } from 'react'
-import React, { memo, useMemo } from 'react'
 import Chip from '@mui/material/Chip'
 import type { ChipProps, ChipPropsColorOverrides } from '@mui/material/Chip/Chip'
 import type { OverridableStringUnion } from '@mui/types'
+import type { ElementType, FC, ReactNode } from 'react'
+import React, { memo, useMemo } from 'react'
 import { CHIP_COLOR_OVERRIDES } from '../themes/palette'
 
 export type CustomChipProps = {
@@ -38,14 +38,13 @@ export const CustomChip: FC<CustomChipProps> = memo<CustomChipProps>(({
 }) => {
   const isCustomColor = useMemo(() => Object.keys(CHIP_COLOR_OVERRIDES).includes(value), [value])
 
-  //to support many usages in UI
+  // to support many usages in UI
   const sxOverrides = useMemo(() => (isExtraSmall
-      ? {
-        ...sx,
-        ...extraSmallStyles,
-      }
-      : sx
-  ), [isExtraSmall, sx])
+    ? {
+      ...sx,
+      ...extraSmallStyles,
+    }
+    : sx), [isExtraSmall, sx])
 
   return (
     <Chip
@@ -59,7 +58,10 @@ export const CustomChip: FC<CustomChipProps> = memo<CustomChipProps>(({
   )
 })
 
-type ChipColor = OverridableStringUnion<'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning', ChipPropsColorOverrides>
+type ChipColor = OverridableStringUnion<
+  'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning',
+  ChipPropsColorOverrides
+>
 
 const extraSmallStyles = {
   height: '14px',

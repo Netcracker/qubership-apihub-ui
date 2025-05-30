@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
+import { useCompareBreadcrumbs } from '@apihub/routes/root/PortalPage/VersionPage/useCompareBreadcrumbs'
+import { useComparisonObjects } from '@apihub/routes/root/PortalPage/VersionPage/useComparisonObjects'
+import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
+import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
+import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { GROUP_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import type { FC } from 'react'
 import { memo, useMemo } from 'react'
-import { GroupCompareContent } from './GroupCompareContent'
-import { ComparisonToolbar } from '../ComparisonToolbar'
-import { ChangesLoadingStatusProvider } from '../ChangesLoadingStatusProvider'
-import { GroupCompareSidebar } from './GroupCompareSidebar'
-import { COMPARE_PACKAGES_MODE } from '../OperationContent/OperationView/OperationDisplayMode'
-import { VersionsComparisonGlobalParamsContext } from '../VersionsComparisonGlobalParams'
-import { useCompareGroups } from '../../useCompareGroups'
-import { CompareRestGroupsDialog } from '../CompareRestGroupsDialog'
 import { useParams } from 'react-router-dom'
-import { useComparisonParams } from '../useComparisonParams'
-import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
-import { GROUP_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
-import { useComparisonObjects } from '@apihub/routes/root/PortalPage/VersionPage/useComparisonObjects'
-import { useCompareBreadcrumbs } from '@apihub/routes/root/PortalPage/VersionPage/useCompareBreadcrumbs'
+import { useCompareGroups } from '../../useCompareGroups'
+import { ChangesLoadingStatusProvider } from '../ChangesLoadingStatusProvider'
 import { BreadcrumbsDataContext } from '../ComparedPackagesBreadcrumbsProvider'
+import { CompareRestGroupsDialog } from '../CompareRestGroupsDialog'
+import { ComparisonToolbar } from '../ComparisonToolbar'
+import { COMPARE_PACKAGES_MODE } from '../OperationContent/OperationView/OperationDisplayMode'
+import { useComparisonParams } from '../useComparisonParams'
+import { VersionsComparisonGlobalParamsContext } from '../VersionsComparisonGlobalParams'
+import { GroupCompareContent } from './GroupCompareContent'
+import { GroupCompareSidebar } from './GroupCompareSidebar'
 
 export const GroupComparePage: FC = memo(() => {
   const { group } = useParams()
@@ -50,9 +50,8 @@ export const GroupComparePage: FC = memo(() => {
   })
 
   const tags = useMemo(() => (isEmpty(compareGroups.operationTypes[0]?.tags)
-      ? compareGroups.operationTypes[1]?.tags ?? []
-      : compareGroups.operationTypes[0]?.tags ?? []),
-    [compareGroups.operationTypes])
+    ? compareGroups.operationTypes[1]?.tags ?? []
+    : compareGroups.operationTypes[0]?.tags ?? []), [compareGroups.operationTypes])
   const groupChanges = useMemo(() => compareGroups.data ?? [], [compareGroups.data])
 
   const [originComparisonObject, changedComparisonObject] = useComparisonObjects({
@@ -67,18 +66,18 @@ export const GroupComparePage: FC = memo(() => {
       <BreadcrumbsDataContext.Provider value={mergedBreadcrumbsData}>
         <VersionsComparisonGlobalParamsContext.Provider value={groupsComparisonParams}>
           <PageLayout
-            toolbar={<ComparisonToolbar compareToolbarMode={COMPARE_PACKAGES_MODE}/>}
+            toolbar={<ComparisonToolbar compareToolbarMode={COMPARE_PACKAGES_MODE} />}
             body={
               <GroupCompareContent
                 groupChanges={groupChanges}
                 breadcrumbsData={mergedBreadcrumbsData}
               />
             }
-            navigation={<GroupCompareSidebar tags={tags}/>}
+            navigation={<GroupCompareSidebar tags={tags} />}
           />
         </VersionsComparisonGlobalParamsContext.Provider>
       </BreadcrumbsDataContext.Provider>
-      <CompareRestGroupsDialog/>
+      <CompareRestGroupsDialog />
     </ChangesLoadingStatusProvider>
   )
 })

@@ -14,44 +14,44 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useCallback, useMemo } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import { Box, IconButton, Typography } from '@mui/material'
-import ArrowBackIcon from '@mui/icons-material/ArrowBack'
-import { ComparisonOperationChangeSeverityFilters } from './ComparisonOperationChangeSeverityFilters'
-import { useChangesLoadingStatus } from './ChangesLoadingStatusProvider'
-import { ComparisonChangeSeverityFilters } from './ComparisonChangeSeverityFilters'
-import { PackageSelector } from './PackageSelector'
-import { useIsPackageFromDashboard } from '../useIsPackageFromDashboard'
-import { useBreadcrumbsData } from './ComparedPackagesBreadcrumbsProvider'
-import { ComparedPackagesBreadcrumbs } from '../../ComparedPackagesBreadcrumbs'
-import { ApiTypeSegmentedSelector } from './VersionComparePage/ApiTypeSegmentedSelector'
-import { useChangesSummaryFromContext } from './ChangesSummaryProvider'
-import { useOperationViewMode } from './useOperationViewMode'
-import { getOverviewPath } from '../../../NavigationProvider'
-import { OperationViewModeSelector } from './OperationViewModeSelector'
 import { useBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
+import { isLinkedComparedBreadcrumbPathItem } from '@apihub/routes/root/PortalPage/VersionPage/breadcrumbs'
+import type { ChangelogAvailable } from '@apihub/routes/root/PortalPage/VersionPage/common-props'
 import {
   COMPARE_DASHBOARDS_MODE,
   COMPARE_DIFFERENT_OPERATIONS_MODE,
   COMPARE_PACKAGES_MODE,
   COMPARE_SAME_OPERATIONS_MODE,
 } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationView/OperationDisplayMode'
+import { useApiTypeSearchParam } from '@apihub/routes/root/PortalPage/VersionPage/useApiTypeSearchParam'
+import { isApiTypeSelectorShown } from '@apihub/utils/operation-types'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import { Box, IconButton, Typography } from '@mui/material'
+import type { ChangesTooltipCategory } from '@netcracker/qubership-apihub-ui-shared/components/ChangesTooltip'
+import { CATEGORY_OPERATION, CATEGORY_PACKAGE } from '@netcracker/qubership-apihub-ui-shared/components/ChangesTooltip'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { API_TYPE_TITLE_MAP, API_TYPES } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import {
   OPERATION_COMPARE_VIEW_MODES,
   RAW_OPERATION_VIEW_MODE,
 } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
 import { isDashboardComparisonSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
-import { isApiTypeSelectorShown } from '@apihub/utils/operation-types'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { API_TYPE_TITLE_MAP, API_TYPES } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { isLinkedComparedBreadcrumbPathItem } from '@apihub/routes/root/PortalPage/VersionPage/breadcrumbs'
-import type { ChangelogAvailable } from '@apihub/routes/root/PortalPage/VersionPage/common-props'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { ChangesTooltipCategory } from '@netcracker/qubership-apihub-ui-shared/components/ChangesTooltip'
-import { CATEGORY_OPERATION, CATEGORY_PACKAGE } from '@netcracker/qubership-apihub-ui-shared/components/ChangesTooltip'
-import { useApiTypeSearchParam } from '@apihub/routes/root/PortalPage/VersionPage/useApiTypeSearchParam'
+import type { FC } from 'react'
+import { memo, useCallback, useMemo } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { getOverviewPath } from '../../../NavigationProvider'
+import { ComparedPackagesBreadcrumbs } from '../../ComparedPackagesBreadcrumbs'
+import { useIsPackageFromDashboard } from '../useIsPackageFromDashboard'
+import { useChangesLoadingStatus } from './ChangesLoadingStatusProvider'
+import { useChangesSummaryFromContext } from './ChangesSummaryProvider'
+import { useBreadcrumbsData } from './ComparedPackagesBreadcrumbsProvider'
+import { ComparisonChangeSeverityFilters } from './ComparisonChangeSeverityFilters'
+import { ComparisonOperationChangeSeverityFilters } from './ComparisonOperationChangeSeverityFilters'
+import { OperationViewModeSelector } from './OperationViewModeSelector'
+import { PackageSelector } from './PackageSelector'
+import { useOperationViewMode } from './useOperationViewMode'
+import { ApiTypeSegmentedSelector } from './VersionComparePage/ApiTypeSegmentedSelector'
 
 export type ComparisonPageToolbarProps = {
   compareToolbarMode: CompareToolbarMode
@@ -80,7 +80,9 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
   const breadcrumbsContext = useBreadcrumbsData()
   const commonLinkedBreadcrumbs = breadcrumbsContext?.common.filter(isLinkedComparedBreadcrumbPathItem)
 
-  const isOperationsComparison = [COMPARE_SAME_OPERATIONS_MODE, COMPARE_DIFFERENT_OPERATIONS_MODE].includes(compareToolbarMode)
+  const isOperationsComparison = [COMPARE_SAME_OPERATIONS_MODE, COMPARE_DIFFERENT_OPERATIONS_MODE].includes(
+    compareToolbarMode,
+  )
   const isPackagesComparison = compareToolbarMode === COMPARE_PACKAGES_MODE
 
   const { mode } = useOperationViewMode()
@@ -112,7 +114,16 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
       backwardLocation.fromDocumentsComparison && (target = { ...backwardLocation.fromDocumentsComparison })
     }
     navigate(target)
-  }, [backwardLocation.fromDocumentsComparison, backwardLocation.fromOperationsComparison, backwardLocation.fromPackagesComparison, isOperationsComparison, isPackagesComparison, mainPackageId, mainVersionId, navigate])
+  }, [
+    backwardLocation.fromDocumentsComparison,
+    backwardLocation.fromOperationsComparison,
+    backwardLocation.fromPackagesComparison,
+    isOperationsComparison,
+    isPackagesComparison,
+    mainPackageId,
+    mainVersionId,
+    navigate,
+  ])
 
   const changesLoadingStatus = useChangesLoadingStatus()
 
@@ -120,42 +131,46 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
     isOperationsComparison
       ? `${TITLE_BY_COMPARE_MODE[compareToolbarMode]} ${API_TYPE_TITLE_MAP[operationApiType as ApiType]}`
       : group
-        ? COMPARE_API_BY_GROUPS
-        : TITLE_BY_COMPARE_MODE[compareToolbarMode]
+      ? COMPARE_API_BY_GROUPS
+      : TITLE_BY_COMPARE_MODE[compareToolbarMode]
   ), [compareToolbarMode, group, isOperationsComparison, operationApiType])
 
   return (
     <Box sx={COMPARISON_PAGE_TOOLBAR_STYLES} data-testid="ComparisonToolbar">
       <Box display="flex" flexDirection="column">
         <Typography variant="body2">
-          <ComparedPackagesBreadcrumbs data={commonLinkedBreadcrumbs}/>
+          <ComparedPackagesBreadcrumbs data={commonLinkedBreadcrumbs} />
         </Typography>
         <Box display="flex" alignItems="center">
           <IconButton color="primary" onClick={handleBackClick} data-testid="BackButton">
-            <ArrowBackIcon/>
+            <ArrowBackIcon />
           </IconButton>
           <Typography sx={COMPARISON_PAGE_TOOLBAR_TEXT_STYLES}>
             {title}
           </Typography>
-          {isPackageFromDashboard && compareToolbarMode !== COMPARE_DIFFERENT_OPERATIONS_MODE && <PackageSelector/>}
+          {isPackageFromDashboard && compareToolbarMode !== COMPARE_DIFFERENT_OPERATIONS_MODE && <PackageSelector />}
         </Box>
       </Box>
       <Box sx={COMPARISON_PAGE_TOOLBAR_ACTIONS_STYLES}>
         {!changesLoadingStatus && (
           isOperationsComparison
-            ? <>
-              {mode !== RAW_OPERATION_VIEW_MODE && (
-                <ComparisonOperationChangeSeverityFilters isChangelogAvailable={isChangelogAvailable}/>
-              )}
-              <OperationViewModeSelector modes={OPERATION_COMPARE_VIEW_MODES}/>
-            </>
-            : <>
-              <ComparisonChangeSeverityFilters
-                category={getChangeSeverityCategory(isDashboardsComparison, isPackagesComparison)}
-                apiType={operationApiType ?? API_TYPES.find(type => type.toString() === apiTypeSearchParam)}
-              />
-              {isDashboardsComparison && showApiTypeSelector && <ApiTypeSegmentedSelector/>}
-            </>
+            ? (
+              <>
+                {mode !== RAW_OPERATION_VIEW_MODE && (
+                  <ComparisonOperationChangeSeverityFilters isChangelogAvailable={isChangelogAvailable} />
+                )}
+                <OperationViewModeSelector modes={OPERATION_COMPARE_VIEW_MODES} />
+              </>
+            )
+            : (
+              <>
+                <ComparisonChangeSeverityFilters
+                  category={getChangeSeverityCategory(isDashboardsComparison, isPackagesComparison)}
+                  apiType={operationApiType ?? API_TYPES.find(type => type.toString() === apiTypeSearchParam)}
+                />
+                {isDashboardsComparison && showApiTypeSelector && <ApiTypeSegmentedSelector />}
+              </>
+            )
         )}
       </Box>
     </Box>
@@ -207,4 +222,3 @@ const TITLE_BY_COMPARE_MODE = {
 }
 
 const COMPARE_API_BY_GROUPS = 'Compare API by Groups'
-

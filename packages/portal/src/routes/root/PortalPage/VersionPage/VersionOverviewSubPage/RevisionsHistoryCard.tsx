@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-import type { Dispatch, FC, SetStateAction } from 'react'
-import React, { memo, useRef, useState } from 'react'
-import { usePagedRevisions } from '../usePagedRevisions'
-import { useParams } from 'react-router-dom'
-import { VersionHistoryTable } from '../../VersionHistoryTable'
+import { MetaDataContent } from '@apihub/components/MetaDataContent'
 import { Box, Tooltip, Typography } from '@mui/material'
-import { useFullMainVersion } from '../../FullMainVersionProvider'
-import { useIntersectionObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useIntersectionObserver'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import {
   NAVIGATION_PLACEHOLDER_AREA,
   NO_SEARCH_RESULTS,
   Placeholder,
 } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
-import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
-import { MetaDataContent } from '@apihub/components/MetaDataContent'
-import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoContextIcon'
 import type { Revision } from '@netcracker/qubership-apihub-ui-shared/entities/revisions'
+import { useIntersectionObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useIntersectionObserver'
+import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoContextIcon'
+import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import type { Dispatch, FC, SetStateAction } from 'react'
+import React, { memo, useRef, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import { useFullMainVersion } from '../../FullMainVersionProvider'
+import { VersionHistoryTable } from '../../VersionHistoryTable'
+import { usePagedRevisions } from '../usePagedRevisions'
 
 export const RevisionsHistoryCard: FC = memo(() => {
   const { packageId } = useParams()
@@ -50,7 +50,7 @@ export const RevisionsHistoryCard: FC = memo(() => {
 
   return (
     <BodyCard
-      header={<RevisionsHistoryCardHeader setSearchValue={setSearchValue}/>}
+      header={<RevisionsHistoryCardHeader setSearchValue={setSearchValue} />}
       body={
         <Placeholder
           invisible={isNotEmpty(revisions) || isLoading}
@@ -62,10 +62,11 @@ export const RevisionsHistoryCard: FC = memo(() => {
             packageKey={packageId ?? ''}
             hasNextPage={hasNextPage}
             refObject={ref}
-            actionsCell={(item) => <RevisionActions revision={item as Revision}/>}
+            actionsCell={(item) => <RevisionActions revision={item as Revision} />}
             isLoading={isLoading}
           />
-        </Placeholder>}
+        </Placeholder>
+      }
     />
   )
 })
@@ -74,21 +75,23 @@ type RevisionsHistoryCardHeaderProps = {
   setSearchValue: Dispatch<SetStateAction<string>>
 }
 
-const RevisionsHistoryCardHeader: FC<RevisionsHistoryCardHeaderProps> = memo<RevisionsHistoryCardHeaderProps>(({ setSearchValue }) => {
-  return (
-    <Box
-      sx={{
-        display: 'grid',
-        gap: 1,
-        gridTemplateColumns: '1fr auto',
-        alignItems: 'center',
-      }}
-    >
-      <Typography variant="inherit">Revision History</Typography>
-      <SearchBar onValueChange={setSearchValue} data-testid="SearchRevisions"/>
-    </Box>
-  )
-})
+const RevisionsHistoryCardHeader: FC<RevisionsHistoryCardHeaderProps> = memo<RevisionsHistoryCardHeaderProps>(
+  ({ setSearchValue }) => {
+    return (
+      <Box
+        sx={{
+          display: 'grid',
+          gap: 1,
+          gridTemplateColumns: '1fr auto',
+          alignItems: 'center',
+        }}
+      >
+        <Typography variant="inherit">Revision History</Typography>
+        <SearchBar onValueChange={setSearchValue} data-testid="SearchRevisions" />
+      </Box>
+    )
+  },
+)
 
 type RevisionActionsProps = {
   revision: Revision
@@ -102,13 +105,13 @@ const RevisionActions: FC<RevisionActionsProps> = memo<RevisionActionsProps>(({ 
     return (
       <Tooltip
         disableHoverListener={false}
-        title={<MetaDataContent metaData={publishMeta}/>}
+        title={<MetaDataContent metaData={publishMeta} />}
         placement="left"
         slotProps={{
           tooltip: { sx: { maxWidth: REVISION_ACTION_TOOLTIP_MAX_WIDTH } },
         }}
       >
-        <InfoContextIcon sx={{ visibility: 'hidden' }} className="visible-on-hover" area-label="info"/>
+        <InfoContextIcon sx={{ visibility: 'hidden' }} className="visible-on-hover" area-label="info" />
       </Tooltip>
     )
   }

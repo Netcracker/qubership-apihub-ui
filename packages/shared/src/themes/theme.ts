@@ -15,9 +15,9 @@
  */
 
 import { createTheme } from '@mui/material/styles'
-import { createTypography } from './typography'
-import { createPalette } from './palette'
 import { createComponents } from './components'
+import { createPalette } from './palette'
+import { createTypography } from './typography'
 
 export const theme = createTheme({
   typography: createTypography(),

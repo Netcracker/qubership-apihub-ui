@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { useAuthorization } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
 import { getTokenPayload } from '@netcracker/qubership-apihub-ui-shared/entities/token-payload'
+import { useAuthorization } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
 
 export function useGitlabIntegrationCheck(): boolean {
   const [authorization] = useAuthorization()
@@ -26,9 +26,7 @@ export function useGitlabIntegrationCheck(): boolean {
 
   try {
     return getTokenPayload(authorization.token).extensions.gitIntegration
-  } catch (e) {/*do nothing*/}
+  } catch (e) { /*do nothing*/ }
 
   return false
 }
-
-

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import { editor as Editor } from 'monaco-editor'
 import type { RefObject } from 'react'
 import { useEffect, useRef } from 'react'
-import { editor as Editor } from 'monaco-editor'
 import { useEffectOnce } from 'react-use'
-import type { SpecType } from '../../utils/specs'
 import type { LanguageType } from '../../types/languages'
 import { LANGUAGE_TYPE_TEXT } from '../../types/languages'
 import type { SpecItemUri } from '../../utils/specifications'
 import { findPathLocation } from '../../utils/specifications'
+import type { SpecType } from '../../utils/specs'
 
 export function useMonacoDiffEditorElement(options: {
   before: string
@@ -62,7 +62,7 @@ export function useMonacoDiffEditorElement(options: {
   })
 
   useEffect(() => {
-    //todo resolve problem with load schema model by filename (like in useSetEditorModel)
+    // todo resolve problem with load schema model by filename (like in useSetEditorModel)
     editor.current?.setModel({
       original: Editor.createModel(before, language),
       modified: Editor.createModel(after, language),

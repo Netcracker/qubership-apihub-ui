@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
+import { CloseOutlined as CloseOutlinedIcon } from '@mui/icons-material'
+import { Box, Dialog, DialogContent, DialogTitle, IconButton } from '@mui/material'
+import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
+import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
+import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
+import { RolesTable } from '@netcracker/qubership-apihub-ui-shared/components/RolesTable'
+import { SHOW_USER_ROLES_DIALOG } from '@netcracker/qubership-apihub-ui-shared/types/dialogs'
+import type { Permission } from '@netcracker/qubership-apihub-ui-shared/types/permissions'
+import type { Role } from '@netcracker/qubership-apihub-ui-shared/types/roles'
 import type { FC } from 'react'
 import * as React from 'react'
 import { memo, useCallback } from 'react'
-import type { Role } from '@netcracker/qubership-apihub-ui-shared/types/roles'
-import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import type { Permission } from '@netcracker/qubership-apihub-ui-shared/types/permissions'
-import { RolesTable } from '@netcracker/qubership-apihub-ui-shared/components/RolesTable'
-import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
-import { Box, Dialog, DialogContent, DialogTitle, IconButton } from '@mui/material'
-import { CloseOutlined as CloseOutlinedIcon } from '@mui/icons-material'
-import { SHOW_USER_ROLES_DIALOG } from '@netcracker/qubership-apihub-ui-shared/types/dialogs'
 
 export type UserRolesDialogProps = {
   permissions: ReadonlyArray<Permission>
@@ -42,12 +42,14 @@ export const UserRolesDialog: FC<UserRolesDialogProps> = memo((props) => {
   return (
     <PopupDelegate
       type={SHOW_USER_ROLES_DIALOG}
-      render={props => <UserRolesPopup
-        {...props}
-        permissions={permissions}
-        roles={roles}
-        isLoading={isLoading}
-      />}
+      render={props => (
+        <UserRolesPopup
+          {...props}
+          permissions={permissions}
+          roles={roles}
+          isLoading={isLoading}
+        />
+      )}
     />
   )
 })
@@ -78,19 +80,19 @@ const UserRolesPopup: FC<UserRolesPopupProps> = memo((props) => {
           sx={{ color: '#353C4E' }}
           onClick={onClose}
         >
-          <CloseOutlinedIcon/>
+          <CloseOutlinedIcon />
         </IconButton>
       </DialogTitle>
       <DialogContent sx={{ width: '100%', height: '100%', overflow: 'hidden', paddingBottom: '16px' }}>
         {isLoading
-          ? <LoadingIndicator/>
-          : <RolesTable
-            permissions={permissions}
-            roles={roles}
-          />
-        }
+          ? <LoadingIndicator />
+          : (
+            <RolesTable
+              permissions={permissions}
+              roles={roles}
+            />
+          )}
       </DialogContent>
     </Dialog>
   )
 })
-

@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
+import { DropdownPackageReferenceSelector } from '@netcracker/qubership-apihub-ui-shared/components/DropdownPackageReferenceSelector'
+import { PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import type { PackageReference } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
+import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import type { FC } from 'react'
 import { memo, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { useVersionSearchParam } from '../../useVersionSearchParam'
 import { usePackageSearchParam } from '../../usePackageSearchParam'
-import { useRefSearchParam } from '../useRefSearchParam'
 import { useFilteredPackageRefs } from '../../useRefPackage'
-import type { PackageReference } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
-import { PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import { DropdownPackageReferenceSelector } from '@netcracker/qubership-apihub-ui-shared/components/DropdownPackageReferenceSelector'
+import { useVersionSearchParam } from '../../useVersionSearchParam'
+import { useRefSearchParam } from '../useRefSearchParam'
 
 export const PackageSelector: FC = memo(() => {
   const [searchValue, setSearchValue] = useState('')

@@ -15,20 +15,15 @@
  */
 
 import type { Document } from '@apihub/entities/documents'
-import type { FC } from 'react'
-import * as React from 'react'
-import { memo, useCallback, useMemo } from 'react'
-import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, ListSubheader } from '@mui/material'
-import type { To } from 'react-router-dom'
-import { useNavigate, useParams } from 'react-router-dom'
-import { DocumentActionsButton } from './DocumentActionsButton'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
-import { SidebarSkeleton } from '@netcracker/qubership-apihub-ui-shared/components/SidebarSkeleton'
-import { isEmpty, isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, ListSubheader } from '@mui/material'
 import { NAVIGATION_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
-import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
-import { optionalSearchParams, REF_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { SidebarSkeleton } from '@netcracker/qubership-apihub-ui-shared/components/SidebarSkeleton'
 import { SpecLogo } from '@netcracker/qubership-apihub-ui-shared/components/SpecLogo'
+import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
+import { isEmpty, isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { alphabeticallyBy } from '@netcracker/qubership-apihub-ui-shared/utils/comparers'
+import { optionalSearchParams, REF_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import {
   isGraphQlSpecType,
@@ -38,7 +33,12 @@ import {
   PROTOBUF_3_SPEC_TYPE,
 } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import { groupBy } from 'lodash-es'
-import { alphabeticallyBy } from '@netcracker/qubership-apihub-ui-shared/utils/comparers'
+import type { FC } from 'react'
+import * as React from 'react'
+import { memo, useCallback, useMemo } from 'react'
+import type { To } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
+import { DocumentActionsButton } from './DocumentActionsButton'
 
 export type DocumentListProps = {
   isLoading: boolean
@@ -106,14 +106,18 @@ export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({ do
   const groupedDocuments = useMemo(() => {
     const groupedDocuments = groupBy(documents, ({ type }) => getGroupNameBySpecType(type))
     return Object.entries(groupedDocuments)
-      .sort(([groupNameA], [groupNameB]) => GROUPS_DISPLAY_ORDER.indexOf(groupNameA) - GROUPS_DISPLAY_ORDER.indexOf(groupNameB))
-      .map(([groupName, documents]) => [groupName, documents.sort((it, that) => alphabeticallyBy('title', it, that))] as [GroupName, Document[]])
+      .sort(([groupNameA], [groupNameB]) =>
+        GROUPS_DISPLAY_ORDER.indexOf(groupNameA) - GROUPS_DISPLAY_ORDER.indexOf(groupNameB)
+      )
+      .map(([groupName, documents]) =>
+        [groupName, documents.sort((it, that) => alphabeticallyBy('title', it, that))] as [GroupName, Document[]]
+      )
   }, [documents])
 
   if (isLoading) {
     return (
       <Box mt={1}>
-        <SidebarSkeleton/>
+        <SidebarSkeleton />
       </Box>
     )
   } else if (isEmpty(documents)) {
@@ -127,77 +131,81 @@ export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({ do
   }
 
   return (
-    <List sx={{
-      paddingBottom: '30px',
-      gap: '16px',
-      display: 'flex',
-      flexDirection: 'column',
-    }} data-testid="DocumentsList"
+    <List
+      sx={{
+        paddingBottom: '30px',
+        gap: '16px',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+      data-testid="DocumentsList"
     >
-      {groupedDocuments.map(([groupName, documents]) => <Box key={groupName}>
-        <ListSubheader
-          sx={{
-            fontSize: 12,
-            lineHeight: '24px',
-          }}
-        >
-          {groupName}
-        </ListSubheader>
-        {documents.map(({ key, type, title, slug, version, format }) => {
-          const displayTitle = version ? `${title} ${version}` : title
-          return (
-            <ListItem
-              key={key}
-              sx={{ p: 0 }}
-            >
-              {/*TODO: Check flexDirection in theme*/}
-              <ListItemButton
-                sx={{
-                  flexDirection: 'unset',
-                  backgroundColor: documentId === slug ? '#ECEDEF' : 'transparent',
-                  height: '36px',
-                  alignItems: 'center',
-                  '&:hover': {
-                    '& .MuiButtonBase-root': {
-                      visibility: 'visible',
-                    },
-                  },
-                }}
-                selected={documentId === slug}
-                onClick={() => {
-                  navigateToSelectedDocument({
-                    pathname: `/portal/packages/${packageKey}/${escapedVersionKey}/documents/${slug}`,
-                    search: `${search}`,
-                  })
-                }}
-                data-testid="DocumentButton"
+      {groupedDocuments.map(([groupName, documents]) => (
+        <Box key={groupName}>
+          <ListSubheader
+            sx={{
+              fontSize: 12,
+              lineHeight: '24px',
+            }}
+          >
+            {groupName}
+          </ListSubheader>
+          {documents.map(({ key, type, title, slug, version, format }) => {
+            const displayTitle = version ? `${title} ${version}` : title
+            return (
+              <ListItem
+                key={key}
+                sx={{ p: 0 }}
               >
-                <ListItemIcon sx={{ minWidth: 2, mt: 0, mr: 1 }}>
-                  <SpecLogo value={type}/>
-                </ListItemIcon>
-                <ListItemText primary={displayTitle} primaryTypographyProps={{ sx: { mt: 0.25 } }}/>
-                <DocumentActionsButton
-                  slug={slug}
-                  docType={type}
-                  format={format}
+                {/*TODO: Check flexDirection in theme*/}
+                <ListItemButton
                   sx={{
-                    ml: 1,
-                    visibility: 'visible',
-                    backgroundColor: 'transparent',
+                    flexDirection: 'unset',
+                    backgroundColor: documentId === slug ? '#ECEDEF' : 'transparent',
+                    height: '36px',
+                    alignItems: 'center',
                     '&:hover': {
-                      backgroundColor: '#ECEDEF',
+                      '& .MuiButtonBase-root': {
+                        visibility: 'visible',
+                      },
                     },
-                    width: 24,
-                    minWidth: 24,
-                    height: 24,
                   }}
-                  icon={<MoreVertIcon sx={{ color: '#626D82' }} fontSize="small"/>}
-                />
-              </ListItemButton>
-            </ListItem>
-          )
-        })}
-      </Box>)}
+                  selected={documentId === slug}
+                  onClick={() => {
+                    navigateToSelectedDocument({
+                      pathname: `/portal/packages/${packageKey}/${escapedVersionKey}/documents/${slug}`,
+                      search: `${search}`,
+                    })
+                  }}
+                  data-testid="DocumentButton"
+                >
+                  <ListItemIcon sx={{ minWidth: 2, mt: 0, mr: 1 }}>
+                    <SpecLogo value={type} />
+                  </ListItemIcon>
+                  <ListItemText primary={displayTitle} primaryTypographyProps={{ sx: { mt: 0.25 } }} />
+                  <DocumentActionsButton
+                    slug={slug}
+                    docType={type}
+                    format={format}
+                    sx={{
+                      ml: 1,
+                      visibility: 'visible',
+                      backgroundColor: 'transparent',
+                      '&:hover': {
+                        backgroundColor: '#ECEDEF',
+                      },
+                      width: 24,
+                      minWidth: 24,
+                      height: 24,
+                    }}
+                    icon={<MoreVertIcon sx={{ color: '#626D82' }} fontSize="small" />}
+                  />
+                </ListItemButton>
+              </ListItem>
+            )
+          })}
+        </Box>
+      ))}
     </List>
   )
 })

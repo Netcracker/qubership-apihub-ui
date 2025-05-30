@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
+import type { Service } from '@apihub/entities/services'
+import type { ServiceKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { RowModel, RowSelectionState } from '@tanstack/react-table'
 import type { Updater } from '@tanstack/table-core'
-import type { Service } from '@apihub/entities/services'
-import { useEffectOnce } from 'react-use'
 import { useEffect, useMemo } from 'react'
-import type { ServiceKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { useEffectOnce } from 'react-use'
 
-type ServiceRowModel = RowModel<Partial<{
-  service: Service
-}>>
+type ServiceRowModel = RowModel<
+  Partial<{
+    service: Service
+  }>
+>
 
 const TRUE_FUNCTION = (): boolean => true
 
@@ -39,22 +41,27 @@ export function useConfigureServiceSelection(
   useEffectOnce(() => {
     const rowSelect = Object.fromEntries(
       Object.entries(getRowModel().rowsById)
-        .map(([id, { original }]) =>
-          [id, !!selected?.includes(original.service?.key ?? '') && filter(original.service)],
-        ),
+        .map((
+          [id, { original }],
+        ) => [id, !!selected?.includes(original.service?.key ?? '') && filter(original.service)]),
     )
 
     setRowSelection(rowSelect)
   })
 
   const selectedServiceKeys = useMemo(
-    () => getSelectedRowModel().flatRows.filter(({ original: { service } }) => !!service).map(({ original: { service } }) => service!.key),
+    () =>
+      getSelectedRowModel().flatRows.filter(({ original: { service } }) => !!service).map(({ original: { service } }) =>
+        service!.key
+      ),
     // Refactor it. Here we need to recalculate selected services when table selection changes.
     //  Seems there are another way to find out the table selection has changed. Find it!
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [rowSelection],
   )
-  useEffect(() => {onSelect(selectedServiceKeys)}, [onSelect, selectedServiceKeys])
+  useEffect(() => {
+    onSelect(selectedServiceKeys)
+  }, [onSelect, selectedServiceKeys])
 
   return selectedServiceKeys
 }

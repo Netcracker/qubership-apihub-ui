@@ -34,7 +34,7 @@ export const PackageKindLogo: FC<PackageKindLogoProps> = memo<PackageKindLogoPro
 })
 
 const PACKAGE_KIND_ICON_MAP: Partial<Record<PackageKind, ReactElement>> = {
-  [DASHBOARD_KIND]: <DashboardIcon/>,
-  [GROUP_KIND]: <GroupIcon/>,
-  [PACKAGE_KIND]: <PackageIcon/>,
+  [DASHBOARD_KIND]: <DashboardIcon />,
+  [GROUP_KIND]: <GroupIcon />,
+  [PACKAGE_KIND]: <PackageIcon />,
 }

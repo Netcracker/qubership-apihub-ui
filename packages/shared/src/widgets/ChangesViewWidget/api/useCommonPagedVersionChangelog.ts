@@ -16,8 +16,6 @@
 
 import type { FetchNextPageOptions, InfiniteQueryObserverResult } from '@tanstack/react-query'
 import { useInfiniteQuery } from '@tanstack/react-query'
-import type { VersionChangelogOptions } from './getVersionChangelog'
-import { getVersionChangelog } from './getVersionChangelog'
 import { useMemo } from 'react'
 import type {
   DifferentVersionChanges,
@@ -27,14 +25,18 @@ import type {
   VersionChangesDto,
 } from '../../../entities/version-changelog'
 import { toDiffVersionChanges, toVersionChanges } from '../../../entities/version-changelog'
-import type { HasNextPage, IsFetchingNextPage, IsLoading } from '../../../utils/aliases'
 import {
   useResolvedOperationGroupParameters,
 } from '../../../hooks/operation-groups/useResolvedOperationGroupParameters'
+import type { HasNextPage, IsFetchingNextPage, IsLoading } from '../../../utils/aliases'
+import type { VersionChangelogOptions } from './getVersionChangelog'
+import { getVersionChangelog } from './getVersionChangelog'
 
 const VERSION_CHANGELOG = 'version-changelog-query-key'
 
-export type FetchNextPage = (options?: FetchNextPageOptions) => Promise<InfiniteQueryObserverResult<VersionChangesDto, Error>>
+export type FetchNextPage = (
+  options?: FetchNextPageOptions,
+) => Promise<InfiniteQueryObserverResult<VersionChangesDto, Error>>
 
 function useCommonPagedVersionChangelog<T>(
   options: VersionChangelogOptions,
@@ -69,30 +71,45 @@ function useCommonPagedVersionChangelog<T>(
     hasNextPage,
   } = useInfiniteQuery<VersionChangesDto, Error, VersionChangesDto>({
     queryKey: [
-      VERSION_CHANGELOG, packageKey, versionKey, documentSlug, packageIdFilter,
-      previousVersionKey, previousVersionPackageKey, tag, searchValue, apiType, apiAudience, apiKind, group,
-      page, limit, enabled, severityFilters,
+      VERSION_CHANGELOG,
+      packageKey,
+      versionKey,
+      documentSlug,
+      packageIdFilter,
+      previousVersionKey,
+      previousVersionPackageKey,
+      tag,
+      searchValue,
+      apiType,
+      apiAudience,
+      apiKind,
+      group,
+      page,
+      limit,
+      enabled,
+      severityFilters,
     ],
     enabled: !!versionKey && !!packageKey && enabled,
     retry: false,
-    queryFn: ({ pageParam = page, signal }) => getVersionChangelog({
-      packageKey: packageKey,
-      versionKey: versionKey,
-      documentSlug: documentSlug,
-      packageIdFilter: packageIdFilter,
-      previousVersionKey: previousVersionKey,
-      previousVersionPackageKey: previousVersionPackageKey,
-      tag: tag,
-      searchValue: searchValue,
-      apiType: apiType,
-      apiKind: apiKind,
-      apiAudience: apiAudience,
-      group: resolvedGroupName,
-      severityFilters: severityFilters,
-      emptyGroup: resolvedEmptyGroup,
-      page: pageParam - 1,
-      limit: limit,
-    }, signal),
+    queryFn: ({ pageParam = page, signal }) =>
+      getVersionChangelog({
+        packageKey: packageKey,
+        versionKey: versionKey,
+        documentSlug: documentSlug,
+        packageIdFilter: packageIdFilter,
+        previousVersionKey: previousVersionKey,
+        previousVersionPackageKey: previousVersionPackageKey,
+        tag: tag,
+        searchValue: searchValue,
+        apiType: apiType,
+        apiKind: apiKind,
+        apiAudience: apiAudience,
+        group: resolvedGroupName,
+        severityFilters: severityFilters,
+        emptyGroup: resolvedEmptyGroup,
+        page: pageParam - 1,
+        limit: limit,
+      }, signal),
     getNextPageParam: (lastPage, allPages) => {
       if (limit && enabled) {
         return lastPage.operations?.length === limit ? allPages.length + 1 : undefined

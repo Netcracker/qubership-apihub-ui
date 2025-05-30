@@ -1,17 +1,17 @@
-import React, { type FC, memo, useCallback, useEffect, useState } from 'react'
-import { Controller } from 'react-hook-form'
-import { Button, DialogActions, DialogContent, DialogTitle } from '@mui/material'
-import { LoadingButton } from '@mui/lab'
-import { useUpdateAllowedOasExtensions } from '../useAllowedOasExtensions'
-import { PopupDelegate, type PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import {
   SHOW_EDIT_PRESERVED_OAS_EXTENSIONS_DIALOG,
   type ShowEditPreservedOasExtensionsDetail,
 } from '@apihub/routes/EventBusProvider'
+import { LoadingButton } from '@mui/lab'
+import { Button, DialogActions, DialogContent, DialogTitle } from '@mui/material'
 import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
+import { PopupDelegate, type PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
+import React, { type FC, memo, useCallback, useEffect, useState } from 'react'
+import { Controller } from 'react-hook-form'
 import { OAS_EXTENSION_KIND_INHERITED } from '../package-export-config'
-import { type EditOasExtensionsForm, useOasExtensionsManager } from './useOasExtensionsManager'
+import { useUpdateAllowedOasExtensions } from '../useAllowedOasExtensions'
 import { OasExtensionsAutocomplete } from './OasExtensionsAutocomplete'
+import { type EditOasExtensionsForm, useOasExtensionsManager } from './useOasExtensionsManager'
 
 export const EditPreservedOasExtensionsDialog: FC = memo(() => {
   return (

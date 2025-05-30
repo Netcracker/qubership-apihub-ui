@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { FC, HTMLAttributes } from 'react'
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import type { Service } from '@apihub/entities/services'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import {
   Accordion,
   AccordionDetails,
@@ -26,25 +26,25 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
-import { Header } from './internal/Header'
-import { useSpecsRaw } from '../../useSpecRaw'
-import type { Spec } from '@netcracker/qubership-apihub-ui-shared/entities/specs'
-import { GRAPHQL_SCHEMA_SPEC_TYPE, isGraphQlSpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import { APIHUB_NC_BASE_PATH } from '@netcracker/qubership-apihub-ui-shared/utils/urls'
-import { useMergedGraphQlSpec } from './useMergedGraphQlSpec'
-import { OptionItem } from '@netcracker/qubership-apihub-ui-shared/components/OptionItem'
-import { GRAPHQL_FILE_EXTENSION } from '@netcracker/qubership-apihub-ui-shared/utils/files'
-import type { Service } from '@apihub/entities/services'
-import { CommonSpecificationPopup } from './CommonSpecificationPopup'
-import { sortBy } from 'lodash-es'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import { KeyIcon } from '@netcracker/qubership-apihub-ui-shared/icons/KeyIcon'
-import { useIdentityProviderUrl, useSetIdentityProviderUrl } from '../../IdpUrlContextProvider'
 import type { IdpAuthTokenFormData } from '@netcracker/qubership-apihub-ui-shared/components/IdpAuthTokenForm'
 import { IdpAuthTokenForm } from '@netcracker/qubership-apihub-ui-shared/components/IdpAuthTokenForm'
-import { useIdpAuthToken } from './useIdpAuthToken'
-import { useLocalIdpAuthToken } from '../../useLocalIdpAuthToken'
+import { OptionItem } from '@netcracker/qubership-apihub-ui-shared/components/OptionItem'
+import type { Spec } from '@netcracker/qubership-apihub-ui-shared/entities/specs'
+import { KeyIcon } from '@netcracker/qubership-apihub-ui-shared/icons/KeyIcon'
+import { GRAPHQL_FILE_EXTENSION } from '@netcracker/qubership-apihub-ui-shared/utils/files'
+import { GRAPHQL_SCHEMA_SPEC_TYPE, isGraphQlSpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import { APIHUB_NC_BASE_PATH } from '@netcracker/qubership-apihub-ui-shared/utils/urls'
+import { sortBy } from 'lodash-es'
+import type { FC, HTMLAttributes } from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { useEffectOnce } from 'react-use'
+import { useIdentityProviderUrl, useSetIdentityProviderUrl } from '../../IdpUrlContextProvider'
+import { useLocalIdpAuthToken } from '../../useLocalIdpAuthToken'
+import { useSpecsRaw } from '../../useSpecRaw'
+import { CommonSpecificationPopup } from './CommonSpecificationPopup'
+import { Header } from './internal/Header'
+import { useIdpAuthToken } from './useIdpAuthToken'
+import { useMergedGraphQlSpec } from './useMergedGraphQlSpec'
 
 export type GraphQlSpecificationPopupProps = {
   clickedSpec: Spec
@@ -88,7 +88,9 @@ export const GraphQlSpecificationPopup: FC<GraphQlSpecificationPopupProps> = mem
       proxyServerUrl: proxyServer.url,
       serviceKey: service.key,
       extension: GRAPHQL_FILE_EXTENSION,
-      ...(mergedSpecRaw && (currentSchemaOption?.key === COMBINED_SCHEMA_OPTION_NAME) ? COMBINED_SCHEMA_OPTION : currentSchemaOption),
+      ...(mergedSpecRaw && (currentSchemaOption?.key === COMBINED_SCHEMA_OPTION_NAME)
+        ? COMBINED_SCHEMA_OPTION
+        : currentSchemaOption),
     }
   ), [currentSchemaOption, mergedSpecRaw, proxyServer.url, service.key])
 
@@ -129,7 +131,7 @@ export const GraphQlSpecificationPopup: FC<GraphQlSpecificationPopupProps> = mem
     <CardHeader
       sx={{ p: 0 }}
       title="GraphQL Playground"
-      subheader={(
+      subheader={
         <Box>
           <Header agentId={agentId} namespaceKey={namespaceKey} specKey={clickedSpec?.serviceKey}>
             <Box display="flex" gap="2px" alignItems="center" justifyContent="center" flexGrow="">
@@ -157,12 +159,14 @@ export const GraphQlSpecificationPopup: FC<GraphQlSpecificationPopupProps> = mem
                 value={currentSchemaOption}
                 fullWidth
                 options={schemaOptions}
-                renderOption={(props, spec) => <SpecOptionItem
-                  props={props}
-                  key={spec.key}
-                  spec={spec}
-                  mergedSchemaAvailable={!!mergedSpecRaw}
-                />}
+                renderOption={(props, spec) => (
+                  <SpecOptionItem
+                    props={props}
+                    key={spec.key}
+                    spec={spec}
+                    mergedSchemaAvailable={!!mergedSpecRaw}
+                  />
+                )}
                 isOptionEqualToValue={(option, value) => option.key === value.key}
                 getOptionLabel={(option) => option?.name ?? ''}
                 renderInput={(params) => (
@@ -181,10 +185,10 @@ export const GraphQlSpecificationPopup: FC<GraphQlSpecificationPopupProps> = mem
             <Accordion expanded={expand}>
               <AccordionSummary
                 sx={{ pl: 0, width: '130px' }}
-                expandIcon={<ExpandMoreIcon/>}
+                expandIcon={<ExpandMoreIcon />}
                 onClick={() => setExpand(!expand)}
               >
-                <KeyIcon color="#626D82"/>
+                <KeyIcon color="#626D82" />
                 <Typography width="100%" noWrap variant="button">Authenticate</Typography>
               </AccordionSummary>
               <AccordionDetails>
@@ -198,21 +202,23 @@ export const GraphQlSpecificationPopup: FC<GraphQlSpecificationPopupProps> = mem
             </Accordion>
           </Box>
         </Box>
-      )}
+      }
     />
   )
 
-  return <CommonSpecificationPopup
-    spec={spec}
-    proxyServer={proxyServer}
-    value={value}
-    header={localAuthToken}
-    isLoading={isSpecsLoading}
-    headerComponent={headerComponent}
-    disableSpecViewToggler={true}
-    open={open}
-    setOpen={setOpen}
-  />
+  return (
+    <CommonSpecificationPopup
+      spec={spec}
+      proxyServer={proxyServer}
+      value={value}
+      header={localAuthToken}
+      isLoading={isSpecsLoading}
+      headerComponent={headerComponent}
+      disableSpecViewToggler={true}
+      open={open}
+      setOpen={setOpen}
+    />
+  )
 })
 
 export type SpecOptionItemProps = {
@@ -246,7 +252,12 @@ export const SpecOptionItem: FC<SpecOptionItemProps> = memo<SpecOptionItemProps>
   )
 })
 
-function getAgentProxyServerUrl(serviceKey?: string, agentId?: string, namespace?: string, endpoint = DEFAULT_GRAPHQL_ENDPOINT): string {
+function getAgentProxyServerUrl(
+  serviceKey?: string,
+  agentId?: string,
+  namespace?: string,
+  endpoint = DEFAULT_GRAPHQL_ENDPOINT,
+): string {
   if (!agentId || !namespace) {
     return ''
   }

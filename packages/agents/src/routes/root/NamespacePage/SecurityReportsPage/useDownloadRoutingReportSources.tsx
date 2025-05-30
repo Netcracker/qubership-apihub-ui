@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { useMutation } from '@tanstack/react-query'
 import type { Key } from '@apihub/entities/keys'
-import fileDownload from 'js-file-download'
+import { ncCustomAgentsRequestBlob } from '@apihub/utils/requests'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { API_V3 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { APIHUB_NC_BASE_PATH } from '@netcracker/qubership-apihub-ui-shared/utils/urls'
-import { ncCustomAgentsRequestBlob } from '@apihub/utils/requests'
+import { useMutation } from '@tanstack/react-query'
+import fileDownload from 'js-file-download'
 import { generatePath } from 'react-router-dom'
 
 export function useDownloadRoutingReportSources(): [DownloadRoutingReportSourcesFunction, IsLoading] {
@@ -35,22 +35,23 @@ export function useDownloadRoutingReportSources(): [DownloadRoutingReportSources
 export const downloadRoutingReportSources = async (
   processId: Key,
 ): Promise<void> => {
-
   const pathPattern = '/security/gatewayRouting/:processId/source'
   const response = await ncCustomAgentsRequestBlob(
     generatePath(pathPattern, { processId }),
     {
       method: 'GET',
-    }, {
+    },
+    {
       basePath: `${APIHUB_NC_BASE_PATH}${API_V3}`,
     },
   )
 
-  const getFilename = (): string => response.headers
-    .get('content-disposition')!
-    .split('filename=')[1]
-    .split(';')[0]
-    .slice(1, -1)
+  const getFilename = (): string =>
+    response.headers
+      .get('content-disposition')!
+      .split('filename=')[1]
+      .split(';')[0]
+      .slice(1, -1)
 
   fileDownload(await response.blob(), getFilename())
 }

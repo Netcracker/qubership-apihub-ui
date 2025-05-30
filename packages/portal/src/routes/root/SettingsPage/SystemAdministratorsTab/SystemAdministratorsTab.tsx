@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
+import { useEventBus } from '@apihub/routes/EventBusProvider'
 import { Box, Button } from '@mui/material'
+import { AddSystemAdministratorDialog } from '@netcracker/qubership-apihub-ui-shared/components/AddSystemAdministratorDialog'
+import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
+import { ConfirmationDialog } from '@netcracker/qubership-apihub-ui-shared/components/ConfirmationDialog'
+import { SystemAdministratorsTable } from '@netcracker/qubership-apihub-ui-shared/components/SystemAdministratorsTable'
+import { AddIcon } from '@netcracker/qubership-apihub-ui-shared/icons/AddIcon'
+import type { SystemAdmin } from '@netcracker/qubership-apihub-ui-shared/types/system-admins'
 import type { FC } from 'react'
 import * as React from 'react'
 import { memo, useCallback, useState } from 'react'
-import { useAddSystemAdmin, useDeleteSystemAdmin, useSystemAdmins } from './useSystemAdmin'
 import { useUsers } from '../../useUsers'
-import { useEventBus } from '@apihub/routes/EventBusProvider'
-import type { SystemAdmin } from '@netcracker/qubership-apihub-ui-shared/types/system-admins'
-import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
-import { AddIcon } from '@netcracker/qubership-apihub-ui-shared/icons/AddIcon'
-import { SystemAdministratorsTable } from '@netcracker/qubership-apihub-ui-shared/components/SystemAdministratorsTable'
-import { AddSystemAdministratorDialog } from '@netcracker/qubership-apihub-ui-shared/components/AddSystemAdministratorDialog'
-import { ConfirmationDialog } from '@netcracker/qubership-apihub-ui-shared/components/ConfirmationDialog'
+import { useAddSystemAdmin, useDeleteSystemAdmin, useSystemAdmins } from './useSystemAdmin'
 
 export const SystemAdministratorsTab: FC = memo(() => {
   const { showAddSystemAdministratorDialog } = useEventBus()
@@ -50,41 +50,43 @@ export const SystemAdministratorsTab: FC = memo(() => {
     setUserSearch(search)
   }, [setUserSearch])
 
-  return <>
-    <BodyCard
-      header="System Administrators"
-      action={
-        <Box>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon/>}
-            onClick={showAddSystemAdministratorDialog}
-          >
-            Add User
-          </Button>
-        </Box>
-      }
-      body={
-        <SystemAdministratorsTable
-          data={systemAdmins ?? []}
-          deleteAdministrator={handleDeleteAdministrator}
-          isLoading={isSystemAdminsLoading || isAddSystemAdminLoading || isDeleteSystemAdminLoading}
-        />
-      }
-    />
-    <AddSystemAdministratorDialog
-      users={usersData?.users}
-      onConfirm={addSystemAdmin}
-      isUsersDataLoading={isUsersDataLoading}
-      setUserSearch={handleSetUserSearch}
-    />
-    <ConfirmationDialog
-      open={confirmationOpen}
-      message={`Remove ${deleteConfirmationData?.name} from system administrators?`}
-      loading={isDeleteSystemAdminLoading}
-      confirmButtonName="Delete"
-      onConfirm={() => deleteSystemAdmin(deleteConfirmationData!.key)}
-      onCancel={() => setConfirmationOpen(false)}
-    />
-  </>
+  return (
+    <>
+      <BodyCard
+        header="System Administrators"
+        action={
+          <Box>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={showAddSystemAdministratorDialog}
+            >
+              Add User
+            </Button>
+          </Box>
+        }
+        body={
+          <SystemAdministratorsTable
+            data={systemAdmins ?? []}
+            deleteAdministrator={handleDeleteAdministrator}
+            isLoading={isSystemAdminsLoading || isAddSystemAdminLoading || isDeleteSystemAdminLoading}
+          />
+        }
+      />
+      <AddSystemAdministratorDialog
+        users={usersData?.users}
+        onConfirm={addSystemAdmin}
+        isUsersDataLoading={isUsersDataLoading}
+        setUserSearch={handleSetUserSearch}
+      />
+      <ConfirmationDialog
+        open={confirmationOpen}
+        message={`Remove ${deleteConfirmationData?.name} from system administrators?`}
+        loading={isDeleteSystemAdminLoading}
+        confirmButtonName="Delete"
+        onConfirm={() => deleteSystemAdmin(deleteConfirmationData!.key)}
+        onCancel={() => setConfirmationOpen(false)}
+      />
+    </>
+  )
 })

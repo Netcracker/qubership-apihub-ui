@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 
-import type { FC, PropsWithChildren } from 'react'
-import * as React from 'react'
-import type { Variant } from '@mui/material/styles/createTypography'
-import { OverflowTooltip } from './OverflowTooltip'
 import type { Theme } from '@mui/material'
 import { Typography } from '@mui/material'
+import type { Variant } from '@mui/material/styles/createTypography'
 import type { SxProps } from '@mui/system'
+import type { FC, PropsWithChildren } from 'react'
+import * as React from 'react'
+import { OverflowTooltip } from './OverflowTooltip'
 import type { TestableProps } from './Testable'
 
-export type TextWithTooltipProps = {
-  variant?: Variant | 'inherit'
-  tooltipText?: React.ReactNode
-  sx?: SxProps<Theme>
-} & PropsWithChildren & TestableProps
+export type TextWithTooltipProps =
+  & {
+    variant?: Variant | 'inherit'
+    tooltipText?: React.ReactNode
+    sx?: SxProps<Theme>
+  }
+  & PropsWithChildren
+  & TestableProps
 
 export const TextWithOverflowTooltip: FC<TextWithTooltipProps> = ({
   variant = 'body2',

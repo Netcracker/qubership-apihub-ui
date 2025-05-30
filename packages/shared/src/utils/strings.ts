@@ -76,7 +76,6 @@ export const transformStringValue = (value: string | undefined): string => {
     return NO_DATA_STRING
   }
   return value
-
 }
 
 /**

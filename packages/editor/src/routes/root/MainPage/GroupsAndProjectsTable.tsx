@@ -28,28 +28,28 @@ import {
 } from '@mui/material'
 import type { FC } from 'react'
 import { memo, useRef } from 'react'
-import { useIsFavoriteMainViewMode } from './useMainPageMode'
-import { useFavorProject } from './useFavorProject'
 import { useDisfavorProject } from './useDisfavorProject'
+import { useFavorProject } from './useFavorProject'
+import { useIsFavoriteMainViewMode } from './useMainPageMode'
 
-import { NavLink } from 'react-router-dom'
 import StarOutlineRoundedIcon from '@mui/icons-material/StarOutlineRounded'
 import StarRoundedIcon from '@mui/icons-material/StarRounded'
+import { NavLink } from 'react-router-dom'
 
-import { useTextSearchParam } from '../useTextSearchParam'
-import { usePagedProjects } from './usePagedProjects'
-import { getProjectPath } from '../../NavigationProvider'
-import { useIntersectionObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useIntersectionObserver'
+import { FILES_PROJECT_EDITOR_MODE } from '@apihub/entities/editor-modes'
+import { calculateProjectPath } from '@apihub/utils/projects'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import {
   CONTENT_PLACEHOLDER_AREA,
   NO_SEARCH_RESULTS,
   Placeholder,
 } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
+import { useIntersectionObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useIntersectionObserver'
 import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import { BRANCH_SEARCH_PARAM, MODE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { FILES_PROJECT_EDITOR_MODE } from '@apihub/entities/editor-modes'
-import { calculateProjectPath } from '@apihub/utils/projects'
+import { getProjectPath } from '../../NavigationProvider'
+import { useTextSearchParam } from '../useTextSearchParam'
+import { usePagedProjects } from './usePagedProjects'
 
 export const GroupsAndProjectsTable: FC = memo(() => {
   const [textFilter] = useTextSearchParam()
@@ -69,9 +69,7 @@ export const GroupsAndProjectsTable: FC = memo(() => {
   useIntersectionObserver(ref, isFetchingNextPage, hasNextPage, fetchNextPage)
 
   if (isLoading) {
-    return (
-      <LoadingIndicator/>
-    )
+    return <LoadingIndicator />
   }
 
   return (
@@ -84,90 +82,85 @@ export const GroupsAndProjectsTable: FC = memo(() => {
         <Table>
           <TableHead>
             <TableRow>
-              {
-                columns.map(({ key, label }) => {
-                  return (
-                    <TableCell key={key}
-                               sx={{ width: { favorite: '32px', name: '55%', id: 'auto', group: 'auto' }[key] }}>
-                      <Typography noWrap variant="subtitle2" sx={{ pl: 0 }}>
-                        {label}
-                      </Typography>
-                    </TableCell>
-                  )
-                })
-              }
+              {columns.map(({ key, label }) => {
+                return (
+                  <TableCell
+                    key={key}
+                    sx={{ width: { favorite: '32px', name: '55%', id: 'auto', group: 'auto' }[key] }}
+                  >
+                    <Typography noWrap variant="subtitle2" sx={{ pl: 0 }}>
+                      {label}
+                    </Typography>
+                  </TableCell>
+                )
+              })}
             </TableRow>
           </TableHead>
           <TableBody>
-            {
-              projects.map((project) => (
-                <TableRow role="checkbox" tabIndex={-1} key={project.key}>
-                  {
-                    columns.map(column => {
-                      const { favorite, key, name, integration } = project
-                      switch (column.key) {
-                      case 'favorite': {
-                        return (
-                          <TableCell
-                            key={column.key}
-                            sx={{ fontSize: 0, width: 48 }}
-                            onClick={() => {
-                              favorite ? disfavorProject(key) : favorProject(key)
-                            }}
-                          >
-                            {
-                              favorite
-                                ? <StarRoundedIcon fontSize="small" color="warning"/>
-                                : <StarOutlineRoundedIcon fontSize="small" color="action"/>
-                            }
-                          </TableCell>
-                        )
-                      }
-                      case 'name': {
-                        return (
-                          <TableCell key={column.key}>
-                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                              <Link
-                                component={NavLink}
-                                to={getProjectPath({
-                                  projectKey: key,
-                                  search: {
-                                    [BRANCH_SEARCH_PARAM]: { value: integration?.defaultBranch },
-                                    [MODE_SEARCH_PARAM]: { value: FILES_PROJECT_EDITOR_MODE },
-                                  },
-                                })}>
-                                {name}
-                              </Link>
-                            </Box>
-                          </TableCell>
-                        )
-                      }
-                      case 'id': {
-                        return (
-                          <TableCell key={column.key}>
-                            {key}
-                          </TableCell>
-                        )
-                      }
-                      case 'group': {
-                        return (
-                          <TableCell key={column.key}>
-                            {calculateProjectPath(project)}
-                          </TableCell>
-                        )
-                      }
-                      }
-                    })
+            {projects.map((project) => (
+              <TableRow role="checkbox" tabIndex={-1} key={project.key}>
+                {columns.map(column => {
+                  const { favorite, key, name, integration } = project
+                  switch (column.key) {
+                    case 'favorite': {
+                      return (
+                        <TableCell
+                          key={column.key}
+                          sx={{ fontSize: 0, width: 48 }}
+                          onClick={() => {
+                            favorite ? disfavorProject(key) : favorProject(key)
+                          }}
+                        >
+                          {favorite
+                            ? <StarRoundedIcon fontSize="small" color="warning" />
+                            : <StarOutlineRoundedIcon fontSize="small" color="action" />}
+                        </TableCell>
+                      )
+                    }
+                    case 'name': {
+                      return (
+                        <TableCell key={column.key}>
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Link
+                              component={NavLink}
+                              to={getProjectPath({
+                                projectKey: key,
+                                search: {
+                                  [BRANCH_SEARCH_PARAM]: { value: integration?.defaultBranch },
+                                  [MODE_SEARCH_PARAM]: { value: FILES_PROJECT_EDITOR_MODE },
+                                },
+                              })}
+                            >
+                              {name}
+                            </Link>
+                          </Box>
+                        </TableCell>
+                      )
+                    }
+                    case 'id': {
+                      return (
+                        <TableCell key={column.key}>
+                          {key}
+                        </TableCell>
+                      )
+                    }
+                    case 'group': {
+                      return (
+                        <TableCell key={column.key}>
+                          {calculateProjectPath(project)}
+                        </TableCell>
+                      )
+                    }
                   }
-                </TableRow>
-              ))
-            }
+                })}
+              </TableRow>
+            ))}
             <TableRow>
-              {hasNextPage && columns.map(cell =>
+              {hasNextPage && columns.map(cell => (
                 <TableCell ref={ref} key={cell.key}>
-                  <Skeleton variant="text"/>
-                </TableCell>,
-              )}
+                  <Skeleton variant="text" />
+                </TableCell>
+              ))}
             </TableRow>
           </TableBody>
         </Table>

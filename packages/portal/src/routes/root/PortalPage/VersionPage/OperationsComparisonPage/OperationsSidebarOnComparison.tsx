@@ -47,52 +47,54 @@ export type OperationsSidebarOnComparisonProps = {
   onOperationClick: (key: Key) => void
 }
 
-export const OperationsSidebarOnComparison: FC<OperationsSidebarOnComparisonProps> =
-  memo<OperationsSidebarOnComparisonProps>(props => {
-    const {
-      operationPackageKey,
-      operationPackageVersion,
-      searchValue,
-      setSearchValue,
-      tags,
-      apiType,
-      operationsGroupedByTag,
-      areChangesLoading,
-      onOperationClick,
-    } = props
+export const OperationsSidebarOnComparison: FC<OperationsSidebarOnComparisonProps> = memo<
+  OperationsSidebarOnComparisonProps
+>(props => {
+  const {
+    operationPackageKey,
+    operationPackageVersion,
+    searchValue,
+    setSearchValue,
+    tags,
+    apiType,
+    operationsGroupedByTag,
+    areChangesLoading,
+    onOperationClick,
+  } = props
 
-    const [expanded, setExpanded] = useState<readonly string[]>([])
-    useAutoExpandTags(expanded, setExpanded, searchValue, tags)
+  const [expanded, setExpanded] = useState<readonly string[]>([])
+  useAutoExpandTags(expanded, setExpanded, searchValue, tags)
 
-    return (
-      <SidebarPanel
-        header={
-          <Box mr={4} width="100%" display="flex" flexDirection="column" gap={1}>
-            <OperationsFilterPanel
-              packageKey={operationPackageKey}
-              versionKey={operationPackageVersion}
-              apiTypeFilter={apiType}
-              comparisonPage={true}
-            />
-            <Divider flexItem sx={DIVIDER_STYLES}/>
-            <SearchBar
-              value={searchValue}
-              onValueChange={setSearchValue}
-              data-testid="SearchOperations"
-            />
-          </Box>
-        }
-        body={
-          <CardContent sx={{ p: 1 }}>
-            {areChangesLoading && isEmpty(tags)
-              ? <SidebarSkeleton/>
-              : <Placeholder
+  return (
+    <SidebarPanel
+      header={
+        <Box mr={4} width="100%" display="flex" flexDirection="column" gap={1}>
+          <OperationsFilterPanel
+            packageKey={operationPackageKey}
+            versionKey={operationPackageVersion}
+            apiTypeFilter={apiType}
+            comparisonPage={true}
+          />
+          <Divider flexItem sx={DIVIDER_STYLES} />
+          <SearchBar
+            value={searchValue}
+            onValueChange={setSearchValue}
+            data-testid="SearchOperations"
+          />
+        </Box>
+      }
+      body={
+        <CardContent sx={{ p: 1 }}>
+          {areChangesLoading && isEmpty(tags)
+            ? <SidebarSkeleton />
+            : (
+              <Placeholder
                 invisible={isNotEmpty(tags)}
                 area={NAVIGATION_PLACEHOLDER_AREA}
                 message={searchValue ? NO_SEARCH_RESULTS : 'No tags'}
                 testId={searchValue ? 'NoSearchResultsPlaceholder' : 'NoTagsPlaceholder'}
               >
-                {tags.map(tag =>
+                {tags.map(tag => (
                   <OperationsByTagList
                     key={tag}
                     tag={tag || DEFAULT_TAG}
@@ -101,11 +103,12 @@ export const OperationsSidebarOnComparison: FC<OperationsSidebarOnComparisonProp
                     expanded={expanded}
                     setExpanded={setExpanded}
                     onOperationClick={onOperationClick}
-                  />,
-                )}
-              </Placeholder>}
-          </CardContent>
-        }
-      />
-    )
-  })
+                  />
+                ))}
+              </Placeholder>
+            )}
+        </CardContent>
+      }
+    />
+  )
+})

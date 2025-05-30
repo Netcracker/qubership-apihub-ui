@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
+import { CurrentPackageProvider } from '@apihub/components/CurrentPackageProvider'
+import { DeleteFileDialog } from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/DeleteFileDialog'
+import { EditFileLabelsDialog } from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/EditFileLabelsDialog'
+import { LayoutWithTabs } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/LayoutWithTabs'
+import { LayoutWithToolbar } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/LayoutWithToolbar'
+import { PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { useActiveTabs } from '@netcracker/qubership-apihub-ui-shared/hooks/pathparams/useActiveTabs'
 import type { FC, ReactNode } from 'react'
 import { memo } from 'react'
-import { usePackage } from '../../usePackage'
 import type { PackageVersionPageRoute } from '../../../../routes'
 import { CONFIGURATION_PAGE } from '../../../../routes'
 import { NoPackageVersionPlaceholder } from '../../NoPackageVersionPlaceholder'
+import { usePackage } from '../../usePackage'
 import { PublishPackageVersionDialog } from '../DashboardPage/PublishPackageVersionDialog'
-import { PackageVersionPageToolbar } from './PackageVersionPageToolbar'
-import { VersionConfigurationSubPage } from './VersionConfigurationSubPage'
-import { PackageVersionNavigationMenu } from './PackageVersionNavigationMenu'
-import { CurrentPackageProvider } from '@apihub/components/CurrentPackageProvider'
 import { FilesProvider } from '../FilesProvider'
+import { PackageVersionNavigationMenu } from './PackageVersionNavigationMenu'
+import { PackageVersionPageToolbar } from './PackageVersionPageToolbar'
 import { PortalSpecificationDialog } from './PortalSpecificationDialog'
-import { useActiveTabs } from '@netcracker/qubership-apihub-ui-shared/hooks/pathparams/useActiveTabs'
-import { PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { LayoutWithToolbar } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/LayoutWithToolbar'
-import { DeleteFileDialog } from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/DeleteFileDialog'
-import { LayoutWithTabs } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/LayoutWithTabs'
-import { EditFileLabelsDialog } from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/EditFileLabelsDialog'
+import { VersionConfigurationSubPage } from './VersionConfigurationSubPage'
 
 export const ConfigurePackageVersionPage: FC = memo(() => {
   const [menuItem] = useActiveTabs()
@@ -44,21 +44,21 @@ export const ConfigurePackageVersionPage: FC = memo(() => {
       <FilesProvider enabled={isPackage}>
         <NoPackageVersionPlaceholder packageObject={packageObject}>
           <LayoutWithToolbar
-            toolbar={<PackageVersionPageToolbar/>}
-            body={<PackageVersionPageBody menuItem={menuItem as PackageVersionPageRoute}/>}
+            toolbar={<PackageVersionPageToolbar />}
+            body={<PackageVersionPageBody menuItem={menuItem as PackageVersionPageRoute} />}
           />
         </NoPackageVersionPlaceholder>
-        <DeleteFileDialog/>
-        <EditFileLabelsDialog/>
-        <PublishPackageVersionDialog/>
-        <PortalSpecificationDialog/>
+        <DeleteFileDialog />
+        <EditFileLabelsDialog />
+        <PublishPackageVersionDialog />
+        <PortalSpecificationDialog />
       </FilesProvider>
     </CurrentPackageProvider>
   )
 })
 
 const PATH_PARAM_TO_SUB_PAGE_MAP: Record<PackageVersionPageRoute, ReactNode> = {
-  [CONFIGURATION_PAGE]: <VersionConfigurationSubPage/>,
+  [CONFIGURATION_PAGE]: <VersionConfigurationSubPage />,
 }
 
 type PackageVersionPageBodyProps = {
@@ -68,7 +68,7 @@ type PackageVersionPageBodyProps = {
 const PackageVersionPageBody: FC<PackageVersionPageBodyProps> = memo<PackageVersionPageBodyProps>(({ menuItem }) => {
   return (
     <LayoutWithTabs
-      tabs={<PackageVersionNavigationMenu/>}
+      tabs={<PackageVersionNavigationMenu />}
       body={PATH_PARAM_TO_SUB_PAGE_MAP[menuItem]}
     />
   )

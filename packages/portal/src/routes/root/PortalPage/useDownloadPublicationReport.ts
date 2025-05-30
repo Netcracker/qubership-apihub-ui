@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { useMutation } from '@tanstack/react-query'
-import fileDownload from 'js-file-download'
 import type { Key } from '@apihub/entities/keys'
-import { generatePath } from 'react-router-dom'
-import { portalRequestBlob } from '@apihub/utils/requests'
 import { useShowErrorNotification } from '@apihub/routes/root/BasePage/Notification'
+import { portalRequestBlob } from '@apihub/utils/requests'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { API_V1 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import { useMutation } from '@tanstack/react-query'
+import fileDownload from 'js-file-download'
+import { generatePath } from 'react-router-dom'
 
 export function useDownloadPublicationReport(): [DownloadPublicationReportFunction, IsLoading] {
   const showErrorNotification = useShowErrorNotification()
@@ -49,7 +49,8 @@ export const downloadPublicationReport = async ({
     generatePath(pathPattern, { packageId, publishId }),
     {
       method: 'GET',
-    }, {
+    },
+    {
       basePath: API_V1,
     },
   )

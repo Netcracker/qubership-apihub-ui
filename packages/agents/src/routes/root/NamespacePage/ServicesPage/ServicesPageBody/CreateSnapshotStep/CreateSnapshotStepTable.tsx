@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useEffect, useMemo, useRef, useState } from 'react'
-import type { ColumnDef } from '@tanstack/table-core'
+import type { ServiceConfig } from '@apihub/entities/publish-config'
+import type { Service } from '@apihub/entities/services'
+import ArrowOutwardRoundedIcon from '@mui/icons-material/ArrowOutwardRounded'
 import {
   Box,
   Button,
@@ -30,7 +30,25 @@ import {
   TableRow,
   Typography,
 } from '@mui/material'
-import ArrowOutwardRoundedIcon from '@mui/icons-material/ArrowOutwardRounded'
+import { ColumnDelimiter } from '@netcracker/qubership-apihub-ui-shared/components/ColumnDelimiter'
+import {
+  CONTENT_PLACEHOLDER_AREA,
+  NO_SEARCH_RESULTS,
+  Placeholder,
+} from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
+import {
+  LOADING_STATUS_MARKER_VARIANT,
+  StatusMarker,
+} from '@netcracker/qubership-apihub-ui-shared/components/StatusMarker'
+import type { ServiceKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { Spec } from '@netcracker/qubership-apihub-ui-shared/entities/specs'
+import { useResizeObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useResizeObserver'
+import type { ColumnModel } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
+import {
+  DEFAULT_CONTAINER_WIDTH,
+  useColumnsSizing,
+} from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
+import { isEmpty, isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import type {
   ColumnSizingInfoState,
   ColumnSizingState,
@@ -46,34 +64,19 @@ import {
   getFilteredRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { useServicePublishDetails } from './useServicePublishDetails'
-import { ServiceOrDocumentationTableCell } from '../ServiceOrDocumentationTableCell'
-import { BaselinePackageTableCell } from '../BaselinePackageTableCell'
+import type { ColumnDef } from '@tanstack/table-core'
+import type { FC } from 'react'
+import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import { PUBLISH_STATUS_TO_STATUS_MARKER_VARIANT_MAP } from '../../../constants'
-import { useSnapshotPublicationInfo } from '../../../useSnapshotPublicationInfo'
-import { useConfigureServiceSelection } from '../useConfigureServiceSelection'
-import { ServiceLabelsTableCell } from '../ServiceLabelsTableCell'
-import { serviceFilter } from '../utils'
 import { useServices } from '../../../useServices'
-import type { ServiceKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { ColumnModel } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
-import {
-  DEFAULT_CONTAINER_WIDTH,
-  useColumnsSizing,
-} from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
+import { useSnapshotPublicationInfo } from '../../../useSnapshotPublicationInfo'
 import { useCreateSnapshotPublicationOptions } from '../../ServicesPageProvider/ServicesPublicationOptionsProvider'
-import { isEmpty, isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import {
-  CONTENT_PLACEHOLDER_AREA,
-  NO_SEARCH_RESULTS,
-  Placeholder,
-} from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
-import { ColumnDelimiter } from '@netcracker/qubership-apihub-ui-shared/components/ColumnDelimiter'
-import type { Service } from '@apihub/entities/services'
-import type { ServiceConfig } from '@apihub/entities/publish-config'
-import type { Spec } from '@netcracker/qubership-apihub-ui-shared/entities/specs'
-import { LOADING_STATUS_MARKER_VARIANT, StatusMarker } from '@netcracker/qubership-apihub-ui-shared/components/StatusMarker'
-import { useResizeObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useResizeObserver'
+import { BaselinePackageTableCell } from '../BaselinePackageTableCell'
+import { ServiceLabelsTableCell } from '../ServiceLabelsTableCell'
+import { ServiceOrDocumentationTableCell } from '../ServiceOrDocumentationTableCell'
+import { useConfigureServiceSelection } from '../useConfigureServiceSelection'
+import { serviceFilter } from '../utils'
+import { useServicePublishDetails } from './useServicePublishDetails'
 
 export type CreateSnapshotStepTableProps = {
   selectable?: boolean
@@ -138,60 +141,64 @@ export const CreateSnapshotStepTable: FC<CreateSnapshotStepTableProps> = memo<Cr
     {
       id: SERVICE_OR_DOCUMENTATION_COLUMN_ID,
       header: 'Service / Documentation',
-      cell: ({ row }) => <ServiceOrDocumentationTableCell value={row}/>,
+      cell: ({ row }) => <ServiceOrDocumentationTableCell value={row} />,
     },
     {
       id: SERVICE_LABELS_COLUMN_ID,
       header: 'Labels',
-      cell: ({ row }) => <ServiceLabelsTableCell value={row}/>,
+      cell: ({ row }) => <ServiceLabelsTableCell value={row} />,
     },
     {
       id: BASELINE_PACKAGE_COLUMN_ID,
       header: 'Baseline Package',
-      cell: ({ row }) => <BaselinePackageTableCell value={row}/>,
+      cell: ({ row }) => <BaselinePackageTableCell value={row} />,
     },
     {
       id: PUBLISH_STATUS_COLUMN_ID,
       header: 'Publish Status',
-      cell: ({ row: { original, getIsSelected } }) => getIsSelected() &&
-        <CreateSnapshotDetailsTableCell value={original}/>,
+      cell: ({ row: { original, getIsSelected } }) =>
+        getIsSelected()
+        && <CreateSnapshotDetailsTableCell value={original} />,
     },
     {
       id: VIEW_SNAPSHOT_URL_COLUMN_ID,
-      cell: isSnapshotPublicationInfoSuccess ? ({ row: { original: { service, viewSnapshotUrl } } }) => {
-        if (service && viewSnapshotUrl) {
-          return (
-            <Button
-              data-testid="ViewSnapshotButton"
-              sx={{ visibility: 'hidden', p: 0, height: 10, whiteSpace: 'nowrap' }}
-              className="hoverable"
-              component="a"
-              variant="text"
-              href={viewSnapshotUrl}
-              target="_blank"
-              startIcon={<ArrowOutwardRoundedIcon/>}
-            >
-              View Snapshot
-            </Button>
-          )
-        }
+      cell: isSnapshotPublicationInfoSuccess
+        ? ({ row: { original: { service, viewSnapshotUrl } } }) => {
+          if (service && viewSnapshotUrl) {
+            return (
+              <Button
+                data-testid="ViewSnapshotButton"
+                sx={{ visibility: 'hidden', p: 0, height: 10, whiteSpace: 'nowrap' }}
+                className="hoverable"
+                component="a"
+                variant="text"
+                href={viewSnapshotUrl}
+                target="_blank"
+                startIcon={<ArrowOutwardRoundedIcon />}
+              >
+                View Snapshot
+              </Button>
+            )
+          }
 
-        return null
-      } : undefined,
+          return null
+        }
+        : undefined,
     },
   ], [isSnapshotPublicationInfoSuccess, selectable])
 
-  const data: TableData[] = useMemo(() => services.map(service => {
-    const servicePublishInfo = snapshotPublicationInfo.services.find(({ key }) => key === service.key)
+  const data: TableData[] = useMemo(() =>
+    services.map(service => {
+      const servicePublishInfo = snapshotPublicationInfo.services.find(({ key }) => key === service.key)
 
-    return ({
-      service: service,
-      serviceConfig: config?.serviceConfigs.find(({ serviceId }) => serviceId === service.key),
-      children: service.specs?.map(spec => ({ spec })),
-      viewSnapshotUrl: servicePublishInfo?.viewSnapshotUrl,
-      builderId: config?.builderId,
-    })
-  }), [config?.builderId, config?.serviceConfigs, snapshotPublicationInfo.services, services])
+      return ({
+        service: service,
+        serviceConfig: config?.serviceConfigs.find(({ serviceId }) => serviceId === service.key),
+        children: service.specs?.map(spec => ({ spec })),
+        viewSnapshotUrl: servicePublishInfo?.viewSnapshotUrl,
+        builderId: config?.builderId,
+      })
+    }), [config?.builderId, config?.serviceConfigs, snapshotPublicationInfo.services, services])
 
   const globalFilter = useMemo(() => ({
     searchValue,
@@ -259,7 +266,7 @@ export const CreateSnapshotStepTable: FC<CreateSnapshotStepTableProps> = memo<Cr
                     }}
                   >
                     {flexRender(header.column.columnDef.header, header.getContext())}
-                    {index !== headerGroup.headers.length - 1 && <ColumnDelimiter header={header} resizable={true}/>}
+                    {index !== headerGroup.headers.length - 1 && <ColumnDelimiter header={header} resizable={true} />}
                   </TableCell>
                 ))}
               </TableRow>
@@ -279,7 +286,7 @@ export const CreateSnapshotStepTable: FC<CreateSnapshotStepTableProps> = memo<Cr
                 ))}
               </TableRow>
             ))}
-            {isServicesLoading && <TableSkeleton/>}
+            {isServicesLoading && <TableSkeleton />}
           </TableBody>
         </Table>
       </TableContainer>
@@ -315,7 +322,9 @@ type CreateSnapshotDetailsTableCellProps = {
   value: TableData
 }
 
-const CreateSnapshotDetailsTableCell: FC<CreateSnapshotDetailsTableCellProps> = memo<CreateSnapshotDetailsTableCellProps>(({
+const CreateSnapshotDetailsTableCell: FC<CreateSnapshotDetailsTableCellProps> = memo<
+  CreateSnapshotDetailsTableCellProps
+>(({
   value: {
     serviceConfig,
     builderId,
@@ -328,14 +337,12 @@ const CreateSnapshotDetailsTableCell: FC<CreateSnapshotDetailsTableCellProps> = 
   }
 
   if (isLoading) {
-    return (
-      <StatusMarker value={LOADING_STATUS_MARKER_VARIANT}/>
-    )
+    return <StatusMarker value={LOADING_STATUS_MARKER_VARIANT} />
   }
 
   return (
     <Box display="flex" gap={1}>
-      <StatusMarker value={PUBLISH_STATUS_TO_STATUS_MARKER_VARIANT_MAP[publishDetails.status]}/>
+      <StatusMarker value={PUBLISH_STATUS_TO_STATUS_MARKER_VARIANT_MAP[publishDetails.status]} />
       <Typography noWrap variant="inherit">{publishDetails.message}</Typography>
     </Box>
   )
@@ -344,11 +351,11 @@ const CreateSnapshotDetailsTableCell: FC<CreateSnapshotDetailsTableCellProps> = 
 const TableSkeleton: FC = memo(() => {
   return (
     <>
-      <RowSkeleton/>
-      <RowSkeleton/>
-      <RowSkeleton/>
-      <RowSkeleton/>
-      <RowSkeleton/>
+      <RowSkeleton />
+      <RowSkeleton />
+      <RowSkeleton />
+      <RowSkeleton />
+      <RowSkeleton />
     </>
   )
 })
@@ -356,16 +363,16 @@ const TableSkeleton: FC = memo(() => {
 const RowSkeleton: FC = memo(() => {
   return (
     <TableRow>
-      <TableCell/>
+      <TableCell />
       <TableCell>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
-      <TableCell/>
-      <TableCell/>
-      <TableCell/>
+      <TableCell />
+      <TableCell />
+      <TableCell />
     </TableRow>
   )
 })

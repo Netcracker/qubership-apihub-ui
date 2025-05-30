@@ -14,22 +14,29 @@
  * limitations under the License.
  */
 
-import type { FC, PropsWithChildren, ReactNode, SyntheticEvent } from 'react'
-import React, { memo, useMemo } from 'react'
-import TreeItem from '@mui/lab/TreeItem'
-import type { SectionKey } from './OperationModelList'
-import { joinedJsonPath } from '@netcracker/qubership-apihub-ui-shared/utils/operations'
-import type { JsonPath } from '@netcracker/qubership-apihub-json-crawl'
 import type { OpenApiCustomSchemaObject } from '@apihub/entities/operation-structure'
+import TreeItem from '@mui/lab/TreeItem'
+import type { JsonPath } from '@netcracker/qubership-apihub-json-crawl'
 import type {
   HashWithTitle,
 } from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView/oasToClassDiagramService'
+import { joinedJsonPath } from '@netcracker/qubership-apihub-ui-shared/utils/operations'
+import type { FC, PropsWithChildren, ReactNode, SyntheticEvent } from 'react'
+import React, { memo, useMemo } from 'react'
+import type { SectionKey } from './OperationModelList'
 
 type ItemProps = PropsWithChildren & {
   label: ReactNode
   scopeDeclarationPath: JsonPath
   declarationPath: JsonPath
-  onClick?: (event: SyntheticEvent, nodeId: string, scopeDeclarationPath: JsonPath, declarationPath: JsonPath, schemaTolerantHashWithTitle?: HashWithTitle, schemaObject?: OpenApiCustomSchemaObject) => void
+  onClick?: (
+    event: SyntheticEvent,
+    nodeId: string,
+    scopeDeclarationPath: JsonPath,
+    declarationPath: JsonPath,
+    schemaTolerantHashWithTitle?: HashWithTitle,
+    schemaObject?: OpenApiCustomSchemaObject,
+  ) => void
 }
 
 type SectionItemProps = PropsWithChildren & ItemProps & {
@@ -85,7 +92,8 @@ export const ModelItem: FC<ModelItemProps> = memo<ModelItemProps>(({
       key={nodeId}
       nodeId={nodeId}
       label={label}
-      onClick={(event) => onClick?.(event, nodeId, scopeDeclarationPath, declarationPath, schemaTolerantHashWithTitle, schemaObject)}
+      onClick={(event) =>
+        onClick?.(event, nodeId, scopeDeclarationPath, declarationPath, schemaTolerantHashWithTitle, schemaObject)}
       sx={TREE_ITEM_CHILD_LABEL_STYLES}
     />
   )

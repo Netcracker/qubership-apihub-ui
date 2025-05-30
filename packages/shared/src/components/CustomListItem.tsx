@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { Box, ListItemText, Typography } from '@mui/material'
 import type { FC } from 'react'
 import React, { memo } from 'react'
-import { Box, ListItemText, Typography } from '@mui/material'
 import { OverflowTooltip } from './OverflowTooltip'
 
 // First Order Component //

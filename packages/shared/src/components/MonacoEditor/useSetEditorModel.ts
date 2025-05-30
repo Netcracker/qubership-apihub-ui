@@ -17,8 +17,8 @@
 import { editor as Editor, Uri } from 'monaco-editor'
 import type { MutableRefObject } from 'react'
 import { useEffect } from 'react'
-import type { SpecType } from '../../utils/specs'
 import type { LanguageType } from '../../types/languages'
+import type { SpecType } from '../../utils/specs'
 
 export function useSetEditorModel(
   editor: MutableRefObject<Editor.IStandaloneCodeEditor | undefined>,

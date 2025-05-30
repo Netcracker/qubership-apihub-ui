@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import type { DiscoveryStatus } from './statuses'
-import { NONE_DISCOVERY_STATUS } from './statuses'
-import type { AgentKey, NamespaceKey, PackageKey, ServiceKey, VersionKey, WorkspaceKey } from './keys'
-import type { VersionStatuses } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import { ncCustomAgentsRequestJson, ncCustomAgentsRequestVoid } from '@apihub/utils/requests'
 import type { Spec, SpecDto } from '@netcracker/qubership-apihub-ui-shared/entities/specs'
 import { toSpec } from '@netcracker/qubership-apihub-ui-shared/entities/specs'
-import { ncCustomAgentsRequestJson, ncCustomAgentsRequestVoid } from '@apihub/utils/requests'
+import type { VersionStatuses } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import type { AgentKey, NamespaceKey, PackageKey, ServiceKey, VersionKey, WorkspaceKey } from './keys'
+import type { DiscoveryStatus } from './statuses'
+import { NONE_DISCOVERY_STATUS } from './statuses'
 
 export type Services = {
   status: DiscoveryStatus
@@ -104,7 +104,9 @@ export async function getServices(
   workspaceKey: WorkspaceKey,
   onlyWithSpecs: boolean = false,
 ): Promise<ServicesDto> {
-  const servicesDto = await ncCustomAgentsRequestJson<ServicesDto>(`/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/services`, {
+  const servicesDto = await ncCustomAgentsRequestJson<ServicesDto>(
+    `/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/services`,
+    {
       method: 'get',
     },
   )
@@ -122,7 +124,9 @@ export async function runServiceDiscovery(
   namespaceKey: NamespaceKey,
   workspaceKey: WorkspaceKey,
 ): Promise<void> {
-  return await ncCustomAgentsRequestVoid(`/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/discover`, {
+  return await ncCustomAgentsRequestVoid(
+    `/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/discover`,
+    {
       method: 'post',
     },
   )

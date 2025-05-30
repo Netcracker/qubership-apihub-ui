@@ -18,8 +18,8 @@ import { useCallback } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useHash } from 'react-use'
 
-import { useSearchParam } from './useSearchParam'
 import { EXPAND_NAVIGATION_MENU_SEARCH_PARAM } from '../../utils/search-params'
+import { useSearchParam } from './useSearchParam'
 
 export const EXPAND_NAVIGATION_MENU = 'expand'
 

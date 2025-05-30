@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { useCallback } from 'react'
 import type { Key } from '@apihub/entities/keys'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useHash } from 'react-use'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import { SEARCH_TEXT_PARAM_KEY } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { useCallback } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useHash } from 'react-use'
 
 export function useTextSearchParam(): [Key | undefined, SetTextSearchParam] {
   const text = useSearchParam<Key>(SEARCH_TEXT_PARAM_KEY)

@@ -14,31 +14,33 @@
  * limitations under the License.
  */
 
+import { LoadingButton } from '@mui/lab'
+import { Autocomplete, Box, Button, TextField, Typography } from '@mui/material'
+import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
+import type { ServiceKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import type { FC } from 'react'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { Autocomplete, Box, Button, TextField, Typography } from '@mui/material'
 import type { Control, FieldErrors } from 'react-hook-form'
 import { Controller, useForm } from 'react-hook-form'
-import { LoadingButton } from '@mui/lab'
-import type { CreateSnapshot } from './useCreateSnapshot'
-import { useCreateSnapshot } from './useCreateSnapshot'
-import { useCreateSnapshotStepStatus } from './useCreateSnapshotStepStatus'
-import { CreateSnapshotStepTable } from './CreateSnapshotStepTable'
-import { useSetSnapshotTableSelectable, useSnapshotTableSelectable } from '../../SnapshotTableProvider'
 import { useVersionOptions } from '../../../AutomationPage/useVersionOptions'
 import { useBaselineOptions } from '../../../useBaselineOptions'
-import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
-import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { useCreateSnapshotPublicationOptions } from '../../ServicesPageProvider/ServicesPublicationOptionsProvider'
 import {
   ERROR_STEP_STATUS,
-  INITIAL_STEP_STATUS, RUNNING_STEP_STATUS, SUCCESS_STEP_STATUS,
+  INITIAL_STEP_STATUS,
+  RUNNING_STEP_STATUS,
+  SUCCESS_STEP_STATUS,
   useCreateSnapshotStep,
   usePromoteVersionStep,
   useValidationResultsStep,
 } from '../../ServicesPageProvider/ServicesStepsProvider'
-import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import type { ServiceKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { useSetSnapshotTableSelectable, useSnapshotTableSelectable } from '../../SnapshotTableProvider'
+import { CreateSnapshotStepTable } from './CreateSnapshotStepTable'
+import type { CreateSnapshot } from './useCreateSnapshot'
+import { useCreateSnapshot } from './useCreateSnapshot'
+import { useCreateSnapshotStepStatus } from './useCreateSnapshotStepStatus'
 
 export const CreateSnapshotStep: FC = memo(() => {
   const [createSnapshot, isLoading] = useCreateSnapshot()
@@ -85,7 +87,8 @@ export const CreateSnapshotStep: FC = memo(() => {
           control={control}
           rules={{
             validate: {
-              notEqualToBaseline: (snapshotName) => snapshotName !== baseline || 'Snapshot name must not be the same as baseline',
+              notEqualToBaseline: (snapshotName) =>
+                snapshotName !== baseline || 'Snapshot name must not be the same as baseline',
             },
           }}
           render={({ field: { value, onChange } }) => (
@@ -241,11 +244,12 @@ function useToolbarData(
   const [, setPromoteVersionStep] = usePromoteVersionStep()
 
   const onSubmit = useMemo(
-    () => form.handleSubmit(publishOptions => {
-      setValidationResultsStep(prevState => ({ ...prevState, status: INITIAL_STEP_STATUS }))
-      setPromoteVersionStep(prevState => ({ ...prevState, status: INITIAL_STEP_STATUS }))
-      createSnapshot(publishOptions)
-    }),
+    () =>
+      form.handleSubmit(publishOptions => {
+        setValidationResultsStep(prevState => ({ ...prevState, status: INITIAL_STEP_STATUS }))
+        setPromoteVersionStep(prevState => ({ ...prevState, status: INITIAL_STEP_STATUS }))
+        createSnapshot(publishOptions)
+      }),
     [form, createSnapshot, setPromoteVersionStep, setValidationResultsStep],
   )
 

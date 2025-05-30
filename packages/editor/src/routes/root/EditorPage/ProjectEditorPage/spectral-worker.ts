@@ -18,21 +18,17 @@ import type { ISpectralDiagnostic, RulesetDefinition } from '@stoplight/spectral
 import { Document, Spectral } from '@stoplight/spectral-core'
 import * as Parsers from '@stoplight/spectral-parsers'
 
-import { Resolver } from '@stoplight/spectral-ref-resolver'
-import type URI from 'urijs'
-import { expose } from 'comlink'
-import { oas } from '@stoplight/spectral-rulesets'
-import { truthy } from '@stoplight/spectral-functions'
-import { DiagnosticSeverity } from '@stoplight/types'
-import type { BranchCache } from './useBranchCache'
 import type { FileProblemType } from '@apihub/entities/file-problems'
-import {
-  ERROR_FILE_PROBLEM_TYPE,
-  INFO_FILE_PROBLEM_TYPE,
-  WARN_FILE_PROBLEM_TYPE,
-} from '@apihub/entities/file-problems'
-import { scheduleInBackground } from '@netcracker/qubership-apihub-ui-shared/utils/scheduler'
+import { ERROR_FILE_PROBLEM_TYPE, INFO_FILE_PROBLEM_TYPE, WARN_FILE_PROBLEM_TYPE } from '@apihub/entities/file-problems'
 import type { FileKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { scheduleInBackground } from '@netcracker/qubership-apihub-ui-shared/utils/scheduler'
+import { truthy } from '@stoplight/spectral-functions'
+import { Resolver } from '@stoplight/spectral-ref-resolver'
+import { oas } from '@stoplight/spectral-rulesets'
+import { DiagnosticSeverity } from '@stoplight/types'
+import { expose } from 'comlink'
+import type URI from 'urijs'
+import type { BranchCache } from './useBranchCache'
 
 export const MAX_CONCURRENT_WORKERS_COUNT = 3
 

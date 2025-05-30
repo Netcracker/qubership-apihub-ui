@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo } from 'react'
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
+import type { FC } from 'react'
+import { memo } from 'react'
 
 export const LoadingIndicator: FC = memo(() => {
   return (
@@ -31,7 +31,7 @@ export const LoadingIndicator: FC = memo(() => {
         justifyContent: 'center',
       }}
     >
-      <CircularProgress/>
+      <CircularProgress />
     </Box>
   )
 })

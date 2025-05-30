@@ -16,10 +16,10 @@
 
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
-import { useParams } from 'react-router-dom'
-import { useBranchSearchParam } from '../../useBranchSearchParam'
 import type { BranchConfig, BranchConfigDto, ChangeType } from '@apihub/entities/branches'
-import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { ADD_OPERATION, PATCH_OPERATION, REMOVE_OPERATION } from '@apihub/entities/operations'
+import type { ProjectFile, ProjectFileDto } from '@apihub/entities/project-files'
+import { toRef } from '@apihub/entities/refs'
 import type {
   BranchEditorsAddedEventData,
   BranchEditorsRemovedEventData,
@@ -27,12 +27,12 @@ import type {
   BranchRefsUpdatedEventData,
 } from '@apihub/entities/ws-branch-events'
 import { isBranchEditorsAddedEventData, isBranchEditorsRemovedEventData } from '@apihub/entities/ws-branch-events'
-import { ADD_OPERATION, PATCH_OPERATION, REMOVE_OPERATION } from '@apihub/entities/operations'
-import { getFileFormat } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import { UNMODIFIED_CHANGE_STATUS } from '@netcracker/qubership-apihub-ui-shared/entities/change-statuses'
-import { toRef } from '@apihub/entities/refs'
-import type { ProjectFile, ProjectFileDto } from '@apihub/entities/project-files'
 import { toUser } from '@netcracker/qubership-apihub-ui-shared/types/user'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { getFileFormat } from '@netcracker/qubership-apihub-ui-shared/utils/files'
+import { useParams } from 'react-router-dom'
+import { useBranchSearchParam } from '../../useBranchSearchParam'
 
 export const BRANCH_CONFIG_QUERY_KEY = 'branch-config-query-key'
 
@@ -71,13 +71,16 @@ export function useUpdateChangeStatusInBranchConfig(): UpdateChangeStatusInBranc
   const [selectedBranch] = useBranchSearchParam()
 
   return (value: ChangeType): void => {
-    client.setQueryData<BranchConfig>([BRANCH_CONFIG_QUERY_KEY, projectId, selectedBranch], (oldBranchConfig): BranchConfig => {
-      const projectBranchConfig = (oldBranchConfig as BranchConfig)
-      return {
-        ...projectBranchConfig,
-        changeType: value,
-      }
-    })
+    client.setQueryData<BranchConfig>(
+      [BRANCH_CONFIG_QUERY_KEY, projectId, selectedBranch],
+      (oldBranchConfig): BranchConfig => {
+        const projectBranchConfig = oldBranchConfig as BranchConfig
+        return {
+          ...projectBranchConfig,
+          changeType: value,
+        }
+      },
+    )
   }
 }
 
@@ -92,7 +95,7 @@ export function useUpdateEditorsInBranchConfig(): UpdateEditorsInBranchConfig {
     const { userId } = value
 
     client.setQueryData<BranchConfig>([BRANCH_CONFIG_QUERY_KEY, projectId, selectedBranch], (oldData): BranchConfig => {
-      const projectBranchConfig = (oldData as BranchConfig)
+      const projectBranchConfig = oldData as BranchConfig
       let updatedEditors = projectBranchConfig.editors
 
       if (isBranchEditorsAddedEventData(value)) {
@@ -115,7 +118,9 @@ export function useUpdateEditorsInBranchConfig(): UpdateEditorsInBranchConfig {
   }
 }
 
-type UpdateEditorsInBranchConfig = (branchEditorsUpdatedData: BranchEditorsAddedEventData | BranchEditorsRemovedEventData) => void
+type UpdateEditorsInBranchConfig = (
+  branchEditorsUpdatedData: BranchEditorsAddedEventData | BranchEditorsRemovedEventData,
+) => void
 
 // TODO: Reorganize like `useUpdateRefsInBranchConfig`
 export function useUpdateFilesInBranchConfig(): UpdateFilesInBranchConfig {
@@ -127,7 +132,7 @@ export function useUpdateFilesInBranchConfig(): UpdateFilesInBranchConfig {
     const { fileId: updatedFileId, operation: updatedOperation, data: updatedData } = value
 
     client.setQueryData<BranchConfig>([BRANCH_CONFIG_QUERY_KEY, projectId, selectedBranch], (oldData): BranchConfig => {
-      const projectBranchConfig = (oldData as BranchConfig)
+      const projectBranchConfig = oldData as BranchConfig
       let updatedFiles = projectBranchConfig.files
 
       switch (updatedOperation) {
@@ -227,16 +232,15 @@ export function useUpdateRefsInBranchConfig(): UpdateRefsInBranchConfig {
         return {
           ...oldBranchConfig,
           refs: oldBranchConfig.refs.map((ref) => (
-              ref.key === updatedRefId
-                ? {
-                  ...ref,
-                  version: updatedData.version ?? ref.version,
-                  versionStatus: updatedData.versionStatus ?? ref.versionStatus,
-                  status: updatedData.status ?? ref.status,
-                }
-                : ref
-            ),
-          ),
+            ref.key === updatedRefId
+              ? {
+                ...ref,
+                version: updatedData.version ?? ref.version,
+                versionStatus: updatedData.versionStatus ?? ref.versionStatus,
+                status: updatedData.status ?? ref.status,
+              }
+              : ref
+          )),
         }
       }
 

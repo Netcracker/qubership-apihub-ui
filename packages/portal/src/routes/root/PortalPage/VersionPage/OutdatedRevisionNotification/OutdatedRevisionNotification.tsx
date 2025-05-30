@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
+import { ConfirmationDialog } from '@netcracker/qubership-apihub-ui-shared/components/ConfirmationDialog'
+import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import type { FC } from 'react'
 import * as React from 'react'
 import { memo, useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { useSetPathParam } from '../useSetPathParam'
+import { VERSION_ID } from '../../../../../routes'
+import {
+  useAsyncInvalidateAllByVersion,
+  useAsyncInvalidatePackageVersionContentByVersion,
+} from '../../../usePackageVersionContent'
 import {
   useFullMainVersion,
   useIsLatestRevision,
   useSetFullMainVersion,
   useSetIsLatestRevision,
 } from '../../FullMainVersionProvider'
-import {
-  useAsyncInvalidateAllByVersion,
-  useAsyncInvalidatePackageVersionContentByVersion,
-} from '../../../usePackageVersionContent'
+import { useSetPathParam } from '../useSetPathParam'
 import { useActualVersion } from './useActualVersion'
-import { VERSION_ID } from '../../../../../routes'
-import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
-import { ConfirmationDialog } from '@netcracker/qubership-apihub-ui-shared/components/ConfirmationDialog'
 
 export const OutdatedRevisionNotification: FC = memo(() => {
   const [open, setOpen] = useState(false)
@@ -51,11 +51,11 @@ export const OutdatedRevisionNotification: FC = memo(() => {
   const invalidatePackageVersionContentByVersion = useAsyncInvalidatePackageVersionContentByVersion()
 
   useEffect(() => {
-    mainRevisionKey &&
-    updatedVersionKey === versionKey &&
-    updatedRevisionKey > mainRevisionKey &&
-    isLatestRevision &&
-    setOpen(true)
+    mainRevisionKey
+      && updatedVersionKey === versionKey
+      && updatedRevisionKey > mainRevisionKey
+      && isLatestRevision
+      && setOpen(true)
   }, [isLatestRevision, mainRevisionKey, updatedRevisionKey, updatedVersionKey, versionKey])
 
   // navigation to the new latest revision

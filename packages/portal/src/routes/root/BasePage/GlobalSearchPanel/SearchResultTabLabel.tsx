@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import type { DocumentSearchResult, OperationSearchResult, PackageSearchResult } from '@apihub/entities/global-search'
+import { Box, CircularProgress } from '@mui/material'
 import type { FC } from 'react'
 import { memo } from 'react'
-import { Box, CircularProgress } from '@mui/material'
-import type { DocumentSearchResult, OperationSearchResult, PackageSearchResult } from '@apihub/entities/global-search'
 
 export type SearchResultTabLabelProps = {
   label: string
@@ -34,7 +34,7 @@ export const SearchResultTabLabel: FC<SearchResultTabLabelProps> = memo<SearchRe
     <Box display="flex" gap={1}>
       <Box>{label}</Box>
       <>
-        {isLoading ? <CircularProgress size={14}/> : countSearchResult(results)}
+        {isLoading ? <CircularProgress size={14} /> : countSearchResult(results)}
       </>
     </Box>
   )

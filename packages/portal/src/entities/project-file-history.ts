@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { Key } from './keys'
 import type { User, UserDto } from '@netcracker/qubership-apihub-ui-shared/types/user'
+import type { Key } from './keys'
 
 export type ProjectFileHistory = ReadonlyArray<ProjectFileChangeHistory>
 

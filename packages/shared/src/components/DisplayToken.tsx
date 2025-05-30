@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import { Box, TextField, Typography } from '@mui/material'
 import type { FC } from 'react'
 import * as React from 'react'
 import { memo, useCallback } from 'react'
-import { Box, TextField, Typography } from '@mui/material'
-import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import { useCopyToClipboard } from 'react-use'
 import type { Key } from '../entities/keys'
 import { InfoContextIcon } from '../icons/InfoContextIcon'
@@ -35,7 +35,7 @@ export type DisplayTokenProps = {
   showSuccessNotification: (detail: NotificationDetail) => void
 }
 
-//First Order Component
+// First Order Component
 export const DisplayToken: FC<DisplayTokenProps> = memo(({
   generatedApiKey,
   showSuccessNotification,
@@ -57,20 +57,22 @@ export const DisplayToken: FC<DisplayTokenProps> = memo(({
         value={generatedApiKey}
         InputProps={{
           readOnly: true,
-          endAdornment: <ContentCopyIcon
-            sx={{
-              cursor: 'pointer',
-              '&:hover': { color: '#0068FF' },
-              '&:active': { color: '#003AB8' },
-            }}
-            onClick={handleCopyToClipboard}
-            data-testid="CopyIcon"
-          />,
+          endAdornment: (
+            <ContentCopyIcon
+              sx={{
+                cursor: 'pointer',
+                '&:hover': { color: '#0068FF' },
+                '&:active': { color: '#003AB8' },
+              }}
+              onClick={handleCopyToClipboard}
+              data-testid="CopyIcon"
+            />
+          ),
         }}
         data-testid="AccessTokenTextField"
       />
       <Box display="flex" alignItems="center" marginTop="4px" data-testid="TokenWarning">
-        <InfoContextIcon/>
+        <InfoContextIcon />
         <Typography sx={{ ml: '4px', fontSize: '12px', color: '#626D82' }}>
           Copy and save this token because it won’t be saved
         </Typography>

@@ -18,9 +18,9 @@ import type { editor as Editor } from 'monaco-editor'
 import { editor, Range } from 'monaco-editor'
 import type { MutableRefObject } from 'react'
 import { useEffect, useState } from 'react'
-import { navigateTo } from './utils'
 import type { SpecItemUri } from '../../utils/specifications'
 import { findPathLocation } from '../../utils/specifications'
+import { navigateTo } from './utils'
 import IEditorDecorationsCollection = editor.IEditorDecorationsCollection
 import IModelDeltaDecoration = editor.IModelDeltaDecoration
 

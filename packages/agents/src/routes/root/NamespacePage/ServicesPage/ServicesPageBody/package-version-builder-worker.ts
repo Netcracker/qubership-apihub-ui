@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { expose } from 'comlink'
+import type { AgentKey, NamespaceKey, WorkspaceKey } from '@apihub/entities/keys'
+import type { ServiceConfig } from '@apihub/entities/publish-config'
+import type { PublishDetails } from '@apihub/entities/publish-details'
+import { setPublicationDetails } from '@apihub/entities/publish-details'
+import type { PublishStatus } from '@apihub/entities/statuses'
+import { COMPLETE_PUBLISH_STATUS, ERROR_PUBLISH_STATUS } from '@apihub/entities/statuses'
 import { PackageVersionBuilder } from '@netcracker/qubership-apihub-api-processor'
 import {
   packageVersionResolver,
@@ -22,14 +27,12 @@ import {
   versionOperationsResolver,
   versionReferencesResolver,
 } from '@netcracker/qubership-apihub-ui-shared/utils/builder-resolvers'
+import {
+  NONE_PUBLISH_STATUS,
+  RUNNING_PUBLISH_STATUS,
+} from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
+import { expose } from 'comlink'
 import { getSpecBlob } from '../../useSpecRaw'
-import { NONE_PUBLISH_STATUS, RUNNING_PUBLISH_STATUS } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
-import type { PublishStatus } from '@apihub/entities/statuses'
-import { COMPLETE_PUBLISH_STATUS, ERROR_PUBLISH_STATUS } from '@apihub/entities/statuses'
-import type { PublishDetails } from '@apihub/entities/publish-details'
-import { setPublicationDetails } from '@apihub/entities/publish-details'
-import type { AgentKey, NamespaceKey, WorkspaceKey } from '@apihub/entities/keys'
-import type { ServiceConfig } from '@apihub/entities/publish-config'
 
 /*
 For using worker in proxy mode you need to change common apihub-shared import
@@ -66,7 +69,8 @@ const worker: PackageVersionBuilderWorker = {
       ...serviceConfig,
     }, {
       resolvers: {
-        fileResolver: fileId => getSpecBlob(agentId, namespaceKey, workspaceKey, serviceConfig.serviceId, fileId, authorization),
+        fileResolver: fileId =>
+          getSpecBlob(agentId, namespaceKey, workspaceKey, serviceConfig.serviceId, fileId, authorization),
         versionResolver: await packageVersionResolver(authorization),
         versionReferencesResolver: await versionReferencesResolver(authorization),
         versionOperationsResolver: await versionOperationsResolver(authorization),

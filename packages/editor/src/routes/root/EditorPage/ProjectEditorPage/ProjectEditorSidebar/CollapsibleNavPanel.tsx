@@ -17,13 +17,13 @@
 import type { FC } from 'react'
 import { memo, useState } from 'react'
 
-import { Button, Card, Collapse, Divider } from '@mui/material'
 import ExpandLessOutlinedIcon from '@mui/icons-material/ExpandLessOutlined'
 import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined'
+import { Button, Card, Collapse, Divider } from '@mui/material'
+import { SpecNavigation } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/SpecNavigation'
 import { useSpecItemUriHashParam } from '@netcracker/qubership-apihub-ui-shared/hooks/hashparams/useSpecItemUriHashParam'
 import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import { isOpenApiSpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import { SpecNavigation } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/SpecNavigation'
 
 export type CollapsibleNavPanelProps = {
   filename?: string
@@ -40,12 +40,12 @@ export const CollapsibleNavPanel: FC<CollapsibleNavPanelProps> = memo<Collapsibl
 
   return (
     <>
-      <Divider orientation="horizontal" variant="fullWidth"/>
+      <Divider orientation="horizontal" variant="fullWidth" />
       <Button
         sx={{ my: 1, justifyContent: 'left', px: 2 }}
         variant="text"
         disabled={!isOpenApiSpecType(type)}
-        startIcon={open ? <ExpandLessOutlinedIcon/> : <ExpandMoreOutlinedIcon/>}
+        startIcon={open ? <ExpandLessOutlinedIcon /> : <ExpandMoreOutlinedIcon />}
         onClick={() => setOpen(!open)}
       >
         {open ? 'Close' : 'Open'} navigation

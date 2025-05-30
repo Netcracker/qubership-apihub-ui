@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { useBackwardLocation } from './root/useBackwardLocation'
-import { useBackwardLocationContext, useSetBackwardLocationContext } from './BackwardLocationProvider'
 import { useCallback } from 'react'
+import { useBackwardLocationContext, useSetBackwardLocationContext } from './BackwardLocationProvider'
+import { useBackwardLocation } from './root/useBackwardLocation'
 
 export function useDefaultBreadcrumbClickHandler(): () => void {
   const location = useBackwardLocation()

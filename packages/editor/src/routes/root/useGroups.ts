@@ -16,13 +16,13 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-import { useShowSuccessNotification } from './BasePage/Notification'
 import type { Group, GroupDto, Groups, GroupsDto } from '@apihub/entities/groups'
 import { toGroupDto } from '@apihub/entities/groups'
+import { editorRequestJson, editorRequestVoid } from '@apihub/utils/requests'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { InvalidateQuery, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { editorRequestJson, editorRequestVoid } from '@apihub/utils/requests'
 import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { useShowSuccessNotification } from './BasePage/Notification'
 
 const GROUPS_QUERY_KEY = 'groups-query-key'
 

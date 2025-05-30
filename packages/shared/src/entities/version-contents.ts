@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import type { VersionStatus } from './version-status'
-import type { ChangesSummary } from './change-severities'
-import type { PackagesRefs, Tags } from './operations'
-import type { OperationGroup, OperationGroupWithApiTypeDto } from './operation-groups'
-import type { Key, VersionKey } from './keys'
-import type { Principal } from './principals'
-import type { ApiType } from './api-types'
-import type { ApiAudienceTransition, DiffTypeDto } from '@netcracker/qubership-apihub-api-processor'
 import type { DiffType } from '@netcracker/qubership-apihub-api-diff'
+import type { ApiAudienceTransition, DiffTypeDto } from '@netcracker/qubership-apihub-api-processor'
+import type { ApiType } from './api-types'
+import type { ChangesSummary } from './change-severities'
+import type { Key, VersionKey } from './keys'
+import type { OperationGroup, OperationGroupWithApiTypeDto } from './operation-groups'
+import type { PackagesRefs, Tags } from './operations'
+import type { Principal } from './principals'
+import type { VersionStatus } from './version-status'
 
 export type NumberOfImpactedOperations = ChangesSummary
 
@@ -106,7 +106,9 @@ export type OperationTypeDeprecatedSummary = Readonly<{
   tags: Tags
 }>
 
-export function isDashboardDeprecatedSummaryDto(value: VersionDeprecatedSummaryDto): value is DashboardDeprecatedSummaryDto {
+export function isDashboardDeprecatedSummaryDto(
+  value: VersionDeprecatedSummaryDto,
+): value is DashboardDeprecatedSummaryDto {
   return !!(value as DashboardDeprecatedSummaryDto)?.refs
 }
 

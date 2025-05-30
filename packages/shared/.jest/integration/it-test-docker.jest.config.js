@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import baseConfig from './it-test.jest.config.js'
 import presetConfig from './docker/jest-preset.cjs'
+import baseConfig from './it-test.jest.config.js'
 
 process.env.JEST_PUPPETEER_CONFIG = '.jest/integration/puppeteer-docker.config.cjs'
 process.env.RUN_IN_DOCKER = 'true'
@@ -28,5 +28,5 @@ delete customConfig.testEnvironment
 
 export default {
   ...customConfig,
-  ...presetConfig
+  ...presetConfig,
 }

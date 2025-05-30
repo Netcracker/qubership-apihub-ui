@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { Box, List, ListItem, ListItemButton, ListItemText } from '@mui/material'
+import { API_TYPE_TITLE_MAP, API_TYPES } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { FC } from 'react'
 import { memo } from 'react'
-import { Box, List, ListItem, ListItemButton, ListItemText } from '@mui/material'
 import { useApiTypeSearchParam } from '../useApiTypeSearchParam'
-import { API_TYPE_TITLE_MAP, API_TYPES } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 
 export const ApiTypeListSelector: FC = memo(() => {
   const { apiType: selectedApiType, setApiTypeSearchParam } = useApiTypeSearchParam()

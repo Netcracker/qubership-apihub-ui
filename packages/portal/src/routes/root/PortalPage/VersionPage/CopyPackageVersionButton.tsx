@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { memo } from 'react'
-import { Button } from '@mui/material'
 import { useEventBus } from '@apihub/routes/EventBusProvider'
-import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined'
 import { CopyPackageVersionDialog } from '@apihub/routes/root/PortalPage/CopyPackageVersionDialog'
+import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined'
+import { Button } from '@mui/material'
+import { memo } from 'react'
 
 export const CopyPackageVersionButton = memo(() => {
   const { showCopyPackageVersionDialog } = useEventBus()
@@ -27,14 +27,14 @@ export const CopyPackageVersionButton = memo(() => {
     <>
       <Button
         variant="outlined"
-        startIcon={<ContentCopyOutlinedIcon/>}
+        startIcon={<ContentCopyOutlinedIcon />}
         onClick={showCopyPackageVersionDialog}
         data-testid="CopyVersionButton"
       >
         Copy
       </Button>
 
-      <CopyPackageVersionDialog/>
+      <CopyPackageVersionDialog />
     </>
   )
 })

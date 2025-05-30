@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { useCallback } from 'react'
-import { useHash } from 'react-use'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import { DETAILED_SCHEMA_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/entities/schema-view-mode'
+import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
+import { useCallback } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useHash } from 'react-use'
 
 const SCHEMA_VIEW_MODE_PARAM_KEY = 'schemaViewMode'
 

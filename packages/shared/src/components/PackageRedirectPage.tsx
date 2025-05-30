@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo } from 'react'
-import { CONTENT_PLACEHOLDER_AREA, Placeholder } from './Placeholder'
 import { Link, Typography } from '@mui/material'
 import Box from '@mui/material/Box'
+import type { FC } from 'react'
+import { memo } from 'react'
+import type { Key } from '../entities/keys'
 import { DEFAULT_PAPER_SHADOW } from '../themes/palette'
 import { DEFAULT_PAGE_LAYOUT_GAP } from '../utils/page-layouts'
-import type { Key } from '../entities/keys'
+import { CONTENT_PLACEHOLDER_AREA, Placeholder } from './Placeholder'
 
 export type PackageRedirectPageProps = {
   newId: Key
   href?: string
 }
 
-//todo unification with Error page and minimize border of text box
+// todo unification with Error page and minimize border of text box
 export const PackageRedirectPage: FC<PackageRedirectPageProps> = memo<PackageRedirectPageProps>(({
   newId,
   href,
@@ -40,12 +40,14 @@ export const PackageRedirectPage: FC<PackageRedirectPageProps> = memo<PackageRed
       height: '100%',
     }}
   >
-    <Box sx={{
-      height: '100%',
-      backgroundColor: '#FFFFFF',
-      borderRadius: '10px 10px 0 0',
-      boxShadow: DEFAULT_PAPER_SHADOW,
-    }}>
+    <Box
+      sx={{
+        height: '100%',
+        backgroundColor: '#FFFFFF',
+        borderRadius: '10px 10px 0 0',
+        boxShadow: DEFAULT_PAPER_SHADOW,
+      }}
+    >
       <Placeholder
         invisible={false}
         area={CONTENT_PLACEHOLDER_AREA}
@@ -54,9 +56,9 @@ export const PackageRedirectPage: FC<PackageRedirectPageProps> = memo<PackageRed
             <Typography component="div" variant="h5" fontSize={20} textAlign="center">{REDIRECT_TITLE}</Typography>
             <Box>
               <Typography display="inline" variant="h6" color="#626D82">
-                The package you were trying to retrieve was moved
-                to another group and therefore its ID was changed to {newId}. The page you were looking for may
-                be <Link href={href}> here</Link>.
+                The package you were trying to retrieve was moved to another group and therefore its ID was changed to
+                {' '}
+                {newId}. The page you were looking for may be <Link href={href}>here</Link>.
               </Typography>
             </Box>
           </Box>

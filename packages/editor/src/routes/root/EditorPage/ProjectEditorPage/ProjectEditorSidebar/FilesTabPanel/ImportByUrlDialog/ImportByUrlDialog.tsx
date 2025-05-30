@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
+import { Alert, Button, DialogActions, DialogContent, DialogTitle, TextField, Typography } from '@mui/material'
 import type { FC } from 'react'
 import { memo, useEffect, useState } from 'react'
-import { Alert, Button, DialogActions, DialogContent, DialogTitle, TextField, Typography } from '@mui/material'
 import { useEvent } from 'react-use'
 
-import { SHOW_IMPORT_BY_URL_DIALOG } from '../../../../../../EventBusProvider'
 import { LoadingButton } from '@mui/lab'
+import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 import { Controller, useForm } from 'react-hook-form'
+import { SHOW_IMPORT_BY_URL_DIALOG } from '../../../../../../EventBusProvider'
 import { useProject } from '../../../../../useProject'
 import { useImportProjectFile } from './useImportProjectFile'
-import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 
 export const ImportByUrlDialog: FC = memo(() => {
   const [open, setOpen] = useState(false)
@@ -42,8 +42,12 @@ export const ImportByUrlDialog: FC = memo(() => {
   const { handleSubmit, control, reset } = useForm<{ url: string; path: string }>()
   const [importProjectFile, isLoading, isError] = useImportProjectFile()
 
-  useEffect(() => {!isLoading && !isError && setOpen(false)}, [isLoading, isError])
-  useEffect(() => {!open && reset()}, [open, reset])
+  useEffect(() => {
+    !isLoading && !isError && setOpen(false)
+  }, [isLoading, isError])
+  useEffect(() => {
+    !open && reset()
+  }, [open, reset])
 
   return (
     <DialogForm
@@ -63,7 +67,8 @@ export const ImportByUrlDialog: FC = memo(() => {
           render={({ field }) => (
             <TextField
               {...field}
-              autoFocus required
+              autoFocus
+              required
               type="url"
               label="URL"
             />

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { User } from './user'
 import type { Key } from '../entities/keys'
+import type { User } from './user'
 
 export type Tokens = SystemToken[]
 

@@ -16,11 +16,11 @@
 
 import type { FC } from 'react'
 import { lazy, memo, Suspense } from 'react'
+import type { LanguageType } from '../../types/languages'
+import type { SpecItemUri } from '../../utils/specifications'
+import type { SpecType } from '../../utils/specs'
 import { LoadingIndicator } from '../LoadingIndicator'
 import type { MonacoEditorElementProps } from './MonacoEditorElement'
-import type { SpecType } from '../../utils/specs'
-import type { SpecItemUri } from '../../utils/specifications'
-import type { LanguageType } from '../../types/languages'
 
 export type MonacoEditorProps = {
   value: string
@@ -44,7 +44,7 @@ export const MonacoEditor: FC<MonacoEditorProps> = /* @__PURE__ */ memo<MonacoEd
   },
 ) => {
   return (
-    <Suspense fallback={<LoadingIndicator/>}>
+    <Suspense fallback={<LoadingIndicator />}>
       <MonacoEditorElement
         value={value}
         type={type}

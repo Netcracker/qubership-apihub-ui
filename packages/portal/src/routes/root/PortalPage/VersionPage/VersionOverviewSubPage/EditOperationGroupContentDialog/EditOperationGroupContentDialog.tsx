@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { SHOW_EDIT_OPERATION_GROUP_CONTENT_DIALOG } from '@apihub/routes/EventBusProvider'
+import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import type { FC } from 'react'
 import { Popup } from './internal/components/Popup'
-import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import { SHOW_EDIT_OPERATION_GROUP_CONTENT_DIALOG } from '@apihub/routes/EventBusProvider'
 
 export const EditOperationGroupContentDialog: FC = () => {
   return (

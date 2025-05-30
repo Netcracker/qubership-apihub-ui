@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { generatePath, useParams } from 'react-router-dom'
+import { useVersionWithRevision } from '@apihub/routes/root/useVersionWithRevision'
+import { portalRequestBlob } from '@apihub/utils/requests'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { InvalidateQuery, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { getFileName } from '@netcracker/qubership-apihub-ui-shared/utils/files'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import JSZip from 'jszip'
 import { useMemo } from 'react'
+import { generatePath, useParams } from 'react-router-dom'
 import { useShowErrorNotification } from './BasePage/Notification'
-import { portalRequestBlob } from '@apihub/utils/requests'
-import type { InvalidateQuery, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { getFileName } from '@netcracker/qubership-apihub-ui-shared/utils/files'
-import { useVersionWithRevision } from '@apihub/routes/root/useVersionWithRevision'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 const VERSION_SOURCES_QUERY_KEY = 'version-sources-query-key'
 
@@ -61,12 +61,13 @@ export async function fetchSources(
 export async function getSourcesFromZip(data: Blob): Promise<File[]> {
   const zip = new JSZip()
   const jsZip = await zip.loadAsync(data)
-  return Promise.all(Object.values(jsZip.files)
-    .filter(file => !file.dir)
-    .map(async (file) => {
-      const fileData = await file.async('blob')
-      return new File([fileData], getFileName(file.name))
-    }),
+  return Promise.all(
+    Object.values(jsZip.files)
+      .filter(file => !file.dir)
+      .map(async (file) => {
+        const fileData = await file.async('blob')
+        return new File([fileData], getFileName(file.name))
+      }),
   )
 }
 

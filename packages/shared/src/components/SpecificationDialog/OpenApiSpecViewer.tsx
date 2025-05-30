@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
+import { Box } from '@mui/material'
+import { Resizable } from 're-resizable'
 import type { FC } from 'react'
 import { memo } from 'react'
-import { Resizable } from 're-resizable'
-import { Box } from '@mui/material'
+import type { ProxyServer } from '../../entities/services'
+import type { Spec } from '../../entities/specs'
+import { useSpecItemUriHashParam } from '../../hooks/hashparams/useSpecItemUriHashParam'
+import { ApispecView } from '../ApispecView'
 import type { SpecViewMode } from '../SpecViewToggler'
 import { DOC_SPEC_VIEW_MODE, RAW_SPEC_VIEW_MODE } from '../SpecViewToggler'
-import { ApispecView } from '../ApispecView'
-import { SpecNavigation } from './SpecNavigation'
 import { RawSpecView } from './RawSpecView'
-import type { Spec } from '../../entities/specs'
-import type { ProxyServer } from '../../entities/services'
-import { useSpecItemUriHashParam } from '../../hooks/hashparams/useSpecItemUriHashParam'
+import { SpecNavigation } from './SpecNavigation'
 
 export type OpenApiSpecViewerProps = {
   view: SpecViewMode

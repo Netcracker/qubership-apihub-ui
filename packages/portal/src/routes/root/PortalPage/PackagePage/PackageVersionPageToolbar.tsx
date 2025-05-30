@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
+import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
+import { useBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
+import { useEventBus } from '@apihub/routes/EventBusProvider'
+import { usePackageVersionContent } from '@apihub/routes/root/usePackageVersionContent'
+import { Box, Button } from '@mui/material'
+import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
+import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
+import { VersionTitle } from '@netcracker/qubership-apihub-ui-shared/components/Titles/VersionTitle'
+import { Toolbar } from '@netcracker/qubership-apihub-ui-shared/components/Toolbar'
+import { ToolbarTitle } from '@netcracker/qubership-apihub-ui-shared/components/ToolbarTitle'
+import { ExitIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ExitIcon'
+import { isNotEmptyRecord } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import type { FC } from 'react'
 import { memo, useCallback, useMemo } from 'react'
-import { Box, Button } from '@mui/material'
 import { useNavigate, useParams } from 'react-router-dom'
 import { PackageBreadcrumbs } from '../../PackageBreadcrumbs'
 import { useFiles } from '../FilesProvider'
-import { useBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
-import { useEventBus } from '@apihub/routes/EventBusProvider'
-import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
-import { isNotEmptyRecord } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import { Toolbar } from '@netcracker/qubership-apihub-ui-shared/components/Toolbar'
-import { ToolbarTitle } from '@netcracker/qubership-apihub-ui-shared/components/ToolbarTitle'
-import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
-import { ExitIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ExitIcon'
-import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
-import { usePackageVersionContent } from '@apihub/routes/root/usePackageVersionContent'
-import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
-import { VersionTitle } from '@netcracker/qubership-apihub-ui-shared/components/Titles/VersionTitle'
 
 export const PackageVersionPageToolbar: FC = memo(() => {
   const { packageId, versionId } = useParams()
@@ -61,21 +61,22 @@ export const PackageVersionPageToolbar: FC = memo(() => {
 
   return (
     <Toolbar
-      breadcrumbs={<PackageBreadcrumbs packageObject={currentPackage}/>}
+      breadcrumbs={<PackageBreadcrumbs packageObject={currentPackage} />}
       header={
         <>
-          <ToolbarTitle value={`${currentPackage?.name}: Edit Version `}/>
-          {versionContent &&
-            <Box display="flex" gap={1} alignItems="center" sx={{ ml: 2 }}>
-              <VersionTitle
-                version={versionKey}
-                revision={revisionKey}
-                latestRevision={latestRevision}
-                subtitleVariant
-              />
-              <CustomChip value={status!}/>
-            </Box>
-          }
+          <ToolbarTitle value={`${currentPackage?.name}: Edit Version `} />
+          {versionContent
+            && (
+              <Box display="flex" gap={1} alignItems="center" sx={{ ml: 2 }}>
+                <VersionTitle
+                  version={versionKey}
+                  revision={revisionKey}
+                  latestRevision={latestRevision}
+                  subtitleVariant
+                />
+                <CustomChip value={status!} />
+              </Box>
+            )}
         </>
       }
       action={
@@ -91,7 +92,7 @@ export const PackageVersionPageToolbar: FC = memo(() => {
             testId="PublishButton"
           />
           <Button
-            startIcon={<ExitIcon/>}
+            startIcon={<ExitIcon />}
             variant="outlined"
             onClick={navigateToPrevPage}
             data-testid="ExitButton"

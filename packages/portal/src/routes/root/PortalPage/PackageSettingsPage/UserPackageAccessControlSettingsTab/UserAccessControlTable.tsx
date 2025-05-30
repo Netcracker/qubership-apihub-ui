@@ -14,29 +14,29 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import React, { useCallback, useMemo, useState } from 'react'
-import type { Role, Roles } from '@netcracker/qubership-apihub-ui-shared/types/roles'
+import type { Key } from '@apihub/entities/keys'
 import type { PackageMember, PackageMembers } from '@apihub/routes/root/PortalPage/PackageSettingsPage/package-settings'
 import {
   ADD_CHANGE_ROLE_ACTION,
   REMOVE_CHANGE_ROLE_ACTION,
 } from '@apihub/routes/root/PortalPage/PackageSettingsPage/package-settings'
-import { InfinityScrollableMatrix } from '@netcracker/qubership-apihub-ui-shared/components/InfinityScrollableMatrix'
-import { Box, Checkbox, TableCell, Tooltip, Typography } from '@mui/material'
-import { CheckboxDisabledCheckedIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CheckboxDisabledCheckedIcon'
-import { CheckboxCheckedIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CheckboxCheckedIcon'
-import { CheckboxDisabledIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CheckboxDisabledIcon'
-import { CheckboxIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CheckboxIcon'
 import {
   useChangePackageMemberRole,
   useDeletePackageMember,
 } from '@apihub/routes/root/PortalPage/PackageSettingsPage/UserPackageAccessControlSettingsTab/useUserPackageAccess'
-import type { Key } from '@apihub/entities/keys'
+import { Box, Checkbox, TableCell, Tooltip, Typography } from '@mui/material'
 import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
-import { DeleteIcon } from '@netcracker/qubership-apihub-ui-shared/icons/DeleteIcon'
 import { ConfirmationDialog } from '@netcracker/qubership-apihub-ui-shared/components/ConfirmationDialog'
+import { InfinityScrollableMatrix } from '@netcracker/qubership-apihub-ui-shared/components/InfinityScrollableMatrix'
 import { UserView } from '@netcracker/qubership-apihub-ui-shared/components/Users/UserView'
+import { CheckboxCheckedIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CheckboxCheckedIcon'
+import { CheckboxDisabledCheckedIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CheckboxDisabledCheckedIcon'
+import { CheckboxDisabledIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CheckboxDisabledIcon'
+import { CheckboxIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CheckboxIcon'
+import { DeleteIcon } from '@netcracker/qubership-apihub-ui-shared/icons/DeleteIcon'
+import type { Role, Roles } from '@netcracker/qubership-apihub-ui-shared/types/roles'
+import type { FC } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 
 export type UserAccessControlTableProps = {
   packageKey: Key
@@ -54,7 +54,6 @@ const DELETE_USER_PERMISSION_TOOLTIP = 'You cannot remove the user with role hig
 const DELETE_INHERITED_USER_PERMISSION_TOOLTIP = 'You cannot remove the user with inherited role'
 
 export const UserAccessControlTable: FC<UserAccessControlTableProps> = (props) => {
-
   const {
     packageKey,
     roles,
@@ -65,7 +64,9 @@ export const UserAccessControlTable: FC<UserAccessControlTableProps> = (props) =
   } = props
 
   const members = useMemo(() => {
-    return packageMembers.filter(packageMember => packageMember.user.name.toLowerCase().includes(searchValue.toLowerCase()))
+    return packageMembers.filter(packageMember =>
+      packageMember.user.name.toLowerCase().includes(searchValue.toLowerCase())
+    )
   }, [packageMembers, searchValue])
 
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false)
@@ -196,8 +197,8 @@ export const UserAccessControlTable: FC<UserAccessControlTableProps> = (props) =
             <Checkbox
               checked={item.checked}
               disabled={item.disabled}
-              icon={item.disabled ? <CheckboxDisabledIcon/> : <CheckboxIcon/>}
-              checkedIcon={item.disabled ? <CheckboxDisabledCheckedIcon/> : <CheckboxCheckedIcon/>}
+              icon={item.disabled ? <CheckboxDisabledIcon /> : <CheckboxIcon />}
+              checkedIcon={item.disabled ? <CheckboxDisabledCheckedIcon /> : <CheckboxCheckedIcon />}
               onChange={() => onChangePackageMemberRole(item.userId, item.roleId, item.checked)}
             />
           </Box>
@@ -207,9 +208,7 @@ export const UserAccessControlTable: FC<UserAccessControlTableProps> = (props) =
   }, [onChangePackageMemberRole])
 
   const deleteColumnHeaderRender = useCallback(() => {
-    return (
-      <TableCell sx={{ width: '42px' }} className="rightHeaderSticky"/>
-    )
+    return <TableCell sx={{ width: '42px' }} className="rightHeaderSticky" />
   }, [])
 
   const deleteCellRender = useCallback((key: string, item: PackageMember, rowItems: MatrixItem[]) => {
@@ -224,7 +223,7 @@ export const UserAccessControlTable: FC<UserAccessControlTableProps> = (props) =
           disableHint={false}
           hint={!disabledItem ? 'Delete' : disabledItem.deleteTooltip}
           tooltipPlacement="left"
-          startIcon={<DeleteIcon color="#626D82"/>}
+          startIcon={<DeleteIcon color="#626D82" />}
           sx={{ visibility: 'hidden' }}
           onClick={() => {
             setDeleteConfirmationData(item)
@@ -254,7 +253,8 @@ export const UserAccessControlTable: FC<UserAccessControlTableProps> = (props) =
         title={`Remove ${deleteConfirmationData?.user.name} from the package?`}
         loading={isDeletingPackageMember}
         confirmButtonName="Remove"
-        onConfirm={() => onDeletePackageMember(packageKey, deleteConfirmationData!.user.id, deleteConfirmationData?.user.name ?? '')}
+        onConfirm={() =>
+          onDeletePackageMember(packageKey, deleteConfirmationData!.user.id, deleteConfirmationData?.user.name ?? '')}
         onCancel={() => setDeleteConfirmationOpen(false)}
       />
     </>

@@ -14,35 +14,39 @@
  * limitations under the License.
  */
 
-import type { Key } from './keys'
+import type { ChangeStatus } from '@netcracker/qubership-apihub-ui-shared/entities/change-statuses'
 import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 import type { Url } from '@netcracker/qubership-apihub-ui-shared/types/url'
-import type { ChangeStatus } from '@netcracker/qubership-apihub-ui-shared/entities/change-statuses'
+import type { Key } from './keys'
 
-export type Ref = Partial<Readonly<{
-  key: Key
-  version: string
-  name: string
-  type: RefType
-  kind: RefKind
-  versionStatus: VersionStatus
-  refUrl: Url
-  status: ChangeStatus
-}>>
+export type Ref = Partial<
+  Readonly<{
+    key: Key
+    version: string
+    name: string
+    type: RefType
+    kind: RefKind
+    versionStatus: VersionStatus
+    refUrl: Url
+    status: ChangeStatus
+  }>
+>
 
 export type RefType = 'depend' | 'import'
 export type RefKind = 'group' | 'project'
 
-export type RefDto = Partial<Readonly<{
-  refId: Key
-  name: string
-  type: RefType
-  kind: RefKind | 'package'
-  version: string
-  versionStatus: VersionStatus
-  refUrl: Url
-  status: ChangeStatus
-}>>
+export type RefDto = Partial<
+  Readonly<{
+    refId: Key
+    name: string
+    type: RefType
+    kind: RefKind | 'package'
+    version: string
+    versionStatus: VersionStatus
+    refUrl: Url
+    status: ChangeStatus
+  }>
+>
 
 export function toRef(value: RefDto): Ref {
   return {

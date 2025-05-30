@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { useParams } from 'react-router-dom'
-import { useState } from 'react'
-import { getOperationGroups } from './useOperationGroups'
-import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import type { OperationGroup } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
+import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { useState } from 'react'
+import { useParams } from 'react-router-dom'
+import { getOperationGroups } from './useOperationGroups'
 
 export const useOperationGroupComparison = (): [boolean, GetOperationGroupFunction] => {
   const { packageId, versionId } = useParams()

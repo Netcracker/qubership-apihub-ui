@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useState } from 'react'
 import {
   Box,
   Button,
@@ -29,10 +27,12 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import { useProject } from '../../../useProject'
-import { useBranchSearchParam } from '../../../useBranchSearchParam'
-import { useHasEditBranchPermission } from '../useHasBranchPermission'
+import type { FC } from 'react'
+import { memo, useState } from 'react'
 import { useEventBus } from '../../../../EventBusProvider'
+import { useBranchSearchParam } from '../../../useBranchSearchParam'
+import { useProject } from '../../../useProject'
+import { useHasEditBranchPermission } from '../useHasBranchPermission'
 
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined'
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
@@ -40,18 +40,18 @@ import VisibilityIcon from '@mui/icons-material/Visibility'
 import type { Column } from 'react-table'
 import { useTable } from 'react-table'
 
-import { useBranches } from '../../../useBranches'
-import { useNavigation } from '../../../../NavigationProvider'
-import { MenuButtonItems } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
 import { TitledValue } from '@apihub/components/TitledValue'
-import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
-import { BRANCH_SEARCH_PARAM, MODE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { FILES_PROJECT_EDITOR_MODE } from '@apihub/entities/editor-modes'
 import type { Branch } from '@apihub/entities/branches'
-import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
+import { FILES_PROJECT_EDITOR_MODE } from '@apihub/entities/editor-modes'
+import { MenuButtonItems } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
 import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
 import { FormattedDate } from '@netcracker/qubership-apihub-ui-shared/components/FormattedDate'
+import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
+import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
+import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { BRANCH_SEARCH_PARAM, MODE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { useNavigation } from '../../../../NavigationProvider'
+import { useBranches } from '../../../useBranches'
 
 export const BranchSelector: FC = memo(() => {
   const [anchor, setAnchor] = useState<HTMLElement>()
@@ -79,7 +79,7 @@ export const BranchSelector: FC = memo(() => {
       sx={{ minWidth: 4, height: 20, p: 0, boxShadow: 'none', '&:hover': { boxShadow: 'none' } }}
       variant="text"
       onClick={({ currentTarget }) => setAnchor(currentTarget)}
-      endIcon={<KeyboardArrowDownOutlinedIcon/>}
+      endIcon={<KeyboardArrowDownOutlinedIcon />}
     >
       <Typography noWrap variant="subtitle3" color="inherit">{selectedBranch}</Typography>
       <MenuButtonItems
@@ -94,12 +94,12 @@ export const BranchSelector: FC = memo(() => {
             title="Git repository"
             value={<Link href={project?.integration?.repositoryUrl}>{project?.integration?.repositoryName}</Link>}
           />
-          <SearchBar onValueChange={setSearchState}/>
-          {
-            hasEditPermission && <Button
+          <SearchBar onValueChange={setSearchState} />
+          {hasEditPermission && (
+            <Button
               sx={{ mt: 1, mb: -1, p: 1 }}
               variant="text"
-              startIcon={<AddOutlinedIcon/>}
+              startIcon={<AddOutlinedIcon />}
               onClick={() => {
                 setAnchor(undefined)
                 showCreateBranchDialog()
@@ -107,60 +107,54 @@ export const BranchSelector: FC = memo(() => {
             >
               Create new branch
             </Button>
-          }
+          )}
           <TableContainer sx={{ mt: 1, maxHeight: 400 }}>
             <Table {...getTableProps()} sx={{ maxWidth: 600 }}>
               <TableHead>
-                {
-                  headerGroups.map(headerGroup => (
-                    <TableRow {...headerGroup.getHeaderGroupProps()}>
-                      {
-                        headerGroups.map(headerGroup => headerGroup.headers.map(column => (
-                          <TableCell
-                            {...column.getHeaderProps({ style: { width: column.width } })}
-                            key={column.id}
-                            align={column.id === 'name' ? 'left' : 'right'}
-                          >
-                            {column.render('Header')}
-                          </TableCell>
-                        )))
-                      }
-                    </TableRow>
-                  ))
-                }
+                {headerGroups.map(headerGroup => (
+                  <TableRow {...headerGroup.getHeaderGroupProps()}>
+                    {headerGroups.map(headerGroup =>
+                      headerGroup.headers.map(column => (
+                        <TableCell
+                          {...column.getHeaderProps({ style: { width: column.width } })}
+                          key={column.id}
+                          align={column.id === 'name' ? 'left' : 'right'}
+                        >
+                          {column.render('Header')}
+                        </TableCell>
+                      ))
+                    )}
+                  </TableRow>
+                ))}
               </TableHead>
               <TableBody {...getTableBodyProps()}>
-                {
-                  rows
-                    .map(row => {
-                      prepareRow(row)
-                      return (
-                        <TableRow {...row.getRowProps()}>
-                          {
-                            row.cells.map((cell) => (
-                              <TableCell
-                                align="right"
-                                key={cell.column.id}
-                                onClick={event => {
-                                  event.stopPropagation()
-                                  navigateToProject({
-                                    search: {
-                                      [BRANCH_SEARCH_PARAM]: { value: row.original.name },
-                                      [MODE_SEARCH_PARAM]: { value: FILES_PROJECT_EDITOR_MODE },
-                                    },
-                                    replace: true,
-                                  })
-                                  setAnchor(undefined)
-                                }}
-                              >
-                                {cell.render('Cell')}
-                              </TableCell>
-                            ))
-                          }
-                        </TableRow>
-                      )
-                    })
-                }
+                {rows
+                  .map(row => {
+                    prepareRow(row)
+                    return (
+                      <TableRow {...row.getRowProps()}>
+                        {row.cells.map((cell) => (
+                          <TableCell
+                            align="right"
+                            key={cell.column.id}
+                            onClick={event => {
+                              event.stopPropagation()
+                              navigateToProject({
+                                search: {
+                                  [BRANCH_SEARCH_PARAM]: { value: row.original.name },
+                                  [MODE_SEARCH_PARAM]: { value: FILES_PROJECT_EDITOR_MODE },
+                                },
+                                replace: true,
+                              })
+                              setAnchor(undefined)
+                            }}
+                          >
+                            {cell.render('Cell')}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    )
+                  })}
               </TableBody>
             </Table>
           </TableContainer>
@@ -177,11 +171,9 @@ const COLUMNS: ReadonlyArray<Column<Branch>> = [
     Header: 'Branch',
     Cell: ({ row: { original: { permissions, name } } }) => (
       <Box display="flex" alignItems="center" gap={1}>
-        {
-          isNotEmpty(permissions)
-            ? null
-            : <Tooltip title="Read-only">{<VisibilityIcon fontSize="inherit" color="disabled"/>}</Tooltip>
-        }
+        {isNotEmpty(permissions)
+          ? null
+          : <Tooltip title="Read-only">{<VisibilityIcon fontSize="inherit" color="disabled" />}</Tooltip>}
         <OverflowTooltip title={name ?? ''}>
           <Typography noWrap variant="inherit">{name}</Typography>
         </OverflowTooltip>
@@ -202,16 +194,20 @@ const COLUMNS: ReadonlyArray<Column<Branch>> = [
     accessor: 'status',
     width: '20%',
     Header: 'Status',
-    Cell: ({ value }) => <>
-      {value && <CustomChip value={value}/>}
-    </>,
+    Cell: ({ value }) => (
+      <>
+        {value && <CustomChip value={value} />}
+      </>
+    ),
   },
   {
     accessor: 'publishedAt',
     width: '22%',
     Header: 'Last Published',
-    Cell: ({ row: { original: { publishedAt } } }) => <>
-      {publishedAt && <FormattedDate value={publishedAt}/>}
-    </>,
+    Cell: ({ row: { original: { publishedAt } } }) => (
+      <>
+        {publishedAt && <FormattedDate value={publishedAt} />}
+      </>
+    ),
   },
 ]

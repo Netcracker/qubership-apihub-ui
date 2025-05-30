@@ -16,10 +16,10 @@
 
 import { useMemo } from 'react'
 
-import { useParams } from 'react-router-dom'
 import type { OperationTypeForm } from '@apihub/utils/operation-types'
 import { getDefaultApiType } from '@apihub/utils/operation-types'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { useParams } from 'react-router-dom'
 
 export function useEffectiveApiType(operationTypes: OperationTypeForm): ApiType {
   const { apiType } = useParams()

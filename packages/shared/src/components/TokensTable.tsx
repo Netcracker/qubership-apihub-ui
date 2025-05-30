@@ -14,30 +14,30 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useEffect, useMemo, useRef, useState } from 'react'
-import type { ColumnDef } from '@tanstack/table-core'
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
 import type { ColumnSizingInfoState, ColumnSizingState, OnChangeFn } from '@tanstack/react-table'
 import { flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from '@tanstack/react-table'
+import type { ColumnDef } from '@tanstack/table-core'
+import type { FC } from 'react'
+import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import { TextWithOverflowTooltip } from './TextWithOverflowTooltip'
 
 import { CONTENT_PLACEHOLDER_AREA, Placeholder } from './Placeholder'
 
-import { TableCellSkeleton } from './TableCellSkeleton'
-import type { DeleteApiKey, SystemToken, Tokens } from '../types/tokens'
-import type { IsLoading } from '../utils/aliases'
+import { tokenRoleMapping } from '../entities/tokens'
+import { useResizeObserver } from '../hooks/common/useResizeObserver'
 import type { ColumnModel } from '../hooks/table-resizing/useColumnResizing'
 import { DEFAULT_CONTAINER_WIDTH, useColumnsSizing } from '../hooks/table-resizing/useColumnResizing'
-import { tokenRoleMapping } from '../entities/tokens'
-import { UserView } from './Users/UserView'
-import { ButtonWithHint } from './Buttons/ButtonWithHint'
 import { DeleteIcon } from '../icons/DeleteIcon'
+import type { DeleteApiKey, SystemToken, Tokens } from '../types/tokens'
+import type { IsLoading } from '../utils/aliases'
 import { isEmpty } from '../utils/arrays'
 import { createComponents } from '../utils/components'
 import { DEFAULT_NUMBER_SKELETON_ROWS } from '../utils/constants'
-import { useResizeObserver } from '../hooks/common/useResizeObserver'
+import { ButtonWithHint } from './Buttons/ButtonWithHint'
 import { FormattedDate } from './FormattedDate'
+import { TableCellSkeleton } from './TableCellSkeleton'
+import { UserView } from './Users/UserView'
 
 export type TokensTableTableProps = {
   data: Tokens
@@ -68,71 +68,72 @@ export const TokensTable: FC<TokensTableTableProps> = memo(({
   })
 
   const columns: ColumnDef<SystemToken>[] = useMemo(() => {
-      return [
-        {
-          id: NAME_COLUMN_ID,
-          header: 'Name',
-          cell: ({ row: { original: { name } } }) => (
-            <TextWithOverflowTooltip tooltipText={name}>
-              <Typography variant="inherit">{name}</Typography>
-            </TextWithOverflowTooltip>
-          ),
+    return [
+      {
+        id: NAME_COLUMN_ID,
+        header: 'Name',
+        cell: ({ row: { original: { name } } }) => (
+          <TextWithOverflowTooltip tooltipText={name}>
+            <Typography variant="inherit">{name}</Typography>
+          </TextWithOverflowTooltip>
+        ),
+      },
+      {
+        id: ROLES_COLUMN_ID,
+        header: 'Roles',
+        cell: ({ row: { original: { roles } } }) => (
+          <TextWithOverflowTooltip tooltipText={roles.map(role => tokenRoleMapping[role]).join(', ')}>
+            <Typography variant="inherit">
+              {roles.map(role =>
+                tokenRoleMapping[role]
+              ).join(', ')}
+            </Typography>
+          </TextWithOverflowTooltip>
+        ),
+      },
+      {
+        id: CREATED_AT_COLUMN_ID,
+        header: 'Created At',
+        cell: ({ row: { original: { createdAt } } }) => <FormattedDate value={createdAt} />,
+      },
+      {
+        id: CREATED_BY_COLUMN_ID,
+        header: 'Created By',
+        cell: ({ row: { original: { createdBy } } }) => {
+          return <UserView name={createdBy.name} avatarUrl={createdBy.avatarUrl} />
         },
-        {
-          id: ROLES_COLUMN_ID,
-          header: 'Roles',
-          cell: ({ row: { original: { roles } } }) => (
-            <TextWithOverflowTooltip tooltipText={roles.map(role => tokenRoleMapping[role]).join(', ')}>
-              <Typography variant="inherit">{roles.map(role => tokenRoleMapping[role]).join(', ')}</Typography>
-            </TextWithOverflowTooltip>
-          ),
+      },
+      {
+        id: CREATED_FOR_COLUMN_ID,
+        header: 'Created For',
+        cell: ({ row: { original: { createdFor } } }) => {
+          return <UserView name={createdFor.name} avatarUrl={createdFor.avatarUrl} />
         },
-        {
-          id: CREATED_AT_COLUMN_ID,
-          header: 'Created At',
-          cell: ({ row: { original: { createdAt } } }) => (
-            <FormattedDate value={createdAt}/>
-          ),
-        },
-        {
-          id: CREATED_BY_COLUMN_ID,
-          header: 'Created By',
-          cell: ({ row: { original: { createdBy } } }) => {
-            return <UserView name={createdBy.name} avatarUrl={createdBy.avatarUrl}/>
-          },
-        },
-        {
-          id: CREATED_FOR_COLUMN_ID,
-          header: 'Created For',
-          cell: ({ row: { original: { createdFor } } }) => {
-            return <UserView name={createdFor.name} avatarUrl={createdFor.avatarUrl}/>
-          },
-        },
-        {
-          id: DELETE_COLUMN_ID,
-          header: '',
-          cell: ({ row: { original: { key, packageKey } } }) => (
-            <ButtonWithHint
-              area-label="delete"
-              disabled={disableDelete}
-              disableHint={false}
-              hint={disableDelete ? 'You do not have permission to generate token' : 'Delete'}
-              size="small"
-              sx={{ visibility: 'hidden', height: '20px' }}
-              className="hoverable"
-              startIcon={<DeleteIcon color={'#626D82'}/>}
-              onClick={() => deleteApiKey({
+      },
+      {
+        id: DELETE_COLUMN_ID,
+        header: '',
+        cell: ({ row: { original: { key, packageKey } } }) => (
+          <ButtonWithHint
+            area-label="delete"
+            disabled={disableDelete}
+            disableHint={false}
+            hint={disableDelete ? 'You do not have permission to generate token' : 'Delete'}
+            size="small"
+            sx={{ visibility: 'hidden', height: '20px' }}
+            className="hoverable"
+            startIcon={<DeleteIcon color={'#626D82'} />}
+            onClick={() =>
+              deleteApiKey({
                 key: key,
                 packageKey: packageKey,
               })}
-              testId="DeleteButton"
-            />
-          ),
-        },
-      ]
-    },
-    [deleteApiKey, disableDelete],
-  )
+            testId="DeleteButton"
+          />
+        ),
+      },
+    ]
+  }, [deleteApiKey, disableDelete])
 
   const { getHeaderGroups, getRowModel, setColumnSizing } = useReactTable({
     data: data,
@@ -174,7 +175,7 @@ export const TokensTable: FC<TokensTableTableProps> = memo(({
               ))}
             </TableRow>
           ))}
-          {isLoading && <TableSkeleton/>}
+          {isLoading && <TableSkeleton />}
         </TableBody>
       </Table>
       {isEmpty(data) && !isLoading
@@ -186,25 +187,24 @@ export const TokensTable: FC<TokensTableTableProps> = memo(({
             message="No Tokens"
           />
         )
-        : null
-      }
+        : null}
     </TableContainer>
   )
 })
 
 const TableSkeleton: FC = memo(() => {
-  return createComponents(<RowSkeleton/>, DEFAULT_NUMBER_SKELETON_ROWS)
+  return createComponents(<RowSkeleton />, DEFAULT_NUMBER_SKELETON_ROWS)
 })
 
 const RowSkeleton: FC = memo(() => {
   return (
     <TableRow>
-      <TableCellSkeleton/>
-      <TableCellSkeleton/>
-      <TableCellSkeleton/>
-      <TableCellSkeleton/>
-      <TableCellSkeleton/>
-      <TableCellSkeleton/>
+      <TableCellSkeleton />
+      <TableCellSkeleton />
+      <TableCellSkeleton />
+      <TableCellSkeleton />
+      <TableCellSkeleton />
+      <TableCellSkeleton />
     </TableRow>
   )
 })

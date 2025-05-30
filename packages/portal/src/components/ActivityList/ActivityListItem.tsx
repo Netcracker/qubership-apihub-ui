@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
+import { Box, Link, Typography } from '@mui/material'
+import { FormattedDate } from '@netcracker/qubership-apihub-ui-shared/components/FormattedDate'
+import { PrincipalView } from '@netcracker/qubership-apihub-ui-shared/components/PrincipalView'
 import type { FC } from 'react'
 import { useMemo, useState } from 'react'
-import { useEffectOnce } from 'react-use'
-import { Box, Link, Typography } from '@mui/material'
 import { NavLink } from 'react-router-dom'
+import { useEffectOnce } from 'react-use'
 import type { Activity } from '../../entities/activities'
 import type { ActivityMessage } from '../../utils/activities'
 import { EMPTY_ACTIVITY_MESSAGE, getActivityMessageServiceInstance, LINK_PLACEHOLDER } from '../../utils/activities'
-import { FormattedDate } from '@netcracker/qubership-apihub-ui-shared/components/FormattedDate'
-import { PrincipalView } from '@netcracker/qubership-apihub-ui-shared/components/PrincipalView'
 
 type ActivitiesListItemProps = {
   activity: Activity
@@ -82,7 +82,7 @@ export const ActivityListItem: FC<ActivitiesListItemProps> = ({ activity }) => {
             color="#8992A1"
           />
         </Box>
-        <PrincipalView value={activity.principal}/>
+        <PrincipalView value={activity.principal} />
       </Box>
       <Box overflow="auto" data-testid="ActivityMessage">
         <Typography variant="body2">

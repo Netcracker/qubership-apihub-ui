@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
+import { MainPageCard } from '@apihub/routes/root/MainPage/MainPageCard'
+import { Box, IconButton } from '@mui/material'
+import { ToolbarTitle } from '@netcracker/qubership-apihub-ui-shared/components/ToolbarTitle'
+import { isBoolean } from '@netcracker/qubership-apihub-ui-shared/utils/types'
 import type { FC } from 'react'
 import React, { memo, useMemo } from 'react'
-import { usePackage } from '../../usePackage'
-import { Box, IconButton } from '@mui/material'
-import { PackageBreadcrumbs } from '../../PackageBreadcrumbs'
 import { useParams } from 'react-router-dom'
-import { useFavorPackage } from '../useFavorPackage'
-import { useDisfavorPackage } from '../useDisfavorPackage'
-import { FavoriteIconButton } from '../FavoriteIconButton'
-import { ActivityHistoryCard } from './ActivityHistoryCard'
+import { PackageBreadcrumbs } from '../../PackageBreadcrumbs'
+import type { ActivityHistoryQueryResult } from '../../useActivityHistory'
+import { usePackageActivityHistory } from '../../useActivityHistory'
+import { usePackage } from '../../usePackage'
 import {
   useActivityHistoryFiltersContext,
   useSetActivityHistoryFiltersContext,
 } from '../ActivityHistoryFiltersProvider'
-import type { ActivityHistoryQueryResult } from '../../useActivityHistory'
-import { usePackageActivityHistory } from '../../useActivityHistory'
-import { MainPageCard } from '@apihub/routes/root/MainPage/MainPageCard'
-import { ToolbarTitle } from '@netcracker/qubership-apihub-ui-shared/components/ToolbarTitle'
-import { isBoolean } from '@netcracker/qubership-apihub-ui-shared/utils/types'
+import { FavoriteIconButton } from '../FavoriteIconButton'
+import { useDisfavorPackage } from '../useDisfavorPackage'
+import { useFavorPackage } from '../useFavorPackage'
+import { ActivityHistoryCard } from './ActivityHistoryCard'
 
 export const GroupPage: FC = memo(() => {
   const { groupId: groupKey = '' } = useParams()
@@ -59,7 +59,7 @@ export const GroupPage: FC = memo(() => {
   const title = useMemo(
     () => (
       <Box>
-        <PackageBreadcrumbs packageObject={groupPackage}/>
+        <PackageBreadcrumbs packageObject={groupPackage} />
         <Box display="flex" gap={1}>
           <IconButton
             sx={{ padding: 0 }}
@@ -68,9 +68,9 @@ export const GroupPage: FC = memo(() => {
             }}
             data-testid="FavoriteButton"
           >
-            {isBoolean(isFavorite) && <FavoriteIconButton isFavorite={isFavorite}/>}
+            {isBoolean(isFavorite) && <FavoriteIconButton isFavorite={isFavorite} />}
           </IconButton>
-          <ToolbarTitle value={groupPackage?.name}/>
+          <ToolbarTitle value={groupPackage?.name} />
         </Box>
       </Box>
     ),

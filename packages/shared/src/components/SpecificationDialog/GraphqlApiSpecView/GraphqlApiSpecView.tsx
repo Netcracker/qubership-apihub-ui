@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
+import { explorerPlugin } from '@graphiql/plugin-explorer'
+import { createGraphiQLFetcher } from '@graphiql/toolkit'
 import type { SxProps } from '@mui/material'
 import { Box } from '@mui/material'
-import type { FC } from 'react'
-import { memo } from 'react'
+import type { Theme } from '@mui/material/styles'
+import { GraphiQL } from 'graphiql'
 import type { GraphQLSchemaExtensions, IntrospectionQuery } from 'graphql'
 import { buildSchema, introspectionFromSchema } from 'graphql'
-import { ErrorBoundary } from './ErrorBoundary'
-import { GraphiQL } from 'graphiql'
-import { explorerPlugin } from '@graphiql/plugin-explorer'
-import type { Theme } from '@mui/material/styles'
-import { createGraphiQLFetcher } from '@graphiql/toolkit'
+import type { FC } from 'react'
+import { memo } from 'react'
 import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '../../Placeholder'
+import { ErrorBoundary } from './ErrorBoundary'
 
 import 'graphiql/graphiql.css'
 import '@graphiql/plugin-explorer/dist/style.css'
@@ -55,9 +55,13 @@ export const GraphqlApiSpecView: FC<GraphqlApiSpecViewProps> = /* @__PURE__ */ m
 
   const explorer = explorerPlugin({})
 
-  const defaultHeader = JSON.stringify({
-    Authorization: header || 'Bearer XXX',
-  }, undefined, 2)
+  const defaultHeader = JSON.stringify(
+    {
+      Authorization: header || 'Bearer XXX',
+    },
+    undefined,
+    2,
+  )
 
   return (
     <Box sx={GRAPHQL_CUSTOM_STYLE}>

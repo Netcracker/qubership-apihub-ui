@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { isAppliedSearchValueForTag } from '@netcracker/qubership-apihub-ui-shared/utils/tags'
 import type { FC } from 'react'
 import { useState } from 'react'
-import { useChangesSummaryFromContext } from '../ChangesSummaryProvider'
 import { useParams } from 'react-router-dom'
-import { useTagsFromChangesSummary } from '../useTagsFromChangesSummary'
+import { usePackageKind } from '../../usePackageKind'
+import { useChangesSummaryFromContext } from '../ChangesSummaryProvider'
 import { SelfManagedOperationFilters } from '../SelfManagedOperationFilters'
 import { useDefaultOperationFilterControllers } from '../useDefaultOperationFilterControllers'
-import { usePackageKind } from '../../usePackageKind'
 import { useTagSearchFilter } from '../useTagSearchFilter'
-import { isAppliedSearchValueForTag } from '@netcracker/qubership-apihub-ui-shared/utils/tags'
-import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { useTagsFromChangesSummary } from '../useTagsFromChangesSummary'
 
 export const ApiChangesNavigation: FC = () => {
   const { apiType } = useParams()
@@ -72,5 +72,3 @@ export const ApiChangesNavigation: FC = () => {
     />
   )
 }
-
-

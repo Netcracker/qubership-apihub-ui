@@ -1,7 +1,7 @@
+import { Box, TextField, ThemeProvider } from '@mui/material'
 import type { Meta, StoryObj } from '@storybook/react'
 import type { ReactElement, SyntheticEvent } from 'react'
 import React, { useState } from 'react'
-import { Box, TextField, ThemeProvider } from '@mui/material'
 import { theme } from '../../../themes/theme'
 import type { LabellessAutocompleteProps } from './LabellessAutocomplete'
 import { LabellessAutocomplete } from './LabellessAutocomplete'
@@ -26,7 +26,7 @@ const meta = {
     (Story) => (
       <ThemeProvider theme={theme}>
         <Box sx={{ width: '600px', p: 2 }}>
-          <Story/>
+          <Story />
         </Box>
       </ThemeProvider>
     ),

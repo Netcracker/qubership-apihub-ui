@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import type { Group } from '@apihub/entities/groups'
+import { EMPTY_GROUP } from '@apihub/entities/groups'
+import { LoadingButton } from '@mui/lab'
 import {
   Autocomplete,
   Button,
@@ -24,22 +27,19 @@ import {
   ListItem,
   TextField,
 } from '@mui/material'
-import type { FC } from 'react'
-import { memo, useEffect, useMemo, useState } from 'react'
-import { useEvent } from 'react-use'
-import { Controller, useForm } from 'react-hook-form'
-import { useCreateGroup } from '../useGroups'
-import { LoadingButton } from '@mui/lab'
-import { SHOW_CREATE_GROUP_DIALOG } from '../../EventBusProvider'
-import type { Group } from '@apihub/entities/groups'
-import { EMPTY_GROUP } from '@apihub/entities/groups'
 import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
-import { ALIAS_VALIDATION_RULES } from '@netcracker/qubership-apihub-ui-shared/utils/validations'
-import { usePackages } from '@netcracker/qubership-apihub-ui-shared/hooks/packages/usePackages'
 import type { Package } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { GROUP_KIND, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { calculatePackagePath } from '@netcracker/qubership-apihub-ui-shared/utils/packages'
+import { usePackages } from '@netcracker/qubership-apihub-ui-shared/hooks/packages/usePackages'
 import { disableAutocompleteSearch } from '@netcracker/qubership-apihub-ui-shared/utils/mui'
+import { calculatePackagePath } from '@netcracker/qubership-apihub-ui-shared/utils/packages'
+import { ALIAS_VALIDATION_RULES } from '@netcracker/qubership-apihub-ui-shared/utils/validations'
+import type { FC } from 'react'
+import { memo, useEffect, useMemo, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { useEvent } from 'react-use'
+import { SHOW_CREATE_GROUP_DIALOG } from '../../EventBusProvider'
+import { useCreateGroup } from '../useGroups'
 
 export const CreateGroupDialog: FC = memo(() => {
   const [open, setOpen] = useState(false)
@@ -63,8 +63,12 @@ export const CreateGroupDialog: FC = memo(() => {
   })
   const [createGroup, isLoading, error] = useCreateGroup()
 
-  useEffect(() => {!isLoading && !error && setOpen(false)}, [error, isLoading])
-  useEffect(() => {!open && reset()}, [open, reset])
+  useEffect(() => {
+    !isLoading && !error && setOpen(false)
+  }, [error, isLoading])
+  useEffect(() => {
+    !open && reset()
+  }, [open, reset])
 
   return (
     <DialogForm
@@ -80,7 +84,7 @@ export const CreateGroupDialog: FC = memo(() => {
         <Controller
           name="name"
           control={control}
-          render={({ field }) => <TextField {...field} autoFocus required label="Group name"/>}
+          render={({ field }) => <TextField {...field} autoFocus required label="Group name" />}
         />
         <Controller
           name="alias"
@@ -100,26 +104,27 @@ export const CreateGroupDialog: FC = memo(() => {
         <Controller
           name="parent"
           control={control}
-          render={({ field }) =>
+          render={({ field }) => (
             <Autocomplete
               loading={areGroupsLoading}
               value={selectedGroup}
               options={groups}
               filterOptions={disableAutocompleteSearch}
               getOptionLabel={(parent: Package) => calculatePackagePath(parent, true)}
-              renderOption={(props, parent) =>
+              renderOption={(props, parent) => (
                 <ListItem {...props} key={parent.key}>
                   {calculatePackagePath(parent, true)}
                 </ListItem>
-              }
+              )}
               isOptionEqualToValue={(option, value) => option.key === value.key}
               onInputChange={debouncedOnGroupInputChange}
-              renderInput={(params) => <TextField {...field} {...params} label="Parent group"/>}
+              renderInput={(params) => <TextField {...field} {...params} label="Parent group" />}
               onChange={(_, value) => {
                 setValue('parentKey', value?.key ?? '')
                 setSelectedGroup(value)
               }}
-            />}
+            />
+          )}
         />
       </DialogContent>
 

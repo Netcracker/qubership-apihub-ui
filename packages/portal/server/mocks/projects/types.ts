@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import type { UserDto } from '../auth/types'
 import type { FileFormat } from '../global-search/types'
 import type { GroupDto } from '../groups/types'
-import type { UserDto } from '../auth/types'
-import type { VersionStatus } from '../packages/version-statuses'
 import type { Principal } from '../packages/principal'
+import type { VersionStatus } from '../packages/version-statuses'
 
 export type ConfigFileKeyPrefixType = 'apihub-config'
 export type ConfigFileKey = `${ConfigFileKeyPrefixType}${string}`
@@ -32,16 +32,18 @@ export type BranchConfigDto = Readonly<{
   changeType: ChangeType
 }>
 
-export type RefDto = Partial<Readonly<{
-  refId: string
-  name: string
-  type: 'depend' | 'import'
-  kind: 'group' | 'project' | 'package'
-  version: string
-  versionStatus: VersionStatus
-  refUrl: string
-  status: ChangeStatus
-}>>
+export type RefDto = Partial<
+  Readonly<{
+    refId: string
+    name: string
+    type: 'depend' | 'import'
+    kind: 'group' | 'project' | 'package'
+    version: string
+    versionStatus: VersionStatus
+    refUrl: string
+    status: ChangeStatus
+  }>
+>
 
 export const ALL_BRANCH_PERMISSION_TYPE = 'all'
 export const SAVE_BRANCH_PERMISSION_TYPE = 'save'
@@ -179,14 +181,16 @@ export type ProjectFileChangeHistoryDto = Readonly<{
   publishedAt?: string
 }>
 
-export type IntegrationDto = Partial<Readonly<{
-  type: 'gitlab'
-  repositoryId: string
-  repositoryName: string
-  repositoryUrl: string
-  defaultBranch: string
-  defaultFolder: string
-}>>
+export type IntegrationDto = Partial<
+  Readonly<{
+    type: 'gitlab'
+    repositoryId: string
+    repositoryName: string
+    repositoryUrl: string
+    defaultBranch: string
+    defaultFolder: string
+  }>
+>
 
 export const MOVED_CHANGE_STATUS = 'moved'
 export const MODIFIED_CHANGE_STATUS = 'modified'

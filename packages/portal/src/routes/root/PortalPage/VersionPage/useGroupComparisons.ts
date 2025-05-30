@@ -13,13 +13,13 @@
  * limitations under the License.
  */
 
-import { useQuery } from '@tanstack/react-query'
 import type { VersionsComparison } from '@netcracker/qubership-apihub-api-processor'
-import { PackageVersionBuilder } from '../package-version-builder'
-import { usePackage } from '../../usePackage'
 import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { getAuthorization } from '@netcracker/qubership-apihub-ui-shared/utils/storages'
+import { useQuery } from '@tanstack/react-query'
+import { usePackage } from '../../usePackage'
+import { PackageVersionBuilder } from '../package-version-builder'
 
 const GROUPS_CHANGES_QUERY_KEY = 'groups-changes-query-key'
 
@@ -65,4 +65,3 @@ export function useGroupComparisons(options?: {
 export const getFullPrefixGroup = (restGroupingPrefix: string | undefined, group: string): string => {
   return restGroupingPrefix ? restGroupingPrefix.replace(/{group}/g, group) : group
 }
-

@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-import type {
-  DiffTypeDto,
-  OperationType,
-} from '@netcracker/qubership-apihub-api-processor'
+import type { DiffTypeDto, OperationType } from '@netcracker/qubership-apihub-api-processor'
 import { convertDtoFieldOperationTypes } from '@netcracker/qubership-apihub-api-processor'
 
+import type { DiffType } from '@netcracker/qubership-apihub-api-diff'
+import { hasNoChangesInSummary } from '../utils/change-severities'
+import type { Key } from './keys'
 import type { PackageRef, PackagesRefs } from './operations'
 import { toPackageRef } from './operations'
 import { EMPTY_CHANGE_SUMMARY } from './version-changelog'
 import type { VersionStatus } from './version-status'
-import type { Key } from './keys'
-import { hasNoChangesInSummary } from '../utils/change-severities'
-import type { DiffType } from '@netcracker/qubership-apihub-api-diff'
 
 export type VersionChangesSummaryDto = PackageComparisonSummary<DiffTypeDto> | DashboardComparisonSummaryDto
 export type VersionChangesSummary = PackageComparisonSummary | DashboardComparisonSummary
@@ -126,7 +123,8 @@ export function hasNoVersionChanges(value: VersionChangesSummary): boolean {
     const refs = (value ?? []) as DashboardComparisonSummary
     const checkedChangesAbsence = refs.map(ref => {
       const checkedChangesAbsenceForRef = ref.operationTypes.map(hasNoChangesForOperationType)
-      return !checkedChangesAbsenceForRef.length || checkedChangesAbsenceForRef.reduce((prev, curr) => prev && curr, true)
+      return !checkedChangesAbsenceForRef.length
+        || checkedChangesAbsenceForRef.reduce((prev, curr) => prev && curr, true)
     })
     return !checkedChangesAbsence.length || checkedChangesAbsence.reduce((prev, curr) => prev && curr, true)
   }

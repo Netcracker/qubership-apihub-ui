@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import React, { memo, useCallback, useEffect, useMemo } from 'react'
-import { useUpdateOperationGroupParameters } from './useManageOperationGroup'
-import type { OperationGroupParameters } from './OperationGroupParametersPopup'
-import { OperationGroupParametersPopup } from './OperationGroupParametersPopup'
-import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import type { EditOperationGroupDetail } from '@apihub/routes/EventBusProvider'
 import { SHOW_EDIT_OPERATION_GROUP_DIALOG } from '@apihub/routes/EventBusProvider'
+import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
+import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
+import type { FC } from 'react'
+import React, { memo, useCallback, useEffect, useMemo } from 'react'
+import type { OperationGroupParameters } from './OperationGroupParametersPopup'
+import { OperationGroupParametersPopup } from './OperationGroupParametersPopup'
+import { useUpdateOperationGroupParameters } from './useManageOperationGroup'
 
 export const EditOperationGroupDialog: FC = memo(() => {
   return (
     <PopupDelegate
       type={SHOW_EDIT_OPERATION_GROUP_DIALOG}
-      render={props => <EditOperationGroupPopup {...props}/>}
+      render={props => <EditOperationGroupPopup {...props} />}
     />
   )
 })

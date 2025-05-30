@@ -20,9 +20,16 @@ import { memo } from 'react'
 export const MarkdownIcon: FC = memo(() => {
   return (
     <div style={{ display: 'flex' }}>
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"
-           xmlnsXlink="http://www.w3.org/1999/xlink" data-testid="MarkdownIcon">
-        <rect x="1" y="4" width="18" height="11" fill="url(#markdownpattern)"/>
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
+        data-testid="MarkdownIcon"
+      >
+        <rect x="1" y="4" width="18" height="11" fill="url(#markdownpattern)" />
         <defs>
           <pattern
             id="markdownpattern"
@@ -30,7 +37,7 @@ export const MarkdownIcon: FC = memo(() => {
             width="1"
             height="1"
           >
-            <use xlinkHref="#image0_68234_657156" transform="translate(0 -0.0034965) scale(0.000600962 0.000983392)"/>
+            <use xlinkHref="#image0_68234_657156" transform="translate(0 -0.0034965) scale(0.000600962 0.000983392)" />
           </pattern>
           <image
             id="image0_68234_657156"

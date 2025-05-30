@@ -14,30 +14,32 @@
  * limitations under the License.
  */
 
-import type { UseQueryOptions } from '@tanstack/react-query'
-import { useQueries, useQuery } from '@tanstack/react-query'
-import { useParams } from 'react-router-dom'
+import type { AgentKey, NamespaceKey, WorkspaceKey } from '@apihub/entities/keys'
 import { ncCustomAgentsRequestBlob } from '@apihub/utils/requests'
 import type { ServiceKey, SpecKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { SpecRaw } from '@netcracker/qubership-apihub-ui-shared/entities/specs'
-import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { toFormattedJsonString } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
-import { getAuthorization } from '@netcracker/qubership-apihub-ui-shared/utils/storages'
-import type { AgentKey, NamespaceKey, WorkspaceKey } from '@apihub/entities/keys'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
-import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { useMemo } from 'react'
-import { APIHUB_NC_BASE_PATH } from '@netcracker/qubership-apihub-ui-shared/utils/urls'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { API_V2 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { getAuthorization } from '@netcracker/qubership-apihub-ui-shared/utils/storages'
+import { toFormattedJsonString } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
+import { APIHUB_NC_BASE_PATH } from '@netcracker/qubership-apihub-ui-shared/utils/urls'
+import type { UseQueryOptions } from '@tanstack/react-query'
+import { useQueries, useQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
+import { useParams } from 'react-router-dom'
 
 const SPEC_RAW_QUERY_KEY = 'spec-raw-query-key'
 const EMPTY_SPECS_RESULT: Map<SpecKey, SpecRaw> = new Map()
 
-export function useSpecRaw(options?: Partial<{
-  serviceKey: ServiceKey
-  specKey: SpecKey
-  enabled: boolean
-}>): [SpecRaw, IsLoading] {
+export function useSpecRaw(
+  options?: Partial<{
+    serviceKey: ServiceKey
+    specKey: SpecKey
+    enabled: boolean
+  }>,
+): [SpecRaw, IsLoading] {
   const { agentId, namespaceKey } = useParams()
   const { serviceKey, specKey, enabled } = options ?? {}
   const workspaceKey = useSearchParam(WORKSPACE_SEARCH_PARAM)
@@ -128,7 +130,11 @@ export async function getSpecBlob(
   authorization: string,
   ignoreErrors?: boolean,
 ): Promise<Blob> {
-  return (await ncCustomAgentsRequestBlob(`/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/services/${serviceKey}/specs/${encodeURIComponent(specKey)}`, {
+  return (await ncCustomAgentsRequestBlob(
+    `/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/services/${serviceKey}/specs/${
+      encodeURIComponent(specKey)
+    }`,
+    {
       method: 'get',
       headers: { authorization },
     },

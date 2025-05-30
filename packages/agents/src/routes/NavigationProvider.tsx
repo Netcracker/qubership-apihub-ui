@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import type { FC, PropsWithChildren } from 'react'
-import { createContext, memo, useContext, useState } from 'react'
-import { createEventBus, slot } from 'ts-event-bus'
-import { useEvent } from 'react-use'
-import { generatePath, useNavigate } from 'react-router-dom'
-import type { Path } from '@remix-run/router'
-import { AGENT_PAGE_PATH_PATTERN, NAMESPACE_PAGE_PATH_PATTERN } from './routes'
 import type { SearchParam, WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import type { Path } from '@remix-run/router'
+import type { FC, PropsWithChildren } from 'react'
+import { createContext, memo, useContext, useState } from 'react'
+import { generatePath, useNavigate } from 'react-router-dom'
+import { useEvent } from 'react-use'
+import { createEventBus, slot } from 'ts-event-bus'
+import { AGENT_PAGE_PATH_PATTERN, NAMESPACE_PAGE_PATH_PATTERN } from './routes'
 
 export const NAVIGATE_TO_AGENT = 'navigate-to-agent'
 export const NAVIGATE_TO_NAMESPACE = 'navigate-to-namespace'

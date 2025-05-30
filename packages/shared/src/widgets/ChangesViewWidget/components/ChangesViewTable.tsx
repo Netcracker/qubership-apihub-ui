@@ -46,7 +46,13 @@ import type { Tag } from '../../../entities/operations'
 import { DEFAULT_TAG } from '../../../entities/operations'
 import type { Package, PackageKind } from '../../../entities/packages'
 import { DASHBOARD_KIND } from '../../../entities/packages'
-import { API_AUDIENCE_COLUMN_ID, API_KIND_COLUMN_ID, ENDPOINT_COLUMN_ID, PACKAGE_COLUMN_ID, TAGS_COLUMN_ID } from '../../../entities/table-columns'
+import {
+  API_AUDIENCE_COLUMN_ID,
+  API_KIND_COLUMN_ID,
+  ENDPOINT_COLUMN_ID,
+  PACKAGE_COLUMN_ID,
+  TAGS_COLUMN_ID,
+} from '../../../entities/table-columns'
 import type { OperationChangeBase, VersionChangesData } from '../../../entities/version-changelog'
 import { useIntersectionObserver } from '../../../hooks/common/useIntersectionObserver'
 import { useResizeObserver } from '../../../hooks/common/useResizeObserver'
@@ -57,7 +63,9 @@ import { DEFAULT_NUMBER_SKELETON_ROWS } from '../../../utils/constants'
 import type { ChangesViewTableData } from '../const/table'
 import { CHANGES_COLUMN_ID, COLUMNS_MODELS } from '../const/table'
 
-export type FetchNextPage = (options?: FetchNextPageOptions) => Promise<InfiniteQueryObserverResult<VersionChangesData, Error>>
+export type FetchNextPage = (
+  options?: FetchNextPageOptions,
+) => Promise<InfiniteQueryObserverResult<VersionChangesData, Error>>
 
 export type SubTableComponentProps = {
   value: Row<ChangesViewTableData>
@@ -94,7 +102,8 @@ export const ChangesViewTable: FC<ChangeViewTableProps> = memo<ChangeViewTablePr
     hasNextPage,
     SubTableComponent,
     isLoading,
-  }) => {
+  },
+) => {
   const isDashboardType = useMemo(() => packageObject?.kind === DASHBOARD_KIND, [packageObject?.kind])
 
   const [containerWidth, setContainerWidth] = useState(DEFAULT_CONTAINER_WIDTH)
@@ -143,9 +152,7 @@ export const ChangesViewTable: FC<ChangeViewTableProps> = memo<ChangeViewTablePr
         cell: ({ row: { original: { change } } }) => {
           const changeSummary = change?.changeSummary
           if (changeSummary) {
-            return (
-              <Changes value={changeSummary} mode="compact" />
-            )
+            return <Changes value={changeSummary} mode="compact" />
           }
         },
       },
@@ -156,20 +163,25 @@ export const ChangesViewTable: FC<ChangeViewTableProps> = memo<ChangeViewTablePr
           const currentApiAudience = change?.currentOperation?.apiAudience
           const previousApiAudience = change?.previousOperation?.apiAudience
           if (currentApiAudience && previousApiAudience && currentApiAudience !== previousApiAudience) {
-            return (<>{currentApiAudience} <span style={{ textDecoration: 'line-through' }}>{previousApiAudience}</span></>)
+            return (
+              <>
+                {currentApiAudience} <span style={{ textDecoration: 'line-through' }}>{previousApiAudience}</span>
+              </>
+            )
           }
           if (currentApiAudience) {
-            return (currentApiAudience)
+            return currentApiAudience
           }
           if (previousApiAudience) {
-            return (previousApiAudience)
+            return previousApiAudience
           }
         },
       },
       {
         id: API_KIND_COLUMN_ID,
         header: 'Kind',
-        cell: ({ row: { original: { change } } }) => change.currentOperation?.apiKind ?? change.previousOperation?.apiKind,
+        cell: ({ row: { original: { change } } }) =>
+          change.currentOperation?.apiKind ?? change.previousOperation?.apiKind,
       },
     ]
 
@@ -193,23 +205,25 @@ export const ChangesViewTable: FC<ChangeViewTableProps> = memo<ChangeViewTablePr
     return result
   }, [isDashboardType, mainPackageKind])
 
-  const data: ChangesViewTableData[] = useMemo(() => value.map(change => {
-    const {
-      action,
-      changeSummary: {
-        breaking = 0,
-        [RISKY_CHANGE_SEVERITY]: risky = 0,
-        deprecated = 0,
-        [NON_BREAKING_CHANGE_SEVERITY]: nonBreaking = 0,
-        annotation = 0,
-        unclassified = 0,
-      } = {},
-    } = change
-    return {
-      change: change,
-      canExpand: action === REPLACE_ACTION_TYPE && (breaking > 0 || risky > 0 || deprecated > 0 || nonBreaking > 0 || annotation > 0 || unclassified > 0),
-    }
-  }), [value])
+  const data: ChangesViewTableData[] = useMemo(() =>
+    value.map(change => {
+      const {
+        action,
+        changeSummary: {
+          breaking = 0,
+          [RISKY_CHANGE_SEVERITY]: risky = 0,
+          deprecated = 0,
+          [NON_BREAKING_CHANGE_SEVERITY]: nonBreaking = 0,
+          annotation = 0,
+          unclassified = 0,
+        } = {},
+      } = change
+      return {
+        change: change,
+        canExpand: action === REPLACE_ACTION_TYPE
+          && (breaking > 0 || risky > 0 || deprecated > 0 || nonBreaking > 0 || annotation > 0 || unclassified > 0),
+      }
+    }), [value])
 
   const [expanded, setExpanded] = useState<ExpandedState>({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -239,9 +253,8 @@ export const ChangesViewTable: FC<ChangeViewTableProps> = memo<ChangeViewTablePr
   const rowSkeleton = useMemo(() => (
     packageObject?.kind === DASHBOARD_KIND
       ? <DashboardRowSkeleton refObject={ref} />
-      : <PackageRowSkeleton refObject={ref} />),
-    [packageObject?.kind],
-  )
+      : <PackageRowSkeleton refObject={ref} />
+  ), [packageObject?.kind])
 
   return (
     <TableContainer ref={tableContainerRef} sx={{ mt: 1 }}>
@@ -261,8 +274,8 @@ export const ChangesViewTable: FC<ChangeViewTableProps> = memo<ChangeViewTablePr
                   }}
                 >
                   {flexRender(headerColumn.column.columnDef.header, headerColumn.getContext())}
-                  {index !== headerGroup.headers.length - 1 &&
-                    <ColumnDelimiter header={headerColumn} resizable={true} />}
+                  {index !== headerGroup.headers.length - 1
+                    && <ColumnDelimiter header={headerColumn} resizable={true} />}
                 </TableCell>
               ))}
             </TableRow>
@@ -316,19 +329,19 @@ const DashboardRowSkeleton: FC<RowSkeletonProps> = memo<RowSkeletonProps>(({ ref
   return (
     <TableRow>
       <TableCell ref={refObject}>
-        <Skeleton variant="rectangular" width='80%' />
+        <Skeleton variant="rectangular" width="80%" />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width='80%' />
+        <Skeleton variant="rectangular" width="80%" />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width='80%' />
+        <Skeleton variant="rectangular" width="80%" />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width='80%' />
+        <Skeleton variant="rectangular" width="80%" />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width='80%' />
+        <Skeleton variant="rectangular" width="80%" />
       </TableCell>
       <TableCell />
     </TableRow>
@@ -339,16 +352,16 @@ const PackageRowSkeleton: FC<RowSkeletonProps> = memo<RowSkeletonProps>(({ refOb
   return (
     <TableRow>
       <TableCell ref={refObject}>
-        <Skeleton variant="rectangular" width='80%' />
+        <Skeleton variant="rectangular" width="80%" />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width='80%' />
+        <Skeleton variant="rectangular" width="80%" />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width='80%' />
+        <Skeleton variant="rectangular" width="80%" />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width='80%' />
+        <Skeleton variant="rectangular" width="80%" />
       </TableCell>
       <TableCell />
     </TableRow>

@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { Fragment, memo, useEffect, useMemo, useState } from 'react'
-import { Box, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
-import type { ColumnDef, ExpandedState, VisibilityState } from '@tanstack/react-table'
-import { flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from '@tanstack/react-table'
+import { groupOperationsByTags } from '@apihub/utils/operations'
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
 import KeyboardArrowRightOutlinedIcon from '@mui/icons-material/KeyboardArrowRightOutlined'
-import { SubOpenApiTable } from './SubOpenApiTable'
-import { COLUMNS_SIZES_MAP } from './openapi-table'
+import { Box, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
-import { groupOperationsByTags } from '@apihub/utils/operations'
 import type { OperationData, OperationsData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import { API_AUDIENCE_COLUMN_ID, API_KIND_COLUMN_ID, ENDPOINT_COLUMN_ID } from '@netcracker/qubership-apihub-ui-shared/entities/table-columns'
+import {
+  API_AUDIENCE_COLUMN_ID,
+  API_KIND_COLUMN_ID,
+  ENDPOINT_COLUMN_ID,
+} from '@netcracker/qubership-apihub-ui-shared/entities/table-columns'
+import type { ColumnDef, ExpandedState, VisibilityState } from '@tanstack/react-table'
+import { flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from '@tanstack/react-table'
+import type { FC } from 'react'
+import { Fragment, memo, useEffect, useMemo, useState } from 'react'
+import { COLUMNS_SIZES_MAP } from './openapi-table'
+import { SubOpenApiTable } from './SubOpenApiTable'
 
 export type OpenApiTableTreeProps = {
   documentSlug: string
@@ -65,10 +69,11 @@ export const OpenApiTableTree: FC<OpenApiTableTreeProps> = memo(({ documentSlug,
   ], [])
 
   const data: OpenApiTreeTableData[] = useMemo(
-    () => Object.entries(operationsGroupedByTag).map(([tag, operations]) => ({
-      tag: tag,
-      operations: operations as OperationData[],
-    })),
+    () =>
+      Object.entries(operationsGroupedByTag).map(([tag, operations]) => ({
+        tag: tag,
+        operations: operations as OperationData[],
+      })),
     [operationsGroupedByTag],
   )
 

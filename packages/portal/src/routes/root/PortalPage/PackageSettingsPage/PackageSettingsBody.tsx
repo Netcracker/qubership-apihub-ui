@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+import {
+  ExportSettingsTab,
+} from '@apihub/routes/root/PortalPage/PackageSettingsPage/ExportSettingsTab/ExportSettingsTab'
+import {
+  UserPackageAccessControlSettingsTab,
+} from '@apihub/routes/root/PortalPage/PackageSettingsPage/UserPackageAccessControlSettingsTab/UserPackageAccessControlSettingsTab'
 import type { FC } from 'react'
 import { memo } from 'react'
-import { AccessTokensPackageSettingsTab } from './AccessTokensPackageSettingsTab'
-import { GeneralPackageSettingsTab } from './GeneralPackageSettingsTab/GeneralPackageSettingsTab'
-import { useActiveTabContentContext } from './PackageSettingsPage'
-import type { PackageSettingsTabProps } from './package-settings'
-import { VersionsPackageSettingsTab } from './VersionsPackageSettingsTab/VersionsPackageSettingsTab'
 import {
   ACCESS_TOKENS_PAGE,
   API_SPECIFIC_CONFIGURATION_PAGE,
@@ -29,15 +30,14 @@ import {
   USER_ACCESS_CONTROLS_PAGE,
   VERSIONS_PAGE,
 } from '../../../../routes'
+import { AccessTokensPackageSettingsTab } from './AccessTokensPackageSettingsTab'
+import { GeneralPackageSettingsTab } from './GeneralPackageSettingsTab/GeneralPackageSettingsTab'
+import type { PackageSettingsTabProps } from './package-settings'
+import { useActiveTabContentContext } from './PackageSettingsPage'
 import {
   SpecificConfigurationPackageSettingsTab,
 } from './SpecificConfigurationPackageSettingsTab/SpecificConfigurationPackageSettingsTab'
-import {
-  UserPackageAccessControlSettingsTab,
-} from '@apihub/routes/root/PortalPage/PackageSettingsPage/UserPackageAccessControlSettingsTab/UserPackageAccessControlSettingsTab'
-import {
-  ExportSettingsTab,
-} from '@apihub/routes/root/PortalPage/PackageSettingsPage/ExportSettingsTab/ExportSettingsTab'
+import { VersionsPackageSettingsTab } from './VersionsPackageSettingsTab/VersionsPackageSettingsTab'
 
 export const PackageSettingsBody: FC<PackageSettingsTabProps> = memo<PackageSettingsTabProps>(({
   packageObject,
@@ -47,21 +47,19 @@ export const PackageSettingsBody: FC<PackageSettingsTabProps> = memo<PackageSett
 
   return (
     <>
-      {
-        {
-          [GENERAL_PAGE]: (
-            <GeneralPackageSettingsTab
-              packageObject={packageObject}
-              isPackageLoading={isPackageLoading}
-            />
-          ),
-          [API_SPECIFIC_CONFIGURATION_PAGE]: <SpecificConfigurationPackageSettingsTab packageObject={packageObject}/>,
-          [EXPORT_SETTINGS_PAGE]: <ExportSettingsTab packageObject={packageObject}/>,
-          [VERSIONS_PAGE]: <VersionsPackageSettingsTab packageObject={packageObject}/>,
-          [ACCESS_TOKENS_PAGE]: <AccessTokensPackageSettingsTab packageObject={packageObject}/>,
-          [USER_ACCESS_CONTROLS_PAGE]: <UserPackageAccessControlSettingsTab packageObject={packageObject}/>,
-        }[activeTab]
-      }
+      {{
+        [GENERAL_PAGE]: (
+          <GeneralPackageSettingsTab
+            packageObject={packageObject}
+            isPackageLoading={isPackageLoading}
+          />
+        ),
+        [API_SPECIFIC_CONFIGURATION_PAGE]: <SpecificConfigurationPackageSettingsTab packageObject={packageObject} />,
+        [EXPORT_SETTINGS_PAGE]: <ExportSettingsTab packageObject={packageObject} />,
+        [VERSIONS_PAGE]: <VersionsPackageSettingsTab packageObject={packageObject} />,
+        [ACCESS_TOKENS_PAGE]: <AccessTokensPackageSettingsTab packageObject={packageObject} />,
+        [USER_ACCESS_CONTROLS_PAGE]: <UserPackageAccessControlSettingsTab packageObject={packageObject} />,
+      }[activeTab]}
     </>
   )
 })

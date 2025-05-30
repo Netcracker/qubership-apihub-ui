@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { PACKAGE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import { useSetSearchParams } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSetSearchParams'
+import { PACKAGE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { useMemo } from 'react'
 
 export function usePackageSearchParam(): [Key | undefined, SetPackageSearchParam] {
   const param = useSearchParam<Key>(PACKAGE_SEARCH_PARAM)

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { PackageKey, ServicePublishInfoKey } from './keys'
-import type { ChangesSummary } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { DiffTypeDto } from '@netcracker/qubership-apihub-api-processor'
 import { replacePropertyInChangesSummary } from '@netcracker/qubership-apihub-api-processor'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { ChangesSummary } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
+import type { PackageKey, ServicePublishInfoKey } from './keys'
 
 export type ServicePublishInfo = Readonly<{
   key: ServicePublishInfoKey

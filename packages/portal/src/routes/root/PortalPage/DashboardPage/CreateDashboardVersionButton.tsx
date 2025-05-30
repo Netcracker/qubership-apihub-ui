@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
+import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
+import { useEventBus } from '@apihub/routes/EventBusProvider'
+import type { ButtonGroupProps, ButtonProps } from '@mui/material'
+import { Box, Button, MenuItem, Typography } from '@mui/material'
+import type { SxProps } from '@mui/system'
+import { MultiButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MultiButton'
+import { SPECIAL_VERSION_KEY } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
 import type { FC } from 'react'
 import * as React from 'react'
 import { memo, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import { useNavigation } from '../../../NavigationProvider'
 import { useBackwardLocation } from '../../useBackwardLocation'
-import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
-import { SPECIAL_VERSION_KEY } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
-import type { ButtonGroupProps, ButtonProps } from '@mui/material'
-import { Box, Button, MenuItem, Typography } from '@mui/material'
-import { MultiButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MultiButton'
-import { useEventBus } from '@apihub/routes/EventBusProvider'
-import type { SxProps } from '@mui/system'
 
 export type CreateVersionButtonProps = {
   disabled: boolean

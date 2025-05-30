@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import type { FC, PropsWithChildren } from 'react'
-import React, { memo, useCallback, useEffect, useState } from 'react'
-import Box from '@mui/material/Box'
-import { IconButton } from '@mui/material'
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
 import KeyboardArrowRightOutlinedIcon from '@mui/icons-material/KeyboardArrowRightOutlined'
+import { IconButton } from '@mui/material'
+import Box from '@mui/material/Box'
+import type { FC, PropsWithChildren } from 'react'
+import React, { memo, useCallback, useEffect, useState } from 'react'
 
 export type ExpandableItemProps = PropsWithChildren<{
   expanded?: boolean
@@ -56,13 +56,12 @@ export const ExpandableItem: FC<ExpandableItemProps> = memo<ExpandableItemProps>
         ? (
           <IconButton sx={{ p: 0 }} onClick={onClick}>
             {internalExpanded
-              ? <KeyboardArrowDownOutlinedIcon sx={{ fontSize: '16px' }}/>
-              : <KeyboardArrowRightOutlinedIcon sx={{ fontSize: '16px' }}/>}
+              ? <KeyboardArrowDownOutlinedIcon sx={{ fontSize: '16px' }} />
+              : <KeyboardArrowRightOutlinedIcon sx={{ fontSize: '16px' }} />}
           </IconButton>
         )
         // placeholder
-        : <Box/>
-      }
+        : <Box />}
 
       {children}
     </Box>

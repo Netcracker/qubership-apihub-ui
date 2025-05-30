@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo } from 'react'
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
 import { Avatar, IconButton, MenuItem } from '@mui/material'
-import { useAuthorization } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
-import { UserAvatar } from '@netcracker/qubership-apihub-ui-shared/components/Users/UserAvatar'
 import { MenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
+import { UserAvatar } from '@netcracker/qubership-apihub-ui-shared/components/Users/UserAvatar'
+import { useAuthorization } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
+import type { FC } from 'react'
+import { memo } from 'react'
 
 export const UserPanel: FC = memo(() => {
   const [authorization, , removeAuthorization] = useAuthorization()
@@ -28,11 +28,9 @@ export const UserPanel: FC = memo(() => {
   return (
     <>
       <IconButton data-testid="AppUserAvatar" size="large" color="inherit">
-        {
-          authorization?.user.avatarUrl
-            ? <Avatar src={authorization.user.avatarUrl}/>
-            : <UserAvatar size="medium" name={authorization?.user.name ?? ''}/>
-        }
+        {authorization?.user.avatarUrl
+          ? <Avatar src={authorization.user.avatarUrl} />
+          : <UserAvatar size="medium" name={authorization?.user.name ?? ''} />}
       </IconButton>
 
       <MenuButton
@@ -40,7 +38,7 @@ export const UserPanel: FC = memo(() => {
         variant="text"
         color="inherit"
         title={authorization?.user.name ?? ''}
-        icon={<KeyboardArrowDownOutlinedIcon/>}
+        icon={<KeyboardArrowDownOutlinedIcon />}
         data-testid="UserMenuButton"
       >
         <MenuItem

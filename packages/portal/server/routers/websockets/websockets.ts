@@ -15,15 +15,14 @@
  */
 
 import { Router } from 'express'
-import type { Server } from 'ws'
-import type { Socket } from '../../types'
-import { TextState } from './text-state'
 import type http from 'http'
+import type { Server } from 'ws'
 import { BRANCH_CONFIG } from '../../mocks/projects/branches'
+import type { Socket } from '../../types'
 import { getFileContent } from '../packages/packages'
+import { TextState } from './text-state'
 
 export function ProjectsWsRouter(app: http.Server, branchWss: Server, fileWss: Server): Router {
-
   const router = Router()
 
   branchWss.on('connection', (current: Socket) => {
@@ -37,7 +36,7 @@ export function ProjectsWsRouter(app: http.Server, branchWss: Server, fileWss: S
       }))
     })
 
-    //send current user to other users
+    // send current user to other users
     connectedClients.forEach((s: Socket) => {
       s.send(JSON.stringify({
         type: 'user:connected',
@@ -51,10 +50,10 @@ export function ProjectsWsRouter(app: http.Server, branchWss: Server, fileWss: S
       }))
     })
 
-    //send other users to current user
+    // send other users to current user
     connectedClients
       .forEach(({ id }: Socket) => {
-        if (id === current.id) {return}
+        if (id === current.id) return
         current.send(JSON.stringify({
           type: 'user:connected',
           sessionId: id,
@@ -90,14 +89,14 @@ export function ProjectsWsRouter(app: http.Server, branchWss: Server, fileWss: S
     const textState = new TextState(getFileContent(fileId).toString())
 
     current.state = {
-      userId: current.id!,//req.query.userId as string,
-      userName: `User ${(current.id)}`, //req.query.userName as string,
-      color: userColor,//req.query.userColor as string,
-      revision: 0, //parseInt(req.query.revision as string),
+      userId: current.id!, // req.query.userId as string,
+      userName: `User ${(current.id)}`, // req.query.userName as string,
+      color: userColor, // req.query.userColor as string,
+      revision: 0, // parseInt(req.query.revision as string),
       cursor: null,
     }
 
-    //send current user to other users
+    // send current user to other users
     connectedClients
       .filter(({ id }: Socket) => id !== current.id)
       .forEach((s: Socket) => {
@@ -118,7 +117,7 @@ export function ProjectsWsRouter(app: http.Server, branchWss: Server, fileWss: S
         }
       })
 
-    //send other users to current user
+    // send other users to current user
     connectedClients
       .forEach(({ state }: Socket) => {
         if (state) {

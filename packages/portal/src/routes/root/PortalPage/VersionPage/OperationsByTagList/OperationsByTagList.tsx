@@ -59,27 +59,26 @@ export const OperationsByTagList: FC<OperationsByTagListProps> = memo<Operations
     <Accordion expanded={isTagExpanded} onChange={onChange}>
       <AccordionSummary
         sx={ACCORDION_SUMMARY_STYLE}
-        expandIcon={<ExpandMoreIcon/>}
+        expandIcon={<ExpandMoreIcon />}
         data-testid="TagAccordionButton"
       >
         <Typography width="100%" noWrap variant="button">{tag}</Typography>
       </AccordionSummary>
       <AccordionDetails>
-        {
-          isTagExpanded && (
-            group ? (
-                <OperationsListOnComparison
-                  changedOperationPairs={operationsList}
-                />
-              )
-              : (
-                <OperationsListOnComparison
-                  changedOperationPairs={operationsList}
-                />
-              )
-          )
-        }
-        {isLoading && <Skeleton sx={{ ml: 4, mr: 1 }}/>}
+        {isTagExpanded && (
+          group
+            ? (
+              <OperationsListOnComparison
+                changedOperationPairs={operationsList}
+              />
+            )
+            : (
+              <OperationsListOnComparison
+                changedOperationPairs={operationsList}
+              />
+            )
+        )}
+        {isLoading && <Skeleton sx={{ ml: 4, mr: 1 }} />}
       </AccordionDetails>
     </Accordion>
   )

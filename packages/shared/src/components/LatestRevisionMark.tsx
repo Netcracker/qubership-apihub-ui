@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { Typography } from '@mui/material'
 import type { FC } from 'react'
 import { memo } from 'react'
-import { Typography } from '@mui/material'
 
 export type LatestRevisionMarkProps = {
   latest: boolean | undefined

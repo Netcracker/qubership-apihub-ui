@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useCallback } from 'react'
+import { FileUploadField } from '@netcracker/qubership-apihub-ui-shared/components/FileUploadField'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import {
   JSON_FILE_EXTENSION,
   YAML_FILE_EXTENSION,
   YML_FILE_EXTENSION,
 } from '@netcracker/qubership-apihub-ui-shared/utils/files'
-import { useDownloadExportTemplate } from './useDownloadExportTemplate'
+import type { FC } from 'react'
+import { memo, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { FileUploadField } from '@netcracker/qubership-apihub-ui-shared/components/FileUploadField'
+import { useDownloadExportTemplate } from './useDownloadExportTemplate'
 
 export type TemplateUploadProps = {
   uploadedFile: File | undefined
@@ -44,12 +44,13 @@ export const TemplateUpload: FC<TemplateUploadProps> = memo<TemplateUploadProps>
   const [downloadExportTemplate] = useDownloadExportTemplate()
 
   const onDownload = useCallback(
-    () => downloadExportTemplate({
-      packageKey: packageId!,
-      version: versionId!,
-      groupName: groupName,
-      apiType: apiType,
-    }),
+    () =>
+      downloadExportTemplate({
+        packageKey: packageId!,
+        version: versionId!,
+        groupName: groupName,
+        apiType: apiType,
+      }),
     [apiType, downloadExportTemplate, groupName, packageId, versionId],
   )
 

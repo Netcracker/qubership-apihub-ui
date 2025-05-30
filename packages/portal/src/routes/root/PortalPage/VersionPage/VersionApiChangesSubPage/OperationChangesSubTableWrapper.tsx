@@ -17,15 +17,17 @@
 import type { FC } from 'react'
 import { memo, useMemo } from 'react'
 
-import { useOperationChangelog } from '../useOperationChangelog'
-import type { SubTableComponentProps } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget'
-import { OperationChangesSubTable } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget'
 import { usePackageVersionContent } from '@apihub/routes/root/usePackageVersionContent'
 import { sortChanges } from '@netcracker/qubership-apihub-ui-shared/utils/api-changes'
+import type { SubTableComponentProps } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget'
+import { OperationChangesSubTable } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget'
+import { useOperationChangelog } from '../useOperationChangelog'
 
 export type OperationChangesSubTableWrapper = SubTableComponentProps
 
-export const OperationChangesSubTableWrapper: FC<OperationChangesSubTableWrapper> = memo<OperationChangesSubTableWrapper>(
+export const OperationChangesSubTableWrapper: FC<OperationChangesSubTableWrapper> = memo<
+  OperationChangesSubTableWrapper
+>(
   ({ value, packageKey, versionKey, apiType, packageKind }) => {
     const { currentOperation, previousOperation } = value.original.change
     const operationKey = currentOperation?.operationKey ?? previousOperation!.operationKey

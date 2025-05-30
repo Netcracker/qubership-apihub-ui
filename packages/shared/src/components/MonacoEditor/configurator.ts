@@ -15,8 +15,8 @@
  */
 
 import { setDiagnosticsOptions } from 'monaco-yaml'
-import { OPENAPI_2_0_SPEC_TYPE, OPENAPI_3_0_SPEC_TYPE, OPENAPI_3_1_SPEC_TYPE } from '../../utils/specs'
 import { JSON_FILE_EXTENSION, YAML_FILE_EXTENSION, YML_FILE_EXTENSION } from '../../utils/files'
+import { OPENAPI_2_0_SPEC_TYPE, OPENAPI_3_0_SPEC_TYPE, OPENAPI_3_1_SPEC_TYPE } from '../../utils/specs'
 
 export function preconfigureMonaco(): void {
   const getFileMasks = (schema: string, ...extensions: string[]): string[] => {

@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
+import { useShowInfoNotification } from '@apihub/routes/root/BasePage/Notification'
+import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import TreeView from '@mui/lab/TreeView'
+import { Box, Typography } from '@mui/material'
+import type { JsonPath } from '@netcracker/qubership-apihub-json-crawl'
+import type {
+  HashWithTitle,
+  VisitorNavigationDetails,
+} from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView/oasToClassDiagramService'
+import { NavigationFailReason } from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView/SchemaGraphView'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { isEmpty, isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import type { FC, SyntheticEvent } from 'react'
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { Box, Typography } from '@mui/material'
-import TreeView from '@mui/lab/TreeView'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import ChevronRightIcon from '@mui/icons-material/ChevronRight'
-import { OperationModelListSkeleton } from './OperationModelListSkeleton'
-import type { JsonPath } from '@netcracker/qubership-apihub-json-crawl'
-import { ErrorModelLabel, ModelLabel } from './ModelLabel'
-import { ErrorModelItem, ModelItem, SectionItem } from './ModelListItem'
 import type {
   MediaType,
   OpenApiCustomSchemaObject,
@@ -37,14 +42,9 @@ import {
   OPEN_API_SECTION_REQUESTS,
   OPEN_API_SECTION_RESPONSES,
 } from '../../entities/operation-structure'
-import type {
-  HashWithTitle,
-  VisitorNavigationDetails,
-} from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView/oasToClassDiagramService'
-import { isEmpty, isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { useShowInfoNotification } from '@apihub/routes/root/BasePage/Notification'
-import { NavigationFailReason } from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView/SchemaGraphView'
+import { ErrorModelLabel, ModelLabel } from './ModelLabel'
+import { ErrorModelItem, ModelItem, SectionItem } from './ModelListItem'
+import { OperationModelListSkeleton } from './OperationModelListSkeleton'
 
 // First Order Component //
 export type OperationSidebarProps = {
@@ -101,8 +101,8 @@ export const OperationModelList: FC<OperationSidebarProps> = memo<OperationSideb
     event.stopPropagation()
   }, [])
 
-  const getNavigationFailedCallback = useCallback((schemaObject?: OpenApiCustomSchemaObject) =>
-    (failReason: NavigationFailReason): void => {
+  const getNavigationFailedCallback = useCallback(
+    (schemaObject?: OpenApiCustomSchemaObject) => (failReason: NavigationFailReason): void => {
       if (!schemaObject) {
         return console.error('Something went wrong during the navigation')
       }
@@ -113,9 +113,14 @@ export const OperationModelList: FC<OperationSidebarProps> = memo<OperationSideb
         case NavigationFailReason.NO_MATCHED_NODES:
           return showNotification({ message: `The graph does not have a node for the schema "${schemaObject.title}"` })
         case NavigationFailReason.MULTIPLE_MATCHED_NODES:
-          return showNotification({ message: `There are multiple nodes on the graph that match the schema "${schemaObject.title}", so navigation to a specific node is not possible` })
+          return showNotification({
+            message:
+              `There are multiple nodes on the graph that match the schema "${schemaObject.title}", so navigation to a specific node is not possible`,
+          })
       }
-    }, [showNotification])
+    },
+    [showNotification],
+  )
 
   const handleLabelClick = useCallback((
     event: SyntheticEvent,
@@ -178,36 +183,53 @@ export const OperationModelList: FC<OperationSidebarProps> = memo<OperationSideb
           label={sectionTitle}
           onClick={isAvailableSection ? handleLabelClick : undefined}
         >
-          {models.map(({ title, scopeDeclarationPath, declarationPath, schemaObjectName, schemaTolerantHashWithTitle, schemaObject, error }, index) => {
-            const handleOnModelUsagesClick = (): void => {
-              if (schemaObjectName) {
-                onModelUsagesClick(schemaObjectName)
+          {models.map(
+            (
+              {
+                title,
+                scopeDeclarationPath,
+                declarationPath,
+                schemaObjectName,
+                schemaTolerantHashWithTitle,
+                schemaObject,
+                error,
+              },
+              index,
+            ) => {
+              const handleOnModelUsagesClick = (): void => {
+                if (schemaObjectName) {
+                  onModelUsagesClick(schemaObjectName)
+                }
               }
-            }
 
-            if (error) {
-              return <ErrorModelItem
-                key={`${sectionKey}-${index}`}
-                title={title}
-                label={<ErrorModelLabel title={title} error={error}/>}
-              />
-            }
+              if (error) {
+                return (
+                  <ErrorModelItem
+                    key={`${sectionKey}-${index}`}
+                    title={title}
+                    label={<ErrorModelLabel title={title} error={error} />}
+                  />
+                )
+              }
 
-            return (
-            <ModelItem
-              key={`${sectionKey}-${index}`}
-              scopeDeclarationPath={scopeDeclarationPath}
-              declarationPath={declarationPath}
-              schemaTolerantHashWithTitle={schemaTolerantHashWithTitle}
-              schemaObject={schemaObject}
-              label={isParameters ? title : <ModelLabel title={title} onModelUsagesClick={handleOnModelUsagesClick} />}
-              onClick={handleLabelClick}
-            />
-          )})}
+              return (
+                <ModelItem
+                  key={`${sectionKey}-${index}`}
+                  scopeDeclarationPath={scopeDeclarationPath}
+                  declarationPath={declarationPath}
+                  schemaTolerantHashWithTitle={schemaTolerantHashWithTitle}
+                  schemaObject={schemaObject}
+                  label={isParameters
+                    ? title
+                    : <ModelLabel title={title} onModelUsagesClick={handleOnModelUsagesClick} />}
+                  onClick={handleLabelClick}
+                />
+              )
+            },
+          )}
         </SectionItem>
       )
     })
-
   }, [availableSidebarSectionKeys, handleLabelClick, onModelUsagesClick, sidebarSections])
 
   const defaultCollapseIcon = useMemo(() => <ExpandMoreIcon />, [])
@@ -219,9 +241,7 @@ export const OperationModelList: FC<OperationSidebarProps> = memo<OperationSideb
         <Typography variant="h2" color="inherit">{SIDEBAR_TITLE}</Typography>
       </Box>
 
-      {isLoading && (
-        <OperationModelListSkeleton />
-      )}
+      {isLoading && <OperationModelListSkeleton />}
 
       <TreeView
         disabledItemsFocusable
@@ -260,7 +280,9 @@ type OperationSection = {
   models: OpenApiVisitorData[]
 }
 
-function flatResponses(responses: Record<ResponseCode, Record<MediaType, OpenApiVisitorDataWithSection>>): OperationSection[] {
+function flatResponses(
+  responses: Record<ResponseCode, Record<MediaType, OpenApiVisitorDataWithSection>>,
+): OperationSection[] {
   const result: OperationSection[] = []
   Object.entries(responses).forEach(([code, response]) => {
     Object.entries(response).forEach(([mediaType, content]) => {
@@ -323,15 +345,14 @@ function isTreeViewExpandIcon(element: Element): boolean {
 }
 
 function sortModels(models: OpenApiVisitorData[]): OpenApiVisitorData[] {
-  return models.sort((model1, model2) =>
-    model1.title.localeCompare(model2.title),
-  )
+  return models.sort((model1, model2) => model1.title.localeCompare(model2.title))
 }
 
 function getDefaultAvailableSection(sections: OperationSection[]): OperationSection {
   const firstPriorityResponses = sections.filter(section => section.code === FIRST_PRIORITY_CODE)
   if (isNotEmpty(firstPriorityResponses)) {
-    return firstPriorityResponses.find(response => response.mediaType === FIRST_PRIORITY_MEDIA_TYPE) ?? firstPriorityResponses[0]
+    return firstPriorityResponses.find(response => response.mediaType === FIRST_PRIORITY_MEDIA_TYPE)
+      ?? firstPriorityResponses[0]
   }
 
   const secondPriorityResponses = sections.filter(section => section.code === SECOND_PRIORITY_CODE)

@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useShowErrorNotification, useShowSuccessNotification } from './BasePage/Notification'
-import { useInvalidatePackages } from './usePackages'
-import { useProject } from './useProject'
-import { generatePath } from 'react-router-dom'
+import { editorRequestJson, editorRequestVoid } from '@apihub/utils/requests'
+import {
+  ERROR_STATUS_MARKER_VARIANT,
+  SUCCESS_STATUS_MARKER_VARIANT,
+  WARNING_STATUS_MARKER_VARIANT,
+} from '@netcracker/qubership-apihub-ui-shared/components/StatusMarker'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type {
   BwcErrors,
   CreatePackageProps,
@@ -29,16 +31,14 @@ import type {
   PackageSummary,
 } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { PRIVATE_PACKAGE_ROLE, PUBLIC_PACKAGE_ROLE } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { InvalidateQuery, IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { editorRequestJson, editorRequestVoid } from '@apihub/utils/requests'
-import { API_V2 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
-import {
-  ERROR_STATUS_MARKER_VARIANT,
-  SUCCESS_STATUS_MARKER_VARIANT,
-  WARNING_STATUS_MARKER_VARIANT,
-} from '@netcracker/qubership-apihub-ui-shared/components/StatusMarker'
+import { API_V2 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { generatePath } from 'react-router-dom'
+import { useShowErrorNotification, useShowSuccessNotification } from './BasePage/Notification'
+import { useInvalidatePackages } from './usePackages'
+import { useProject } from './useProject'
 
 type UpdatePackage = (value: Package) => void
 type CreatePackage = (value: Package) => void
@@ -131,11 +131,9 @@ export async function createPackage(
   value: CreatePackageProps,
 ): Promise<PackageDto> {
   return await editorRequestJson<PackageDto>('/packages', {
-      method: 'POST',
-      body: JSON.stringify(value),
-    },
-    { basePath: API_V2 },
-  )
+    method: 'POST',
+    body: JSON.stringify(value),
+  }, { basePath: API_V2 })
 }
 
 export async function packageDetails(
@@ -145,14 +143,12 @@ export async function packageDetails(
   const packageId = encodeURIComponent(packageKey)
   const pathPattern = '/packages/:packageId'
   return await editorRequestJson<PackageDto>(`${generatePath(pathPattern, { packageId })}?showParents=${showParents}`, {
-      method: 'GET',
-    },
-    {
-      basePath: API_V2,
-      ignoreNotFound: true, // todo replace with a proper handling
-      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-    },
-  )
+    method: 'GET',
+  }, {
+    basePath: API_V2,
+    ignoreNotFound: true, // todo replace with a proper handling
+    customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+  })
 }
 
 export async function updatePackage(
@@ -160,21 +156,17 @@ export async function updatePackage(
   value: Package,
 ): Promise<PackageDto> {
   return await editorRequestJson<PackageDto>(`/packages/${packageKey}`, {
-      method: 'PATCH',
-      body: JSON.stringify(toPackageDto(value)),
-    },
-    { basePath: API_V2 },
-  )
+    method: 'PATCH',
+    body: JSON.stringify(toPackageDto(value)),
+  }, { basePath: API_V2 })
 }
 
 export async function deletePackage(
   packageKey: Key,
 ): Promise<void> {
   return await editorRequestVoid(`/packages/${packageKey}`, {
-      method: 'DELETE',
-    },
-    { basePath: API_V2 },
-  )
+    method: 'DELETE',
+  }, { basePath: API_V2 })
 }
 
 export function useInvalidatePackage(): InvalidateQuery<{
@@ -227,7 +219,9 @@ export function toPackageDto(value: Package): PackageDto {
   }
 }
 
-export function toLastReleaseVersionDetails(value?: LastReleaseVersionDetailsDto): LastReleaseVersionDetails | undefined {
+export function toLastReleaseVersionDetails(
+  value?: LastReleaseVersionDetailsDto,
+): LastReleaseVersionDetails | undefined {
   if (!value) {
     return undefined
   }
@@ -239,7 +233,9 @@ export function toLastReleaseVersionDetails(value?: LastReleaseVersionDetailsDto
   }
 }
 
-export function toLastReleaseVersionDetailsDto(value?: LastReleaseVersionDetails): LastReleaseVersionDetailsDto | undefined {
+export function toLastReleaseVersionDetailsDto(
+  value?: LastReleaseVersionDetails,
+): LastReleaseVersionDetailsDto | undefined {
   if (!value) {
     return undefined
   }
@@ -267,7 +263,8 @@ export function countBwcErrors(lastPublishedVersion: PackageSummary | undefined)
     }
   }
 
-  const warningCount = lastPublishedVersion && (Object?.values(lastPublishedVersion)?.reduce((a, b) => a + b, 0) - (lastPublishedVersion?.breaking ?? 0))
+  const warningCount = lastPublishedVersion
+    && (Object?.values(lastPublishedVersion)?.reduce((a, b) => a + b, 0) - (lastPublishedVersion?.breaking ?? 0))
 
   if (warningCount && warningCount > 0) {
     bwcErrors = {

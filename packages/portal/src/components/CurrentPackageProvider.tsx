@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import type { Package } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import type { FC, PropsWithChildren } from 'react'
 import { createContext, useContext } from 'react'
-import type { Package } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 
 type CurrentPackageProviderProps = PropsWithChildren & {
   value: Package | null

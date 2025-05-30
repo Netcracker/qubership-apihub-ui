@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
+import type { LanguageType } from '@netcracker/qubership-apihub-ui-shared/types/languages'
+import type { SpecItemUri } from '@netcracker/qubership-apihub-ui-shared/utils/specifications'
+import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import { editor as Editor, Uri } from 'monaco-editor/esm/vs/editor/editor.api'
 import type { RefObject } from 'react'
 import { useRef, useState } from 'react'
-import { useUpdateModel } from './useUpdateModel'
 import { useDebounce, useEffectOnce, useLocation } from 'react-use'
+import type { FileProblem } from '../../../../../../../entities/file-problems'
+import { useBranchSearchParam } from '../../../../../useBranchSearchParam'
+import { useFileSearchParam } from '../../../../../useFileSearchParam'
+import { useModeSearchParam } from '../../../../../useModeSearchParam'
 import { preconfigureOtMonaco } from './configurator'
 import { useRegisterLinks } from './useRegisterLinks'
-import { useRegisterSelectionDecorator } from './useRegisterSelectionDecorator'
 import { useRegisterProblemDecorator } from './useRegisterProblemDecorator'
-import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import type { SpecItemUri } from '@netcracker/qubership-apihub-ui-shared/utils/specifications'
-import { useModeSearchParam } from '../../../../../useModeSearchParam'
-import { useFileSearchParam } from '../../../../../useFileSearchParam'
-import { useBranchSearchParam } from '../../../../../useBranchSearchParam'
-import type { FileProblem } from '../../../../../../../entities/file-problems'
-import type { LanguageType } from '@netcracker/qubership-apihub-ui-shared/types/languages'
+import { useRegisterSelectionDecorator } from './useRegisterSelectionDecorator'
+import { useUpdateModel } from './useUpdateModel'
 
 preconfigureOtMonaco()
 
@@ -91,10 +91,12 @@ export function useOtMonaco(options: {
     setContent(value)
     codeEditor.onDidChangeModelContent(() => setContent(codeEditor.getValue()))
 
-    codeEditor.changeViewZones(changeAccessor => changeAccessor.addZone({
-      afterLineNumber: 0,
-      domNode: document.createElement('div'),
-    }))
+    codeEditor.changeViewZones(changeAccessor =>
+      changeAccessor.addZone({
+        afterLineNumber: 0,
+        domNode: document.createElement('div'),
+      })
+    )
 
     setEditor(codeEditor)
 

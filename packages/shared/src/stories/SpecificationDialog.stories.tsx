@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react'
 import { Box, CssBaseline, ThemeProvider } from '@mui/material'
+import type { Meta, StoryObj } from '@storybook/react'
 import type { FC } from 'react'
 import React from 'react'
-import { markdownSample } from './samples/markdown-sample'
+import type { PopupProps } from '../components/PopupDelegate'
 import { MarkdownViewer } from '../components/SpecificationDialog/MarkdownViewer'
-import { useSpecViewer } from '../components/SpecificationDialog/useSpecViewer'
 import type { SpecificationDialogDetail } from '../components/SpecificationDialog/SpecificationDialog'
 import { SpecificationPopup } from '../components/SpecificationDialog/SpecificationDialog'
+import { useSpecViewer } from '../components/SpecificationDialog/useSpecViewer'
+import { theme } from '../themes/theme'
 import type { FileExtension } from '../utils/files'
 import { GRAPHQL_FILE_EXTENSION, JSON_FILE_EXTENSION } from '../utils/files'
 import type { SpecType } from '../utils/specs'
 import { GRAPHQL_SCHEMA_SPEC_TYPE, OPENAPI_3_0_SPEC_TYPE } from '../utils/specs'
-import type { PopupProps } from '../components/PopupDelegate'
-import { theme } from '../themes/theme'
-import { openapiSample } from './samples/openapi-samples'
 import { graphqlSample } from './samples/graphql-samples'
+import { markdownSample } from './samples/markdown-sample'
+import { openapiSample } from './samples/openapi-samples'
 
 const GRAPHQL_SPEC = {
   key: 'CPM.graphql',
@@ -56,17 +56,19 @@ const SpecificationPopupWrapper: FC<PopupProps & { value: string }> = ({ open, s
     setViewMode,
   } = useSpecViewer({ spec: spec, value: value })
 
-  return <SpecificationPopup
-    open={open}
-    setOpen={setOpen}
-    detail={{
-      spec: spec,
-      viewer: viewer,
-      viewModes: viewModes,
-      viewMode: viewMode,
-      setViewMode: setViewMode,
-    }}
-  />
+  return (
+    <SpecificationPopup
+      open={open}
+      setOpen={setOpen}
+      detail={{
+        spec: spec,
+        viewer: viewer,
+        viewModes: viewModes,
+        viewMode: viewMode,
+        setViewMode: setViewMode,
+      }}
+    />
+  )
 }
 
 const meta: Meta<typeof SpecificationPopup> = {
@@ -75,9 +77,9 @@ const meta: Meta<typeof SpecificationPopup> = {
   decorators: [
     (Story) => (
       <ThemeProvider theme={theme}>
-        <CssBaseline/>
+        <CssBaseline />
         <Box sx={{ width: '800px' }}>
-          <Story/>
+          <Story />
         </Box>
       </ThemeProvider>
     ),
@@ -96,7 +98,7 @@ export const OpenApiStory: Story = {
       spec: OPENAPI_SPEC,
     },
   },
-  render: (args) => <SpecificationPopupWrapper {...args} value={JSON.stringify(openapiSample, null, 2)}/>,
+  render: (args) => <SpecificationPopupWrapper {...args} value={JSON.stringify(openapiSample, null, 2)} />,
 }
 
 export const MarkdownStory: Story = {
@@ -107,9 +109,11 @@ export const MarkdownStory: Story = {
       spec: {
         'name': 'Markdown file',
       },
-      viewer: <MarkdownViewer
-        value={markdownSample}
-      />,
+      viewer: (
+        <MarkdownViewer
+          value={markdownSample}
+        />
+      ),
       viewModes: [],
       setViewMode: () => null,
     },
@@ -125,5 +129,5 @@ export const GraphqlStory: Story = {
       spec: GRAPHQL_SPEC,
     },
   },
-  render: (args) => <SpecificationPopupWrapper {...args} value={graphqlSample}/>,
+  render: (args) => <SpecificationPopupWrapper {...args} value={graphqlSample} />,
 }

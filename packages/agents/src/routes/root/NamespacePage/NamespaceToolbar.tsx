@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { Box, Divider, Typography } from '@mui/material'
+import { CloudIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CloudIcon'
 import type { FC } from 'react'
 import { memo } from 'react'
-import { Box, Divider, Typography } from '@mui/material'
+import { AgentsSelector } from './AgentsSelector'
 import { NamespaceSelector } from './NamespaceSelector'
 import { WorkspaceSelector } from './WorkspaceSelector'
-import { AgentsSelector } from './AgentsSelector'
-import { CloudIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CloudIcon'
 
 export const NamespaceToolbar: FC = memo(() => {
   return (
@@ -32,19 +32,19 @@ export const NamespaceToolbar: FC = memo(() => {
       minWidth="max-content"
       data-testid="NamespaceToolbar"
     >
-      <CloudIcon/>
+      <CloudIcon />
 
       <Typography variant="subtitle2">From</Typography>
 
-      <AgentsSelector/>
+      <AgentsSelector />
 
-      <NamespaceSelector/>
+      <NamespaceSelector />
 
-      <Divider orientation="vertical"/>
+      <Divider orientation="vertical" />
 
       <Typography variant="subtitle2">To</Typography>
 
-      <WorkspaceSelector/>
+      <WorkspaceSelector />
     </Box>
   )
 })

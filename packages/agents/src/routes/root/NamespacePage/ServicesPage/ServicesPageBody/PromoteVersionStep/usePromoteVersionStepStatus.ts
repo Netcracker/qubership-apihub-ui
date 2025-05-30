@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { useAllPublishDetailsStatus } from '../useAllPublicationDetails'
 import { PUBLISH_STATUS_TO_STEP_STATUS_MAP } from '../../../constants'
-import type { StepStatus } from '../../ServicesPageProvider/ServicesStepsProvider'
 import { usePromoteVersionPublicationOptions } from '../../ServicesPageProvider/ServicesPublicationOptionsProvider'
+import type { StepStatus } from '../../ServicesPageProvider/ServicesStepsProvider'
+import { useAllPublishDetailsStatus } from '../useAllPublicationDetails'
 
 export function usePromoteVersionStepStatus(): StepStatus {
   const { promotePublicationOptions: { config } } = usePromoteVersionPublicationOptions()

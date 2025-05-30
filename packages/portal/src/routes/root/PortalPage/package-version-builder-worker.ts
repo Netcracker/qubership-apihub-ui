@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { expose } from 'comlink'
+import { portalRequestBlob, portalRequestJson } from '@apihub/utils/requests'
 import type {
   BuildConfig,
   BuildType,
@@ -25,7 +25,8 @@ import type {
   VersionStatus,
 } from '@netcracker/qubership-apihub-api-processor'
 import { BUILD_TYPE, PackageVersionBuilder, VERSION_STATUS } from '@netcracker/qubership-apihub-api-processor'
-import type { BuilderOptions } from './package-version-builder'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import {
   packageVersionResolver,
   templateResolver,
@@ -34,11 +35,7 @@ import {
   versionOperationsResolver,
   versionReferencesResolver,
 } from '@netcracker/qubership-apihub-ui-shared/utils/builder-resolvers'
-import type { PublishOptions } from './usePublishPackageVersion'
-import { generatePath } from 'react-router-dom'
-import { portalRequestBlob, portalRequestJson } from '@apihub/utils/requests'
-import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
+import { packToZip } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import type { PublishDetails, PublishStatus } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
 import {
   COMPLETE_PUBLISH_STATUS,
@@ -48,11 +45,14 @@ import {
   setPublicationDetails,
   startPackageVersionPublication,
 } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
 import { API_V3, NotFoundError } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
-import { packToZip } from '@netcracker/qubership-apihub-ui-shared/utils/files'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { expose } from 'comlink'
+import { generatePath } from 'react-router-dom'
 import { v4 as uuidv4 } from 'uuid'
+import type { BuilderOptions } from './package-version-builder'
+import type { PublishOptions } from './usePublishPackageVersion'
 
 /*
 For using worker in proxy mode you need to change common apihub-shared import
@@ -86,17 +86,19 @@ async function exportOperations(options: ExportOperationsOptions): Promise<[Blob
     {
       method: 'GET',
       headers: { authorization },
-    }, {
-    basePath: API_V3,
-    customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-  },
+    },
+    {
+      basePath: API_V3,
+      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+    },
   )
 
-  const getFilename = (): string => response.headers
-    .get('content-disposition')!
-    .split('filename=')[1]
-    .split(';')[0]
-    .replace(/@\d+\./, '.')
+  const getFilename = (): string =>
+    response.headers
+      .get('content-disposition')!
+      .split('filename=')[1]
+      .split(';')[0]
+      .replace(/@\d+\./, '.')
 
   return [await response.blob(), getFilename()]
 }
@@ -136,10 +138,11 @@ async function startDocumentTransformation(options: TransformDocumentOptions): P
     {
       method: 'POST',
       headers: { authorization },
-    }, {
-    basePath: API_V3,
-    customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-  },
+    },
+    {
+      basePath: API_V3,
+      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+    },
   )
 }
 
@@ -162,23 +165,25 @@ function isDocumentsTransformationCreatedSuccessfully(
 }
 
 type TransformDocumentResponse =
-  null
+  | null
   | DocumentsTransformationSuccessfulCreationResponse
   | DocumentsTransformationStatusResponse
 
-type DocumentsTransformationSuccessfulCreationResponse = {
-  buildId: string
-} & Partial<{
-  packageId: string
-  groupName: string
-  version: string
-  previousVersion: string
-  previousVersionPackageId: string
-  status: VersionStatus
-  buildType: BuildType
-  createdBy: string
-  format: OperationsGroupExportFormat
-}>
+type DocumentsTransformationSuccessfulCreationResponse =
+  & {
+    buildId: string
+  }
+  & Partial<{
+    packageId: string
+    groupName: string
+    version: string
+    previousVersion: string
+    previousVersionPackageId: string
+    status: VersionStatus
+    buildType: BuildType
+    createdBy: string
+    format: OperationsGroupExportFormat
+  }>
 
 type DocumentsTransformationStatusResponse = {
   status?: Exclude<PublishStatus, 'none' | 'complete'>

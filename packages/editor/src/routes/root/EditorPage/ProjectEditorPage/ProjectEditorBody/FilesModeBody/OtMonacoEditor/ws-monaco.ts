@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { WSAdapter } from './ws-adapter'
-import { disposeCursorWidget, MonacoAdapter } from './monaco'
 import type { EditorClientEvent, IEditorClient, TEditorClientEventArgs } from '@otjs/plaintext-editor'
 import { DatabaseAdapterEvent, EditorClient } from '@otjs/plaintext-editor'
 import type { Handler } from 'mitt'
+import { disposeCursorWidget, MonacoAdapter } from './monaco'
+import { WSAdapter } from './ws-adapter'
 
 import type { IWSMonacoEditor, IWSMonacoEditorConstructionOptions } from './ws-monaco.types'
 
@@ -40,12 +40,11 @@ export class WSMonacoEditor implements IWSMonacoEditor {
     }: IWSMonacoEditorConstructionOptions,
   ) {
     this._databaseAdapter = new WSAdapter({
-        websocket,
-        initialDocument,
-        userId,
-        userName,
-      },
-    )
+      websocket,
+      initialDocument,
+      userId,
+      userName,
+    })
     this._editorAdapter = new MonacoAdapter({
       announcementDuration: announcementDuration,
       editor: editor,
@@ -65,7 +64,8 @@ export class WSMonacoEditor implements IWSMonacoEditor {
         if (cursor === null) {
           disposeCursorWidget(clientId)
         }
-      })
+      },
+    )
     this._databaseAdapter.on(
       DatabaseAdapterEvent.Ready,
       (ready) => {
@@ -73,7 +73,8 @@ export class WSMonacoEditor implements IWSMonacoEditor {
           // When socket reconnects, we need to reset initiated state to avoid intermediate operations
           this._editorAdapter?.resetInitiated()
         }
-      })
+      },
+    )
 
     users?.forEach(user => {
       this._databaseAdapter?.handleConnectedUser(user)

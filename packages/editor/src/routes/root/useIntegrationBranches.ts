@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { useQuery } from '@tanstack/react-query'
 import type { IntegrationBranches, IntegrationBranchesDto } from '@apihub/entities/integration-branches'
+import { editorRequestJson } from '@apihub/utils/requests'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { editorRequestJson } from '@apihub/utils/requests'
-
+import { useQuery } from '@tanstack/react-query'
 
 const INTEGRATION_BRANCHES_QUERY_KEY = 'integration-branches-query-key'
 

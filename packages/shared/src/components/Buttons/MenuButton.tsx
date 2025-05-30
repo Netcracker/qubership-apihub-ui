@@ -14,23 +14,25 @@
  * limitations under the License.
  */
 
-import type { FC, MouseEvent, ReactNode } from 'react'
-import * as React from 'react'
-import { memo, useRef, useState } from 'react'
 import type { ButtonProps, MenuProps } from '@mui/material'
 import { Button, CircularProgress, Menu } from '@mui/material'
 import { alpha, styled } from '@mui/material/styles'
+import type { FC, MouseEvent, ReactNode } from 'react'
+import * as React from 'react'
+import { memo, useRef, useState } from 'react'
 
-export type MenuButtonProps = Partial<{
-  title: ReactNode
-  icon: ReactNode
-  alignItems: 'normal' | 'center'
-  onClick: (event: MouseEvent) => void
-  onItemClick: (event: MouseEvent) => void
-  onClose: () => void
-  multiple: boolean
-  isLoading?: boolean
-} & ButtonProps>
+export type MenuButtonProps = Partial<
+  {
+    title: ReactNode
+    icon: ReactNode
+    alignItems: 'normal' | 'center'
+    onClick: (event: MouseEvent) => void
+    onItemClick: (event: MouseEvent) => void
+    onClose: () => void
+    multiple: boolean
+    isLoading?: boolean
+  } & ButtonProps
+>
 
 export const MenuButton: FC<MenuButtonProps> = memo<MenuButtonProps>(({
   variant,
@@ -49,15 +51,15 @@ export const MenuButton: FC<MenuButtonProps> = memo<MenuButtonProps>(({
 }) => {
   const [anchor, setAnchor] = useState<HTMLElement>()
   const buttonRef = useRef<HTMLElement>()
-  const iconOrLoadingIndicator = isLoading ? <CircularProgress sx={{ ml: '2px', mt: '2px' }} size={16}/> : icon
+  const iconOrLoadingIndicator = isLoading ? <CircularProgress sx={{ ml: '2px', mt: '2px' }} size={16} /> : icon
 
   return (
     <>
-      {
-        title
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          ? <Button
+      {title
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        ? (
+          <Button
             {...props}
             sx={sx}
             ref={buttonRef}
@@ -71,7 +73,9 @@ export const MenuButton: FC<MenuButtonProps> = memo<MenuButtonProps>(({
           >
             {title}
           </Button>
-          : <Button
+        )
+        : (
+          <Button
             {...props}
             sx={{ width: 32, minWidth: 32, p: 1.25, ...sx }}
             variant={variant}
@@ -83,7 +87,7 @@ export const MenuButton: FC<MenuButtonProps> = memo<MenuButtonProps>(({
           >
             {iconOrLoadingIndicator}
           </Button>
-      }
+        )}
       <MenuButtonItems
         anchorEl={anchor}
         open={!!anchor}
@@ -118,7 +122,7 @@ export const MenuButton: FC<MenuButtonProps> = memo<MenuButtonProps>(({
   )
 })
 
-export const MenuButtonItems = styled(memo<MenuProps>(props => <Menu {...props}/>))(({
+export const MenuButtonItems = styled(memo<MenuProps>(props => <Menu {...props} />))(({
   theme: {
     palette: {
       action,
@@ -126,7 +130,8 @@ export const MenuButtonItems = styled(memo<MenuProps>(props => <Menu {...props}/
       mode,
       primary,
       text,
-    }, spacing,
+    },
+    spacing,
   },
 }) => ({
   '& .MuiPaper-root': {
@@ -134,7 +139,8 @@ export const MenuButtonItems = styled(memo<MenuProps>(props => <Menu {...props}/
     marginTop: spacing(1),
     minWidth: 90,
     color: mode === 'light' ? 'rgb(55, 65, 81)' : grey[300],
-    boxShadow: 'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
+    boxShadow:
+      'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
     '& .MuiMenu-list': {
       padding: '4px 0',
     },

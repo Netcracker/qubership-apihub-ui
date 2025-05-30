@@ -20,47 +20,47 @@ import { useIsPublishProjectEditorMode } from '../../useProjectEditorMode'
 
 import { useEventBus } from '../../../../../EventBusProvider'
 
-import { Box, CircularProgress, Link, List, ListItem, ListItemText, Typography } from '@mui/material'
-import { NavLink } from 'react-router-dom'
-import { PublishTabItem } from './PublishTabItem'
-import { BwcPublishProjectVersionDialog } from './BwcPublishProjectVersionDialog'
-import { useBwcVersionKey } from '../../BwcVersionKeyProvider'
-import { BwcCheckDialog } from './BwcCheckDialog'
-import { usePublishableBranchFileKeys } from '../../usePublishableBranchFileKeys'
-import { useBranchChangeCount } from '../../useBranchChanges'
-import { useBranchConflicts } from '../../useBranchConflicts'
-import { useBranchSearchParam } from '../../../../useBranchSearchParam'
-import { useBranchCache } from '../../useBranchCache'
-import { useBwcProblems } from '../../useBwcProblems'
-import { useProject } from '../../../../useProject'
-import { GENERAL_SETTINGS_TAB } from '../SettingsTabPanel'
-import { useHasPublishBranchPermission } from '../../useHasBranchPermission'
-import { usePackage } from '../../../../usePackage'
-import { useFileProblemsMap } from '../../useFileProblems'
-import { WarningMarker } from '../WarningMarker'
-import { useNavigation } from '../../../../../NavigationProvider'
+import { SidebarTabPanel } from '@apihub/components/SidebarTabPanel'
 import {
   CHANGES_PROJECT_EDITOR_MODE,
   PUBLISH_PROJECT_EDITOR_MODE,
   SETTINGS_PROJECT_EDITOR_MODE,
 } from '@apihub/entities/editor-modes'
-import { SidebarTabPanel } from '@apihub/components/SidebarTabPanel'
-import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { Box, CircularProgress, Link, List, ListItem, ListItemText, Typography } from '@mui/material'
+import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import { NAVIGATION_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
-import { MANAGE_STATUS_VERSION_PERMISSIONS } from '@netcracker/qubership-apihub-ui-shared/entities/package-permissions'
-import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
-import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import {
   ERROR_STATUS_MARKER_VARIANT,
   StatusMarker,
   SUCCESS_STATUS_MARKER_VARIANT,
   WARNING_STATUS_MARKER_VARIANT,
 } from '@netcracker/qubership-apihub-ui-shared/components/StatusMarker'
-import type { IsFetching } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { BRANCH_SEARCH_PARAM, MODE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { MANAGE_STATUS_VERSION_PERMISSIONS } from '@netcracker/qubership-apihub-ui-shared/entities/package-permissions'
+import type { IsFetching } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { BRANCH_SEARCH_PARAM, MODE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import objectHash from 'object-hash'
+import { NavLink } from 'react-router-dom'
+import { useNavigation } from '../../../../../NavigationProvider'
+import { useBranchSearchParam } from '../../../../useBranchSearchParam'
+import { usePackage } from '../../../../usePackage'
+import { useProject } from '../../../../useProject'
+import { useBwcVersionKey } from '../../BwcVersionKeyProvider'
+import { useBranchCache } from '../../useBranchCache'
+import { useBranchChangeCount } from '../../useBranchChanges'
+import { useBranchConflicts } from '../../useBranchConflicts'
+import { useBwcProblems } from '../../useBwcProblems'
+import { useFileProblemsMap } from '../../useFileProblems'
+import { useHasPublishBranchPermission } from '../../useHasBranchPermission'
+import { usePublishableBranchFileKeys } from '../../usePublishableBranchFileKeys'
+import { GENERAL_SETTINGS_TAB } from '../SettingsTabPanel'
+import { WarningMarker } from '../WarningMarker'
+import { BwcCheckDialog } from './BwcCheckDialog'
+import { BwcPublishProjectVersionDialog } from './BwcPublishProjectVersionDialog'
+import { PublishTabItem } from './PublishTabItem'
 
 export const PublishTabPanel: FC = memo(() => {
   const visible = useIsPublishProjectEditorMode()
@@ -76,56 +76,58 @@ export const PublishTabPanel: FC = memo(() => {
     return null
   }
 
-  return (<>
-    <SidebarTabPanel
-      value={PUBLISH_PROJECT_EDITOR_MODE}
-      header={
-        <Box display="flex" width="100%" alignItems="center" flexGrow={1} gap={1}>
-          <Typography variant="h3" noWrap>Publish preview</Typography>
-          {isNotEmpty(conflicts) && <WarningMarker/>}
-          {isPublishAvailable && !isBranchCacheLoading && <PublishButton isValidating={isFetching}/>}
-        </Box>
-      }
-      body={
-        isBranchCacheLoading
-          ? <LoadingIndicator/>
-          : <Placeholder
-            invisible={isNotEmpty(publishableFileKeys)}
-            area={NAVIGATION_PLACEHOLDER_AREA}
-            message="Nothing to publish"
-          >
-            <BwcStatusBar/>
-            <List>
-              {publishableFileKeys.map((fileKey) => {
-                const fileData = branchCache[fileKey]
-                if (!fileData) {
-                  return null
-                }
-                return (
-                  <PublishTabItem
-                    key={fileKey}
-                    fileKey={fileKey}
-                    fileType={fileData.type}
-                    fileTitle={fileData.title}
-                    problems={fileProblemsMap[fileKey]}
-                  />
-                )
-              })}
-            </List>
-          </Placeholder>
-      }
-    />
+  return (
+    <>
+      <SidebarTabPanel
+        value={PUBLISH_PROJECT_EDITOR_MODE}
+        header={
+          <Box display="flex" width="100%" alignItems="center" flexGrow={1} gap={1}>
+            <Typography variant="h3" noWrap>Publish preview</Typography>
+            {isNotEmpty(conflicts) && <WarningMarker />}
+            {isPublishAvailable && !isBranchCacheLoading && <PublishButton isValidating={isFetching} />}
+          </Box>
+        }
+        body={isBranchCacheLoading
+          ? <LoadingIndicator />
+          : (
+            <Placeholder
+              invisible={isNotEmpty(publishableFileKeys)}
+              area={NAVIGATION_PLACEHOLDER_AREA}
+              message="Nothing to publish"
+            >
+              <BwcStatusBar />
+              <List>
+                {publishableFileKeys.map((fileKey) => {
+                  const fileData = branchCache[fileKey]
+                  if (!fileData) {
+                    return null
+                  }
+                  return (
+                    <PublishTabItem
+                      key={fileKey}
+                      fileKey={fileKey}
+                      fileType={fileData.type}
+                      fileTitle={fileData.title}
+                      problems={fileProblemsMap[fileKey]}
+                    />
+                  )
+                })}
+              </List>
+            </Placeholder>
+          )}
+      />
 
-    <BwcPublishProjectVersionDialog/>
-    <BwcCheckDialog/>
-  </>)
+      <BwcPublishProjectVersionDialog />
+      <BwcCheckDialog />
+    </>
+  )
 })
 
 type PublishButtonProps = {
   isValidating: boolean
 }
 
-const PublishButton: FC<PublishButtonProps> = memo(({isValidating}) => {
+const PublishButton: FC<PublishButtonProps> = memo(({ isValidating }) => {
   const saveAvailable = useBranchChangeCount() > 0
   const [onStartPublish, isLoading] = useOnStartPublish()
   const [branch] = useBranchSearchParam()
@@ -138,9 +140,8 @@ const PublishButton: FC<PublishButtonProps> = memo(({isValidating}) => {
   const hasSavePermission = !hasPublishPermission && saveAvailable
 
   const hasPublishPermissions = useMemo(
-    () => MANAGE_STATUS_VERSION_PERMISSIONS.some(managePermission =>
-      packageObj?.permissions?.includes(managePermission),
-    ),
+    () =>
+      MANAGE_STATUS_VERSION_PERMISSIONS.some(managePermission => packageObj?.permissions?.includes(managePermission)),
     [packageObj],
   )
 
@@ -149,7 +150,11 @@ const PublishButton: FC<PublishButtonProps> = memo(({isValidating}) => {
       Please attach package in settings
       <Link
         component={NavLink}
-        to={{ search: `branch=${encodeURIComponent(branch ?? '')}&mode=${SETTINGS_PROJECT_EDITOR_MODE}&setting=${GENERAL_SETTINGS_TAB}` }}
+        to={{
+          search: `branch=${
+            encodeURIComponent(branch ?? '')
+          }&mode=${SETTINGS_PROJECT_EDITOR_MODE}&setting=${GENERAL_SETTINGS_TAB}`,
+        }}
       >
         Go to settings
       </Link>
@@ -177,7 +182,8 @@ const PublishButton: FC<PublishButtonProps> = memo(({isValidating}) => {
         variant="contained"
         disabled={!packageKey || hasSavePermission || !hasPublishPermissions || isValidating}
         disableHint={!!packageKey && hasPublishPermissions && !isValidating}
-        hint={noPackageKeyTooltipTitle || noPublishPermissionTooltipTitle || noGrantTooltipTitle || isValidatingTooltipTitle}
+        hint={noPackageKeyTooltipTitle || noPublishPermissionTooltipTitle || noGrantTooltipTitle
+          || isValidatingTooltipTitle}
         isLoading={isLoading}
         onClick={onStartPublish}
         title={saveAvailable ? 'Save & Publish' : 'Publish'}
@@ -190,18 +196,18 @@ const BwcStatusBar: FC = memo(() => {
   const { showBwcCheckDialog } = useEventBus()
   const previousVersionKey = useBwcVersionKey()
   const [, , isBwcChecking, checkBwcProblems] = useBwcProblems(previousVersionKey)
-  useEffect(() => {previousVersionKey && checkBwcProblems()}, [checkBwcProblems, previousVersionKey])
+  useEffect(() => {
+    previousVersionKey && checkBwcProblems()
+  }, [checkBwcProblems, previousVersionKey])
 
   const { versionKey: previousVersion } = getSplittedVersionKey(previousVersionKey)
 
   return (
     <ListItem
       sx={{ display: 'flex', flexDirection: 'row', backgroundColor: '#F8F9FA', px: 2, py: 1 }}
-      secondaryAction={
-        isBwcChecking
-          ? <CircularProgress size={16}/>
-          : <BwcCheckStatus/>
-      }
+      secondaryAction={isBwcChecking
+        ? <CircularProgress size={16} />
+        : <BwcCheckStatus />}
       disablePadding
     >
       <ListItemText
@@ -212,7 +218,9 @@ const BwcStatusBar: FC = memo(() => {
             underline="none"
             onClick={showBwcCheckDialog}
           >
-            {!previousVersionKey ? 'No previous release version selected' : `Previous release version: ${previousVersion}`}
+            {!previousVersionKey
+              ? 'No previous release version selected'
+              : `Previous release version: ${previousVersion}`}
           </Link>
         }
         secondaryTypographyProps={{ noWrap: true }}

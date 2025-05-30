@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import React, { memo } from 'react'
-import { Box, MenuItem, Tooltip, Typography } from '@mui/material'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
+import { Box, MenuItem, Tooltip, Typography } from '@mui/material'
 import { MenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
 import { YellowWarningIcon } from '@netcracker/qubership-apihub-ui-shared/icons/WarningIcon'
+import type { FC } from 'react'
+import React, { memo } from 'react'
 
 export type ModelLabelProps = {
   title: string
@@ -32,18 +32,20 @@ export const ModelLabel: FC<ModelLabelProps> = memo<ModelLabelProps>(({
   onModelUsagesClick,
 }) => {
   return (
-    <Box sx={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: 1,
-      justifyContent: 'space-between',
-      width: '100%',
-      '&:hover': {
-        '& .hoverable': {
-          visibility: 'visible',
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1,
+        justifyContent: 'space-between',
+        width: '100%',
+        '&:hover': {
+          '& .hoverable': {
+            visibility: 'visible',
+          },
         },
-      },
-    }}>
+      }}
+    >
       <Typography noWrap variant="body2">{title}</Typography>
       <MenuButton
         sx={{
@@ -58,7 +60,7 @@ export const ModelLabel: FC<ModelLabelProps> = memo<ModelLabelProps>(({
         }}
         className="hoverable"
         size="small"
-        icon={<MoreVertIcon sx={{ color: '#626D82' }} fontSize="small"/>}
+        icon={<MoreVertIcon sx={{ color: '#626D82' }} fontSize="small" />}
         onClick={event => event.stopPropagation()}
         data-testid="ActionMenuButton"
       >
@@ -81,16 +83,18 @@ export const ErrorModelLabel: FC<ErrorModelLabelProps> = memo<ErrorModelLabelPro
   error,
 }) => {
   return (
-    <Box sx={{
-      cursor: 'default',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '4px',
-    }}>
+    <Box
+      sx={{
+        cursor: 'default',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '4px',
+      }}
+    >
       <Typography noWrap variant="body2">{title}</Typography>
       <Tooltip title={error}>
         <Box sx={{ cursor: 'pointer' }}>
-          <YellowWarningIcon/>
+          <YellowWarningIcon />
         </Box>
       </Tooltip>
     </Box>

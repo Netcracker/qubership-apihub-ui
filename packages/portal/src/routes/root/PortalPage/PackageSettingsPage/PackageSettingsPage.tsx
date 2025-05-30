@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
+import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
+import { useActiveTabs } from '@netcracker/qubership-apihub-ui-shared/hooks/pathparams/useActiveTabs'
 import type { Dispatch, FC, SetStateAction } from 'react'
 import { createContext, memo, useContext, useState } from 'react'
-import { PackageSettingsToolbar } from './PackageSettingsToolbar'
-import { PackageSettingsNavigation } from './PackageSettingsNavigation'
-import { PackageSettingsBody } from './PackageSettingsBody'
+import { useParams } from 'react-router-dom'
 import type { PackageSettingsPageRoute } from '../../../../routes'
 import { GENERAL_PAGE } from '../../../../routes'
-import { useParams } from 'react-router-dom'
-import { usePackage } from '../../usePackage'
 import { NoPackagePlaceholder } from '../../NoPackagePlaceholder'
-import { useActiveTabs } from '@netcracker/qubership-apihub-ui-shared/hooks/pathparams/useActiveTabs'
-import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
+import { usePackage } from '../../usePackage'
+import { PackageSettingsBody } from './PackageSettingsBody'
+import { PackageSettingsNavigation } from './PackageSettingsNavigation'
+import { PackageSettingsToolbar } from './PackageSettingsToolbar'
 
 export const PackageSettingsPage: FC = memo(() => {
   const [menuItem] = useActiveTabs()
@@ -39,11 +39,9 @@ export const PackageSettingsPage: FC = memo(() => {
       <SetActiveTabContentContext.Provider value={setActiveTab}>
         <NoPackagePlaceholder packageObject={packageObject} isLoading={isPackageLoading}>
           <PageLayout
-            toolbar={<PackageSettingsToolbar packageObject={packageObject!} isPackageLoading={isPackageLoading}/>}
-            navigation={
-              <PackageSettingsNavigation packageObject={packageObject!}/>
-            }
-            body={<PackageSettingsBody packageObject={packageObject!} isPackageLoading={isPackageLoading}/>}
+            toolbar={<PackageSettingsToolbar packageObject={packageObject!} isPackageLoading={isPackageLoading} />}
+            navigation={<PackageSettingsNavigation packageObject={packageObject!} />}
+            body={<PackageSettingsBody packageObject={packageObject!} isPackageLoading={isPackageLoading} />}
           />
         </NoPackagePlaceholder>
       </SetActiveTabContentContext.Provider>

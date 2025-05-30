@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { useLocation } from 'react-use'
 import { useMemo } from 'react'
+import { useLocation } from 'react-use'
 
 export function useBackwardLocation(): { pathname: string; search: string } {
   const location = useLocation()

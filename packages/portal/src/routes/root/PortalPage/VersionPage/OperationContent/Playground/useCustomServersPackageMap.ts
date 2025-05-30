@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-import { useCallback, useState } from 'react'
-import { safeParse } from '@stoplight/json'
-import { useSetCustomServersContext } from './CustomServersProvider'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { safeParse } from '@stoplight/json'
+import { useCallback, useState } from 'react'
+import { useSetCustomServersContext } from './CustomServersProvider'
 
 export function getCustomServersPackageMapFromLocalStorage(): CustomServersPackageMap {
   return safeParse(localStorage.getItem(CUSTOM_SERVERS_KEY) ?? '') ?? {}
 }
 
 export function useCustomServersPackageMap(): [CustomServersPackageMap, SetCustomServersPackageMap] {
-  const [customServers, setCustomServers] = useState<CustomServersPackageMap>(getCustomServersPackageMapFromLocalStorage)
+  const [customServers, setCustomServers] = useState<CustomServersPackageMap>(
+    getCustomServersPackageMapFromLocalStorage,
+  )
   const setCustomServersMap = useSetCustomServersContext()
 
   const updateCustomServers = useCallback((key: string, value: CustomServer[]) => {

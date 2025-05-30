@@ -17,8 +17,8 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import type { ReactNode } from 'react'
 import { FileActions, FileInfoIcon, FileTableUpload } from '../../components/FileTableUpload/FileTableUpload'
-import { fullHeight } from '../commons/decorators'
 import { SpecLogo } from '../../components/SpecLogo'
+import { fullHeight } from '../commons/decorators'
 
 const meta: Meta<typeof FileTableUpload> = {
   title: '/File Table Upload/File Table Upload',
@@ -51,15 +51,17 @@ export const WithFilesStory: Story = {
     showPlaceholder: true,
     onAddFiles: () => null,
     getFileClickHandler: () => null,
-    getFileLeftIcon: () => <SpecLogo value={''}/>,
-    getFileRightIcon: () => <FileInfoIcon/>,
+    getFileLeftIcon: () => <SpecLogo value={''} />,
+    getFileRightIcon: () => <FileInfoIcon />,
     getFileActions: (file: File): ReactNode => {
-      return <FileActions
-        file={file}
-        onDeleteAction={() => null}
-        onRestoreAction={() => null}
-        onEditAction={() => null}
-      />
+      return (
+        <FileActions
+          file={file}
+          onDeleteAction={() => null}
+          onRestoreAction={() => null}
+          onEditAction={() => null}
+        />
+      )
     },
   },
 }

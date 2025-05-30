@@ -17,17 +17,17 @@
 import type { FC } from 'react'
 import { memo } from 'react'
 
-import { Marker } from 'react-mark.js'
+import { ApispecView } from '@netcracker/qubership-apihub-ui-shared/components/ApispecView'
 import { JsonSchemaViewer } from '@netcracker/qubership-apihub-ui-shared/components/JsonSchemaViewer'
-import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import { isOpenApiSpecType, UNKNOWN_SPEC_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import type { FileFormat } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import { JSON_FILE_FORMAT, MD_FILE_FORMAT, YAML_FILE_FORMAT } from '@netcracker/qubership-apihub-ui-shared/utils/files'
-import { generateSpecificationByPathItems } from '../utils/specifications'
 import { toJsonSchema } from '@netcracker/qubership-apihub-ui-shared/utils/specifications'
-import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
-import { ApispecView } from '@netcracker/qubership-apihub-ui-shared/components/ApispecView'
+import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import { isOpenApiSpecType, UNKNOWN_SPEC_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import { Marker } from 'react-mark.js'
 import { isJsonSchemaSpecType } from '../entities/spec-types'
+import { generateSpecificationByPathItems } from '../utils/specifications'
 import { MarkdownViewer } from './MarkdownViewer'
 
 export type DocSpecViewProps = {
@@ -57,7 +57,7 @@ export const DocSpecView: FC<DocSpecViewProps> = memo<DocSpecViewProps>(({
         // TODO: Fix types as casting is required now
         return (
           <Marker mark={searchPhrase}>
-            <JsonSchemaViewer schema={jsonSchema as object}/>
+            <JsonSchemaViewer schema={jsonSchema as object} />
           </Marker>
         )
       }
@@ -100,7 +100,7 @@ export const DocSpecView: FC<DocSpecViewProps> = memo<DocSpecViewProps>(({
   if (isJsonSchemaSpecType(type)) {
     return (
       <Marker mark={searchPhrase}>
-        <JsonSchemaViewer schema={JSON.parse(value)}/>
+        <JsonSchemaViewer schema={JSON.parse(value)} />
       </Marker>
     )
   }
@@ -108,7 +108,7 @@ export const DocSpecView: FC<DocSpecViewProps> = memo<DocSpecViewProps>(({
   if (format === MD_FILE_FORMAT) {
     return (
       <Marker mark={searchPhrase}>
-        <MarkdownViewer value={value}/>
+        <MarkdownViewer value={value} />
       </Marker>
     )
   }

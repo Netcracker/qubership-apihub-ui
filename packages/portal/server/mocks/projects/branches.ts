@@ -15,8 +15,8 @@
  */
 
 import type { Writeable } from '../../types'
-import type { BranchConfigDto, BranchConflictsDto, BranchesDto, ChangeStatus } from './types'
 import { ARCHIVED_VERSION_STATUS, DRAFT_VERSION_STATUS, RELEASE_VERSION_STATUS } from '../packages/version-statuses'
+import type { BranchConfigDto, BranchConflictsDto, BranchesDto, ChangeStatus } from './types'
 
 export const BRANCH_CONFIG: Writeable<BranchConfigDto> = {
   editors: [],

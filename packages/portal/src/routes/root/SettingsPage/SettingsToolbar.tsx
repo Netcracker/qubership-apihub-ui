@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useCallback, useMemo } from 'react'
-import { Button } from '@mui/material'
-import { useNavigate } from 'react-router-dom'
 import { useBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
+import { Button } from '@mui/material'
 import { LARGE_TOOLBAR_SIZE, Toolbar } from '@netcracker/qubership-apihub-ui-shared/components/Toolbar'
 import { ToolbarTitle } from '@netcracker/qubership-apihub-ui-shared/components/ToolbarTitle'
 import { ExitIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ExitIcon'
+import type { FC } from 'react'
+import { memo, useCallback, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 export const SettingsToolbar: FC = memo(() => {
   const navigate = useNavigate()
@@ -37,17 +37,17 @@ export const SettingsToolbar: FC = memo(() => {
 
   return (
     <Toolbar
-      header={<ToolbarTitle value="APIHUB Portal Settings"/>}
+      header={<ToolbarTitle value="APIHUB Portal Settings" />}
       size={LARGE_TOOLBAR_SIZE}
-      action={(
+      action={
         <Button
-          startIcon={<ExitIcon/>}
+          startIcon={<ExitIcon />}
           variant="outlined"
           onClick={navigateToPrevPage}
         >
           Exit
         </Button>
-      )}
+      }
     />
   )
 })

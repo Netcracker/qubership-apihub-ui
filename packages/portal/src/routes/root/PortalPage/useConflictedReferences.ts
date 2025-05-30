@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
+import type { Key, PackageKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { VersionReferences } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useParams } from 'react-router-dom'
-import { useDashboardPackages } from './useDashboardPackages'
 import { useMemo } from 'react'
+import { useParams } from 'react-router-dom'
 import type { CountPackageInDashboardMap } from './package-references'
 import { markParentPackages } from './package-references'
-import type { Key, PackageKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import type { VersionReferences } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
-import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { useDashboardPackages } from './useDashboardPackages'
 
 const CONFLICTED_REFERENCE_QUERY_KEY = 'conflicted-reference-query-key'
 
@@ -60,9 +60,12 @@ export function useAddConflictedReferences(): [AddConflictedReferences, IsLoadin
     mutationFn: () => Promise.resolve(),
     onSuccess: (_, { versionReferences, parentKey }) => {
       const conflictedReferencesSet = createConflictedReferencesSet(versionReferences, dashboardPackages!, parentKey)
-      client.setQueryData<Set<Key>>([CONFLICTED_REFERENCE_QUERY_KEY, packageId, versionId], (oldConflictedReferencesSet) => {
-        return mergeSet(conflictedReferencesSet, oldConflictedReferencesSet)
-      })
+      client.setQueryData<Set<Key>>(
+        [CONFLICTED_REFERENCE_QUERY_KEY, packageId, versionId],
+        (oldConflictedReferencesSet) => {
+          return mergeSet(conflictedReferencesSet, oldConflictedReferencesSet)
+        },
+      )
     },
   })
   return [mutate, isLoading]
@@ -91,7 +94,11 @@ type VersionReferencesItem = {
   parentKey?: Key
 }
 
-function createConflictedReferencesSet(versionReferences: VersionReferences, countPackageInDashboardMap: CountPackageInDashboardMap, parentKey?: Key): Set<Key> {
+function createConflictedReferencesSet(
+  versionReferences: VersionReferences,
+  countPackageInDashboardMap: CountPackageInDashboardMap,
+  parentKey?: Key,
+): Set<Key> {
   const conflictedPackages = new Set<Key>()
   if (!countPackageInDashboardMap) {
     return conflictedPackages

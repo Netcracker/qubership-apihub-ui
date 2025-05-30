@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react'
-import { usePackage } from '../../usePackage'
+import type { PackagesComparisonParams } from '@apihub/entities/breadcrumbs'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { VersionChangesSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
 import { isDashboardComparisonSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { PackagesComparisonParams } from '@apihub/entities/breadcrumbs'
+import { useMemo } from 'react'
+import { usePackage } from '../../usePackage'
 
 export function usePackagesFromDashboardsComparisonParams(
   changesSummary?: VersionChangesSummary,
@@ -39,7 +39,8 @@ export function usePackagesFromDashboardsComparisonParams(
       ...refComparisonParams,
       originPackage: originPackageKey ? originPackage : null,
       changedPackage: changedPackageKey ? changedPackage : null,
-    }), [changedPackage, changedPackageKey, originPackage, originPackageKey, refComparisonParams],
+    }),
+    [changedPackage, changedPackageKey, originPackage, originPackageKey, refComparisonParams],
   )
 }
 

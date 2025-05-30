@@ -38,7 +38,12 @@ export function matchPathname(pathname: string, patterns: string[]): PathMatch |
   return pathMatch
 }
 
-export function replaceParam(locationPathname: string, params: Params<string>, paramKey: string, newParamValue: string): string | null {
+export function replaceParam(
+  locationPathname: string,
+  params: Params<string>,
+  paramKey: string,
+  newParamValue: string,
+): string | null {
   if (!params[paramKey]) {
     return null
   }

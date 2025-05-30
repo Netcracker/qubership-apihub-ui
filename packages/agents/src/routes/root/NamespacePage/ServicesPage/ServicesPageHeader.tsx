@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useCallback, useMemo } from 'react'
-import type { ButtonProps, Theme } from '@mui/material'
-import { Box, Button, CircularProgress, Divider, Step, StepLabel, Stepper, Tooltip, Typography } from '@mui/material'
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
+import type { ButtonProps, Theme } from '@mui/material'
+import { Box, Button, CircularProgress, Divider, Step, StepLabel, Stepper, Tooltip, Typography } from '@mui/material'
+import type { Color } from '@netcracker/qubership-apihub-ui-shared/utils/types'
+import type { FC } from 'react'
+import { memo, useCallback, useMemo } from 'react'
 import type { Step as ServicesPageStep, StepKey, StepStatus } from './ServicesPageProvider/ServicesStepsProvider'
 import {
   CREATE_SNAPSHOT_STEP_KEY,
@@ -35,7 +36,6 @@ import {
   useValidationResultsStep,
   VALIDATION_RESULTS_STEP_KEY,
 } from './ServicesPageProvider/ServicesStepsProvider'
-import type { Color } from '@netcracker/qubership-apihub-ui-shared/utils/types'
 
 export const ServicesPageHeader: FC = memo(() => {
   const [activeStepIndex, allSteps, backButtonProps, nextButtonProps] = useHeaderData()
@@ -65,11 +65,12 @@ export const ServicesPageHeader: FC = memo(() => {
                     color: `${STEP_STATUS_TO_COLOR_MAP[status](theme)} !important`,
                   }),
                 }}
-                icon={status === RUNNING_STEP_STATUS && <CircularProgress size={24}/>}
+                icon={status === RUNNING_STEP_STATUS && <CircularProgress size={24} />}
                 optional={
                   <Box data-testid="StepStatus" display="flex">
-                    <Typography data-testid={status} noWrap
-                                variant="caption">{STEP_STATUS_TO_STATUS_MESSAGE_MAP[status]}</Typography>
+                    <Typography data-testid={status} noWrap variant="caption">
+                      {STEP_STATUS_TO_STATUS_MESSAGE_MAP[status]}
+                    </Typography>
                   </Box>
                 }
               >
@@ -88,14 +89,14 @@ export const ServicesPageHeader: FC = memo(() => {
           alignItems: 'center',
         }}
       >
-        <Divider orientation="vertical"/>
+        <Divider orientation="vertical" />
         <Button {...backButtonProps} data-testid="BackButton" variant="outlined">
-          <KeyboardArrowLeftIcon fontSize="small" sx={{ ml: -1.5 }}/>
+          <KeyboardArrowLeftIcon fontSize="small" sx={{ ml: -1.5 }} />
           Back
         </Button>
         <Button {...nextButtonProps} data-testid="NextButton">
           Next
-          <KeyboardArrowRightIcon fontSize="small" sx={{ mr: -1.5 }}/>
+          <KeyboardArrowRightIcon fontSize="small" sx={{ mr: -1.5 }} />
         </Button>
       </Box>
     </Box>
@@ -139,7 +140,15 @@ function useHeaderData(): [
       setPromoteVersionStep(prevState => ({ ...prevState, active: false }))
       setValidationResultsStep(prevState => ({ ...prevState, active: true }))
     }
-  }, [createSnapshotStep.active, validationResultsStep.active, promoteVersionStep.active, setCreateSnapshotStep, setDiscoverServicesStep, setValidationResultsStep, setPromoteVersionStep])
+  }, [
+    createSnapshotStep.active,
+    validationResultsStep.active,
+    promoteVersionStep.active,
+    setCreateSnapshotStep,
+    setDiscoverServicesStep,
+    setValidationResultsStep,
+    setPromoteVersionStep,
+  ])
 
   const onNextButtonClick = useCallback(() => {
     if (discoverServicesStep.active) {
@@ -154,7 +163,15 @@ function useHeaderData(): [
       setValidationResultsStep(prevState => ({ ...prevState, active: false }))
       setPromoteVersionStep(prevState => ({ ...prevState, active: true }))
     }
-  }, [discoverServicesStep.active, createSnapshotStep.active, validationResultsStep.active, setDiscoverServicesStep, setCreateSnapshotStep, setValidationResultsStep, setPromoteVersionStep])
+  }, [
+    discoverServicesStep.active,
+    createSnapshotStep.active,
+    validationResultsStep.active,
+    setDiscoverServicesStep,
+    setCreateSnapshotStep,
+    setValidationResultsStep,
+    setPromoteVersionStep,
+  ])
 
   const nextButtonVariant = useMemo(() => {
     if (activeStep.status === SUCCESS_STEP_STATUS) {

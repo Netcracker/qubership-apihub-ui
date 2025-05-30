@@ -15,9 +15,9 @@
  */
 
 import { useQuery } from '@tanstack/react-query'
+import type { SystemConfiguration, SystemConfigurationDto } from '../../types/system-configuration'
 import type { IsLoading } from '../../utils/aliases'
 import { requestJson } from '../../utils/requests'
-import type { SystemConfiguration, SystemConfigurationDto } from '../../types/system-configuration'
 
 const SYSTEM_CONGIGURATION_QUERY_KEY = 'system-configuration-query-key'
 

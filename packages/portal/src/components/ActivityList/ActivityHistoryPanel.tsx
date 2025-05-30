@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
+import { Box, Card, ListItemIcon, Typography } from '@mui/material'
+import ListItemButton from '@mui/material/ListItemButton'
+import { KeyboardDoubleArrowRightIcon } from '@netcracker/qubership-apihub-ui-shared/icons/KeyboardDoubleArrowRightIcon'
+import { DEFAULT_PAPER_SHADOW } from '@netcracker/qubership-apihub-ui-shared/themes/palette'
 import type { FC } from 'react'
 import React, { memo } from 'react'
-import { Box, Card, ListItemIcon, Typography } from '@mui/material'
-import { ActivityListFilters } from './ActivityListFilters'
-import { ActivityListBody } from './ActivityListBody'
-import ListItemButton from '@mui/material/ListItemButton'
 import type { Activity } from '../../entities/activities'
 import type { ActivityType } from '../../entities/activity-enums'
-import { DEFAULT_PAPER_SHADOW } from '@netcracker/qubership-apihub-ui-shared/themes/palette'
-import { KeyboardDoubleArrowRightIcon } from '@netcracker/qubership-apihub-ui-shared/icons/KeyboardDoubleArrowRightIcon'
+import { ActivityListBody } from './ActivityListBody'
+import { ActivityListFilters } from './ActivityListFilters'
 
 export type ActivityHistoryPanelProps = {
   onCollapse: () => void
@@ -40,19 +40,20 @@ export type ActivityHistoryPanelProps = {
 
 // First Order Component //
 export const ActivityHistoryPanel: FC<ActivityHistoryPanelProps> = memo((props) => {
-    const {
-      onCollapse,
-      activities = [],
-      isLoading = false,
-      types = [],
-      textFilter,
-      onChangeFilters,
-      placeholderText,
-    } = props
+  const {
+    onCollapse,
+    activities = [],
+    isLoading = false,
+    types = [],
+    textFilter,
+    onChangeFilters,
+    placeholderText,
+  } = props
 
-    return (
-      <>
-        <Card sx={{
+  return (
+    <>
+      <Card
+        sx={{
           display: 'grid',
           gridTemplateRows: 'max-content 1fr',
           width: '100%',
@@ -61,59 +62,59 @@ export const ActivityHistoryPanel: FC<ActivityHistoryPanelProps> = memo((props) 
           borderRadius: '10px 0 0 10px',
           p: 3,
         }}
-        data-testid="ActivityHistoryPanel">
-          <Box>
-            <Box
+        data-testid="ActivityHistoryPanel"
+      >
+        <Box>
+          <Box
+            sx={{
+              display: 'grid',
+              gap: 1,
+              gridTemplateColumns: '1fr auto',
+              pt: '6px',
+              pb: '6px',
+              mb: 1,
+            }}
+          >
+            <Typography variant="body2" fontWeight="600" fontSize={15}>Activity History</Typography>
+            <ListItemButton
+              onClick={onCollapse}
               sx={{
-                display: 'grid',
-                gap: 1,
-                gridTemplateColumns: '1fr auto',
-                pt: '6px',
-                pb: '6px',
-                mb: 1,
+                height: '20px',
+                flexDirection: 'row',
               }}
+              data-testid="CollapseButton"
             >
-              <Typography variant="body2" fontWeight="600" fontSize={15}>Activity History</Typography>
-              <ListItemButton
-                onClick={onCollapse}
+              <ListItemIcon
                 sx={{
-                  height: '20px',
-                  flexDirection: 'row',
+                  minWidth: 0,
+                  mr: 1,
+                  mt: '4px',
+                  justifyContent: 'center',
                 }}
-                data-testid="CollapseButton"
               >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: 1,
-                    mt: '4px',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <KeyboardDoubleArrowRightIcon size={11}/>
-                </ListItemIcon>
-                <Typography fontWeight="500" fontSize={13} color="#0068FF">Collapse</Typography>
-              </ListItemButton>
-            </Box>
-            <Box pb={3}>
-              <ActivityListFilters
-                text={textFilter}
-                types={types}
-                onChangeFilters={onChangeFilters}
-              />
-            </Box>
+                <KeyboardDoubleArrowRightIcon size={11} />
+              </ListItemIcon>
+              <Typography fontWeight="500" fontSize={13} color="#0068FF">Collapse</Typography>
+            </ListItemButton>
           </Box>
-          <Box overflow="hidden auto">
-            <ActivityListBody
-              activities={activities}
+          <Box pb={3}>
+            <ActivityListFilters
+              text={textFilter}
               types={types}
-              textFilter={textFilter}
-              placeholderText={placeholderText}
-              isLoading={isLoading}
+              onChangeFilters={onChangeFilters}
             />
           </Box>
-        </Card>
-      </>
-    )
-  },
-)
+        </Box>
+        <Box overflow="hidden auto">
+          <ActivityListBody
+            activities={activities}
+            types={types}
+            textFilter={textFilter}
+            placeholderText={placeholderText}
+            isLoading={isLoading}
+          />
+        </Box>
+      </Card>
+    </>
+  )
+})

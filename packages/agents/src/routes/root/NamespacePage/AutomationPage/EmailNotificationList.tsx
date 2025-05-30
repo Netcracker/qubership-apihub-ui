@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import type { Emails } from '@apihub/entities/settings'
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography } from '@mui/material'
+import { DeleteIcon } from '@netcracker/qubership-apihub-ui-shared/icons/DeleteIcon'
+import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import type { FC } from 'react'
 import { memo, useCallback, useState } from 'react'
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography } from '@mui/material'
-import type { Emails } from '@apihub/entities/settings'
-import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import { DeleteIcon } from '@netcracker/qubership-apihub-ui-shared/icons/DeleteIcon'
 
 const boxSX = {
   backgroundColor: '#fff',
@@ -95,10 +95,7 @@ export const EmailNotificationList: FC<NotificationListProps> = memo<Notificatio
           type={'email'}
           onChange={(e) => setNewEmail(e.target.value)}
         />
-        <Button variant="contained"
-                sx={buttonSX}
-                onClick={() => addMail(onChange, value)}
-        >
+        <Button variant="contained" sx={buttonSX} onClick={() => addMail(onChange, value)}>
           Add Email
         </Button>
       </Box>
@@ -112,14 +109,19 @@ export const EmailNotificationList: FC<NotificationListProps> = memo<Notificatio
       <Box sx={itemsBoxSX}>
         {value && isNotEmpty(value) && value.map((data: string, index: number) => {
           return (
-            <Box sx={boxSX} onMouseEnter={() => handleMouseEnter(index)} onMouseLeave={handleMouseLeave} key={index}>
+            <Box
+              sx={boxSX}
+              onMouseEnter={() => handleMouseEnter(index)}
+              onMouseLeave={handleMouseLeave}
+              key={index}
+            >
               <Typography variant="body2">{data}</Typography>
               {hoveredIndex === index && (
                 <Box
                   style={{ cursor: 'pointer' }}
                   onClick={() => setDeletingIndex(index)}
                 >
-                  <DeleteIcon color="#626D82"/>
+                  <DeleteIcon color="#626D82" />
                 </Box>
               )}
             </Box>
@@ -131,13 +133,14 @@ export const EmailNotificationList: FC<NotificationListProps> = memo<Notificatio
             <Typography>Are you sure you want to delete this Email?</Typography>
           </DialogContent>
           <DialogActions style={{ justifyContent: 'flex-end' }}>
-            <Button variant="contained"
-                    sx={buttonSX}
-                    onClick={() => {
-                      const updatedList = value?.filter((_email: string, i: number) => i !== deletingIndex) ?? []
-                      onChange(updatedList)
-                      setDeletingIndex(-1)
-                    }}
+            <Button
+              variant="contained"
+              sx={buttonSX}
+              onClick={() => {
+                const updatedList = value?.filter((_email: string, i: number) => i !== deletingIndex) ?? []
+                onChange(updatedList)
+                setDeletingIndex(-1)
+              }}
             >
               Yes
             </Button>

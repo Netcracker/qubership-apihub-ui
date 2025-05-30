@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { editorRequestVoid } from '@apihub/utils/requests'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { useMutation } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import { useBranchSearchParam } from '../../../useBranchSearchParam'
-import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { editorRequestVoid } from '@apihub/utils/requests'
 
 export function useUpdateBranchEditingMode(): [UpdateBranchEditingMode, IsLoading] {
   const { projectId } = useParams()

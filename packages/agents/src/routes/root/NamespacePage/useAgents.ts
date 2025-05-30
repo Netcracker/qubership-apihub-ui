@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { useQuery } from '@tanstack/react-query'
-import type { Agents} from '@netcracker/qubership-apihub-ui-shared/entities/agents'
+import type { Agents } from '@netcracker/qubership-apihub-ui-shared/entities/agents'
 import { EMPTY_AGENTS, getAgents } from '@netcracker/qubership-apihub-ui-shared/entities/agents'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { useQuery } from '@tanstack/react-query'
 
 const AGENTS_QUERY_KEY = 'agents-query-key'
 

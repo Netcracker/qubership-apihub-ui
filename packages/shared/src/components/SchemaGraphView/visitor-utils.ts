@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import type { OpenAPIV3 } from 'openapi-types'
-import { UNKNOWN_SCHEMA_TYPE } from './schema-graph-content'
 import {
   JSON_SCHEMA_PROPERTY_ALL_OF,
   JSON_SCHEMA_PROPERTY_ANY_OF,
   JSON_SCHEMA_PROPERTY_ONE_OF,
   parseRef,
 } from '@netcracker/qubership-apihub-api-unifier'
+import type { OpenAPIV3 } from 'openapi-types'
+import { UNKNOWN_SCHEMA_TYPE } from './schema-graph-content'
 
 export const ALL_OF_COMBINER = JSON_SCHEMA_PROPERTY_ALL_OF
 export const ONE_OF_COMBINER = JSON_SCHEMA_PROPERTY_ONE_OF
@@ -33,7 +33,7 @@ export function calculatePropertyType(value: OpenAPIV3.SchemaObject): string {
   if (!value?.type) {
     const combinerUsed = COMBINERS.find(combiner => !!value?.[combiner])
     if (combinerUsed) {
-      return combinerUsed === ALL_OF_COMBINER ? 'object'/*this wrong*/ : combinerUsed
+      return combinerUsed === ALL_OF_COMBINER ? 'object' /*this wrong*/ : combinerUsed
     }
 
     return UNKNOWN_SCHEMA_TYPE

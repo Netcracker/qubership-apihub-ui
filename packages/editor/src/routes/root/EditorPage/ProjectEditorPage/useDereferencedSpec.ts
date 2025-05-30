@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { useParams } from 'react-router-dom'
-import { useBranchSearchParam } from '../../useBranchSearchParam'
-import { useAllBranchFiles, useBranchCache } from './useBranchCache'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { useBranchConfig } from './useBranchConfig'
-import { PackageVersionBuilder } from './package-version-builder'
-import { VERSION_CANDIDATE } from './consts'
 import type { FileKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { InvalidateQuery, IsFetching } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { getAuthorization } from '@netcracker/qubership-apihub-ui-shared/utils/storages'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useParams } from 'react-router-dom'
+import { useBranchSearchParam } from '../../useBranchSearchParam'
+import { VERSION_CANDIDATE } from './consts'
+import { PackageVersionBuilder } from './package-version-builder'
+import { useAllBranchFiles, useBranchCache } from './useBranchCache'
+import { useBranchConfig } from './useBranchConfig'
 
 const DEREFERENCED_SPEC_QUERY_KEY = 'dereferenced-spec-query-key'
 
@@ -39,16 +39,17 @@ export function useDereferencedSpec(
 
   const { data, isFetching } = useQuery<string, Error, DereferencedSpec>({
     queryKey: [DEREFERENCED_SPEC_QUERY_KEY, projectId, branchName, fileKey],
-    queryFn: async () => (await PackageVersionBuilder.dereference(fileKey!, {
-      packageKey: projectId!,
-      versionKey: VERSION_CANDIDATE,
-      previousVersionKey: VERSION_CANDIDATE,
-      previousPackageKey: projectId!,
-      authorization: getAuthorization(),
-      branchName: branchName!,
-      files: branchConfig?.files ?? [],
-      sources: branchFiles,
-    })).content,
+    queryFn: async () =>
+      (await PackageVersionBuilder.dereference(fileKey!, {
+        packageKey: projectId!,
+        versionKey: VERSION_CANDIDATE,
+        previousVersionKey: VERSION_CANDIDATE,
+        previousPackageKey: projectId!,
+        authorization: getAuthorization(),
+        branchName: branchName!,
+        files: branchConfig?.files ?? [],
+        sources: branchFiles,
+      })).content,
     enabled: !!projectId && !!branchName && !!fileKey && !isBranchConfigLoading && !isBranchFilesLoading,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,

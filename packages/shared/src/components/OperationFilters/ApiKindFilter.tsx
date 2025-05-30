@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { Autocomplete, InputLabel, TextField } from '@mui/material'
 import type { FC } from 'react'
 import * as React from 'react'
 import { memo } from 'react'
-import { Autocomplete, InputLabel, TextField } from '@mui/material'
-import { OptionItem } from '../OptionItem'
 import type { ApiKind } from '../../entities/operations'
 import { API_KINDS } from '../../entities/operations'
+import { OptionItem } from '../OptionItem'
 
 export type ApiKindFilterProps = {
   onSelectApiKind: (value?: ApiKind) => void

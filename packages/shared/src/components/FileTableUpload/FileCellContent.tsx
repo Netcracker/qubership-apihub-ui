@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { Box, Button } from '@mui/material'
 import type { FC, ReactNode } from 'react'
 import { memo, useMemo } from 'react'
-import { Box, Button } from '@mui/material'
 import { TextWithOverflowTooltip } from '../TextWithOverflowTooltip'
 
 export const FileCellContent: FC<{

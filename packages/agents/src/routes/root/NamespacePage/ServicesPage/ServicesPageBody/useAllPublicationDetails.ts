@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import { useQuery } from '@tanstack/react-query'
-import { useInvalidateSnapshotPublicationInfo } from '../../useSnapshotPublicationInfo'
-import { useCreateSnapshotPublicationOptions } from '../ServicesPageProvider/ServicesPublicationOptionsProvider'
-import { useInvalidateSnapshots, useSnapshots } from '../../useSnapshots'
-import { useMemo } from 'react'
+import type { PublishConfig } from '@apihub/entities/publish-config'
 import { EMPTY_ALL_PUBLISH_DETAILS, getPublishDetails } from '@apihub/entities/publish-details'
 import {
   COMPLETE_PUBLISH_STATUS,
@@ -26,15 +22,25 @@ import {
   NONE_PUBLISH_STATUS,
   RUNNING_PUBLISH_STATUS,
 } from '@apihub/entities/statuses'
-import type { PublishDetails, PublishDetailsDto, PublishStatus } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
-import type { PublishConfig } from '@apihub/entities/publish-config'
+import type {
+  PublishDetails,
+  PublishDetailsDto,
+  PublishStatus,
+} from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
 import { STATUS_REFETCH_INTERVAL } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import { useQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
+import { useInvalidateSnapshotPublicationInfo } from '../../useSnapshotPublicationInfo'
+import { useInvalidateSnapshots, useSnapshots } from '../../useSnapshots'
+import { useCreateSnapshotPublicationOptions } from '../ServicesPageProvider/ServicesPublicationOptionsProvider'
 
 const ALL_PUBLISH_DETAILS_QUERY_KEY = 'all-publish-details-query-key'
 
-export function useAllPublicationDetails(options?: Partial<{
-  config: PublishConfig
-}>): [PublishDetails[]] {
+export function useAllPublicationDetails(
+  options?: Partial<{
+    config: PublishConfig
+  }>,
+): [PublishDetails[]] {
   const { config } = options ?? {}
   const [snapshots, isLoading] = useSnapshots()
   const { createSnapshotPublicationOptions } = useCreateSnapshotPublicationOptions()
@@ -53,7 +59,11 @@ export function useAllPublicationDetails(options?: Partial<{
       return getPublishDetails(snapshots.packageKey, publishIds)
     },
     refetchInterval: data => {
-      if (data?.find(publishDetails => publishDetails.status === RUNNING_PUBLISH_STATUS || publishDetails.status === NONE_PUBLISH_STATUS)) {
+      if (
+        data?.find(publishDetails =>
+          publishDetails.status === RUNNING_PUBLISH_STATUS || publishDetails.status === NONE_PUBLISH_STATUS
+        )
+      ) {
         return STATUS_REFETCH_INTERVAL
       }
       return false
@@ -72,9 +82,11 @@ export function useAllPublicationDetails(options?: Partial<{
   ]
 }
 
-export function useAllPublishDetailsStatus(options?: Partial<{
-  config: PublishConfig
-}>): PublishStatus {
+export function useAllPublishDetailsStatus(
+  options?: Partial<{
+    config: PublishConfig
+  }>,
+): PublishStatus {
   const { config } = options ?? {}
   const [allPublishDetails] = useAllPublicationDetails({ config })
 

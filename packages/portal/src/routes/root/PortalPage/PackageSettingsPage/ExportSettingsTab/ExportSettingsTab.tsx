@@ -1,13 +1,13 @@
+import { useEventBus } from '@apihub/routes/EventBusProvider'
 import { Box } from '@mui/material'
+import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import type { FC } from 'react'
 import React, { memo, useCallback } from 'react'
 import type { PackageSettingsTabProps } from '../package-settings'
-import { EditPreservedOasExtensionsDialog } from './EditPreservedOasExtensionsDialog/EditPreservedOasExtensionsDialog'
-import { useEventBus } from '@apihub/routes/EventBusProvider'
-import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import { SettingsEditableParameter } from '../SettingsEditableParameter/SettingsEditableParameter'
-import { useAllowedOasExtensions } from './useAllowedOasExtensions'
+import { EditPreservedOasExtensionsDialog } from './EditPreservedOasExtensionsDialog/EditPreservedOasExtensionsDialog'
 import { OasExtensionsList } from './OasExtensionsList'
+import { useAllowedOasExtensions } from './useAllowedOasExtensions'
 
 const BODY_CONTAINER_SX = {
   mt: 1,
@@ -45,13 +45,13 @@ export const ExportSettingsTab: FC<PackageSettingsTabProps> = memo<PackageSettin
                 isLoading={isOasExtensionsLoading}
                 data-testid="ListOfOasExtensionsSettingsParameter"
               >
-                <OasExtensionsList extensions={oasExtensions}/>
+                <OasExtensionsList extensions={oasExtensions} />
               </SettingsEditableParameter>
             </Box>
           </Box>
         }
       />
-      <EditPreservedOasExtensionsDialog/>
+      <EditPreservedOasExtensionsDialog />
     </Box>
   )
 })

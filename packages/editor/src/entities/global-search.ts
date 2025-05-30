@@ -16,11 +16,11 @@
 
 import type { Key, VersionKey } from './keys'
 
-import type { Group, GroupDto } from './groups'
-import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import type { FileFormat } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import type { MethodType } from '@netcracker/qubership-apihub-ui-shared/entities/method-types'
+import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import type { FileFormat } from '@netcracker/qubership-apihub-ui-shared/utils/files'
+import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import type { Group, GroupDto } from './groups'
 
 export type SearchResults = Readonly<{
   packages: PackageSearchResult[]
@@ -56,11 +56,13 @@ export type DocumentSearchResult = Readonly<{
 }>
 
 // TODO: Remove partial when BE will be ready
-export type SearchResultsDto = Readonly<Partial<{
-  packages: PackageSearchResultDto[]
-  versions: VersionSearchResultDto[]
-  documents: DocumentSearchResultDto[]
-}>>
+export type SearchResultsDto = Readonly<
+  Partial<{
+    packages: PackageSearchResultDto[]
+    versions: VersionSearchResultDto[]
+    documents: DocumentSearchResultDto[]
+  }>
+>
 
 export type PackageSearchResultDto = Readonly<{
   packageId: string
@@ -207,7 +209,7 @@ export type OpenApiData = {
 }
 
 export type OverviewResultDto = Readonly<{
-  name: string //TODO: Always Overview?
+  name: string // TODO: Always Overview?
   text: string
 }>
 

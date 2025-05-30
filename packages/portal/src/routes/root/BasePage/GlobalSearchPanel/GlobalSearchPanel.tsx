@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
+import { HIDE_GLOBAL_SEARCH_PANEL, SHOW_GLOBAL_SEARCH_PANEL } from '@apihub/routes/EventBusProvider'
+import { Box, Drawer } from '@mui/material'
 import type { FC } from 'react'
 import { memo, useState } from 'react'
-import { Box, Drawer } from '@mui/material'
 import { useEvent } from 'react-use'
+import { GlobalSearchTextProvider } from './GlobalSearchTextProvider'
 import { SearchFilters } from './SearchFilters'
 import { SearchResults } from './SearchResults'
-import { GlobalSearchTextProvider } from './GlobalSearchTextProvider'
-import { HIDE_GLOBAL_SEARCH_PANEL, SHOW_GLOBAL_SEARCH_PANEL } from '@apihub/routes/EventBusProvider'
 
 export const GlobalSearchPanel: FC = memo(() => {
   const [open, setOpen] = useState(false)
@@ -45,14 +45,16 @@ export const GlobalSearchPanel: FC = memo(() => {
       open={open}
       onClose={() => setOpen(false)}
     >
-      <Box sx={{ p: 2, display: 'flex', flexDirection: 'row', overflow: 'hidden', height: '100%' }}
-           data-testid="GlobalSearchPanel">
+      <Box
+        sx={{ p: 2, display: 'flex', flexDirection: 'row', overflow: 'hidden', height: '100%' }}
+        data-testid="GlobalSearchPanel"
+      >
         <GlobalSearchTextProvider>
           <Box sx={{ p: 2, width: '330px' }}>
-            <SearchFilters enabledFilters={open}/>
+            <SearchFilters enabledFilters={open} />
           </Box>
           <Box sx={{ pl: 1, width: '500px' }}>
-            <SearchResults/>
+            <SearchResults />
           </Box>
         </GlobalSearchTextProvider>
       </Box>

@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo } from 'react'
-import { useParams } from 'react-router-dom'
-import { useDownloadChangesAsExcel } from './useDownloadChangesAsExcel'
-import { useOrderedComparisonFiltersSummary } from './useOrderedComparisonFiltersSummary'
+import { ExportMenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ExportMenuButton'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { ChangeSeverity } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
 import type { ApiAudience, ApiKind } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import {
   useResolvedOperationGroupParameters,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/operation-groups/useResolvedOperationGroupParameters'
-import { ExportMenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ExportMenuButton'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { FC } from 'react'
+import { memo } from 'react'
+import { useParams } from 'react-router-dom'
+import { useDownloadChangesAsExcel } from './useDownloadChangesAsExcel'
+import { useOrderedComparisonFiltersSummary } from './useOrderedComparisonFiltersSummary'
 
 export type ExportChangesMenuProps = {
   textFilter?: string
@@ -96,18 +96,23 @@ export const ExportChangesMenu: FC<ExportChangesMenuProps> = memo(({
     })
   }
 
-  return <ExportMenuButton
-    disabled={isDownloadButtonDisabled}
-    title="Export Changes to Excel"
-    allDownloadText="All changes"
-    filteredDownloadText="Filtered changes"
-    downloadAll={onDownloadAllChanges}
-    downloadFiltered={onDownloadFilteredChanges}
-  />
+  return (
+    <ExportMenuButton
+      disabled={isDownloadButtonDisabled}
+      title="Export Changes to Excel"
+      allDownloadText="All changes"
+      filteredDownloadText="Filtered changes"
+      downloadAll={onDownloadAllChanges}
+      downloadFiltered={onDownloadFilteredChanges}
+    />
+  )
 })
 
-function isEmptyChangesSummary(changeSeverities: ReadonlySet<ChangeSeverity>, changesSummary: Record<ChangeSeverity, number> | undefined): boolean {
+function isEmptyChangesSummary(
+  changeSeverities: ReadonlySet<ChangeSeverity>,
+  changesSummary: Record<ChangeSeverity, number> | undefined,
+): boolean {
   return !changesSummary || Object.entries(changesSummary).every((
-    [key, value]) => !changeSeverities.has(key as ChangeSeverity) || value === 0,
-  )
+    [key, value],
+  ) => !changeSeverities.has(key as ChangeSeverity) || value === 0)
 }

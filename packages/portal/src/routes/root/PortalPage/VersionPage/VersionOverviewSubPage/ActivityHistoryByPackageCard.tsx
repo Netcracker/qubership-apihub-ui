@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import React, { memo } from 'react'
-import { usePackageActivityHistory } from '../../../useActivityHistory'
-import { useParams } from 'react-router-dom'
-import { Box, Typography } from '@mui/material'
 import { ActivityListBody } from '@apihub/components/ActivityList/ActivityListBody'
-import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
+import { ActivityListFilters } from '@apihub/components/ActivityList/ActivityListFilters'
+import type { ActivityType } from '@apihub/entities/activity-enums'
 import {
   useActivityHistoryFiltersContext,
   useSetActivityHistoryFiltersContext,
 } from '@apihub/routes/root/MainPage/ActivityHistoryFiltersProvider'
-import type { ActivityType } from '@apihub/entities/activity-enums'
-import { ActivityListFilters } from '@apihub/components/ActivityList/ActivityListFilters'
+import { Box, Typography } from '@mui/material'
+import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
+import type { FC } from 'react'
+import React, { memo } from 'react'
+import { useParams } from 'react-router-dom'
+import { usePackageActivityHistory } from '../../../useActivityHistory'
 
 export const ActivityHistoryByPackageCard: FC = memo(() => {
   const { packageId: packageKey } = useParams()
@@ -71,7 +71,9 @@ type ActivityHistoryByPackageCardHeaderProps = Partial<{
   }) => void
 }>
 
-const ActivityHistoryByPackageCardHeader: FC<ActivityHistoryByPackageCardHeaderProps> = memo<ActivityHistoryByPackageCardHeaderProps>(({
+const ActivityHistoryByPackageCardHeader: FC<ActivityHistoryByPackageCardHeaderProps> = memo<
+  ActivityHistoryByPackageCardHeaderProps
+>(({
   textFilter,
   types,
   onChangeFilters,

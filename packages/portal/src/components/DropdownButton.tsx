@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { FC, ReactNode } from 'react'
-import { memo, useCallback, useMemo, useRef, useState } from 'react'
+import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
+import KeyboardArrowUpOutlinedIcon from '@mui/icons-material/KeyboardArrowUpOutlined'
 import {
   Badge,
   Box,
@@ -29,28 +29,32 @@ import {
   Popper,
   Tooltip,
 } from '@mui/material'
-import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
-import KeyboardArrowUpOutlinedIcon from '@mui/icons-material/KeyboardArrowUpOutlined'
 import type { TestableProps } from '@netcracker/qubership-apihub-ui-shared/components/Testable'
 import { CheckIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CheckIcon'
+import type { FC, ReactNode } from 'react'
+import { memo, useCallback, useMemo, useRef, useState } from 'react'
 
-export type DropdownButtonProps = Readonly<{
-  label?: string
-  icon?: ReactNode
-  options: Array<DropdownButtonOption>
-  disabled?: boolean
-  hint?: string
-  closeOnClick?: boolean
-  disableHint?: boolean
-}> & TestableProps
+export type DropdownButtonProps =
+  & Readonly<{
+    label?: string
+    icon?: ReactNode
+    options: Array<DropdownButtonOption>
+    disabled?: boolean
+    hint?: string
+    closeOnClick?: boolean
+    disableHint?: boolean
+  }>
+  & TestableProps
 
-type DropdownButtonOption = Readonly<{
-  key: string
-  label: string
-  method?: () => void
-  disabled?: boolean
-  selected?: boolean
-}> & TestableProps
+type DropdownButtonOption =
+  & Readonly<{
+    key: string
+    label: string
+    method?: () => void
+    disabled?: boolean
+    selected?: boolean
+  }>
+  & TestableProps
 
 export const DropdownButton: FC<DropdownButtonProps> = memo<DropdownButtonProps>((props) => {
   const {
@@ -85,34 +89,39 @@ export const DropdownButton: FC<DropdownButtonProps> = memo<DropdownButtonProps>
         title={hint}
       >
         <Box>
-          {label ? (
-            <Button
-              ref={anchorRef}
-              disabled={disabled}
-              variant="contained"
-              sx={{ pr: '35px', pl: '35px' }}
-              startIcon={icon}
-              endIcon={open ? <KeyboardArrowUpOutlinedIcon fontSize="small"/> : <KeyboardArrowDownOutlinedIcon
-                fontSize="small"/>}
-              onClick={() => setOpen((prevOpen) => !prevOpen)}
-              data-testid={props.testId}
-            >
-              {label}
-            </Button>
-          ) : (
-            <IconButton
-              ref={anchorRef}
-              disabled={disabled}
-              onClick={() => setOpen((prevOpen) => !prevOpen)}
-              data-testid={props.testId}
-            >
-              {hasSelectedOptions ? (
-                <Badge variant="dot" color="primary">
-                  {icon}
-                </Badge>
-              ) : icon}
-            </IconButton>
-          )}
+          {label
+            ? (
+              <Button
+                ref={anchorRef}
+                disabled={disabled}
+                variant="contained"
+                sx={{ pr: '35px', pl: '35px' }}
+                startIcon={icon}
+                endIcon={open
+                  ? <KeyboardArrowUpOutlinedIcon fontSize="small" />
+                  : <KeyboardArrowDownOutlinedIcon fontSize="small" />}
+                onClick={() => setOpen((prevOpen) => !prevOpen)}
+                data-testid={props.testId}
+              >
+                {label}
+              </Button>
+            )
+            : (
+              <IconButton
+                ref={anchorRef}
+                disabled={disabled}
+                onClick={() => setOpen((prevOpen) => !prevOpen)}
+                data-testid={props.testId}
+              >
+                {hasSelectedOptions
+                  ? (
+                    <Badge variant="dot" color="primary">
+                      {icon}
+                    </Badge>
+                  )
+                  : icon}
+              </IconButton>
+            )}
         </Box>
       </Tooltip>
       <Popper
@@ -129,8 +138,7 @@ export const DropdownButton: FC<DropdownButtonProps> = memo<DropdownButtonProps>
           <Grow
             {...TransitionProps}
             style={{
-              transformOrigin:
-                placement === 'bottom' ? 'center top' : 'center bottom',
+              transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
             }}
           >
             <Paper
@@ -139,7 +147,8 @@ export const DropdownButton: FC<DropdownButtonProps> = memo<DropdownButtonProps>
                 marginTop: '7px',
                 background: '#FFFFFF',
                 boxShadow: '0px 0px 2px rgba(0, 0, 0, 0.2), 0px 6px 20px rgba(0, 0, 0, 0.15)',
-              }}>
+              }}
+            >
               <ClickAwayListener onClickAway={() => setOpen(false)}>
                 <MenuList id="split-button-menu" autoFocusItem>
                   {options.map((option) => (
@@ -149,10 +158,12 @@ export const DropdownButton: FC<DropdownButtonProps> = memo<DropdownButtonProps>
                       onClick={() => handleMenuItemClick(option)}
                       data-testid={option.testId}
                     >
-                      {option?.selected ? <CheckIcon/> : null}
-                      <span style={{
-                        marginLeft: option?.selected ? 10 : 25,
-                      }}>
+                      {option?.selected ? <CheckIcon /> : null}
+                      <span
+                        style={{
+                          marginLeft: option?.selected ? 10 : 25,
+                        }}
+                      >
                         {option?.label}
                       </span>
                     </MenuItem>

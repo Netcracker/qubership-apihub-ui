@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useCallback, useMemo } from 'react'
-import { AuthenticationReports } from './AuthenticationReports'
-import { RoutingReports } from './RoutingReports'
-import { AUTHENTICATION_REPORTS_PAGE, ROUTING_REPORTS_PAGE, SECURITY_REPORTS_PAGE } from '../../../routes'
-import { useNavigation } from '../../../NavigationProvider'
-import { useParams } from 'react-router-dom'
-import { useActiveTabs } from '@netcracker/qubership-apihub-ui-shared/hooks/pathparams/useActiveTabs'
+import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import type { PanelItem, TabItem } from '@netcracker/qubership-apihub-ui-shared/components/Panels/TabsPanel'
 import { TabsPanel } from '@netcracker/qubership-apihub-ui-shared/components/Panels/TabsPanel'
-import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
-import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { useActiveTabs } from '@netcracker/qubership-apihub-ui-shared/hooks/pathparams/useActiveTabs'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
+import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import type { FC } from 'react'
+import { memo, useCallback, useMemo } from 'react'
+import { useParams } from 'react-router-dom'
+import { useNavigation } from '../../../NavigationProvider'
+import { AUTHENTICATION_REPORTS_PAGE, ROUTING_REPORTS_PAGE, SECURITY_REPORTS_PAGE } from '../../../routes'
+import { AuthenticationReports } from './AuthenticationReports'
+import { RoutingReports } from './RoutingReports'
 
 // High Order Component //
 export const SecurityReportsPage: FC = memo(() => {
@@ -37,10 +37,10 @@ export const SecurityReportsPage: FC = memo(() => {
 
   const tabPanels: PanelItem<SecurityReportsTabs>[] = useMemo(() => [{
     key: AUTHENTICATION_REPORTS_PAGE,
-    content: <AuthenticationReports/>,
+    content: <AuthenticationReports />,
   }, {
     key: ROUTING_REPORTS_PAGE,
-    content: <RoutingReports/>,
+    content: <RoutingReports />,
   }], [])
 
   const onChangeTab = useCallback((tab: SecurityReportsTabs) => {

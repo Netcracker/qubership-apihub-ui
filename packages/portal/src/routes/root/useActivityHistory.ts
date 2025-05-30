@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { generatePath } from 'react-router-dom'
 import type {
   Activities,
   Activity,
@@ -23,16 +22,17 @@ import type {
   ActivityHistoryDto,
   EventDetails,
 } from '@apihub/entities/activities'
-import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import type { PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import type { ActivityEventType, ActivityType } from '@apihub/entities/activity-enums'
-import { useQuery } from '@tanstack/react-query'
-import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import { portalRequestJson } from '@apihub/utils/requests'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
 import { API_V4 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { useQuery } from '@tanstack/react-query'
+import { generatePath } from 'react-router-dom'
 
 const ACTIVITY_HISTORY_QUERY_KEY = 'activity-history-query-key'
 const PACKAGE_ACTIVITY_HISTORY_QUERY_KEY = 'package-activity-history-query-key'
@@ -42,19 +42,29 @@ export type ActivityHistoryQueryResult = {
   isLoading: IsLoading
 }
 
-export function useActivityHistory(options: Partial<{
-  kind: PackageKind[]
-  limit: number
-  onlyFavorite: boolean
-  textFilter: string
-  types: ReadonlyArray<ActivityType>
-  page: number
-  onlyShared: boolean
-  enabled: boolean
-}>): ActivityHistoryQueryResult {
+export function useActivityHistory(
+  options: Partial<{
+    kind: PackageKind[]
+    limit: number
+    onlyFavorite: boolean
+    textFilter: string
+    types: ReadonlyArray<ActivityType>
+    page: number
+    onlyShared: boolean
+    enabled: boolean
+  }>,
+): ActivityHistoryQueryResult {
   const activityTypesKey = generateTypeFiltersKey(options?.types)
   const { data, isLoading } = useQuery<ActivityHistoryDto, Error, Activities>({
-    queryKey: [ACTIVITY_HISTORY_QUERY_KEY, options.textFilter, options.onlyShared, options.onlyFavorite, activityTypesKey, options.page, options.limit],
+    queryKey: [
+      ACTIVITY_HISTORY_QUERY_KEY,
+      options.textFilter,
+      options.onlyShared,
+      options.onlyFavorite,
+      activityTypesKey,
+      options.page,
+      options.limit,
+    ],
     queryFn: () => fetchActivityHistory(options),
     select: toActivityHistory,
     cacheTime: 1000,
@@ -85,10 +95,11 @@ export function usePackageActivityHistory(options: {
   const activityTypesKey = generateTypeFiltersKey(types)
   const { data, isLoading } = useQuery<ActivityHistoryDto, Error, Activities>({
     queryKey: [PACKAGE_ACTIVITY_HISTORY_QUERY_KEY, packageKey, textFilter, includeRefs, activityTypesKey],
-    queryFn: ({ signal }) => fetchPackageActivityHistory({
-      ...options,
-      packageKey: packageKey!,
-    }, signal),
+    queryFn: ({ signal }) =>
+      fetchPackageActivityHistory({
+        ...options,
+        packageKey: packageKey!,
+      }, signal),
     select: toActivityHistory,
     enabled: !!packageKey && enabled,
     cacheTime: 1000,
@@ -101,15 +112,17 @@ export function usePackageActivityHistory(options: {
   }
 }
 
-async function fetchActivityHistory(options: Partial<{
-  kind: PackageKind[]
-  limit: number
-  onlyFavorite: boolean
-  textFilter: string
-  types: ReadonlyArray<ActivityType>
-  page: number
-  onlyShared: boolean
-}>): Promise<ActivityHistoryDto> {
+async function fetchActivityHistory(
+  options: Partial<{
+    kind: PackageKind[]
+    limit: number
+    onlyFavorite: boolean
+    textFilter: string
+    types: ReadonlyArray<ActivityType>
+    page: number
+    onlyShared: boolean
+  }>,
+): Promise<ActivityHistoryDto> {
   const searchParams = optionalSearchParams({
     kind: { value: options.kind },
     limit: { value: options.limit },

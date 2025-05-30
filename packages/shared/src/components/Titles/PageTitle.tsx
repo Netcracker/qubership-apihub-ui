@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import { Box, Typography } from '@mui/material'
 import type { FC, ReactNode } from 'react'
 import * as React from 'react'
 import { memo } from 'react'
-import { Box, Typography } from '@mui/material'
-import { ApiTypeSelector } from '../ApiTypeSelector'
 import type { ApiType } from '../../entities/api-types'
+import { ApiTypeSelector } from '../ApiTypeSelector'
 
 export type PageTitleProps = {
   title: string

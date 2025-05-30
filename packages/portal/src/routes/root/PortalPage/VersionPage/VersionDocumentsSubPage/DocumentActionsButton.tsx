@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-import type { FC, ReactNode } from 'react'
-import { memo, useCallback, useMemo, useState } from 'react'
-import { useCopyToClipboard, useLocation } from 'react-use'
+import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
+import KeyboardArrowUpOutlinedIcon from '@mui/icons-material/KeyboardArrowUpOutlined'
 import type { SxProps } from '@mui/material'
 import { MenuItem } from '@mui/material'
-import { useParams } from 'react-router-dom'
-import { INTERACTIVE_DOC_TYPE, RAW_DOC_TYPE, useDownloadPublishedDocument } from '../useDownloadPublishedDocument'
-import { useShowSuccessNotification } from '../../../BasePage/Notification'
-import { useGetSharedKey } from './useGetSharedKey'
-import KeyboardArrowUpOutlinedIcon from '@mui/icons-material/KeyboardArrowUpOutlined'
-import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
 import type { Theme } from '@mui/material/styles'
-import { useNavigation } from '../../../../NavigationProvider'
+import type { MenuButtonProps } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
+import { MenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
+import {
+  MenuButtonContentWithSections,
+} from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButtonContentWithSections'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import { isOpenApiSpecType, UNKNOWN_SPEC_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import type { FileFormat } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import {
   HTML_FILE_EXTENSION,
@@ -37,14 +33,18 @@ import {
   MD_FILE_FORMAT,
   YAML_FILE_EXTENSION,
 } from '@netcracker/qubership-apihub-ui-shared/utils/files'
-import type { MenuButtonProps } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
-import { MenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
-import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import { REF_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import { isOpenApiSpecType, UNKNOWN_SPEC_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import type { FC, ReactNode } from 'react'
+import { memo, useCallback, useMemo, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import { useCopyToClipboard, useLocation } from 'react-use'
+import { useNavigation } from '../../../../NavigationProvider'
+import { useShowSuccessNotification } from '../../../BasePage/Notification'
 import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
-import {
-  MenuButtonContentWithSections,
-} from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButtonContentWithSections'
+import { INTERACTIVE_DOC_TYPE, RAW_DOC_TYPE, useDownloadPublishedDocument } from '../useDownloadPublishedDocument'
+import { useGetSharedKey } from './useGetSharedKey'
 
 export type DocumentActionsButtonProps = {
   slug: Key
@@ -100,56 +100,62 @@ export const DocumentActionsButton: FC<DocumentActionsButtonProps> = memo<Docume
   const openApiActions = useMemo(() => ({
     'Interactive HTML': [
       {
-        onClick: () => navigateToDocumentPreview({
-          packageKey: packageId!,
-          versionKey: versionId!,
-          documentKey: slug,
-          search: {
-            [REF_SEARCH_PARAM]: { value: ref ?? '' },
-          },
-        }),
+        onClick: () =>
+          navigateToDocumentPreview({
+            packageKey: packageId!,
+            versionKey: versionId!,
+            documentKey: slug,
+            search: {
+              [REF_SEARCH_PARAM]: { value: ref ?? '' },
+            },
+          }),
         title: 'Preview document',
         testId: 'PreviewDocumentMenuItem',
       },
       {
-        onClick: () => downloadPublishedDocument({
-          docType: INTERACTIVE_DOC_TYPE,
-          rawOptions: { resultFileExtension: HTML_FILE_EXTENSION, inlineRefs: false },
-        }),
+        onClick: () =>
+          downloadPublishedDocument({
+            docType: INTERACTIVE_DOC_TYPE,
+            rawOptions: { resultFileExtension: HTML_FILE_EXTENSION, inlineRefs: false },
+          }),
         title: 'Download (zip)',
         testId: 'DownloadZipMenuItem',
       },
     ],
     'Download source': [
       {
-        onClick: () => downloadPublishedDocument({
-          docType: RAW_DOC_TYPE,
-          rawOptions: { resultFileExtension: YAML_FILE_EXTENSION, inlineRefs: false },
-        }),
+        onClick: () =>
+          downloadPublishedDocument({
+            docType: RAW_DOC_TYPE,
+            rawOptions: { resultFileExtension: YAML_FILE_EXTENSION, inlineRefs: false },
+          }),
         title: 'Download as YAML',
         testId: 'DownloadYamlMenuItem',
       },
       {
-        onClick: () => downloadPublishedDocument({
-          docType: RAW_DOC_TYPE,
-          rawOptions: { resultFileExtension: JSON_FILE_EXTENSION, inlineRefs: false },
-        }),
+        onClick: () =>
+          downloadPublishedDocument({
+            docType: RAW_DOC_TYPE,
+            rawOptions: { resultFileExtension: JSON_FILE_EXTENSION, inlineRefs: false },
+          }),
         title: 'Download as JSON',
         testId: 'DownloadJsonMenuItem',
       },
       {
-        onClick: () => downloadPublishedDocument({
-          docType: RAW_DOC_TYPE,
-          rawOptions: { resultFileExtension: YAML_FILE_EXTENSION, inlineRefs: true },
-        }),
+        onClick: () =>
+          downloadPublishedDocument({
+            docType: RAW_DOC_TYPE,
+            rawOptions: { resultFileExtension: YAML_FILE_EXTENSION, inlineRefs: true },
+          }),
         title: 'Download as YAML (inline refs)',
         testId: 'DownloadYamlInlineRefsMenuItem',
       },
       {
-        onClick: () => downloadPublishedDocument({
-          docType: RAW_DOC_TYPE,
-          rawOptions: { resultFileExtension: JSON_FILE_EXTENSION, inlineRefs: true },
-        }),
+        onClick: () =>
+          downloadPublishedDocument({
+            docType: RAW_DOC_TYPE,
+            rawOptions: { resultFileExtension: JSON_FILE_EXTENSION, inlineRefs: true },
+          }),
         title: 'Download as JSON (inline refs)',
         testId: 'DownloadJsonInlineRefsMenuItem',
       },
@@ -196,11 +202,9 @@ export const DocumentActionsButton: FC<DocumentActionsButtonProps> = memo<Docume
   return (
     <MenuButton
       sx={sx ?? DEFAULT_ACTION_BUTTON_STYLE}
-      icon={(
-        actionMenuOpen
-          ? (openedIcon ?? icon ?? <KeyboardArrowUpOutlinedIcon fontSize="small"/>)
-          : (icon ?? <KeyboardArrowDownOutlinedIcon fontSize="small"/>)
-      )}
+      icon={actionMenuOpen
+        ? (openedIcon ?? icon ?? <KeyboardArrowUpOutlinedIcon fontSize="small" />)
+        : (icon ?? <KeyboardArrowDownOutlinedIcon fontSize="small" />)}
       onClick={event => {
         event.stopPropagation()
         setActionMenuOpen(!actionMenuOpen)
@@ -215,17 +219,16 @@ export const DocumentActionsButton: FC<DocumentActionsButtonProps> = memo<Docume
             content={openApiActions}
           />
         )
-        : <MenuItem onClick={() => downloadPublishedDocument()} data-testid="DownloadMenuItem">
-          Download
-        </MenuItem>
-      }
-      {
-        isShareAvailable && (
-          <MenuButtonContentWithSections
-            content={shareActions}
-          />
-        )
-      }
+        : (
+          <MenuItem onClick={() => downloadPublishedDocument()} data-testid="DownloadMenuItem">
+            Download
+          </MenuItem>
+        )}
+      {isShareAvailable && (
+        <MenuButtonContentWithSections
+          content={shareActions}
+        />
+      )}
     </MenuButton>
   )
 })

@@ -17,8 +17,8 @@
 import type { editor as Editor } from 'monaco-editor'
 import type { MutableRefObject } from 'react'
 import { useEffect } from 'react'
-import { navigateTo } from './utils'
 import { findPathLocation } from '../../utils/specifications'
+import { navigateTo } from './utils'
 
 export function useAddSelectedUriNavigation(
   editor: MutableRefObject<Editor.IStandaloneCodeEditor | undefined>,

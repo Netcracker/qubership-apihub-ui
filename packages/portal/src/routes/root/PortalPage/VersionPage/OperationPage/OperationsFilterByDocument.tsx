@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import React, { memo, useEffect, useState } from 'react'
-import { Autocomplete, Box, InputLabel, TextField } from '@mui/material'
-import { useDocuments } from '../useDocuments'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { Document } from '@apihub/entities/documents'
 import { EMPTY_DOC } from '@apihub/entities/documents'
+import { Autocomplete, Box, InputLabel, TextField } from '@mui/material'
 import { OptionItem } from '@netcracker/qubership-apihub-ui-shared/components/OptionItem'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { FC } from 'react'
+import React, { memo, useEffect, useState } from 'react'
+import { useDocuments } from '../useDocuments'
 
 export type OperationsFilterByDocumentProps = {
   labelText?: string
@@ -36,8 +36,8 @@ export type OperationsFilterByDocumentProps = {
 const INPUT_FIELD_ID = 'filter-by-document'
 const DEFAULT_FILTER_BY_DOCUMENT_LABEL = 'Filter by Document'
 
-export const OperationsFilterByDocument: FC<OperationsFilterByDocumentProps> =
-  memo<OperationsFilterByDocumentProps>((props) => {
+export const OperationsFilterByDocument: FC<OperationsFilterByDocumentProps> = memo<OperationsFilterByDocumentProps>(
+  (props) => {
     const {
       labelText,
       packageKey,
@@ -58,7 +58,9 @@ export const OperationsFilterByDocument: FC<OperationsFilterByDocumentProps> =
       if (isDocumentsLoading) {
         return
       }
-      const newSelectedDocument = defaultDocumentSlug ? documents.find(doc => doc.slug === defaultDocumentSlug) : EMPTY_DOC
+      const newSelectedDocument = defaultDocumentSlug
+        ? documents.find(doc => doc.slug === defaultDocumentSlug)
+        : EMPTY_DOC
       newSelectedDocument ? setSelectedDocument(newSelectedDocument) : onDocumentSelect(EMPTY_DOC)
     }, [defaultDocumentSlug, documents, isDocumentsLoading, onDocumentSelect])
 
@@ -73,9 +75,7 @@ export const OperationsFilterByDocument: FC<OperationsFilterByDocumentProps> =
           options={documents}
           value={selectedDocument}
           renderOption={(props, { key, title }: Document) => {
-            return (
-              <OptionItem key={key} props={props} title={title!}/>
-            )
+            return <OptionItem key={key} props={props} title={title!} />
           }}
           getOptionLabel={(option) => (option as Document).title ?? ''}
           isOptionEqualToValue={(option, value) => option.key === value.key}
@@ -92,4 +92,5 @@ export const OperationsFilterByDocument: FC<OperationsFilterByDocumentProps> =
         />
       </Box>
     )
-  })
+  },
+)

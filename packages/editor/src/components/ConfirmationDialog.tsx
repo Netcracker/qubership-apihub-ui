@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useEffect } from 'react'
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton } from '@mui/material'
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import { LoadingButton } from '@mui/lab'
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton } from '@mui/material'
+import type { FC } from 'react'
+import { memo, useEffect } from 'react'
 
 export type ConfirmationDialogProps = {
   open: boolean
@@ -92,5 +92,7 @@ function useCloseOnLoadingFinish(
   enabled?: boolean,
 ): void {
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { enabled && !loading && onClose?.() }, [enabled, loading])
+  useEffect(() => {
+    enabled && !loading && onClose?.()
+  }, [enabled, loading])
 }

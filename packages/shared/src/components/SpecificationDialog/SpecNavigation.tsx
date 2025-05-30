@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined'
 import {
   Accordion,
   AccordionDetails,
@@ -27,9 +28,11 @@ import {
 } from '@mui/material'
 import type { FC } from 'react'
 import { memo, useCallback, useMemo, useState } from 'react'
-import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined'
 import { useMount } from 'react-use'
-import { CustomChip } from '../CustomChip'
+import type { Key } from '../../entities/keys'
+import type { MethodType } from '../../entities/method-types'
+import { METHOD_TYPES } from '../../entities/method-types'
+import { isNotEmpty } from '../../utils/arrays'
 import type { OpenapiSchema, SpecItemPath, SpecItemUri } from '../../utils/specifications'
 import {
   decodeKey,
@@ -38,10 +41,7 @@ import {
   toFormattedOpenApiPathName,
   toOpenApiSchema,
 } from '../../utils/specifications'
-import { isNotEmpty } from '../../utils/arrays'
-import type { MethodType } from '../../entities/method-types'
-import { METHOD_TYPES } from '../../entities/method-types'
-import type { Key } from '../../entities/keys'
+import { CustomChip } from '../CustomChip'
 
 export type SpecNavigationProps = {
   content?: string | null
@@ -74,7 +74,7 @@ export const SpecNavigation: FC<SpecNavigationProps> = /* @__PURE__ */ memo<Spec
       </Button>
       {isNotEmpty(paths) && (
         <Accordion defaultExpanded={true}>
-          <AccordionSummary expandIcon={<ExpandMoreOutlinedIcon/>}>
+          <AccordionSummary expandIcon={<ExpandMoreOutlinedIcon />}>
             <Typography variant="button">Paths</Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -86,7 +86,10 @@ export const SpecNavigation: FC<SpecNavigationProps> = /* @__PURE__ */ memo<Spec
                   navigateAndSelect([PATHS_SECTION, path, value.find(({ key }) => !!key)?.method ?? ''], path)
                 }}
               >
-                <ListItemText primary={toFormattedOpenApiPathName(path)} primaryTypographyProps={{ sx: { mt: 0.25 } }}/>
+                <ListItemText
+                  primary={toFormattedOpenApiPathName(path)}
+                  primaryTypographyProps={{ sx: { mt: 0.25 } }}
+                />
                 <Box display="flex" gap={0.5} mb={0.5} px={0}>
                   {value.filter(({ method }) => METHOD_TYPES.has(method)).map(({ method }, index) => (
                     <CustomChip
@@ -107,7 +110,7 @@ export const SpecNavigation: FC<SpecNavigationProps> = /* @__PURE__ */ memo<Spec
       )}
       {isNotEmpty(schemaNames) && (
         <Accordion defaultExpanded={true}>
-          <AccordionSummary expandIcon={<ExpandMoreOutlinedIcon/>}>
+          <AccordionSummary expandIcon={<ExpandMoreOutlinedIcon />}>
             <Typography variant="button">Models</Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -117,12 +120,17 @@ export const SpecNavigation: FC<SpecNavigationProps> = /* @__PURE__ */ memo<Spec
                 key={name}
                 onClick={() => {
                   navigateAndSelect(
-                    [...((schema && isSwagger(schema)) ? [DEFINITIONS_SECTION] : [COMPONENTS_SECTION, SCHEMAS_SECTION]), name],
+                    [
+                      ...((schema && isSwagger(schema))
+                        ? [DEFINITIONS_SECTION]
+                        : [COMPONENTS_SECTION, SCHEMAS_SECTION]),
+                      name,
+                    ],
                     name,
                   )
                 }}
               >
-                <ListItemText primary={name} primaryTypographyProps={{ sx: { mt: 0.25 } }}/>
+                <ListItemText primary={name} primaryTypographyProps={{ sx: { mt: 0.25 } }} />
               </ListItemButton>
             ))}
           </AccordionDetails>
@@ -131,7 +139,7 @@ export const SpecNavigation: FC<SpecNavigationProps> = /* @__PURE__ */ memo<Spec
       {componentsSectionItems.map(({ value, title, section }) => (
         isNotEmpty(value) && (
           <Accordion key={title}>
-            <AccordionSummary expandIcon={<ExpandMoreOutlinedIcon/>}>
+            <AccordionSummary expandIcon={<ExpandMoreOutlinedIcon />}>
               <Typography variant="button">{title}</Typography>
             </AccordionSummary>
             <AccordionDetails>
@@ -143,7 +151,7 @@ export const SpecNavigation: FC<SpecNavigationProps> = /* @__PURE__ */ memo<Spec
                     navigateAndSelect([COMPONENTS_SECTION, section, name], name)
                   }}
                 >
-                  <ListItemText primary={name} primaryTypographyProps={{ sx: { mt: 0.25 } }}/>
+                  <ListItemText primary={name} primaryTypographyProps={{ sx: { mt: 0.25 } }} />
                 </ListItemButton>
               ))}
             </AccordionDetails>
@@ -157,14 +165,19 @@ export const SpecNavigation: FC<SpecNavigationProps> = /* @__PURE__ */ memo<Spec
 function useNavigationData(content?: string | null): [OpenapiSchema | null, NavigationData] {
   const schema = useMemo(() => toOpenApiSchema(content ?? ''), [content])
 
-  return useMemo(() => ([
+  return useMemo(() => [
     schema,
     schema
       ? {
-        paths: Object.entries(schema.paths ?? {}).map(([path, value]) => ([path, Object.keys(value).map((methodType) => ({
-          key: `${PATHS_URI_PREFIX}${encodeKey(path)}`,
-          method: methodType as MethodType,
-        }))])),
+        paths: Object.entries(schema.paths ?? {}).map((
+          [path, value],
+        ) => [
+          path,
+          Object.keys(value).map((methodType) => ({
+            key: `${PATHS_URI_PREFIX}${encodeKey(path)}`,
+            method: methodType as MethodType,
+          })),
+        ]),
         schemaNames: Object.keys(schema.components?.schemas ?? schema.definitions ?? []),
         componentsSectionItems: [
           {
@@ -214,7 +227,7 @@ function useNavigationData(content?: string | null): [OpenapiSchema | null, Navi
         schemaNames: [],
         componentsSectionItems: [],
       },
-  ]), [schema])
+  ], [schema])
 }
 
 type NavigationData = {

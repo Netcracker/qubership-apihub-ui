@@ -40,8 +40,10 @@ export type DocumentSearchResultDto = Readonly<{
 }>
 
 // TODO: Remove partial when BE will be ready
-export type SearchResultsDto = Readonly<Partial<{
-  packages: PackageSearchResultDto[]
-  versions: VersionSearchResultDto[]
-  documents: DocumentSearchResultDto[]
-}>>
+export type SearchResultsDto = Readonly<
+  Partial<{
+    packages: PackageSearchResultDto[]
+    versions: VersionSearchResultDto[]
+    documents: DocumentSearchResultDto[]
+  }>
+>

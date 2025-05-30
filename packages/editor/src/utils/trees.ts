@@ -16,10 +16,10 @@
 
 import type { GitFile } from '@apihub/entities/git-files'
 import type { ProjectFile } from '@apihub/entities/project-files'
-import { UNKNOWN_FILE_FORMAT } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import { UNMODIFIED_CHANGE_STATUS } from '@netcracker/qubership-apihub-ui-shared/entities/change-statuses'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { alphabeticallyBy } from '@netcracker/qubership-apihub-ui-shared/utils/comparers'
+import { UNKNOWN_FILE_FORMAT } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 
 export type TreeGitFile = TreeFile<GitFile>
 export type TreeProjectFile = TreeFile<ProjectFile>
@@ -104,7 +104,10 @@ export function collapseProjectFileTree(
 export function buildGitFileTree(
   flatTree: ReadonlyArray<GitFile>,
 ): TreeGitFile[] {
-  const flatTreeFiles: TreeGitFile[] = flatTree.map(gitFile => ({ ...gitFile, ...gitFile.isFolder ? { children: [] } : {} }))
+  const flatTreeFiles: TreeGitFile[] = flatTree.map(gitFile => ({
+    ...gitFile,
+    ...gitFile.isFolder ? { children: [] } : {},
+  }))
 
   const tree: TreeGitFile[] = []
 
@@ -204,8 +207,8 @@ const naturalFileComparator = (it: ProjectFile, that: ProjectFile): number => {
   return a < b
     ? -1
     : a > b
-      ? 1
-      : alphabeticallyBy('name', it, that)
+    ? 1
+    : alphabeticallyBy('name', it, that)
 }
 
 function sortAlphabetically(fileTree: TreeProjectFile[]): void {

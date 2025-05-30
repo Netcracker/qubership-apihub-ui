@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-import { useHash } from 'react-use'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useCallback } from 'react'
 import type { Key } from '@apihub/entities/keys'
 import type { OperationViewMode } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
 import {
@@ -28,8 +25,11 @@ import {
   DETAILED_SCHEMA_VIEW_MODE,
   SIMPLE_SCHEMA_VIEW_MODE,
 } from '@netcracker/qubership-apihub-ui-shared/entities/schema-view-mode'
-import { MODE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
+import { MODE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { useCallback } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useHash } from 'react-use'
 
 type OperationViewModeState = {
   mode: OperationViewMode
@@ -37,7 +37,9 @@ type OperationViewModeState = {
   schemaViewMode: SchemaViewMode | undefined
 }
 
-export function useOperationViewMode(defaultValue: OperationViewMode = DOC_OPERATION_VIEW_MODE): OperationViewModeState {
+export function useOperationViewMode(
+  defaultValue: OperationViewMode = DOC_OPERATION_VIEW_MODE,
+): OperationViewModeState {
   const modeValue = useSearchParam<Key>(MODE_SEARCH_PARAM) ?? defaultValue
   const [hashParam] = useHash()
   const [searchParams] = useSearchParams()

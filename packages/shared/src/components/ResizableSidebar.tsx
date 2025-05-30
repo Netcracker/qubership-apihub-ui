@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { FC, PropsWithChildren } from 'react'
-import React, { memo, useCallback, useEffect, useState } from 'react'
 import type { ResizeCallback } from 're-resizable'
 import { Resizable } from 're-resizable'
+import type { FC, PropsWithChildren } from 'react'
+import React, { memo, useCallback, useEffect, useState } from 'react'
 
 export type ResizableSidebarProps = PropsWithChildren & {
   open: boolean
@@ -46,26 +46,28 @@ export const ResizableSidebar: FC<ResizableSidebarProps> = memo<ResizableSidebar
     setWidth(width + delta.width)
   }, [width])
 
-  return open ? (
-    <Resizable
-      onResize={onResize}
-      onResizeStop={onResizeStop}
-      style={{
-        borderLeft: '1px solid #D5DCE3',
-        backgroundColor: '#FFFFFF',
-        position: 'absolute',
-        right: 0,
-      }}
-      enable={RESIZABLE_CONFIG}
-      boundsByDirection={true}
-      defaultSize={{ width: width, height: '100%' }}
-      maxWidth={maxWidth}
-      minWidth={defaultWidth}
-      maxHeight="100%"
-    >
-      {children}
-    </Resizable>
-  ) : null
+  return open
+    ? (
+      <Resizable
+        onResize={onResize}
+        onResizeStop={onResizeStop}
+        style={{
+          borderLeft: '1px solid #D5DCE3',
+          backgroundColor: '#FFFFFF',
+          position: 'absolute',
+          right: 0,
+        }}
+        enable={RESIZABLE_CONFIG}
+        boundsByDirection={true}
+        defaultSize={{ width: width, height: '100%' }}
+        maxWidth={maxWidth}
+        minWidth={defaultWidth}
+        maxHeight="100%"
+      >
+        {children}
+      </Resizable>
+    )
+    : null
 })
 
 const RESIZABLE_CONFIG = {

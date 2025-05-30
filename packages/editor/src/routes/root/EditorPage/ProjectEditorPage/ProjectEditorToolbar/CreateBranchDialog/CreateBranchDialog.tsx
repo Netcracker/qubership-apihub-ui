@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useState } from 'react'
+import { LoadingButton } from '@mui/lab'
 import {
   Autocomplete,
   Box,
@@ -29,20 +28,21 @@ import {
   ListItem,
   TextField,
 } from '@mui/material'
-import { Controller, useForm } from 'react-hook-form'
-import { SHOW_CREATE_BRANCH_DIALOG } from '../../../../../EventBusProvider'
-import { useBranchSearchParam } from '../../../../useBranchSearchParam'
-import { useCreateBranch } from './useCreateBranch'
-import { LoadingButton } from '@mui/lab'
-import { useBranches, useIsBranchExists } from '../../../../useBranches'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
+import type { FC } from 'react'
+import { memo, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { SHOW_CREATE_BRANCH_DIALOG } from '../../../../../EventBusProvider'
+import { useBranches, useIsBranchExists } from '../../../../useBranches'
+import { useBranchSearchParam } from '../../../../useBranchSearchParam'
+import { useCreateBranch } from './useCreateBranch'
 
 export const CreateBranchDialog: FC = memo(() => {
   return (
     <PopupDelegate
       type={SHOW_CREATE_BRANCH_DIALOG}
-      render={props => <CreateBranchPopup {...props}/>}
+      render={props => <CreateBranchPopup {...props} />}
     />
   )
 })
@@ -66,12 +66,10 @@ const CreateBranchPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }) =
     <Dialog open={open} onClose={() => setOpen(false)}>
       <Box
         component="form"
-        onSubmit={
-          handleSubmit(({ currentBranchName, newBranchName }) => {
-            createBranch({ currentBranchName, newBranchName, withPublish })
-            setOpen(false)
-          })
-        }
+        onSubmit={handleSubmit(({ currentBranchName, newBranchName }) => {
+          createBranch({ currentBranchName, newBranchName, withPublish })
+          setOpen(false)
+        })}
       >
         <DialogTitle>
           Create New Branch
@@ -81,13 +79,15 @@ const CreateBranchPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }) =
           <Controller
             name="currentBranchName"
             control={control}
-            render={({ field: { value, onChange } }) => <Autocomplete
-              value={value}
-              options={branches.map(({ name }) => name)}
-              renderOption={(props, name) => <ListItem {...props} key={name}>{name}</ListItem>}
-              renderInput={params => <TextField {...params} onChange={onChange} required label="Current branch"/>}
-              onChange={(_, value) => onChange(value)}
-            />}
+            render={({ field: { value, onChange } }) => (
+              <Autocomplete
+                value={value}
+                options={branches.map(({ name }) => name)}
+                renderOption={(props, name) => <ListItem {...props} key={name}>{name}</ListItem>}
+                renderInput={params => <TextField {...params} onChange={onChange} required label="Current branch" />}
+                onChange={(_, value) => onChange(value)}
+              />
+            )}
           />
           <Controller
             name="newBranchName"
@@ -96,22 +96,24 @@ const CreateBranchPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }) =
               validate: {
                 alreadyExists: () => !isNewBranchAlreadyExists || 'Branch already exists',
                 checkSpaces: (newBranch) => {
-                  return /^[a-z0-9]([/\-a-z0-9_|-|.|#]*[a-z0-9])?$/ig.test(newBranch) ||
-                    'Branch name must contain only letters, numbers and these symbols (/, -, _, ., #), the name cannot end with a symbols'
+                  return /^[a-z0-9]([/\-a-z0-9_|-|.|#]*[a-z0-9])?$/ig.test(newBranch)
+                    || 'Branch name must contain only letters, numbers and these symbols (/, -, _, ., #), the name cannot end with a symbols'
                 },
               },
             }}
-            render={({ field }) => <TextField
-              {...field}
-              required
-              label="New branch"
-              error={!!errors.newBranchName}
-              helperText={errors.newBranchName?.message}
-            />}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                required
+                label="New branch"
+                error={!!errors.newBranchName}
+                helperText={errors.newBranchName?.message}
+              />
+            )}
           />
           <FormControlLabel
             label="Create snapshot"
-            control={<Checkbox onChange={(_, checked) => setWithPublish(checked)}/>}
+            control={<Checkbox onChange={(_, checked) => setWithPublish(checked)} />}
           />
         </DialogContent>
         <DialogActions>

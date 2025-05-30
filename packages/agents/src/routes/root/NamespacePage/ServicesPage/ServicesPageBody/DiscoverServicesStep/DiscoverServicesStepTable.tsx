@@ -15,11 +15,18 @@
  */
 
 import type { Service } from '@apihub/entities/services'
-import type { FC } from 'react'
-import { memo, useEffect, useMemo, useRef, useState } from 'react'
-import type { ColumnDef } from '@tanstack/table-core'
-import { Button, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import ArrowOutwardRoundedIcon from '@mui/icons-material/ArrowOutwardRounded'
+import { Button, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
+import { ColumnDelimiter } from '@netcracker/qubership-apihub-ui-shared/components/ColumnDelimiter'
+import type { Spec } from '@netcracker/qubership-apihub-ui-shared/entities/specs'
+import { useResizeObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useResizeObserver'
+import type { ColumnModel } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
+import {
+  DEFAULT_CONTAINER_WIDTH,
+  useColumnsSizing,
+} from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
+import { createComponents } from '@netcracker/qubership-apihub-ui-shared/utils/components'
+import { DEFAULT_NUMBER_SKELETON_ROWS } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
 import type {
   ColumnSizingInfoState,
   ColumnSizingState,
@@ -28,19 +35,12 @@ import type {
   VisibilityState,
 } from '@tanstack/react-table'
 import { flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from '@tanstack/react-table'
-import { ServiceOrDocumentationTableCell } from '../ServiceOrDocumentationTableCell'
+import type { ColumnDef } from '@tanstack/table-core'
+import type { FC } from 'react'
+import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import { BaselinePackageTableCell } from '../BaselinePackageTableCell'
 import { ServiceLabelsTableCell } from '../ServiceLabelsTableCell'
-import type { ColumnModel } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
-import {
-  DEFAULT_CONTAINER_WIDTH,
-  useColumnsSizing,
-} from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
-import { ColumnDelimiter } from '@netcracker/qubership-apihub-ui-shared/components/ColumnDelimiter'
-import type { Spec } from '@netcracker/qubership-apihub-ui-shared/entities/specs'
-import { createComponents } from '@netcracker/qubership-apihub-ui-shared/utils/components'
-import { DEFAULT_NUMBER_SKELETON_ROWS } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
-import { useResizeObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useResizeObserver'
+import { ServiceOrDocumentationTableCell } from '../ServiceOrDocumentationTableCell'
 
 type DiscoverServicesStepTableProps = {
   value: ReadonlyArray<Service>
@@ -69,17 +69,17 @@ export const DiscoverServicesStepTable: FC<DiscoverServicesStepTableProps> = mem
     {
       id: SERVICE_OR_DOCUMENTATION_COLUMN_ID,
       header: 'Service / Documentation',
-      cell: ({ row }) => <ServiceOrDocumentationTableCell value={row}/>,
+      cell: ({ row }) => <ServiceOrDocumentationTableCell value={row} />,
     },
     {
       id: SERVICE_LABELS_COLUMN_ID,
       header: 'Labels',
-      cell: ({ row }) => <ServiceLabelsTableCell value={row}/>,
+      cell: ({ row }) => <ServiceLabelsTableCell value={row} />,
     },
     {
       id: BASELINE_PACKAGE_COLUMN_ID,
       header: 'Baseline Package',
-      cell: ({ row }) => <BaselinePackageTableCell value={row}/>,
+      cell: ({ row }) => <BaselinePackageTableCell value={row} />,
     },
     {
       id: VIEW_PACKAGE_URL_COLUMN_ID,
@@ -94,7 +94,7 @@ export const DiscoverServicesStepTable: FC<DiscoverServicesStepTableProps> = mem
               variant="text"
               href={viewPackageUrl}
               target="_blank"
-              startIcon={<ArrowOutwardRoundedIcon/>}
+              startIcon={<ArrowOutwardRoundedIcon />}
             >
               View Package
             </Button>
@@ -106,13 +106,14 @@ export const DiscoverServicesStepTable: FC<DiscoverServicesStepTableProps> = mem
     },
   ], [])
 
-  const data: TableData[] = useMemo(() => value.map(service => {
-    return ({
-      service: service,
-      viewPackageUrl: service.baseline?.url,
-      children: service.specs?.map(spec => ({ spec })),
-    })
-  }), [value])
+  const data: TableData[] = useMemo(() =>
+    value.map(service => {
+      return ({
+        service: service,
+        viewPackageUrl: service.baseline?.url,
+        children: service.specs?.map(spec => ({ spec })),
+      })
+    }), [value])
 
   const [expanded, setExpanded] = useState<ExpandedState>({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -150,7 +151,7 @@ export const DiscoverServicesStepTable: FC<DiscoverServicesStepTableProps> = mem
                   }}
                 >
                   {flexRender(header.column.columnDef.header, header.getContext())}
-                  {index !== headerGroup.headers.length - 1 && <ColumnDelimiter header={header} resizable={true}/>}
+                  {index !== headerGroup.headers.length - 1 && <ColumnDelimiter header={header} resizable={true} />}
                 </TableCell>
               ))}
             </TableRow>
@@ -170,7 +171,7 @@ export const DiscoverServicesStepTable: FC<DiscoverServicesStepTableProps> = mem
               ))}
             </TableRow>
           ))}
-          {isLoading && <TableSkeleton/>}
+          {isLoading && <TableSkeleton />}
         </TableBody>
       </Table>
     </TableContainer>
@@ -197,20 +198,20 @@ type TableData = Partial<{
 }>
 
 const TableSkeleton: FC = memo(() => {
-  return createComponents(<RowSkeleton/>, DEFAULT_NUMBER_SKELETON_ROWS)
+  return createComponents(<RowSkeleton />, DEFAULT_NUMBER_SKELETON_ROWS)
 })
 
 const RowSkeleton: FC = memo(() => {
   return (
     <TableRow>
       <TableCell>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
-      <TableCell/>
-      <TableCell/>
+      <TableCell />
+      <TableCell />
     </TableRow>
   )
 })

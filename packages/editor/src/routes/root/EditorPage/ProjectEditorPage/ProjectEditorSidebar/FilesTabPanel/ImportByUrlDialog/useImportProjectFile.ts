@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
+import type { AxiosError } from '@apihub/entities/error'
+import { editorRequestJson } from '@apihub/utils/requests'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { IsError, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { JSON_FILE_EXTENSION, YAML_FILE_EXTENSION } from '@netcracker/qubership-apihub-ui-shared/utils/files'
+import { requestText } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import { safeParse } from '@stoplight/json'
+import { useMutation } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import { useBranchSearchParam } from '../../../../../useBranchSearchParam'
 import { useFileSearchParam } from '../../../../../useFileSearchParam'
-import { useMutation } from '@tanstack/react-query'
-import { safeParse } from '@stoplight/json'
-import type { IsError, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import type { AxiosError } from '@apihub/entities/error'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { editorRequestJson } from '@apihub/utils/requests'
-import { requestText } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
-import { JSON_FILE_EXTENSION, YAML_FILE_EXTENSION } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import { uploadProjectFiles } from '../UploadFileDialog/useUploadProjectFiles'
 
 export function useImportProjectFile(): [ImportProjectFile, IsLoading, IsError, AxiosError | null] {

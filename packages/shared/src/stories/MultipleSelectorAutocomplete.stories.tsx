@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
+import { Box, Chip, DialogContent, ListItem } from '@mui/material'
 import type { Meta, StoryFn } from '@storybook/react'
 import React from 'react'
-import { DialogForm } from '../components/DialogForm'
-import { Box, Chip, DialogContent, ListItem } from '@mui/material'
-import { MultipleSelectorAutocomplete } from '../components/MultipleSelectorAutocomplete'
-import type { Role, Roles } from '../types/roles'
-import { CheckIcon } from '../icons/CheckIcon'
-import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import { Controller, useForm } from 'react-hook-form'
+import { DialogForm } from '../components/DialogForm'
+import { MultipleSelectorAutocomplete } from '../components/MultipleSelectorAutocomplete'
+import { CheckIcon } from '../icons/CheckIcon'
+import type { Role, Roles } from '../types/roles'
 import { ROLES_LIST } from './samples/roles-samples'
 
 export default {
@@ -37,7 +37,7 @@ const MultipleSelectorAutocompleteFn: StoryFn = () => {
         <Controller
           name="roles"
           control={control}
-          render={({ field: { value, onChange } }) =>
+          render={({ field: { value, onChange } }) => (
             <MultipleSelectorAutocomplete<Role>
               id="roles-selector"
               options={ROLES_LIST}
@@ -49,7 +49,7 @@ const MultipleSelectorAutocompleteFn: StoryFn = () => {
                 const selected = (value as Role[])?.some(role => role.key === key)
                 return (
                   <ListItem {...props} key={role} sx={{ pointerEvents: selected ? 'none' : '' }}>
-                    {selected ? <CheckIcon/> : null}
+                    {selected ? <CheckIcon /> : null}
                     <Box sx={{ marginLeft: selected ? '6px' : '21px' }}>
                       {role}
                     </Box>
@@ -62,14 +62,14 @@ const MultipleSelectorAutocompleteFn: StoryFn = () => {
                     variant="outlined"
                     size="small"
                     sx={DEFAULT_CHIP_STYLE}
-                    avatar={<CheckIcon/>}
-                    deleteIcon={<CloseOutlinedIcon/>}
-                    label={option?.role} {...getTagProps({ index })}
+                    avatar={<CheckIcon />}
+                    deleteIcon={<CloseOutlinedIcon />}
+                    label={option?.role}
+                    {...getTagProps({ index })}
                   />
-                ))
-              }
+                ))}
             />
-          }
+          )}
         />
       </DialogContent>
     </DialogForm>

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, Suspense, useMemo } from 'react'
-import { Box, IconButton, Typography } from '@mui/material'
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
-import type { OpenAPIV3 } from 'openapi-types'
+import { Box, IconButton, Typography } from '@mui/material'
 import { JsonSchemaViewer } from '@netcracker/qubership-apihub-ui-shared/components/JsonSchemaViewer'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import type { SchemaViewMode } from '@netcracker/qubership-apihub-ui-shared/entities/schema-view-mode'
 import { DETAILED_SCHEMA_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/entities/schema-view-mode'
+import type { OpenAPIV3 } from 'openapi-types'
+import type { FC } from 'react'
+import { memo, Suspense, useMemo } from 'react'
 
 export const CONTEXT_PANEL_DEFAULT_WIDTH = 300
 
@@ -40,15 +40,18 @@ export const SchemaContextPanel: FC<SchemaContextPanelProps> = memo<SchemaContex
   onClose,
   title,
 }) => {
-  const calculatedTitle = useMemo(() => title ?? (contextSchema as OpenAPIV3.SchemaObject)?.title ?? '', [contextSchema, title])
+  const calculatedTitle = useMemo(() => title ?? (contextSchema as OpenAPIV3.SchemaObject)?.title ?? '', [
+    contextSchema,
+    title,
+  ])
 
   return (
-    <Suspense fallback={<LoadingIndicator/>}>
+    <Suspense fallback={<LoadingIndicator />}>
       <Box height="100%" width="100%" overflow="hidden" display="flex" flexDirection="column">
         <Box pl={2} pt={2} pb={0} alignItems="center" display="flex" justifyContent="space-between">
           <Typography variant="h2" color="inherit">{calculatedTitle}</Typography>
           <IconButton onClick={onClose}>
-            <CloseOutlinedIcon fontSize="small"/>
+            <CloseOutlinedIcon fontSize="small" />
           </IconButton>
         </Box>
         <Box px={1} overflow="hidden auto">

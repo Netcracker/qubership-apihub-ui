@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import type { FC, ReactElement } from 'react'
-import React, { memo } from 'react'
 import { Box, capitalize, ToggleButton } from '@mui/material'
-import { OperationViewModeSelector } from '../OperationViewModeSelector'
-import { ComparisonSelectorButton } from '../ComparisonSelectorButton'
-import { PLAYGROUND_SIDEBAR_VIEW_MODES } from '../playground-modes'
-import { OPERATION_VIEW_MODES } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
 import { CustomToggleButtonGroup } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/CustomToggleButtonGroup'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { API_TYPE_GRAPHQL, API_TYPE_REST } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { OPERATION_VIEW_MODES } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
+import type { FC, ReactElement } from 'react'
+import React, { memo } from 'react'
+import { ComparisonSelectorButton } from '../ComparisonSelectorButton'
+import { OperationViewModeSelector } from '../OperationViewModeSelector'
+import { PLAYGROUND_SIDEBAR_VIEW_MODES } from '../playground-modes'
 
-type SetMode = (value: (string | undefined)) => void
+type SetMode = (value: string | undefined) => void
 
 // First Order Component //
 export type OperationToolbarActionsProps = {
@@ -44,8 +44,8 @@ export const OperationToolbarActions: FC<OperationToolbarActionsProps> = memo<Op
 
   return (
     <Box sx={OPERATION_ACTIONS_STYLES}>
-      <OperationViewModeSelector modes={OPERATION_VIEW_MODES.get(apiType)!}/>
-      <ComparisonSelectorButton showCompareGroups={showCompareGroups}/>
+      <OperationViewModeSelector modes={OPERATION_VIEW_MODES.get(apiType)!} />
+      <ComparisonSelectorButton showCompareGroups={showCompareGroups} />
       {/* todo remove after support GraphQL playground */}
       {API_TYPE_PLAYGROUND_MAP[apiType](playgroundViewMode, setPlaygroundViewMode)}
     </Box>
@@ -58,16 +58,17 @@ const OPERATION_ACTIONS_STYLES = {
   ml: 'auto',
 }
 
-const API_TYPE_PLAYGROUND_MAP: Record<ApiType, (playgroundViewMode: string, setPlaygroundViewMode: SetMode) => ReactElement | null> = {
+const API_TYPE_PLAYGROUND_MAP: Record<
+  ApiType,
+  (playgroundViewMode: string, setPlaygroundViewMode: SetMode) => ReactElement | null
+> = {
   [API_TYPE_REST]: (playgroundViewMode, setPlaygroundViewMode) => (
     <CustomToggleButtonGroup exclusive value={playgroundViewMode} onClick={setPlaygroundViewMode}>
-      {
-        PLAYGROUND_SIDEBAR_VIEW_MODES.map(mode => (
-          <ToggleButton key={mode} value={mode}>
-            {capitalize(mode)}
-          </ToggleButton>
-        ))
-      }
+      {PLAYGROUND_SIDEBAR_VIEW_MODES.map(mode => (
+        <ToggleButton key={mode} value={mode}>
+          {capitalize(mode)}
+        </ToggleButton>
+      ))}
     </CustomToggleButtonGroup>
   ),
   [API_TYPE_GRAPHQL]: () => null,

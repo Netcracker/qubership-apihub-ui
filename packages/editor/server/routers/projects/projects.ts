@@ -364,7 +364,9 @@ export function saveChanges(router: Router & WithWebsocketMethod, wss: Server): 
     const { comment, branch, createMergeRequest } = req.body
     const files = [...BRANCH_CONFIG.files]
 
-    BRANCH_CONFIG.files = files.filter(({ status }) => status !== DELETED_CHANGE_STATUS && status !== EXCLUDED_CHANGE_STATUS)
+    BRANCH_CONFIG.files = files.filter(({ status }) =>
+      status !== DELETED_CHANGE_STATUS && status !== EXCLUDED_CHANGE_STATUS
+    )
 
     wss.clients.forEach((s: Socket) => {
       s.send(JSON.stringify({

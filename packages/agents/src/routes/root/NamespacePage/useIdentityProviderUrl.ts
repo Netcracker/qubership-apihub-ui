@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { generatePath } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
-import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { ncCustomAgentsRequestJson } from '@apihub/utils/requests'
-import { APIHUB_NC_BASE_PATH } from '@netcracker/qubership-apihub-ui-shared/utils/urls'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { API_V1 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import { APIHUB_NC_BASE_PATH } from '@netcracker/qubership-apihub-ui-shared/utils/urls'
+import { useQuery } from '@tanstack/react-query'
+import { generatePath } from 'react-router-dom'
 
 export type IdpUrlDto = {
   identityProviderUrl: string

@@ -14,36 +14,36 @@
  * limitations under the License.
  */
 
-import type { FC, ReactNode } from 'react'
-import { memo } from 'react'
-import { VersionPageToolbar } from './VersionPageToolbar'
-import { VersionApiChangesSubPage } from './VersionApiChangesSubPage/VersionApiChangesSubPage'
-import { VersionOperationsSubPage } from './VersionOperationsSubPage/VersionOperationsSubPage'
-import { VersionDocumentsSubPage } from './VersionDocumentsSubPage/VersionDocumentsSubPage'
-import { usePackage } from '../../usePackage'
-import type { VersionPageRoute } from '../../../../routes'
-import { API_CHANGES_PAGE, DEPRECATED_PAGE, DOCUMENTS_PAGE, OPERATIONS_PAGE, OVERVIEW_PAGE } from '../../../../routes'
-import { VersionOverviewSubPage } from './VersionOverviewSubPage/VersionOverviewSubPage'
-import {
-  VersionDeprecatedOperationsSubPage,
-} from './VersionDeprecatedOperationsSubPage/VersionDeprecatedOperationsSubPage'
-import { NoPackageVersionPlaceholder } from '../../NoPackageVersionPlaceholder'
 import { CurrentPackageProvider } from '@apihub/components/CurrentPackageProvider'
-import { FullMainVersionProvider } from '../FullMainVersionProvider'
-import { OutdatedRevisionNotification } from './OutdatedRevisionNotification/OutdatedRevisionNotification'
-import { ActivityHistoryFiltersProvider } from '../../MainPage/ActivityHistoryFiltersProvider'
-import { NoPackagePlaceholder } from '../../NoPackagePlaceholder'
-import { SelectedPreviewOperationProvider } from '../SelectedPreviewOperationProvider'
-import { VersionNavigationMenu } from '../VersionNavigationMenu'
-import { useActiveTabs } from '@netcracker/qubership-apihub-ui-shared/hooks/pathparams/useActiveTabs'
-import { LayoutWithToolbar } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/LayoutWithToolbar'
-import { PreviousReleaseOptionsProvider } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget'
-import { TOGGLE_SIDEBAR_BUTTON } from '@netcracker/qubership-apihub-ui-shared/components/NavigationMenu'
-import { LayoutWithTabs } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/LayoutWithTabs'
-import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import {
   PublishDashboardVersionFromCSVDialog,
 } from '@apihub/routes/root/PortalPage/DashboardPage/PublishDashboardVersionFromCSVDialog'
+import { TOGGLE_SIDEBAR_BUTTON } from '@netcracker/qubership-apihub-ui-shared/components/NavigationMenu'
+import { LayoutWithTabs } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/LayoutWithTabs'
+import { LayoutWithToolbar } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/LayoutWithToolbar'
+import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { useActiveTabs } from '@netcracker/qubership-apihub-ui-shared/hooks/pathparams/useActiveTabs'
+import { PreviousReleaseOptionsProvider } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget'
+import type { FC, ReactNode } from 'react'
+import { memo } from 'react'
+import type { VersionPageRoute } from '../../../../routes'
+import { API_CHANGES_PAGE, DEPRECATED_PAGE, DOCUMENTS_PAGE, OPERATIONS_PAGE, OVERVIEW_PAGE } from '../../../../routes'
+import { ActivityHistoryFiltersProvider } from '../../MainPage/ActivityHistoryFiltersProvider'
+import { NoPackagePlaceholder } from '../../NoPackagePlaceholder'
+import { NoPackageVersionPlaceholder } from '../../NoPackageVersionPlaceholder'
+import { usePackage } from '../../usePackage'
+import { FullMainVersionProvider } from '../FullMainVersionProvider'
+import { SelectedPreviewOperationProvider } from '../SelectedPreviewOperationProvider'
+import { VersionNavigationMenu } from '../VersionNavigationMenu'
+import { OutdatedRevisionNotification } from './OutdatedRevisionNotification/OutdatedRevisionNotification'
+import { VersionApiChangesSubPage } from './VersionApiChangesSubPage/VersionApiChangesSubPage'
+import {
+  VersionDeprecatedOperationsSubPage,
+} from './VersionDeprecatedOperationsSubPage/VersionDeprecatedOperationsSubPage'
+import { VersionDocumentsSubPage } from './VersionDocumentsSubPage/VersionDocumentsSubPage'
+import { VersionOperationsSubPage } from './VersionOperationsSubPage/VersionOperationsSubPage'
+import { VersionOverviewSubPage } from './VersionOverviewSubPage/VersionOverviewSubPage'
+import { VersionPageToolbar } from './VersionPageToolbar'
 
 export const VersionPage: FC = memo(() => {
   const [menuItem] = useActiveTabs()
@@ -56,13 +56,13 @@ export const VersionPage: FC = memo(() => {
           <NoPackagePlaceholder packageObject={packageObject} isLoading={isLoading}>
             <NoPackageVersionPlaceholder packageObject={packageObject}>
               <LayoutWithToolbar
-                toolbar={<VersionPageToolbar/>}
-                body={<VersionPageBody menuItem={menuItem as VersionPageRoute}/>}
+                toolbar={<VersionPageToolbar />}
+                body={<VersionPageBody menuItem={menuItem as VersionPageRoute} />}
               />
-              <OutdatedRevisionNotification/>
+              <OutdatedRevisionNotification />
             </NoPackageVersionPlaceholder>
           </NoPackagePlaceholder>
-          {packageObject?.kind === DASHBOARD_KIND && <PublishDashboardVersionFromCSVDialog/>}
+          {packageObject?.kind === DASHBOARD_KIND && <PublishDashboardVersionFromCSVDialog />}
         </ActivityHistoryFiltersProvider>
       </FullMainVersionProvider>
     </CurrentPackageProvider>
@@ -70,23 +70,23 @@ export const VersionPage: FC = memo(() => {
 })
 
 const PATH_PARAM_TO_SUB_PAGE_MAP: Record<VersionPageRoute, ReactNode> = {
-  [OVERVIEW_PAGE]: <VersionOverviewSubPage/>,
+  [OVERVIEW_PAGE]: <VersionOverviewSubPage />,
   [OPERATIONS_PAGE]: (
     <SelectedPreviewOperationProvider>
-      <VersionOperationsSubPage/>
+      <VersionOperationsSubPage />
     </SelectedPreviewOperationProvider>
   ),
   [API_CHANGES_PAGE]: (
     <PreviousReleaseOptionsProvider>
-      <VersionApiChangesSubPage/>
+      <VersionApiChangesSubPage />
     </PreviousReleaseOptionsProvider>
   ),
   [DEPRECATED_PAGE]: (
     <SelectedPreviewOperationProvider>
-      <VersionDeprecatedOperationsSubPage/>
+      <VersionDeprecatedOperationsSubPage />
     </SelectedPreviewOperationProvider>
   ),
-  [DOCUMENTS_PAGE]: <VersionDocumentsSubPage/>,
+  [DOCUMENTS_PAGE]: <VersionDocumentsSubPage />,
 }
 
 const VERSION_PAGE_MENU_ITEMS = [
@@ -104,7 +104,7 @@ type VersionPageBodyProps = {
 const VersionPageBody: FC<VersionPageBodyProps> = memo<VersionPageBodyProps>(({ menuItem }) => {
   return (
     <LayoutWithTabs
-      tabs={<VersionNavigationMenu menuItems={VERSION_PAGE_MENU_ITEMS}/>}
+      tabs={<VersionNavigationMenu menuItems={VERSION_PAGE_MENU_ITEMS} />}
       body={PATH_PARAM_TO_SUB_PAGE_MAP[menuItem]}
     />
   )

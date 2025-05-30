@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { useSearchParam } from 'react-use'
 import { useMutation } from '@tanstack/react-query'
+import { useSearchParam } from 'react-use'
 import type { Credentials, LoginUser } from '../../../hooks/authorization'
 import { useAuthorization } from '../../../hooks/authorization'
 import type { Authorization, AuthorizationDto } from '../../../types/authorization'
-import { requestJson } from '../../../utils/requests'
 import { toUser } from '../../../types/user'
 import type { IsError, IsLoading } from '../../../utils/aliases'
+import { requestJson } from '../../../utils/requests'
 
 export function useLoginUser(): [LoginUser, IsLoading, IsError] {
   const [, setAuthorization] = useAuthorization()

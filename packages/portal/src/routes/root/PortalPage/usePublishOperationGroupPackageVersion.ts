@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
+import { API_V3, requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { useMutation } from '@tanstack/react-query'
 import { generatePath } from 'react-router-dom'
-import { API_V3, requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
-import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 
 type PublishOperationGroupPackageVersionData = {
   packageKey: Key
@@ -51,7 +51,11 @@ type PublishOperationGroupPackageVersionQueryContent = {
 }
 
 export function usePublishOperationGroupPackageVersion(): PublishOperationGroupPackageVersionQueryContent {
-  const { data, mutate, isLoading, isSuccess } = useMutation<PublishResponse, Error, PublishOperationGroupPackageVersionData>({
+  const { data, mutate, isLoading, isSuccess } = useMutation<
+    PublishResponse,
+    Error,
+    PublishOperationGroupPackageVersionData
+  >({
     mutationFn: (data) => publishOperationGroupPackageVersion(data),
   })
 
@@ -63,7 +67,9 @@ export function usePublishOperationGroupPackageVersion(): PublishOperationGroupP
   }
 }
 
-async function publishOperationGroupPackageVersion(data: PublishOperationGroupPackageVersionData): Promise<PublishResponse> {
+async function publishOperationGroupPackageVersion(
+  data: PublishOperationGroupPackageVersionData,
+): Promise<PublishResponse> {
   const {
     packageKey,
     versionKey,
@@ -76,18 +82,21 @@ async function publishOperationGroupPackageVersion(data: PublishOperationGroupPa
   const encodedGroupName = encodeURIComponent(groupName)
 
   const pathPattern = '/packages/:packageId/versions/:versionId/:apiType/groups/:encodedGroupName/publish'
-  return await requestJson<PublishResponse>(generatePath(pathPattern, { packageId, versionId, apiType, encodedGroupName }), {
-    method: 'POST',
-    body: JSON.stringify({
-      packageId: value.targetPackageKey,
-      version: value.targetVersionKey,
-      previousVersion: value.previousVersion,
-      status: value.status,
-      versionLabels: value.versionLabels,
-    }),
-  }, {
-    customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-    basePath: API_V3,
-  })
+  return await requestJson<PublishResponse>(
+    generatePath(pathPattern, { packageId, versionId, apiType, encodedGroupName }),
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        packageId: value.targetPackageKey,
+        version: value.targetVersionKey,
+        previousVersion: value.previousVersion,
+        status: value.status,
+        versionLabels: value.versionLabels,
+      }),
+    },
+    {
+      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+      basePath: API_V3,
+    },
+  )
 }
-

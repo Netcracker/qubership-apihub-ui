@@ -16,10 +16,10 @@
 
 import type { AvatarProps } from '@mui/material'
 import { Avatar, Tooltip, Typography } from '@mui/material'
+import type { Theme } from '@mui/material/styles'
+import type { SxProps } from '@mui/system'
 import type { FC } from 'react'
 import { memo } from 'react'
-import type { SxProps } from '@mui/system'
-import type { Theme } from '@mui/material/styles'
 import { stringToColor } from '../../utils/strings'
 
 type Size = 'small' | 'medium' | 'large'

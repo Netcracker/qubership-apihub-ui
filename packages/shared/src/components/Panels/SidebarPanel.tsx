@@ -50,7 +50,7 @@ export const SidebarPanel: FC<SidebarPanelProps> = memo<SidebarPanelProps>(({
           >
             {header}
           </Box>
-          {withDivider && <Divider orientation="horizontal" variant="fullWidth"/>}
+          {withDivider && <Divider orientation="horizontal" variant="fullWidth" />}
         </>
       )}
       {body}

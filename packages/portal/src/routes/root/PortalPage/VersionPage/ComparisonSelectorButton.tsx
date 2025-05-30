@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
+import { useEventBus } from '@apihub/routes/EventBusProvider'
+import CompareArrowsOutlinedIcon from '@mui/icons-material/CompareArrowsOutlined'
+import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
+import { Box, MenuItem, Tooltip } from '@mui/material'
+import { MenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
 import type { FC } from 'react'
 import { memo } from 'react'
-import { Box, MenuItem, Tooltip } from '@mui/material'
-import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
-import CompareArrowsOutlinedIcon from '@mui/icons-material/CompareArrowsOutlined'
 import { useParams } from 'react-router-dom'
-import { CompareRevisionsDialog } from './CompareRevisionsDialog'
-import { CompareVersionsDialog } from './CompareVersionsDialog/CompareVersionsDialog'
 import { CompareOperationPathsDialog } from './CompareOperationPathsDialog'
 import { CompareRestGroupsDialog } from './CompareRestGroupsDialog'
+import { CompareRevisionsDialog } from './CompareRevisionsDialog'
+import { CompareVersionsDialog } from './CompareVersionsDialog/CompareVersionsDialog'
 import { useOperationGroupComparison } from './useOperationGroupComparison'
-import { MenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
-import { useEventBus } from '@apihub/routes/EventBusProvider'
 
 type ComparisonSelectorButtonProps = {
   showCompareGroups: boolean
@@ -48,9 +48,9 @@ export const ComparisonSelectorButton: FC<ComparisonSelectorButtonProps> = memo(
       <MenuButton
         title="Compare"
         variant="outlined"
-        startIcon={<CompareArrowsOutlinedIcon/>}
+        startIcon={<CompareArrowsOutlinedIcon />}
         onClick={onGetOperationGroup}
-        endIcon={<KeyboardArrowDownOutlinedIcon/>}
+        endIcon={<KeyboardArrowDownOutlinedIcon />}
         sx={{
           '&.MuiButton-root': {
             width: '145px',
@@ -75,7 +75,8 @@ export const ComparisonSelectorButton: FC<ComparisonSelectorButtonProps> = memo(
         <MenuItem onClick={showCompareRevisionsDialog} data-testid="RevisionsMenuItem">
           Revisions
         </MenuItem>
-        {!operationId && showCompareGroups && (disableCompareGroup ? (
+        {!operationId && showCompareGroups && (disableCompareGroup
+          ? (
             <Tooltip
               placement="right"
               title="Comparison is not available since there are less than 2 groups"
@@ -86,18 +87,18 @@ export const ComparisonSelectorButton: FC<ComparisonSelectorButtonProps> = memo(
                 </MenuItem>
               </Box>
             </Tooltip>
-          ) : (
+          )
+          : (
             <MenuItem onClick={showCompareRestGroupsDialog} data-testid="RestGroupsMenuItem">
               REST Groups
             </MenuItem>
-          )
-        )}
+          ))}
       </MenuButton>
 
-      <CompareVersionsDialog/>
-      <CompareRevisionsDialog/>
-      <CompareOperationPathsDialog/>
-      <CompareRestGroupsDialog/>
+      <CompareVersionsDialog />
+      <CompareRevisionsDialog />
+      <CompareOperationPathsDialog />
+      <CompareRestGroupsDialog />
     </>
   )
 })

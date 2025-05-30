@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import { Box, Link, Typography } from '@mui/material'
+import type { Path } from '@remix-run/router'
 import type { FC } from 'react'
 import React, { memo, useMemo } from 'react'
-import { Box, Link, Typography } from '@mui/material'
 import { NavLink } from 'react-router-dom'
-import type { Path } from '@remix-run/router'
 import type { Operation } from '../../entities/operations'
 import { isGraphQlOperation, isRestOperation } from '../../entities/operations'
-import { OverflowTooltip } from '../OverflowTooltip'
 import { CustomChip } from '../CustomChip'
+import { OverflowTooltip } from '../OverflowTooltip'
 import { TextWithOverflowTooltip } from '../TextWithOverflowTooltip'
 
 export type OperationTitleWithMetaProps = {
@@ -43,8 +43,8 @@ export const OperationTitleWithMeta: FC<OperationTitleWithMetaProps> = memo<Oper
     badgeText,
     openLinkInNewTab = false,
     onlyTitle = false,
-  }) => {
-
+  },
+) => {
   const { title, subtitle, type } = useMemo(() => {
     if (isRestOperation(operation)) {
       return {
@@ -64,19 +64,21 @@ export const OperationTitleWithMeta: FC<OperationTitleWithMetaProps> = memo<Oper
   }, [operation])
 
   const titleNode = link
-    ? <Typography noWrap variant="subtitle1">
-      <Link
-        component={NavLink}
-        to={link}
-        target={openLinkInNewTab ? '_blank' : '_self'}
-        onClick={(event) => {
-          event.stopPropagation()
-          onLinkClick?.()
-        }}
-      >
-        {title}
-      </Link>
-    </Typography>
+    ? (
+      <Typography noWrap variant="subtitle1">
+        <Link
+          component={NavLink}
+          to={link}
+          target={openLinkInNewTab ? '_blank' : '_self'}
+          onClick={(event) => {
+            event.stopPropagation()
+            onLinkClick?.()
+          }}
+        >
+          {title}
+        </Link>
+      </Typography>
+    )
     : <Typography noWrap variant="inherit">{title}</Typography>
 
   return (
@@ -91,13 +93,14 @@ export const OperationTitleWithMeta: FC<OperationTitleWithMetaProps> = memo<Oper
           {titleNode}
         </OverflowTooltip>
 
-        {badgeText &&
-          <CustomChip
-            value={badgeText.toLowerCase()}
-            label={badgeText}
-            isExtraSmall
-          />
-        }
+        {badgeText
+          && (
+            <CustomChip
+              value={badgeText.toLowerCase()}
+              label={badgeText}
+              isExtraSmall
+            />
+          )}
       </Box>
       {!onlyTitle && (
         <Box display="flex" alignItems="center" gap={1} data-testid="OperationPath">

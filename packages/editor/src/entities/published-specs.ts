@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import type { FileKey, Key, VersionKey } from './keys'
+import type { MethodType } from '@netcracker/qubership-apihub-ui-shared/entities/method-types'
 import type { FileFormat } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import { getFileFormat, UNKNOWN_FILE_FORMAT } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import { UNKNOWN_SPEC_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import type { MethodType } from '@netcracker/qubership-apihub-ui-shared/entities/method-types'
+import type { FileKey, Key, VersionKey } from './keys'
 
 export type PublishedSpec = Readonly<{
   key: Key

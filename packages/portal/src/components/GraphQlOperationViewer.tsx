@@ -17,9 +17,9 @@
 import type { GraphQLOperationViewerProps } from '@netcracker/qubership-apihub-api-doc-viewer'
 import { GraphQLOperationViewer } from '@netcracker/qubership-apihub-api-doc-viewer'
 import '@netcracker/qubership-apihub-api-doc-viewer/dist/style.css'
+import { Box } from '@mui/material'
 import type { FC } from 'react'
 import { memo } from 'react'
-import { Box } from '@mui/material'
 
 export type GraphQlOperationViewerProps = GraphQLOperationViewerProps
 export const GraphQlOperationViewer: FC<GraphQlOperationViewerProps> = memo<GraphQlOperationViewerProps>(({

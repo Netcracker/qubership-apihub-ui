@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import type { ToggleButtonProps } from '@mui/material'
+import { ToggleButton, Tooltip } from '@mui/material'
 import type { FC, ReactNode } from 'react'
 import * as React from 'react'
 import { forwardRef } from 'react'
-import type { ToggleButtonProps } from '@mui/material'
-import { ToggleButton, Tooltip } from '@mui/material'
 
 type TooltipToggleButtonProps = ToggleButtonProps & {
   hint: string | ReactNode
@@ -34,7 +34,9 @@ export const ToggleButtonWithHint: FC<TooltipToggleButtonProps> = forwardRef(
           title={hint}
           disableHoverListener={disableHint}
         >
-          <span><ToggleButton ref={ref} {...props} /></span>
+          <span>
+            <ToggleButton ref={ref} {...props} />
+          </span>
         </Tooltip>
       )
   },
@@ -66,4 +68,3 @@ export const TOGGLE_BUTTON_DISABLING_END_STYLE = {
 export const TOGGLE_BUTTON_ENABLING_END_STYLE = {
   borderRadius: '0 6px 6px 0!important',
 }
-

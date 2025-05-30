@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
+import type { Key, PackageKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { VersionReferences } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
+import { toVersionReferences } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import { getReferences } from '../useVersionReferences'
 import type {
@@ -24,11 +29,6 @@ import type {
   VersionReferencesItem,
 } from './package-references'
 import { addToMap, removeFromMap } from './package-references'
-import { useMemo } from 'react'
-import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import type { Key, PackageKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { VersionReferences } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
-import { toVersionReferences } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
 
 const DASHBOARD_PACKAGES_QUERY_KEY = 'dashboard-packages-query-key'
 
@@ -65,9 +65,12 @@ export function useAddDashboardPackages(): [AddDashboardPackages, IsLoading] {
     onSuccess: (_, { versionReferences, parentKey }) => {
       const dashboardPackagesMap = createCountPackageInDashboardMap(versionReferences, parentKey)
 
-      client.setQueryData<CountPackageInDashboardMap>([DASHBOARD_PACKAGES_QUERY_KEY, packageId, versionId], (oldDashboardPackagesMap) => {
-        return addToMap(dashboardPackagesMap, oldDashboardPackagesMap!)
-      })
+      client.setQueryData<CountPackageInDashboardMap>(
+        [DASHBOARD_PACKAGES_QUERY_KEY, packageId, versionId],
+        (oldDashboardPackagesMap) => {
+          return addToMap(dashboardPackagesMap, oldDashboardPackagesMap!)
+        },
+      )
     },
   })
   return [mutate, isLoading]
@@ -85,9 +88,12 @@ export function useRemoveDashboardPackages(): [RemoveDashboardPackages, IsLoadin
         versionReferences = toVersionReferences(await getReferences(key, versionKey))
       }
       const dashboardPackagesMap = createCountPackageInDashboardMap(versionReferences, key)
-      client.setQueryData<CountPackageInDashboardMap>([DASHBOARD_PACKAGES_QUERY_KEY, packageId, versionId], (oldDashboardPackagesMap) => {
-        return removeFromMap(oldDashboardPackagesMap!, dashboardPackagesMap)
-      })
+      client.setQueryData<CountPackageInDashboardMap>(
+        [DASHBOARD_PACKAGES_QUERY_KEY, packageId, versionId],
+        (oldDashboardPackagesMap) => {
+          return removeFromMap(oldDashboardPackagesMap!, dashboardPackagesMap)
+        },
+      )
     },
   })
   return [mutate, isLoading]
@@ -108,7 +114,10 @@ export function useResetDashboardPackages(): [ResetDashboardPackages, IsLoading]
   return [mutate, isLoading]
 }
 
-function createCountPackageInDashboardMap(versionReferences: VersionReferences, parentKey?: Key): CountPackageInDashboardMap {
+function createCountPackageInDashboardMap(
+  versionReferences: VersionReferences,
+  parentKey?: Key,
+): CountPackageInDashboardMap {
   const dashboardPackagesMap = new Map<PackageKey, CountInDashboard>()
   const dashboardPackages: Key[] = []
   if (versionReferences.packages) {

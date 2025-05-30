@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import { Autocomplete, InputLabel, TextField } from '@mui/material'
 import type { FC } from 'react'
 import { memo } from 'react'
-import { Autocomplete, InputLabel, TextField } from '@mui/material'
-import { OptionItem } from '../OptionItem'
 import type { ApiAudience } from '../../entities/operations'
 import { API_AUDIENCES } from '../../entities/operations'
+import { OptionItem } from '../OptionItem'
 
 export type ApiAudienceFilterProps = {
   onSelectApiAudience: (value?: ApiAudience) => void

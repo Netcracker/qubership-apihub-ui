@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { useShowErrorNotification } from '../../../BasePage/Notification'
+import { WORKSPACES_PAGE_REFERER } from '@apihub/entities/referer-pages-names'
+import { portalRequestJson } from '@apihub/utils/requests'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { PackageDto } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { useMutation } from '@tanstack/react-query'
-import { SPACE_QUERY_KEY } from './usePrivateWorkspaceUser'
+import { useShowErrorNotification } from '../../../BasePage/Notification'
 import { useRefetchPackage } from '../../../usePackage'
 import { useRefetchPackages } from '../../../usePackages'
-import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { WORKSPACES_PAGE_REFERER } from '@apihub/entities/referer-pages-names'
-import type { PackageDto } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { portalRequestJson } from '@apihub/utils/requests'
+import { SPACE_QUERY_KEY } from './usePrivateWorkspaceUser'
 
 export function useCreatePersonalPackage(): [CreatePersonalPackage, IsLoading, IsSuccess, Error | null] {
   const showErrorNotification = useShowErrorNotification()

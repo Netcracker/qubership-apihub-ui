@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { useEvent } from 'react-use'
-import type { OperationListsDelta } from '../types'
-import type { Dispatch, SetStateAction } from 'react'
-import { deepIncludes } from '../utils'
-import type { Operation, Operations } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import {
   OPERATION_MOVED,
   OPERATIONS_ADD_TO_GROUP_ACTION,
   OPERATIONS_REMOVE_FROM_GROUP_ACTION,
 } from '@apihub/routes/EventBusProvider'
+import type { Operation, Operations } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import type { Dispatch, SetStateAction } from 'react'
+import { useEvent } from 'react-use'
+import type { OperationListsDelta } from '../types'
+import { deepIncludes } from '../utils'
 
 export function useOperationMovedEvent(options: {
   checkedOperations: Operations
@@ -63,7 +63,9 @@ export function useOperationMovedEvent(options: {
             })
           }
         })
-        let newDelta = operationListsDelta.filter(deltaOperation => !returnedBackOperationsIds.includes(deltaOperation.operation))
+        let newDelta = operationListsDelta.filter(deltaOperation =>
+          !returnedBackOperationsIds.includes(deltaOperation.operation)
+        )
         newDelta = [...newDelta, ...addedOperations]
         setOperationListsDelta(newDelta)
       } else if (action === OPERATIONS_REMOVE_FROM_GROUP_ACTION) {
@@ -81,7 +83,9 @@ export function useOperationMovedEvent(options: {
             })
           }
         })
-        let newDelta = operationListsDelta.filter(deltaOperation => !returnedBackOperations.includes(deltaOperation.operation))
+        let newDelta = operationListsDelta.filter(deltaOperation =>
+          !returnedBackOperations.includes(deltaOperation.operation)
+        )
         newDelta = [...newDelta, ...removedOperations]
         setOperationListsDelta(newDelta)
       }

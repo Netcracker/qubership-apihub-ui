@@ -17,13 +17,13 @@
 import type { Dispatch, FC, SetStateAction } from 'react'
 import { createContext, memo, useContext, useEffect, useState } from 'react'
 
-import { useSettingSearchParam } from '../../useSettingSearchParam'
-import { GENERAL_SETTINGS_TAB } from '../../ProjectEditorSidebar/SettingsTabPanel'
+import { EMPTY_PROJECT } from '@apihub/entities/projects'
 import { usePackage } from '../../../../usePackage'
 import { useProject } from '../../../../useProject'
-import { EMPTY_PROJECT } from '@apihub/entities/projects'
-import { SettingsViewerGeneral } from './SettingsTabGeneral/SettingsViewerGeneral'
+import { GENERAL_SETTINGS_TAB } from '../../ProjectEditorSidebar/SettingsTabPanel'
+import { useSettingSearchParam } from '../../useSettingSearchParam'
 import { SettingsEditorGeneral } from './SettingsTabGeneral/SettingsEditorGeneral'
+import { SettingsViewerGeneral } from './SettingsTabGeneral/SettingsViewerGeneral'
 
 /* TODO 15.08.23 // Refactor these forms
 Form auto-fills & works in not obvious way.
@@ -48,8 +48,8 @@ export const SettingsModeBody: FC = memo(() => {
   return (
     <EditableSettingsTabContentContext.Provider value={editable}>
       <SetEditableSettingsTabContentContext.Provider value={setEditable}>
-        <SettingsViewerGeneral project={project ?? EMPTY_PROJECT} packageObj={packageObj}/>
-        <SettingsEditorGeneral project={project ?? EMPTY_PROJECT} packageObj={packageObj}/>
+        <SettingsViewerGeneral project={project ?? EMPTY_PROJECT} packageObj={packageObj} />
+        <SettingsEditorGeneral project={project ?? EMPTY_PROJECT} packageObj={packageObj} />
       </SetEditableSettingsTabContentContext.Provider>
     </EditableSettingsTabContentContext.Provider>
   )

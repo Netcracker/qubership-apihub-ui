@@ -15,8 +15,8 @@
  */
 
 import { Table, TableBody, TableContainer, TableHead, TableRow } from '@mui/material'
-import { genericMemo } from '../utils/components'
 import type { ReactElement } from 'react'
+import { genericMemo } from '../utils/components'
 
 export type InfinityScrollableMatrixProps<H extends object, V extends object, C extends object> = {
   horizontalItems: ReadonlyArray<H>
@@ -30,7 +30,9 @@ export type InfinityScrollableMatrixProps<H extends object, V extends object, C 
   deleteCellRender?: (key: string, item: V, rowItems: C[]) => ReactElement
 }
 
-function renderInfinityScrollableMatrix<H extends object, V extends object, C extends object>(props: InfinityScrollableMatrixProps<H, V, C>): ReactElement {
+function renderInfinityScrollableMatrix<H extends object, V extends object, C extends object>(
+  props: InfinityScrollableMatrixProps<H, V, C>,
+): ReactElement {
   const {
     verticalItems,
     horizontalItems,
@@ -103,7 +105,9 @@ function renderInfinityScrollableMatrix<H extends object, V extends object, C ex
               }}
             >
               {verticalItemRender(item)}
-              {matrix[indexRox].map((matrixItem, indexColumn) => matrixCellRender(`cell-${indexRox}-${indexColumn}`, matrixItem))}
+              {matrix[indexRox].map((matrixItem, indexColumn) =>
+                matrixCellRender(`cell-${indexRox}-${indexColumn}`, matrixItem)
+              )}
               {deleteCellRender?.(`delete-cell-${indexRox}`, item, matrix[indexRox])}
             </TableRow>
           ))}

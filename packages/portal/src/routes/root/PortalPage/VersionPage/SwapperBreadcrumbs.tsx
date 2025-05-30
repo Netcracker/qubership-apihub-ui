@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { Box, Typography } from '@mui/material'
+import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
 import type { FC } from 'react'
 import React, { memo } from 'react'
 import { ComparedPackagesBreadcrumbs } from '../../ComparedPackagesBreadcrumbs'
-import { Box, Typography } from '@mui/material'
-import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
 import type { ComparedPackagesBreadcrumbsData } from './breadcrumbs'
 import { isLinkedComparedBreadcrumbPathItem } from './breadcrumbs'
 
@@ -41,7 +41,7 @@ export const SwapperBreadcrumbs: FC<SwapperBreadcrumbsProps> = memo<SwapperBread
 
   return (
     <>
-      <ComparedPackagesBreadcrumbs data={linkedBreadcrumbs}/>
+      <ComparedPackagesBreadcrumbs data={linkedBreadcrumbs} />
       <OverflowTooltip title={textBreadcrumb?.name}>
         <Box sx={SWAPPER_TEXT_STYLES} data-testid="SwapperTitle">
           <Typography fontWeight="600">{textBreadcrumb?.name}</Typography>

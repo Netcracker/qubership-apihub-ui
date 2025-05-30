@@ -30,14 +30,16 @@ export default {
     'ts',
     'js',
     'json',
-    'node'
+    'node',
   ],
   transform: {
     '\\.ts?$': [
-      'ts-jest', { tsconfig: '<rootDir>/.jest/integration/tsconfig.it-test.json' }
-    ]
+      'ts-jest',
+      { tsconfig: '<rootDir>/.jest/integration/tsconfig.it-test.json' },
+    ],
   },
   reporters: [
-    'default', 'jest-image-snapshot-diff-reporter'
-  ]
+    'default',
+    'jest-image-snapshot-diff-reporter',
+  ],
 }

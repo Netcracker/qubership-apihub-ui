@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react'
 import { Box } from '@mui/material'
-import { RED_SECTION_COLOR } from './commons/placeholder-colors'
+import type { Meta, StoryObj } from '@storybook/react'
 import { ExpandableItem } from '../components/ExpandableItem'
+import { RED_SECTION_COLOR } from './commons/placeholder-colors'
 
 const meta: Meta<typeof ExpandableItem> = {
   title: 'Expandable Item',

@@ -15,20 +15,20 @@
  */
 
 // eslint-disable-next-line filenames/no-index
-import express from 'express'
 import bodyParser from 'body-parser'
 import cors from 'cors'
-import { ProjectsRouter } from './routers/projects/router'
-import { ProjectsWsRouter } from './routers/websockets/websockets'
-import ws from 'ws'
+import express from 'express'
 import http from 'http'
-import { DebugRouter } from './routers/debug/router'
+import ws from 'ws'
 import { AuthRouter } from './routers/auth/router'
-import { IntegrationsRouter } from './routers/integrations/router'
-import { SystemRouter } from './routers/system/router'
-import { GroupsRouter } from './routers/groups/router'
+import { DebugRouter } from './routers/debug/router'
 import { GlobalSearchRouter } from './routers/global-search/router'
+import { GroupsRouter } from './routers/groups/router'
+import { IntegrationsRouter } from './routers/integrations/router'
+import { ProjectsRouter } from './routers/projects/router'
+import { SystemRouter } from './routers/system/router'
 import { UsersRouter } from './routers/users/router'
+import { ProjectsWsRouter } from './routers/websockets/websockets'
 
 const app = express()
 const port = process.env.NODEJS_PORT || 3004

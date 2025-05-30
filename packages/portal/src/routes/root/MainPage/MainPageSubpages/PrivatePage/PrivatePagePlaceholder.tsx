@@ -15,12 +15,12 @@
  */
 
 import { Box, Button, Typography } from '@mui/material'
+import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
+import { useAuthorization } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
 import type { FC } from 'react'
 import React, { memo, useCallback } from 'react'
 import { MainPageCard } from '../../MainPageCard'
 import { useCreatePersonalPackage } from './usePrivateWorkspace'
-import { useAuthorization } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
-import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 
 export const PrivatePagePlaceholder: FC = memo(() => {
   const [authorization] = useAuthorization()
@@ -39,14 +39,14 @@ export const PrivatePagePlaceholder: FC = memo(() => {
           invisible={false}
           area={CONTENT_PLACEHOLDER_AREA}
           message={
-            <Box display='flex' flexDirection='column' alignItems='center'>
+            <Box display="flex" flexDirection="column" alignItems="center">
               <Typography component="div" variant="h3" color="#8F9EB4" display={'block'}>
                 Create your own workspace that will be available only to you.
               </Typography>
               <Button
                 sx={{ mt: 2 }}
-                variant='contained'
-                children='Create Private Workspace'
+                variant="contained"
+                children="Create Private Workspace"
                 onClick={onCreatePrivatePackage}
                 data-testid="CreatePrivateWorkspaceButton"
               />

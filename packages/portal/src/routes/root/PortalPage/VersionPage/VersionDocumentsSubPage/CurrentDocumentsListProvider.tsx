@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import type { Documents } from '@apihub/entities/documents'
 import type { Dispatch, FC, PropsWithChildren, SetStateAction } from 'react'
 import { createContext, useContext, useState } from 'react'
-import type { Documents } from '@apihub/entities/documents'
 
 const SelectedDocumentContext = createContext<Documents>()
 const SetSelectedDocumentContext = createContext<Dispatch<SetStateAction<Documents>>>()

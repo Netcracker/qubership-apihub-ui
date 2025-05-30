@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { useBranchConfig } from './useBranchConfig'
-import { useChangeSearchParam } from '../../useChangeSearchParam'
-import { useMemo } from 'react'
-import { useBranchChanges } from './useBranchChanges'
 import { getFileName, getFilePath } from '@netcracker/qubership-apihub-ui-shared/utils/files'
+import { useMemo } from 'react'
+import { useChangeSearchParam } from '../../useChangeSearchParam'
+import { useBranchChanges } from './useBranchChanges'
+import { useBranchConfig } from './useBranchConfig'
 
 export function useSelectedChange(): Change | undefined {
   const [selectedChangeKey] = useChangeSearchParam()
@@ -59,4 +59,3 @@ export function useConfigChangeSelected(): boolean {
   const [branchConfig] = useBranchConfig()
   return selectedChangeKey === branchConfig?.key
 }
-

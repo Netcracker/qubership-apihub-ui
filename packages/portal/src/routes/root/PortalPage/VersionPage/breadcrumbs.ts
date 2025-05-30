@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-import { getGroupPath, getOverviewPath, getWorkspacePath } from '../../../NavigationProvider'
-import type { Path } from '@remix-run/router'
-import type { Package, ParentPackage } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { DASHBOARD_KIND, GROUP_KIND, PACKAGE_KIND, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { REVISION_DELIMITER } from '@apihub/entities/versions'
-import { takeIf } from '@netcracker/qubership-apihub-ui-shared/utils/objects'
-import type { OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { getFullPrefixGroup } from '@apihub/routes/root/PortalPage/VersionPage/useGroupComparisons'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import type { Package, ParentPackage } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import {
+  DASHBOARD_KIND,
+  GROUP_KIND,
+  PACKAGE_KIND,
+  WORKSPACE_KIND,
+} from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { takeIf } from '@netcracker/qubership-apihub-ui-shared/utils/objects'
+import type { Path } from '@remix-run/router'
+import { getGroupPath, getOverviewPath, getWorkspacePath } from '../../../NavigationProvider'
 
 export const COMPARISON_OBJECT_TYPE_DASHBOARD_REVISION = 'DASHBOARD_REVISION'
 export const COMPARISON_OBJECT_TYPE_PACKAGE_REVISION = 'PACKAGE_REVISION'
@@ -71,7 +76,7 @@ export type OperationsGroupInPackageRevision = {
 }
 
 export type ComparisonObject =
-  DashboardRevision
+  | DashboardRevision
   | PackageRevision
   | OperationInPackageRevision
   | OperationInDashboardRevision
@@ -85,7 +90,7 @@ export type ComparedBreadcrumbPathItem = {
 }
 
 export type LinkedComparedBreadcrumbPathItem =
-  ComparedBreadcrumbPathItem
+  & ComparedBreadcrumbPathItem
   & Required<Pick<ComparedBreadcrumbPathItem, 'to'>>
 
 export type ComparedPackagesBreadcrumbsData = {

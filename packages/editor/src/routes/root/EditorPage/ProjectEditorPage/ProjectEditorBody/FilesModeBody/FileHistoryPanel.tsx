@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useCallback, useMemo } from 'react'
-import { useSpecType } from '../../../../useSpecType'
-import { useProject } from '../../../../useProject'
 import {
   Box,
   Link,
@@ -30,23 +26,27 @@ import {
   TableRow,
   Tooltip,
 } from '@mui/material'
+import type { FC } from 'react'
+import { memo, useCallback, useMemo } from 'react'
 import type { Column, Row } from 'react-table'
 import { useTable } from 'react-table'
+import { useProject } from '../../../../useProject'
+import { useSpecType } from '../../../../useSpecType'
 
-import { useEventBus } from '../../../../../EventBusProvider'
-import { useSelectedFile } from '../../useSelectedFile'
 import CompareArrowsRoundedIcon from '@mui/icons-material/CompareArrowsRounded'
+import { useEventBus } from '../../../../../EventBusProvider'
 import { useMonacoEditorContent } from '../../MonacoContentProvider'
+import { useSelectedFile } from '../../useSelectedFile'
 
-import { isOpenApiSpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import type { ProjectFileChangeHistory } from '@apihub/entities/project-file-history'
 import { NONE_COMMIT_KEY } from '@apihub/entities/commits'
-import { useFileHistory } from './FileHistoryDialog/useFileHistory'
+import type { ProjectFileChangeHistory } from '@apihub/entities/project-file-history'
 import { FormattedDate } from '@netcracker/qubership-apihub-ui-shared/components/FormattedDate'
-import { UserAvatar } from '@netcracker/qubership-apihub-ui-shared/components/Users/UserAvatar'
 import { NAVIGATION_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
+import { UserAvatar } from '@netcracker/qubership-apihub-ui-shared/components/Users/UserAvatar'
 import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { isOpenApiSpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import { FileHistoryDialog } from './FileHistoryDialog/FileHistoryDialog'
+import { useFileHistory } from './FileHistoryDialog/useFileHistory'
 
 export const FileHistoryPanel: FC = memo(() => {
   const content = useMonacoEditorContent()
@@ -57,11 +57,14 @@ export const FileHistoryPanel: FC = memo(() => {
   const [project] = useProject()
   const { showFileHistoryDialog } = useEventBus()
 
-  const onHistoryCompare = useCallback((rows: Row<ProjectFileChangeHistory>[], row: Row<ProjectFileChangeHistory>): void => {
-    const commitKey = rows[rows.indexOf(row) + 1]?.original?.key ?? NONE_COMMIT_KEY
-    const comparisonCommitKey = row.original.key
-    showFileHistoryDialog({ fileKey, commitKey, comparisonCommitKey })
-  }, [fileKey, showFileHistoryDialog])
+  const onHistoryCompare = useCallback(
+    (rows: Row<ProjectFileChangeHistory>[], row: Row<ProjectFileChangeHistory>): void => {
+      const commitKey = rows[rows.indexOf(row) + 1]?.original?.key ?? NONE_COMMIT_KEY
+      const comparisonCommitKey = row.original.key
+      showFileHistoryDialog({ fileKey, commitKey, comparisonCommitKey })
+    },
+    [fileKey, showFileHistoryDialog],
+  )
 
   const columns: ReadonlyArray<Column<ProjectFileChangeHistory>> = useMemo(() => {
     const columns: Column<ProjectFileChangeHistory>[] = [
@@ -69,9 +72,11 @@ export const FileHistoryPanel: FC = memo(() => {
         accessor: 'modifiedAt',
         width: 80,
         Header: 'Date of change',
-        Cell: ({ row: { original: { modifiedAt } } }) => <>
-          {modifiedAt && <FormattedDate value={modifiedAt}/>}
-        </>,
+        Cell: ({ row: { original: { modifiedAt } } }) => (
+          <>
+            {modifiedAt && <FormattedDate value={modifiedAt} />}
+          </>
+        ),
       },
       {
         accessor: 'modifiedBy',
@@ -90,7 +95,9 @@ export const FileHistoryPanel: FC = memo(() => {
         Header: 'Comment',
         Cell: ({ row: { original: { commitId, comment } } }) => (
           <Link
-            href={`${project?.integration?.repositoryUrl?.substring(0, project?.integration?.repositoryUrl?.lastIndexOf('.'))}/commit/${commitId}`}
+            href={`${
+              project?.integration?.repositoryUrl?.substring(0, project?.integration?.repositoryUrl?.lastIndexOf('.'))
+            }/commit/${commitId}`}
           >
             {comment}
           </Link>
@@ -109,7 +116,7 @@ export const FileHistoryPanel: FC = memo(() => {
               className="hoverable"
               sx={{ visibility: 'hidden' }}
             >
-              <CompareArrowsRoundedIcon sx={{ color: '#626D82' }}/>
+              <CompareArrowsRoundedIcon sx={{ color: '#626D82' }} />
             </Box>
           </Tooltip>
         ),
@@ -129,52 +136,52 @@ export const FileHistoryPanel: FC = memo(() => {
 
   return (
     <>
-      {
-        isLoading
-          ? <FileHistorySkeleton/>
-          : <Placeholder
+      {isLoading
+        ? <FileHistorySkeleton />
+        : (
+          <Placeholder
             invisible={isNotEmpty(fileHistory)}
             area={NAVIGATION_PLACEHOLDER_AREA}
             message="No history items"
           >
             <TableContainer>
-              <Table {...getTableProps()} >
+              <Table {...getTableProps()}>
                 <TableHead>
                   {headerGroups.map(({ getHeaderGroupProps }) => (
                     <TableRow {...getHeaderGroupProps()}>
-                      {headerGroups.map(({ headers }) => headers.map(({ getHeaderProps, id, render, width }) => (
-                        <TableCell {...getHeaderProps({ style: { width: width } })} key={id}>
-                          {render('Header')}
-                        </TableCell>
-                      )))}
+                      {headerGroups.map(({ headers }) =>
+                        headers.map(({ getHeaderProps, id, render, width }) => (
+                          <TableCell {...getHeaderProps({ style: { width: width } })} key={id}>
+                            {render('Header')}
+                          </TableCell>
+                        ))
+                      )}
                     </TableRow>
                   ))}
                 </TableHead>
                 <TableBody {...getTableBodyProps()}>
-                  {
-                    rows.map(row => {
-                      prepareRow(row)
-                      return (
-                        <TableRow {...row.getRowProps()}>
-                          {row.cells.map((cell) => (
-                            <TableCell
-                              key={cell.column.id}
-                              align={cell.column.id === 'commitId' ? 'right' : 'left'}
-                              onClick={() => cell.column.id === 'commitId' && onHistoryCompare(rows, row)}
-                            >
-                              {cell.render('Cell')}
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      )
-                    })
-                  }
+                  {rows.map(row => {
+                    prepareRow(row)
+                    return (
+                      <TableRow {...row.getRowProps()}>
+                        {row.cells.map((cell) => (
+                          <TableCell
+                            key={cell.column.id}
+                            align={cell.column.id === 'commitId' ? 'right' : 'left'}
+                            onClick={() => cell.column.id === 'commitId' && onHistoryCompare(rows, row)}
+                          >
+                            {cell.render('Cell')}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    )
+                  })}
                 </TableBody>
               </Table>
             </TableContainer>
           </Placeholder>
-      }
-      <FileHistoryDialog/>
+        )}
+      <FileHistoryDialog />
     </>
   )
 })
@@ -193,10 +200,10 @@ const FileHistorySkeleton: FC = memo(() => {
             `,
           }}
         >
-          <Skeleton sx={{ gridArea: 'version' }} variant="text" width={94} height={22}/>
-          <Skeleton sx={{ gridArea: 'date' }} variant="text" width={118} height={22}/>
-          <Skeleton sx={{ gridArea: 'user' }} variant="circular" width={15} height={15}/>
-          <Skeleton sx={{ gridArea: 'comment' }} variant="text" width={184} height={22}/>
+          <Skeleton sx={{ gridArea: 'version' }} variant="text" width={94} height={22} />
+          <Skeleton sx={{ gridArea: 'date' }} variant="text" width={118} height={22} />
+          <Skeleton sx={{ gridArea: 'user' }} variant="circular" width={15} height={15} />
+          <Skeleton sx={{ gridArea: 'comment' }} variant="text" width={184} height={22} />
         </Box>
       ))}
     </Box>

@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import type { FileKey, Key } from './keys'
-import type { FileFormat } from './file-formats'
-import { UNKNOWN_FILE_FORMAT } from './file-formats'
+import type { GraphQlOperationType } from '@netcracker/qubership-apihub-ui-shared/entities/graphql-operation-types'
+import type { MethodType } from '@netcracker/qubership-apihub-ui-shared/entities/method-types'
 import type {
   OperationData,
   OperationDto,
@@ -26,11 +25,12 @@ import type {
   Tags,
 } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { toPackageRef } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import { getFileFormat } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import { UNKNOWN_SPEC_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import { getFileFormat } from '@netcracker/qubership-apihub-ui-shared/utils/files'
-import type { MethodType } from '@netcracker/qubership-apihub-ui-shared/entities/method-types'
-import type { GraphQlOperationType } from '@netcracker/qubership-apihub-ui-shared/entities/graphql-operation-types'
+import type { FileFormat } from './file-formats'
+import { UNKNOWN_FILE_FORMAT } from './file-formats'
+import type { FileKey, Key } from './keys'
 
 export type DocumentsDto = Readonly<{
   documents: ReadonlyArray<DocumentDto>

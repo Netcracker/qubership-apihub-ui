@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import type { OperationsApiType } from '@netcracker/qubership-apihub-api-processor'
-import { useMemo } from 'react'
-import { useOperationChangelog } from './useOperationChangelog'
-import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { ChangelogAvailable } from '@apihub/routes/root/PortalPage/VersionPage/common-props'
 import {
   useVersionsComparisonGlobalParams,
 } from '@apihub/routes/root/PortalPage/VersionPage/VersionsComparisonGlobalParams'
-import type { OperationChange } from '@netcracker/qubership-apihub-ui-shared/entities/operation-changelog'
 import { risky } from '@netcracker/qubership-apihub-api-diff'
+import type { OperationsApiType } from '@netcracker/qubership-apihub-api-processor'
+import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { OperationChange } from '@netcracker/qubership-apihub-ui-shared/entities/operation-changelog'
+import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { useMemo } from 'react'
+import { useOperationChangelog } from './useOperationChangelog'
 
 export function useRiskyChanges(options: UseRiskyChangesOptions): [OperationChange[], IsLoading, IsSuccess] {
   const {
@@ -65,15 +65,17 @@ export function useRiskyChanges(options: UseRiskyChangesOptions): [OperationChan
   ], [filteredChanges, isChangesLoading, isSuccess])
 }
 
-export type UseRiskyChangesOptions = Partial<{
-  changedPackageKey: Key
-  changedVersionKey: VersionKey
-  originPackageKey: Key
-  originVersionKey: VersionKey
-  operationKey: Key
-  apiType: OperationsApiType
-  previousVersion: VersionKey
-  previousVersionPackageId: Key
-  comparisonMode?: boolean
-  needToCheckRisky?: boolean
-}> & ChangelogAvailable
+export type UseRiskyChangesOptions =
+  & Partial<{
+    changedPackageKey: Key
+    changedVersionKey: VersionKey
+    originPackageKey: Key
+    originVersionKey: VersionKey
+    operationKey: Key
+    apiType: OperationsApiType
+    previousVersion: VersionKey
+    previousVersionPackageId: Key
+    comparisonMode?: boolean
+    needToCheckRisky?: boolean
+  }>
+  & ChangelogAvailable

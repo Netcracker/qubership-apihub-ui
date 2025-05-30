@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import type { User, UserDto } from '@netcracker/qubership-apihub-ui-shared/types/user'
+import type { Key } from './keys'
 import type { ProjectFile, ProjectFileDto } from './project-files'
 import type { Ref, RefDto } from './refs'
-import type { Key } from './keys'
-import type { User, UserDto } from '@netcracker/qubership-apihub-ui-shared/types/user'
-import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 
 export const CONFIG_FILE_KEY_PREFIX: ConfigFileKeyPrefixType = 'apihub-config'
 

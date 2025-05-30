@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { useQuery } from '@tanstack/react-query'
-import { generatePath, useParams } from 'react-router-dom'
+import type { FileContent } from '@apihub/entities/project-files'
 import { portalRequestText } from '@apihub/utils/requests'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { FileContent } from '@apihub/entities/project-files'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { toFormattedJsonString } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
+import { toFormattedJsonString } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
+import { useQuery } from '@tanstack/react-query'
+import { generatePath, useParams } from 'react-router-dom'
 
 const PUBLISHED_DOCUMENT_RAW_QUERY_KEY = 'published-document-raw-query-key'
 

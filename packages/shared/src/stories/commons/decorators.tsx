@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import type { StoryContext } from '@storybook/react'
 import type { FC } from 'react'
 import React from 'react'
-import type { StoryContext } from '@storybook/react'
 
 export function fullHeight(
   Story: FC<StoryContext>,
@@ -24,7 +24,7 @@ export function fullHeight(
 ): JSX.Element {
   return (
     <div style={{ height: '100vh' }}>
-      <Story {...storyContext}/>
+      <Story {...storyContext} />
     </div>
   )
 }

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { useMutation } from '@tanstack/react-query'
 import type { Key } from '@apihub/entities/keys'
 import { ncCustomAgentsRequestBlob } from '@apihub/utils/requests'
-import type { HttpError } from '@netcracker/qubership-apihub-ui-shared/utils/responses'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import type { HttpError } from '@netcracker/qubership-apihub-ui-shared/utils/responses'
+import { useMutation } from '@tanstack/react-query'
 import { generatePath } from 'react-router-dom'
 import { useShowErrorNotification, useShowSuccessNotification } from '../../../BasePage/NotificationHandler'
 
@@ -67,17 +67,16 @@ async function getIdpAuthToken(
 
   const pathPattern = '/agents/:agentId/namespaces/:name/idp/token'
   const res = await ncCustomAgentsRequestBlob(generatePath(pathPattern, { agentId, name }), {
-      method: 'post',
-      body: JSON.stringify({
-        agentId,
-        name,
-        identityProviderUrl,
-        username,
-        password,
-        tenant,
-      }),
-    },
-  )
+    method: 'post',
+    body: JSON.stringify({
+      agentId,
+      name,
+      identityProviderUrl,
+      username,
+      password,
+      tenant,
+    }),
+  })
 
   return res.headers.get('X-Authorization-Header-Value') ?? ''
 }

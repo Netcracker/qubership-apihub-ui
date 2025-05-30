@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
+import type { Package, PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import {
+  DASHBOARD_KIND,
+  GROUP_KIND,
+  PACKAGE_KIND,
+  WORKSPACE_KIND,
+} from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import type { UserDto } from '@netcracker/qubership-apihub-ui-shared/types/user'
 import type { To } from 'react-router-dom'
 import type { PackageSettingsPageRoute } from '../../../../routes'
-import type { Package, PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { DASHBOARD_KIND, GROUP_KIND, PACKAGE_KIND, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import type { UserDto } from '@netcracker/qubership-apihub-ui-shared/types/user'
 
 export const ADD_CHANGE_ROLE_ACTION = 'add'
 export const REMOVE_CHANGE_ROLE_ACTION = 'remove'

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import { Box, debounce } from '@mui/material'
 import type { FC } from 'react'
 import { memo, useEffect } from 'react'
-import { Box, debounce } from '@mui/material'
-import { useSystemConfiguration } from '../hooks/authorization/useSystemConfiguration'
-import { DEFAULT_AUTHORIZATION_DEBOUNCE, useAuthorization } from '../hooks/authorization'
 import { useSystemInfo } from '../features/system-info'
+import { DEFAULT_AUTHORIZATION_DEBOUNCE, useAuthorization } from '../hooks/authorization'
+import { useSystemConfiguration } from '../hooks/authorization/useSystemConfiguration'
 import { redirectToSaml } from '../utils/redirects'
 
 export const AuthPage: FC = memo(() => {

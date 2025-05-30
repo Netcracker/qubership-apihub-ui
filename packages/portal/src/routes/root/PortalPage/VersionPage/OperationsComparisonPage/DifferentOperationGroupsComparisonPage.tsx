@@ -20,7 +20,11 @@ import {
   COMPARE_SAME_OPERATIONS_MODE,
 } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationView/OperationDisplayMode'
 import { useComparisonObjects } from '@apihub/routes/root/PortalPage/VersionPage/useComparisonObjects'
-import { groupOperationPairsByTags, isFullyAddedOperationChange, isFullyRemovedOperationChange } from '@apihub/utils/operations'
+import {
+  groupOperationPairsByTags,
+  isFullyAddedOperationChange,
+  isFullyRemovedOperationChange,
+} from '@apihub/utils/operations'
 import type { ActionType } from '@netcracker/qubership-apihub-api-diff'
 import { DiffAction } from '@netcracker/qubership-apihub-api-diff'
 import type { OperationChanges } from '@netcracker/qubership-apihub-api-processor'
@@ -65,20 +69,20 @@ import { useCompareGroups } from '../../useCompareGroups'
 import { useIsPackageFromDashboard } from '../../useIsPackageFromDashboard'
 import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
 import { useChangesSummaryContext } from '../ChangesSummaryProvider'
-import { CompareOperationPathsDialog } from '../CompareOperationPathsDialog'
 import { ComparedOperationsContext } from '../ComparedOperationsContext'
 import { BreadcrumbsDataContext } from '../ComparedPackagesBreadcrumbsProvider'
+import { CompareOperationPathsDialog } from '../CompareOperationPathsDialog'
 import { ComparisonToolbar } from '../ComparisonToolbar'
 import { SelectedOperationTagsProvider } from '../SelectedOperationTagsProvider'
-import { ShouldAutoExpandTagsProvider, useSetShouldAutoExpandTagsContext } from '../ShouldAutoExpandTagsProvider'
-import { VersionsComparisonGlobalParamsContext } from '../VersionsComparisonGlobalParams'
 import { VERSION_SWAPPER_HEIGHT } from '../shared-styles'
+import { ShouldAutoExpandTagsProvider, useSetShouldAutoExpandTagsContext } from '../ShouldAutoExpandTagsProvider'
 import { useCompareBreadcrumbs } from '../useCompareBreadcrumbs'
 import { useComparisonParams } from '../useComparisonParams'
 import { useDocumentSearchParam } from '../useDocumentSearchParam'
 import { useNavigateToOperation } from '../useNavigateToOperation'
 import { useOperation } from '../useOperation'
 import { useOperationSearchParam } from '../useOperationSearchParam'
+import { VersionsComparisonGlobalParamsContext } from '../VersionsComparisonGlobalParams'
 import { OperationsSidebarOnComparison } from './OperationsSidebarOnComparison'
 
 export function isOperationPairGrouped(
@@ -93,8 +97,8 @@ export function isOperationPairGrouped(
     for (const groupedOperationPair of groupedOperationPairs) {
       const { currentOperation, previousOperation } = groupedOperationPair
       if (
-        currentOperation?.operationKey === operationKey ||
-        previousOperation?.operationKey === operationKey
+        currentOperation?.operationKey === operationKey
+        || previousOperation?.operationKey === operationKey
       ) {
         return true
       }
@@ -162,8 +166,9 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
         }, _operationAction)
 
         return (
-          isFullyAdded && element.operationId === _operationKeyForChangedOperation ||
-          isFullyRemoved && !!_operationKeyForOriginOperation && element.previousOperationId === _operationKeyForOriginOperation
+          isFullyAdded && element.operationId === _operationKeyForChangedOperation
+          || isFullyRemoved && !!_operationKeyForOriginOperation
+            && element.previousOperationId === _operationKeyForOriginOperation
         )
       },
     )?.diffs?.[0]
@@ -232,30 +237,38 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
       // eslint-disable-next-line prefer-destructuring
       const previousMetadata = operationChange.previousMetadata
       const hasPreviousMetadata = isObject(previousMetadata)
-      const previousOperation: Operation | undefined = operationChange.previousOperationId ? {
-        operationKey: operationChange.previousOperationId,
-        apiKind: operationChange.previousApiKind ?? NO_BWC_API_KIND, // TODO 10.04.25 // Fix it
-        apiAudience: 'unknown',
-        title: previousMetadata?.title ?? '',
-        tags: previousMetadata?.tags ?? [],
-        ...(hasPreviousMetadata ? {
-          ...('type' in previousMetadata ? { type: previousMetadata.type } : {}),
-          ...('path' in previousMetadata ? { path: previousMetadata.path } : {}),
-          ...('method' in previousMetadata ? { method: previousMetadata.method } : {}),
-        } : {}),
-      } : undefined
-      const currentOperation: Operation | undefined = operationChange.operationId ? {
-        operationKey: operationChange.operationId,
-        apiKind: operationChange.apiKind ?? NO_BWC_API_KIND, // TODO 10.04.25 // Fix it
-        apiAudience: 'unknown',
-        title: currentMetadata?.title ?? '',
-        tags: currentMetadata?.tags ?? [],
-        ...(hasCurrentMetadata ? {
-          ...('type' in currentMetadata ? { type: currentMetadata.type } : {}),
-          ...('path' in currentMetadata ? { path: currentMetadata.path } : {}),
-          ...('method' in currentMetadata ? { method: currentMetadata.method } : {}),
-        } : {}),
-      } : undefined
+      const previousOperation: Operation | undefined = operationChange.previousOperationId
+        ? {
+          operationKey: operationChange.previousOperationId,
+          apiKind: operationChange.previousApiKind ?? NO_BWC_API_KIND, // TODO 10.04.25 // Fix it
+          apiAudience: 'unknown',
+          title: previousMetadata?.title ?? '',
+          tags: previousMetadata?.tags ?? [],
+          ...(hasPreviousMetadata
+            ? {
+              ...('type' in previousMetadata ? { type: previousMetadata.type } : {}),
+              ...('path' in previousMetadata ? { path: previousMetadata.path } : {}),
+              ...('method' in previousMetadata ? { method: previousMetadata.method } : {}),
+            }
+            : {}),
+        }
+        : undefined
+      const currentOperation: Operation | undefined = operationChange.operationId
+        ? {
+          operationKey: operationChange.operationId,
+          apiKind: operationChange.apiKind ?? NO_BWC_API_KIND, // TODO 10.04.25 // Fix it
+          apiAudience: 'unknown',
+          title: currentMetadata?.title ?? '',
+          tags: currentMetadata?.tags ?? [],
+          ...(hasCurrentMetadata
+            ? {
+              ...('type' in currentMetadata ? { type: currentMetadata.type } : {}),
+              ...('path' in currentMetadata ? { path: currentMetadata.path } : {}),
+              ...('method' in currentMetadata ? { method: currentMetadata.method } : {}),
+            }
+            : {}),
+        }
+        : undefined
       operationPairs.push({
         currentOperation: currentOperation,
         previousOperation: previousOperation,
@@ -271,9 +284,9 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
       return (operationPair: OperationPair): boolean => {
         const operation = operationPair.currentOperation ?? operationPair.previousOperation!
         return (
-          isRestOperation(operation) &&
-          !Array.isArray(operation[property]) &&
-          operation[property]?.toLowerCase().includes(searchValue.toLowerCase())
+          isRestOperation(operation)
+          && !Array.isArray(operation[property])
+          && operation[property]?.toLowerCase().includes(searchValue.toLowerCase())
         )
       }
     },
@@ -314,10 +327,15 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
     return operationPairsGroupedByTags
   }, [filterGroupedOperations, filterOperations, operationPairsGroupedByTags, searchValue])
 
-  const filteredTagsInSidebar = useMemo(() => tags.filter(tag => filteredOperationsGroupedByTags[tag]?.length), [filteredOperationsGroupedByTags, tags])
+  const filteredTagsInSidebar = useMemo(() => tags.filter(tag => filteredOperationsGroupedByTags[tag]?.length), [
+    filteredOperationsGroupedByTags,
+    tags,
+  ])
 
   const [firstOperationPair] = useMemo(
-    () => (filteredTagsInSidebar.length && (filteredOperationsGroupedByTags || searchValue) ? filteredOperationsGroupedByTags[filteredTagsInSidebar[0]] : []),
+    () => (filteredTagsInSidebar.length && (filteredOperationsGroupedByTags || searchValue)
+      ? filteredOperationsGroupedByTags[filteredTagsInSidebar[0]]
+      : []),
     [filteredOperationsGroupedByTags, filteredTagsInSidebar, searchValue],
   )
   const isCurrentOperationGrouped = useMemo(
@@ -350,7 +368,19 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
         search: searchParams,
       })
     }
-  }, [apiType, areChangesAndOperationsLoading, changedPackageKey, changedVersionKey, filters, firstOperationPair, group, isCurrentOperationGrouped, navigateToFirstGroupOperation, previousGroup, selectedDocumentSlug])
+  }, [
+    apiType,
+    areChangesAndOperationsLoading,
+    changedPackageKey,
+    changedVersionKey,
+    filters,
+    firstOperationPair,
+    group,
+    isCurrentOperationGrouped,
+    navigateToFirstGroupOperation,
+    previousGroup,
+    selectedDocumentSlug,
+  ])
 
   const comparedOperationsPair: OptionalOperationPair<OperationData> = {
     previousOperation: originOperation,
@@ -369,7 +399,10 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
   const mergedBreadcrumbsData = useCompareBreadcrumbs(originComparisonObject, changedComparisonObject)
 
   const handleOperationClick = useNavigateToOperation(
-    changedPackageKey!, changedVersionKey!, apiType as ApiType, setShouldAutoExpand,
+    changedPackageKey!,
+    changedVersionKey!,
+    apiType as ApiType,
+    setShouldAutoExpand,
   )
 
   return (
@@ -422,4 +455,3 @@ export const getFullGroupForOperation = (restGroupingPrefix: string | undefined,
 }
 
 const httpMethods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
-

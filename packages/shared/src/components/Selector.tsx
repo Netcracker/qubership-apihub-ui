@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
+import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
+import { Box, Button, MenuItem, Skeleton, Typography } from '@mui/material'
 import type { FC } from 'react'
 import { memo, useEffect, useState } from 'react'
-import { Box, Button, MenuItem, Skeleton, Typography } from '@mui/material'
-import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
+import type { Key } from '../entities/keys'
+import { isNotEmpty } from '../utils/arrays'
+import { MenuButtonItems } from './Buttons/MenuButton'
+import { CustomChip } from './CustomChip'
 import { NAVIGATION_PLACEHOLDER_AREA, NO_SEARCH_RESULTS, Placeholder } from './Placeholder'
 import { SearchBar } from './SearchBar'
-import { CustomChip } from './CustomChip'
 import type { TestableProps } from './Testable'
-import type { Key } from '../entities/keys'
-import { MenuButtonItems } from './Buttons/MenuButton'
-import { isNotEmpty } from '../utils/arrays'
 
 const TEXT_DISABLED_COLOR = '#00000026'
 
@@ -70,7 +70,7 @@ export const Selector: FC<SelectorProps> = memo<SelectorProps>(({
         variant="text"
         disabled={disabled}
         onClick={({ currentTarget }) => setAnchor(currentTarget)}
-        endIcon={<KeyboardArrowDownOutlinedIcon/>}
+        endIcon={<KeyboardArrowDownOutlinedIcon />}
       >
         {value?.value}
         <MenuButtonItems
@@ -92,32 +92,33 @@ export const Selector: FC<SelectorProps> = memo<SelectorProps>(({
             "
           >
             <Box gridArea="searchbar" overflow="hidden">
-              <SearchBar onValueChange={setSearchValue}/>
+              <SearchBar onValueChange={setSearchValue} />
             </Box>
             <Box gridArea="content" overflow="auto" maxHeight={400}>
               {isSearching
-                ? <Skeleton variant="text" width={'100%'}/>
-                : <Placeholder
-                  invisible={isNotEmpty(options)}
-                  area={NAVIGATION_PLACEHOLDER_AREA}
-                  message={NO_SEARCH_RESULTS}
-                >
-                  {options?.map((option) => (
-                    <MenuItem
-                      key={`selector-option-${option.value}`}
-                      onClick={() => {
-                        onChange?.(option)
-                        setAnchor(undefined)
-                      }}
-                    >
-                      <Box display="flex" width="100%" gap={2}>
-                        <Box flex={1}>{option.value}</Box>
-                        {option.badge && <CustomChip value={option.badge}/>}
-                      </Box>
-                    </MenuItem>
-                  ))}
-                </Placeholder>
-              }
+                ? <Skeleton variant="text" width={'100%'} />
+                : (
+                  <Placeholder
+                    invisible={isNotEmpty(options)}
+                    area={NAVIGATION_PLACEHOLDER_AREA}
+                    message={NO_SEARCH_RESULTS}
+                  >
+                    {options?.map((option) => (
+                      <MenuItem
+                        key={`selector-option-${option.value}`}
+                        onClick={() => {
+                          onChange?.(option)
+                          setAnchor(undefined)
+                        }}
+                      >
+                        <Box display="flex" width="100%" gap={2}>
+                          <Box flex={1}>{option.value}</Box>
+                          {option.badge && <CustomChip value={option.badge} />}
+                        </Box>
+                      </MenuItem>
+                    ))}
+                  </Placeholder>
+                )}
             </Box>
           </Box>
         </MenuButtonItems>

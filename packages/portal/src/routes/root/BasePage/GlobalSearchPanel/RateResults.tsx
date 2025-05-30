@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import { Box, Typography } from '@mui/material'
+import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
+import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
 import type { FC } from 'react'
 import { memo } from 'react'
 import { hasSearchText } from './search-text'
-import { Box, Typography } from '@mui/material'
-import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
-import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
 
 export type RateResultsProps = {
   searchText: string
@@ -50,15 +50,17 @@ export const RateResults: FC<RateResultsProps> = memo<RateResultsProps>(({
     )
   }
   if (labels?.some(label => hasSearchText(label, searchText))) {
-    return <>
-      {labels.map(label => (
-        <CustomChip
-          key={`rate-results-custom-chip-${label}`}
-          sx={{ mr: 1 }}
-          value={label}
-        />
-      ))}
-    </>
+    return (
+      <>
+        {labels.map(label => (
+          <CustomChip
+            key={`rate-results-custom-chip-${label}`}
+            sx={{ mr: 1 }}
+            value={label}
+          />
+        ))}
+      </>
+    )
   }
 
   return null

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { Key } from './keys'
-import { requestJson } from '../utils/requests'
 import { isNotEmpty } from '../utils/arrays'
+import { requestJson } from '../utils/requests'
+import type { Key } from './keys'
 
 export type ServiceNamesDto = {
   serviceNames: ReadonlyArray<ServiceNameDto>

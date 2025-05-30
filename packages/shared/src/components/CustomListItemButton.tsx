@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { ListItemButton } from '@mui/material'
 import type { ReactNode } from 'react'
 import React, { memo, useCallback } from 'react'
-import { ListItemButton } from '@mui/material'
 import type { TestableProps } from './Testable'
 
 const SELECTED_BUTTON_BCG_COLOR = '#ECEDEF'
@@ -65,7 +65,7 @@ function CustomListItemButtonComponent<T>(props: CustomListItemButtonProps<T>): 
   )
 }
 
-const genericMemo: <T>  (component: T) => T = memo
+const genericMemo: <T>(component: T) => T = memo
 export const CustomListItemButton = genericMemo(CustomListItemButtonComponent)
 
 export const LIST_ITEM_SIZE_BIG = 'big'

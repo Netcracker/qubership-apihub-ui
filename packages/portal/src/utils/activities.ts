@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { EventType as ActivityType } from '../entities/activity-enums'
-import { GENERAL_PAGE, PACKAGE_SETTINGS_PAGE, SUMMARY_ROUTE } from '../routes'
 import type {
   Activity,
   CreateOrDeleteManualGroupEventDetails,
@@ -35,11 +33,16 @@ import {
   GROUP_PARAMETER_OPERATIONS,
   GROUP_PARAMETER_TEMPLATE,
 } from '@apihub/entities/activities'
-import { format } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
-import { SPECIAL_VERSION_KEY } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
-import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
-import { GROUP_TYPE_MANUAL, GROUP_TYPE_REST_PATH_PREFIX } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
 import { API_TYPE_TITLE_MAP } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import {
+  GROUP_TYPE_MANUAL,
+  GROUP_TYPE_REST_PATH_PREFIX,
+} from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
+import { SPECIAL_VERSION_KEY } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
+import { format } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
+import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
+import { EventType as ActivityType } from '../entities/activity-enums'
+import { GENERAL_PAGE, PACKAGE_SETTINGS_PAGE, SUMMARY_ROUTE } from '../routes'
 
 export const EMPTY_ACTIVITY_MESSAGE: ActivityMessage = {
   messageTemplate: '',
@@ -119,7 +122,6 @@ class BasicActivityMessageService implements ActivityMessageService {
   protected link(href: string, target: string = '_blank', displayedValue?: string): string {
     return `<a href='${href}' target='${target}'>${displayedValue ?? href}</a>`
   }
-
 }
 
 class GenerateAndRevokeApiKeysActivityMessageService extends BasicActivityMessageService {
@@ -236,7 +238,8 @@ class PublishNewRevisionActivityMessageService extends BasicActivityMessageServi
     switch (activityType) {
       case ActivityType.PUBLISH_NEW_REVISION_EVENT:
         return {
-          messageTemplate: `Published ${LINK_PLACEHOLDER} revision of ${versionKey} version in ${status} status in the ${packageName} ${kind}`,
+          messageTemplate:
+            `Published ${LINK_PLACEHOLDER} revision of ${versionKey} version in ${status} status in the ${packageName} ${kind}`,
           links: [this.getPackageVersionLink(packageId, `@${revisionKey}`, notLatestRevision ? version : versionKey)],
         }
     }
@@ -254,7 +257,9 @@ class PatchVersionMetaActivityMessageService extends BasicActivityMessageService
     switch (activityType) {
       case ActivityType.PATCH_VERSION_META_EVENT:
         return {
-          messageTemplate: `Changed ${versionMeta.join(', ')} for ${LINK_PLACEHOLDER} version of ${packageName} ${kind}`,
+          messageTemplate: `Changed ${
+            versionMeta.join(', ')
+          } for ${LINK_PLACEHOLDER} version of ${packageName} ${kind}`,
           links: [this.getPackageVersionLink(packageId, versionKey, versionKey)],
         }
     }
@@ -295,12 +300,16 @@ class CreateAndDeleteManualGroupActivityMessageService extends BasicActivityMess
     switch (activityType) {
       case ActivityType.CREATE_MANUAL_GROUP_EVENT:
         return {
-          messageTemplate: `Created ${groupName} ${GROUP_TYPE_MANUAL} group (of ${API_TYPE_TITLE_MAP[apiType]} type) in ${LINK_PLACEHOLDER} version of ${packageName} ${kind}`,
+          messageTemplate: `Created ${groupName} ${GROUP_TYPE_MANUAL} group (of ${
+            API_TYPE_TITLE_MAP[apiType]
+          } type) in ${LINK_PLACEHOLDER} version of ${packageName} ${kind}`,
           links: [packageVersionLink],
         }
       case ActivityType.DELETE_MANUAL_GROUP_EVENT:
         return {
-          messageTemplate: `Deleted ${groupName} ${GROUP_TYPE_MANUAL} group (of ${API_TYPE_TITLE_MAP[apiType]} type) in ${LINK_PLACEHOLDER} version of ${packageName} ${kind}`,
+          messageTemplate: `Deleted ${groupName} ${GROUP_TYPE_MANUAL} group (of ${
+            API_TYPE_TITLE_MAP[apiType]
+          } type) in ${LINK_PLACEHOLDER} version of ${packageName} ${kind}`,
           links: [packageVersionLink],
         }
     }
@@ -337,7 +346,8 @@ class UpdateOperationsGroupParametersActivityMessageService extends BasicActivit
     switch (activityType) {
       case ActivityType.UPDATE_OPERATIONS_GROUP_PARAMETERS_EVENT:
         return {
-          messageTemplate: `Changed ${groupParametersString} of ${groupName} ${groupType} group${apiTypeMessage} in ${LINK_PLACEHOLDER} version of ${packageName} ${kind}`,
+          messageTemplate:
+            `Changed ${groupParametersString} of ${groupName} ${groupType} group${apiTypeMessage} in ${LINK_PLACEHOLDER} version of ${packageName} ${kind}`,
           links: [packageVersionLink],
         }
     }

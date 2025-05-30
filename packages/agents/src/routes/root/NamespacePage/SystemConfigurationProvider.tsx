@@ -14,16 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  createContext,
-  type FC,
-  type PropsWithChildren,
-  useContext,
-  useEffect,
-  useState,
-} from 'react'
 import { useSystemConfiguration } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useSystemConfiguration'
 import type { SystemConfiguration } from '@netcracker/qubership-apihub-ui-shared/types/system-configuration'
+import { createContext, type FC, type PropsWithChildren, useContext, useEffect, useState } from 'react'
 
 const SystemConfigurationContext = createContext<SystemConfiguration | null | undefined>()
 
@@ -49,4 +42,3 @@ export const SystemConfigurationProvider: FC<PropsWithChildren> = ({ children })
     </SystemConfigurationContext.Provider>
   )
 }
-

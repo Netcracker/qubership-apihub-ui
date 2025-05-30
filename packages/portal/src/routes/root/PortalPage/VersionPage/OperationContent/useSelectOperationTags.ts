@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo } from 'react'
-import { useSetSelectedOperationTags } from '../SelectedOperationTagsProvider'
 import type { Operation } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { DEFAULT_TAG } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { deduplicate } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { useEffect, useMemo } from 'react'
+import { useSetSelectedOperationTags } from '../SelectedOperationTagsProvider'
 
 export function useSelectOperationTags(...operations: ReadonlyArray<Operation | null | undefined>): void {
   const operationsTags = useMemo(() => {

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { Box, Button } from '@mui/material'
 import type { Meta, StoryFn } from '@storybook/react'
 import type { ChangesTooltipProps } from '../components/ChangesTooltip'
 import { ChangesTooltip } from '../components/ChangesTooltip'
-import { Box, Button } from '@mui/material'
 import { BREAKING_CHANGE_SEVERITY, CHANGE_SEVERITIES } from '../entities/change-severities'
 
 export default {

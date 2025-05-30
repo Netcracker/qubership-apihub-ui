@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import { LayoutWithSidebar } from './LayoutWithSidebar'
+import { Box } from '@mui/material'
 import type { FC, MutableRefObject, ReactNode } from 'react'
 import { memo, useMemo } from 'react'
-import { Box } from '@mui/material'
+import type { Key } from '../../entities/keys'
+import { useStateWithExternal } from '../../hooks/common/useStateWithExternal'
+import { FilterButton } from '../Buttons/FilterButton'
+import { SidebarPanel } from '../Panels/SidebarPanel'
 import { SearchBar } from '../SearchBar'
 import { SelectorWithIcons } from '../SelectorWithIcons'
 import type { TestableProps } from '../Testable'
-import { useStateWithExternal } from '../../hooks/common/useStateWithExternal'
-import type { Key } from '../../entities/keys'
-import { FilterButton } from '../Buttons/FilterButton'
-import { SidebarPanel } from '../Panels/SidebarPanel'
+import { LayoutWithSidebar } from './LayoutWithSidebar'
 
 export type ViewSelectorOptions = ReadonlyArray<{
   icon: ReactNode
@@ -67,9 +67,16 @@ export const RichFiltersLayout: FC<VersionOperationsLayoutProps> = memo<VersionO
   filters,
   testId,
 }) => {
-
-  const [hiddenFiltersPanel, setHiddenFiltersPanel] = useStateWithExternal<boolean>(hideFiltersPanel, hideFiltersPanel, onClickFilterButton)
-  const [selectedViewMode, setSelectedViewMode] = useStateWithExternal<Key | undefined>(viewMode, viewMode, onOperationsViewChange)
+  const [hiddenFiltersPanel, setHiddenFiltersPanel] = useStateWithExternal<boolean>(
+    hideFiltersPanel,
+    hideFiltersPanel,
+    onClickFilterButton,
+  )
+  const [selectedViewMode, setSelectedViewMode] = useStateWithExternal<Key | undefined>(
+    viewMode,
+    viewMode,
+    onOperationsViewChange,
+  )
 
   const viewSelector = useMemo(() => {
     if (viewOptions.length <= 1) {
@@ -111,7 +118,16 @@ export const RichFiltersLayout: FC<VersionOperationsLayoutProps> = memo<VersionO
 
       {exportButton}
     </Box>
-  ), [additionalActions, exportButton, filtersApplied, hiddenFiltersPanel, searchPlaceholder, setHiddenFiltersPanel, setSearchValue, viewSelector])
+  ), [
+    additionalActions,
+    exportButton,
+    filtersApplied,
+    hiddenFiltersPanel,
+    searchPlaceholder,
+    setHiddenFiltersPanel,
+    setSearchValue,
+    viewSelector,
+  ])
 
   return (
     <LayoutWithSidebar

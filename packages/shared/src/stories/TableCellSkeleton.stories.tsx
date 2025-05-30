@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react'
 import { Table, TableRow } from '@mui/material'
+import type { Meta, StoryObj } from '@storybook/react'
 import { TableCellSkeleton } from '../components/TableCellSkeleton'
 
 const meta: Meta<typeof TableCellSkeleton> = {
@@ -25,7 +25,7 @@ const meta: Meta<typeof TableCellSkeleton> = {
     (Story) => (
       <Table sx={{ width: '900px' }}>
         <TableRow>
-          <Story/>
+          <Story />
         </TableRow>
       </Table>
     ),

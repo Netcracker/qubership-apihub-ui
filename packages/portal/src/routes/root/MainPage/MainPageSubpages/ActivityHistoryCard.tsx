@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { ActivityHistoryPanel } from '@apihub/components/ActivityList/ActivityHistoryPanel'
+import type { ActivityType } from '@apihub/entities/activity-enums'
+import { usePortalPageSettingsContext } from '@apihub/routes/PortalPageSettingsProvider'
+import type { ActivityHistoryQueryResult } from '@apihub/routes/root/useActivityHistory'
+import { CollapsedPanel } from '@netcracker/qubership-apihub-ui-shared/components/CollapsedPanel'
 import type { FC } from 'react'
 import { memo } from 'react'
-import type { ActivityType } from '@apihub/entities/activity-enums'
-import { CollapsedPanel } from '@netcracker/qubership-apihub-ui-shared/components/CollapsedPanel'
-import { ActivityHistoryPanel } from '@apihub/components/ActivityList/ActivityHistoryPanel'
-import type { ActivityHistoryQueryResult } from '@apihub/routes/root/useActivityHistory'
-import { usePortalPageSettingsContext } from '@apihub/routes/PortalPageSettingsProvider'
 
 export type ActivityHistoryCardProps = {
   useActivity: (enabled: boolean) => ActivityHistoryQueryResult
@@ -42,18 +42,20 @@ export const ActivityHistoryCard: FC<ActivityHistoryCardProps> = memo<ActivityHi
 
   return (
     <>
-      {
-        expandActivityHistoryPanel
-          ? <ActivityHistoryPanel
+      {expandActivityHistoryPanel
+        ? (
+          <ActivityHistoryPanel
             onCollapse={toggleExpandActivityHistoryPanel}
             activities={activities}
             isLoading={isLoading}
             {...props}
           />
-          : <CollapsedPanel
+        )
+        : (
+          <CollapsedPanel
             onExpand={toggleExpandActivityHistoryPanel}
           />
-      }
+        )}
     </>
   )
 })

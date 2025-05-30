@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
+import { LayoutWithTabs } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/LayoutWithTabs'
+import { LayoutWithToolbar } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/LayoutWithToolbar'
+import { Toolbar } from '@netcracker/qubership-apihub-ui-shared/components/Toolbar'
+import { useActiveTabs } from '@netcracker/qubership-apihub-ui-shared/hooks/pathparams/useActiveTabs'
+import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
+import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import type { FC, ReactNode } from 'react'
 import { memo } from 'react'
 import { useParams } from 'react-router-dom'
-import { NamespaceToolbar } from './NamespaceToolbar'
-import { IdpUrlContextProvider } from './IdpUrlContextProvider'
 import type { NamespacePageRoute } from '../../routes'
 import { AUTOMATION_PAGE, SECURITY_REPORTS_PAGE, SERVICES_PAGE, SNAPSHOTS_PAGE } from '../../routes'
-import { SnapshotsPage } from './SnapshotsPage/SnapshotsPage'
-import { AutomationPage } from './AutomationPage/AutomationPage'
-import { SecurityReportsPage } from './SecurityReportsPage/SecurityReportsPage'
-import { NamespaceNavigationMenu } from './NamespaceNavigationMenu'
-import { useActiveTabs } from '@netcracker/qubership-apihub-ui-shared/hooks/pathparams/useActiveTabs'
-import { ServicesPageProvider } from './ServicesPage/ServicesPageProvider/ServicesPageProvider'
-import { LayoutWithToolbar } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/LayoutWithToolbar'
-import { Toolbar } from '@netcracker/qubership-apihub-ui-shared/components/Toolbar'
-import { ServicesPage } from './ServicesPage/ServicesPage'
-import { LayoutWithTabs } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/LayoutWithTabs'
 import { WelcomePage } from '../WelcomePage'
-import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
-import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { AutomationPage } from './AutomationPage/AutomationPage'
+import { IdpUrlContextProvider } from './IdpUrlContextProvider'
+import { NamespaceNavigationMenu } from './NamespaceNavigationMenu'
+import { NamespaceToolbar } from './NamespaceToolbar'
+import { SecurityReportsPage } from './SecurityReportsPage/SecurityReportsPage'
+import { ServicesPage } from './ServicesPage/ServicesPage'
+import { ServicesPageProvider } from './ServicesPage/ServicesPageProvider/ServicesPageProvider'
+import { SnapshotsPage } from './SnapshotsPage/SnapshotsPage'
 
 export const NamespacePage: FC = memo(() => {
   const { namespaceKey } = useParams()
@@ -42,9 +42,7 @@ export const NamespacePage: FC = memo(() => {
   const workspace = useSearchParam(WORKSPACE_SEARCH_PARAM)
 
   if (!workspace) {
-    return (
-      <WelcomePage />
-    )
+    return <WelcomePage />
   }
 
   return (

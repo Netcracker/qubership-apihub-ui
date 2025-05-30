@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
+import { Autocomplete, Box, capitalize, CircularProgress, ListItem, TextField, Typography } from '@mui/material'
 import type { FC } from 'react'
 import * as React from 'react'
 import { memo, useCallback, useState } from 'react'
-import { Autocomplete, Box, capitalize, CircularProgress, ListItem, TextField, Typography } from '@mui/material'
 import { Controller, useForm } from 'react-hook-form'
-import { DisplayToken, type NotificationDetail } from './DisplayToken'
+import { useDebounce } from 'react-use'
+import type { Key } from '../entities/keys'
 import { reverseTokenRoleMapping } from '../entities/tokens'
 import type { GenerateApiKeyValue, TokenDataForm } from '../types/tokens'
-import type { Key } from '../entities/keys'
-import type { IsLoading } from '../utils/aliases'
-import { ButtonWithHint } from './Buttons/ButtonWithHint'
-import { UserAvatar } from './Users/UserAvatar'
 import type { User } from '../types/user'
-import { useDebounce } from 'react-use'
+import type { IsLoading } from '../utils/aliases'
 import { DEFAULT_DEBOUNCE } from '../utils/constants'
+import { ButtonWithHint } from './Buttons/ButtonWithHint'
+import { DisplayToken, type NotificationDetail } from './DisplayToken'
+import { UserAvatar } from './Users/UserAvatar'
 
 export type GenerateTokenFormProps = {
   roles: string[]
@@ -42,7 +42,7 @@ export type GenerateTokenFormProps = {
   showSuccessNotification: (detail: NotificationDetail) => void
 }
 
-//First Order Component
+// First Order Component
 export const GenerateTokenForm: FC<GenerateTokenFormProps> = memo(({
   roles,
   users,
@@ -74,7 +74,7 @@ export const GenerateTokenForm: FC<GenerateTokenFormProps> = memo(({
   }, [generateApiKey, reset])
 
   if (generatedApiKey) {
-    return <DisplayToken generatedApiKey={generatedApiKey} showSuccessNotification={showSuccessNotification}/>
+    return <DisplayToken generatedApiKey={generatedApiKey} showSuccessNotification={showSuccessNotification} />
   }
 
   return (
@@ -89,16 +89,18 @@ export const GenerateTokenForm: FC<GenerateTokenFormProps> = memo(({
             required: 'The field must be filled',
           }}
           control={control}
-          render={({ field }) => <TextField
-            {...field}
-            required
-            disabled={disabled}
-            sx={{ width: '260px' }}
-            value={field.value}
-            label="Name"
-            onChange={field.onChange}
-            data-testid="NameTextField"
-          />}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              required
+              disabled={disabled}
+              sx={{ width: '260px' }}
+              value={field.value}
+              label="Name"
+              onChange={field.onChange}
+              data-testid="NameTextField"
+            />
+          )}
         />
         <Controller
           name="roles"
@@ -110,22 +112,23 @@ export const GenerateTokenForm: FC<GenerateTokenFormProps> = memo(({
               sx={{ width: '260px' }}
               value={value ?? []}
               options={roles}
-              renderOption={(props, option) => <ListItem
-                {...props}
-                key={option}
-                data-testid={`ListItem-${option}`}
-              >
-                {capitalize(option)}
-              </ListItem>}
+              renderOption={(props, option) => (
+                <ListItem
+                  {...props}
+                  key={option}
+                  data-testid={`ListItem-${option}`}
+                >
+                  {capitalize(option)}
+                </ListItem>
+              )}
               renderTags={(values) =>
-                values.map((value, index) =>
+                values.map((value, index) => (
                   <Typography fontSize="13px">
                     {capitalize(value)} {index === values.length - 1 ? undefined : ', '}
-                  </Typography>,
-                )
-              }
+                  </Typography>
+                ))}
               onChange={(_, roles) => setValue('roles', roles)}
-              renderInput={(params) =>
+              renderInput={(params) => (
                 <TextField
                   {...params}
                   label="Roles"
@@ -134,7 +137,7 @@ export const GenerateTokenForm: FC<GenerateTokenFormProps> = memo(({
                     readOnly: true,
                   }}
                 />
-              }
+              )}
               data-testid="RolesAutocomplete"
             />
           )}
@@ -152,7 +155,7 @@ export const GenerateTokenForm: FC<GenerateTokenFormProps> = memo(({
               disabled={disabled}
               sx={{ width: '260px' }}
               loading={isLoading}
-              loadingText={<CircularProgress size={16}/>}
+              loadingText={<CircularProgress size={16} />}
               options={users ?? []}
               getOptionLabel={(option) => option.name}
               onChange={(_, value) => onChange(value)}
@@ -170,14 +173,14 @@ export const GenerateTokenForm: FC<GenerateTokenFormProps> = memo(({
                   </ListItem>
                 )
               }}
-              renderInput={(params) =>
+              renderInput={(params) => (
                 <TextField
                   {...params}
                   required
                   label="Created For"
                   onChange={(event) => setSearchValue(event?.target?.value ?? '')}
                 />
-              }
+              )}
               data-testid="CreatedForAutocomplete"
             />
           )}

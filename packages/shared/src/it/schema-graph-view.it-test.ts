@@ -15,8 +15,8 @@
  */
 
 import type { StoryPage } from './service/story-page'
-import type { ViewComponent } from './service/view-component'
 import { storyPage } from './service/storybook-service'
+import type { ViewComponent } from './service/view-component'
 
 describe('Schema Graph View', () => {
   let story: StoryPage

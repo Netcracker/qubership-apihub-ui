@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import { useArgs } from '@storybook/preview-api'
 import type { Meta, StoryObj } from '@storybook/react'
 import type { ReactElement } from 'react'
-import { useArgs } from '@storybook/preview-api'
-import { operationTags } from './samples/tags-samples'
 import type { SidebarWithTagsProps } from '../components/SidebarWithTags/SidebarWithTags'
 import { SidebarWithTags } from '../components/SidebarWithTags/SidebarWithTags'
+import { operationTags } from './samples/tags-samples'
 
 const meta: Meta<typeof SidebarWithTags> = {
   title: 'Sidebar With Tags',

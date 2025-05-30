@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { VersionStatus } from './version-statuses'
-import { DRAFT_VERSION_STATUS, RELEASE_VERSION_STATUS } from './version-statuses'
 import type { Principal } from './principal'
 import { TOKEN_SAMPLE, USER_SAMPLE, USER_SAMPLE_WITHOUT_ICON, USER_SAMPLE_WITHOUT_NAME } from './principal'
 import type { OperationsApiType } from './types'
+import type { VersionStatus } from './version-statuses'
+import { DRAFT_VERSION_STATUS, RELEASE_VERSION_STATUS } from './version-statuses'
 
 type Version = string
 

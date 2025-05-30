@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo } from 'react'
 import type { DiffOperationView, OperationView } from '@netcracker/qubership-apihub-apispec-view'
+import { useEffect, useMemo } from 'react'
 import type { OperationViewProps } from './OperationView'
 
 // TODO 27.06.24 // Better to use "instanceof" but there is problem with exporting from "apispec-view"

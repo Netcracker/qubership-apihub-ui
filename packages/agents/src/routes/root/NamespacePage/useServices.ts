@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { Services, ServicesDto } from '@apihub/entities/services'
 import { EMPTY_SERVICES, getServices, toServices } from '@apihub/entities/services'
-import { useParams } from 'react-router-dom'
-import type { InvalidateQuery, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { RUNNING_DISCOVERY_STATUS } from '@apihub/entities/statuses'
-import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
+import type { InvalidateQuery, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { STATUS_REFETCH_INTERVAL } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useParams } from 'react-router-dom'
 
 const SERVICES_QUERY_KEY = 'services-query-key'
 
@@ -51,8 +51,9 @@ export function useInvalidateServices(): InvalidateQuery<void> {
   const { agentId, namespaceKey } = useParams()
   const client = useQueryClient()
 
-  return () => client.invalidateQueries({
-    queryKey: [SERVICES_QUERY_KEY, agentId, namespaceKey],
-    refetchType: 'all',
-  })
+  return () =>
+    client.invalidateQueries({
+      queryKey: [SERVICES_QUERY_KEY, agentId, namespaceKey],
+      refetchType: 'all',
+    })
 }

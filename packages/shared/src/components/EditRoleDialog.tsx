@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import * as React from 'react'
-import { memo, useCallback, useMemo } from 'react'
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
+import ErrorOutlinedIcon from '@mui/icons-material/ErrorOutlined'
 import {
   Button,
   Checkbox,
@@ -28,24 +27,25 @@ import {
   InputLabel,
   TextField,
 } from '@mui/material'
-import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
-import type { PopupProps } from './PopupDelegate'
-import { PopupDelegate } from './PopupDelegate'
-import type { Permission } from '../types/permissions'
+import type { FC } from 'react'
+import * as React from 'react'
+import { memo, useCallback, useMemo } from 'react'
 import type { ControllerRenderProps } from 'react-hook-form'
 import { Controller, useForm } from 'react-hook-form'
-import { DialogForm } from './DialogForm'
-import type { Role } from '../types/roles'
+import { READ_PERMISSION } from '../entities/package-permissions'
 import { CheckboxCheckedIcon } from '../icons/CheckboxCheckedIcon'
 import { CheckboxDisabledCheckedIcon } from '../icons/CheckboxDisabledCheckedIcon'
-import ErrorOutlinedIcon from '@mui/icons-material/ErrorOutlined'
-import { READ_PERMISSION } from '../entities/package-permissions'
+import type { Permission } from '../types/permissions'
+import type { Role } from '../types/roles'
+import { DialogForm } from './DialogForm'
+import type { PopupProps } from './PopupDelegate'
+import { PopupDelegate } from './PopupDelegate'
 
 export const EditRoleDialog: FC = memo(() => {
   return (
     <PopupDelegate
       type={SHOW_EDIT_ROLE_DIALOG}
-      render={props => <EditRolePopup {...props}/>}
+      render={props => <EditRolePopup {...props} />}
     />
   )
 })
@@ -73,7 +73,7 @@ export const EditRolePopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, 
   const { handleSubmit, control, formState: { errors, isDirty } } = useForm<EditRoleForm>({
     defaultValues: {
       permissions: permissions.filter(({ permission }) =>
-        role?.permissions.includes(permission) || permission === READ_PERMISSION,
+        role?.permissions.includes(permission) || permission === READ_PERMISSION
       ),
       role: role?.role,
     },
@@ -101,16 +101,20 @@ export const EditRolePopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, 
       }
       onChange(value.filter((value) => value.permission !== permission.permission))
     }
-    return <>
-      {permissions.map(
-        (permission) => <PermissionControl
-          key={permission.permission}
-          permission={permission}
-          onToggleCheckbox={onToggleCheckbox}
-          checked={value.some((existingValue) => existingValue.permission === permission.permission)}
-        />,
-      )}
-    </>
+    return (
+      <>
+        {permissions.map(
+          (permission) => (
+            <PermissionControl
+              key={permission.permission}
+              permission={permission}
+              onToggleCheckbox={onToggleCheckbox}
+              checked={value.some((existingValue) => existingValue.permission === permission.permission)}
+            />
+          ),
+        )}
+      </>
+    )
   }, [permissions])
 
   const confirmButtonName = role ? 'Update' : 'Create'
@@ -129,15 +133,17 @@ export const EditRolePopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, 
           sx={{ position: 'absolute', right: 8, top: 8, color: '#626D82' }}
           onClick={onClose}
         >
-          <CloseOutlinedIcon fontSize="small"/>
+          <CloseOutlinedIcon fontSize="small" />
         </IconButton>
       </DialogTitle>
-      <DialogContent sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        width: 'auto',
-        minWidth: 'unset',
-      }}>
+      <DialogContent
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          width: 'auto',
+          minWidth: 'unset',
+        }}
+      >
         <Controller
           name="role"
           rules={{
@@ -147,19 +153,23 @@ export const EditRolePopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, 
             },
           }}
           control={control}
-          render={({ field }) => <TextField
-            {...field}
-            sx={{ mt: '4px', mb: '12px' }}
-            required
-            inputProps={{ required: false }} // disables "please fill out this field" prompt
-            value={field.value}
-            disabled={!!role}
-            label="Role Name"
-            error={!!errors.role}
-            helperText={errors.role?.message}
-            InputProps={errors.role ? { endAdornment: <ErrorOutlinedIcon color="error" data-testid="ErrorIcon"/> } : {}}
-            data-testid="RoleNameTextField"
-          />}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              sx={{ mt: '4px', mb: '12px' }}
+              required
+              inputProps={{ required: false }} // disables "please fill out this field" prompt
+              value={field.value}
+              disabled={!!role}
+              label="Role Name"
+              error={!!errors.role}
+              helperText={errors.role?.message}
+              InputProps={errors.role
+                ? { endAdornment: <ErrorOutlinedIcon color="error" data-testid="ErrorIcon" /> }
+                : {}}
+              data-testid="RoleNameTextField"
+            />
+          )}
         />
         <InputLabel required sx={{ fontWeight: 500, color: '#000000' }}>Select permissions</InputLabel>
         <Controller
@@ -212,7 +222,7 @@ export const PermissionControl: FC<{
           disabled={disabled}
           checked={checked}
           onChange={handleToggle}
-          checkedIcon={disabled ? <CheckboxDisabledCheckedIcon/> : <CheckboxCheckedIcon/>}
+          checkedIcon={disabled ? <CheckboxDisabledCheckedIcon /> : <CheckboxCheckedIcon />}
           data-testid={`${permission.permission}Checkbox`}
         />
       }

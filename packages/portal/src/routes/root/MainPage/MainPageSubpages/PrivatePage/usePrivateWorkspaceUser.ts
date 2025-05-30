@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { useQuery } from '@tanstack/react-query'
+import { portalRequestJson } from '@apihub/utils/requests'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { portalRequestJson } from '@apihub/utils/requests'
+import { useQuery } from '@tanstack/react-query'
 
 export const SPACE_QUERY_KEY = 'space-query-key'
 
@@ -35,10 +35,8 @@ export function usePrivateWorkspace(): [Key, IsLoading] {
 
 export async function getPrivateWorkspaceUser(): Promise<Key> {
   const { packageId } = await portalRequestJson<PrivateWorkspaceId>('/space', {
-      method: 'get',
-    },
-    { customErrorHandler: onErrorHandler },
-  )
+    method: 'get',
+  }, { customErrorHandler: onErrorHandler })
 
   return packageId
 }

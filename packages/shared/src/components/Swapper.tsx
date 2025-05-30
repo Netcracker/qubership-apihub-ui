@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import SwapHorizOutlinedIcon from '@mui/icons-material/SwapHorizOutlined'
+import { IconButton, Tooltip } from '@mui/material'
 import type { FC } from 'react'
 import { memo } from 'react'
-import { IconButton, Tooltip } from '@mui/material'
-import SwapHorizOutlinedIcon from '@mui/icons-material/SwapHorizOutlined'
 
 export type SwapperProps = {
   onSwap: () => void
@@ -33,7 +33,7 @@ export const Swapper: FC<SwapperProps> = memo<SwapperProps>(({ onSwap }) => {
         onClick={onSwap}
         data-testid="SwapButton"
       >
-        <SwapHorizOutlinedIcon/>
+        <SwapHorizOutlinedIcon />
       </IconButton>
     </Tooltip>
   )

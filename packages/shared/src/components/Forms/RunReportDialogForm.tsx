@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { DialogForm } from '../DialogForm'
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined'
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
+import { LoadingButton } from '@mui/lab'
 import {
   Box,
   Button,
@@ -27,10 +27,10 @@ import {
   InputAdornment,
   TextField,
 } from '@mui/material'
-import { LoadingButton } from '@mui/lab'
+import type { FC } from 'react'
+import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined'
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
+import { DialogForm } from '../DialogForm'
 import { ErrorTypography } from '../Typography/ErrorTypography'
 
 export type RunReportFormData = {
@@ -141,7 +141,7 @@ export const RunReportDialogForm: FC<RunReportDialogForm> = memo<RunReportDialog
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton edge="end" onClick={() => setPasswordVisible(!passwordVisible)}>
-                      {passwordVisible ? <VisibilityOffOutlinedIcon/> : <VisibilityOutlinedIcon/>}
+                      {passwordVisible ? <VisibilityOffOutlinedIcon /> : <VisibilityOutlinedIcon />}
                     </IconButton>
                   </InputAdornment>
                 ),

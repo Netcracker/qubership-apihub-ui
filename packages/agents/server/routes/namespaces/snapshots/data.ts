@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { generateRandomDigit } from '../../../utils'
 import type { Writeable } from '../../../types'
+import { generateRandomDigit } from '../../../utils'
 import { COMPLETE_SERVICES_DTO } from '../services/data'
 import type { SnapshotPublishInfoDto, SnapshotsDto } from './types'
 
@@ -207,13 +207,15 @@ export const NEWLY_PUBLISHED_SNAPSHOT_PUBLISH_INFO_DTO: SnapshotPublishInfoDto =
     viewChangesUrl: service.specs.length !== 0 ? 'https://apihub.example.com' : undefined,
     viewSnapshotUrl: 'https://apihub.example.com',
     viewBaselineUrl: 'https://apihub.example.com',
-    changes: service.specs.length !== 0 ? {
-      breaking: generateRandomDigit(),
-      semiBreaking: generateRandomDigit(),
-      deprecate: generateRandomDigit(),
-      nonBreaking: generateRandomDigit(),
-      annotation: generateRandomDigit(),
-      unclassified: generateRandomDigit(),
-    } : undefined,
+    changes: service.specs.length !== 0
+      ? {
+        breaking: generateRandomDigit(),
+        semiBreaking: generateRandomDigit(),
+        deprecate: generateRandomDigit(),
+        nonBreaking: generateRandomDigit(),
+        annotation: generateRandomDigit(),
+        unclassified: generateRandomDigit(),
+      }
+      : undefined,
   })),
 }

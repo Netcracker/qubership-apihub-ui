@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { useSnapshots } from '../useSnapshots'
-import { useMemo } from 'react'
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
+import { useMemo } from 'react'
+import { useSnapshots } from '../useSnapshots'
 
 export function useVersionOptions(): string[] {
   const [{ snapshots }] = useSnapshots()

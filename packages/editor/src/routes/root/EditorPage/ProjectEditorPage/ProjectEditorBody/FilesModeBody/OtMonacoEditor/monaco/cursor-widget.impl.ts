@@ -45,8 +45,7 @@ const widgets: Map<string, ICursorWidget> = new Map()
  * @param constructorOptions - Constructor options for Cursor Widget.
  */
 class CursorWidget implements ICursorWidget {
-  protected readonly _toDispose: IDisposableCollection =
-    new DisposableCollection()
+  protected readonly _toDispose: IDisposableCollection = new DisposableCollection()
 
   protected readonly _id: string
   protected readonly _duration: number
@@ -210,13 +209,11 @@ class CursorWidget implements ICursorWidget {
    * Change position of the tooltip.
    */
   protected _updateTooltipPosition(): void {
-    const distanceFromTop =
-      this._widgetNode.offsetTop - this._editor.getScrollTop()
+    const distanceFromTop = this._widgetNode.offsetTop - this._editor.getScrollTop()
 
-    this._tooltipNode.style.top =
-      distanceFromTop - this._tooltipNode.offsetHeight < 5
-        ? `${this._tooltipNode.offsetHeight}px`
-        : `-${this._tooltipNode.offsetHeight}px`
+    this._tooltipNode.style.top = distanceFromTop - this._tooltipNode.offsetHeight < 5
+      ? `${this._tooltipNode.offsetHeight}px`
+      : `-${this._tooltipNode.offsetHeight}px`
 
     this._tooltipNode.style.left = '0'
   }

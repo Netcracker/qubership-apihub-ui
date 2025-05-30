@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useParams } from 'react-router-dom'
-import { toGroup } from './useGroups'
-import { useShowSuccessNotification } from './BasePage/Notification'
-import { useInvalidateBranches } from './useBranches'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { FILES_PROJECT_EDITOR_MODE } from '@apihub/entities/editor-modes'
 import type { Project, ProjectDto } from '@apihub/entities/projects'
 import { toProjectDto } from '@apihub/entities/projects'
-import type { InvalidateQuery, IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { useSetSearchParams } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSetSearchParams'
-import { FILES_PROJECT_EDITOR_MODE } from '@apihub/entities/editor-modes'
 import { editorRequestJson, editorRequestVoid } from '@apihub/utils/requests'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { useSetSearchParams } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSetSearchParams'
+import type { InvalidateQuery, IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useParams } from 'react-router-dom'
+import { useShowSuccessNotification } from './BasePage/Notification'
+import { useInvalidateBranches } from './useBranches'
+import { toGroup } from './useGroups'
 
 const PROJECT_QUERY_KEY = 'project-query-key'
 

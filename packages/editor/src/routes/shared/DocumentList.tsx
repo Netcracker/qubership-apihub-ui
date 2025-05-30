@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo } from 'react'
+import type { Ref } from '@apihub/entities/refs'
 import { Box, Link, List, ListItem, ListItemText, Typography } from '@mui/material'
-import { NavLink } from 'react-router-dom'
-import { RefSpecList } from './RefSpecList'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import type { Ref } from '@apihub/entities/refs'
+import type { FC } from 'react'
+import { memo } from 'react'
+import { NavLink } from 'react-router-dom'
+import { RefSpecList } from './RefSpecList'
 
 export type DocumentListProps = {
   isLoading: boolean
@@ -30,15 +30,11 @@ export type DocumentListProps = {
 
 export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({ isLoading, documents }) => {
   if (isLoading) {
-    return (
-      <LoadingIndicator/>
-    )
+    return <LoadingIndicator />
   }
 
   if (isEmpty(documents)) {
-    return (
-      <Typography noWrap variant="body2" mt={2}>No documents</Typography>
-    )
+    return <Typography noWrap variant="body2" mt={2}>No documents</Typography>
   }
 
   return (

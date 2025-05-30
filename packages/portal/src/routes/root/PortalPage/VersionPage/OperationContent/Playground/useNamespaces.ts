@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { useQuery } from '@tanstack/react-query'
+import { portalRequestJson } from '@apihub/utils/requests'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { Namespaces, NamespacesDto } from '@netcracker/qubership-apihub-ui-shared/entities/namespaces'
 import { EMPTY_NAMESPACES, toNamespaces } from '@netcracker/qubership-apihub-ui-shared/entities/namespaces'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { portalRequestJson } from '@apihub/utils/requests'
+import { useQuery } from '@tanstack/react-query'
 
 const NAMESPACES_QUERY_KEY = 'namespaces-query-key'
 

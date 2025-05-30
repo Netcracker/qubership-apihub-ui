@@ -16,7 +16,11 @@
 
 import type { Package } from '../entities/packages'
 
-export function calculatePackagePath(packageObj?: Package | null, fullPath: boolean = true, separator: string = '/'): string {
+export function calculatePackagePath(
+  packageObj?: Package | null,
+  fullPath: boolean = true,
+  separator: string = '/',
+): string {
   if (!packageObj) {
     return ''
   }

@@ -15,12 +15,22 @@
  */
 
 import type { Service } from '@apihub/entities/services'
-import type { FC } from 'react'
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useSnapshotPublicationInfo } from '../../../useSnapshotPublicationInfo'
-import type { ColumnDef } from '@tanstack/table-core'
-import { Box, Button, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import ArrowOutwardRoundedIcon from '@mui/icons-material/ArrowOutwardRounded'
+import { Box, Button, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
+import { Changes } from '@netcracker/qubership-apihub-ui-shared/components/Changes'
+import { ColumnDelimiter } from '@netcracker/qubership-apihub-ui-shared/components/ColumnDelimiter'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { ChangesSummary } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
+import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import type { Spec } from '@netcracker/qubership-apihub-ui-shared/entities/specs'
+import { useResizeObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useResizeObserver'
+import type { ColumnModel } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
+import {
+  DEFAULT_CONTAINER_WIDTH,
+  useColumnsSizing,
+} from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
+import { createComponents } from '@netcracker/qubership-apihub-ui-shared/utils/components'
+import { DEFAULT_NUMBER_SKELETON_ROWS } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
 import type {
   ColumnSizingInfoState,
   ColumnSizingState,
@@ -29,25 +39,15 @@ import type {
   VisibilityState,
 } from '@tanstack/react-table'
 import { flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from '@tanstack/react-table'
-import { ServiceOrDocumentationTableCell } from '../ServiceOrDocumentationTableCell'
-import { BaselinePackageTableCell } from '../BaselinePackageTableCell'
-import { ServiceLabelsTableCell } from '../ServiceLabelsTableCell'
+import type { ColumnDef } from '@tanstack/table-core'
+import type { FC } from 'react'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useEventBus } from '../../../../../EventBusProvider'
+import { useSnapshotPublicationInfo } from '../../../useSnapshotPublicationInfo'
+import { BaselinePackageTableCell } from '../BaselinePackageTableCell'
 import { BwcStatusTableCell } from '../BwcStatusTableCell'
-import type { ColumnModel } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
-import {
-  DEFAULT_CONTAINER_WIDTH,
-  useColumnsSizing,
-} from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
-import { Changes } from '@netcracker/qubership-apihub-ui-shared/components/Changes'
-import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import { ColumnDelimiter } from '@netcracker/qubership-apihub-ui-shared/components/ColumnDelimiter'
-import type { Spec } from '@netcracker/qubership-apihub-ui-shared/entities/specs'
-import type { ChangesSummary } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
-import { createComponents } from '@netcracker/qubership-apihub-ui-shared/utils/components'
-import { DEFAULT_NUMBER_SKELETON_ROWS } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
-import { useResizeObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useResizeObserver'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { ServiceLabelsTableCell } from '../ServiceLabelsTableCell'
+import { ServiceOrDocumentationTableCell } from '../ServiceOrDocumentationTableCell'
 
 export type ValidationResultsStepTableProps = {
   value: ReadonlyArray<Service>
@@ -83,22 +83,22 @@ export const ValidationResultsStepTable: FC<ValidationResultsStepTableProps> = m
     {
       id: SERVICE_OR_DOCUMENTATION_COLUMN_ID,
       header: 'Service / Documentation',
-      cell: ({ row }) => <ServiceOrDocumentationTableCell value={row}/>,
+      cell: ({ row }) => <ServiceOrDocumentationTableCell value={row} />,
     },
     {
       id: SERVICE_LABELS_COLUMN_ID,
       header: 'Labels',
-      cell: ({ row }) => <ServiceLabelsTableCell value={row}/>,
+      cell: ({ row }) => <ServiceLabelsTableCell value={row} />,
     },
     {
       id: BASELINE_PACKAGE_COLUMN_ID,
       header: 'Baseline Package',
-      cell: ({ row }) => <BaselinePackageTableCell value={row}/>,
+      cell: ({ row }) => <BaselinePackageTableCell value={row} />,
     },
     {
       id: BWC_STATUS_COLUMN_ID,
       header: 'BWC Status',
-      cell: ({ row }) => <BwcStatusTableCell value={row}/>,
+      cell: ({ row }) => <BwcStatusTableCell value={row} />,
     },
     {
       id: CHANGES_COLUMN_ID,
@@ -107,7 +107,7 @@ export const ValidationResultsStepTable: FC<ValidationResultsStepTableProps> = m
         if (service && changeSummary) {
           return (
             <Box onClick={() => openChangeView(service, viewChangesUrl, apiType)}>
-              <Changes mode="compact" value={changeSummary}/>
+              <Changes mode="compact" value={changeSummary} />
             </Box>
           )
         }
@@ -128,7 +128,7 @@ export const ValidationResultsStepTable: FC<ValidationResultsStepTableProps> = m
               variant="text"
               href={viewChangesUrl}
               target="_blank"
-              startIcon={<ArrowOutwardRoundedIcon/>}
+              startIcon={<ArrowOutwardRoundedIcon />}
             >
               View Changes
             </Button>
@@ -140,26 +140,32 @@ export const ValidationResultsStepTable: FC<ValidationResultsStepTableProps> = m
     },
   ], [openChangeView])
 
-  const data: TableData[] = useMemo(() => value.filter(service => !!snapshotPublicationInfo.services.find(({ key }) => key === service.key)).map(service => {
-    const {
-      changeSummary,
-      viewChangesUrl,
-      baselineFound,
-      baselineVersionFound,
-      apiTypes,
-    } = snapshotPublicationInfo.services.find(({ key }) => key === service.key)!
-    const [apiType = DEFAULT_API_TYPE] = apiTypes ?? []
-    return ({
-      service: service,
-      bwcErrors: (baselineFound && baselineVersionFound) ? changeSummary?.breaking : undefined,
-      changeSummary: changeSummary,
-      viewChangesUrl: viewChangesUrl,
-      children: service.specs?.map(spec => ({ spec })),
-      baselineFound: baselineFound,
-      baselineVersionFound: baselineVersionFound,
-      apiType: apiType,
-    })
-  }), [snapshotPublicationInfo.services, value])
+  const data: TableData[] = useMemo(
+    () =>
+      value.filter(service => !!snapshotPublicationInfo.services.find(({ key }) => key === service.key)).map(
+        service => {
+          const {
+            changeSummary,
+            viewChangesUrl,
+            baselineFound,
+            baselineVersionFound,
+            apiTypes,
+          } = snapshotPublicationInfo.services.find(({ key }) => key === service.key)!
+          const [apiType = DEFAULT_API_TYPE] = apiTypes ?? []
+          return ({
+            service: service,
+            bwcErrors: (baselineFound && baselineVersionFound) ? changeSummary?.breaking : undefined,
+            changeSummary: changeSummary,
+            viewChangesUrl: viewChangesUrl,
+            children: service.specs?.map(spec => ({ spec })),
+            baselineFound: baselineFound,
+            baselineVersionFound: baselineVersionFound,
+            apiType: apiType,
+          })
+        },
+      ),
+    [snapshotPublicationInfo.services, value],
+  )
 
   const [expanded, setExpanded] = useState<ExpandedState>({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -198,7 +204,7 @@ export const ValidationResultsStepTable: FC<ValidationResultsStepTableProps> = m
                   }}
                 >
                   {flexRender(header.column.columnDef.header, header.getContext())}
-                  {index !== headerGroup.headers.length - 1 && <ColumnDelimiter header={header} resizable={true}/>}
+                  {index !== headerGroup.headers.length - 1 && <ColumnDelimiter header={header} resizable={true} />}
                 </TableCell>
               ))}
             </TableRow>
@@ -218,7 +224,7 @@ export const ValidationResultsStepTable: FC<ValidationResultsStepTableProps> = m
               ))}
             </TableRow>
           ))}
-          {isLoading && <TableSkeleton/>}
+          {isLoading && <TableSkeleton />}
         </TableBody>
       </Table>
     </TableContainer>
@@ -253,22 +259,22 @@ type TableData = Partial<{
 }>
 
 const TableSkeleton: FC = memo(() => {
-  return createComponents(<RowSkeleton/>, DEFAULT_NUMBER_SKELETON_ROWS)
+  return createComponents(<RowSkeleton />, DEFAULT_NUMBER_SKELETON_ROWS)
 })
 
 const RowSkeleton: FC = memo(() => {
   return (
     <TableRow>
       <TableCell>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
-      <TableCell/>
+      <TableCell />
     </TableRow>
   )
 })

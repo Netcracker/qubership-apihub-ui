@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import type { FC, PropsWithChildren } from 'react'
-import { createContext, memo, useContext, useState } from 'react'
-import { createEventBus, slot } from 'ts-event-bus'
-import { useEvent } from 'react-use'
-import { useNavigate } from 'react-router-dom'
-import type { Path } from '@remix-run/router'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type {
   BRANCH_SEARCH_PARAM,
   MODE_SEARCH_PARAM,
@@ -28,7 +23,12 @@ import type {
   VIEW_SEARCH_PARAM,
 } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { Path } from '@remix-run/router'
+import type { FC, PropsWithChildren } from 'react'
+import { createContext, memo, useContext, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useEvent } from 'react-use'
+import { createEventBus, slot } from 'ts-event-bus'
 
 export const NAVIGATE_TO_EDITOR = 'navigate-to-editor'
 export const NAVIGATE_TO_PROJECT = 'navigate-to-project'

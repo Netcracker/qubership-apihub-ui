@@ -20,12 +20,12 @@
 import '@mui/material/styles'
 import '@mui/material/Button'
 import '@mui/material/Chip'
-import { ComponentsProps } from '@mui/material/styles/props'
-import { ComponentsOverrides } from '@mui/material/styles/overrides'
-import { ComponentsVariants } from '@mui/material/styles/variants'
+import { Theme } from '@mui/material'
 import { SimplePaletteColorOptions } from '@mui/material/styles/createPalette'
 import { CSSProperties } from '@mui/material/styles/createTypography'
-import { Theme } from '@mui/material'
+import { ComponentsOverrides } from '@mui/material/styles/overrides'
+import { ComponentsProps } from '@mui/material/styles/props'
+import { ComponentsVariants } from '@mui/material/styles/variants'
 import { Context } from 'react'
 import { FetchErrorDetails, FetchRedirectDetails } from '../src/utils'
 
@@ -50,9 +50,9 @@ declare module '@mui/material/styles' {
 
   interface Components {
     MuiTabPanel?: {
-      defaultProps?: ComponentsProps['MuiTabPanel'];
-      styleOverrides?: ComponentsOverrides<Theme>['MuiTabPanel'];
-      variants?: ComponentsVariants['MuiTabPanel'];
+      defaultProps?: ComponentsProps['MuiTabPanel']
+      styleOverrides?: ComponentsOverrides<Theme>['MuiTabPanel']
+      variants?: ComponentsVariants['MuiTabPanel']
     }
   }
 
@@ -97,12 +97,12 @@ declare module '@mui/material/Chip' {
 
 declare module '@mui/material/Typography' {
   interface TypographyPropsVariantOverrides {
-    subtitle3: true;
+    subtitle3: true
   }
 }
 
 interface CustomEventMap {
-  'fetch-error': CustomEvent<FetchErrorDetails>,
+  'fetch-error': CustomEvent<FetchErrorDetails>
   'fetch-redirect': CustomEvent<FetchRedirectDetails>
 }
 
@@ -112,9 +112,15 @@ declare global {
     TaskController: TaskController
     TaskPriorityChangeEvent: TaskPriorityChangeEvent
 
-    addEventListener<K extends keyof CustomEventMap>(type: K, listener: (this: Document, ev: CustomEventMap[K]) => void): void
+    addEventListener<K extends keyof CustomEventMap>(
+      type: K,
+      listener: (this: Document, ev: CustomEventMap[K]) => void,
+    ): void
 
-    removeEventListener<K extends keyof CustomEventMap>(type: K, listener: (this: Document, ev: CustomEventMap[K]) => void): void
+    removeEventListener<K extends keyof CustomEventMap>(
+      type: K,
+      listener: (this: Document, ev: CustomEventMap[K]) => void,
+    ): void
   }
 }
 
@@ -124,9 +130,9 @@ declare class Scheduler {
   postTask<T>(
     callback: () => T,
     options: Partial<{
-      signal: AbortSignal,
-      priority: Priority,
-      delay: number,
+      signal: AbortSignal
+      priority: Priority
+      delay: number
     }>,
   ): Promise<T>
 }
@@ -139,7 +145,7 @@ declare type Priority =
 declare class TaskController extends AbortController {
   constructor(
     init: {
-      priority: Priority,
+      priority: Priority
     },
   )
 
@@ -152,7 +158,7 @@ declare class TaskPriorityChangeEvent extends Event {
   constructor(
     typeArg: string,
     init: {
-      previousPriority: Priority,
+      previousPriority: Priority
     },
   )
 }

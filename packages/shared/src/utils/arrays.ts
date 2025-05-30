@@ -24,7 +24,7 @@ export function groupBy<T extends ReadonlyArray<any>>(
 ): Record<string, T> {
   return array.reduce(
     (previousValue, currentValue) => {
-      (previousValue[currentValue[key]] = previousValue[currentValue[key]] ?? []).push(currentValue)
+      ;(previousValue[currentValue[key]] = previousValue[currentValue[key]] ?? []).push(currentValue)
       return previousValue
     },
     {},
@@ -36,7 +36,7 @@ export function sortByProperty<T>(
   property: keyof T,
 ): T[] {
   const collator = new Intl.Collator(undefined, { numeric: true })
-  
+
   return [...array].sort((a, b) => {
     const aValue = a[property]
     const bValue = b[property]

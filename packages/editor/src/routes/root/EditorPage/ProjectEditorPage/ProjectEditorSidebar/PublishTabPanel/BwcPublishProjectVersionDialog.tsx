@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useEffect, useMemo } from 'react'
-import { Button, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material'
-import type { BwcPublishProjectVersionDialogDetail } from '../../../../../EventBusProvider'
-import { SHOW_BWC_PUBLISH_PROJECT_VERSION_DIALOG } from '../../../../../EventBusProvider'
 import { LoadingButton } from '@mui/lab'
-import { usePublishProjectVersion } from '../../usePublishProjectVersion'
-import { useSaveChanges } from '../../useSaveChanges'
+import { Button, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material'
+import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 import { waitForSocketEvent } from '@netcracker/qubership-apihub-ui-shared/utils/sockets'
+import type { FC } from 'react'
+import { memo, useEffect, useMemo } from 'react'
+import type { BwcPublishProjectVersionDialogDetail } from '../../../../../EventBusProvider'
+import { SHOW_BWC_PUBLISH_PROJECT_VERSION_DIALOG } from '../../../../../EventBusProvider'
+import { usePublishProjectVersion } from '../../usePublishProjectVersion'
+import { useSaveChanges } from '../../useSaveChanges'
 
 export const BwcPublishProjectVersionDialog: FC = memo(() => (
   <PopupDelegate

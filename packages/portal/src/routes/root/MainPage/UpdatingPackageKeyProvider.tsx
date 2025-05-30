@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { Dispatch, FC, PropsWithChildren, SetStateAction } from 'react'
 import { createContext, useContext, useState } from 'react'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 
 const UpdatingPackageKeyContext = createContext<Key>()
 const SetUpdatingPackageKeyContext = createContext<Dispatch<SetStateAction<Key>>>()

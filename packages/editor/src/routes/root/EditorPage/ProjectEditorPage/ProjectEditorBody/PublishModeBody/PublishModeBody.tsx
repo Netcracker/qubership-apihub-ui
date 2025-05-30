@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo } from 'react'
-import { Autocomplete, Box, Chip, TextField, Typography } from '@mui/material'
-import { useUpdateProjectFileMeta } from '../../useUpdateProjectFileMeta'
-import { FileProblemsPanel } from '../../FileProblemsPanel'
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
-import { PublishPreviewDialog } from './PublishPreviewDialog'
-import { useEventBus } from '../../../../../EventBusProvider'
-import { useSelectedPreviewFile } from '../../useSelectedPreviewFile'
-import { useBranchCache } from '../../useBranchCache'
+import { Autocomplete, Box, Chip, TextField, Typography } from '@mui/material'
+import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
+import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import { GRAPHQL_SPEC_TYPES, UNKNOWN_SPEC_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
-import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
+import type { FC } from 'react'
+import { memo } from 'react'
+import { useEventBus } from '../../../../../EventBusProvider'
+import { FileProblemsPanel } from '../../FileProblemsPanel'
+import { useBranchCache } from '../../useBranchCache'
+import { useSelectedPreviewFile } from '../../useSelectedPreviewFile'
+import { useUpdateProjectFileMeta } from '../../useUpdateProjectFileMeta'
+import { PublishPreviewDialog } from './PublishPreviewDialog'
 
 export const PublishModeBody: FC = memo(() => {
   const { key = '', publish, labels = [] } = useSelectedPreviewFile() ?? {}
@@ -48,49 +48,51 @@ export const PublishModeBody: FC = memo(() => {
       <BodyCard
         header={branchCache[key]?.title}
         subheader={key}
-        action={
-          branchCache[key]?.type !== UNKNOWN_SPEC_TYPE && (
-            <ButtonWithHint
-              variant="outlined"
-              title="Preview"
-              disabled={previewDisabled}
-              disableHint={!previewDisabled}
-              hint="Preview is not available for GraphQL"
-              onClick={showPublishPreviewDialog}
-              startIcon={<VisibilityOutlinedIcon fontSize="small" sx={{ mr: 1 }}/>}
-            />
-          )
-        }
-        body={
-          isLoading
-            ? <LoadingIndicator/>
-            : <Box display="flex" flexDirection="column" overflow="auto" gap={2}>
+        action={branchCache[key]?.type !== UNKNOWN_SPEC_TYPE && (
+          <ButtonWithHint
+            variant="outlined"
+            title="Preview"
+            disabled={previewDisabled}
+            disableHint={!previewDisabled}
+            hint="Preview is not available for GraphQL"
+            onClick={showPublishPreviewDialog}
+            startIcon={<VisibilityOutlinedIcon fontSize="small" sx={{ mr: 1 }} />}
+          />
+        )}
+        body={isLoading
+          ? <LoadingIndicator />
+          : (
+            <Box display="flex" flexDirection="column" overflow="auto" gap={2}>
               <Typography variant="h5">Labels</Typography>
               <Autocomplete
-                multiple freeSolo
+                multiple
+                freeSolo
                 options={['']}
                 getOptionLabel={(option) => option}
                 value={[...labels]}
                 onChange={(_, value) => updateFileMeta({ key: key, labels: value })}
                 renderTags={(value, getTagProps) => (
-                  value.map((option, index) => <Chip {...getTagProps({ index })} variant="filled" label={option}
-                                                     size="small"/>)
+                  value.map((option, index) => (
+                    <Chip {...getTagProps({ index })} variant="filled" label={option} size="small" />
+                  ))
                 )}
-                renderInput={(params) => <TextField
-                  {...params}
-                  hiddenLabel
-                  variant="filled"
-                  placeholder="Add Label"
-                  sx={{ m: 0 }}
-                  inputProps={{ ...params.inputProps, style: { marginTop: -6 } }}
-                />}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    hiddenLabel
+                    variant="filled"
+                    placeholder="Add Label"
+                    sx={{ m: 0 }}
+                    inputProps={{ ...params.inputProps, style: { marginTop: -6 } }}
+                  />
+                )}
               />
               <Typography variant="h5">Problems</Typography>
-              <FileProblemsPanel fileKey={key}/>
+              <FileProblemsPanel fileKey={key} />
             </Box>
-        }
+          )}
       />
-      <PublishPreviewDialog/>
+      <PublishPreviewDialog />
     </Placeholder>
   )
 })

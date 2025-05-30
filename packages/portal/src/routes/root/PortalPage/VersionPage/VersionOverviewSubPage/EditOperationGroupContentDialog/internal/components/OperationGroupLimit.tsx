@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
 import { Box, Typography } from '@mui/material'
+import type { FC } from 'react'
 import { OPERATION_GROUP_LIMIT } from '../consts'
 
 export type OperationGroupLimitProps = {

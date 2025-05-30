@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
+import { Box, Typography } from '@mui/material'
 import type { FC } from 'react'
 import * as React from 'react'
 import { memo, useMemo, useState } from 'react'
-import { Box, Typography } from '@mui/material'
-import { CustomTagsTree, isPrimitive } from './CustomTagsTree'
-import { InfoContextIcon } from '../icons/InfoContextIcon'
-import { OverflowTooltip } from './OverflowTooltip'
 import type { JSONValue } from '../entities/operations'
+import { InfoContextIcon } from '../icons/InfoContextIcon'
 import type { Pixel } from '../utils/types'
 import { ButtonWithHint } from './Buttons/ButtonWithHint'
+import { CustomTagsTree, isPrimitive } from './CustomTagsTree'
+import { OverflowTooltip } from './OverflowTooltip'
 
 const MAX_LINES_COUNT = 2
 const ICON_SIZE: Pixel = 16
@@ -85,69 +85,69 @@ export const CustomMetadataCell: FC<CustomMetadataCellProps> = memo<CustomMetada
             if (!isPrimitive(value)) {
               return (
                 <Box key={key} overflow="hidden" textOverflow="ellipsis">
-                  <Typography display="inline" minWidth="fit-content" variant="subtitle1">{key}: </Typography>
+                  <Typography display="inline" minWidth="fit-content" variant="subtitle1">{key}:</Typography>
                   <Typography display="inline" variant="body2">...</Typography>
                 </Box>
               )
             }
             return (
               <Box className="tagLine" key={key} overflow="hidden" textOverflow="ellipsis">
-                <Typography display="inline" minWidth="fit-content" variant="subtitle1">{key}: </Typography>
+                <Typography display="inline" minWidth="fit-content" variant="subtitle1">{key}:</Typography>
                 <Typography display="inline" variant="body2">{`${value}`}</Typography>
               </Box>
             )
           })}
         </Box>
       </Box>
-      {shouldShowIcon && <Box alignSelf="end" height="23px" display="flex" alignItems="center">
-        <ButtonWithHint
-          area-label="info"
-          hint={
-            <Box overflow="scroll" maxHeight="50vh">
-              <CustomTagsTree tree={tree}/>
-            </Box>
-          }
-          size="small"
-          sx={{ visibility: 'hidden', height: '20px' }}
-          startIcon={
-            <InfoContextIcon
-              className="visible-on-hover"
-              sx={{
-                fontSize: `${ICON_SIZE}px`,
-                visibility: open ? 'visible' : 'hidden',
-                cursor: 'default', // needed to prevent the cursor from changing to a pointer (default for buttons) when hovering over the icon
-              }}
-            />
-          }
-          disableHint={false}
-          disabled={false}
-          handleClose={handleHintClose}
-          handleOpen={handleHintOpen}
-          tooltipMaxWidth={350}
-        />
-      </Box>}
+      {shouldShowIcon && (
+        <Box alignSelf="end" height="23px" display="flex" alignItems="center">
+          <ButtonWithHint
+            area-label="info"
+            hint={
+              <Box overflow="scroll" maxHeight="50vh">
+                <CustomTagsTree tree={tree} />
+              </Box>
+            }
+            size="small"
+            sx={{ visibility: 'hidden', height: '20px' }}
+            startIcon={
+              <InfoContextIcon
+                className="visible-on-hover"
+                sx={{
+                  fontSize: `${ICON_SIZE}px`,
+                  visibility: open ? 'visible' : 'hidden',
+                  cursor: 'default', // needed to prevent the cursor from changing to a pointer (default for buttons) when hovering over the icon
+                }}
+              />
+            }
+            disableHint={false}
+            disabled={false}
+            handleClose={handleHintClose}
+            handleOpen={handleHintOpen}
+            tooltipMaxWidth={350}
+          />
+        </Box>
+      )}
     </Box>
   )
 
   return (
     <Box alignSelf="end" paddingBottom="10px">
-      {
-        shouldShowIcon ? cellContent : (
-          <OverflowTooltip
-            checkOverflow={checkTextOverflow}
-            title={
-              <Box overflow="scroll" maxHeight="50vh">
-                <CustomTagsTree tree={tree}/>
-              </Box>
-            }
-            PopperProps={{
-              sx: { '.MuiTooltip-tooltip': { maxWidth: 350 } },
-            }}
-          >
-            {cellContent}
-          </OverflowTooltip>
-        )
-      }
+      {shouldShowIcon ? cellContent : (
+        <OverflowTooltip
+          checkOverflow={checkTextOverflow}
+          title={
+            <Box overflow="scroll" maxHeight="50vh">
+              <CustomTagsTree tree={tree} />
+            </Box>
+          }
+          PopperProps={{
+            sx: { '.MuiTooltip-tooltip': { maxWidth: 350 } },
+          }}
+        >
+          {cellContent}
+        </OverflowTooltip>
+      )}
     </Box>
   )
 })

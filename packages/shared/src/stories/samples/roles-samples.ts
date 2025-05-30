@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { Role } from '../../types/roles'
 import type { Permission } from '../../types/permissions'
+import type { Role } from '../../types/roles'
 
 export const ROLES_LIST: Role[] = [
   {

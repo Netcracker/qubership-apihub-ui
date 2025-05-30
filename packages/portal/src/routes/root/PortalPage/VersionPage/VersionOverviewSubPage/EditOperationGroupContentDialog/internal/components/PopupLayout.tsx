@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
+import { Box } from '@mui/material'
+import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import type { FC, ReactNode } from 'react'
 import * as React from 'react'
-import { Box } from '@mui/material'
-import type { ExchangerControlsProps } from './ExchangerControls'
-import { ExchangerControls } from './ExchangerControls'
 import {
   BORDER,
   CONTENT_HEIGHT,
@@ -26,8 +25,9 @@ import {
   OVERRIDE_LEFT_SECTION_INDENTS,
   OVERRIDE_RIGHT_SECTION_INDENTS,
 } from '../consts'
+import type { ExchangerControlsProps } from './ExchangerControls'
+import { ExchangerControls } from './ExchangerControls'
 import { OperationGroupLimit } from './OperationGroupLimit'
-import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 
 export type EditOperationGroupContentPopupLayoutProps = {
   navigation: ReactNode
@@ -66,17 +66,17 @@ export const PopupLayout: FC<EditOperationGroupContentPopupLayoutProps> = (props
       >
         <BodyCard
           header={leftHeader}
-          body={(
+          body={
             <Box display="flex" height="100%" overflow="auto">
               {leftBody}
             </Box>
-          )}
+          }
           overrideHeaderSx={OVERRIDE_LEFT_SECTION_INDENTS}
           overrideBodySx={OVERRIDE_LEFT_SECTION_INDENTS}
         />
       </Box>
       {/* Exchanger Controls */}
-      <ExchangerControls {...exchangerParameters}/>
+      <ExchangerControls {...exchangerParameters} />
       {/* Right List */}
       <Box
         width={LIST_WIDTH}
@@ -85,14 +85,14 @@ export const PopupLayout: FC<EditOperationGroupContentPopupLayoutProps> = (props
       >
         <BodyCard
           header={rightHeader}
-          body={(
+          body={
             <>
               <Box display="flex" flexDirection="column" height="100%" overflow="auto">
                 {rightBody}
               </Box>
-              <OperationGroupLimit count={rightCount}/>
+              <OperationGroupLimit count={rightCount} />
             </>
-          )}
+          }
           overrideHeaderSx={OVERRIDE_RIGHT_SECTION_INDENTS}
           overrideBodySx={OVERRIDE_RIGHT_SECTION_INDENTS}
         />

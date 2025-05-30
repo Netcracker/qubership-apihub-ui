@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-import { useMutation } from '@tanstack/react-query'
-import { useShowErrorNotification, useShowSuccessNotification } from '../../../../BasePage/Notification'
-import { useInvalidateVersionContent } from '../../../../usePackageVersionContent'
-import { generatePath } from 'react-router-dom'
+import { portalRequestVoid } from '@apihub/utils/requests'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import type {
   CreateOperationGroupDto,
   UpdateOperationGroupDto,
@@ -28,10 +25,13 @@ import {
   toCreateOperationGroupDto,
   toUpdateOperationGroupDto,
 } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
-import { portalRequestVoid } from '@apihub/utils/requests'
+import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
 import { API_V3 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { useMutation } from '@tanstack/react-query'
+import { generatePath } from 'react-router-dom'
+import { useShowErrorNotification, useShowSuccessNotification } from '../../../../BasePage/Notification'
+import { useInvalidateVersionContent } from '../../../../usePackageVersionContent'
 
 type CreateOperationGroupData = {
   packageKey: Key
@@ -67,7 +67,13 @@ export function useCreateOperationGroup(): {
 
   const { mutate, isLoading, isSuccess } = useMutation<void, Error, CreateOperationGroupData>({
     mutationFn: ({ packageKey, versionKey, apiType, groupName, description, template, isTemplateUpdated }) =>
-      createOperationGroup(packageKey, versionKey, apiType, toCreateOperationGroupDto(groupName, description, template), isTemplateUpdated),
+      createOperationGroup(
+        packageKey,
+        versionKey,
+        apiType,
+        toCreateOperationGroupDto(groupName, description, template),
+        isTemplateUpdated,
+      ),
     onSuccess: (_, { packageKey, versionKey, groupName }) => {
       showNotification({ message: `New group ${groupName} has been added ` })
       return invalidateVersionContent({ packageKey, versionKey })
@@ -103,7 +109,14 @@ export function useUpdateOperationGroupParameters(): {
       template,
       isTemplateUpdated,
     }) =>
-      updateOperationGroupParameters(packageKey, versionKey, apiType, toUpdateOperationGroupDto(groupName, description, template), oldGroupName, isTemplateUpdated),
+      updateOperationGroupParameters(
+        packageKey,
+        versionKey,
+        apiType,
+        toUpdateOperationGroupDto(groupName, description, template),
+        oldGroupName,
+        isTemplateUpdated,
+      ),
     onSuccess: (_, { packageKey, versionKey, groupName }) => {
       showNotification({ message: `Group ${groupName} has been updated ` })
       return invalidateVersionContent({ packageKey, versionKey })

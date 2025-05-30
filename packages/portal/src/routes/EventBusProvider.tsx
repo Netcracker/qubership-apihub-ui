@@ -14,21 +14,39 @@
  * limitations under the License.
  */
 
-import type { FC, PropsWithChildren } from 'react'
-import { createContext, memo, useContext, useState } from 'react'
-import { createEventBus, slot } from 'ts-event-bus'
-import type { Path } from '@remix-run/router'
+import type { SearchCriteria } from '@apihub/entities/global-search'
+import type {
+  OasSettingsExtension,
+} from '@netcracker/qubership-apihub-ui-portal/src/routes/root/PortalPage/PackageSettingsPage/ExportSettingsTab/package-export-config'
+import {
+  SHOW_ADD_SYSTEM_ADMINISTRATOR_DIALOG,
+} from '@netcracker/qubership-apihub-ui-shared/components/AddSystemAdministratorDialog'
+import type { ShowDeleteRoleDetail } from '@netcracker/qubership-apihub-ui-shared/components/DeleteRoleDialog'
+import { SHOW_DELETE_ROLE_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/DeleteRoleDialog'
+import type { ShowEditRoleDetail } from '@netcracker/qubership-apihub-ui-shared/components/EditRoleDialog'
+import { SHOW_EDIT_ROLE_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/EditRoleDialog'
+import type { ShowEmptyPackageDetail } from '@netcracker/qubership-apihub-ui-shared/components/EmptyPackageDialog'
+import { SHOW_EMPTY_PACKAGE_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/EmptyPackageDialog'
+import type {
+  ShowDeleteFileDetail,
+} from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/DeleteFileDialog'
+import {
+  SHOW_DELETE_FILE_DIALOG,
+} from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/DeleteFileDialog'
+import type {
+  ShowEditFileLabelsDetail,
+} from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/EditFileLabelsDialog'
+import {
+  SHOW_EDIT_FILE_LABELS_DIALOG,
+} from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/EditFileLabelsDialog'
 import type {
   SpecificationDialogDetail,
 } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/SpecificationDialog'
 import {
   SHOW_SPECIFICATION_DIALOG,
 } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/SpecificationDialog'
-import type { SearchCriteria } from '@apihub/entities/global-search'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import type { PackagePermissions } from '@netcracker/qubership-apihub-ui-shared/entities/package-permissions'
-import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 import type { OperationGroup } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
 import type {
   ApiAudience,
@@ -36,34 +54,16 @@ import type {
   OperationData,
   OperationsGroupedByTag,
 } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import type { PackagePermissions } from '@netcracker/qubership-apihub-ui-shared/entities/package-permissions'
+import type { PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import type { Spec } from '@netcracker/qubership-apihub-ui-shared/entities/specs'
-import type { ShowDeleteRoleDetail } from '@netcracker/qubership-apihub-ui-shared/components/DeleteRoleDialog'
-import { SHOW_DELETE_ROLE_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/DeleteRoleDialog'
-import type { ShowEditRoleDetail } from '@netcracker/qubership-apihub-ui-shared/components/EditRoleDialog'
-import { SHOW_EDIT_ROLE_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/EditRoleDialog'
-import type {
-  ShowDeleteFileDetail,
-} from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/DeleteFileDialog'
-import {
-  SHOW_DELETE_FILE_DIALOG,
-} from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/DeleteFileDialog'
 import type { PackageReference } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
-import {
-  SHOW_ADD_SYSTEM_ADMINISTRATOR_DIALOG,
-} from '@netcracker/qubership-apihub-ui-shared/components/AddSystemAdministratorDialog'
-import type {
-  ShowEditFileLabelsDetail,
-} from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/EditFileLabelsDialog'
-import {
-  SHOW_EDIT_FILE_LABELS_DIALOG,
-} from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/EditFileLabelsDialog'
-import type { ShowEmptyPackageDetail } from '@netcracker/qubership-apihub-ui-shared/components/EmptyPackageDialog'
-import { SHOW_EMPTY_PACKAGE_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/EmptyPackageDialog'
+import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 import { SHOW_ADD_USER_DIALOG, SHOW_USER_ROLES_DIALOG } from '@netcracker/qubership-apihub-ui-shared/types/dialogs'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import type {
-  OasSettingsExtension,
-} from '@netcracker/qubership-apihub-ui-portal/src/routes/root/PortalPage/PackageSettingsPage/ExportSettingsTab/package-export-config'
+import type { Path } from '@remix-run/router'
+import type { FC, PropsWithChildren } from 'react'
+import { createContext, memo, useContext, useState } from 'react'
+import { createEventBus, slot } from 'ts-event-bus'
 
 // base
 export const SHOW_SUCCESS_NOTIFICATION = 'show-success-notification'
@@ -178,7 +178,7 @@ export type OperationsMovementDetails =
 
 export type ShowEditPackagePrefixDetail = {
   packageKey?: string
-  existingPrefix?:string
+  existingPrefix?: string
 }
 
 export type ShowEditPreservedOasExtensionsDetail = {

@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo } from 'react'
-import { useParams } from 'react-router-dom'
-import { useDownloadOperationsAsExcel } from './useDownloadOperationsAsExcel'
-import { useFullMainVersion } from '../FullMainVersionProvider'
+import { ExportMenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ExportMenuButton'
 import type { ApiAudience, ApiKind } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import {
   useResolvedOperationGroupParameters,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/operation-groups/useResolvedOperationGroupParameters'
-import { ExportMenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ExportMenuButton'
+import type { FC } from 'react'
+import { memo } from 'react'
+import { useParams } from 'react-router-dom'
+import { useFullMainVersion } from '../FullMainVersionProvider'
+import { useDownloadOperationsAsExcel } from './useDownloadOperationsAsExcel'
 
 export type ExportOperationsMenuProps = {
   textFilter?: string
@@ -84,12 +84,14 @@ export const ExportOperationsMenu: FC<ExportOperationsMenuProps> = memo(({
     })
   }
 
-  return <ExportMenuButton
-    disabled={disabled}
-    title={title ?? 'Export Operations to Excel'}
-    allDownloadText="All operations"
-    filteredDownloadText="Filtered operations"
-    downloadAll={onDownloadAllOperations}
-    downloadFiltered={onDownloadFilteredOperations}
-  />
+  return (
+    <ExportMenuButton
+      disabled={disabled}
+      title={title ?? 'Export Operations to Excel'}
+      allDownloadText="All operations"
+      filteredDownloadText="Filtered operations"
+      downloadAll={onDownloadAllOperations}
+      downloadFiltered={onDownloadFilteredOperations}
+    />
+  )
 })

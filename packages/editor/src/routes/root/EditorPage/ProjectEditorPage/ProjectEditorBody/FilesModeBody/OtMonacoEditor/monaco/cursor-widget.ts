@@ -22,8 +22,8 @@
  * See LICENSE file in the root directory for more details.
  */
 
-import type { IDisposable } from '../monaco-types'
 import type * as monaco from 'monaco-editor'
+import type { IDisposable } from '../monaco-types'
 
 /**
  * @internal
@@ -48,9 +48,7 @@ export type TCursorWidgetConstructionOptions = {
  * @internal
  * Cursor Widget - To show tooltip like UI with Username beside Cursor.
  */
-export interface ICursorWidget
-  extends monaco.editor.IContentWidget,
-    IDisposable {
+export interface ICursorWidget extends monaco.editor.IContentWidget, IDisposable {
   /**
    * Update Range of the Cursor Widget.
    * @param range - Range of the Cursor/Selection.

@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import * as React from 'react'
-import { memo, useEffect, useState } from 'react'
 import {
   Autocomplete,
   Button,
@@ -27,14 +24,17 @@ import {
   ListItemText,
   TextField,
 } from '@mui/material'
+import type { FC } from 'react'
+import * as React from 'react'
+import { memo, useEffect, useState } from 'react'
 import { useEvent } from 'react-use'
 import { SHOW_BWC_CHECK_DIALOG } from '../../../../../EventBusProvider'
 
+import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
+import type { VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import { useBwcVersionKey, useSetBwcVersionKey } from '../../BwcVersionKeyProvider'
 import { NO_PREVIOUS_RELEASE_VERSION_OPTION, usePreviousVersionOptions } from '../../usePreviousVersionOptions'
-import type { VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
-import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 
 export const BwcCheckDialog: FC = memo(() => {
   const [open, setOpen] = useState(false)
@@ -45,7 +45,9 @@ export const BwcCheckDialog: FC = memo(() => {
   const bwcVersionKey = useBwcVersionKey()
   const setBwcVersionKey = useSetBwcVersionKey()
   const [selectedPreviousVersion, setSelectedPreviousVersion] = useState<VersionKey | undefined>(() => bwcVersionKey)
-  useEffect(() => {bwcVersionKey && setSelectedPreviousVersion(bwcVersionKey)}, [bwcVersionKey])
+  useEffect(() => {
+    bwcVersionKey && setSelectedPreviousVersion(bwcVersionKey)
+  }, [bwcVersionKey])
 
   return (
     <DialogForm
@@ -66,16 +68,19 @@ export const BwcCheckDialog: FC = memo(() => {
               <ListItemText>{getSplittedVersionKey(value).versionKey}</ListItemText>
             </ListItem>
           )}
-          renderInput={(params) => <TextField {...params} required label="Previous release version"/>}
+          renderInput={(params) => <TextField {...params} required label="Previous release version" />}
           onChange={(_, value) => value && setSelectedPreviousVersion(value)}
         />
       </DialogContent>
 
       <DialogActions>
-        <Button variant="contained" onClick={() => {
-          setOpen(false)
-          setBwcVersionKey(selectedPreviousVersion)
-        }}>
+        <Button
+          variant="contained"
+          onClick={() => {
+            setOpen(false)
+            setBwcVersionKey(selectedPreviousVersion)
+          }}
+        >
           Check
         </Button>
         <Button variant="outlined" onClick={() => setOpen(false)}>

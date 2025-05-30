@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { useParams } from 'react-router-dom'
-import { useBranchSearchParam } from '../../../../../useBranchSearchParam'
-import { useMutation } from '@tanstack/react-query'
-import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { useSetSearchParams } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSetSearchParams'
-import { useShowSuccessNotification } from '../../../../../BasePage/Notification'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { editorRequestJson } from '@apihub/utils/requests'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { useSetSearchParams } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSetSearchParams'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { useMutation } from '@tanstack/react-query'
+import { useParams } from 'react-router-dom'
+import { useShowSuccessNotification } from '../../../../../BasePage/Notification'
+import { useBranchSearchParam } from '../../../../../useBranchSearchParam'
 
 export function useUploadProjectFiles(): [UploadProjectFiles, IsLoading] {
   const { projectId } = useParams()

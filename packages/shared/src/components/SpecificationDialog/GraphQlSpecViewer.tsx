@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useMemo } from 'react'
 import { buildClientSchema, buildSchema, getIntrospectionQuery, graphqlSync } from 'graphql'
 import { printSchema as stringifyGraphQl } from 'graphql/utilities/printSchema'
-import type { SpecViewMode } from '../SpecViewToggler'
-import { DOC_SPEC_VIEW_MODE, INTROSPECTION_SPEC_VIEW_MODE, SCHEMA_SPEC_VIEW_MODE } from '../SpecViewToggler'
-import { RawSpecView } from './RawSpecView'
-import { GraphqlApiSpecView } from './GraphqlApiSpecView'
-import type { Spec } from '../../entities/specs'
+import type { FC } from 'react'
+import { memo, useMemo } from 'react'
 import type { ProxyServer } from '../../entities/services'
+import type { Spec } from '../../entities/specs'
 import type { FileExtension } from '../../utils/files'
 import { findGraphQlSpecType, GRAPHQL_FILE_EXTENSION, JSON_FILE_EXTENSION } from '../../utils/files'
 import { GRAPHQL_INTROSPECTION_SPEC_TYPE, GRAPHQL_SCHEMA_SPEC_TYPE, GRAPHQL_SPEC_TYPE } from '../../utils/specs'
+import type { SpecViewMode } from '../SpecViewToggler'
+import { DOC_SPEC_VIEW_MODE, INTROSPECTION_SPEC_VIEW_MODE, SCHEMA_SPEC_VIEW_MODE } from '../SpecViewToggler'
+import { GraphqlApiSpecView } from './GraphqlApiSpecView'
+import { RawSpecView } from './RawSpecView'
 
 export type GraphQlSpecViewerProps = {
   view: SpecViewMode
@@ -36,7 +36,11 @@ export type GraphQlSpecViewerProps = {
   header?: string
 }
 
-export const GRAPHQL_VIEW_MODES: SpecViewMode[] = [DOC_SPEC_VIEW_MODE, SCHEMA_SPEC_VIEW_MODE, INTROSPECTION_SPEC_VIEW_MODE]
+export const GRAPHQL_VIEW_MODES: SpecViewMode[] = [
+  DOC_SPEC_VIEW_MODE,
+  SCHEMA_SPEC_VIEW_MODE,
+  INTROSPECTION_SPEC_VIEW_MODE,
+]
 
 export const GraphQlSpecViewer: FC<GraphQlSpecViewerProps> = /* @__PURE__ */ memo<GraphQlSpecViewerProps>(({
   view,
@@ -53,10 +57,14 @@ export const GraphQlSpecViewer: FC<GraphQlSpecViewerProps> = /* @__PURE__ */ mem
     }
     if (view === INTROSPECTION_SPEC_VIEW_MODE && graphQlSpecType === GRAPHQL_SCHEMA_SPEC_TYPE) {
       const schema = buildSchema(value, { noLocation: true })
-      const introspection = JSON.stringify(graphqlSync({
-        schema: schema,
-        source: getIntrospectionQuery(),
-      }).data, null, 2)
+      const introspection = JSON.stringify(
+        graphqlSync({
+          schema: schema,
+          source: getIntrospectionQuery(),
+        }).data,
+        null,
+        2,
+      )
       return [introspection, JSON_FILE_EXTENSION]
     }
 

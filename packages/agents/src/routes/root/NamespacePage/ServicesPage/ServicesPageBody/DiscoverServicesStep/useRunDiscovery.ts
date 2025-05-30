@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
+import type { WorkspaceKey } from '@apihub/entities/keys'
+import { runServiceDiscovery } from '@apihub/entities/services'
+import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
+import type { IsError, IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { useMutation } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import { useInvalidateServices } from '../../../useServices'
-import type { IsError, IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { runServiceDiscovery } from '@apihub/entities/services'
-import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
-import type { WorkspaceKey } from '@apihub/entities/keys'
 
 export function useRunDiscovery(): [RunDiscovery, IsLoading, IsSuccess, IsError] {
   const { agentId, namespaceKey } = useParams()
@@ -30,7 +30,7 @@ export function useRunDiscovery(): [RunDiscovery, IsLoading, IsSuccess, IsError]
   const invalidateServices = useInvalidateServices()
 
   const { mutate, isLoading, isSuccess, isError } = useMutation<void, Error, WorkspaceKey | undefined>({
-    mutationFn: ( workspaceKey ) => runServiceDiscovery(agentId!, namespaceKey!, workspaceKey ?? workspaceId!),
+    mutationFn: (workspaceKey) => runServiceDiscovery(agentId!, namespaceKey!, workspaceKey ?? workspaceId!),
     onSuccess: invalidateServices,
   })
 

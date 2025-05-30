@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-import type { JSONSchema } from '@stoplight/spectral-core'
-import { Resolver } from '@stoplight/json-ref-resolver'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { MethodType } from '@netcracker/qubership-apihub-ui-shared/entities/method-types'
 import { JSON_FILE_FORMAT, YAML_FILE_FORMAT } from '@netcracker/qubership-apihub-ui-shared/utils/files'
-import type { OpenapiSchema, PathItemObject, SpecItemUri } from '@netcracker/qubership-apihub-ui-shared/utils/specifications'
+import type {
+  OpenapiSchema,
+  PathItemObject,
+  SpecItemUri,
+} from '@netcracker/qubership-apihub-ui-shared/utils/specifications'
 import { toJsonSchema, toYaml } from '@netcracker/qubership-apihub-ui-shared/utils/specifications'
+import { Resolver } from '@stoplight/json-ref-resolver'
+import type { JSONSchema } from '@stoplight/spectral-core'
 
 export type SpecPathKey = [Key, MethodType]
 
@@ -77,7 +81,8 @@ export function generateSpecificationByPathItems(
   }
 
   if (fileFormat === JSON_FILE_FORMAT) {
-    const content = `{"openapi": "3.0.0", "info": {"title": " ", "description": " ", "version": " ", "contact": {"name": " ", "url": "https://example.com", "email": "mail@example.com"}, "license": {"name": " ", "url": "https://example.com"} }, "servers": [{"url": "https://example.com"}], "tags": [{"name": " ", "description": " "}], "paths": {"/": ${value}}}`
+    const content =
+      `{"openapi": "3.0.0", "info": {"title": " ", "description": " ", "version": " ", "contact": {"name": " ", "url": "https://example.com", "email": "mail@example.com"}, "license": {"name": " ", "url": "https://example.com"} }, "servers": [{"url": "https://example.com"}], "tags": [{"name": " ", "description": " "}], "paths": {"/": ${value}}}`
     return [content, 0, itemUri]
   }
 

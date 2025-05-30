@@ -15,10 +15,10 @@
  */
 
 // eslint-disable-next-line filenames/no-index
-export { ChangesViewTable } from './components/ChangesViewTable'
-export { OperationChangesSubTable } from './components/OperationChangesSubTable'
-export { PreviousReleaseOptionsProvider } from './components/PreviousReleaseOptionsProvider'
-export type { SubTableComponentProps } from './components/ChangesViewTable'
 export { getOperationChangeLog } from './api/getOperationChangelog'
 export { getVersionChangelog } from './api/getVersionChangelog'
 export { useFlatVersionChangelog } from './api/useFlatVersionChangelog'
+export { ChangesViewTable } from './components/ChangesViewTable'
+export type { SubTableComponentProps } from './components/ChangesViewTable'
+export { OperationChangesSubTable } from './components/OperationChangesSubTable'
+export { PreviousReleaseOptionsProvider } from './components/PreviousReleaseOptionsProvider'

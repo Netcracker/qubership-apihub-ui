@@ -16,12 +16,12 @@
 
 import type { QueryKey } from '@tanstack/react-query'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { toPackage } from './usePackage'
 import type { PackageKind, Packages, PackagesDto } from '../../entities/packages'
-import type { InvalidateQuery, IsFetching, IsLoading } from '../../utils/aliases'
 import { EMPTY_PAGE_REFERER } from '../../entities/referer-pages-names'
-import { optionalSearchParams } from '../../utils/search-params'
+import type { InvalidateQuery, IsFetching, IsLoading } from '../../utils/aliases'
 import { requestJson } from '../../utils/requests'
+import { optionalSearchParams } from '../../utils/search-params'
+import { toPackage } from './usePackage'
 
 const PACKAGES_QUERY_KEY = 'packages-query-key'
 
@@ -63,10 +63,35 @@ export function usePackages(options: {
     refererPageName = EMPTY_PAGE_REFERER,
   } = options ?? {}
 
-  const queryKey = [PACKAGES_QUERY_KEY, refererPageName, kind, parentId, page, limit, onlyFavorite, textFilter, onlyShared, showAllDescendants, lastReleaseVersionDetails]
+  const queryKey = [
+    PACKAGES_QUERY_KEY,
+    refererPageName,
+    kind,
+    parentId,
+    page,
+    limit,
+    onlyFavorite,
+    textFilter,
+    onlyShared,
+    showAllDescendants,
+    lastReleaseVersionDetails,
+  ]
   const { data: packages = [], isLoading, isFetching, error } = useQuery<Packages, Error, Packages>({
     queryKey: queryKey,
-    queryFn: () => getPackages(kind, limit, onlyFavorite, page, parentId, showParents, textFilter, onlyShared, lastReleaseVersionDetails, versionLabel, showAllDescendants),
+    queryFn: () =>
+      getPackages(
+        kind,
+        limit,
+        onlyFavorite,
+        page,
+        parentId,
+        showParents,
+        textFilter,
+        onlyShared,
+        lastReleaseVersionDetails,
+        versionLabel,
+        showAllDescendants,
+      ),
     enabled: enabled,
   })
 
@@ -86,7 +111,6 @@ export async function getPackages(
   versionLabel: string,
   showAllDescendants: boolean,
 ): Promise<Packages> {
-
   const searchParam = optionalSearchParams({
     kind: { value: kind.toString() },
     limit: { value: limit },
@@ -101,19 +125,23 @@ export async function getPackages(
     showAllDescendants: { value: showAllDescendants },
   })
 
-  return toPackages(await requestJson<PackagesDto>(`/api/v2/packages?${searchParam}`, {
-    method: 'GET',
-  }))
+  return toPackages(
+    await requestJson<PackagesDto>(`/api/v2/packages?${searchParam}`, {
+      method: 'GET',
+    }),
+  )
 }
 
 export function toPackages(value: PackagesDto): Packages {
   return value?.packages.map((pack) => toPackage(pack))
 }
 
-export function useInvalidatePackages(options: Partial<{
-  queryKey: QueryKey
-  refererPageName: string
-}>): InvalidateQuery<void> {
+export function useInvalidatePackages(
+  options: Partial<{
+    queryKey: QueryKey
+    refererPageName: string
+  }>,
+): InvalidateQuery<void> {
   const {
     refererPageName = EMPTY_PAGE_REFERER,
     queryKey = [PACKAGES_QUERY_KEY, refererPageName],

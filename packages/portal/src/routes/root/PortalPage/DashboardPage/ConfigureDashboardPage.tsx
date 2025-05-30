@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
+import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
 import type { FC } from 'react'
 import { memo } from 'react'
-import { ConfigureDashboardToolbar } from './ConfigureDashboardToolbar'
-import { AddPackageDialog } from './AddPackageDialog'
-import { usePackage } from '../../usePackage'
-import { PublishPackageVersionDialog } from './PublishPackageVersionDialog'
-import { DashboardReferencesContextProvider } from './DashboardReferencesProvider'
 import { CONFIGURATION_PAGE } from '../../../../routes'
 import { NoPackageVersionPlaceholder } from '../../NoPackageVersionPlaceholder'
-import { ConfigureDashboardSubPage } from './ConfigureDashboardSubPage'
+import { usePackage } from '../../usePackage'
 import { VersionNavigationMenu } from '../VersionNavigationMenu'
+import { AddPackageDialog } from './AddPackageDialog'
+import { ConfigureDashboardSubPage } from './ConfigureDashboardSubPage'
+import { ConfigureDashboardToolbar } from './ConfigureDashboardToolbar'
+import { DashboardReferencesContextProvider } from './DashboardReferencesProvider'
+import { PublishPackageVersionDialog } from './PublishPackageVersionDialog'
 import { RecursiveDashboardNameContextProvider } from './RecursiveDashboardNameContextProvider'
-import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
 
 export const ConfigureDashboardPage: FC = memo(() => {
   const [packageObject] = usePackage({ showParents: true })
@@ -36,13 +36,13 @@ export const ConfigureDashboardPage: FC = memo(() => {
       <RecursiveDashboardNameContextProvider>
         <NoPackageVersionPlaceholder packageObject={packageObject}>
           <PageLayout
-            toolbar={<ConfigureDashboardToolbar packageObject={packageObject}/>}
-            menu={<VersionNavigationMenu menuItems={CONFIGURE_DASHBOARD_PAGE_MENU_ITEMS}/>}
-            body={<ConfigureDashboardSubPage/>}
+            toolbar={<ConfigureDashboardToolbar packageObject={packageObject} />}
+            menu={<VersionNavigationMenu menuItems={CONFIGURE_DASHBOARD_PAGE_MENU_ITEMS} />}
+            body={<ConfigureDashboardSubPage />}
           />
         </NoPackageVersionPlaceholder>
-        <AddPackageDialog packageObject={packageObject}/>
-        <PublishPackageVersionDialog/>
+        <AddPackageDialog packageObject={packageObject} />
+        <PublishPackageVersionDialog />
       </RecursiveDashboardNameContextProvider>
     </DashboardReferencesContextProvider>
   )

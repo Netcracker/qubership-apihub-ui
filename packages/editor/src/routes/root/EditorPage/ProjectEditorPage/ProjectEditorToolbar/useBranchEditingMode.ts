@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { useBranchConfig } from '../useBranchConfig'
-import { useMemo } from 'react'
 import { useAuthorization } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
+import { useMemo } from 'react'
+import { useBranchConfig } from '../useBranchConfig'
 
 export function useBranchEditingMode(): boolean {
   const [branchConfig] = useBranchConfig()

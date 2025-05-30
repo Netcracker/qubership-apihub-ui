@@ -14,6 +14,28 @@
  * limitations under the License.
  */
 
+import { REVISION_DELIMITER } from '@apihub/entities/versions'
+import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
+import { SHOW_COMPARE_REVISIONS_DIALOG } from '@apihub/routes/EventBusProvider'
+import { useNavigation } from '@apihub/routes/NavigationProvider'
+import { useRefSearchParam } from '@apihub/routes/root/PortalPage/useRefSearchParam'
+import { useAllRevisions } from '@apihub/routes/root/PortalPage/VersionPage/usePagedRevisions'
+import { getDefaultApiType } from '@apihub/utils/operation-types'
+import type {
+  CompareRevisionsDialogData,
+  CompareRevisionsDialogFormData,
+} from '@netcracker/qubership-apihub-ui-shared/components/CompareRevisionsDialogForm'
+import { CompareRevisionsDialogForm } from '@netcracker/qubership-apihub-ui-shared/components/CompareRevisionsDialogForm'
+import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
+import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import {
+  API_TYPE_SEARCH_PARAM,
+  PACKAGE_SEARCH_PARAM,
+  REF_SEARCH_PARAM,
+  VERSION_SEARCH_PARAM,
+} from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import type { FC } from 'react'
 import * as React from 'react'
 import { memo, useCallback, useEffect, useMemo } from 'react'
@@ -22,34 +44,12 @@ import { useParams } from 'react-router-dom'
 import { useLocation, useSearchParam } from 'react-use'
 import { usePackageVersionContent } from '../../usePackageVersionContent'
 import { useVersionWithRevision } from '../../useVersionWithRevision'
-import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import { SHOW_COMPARE_REVISIONS_DIALOG } from '@apihub/routes/EventBusProvider'
-import { REVISION_DELIMITER } from '@apihub/entities/versions'
-import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
-import {
-  API_TYPE_SEARCH_PARAM,
-  PACKAGE_SEARCH_PARAM,
-  REF_SEARCH_PARAM,
-  VERSION_SEARCH_PARAM,
-} from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
-import { getDefaultApiType } from '@apihub/utils/operation-types'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { useAllRevisions } from '@apihub/routes/root/PortalPage/VersionPage/usePagedRevisions'
-import type {
-  CompareRevisionsDialogData,
-  CompareRevisionsDialogFormData,
-} from '@netcracker/qubership-apihub-ui-shared/components/CompareRevisionsDialogForm'
-import { CompareRevisionsDialogForm } from '@netcracker/qubership-apihub-ui-shared/components/CompareRevisionsDialogForm'
-import { useNavigation } from '@apihub/routes/NavigationProvider'
-import { useRefSearchParam } from '@apihub/routes/root/PortalPage/useRefSearchParam'
 
 export const CompareRevisionsDialog: FC = memo(() => {
   return (
     <PopupDelegate
       type={SHOW_COMPARE_REVISIONS_DIALOG}
-      render={props => <CompareRevisionsPopup {...props}/>}
+      render={props => <CompareRevisionsPopup {...props} />}
     />
   )
 })
@@ -105,8 +105,14 @@ function useDialogData(
   const { versionKey: defaultVersion, revisionKey: defaultRevisionKey } = getSplittedVersionKey(fullDefaultVersion)
   const { revisionKey: searchRevisionKey } = getSplittedVersionKey(fullSearchVersion)
 
-  const changedRevisionData = useMemo(() => revisions.find(revision => revision.revision === +defaultRevisionKey), [defaultRevisionKey, revisions])
-  const originRevisionData = useMemo(() => revisions.find(revision => revision.revision === +searchRevisionKey), [revisions, searchRevisionKey])
+  const changedRevisionData = useMemo(() => revisions.find(revision => revision.revision === +defaultRevisionKey), [
+    defaultRevisionKey,
+    revisions,
+  ])
+  const originRevisionData = useMemo(() => revisions.find(revision => revision.revision === +searchRevisionKey), [
+    revisions,
+    searchRevisionKey,
+  ])
 
   const defaultValues = useMemo(() => {
     return {
@@ -117,7 +123,9 @@ function useDialogData(
 
   const form = useForm<CompareRevisionsDialogFormData>({ defaultValues })
 
-  useEffect(() => {form.reset(defaultValues) }, [defaultValues, form])
+  useEffect(() => {
+    form.reset(defaultValues)
+  }, [defaultValues, form])
 
   const { changedRevision, originalRevision } = form.watch()
 
@@ -134,30 +142,45 @@ function useDialogData(
     includeOperations: true,
   })
 
-  const onSubmit = useMemo(() => form.handleSubmit(async ({ originalRevision, changedRevision }) => {
-    setBackwardLocation({ ...backwardLocation, fromDocumentsComparison: { pathname: pathname!, search: search! } })
-    const originalPackageKey = encodeURIComponent(searchPackageKey ?? '')
-    const changedPackageKey = encodeURIComponent(defaultPackageKey ?? '')
-    const changedVersionKey = encodeURIComponent(`${defaultVersion}${REVISION_DELIMITER}${changedRevision?.revision}`)
-    const originVersionKey = `${defaultVersion}${REVISION_DELIMITER}${originalRevision?.revision}`
+  const onSubmit = useMemo(() =>
+    form.handleSubmit(async ({ originalRevision, changedRevision }) => {
+      setBackwardLocation({ ...backwardLocation, fromDocumentsComparison: { pathname: pathname!, search: search! } })
+      const originalPackageKey = encodeURIComponent(searchPackageKey ?? '')
+      const changedPackageKey = encodeURIComponent(defaultPackageKey ?? '')
+      const changedVersionKey = encodeURIComponent(`${defaultVersion}${REVISION_DELIMITER}${changedRevision?.revision}`)
+      const originVersionKey = `${defaultVersion}${REVISION_DELIMITER}${originalRevision?.revision}`
 
-    const { data } = await refetch()
-    const apiTypes = Object.keys(data?.operationTypes ?? {}) as ApiType[]
-    const apiType = getDefaultApiType(apiTypes)
+      const { data } = await refetch()
+      const apiTypes = Object.keys(data?.operationTypes ?? {}) as ApiType[]
+      const apiType = getDefaultApiType(apiTypes)
 
-    navigateToVersionsComparison({
-      packageKey: changedPackageKey,
-      versionKey: changedVersionKey,
-      search: {
-        [VERSION_SEARCH_PARAM]: { value: originVersionKey },
-        [PACKAGE_SEARCH_PARAM]: { value: originalPackageKey !== changedPackageKey ? originalPackageKey : '' },
-        [API_TYPE_SEARCH_PARAM]: { value: apiType },
-        [REF_SEARCH_PARAM]: { value: ref ?? '' },
-      },
-    })
+      navigateToVersionsComparison({
+        packageKey: changedPackageKey,
+        versionKey: changedVersionKey,
+        search: {
+          [VERSION_SEARCH_PARAM]: { value: originVersionKey },
+          [PACKAGE_SEARCH_PARAM]: { value: originalPackageKey !== changedPackageKey ? originalPackageKey : '' },
+          [API_TYPE_SEARCH_PARAM]: { value: apiType },
+          [REF_SEARCH_PARAM]: { value: ref ?? '' },
+        },
+      })
 
-    !isRefetching && setOpen(false)
-  }), [form, setBackwardLocation, backwardLocation, pathname, search, searchPackageKey, defaultPackageKey, defaultVersion, refetch, navigateToVersionsComparison, ref, isRefetching, setOpen])
+      !isRefetching && setOpen(false)
+    }), [
+    form,
+    setBackwardLocation,
+    backwardLocation,
+    pathname,
+    search,
+    searchPackageKey,
+    defaultPackageKey,
+    defaultVersion,
+    refetch,
+    navigateToVersionsComparison,
+    ref,
+    isRefetching,
+    setOpen,
+  ])
 
   const originalRevisions = useMemo(() => {
     return revisions.filter(revision => revision.revision !== changedRevision?.revision)

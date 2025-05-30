@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-import { useQuery } from '@tanstack/react-query'
-import { useParams } from 'react-router-dom'
-import type {
-  Namespaces,
-  NamespacesDto} from '@netcracker/qubership-apihub-ui-shared/entities/namespaces'
+import type { Namespaces, NamespacesDto } from '@netcracker/qubership-apihub-ui-shared/entities/namespaces'
 import {
   EMPTY_NAMESPACES,
   getNamespaces,
   toNamespaces,
 } from '@netcracker/qubership-apihub-ui-shared/entities/namespaces'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { useQuery } from '@tanstack/react-query'
+import { useParams } from 'react-router-dom'
 
 const NAMESPACES_QUERY_KEY = 'namespaces-query-key'
 

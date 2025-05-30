@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo } from 'react'
-import { Box, Link, Typography } from '@mui/material'
-import type { To } from 'react-router-dom'
-import { NavLink } from 'react-router-dom'
-import { Marker } from 'react-mark.js'
-import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 import { useEventBus } from '@apihub/routes/EventBusProvider'
-import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
+import { Box, Link, Typography } from '@mui/material'
 import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
+import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
 import { SpecLogo } from '@netcracker/qubership-apihub-ui-shared/components/SpecLogo'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import type { FC } from 'react'
+import { memo } from 'react'
+import { Marker } from 'react-mark.js'
+import type { To } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 
 export type ResultCommonHeaderProps = {
   url: To
@@ -64,12 +64,12 @@ export const ResultCommonHeader: FC<ResultCommonHeaderProps> = memo<ResultCommon
             {breadcrumbs}
           </Typography>
         </OverflowTooltip>
-        {breadCrumbsStatus && <CustomChip value={breadCrumbsStatus} data-testid="VersionStatusChip"/>}
+        {breadCrumbsStatus && <CustomChip value={breadCrumbsStatus} data-testid="VersionStatusChip" />}
       </Box>
 
       <Marker mark={searchText}>
         <Box display="flex" gap={1}>
-          {icon && <SpecLogo value={icon}/>}
+          {icon && <SpecLogo value={icon} />}
           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', width: '450px' }}>
             <OverflowTooltip title={title}>
               <Box sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', width: 'inherit' }}>
@@ -83,7 +83,7 @@ export const ResultCommonHeader: FC<ResultCommonHeaderProps> = memo<ResultCommon
                 </Link>
               </Box>
             </OverflowTooltip>
-            {status && <CustomChip value={status} data-testid="VersionStatusChip"/>}
+            {status && <CustomChip value={status} data-testid="VersionStatusChip" />}
           </Box>
         </Box>
       </Marker>

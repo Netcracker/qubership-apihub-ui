@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-import { useQuery } from '@tanstack/react-query'
-import { useVersionWithRevision } from '../../useVersionWithRevision'
-import { useMemo } from 'react'
-import { generatePath } from 'react-router-dom'
-import type { OperationData, OperationDto, PackagesRefs } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import { portalRequestJson } from '@apihub/utils/requests'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type {
+  OperationData,
+  OperationDto,
+  PackagesRefs,
+} from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { DEFAULT_API_TYPE, toOperation } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { IsInitialLoading, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { portalRequestJson } from '@apihub/utils/requests'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { useQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
+import { generatePath } from 'react-router-dom'
+import { useVersionWithRevision } from '../../useVersionWithRevision'
 
 const OPERATION_QUERY_KEY = 'operation-query-key'
 
@@ -89,7 +93,8 @@ async function getOperation(
     generatePath(pathPattern, { packageId, versionId, apiType, operationId }),
     {
       method: 'get',
-    }, {
+    },
+    {
       customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
     },
   )

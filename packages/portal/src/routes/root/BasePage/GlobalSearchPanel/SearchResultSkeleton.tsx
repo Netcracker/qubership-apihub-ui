@@ -23,7 +23,7 @@ export const SearchResultSkeleton: FC = memo(() => {
     <Box>
       {[...Array(3)].map((_, index) => (
         <Box key={index} mb={2}>
-          <Skeleton variant="rectangular" height={90} width="100%"/>
+          <Skeleton variant="rectangular" height={90} width="100%" />
         </Box>
       ))}
     </Box>

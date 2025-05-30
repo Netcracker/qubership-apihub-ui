@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
+import { Autocomplete, InputLabel, TextField } from '@mui/material'
 import type { FC } from 'react'
 import * as React from 'react'
 import { useMemo } from 'react'
-import { Autocomplete, InputLabel, TextField } from '@mui/material'
-import { OptionItem } from '../OptionItem'
-import { slugify } from '../../utils/files'
+import type { ApiType } from '../../entities/api-types'
 import type { OperationGroupName } from '../../entities/operation-groups'
 import { ALL_OPERATION_GROUPS, UNGROUPED_OPERATION_GROUP } from '../../entities/operation-groups'
 import type { PackageVersionContent } from '../../entities/version-contents'
-import type { ApiType } from '../../entities/api-types'
+import { slugify } from '../../utils/files'
+import { OptionItem } from '../OptionItem'
 
 export type OperationGroupFilterProps = Partial<{
   required: boolean
@@ -39,8 +39,13 @@ const FILTER_GROUP_LABEL = 'Filter by Group'
 
 export const OperationGroupFilter: FC<OperationGroupFilterProps> = (props) => {
   const {
-    required = false, labelText, value,
-    onSelectValue, isLoading, apiType, versionContent,
+    required = false,
+    labelText,
+    value,
+    onSelectValue,
+    isLoading,
+    apiType,
+    versionContent,
   } = props
 
   const options: OperationGroupName[] = useOperationGroupsFromPackageVersionContent(

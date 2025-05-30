@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
+import type { PackageVersionConfig, PackageVersionConfigDto } from '@apihub/entities/package-version-config'
+import { toPackageVersionConfig } from '@apihub/entities/package-version-config'
+import { portalRequestJson } from '@apihub/utils/requests'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
+import { API_V2 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { useQuery } from '@tanstack/react-query'
 import { generatePath } from 'react-router-dom'
 import { useVersionWithRevision } from '../useVersionWithRevision'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { PackageVersionConfig, PackageVersionConfigDto } from '@apihub/entities/package-version-config'
-import { toPackageVersionConfig } from '@apihub/entities/package-version-config'
-import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { portalRequestJson } from '@apihub/utils/requests'
-import { API_V2 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
-import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
 
 const PACKAGE_VERSION_CONFIG_QUERY_KEY = 'package-version-config-query-key'
 
@@ -31,7 +31,6 @@ export function usePackageVersionConfig(
   packageKey?: Key,
   versionKey?: Key,
 ): [PackageVersionConfig | null, IsLoading] {
-
   const { fullVersion, isInitialLoading: isFullVersionLoading } = useVersionWithRevision(versionKey, packageKey)
   const { data, isInitialLoading } = useQuery<PackageVersionConfigDto, Error, PackageVersionConfig>({
     queryKey: [PACKAGE_VERSION_CONFIG_QUERY_KEY, packageKey, fullVersion],

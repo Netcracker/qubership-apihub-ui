@@ -16,9 +16,12 @@ export type ExportConfigDto = Readonly<{
   allowedOasExtensions: OasExtensionDto[]
 }>
 
-export type OasExtension = Readonly<Omit<OasExtensionDto, 'packageId'> & Partial<{
-  packageKey: PackageKey
-}>>
+export type OasExtension = Readonly<
+  & Omit<OasExtensionDto, 'packageId'>
+  & Partial<{
+    packageKey: PackageKey
+  }>
+>
 
 export type ExportConfig = Readonly<{
   allowedOasExtensions: ReadonlyArray<OasExtension>

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { PaletteOptions, SimplePaletteColorOptions } from '@mui/material/styles/createPalette'
 import type { ChipPropsColorOverrides } from '@mui/material/Chip/Chip'
+import type { PaletteOptions, SimplePaletteColorOptions } from '@mui/material/styles/createPalette'
 
 export function createPalette(): PaletteOptions {
   return {

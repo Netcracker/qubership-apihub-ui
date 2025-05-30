@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import type { PackageSettingsNavItemProps } from './package-settings'
-import { PACKAGE_KINDS_NAMES_MAP } from './package-settings'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { Package, PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { DASHBOARD_KIND, GROUP_KIND, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import {
   ACCESS_TOKENS_PAGE,
   API_SPECIFIC_CONFIGURATION_PAGE,
@@ -25,9 +26,8 @@ import {
   VERSIONS_PAGE,
 } from '../../../../routes'
 import { getPackageSettingsPath } from '../../../NavigationProvider'
-import type { Package, PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { DASHBOARD_KIND, GROUP_KIND, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { PackageSettingsNavItemProps } from './package-settings'
+import { PACKAGE_KINDS_NAMES_MAP } from './package-settings'
 
 const PACKAGE_KINDS_WITHOUT_VERSIONS = [GROUP_KIND, WORKSPACE_KIND]
 const PACKAGE_KINDS_WITHOUT_API_SPECIFIC_CONFIGURATION = [GROUP_KIND, WORKSPACE_KIND, DASHBOARD_KIND]

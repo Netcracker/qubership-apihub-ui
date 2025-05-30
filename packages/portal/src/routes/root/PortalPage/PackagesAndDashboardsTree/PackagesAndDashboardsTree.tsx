@@ -14,37 +14,37 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useEffect, useMemo, useRef, useState } from 'react'
-import { Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
-import { ReferenceRow } from './ReferenceRow'
-import {
-  DashboardCollapsedReferenceKeysContext,
-  SetDashboardCollapsedReferenceKeysContext,
-} from './CollapsedReferenceKeysContext'
-import { useVersionReferences } from '../../useVersionReferences'
-import { useParams } from 'react-router-dom'
-import { useUpdateDeletedReferences } from '../useDeletedReferences'
-import { useAddDashboardPackages, useDashboardPackages, useResetDashboardPackages } from '../useDashboardPackages'
-import { useAddConflictedReferences } from '../useConflictedReferences'
-import { useEffectOnce } from 'react-use'
-import type { ColumnDef, ColumnSizingInfoState, ColumnSizingState, OnChangeFn } from '@tanstack/react-table'
-import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { PackageReferenceWithStatus } from '@apihub/routes/root/PortalPage/DashboardPage/configure-dashboard'
+import { Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
+import { ColumnDelimiter } from '@netcracker/qubership-apihub-ui-shared/components/ColumnDelimiter'
+import { CustomTableHeadCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomTableHeadCell'
+import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { ReferenceKind } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
+import { useResizeObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useResizeObserver'
 import type { ColumnModel } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
 import {
   DEFAULT_CONTAINER_WIDTH,
   useColumnsSizing,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
-import { CustomTableHeadCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomTableHeadCell'
-import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import { ColumnDelimiter } from '@netcracker/qubership-apihub-ui-shared/components/ColumnDelimiter'
 import { createComponents } from '@netcracker/qubership-apihub-ui-shared/utils/components'
 import { DEFAULT_NUMBER_SKELETON_ROWS } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
-import { useResizeObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useResizeObserver'
+import type { ColumnDef, ColumnSizingInfoState, ColumnSizingState, OnChangeFn } from '@tanstack/react-table'
+import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import type { FC } from 'react'
+import { memo, useEffect, useMemo, useRef, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import { useEffectOnce } from 'react-use'
+import { useVersionReferences } from '../../useVersionReferences'
+import { useAddConflictedReferences } from '../useConflictedReferences'
+import { useAddDashboardPackages, useDashboardPackages, useResetDashboardPackages } from '../useDashboardPackages'
+import { useUpdateDeletedReferences } from '../useDeletedReferences'
+import {
+  DashboardCollapsedReferenceKeysContext,
+  SetDashboardCollapsedReferenceKeysContext,
+} from './CollapsedReferenceKeysContext'
+import { ReferenceRow } from './ReferenceRow'
 
 export type PackagesAndDashboardsTreeProps = {
   currentDashboardReferences: PackageReferenceWithStatus[]
@@ -105,29 +105,29 @@ export const PackagesAndDashboardsTree: FC<PackagesAndDashboardsTreeProps> = mem
     defaultMinColumnSize: 60,
   })
 
-  const data: TableData[] = useMemo(() => currentDashboardReferences.map(pack => ({
-    packageReference: pack,
-  })), [currentDashboardReferences])
+  const data: TableData[] = useMemo(() =>
+    currentDashboardReferences.map(pack => ({
+      packageReference: pack,
+    })), [currentDashboardReferences])
 
   const columns: ColumnDef<TableData>[] = useMemo(() => [
-      {
-        id: PACKAGE_COLUMN_ID,
-        header: () => <CustomTableHeadCell title="Packages and Dashboards"/>,
-      },
-      {
-        id: VERSION_COLUMN_ID,
-        header: () => <CustomTableHeadCell title="Version"/>,
-      },
-      {
-        id: STATUS_COLUMN_ID,
-        header: () => <CustomTableHeadCell title="Status"/>,
-      },
-      {
-        id: REMOVE_COLUMN_ID,
-        header: () => <CustomTableHeadCell title=""/>,
-      },
-    ], [],
-  )
+    {
+      id: PACKAGE_COLUMN_ID,
+      header: () => <CustomTableHeadCell title="Packages and Dashboards" />,
+    },
+    {
+      id: VERSION_COLUMN_ID,
+      header: () => <CustomTableHeadCell title="Version" />,
+    },
+    {
+      id: STATUS_COLUMN_ID,
+      header: () => <CustomTableHeadCell title="Status" />,
+    },
+    {
+      id: REMOVE_COLUMN_ID,
+      header: () => <CustomTableHeadCell title="" />,
+    },
+  ], [])
 
   const { getHeaderGroups, setColumnSizing } = useReactTable({
     data: data,
@@ -171,8 +171,8 @@ export const PackagesAndDashboardsTree: FC<PackagesAndDashboardsTreeProps> = mem
                         }}
                       >
                         {flexRender(headerColumn.column.columnDef.header, headerColumn.getContext())}
-                        {index !== headerGroup.headers.length - 1 &&
-                          <ColumnDelimiter header={headerColumn} resizable={true}/>}
+                        {index !== headerGroup.headers.length - 1
+                          && <ColumnDelimiter header={headerColumn} resizable={true} />}
                       </TableCell>
                     ))}
                   </TableRow>
@@ -181,10 +181,12 @@ export const PackagesAndDashboardsTree: FC<PackagesAndDashboardsTreeProps> = mem
               <TableBody>
                 {versionReferences.references?.filter(({ parentPackageRef }) => !parentPackageRef).map(ref => {
                   const packageByRef = versionReferences.packages![ref.packageRef!]
-                  if (currentDashboardReferences?.some(({
-                    packageReference: { key },
-                    added,
-                  }) => key === packageByRef.key && !added)) {
+                  if (
+                    currentDashboardReferences?.some(({
+                      packageReference: { key },
+                      added,
+                    }) => key === packageByRef.key && !added)
+                  ) {
                     return (
                       <ReferenceRow
                         key={packageByRef.key}
@@ -212,9 +214,8 @@ export const PackagesAndDashboardsTree: FC<PackagesAndDashboardsTreeProps> = mem
                       readonly={readonly}
                     />
                   )
-                })
-                }
-                {(isLoading || isReferencesLoading) && <TableSkeleton/>}
+                })}
+                {(isLoading || isReferencesLoading) && <TableSkeleton />}
               </TableBody>
             </Table>
           </TableContainer>
@@ -241,22 +242,22 @@ type TableData = {
 }
 
 const TableSkeleton: FC = memo(() => {
-  return createComponents(<RowSkeleton/>, DEFAULT_NUMBER_SKELETON_ROWS)
+  return createComponents(<RowSkeleton />, DEFAULT_NUMBER_SKELETON_ROWS)
 })
 
 const RowSkeleton: FC = memo(() => {
   return (
     <TableRow>
       <TableCell>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width={'80%'}/>
+        <Skeleton variant="rectangular" width={'80%'} />
       </TableCell>
-      <TableCell/>
+      <TableCell />
     </TableRow>
   )
 })

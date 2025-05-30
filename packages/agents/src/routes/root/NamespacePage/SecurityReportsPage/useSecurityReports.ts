@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-import type { FetchNextPageOptions, InfiniteQueryObserverResult } from '@tanstack/react-query'
-import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
-import { useMemo } from 'react'
-import { generatePath } from 'react-router-dom'
 import { ncCustomAgentsRequestJson } from '@apihub/utils/requests'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { SecurityReports } from '@netcracker/qubership-apihub-ui-shared/components/SecurityReportsTable'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type {
   HasNextPage,
   InvalidateQuery,
   IsFetchingNextPage,
   IsLoading,
 } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { API_V3, API_V4 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { APIHUB_NC_BASE_PATH } from '@netcracker/qubership-apihub-ui-shared/utils/urls'
-import { API_V3, API_V4 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import type { FetchNextPageOptions, InfiniteQueryObserverResult } from '@tanstack/react-query'
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
+import { useMemo } from 'react'
+import { generatePath } from 'react-router-dom'
 
 export const SECURITY_REPORT_TYPE_AUTH_CHECK = 'authentication-check'
 export const SECURITY_REPORT_TYPE_GATEWAY_ROUTING = 'gateway-routing'
@@ -61,7 +61,8 @@ export function useSecurityReports(options: {
     isLoading,
   } = useInfiniteQuery<SecurityReports, Error, SecurityReports>({
     queryKey: [SECURITY_REPORTS_QUERY_KEY, agentKey, workspaceKey, type, namespaceKey],
-    queryFn: ({ pageParam = page }) => getSecurityReports(agentKey!, namespaceKey, workspaceKey, type, pageParam - 1, limit),
+    queryFn: ({ pageParam = page }) =>
+      getSecurityReports(agentKey!, namespaceKey, workspaceKey, type, pageParam - 1, limit),
     getNextPageParam: (lastPage, allPages) => {
       if (!limit) {
         return undefined
@@ -108,7 +109,8 @@ async function getSecurityReports(
     `${generatePath(pathPattern, { reportPath })}?${queryParams}`,
     {
       method: 'GET',
-    }, {
+    },
+    {
       basePath: `${APIHUB_NC_BASE_PATH}${basePath}`,
       customErrorHandler: () => Promise.reject(),
     },
@@ -124,7 +126,9 @@ export function useInvalidateSecurityReports(): InvalidateQuery<void> {
   }
 }
 
-export type FetchNextReports = (options?: FetchNextPageOptions) => Promise<InfiniteQueryObserverResult<SecurityReports, Error>>
+export type FetchNextReports = (
+  options?: FetchNextPageOptions,
+) => Promise<InfiniteQueryObserverResult<SecurityReports, Error>>
 
 type ResultReports = {
   reports: SecurityReports

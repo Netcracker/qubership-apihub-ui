@@ -43,7 +43,12 @@ import { useOperationSearchParam } from './useOperationSearchParam'
 import { useOperationViewMode } from './useOperationViewMode'
 import { useSidebarPlaygroundViewMode } from './useSidebarPlaygroundViewMode'
 
-export function useNavigateToOperation(packageKey: Key, versionKey: Key, apiType: ApiType, setShouldAutoExpand: Dispatch<SetStateAction<boolean>>): (operationKey: Key) => void {
+export function useNavigateToOperation(
+  packageKey: Key,
+  versionKey: Key,
+  apiType: ApiType,
+  setShouldAutoExpand: Dispatch<SetStateAction<boolean>>,
+): (operationKey: Key) => void {
   const { navigateToOperations } = useNavigation()
 
   const { mode } = useOperationViewMode()
@@ -72,7 +77,20 @@ export function useNavigateToOperation(packageKey: Key, versionKey: Key, apiType
         [OPERATION_SEARCH_PARAM]: { value: previousOperationKey },
       },
     })
-  }, [apiType, documentSlug, fileViewMode, mode, navigateToOperations, packageKey, playgroundViewMode, ref, searchValue, setShouldAutoExpand, versionKey, previousOperationKey])
+  }, [
+    apiType,
+    documentSlug,
+    fileViewMode,
+    mode,
+    navigateToOperations,
+    packageKey,
+    playgroundViewMode,
+    ref,
+    searchValue,
+    setShouldAutoExpand,
+    versionKey,
+    previousOperationKey,
+  ])
 }
 
 export function getOperationLink(params: {
@@ -89,9 +107,17 @@ export function getOperationLink(params: {
   ref?: Key
 }): Partial<Path> {
   const {
-    packageKey, versionKey, operationKey,
-    apiType, packageRef, ref,
-    mode, playgroundViewMode, fileViewMode, kind, documentSlug,
+    packageKey,
+    versionKey,
+    operationKey,
+    apiType,
+    packageRef,
+    ref,
+    mode,
+    playgroundViewMode,
+    fileViewMode,
+    kind,
+    documentSlug,
   } = params
 
   return getOperationsPath({
@@ -108,4 +134,3 @@ export function getOperationLink(params: {
     },
   })
 }
-

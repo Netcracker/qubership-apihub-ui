@@ -16,8 +16,8 @@
 
 import '@netcracker/qubership-apihub-apispec-view'
 import type { DiffOperationView } from '@netcracker/qubership-apihub-apispec-view'
-import type { OperationViewElementProps } from '../OperationView/OperationViewElement'
 import type { ChangeSeverity } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
+import type { OperationViewElementProps } from '../OperationView/OperationViewElement'
 
 export type DiffOperationViewElementProps = OperationViewElementProps & {
   filters: ChangeSeverity[]

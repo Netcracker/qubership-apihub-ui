@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 
 export type OperationTypeForm =
   | ReadonlyArray<ApiType>

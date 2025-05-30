@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import fileDownload from 'js-file-download'
 import type { FC } from 'react'
 import { memo, useCallback } from 'react'
-import fileDownload from 'js-file-download'
-import { UnsupportedFilePlaceholder } from '../UnsupportedFilePlaceholder'
 import type { Spec } from '../../entities/specs'
+import { UnsupportedFilePlaceholder } from '../UnsupportedFilePlaceholder'
 
 export type UnsupportedViewerProps = {
   value: string
@@ -26,7 +26,6 @@ export type UnsupportedViewerProps = {
 }
 
 export const UnsupportedViewer: FC<UnsupportedViewerProps> = memo<UnsupportedViewerProps>(({ value, spec }) => {
-
   const downloadSpec = useCallback(() => {
     fileDownload(value, spec.name + spec.extension)
   }, [spec, value])

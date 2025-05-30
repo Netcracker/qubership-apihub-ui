@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { CssBaseline, ThemeProvider } from '@mui/material'
+import { theme } from '@netcracker/qubership-apihub-ui-shared/themes/theme'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import type { FC } from 'react'
 import { memo, StrictMode } from 'react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { CssBaseline, ThemeProvider } from '@mui/material'
 import { Router } from './routes/Router'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { theme } from '@netcracker/qubership-apihub-ui-shared/themes/theme'
 
 const client = new QueryClient({
   defaultOptions: {
@@ -37,10 +37,10 @@ export const App: FC = memo(() => {
     <StrictMode>
       <QueryClientProvider client={client}>
         <ThemeProvider theme={theme}>
-          <CssBaseline/>
-          <Router/>
+          <CssBaseline />
+          <Router />
         </ThemeProvider>
-        <ReactQueryDevtools initialIsOpen={false}/>
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </StrictMode>
   )

@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { Fragment, memo, useMemo, useState } from 'react'
-import { useSnapshots } from '../useSnapshots'
-import type { ColumnDef } from '@tanstack/table-core'
+import type { ServicePublishInfo } from '@apihub/entities/service-publish-info'
+import type { Snapshot } from '@apihub/entities/snapshots'
+import ArrowOutwardRoundedIcon from '@mui/icons-material/ArrowOutwardRounded'
+import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
+import KeyboardArrowRightOutlinedIcon from '@mui/icons-material/KeyboardArrowRightOutlined'
 import {
   Box,
   Button,
@@ -30,30 +31,29 @@ import {
   TableRow,
   Typography,
 } from '@mui/material'
-import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
-import KeyboardArrowRightOutlinedIcon from '@mui/icons-material/KeyboardArrowRightOutlined'
-import ArrowOutwardRoundedIcon from '@mui/icons-material/ArrowOutwardRounded'
-import type { ExpandedState } from '@tanstack/react-table'
-import { flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from '@tanstack/react-table'
-import { SnapshotsSubTable } from './SnapshotsSubTable'
-import {
-  BACKWARD_COMPATIBLE_MESSAGE,
-  BACKWARD_INCOMPATIBLE_MESSAGE,
-  BASELINE_VERSION_NOT_FOUND_MESSAGE,
-} from '../ServicesPage/ServicesPageBody/validationMessages'
-import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
-import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
+import { Changes } from '@netcracker/qubership-apihub-ui-shared/components/Changes'
 import { FormattedDate } from '@netcracker/qubership-apihub-ui-shared/components/FormattedDate'
+import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
 import {
   ERROR_STATUS_MARKER_VARIANT,
   StatusMarker,
   SUCCESS_STATUS_MARKER_VARIANT,
   WARNING_STATUS_MARKER_VARIANT,
 } from '@netcracker/qubership-apihub-ui-shared/components/StatusMarker'
-import { Changes } from '@netcracker/qubership-apihub-ui-shared/components/Changes'
-import type { Snapshot } from '@apihub/entities/snapshots'
-import type { ServicePublishInfo } from '@apihub/entities/service-publish-info'
 import type { ChangesSummary } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
+import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
+import type { ExpandedState } from '@tanstack/react-table'
+import { flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from '@tanstack/react-table'
+import type { ColumnDef } from '@tanstack/table-core'
+import type { FC } from 'react'
+import { Fragment, memo, useMemo, useState } from 'react'
+import {
+  BACKWARD_COMPATIBLE_MESSAGE,
+  BACKWARD_INCOMPATIBLE_MESSAGE,
+  BASELINE_VERSION_NOT_FOUND_MESSAGE,
+} from '../ServicesPage/ServicesPageBody/validationMessages'
+import { useSnapshots } from '../useSnapshots'
+import { SnapshotsSubTable } from './SnapshotsSubTable'
 
 export const SnapshotsTable: FC = memo(() => {
   const [{ snapshots }] = useSnapshots()
@@ -77,8 +77,8 @@ export const SnapshotsTable: FC = memo(() => {
               {getCanExpand() && (
                 <IconButton sx={{ p: 0 }} onClick={getToggleExpandedHandler()}>
                   {getIsExpanded()
-                    ? <KeyboardArrowDownOutlinedIcon sx={{ fontSize: '16px' }}/>
-                    : <KeyboardArrowRightOutlinedIcon sx={{ fontSize: '16px' }}/>}
+                    ? <KeyboardArrowDownOutlinedIcon sx={{ fontSize: '16px' }} />
+                    : <KeyboardArrowRightOutlinedIcon sx={{ fontSize: '16px' }} />}
                 </IconButton>
               )}
 
@@ -104,9 +104,7 @@ export const SnapshotsTable: FC = memo(() => {
       id: PUBLISHED_DATE_COLUMN_ID,
       header: 'Published Date',
       cell: ({ row: { original: { publishedDate } } }) => (
-        publishedDate && (
-          <FormattedDate value={publishedDate}/>
-        )
+        publishedDate && <FormattedDate value={publishedDate} />
       ),
     },
     {
@@ -121,7 +119,7 @@ export const SnapshotsTable: FC = memo(() => {
           if (!viewChangesUrl) {
             return (
               <Box display="flex" gap={1}>
-                <StatusMarker value={WARNING_STATUS_MARKER_VARIANT}/>
+                <StatusMarker value={WARNING_STATUS_MARKER_VARIANT} />
                 <Typography noWrap variant="inherit">{BASELINE_VERSION_NOT_FOUND_MESSAGE}</Typography>
               </Box>
             )
@@ -131,9 +129,10 @@ export const SnapshotsTable: FC = memo(() => {
             const areBwcErrorsExist = bwcErrors > 0
             return (
               <Box display="flex" gap={1}>
-                <StatusMarker value={areBwcErrorsExist ? ERROR_STATUS_MARKER_VARIANT : SUCCESS_STATUS_MARKER_VARIANT}/>
-                <Typography noWrap
-                            variant="inherit">{areBwcErrorsExist ? BACKWARD_INCOMPATIBLE_MESSAGE : BACKWARD_COMPATIBLE_MESSAGE}</Typography>
+                <StatusMarker value={areBwcErrorsExist ? ERROR_STATUS_MARKER_VARIANT : SUCCESS_STATUS_MARKER_VARIANT} />
+                <Typography noWrap variant="inherit">
+                  {areBwcErrorsExist ? BACKWARD_INCOMPATIBLE_MESSAGE : BACKWARD_COMPATIBLE_MESSAGE}
+                </Typography>
               </Box>
             )
           }
@@ -147,9 +146,7 @@ export const SnapshotsTable: FC = memo(() => {
       header: 'Changes',
       cell: ({ row: { original: { changeSummary, viewChangesUrl } } }) => {
         if (viewChangesUrl && changeSummary) {
-          return (
-            <Changes mode="compact" value={changeSummary}/>
-          )
+          return <Changes mode="compact" value={changeSummary} />
         }
 
         return null
@@ -166,7 +163,7 @@ export const SnapshotsTable: FC = memo(() => {
             variant="text"
             href={viewChangesUrl}
             target="_blank"
-            startIcon={<ArrowOutwardRoundedIcon/>}
+            startIcon={<ArrowOutwardRoundedIcon />}
           >
             View Changes
           </Button>
@@ -177,11 +174,12 @@ export const SnapshotsTable: FC = memo(() => {
 
   const [expanded, setExpanded] = useState<ExpandedState>({})
 
-  const data: SnapshotsTableData[] = useMemo(() => snapshots.map(snapshot => ({
-    snapshot: snapshot,
-    publishedDate: snapshot.createdAt,
-    baselineOrChanges: snapshot.previousVersionKey,
-  })), [snapshots])
+  const data: SnapshotsTableData[] = useMemo(() =>
+    snapshots.map(snapshot => ({
+      snapshot: snapshot,
+      publishedDate: snapshot.createdAt,
+      baselineOrChanges: snapshot.previousVersionKey,
+    })), [snapshots])
 
   const { getHeaderGroups, getRowModel } = useReactTable({
     data: data,
@@ -221,7 +219,7 @@ export const SnapshotsTable: FC = memo(() => {
                 ))}
               </TableRow>
               {row.original.snapshot && row.getIsExpanded() && (
-                <SnapshotsSubTable value={row} lastColumnId={VIEW_CHANGES_URL_COLUMN_ID}/>
+                <SnapshotsSubTable value={row} lastColumnId={VIEW_CHANGES_URL_COLUMN_ID} />
               )}
             </Fragment>
           ))}

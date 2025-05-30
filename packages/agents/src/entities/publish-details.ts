@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import type { PackageKey, PublishKey } from './keys'
 import type { PublishStatus } from './statuses'
 import { NONE_PUBLISH_STATUS } from './statuses'
-import type { PackageKey, PublishKey } from './keys'
 
-import { generatePath } from 'react-router-dom'
 import { ncCustomAgentsRequestJson, ncCustomAgentsRequestVoid } from '@apihub/utils/requests'
-import { API_V2 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
-import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
 import type { SetPublicationDetailsOptions } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
+import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
+import { API_V2 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import { generatePath } from 'react-router-dom'
 
 export type PublishDetails = PublishDetailsDto
 
@@ -49,17 +49,15 @@ export async function getPublishDetails(
 
   const pathPattern = '/packages/:packageId/publish/statuses'
   return await ncCustomAgentsRequestJson<PublishDetails[]>(generatePath(pathPattern, { packageId }), {
-      method: 'post',
-      body: JSON.stringify({
-        publishIds: publishKeys,
-      }),
-    },
-    {
-      basePath: API_V2,
-      ignoreNotFound: true,
-      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-    },
-  )
+    method: 'post',
+    body: JSON.stringify({
+      publishIds: publishKeys,
+    }),
+  }, {
+    basePath: API_V2,
+    ignoreNotFound: true,
+    customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+  })
 }
 
 // TODO 23.08.23 // Check it later, why there is optional builderId here
@@ -88,15 +86,13 @@ export async function setPublicationDetails(options: SetPublicationDetailsOption
   const signal = abortController?.signal
   const pathPattern = '/packages/:packageId/publish/:publishId/status'
   return await ncCustomAgentsRequestVoid(generatePath(pathPattern, { packageId, publishId }), {
-      method: 'post',
-      body: formData,
-      headers: { authorization },
-      signal: signal,
-    },
-    {
-      basePath: API_V2,
-      ignoreNotFound: true,
-      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-    },
-  )
+    method: 'post',
+    body: formData,
+    headers: { authorization },
+    signal: signal,
+  }, {
+    basePath: API_V2,
+    ignoreNotFound: true,
+    customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+  })
 }

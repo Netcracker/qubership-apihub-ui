@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import type { QueryKey } from '@tanstack/react-query'
-import { useQuery } from '@tanstack/react-query'
-import { useVersionWithRevision } from '../../useVersionWithRevision'
-import { generatePath } from 'react-router-dom'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import type { Document, DocumentDto } from '@apihub/entities/documents'
 import { EMPTY_DOC, toDocument } from '@apihub/entities/documents'
 import { portalRequestJson } from '@apihub/utils/requests'
-import { API_V3 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
+import { API_V3 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import type { QueryKey } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
+import { generatePath } from 'react-router-dom'
+import { useVersionWithRevision } from '../../useVersionWithRevision'
 
 const DOCUMENT_QUERY_KEY = 'document-query-key'
 

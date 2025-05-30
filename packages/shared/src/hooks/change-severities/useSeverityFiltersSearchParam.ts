@@ -18,8 +18,8 @@ import { useCallback } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useHash } from 'react-use'
 import type { ChangeSeverity } from '../../entities/change-severities'
-import { useSearchParam } from '../searchparams/useSearchParam'
 import { FILTERS_SEARCH_PARAM } from '../../utils/search-params'
+import { useSearchParam } from '../searchparams/useSearchParam'
 
 export function useSeverityFiltersSearchParam(): [ChangeSeverity[], SetChangeSeverity] {
   const filters = useSearchParam(FILTERS_SEARCH_PARAM)

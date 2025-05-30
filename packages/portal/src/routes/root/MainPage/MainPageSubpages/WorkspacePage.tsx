@@ -14,26 +14,30 @@
  * limitations under the License.
  */
 
+import { MainPageCard } from '@apihub/routes/root/MainPage/MainPageCard'
+import { Box, IconButton } from '@mui/material'
+import {
+  CONTENT_PLACEHOLDER_AREA,
+  NO_PERMISSION,
+  Placeholder,
+} from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
+import { ToolbarTitle } from '@netcracker/qubership-apihub-ui-shared/components/ToolbarTitle'
+import { READ_PERMISSION } from '@netcracker/qubership-apihub-ui-shared/entities/package-permissions'
+import { isBoolean } from '@netcracker/qubership-apihub-ui-shared/utils/types'
 import type { FC } from 'react'
 import React, { memo, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
-import { usePackage } from '../../usePackage'
-import { Box, IconButton } from '@mui/material'
-import { FavoriteIconButton } from '../FavoriteIconButton'
-import { useFavorPackage } from '../useFavorPackage'
-import { useDisfavorPackage } from '../useDisfavorPackage'
 import type { ActivityHistoryQueryResult } from '../../useActivityHistory'
 import { usePackageActivityHistory } from '../../useActivityHistory'
+import { usePackage } from '../../usePackage'
 import {
   useActivityHistoryFiltersContext,
   useSetActivityHistoryFiltersContext,
 } from '../ActivityHistoryFiltersProvider'
+import { FavoriteIconButton } from '../FavoriteIconButton'
+import { useDisfavorPackage } from '../useDisfavorPackage'
+import { useFavorPackage } from '../useFavorPackage'
 import { ActivityHistoryCard } from './ActivityHistoryCard'
-import { READ_PERMISSION } from '@netcracker/qubership-apihub-ui-shared/entities/package-permissions'
-import { isBoolean } from '@netcracker/qubership-apihub-ui-shared/utils/types'
-import { ToolbarTitle } from '@netcracker/qubership-apihub-ui-shared/components/ToolbarTitle'
-import { MainPageCard } from '@apihub/routes/root/MainPage/MainPageCard'
-import { CONTENT_PLACEHOLDER_AREA, NO_PERMISSION, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 
 export const WorkspacePage: FC = memo(() => {
   const { workspaceKey = '' } = useParams()
@@ -69,27 +73,29 @@ export const WorkspacePage: FC = memo(() => {
           }}
           data-testid="FavoriteButton"
         >
-          {isBoolean(isFavorite) && <FavoriteIconButton isFavorite={isFavorite}/>}
+          {isBoolean(isFavorite) && <FavoriteIconButton isFavorite={isFavorite} />}
         </IconButton>
-        <ToolbarTitle value={workspace?.name}/>
+        <ToolbarTitle value={workspace?.name} />
       </Box>
     ),
     [disfavorPackage, favorPackage, isFavorite, workspace?.name, workspaceKey],
   )
 
   if (!hasReedPermissionWorkspace && !isLoadingWorkspace) {
-    return <MainPageCard
-      title=""
-      hideSearchBar
-      hideViewSelector
-      content={
-        <Placeholder
-          invisible={false}
-          area={CONTENT_PLACEHOLDER_AREA}
-          message={NO_PERMISSION}
-        />
-      }
-    />
+    return (
+      <MainPageCard
+        title=""
+        hideSearchBar
+        hideViewSelector
+        content={
+          <Placeholder
+            invisible={false}
+            area={CONTENT_PLACEHOLDER_AREA}
+            message={NO_PERMISSION}
+          />
+        }
+      />
+    )
   }
 
   return (

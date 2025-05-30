@@ -19,8 +19,8 @@ import * as React from 'react'
 import { memo, useMemo } from 'react'
 import type { Operation } from '../entities/operations'
 import { isGraphQlOperation, isRestOperation } from '../entities/operations'
-import type { TestableProps } from './Testable'
 import { OptionItem } from './OptionItem'
+import type { TestableProps } from './Testable'
 
 export type OperationOptionItemProps = {
   props: HTMLAttributes<HTMLLIElement>
@@ -36,8 +36,8 @@ export const OperationOptionItem: FC<OperationOptionItemProps> = memo<OperationO
     isRestOperation(operation)
       ? [operation.path, operation.method]
       : isGraphQlOperation(operation)
-        ? [operation.type, operation.method]
-        : ['unknown', 'unknown'] // Default, should not happen
+      ? [operation.type, operation.method]
+      : ['unknown', 'unknown'] // Default, should not happen
   ), [operation])
 
   return (

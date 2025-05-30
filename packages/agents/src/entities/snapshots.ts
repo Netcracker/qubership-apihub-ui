@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { AgentKey, NamespaceKey, PackageKey, ServiceKey, VersionKey, WorkspaceKey } from './keys'
-import type { PublishConfigDto } from './publish-config'
 import { ncCustomAgentsRequestJson } from '@apihub/utils/requests'
 import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import type { AgentKey, NamespaceKey, PackageKey, ServiceKey, VersionKey, WorkspaceKey } from './keys'
+import type { PublishConfigDto } from './publish-config'
 
 export type Snapshots = {
   packageKey: PackageKey
@@ -68,7 +68,9 @@ export async function getSnapshots(
   namespaceKey: NamespaceKey,
   workspaceKey: WorkspaceKey,
 ): Promise<SnapshotsDto> {
-  return await ncCustomAgentsRequestJson<SnapshotsDto>(`/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/snapshots`, {
+  return await ncCustomAgentsRequestJson<SnapshotsDto>(
+    `/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/snapshots`,
+    {
       method: 'get',
     },
   )
@@ -98,15 +100,19 @@ export async function publishSnapshot(
   builderId: string,
   status?: VersionStatus,
 ): Promise<PublishConfigDto> {
-  return await ncCustomAgentsRequestJson<PublishConfigDto>(`/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/snapshots?clientBuild=${clientBuild}&promote=${promote}`, {
+  return await ncCustomAgentsRequestJson<PublishConfigDto>(
+    `/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/snapshots?clientBuild=${clientBuild}&promote=${promote}`,
+    {
       method: 'post',
-      body: JSON.stringify(<PublishSnapshotRequestDto>{
-        version: version,
-        previousVersion: calculatePreviousVersion(previousVersion),
-        services: serviceKeys,
-        status: status,
-        builderId: builderId,
-      }),
+      body: JSON.stringify(
+        <PublishSnapshotRequestDto> {
+          version: version,
+          previousVersion: calculatePreviousVersion(previousVersion),
+          services: serviceKeys,
+          status: status,
+          builderId: builderId,
+        },
+      ),
     },
   )
 }

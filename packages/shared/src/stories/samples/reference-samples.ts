@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { PackageReference } from '../../entities/version-references'
 import { PACKAGE_KIND } from '../../entities/packages'
+import type { PackageReference } from '../../entities/version-references'
 import { DRAFT_VERSION_STATUS } from '../../entities/version-status'
 
 export const references: PackageReference[] = [

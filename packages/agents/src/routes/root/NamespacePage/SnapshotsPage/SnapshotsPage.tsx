@@ -17,12 +17,12 @@
 import type { FC } from 'react'
 import { memo } from 'react'
 
-import { useSnapshots } from '../useSnapshots'
-import { SnapshotsTable } from './SnapshotsTable'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
+import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
+import { useSnapshots } from '../useSnapshots'
+import { SnapshotsTable } from './SnapshotsTable'
 
 export const SnapshotsPage: FC = memo(() => {
   const [{ snapshots }, isLoading] = useSnapshots()
@@ -37,11 +37,10 @@ export const SnapshotsPage: FC = memo(() => {
           message="No snapshots"
         >
           {isLoading
-            ? <LoadingIndicator/>
-            : <SnapshotsTable/>}
+            ? <LoadingIndicator />
+            : <SnapshotsTable />}
         </Placeholder>
       }
     />
   )
 })
-

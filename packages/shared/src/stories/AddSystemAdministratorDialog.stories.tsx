@@ -27,7 +27,7 @@ const meta: Meta<typeof AddSystemAdministratorPopup> = {
   decorators: [
     (Story) => (
       <ThemeProvider theme={theme}>
-        <Story/>
+        <Story />
       </ThemeProvider>
     ),
   ],

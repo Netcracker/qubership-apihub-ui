@@ -44,8 +44,7 @@ export class NoopError extends Error {
  */
 export class InvalidOperationError extends Error {
   readonly name: string = 'Invalid Operation Encountered'
-  readonly message: string =
-    'The Operation recieved was either Invalid or Corrupted, please retry!'
+  readonly message: string = 'The Operation recieved was either Invalid or Corrupted, please retry!'
 }
 
 /**

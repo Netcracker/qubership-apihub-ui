@@ -14,32 +14,39 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import { CONTEXT_PANEL_DEFAULT_WIDTH, SchemaContextPanel } from '@apihub/components/SchemaContextPanel'
 import { Box } from '@mui/material'
-import {
-  useOperationNavigationDetails,
-  useOperationPathViewPort,
-  useSetOperationPathViewPort,
-} from '../../../OperationNavigationDataProvider'
 import type { SelectableObject } from '@netcracker/qubership-apihub-class-view'
+import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
+import { ResizableSidebar } from '@netcracker/qubership-apihub-ui-shared/components/ResizableSidebar'
+import type {
+  Action,
+  NavigationState,
+  ViewPortCenter,
+} from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView'
+import {
+  FIT_TO_SCREEN_ACTION,
+  SchemaGraphView,
+} from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView'
 import type { SchemaGraphMeta } from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView/schema-graph-content'
 import {
   isNamedObject,
   isProperty,
   isSchema,
 } from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView/schema-graph-content'
-import type { OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import type { Action, NavigationState, ViewPortCenter } from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView'
-import { FIT_TO_SCREEN_ACTION, SchemaGraphView } from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView'
-import { CONTEXT_PANEL_DEFAULT_WIDTH, SchemaContextPanel } from '@apihub/components/SchemaContextPanel'
+import { VISITOR_FLAG_INLINE_REFS } from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView/visitor-utils'
 import { ZoomPanel } from '@netcracker/qubership-apihub-ui-shared/components/ZoomPanel'
-import { ResizableSidebar } from '@netcracker/qubership-apihub-ui-shared/components/ResizableSidebar'
-import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
+import type { OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import { NAVIGATION_MAX_WIDTH } from '@netcracker/qubership-apihub-ui-shared/utils/page-layouts'
 import type { OpenAPIV3 } from 'openapi-types'
-import { VISITOR_FLAG_INLINE_REFS } from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView/visitor-utils'
-import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import type { FC } from 'react'
+import { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import {
+  useOperationNavigationDetails,
+  useOperationPathViewPort,
+  useSetOperationPathViewPort,
+} from '../../../OperationNavigationDataProvider'
 
 export type OperationModelsGraphProps = {
   operationData: OperationData | null | undefined
@@ -67,8 +74,7 @@ export const OperationModelsGraph: FC<OperationModelsGraphProps> = memo<Operatio
         ...navigationDetails,
         viewPort: modelViewPort,
       }
-      : undefined
-    ),
+      : undefined),
     // should calc only on change path for navigation
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [navigationDetails],
@@ -140,7 +146,8 @@ export const OperationModelsGraph: FC<OperationModelsGraphProps> = memo<Operatio
               value={zoom}
               specificOptions={ZOOM_OPTIONS}
               onChange={onZoomChange}
-              onFitToScreen={() => setAction({ type: FIT_TO_SCREEN_ACTION })}
+              onFitToScreen={() =>
+                setAction({ type: FIT_TO_SCREEN_ACTION })}
             />
           </Box>
         )}

@@ -21,10 +21,10 @@ import 'monaco-editor/esm/vs/basic-languages/markdown/markdown.contribution'
 
 import type { FC } from 'react'
 import { memo } from 'react'
-import { useMonacoDiffEditorElement } from './useMonacoDiffEditorElement'
-import type { SpecType } from '../../utils/specs'
 import type { LanguageType } from '../../types/languages'
 import type { SpecItemUri } from '../../utils/specifications'
+import type { SpecType } from '../../utils/specs'
+import { useMonacoDiffEditorElement } from './useMonacoDiffEditorElement'
 
 export type MonacoDiffEditorElementProps = {
   before: string

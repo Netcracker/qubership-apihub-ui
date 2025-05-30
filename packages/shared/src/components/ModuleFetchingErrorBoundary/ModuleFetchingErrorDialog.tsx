@@ -35,15 +35,16 @@ export const ModuleFetchingErrorPopup: FC<PropsWithChildren> = () => (
         variant="body2"
         data-testid="ModuleFetchingErrorDialogContent"
       >
-        Please reload the page to get the latest version;
-        otherwise, APIHUB UI may not function correctly
+        Please reload the page to get the latest version; otherwise, APIHUB UI may not function correctly
       </DialogContentText>
     </DialogContent>
     <DialogActions>
       <Button
         variant="contained"
-        startIcon={<Autorenew/>}
-        onClick={() => { location.reload() }}
+        startIcon={<Autorenew />}
+        onClick={() => {
+          location.reload()
+        }}
       >
         Reload
       </Button>

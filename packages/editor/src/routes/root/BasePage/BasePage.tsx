@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useCallback } from 'react'
-import { Outlet } from 'react-router-dom'
 import { Box } from '@mui/material'
-import { MainPageProvider } from '../MainPage/MainPageProvider'
-import { UserPanel } from './UserPanel'
 import type { Theme } from '@mui/material/styles'
 import type { SystemStyleObject } from '@mui/system/styleFunctionSx/styleFunctionSx'
-import { SystemInfoPopup, useSystemInfo } from '@netcracker/qubership-apihub-ui-shared/features/system-info'
-import { Notification, useShowErrorNotification } from './Notification'
-import { cutViewPortStyleCalculator } from '@netcracker/qubership-apihub-ui-shared/utils/themes'
+import { AppHeader } from '@netcracker/qubership-apihub-ui-shared/components/AppHeader'
+import { ExceptionSituationHandler } from '@netcracker/qubership-apihub-ui-shared/components/ExceptionSituationHandler'
 import {
   MaintenanceNotification,
   NOTIFICATION_HEIGHT,
 } from '@netcracker/qubership-apihub-ui-shared/components/MaintenanceNotification'
-import { AppHeader } from '@netcracker/qubership-apihub-ui-shared/components/AppHeader'
+import { SystemInfoPopup, useSystemInfo } from '@netcracker/qubership-apihub-ui-shared/features/system-info'
 import { LogoIcon } from '@netcracker/qubership-apihub-ui-shared/icons/LogoIcon'
-import { ExceptionSituationHandler } from '@netcracker/qubership-apihub-ui-shared/components/ExceptionSituationHandler'
+import { cutViewPortStyleCalculator } from '@netcracker/qubership-apihub-ui-shared/utils/themes'
+import type { FC } from 'react'
+import { memo, useCallback } from 'react'
+import { Outlet } from 'react-router-dom'
 import * as packageJson from '../../../../package.json'
+import { MainPageProvider } from '../MainPage/MainPageProvider'
+import { Notification, useShowErrorNotification } from './Notification'
+import { UserPanel } from './UserPanel'
 
 export const BasePage: FC = memo(() => {
   const { notification: systemNotification } = useSystemInfo()
@@ -41,7 +41,10 @@ export const BasePage: FC = memo(() => {
   const EDITOR_DEPRECATED = 40
   const viewPortStyleCalculator = useCallback(
     (theme: Theme): SystemStyleObject<Theme> => {
-      return cutViewPortStyleCalculator(theme, systemNotification ? NOTIFICATION_HEIGHT + EDITOR_DEPRECATED : EDITOR_DEPRECATED)
+      return cutViewPortStyleCalculator(
+        theme,
+        systemNotification ? NOTIFICATION_HEIGHT + EDITOR_DEPRECATED : EDITOR_DEPRECATED,
+      )
     },
     [systemNotification],
   )
@@ -61,10 +64,12 @@ export const BasePage: FC = memo(() => {
             { name: 'API Editor', pathname: '/editor', active: true, testId: 'EditorHeaderButton' },
             { name: 'Agent', pathname: '/agents', testId: 'AgentHeaderButton' },
           ]}
-          action={<>
-            <SystemInfoPopup frontendVersionKey={packageJson.version} />
-            <UserPanel />
-          </>}
+          action={
+            <>
+              <SystemInfoPopup frontendVersionKey={packageJson.version} />
+              <UserPanel />
+            </>
+          }
         />
         <Box sx={viewPortStyleCalculator}>
           <ExceptionSituationHandler
@@ -75,11 +80,10 @@ export const BasePage: FC = memo(() => {
           </ExceptionSituationHandler>
         </Box>
         <Notification />
-        {systemNotification && (
-          <MaintenanceNotification value={systemNotification} />
-        )}
+        {systemNotification && <MaintenanceNotification value={systemNotification} />}
         <MaintenanceNotification
-          value={'API Editor will be deprecated in upcoming releases. A VS Code plugin will replace it, enabling you to publish your API documents directly to Portal.'} />
+          value={'API Editor will be deprecated in upcoming releases. A VS Code plugin will replace it, enabling you to publish your API documents directly to Portal.'}
+        />
       </Box>
     </MainPageProvider>
   )

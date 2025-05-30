@@ -25,7 +25,7 @@ export function wrapByCommonRoute(basePage: ReactNode, childrenRoutes: Applicati
     {
       id: 'login',
       path: '/login',
-      element: <LoginPage applicationName={'APIHUB NC Custom Service'}/>,
+      element: <LoginPage applicationName={'APIHUB NC Custom Service'} />,
     },
     {
       id: 'root',

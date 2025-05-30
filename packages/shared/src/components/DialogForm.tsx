@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-import type { FC, PropsWithChildren } from 'react'
-import { memo } from 'react'
 import Box from '@mui/material/Box'
 import Dialog from '@mui/material/Dialog'
 import type { DialogProps } from '@mui/material/Dialog/Dialog'
+import type { FC, PropsWithChildren } from 'react'
+import { memo } from 'react'
 import { takeIfDefined } from '../utils/objects'
 
-export type DialogFormProps = PropsWithChildren<Pick<DialogProps, 'open' | 'onClose'> & {
-  onSubmit?: () => void
-  width?: string
-  maxWidth?: DialogProps['maxWidth']
-}>
+export type DialogFormProps = PropsWithChildren<
+  Pick<DialogProps, 'open' | 'onClose'> & {
+    onSubmit?: () => void
+    width?: string
+    maxWidth?: DialogProps['maxWidth']
+  }
+>
 
 export const DialogForm: FC<DialogFormProps> = memo<DialogFormProps>(({
   open,

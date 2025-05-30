@@ -14,23 +14,15 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { usePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
+import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
+import { SHOW_COPY_PACKAGE_VERSION_DIALOG } from '@apihub/routes/EventBusProvider'
+import { useFullMainVersion } from '@apihub/routes/root/PortalPage/FullMainVersionProvider'
+import { useCopyPackageVersion } from '@apihub/routes/root/PortalPage/useCopyPackageVersion'
+import { usePackageVersionConfig } from '@apihub/routes/root/PortalPage/usePackageVersionConfig'
+import { usePublicationStatuses } from '@apihub/routes/root/PortalPage/usePublicationStatus'
+import { usePackages } from '@apihub/routes/root/usePackages'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import { SHOW_COPY_PACKAGE_VERSION_DIALOG } from '@apihub/routes/EventBusProvider'
-import type { Package } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { DASHBOARD_KIND, PACKAGE_KIND, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { getSplittedVersionKey, getVersionLabelsMap } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import {
-  DRAFT_VERSION_STATUS,
-  NO_PREVIOUS_RELEASE_VERSION_OPTION,
-  RELEASE_VERSION_STATUS,
-} from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 import type { VersionFormData } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
 import {
   getPackageOptions,
@@ -39,18 +31,26 @@ import {
   usePreviousVersionOptions,
   VersionDialogForm,
 } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
-import { usePackages } from '@apihub/routes/root/usePackages'
-import { useCopyPackageVersion } from '@apihub/routes/root/PortalPage/useCopyPackageVersion'
-import { usePublicationStatuses } from '@apihub/routes/root/PortalPage/usePublicationStatus'
-import { useFullMainVersion } from '@apihub/routes/root/PortalPage/FullMainVersionProvider'
-import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
-import { usePackageVersionConfig } from '@apihub/routes/root/PortalPage/usePackageVersionConfig'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { Package } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { DASHBOARD_KIND, PACKAGE_KIND, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import {
+  DRAFT_VERSION_STATUS,
+  NO_PREVIOUS_RELEASE_VERSION_OPTION,
+  RELEASE_VERSION_STATUS,
+} from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import { usePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
+import { getSplittedVersionKey, getVersionLabelsMap } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
+import type { FC } from 'react'
+import { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import { useForm } from 'react-hook-form'
 
 export const CopyPackageVersionDialog: FC = memo(() => {
   return (
     <PopupDelegate
       type={SHOW_COPY_PACKAGE_VERSION_DIALOG}
-      render={props => <CopyPackageVersionPopup {...props}/>}
+      render={props => <CopyPackageVersionPopup {...props} />}
     />
   )
 })
@@ -101,11 +101,24 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const [isPublishing, isPublished] = usePublicationStatuses(targetPackage?.key ?? '', publishId, targetVersion)
 
   const targetPackagePermissions = useMemo(() => targetPackage?.permissions ?? [], [targetPackage?.permissions])
-  const targetReleaseVersionPattern = useMemo(() => targetPackage?.releaseVersionPattern, [targetPackage?.releaseVersionPattern])
+  const targetReleaseVersionPattern = useMemo(() => targetPackage?.releaseVersionPattern, [
+    targetPackage?.releaseVersionPattern,
+  ])
   const versionLabelsMap = useMemo(() => getVersionLabelsMap(filteredVersions), [filteredVersions])
-  const versionOptions = useMemo(() => getVersionOptions(versionLabelsMap, targetVersion), [targetVersion, versionLabelsMap])
-  const packageOptions = useMemo(() => getPackageOptions(packages, targetPackage, !!packagesFilter), [packages, packagesFilter, targetPackage])
-  const workspaceOptions = useMemo(() => getPackageOptions(workspaces, targetWorkspace, !!workspacesFilter), [targetWorkspace, workspaces, workspacesFilter])
+  const versionOptions = useMemo(() => getVersionOptions(versionLabelsMap, targetVersion), [
+    targetVersion,
+    versionLabelsMap,
+  ])
+  const packageOptions = useMemo(() => getPackageOptions(packages, targetPackage, !!packagesFilter), [
+    packages,
+    packagesFilter,
+    targetPackage,
+  ])
+  const workspaceOptions = useMemo(() => getPackageOptions(workspaces, targetWorkspace, !!workspacesFilter), [
+    targetWorkspace,
+    workspaces,
+    workspacesFilter,
+  ])
 
   const defaultValues: VersionFormData = useMemo(() => {
     return {
@@ -118,7 +131,7 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     }
   }, [currentWorkspace, versionId])
 
-  const { handleSubmit, control, reset, setValue, formState } = useForm<VersionFormData>({defaultValues})
+  const { handleSubmit, control, reset, setValue, formState } = useForm<VersionFormData>({ defaultValues })
   const onVersionsFilter = useCallback((value: Key) => setVersionsFilter(value), [setVersionsFilter])
   const onPackagesFilter = useCallback((value: Key) => setPackagesFilter(value), [setPackagesFilter])
   const onWorkspacesFilter = useCallback((value: Key) => setWorkspacesFilter(value), [setWorkspacesFilter])
@@ -131,8 +144,12 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     const workspace = currentPackage?.parents?.find(pack => pack.kind === WORKSPACE_KIND)
     setTargetWorkspace(workspace ?? null)
   }, [currentPackage?.parents])
-  useEffect(() => {isCopyingStartedSuccessfully && isPublished && setOpen(false)}, [setOpen, isCopyingStartedSuccessfully, isPublished])
-  useEffect(() => {reset(defaultValues)}, [defaultValues, reset])
+  useEffect(() => {
+    isCopyingStartedSuccessfully && isPublished && setOpen(false)
+  }, [setOpen, isCopyingStartedSuccessfully, isPublished])
+  useEffect(() => {
+    reset(defaultValues)
+  }, [defaultValues, reset])
   useEffect(() => {
     if (!targetWorkspace) {
       setTargetPackage(null)

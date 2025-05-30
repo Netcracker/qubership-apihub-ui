@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import type { SpecItemUri } from '@netcracker/qubership-apihub-ui-shared/utils/specifications'
+import { findPathLocation } from '@netcracker/qubership-apihub-ui-shared/utils/specifications'
 import type { editor as Editor } from 'monaco-editor'
 import { editor, Range } from 'monaco-editor'
 import { useEffect, useState } from 'react'
 import { monacoEditorNavigateTo } from './useOtMonaco'
-import type { SpecItemUri } from '@netcracker/qubership-apihub-ui-shared/utils/specifications'
-import { findPathLocation } from '@netcracker/qubership-apihub-ui-shared/utils/specifications'
 import IEditorDecorationsCollection = editor.IEditorDecorationsCollection
 import IModelDeltaDecoration = editor.IModelDeltaDecoration
 
@@ -38,8 +38,8 @@ export function useRegisterSelectionDecorator(
       setSelectionDecorations(editor.createDecorationsCollection())
     }
 
-    const location = findPathLocation(editor.getValue(), selectedUri) ??
-      findPathLocation(editor.getValue(), selectedUri.slice(0, selectedUri.lastIndexOf('/')))
+    const location = findPathLocation(editor.getValue(), selectedUri)
+      ?? findPathLocation(editor.getValue(), selectedUri.slice(0, selectedUri.lastIndexOf('/')))
 
     if (location) {
       const startLine = location?.range.start.line

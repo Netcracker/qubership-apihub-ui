@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import { Accordion, AccordionDetails, AccordionSummary, Typography } from '@mui/material'
 import type { FC, ReactNode } from 'react'
 import React, { memo } from 'react'
-import { Accordion, AccordionDetails, AccordionSummary, Typography } from '@mui/material'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
 export type CustomAccordionProps = {
   expanded: boolean
@@ -32,7 +32,7 @@ export const CustomAccordion: FC<CustomAccordionProps> = memo<CustomAccordionPro
     <Accordion expanded={expanded} onChange={setExpanded} elevation={0} sx={{ display: 'contents' }}>
       <AccordionSummary
         sx={ACCORDION_SUMMARY_STYLE}
-        expandIcon={<ExpandMoreIcon/>}
+        expandIcon={<ExpandMoreIcon />}
       >
         <Typography width="100%" noWrap variant="button">{title}</Typography>
       </AccordionSummary>

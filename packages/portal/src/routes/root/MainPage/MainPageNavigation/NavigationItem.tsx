@@ -15,32 +15,36 @@
  */
 
 import { Box, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
+import type { TestableProps } from '@netcracker/qubership-apihub-ui-shared/components/Testable'
 import type { Path } from '@remix-run/router'
 import type { FC } from 'react'
 import React, { memo } from 'react'
 import { NavLink } from 'react-router-dom'
-import type { TestableProps } from '@netcracker/qubership-apihub-ui-shared/components/Testable'
 
-export type NavigationItemProps = Readonly<{
-  to: Partial<Path>
-  label: string
-  icon?: React.ReactNode
-  selected?: boolean
-  packageKey?: string
-}> & TestableProps
+export type NavigationItemProps =
+  & Readonly<{
+    to: Partial<Path>
+    label: string
+    icon?: React.ReactNode
+    selected?: boolean
+    packageKey?: string
+  }>
+  & TestableProps
 
 export const NavigationItem: FC<NavigationItemProps> = memo<NavigationItemProps>(props => {
   const { to, icon, label, packageKey, testId, selected } = props
 
   return (
-    <Box sx={{
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center',
-      height: '32px',
-      mb: packageKey ? '8px' : '16px',
-      pr: '6px',
-    }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        height: '32px',
+        mb: packageKey ? '8px' : '16px',
+        pr: '6px',
+      }}
+    >
       <ListItemButton
         component={NavLink}
         to={to}
@@ -69,7 +73,7 @@ export const NavigationItem: FC<NavigationItemProps> = memo<NavigationItemProps>
         >
           {icon}
         </ListItemIcon>
-        <ListItemText sx={{ fontWeight: 500 }} primary={label}/>
+        <ListItemText sx={{ fontWeight: 500 }} primary={label} />
       </ListItemButton>
     </Box>
   )

@@ -15,8 +15,6 @@
  */
 
 import type { FC } from 'react'
-import type { TogglerProps } from './Toggler'
-import { Toggler } from './Toggler'
 import {
   DOC_OPERATION_VIEW_MODE,
   INTROSPECTION_OPERATION_VIEW_MODE,
@@ -24,6 +22,8 @@ import {
   SCHEMA_OPERATION_VIEW_MODE,
   SIMPLE_OPERATION_VIEW_MODE,
 } from '../entities/operation-view-mode'
+import type { TogglerProps } from './Toggler'
+import { Toggler } from './Toggler'
 
 export const DOC_SPEC_VIEW_MODE = DOC_OPERATION_VIEW_MODE
 export const SIMPLE_SPEC_VIEW_MODE = SIMPLE_OPERATION_VIEW_MODE

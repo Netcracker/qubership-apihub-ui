@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
+import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
 import type { FC } from 'react'
 import { memo } from 'react'
-import { SpecToolbar } from './SpecToolbar'
 import { DocumentPreviewCard } from './DocumentPreviewCard'
-import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
+import { SpecToolbar } from './SpecToolbar'
 
 export const DocumentPreviewPage: FC = memo(() => {
   return (
     <PageLayout
-      toolbar={<SpecToolbar/>}
-      body={<DocumentPreviewCard/>}
+      toolbar={<SpecToolbar />}
+      body={<DocumentPreviewCard />}
     />
   )
 })

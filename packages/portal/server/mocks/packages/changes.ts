@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { VersionChangesDto } from './types'
-import { PACKAGES } from './packages'
 import { OPERATIONS } from './operations'
+import { PACKAGES } from './packages'
+import type { VersionChangesDto } from './types'
 import { getChangesSummary } from './version-contents'
 
 export const DEFAULT_CHANGES = {
@@ -176,7 +176,8 @@ export const PACKAGE1_CHANGES: VersionChangesDto = {
 }
 
 export function generateVersionChanges(packageId: string, version1: string, version2: string): VersionChangesDto {
-  const packageObject = PACKAGES.packages.find(packageObject => packageObject.packageId === packageId) ?? PACKAGES.packages[0]
+  const packageObject = PACKAGES.packages.find(packageObject => packageObject.packageId === packageId)
+    ?? PACKAGES.packages[0]
   const ref1 = `${packageId}@${version1}`
   const ref2 = `${packageId}@${version2}`
   return {

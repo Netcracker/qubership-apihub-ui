@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import type { ChangeEvent, FC } from 'react'
-import * as React from 'react'
-import { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import { SHOW_CREATE_CUSTOM_SERVER_DIALOG } from '@apihub/routes/EventBusProvider'
+import { LoadingButton } from '@mui/lab'
 import {
   Autocomplete,
   Button,
@@ -27,23 +26,24 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
-import { LoadingButton } from '@mui/lab'
-import { Controller, useForm } from 'react-hook-form'
-import type { ControllerFieldState, ControllerRenderProps } from 'react-hook-form/dist/types/controller'
-import type { UseFormStateReturn } from 'react-hook-form/dist/types'
-import { usePackage } from '../../../../usePackage'
-import { useAgents } from './useAgents'
-import { useNamespaces } from './useNamespaces'
-import { useCustomServersPackageMap } from './useCustomServersPackageMap'
-import { useParams } from 'react-router-dom'
-import { useServiceNames } from './useServiceNames'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import { SHOW_CREATE_CUSTOM_SERVER_DIALOG } from '@apihub/routes/EventBusProvider'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { Namespace } from '@netcracker/qubership-apihub-ui-shared/entities/namespaces'
-import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 import { isServiceNameExistInNamespace } from '@netcracker/qubership-apihub-ui-shared/entities/service-names'
+import type { ChangeEvent, FC } from 'react'
+import * as React from 'react'
+import { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import type { UseFormStateReturn } from 'react-hook-form/dist/types'
+import type { ControllerFieldState, ControllerRenderProps } from 'react-hook-form/dist/types/controller'
+import { useParams } from 'react-router-dom'
+import { usePackage } from '../../../../usePackage'
+import { useAgents } from './useAgents'
+import { useCustomServersPackageMap } from './useCustomServersPackageMap'
+import { useNamespaces } from './useNamespaces'
+import { useServiceNames } from './useServiceNames'
 
 const CLOUD_KEY = 'cloudKey'
 const NAMESPACE_KEY = 'namespaceKey'
@@ -61,7 +61,7 @@ export const CreateCustomServerDialog: FC = memo(() => {
   return (
     <PopupDelegate
       type={SHOW_CREATE_CUSTOM_SERVER_DIALOG}
-      render={props => <CreateCustomServerPopup {...props}/>}
+      render={props => <CreateCustomServerPopup {...props} />}
     />
   )
 })
@@ -93,7 +93,9 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     [agents],
   )
   useEffect(
-    () => {selectedCloud && cloudAgentIdMap.has(selectedCloud) && setSelectedAgent(cloudAgentIdMap.get(selectedCloud) ?? '')},
+    () => {
+      selectedCloud && cloudAgentIdMap.has(selectedCloud) && setSelectedAgent(cloudAgentIdMap.get(selectedCloud) ?? '')
+    },
     [cloudAgentIdMap, selectedCloud],
   )
   const [namespaces] = useNamespaces(selectedAgent!)
@@ -117,7 +119,12 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const isUrlGenerationAvailable = isServiceNameExist && selectedAgent && selectedNamespace
 
   useEffect(
-    () => {isUrlGenerationAvailable && setSelectedCustomUrl(`/apihub-nc/agents/${selectedAgent}/namespaces/${namespaceKey}/services/${selectedService}/proxy/`)},
+    () => {
+      isUrlGenerationAvailable
+        && setSelectedCustomUrl(
+          `/apihub-nc/agents/${selectedAgent}/namespaces/${namespaceKey}/services/${selectedService}/proxy/`,
+        )
+    },
     [isUrlGenerationAvailable, namespaceKey, selectedAgent, selectedNamespace, selectedService],
   )
 
@@ -159,9 +166,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
         </ListItem>
       )}
       isOptionEqualToValue={(option, value) => option === value}
-      renderInput={(params) => (
-        <TextField {...field} {...params} label="Cloud"/>
-      )}
+      renderInput={(params) => <TextField {...field} {...params} label="Cloud" />}
       onChange={(_, value) => {
         setValue(CLOUD_KEY, value ?? '')
         setSelectedCloud(value ?? '')
@@ -173,7 +178,8 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   ), [clouds, selectedCloud, setValue])
 
   const renderSelectNamespace = useCallback((
-    { field }: ControllerRenderFunctionProps<typeof NAMESPACE_KEY>) => (
+    { field }: ControllerRenderFunctionProps<typeof NAMESPACE_KEY>,
+  ) => (
     <Autocomplete
       key="namespaceAutocomplete"
       options={namespaces}
@@ -203,39 +209,35 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   ), [isServiceNameValid, namespaces, selectedNamespace, serviceName, setValue])
 
   const renderSelectService = useCallback((
-      { field }: ControllerRenderFunctionProps<typeof SERVICE_KEY>) => (
-      <Autocomplete
-        disabled={true}
-        key="serviceAutocomplete"
-        options={[serviceName]}
-        value={selectedService}
-        renderOption={(props, serviceName) => (
-          <ListItem {...props} key={serviceName}>
-            {serviceName}
-          </ListItem>
-        )}
-        renderInput={(params) => (
-          <TextField {...field} {...params} label="Service"/>
-        )}
-        data-testid="ServiceAutocomplete"
-      />
-    ),
-    [selectedService, serviceName],
-  )
+    { field }: ControllerRenderFunctionProps<typeof SERVICE_KEY>,
+  ) => (
+    <Autocomplete
+      disabled={true}
+      key="serviceAutocomplete"
+      options={[serviceName]}
+      value={selectedService}
+      renderOption={(props, serviceName) => (
+        <ListItem {...props} key={serviceName}>
+          {serviceName}
+        </ListItem>
+      )}
+      renderInput={(params) => <TextField {...field} {...params} label="Service" />}
+      data-testid="ServiceAutocomplete"
+    />
+  ), [selectedService, serviceName])
 
   const renderSelectUrl = useCallback((
-      { field }: ControllerRenderFunctionProps<typeof CUSTOM_SERVER_URL_KEY>) => (
-      <TextField
-        {...field}
-        value={selectedCustomUrl ?? ''}
-        onChange={updateSelectedCustomUrl}
-        required
-        label="Server URL"
-        data-testid="ServerUrlTextInput"
-      />
-    ),
-    [selectedCustomUrl, updateSelectedCustomUrl],
-  )
+    { field }: ControllerRenderFunctionProps<typeof CUSTOM_SERVER_URL_KEY>,
+  ) => (
+    <TextField
+      {...field}
+      value={selectedCustomUrl ?? ''}
+      onChange={updateSelectedCustomUrl}
+      required
+      label="Server URL"
+      data-testid="ServerUrlTextInput"
+    />
+  ), [selectedCustomUrl, updateSelectedCustomUrl])
 
   return (
     <DialogForm
@@ -248,25 +250,27 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       </DialogTitle>
 
       <DialogContent>
-        {isServiceNameExist && (<>
-          <Typography variant="subtitle2">Use Agent Proxy</Typography>
+        {isServiceNameExist && (
+          <>
+            <Typography variant="subtitle2">Use Agent Proxy</Typography>
 
-          <Controller
-            name={CLOUD_KEY}
-            control={control}
-            render={renderSelectCloud}
-          />
-          <Controller
-            name={NAMESPACE_KEY}
-            control={control}
-            render={renderSelectNamespace}
-          />
-          <Controller
-            name={SERVICE_KEY}
-            control={control}
-            render={renderSelectService}
-          />
-        </>)}
+            <Controller
+              name={CLOUD_KEY}
+              control={control}
+              render={renderSelectCloud}
+            />
+            <Controller
+              name={NAMESPACE_KEY}
+              control={control}
+              render={renderSelectNamespace}
+            />
+            <Controller
+              name={SERVICE_KEY}
+              control={control}
+              render={renderSelectService}
+            />
+          </>
+        )}
 
         <Typography variant="subtitle2" mt={2}>Custom Server URL</Typography>
 

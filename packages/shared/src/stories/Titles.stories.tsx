@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { Box } from '@mui/material'
 import type { Meta, StoryFn } from '@storybook/react'
 import React from 'react'
-import { Box } from '@mui/material'
 import type { PageTitleProps } from '../components/Titles/PageTitle'
 import { PageTitle } from '../components/Titles/PageTitle'
-import { BLUE_SECTION_COLOR } from './commons/placeholder-colors'
 import { API_TYPE_REST } from '../entities/api-types'
+import { BLUE_SECTION_COLOR } from './commons/placeholder-colors'
 
 export default {
   title: 'Titles',

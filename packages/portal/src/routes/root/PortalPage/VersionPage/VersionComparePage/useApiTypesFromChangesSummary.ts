@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { VersionChangesSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
 import { isDashboardComparisonSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { useMemo } from 'react'
 
-export function useApiTypesFromChangesSummary(versionChangesSummary?: VersionChangesSummary, refPackageKey?: Key): ApiType[] {
+export function useApiTypesFromChangesSummary(
+  versionChangesSummary?: VersionChangesSummary,
+  refPackageKey?: Key,
+): ApiType[] {
   return useMemo(
     // todo change PackageComparisonSummary.operationTypes to Record
     () => {

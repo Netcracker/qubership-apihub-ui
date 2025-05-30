@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import { UnsupportedFilePlaceholder } from '@netcracker/qubership-apihub-ui-shared/components/UnsupportedFilePlaceholder'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { FC } from 'react'
 import { memo } from 'react'
 import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
 import { useDownloadPublishedDocument } from '../useDownloadPublishedDocument'
-import { UnsupportedFilePlaceholder } from '@netcracker/qubership-apihub-ui-shared/components/UnsupportedFilePlaceholder'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 
 export type UnsupportedViewProps = {
   documentId: Key | undefined

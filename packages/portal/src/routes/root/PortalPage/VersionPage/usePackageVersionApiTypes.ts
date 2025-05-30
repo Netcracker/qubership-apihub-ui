@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-import { usePackageVersionContent } from '../../usePackageVersionContent'
-import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { usePackageVersionContent } from '../../usePackageVersionContent'
 
 export function usePackageVersionApiTypes(packageKey: string, versionKey: string): {
   apiTypes: ApiType[]
   isLoading: IsLoading
 } {
   const { versionContent, isLoading } = usePackageVersionContent(
-    { packageKey: packageKey, versionKey: versionKey, includeSummary: true })
+    { packageKey: packageKey, versionKey: versionKey, includeSummary: true },
+  )
 
   return {
     apiTypes: versionContent?.operationTypes

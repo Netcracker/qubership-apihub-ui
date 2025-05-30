@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
+import type { ShowEditPackageVersionDetail } from '@apihub/routes/EventBusProvider'
+import { SHOW_EDIT_PACKAGE_VERSION_DIALOG } from '@apihub/routes/EventBusProvider'
+import { useEditPackageVersion } from '@apihub/routes/root/usePackageVersions'
+import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
+import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
+import type { VersionFormData } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
+import { VersionDialogForm } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
 import type { FC } from 'react'
 import * as React from 'react'
 import { memo, useCallback, useEffect, useMemo } from 'react'
-import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import type { ShowEditPackageVersionDetail } from '@apihub/routes/EventBusProvider'
-import { SHOW_EDIT_PACKAGE_VERSION_DIALOG } from '@apihub/routes/EventBusProvider'
 import { useForm } from 'react-hook-form'
-import type { VersionFormData } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
-import { VersionDialogForm } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
-import { useEditPackageVersion } from '@apihub/routes/root/usePackageVersions'
 
 export const EditPackageVersionDialog: FC = memo(() => {
   return (
     <PopupDelegate
       type={SHOW_EDIT_PACKAGE_VERSION_DIALOG}
-      render={props => <EditPackageVersionPopup {...props}/>}
+      render={props => <EditPackageVersionPopup {...props} />}
     />
   )
 })
@@ -46,7 +46,9 @@ const EditPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   } = detail as ShowEditPackageVersionDetail
   const [editPackageVersion, isLoading, isSuccess] = useEditPackageVersion()
 
-  useEffect(() => {isSuccess && setOpen(false)}, [isSuccess, setOpen])
+  useEffect(() => {
+    isSuccess && setOpen(false)
+  }, [isSuccess, setOpen])
 
   const defaultValues = useMemo(() => ({
     version: version,

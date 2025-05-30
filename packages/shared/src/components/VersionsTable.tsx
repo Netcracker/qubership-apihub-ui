@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import type { PackageVersion } from '../entities/versions'
-import type { FC } from 'react'
-import { memo, useEffect, useMemo, useRef, useState } from 'react'
-import type { ColumnModel } from '../hooks/table-resizing/useColumnResizing'
-import { DEFAULT_CONTAINER_WIDTH, useColumnsSizing } from '../hooks/table-resizing/useColumnResizing'
+import { Box, Link, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import type {
   ColumnSizingInfoState,
   ColumnSizingState,
@@ -27,22 +23,26 @@ import type {
   VisibilityState,
 } from '@tanstack/react-table'
 import { flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from '@tanstack/react-table'
-import { useResizeObserver } from '../hooks/common/useResizeObserver'
 import type { ColumnDef } from '@tanstack/table-core'
-import { CustomTableHeadCell } from './CustomTableHeadCell'
-import { getSplittedVersionKey } from '../utils/versions'
-import { TextWithOverflowTooltip } from './TextWithOverflowTooltip'
-import { FormattedDate } from './FormattedDate'
-import { OverflowTooltip } from './OverflowTooltip'
-import { Box, Link, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
-import { CustomChip } from './CustomChip'
-import { ColumnDelimiter } from './ColumnDelimiter'
-import { createComponents } from '../utils/components'
-import { DEFAULT_NUMBER_SKELETON_ROWS } from '../utils/constants'
+import type { FC } from 'react'
+import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import type { VersionStatus } from '../entities/version-status'
 import { ARCHIVED_VERSION_STATUS, DRAFT_VERSION_STATUS, RELEASE_VERSION_STATUS } from '../entities/version-status'
+import type { PackageVersion } from '../entities/versions'
+import { useResizeObserver } from '../hooks/common/useResizeObserver'
+import type { ColumnModel } from '../hooks/table-resizing/useColumnResizing'
+import { DEFAULT_CONTAINER_WIDTH, useColumnsSizing } from '../hooks/table-resizing/useColumnResizing'
 import { ArrowDown } from '../icons/ArrowDown'
 import { ArrowUp } from '../icons/ArrowUp'
+import { createComponents } from '../utils/components'
+import { DEFAULT_NUMBER_SKELETON_ROWS } from '../utils/constants'
+import { getSplittedVersionKey } from '../utils/versions'
+import { ColumnDelimiter } from './ColumnDelimiter'
+import { CustomChip } from './CustomChip'
+import { CustomTableHeadCell } from './CustomTableHeadCell'
+import { FormattedDate } from './FormattedDate'
+import { OverflowTooltip } from './OverflowTooltip'
+import { TextWithOverflowTooltip } from './TextWithOverflowTooltip'
 
 type VersionsTableProps = {
   value: ReadonlyArray<PackageVersion>
@@ -74,15 +74,17 @@ export const VersionsTable: FC<VersionsTableProps> = memo<VersionsTableProps>(({
   const columns: ColumnDef<TableData>[] = useMemo(() => [
     {
       id: VERSION_COLUMN_ID,
-      header: () => <Box display="flex" gap="4px">
-        <CustomTableHeadCell title="Version" />
-        {versionStatus === RELEASE_VERSION_STATUS && <ArrowDown />}
-        {versionStatus === ARCHIVED_VERSION_STATUS && <ArrowUp />}
-      </Box>,
+      header: () => (
+        <Box display="flex" gap="4px">
+          <CustomTableHeadCell title="Version" />
+          {versionStatus === RELEASE_VERSION_STATUS && <ArrowDown />}
+          {versionStatus === ARCHIVED_VERSION_STATUS && <ArrowUp />}
+        </Box>
+      ),
       cell: ({ row: { original: { version } } }) => {
         const { versionKey } = getSplittedVersionKey(version?.key)
         return (
-          <TextWithOverflowTooltip tooltipText={versionKey}          >
+          <TextWithOverflowTooltip tooltipText={versionKey}>
             <Link>{versionKey}</Link>
           </TextWithOverflowTooltip>
         )
@@ -90,13 +92,13 @@ export const VersionsTable: FC<VersionsTableProps> = memo<VersionsTableProps>(({
     },
     {
       id: PUBLICATION_DATE_COLUMN_ID,
-      header: () => <Box display="flex" gap="4px">
-        <CustomTableHeadCell title="Publication Date" />
-        {versionStatus === DRAFT_VERSION_STATUS && <ArrowDown />}
-      </Box>,
-      cell: ({ row: { original: { version } } }) => (
-        <FormattedDate value={version?.createdAt} />
+      header: () => (
+        <Box display="flex" gap="4px">
+          <CustomTableHeadCell title="Publication Date" />
+          {versionStatus === DRAFT_VERSION_STATUS && <ArrowDown />}
+        </Box>
       ),
+      cell: ({ row: { original: { version } } }) => <FormattedDate value={version?.createdAt} />,
     },
     {
       id: LABELS_COLUMN_ID,
@@ -105,10 +107,10 @@ export const VersionsTable: FC<VersionsTableProps> = memo<VersionsTableProps>(({
         const versionLabels = version?.versionLabels
         return (
           <OverflowTooltip
-            title={versionLabels?.map((label => <Box key={`${version?.key}-${label}-tooltip`}>{label}</Box>))}
+            title={versionLabels?.map(label => <Box key={`${version?.key}-${label}-tooltip`}>{label}</Box>)}
           >
             <Box sx={{ display: 'flex' }}>
-              {versionLabels?.map(label =>
+              {versionLabels?.map(label => (
                 <CustomChip
                   key={`${version?.key}-${label}-chip`}
                   sx={{ mr: 1 }}
@@ -118,8 +120,8 @@ export const VersionsTable: FC<VersionsTableProps> = memo<VersionsTableProps>(({
                       {label}
                     </Box>
                   }
-                />,
-              )}
+                />
+              ))}
             </Box>
           </OverflowTooltip>
         )
@@ -127,9 +129,10 @@ export const VersionsTable: FC<VersionsTableProps> = memo<VersionsTableProps>(({
     },
   ], [versionStatus])
 
-  const data: TableData[] = useMemo(() => value.map(version => ({
-    version: version,
-  })), [value])
+  const data: TableData[] = useMemo(() =>
+    value.map(version => ({
+      version: version,
+    })), [value])
 
   const [expanded, setExpanded] = useState<ExpandedState>({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -170,8 +173,8 @@ export const VersionsTable: FC<VersionsTableProps> = memo<VersionsTableProps>(({
                   }}
                 >
                   {flexRender(headerColumn.column.columnDef.header, headerColumn.getContext())}
-                  {index !== headerGroup.headers.length - 1 &&
-                    <ColumnDelimiter header={headerColumn} resizable={true} />}
+                  {index !== headerGroup.headers.length - 1
+                    && <ColumnDelimiter header={headerColumn} resizable={true} />}
                 </TableCell>
               ))}
             </TableRow>
@@ -220,13 +223,13 @@ const RowSkeleton: FC = memo(() => {
   return (
     <TableRow>
       <TableCell>
-        <Skeleton variant="rectangular" width='80%' />
+        <Skeleton variant="rectangular" width="80%" />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width='80%' />
+        <Skeleton variant="rectangular" width="80%" />
       </TableCell>
       <TableCell>
-        <Skeleton variant="rectangular" width='80%' />
+        <Skeleton variant="rectangular" width="80%" />
       </TableCell>
     </TableRow>
   )

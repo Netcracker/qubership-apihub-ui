@@ -16,12 +16,12 @@
 
 import type { Key } from '@apihub/entities/keys'
 import { portalRequestJson } from '@apihub/utils/requests'
-import { useQuery } from '@tanstack/react-query'
-import { useVersionWithRevision } from '../../useVersionWithRevision'
-import { generatePath } from 'react-router-dom'
+import type { OperationGroup } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
-import type { OperationGroup } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
+import { useQuery } from '@tanstack/react-query'
+import { generatePath } from 'react-router-dom'
+import { useVersionWithRevision } from '../../useVersionWithRevision'
 
 const OPERATIONS_GROUP_QUERY_KEY = 'operations-group-query-key'
 
@@ -56,7 +56,8 @@ export async function getOperationGroups(
     },
     {
       customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-    })
+    },
+  )
 
   return result.operationGroups.filter(group => group.isPrefixGroup)
 }

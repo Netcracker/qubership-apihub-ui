@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ModuleFetchingErrorBoundary } from '@netcracker/qubership-apihub-ui-shared/components/ModuleFetchingErrorBoundary/ModuleFetchingErrorBoundary'
 import type { FC } from 'react'
 import { memo } from 'react'
 import {
@@ -22,11 +23,10 @@ import {
   useIsPublishProjectEditorMode,
   useIsSettingsProjectEditorMode,
 } from '../useProjectEditorMode'
+import { ChangesModeBody } from './ChangesModeBody/ChangesModeBody'
 import { FilesModeBody } from './FilesModeBody/FilesModeBody'
 import { PublishModeBody } from './PublishModeBody/PublishModeBody'
-import { ChangesModeBody } from './ChangesModeBody/ChangesModeBody'
 import { SettingsModeBody } from './SettingsModeBody/SettingsModeBody'
-import { ModuleFetchingErrorBoundary } from '@netcracker/qubership-apihub-ui-shared/components/ModuleFetchingErrorBoundary/ModuleFetchingErrorBoundary'
 
 export const ProjectEditorBody: FC = memo(() => {
   const isFilesEditorPageMode = useIsFilesProjectEditorMode()
@@ -37,27 +37,21 @@ export const ProjectEditorBody: FC = memo(() => {
   if (isFilesEditorPageMode) {
     return (
       <ModuleFetchingErrorBoundary>
-        <FilesModeBody/>
+        <FilesModeBody />
       </ModuleFetchingErrorBoundary>
     )
   }
 
   if (isPublishEditorMode) {
-    return (
-      <PublishModeBody/>
-    )
+    return <PublishModeBody />
   }
 
   if (isChangesEditorPageMode) {
-    return (
-      <ChangesModeBody/>
-    )
+    return <ChangesModeBody />
   }
 
   if (isSettingsEditorMode) {
-    return (
-      <SettingsModeBody/>
-    )
+    return <SettingsModeBody />
   }
 
   return null

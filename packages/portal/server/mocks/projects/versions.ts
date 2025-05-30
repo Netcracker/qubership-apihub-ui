@@ -15,7 +15,7 @@
  */
 
 import type { Writeable } from '../../types'
-import type { PackageVersionsDto } from './types'
+import { TOKEN_SAMPLE, USER_SAMPLE } from '../packages/principal'
 import {
   VERSION_0_0,
   VERSION_1_0,
@@ -26,7 +26,7 @@ import {
   VERSION_2_6_3,
 } from '../packages/version-contents'
 import { ARCHIVED_VERSION_STATUS, DRAFT_VERSION_STATUS, RELEASE_VERSION_STATUS } from '../packages/version-statuses'
-import { TOKEN_SAMPLE, USER_SAMPLE } from '../packages/principal'
+import type { PackageVersionsDto } from './types'
 
 export const VERSIONS: Writeable<PackageVersionsDto> = {
   versions: [

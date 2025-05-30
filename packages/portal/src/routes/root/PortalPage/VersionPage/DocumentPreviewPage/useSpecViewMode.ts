@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-import { useHash } from 'react-use'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useCallback } from 'react'
+import type { SpecViewMode } from '@netcracker/qubership-apihub-ui-shared/components/SpecViewToggler'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { OperationViewMode } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
 import { DOC_OPERATION_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { MODE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import type { SpecViewMode } from '@netcracker/qubership-apihub-ui-shared/components/SpecViewToggler'
+import { useCallback } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useHash } from 'react-use'
 
-export function useSpecViewMode(defaultValue: Key = DOC_OPERATION_VIEW_MODE): [OperationViewMode, SetOperationViewMode] {
+export function useSpecViewMode(
+  defaultValue: Key = DOC_OPERATION_VIEW_MODE,
+): [OperationViewMode, SetOperationViewMode] {
   const specViewMode = useSearchParam<Key>(MODE_SEARCH_PARAM) ?? defaultValue
   const [hashParam] = useHash()
   const [searchParams] = useSearchParams()

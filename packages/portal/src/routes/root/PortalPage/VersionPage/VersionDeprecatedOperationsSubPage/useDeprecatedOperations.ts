@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { useInfiniteQuery } from '@tanstack/react-query'
-import { useVersionWithRevision } from '../../../useVersionWithRevision'
-import { generatePath } from 'react-router-dom'
+import { portalRequestJson } from '@apihub/utils/requests'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { Key, PackageKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { OperationGroupName } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
 import type {
   ApiAudience,
   ApiKind,
@@ -35,35 +35,37 @@ import {
   EMPTY_TAG,
   toOperations,
 } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import type { OperationGroupName } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
-import type { HasNextPage, IsFetchingNextPage, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import {
   useResolvedOperationGroupParameters,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/operation-groups/useResolvedOperationGroupParameters'
-import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { portalRequestJson } from '@apihub/utils/requests'
+import type { HasNextPage, IsFetchingNextPage, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { useInfiniteQuery } from '@tanstack/react-query'
+import { generatePath } from 'react-router-dom'
+import { useVersionWithRevision } from '../../../useVersionWithRevision'
 
 const DEPRECATED_OPERATIONS_QUERY_KEY = 'deprecated-operations-query-key'
 const EMPTY_TAG_QUERY_PARAM_KEY = 'emptyTag'
 
-export function useDeprecatedOperations(options?: Partial<{
-  packageKey: Key
-  versionKey: Key
-  ids: string[]
-  apiKind: ApiKind
-  apiAudience: ApiAudience
-  label: string
-  tag: string
-  textFilter: string
-  apiType: ApiType
-  excludedGroupName: OperationGroupName
-  groupName: OperationGroupName
-  refPackageKey: PackageKey
-  page: number
-  limit: number
-}>): [OperationsData, IsLoading, FetchNextOperationList, IsFetchingNextPage, HasNextPage] {
+export function useDeprecatedOperations(
+  options?: Partial<{
+    packageKey: Key
+    versionKey: Key
+    ids: string[]
+    apiKind: ApiKind
+    apiAudience: ApiAudience
+    label: string
+    tag: string
+    textFilter: string
+    apiType: ApiType
+    excludedGroupName: OperationGroupName
+    groupName: OperationGroupName
+    refPackageKey: PackageKey
+    page: number
+    limit: number
+  }>,
+): [OperationsData, IsLoading, FetchNextOperationList, IsFetchingNextPage, HasNextPage] {
   const {
     packageKey,
     versionKey,
@@ -95,7 +97,19 @@ export function useDeprecatedOperations(options?: Partial<{
     isFetchingNextPage,
     hasNextPage,
   } = useInfiniteQuery<OperationsData, Error, OperationsData>({
-    queryKey: [DEPRECATED_OPERATIONS_QUERY_KEY, packageKey, fullVersion, tag, apiKind, apiAudience, textFilter, apiType, excludedGroupName, groupName, refPackageKey],
+    queryKey: [
+      DEPRECATED_OPERATIONS_QUERY_KEY,
+      packageKey,
+      fullVersion,
+      tag,
+      apiKind,
+      apiAudience,
+      textFilter,
+      apiType,
+      excludedGroupName,
+      groupName,
+      refPackageKey,
+    ],
     queryFn: ({ pageParam = page, signal }) => {
       return getDeprecatedOperations({
         packageKey: packageKey!,
@@ -194,12 +208,24 @@ async function getDeprecatedOperations(
     limit: { value: limit },
   })
 
-  let operations: OperationsWithDeprecations = await fetchDeprecatedOperations(packageId, versionId, queryParams, apiType, signal)
+  let operations: OperationsWithDeprecations = await fetchDeprecatedOperations(
+    packageId,
+    versionId,
+    queryParams,
+    apiType,
+    signal,
+  )
 
   if (tag === DEFAULT_TAG) {
     // It's possible to have operations with explicitly defined default tag, we've to load them
     queryParams.set(EMPTY_TAG_QUERY_PARAM_KEY, 'false')
-    const additionalOperations: OperationsWithDeprecations = await fetchDeprecatedOperations(packageId, versionId, queryParams, apiType, signal)
+    const additionalOperations: OperationsWithDeprecations = await fetchDeprecatedOperations(
+      packageId,
+      versionId,
+      queryParams,
+      apiType,
+      signal,
+    )
     operations = [...operations, ...additionalOperations]
   }
 
@@ -214,12 +240,14 @@ async function fetchDeprecatedOperations(
   signal?: AbortSignal,
 ): Promise<OperationsWithDeprecations> {
   const pathPattern = '/packages/:packageId/versions/:versionId/:apiType/deprecated'
-  return toOperations(await portalRequestJson<OperationsWithDeprecationsDto>(
-    `${generatePath(pathPattern, { packageId, versionId, apiType })}?${queryParams}`,
-    { method: 'get' },
-    {
-      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-    },
-    signal,
-  ) as OperationsDto)
+  return toOperations(
+    await portalRequestJson<OperationsWithDeprecationsDto>(
+      `${generatePath(pathPattern, { packageId, versionId, apiType })}?${queryParams}`,
+      { method: 'get' },
+      {
+        customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+      },
+      signal,
+    ) as OperationsDto,
+  )
 }

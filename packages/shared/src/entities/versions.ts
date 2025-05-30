@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { VersionStatus } from './version-status'
 import type { Key } from './keys'
 import type { Principal } from './principals'
+import type { VersionStatus } from './version-status'
 
 export type PagedPackageVersions = Readonly<PackageVersions[]>
 

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { Box, Chip, IconButton, Link, Typography } from '@mui/material'
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
 import KeyboardArrowRightOutlinedIcon from '@mui/icons-material/KeyboardArrowRightOutlined'
-import type { To } from 'react-router-dom'
-import { NavLink } from 'react-router-dom'
+import { Box, Chip, IconButton, Link, Typography } from '@mui/material'
 import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
 import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
+import type { FC } from 'react'
+import type { To } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 
 export type ViewData = Partial<{
   isSubTable: boolean
@@ -65,13 +65,14 @@ export const EndpointViewer: FC<EndpointViewerProps> = (props) => {
   return (
     <Box sx={{ ml: isSubTable ? 3 : 0 }}>
       <Box display="flex">
-        {canExpand &&
-          <IconButton sx={{ p: 0, mr: 1 }} onClick={onToggleExpander}>
-            {isExpanded
-              ? <KeyboardArrowDownOutlinedIcon sx={{ fontSize: '16px' }}/>
-              : <KeyboardArrowRightOutlinedIcon sx={{ fontSize: '16px' }}/>}
-          </IconButton>
-        }
+        {canExpand
+          && (
+            <IconButton sx={{ p: 0, mr: 1 }} onClick={onToggleExpander}>
+              {isExpanded
+                ? <KeyboardArrowDownOutlinedIcon sx={{ fontSize: '16px' }} />
+                : <KeyboardArrowRightOutlinedIcon sx={{ fontSize: '16px' }} />}
+            </IconButton>
+          )}
 
         <OverflowTooltip title={title}>
           <Box sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
@@ -82,24 +83,24 @@ export const EndpointViewer: FC<EndpointViewerProps> = (props) => {
             >
               {title}
             </Link>
-            {deprecated && <Chip
-              label="Deprecated"
-              sx={{
-                marginLeft: '8px',
-                color: 'white',
-                backgroundColor: '#EF9206',
-                fontSize: '11px',
-                height: '14px',
-              }}/>
-            }
+            {deprecated && (
+              <Chip
+                label="Deprecated"
+                sx={{
+                  marginLeft: '8px',
+                  color: 'white',
+                  backgroundColor: '#EF9206',
+                  fontSize: '11px',
+                  height: '14px',
+                }}
+              />
+            )}
           </Box>
         </OverflowTooltip>
       </Box>
 
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        {method && (
-          <CustomChip sx={{ mr: 1 }} value={method} variant="outlined"/>
-        )}
+        {method && <CustomChip sx={{ mr: 1 }} value={method} variant="outlined" />}
         {path && (
           <OverflowTooltip title={path}>
             <Typography noWrap variant="inherit">

@@ -15,11 +15,11 @@
  */
 
 import { useState } from 'react'
-import { usePackages } from './usePackages'
-import { usePackage } from './usePackage'
 import type { Package, PackageKind, Packages } from '../../entities/packages'
-import type { Key } from '../../utils/types'
 import type { IsLoading } from '../../utils/aliases'
+import type { Key } from '../../utils/types'
+import { usePackage } from './usePackage'
+import { usePackages } from './usePackages'
 
 export type PackagesLoaderResult = {
   currentPackage: Package | null
@@ -30,7 +30,11 @@ export type PackagesLoaderResult = {
   error: Error | null
 }
 
-export function usePackagesLoader(packageKey: Key | undefined, packagesKind: PackageKind, parentPackageKey?: Key): PackagesLoaderResult {
+export function usePackagesLoader(
+  packageKey: Key | undefined,
+  packagesKind: PackageKind,
+  parentPackageKey?: Key,
+): PackagesLoaderResult {
   const [textFilter, setTextFilter] = useState<string | undefined>()
 
   const { packages, isLoading: isPackagesLoading } = usePackages({

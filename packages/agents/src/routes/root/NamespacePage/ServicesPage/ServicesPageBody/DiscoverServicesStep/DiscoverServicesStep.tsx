@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useMemo, useState } from 'react'
-import { useServices } from '../../../useServices'
-import { DiscoverServicesStepTable } from './DiscoverServicesStepTable'
-import { DiscoverServicesStepToolbar } from './DiscoverServicesStepToolbar'
-import { filterServices } from '../../services'
 import {
   CONTENT_PLACEHOLDER_AREA,
   NO_SEARCH_RESULTS,
   Placeholder,
 } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import type { FC } from 'react'
+import { memo, useMemo, useState } from 'react'
+import { useServices } from '../../../useServices'
+import { filterServices } from '../../services'
+import { DiscoverServicesStepTable } from './DiscoverServicesStepTable'
+import { DiscoverServicesStepToolbar } from './DiscoverServicesStepToolbar'
 
 export const DiscoverServicesStep: FC = memo(() => {
   const [{ services }, isLoading] = useServices()
@@ -35,13 +35,13 @@ export const DiscoverServicesStep: FC = memo(() => {
 
   return (
     <>
-      <DiscoverServicesStepToolbar onSearch={setSearchValue}/>
+      <DiscoverServicesStepToolbar onSearch={setSearchValue} />
       <Placeholder
         invisible={isNotEmpty(filteredServices) || isLoading}
         area={CONTENT_PLACEHOLDER_AREA}
-        message={searchValue ? NO_SEARCH_RESULTS: 'No services'}
+        message={searchValue ? NO_SEARCH_RESULTS : 'No services'}
       >
-        <DiscoverServicesStepTable value={filteredServices} isLoading={isLoading}/>
+        <DiscoverServicesStepTable value={filteredServices} isLoading={isLoading} />
       </Placeholder>
     </>
   )

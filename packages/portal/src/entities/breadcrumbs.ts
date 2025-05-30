@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { Package } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { Package } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 
 export type PackagesComparisonParams = Partial<{
   changedPackage: Package | null

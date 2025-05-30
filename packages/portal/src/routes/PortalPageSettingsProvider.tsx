@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { FC, PropsWithChildren } from 'react'
-import { createContext, memo, useContext } from 'react'
 import { usePortalPageSettings } from '@apihub/routes/usePortalPageSettings'
 import type { ExtendedPageSettingsState } from '@netcracker/qubership-apihub-ui-shared/hooks/storages/usePageSettingsState'
+import type { FC, PropsWithChildren } from 'react'
+import { createContext, memo, useContext } from 'react'
 
 export const PortalPageSettingsProvider: FC<PropsWithChildren> = memo<PropsWithChildren>(({ children }) => {
   const content = usePortalPageSettings()

@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react'
+import { calculateTotalChangeSummary } from '@netcracker/qubership-apihub-api-processor'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { ChangeSeverity } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
+import { EMPTY_CHANGE_SUMMARY } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
 import type {
   DashboardComparisonSummary,
   RefComparisonSummary,
 } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
-import type { ChangeSeverity } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
-import { filterChangesBySeverity, hasNoChangesInSummary } from '@netcracker/qubership-apihub-ui-shared/utils/change-severities'
-import { EMPTY_CHANGE_SUMMARY } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
 import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { calculateTotalChangeSummary } from '@netcracker/qubership-apihub-api-processor'
+import {
+  filterChangesBySeverity,
+  hasNoChangesInSummary,
+} from '@netcracker/qubership-apihub-ui-shared/utils/change-severities'
+import { useMemo } from 'react'
 
 function changeSeverityFilter({ operationTypes }: RefComparisonSummary, filters: ChangeSeverity[]): boolean {
   const matchSeverities = operationTypes.some(apiType => filterChangesBySeverity(filters, apiType.changesSummary))
@@ -46,7 +49,10 @@ export function useFilteredDashboardChanges(
   apiType?: ApiType,
 ): DashboardComparisonSummary {
   return useMemo(
-    () => dashboardChanges?.filter((refChanges) => apiTypeFilter(refChanges, apiType))?.filter((refChanges) => changeSeverityFilter(refChanges, severityFilter)) ?? [],
+    () =>
+      dashboardChanges?.filter((refChanges) => apiTypeFilter(refChanges, apiType))?.filter((refChanges) =>
+        changeSeverityFilter(refChanges, severityFilter)
+      ) ?? [],
     [dashboardChanges, apiType, severityFilter],
   )
 }

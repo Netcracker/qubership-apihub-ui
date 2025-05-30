@@ -22,8 +22,8 @@
  * See LICENSE file in the root directory for more details.
  */
 
-import type * as monaco from 'monaco-editor'
 import type { Handler } from 'mitt'
+import type * as monaco from 'monaco-editor'
 
 /**
  * @internal

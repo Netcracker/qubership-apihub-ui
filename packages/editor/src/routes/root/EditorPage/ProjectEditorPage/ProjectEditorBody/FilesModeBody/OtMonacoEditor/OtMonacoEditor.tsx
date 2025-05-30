@@ -21,23 +21,23 @@ import 'monaco-editor/esm/vs/basic-languages/protobuf/protobuf.contribution'
 import 'monaco-editor/esm/vs/basic-languages/markdown/markdown.contribution'
 import '@netcracker/qubership-apihub-ui-shared/components/MonacoEditor/index.css'
 
+import type { FileProblem } from '@apihub/entities/file-problems'
+import type { DocumentSnapshotEventData } from '@apihub/entities/ws-file-events'
+import { useAuthorization } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
+import type { LanguageType } from '@netcracker/qubership-apihub-ui-shared/types/languages'
+import type { SpecItemUri } from '@netcracker/qubership-apihub-ui-shared/utils/specifications'
+import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import type { FC } from 'react'
 import { memo, useEffect } from 'react'
-import { useOtMonaco } from './useOtMonaco'
-import { WSMonacoEditor } from './ws-monaco'
-import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import type { SpecItemUri } from '@netcracker/qubership-apihub-ui-shared/utils/specifications'
-import { useAuthorization } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
-import type { DocumentSnapshotEventData } from '@apihub/entities/ws-file-events'
-import type { FileProblem } from '@apihub/entities/file-problems'
+import { useFileSearchParam } from '../../../../../useFileSearchParam'
 import {
   useConnectedUsers,
   useConnecting,
   useFileEditingWebSocket,
   useUserCursors,
 } from '../../../FileEditingWebSocketProvider'
-import { useFileSearchParam } from '../../../../../useFileSearchParam'
-import type { LanguageType } from '@netcracker/qubership-apihub-ui-shared/types/languages'
+import { useOtMonaco } from './useOtMonaco'
+import { WSMonacoEditor } from './ws-monaco'
 
 export type OtMonacoEditorProps = {
   initialDocument: DocumentSnapshotEventData

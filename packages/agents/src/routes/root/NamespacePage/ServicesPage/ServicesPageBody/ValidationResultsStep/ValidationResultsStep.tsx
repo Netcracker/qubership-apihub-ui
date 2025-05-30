@@ -14,27 +14,28 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useEffect, useMemo, useState } from 'react'
-import { ValidationResultsStepTable } from './ValidationResultsStepTable'
-import { useServices } from '../../../useServices'
-import { filterServices } from '../../services'
-import { useSnapshotPublicationInfo } from '../../../useSnapshotPublicationInfo'
-import { Box } from '@mui/material'
 import type { ServicePublishInfo } from '@apihub/entities/service-publish-info'
-import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import {
-  ERROR_STEP_STATUS,
-  RUNNING_STEP_STATUS, SUCCESS_STEP_STATUS,
-  useValidationResultsStep,
-} from '../../ServicesPageProvider/ServicesStepsProvider'
-import { ProblemControls } from '../../../../../../components/ProblemControls'
-import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
+import { Box } from '@mui/material'
 import {
   CONTENT_PLACEHOLDER_AREA,
   NO_SEARCH_RESULTS,
   Placeholder,
 } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
+import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
+import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import type { FC } from 'react'
+import { memo, useEffect, useMemo, useState } from 'react'
+import { ProblemControls } from '../../../../../../components/ProblemControls'
+import { useServices } from '../../../useServices'
+import { useSnapshotPublicationInfo } from '../../../useSnapshotPublicationInfo'
+import { filterServices } from '../../services'
+import {
+  ERROR_STEP_STATUS,
+  RUNNING_STEP_STATUS,
+  SUCCESS_STEP_STATUS,
+  useValidationResultsStep,
+} from '../../ServicesPageProvider/ServicesStepsProvider'
+import { ValidationResultsStepTable } from './ValidationResultsStepTable'
 
 // TODO: Move to another place
 export const BWC_ERRORS_FILTER = 'bwc-errors'
@@ -42,7 +43,7 @@ export const NO_BWC_ERRORS_FILTER = 'no-bwc-errors'
 export const NO_BASELINE_FILTER = 'no-baseline'
 
 export type ValidationFilter =
-  typeof BWC_ERRORS_FILTER
+  | typeof BWC_ERRORS_FILTER
   | typeof NO_BWC_ERRORS_FILTER
   | typeof NO_BASELINE_FILTER
 
@@ -78,8 +79,11 @@ export const ValidationResultsStep: FC = memo(() => {
   )
 
   const promotableServices = useMemo(
-    () => services
-      .filter(service => !!snapshotPublicationInfo.services.find(({ key }) => key === service.key && !!service.baseline)),
+    () =>
+      services
+        .filter(service =>
+          !!snapshotPublicationInfo.services.find(({ key }) => key === service.key && !!service.baseline)
+        ),
     [services, snapshotPublicationInfo.services],
   )
 
@@ -96,7 +100,7 @@ export const ValidationResultsStep: FC = memo(() => {
   return (
     <>
       <Box sx={{ display: 'flex', alignSelf: 'center', ml: 'auto', pt: 1, gap: 1 }}>
-        <ProblemControls filters={filters} setFilters={setFilters}/>
+        <ProblemControls filters={filters} setFilters={setFilters} />
         <SearchBar
           value={searchValue}
           onValueChange={setSearchValue}
@@ -107,9 +111,8 @@ export const ValidationResultsStep: FC = memo(() => {
         area={CONTENT_PLACEHOLDER_AREA}
         message={NO_SEARCH_RESULTS}
       >
-        <ValidationResultsStepTable value={filteredServices} isLoading={isLoading}/>
+        <ValidationResultsStepTable value={filteredServices} isLoading={isLoading} />
       </Placeholder>
     </>
   )
 })
-

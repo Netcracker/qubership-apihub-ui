@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
+import { CloseOutlined as CloseOutlinedIcon } from '@mui/icons-material'
+import { Box, CardHeader, Dialog, DialogContent, DialogTitle, IconButton } from '@mui/material'
 import type { FC, ReactNode } from 'react'
 import { memo, useCallback, useMemo } from 'react'
-import { Box, CardHeader, Dialog, DialogContent, DialogTitle, IconButton } from '@mui/material'
-import { CloseOutlined as CloseOutlinedIcon } from '@mui/icons-material'
+import type { Spec } from '../../entities/specs'
+import { isNotEmpty } from '../../utils/arrays'
 import type { PopupProps } from '../PopupDelegate'
 import { PopupDelegate } from '../PopupDelegate'
 import type { SpecViewMode } from '../SpecViewToggler'
 import { SpecViewToggler } from '../SpecViewToggler'
-import { isNotEmpty } from '../../utils/arrays'
-import type { Spec } from '../../entities/specs'
 
 export const SpecificationDialog: FC = memo(() => {
   return (
     <PopupDelegate
       type={SHOW_SPECIFICATION_DIALOG}
-      render={props => <SpecificationPopup {...props}/>}
+      render={props => <SpecificationPopup {...props} />}
     />
   )
 })
@@ -62,14 +62,12 @@ export const SpecificationPopup: FC<PopupProps> = memo<PopupProps>(({ open, setO
   }, [setOpen])
 
   const defaultHeaderComponent = useMemo(() => (
-      <CardHeader
-        sx={{ p: 0 }}
-        title={spec?.name}
-        subheader={spec?.serviceKey}
-      />
-    ),
-    [spec?.name, spec?.serviceKey],
-  )
+    <CardHeader
+      sx={{ p: 0 }}
+      title={spec?.name}
+      subheader={spec?.serviceKey}
+    />
+  ), [spec?.name, spec?.serviceKey])
 
   return (
     <Dialog
@@ -92,7 +90,7 @@ export const SpecificationPopup: FC<PopupProps> = memo<PopupProps>(({ open, setO
             sx={{ color: '#353C4E' }}
             onClick={onClose}
           >
-            <CloseOutlinedIcon/>
+            <CloseOutlinedIcon />
           </IconButton>
         </Box>
       </DialogTitle>

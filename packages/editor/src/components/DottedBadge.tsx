@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { styled } from '@mui/material/styles'
-import { memo } from 'react'
 import type { BadgeProps, BadgePropsColorOverrides } from '@mui/material'
 import { Badge } from '@mui/material'
+import { styled } from '@mui/material/styles'
 import type { OverridableStringUnion } from '@mui/types'
+import { memo } from 'react'
 
 export const DottedBadge = styled(memo((props: BadgeProps) => (
   <Badge
@@ -35,7 +35,13 @@ export const DottedBadge = styled(memo((props: BadgeProps) => (
   },
 }))
 
-const DOT_COLORS: Record<OverridableStringUnion<'primary' | 'secondary' | 'default' | 'error' | 'info' | 'success' | 'warning', BadgePropsColorOverrides>, string | undefined> = {
+const DOT_COLORS: Record<
+  OverridableStringUnion<
+    'primary' | 'secondary' | 'default' | 'error' | 'info' | 'success' | 'warning',
+    BadgePropsColorOverrides
+  >,
+  string | undefined
+> = {
   primary: '#0068FF',
   secondary: undefined,
   default: undefined,

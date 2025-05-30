@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { useMutation } from '@tanstack/react-query'
 import type { Key } from '@apihub/entities/keys'
+import { useMutation } from '@tanstack/react-query'
 
-import { useInvalidateSecurityReports } from './useSecurityReports'
-import { useParams } from 'react-router-dom'
 import { ncCustomAgentsRequestVoid } from '@apihub/utils/requests'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { useParams } from 'react-router-dom'
+import { useInvalidateSecurityReports } from './useSecurityReports'
 
 export function useCheckSecurity(): StartSecurityCheckFunction {
   const { agentId = '', namespaceKey = '' } = useParams()
@@ -47,10 +47,9 @@ async function startSecurityCheck(
   const workspaceId = encodeURIComponent(workspaceKey)
 
   await ncCustomAgentsRequestVoid('/security/authCheck', {
-      method: 'POST',
-      body: JSON.stringify({ agentId, name, workspaceId }),
-    },
-  )
+    method: 'POST',
+    body: JSON.stringify({ agentId, name, workspaceId }),
+  })
 }
 
 type StartSecurityCheckFunction = () => void

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react'
 import { Box, ThemeProvider } from '@mui/material'
-import { theme } from '../themes/theme'
+import type { Meta, StoryObj } from '@storybook/react'
 import { TokensTable } from '../components/TokensTable'
+import { theme } from '../themes/theme'
 import { TOKENS_LIST } from './samples/tokens-samples'
 
 const meta: Meta<typeof TokensTable> = {
@@ -27,7 +27,7 @@ const meta: Meta<typeof TokensTable> = {
     (Story) => (
       <ThemeProvider theme={theme}>
         <Box sx={{ width: '1200px' }}>
-          <Story/>
+          <Story />
         </Box>
       </ThemeProvider>
     ),

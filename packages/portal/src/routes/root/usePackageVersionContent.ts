@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { QueryKey, UseQueryOptions } from '@tanstack/react-query'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { generatePath } from 'react-router-dom'
+import { portalRequestJson } from '@apihub/utils/requests'
+import { replacePropertyInChangesSummary } from '@netcracker/qubership-apihub-api-processor'
+import { toApiTypeMap } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type {
   OperationTypeSummary,
@@ -24,14 +24,14 @@ import type {
   PackageVersionContent,
   PackageVersionContentDto,
 } from '@netcracker/qubership-apihub-ui-shared/entities/version-contents'
-import type { InvalidateQuery, IsLoading, RefetchQuery } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { SPECIAL_VERSION_KEY } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
-import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { portalRequestJson } from '@apihub/utils/requests'
+import type { InvalidateQuery, IsLoading, RefetchQuery } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
 import { API_V3, DEFAULT_REFETCH_INTERVAL } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
-import { toApiTypeMap } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { replacePropertyInChangesSummary } from '@netcracker/qubership-apihub-api-processor'
+import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import type { QueryKey, UseQueryOptions } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { generatePath } from 'react-router-dom'
 
 export const PACKAGE_VERSION_CONTENT_QUERY_KEY = 'package-version-content-query-key'
 
@@ -74,8 +74,17 @@ export function usePackageVersionContent(options: {
     isRefetching,
     isInitialLoading,
   } = useQuery<PackageVersionContentDto, Error, PackageVersionContent>({
-    queryKey: [PACKAGE_VERSION_CONTENT_QUERY_KEY, packageKey, versionKey, includeSummary, includeOperations, includeGroups, enabled],
-    queryFn: ({ signal }) => getPackageVersionContent(packageKey!, versionKey!, signal, includeSummary, includeOperations, includeGroups),
+    queryKey: [
+      PACKAGE_VERSION_CONTENT_QUERY_KEY,
+      packageKey,
+      versionKey,
+      includeSummary,
+      includeOperations,
+      includeGroups,
+      enabled,
+    ],
+    queryFn: ({ signal }) =>
+      getPackageVersionContent(packageKey!, versionKey!, signal, includeSummary, includeOperations, includeGroups),
     enabled: enabled && !!packageKey && !!versionKey && versionKey !== SPECIAL_VERSION_KEY,
     select: toPackageVersionContent,
   })
@@ -141,23 +150,25 @@ export function useInvalidateVersionContent(): InvalidateQuery<InvalidateVersion
 
 export function useAsyncInvalidateAllByVersion(): InvalidateQueryByVersionCallback {
   const client = useQueryClient()
-  return (versionKey: Key) => client.invalidateQueries({
-    predicate: ({ queryKey }) => (
-      hasVersionKeyIn(queryKey, versionKey)
-    ),
-    refetchType: 'all',
-  })
+  return (versionKey: Key) =>
+    client.invalidateQueries({
+      predicate: ({ queryKey }) => (
+        hasVersionKeyIn(queryKey, versionKey)
+      ),
+      refetchType: 'all',
+    })
 }
 
 export function useAsyncInvalidatePackageVersionContentByVersion(): InvalidateQueryByVersionCallback {
   const client = useQueryClient()
-  return (versionKey: Key) => client.invalidateQueries({
-    predicate: ({ queryKey }) => (
-      queryKey[0] === PACKAGE_VERSION_CONTENT_QUERY_KEY &&
-      hasVersionKeyIn(queryKey, versionKey)
-    ),
-    refetchType: 'all',
-  })
+  return (versionKey: Key) =>
+    client.invalidateQueries({
+      predicate: ({ queryKey }) => (
+        queryKey[0] === PACKAGE_VERSION_CONTENT_QUERY_KEY
+        && hasVersionKeyIn(queryKey, versionKey)
+      ),
+      refetchType: 'all',
+    })
 }
 
 function hasVersionKeyIn(queryKey: QueryKey, versionKey: Key): boolean {
@@ -193,7 +204,9 @@ function toPackageVersionContent(value: PackageVersionContentDto): PackageVersio
   }
 }
 
-function convertDtoFieldOperationTypesWithApiType(operationTypes: ReadonlyArray<OperationTypeSummaryDto> | undefined): ReadonlyArray<OperationTypeSummary> {
+function convertDtoFieldOperationTypesWithApiType(
+  operationTypes: ReadonlyArray<OperationTypeSummaryDto> | undefined,
+): ReadonlyArray<OperationTypeSummary> {
   return operationTypes?.map((type) => {
     if (!type.changesSummary || !type.numberOfImpactedOperations) return { ...type }
     return {

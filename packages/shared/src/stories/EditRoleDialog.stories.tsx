@@ -15,8 +15,8 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react'
-import { PERMISSIONS_LIST, ROLES_LIST } from './samples/roles-samples'
 import { EditRolePopup } from '../components/EditRoleDialog'
+import { PERMISSIONS_LIST, ROLES_LIST } from './samples/roles-samples'
 
 const meta: Meta<typeof EditRolePopup> = {
   title: 'Edit Role Dialog',
@@ -32,7 +32,8 @@ export const CreateStory: Story = {
     open: true,
     detail: {
       permissions: PERMISSIONS_LIST,
-      isRoleUnique: (roleName: string) => !ROLES_LIST?.some(({ role }) => role.toLowerCase() === roleName.toLowerCase()),
+      isRoleUnique: (roleName: string) =>
+        !ROLES_LIST?.some(({ role }) => role.toLowerCase() === roleName.toLowerCase()),
     },
   },
 }

@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
+import { Button, DialogActions, DialogContent, DialogTitle, IconButton, Typography } from '@mui/material'
 import type { FC } from 'react'
 import * as React from 'react'
 import { memo, useCallback, useMemo } from 'react'
-import { Button, DialogActions, DialogContent, DialogTitle, IconButton, Typography } from '@mui/material'
-import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
+import type { Role } from '../types/roles'
+import { DialogForm } from './DialogForm'
 import type { PopupProps } from './PopupDelegate'
 import { PopupDelegate } from './PopupDelegate'
-import { DialogForm } from './DialogForm'
-import type { Role } from '../types/roles'
 
 export const DeleteRoleDialog: FC = memo(() => {
   return (
     <PopupDelegate
       type={SHOW_DELETE_ROLE_DIALOG}
-      render={props => <DeleteRolePopup {...props}/>}
+      render={props => <DeleteRolePopup {...props} />}
     />
   )
 })
@@ -67,13 +67,15 @@ export const DeleteRolePopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen
           sx={{ position: 'absolute', right: 8, top: 8, color: '#626D82' }}
           onClick={onClose}
         >
-          <CloseOutlinedIcon fontSize="small"/>
+          <CloseOutlinedIcon fontSize="small" />
         </IconButton>
       </DialogTitle>
-      <DialogContent sx={{
-        width: 'auto',
-        minWidth: 'unset',
-      }}>
+      <DialogContent
+        sx={{
+          width: 'auto',
+          minWidth: 'unset',
+        }}
+      >
         <Typography variant="body2" fontSize={13} sx={{ pl: 0 }}>
           If you delete the role, all users with that role will be removed from packages.
         </Typography>

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { Key, VersionKey } from './keys'
-import type { JSZipObject } from 'jszip'
-import JSZip from 'jszip'
 import type { BuildConfigRef, FileSourceMap, VersionStatus } from '@netcracker/qubership-apihub-api-processor'
 import { requestBlob } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import type { JSZipObject } from 'jszip'
+import JSZip from 'jszip'
+import type { Key, VersionKey } from './keys'
 
 export type PublishKey = Key
 export type PackageKey = Key

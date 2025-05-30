@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo } from 'react'
-import type { Row } from '@tanstack/react-table'
-import { Box, Typography } from '@mui/material'
 import type { Service } from '@apihub/entities/services'
-import {
-  BACKWARD_COMPATIBLE_MESSAGE,
-  BACKWARD_INCOMPATIBLE_MESSAGE,
-  BASELINE_NOT_FOUND_MESSAGE,
-  BASELINE_VERSION_NOT_FOUND_MESSAGE,
-} from './validationMessages'
-import type {
-  StatusMarkerVariant} from '@netcracker/qubership-apihub-ui-shared/components/StatusMarker'
+import { Box, Typography } from '@mui/material'
+import type { StatusMarkerVariant } from '@netcracker/qubership-apihub-ui-shared/components/StatusMarker'
 import {
   ERROR_STATUS_MARKER_VARIANT,
   StatusMarker,
   SUCCESS_STATUS_MARKER_VARIANT,
   WARNING_STATUS_MARKER_VARIANT,
 } from '@netcracker/qubership-apihub-ui-shared/components/StatusMarker'
+import type { Row } from '@tanstack/react-table'
+import type { FC } from 'react'
+import { memo } from 'react'
+import {
+  BACKWARD_COMPATIBLE_MESSAGE,
+  BACKWARD_INCOMPATIBLE_MESSAGE,
+  BASELINE_NOT_FOUND_MESSAGE,
+  BASELINE_VERSION_NOT_FOUND_MESSAGE,
+} from './validationMessages'
 
 export type BwcStatusTableCellProps = {
   value: Row<CellData>
@@ -96,7 +95,7 @@ const BwcStatusTableCellContent: FC<BwcStatusTableCellContentProps> = memo<BwcSt
 }) => {
   return (
     <Box display="flex" gap={1}>
-      <StatusMarker value={status}/>
+      <StatusMarker value={status} />
       <Typography noWrap variant="inherit">
         {content}
       </Typography>

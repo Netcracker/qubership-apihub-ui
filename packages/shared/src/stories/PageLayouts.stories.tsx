@@ -18,16 +18,16 @@ import type { Meta, StoryFn } from '@storybook/react'
 
 import Box from '@mui/material/Box'
 import React from 'react'
-import type { LayoutWithToolbarProps } from '../components/PageLayouts/LayoutWithToolbar'
-import { LayoutWithToolbar } from '../components/PageLayouts/LayoutWithToolbar'
-import { fullHeight } from './commons/decorators'
-import { LARGE_TOOLBAR_SIZE, Toolbar } from '../components/Toolbar'
-import type { LayoutWithTabsProps } from '../components/PageLayouts/LayoutWithTabs'
-import { LayoutWithTabs } from '../components/PageLayouts/LayoutWithTabs'
 import type { LayoutWithSidebarProps } from '../components/PageLayouts/LayoutWithSidebar'
 import { LayoutWithSidebar } from '../components/PageLayouts/LayoutWithSidebar'
+import type { LayoutWithTabsProps } from '../components/PageLayouts/LayoutWithTabs'
+import { LayoutWithTabs } from '../components/PageLayouts/LayoutWithTabs'
+import type { LayoutWithToolbarProps } from '../components/PageLayouts/LayoutWithToolbar'
+import { LayoutWithToolbar } from '../components/PageLayouts/LayoutWithToolbar'
 import type { VersionOperationsLayoutProps } from '../components/PageLayouts/RichFiltersLayout'
 import { RichFiltersLayout } from '../components/PageLayouts/RichFiltersLayout'
+import { LARGE_TOOLBAR_SIZE, Toolbar } from '../components/Toolbar'
+import { fullHeight } from './commons/decorators'
 import {
   BROWN_SECTION_COLOR,
   GREEN_SECTION_COLOR,
@@ -130,11 +130,11 @@ RichFiltersLayoutStory.args = {
   viewMode: 'option-1',
   additionalActions: <Box sx={{ backgroundColor: ORANGE_SECTION_COLOR }}>Additional Actions</Box>,
   viewOptions: [{
-    icon: <Box width="20px" height="20px" sx={{ backgroundColor: GREEN_SECTION_COLOR }}/>,
+    icon: <Box width="20px" height="20px" sx={{ backgroundColor: GREEN_SECTION_COLOR }} />,
     value: 'option-1',
     tooltip: 'View 1',
   }, {
-    icon: <Box width="20px" height="20px" sx={{ backgroundColor: BROWN_SECTION_COLOR }}/>,
+    icon: <Box width="20px" height="20px" sx={{ backgroundColor: BROWN_SECTION_COLOR }} />,
     value: 'option-2',
     tooltip: 'View 2',
   }],
@@ -148,10 +148,11 @@ RichFiltersLayoutStory.args = {
       This is a body
     </Box>
   ),
-  filters: <Box sx={{ height: '100%', backgroundColor: RED_SECTION_COLOR }}>
-    These are rich filters
-  </Box>,
+  filters: (
+    <Box sx={{ height: '100%', backgroundColor: RED_SECTION_COLOR }}>
+      These are rich filters
+    </Box>
+  ),
   hideFiltersPanel: true,
 }
 RichFiltersLayoutStory.storyName = 'Rich Filters Layout'
-

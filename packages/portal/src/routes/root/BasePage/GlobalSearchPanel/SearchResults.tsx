@@ -14,11 +14,25 @@
  * limitations under the License.
  */
 
+import type { Level, SearchCriteria } from '@apihub/entities/global-search'
+import { DOCUMENT_LEVEL, OPERATION_LEVEL, PACKAGE_LEVEL } from '@apihub/entities/global-search'
+import type { GlobalSearchPanelDetails } from '@apihub/routes/EventBusProvider'
+import { APPLY_GLOBAL_SEARCH_FILTERS } from '@apihub/routes/EventBusProvider'
+import { TabContext, TabList, TabPanel } from '@mui/lab'
+import { Box, Tab } from '@mui/material'
+import {
+  CONTENT_PLACEHOLDER_AREA,
+  NO_SEARCH_RESULTS,
+  Placeholder,
+} from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
+import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
+import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { getOptionalBody } from '@netcracker/qubership-apihub-ui-shared/utils/request-bodies'
 import type { FC } from 'react'
 import { memo, useEffect, useMemo, useState } from 'react'
-import { Box, Tab } from '@mui/material'
 import { useEvent } from 'react-use'
-import { TabContext, TabList, TabPanel } from '@mui/lab'
+import { ApiOperationsSearchList } from './ApiOperationsSearchList'
+import { DocumentSearchList } from './DocumentSearchList'
 import type { SearchResultTab } from './GlobalSearchTextProvider'
 import {
   DOCUMENTS_TAB,
@@ -29,26 +43,12 @@ import {
   useSetGlobalSearchActiveTab,
   useSetGlobalSearchText,
 } from './GlobalSearchTextProvider'
-import { SearchResultTabLabel } from './SearchResultTabLabel'
-import { useOperationsGlobalSearch } from './useOperationsGlobalSearch'
-import { useDocumentsGlobalSearch } from './useDocumentsGlobalSearch'
-import { usePackagesGlobalSearch } from './usePackagesGlobalSearch'
-import { ApiOperationsSearchList } from './ApiOperationsSearchList'
-import { DocumentSearchList } from './DocumentSearchList'
 import { PackageSearchList } from './PackageSearchList'
 import { SearchResultSkeleton } from './SearchResultSkeleton'
-import type { GlobalSearchPanelDetails } from '@apihub/routes/EventBusProvider'
-import { APPLY_GLOBAL_SEARCH_FILTERS } from '@apihub/routes/EventBusProvider'
-import type { Level, SearchCriteria } from '@apihub/entities/global-search'
-import { DOCUMENT_LEVEL, OPERATION_LEVEL, PACKAGE_LEVEL } from '@apihub/entities/global-search'
-import { getOptionalBody } from '@netcracker/qubership-apihub-ui-shared/utils/request-bodies'
-import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
-import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import {
-  CONTENT_PLACEHOLDER_AREA,
-  NO_SEARCH_RESULTS,
-  Placeholder,
-} from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
+import { SearchResultTabLabel } from './SearchResultTabLabel'
+import { useDocumentsGlobalSearch } from './useDocumentsGlobalSearch'
+import { useOperationsGlobalSearch } from './useOperationsGlobalSearch'
+import { usePackagesGlobalSearch } from './usePackagesGlobalSearch'
 
 export const SearchResults: FC = memo(() => {
   const searchText = useGlobalSearchText()
@@ -72,25 +72,45 @@ export const SearchResults: FC = memo(() => {
 
   const currentLevel = useMemo(() => SEARCH_LEVEL_MAP[activeTab], [activeTab])
 
-  const [{ operations }, isInitialOperationsLoading, fetchNextOperationsPage, isNextOperationsPageFetching, hasNextOperationsPage] = useOperationsGlobalSearch(
+  const [
+    { operations },
+    isInitialOperationsLoading,
+    fetchNextOperationsPage,
+    isNextOperationsPageFetching,
+    hasNextOperationsPage,
+  ] = useOperationsGlobalSearch(
     filters
       ? { criteria: { ...filters, searchString: searchText }, enabled: currentLevel === OPERATION_LEVEL }
       : { criteria: { searchString: searchText }, enabled: currentLevel === OPERATION_LEVEL },
   )
 
-  const [{ documents }, isInitialDocumentsLoading, fetchNextDocumentsPage, isNextDocumentsPageFetching, hasNextDocumentsPage] = useDocumentsGlobalSearch(
+  const [
+    { documents },
+    isInitialDocumentsLoading,
+    fetchNextDocumentsPage,
+    isNextDocumentsPageFetching,
+    hasNextDocumentsPage,
+  ] = useDocumentsGlobalSearch(
     filters
       ? { criteria: { ...filters, searchString: searchText }, enabled: currentLevel === DOCUMENT_LEVEL }
       : { criteria: { searchString: searchText }, enabled: currentLevel === DOCUMENT_LEVEL },
   )
 
-  const [{ packages }, isInitialPackagesLoading, fetchNextPackagesPage, isNextPackagesPageFetching, hasNextPackagesPage] = usePackagesGlobalSearch(
+  const [
+    { packages },
+    isInitialPackagesLoading,
+    fetchNextPackagesPage,
+    isNextPackagesPageFetching,
+    hasNextPackagesPage,
+  ] = usePackagesGlobalSearch(
     filters
       ? { criteria: { ...filters, searchString: searchText }, enabled: currentLevel === PACKAGE_LEVEL }
       : { criteria: { searchString: searchText }, enabled: currentLevel === PACKAGE_LEVEL },
   )
 
-  useEffect(() => {apiSpecificSearchMode && setActiveTab(OPERATIONS_TAB)}, [apiSpecificSearchMode, setActiveTab])
+  useEffect(() => {
+    apiSpecificSearchMode && setActiveTab(OPERATIONS_TAB)
+  }, [apiSpecificSearchMode, setActiveTab])
 
   return (
     <Box
@@ -155,72 +175,74 @@ export const SearchResults: FC = memo(() => {
           />
         </TabList>
 
-
         <TabPanel sx={tabPanelStyle} value={OPERATIONS_TAB}>
-          {
-            isInitialOperationsLoading
-              ? <SearchResultSkeleton/>
-              : isNotEmpty(operations)
-                ? <ApiOperationsSearchList
-                  value={operations}
-                  searchText={searchText}
-                  fetchNextPage={fetchNextOperationsPage}
-                  isNextPageFetching={isNextOperationsPageFetching}
-                  hasNextPage={hasNextOperationsPage}
-                />
-                : <Placeholder
-                  invisible={isNotEmpty(operations)}
-                  area={CONTENT_PLACEHOLDER_AREA}
-                  message={searchText ? NO_SEARCH_RESULTS : 'No operations to display'}
-                  testId="NoOperationsPlaceholder"
-                />
-          }
+          {isInitialOperationsLoading
+            ? <SearchResultSkeleton />
+            : isNotEmpty(operations)
+            ? (
+              <ApiOperationsSearchList
+                value={operations}
+                searchText={searchText}
+                fetchNextPage={fetchNextOperationsPage}
+                isNextPageFetching={isNextOperationsPageFetching}
+                hasNextPage={hasNextOperationsPage}
+              />
+            )
+            : (
+              <Placeholder
+                invisible={isNotEmpty(operations)}
+                area={CONTENT_PLACEHOLDER_AREA}
+                message={searchText ? NO_SEARCH_RESULTS : 'No operations to display'}
+                testId="NoOperationsPlaceholder"
+              />
+            )}
         </TabPanel>
-
 
         <TabPanel sx={tabPanelStyle} value={DOCUMENTS_TAB}>
-          {
-            isInitialDocumentsLoading
-              ? <SearchResultSkeleton/>
-              : isNotEmpty(documents)
-                ? <DocumentSearchList
-                  value={documents}
-                  searchText={searchText}
-                  fetchNextPage={fetchNextDocumentsPage}
-                  isNextPageFetching={isNextDocumentsPageFetching}
-                  hasNextPage={hasNextDocumentsPage}
-                />
-                : <Placeholder
-                  invisible={isNotEmpty(documents)}
-                  area={CONTENT_PLACEHOLDER_AREA}
-                  message={searchText ? NO_SEARCH_RESULTS : 'No documents to display'}
-                  testId="NoDocumentsPlaceholder"
-                />
-          }
+          {isInitialDocumentsLoading
+            ? <SearchResultSkeleton />
+            : isNotEmpty(documents)
+            ? (
+              <DocumentSearchList
+                value={documents}
+                searchText={searchText}
+                fetchNextPage={fetchNextDocumentsPage}
+                isNextPageFetching={isNextDocumentsPageFetching}
+                hasNextPage={hasNextDocumentsPage}
+              />
+            )
+            : (
+              <Placeholder
+                invisible={isNotEmpty(documents)}
+                area={CONTENT_PLACEHOLDER_AREA}
+                message={searchText ? NO_SEARCH_RESULTS : 'No documents to display'}
+                testId="NoDocumentsPlaceholder"
+              />
+            )}
         </TabPanel>
-
 
         <TabPanel sx={tabPanelStyle} value={PACKAGES_TAB}>
-          {
-            isInitialPackagesLoading
-              ? <SearchResultSkeleton/>
-              : isNotEmpty(packages)
-                ? <PackageSearchList
-                  value={packages}
-                  searchText={searchText}
-                  fetchNextPage={fetchNextPackagesPage}
-                  isNextPageFetching={isNextPackagesPageFetching}
-                  hasNextPage={hasNextPackagesPage}
-                />
-                : <Placeholder
-                  invisible={isNotEmpty(packages)}
-                  area={CONTENT_PLACEHOLDER_AREA}
-                  message={searchText ? NO_SEARCH_RESULTS : 'No packages to display'}
-                  testId="NoPackagesPlaceholder"
-                />
-          }
+          {isInitialPackagesLoading
+            ? <SearchResultSkeleton />
+            : isNotEmpty(packages)
+            ? (
+              <PackageSearchList
+                value={packages}
+                searchText={searchText}
+                fetchNextPage={fetchNextPackagesPage}
+                isNextPageFetching={isNextPackagesPageFetching}
+                hasNextPage={hasNextPackagesPage}
+              />
+            )
+            : (
+              <Placeholder
+                invisible={isNotEmpty(packages)}
+                area={CONTENT_PLACEHOLDER_AREA}
+                message={searchText ? NO_SEARCH_RESULTS : 'No packages to display'}
+                testId="NoPackagesPlaceholder"
+              />
+            )}
         </TabPanel>
-
       </TabContext>
     </Box>
   )

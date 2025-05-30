@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
+import { List } from '@mui/material'
 import type { FC } from 'react'
 import * as React from 'react'
 import { memo, useRef } from 'react'
-import { List } from '@mui/material'
-import { NAVIGATION_PLACEHOLDER_AREA, NO_SEARCH_RESULTS, Placeholder } from '../Placeholder'
-import { isNotEmpty } from '../../utils/arrays'
 import type { Tags } from '../../entities/operations'
 import { useIntersectionObserver } from '../../hooks/common/useIntersectionObserver'
 import type { HasNextPage, IsFetchingNextPage } from '../../utils/aliases'
-import { TagListSkeleton, TagSkeleton } from './TagListSkeleton'
+import { isNotEmpty } from '../../utils/arrays'
+import { NAVIGATION_PLACEHOLDER_AREA, NO_SEARCH_RESULTS, Placeholder } from '../Placeholder'
 import { TagListItem } from './TagListItem'
+import { TagListSkeleton, TagSkeleton } from './TagListSkeleton'
 
 export type TagListProps = {
   searchValue: string
@@ -53,9 +53,7 @@ export const TagList: FC<TagListProps> = memo<TagListProps>((props) => {
   useIntersectionObserver(ref, isNextTagsPageFetching, hasNextTagsPage, fetchNextTagsPage)
 
   if (areTagsLoading) {
-    return (
-      <TagListSkeleton/>
-    )
+    return <TagListSkeleton />
   }
 
   return (
@@ -75,7 +73,7 @@ export const TagList: FC<TagListProps> = memo<TagListProps>((props) => {
             />
           )
         })}
-        {hasNextTagsPage && <TagSkeleton key="tag-skeleton" refObject={ref}/>}
+        {hasNextTagsPage && <TagSkeleton key="tag-skeleton" refObject={ref} />}
       </List>
     </Placeholder>
   )

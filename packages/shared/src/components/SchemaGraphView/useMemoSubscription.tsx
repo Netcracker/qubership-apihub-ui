@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useRef } from 'react'
 import type { ClassViewComponent, RichHTMLElementEventMap } from '@netcracker/qubership-apihub-class-view'
+import { useCallback, useEffect, useRef } from 'react'
 import type { SchemaGraphMeta } from './schema-graph-content'
 
 type EventTypeMap = RichHTMLElementEventMap<SchemaGraphMeta>

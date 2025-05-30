@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react'
 import { Box } from '@mui/material'
+import type { Meta, StoryObj } from '@storybook/react'
 import type { CustomListItemButtonProps } from '../components/CustomListItemButton'
 import { CustomListItemButton, LIST_ITEM_SIZE_BIG, LIST_ITEM_SIZE_SMALL } from '../components/CustomListItemButton'
 import { GREEN_SECTION_COLOR } from './commons/placeholder-colors'

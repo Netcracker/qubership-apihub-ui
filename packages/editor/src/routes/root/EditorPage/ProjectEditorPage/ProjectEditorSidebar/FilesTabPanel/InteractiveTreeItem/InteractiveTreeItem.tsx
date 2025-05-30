@@ -14,29 +14,30 @@
  * limitations under the License.
  */
 
-import type { TreeItemProps } from '@mui/lab'
-import { TreeItem, treeItemClasses } from '@mui/lab'
-import { styled } from '@mui/material/styles'
-import { memo, useMemo, useState } from 'react'
-import { useEventBus } from '../../../../../../EventBusProvider'
-import { useHasEditBranchPermission } from '../../../useHasBranchPermission'
-import { useRestoreProjectFile } from './useRestoreProjectFile'
-import { useUpdateProjectFileMeta } from '../../../useUpdateProjectFileMeta'
-import { Box, Button, Divider, MenuItem, Typography } from '@mui/material'
+import type { TreeProjectFile } from '@apihub/utils/trees'
 import FolderIcon from '@mui/icons-material/Folder'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
-import type { TreeProjectFile } from '@apihub/utils/trees'
-import { useSystemInfo } from '@netcracker/qubership-apihub-ui-shared/features/system-info'
+import type { TreeItemProps } from '@mui/lab'
+import { TreeItem, treeItemClasses } from '@mui/lab'
+import { Box, Button, Divider, MenuItem, Typography } from '@mui/material'
+import { styled } from '@mui/material/styles'
+import { MenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
+import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
 import {
   ADDED_CHANGE_STATUS,
   DELETED_CHANGE_STATUS,
-  EXCLUDED_CHANGE_STATUS, STATUS_COLORS,
+  EXCLUDED_CHANGE_STATUS,
+  STATUS_COLORS,
 } from '@netcracker/qubership-apihub-ui-shared/entities/change-statuses'
-import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import { FileIcon } from '@netcracker/qubership-apihub-ui-shared/icons/FileIcon'
+import { useSystemInfo } from '@netcracker/qubership-apihub-ui-shared/features/system-info'
 import { ComponentIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ComponentIcon'
-import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
-import { MenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
+import { FileIcon } from '@netcracker/qubership-apihub-ui-shared/icons/FileIcon'
+import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { memo, useMemo, useState } from 'react'
+import { useEventBus } from '../../../../../../EventBusProvider'
+import { useHasEditBranchPermission } from '../../../useHasBranchPermission'
+import { useUpdateProjectFileMeta } from '../../../useUpdateProjectFileMeta'
+import { useRestoreProjectFile } from './useRestoreProjectFile'
 
 export type InteractiveTreeItemProps = {
   file: TreeProjectFile
@@ -60,9 +61,16 @@ export const InteractiveTreeItem = styled(memo<InteractiveTreeItemProps>(({ file
   const { productionMode } = useSystemInfo()
   const [updateFileMeta] = useUpdateProjectFileMeta()
 
-  const isFileNotRemoved = useMemo(() => status !== EXCLUDED_CHANGE_STATUS && status !== DELETED_CHANGE_STATUS, [status])
-  const isFileCanBeRestored = useMemo(() => status !== ADDED_CHANGE_STATUS && status !== DELETED_CHANGE_STATUS, [status])
-  const isDeleteFolderAvailable = useMemo(() => children?.find(({ status }) => status !== DELETED_CHANGE_STATUS && status !== EXCLUDED_CHANGE_STATUS), [children])
+  const isFileNotRemoved = useMemo(() => status !== EXCLUDED_CHANGE_STATUS && status !== DELETED_CHANGE_STATUS, [
+    status,
+  ])
+  const isFileCanBeRestored = useMemo(() => status !== ADDED_CHANGE_STATUS && status !== DELETED_CHANGE_STATUS, [
+    status,
+  ])
+  const isDeleteFolderAvailable = useMemo(
+    () => children?.find(({ status }) => status !== DELETED_CHANGE_STATUS && status !== EXCLUDED_CHANGE_STATUS),
+    [children],
+  )
 
   const actionButtonStyle = useMemo(() => {
     return {
@@ -85,8 +93,10 @@ export const InteractiveTreeItem = styled(memo<InteractiveTreeItemProps>(({ file
         label={
           <Box display="flex" alignItems="center" height={24}>
             {isNotEmpty(children)
-              ? <FolderIcon sx={{ color: '#FFB02E' }} fontSize="small"/>
-              : publish ? <FileIcon/> : <ComponentIcon/>}
+              ? <FolderIcon sx={{ color: '#FFB02E' }} fontSize="small" />
+              : publish
+              ? <FileIcon />
+              : <ComponentIcon />}
             <OverflowTooltip title={name} placement="right">
               <Typography
                 noWrap
@@ -107,7 +117,7 @@ export const InteractiveTreeItem = styled(memo<InteractiveTreeItemProps>(({ file
                   <MenuButton
                     sx={actionButtonStyle}
                     size="small"
-                    icon={<MoreVertIcon sx={{ color: '#626D82' }} fontSize="small"/>}
+                    icon={<MoreVertIcon sx={{ color: '#626D82' }} fontSize="small" />}
                     onClick={event => {
                       event.stopPropagation()
                       setActionMenuOpen(true)
@@ -131,12 +141,14 @@ export const InteractiveTreeItem = styled(memo<InteractiveTreeItemProps>(({ file
                             Create
                           </MenuItem>
                           {isDeleteFolderAvailable && (
-                            <MenuItem sx={{ color: '#FF5260' }}
-                                      onClick={() => showDeleteContentDialog({ key: key, name: name, isFolder: true })}>
+                            <MenuItem
+                              sx={{ color: '#FF5260' }}
+                              onClick={() => showDeleteContentDialog({ key: key, name: name, isFolder: true })}
+                            >
                               Delete
                             </MenuItem>
                           )}
-                          <Divider orientation="horizontal" variant="fullWidth"/>
+                          <Divider orientation="horizontal" variant="fullWidth" />
                           <MenuItem onClick={() => updateFileMeta({ key: key, publish: true, bulk: true })}>
                             Convert to document
                           </MenuItem>
@@ -157,11 +169,13 @@ export const InteractiveTreeItem = styled(memo<InteractiveTreeItemProps>(({ file
                               Move
                             </MenuItem>
                           )}
-                          <MenuItem sx={{ color: '#FF5260' }}
-                                    onClick={() => showDeleteContentDialog({ key: key, name: name, isFolder: false })}>
+                          <MenuItem
+                            sx={{ color: '#FF5260' }}
+                            onClick={() => showDeleteContentDialog({ key: key, name: name, isFolder: false })}
+                          >
                             Delete
                           </MenuItem>
-                          <Divider orientation="horizontal" variant="fullWidth"/>
+                          <Divider orientation="horizontal" variant="fullWidth" />
                           <MenuItem onClick={() => updateFileMeta({ key: file.key, publish: !file.publish })}>
                             Convert to {publish ? 'component' : 'document'}
                           </MenuItem>
@@ -170,7 +184,8 @@ export const InteractiveTreeItem = styled(memo<InteractiveTreeItemProps>(({ file
                   </MenuButton>
                 )
                 : isFileCanBeRestored
-                  ? <Button
+                ? (
+                  <Button
                     sx={actionButtonStyle}
                     onClick={event => {
                       event.stopPropagation()
@@ -179,14 +194,16 @@ export const InteractiveTreeItem = styled(memo<InteractiveTreeItemProps>(({ file
                   >
                     Restore
                   </Button>
-                  : null
+                )
+                : null
             )}
           </Box>
         }
       >
-        {isNotEmpty(children) && children?.map((file) => (
-          <InteractiveTreeItem key={file.key} nodeId={file.key} file={file} level={level + 1}/>
-        ))}
+        {isNotEmpty(children)
+          && children?.map((file) => (
+            <InteractiveTreeItem key={file.key} nodeId={file.key} file={file} level={level + 1} />
+          ))}
       </TreeItem>
     </>
   )

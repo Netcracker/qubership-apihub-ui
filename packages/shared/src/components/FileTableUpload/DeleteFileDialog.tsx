@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
+import { Button, DialogActions, DialogTitle, IconButton } from '@mui/material'
 import type { FC } from 'react'
 import { memo, useCallback, useMemo } from 'react'
-import { Button, DialogActions, DialogTitle, IconButton } from '@mui/material'
-import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
+import { DialogForm } from '../DialogForm'
 import type { PopupProps } from '../PopupDelegate'
 import { PopupDelegate } from '../PopupDelegate'
-import { DialogForm } from '../DialogForm'
 
 export const DeleteFileDialog: FC = memo(() => {
   return (
     <PopupDelegate
       type={SHOW_DELETE_FILE_DIALOG}
-      render={props => <DeleteFilePopup {...props}/>}
+      render={props => <DeleteFilePopup {...props} />}
     />
   )
 })
@@ -65,7 +65,7 @@ export const DeleteFilePopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen
           sx={{ position: 'absolute', right: 8, top: 8, color: '#626D82' }}
           onClick={onClose}
         >
-          <CloseOutlinedIcon fontSize="small"/>
+          <CloseOutlinedIcon fontSize="small" />
         </IconButton>
       </DialogTitle>
       <DialogActions sx={{ pt: 0 }}>

@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
+import Box from '@mui/material/Box'
 import type { FC } from 'react'
 import { memo, useEffect, useMemo, useRef } from 'react'
-import Box from '@mui/material/Box'
 import '@netcracker/qubership-apihub-class-view/class-view.css'
-import type { DomainObject, Point, SelectableObject, SelectionChangeData, Shape } from '@netcracker/qubership-apihub-class-view'
+import type {
+  DomainObject,
+  Point,
+  SelectableObject,
+  SelectionChangeData,
+  Shape,
+} from '@netcracker/qubership-apihub-class-view'
 import {
   ClassViewComponent,
   EVENT_SELECTION_CHANGE,
@@ -28,14 +34,14 @@ import {
   SHAPE_RECTANGLE,
   SHAPE_ROUND_RECTANGLE,
 } from '@netcracker/qubership-apihub-class-view'
-import { useMemoSubscription } from './useMemoSubscription'
+import type { OpenAPIV3 } from 'openapi-types'
+import { isEmpty } from '../../utils/arrays'
+import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '../Placeholder'
 import type { VisitorNavigationDetails } from './oasToClassDiagramService'
 import { schemaHashWithTitle, transformOasToEffectiveClassDiagram } from './oasToClassDiagramService'
-import type { OpenAPIV3 } from 'openapi-types'
 import type { SchemaClass } from './schema-graph-content'
 import { isSchema, SCHEMA_TYPE, type SchemaGraphContent, type SchemaGraphMeta } from './schema-graph-content'
-import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '../Placeholder'
-import { isEmpty } from '../../utils/arrays'
+import { useMemoSubscription } from './useMemoSubscription'
 
 export type ViewPortCenter = [number, number]
 
@@ -86,9 +92,20 @@ export const SchemaGraphView: FC<SchemaGraphViewProps> = /* @__PURE__ */ memo<Sc
     return component
   }, [])
 
-  useMemoSubscription<SelectableObject<SchemaGraphMeta>, typeof EVENT_SELECTION_CHANGE>(view, EVENT_SELECTION_CHANGE, onSelectionChange, getSelectedObject, isSelectionCancel)
+  useMemoSubscription<SelectableObject<SchemaGraphMeta>, typeof EVENT_SELECTION_CHANGE>(
+    view,
+    EVENT_SELECTION_CHANGE,
+    onSelectionChange,
+    getSelectedObject,
+    isSelectionCancel,
+  )
   useMemoSubscription<number, typeof EVENT_ZOOM_CHANGE>(view, EVENT_ZOOM_CHANGE, onZoomChange, getEventValue)
-  useMemoSubscription<[number, number], typeof EVENT_VIEWPORT_CENTER_CHANGE>(view, EVENT_VIEWPORT_CENTER_CHANGE, onViewPortChange, getViewPortCoordinates)
+  useMemoSubscription<[number, number], typeof EVENT_VIEWPORT_CENTER_CHANGE>(
+    view,
+    EVENT_VIEWPORT_CENTER_CHANGE,
+    onViewPortChange,
+    getViewPortCoordinates,
+  )
 
   const [content, objectsMap, isEmptyContent] = useGraphContentFactory(navigationState, data)
 
@@ -104,7 +121,7 @@ export const SchemaGraphView: FC<SchemaGraphViewProps> = /* @__PURE__ */ memo<Sc
 
   useEffect(() => {
     if (view) {
-      //need set empty content also because previous graph will flash when next set other (not-empty) graph
+      // need set empty content also because previous graph will flash when next set other (not-empty) graph
       view.animationDuration = ANIMATION_DURATION_ZERO
       view.content = content
       onNavigationToEmptyContent?.(isEmptyContent)
@@ -119,7 +136,7 @@ export const SchemaGraphView: FC<SchemaGraphViewProps> = /* @__PURE__ */ memo<Sc
 
     const matchedClass = getMatchedClass(objectsMap, navigationState)
 
-    //graph will fit automatically if content is new
+    // graph will fit automatically if content is new
     if (matchedClass) {
       view.animationDuration = ANIMATION_DURATION_MORPH
       view.navigateTo([matchedClass])
@@ -167,7 +184,7 @@ export const SchemaGraphView: FC<SchemaGraphViewProps> = /* @__PURE__ */ memo<Sc
   }, [view, action])
 
   return !isEmptyContent
-    ? <Box ref={viewContainerRef}/>
+    ? <Box ref={viewContainerRef} />
     : (
       <Placeholder
         invisible={false}
@@ -237,7 +254,9 @@ function selectClassShape(object: DomainObject): Shape {
     : SHAPE_RECTANGLE
 }
 
-function getSelectedObject(event: CustomEvent<SelectionChangeData<SchemaGraphMeta>>): SelectableObject<SchemaGraphMeta> {
+function getSelectedObject(
+  event: CustomEvent<SelectionChangeData<SchemaGraphMeta>>,
+): SelectableObject<SchemaGraphMeta> {
   const { newValue: [selectedObject] } = event.detail
   return selectedObject
 }
@@ -271,7 +290,10 @@ const EMPTY_CONTENT = {
 const ANIMATION_DURATION_ZERO = 0
 const ANIMATION_DURATION_MORPH = 350
 
-function getMatchedClass(objectsMap: Record<string, DomainObject<SchemaGraphMeta>>, navigationState: NavigationState): SchemaClass | undefined {
+function getMatchedClass(
+  objectsMap: Record<string, DomainObject<SchemaGraphMeta>>,
+  navigationState: NavigationState,
+): SchemaClass | undefined {
   const {
     schemaTolerantHashWithTitle,
     navigationFailedCallback,

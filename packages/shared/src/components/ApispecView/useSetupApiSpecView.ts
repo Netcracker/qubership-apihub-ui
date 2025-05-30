@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { useEffect } from 'react'
 import type { ApispecView } from '@netcracker/qubership-apihub-apispec-view'
+import { useEffect } from 'react'
 import type { ApispecViewProps } from './ApispecView'
 
 export function useSetupApiSpecView(operationViewElement: ApispecView, props: ApispecViewProps): void {

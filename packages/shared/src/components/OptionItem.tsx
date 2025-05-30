@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import type { TooltipProps } from '@mui/material'
+import { Box, ListItem, Tooltip, Typography } from '@mui/material'
 import type { FC, HTMLAttributes } from 'react'
 import * as React from 'react'
 import { memo } from 'react'
-import type { TooltipProps } from '@mui/material'
-import { Box, ListItem, Tooltip, Typography } from '@mui/material'
-import { OverflowTooltip } from './OverflowTooltip'
 import { CustomChip } from './CustomChip'
+import { OverflowTooltip } from './OverflowTooltip'
 import type { TestableProps } from './Testable'
 
 export type OptionItemProps = {
@@ -66,7 +66,7 @@ export const OptionItem: FC<OptionItemProps> = memo<OptionItemProps>(({
                 </OverflowTooltip>
               )}
             </Box>
-            {chipValue && <CustomChip sx={{ marginLeft: 'auto' }} variant="outlined" value={chipValue}/>}
+            {chipValue && <CustomChip sx={{ marginLeft: 'auto' }} variant="outlined" value={chipValue} />}
           </Box>
         </ListItem>
       </Box>

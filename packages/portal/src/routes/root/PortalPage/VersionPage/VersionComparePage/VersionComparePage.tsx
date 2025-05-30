@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-import type { FC, ReactNode } from 'react'
-import { memo, useMemo } from 'react'
-import { VersionCompareContent } from './VersionCompareContent'
-import type { CompareToolbarMode } from '../ComparisonToolbar'
-import { ComparisonToolbar } from '../ComparisonToolbar'
-import { CompareVersionsDialog } from '../CompareVersionsDialog/CompareVersionsDialog'
-import { CompareRevisionsDialog } from '../CompareRevisionsDialog'
-import { ChangesLoadingStatusProvider } from '../ChangesLoadingStatusProvider'
-import { usePackageKind } from '../../usePackageKind'
-import { DashboardsCompareContent } from './DashboardsCompareContent'
-import { VersionCompareSidebar } from './VersionCompareSidebar'
-import { useCompareVersions } from '../../useCompareVersions'
-import { COMPARE_DASHBOARDS_MODE, COMPARE_PACKAGES_MODE } from '../OperationContent/OperationView/OperationDisplayMode'
-import { useRefSearchParam } from '../../useRefSearchParam'
-import { BreadcrumbsDataContext } from '../ComparedPackagesBreadcrumbsProvider'
-import { useComparisonParams } from '../useComparisonParams'
-import { VersionsComparisonGlobalParamsContext } from '../VersionsComparisonGlobalParams'
-import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
 import { useCompareBreadcrumbs } from '@apihub/routes/root/PortalPage/VersionPage/useCompareBreadcrumbs'
 import { useComparisonObjects } from '@apihub/routes/root/PortalPage/VersionPage/useComparisonObjects'
+import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import type { FC, ReactNode } from 'react'
+import { memo, useMemo } from 'react'
+import { useCompareVersions } from '../../useCompareVersions'
+import { usePackageKind } from '../../usePackageKind'
+import { useRefSearchParam } from '../../useRefSearchParam'
+import { ChangesLoadingStatusProvider } from '../ChangesLoadingStatusProvider'
+import { BreadcrumbsDataContext } from '../ComparedPackagesBreadcrumbsProvider'
+import { CompareRevisionsDialog } from '../CompareRevisionsDialog'
+import { CompareVersionsDialog } from '../CompareVersionsDialog/CompareVersionsDialog'
+import type { CompareToolbarMode } from '../ComparisonToolbar'
+import { ComparisonToolbar } from '../ComparisonToolbar'
+import { COMPARE_DASHBOARDS_MODE, COMPARE_PACKAGES_MODE } from '../OperationContent/OperationView/OperationDisplayMode'
+import { useComparisonParams } from '../useComparisonParams'
+import { VersionsComparisonGlobalParamsContext } from '../VersionsComparisonGlobalParams'
+import { DashboardsCompareContent } from './DashboardsCompareContent'
+import { VersionCompareContent } from './VersionCompareContent'
+import { VersionCompareSidebar } from './VersionCompareSidebar'
 
 export const VersionComparePage: FC = memo(() => {
   const [mainPackageKind] = usePackageKind()
@@ -54,26 +54,27 @@ export const VersionComparePage: FC = memo(() => {
   const [originComparisonObject, changedComparisonObject] = useComparisonObjects(versionsComparisonParams)
   const mergedBreadcrumbsData = useCompareBreadcrumbs(originComparisonObject, changedComparisonObject)
 
-  const [compareToolbarMode, compareContentComponent, sidebarComponent]: [CompareToolbarMode, ReactNode, ReactNode] = useMemo(
-    () => (isDashboardsComparison
-      ? [COMPARE_DASHBOARDS_MODE, <DashboardsCompareContent/>, undefined]
-      : [COMPARE_PACKAGES_MODE, <VersionCompareContent/>, <VersionCompareSidebar/>]),
-    [isDashboardsComparison],
-  )
+  const [compareToolbarMode, compareContentComponent, sidebarComponent]: [CompareToolbarMode, ReactNode, ReactNode] =
+    useMemo(
+      () => (isDashboardsComparison
+        ? [COMPARE_DASHBOARDS_MODE, <DashboardsCompareContent />, undefined]
+        : [COMPARE_PACKAGES_MODE, <VersionCompareContent />, <VersionCompareSidebar />]),
+      [isDashboardsComparison],
+    )
 
   return (
     <ChangesLoadingStatusProvider>
       <VersionsComparisonGlobalParamsContext.Provider value={versionsComparisonParams}>
         <BreadcrumbsDataContext.Provider value={mergedBreadcrumbsData}>
           <PageLayout
-            toolbar={<ComparisonToolbar compareToolbarMode={compareToolbarMode}/>}
+            toolbar={<ComparisonToolbar compareToolbarMode={compareToolbarMode} />}
             body={compareContentComponent}
             navigation={sidebarComponent}
           />
         </BreadcrumbsDataContext.Provider>
       </VersionsComparisonGlobalParamsContext.Provider>
-      <CompareVersionsDialog/>
-      <CompareRevisionsDialog/>
+      <CompareVersionsDialog />
+      <CompareRevisionsDialog />
     </ChangesLoadingStatusProvider>
   )
 })

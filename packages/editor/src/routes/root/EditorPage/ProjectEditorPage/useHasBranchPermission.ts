@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { useBranchConfig } from './useBranchConfig'
-import { useMemo } from 'react'
 import type { BranchPermission } from '@apihub/entities/branches'
 import {
   ALL_BRANCH_PERMISSION_TYPE,
@@ -24,12 +22,15 @@ import {
   SAVE_BRANCH_PERMISSION_TYPE,
 } from '@apihub/entities/branches'
 import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { useMemo } from 'react'
+import { useBranchConfig } from './useBranchConfig'
 
 function useHasBranchPermission(permission: BranchPermission): boolean {
   const [branchConfig] = useBranchConfig()
 
   const hasBranchPermission = useMemo(
-    () => (branchConfig?.permissions?.includes(ALL_BRANCH_PERMISSION_TYPE) || branchConfig?.permissions?.includes(permission)),
+    () => (branchConfig?.permissions?.includes(ALL_BRANCH_PERMISSION_TYPE)
+      || branchConfig?.permissions?.includes(permission)),
     [branchConfig?.permissions, permission],
   )
 

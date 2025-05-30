@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
+import ErrorOutlinedIcon from '@mui/icons-material/ErrorOutlined'
+import { Alert, Box, Typography } from '@mui/material'
 import type { ChangeEvent, DragEvent, FC } from 'react'
 import * as React from 'react'
 import { memo, useCallback, useMemo } from 'react'
-import { Alert, Box, Typography } from '@mui/material'
-import { FileUpload } from './FileUpload'
-import { UploadButton } from './UploadButton'
-import { UploadedFilePreview } from './UploadedFilePreview'
 import { CloudUploadIcon } from '../icons/CloudUploadIcon'
 import type { FileExtension } from '../utils/files'
 import { createFileFormatEnumeration, transformFileListToFileArray } from '../utils/files'
-import ErrorOutlinedIcon from '@mui/icons-material/ErrorOutlined'
+import { FileUpload } from './FileUpload'
+import { UploadButton } from './UploadButton'
+import { UploadedFilePreview } from './UploadedFilePreview'
 
 export type FileUploadFieldProps = {
   uploadedFile: File | undefined
@@ -43,16 +43,16 @@ export const FileUploadField: FC<FileUploadFieldProps> = memo<FileUploadFieldPro
   acceptableExtensions,
   errorMessage,
 }) => {
-
   const onUpload = useCallback(
     ({ target: { files } }: ChangeEvent<HTMLInputElement>) =>
       setUploadedFile(files ? transformFileListToFileArray(files)[0] : undefined),
-    [setUploadedFile])
+    [setUploadedFile],
+  )
 
   const onDrop = useCallback(
-    ({ dataTransfer: { files } }: DragEvent<HTMLElement>) =>
-      setUploadedFile(transformFileListToFileArray(files)[0]),
-    [setUploadedFile])
+    ({ dataTransfer: { files } }: DragEvent<HTMLElement>) => setUploadedFile(transformFileListToFileArray(files)[0]),
+    [setUploadedFile],
+  )
 
   const onDelete = useCallback(() => setUploadedFile(undefined), [setUploadedFile])
 
@@ -60,13 +60,14 @@ export const FileUploadField: FC<FileUploadFieldProps> = memo<FileUploadFieldPro
     () => (
       errorMessage && (
         <Alert
-          icon={<ErrorOutlinedIcon color="error"/>}
+          icon={<ErrorOutlinedIcon color="error" />}
           severity="error"
           sx={{ p: 0, py: '1px', pl: 2, alignItems: 'center' }}
         >
           {errorMessage}
         </Alert>
-      )),
+      )
+    ),
     [errorMessage],
   )
 
@@ -102,7 +103,7 @@ export const FileUploadField: FC<FileUploadFieldProps> = memo<FileUploadFieldPro
             height: '44px',
           }}
         >
-          <CloudUploadIcon sx={{ color: '#626D82', mr: '8px' }}/>
+          <CloudUploadIcon sx={{ color: '#626D82', mr: '8px' }} />
           <Typography variant="subtitle2" fontSize={13}>
             {`Drop ${createFileFormatEnumeration(acceptableExtensions)} file here to attach or`}
           </Typography>

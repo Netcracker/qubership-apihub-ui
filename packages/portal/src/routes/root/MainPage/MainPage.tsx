@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo } from 'react'
+import { MainPageNavigation } from '@apihub/routes/root/MainPage/MainPageNavigation/MainPageNavigation'
 import { Box } from '@mui/material'
-import { Outlet } from 'react-router-dom'
 import { DEFAULT_PAPER_SHADOW } from '@netcracker/qubership-apihub-ui-shared/themes/palette'
 import { DEFAULT_PAGE_LAYOUT_GAP } from '@netcracker/qubership-apihub-ui-shared/utils/page-layouts'
-import { MainPageNavigation } from '@apihub/routes/root/MainPage/MainPageNavigation/MainPageNavigation'
+import type { FC } from 'react'
+import { memo } from 'react'
+import { Outlet } from 'react-router-dom'
 
 export const MAIN_CARD_STYLES = {
   display: 'grid',
@@ -30,18 +30,18 @@ export const MAIN_CARD_STYLES = {
 }
 
 export const MainPage: FC = memo(() => {
-
   return (
-    <Box sx={{
-      background: '#F5F5FA',
-      display: 'flex',
-      height: '100%',
-      width: '100%',
-      pt: DEFAULT_PAGE_LAYOUT_GAP,
-    }}>
-      <MainPageNavigation/>
-      <Outlet/>
+    <Box
+      sx={{
+        background: '#F5F5FA',
+        display: 'flex',
+        height: '100%',
+        width: '100%',
+        pt: DEFAULT_PAGE_LAYOUT_GAP,
+      }}
+    >
+      <MainPageNavigation />
+      <Outlet />
     </Box>
   )
 })
-

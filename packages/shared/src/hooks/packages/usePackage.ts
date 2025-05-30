@@ -16,6 +16,12 @@
 
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { generatePath, useParams } from 'react-router-dom'
+import {
+  ERROR_STATUS_MARKER_VARIANT,
+  SUCCESS_STATUS_MARKER_VARIANT,
+  WARNING_STATUS_MARKER_VARIANT,
+} from '../../components/StatusMarker'
+import type { Key } from '../../entities/keys'
 import type {
   BwcErrors,
   CreatePackageProps,
@@ -28,14 +34,8 @@ import type {
 } from '../../entities/packages'
 import { PRIVATE_PACKAGE_ROLE, PUBLIC_PACKAGE_ROLE } from '../../entities/packages'
 import type { IsLoading, IsSuccess } from '../../utils/aliases'
-import type { Key } from '../../entities/keys'
-import { API_V2, requestJson } from '../../utils/requests'
 import { getPackageRedirectDetails } from '../../utils/redirects'
-import {
-  ERROR_STATUS_MARKER_VARIANT,
-  SUCCESS_STATUS_MARKER_VARIANT,
-  WARNING_STATUS_MARKER_VARIANT,
-} from '../../components/StatusMarker'
+import { API_V2, requestJson } from '../../utils/requests'
 
 const PACKAGE_QUERY_KEY = 'package-query-key'
 
@@ -46,10 +46,12 @@ export type DocumentsQueryResult = {
   error: Error | null
 }
 
-export function usePackage(options?: Partial<{
-  packageKey: Key
-  showParents: boolean
-}>): DocumentsQueryResult {
+export function usePackage(
+  options?: Partial<{
+    packageKey: Key
+    showParents: boolean
+  }>,
+): DocumentsQueryResult {
   const { packageId: paramPackageId } = useParams()
   const { packageKey, showParents = false } = options ?? {}
   const key = packageKey ?? paramPackageId
@@ -87,8 +89,10 @@ type CreatePackage = (value: Package) => void
 type OnSuccess = (packageKey: Key, name: string) => void
 type OnError = (error: Error) => void
 
-export function useCreatePackage(onError: OnError, onSuccess: OnSuccess): [CreatePackage, IsLoading, IsSuccess, Error | null] {
-
+export function useCreatePackage(
+  onError: OnError,
+  onSuccess: OnSuccess,
+): [CreatePackage, IsLoading, IsSuccess, Error | null] {
   const { mutate, isLoading, isSuccess, error } = useMutation<PackageDto, Error, Package>({
     mutationFn: value => createPackage(toCreatePackageProps(value)),
     onSuccess: ({ packageId, name }) => {
@@ -164,7 +168,9 @@ export function toPackageDto(value: Partial<Package>): Partial<PackageDto> {
   }
 }
 
-export function toLastReleaseVersionDetails(value?: LastReleaseVersionDetailsDto): LastReleaseVersionDetails | undefined {
+export function toLastReleaseVersionDetails(
+  value?: LastReleaseVersionDetailsDto,
+): LastReleaseVersionDetails | undefined {
   if (!value) {
     return undefined
   }
@@ -176,7 +182,9 @@ export function toLastReleaseVersionDetails(value?: LastReleaseVersionDetailsDto
   }
 }
 
-export function toLastReleaseVersionDetailsDto(value?: LastReleaseVersionDetails): LastReleaseVersionDetailsDto | undefined {
+export function toLastReleaseVersionDetailsDto(
+  value?: LastReleaseVersionDetails,
+): LastReleaseVersionDetailsDto | undefined {
   if (!value) {
     return undefined
   }
@@ -204,7 +212,8 @@ export function countBwcErrors(lastPublishedVersion: PackageSummary | undefined)
     }
   }
 
-  const warningCount = lastPublishedVersion && (Object?.values(lastPublishedVersion)?.reduce((a, b) => a + b, 0) - (lastPublishedVersion?.breaking ?? 0))
+  const warningCount = lastPublishedVersion
+    && (Object?.values(lastPublishedVersion)?.reduce((a, b) => a + b, 0) - (lastPublishedVersion?.breaking ?? 0))
 
   if (warningCount && warningCount > 0) {
     bwcErrors = {

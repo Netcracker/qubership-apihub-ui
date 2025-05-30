@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-import { useQuery } from '@tanstack/react-query'
-import { useMemo } from 'react'
-import { useVersionWithRevision } from './useVersionWithRevision'
-import { generatePath } from 'react-router-dom'
 import { portalRequestJson } from '@apihub/utils/requests'
-import type { VersionReferences, VersionReferencesDto } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type {
+  VersionReferences,
+  VersionReferencesDto,
+} from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
 import { toVersionReferences } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
 import { API_V3 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import { useQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
+import { generatePath } from 'react-router-dom'
+import { useVersionWithRevision } from './useVersionWithRevision'
 
 export const REFERENCES_QUERY_KEY = 'references-query-key'
 
@@ -90,4 +93,3 @@ export async function getReferences(
     signal,
   )
 }
-

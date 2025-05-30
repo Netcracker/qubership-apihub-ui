@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import type { PackageReferenceWithStatus } from '@apihub/routes/root/PortalPage/DashboardPage/configure-dashboard'
+import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import type { FC } from 'react'
 import { memo, useState } from 'react'
-import { useSetReferences } from '../../PackagesAndDashboardsTree/useSetReferences'
-import { PackagesAndDashboardsTree } from '../../PackagesAndDashboardsTree/PackagesAndDashboardsTree'
 import { useParams } from 'react-router-dom'
-import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
-import type { PackageReferenceWithStatus } from '@apihub/routes/root/PortalPage/DashboardPage/configure-dashboard'
+import { PackagesAndDashboardsTree } from '../../PackagesAndDashboardsTree/PackagesAndDashboardsTree'
+import { useSetReferences } from '../../PackagesAndDashboardsTree/useSetReferences'
 
 export const IncludedPackagesCard: FC = memo(() => {
   const { packageId: packageKey, versionId: versionKey } = useParams()

@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
+import type { Key } from '@apihub/entities/keys'
+import { ncCustomAgentsRequestBlob } from '@apihub/utils/requests'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { API_V2, API_V3 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import { APIHUB_NC_BASE_PATH } from '@netcracker/qubership-apihub-ui-shared/utils/urls'
 import { useMutation } from '@tanstack/react-query'
 import fileDownload from 'js-file-download'
-import type { Key } from '@apihub/entities/keys'
+import { generatePath } from 'react-router-dom'
 import type { SecurityReportType } from './useSecurityReports'
 import { SECURITY_REPORT_TYPE_AUTH_CHECK, SECURITY_REPORT_TYPE_GATEWAY_ROUTING } from './useSecurityReports'
-import { ncCustomAgentsRequestBlob } from '@apihub/utils/requests'
-import { generatePath } from 'react-router-dom'
-import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { APIHUB_NC_BASE_PATH } from '@netcracker/qubership-apihub-ui-shared/utils/urls'
-import { API_V2, API_V3 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 
 export function useDownloadSecurityReport(): [DownloadSecurityReportFunction, IsLoading] {
   const { mutate, isLoading } = useMutation<void, Error, Options>({
@@ -47,16 +47,18 @@ export const downloadSecurityReport = async (
     generatePath(pathPattern, { reportPath, processId }),
     {
       method: 'GET',
-    }, {
+    },
+    {
       basePath: `${APIHUB_NC_BASE_PATH}${apiPath}`,
     },
   )
 
-  const getFilename = (): string => response.headers
-    .get('content-disposition')!
-    .split('filename=')[1]
-    .split(';')[0]
-    .slice(1, -1)
+  const getFilename = (): string =>
+    response.headers
+      .get('content-disposition')!
+      .split('filename=')[1]
+      .split(';')[0]
+      .slice(1, -1)
 
   fileDownload(await response.blob(), getFilename())
 }

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import { Box } from '@mui/material'
 import type { FC } from 'react'
 import { memo } from 'react'
-import { Box } from '@mui/material'
-import { UserAvatar } from './UserAvatar'
-import { TextWithOverflowTooltip } from '../TextWithOverflowTooltip'
 import { EmptyUserIcon } from '../../icons/EmptyUserIcon'
+import { TextWithOverflowTooltip } from '../TextWithOverflowTooltip'
+import { UserAvatar } from './UserAvatar'
 
 export type UserViewProps = Partial<{
   name: string
@@ -30,13 +30,14 @@ export const UserView: FC<UserViewProps> = memo<UserViewProps>(({ name = '', ava
   return (
     <Box display="flex" alignItems="center" gap="4px" overflow="hidden" data-testid="UserView">
       {avatarUrl
-        ? <UserAvatar
-          name={name}
-          src={avatarUrl}
-          size="small"
-        />
-        : <EmptyUserIcon/>
-      }
+        ? (
+          <UserAvatar
+            name={name}
+            src={avatarUrl}
+            size="small"
+          />
+        )
+        : <EmptyUserIcon />}
       <TextWithOverflowTooltip tooltipText={name}>
         {name}
       </TextWithOverflowTooltip>

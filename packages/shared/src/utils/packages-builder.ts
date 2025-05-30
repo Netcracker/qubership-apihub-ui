@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import type { Key } from './types'
-import { API_V1, API_V2, API_V3, requestBlob, requestJson, requestVoid } from './requests'
 import type {
   ApiAudience,
   ApiKind,
@@ -25,14 +23,16 @@ import type {
   ResolvedOperation,
   ResolvedReferences,
 } from '@netcracker/qubership-apihub-api-processor'
-import { optionalSearchParams } from './search-params'
-import { getPackageRedirectDetails } from './redirects'
 import { generatePath } from 'react-router-dom'
-import type { ResolvedVersionDto } from '../types/packages'
-import type { OperationDto, OperationsDto } from '../entities/operations'
-import { isRestOperationDto } from '../entities/operations'
 import type { ApiType } from '../entities/api-types'
 import { API_TYPE_REST } from '../entities/api-types'
+import type { OperationDto, OperationsDto } from '../entities/operations'
+import { isRestOperationDto } from '../entities/operations'
+import type { ResolvedVersionDto } from '../types/packages'
+import { getPackageRedirectDetails } from './redirects'
+import { API_V1, API_V2, API_V3, requestBlob, requestJson, requestVoid } from './requests'
+import { optionalSearchParams } from './search-params'
+import type { Key } from './types'
 
 export async function getPackageVersionContent(
   packageKey: Key,
@@ -106,7 +106,6 @@ export async function fetchDeprecatedItems(
   operationIds: string[] | undefined,
   authorization: string,
 ): Promise<ResolvedDeprecations | null> {
-
   const queryParams = optionalSearchParams({
     ids: { value: operationIds },
     includeDeprecatedItems: { value: true },
@@ -340,10 +339,11 @@ export async function fetchExportTemplate(
   )
   const data = await response.blob()
 
-  const getFilename = (): string => response.headers
-    .get('content-disposition')!
-    .split('filename=')[1]
-    .split(';')[0]
+  const getFilename = (): string =>
+    response.headers
+      .get('content-disposition')!
+      .split('filename=')[1]
+      .split(';')[0]
 
   return [await data.text(), getFilename()]
 }

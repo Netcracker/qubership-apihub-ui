@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { DEFAULT_TAG, EMPTY_TAG } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import type { VersionDeprecatedSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-contents'
+import { isDashboardDeprecatedSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-contents'
+import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { isAppliedSearchValueForTag } from '@netcracker/qubership-apihub-ui-shared/utils/tags'
 import type { FC } from 'react'
 import * as React from 'react'
 import { memo, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { SelfManagedOperationFilters } from '../SelfManagedOperationFilters'
-import { useDeprecatedSummary } from './useDeprecatedSummary'
-import { useDefaultOperationFilterControllers } from '../useDefaultOperationFilterControllers'
 import { usePackageKind } from '../../usePackageKind'
+import { SelfManagedOperationFilters } from '../SelfManagedOperationFilters'
+import { useDefaultOperationFilterControllers } from '../useDefaultOperationFilterControllers'
 import { useTagSearchFilter } from '../useTagSearchFilter'
-import { isAppliedSearchValueForTag } from '@netcracker/qubership-apihub-ui-shared/utils/tags'
-import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import type { VersionDeprecatedSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-contents'
-import { isDashboardDeprecatedSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-contents'
-import { DEFAULT_TAG, EMPTY_TAG } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { useDeprecatedSummary } from './useDeprecatedSummary'
 
 export const DeprecatedOperationsNavigation: FC = memo(() => {
   const { packageId, versionId, apiType } = useParams()

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { useMutation } from '@tanstack/react-query'
-import type { UpdatingOperations } from '../entities'
-import { useInvalidateVersionContent } from '../../../../../../usePackageVersionContent'
-import { generatePath } from 'react-router-dom'
 import type { EditOperationGroupContentDetails } from '@apihub/routes/EventBusProvider'
-import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { portalRequestVoid } from '@apihub/utils/requests'
+import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
 import { API_V3 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import { useMutation } from '@tanstack/react-query'
+import { generatePath } from 'react-router-dom'
+import { useInvalidateVersionContent } from '../../../../../../usePackageVersionContent'
+import type { UpdatingOperations } from '../entities'
 
 const UPDATE_OPERATION_GROUP_MUTATION_KEY = 'update-operation-group-mutation-key'
 

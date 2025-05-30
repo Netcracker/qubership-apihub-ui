@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import { getOptionalBody } from '@netcracker/qubership-apihub-ui-shared/utils/request-bodies'
+import { requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import type { FetchNextPageOptions, InfiniteQueryObserverResult } from '@tanstack/react-query'
 import type {
   DocumentSearchResult,
@@ -27,11 +30,10 @@ import type {
   SearchResults,
   SearchResultsDto,
 } from '../../../../entities/global-search'
-import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
-import { getOptionalBody } from '@netcracker/qubership-apihub-ui-shared/utils/request-bodies'
 
-export type FetchNextSearchResultList = (options?: FetchNextPageOptions) => Promise<InfiniteQueryObserverResult<SearchResults, Error>>
+export type FetchNextSearchResultList = (
+  options?: FetchNextPageOptions,
+) => Promise<InfiniteQueryObserverResult<SearchResults, Error>>
 
 export async function getSearchResult(
   criteria: SearchCriteria,
@@ -39,7 +41,6 @@ export async function getSearchResult(
   limit: number,
   page: number,
 ): Promise<SearchResults> {
-
   const queryParams = optionalSearchParams({
     limit: { value: limit },
     page: { value: page, toStringValue: page => `${page}` },

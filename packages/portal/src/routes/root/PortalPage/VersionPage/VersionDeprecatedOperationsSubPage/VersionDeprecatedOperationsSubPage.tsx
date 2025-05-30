@@ -14,31 +14,34 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, type MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { ExportOperationsMenu } from '../ExportOperationsMenu'
-import { useApiKindSearchFilter } from '../useApiKindSearchFilters'
-import { useTagSearchFilter } from '../useTagSearchFilter'
-import { useRefSearchParam } from '../../useRefSearchParam'
-import { useOperationGroupSearchFilter } from '../useOperationGroupSearchFilter'
-import { useSetSelectedPreviewOperation } from '../../SelectedPreviewOperationProvider'
-import { useDeprecatedOperations } from './useDeprecatedOperations'
-import type { NumberSize, ResizeDirection } from 're-resizable'
-import { DeprecatedOperationsTable } from './DeprecatedOperationsTable'
-import { OperationListWithPreview } from '../OperationListWithPreview'
-import { DeprecatedItemsList } from './DeprecatedItemList'
-import { VersionOperationsPanel } from '../VersionOperationsPanel'
-import { DeprecatedOperationsNavigation } from './DeprecatedOperationsNavigation'
-import type { OperationData, OperationWithDeprecations } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import { isEmptyTag } from '@netcracker/qubership-apihub-ui-shared/utils/tags'
-import { isEmpty, isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import { NAVIGATION_MAX_WIDTH } from '@netcracker/qubership-apihub-ui-shared/utils/page-layouts'
 import type { Key } from '@apihub/entities/keys'
 import { usePortalPageSettingsContext } from '@apihub/routes/PortalPageSettingsProvider'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type {
+  OperationData,
+  OperationWithDeprecations,
+} from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import { isEmpty, isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { NAVIGATION_MAX_WIDTH } from '@netcracker/qubership-apihub-ui-shared/utils/page-layouts'
+import { isEmptyTag } from '@netcracker/qubership-apihub-ui-shared/utils/tags'
+import type { NumberSize, ResizeDirection } from 're-resizable'
+import type { FC } from 'react'
+import { memo, type MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import { useSetSelectedPreviewOperation } from '../../SelectedPreviewOperationProvider'
+import { useRefSearchParam } from '../../useRefSearchParam'
+import { ExportOperationsMenu } from '../ExportOperationsMenu'
+import { OperationListWithPreview } from '../OperationListWithPreview'
 import { useApiAudienceSearchFilter } from '../useApiAudienceSearchFilters'
+import { useApiKindSearchFilter } from '../useApiKindSearchFilters'
+import { useOperationGroupSearchFilter } from '../useOperationGroupSearchFilter'
+import { useTagSearchFilter } from '../useTagSearchFilter'
+import { VersionOperationsPanel } from '../VersionOperationsPanel'
+import { DeprecatedItemsList } from './DeprecatedItemList'
+import { DeprecatedOperationsNavigation } from './DeprecatedOperationsNavigation'
+import { DeprecatedOperationsTable } from './DeprecatedOperationsTable'
+import { useDeprecatedOperations } from './useDeprecatedOperations'
 
 // High Order Component //
 export const VersionDeprecatedOperationsSubPage: FC = memo(() => {
@@ -91,9 +94,11 @@ export const VersionDeprecatedOperationsSubPage: FC = memo(() => {
   const onResize = useCallback(
     (_: MouseEvent | TouchEvent, __: ResizeDirection, ___: HTMLElement, delta: NumberSize) => {
       togglePreviewSize(previewSize + delta.width)
-    }, [previewSize, togglePreviewSize])
+    },
+    [previewSize, togglePreviewSize],
+  )
 
-  //todo move to low level (VersionOperationsPanel or OperationListWithPreview)
+  // todo move to low level (VersionOperationsPanel or OperationListWithPreview)
   const maxPreviewWidth = useMemo(() => {
     if (bodyRef.current?.clientWidth) {
       return bodyRef.current.clientWidth - SUBPAGE_MARGIN
@@ -104,8 +109,9 @@ export const VersionDeprecatedOperationsSubPage: FC = memo(() => {
   }, [bodyRef.current?.clientWidth])
 
   const isExpandableItem = useCallback((operation: OperationData): boolean => {
-    const operationWithDeprecations = (operation as OperationWithDeprecations)
-    const onlyDeprecatedOperationItem = operationWithDeprecations.deprecated && Number(operationWithDeprecations?.deprecatedCount ?? 0) === 1
+    const operationWithDeprecations = operation as OperationWithDeprecations
+    const onlyDeprecatedOperationItem = operationWithDeprecations.deprecated
+      && Number(operationWithDeprecations?.deprecatedCount ?? 0) === 1
     return !onlyDeprecatedOperationItem
   }, [])
 
@@ -118,41 +124,46 @@ export const VersionDeprecatedOperationsSubPage: FC = memo(() => {
       onContextSearch={setSearchValue}
       title={DEPRECATED_TITLE}
       bodyRef={bodyRef}
-      table={<DeprecatedOperationsTable
-        operations={operations}
-        isLoading={isLoading}
-        fetchNextPage={fetchNextPage}
-        isFetchingNextPage={isFetchingNextPage}
-        hasNextPage={hasNextPage}
-      />}
-      list={<OperationListWithPreview
-        operations={operations}
-        fetchNextPage={fetchNextPage}
-        hasNextPage={hasNextPage}
-        isListLoading={isLoading}
-        isNextPageFetching={isFetchingNextPage}
-        packageKey={packageId!}
-        versionKey={versionId!}
-        apiType={apiType}
-        initialSize={previewSize}
-        handleResize={onResize}
-        maxPreviewWidth={maxPreviewWidth}
-        isExpandableItem={isExpandableItem}
-        SubComponent={DeprecatedItemsList}
-      />}
+      table={
+        <DeprecatedOperationsTable
+          operations={operations}
+          isLoading={isLoading}
+          fetchNextPage={fetchNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+          hasNextPage={hasNextPage}
+        />
+      }
+      list={
+        <OperationListWithPreview
+          operations={operations}
+          fetchNextPage={fetchNextPage}
+          hasNextPage={hasNextPage}
+          isListLoading={isLoading}
+          isNextPageFetching={isFetchingNextPage}
+          packageKey={packageId!}
+          versionKey={versionId!}
+          apiType={apiType}
+          initialSize={previewSize}
+          handleResize={onResize}
+          maxPreviewWidth={maxPreviewWidth}
+          isExpandableItem={isExpandableItem}
+          SubComponent={DeprecatedItemsList}
+        />
+      }
       filters={<DeprecatedOperationsNavigation />}
-      exportButton={<ExportOperationsMenu
-        title="Export to Excel"
-        disabled={isEmpty(operations)}
-        textFilter={searchValue}
-        kind={apiKindFilter}
-        apiAudience={apiAudienceFilter}
-        tag={selectedTag}
-        group={operationGroup}
-        refPackageId={refKey}
-        emptyTag={emptyTag}
-        onlyDeprecated
-      />
+      exportButton={
+        <ExportOperationsMenu
+          title="Export to Excel"
+          disabled={isEmpty(operations)}
+          textFilter={searchValue}
+          kind={apiKindFilter}
+          apiAudience={apiAudienceFilter}
+          tag={selectedTag}
+          group={operationGroup}
+          refPackageId={refKey}
+          emptyTag={emptyTag}
+          onlyDeprecated
+        />
       }
       testId="DeprecatedTab"
     />

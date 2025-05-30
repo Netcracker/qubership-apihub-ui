@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { DEFAULT_TAG, EMPTY_TAG } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type {
   DashboardComparisonSummary,
   PackageComparisonSummary,
@@ -26,8 +27,7 @@ import {
   isDashboardComparisonSummary,
   isPackageComparisonSummary,
 } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
-import { DEFAULT_TAG, EMPTY_TAG } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { useMemo } from 'react'
 
 export function useTagsFromChangesSummary(
   apiType: ApiType | undefined,

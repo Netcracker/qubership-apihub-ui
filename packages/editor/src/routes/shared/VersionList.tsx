@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { List, ListItem, ListItemButton, ListItemText } from '@mui/material'
+import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
+import type { PackageVersions } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
 import type { ReactNode } from 'react'
 import { memo } from 'react'
-import { List, ListItem, ListItemButton, ListItemText } from '@mui/material'
-import type { PackageVersions } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
-import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
 
 export type VersionListProps = Partial<{
   versions: PackageVersions
@@ -41,8 +41,8 @@ export const VersionList = memo<VersionListProps>(({ versions, selectedVersion, 
             selected={selectedVersion === key}
             onClick={() => onSelectVersion?.(key)}
           >
-            <ListItemText primary={key}/>
-            <CustomChip value={status}/>
+            <ListItemText primary={key} />
+            <CustomChip value={status} />
           </ListItemButton>
         </ListItem>
       ))}

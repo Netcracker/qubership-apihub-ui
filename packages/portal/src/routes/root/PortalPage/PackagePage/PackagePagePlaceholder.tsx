@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
+import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
+import { useEventBus } from '@apihub/routes/EventBusProvider'
+import { Box, Button, capitalize, Link } from '@mui/material'
+import { EmptyPackageDialog } from '@netcracker/qubership-apihub-ui-shared/components/EmptyPackageDialog'
+import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
+import type { PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { SPECIAL_VERSION_KEY } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
 import type { FC } from 'react'
 import { memo, useCallback, useMemo } from 'react'
-import { Box, Button, capitalize, Link } from '@mui/material'
 import { NavLink, useParams } from 'react-router-dom'
 import { getVersionPath, useNavigation } from '../../../NavigationProvider'
 import { useBackwardLocation } from '../../useBackwardLocation'
-import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
-import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
-import type { PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { SPECIAL_VERSION_KEY } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
-import { EmptyPackageDialog } from '@netcracker/qubership-apihub-ui-shared/components/EmptyPackageDialog'
-import { useEventBus } from '@apihub/routes/EventBusProvider'
-import { PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 
 export type PackagePagePlaceholderProps = {
   kind: PackageKind
@@ -74,9 +74,10 @@ export const PackagePagePlaceholder: FC<PackagePagePlaceholderProps> = memo<Pack
     },
   ], [handleNavigateToEdit, navigateToAgent, navigateToEditor])
 
-  const handleShowEmptyPackageDialog = useCallback(() => showEmptyPackageDialog({
-    emptyPackageData,
-  }), [emptyPackageData, showEmptyPackageDialog])
+  const handleShowEmptyPackageDialog = useCallback(() =>
+    showEmptyPackageDialog({
+      emptyPackageData,
+    }), [emptyPackageData, showEmptyPackageDialog])
 
   return (
     <Placeholder
@@ -85,28 +86,33 @@ export const PackagePagePlaceholder: FC<PackagePagePlaceholderProps> = memo<Pack
       message={
         <Box>
           {capitalize(kind)} is empty.&nbsp;
-          {kind === PACKAGE_KIND ? (
-            <Box>
-              <Button
-                sx={{ '&:hover': { backgroundColor: '#2E3A5217' } }}
-                onClick={handleShowEmptyPackageDialog}
-                data-testid="HowToUploadButton"
-              >
-                How to Upload API documentation?
-              </Button>
-              <EmptyPackageDialog/>
-            </Box>
-          ) : (
-            <>
-              <Link component={NavLink}
-                    to={getVersionPath({ packageKey: packageId!, versionKey: SPECIAL_VERSION_KEY, edit: true })}
-                    onClick={handleClick}
-                    data-testid="CreateVersionLink">
-                Create
-              </Link>
-              &nbsp;new<br/>{kind} version.
-            </>
-          )}
+          {kind === PACKAGE_KIND
+            ? (
+              <Box>
+                <Button
+                  sx={{ '&:hover': { backgroundColor: '#2E3A5217' } }}
+                  onClick={handleShowEmptyPackageDialog}
+                  data-testid="HowToUploadButton"
+                >
+                  How to Upload API documentation?
+                </Button>
+                <EmptyPackageDialog />
+              </Box>
+            )
+            : (
+              <>
+                <Link
+                  component={NavLink}
+                  to={getVersionPath({ packageKey: packageId!, versionKey: SPECIAL_VERSION_KEY, edit: true })}
+                  onClick={handleClick}
+                  data-testid="CreateVersionLink"
+                >
+                  Create
+                </Link>
+                &nbsp;new<br />
+                {kind} version.
+              </>
+            )}
         </Box>
       }
     />

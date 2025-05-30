@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-import type { FC, SyntheticEvent } from 'react'
-import * as React from 'react'
-import { memo } from 'react'
 import {
   Autocomplete,
   Box,
@@ -28,16 +25,19 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
+import type { FC, SyntheticEvent } from 'react'
+import * as React from 'react'
+import { memo } from 'react'
 import type { Control } from 'react-hook-form'
 import { Controller } from 'react-hook-form'
 import type { Operation, OperationData, OperationsData } from '../entities/operations'
-import { disableAutocompleteSearch } from '../utils/mui'
-import { DEFAULT_DEBOUNCE } from '../utils/constants'
 import type { IsLoading } from '../utils/aliases'
-import type { TestableProps } from './Testable'
-import { OperationOptionItem } from './OperationOptionItem'
+import { DEFAULT_DEBOUNCE } from '../utils/constants'
+import { disableAutocompleteSearch } from '../utils/mui'
 import { DialogForm } from './DialogForm'
+import { OperationOptionItem } from './OperationOptionItem'
 import { Swapper } from './Swapper'
+import type { TestableProps } from './Testable'
 
 export type CompareOperationPathsDialogFormData = {
   originalOperation: OperationData | null
@@ -99,7 +99,7 @@ export const CompareOperationPathsDialogForm: FC<CompareOperationPathsDialogForm
         />
 
         <Box sx={{ gridArea: 'swapper', alignSelf: 'center' }}>
-          <Swapper onSwap={onSwap}/>
+          <Swapper onSwap={onSwap} />
         </Box>
 
         <Typography variant="button" sx={{ gridArea: 'changedTitle' }}>
@@ -157,12 +157,14 @@ const OperationController: FC<OperationControllerProps> = memo<OperationControll
           options={options}
           getOptionLabel={({ title }: Operation) => title}
           isOptionEqualToValue={(option, value) => option.operationKey === value.operationKey}
-          renderOption={(props, operation) => <OperationOptionItem
-            key={`operation-controller-autocomplete-${operation.operationKey}`}
-            props={props}
-            operation={operation}
-          />}
-          renderInput={(params) => <TextField {...params} required label="Operation"/>}
+          renderOption={(props, operation) => (
+            <OperationOptionItem
+              key={`operation-controller-autocomplete-${operation.operationKey}`}
+              props={props}
+              operation={operation}
+            />
+          )}
+          renderInput={(params) => <TextField {...params} required label="Operation" />}
           onChange={(_, value) => onChange(value)}
           data-testid={testId}
         />

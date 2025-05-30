@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { Package } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
+import { usePackage } from '../../usePackage'
 import { usePackageSearchParam } from '../../usePackageSearchParam'
 import { useVersionSearchParam } from '../../useVersionSearchParam'
-import { usePackage } from '../../usePackage'
 import { useApiTypeSearchParam } from './useApiTypeSearchParam'
-import type { Package } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 
 export type ComparisonParams = Partial<{
   originPackage: Package | null
@@ -53,6 +53,16 @@ export function useComparisonParams(): ComparisonParams {
       changedPackageKey: changedPackageKey,
       changedVersionKey: changedVersionKey,
       apiType: (apiType ?? apiTypeAsSearchParam) as ApiType,
-    }), [apiType, apiTypeAsSearchParam, changedPackage, changedPackageKey, changedVersionKey, originPackage, originPackageKey, originVersionKey],
+    }),
+    [
+      apiType,
+      apiTypeAsSearchParam,
+      changedPackage,
+      changedPackageKey,
+      changedVersionKey,
+      originPackage,
+      originPackageKey,
+      originVersionKey,
+    ],
   )
 }

@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, StrictMode, useState } from 'react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { CssBaseline, ThemeProvider } from '@mui/material'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { RouterProvider } from 'react-router-dom'
-import { useLocation } from 'react-use'
-import { isTokenExpired } from '@netcracker/qubership-apihub-ui-shared/entities/token-payload'
-import { getToken } from '@netcracker/qubership-apihub-ui-shared/utils/storages'
-import { useAuthorization } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
-import { theme } from '@netcracker/qubership-apihub-ui-shared/themes/theme'
 import { ErrorHandler } from '@apihub/components/ErrorHandler'
 import { EventBusProvider } from '@apihub/routes/EventBusProvider'
 import { router } from '@apihub/routes/Router'
+import { CssBaseline, ThemeProvider } from '@mui/material'
+import { isTokenExpired } from '@netcracker/qubership-apihub-ui-shared/entities/token-payload'
+import { useAuthorization } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
 import { AuthPage } from '@netcracker/qubership-apihub-ui-shared/pages/AuthPage'
+import { theme } from '@netcracker/qubership-apihub-ui-shared/themes/theme'
+import { getToken } from '@netcracker/qubership-apihub-ui-shared/utils/storages'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import type { FC } from 'react'
+import { memo, StrictMode, useState } from 'react'
+import { RouterProvider } from 'react-router-dom'
+import { useLocation } from 'react-use'
 
 const client = new QueryClient({
   defaultOptions: {
@@ -51,14 +51,14 @@ export const App: FC = memo(() => {
     <StrictMode>
       <QueryClientProvider client={client}>
         <ThemeProvider theme={theme}>
-          <CssBaseline/>
+          <CssBaseline />
           <ErrorHandler>
             <EventBusProvider>
-              {auth || isLoginPage ? <RouterProvider router={router}/> : <AuthPage/>}
+              {auth || isLoginPage ? <RouterProvider router={router} /> : <AuthPage />}
             </EventBusProvider>
           </ErrorHandler>
         </ThemeProvider>
-        <ReactQueryDevtools initialIsOpen={false}/>
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </StrictMode>
   )

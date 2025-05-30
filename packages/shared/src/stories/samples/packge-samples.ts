@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { READ_PERMISSION } from '../../entities/package-permissions'
 import type { Packages } from '../../entities/packages'
 import { PACKAGE_KIND } from '../../entities/packages'
-import { READ_PERMISSION } from '../../entities/package-permissions'
 
 export const PACKAGE_OPTIONS: Packages = [
   {

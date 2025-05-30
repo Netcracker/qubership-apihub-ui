@@ -15,8 +15,8 @@
  */
 
 import { mergeTypeDefs } from '@graphql-tools/merge'
-import { print } from 'graphql'
 import type { SpecRaw } from '@netcracker/qubership-apihub-ui-shared/entities/specs'
+import { print } from 'graphql'
 import { useMemo } from 'react'
 
 export function useMergedGraphQlSpec(options: {

@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
+import { Box, List, ListItem, ListItemButton, ListItemText, Tooltip } from '@mui/material'
+import { RedWarningIcon, YellowWarningIcon } from '@netcracker/qubership-apihub-ui-shared/icons/WarningIcon'
+import { isNotEmptyMap, isNotEmptySet } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import type { FC } from 'react'
 import * as React from 'react'
 import { memo } from 'react'
-import { useActiveTabConfigureDashboard, useSetActiveTabConfigureDashboard } from './ConfigureDashboardSubPage'
+import { useParams } from 'react-router-dom'
+import { useConflictedReferences } from '../useConflictedReferences'
+import { useDeletedReferences } from '../useDeletedReferences'
 import type { ConfigureDashboardNavItemProps } from './configure-dashboard'
 import { PACKAGES_CONFIGURE_DASHBOARD_TAB } from './configure-dashboard'
-import { Box, List, ListItem, ListItemButton, ListItemText, Tooltip } from '@mui/material'
-import { useParams } from 'react-router-dom'
-import { useDeletedReferences } from '../useDeletedReferences'
-import { useConflictedReferences } from '../useConflictedReferences'
-import { isNotEmptyMap, isNotEmptySet } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import { RedWarningIcon, YellowWarningIcon } from '@netcracker/qubership-apihub-ui-shared/icons/WarningIcon'
+import { useActiveTabConfigureDashboard, useSetActiveTabConfigureDashboard } from './ConfigureDashboardSubPage'
 
 export const ConfigureDashboardNavigation: FC = memo(() => {
   const activeTab = useActiveTabConfigureDashboard()
@@ -37,7 +37,7 @@ export const ConfigureDashboardNavigation: FC = memo(() => {
 
   return (
     <List>
-      {CONFIGURE_DASHBOARD_SIDEBAR.map(({ id, title, testId }) =>
+      {CONFIGURE_DASHBOARD_SIDEBAR.map(({ id, title, testId }) => (
         <ListItem
           key={`configure-dashboard-navigation-list-item-${id}-${title}`}
           sx={{ p: 0 }}
@@ -52,28 +52,35 @@ export const ConfigureDashboardNavigation: FC = memo(() => {
             onClick={() => setActiveTab(id)}
             data-testid={testId}
           >
-            <ListItemText primary={
-              <Box display="flex">
-                {title}
-                <Box ml="5px" display="flex">
-                  {id === PACKAGES_CONFIGURE_DASHBOARD_TAB && isNotEmptySet(conflictedReferences) &&
-                    <Tooltip title="There are conflicts in dashboard configuration" placement="right">
-                      <Box data-testid="ConflictAlert">
-                        <YellowWarningIcon/>
-                      </Box>
-                    </Tooltip>}
-                  {id === PACKAGES_CONFIGURE_DASHBOARD_TAB && isNotEmptyMap(deletedReferences) &&
-                    <Tooltip title="Some included package/dashboard versions no longer exist" placement="right">
-                      <Box data-testid="NotExistAlert">
-                        <RedWarningIcon/>
-                      </Box>
-                    </Tooltip>}
+            <ListItemText
+              primary={
+                <Box display="flex">
+                  {title}
+                  <Box ml="5px" display="flex">
+                    {id === PACKAGES_CONFIGURE_DASHBOARD_TAB && isNotEmptySet(conflictedReferences)
+                      && (
+                        <Tooltip title="There are conflicts in dashboard configuration" placement="right">
+                          <Box data-testid="ConflictAlert">
+                            <YellowWarningIcon />
+                          </Box>
+                        </Tooltip>
+                      )}
+                    {id === PACKAGES_CONFIGURE_DASHBOARD_TAB && isNotEmptyMap(deletedReferences)
+                      && (
+                        <Tooltip title="Some included package/dashboard versions no longer exist" placement="right">
+                          <Box data-testid="NotExistAlert">
+                            <RedWarningIcon />
+                          </Box>
+                        </Tooltip>
+                      )}
+                  </Box>
                 </Box>
-              </Box>
-            } primaryTypographyProps={{ sx: { mt: 1 } }}/>
+              }
+              primaryTypographyProps={{ sx: { mt: 1 } }}
+            />
           </ListItemButton>
-        </ListItem>,
-      )}
+        </ListItem>
+      ))}
     </List>
   )
 })

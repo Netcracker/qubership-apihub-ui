@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { Key } from './keys'
 import type { Url } from '../types/url'
+import type { Key } from './keys'
 
 export const USER = 'user'
 export const API_KEY = 'apiKey'

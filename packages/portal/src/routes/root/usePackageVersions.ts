@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-import { useMutation } from '@tanstack/react-query'
-import { useShowErrorNotification, useShowSuccessNotification } from './BasePage/Notification'
-import type { PackageVersionDto } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
 import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import type { PackageVersionDto } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
 import {
-  deletePackageVersion, editPackageVersion,
+  deletePackageVersion,
+  editPackageVersion,
   useInvalidatePackageVersions,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
+import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { useMutation } from '@tanstack/react-query'
+import { useShowErrorNotification, useShowSuccessNotification } from './BasePage/Notification'
 
 type DeletePackageVersion = (data: DeletePackageVersionData) => void
 type DeletePackageVersionData = { packageKey: Key; versionId: Key }

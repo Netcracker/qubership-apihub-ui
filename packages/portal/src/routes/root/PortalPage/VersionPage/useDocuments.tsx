@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import { useQuery } from '@tanstack/react-query'
-import { useVersionWithRevision } from '../../useVersionWithRevision'
-import { generatePath } from 'react-router-dom'
 import type { Documents, DocumentsDto } from '@apihub/entities/documents'
 import { toDocuments } from '@apihub/entities/documents'
-import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { portalRequestJson } from '@apihub/utils/requests'
-import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
+import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { useQuery } from '@tanstack/react-query'
+import { generatePath } from 'react-router-dom'
+import { useVersionWithRevision } from '../../useVersionWithRevision'
 
 const DOCUMENTS_QUERY_KEY = 'documents-query-key'
 
@@ -34,12 +34,14 @@ export type DocumentsQueryState = {
   isInitialLoading: IsLoading
 }
 
-export function useDocuments(options: Partial<{
-  packageKey: Key
-  versionKey: Key
-  apiType: ApiType
-  enabled: boolean
-}>): DocumentsQueryState {
+export function useDocuments(
+  options: Partial<{
+    packageKey: Key
+    versionKey: Key
+    apiType: ApiType
+    enabled: boolean
+  }>,
+): DocumentsQueryState {
   const { packageKey, versionKey, apiType, enabled } = options
   const {
     fullVersion,

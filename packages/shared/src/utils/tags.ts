@@ -24,7 +24,6 @@ export function containsTag(
   tags: readonly string[] | undefined,
   tag?: string,
 ): boolean | undefined {
-
   return tags?.includes(tag ?? EMPTY_TAG)
 }
 

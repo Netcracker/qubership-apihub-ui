@@ -54,7 +54,8 @@ function getPublishDetails(router: PublishRouter): void {
       }
     }
 
-    if (publishDetail?.status !== RUNNING_PUBLISH_STATUS) { /* empty */ } else {
+    if (publishDetail?.status !== RUNNING_PUBLISH_STATUS) { /* empty */ }
+    else {
       setTimeout(() => {
         publishDetailMap[publishId] = {
           publishId: publishId,

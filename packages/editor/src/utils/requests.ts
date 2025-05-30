@@ -15,13 +15,11 @@
  */
 
 import type {
-  RequestJsonExtraOptions, RequestTextExtraOptions,
+  RequestJsonExtraOptions,
+  RequestTextExtraOptions,
   RequestVoidExtraOptions,
 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
-import {
-  API_V1,
-  requestJson, requestText, requestVoid,
-} from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import { API_V1, requestJson, requestText, requestVoid } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 
 export function editorRequestJson<T extends object | null>(
   input: RequestInfo | URL,

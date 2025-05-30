@@ -14,35 +14,35 @@
  * limitations under the License.
  */
 
-import type { FC, SyntheticEvent } from 'react'
-import * as React from 'react'
-import { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { useLocation } from 'react-use'
-import { useForm } from 'react-hook-form'
-import { useNavigate, useParams } from 'react-router-dom'
-import { useOperationGroups } from './useOperationGroups'
-import { useRefSearchParam } from '../useRefSearchParam'
-import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import { SHOW_COMPARE_REST_GROUPS_DIALOG } from '@apihub/routes/EventBusProvider'
 import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
-import {
-  GROUP_SEARCH_PARAM,
-  optionalSearchParams,
-  REF_SEARCH_PARAM,
-} from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { SHOW_COMPARE_REST_GROUPS_DIALOG } from '@apihub/routes/EventBusProvider'
 import type {
   CompareRestGroupsDialogData,
   CompareRestGroupsDialogFormData,
 } from '@netcracker/qubership-apihub-ui-shared/components/CompareRestGroupsDialogForm'
 import { CompareRestGroupsDialogForm } from '@netcracker/qubership-apihub-ui-shared/components/CompareRestGroupsDialogForm'
+import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
+import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
+import {
+  GROUP_SEARCH_PARAM,
+  optionalSearchParams,
+  REF_SEARCH_PARAM,
+} from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import type { FC, SyntheticEvent } from 'react'
+import * as React from 'react'
+import { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation } from 'react-use'
+import { useRefSearchParam } from '../useRefSearchParam'
+import { useOperationGroups } from './useOperationGroups'
 
 export const CompareRestGroupsDialog: FC = memo(() => {
   return (
     <PopupDelegate
       type={SHOW_COMPARE_REST_GROUPS_DIALOG}
-      render={props => <CompareRestGroupsPopup {...props}/>}
+      render={props => <CompareRestGroupsPopup {...props} />}
     />
   )
 })
@@ -64,19 +64,21 @@ const CompareRestGroupsPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen
   const onOriginalInputChange = useCallback((event: SyntheticEvent, value: string) => setOriginalInputValue(value), [])
   const onChangedInputChange = useCallback((event: SyntheticEvent, value: string) => setChangedInputValue(value), [])
 
-  return <CompareRestGroupsDialogForm
-    open={open}
-    setOpen={setOpen}
-    control={control}
-    originalGroupOptions={originalGroupOptions}
-    changedGroupOptions={changedGroupOptions}
-    onSwap={onSwap}
-    onSubmit={onSubmit}
-    isLoadingOriginalGroup={isLoadingOriginalGroup}
-    isLoadingChangedGroup={isLoadingChangedGroup}
-    onOriginalInputChange={onOriginalInputChange}
-    onChangedInputChange={onChangedInputChange}
-  />
+  return (
+    <CompareRestGroupsDialogForm
+      open={open}
+      setOpen={setOpen}
+      control={control}
+      originalGroupOptions={originalGroupOptions}
+      changedGroupOptions={changedGroupOptions}
+      onSwap={onSwap}
+      onSubmit={onSubmit}
+      isLoadingOriginalGroup={isLoadingOriginalGroup}
+      isLoadingChangedGroup={isLoadingChangedGroup}
+      onOriginalInputChange={onOriginalInputChange}
+      onChangedInputChange={onChangedInputChange}
+    />
+  )
 })
 
 function useData(
@@ -103,8 +105,14 @@ function useData(
 
   const [ref] = useRefSearchParam()
 
-  const currentGroupObject = useMemo(() => originalOperationGroups.find(({ groupName }) => groupName === currentGroup), [currentGroup, originalOperationGroups])
-  const previousGroupObject = useMemo(() => changedOperationGroups.find(({ groupName }) => groupName === previousGroup), [changedOperationGroups, previousGroup])
+  const currentGroupObject = useMemo(
+    () => originalOperationGroups.find(({ groupName }) => groupName === currentGroup),
+    [currentGroup, originalOperationGroups],
+  )
+  const previousGroupObject = useMemo(
+    () => changedOperationGroups.find(({ groupName }) => groupName === previousGroup),
+    [changedOperationGroups, previousGroup],
+  )
 
   const defaultValues = useMemo(() => ({
     originalGroup: previousGroupObject || null,
@@ -126,32 +134,49 @@ function useData(
     })
   }, [form])
 
-  const onSubmit = useMemo(() => form.handleSubmit(({ originalGroup, changedGroup }) => {
+  const onSubmit = useMemo(() =>
+    form.handleSubmit(({ originalGroup, changedGroup }) => {
+      const searchParams = optionalSearchParams({
+        [GROUP_SEARCH_PARAM]: { value: originalGroup?.groupName },
+        [REF_SEARCH_PARAM]: { value: ref ?? '' },
+      })
 
-    const searchParams = optionalSearchParams({
-      [GROUP_SEARCH_PARAM]: { value: originalGroup?.groupName },
-      [REF_SEARCH_PARAM]: { value: ref ?? '' },
-    })
+      setBackwardLocation({ ...backwardLocation, fromOperationsComparison: { pathname: pathname!, search: search! } })
+      navigate({
+        pathname: `/portal/packages/${defaultPackageKey}/${defaultVersionKey}/groups/${
+          encodeURIComponent(changedGroup?.groupName ?? '')
+        }/compare`,
+        search: `${searchParams}`,
+      })
 
-    setBackwardLocation({ ...backwardLocation, fromOperationsComparison: { pathname: pathname!, search: search! } })
-    navigate({
-      pathname: `/portal/packages/${defaultPackageKey}/${defaultVersionKey}/groups/${encodeURIComponent(changedGroup?.groupName ?? '')}/compare`,
-      search: `${searchParams}`,
-    })
-
-    setTimeout(() => setOpen(false), 1000)
-  }), [form, ref, setBackwardLocation, backwardLocation, pathname, search, navigate, defaultPackageKey, defaultVersionKey, setOpen])
+      setTimeout(() => setOpen(false), 1000)
+    }), [
+    form,
+    ref,
+    setBackwardLocation,
+    backwardLocation,
+    pathname,
+    search,
+    navigate,
+    defaultPackageKey,
+    defaultVersionKey,
+    setOpen,
+  ])
 
   const { originalGroup, changedGroup } = form.watch()
 
   const originalGroupOptions = useMemo(() => {
-    return originalOperationGroups.filter(({ groupName }) => groupName !== changedGroup?.groupName &&
-      (originalInputValue ? groupName.includes(originalInputValue) : true))
+    return originalOperationGroups.filter(({ groupName }) =>
+      groupName !== changedGroup?.groupName
+      && (originalInputValue ? groupName.includes(originalInputValue) : true)
+    )
   }, [originalOperationGroups, changedGroup?.groupName, originalInputValue])
 
   const changedGroupOptions = useMemo(() => {
-    return changedOperationGroups.filter(({ groupName }) => groupName !== originalGroup?.groupName &&
-      (changedInputValue ? groupName.includes(changedInputValue) : true))
+    return changedOperationGroups.filter(({ groupName }) =>
+      groupName !== originalGroup?.groupName
+      && (changedInputValue ? groupName.includes(changedInputValue) : true)
+    )
   }, [changedInputValue, changedOperationGroups, originalGroup?.groupName])
 
   return {

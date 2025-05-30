@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { useParams } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { CommitKey } from '@apihub/entities/commits'
 import { NONE_COMMIT_KEY } from '@apihub/entities/commits'
-import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { editorRequestText } from '@apihub/utils/requests'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { useQuery } from '@tanstack/react-query'
+import { useParams } from 'react-router-dom'
 
 const PROJECT_FILE_CONTENT_BY_BLOB_ID_QUERY_KEY = 'project-file-content-by-blob-id-query-key'
 

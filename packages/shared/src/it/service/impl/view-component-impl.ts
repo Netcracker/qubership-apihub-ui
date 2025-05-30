@@ -15,11 +15,10 @@
  */
 
 import type { ElementHandle } from 'puppeteer'
-import type { ViewComponent } from '../view-component'
 import { captureScreenshot } from '../storybook-functions'
+import type { ViewComponent } from '../view-component'
 
 export class ViewComponentImpl implements ViewComponent {
-
   constructor(
     private readonly _domElement: ElementHandle,
   ) {

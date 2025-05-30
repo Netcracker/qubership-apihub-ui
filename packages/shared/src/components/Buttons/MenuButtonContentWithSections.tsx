@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo } from 'react'
 import type { MenuItemProps } from '@mui/material'
 import { Box, MenuItem, Typography } from '@mui/material'
+import type { FC } from 'react'
+import { memo } from 'react'
 import type { TestableProps } from '../Testable'
 
 type SectionName = string
@@ -26,7 +26,9 @@ type ItemProps = MenuItemProps & TestableProps
 export type MenuButtonContentWithSectionsProps = {
   content: Record<SectionName, ItemProps[]>
 }
-export const MenuButtonContentWithSections: FC<MenuButtonContentWithSectionsProps> = memo<MenuButtonContentWithSectionsProps>(({ content }) => {
+export const MenuButtonContentWithSections: FC<MenuButtonContentWithSectionsProps> = memo<
+  MenuButtonContentWithSectionsProps
+>(({ content }) => {
   return (
     <>
       {Object.entries(content).map(([sectionName, items]) => (
@@ -43,7 +45,7 @@ export const MenuButtonContentWithSections: FC<MenuButtonContentWithSectionsProp
               {title}
             </MenuItem>
           ))}
-          <Box/>
+          <Box />
         </Box>
       ))}
     </>
@@ -57,4 +59,3 @@ const EXPORT_MENU_DELIMITER_STYLES = {
   lineHeight: '20px',
   padding: '8px',
 }
-

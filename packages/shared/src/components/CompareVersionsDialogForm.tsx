@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import type { FC, SyntheticEvent } from 'react'
-import * as React from 'react'
-import { memo, useState } from 'react'
+import { LoadingButton } from '@mui/lab'
 import {
   Autocomplete,
   Box,
@@ -30,20 +28,22 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
+import type { FC, SyntheticEvent } from 'react'
+import * as React from 'react'
+import { memo, useState } from 'react'
 import type { Control, UseFormSetValue } from 'react-hook-form'
 import { Controller } from 'react-hook-form'
-import { LoadingButton } from '@mui/lab'
-import { DialogForm } from './DialogForm'
 import type { Package } from '../entities/packages'
-import { DEFAULT_DEBOUNCE } from '../utils/constants'
 import type { PackageVersion } from '../entities/versions'
+import { DEFAULT_DEBOUNCE } from '../utils/constants'
 import { disableAutocompleteSearch } from '../utils/mui'
 import { getSplittedVersionKey } from '../utils/versions'
 import { CustomChip } from './CustomChip'
-import { VersionTitle } from './Titles/VersionTitle'
+import { DialogForm } from './DialogForm'
 import { Swapper } from './Swapper'
+import { VersionTitle } from './Titles/VersionTitle'
 
-//todo need retest (without nested value)
+// todo need retest (without nested value)
 export type CompareVersionsDialogFormData = {
   originalWorkspace: Package | null
   changedWorkspace: Package | null
@@ -134,54 +134,55 @@ export const CompareVersionsDialogForm: FC<CompareVersionsDialogFormProps> = mem
           Previous
         </Typography>
 
-        {packageMode &&
-          <>
-            <Controller
-              name="originalWorkspace"
-              control={control}
-              render={({ field: { value, onChange } }) => (
-                <Autocomplete
-                  sx={{ gridArea: 'originalWorkspace' }}
-                  value={value}
-                  options={workspaces}
-                  isOptionEqualToValue={(option, value) => option.key === value.key}
-                  getOptionLabel={({ name }: Package) => name}
-                  renderOption={(props, { key, name }) => <ListItem {...props} key={key}>{name}</ListItem>}
-                  renderInput={(params) => <TextField {...params} required label="Workspace"/>}
-                  onChange={(_, value) => {
-                    setValue('originalPackage', null)
-                    setValue('originalVersion', null)
-                    onChange(value)
-                  }}
-                  data-testid="PreviousWorkspaceAutocomplete"
-                />
-              )}
-            />
-            <Controller
-              name="originalPackage"
-              control={control}
-              render={({ field: { value, onChange } }) => (
-                <Autocomplete
-                  autoSelect
-                  filterOptions={disableAutocompleteSearch}
-                  onInputChange={debounce(onOriginalPackageInputChange, DEFAULT_DEBOUNCE)}
-                  sx={{ gridArea: 'originalPackage' }}
-                  value={value}
-                  loading={isOriginalPackagesLoading}
-                  options={originalPackageOptions}
-                  getOptionLabel={({ name }: Package) => name}
-                  renderOption={(props, { key, name }) => <ListItem {...props} key={key}>{name}</ListItem>}
-                  renderInput={(params) => <TextField {...params} required label={packageFieldLabel}/>}
-                  onChange={(_, value) => {
-                    setValue('originalVersion', null)
-                    onChange(value)
-                  }}
-                  data-testid="PreviousPackageAutocomplete"
-                />
-              )}
-            />
-          </>
-        }
+        {packageMode
+          && (
+            <>
+              <Controller
+                name="originalWorkspace"
+                control={control}
+                render={({ field: { value, onChange } }) => (
+                  <Autocomplete
+                    sx={{ gridArea: 'originalWorkspace' }}
+                    value={value}
+                    options={workspaces}
+                    isOptionEqualToValue={(option, value) => option.key === value.key}
+                    getOptionLabel={({ name }: Package) => name}
+                    renderOption={(props, { key, name }) => <ListItem {...props} key={key}>{name}</ListItem>}
+                    renderInput={(params) => <TextField {...params} required label="Workspace" />}
+                    onChange={(_, value) => {
+                      setValue('originalPackage', null)
+                      setValue('originalVersion', null)
+                      onChange(value)
+                    }}
+                    data-testid="PreviousWorkspaceAutocomplete"
+                  />
+                )}
+              />
+              <Controller
+                name="originalPackage"
+                control={control}
+                render={({ field: { value, onChange } }) => (
+                  <Autocomplete
+                    autoSelect
+                    filterOptions={disableAutocompleteSearch}
+                    onInputChange={debounce(onOriginalPackageInputChange, DEFAULT_DEBOUNCE)}
+                    sx={{ gridArea: 'originalPackage' }}
+                    value={value}
+                    loading={isOriginalPackagesLoading}
+                    options={originalPackageOptions}
+                    getOptionLabel={({ name }: Package) => name}
+                    renderOption={(props, { key, name }) => <ListItem {...props} key={key}>{name}</ListItem>}
+                    renderInput={(params) => <TextField {...params} required label={packageFieldLabel} />}
+                    onChange={(_, value) => {
+                      setValue('originalVersion', null)
+                      onChange(value)
+                    }}
+                    data-testid="PreviousPackageAutocomplete"
+                  />
+                )}
+              />
+            </>
+          )}
 
         <Controller
           name="originalVersion"
@@ -210,11 +211,11 @@ export const CompareVersionsDialogForm: FC<CompareVersionsDialogFormProps> = mem
                           showTooltip={false}
                         />
                       </ListItemText>
-                      <CustomChip value={status}/>
+                      <CustomChip value={status} />
                     </ListItem>
                   )
                 }}
-                renderInput={(params) => <TextField {...params} required label="Version"/>}
+                renderInput={(params) => <TextField {...params} required label="Version" />}
                 onChange={(_, value) => onChange(value)}
                 data-testid="PreviousVersionAutocomplete"
               />
@@ -225,7 +226,7 @@ export const CompareVersionsDialogForm: FC<CompareVersionsDialogFormProps> = mem
         <Box
           sx={{ gridArea: 'swapper', alignSelf: 'center' }}
         >
-          <Swapper onSwap={onSwap}/>
+          <Swapper onSwap={onSwap} />
         </Box>
 
         <Typography
@@ -235,54 +236,55 @@ export const CompareVersionsDialogForm: FC<CompareVersionsDialogFormProps> = mem
           Current
         </Typography>
 
-        {packageMode &&
-          <>
-            <Controller
-              name="changedWorkspace"
-              control={control}
-              render={({ field: { value, onChange } }) => (
-                <Autocomplete
-                  sx={{ gridArea: 'changedWorkspace' }}
-                  value={value}
-                  options={workspaces}
-                  isOptionEqualToValue={(option, value) => option.key === value.key}
-                  getOptionLabel={({ name }: Package) => name}
-                  renderOption={(props, { key, name }) => <ListItem {...props} key={key}>{name}</ListItem>}
-                  renderInput={(params) => <TextField {...params} required label="Workspace"/>}
-                  onChange={(_, value) => {
-                    setValue('changedPackage', null)
-                    setValue('changedVersion', null)
-                    onChange(value)
-                  }}
-                  data-testid="CurrentWorkspaceAutocomplete"
-                />
-              )}
-            />
-            <Controller
-              name="changedPackage"
-              control={control}
-              render={({ field: { value, onChange } }) => (
-                <Autocomplete
-                  autoSelect
-                  filterOptions={disableAutocompleteSearch}
-                  onInputChange={debounce(onChangedPackageInputChange, DEFAULT_DEBOUNCE)}
-                  sx={{ gridArea: 'changedPackage' }}
-                  value={value}
-                  loading={isChangedPackagesLoading}
-                  options={changedPackageOptions}
-                  getOptionLabel={({ name }: Package) => name}
-                  renderOption={(props, { key, name }) => <ListItem {...props} key={key}>{name}</ListItem>}
-                  renderInput={(params) => <TextField {...params} required label={packageFieldLabel}/>}
-                  onChange={(_, value) => {
-                    setValue('changedVersion', null)
-                    onChange(value)
-                  }}
-                  data-testid="CurrentPackageAutocomplete"
-                />
-              )}
-            />
-          </>
-        }
+        {packageMode
+          && (
+            <>
+              <Controller
+                name="changedWorkspace"
+                control={control}
+                render={({ field: { value, onChange } }) => (
+                  <Autocomplete
+                    sx={{ gridArea: 'changedWorkspace' }}
+                    value={value}
+                    options={workspaces}
+                    isOptionEqualToValue={(option, value) => option.key === value.key}
+                    getOptionLabel={({ name }: Package) => name}
+                    renderOption={(props, { key, name }) => <ListItem {...props} key={key}>{name}</ListItem>}
+                    renderInput={(params) => <TextField {...params} required label="Workspace" />}
+                    onChange={(_, value) => {
+                      setValue('changedPackage', null)
+                      setValue('changedVersion', null)
+                      onChange(value)
+                    }}
+                    data-testid="CurrentWorkspaceAutocomplete"
+                  />
+                )}
+              />
+              <Controller
+                name="changedPackage"
+                control={control}
+                render={({ field: { value, onChange } }) => (
+                  <Autocomplete
+                    autoSelect
+                    filterOptions={disableAutocompleteSearch}
+                    onInputChange={debounce(onChangedPackageInputChange, DEFAULT_DEBOUNCE)}
+                    sx={{ gridArea: 'changedPackage' }}
+                    value={value}
+                    loading={isChangedPackagesLoading}
+                    options={changedPackageOptions}
+                    getOptionLabel={({ name }: Package) => name}
+                    renderOption={(props, { key, name }) => <ListItem {...props} key={key}>{name}</ListItem>}
+                    renderInput={(params) => <TextField {...params} required label={packageFieldLabel} />}
+                    onChange={(_, value) => {
+                      setValue('changedVersion', null)
+                      onChange(value)
+                    }}
+                    data-testid="CurrentPackageAutocomplete"
+                  />
+                )}
+              />
+            </>
+          )}
 
         <Controller
           name="changedVersion"
@@ -311,11 +313,11 @@ export const CompareVersionsDialogForm: FC<CompareVersionsDialogFormProps> = mem
                           showTooltip={false}
                         />
                       </ListItemText>
-                      <CustomChip value={status}/>
+                      <CustomChip value={status} />
                     </ListItem>
                   )
                 }}
-                renderInput={(params) => <TextField {...params} required label="Version"/>}
+                renderInput={(params) => <TextField {...params} required label="Version" />}
                 onChange={(_, value) => onChange(value)}
                 data-testid="CurrentVersionAutocomplete"
               />

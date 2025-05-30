@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
+import type { Document } from '@apihub/entities/documents'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import { Accordion, AccordionDetails, AccordionSummary, Typography } from '@mui/material'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { FC } from 'react'
 import React, { useCallback, useState } from 'react'
-import { Accordion, AccordionDetails, AccordionSummary, Typography } from '@mui/material'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import { OperationsFilterByDocument } from './OperationsFilterByDocument'
 import { useRefSearchParam } from '../../useRefSearchParam'
 import { useDocumentSearchParam } from '../useDocumentSearchParam'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { Document } from '@apihub/entities/documents'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { OperationsFilterByDocument } from './OperationsFilterByDocument'
 
 export type OperationsFilterPanelProps = {
   packageKey: Key
@@ -53,7 +53,7 @@ export const OperationsFilterPanel: FC<OperationsFilterPanelProps> = (props) => 
     <Accordion expanded={expanded} onChange={() => setExpanded(!expanded)}>
       <AccordionSummary
         sx={ACCORDION_SUMMARY_STYLE}
-        expandIcon={<ExpandMoreIcon/>}
+        expandIcon={<ExpandMoreIcon />}
         data-testid="FiltersAccordionButton"
       >
         <Typography width="100%" noWrap variant="button">

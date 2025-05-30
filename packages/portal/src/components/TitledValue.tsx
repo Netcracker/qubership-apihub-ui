@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import { Box, Typography } from '@mui/material'
+import type { Theme } from '@mui/material/styles'
+import type { SxProps } from '@mui/system'
+import type { TestableProps } from '@netcracker/qubership-apihub-ui-shared/components/Testable'
 import type { FC, ReactNode } from 'react'
 import { memo } from 'react'
-import { Box, Typography } from '@mui/material'
-import type { SxProps } from '@mui/system'
-import type { Theme } from '@mui/material/styles'
-import type { TestableProps } from '@netcracker/qubership-apihub-ui-shared/components/Testable'
 
 export type TitledValueProps = { sx?: SxProps<Theme> } & {
   title: string
@@ -27,8 +27,10 @@ export type TitledValueProps = { sx?: SxProps<Theme> } & {
 } & TestableProps
 
 export const TitledValue: FC<TitledValueProps> = memo<TitledValueProps>(({ title, value, sx, testId }) => {
-  return <Box sx={sx}>
-    <Typography noWrap variant="subtitle2">{title}</Typography>
-    <Typography noWrap variant="body2" data-testid={testId}>{value}</Typography>
-  </Box>
+  return (
+    <Box sx={sx}>
+      <Typography noWrap variant="subtitle2">{title}</Typography>
+      <Typography noWrap variant="body2" data-testid={testId}>{value}</Typography>
+    </Box>
+  )
 })

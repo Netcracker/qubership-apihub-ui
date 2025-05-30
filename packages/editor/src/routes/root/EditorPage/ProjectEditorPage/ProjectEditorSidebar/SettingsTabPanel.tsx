@@ -17,15 +17,14 @@
 import type { FC } from 'react'
 import { memo } from 'react'
 
-import { useIsSettingsProjectEditorMode } from '../useProjectEditorMode'
-import { Box, List, ListItemButton, ListItemText, Typography } from '@mui/material'
-import { useSettingSearchParam } from '../useSettingSearchParam'
 import { SidebarTabPanel } from '@apihub/components/SidebarTabPanel'
 import { SETTINGS_PROJECT_EDITOR_MODE } from '@apihub/entities/editor-modes'
+import { Box, List, ListItemButton, ListItemText, Typography } from '@mui/material'
+import { useIsSettingsProjectEditorMode } from '../useProjectEditorMode'
+import { useSettingSearchParam } from '../useSettingSearchParam'
 
 export const GENERAL_SETTINGS_TAB = 'general'
-export type SettingsTab =
-  | typeof GENERAL_SETTINGS_TAB
+export type SettingsTab = typeof GENERAL_SETTINGS_TAB
 
 export const SettingsTabPanel: FC = memo(() => {
   const [selectedSetting, setSelectedSetting] = useSettingSearchParam()
@@ -51,8 +50,8 @@ export const SettingsTabPanel: FC = memo(() => {
             sx={{ justifyContent: 'center' }}
           >
             <Box>
-              <ListItemText primary="General"/>
-              <ListItemText primary="Project information" primaryTypographyProps={{ color: '#626D82' }}/>
+              <ListItemText primary="General" />
+              <ListItemText primary="Project information" primaryTypographyProps={{ color: '#626D82' }} />
             </Box>
           </ListItemButton>
         </List>

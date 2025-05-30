@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { SearchResultsDto } from './types'
 import { DRAFT_VERSION_STATUS, RELEASE_VERSION_STATUS } from '../packages/version-statuses'
+import type { SearchResultsDto } from './types'
 
 export const PACKAGES_SEARCH_RESULT: SearchResultsDto = {
   packages: [
@@ -32,7 +32,15 @@ export const PACKAGES_SEARCH_RESULT: SearchResultsDto = {
     {
       packageId: 'group',
       name: 'Service with extra looooooong looooooong  looooooong name',
-      parentPackages: ['Workspace', 'Parent Group 1', 'Parent Group 2', 'Parent Group 3', 'Parent Group 4', 'Parent Group 5', 'Parent Group 6'],
+      parentPackages: [
+        'Workspace',
+        'Parent Group 1',
+        'Parent Group 2',
+        'Parent Group 3',
+        'Parent Group 4',
+        'Parent Group 5',
+        'Parent Group 6',
+      ],
       version: '2.6',
       status: DRAFT_VERSION_STATUS,
       createdAt: '2022-03-25T07:02:00.943324181+03:00',
@@ -42,7 +50,15 @@ export const PACKAGES_SEARCH_RESULT: SearchResultsDto = {
     {
       packageId: 'group-3',
       name: 'Service 3',
-      parentPackages: ['Workspace', 'Parent Group 1', 'Parent Group 2', 'Parent Group 3', 'Parent Group 4', 'Parent Group 5', 'Parent Group 6'],
+      parentPackages: [
+        'Workspace',
+        'Parent Group 1',
+        'Parent Group 2',
+        'Parent Group 3',
+        'Parent Group 4',
+        'Parent Group 5',
+        'Parent Group 6',
+      ],
       version: '2.2',
       status: RELEASE_VERSION_STATUS,
       createdAt: '2022-03-25T07:02:00.943324181+03:00',

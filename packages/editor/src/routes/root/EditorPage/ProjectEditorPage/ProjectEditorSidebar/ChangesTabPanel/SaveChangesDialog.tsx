@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useEffect, useState } from 'react'
+import { LoadingButton } from '@mui/lab'
 import {
   Alert,
   Button,
@@ -27,16 +26,17 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
+import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
+import type { FC } from 'react'
+import { memo, useEffect, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 import { useEvent } from 'react-use'
 import type { SaveChangesDialogDetail } from '../../../../../EventBusProvider'
 import { SHOW_SAVE_CHANGES_DIALOG } from '../../../../../EventBusProvider'
-import { Controller, useForm } from 'react-hook-form'
-import { LoadingButton } from '@mui/lab'
+import { useIsBranchExists } from '../../../../useBranches'
 import { useConnectedUsers } from '../../BranchEditingWebSocketProvider'
 import type { SaveChangesDetail } from '../../useSaveChanges'
 import { useSaveChanges } from '../../useSaveChanges'
-import { useIsBranchExists } from '../../../../useBranches'
-import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 
 export const SaveChangesDialog: FC = memo(() => {
   const [open, setOpen] = useState(false)
@@ -59,8 +59,12 @@ export const SaveChangesDialog: FC = memo(() => {
   const users = useConnectedUsers()
   const isNewBranchAlreadyExists = useIsBranchExists(watch().newBranchName)
 
-  useEffect(() => {!isLoading && setOpen(false)}, [isLoading])
-  useEffect(() => {!open && reset()}, [open, reset])
+  useEffect(() => {
+    !isLoading && setOpen(false)
+  }, [isLoading])
+  useEffect(() => {
+    !open && reset()
+  }, [open, reset])
 
   return (
     <DialogForm
@@ -73,16 +77,16 @@ export const SaveChangesDialog: FC = memo(() => {
       </DialogTitle>
 
       <DialogContent sx={{ width: 440 }}>
-        {
-          users.length > 1 && <Alert
+        {users.length > 1 && (
+          <Alert
             sx={{ mb: 1 }}
             severity="warning"
           >
             Other users are editing the branch. All changes will be saved.
           </Alert>
-        }
-        {
-          saveToNewBranch && <>
+        )}
+        {saveToNewBranch && (
+          <>
             <Typography variant="subtitle1">
               Branch name
             </Typography>
@@ -94,13 +98,15 @@ export const SaveChangesDialog: FC = memo(() => {
                   alreadyExists: () => !isNewBranchAlreadyExists || 'Branch already exists',
                 },
               }}
-              render={({ field }) => <TextField
-                {...field}
-                required
-                label="New branch"
-                error={!!errors.newBranchName}
-                helperText={errors.newBranchName?.message}
-              />}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  required
+                  label="New branch"
+                  error={!!errors.newBranchName}
+                  helperText={errors.newBranchName?.message}
+                />
+              )}
             />
             <Controller
               name="createMergeRequest"
@@ -108,13 +114,13 @@ export const SaveChangesDialog: FC = memo(() => {
               render={({ field }) => (
                 <FormControlLabel
                   {...field}
-                  control={<Checkbox/>}
+                  control={<Checkbox />}
                   label="Create merge request"
                 />
               )}
             />
           </>
-        }
+        )}
         <Typography variant="subtitle1">
           Commit message
         </Typography>
@@ -124,7 +130,8 @@ export const SaveChangesDialog: FC = memo(() => {
           render={({ field }) => (
             <TextField
               {...field}
-              multiline required
+              multiline
+              required
               autoComplete="on"
               rows="4"
               type="text"

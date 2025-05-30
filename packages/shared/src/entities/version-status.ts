@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import type { Key } from './keys'
 import type { PackagePermission } from './package-permissions'
 import {
   MANAGE_ARCHIVED_VERSION_PERMISSION,
   MANAGE_DRAFT_VERSION_PERMISSION,
   MANAGE_RELEASE_VERSION_PERMISSION,
 } from './package-permissions'
-import type { Key } from './keys'
 
 export const DRAFT_VERSION_STATUS = 'draft'
 export const RELEASE_VERSION_STATUS = 'release'

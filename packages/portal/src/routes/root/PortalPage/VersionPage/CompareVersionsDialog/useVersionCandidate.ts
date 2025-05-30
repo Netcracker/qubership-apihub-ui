@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { usePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
-import { useMemo } from 'react'
-import { generateVersionWithRevision } from './generateVersionWithRevision'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { PackageVersionContent } from '@netcracker/qubership-apihub-ui-shared/entities/version-contents'
 import type { PackageVersion } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
+import { usePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
+import { useMemo } from 'react'
+import { generateVersionWithRevision } from './generateVersionWithRevision'
 
 export function useVersionCandidate(option: {
   packageKey: Key | undefined
@@ -49,6 +49,5 @@ export function useVersionCandidate(option: {
       const { versionKey: currentVersionKey } = getSplittedVersionKey(versionKey)
       return isLatestRevision ? candidateVersionKey === currentVersionKey : key === versionKey
     })
-
   }, [isLatestRevision, versionKey, versionsCandidates])
 }

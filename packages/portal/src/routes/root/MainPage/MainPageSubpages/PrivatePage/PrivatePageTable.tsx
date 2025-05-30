@@ -15,25 +15,25 @@
  */
 
 import { Box, IconButton, Table, TableBody, TableContainer } from '@mui/material'
+import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
+import { ToolbarTitle } from '@netcracker/qubership-apihub-ui-shared/components/ToolbarTitle'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { isBoolean } from '@netcracker/qubership-apihub-ui-shared/utils/types'
 import type { FC } from 'react'
 import React, { memo, useMemo } from 'react'
-import { MainPageCard } from '../../MainPageCard'
+import type { ActivityHistoryQueryResult } from '../../../useActivityHistory'
+import { usePackageActivityHistory } from '../../../useActivityHistory'
+import { usePackage } from '../../../usePackage'
 import {
   useActivityHistoryFiltersContext,
   useSetActivityHistoryFiltersContext,
 } from '../../ActivityHistoryFiltersProvider'
-import type { ActivityHistoryQueryResult } from '../../../useActivityHistory'
-import { usePackageActivityHistory } from '../../../useActivityHistory'
 import { FavoriteIconButton } from '../../FavoriteIconButton'
-import { useFavorPackage } from '../../useFavorPackage'
-import { useDisfavorPackage } from '../../useDisfavorPackage'
-import { usePackage } from '../../../usePackage'
-import { ActivityHistoryCard } from '../ActivityHistoryCard'
+import { MainPageCard } from '../../MainPageCard'
 import { TableSkeleton } from '../../PackagesTable'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { isBoolean } from '@netcracker/qubership-apihub-ui-shared/utils/types'
-import { ToolbarTitle } from '@netcracker/qubership-apihub-ui-shared/components/ToolbarTitle'
-import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
+import { useDisfavorPackage } from '../../useDisfavorPackage'
+import { useFavorPackage } from '../../useFavorPackage'
+import { ActivityHistoryCard } from '../ActivityHistoryCard'
 
 type PrivatePageTable = {
   workspaceId: Key
@@ -69,9 +69,9 @@ export const PrivatePageTable: FC<PrivatePageTable> = memo(({ workspaceId, isIdL
             !isFavorite ? favorPackage(workspaceId) : disfavorPackage(workspaceId)
           }}
         >
-          {isBoolean(isFavorite) && <FavoriteIconButton isFavorite={isFavorite}/>}
+          {isBoolean(isFavorite) && <FavoriteIconButton isFavorite={isFavorite} />}
         </IconButton>
-        <ToolbarTitle value={workspace?.name}/>
+        <ToolbarTitle value={workspace?.name} />
       </Box>
     ),
     [disfavorPackage, favorPackage, isFavorite, workspace?.name, workspaceId],
@@ -87,7 +87,7 @@ export const PrivatePageTable: FC<PrivatePageTable> = memo(({ workspaceId, isIdL
         <TableContainer>
           <Table>
             <TableBody>
-              {isIdLoading && <TableSkeleton/>}
+              {isIdLoading && <TableSkeleton />}
             </TableBody>
           </Table>
         </TableContainer>
@@ -111,6 +111,3 @@ export const PrivatePageTable: FC<PrivatePageTable> = memo(({ workspaceId, isIdL
     </Box>
   )
 })
-
-
-

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { debounce } from '@mui/material'
 import type { RefObject } from 'react'
 import { useCallback, useEffect } from 'react'
-import { debounce } from '@mui/material'
 
 const WAITING_DEBOUNCE = 50
 

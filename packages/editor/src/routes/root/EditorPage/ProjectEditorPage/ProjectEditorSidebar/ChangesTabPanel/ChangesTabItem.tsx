@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
+import { Box, ListItem, ListItemIcon, ListItemText, MenuItem } from '@mui/material'
 import type { FC } from 'react'
 import { memo, useState } from 'react'
-import { Box, ListItem, ListItemIcon, ListItemText, MenuItem } from '@mui/material'
-import { useResetFile } from './useResetFile'
 import { useChangeSearchParam } from '../../../../useChangeSearchParam'
+import { useResetFile } from './useResetFile'
 
+import { FILES_PROJECT_EDITOR_MODE } from '@apihub/entities/editor-modes'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import WarningRoundedIcon from '@mui/icons-material/WarningRounded'
-import { useSetSelectedConflictedBlobKey } from '../../ConflictedBlobKeyProvider'
-import { useBranchConflicts } from '../../useBranchConflicts'
+import { MenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
 import type { ChangeStatus } from '@netcracker/qubership-apihub-ui-shared/entities/change-statuses'
 import {
   ADDED_CHANGE_STATUS,
@@ -33,10 +33,10 @@ import {
   STATUS_COLORS,
 } from '@netcracker/qubership-apihub-ui-shared/entities/change-statuses'
 import { useSetSearchParams } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSetSearchParams'
-import { FILES_PROJECT_EDITOR_MODE } from '@apihub/entities/editor-modes'
-import { getFileName } from '@netcracker/qubership-apihub-ui-shared/utils/files'
-import { MenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
 import { FileIcon } from '@netcracker/qubership-apihub-ui-shared/icons/FileIcon'
+import { getFileName } from '@netcracker/qubership-apihub-ui-shared/utils/files'
+import { useSetSelectedConflictedBlobKey } from '../../ConflictedBlobKeyProvider'
+import { useBranchConflicts } from '../../useBranchConflicts'
 
 export type ChangesTabItemProps = {
   fileId: string
@@ -91,7 +91,7 @@ export const ChangesTabItem: FC<ChangesTabItemProps> = memo<ChangesTabItemProps>
             height: 24,
           }}
           size="small"
-          icon={<MoreVertIcon sx={{ color: '#626D82' }} fontSize="small"/>}
+          icon={<MoreVertIcon sx={{ color: '#626D82' }} fontSize="small" />}
           onClick={event => {
             event.stopPropagation()
             setActionMenuOpen(true)
@@ -100,16 +100,18 @@ export const ChangesTabItem: FC<ChangesTabItemProps> = memo<ChangesTabItemProps>
           onClose={() => setActionMenuOpen(false)}
         >
           <Box>
-            <MenuItem onClick={() => setSearchParams({ file: fileId, mode: FILES_PROJECT_EDITOR_MODE })}>Edit
-              file</MenuItem>
-            {
-              RESETTABLE_STATUSES.includes(status!) && <MenuItem
-                onClick={() => resetFile(fileId)}>
+            <MenuItem onClick={() => setSearchParams({ file: fileId, mode: FILES_PROJECT_EDITOR_MODE })}>
+              Edit file
+            </MenuItem>
+            {RESETTABLE_STATUSES.includes(status!) && (
+              <MenuItem
+                onClick={() => resetFile(fileId)}
+              >
                 Reset to last saved
               </MenuItem>
-            }
-            {
-              conflictedBlobId && <MenuItem
+            )}
+            {conflictedBlobId && (
+              <MenuItem
                 onClick={() => {
                   setSelectedChangeKey(fileId)
                   setSelectedConflictedCommitKey(conflictedBlobId)
@@ -117,7 +119,7 @@ export const ChangesTabItem: FC<ChangesTabItemProps> = memo<ChangesTabItemProps>
               >
                 View conflict
               </MenuItem>
-            }
+            )}
           </Box>
         </MenuButton>
       }
@@ -137,11 +139,9 @@ export const ChangesTabItem: FC<ChangesTabItemProps> = memo<ChangesTabItemProps>
         >
           <Box display={'flex'}>
             <ListItemIcon sx={{ minWidth: 24 }}>
-              {
-                conflicts.includes(fileId)
-                  ? <WarningRoundedIcon fontSize="small" color="warning"/>
-                  : <FileIcon/>
-              }
+              {conflicts.includes(fileId)
+                ? <WarningRoundedIcon fontSize="small" color="warning" />
+                : <FileIcon />}
             </ListItemIcon>
             <ListItemText
               primary={getFileName(fileId)}
