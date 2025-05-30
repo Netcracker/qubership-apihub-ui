@@ -16,35 +16,24 @@
     "browser": true
   },
   "rules": {
-    "filenames/no-index": 2,
-    "camelcase": "error",
-    "comma-dangle": [
-      "error",
-      {
-        "arrays": "always-multiline",
-        "objects": "always-multiline",
-        "imports": "always-multiline",
-        "exports": "always-multiline",
-        "functions": "always-multiline"
-      }
-    ],
     "eol-last": [
-      "error",
+      "warn",
       "always"
     ],
+    "no-unexpected-multiline": "error",
+    "filenames/no-index": 2,
+    "camelcase": "error",
     "eqeqeq": [
       "error",
       "always"
     ],
     "no-confusing-arrow": "error",
     "no-useless-rename": "error",
-    "no-unexpected-multiline": "error",
     "no-case-declarations": "off",
     "object-shorthand": [
       "error",
       "consistent"
     ],
-    "operator-linebreak": "error",
     "prefer-arrow-callback": "error",
     "prefer-const": "error",
     "prefer-numeric-literals": "error",
@@ -52,14 +41,6 @@
     "prefer-spread": "error",
     "prefer-template": "error",
     "prefer-destructuring": "error",
-    "quotes": [
-      "error",
-      "single"
-    ],
-    "semi": [
-      "error",
-      "never"
-    ],
     "@typescript-eslint/consistent-type-imports": "error",
     "@typescript-eslint/member-delimiter-style": [
       "error",
@@ -68,10 +49,6 @@
           "delimiter": "none"
         }
       }
-    ],
-    "@typescript-eslint/semi": [
-      "error",
-      "never"
     ],
     "@typescript-eslint/explicit-member-accessibility": [
       "error",
@@ -117,20 +94,6 @@
         "browser": true
       },
       "rules": {
-        "indent": "off",
-        "@typescript-eslint/indent": [
-          "error",
-          2,
-          {
-            "FunctionExpression": {
-              "parameters": "first"
-            },
-            "SwitchCase": 1,
-            "ignoredNodes": [
-              "Decorator"
-            ]
-          }
-        ],
         "@typescript-eslint/array-type": "error"
       }
     },
@@ -142,16 +105,7 @@
       "parser": "jsonc-eslint-parser",
       "extends": [
         "plugin:jsonc/recommended-with-json"
-      ],
-      "rules": {
-        "indent": [
-          "error",
-          2
-        ],
-        "quotes": "off",
-        "comma-dangle": "off",
-        "@typescript-eslint/indent": "off"
-      }
+      ]
     },
     {
       "files": [
