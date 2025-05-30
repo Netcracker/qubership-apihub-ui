@@ -16,7 +16,7 @@ on:
       - "docs/**"
 
 jobs:
-  eslint-dprint:
+  eslint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -34,8 +34,13 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run ESLint check
-        continue-on-error: true
         run: npm run lint
+
+  dprint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Run Dprint check
         uses: dprint/check@v2.2
