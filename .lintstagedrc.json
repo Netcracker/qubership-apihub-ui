@@ -1,0 +1,4 @@
+{
+  "*.{ts,tsx,json,jsonc,yml,yaml}": ["eslint --fix", "dprint fmt"],
+  "*.{js,jsx,mjs,md,html,css,scss,less,graphql}": ["dprint fmt"]
+}
