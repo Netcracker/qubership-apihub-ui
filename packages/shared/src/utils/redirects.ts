@@ -65,3 +65,7 @@ export function getPackageRedirectDetails<P extends PackagePathPattern>(
     }
     : null
 }
+
+export function defaultRedirectUri(): string {
+  return location.pathname === '/login' ? location.origin : location.href
+}

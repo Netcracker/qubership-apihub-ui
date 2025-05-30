@@ -17,15 +17,17 @@
 import { useMutation } from '@tanstack/react-query'
 import { useSearchParam } from 'react-use'
 import type { IsError, IsLoading } from '../../../utils/aliases'
+import { SEARCH_PARAM_REDIRECT_URI } from '../../../utils/constants'
+import { defaultRedirectUri } from '../../../utils/redirects'
 import { API_V3, requestVoid } from '../../../utils/requests'
 
 export function useLoginUser(): [LoginUser, IsLoading, IsError] {
-  const redirectUri = useSearchParam('redirectUri')
+  const redirectUri = useSearchParam(SEARCH_PARAM_REDIRECT_URI)
 
   const { mutate, isLoading, isError } = useMutation<void, Error, Credentials>({
     mutationFn: credentials => loginUser(credentials),
     onSuccess: () => {
-      location.replace(redirectUri ?? location.origin)
+      location.replace(redirectUri ?? defaultRedirectUri())
     },
     onError: () => {
       console.error('Wrong credentials!')
