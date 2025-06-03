@@ -4,7 +4,7 @@ import { memo } from 'react'
 import type { ExternalIdentityProvider } from '../../../types/system-configuration'
 import { SESSION_STORAGE_KEY_LAST_IDENTITY_PROVIDER_ID } from '../../../utils/constants'
 import { redirectTo } from '../../../utils/redirects'
-import { defaultRedirectUri } from '../../../utils/redirects'
+import { getRedirectUri } from '../../../utils/redirects'
 import { optionalSearchParams } from '../../../utils/search-params'
 
 type ExternalAuthControlsProps = {
@@ -38,7 +38,7 @@ export const ExternalAuthControls: FC<ExternalAuthControlsProps> = memo(({ provi
               const { loginStartEndpoint } = idp
               if (loginStartEndpoint) {
                 localStorage.setItem(SESSION_STORAGE_KEY_LAST_IDENTITY_PROVIDER_ID, idp.id)
-                redirectTo(loginStartEndpoint, optionalSearchParams({ redirectUri: { value: defaultRedirectUri() } }))
+                redirectTo(loginStartEndpoint, optionalSearchParams({ redirectUri: { value: getRedirectUri() } }))
               }
             }}
           >

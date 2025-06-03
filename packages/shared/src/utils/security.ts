@@ -2,7 +2,7 @@ import type { QueryObserverResult, RefetchOptions, RefetchQueryFilters, UseMutat
 import type { IdentityProviderDto, SystemConfigurationDto } from '../types/system-configuration'
 import { isInternalIdentityProvider } from '../types/system-configuration'
 import { SEARCH_PARAM_NO_AUTO_LOGIN, SESSION_STORAGE_KEY_LAST_IDENTITY_PROVIDER_ID, SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION } from './constants'
-import { defaultRedirectUri, redirectTo, redirectToLogin } from './redirects'
+import { getRedirectUri, redirectTo, redirectToLogin } from './redirects'
 import { optionalSearchParams } from './search-params'
 import { stopThread } from './threads'
 
@@ -94,14 +94,14 @@ async function handleUnauthorizedByProvider(identityProvider: IdentityProviderDt
     // Parameter "redirectUri" is used to redirect when the user is not authenticated and token can't be refreshed
     // In that case we should redirect to the login page with its own "redirectUri"
     // which will be used after logging in via internal identity provider to redirect to the original page.
-    const searchParamsLoginPage = optionalSearchParams({ noAutoLogin: { value: true }, redirectUri: { value: defaultRedirectUri() } })
+    const searchParamsLoginPage = optionalSearchParams({ noAutoLogin: { value: true }, redirectUri: { value: getRedirectUri() } })
     const searchParamsAuthLocalRefresh = optionalSearchParams({ redirectUri: { value: `${location.origin}/login?${searchParamsLoginPage}` } })
     requestEndpoint = `${API_V3}/auth/local/refresh?${searchParamsAuthLocalRefresh}`
   } else if (identityProvider.loginStartEndpoint) {
     // In case of external identity provider, we don't have control over the redirections and we provide
     // just "redirectUri" with value of the current page OR main page (if current page is login page), 
     // because internal redirections will be managed by the backend and the provider.
-    const searchParamsAuthWithStartEndpoint = optionalSearchParams({ redirectUri: { value: defaultRedirectUri() } })
+    const searchParamsAuthWithStartEndpoint = optionalSearchParams({ redirectUri: { value: getRedirectUri() } })
     requestEndpoint = `${identityProvider.loginStartEndpoint}?${searchParamsAuthWithStartEndpoint}`
   } else {
     return TokenRefreshResults.NO_ENDPOINT

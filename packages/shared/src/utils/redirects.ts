@@ -16,7 +16,7 @@
 
 import type { PathMatch } from 'react-router'
 import { matchPath } from 'react-router-dom'
-import { SEARCH_PARAM_NO_AUTO_LOGIN } from './constants'
+import { SEARCH_PARAM_NO_AUTO_LOGIN, SEARCH_PARAM_REDIRECT_URI } from './constants'
 import type { FetchRedirectDetails } from './requests'
 import { API_BASE_PATH_PATTERN, FETCH_REDIRECT_TYPE_PACKAGE } from './requests'
 import { optionalSearchParams } from './search-params'
@@ -66,6 +66,14 @@ export function getPackageRedirectDetails<P extends PackagePathPattern>(
     : null
 }
 
-export function defaultRedirectUri(): string {
-  return location.pathname === '/login' ? location.origin : location.href
+export function getRedirectUri(): string {
+  const url = new URL(location.href)
+  const redirectUri = url.searchParams.get(SEARCH_PARAM_REDIRECT_URI)
+  if (redirectUri) {
+    return redirectUri
+  }
+  if (location.pathname === '/login') {
+    return location.origin
+  }
+  return location.href
 }
