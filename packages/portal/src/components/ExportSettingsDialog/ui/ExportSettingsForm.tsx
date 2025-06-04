@@ -60,9 +60,7 @@ const ExportSettingsFormFields: FC<ExportSettingsFormFieldsProps> = memo(props =
                       title={typeof option.tooltip === 'function' ? option.tooltip(exportConfig) : option.tooltip}
                       placement="right"
                     >
-                      <Box height={20}>
-                        <InfoContextIcon />
-                      </Box>
+                      <InfoContextIcon />
                     </Tooltip>
                   )}
                 </Box>
