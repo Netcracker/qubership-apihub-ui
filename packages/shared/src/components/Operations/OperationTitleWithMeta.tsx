@@ -52,32 +52,50 @@ export const OperationTitleWithMeta: FC<OperationTitleWithMetaProps> = memo<Oper
         subtitle: operation.path,
         type: operation.method,
       }
-    }
-    if (isGraphQlOperation(operation)) {
+    } else if (isGraphQlOperation(operation)) {
       return {
         title: operation.title,
         subtitle: operation.method,
         type: operation.type,
       }
+    } else {
+      throw new Error('Operation must be either a REST or GraphQL operation')
     }
-    throw new Error('Operation must be either a REST or GraphQL operation')
   }, [operation])
 
   const titleNode = link
-    ? <Typography noWrap variant="subtitle1">
-      <Link
-        component={NavLink}
-        to={link}
-        target={openLinkInNewTab ? '_blank' : '_self'}
-        onClick={(event) => {
-          event.stopPropagation()
-          onLinkClick?.()
+    ? (<Box
+      sx={{
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+      }}
+    >
+      <Typography noWrap variant="subtitle1">
+        <Link
+          component={NavLink}
+          to={link}
+          target={openLinkInNewTab ? '_blank' : '_self'}
+          onClick={(event) => {
+            event.stopPropagation()
+            onLinkClick?.()
+          }}
+        >
+          {title}
+        </Link>
+      </Typography>
+    </Box>
+    )
+    : (
+      <Box
+        sx={{
+          maxWidth: '90%',
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
         }}
       >
-        {title}
-      </Link>
-    </Typography>
-    : <Typography noWrap variant="inherit">{title}</Typography>
+        <Typography noWrap variant="inherit">{title}</Typography>
+      </Box>
+    )
 
   return (
     <Box display="flex" flexDirection="column" width="100%">
