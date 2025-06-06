@@ -433,6 +433,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       </DialogTitle>
 
       <DialogContent>
+        {isServiceNameExist && (
         <FormControl component="fieldset">
           <RadioGroup
             value={mode}
@@ -442,8 +443,9 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
             <FormControlLabel value="proxy" control={<Radio />} label="Use Agent Proxy" />
           </RadioGroup>
         </FormControl>
+        )}
 
-        {mode === 'proxy' && (
+        {(!isServiceNameExist || mode === 'proxy' && (
           <>
             <Typography>Server URL:</Typography>
 
@@ -469,8 +471,8 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
               render={renderSelectService}
             />
           </>
-        )}
-        {mode === 'custom' && (
+        ))}
+        {( !isServiceNameExist || mode === 'custom') && (
           <Controller
             name={CUSTOM_SERVER_URL_KEY}
             control={control}
