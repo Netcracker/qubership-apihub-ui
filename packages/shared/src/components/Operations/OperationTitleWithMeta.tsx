@@ -74,7 +74,7 @@ export const OperationTitleWithMeta: FC<OperationTitleWithMetaProps> = memo<Oper
           onLinkClick?.()
         }}
       >
-        {title}
+         {title}
       </Link>
     </Typography>
     : <Typography noWrap variant="inherit">{title}</Typography>
