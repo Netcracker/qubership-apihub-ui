@@ -39,12 +39,12 @@ import { LoadingButton } from '@mui/lab'
 import { Controller, useForm } from 'react-hook-form'
 import type { ControllerFieldState, ControllerRenderProps } from 'react-hook-form/dist/types/controller'
 import type { UseFormStateReturn } from 'react-hook-form/dist/types'
-import { usePackage } from '../../../../usePackage'
-import { useAgents } from './useAgents'
-import { useNamespaces } from './useNamespaces'
-import { useCustomServersPackageMap } from './useCustomServersPackageMap'
+import { usePackage } from '../../../../usePackage' 
+import { useAgents } from './useAgents' 
+import { useNamespaces } from './useNamespaces' 
+import { useCustomServersPackageMap } from './useCustomServersPackageMap' 
 import { useParams } from 'react-router-dom'
-import { useServiceNames } from './useServiceNames'
+import { useServiceNames } from './useServiceNames' 
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
@@ -54,9 +54,7 @@ import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/Di
 import { isServiceNameExistInNamespace } from '@netcracker/qubership-apihub-ui-shared/entities/service-names'
 import CloseIcon from '@mui/icons-material/Close'
 import { useShowSuccessNotification } from '@apihub/routes/root/BasePage/Notification'
-import { DeleteIcon } from '@netcracker/qubership-apihub-ui-shared/icons/DeleteIcon'
-import axios from 'axios'
-import { requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+
 
 const CLOUD_KEY = 'cloudKey'
 const NAMESPACE_KEY = 'namespaceKey'
@@ -102,14 +100,13 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const [mode, setMode] = useState<'custom' | 'proxy'>('custom')
   const [serverUrlError, setServerUrlError] = useState<string | null>(null)
   const [serverUrlWarning, setServerUrlWarning] = useState<string | null>(null)
-  const [apiSpec, setApiSpec] = useState<unknown>(null)
+  // Initialize apiSpec with an empty object as there's no backend involvement for this data
+  const [apiSpec, setApiSpec] = useState<unknown>({})
   const [showWarning, setShowWarning] = useState(false)
   const [urlInput, setUrlInput] = useState('')
-  const [cloud, setCloud] = useState<string[]>([])
 
-  //  Load data for connected fields
+  // Load data for connected fields
   const [agents] = useAgents()
-  const clouds = useMemo(() => agents?.map(({ agentDeploymentCloud }) => agentDeploymentCloud), [agents])
   const cloudAgentIdMap = useMemo(
     () => new Map(agents.map(({ agentId, agentDeploymentCloud }) => [agentDeploymentCloud, agentId])),
     [agents],
@@ -121,21 +118,18 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const [namespaces] = useNamespaces(selectedAgent!)
   const [serviceNames] = useServiceNames(selectedAgent!, selectedNamespace?.namespaceKey)
 
-  useEffect(() => {
-    requestJson<any>(`/api/packages/${packageId}/spec`)
-      .then((spec) => {
-        if (spec) {
-          setApiSpec(spec)
-        }
-      })
-      .catch((err) => {
-        console.error('Failed to load API spec', err)
-      })
-  }, [packageId])
+  // Derive cloud options from useAgents hook directly
+  const cloud = useMemo(() => {
+    const uniqueClouds = Array.from(new Set(agents.map(agent => agent.agentDeploymentCloud).filter(Boolean)))
+    return uniqueClouds as string[]
+  }, [agents])
+
+  
 
   const baseUrl = window.location.origin
 
-  const generatedUrl = `${baseUrl}/apihub-nc/agents/${selectedCloud}/namespaces/${selectedNamespace}/services/${selectedService}/proxy`
+  // Corrected generatedUrl to access namespaceKey safely
+  const generatedUrl = `${baseUrl}/apihub-nc/agents/${selectedCloud}/namespaces/${selectedNamespace?.namespaceKey}/services/${selectedService}/proxy`
 
   // Form initializing
   const defaultFormData = useMemo<CreateCustomServerForm>(() => ({
@@ -201,7 +195,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
           const isRootPath = parsed.pathname === '/' || parsed.pathname === ''
           setShowWarning(isRootPath)
         } catch {
-          setShowWarning(false) // Invalid URL
+          setShowWarning(false) 
         }
       }, delay)
 
@@ -250,13 +244,6 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     description: cloudKey ? `Proxy via agent ${selectedAgent} to ${selectedNamespace?.namespaceKey}` : '',
   }), [cloudKey, selectedAgent, selectedCustomUrl, selectedNamespace?.namespaceKey])
 
-  const hasServers = customServersPackageMap[packageId] && customServersPackageMap[packageId].length > 0
-
-  const handleDeleteServer = useCallback((serverToDelete: { url: string }) => {
-    const updatedServers = customServersPackageMap[packageId].filter(server => server.url !== serverToDelete.url)
-    setCustomServersPackageMap(packageId, updatedServers)
-    localStorage.setItem('customServers', JSON.stringify(updatedServers))
-  }, [customServersPackageMap, packageId, setCustomServersPackageMap])
   const showSuccessNotification = useShowSuccessNotification()
 
   const onAddCustomServer = useCallback(() => {
@@ -267,15 +254,21 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     const caption = server?.description?.trim() || '-'
     const newServer = {
       url: url,
-      caption: caption,
-      origin: 'custom',
+      description: caption, 
+      custom: true,
+      shouldUseProxyEndpoint: mode === 'proxy', // Set based on the selected mode
     }
-    const servers = [...customServersPackageMap?.[packageId] ?? [], newServer]
+    
+    const servers = [...(customServersPackageMap?.[packageId] ?? []), newServer]
     setCustomServersPackageMap(packageId, servers)
 
     setSelectedCustomUrl(server.url)
 
-    localStorage.setItem('customServers', JSON.stringify(servers))
+    // Store in localStorage for Playground to pick up
+    const currentLocalServers = JSON.parse(localStorage.getItem('apihub_custom_servers') || '[]') as typeof servers
+    const updatedLocalServers = [...currentLocalServers, newServer]
+    localStorage.setItem('apihub_custom_servers', JSON.stringify(updatedLocalServers))
+
 
     showSuccessNotification?.({
       title: 'Success',
@@ -283,28 +276,8 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     })
     setTimeout(() => setOpen(false), 50)
 
-  }, [isServiceNameValid, showSuccessNotification, serverUrlError, setCustomServersPackageMap, packageId, customServersPackageMap, server, setOpen, setSelectedCustomUrl])
+  }, [isServiceNameValid, showSuccessNotification, serverUrlError, setCustomServersPackageMap, packageId, customServersPackageMap, server, setOpen, setSelectedCustomUrl, mode])
 
-  useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    const fetchClouds = async () => {
-      try {
-        const res = await axios.get('/api/v2/agents')
-        const uniqueClouds = Array.from(
-          new Set(
-            res.data
-              .map((agent: { agentDeploymentCloud: any }) => agent.agentDeploymentCloud)
-              .filter((cloud: any): cloud is string => typeof cloud === 'string'),
-          ),
-        )
-
-      } catch (error) {
-        console.error('Failed to fetch cloud list:', error)
-      }
-    }
-
-    fetchClouds()
-  }, [])
 
   // Rendering functions
   const renderSelectCloud = useCallback(({ field }: ControllerRenderFunctionProps<typeof CLOUD_KEY>) => (
@@ -440,39 +413,6 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const renderCustomServerOption = (props: any, server: { url: string; caption: string; origin: string }) => (
-    <ListItem
-      {...props}
-      key={server.url}
-      secondaryAction={
-        server.origin === 'custom' && (
-          <IconButton
-            edge="end"
-            aria-label="delete"
-            onClick={e => {
-              e.stopPropagation() // prevent selecting this option on icon click
-              handleDeleteServer(server)
-            }}
-            size="small"
-            data-testid={`delete-server-${server.url}`}
-          >
-            <DeleteIcon />
-          </IconButton>
-        )
-      }
-    >
-      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-        <Typography variant="body2" noWrap>
-          {server.url}
-        </Typography>
-        <Typography variant="caption" color="text.secondary" noWrap>
-          {server.caption || '-'}
-        </Typography>
-      </Box>
-    </ListItem>
-  )
-
   return (
     <DialogForm
       open={open}
@@ -510,7 +450,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
             {generatedUrl ? (
               <Typography variant="body2" >{generatedUrl}</Typography>) : (
               <Typography variant="body2" sx={{ mt: 0.5 }}>
-                {`https://${baseUrl}/apihub-nc/agents/${selectedCloud}/namespaces/${selectedNamespace}/services/${selectedService}/proxy`}
+                {`https://${baseUrl}/apihub-nc/agents/${selectedCloud}/namespaces/${selectedNamespace?.namespaceKey}/services/${selectedService}/proxy`}
               </Typography>
             )}
             <Controller
