@@ -64,20 +64,38 @@ export const OperationTitleWithMeta: FC<OperationTitleWithMetaProps> = memo<Oper
   }, [operation])
 
   const titleNode = link
-    ? <Typography noWrap variant="subtitle1">
-      <Link
-        component={NavLink}
-        to={link}
-        target={openLinkInNewTab ? '_blank' : '_self'}
-        onClick={(event) => {
-          event.stopPropagation()
-          onLinkClick?.()
+    ? (<Box
+      sx={{
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+      }}
+    >
+      <Typography noWrap variant="subtitle1">
+        <Link
+          component={NavLink}
+          to={link}
+          target={openLinkInNewTab ? '_blank' : '_self'}
+          onClick={(event) => {
+            event.stopPropagation()
+            onLinkClick?.()
+          }}
+        >
+          {title}
+        </Link>
+      </Typography>
+    </Box>
+    )
+    : (
+      <Box
+        sx={{
+          maxWidth: '90%',
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
         }}
       >
-        {title}
-      </Link>
-    </Typography>
-    : <Typography noWrap variant="inherit">{title}</Typography>
+        <Typography noWrap variant="inherit">{title}</Typography>
+      </Box>
+    )
 
   return (
     <Box display="flex" flexDirection="column" width="100%">
@@ -101,7 +119,7 @@ export const OperationTitleWithMeta: FC<OperationTitleWithMetaProps> = memo<Oper
       </Box>
       {!onlyTitle && (
         <Box display="flex" alignItems="center" gap={1} data-testid="OperationPath">
-          <CustomChip value={type} variant="outlined"/>
+          <CustomChip value={type} variant="outlined" />
           <TextWithOverflowTooltip tooltipText={subtitle} variant="subtitle2">
             {subtitle}
           </TextWithOverflowTooltip>
