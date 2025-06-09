@@ -55,6 +55,7 @@ import { isServiceNameExistInNamespace } from '@netcracker/qubership-apihub-ui-s
 import CloseIcon from '@mui/icons-material/Close'
 import { useShowSuccessNotification } from '@apihub/routes/root/BasePage/Notification'
 import { portalRequestJson } from '@apihub/utils/requests'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 
 
 const CLOUD_KEY = 'cloudKey'
@@ -435,7 +436,19 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     >
 
       <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pr: 1 }}>
-        Add Custom Server
+         <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          Add Custom Server
+          {!isServiceNameExist && (
+              <Tooltip
+                  title={`Only adding a custom server is available. To use the Agent proxy, specify the service name for the current ${packageId}.`}
+                  placement="right"
+              >
+                  <IconButton size="small" aria-label="info" sx={{ p: '0 4px' }}> {/* Adjusted padding */}
+                      <InfoOutlinedIcon fontSize="small" />
+                  </IconButton>
+              </Tooltip>
+          )}
+        </Box>
         <IconButton
           onClick={() => setOpen(false)}
           size="small"
