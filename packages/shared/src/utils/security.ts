@@ -35,11 +35,11 @@ export async function handleAuthentication(responseStatus: number): Promise<Toke
   // noAutoLogin = true in 2 cases:
   // 1. user manually logged out just now
   // 2. user logged in just now and automatically redirect to login page
-  const autoLogin = !searchParams.get(SEARCH_PARAM_NO_AUTO_LOGIN)
+  const allowedAutoLogin = !searchParams.get(SEARCH_PARAM_NO_AUTO_LOGIN)
 
   let tokenRefreshResult: TokenRefreshResult | undefined
 
-  if (responseStatus === 401 && autoLogin) {
+  if (responseStatus === 401 && allowedAutoLogin) {
     // when we are in worker, we can't use algorithm below in direct way
     // so we have to throw a specific error, catch it in main thread and handle with the same algorithm
     if (typeof window === 'undefined') {
@@ -53,26 +53,25 @@ export async function handleAuthentication(responseStatus: number): Promise<Toke
 
     const { authConfig } = systemConfiguration
 
-    // trying to refresh token by default provider
-    const { defaultProviderId } = authConfig
-    const defaultProvider = defaultProviderId
-      ? authConfig.identityProviders.find(idp => idp.id === defaultProviderId)
-      : undefined
+    // trying to refresh token by auto-login provider
+    const { autoLogin } = authConfig
+    if (autoLogin) {
+      const [autoLoginProvider] = authConfig.identityProviders
+      tokenRefreshResult = await handleUnauthorizedByProvider(autoLoginProvider)
+      if (isTokenRefreshed(tokenRefreshResult)) {
+        return tokenRefreshResult
+      }
+    } else {
+      // trying to refresh token by last used provider
+      const lastProviderId = localStorage.getItem(SESSION_STORAGE_KEY_LAST_IDENTITY_PROVIDER_ID)
+      const lastProvider = lastProviderId
+        ? authConfig.identityProviders.find(idp => idp.id === lastProviderId)
+        : undefined
 
-    tokenRefreshResult = await handleUnauthorizedByProvider(defaultProvider)
-    if (isTokenRefreshed(tokenRefreshResult)) {
-      return tokenRefreshResult
-    }
-
-    // trying to refresh token by last used provider
-    const lastProviderId = localStorage.getItem(SESSION_STORAGE_KEY_LAST_IDENTITY_PROVIDER_ID)
-    const lastProvider = lastProviderId
-      ? authConfig.identityProviders.find(idp => idp.id === lastProviderId)
-      : undefined
-
-    tokenRefreshResult = await handleUnauthorizedByProvider(lastProvider)
-    if (isTokenRefreshed(tokenRefreshResult)) {
-      return tokenRefreshResult
+      tokenRefreshResult = await handleUnauthorizedByProvider(lastProvider)
+      if (isTokenRefreshed(tokenRefreshResult)) {
+        return tokenRefreshResult
+      }
     }
 
     // the first login in clear browser

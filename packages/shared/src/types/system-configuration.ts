@@ -38,7 +38,7 @@ export type SystemConfigurationDto = Readonly<{
   defaultWorkspaceId: string
   authConfig: {
     identityProviders: ReadonlyArray<IdentityProviderDto>
-    defaultProviderId?: IdentityProviderDto['id']
+    autoLogin?: boolean
   }
 }>
 

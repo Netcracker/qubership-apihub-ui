@@ -38,16 +38,15 @@ export const LoginPage: FC<LoginPageComponentProps> = memo(({ applicationName })
   const [systemConfiguration] = useSystemConfiguration()
 
   const identityProviders = systemConfiguration?.authConfig.identityProviders ?? []
-  const defaultProviderId = systemConfiguration?.authConfig.defaultProviderId
+  const autoLogin = systemConfiguration?.authConfig.autoLogin
   const externalIdentityProviders = identityProviders.filter(isExternalIdentityProvider)
   const internalIdentityProvider = identityProviders.find(isInternalIdentityProvider)
   const internalAuthEnabled = !!internalIdentityProvider
   const externalAuthEnabled = !isEmpty(externalIdentityProviders)
   const hideLoginPage =
     noAutoLogin !== 'true' &&
-    defaultProviderId &&
-    externalAuthEnabled &&
-    externalIdentityProviders.some(idp => idp.id === defaultProviderId)
+    autoLogin &&
+    externalAuthEnabled
   const externalAuthControls = (
     externalAuthEnabled
       ? <ExternalAuthControls providers={externalIdentityProviders} />
