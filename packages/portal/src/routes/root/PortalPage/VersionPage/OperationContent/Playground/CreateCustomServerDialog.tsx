@@ -172,10 +172,10 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   }, [apiSpec])
 
   useEffect(() => {
-  portalRequestJson(`/packages/${packageId}/spec`)
-    .then(setApiSpec)
-    .catch(console.error)
-}, [packageId])
+    portalRequestJson(`/packages/${packageId}/spec`)
+      .then(setApiSpec)
+      .catch(console.error)
+  }, [packageId])
 
   const firstSubPath = useMemo(() => {
     const match = apiSpecServerUrls.find((url: string) => {
