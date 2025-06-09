@@ -20,9 +20,3 @@ export const MAIN_PAGE_REFERER = 'MainPage'
 export const SHARED_PAGE_REFERER = 'SharedPage'
 export const WORKSPACES_PAGE_REFERER = 'WorkspacesPage'
 export const FAVORITE_PAGE_REFERER = 'FavoritePage'
-
-export const ROUTE_PAGE_REFERER = {
-  [SHARED_PAGE_REFERER]: '/portal/shared',
-  [WORKSPACES_PAGE_REFERER]: '/portal/workspaces',
-  [FAVORITE_PAGE_REFERER]: '/portal/favorite',
-}

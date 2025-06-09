@@ -45,8 +45,9 @@ import type {
 import { toPackage } from '@netcracker/qubership-apihub-ui-shared/hooks/packages/usePackage'
 
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
-import { MAIN_PAGE_REFERER, ROUTE_PAGE_REFERER } from '@apihub/entities/referer-pages-names'
+import { MAIN_PAGE_REFERER } from '@apihub/entities/referer-pages-names'
 import type { QueryOptions } from '@tanstack/query-core/src/types'
+import { calculateRefererReload } from '@apihub/routes/VisitedRoutesProvider'
 
 export const PACKAGE_QUERY_KEY = 'package-query-key'
 
@@ -118,15 +119,6 @@ export function useDeletePackage(): [DeletePackage, IsLoading, IsSuccess] {
   })
 
   return [mutate, isLoading, isSuccess]
-}
-
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-function calculateRefererReload() {
-  const visitedRoutes = JSON.parse(localStorage.getItem('visitedRoutes') || '[]')
-  const matchedKeys = Object.entries(ROUTE_PAGE_REFERER)
-    .filter(([_, path]) => visitedRoutes.includes(path))
-    .map(([key]) => (useRefetchPackages({ queryKey: [PACKAGES_QUERY_KEY, key] })))
-  return matchedKeys
 }
 
 export function useCreatePackage(refererPageName?: string): [CreatePackage, IsLoading, IsSuccess, Error | null] {
