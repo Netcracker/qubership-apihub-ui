@@ -436,17 +436,17 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     >
 
       <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pr: 1 }}>
-         <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
           Add Custom Server
           {!isServiceNameExist && (
-              <Tooltip
-                  title={`Only adding a custom server is available. To use the Agent proxy, specify the service name for the current ${packageId}.`}
-                  placement="right"
-              >
-                  <IconButton size="small" aria-label="info" sx={{ p: '0 4px' }}> {/* Adjusted padding */}
-                      <InfoOutlinedIcon fontSize="small" />
-                  </IconButton>
-              </Tooltip>
+            <Tooltip
+              title={`Only adding a custom server is available. To use the Agent proxy, specify the service name for the current ${packageId}.`}
+              placement="right"
+            >
+              <IconButton size="small" aria-label="info" sx={{ p: '0 4px' }}>
+                <InfoOutlinedIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
           )}
         </Box>
         <IconButton
