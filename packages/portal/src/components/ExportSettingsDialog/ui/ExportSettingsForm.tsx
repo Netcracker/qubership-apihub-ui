@@ -187,6 +187,7 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
           disabled={initializing || exporting}
           loading={isStartingExport || exporting}
           variant="contained"
+          data-testid="ExportButton"
         >
           Export
         </LoadingButton>
@@ -194,6 +195,7 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
           disabled={initializing}
           variant="outlined"
           onClick={onClose}
+          data-testid="CloseButton"
         >
           Close
         </Button>
