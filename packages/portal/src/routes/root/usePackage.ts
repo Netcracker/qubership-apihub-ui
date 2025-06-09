@@ -16,7 +16,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useShowErrorNotification, useShowSuccessNotification } from './BasePage/Notification'
-import { useRefetchPackages } from './usePackages'
+import { PACKAGES_QUERY_KEY, useRefetchPackages } from './usePackages'
 import { generatePath, useParams } from 'react-router-dom'
 import { useNavigation } from '../NavigationProvider'
 import { portalRequestJson, portalRequestVoid } from '@apihub/utils/requests'
@@ -43,25 +43,28 @@ import type {
   OptionInvalidateQuery,
 } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { toPackage } from '@netcracker/qubership-apihub-ui-shared/hooks/packages/usePackage'
-import { MAIN_PAGE_REFERER } from '@netcracker/qubership-apihub-ui-shared/entities/referer-pages-names'
-import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
 
-const PACKAGE_QUERY_KEY = 'package-query-key'
+import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
+import { MAIN_PAGE_REFERER, ROUTE_PAGE_REFERER } from '@apihub/entities/referer-pages-names'
+import type { QueryOptions } from '@tanstack/query-core/src/types'
+
+export const PACKAGE_QUERY_KEY = 'package-query-key'
 
 export function usePackage(options?: Partial<{
   packageKey: Key
   showParents: boolean
   hideError: boolean
+  requestOptions?: QueryOptions
 }>): [Package | null, IsLoading, Error | null] {
   const { packageId: paramPackageId } = useParams()
-  const { packageKey, showParents = false, hideError = false } = options ?? {}
+  const { packageKey, showParents = false, hideError = false, requestOptions } = options ?? {}
   const key = packageKey ?? paramPackageId
-
   const { data, isLoading, error } = useQuery<PackageDto, Error, Package>({
     queryKey: [PACKAGE_QUERY_KEY, key, showParents],
     queryFn: ({ signal }) => getPackageDetails(key!, showParents, hideError, signal),
     enabled: !!key,
     select: toPackage,
+    ...{requestOptions},
   })
 
   return [data ?? null, isLoading, error]
@@ -77,13 +80,14 @@ export function useUpdatePackage(): [UpdatePackage, IsLoading, IsSuccess] {
   const client = useQueryClient()
   const showNotification = useShowSuccessNotification()
   const showErrorNotification = useShowErrorNotification()
-
+  const refetchPackages = useRefetchPackages({queryKey: [PACKAGES_QUERY_KEY]})
   const { mutate, isLoading, isSuccess } = useMutation<PackageDto, Error, UpdatePackageProps>({
     mutationFn: ({ packageKey, value }) => updatePackage(packageKey, value),
     onSuccess: ({ packageId }) => {
       showNotification({ message: 'Package has been updated' })
-
+      refetchPackages()
       const packageKey = encodeURIComponent(packageId)
+
       return client.invalidateQueries({
         queryKey: [PACKAGE_QUERY_KEY, packageKey],
         refetchType: 'all',
@@ -100,10 +104,12 @@ export function useUpdatePackage(): [UpdatePackage, IsLoading, IsSuccess] {
 export function useDeletePackage(): [DeletePackage, IsLoading, IsSuccess] {
   const showNotification = useShowSuccessNotification()
   const showErrorNotification = useShowErrorNotification()
+  const refererReload = calculateRefererReload()
 
   const { mutate, isLoading, isSuccess } = useMutation<void, Error, Key>({
     mutationFn: packageKey => deletePackage(packageKey),
     onSuccess: (_, key) => {
+      refererReload.forEach(func => func())
       showNotification({ message: `Package ${key} has been deleted` })
     },
     onError: (error) => {
@@ -112,6 +118,15 @@ export function useDeletePackage(): [DeletePackage, IsLoading, IsSuccess] {
   })
 
   return [mutate, isLoading, isSuccess]
+}
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+function calculateRefererReload() {
+  const visitedRoutes = JSON.parse(localStorage.getItem('visitedRoutes') || '[]')
+  const matchedKeys = Object.entries(ROUTE_PAGE_REFERER)
+    .filter(([_, path]) => visitedRoutes.includes(path))
+    .map(([key]) => (useRefetchPackages({ queryKey: [PACKAGES_QUERY_KEY, key] })))
+  return matchedKeys
 }
 
 export function useCreatePackage(refererPageName?: string): [CreatePackage, IsLoading, IsSuccess, Error | null] {
@@ -226,6 +241,11 @@ export async function deletePackage(
 export function useAsyncInvalidatePackage(): (packageKey: Key) => Promise<void> {
   const client = useQueryClient()
   return (packageKey: Key) => client.invalidateQueries([PACKAGE_QUERY_KEY, packageKey])
+}
+
+export function useAsyncRefetchPackage(): (packageKey: Key) => Promise<void> {
+  const client = useQueryClient()
+  return (packageKey: Key) => client.refetchQueries([PACKAGE_QUERY_KEY, packageKey, false])
 }
 
 export function useInvalidatePackage(): OptionInvalidateQuery<Key | undefined> {

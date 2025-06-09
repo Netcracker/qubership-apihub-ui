@@ -18,13 +18,15 @@ import { useQuery } from '@tanstack/react-query'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { portalRequestJson } from '@apihub/utils/requests'
+import type { QueryOptions } from '@tanstack/query-core/src/types'
 
 export const SPACE_QUERY_KEY = 'space-query-key'
 
-export function usePrivateWorkspace(): [Key, IsLoading] {
+export function usePrivateWorkspace(options?: QueryOptions): [Key, IsLoading] {
   const { data, isLoading } = useQuery<Key, Error, Key>({
     queryKey: [SPACE_QUERY_KEY],
     queryFn: () => getPrivateWorkspaceUser(),
+    ...{options},
   })
 
   return [

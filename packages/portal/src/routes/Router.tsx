@@ -64,10 +64,17 @@ import {
 import { ErrorPage, NOT_FOUND_TITLE } from '@netcracker/qubership-apihub-ui-shared/components/ErrorPage'
 import { LoginPage } from '@netcracker/qubership-apihub-ui-shared/pages/login'
 import { ProfilePage } from './root/ProfilePage/ProfilePage'
+import { VisitedRoutesProvider } from '@apihub/routes/VisitedRoutesProvider'
 
 export const router = createBrowserRouter(
   createRoutes([
-    <Route path="/" element={<NavigationProvider><BasePage/></NavigationProvider>}>
+    <Route path="/" element={
+      <NavigationProvider>
+        <VisitedRoutesProvider>
+          <BasePage/>
+        </VisitedRoutesProvider>
+      </NavigationProvider>
+    }>
       <Route index element={<Navigate to="portal" replace/>}/>
       <Route path="portal">
         <Route element={<MainPage/>}>
