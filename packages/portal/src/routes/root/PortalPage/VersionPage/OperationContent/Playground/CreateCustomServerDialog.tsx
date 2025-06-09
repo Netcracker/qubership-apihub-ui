@@ -54,6 +54,7 @@ import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/Di
 import { isServiceNameExistInNamespace } from '@netcracker/qubership-apihub-ui-shared/entities/service-names'
 import CloseIcon from '@mui/icons-material/Close'
 import { useShowSuccessNotification } from '@apihub/routes/root/BasePage/Notification'
+import { portalRequestJson } from '@apihub/utils/requests'
 
 
 const CLOUD_KEY = 'cloudKey'
@@ -170,6 +171,11 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     return servers.map((s: { url: string }) => s.url).filter(Boolean)
   }, [apiSpec])
 
+  useEffect(() => {
+  portalRequestJson(`/packages/${packageId}/spec`)
+    .then(setApiSpec)
+    .catch(console.error)
+}, [packageId])
 
   const firstSubPath = useMemo(() => {
     const match = apiSpecServerUrls.find((url: string) => {
