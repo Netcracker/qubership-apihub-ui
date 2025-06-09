@@ -16,14 +16,37 @@
 
 import type { FC, PropsWithChildren } from 'react'
 import { createContext, memo, useCallback, useContext, useState } from 'react'
-import { createEventBus, slot } from 'ts-event-bus'
-import { useEvent } from 'react-use'
 import { generatePath, useNavigate } from 'react-router-dom'
+import { useEvent } from 'react-use'
+import { createEventBus, slot } from 'ts-event-bus'
 
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { AGENT_ROUTE, EDITOR_ROUTE } from '@netcracker/qubership-apihub-ui-shared/entities/application-routes'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type {
+  API_TYPE_SEARCH_PARAM,
+  DOCUMENT_SEARCH_PARAM,
+  EXPAND_NAVIGATION_MENU_SEARCH_PARAM,
+  FILE_VIEW_MODE_PARAM_KEY,
+  FILTERS_SEARCH_PARAM,
+  GROUP_SEARCH_PARAM,
+  MODE_SEARCH_PARAM,
+  OPERATION_SEARCH_PARAM,
+  OPERATIONS_VIEW_MODE_PARAM,
+  PACKAGE_SEARCH_PARAM,
+  PLAYGROUND_SIDEBAR_VIEW_MODE_SEARCH_PARAM,
+  REF_SEARCH_PARAM,
+  SEARCH_TEXT_PARAM_KEY,
+  SearchParam,
+  TAG_SEARCH_PARAM,
+  VERSION_SEARCH_PARAM,
+} from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import type { Path } from '@remix-run/router'
 import type { OverviewPageRoute, PackageSettingsPageRoute, ProfilePageRoute, SettingsPageRoute } from '../routes'
 import {
   API_CHANGES_PAGE_PATH_PATTERN,
+  API_QUALITY_PAGE_PATH_PATTERN,
   CONFIGURATION_PAGE,
   DEPRECATED_PAGE_PATH_PATTERN,
   DOCUMENTS_PAGE_PATH_PATTERN,
@@ -46,28 +69,6 @@ import {
   VERSION_PAGE_PATH_PATTERN,
   WORKSPACES_PAGE_PATH_PATTERN,
 } from '../routes'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type {
-  API_TYPE_SEARCH_PARAM,
-  DOCUMENT_SEARCH_PARAM,
-  EXPAND_NAVIGATION_MENU_SEARCH_PARAM,
-  FILE_VIEW_MODE_PARAM_KEY,
-  FILTERS_SEARCH_PARAM,
-  GROUP_SEARCH_PARAM,
-  MODE_SEARCH_PARAM,
-  OPERATION_SEARCH_PARAM,
-  OPERATIONS_VIEW_MODE_PARAM,
-  PACKAGE_SEARCH_PARAM,
-  PLAYGROUND_SIDEBAR_VIEW_MODE_SEARCH_PARAM,
-  REF_SEARCH_PARAM,
-  SEARCH_TEXT_PARAM_KEY,
-  SearchParam,
-  TAG_SEARCH_PARAM,
-  VERSION_SEARCH_PARAM,
-} from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { AGENT_ROUTE, EDITOR_ROUTE } from '@netcracker/qubership-apihub-ui-shared/entities/application-routes'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 
 export const NAVIGATE_TO_OVERVIEW = 'navigate-to-overview'
 export const NAVIGATE_TO_OPERATIONS = 'navigate-to-operations'
@@ -144,6 +145,15 @@ export type DeprecatedDetail = {
   search?: {
     [EXPAND_NAVIGATION_MENU_SEARCH_PARAM]?: SearchParam
     [OPERATIONS_VIEW_MODE_PARAM]?: SearchParam
+  }
+}
+
+export type ApiQualityDetail = {
+  packageKey: Key
+  versionKey: Key
+  apiType: ApiType
+  search?: {
+    [EXPAND_NAVIGATION_MENU_SEARCH_PARAM]?: SearchParam
   }
 }
 
@@ -554,6 +564,20 @@ export function getDeprecatedPath({
   const versionId = encodeURIComponent(versionKey)
   return {
     pathname: generatePath(DEPRECATED_PAGE_PATH_PATTERN, { packageId, versionId, apiType }),
+    search: search ? `${optionalSearchParams(search)}` : undefined,
+  }
+}
+
+export function getApiQualityPath({
+  packageKey,
+  versionKey,
+  apiType,
+  search,
+}: ApiQualityDetail): Partial<Path> {
+  const packageId = encodeURIComponent(packageKey)
+  const versionId = encodeURIComponent(versionKey)
+  return {
+    pathname: generatePath(API_QUALITY_PAGE_PATH_PATTERN, { packageId, versionId, apiType }),
     search: search ? `${optionalSearchParams(search)}` : undefined,
   }
 }
