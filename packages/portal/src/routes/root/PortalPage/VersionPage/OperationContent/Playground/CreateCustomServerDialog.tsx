@@ -39,12 +39,12 @@ import { LoadingButton } from '@mui/lab'
 import { Controller, useForm } from 'react-hook-form'
 import type { ControllerFieldState, ControllerRenderProps } from 'react-hook-form/dist/types/controller'
 import type { UseFormStateReturn } from 'react-hook-form/dist/types'
-import { usePackage } from '../../../../usePackage' 
-import { useAgents } from './useAgents' 
-import { useNamespaces } from './useNamespaces' 
-import { useCustomServersPackageMap } from './useCustomServersPackageMap' 
+import { usePackage } from '../../../../usePackage'
+import { useAgents } from './useAgents'
+import { useNamespaces } from './useNamespaces'
+import { useCustomServersPackageMap } from './useCustomServersPackageMap'
 import { useParams } from 'react-router-dom'
-import { useServiceNames } from './useServiceNames' 
+import { useServiceNames } from './useServiceNames'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
@@ -61,6 +61,11 @@ const NAMESPACE_KEY = 'namespaceKey'
 const SERVICE_KEY = 'serviceKey'
 const CUSTOM_SERVER_URL_KEY = 'customServerUrl'
 const DESCRIPTION_KEY = 'description'
+
+const MODE_CUSTOM = 'custom' as const
+const MODE_PROXY = 'proxy' as const
+
+type ModeType = typeof MODE_CUSTOM | typeof MODE_PROXY
 
 type CreateCustomServerForm = {
   [CLOUD_KEY]?: Key
@@ -97,13 +102,14 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const [selectedService] = useState<string | null>(serviceName ?? '')
   const [selectedAgent, setSelectedAgent] = useState<string | undefined>()
   const [selectedCustomUrl, setSelectedCustomUrl] = useState<string>('')
-  const [mode, setMode] = useState<'custom' | 'proxy'>('custom')
+  const [mode, setMode] = useState<ModeType>(MODE_CUSTOM)
   const [serverUrlError, setServerUrlError] = useState<string | null>(null)
   const [serverUrlWarning, setServerUrlWarning] = useState<string | null>(null)
   // Initialize apiSpec with an empty object as there's no backend involvement for this data
   const [apiSpec, setApiSpec] = useState<unknown>({})
   const [showWarning, setShowWarning] = useState(false)
   const [urlInput, setUrlInput] = useState('')
+
 
   // Load data for connected fields
   const [agents] = useAgents()
@@ -124,7 +130,8 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     return uniqueClouds as string[]
   }, [agents])
 
-  
+
+
 
   const baseUrl = window.location.origin
 
@@ -163,6 +170,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     return servers.map((s: { url: string }) => s.url).filter(Boolean)
   }, [apiSpec])
 
+
   const firstSubPath = useMemo(() => {
     const match = apiSpecServerUrls.find((url: string) => {
       try {
@@ -195,7 +203,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
           const isRootPath = parsed.pathname === '/' || parsed.pathname === ''
           setShowWarning(isRootPath)
         } catch {
-          setShowWarning(false) 
+          setShowWarning(false)
         }
       }, delay)
 
@@ -254,11 +262,11 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     const caption = server?.description?.trim() || '-'
     const newServer = {
       url: url,
-      description: caption, 
+      description: caption,
       custom: true,
       shouldUseProxyEndpoint: mode === 'proxy', // Set based on the selected mode
     }
-    
+
     const servers = [...(customServersPackageMap?.[packageId] ?? []), newServer]
     setCustomServersPackageMap(packageId, servers)
 
@@ -434,15 +442,15 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
 
       <DialogContent>
         {isServiceNameExist && (
-        <FormControl component="fieldset">
-          <RadioGroup
-            value={mode}
-            onChange={(e) => setMode(e.target.value as 'custom' | 'proxy')}
-          >
-            <FormControlLabel value="custom" control={<Radio />} label="Add Custom Server URL" />
-            <FormControlLabel value="proxy" control={<Radio />} label="Use Agent Proxy" />
-          </RadioGroup>
-        </FormControl>
+          <FormControl component="fieldset">
+            <RadioGroup
+              value={mode}
+              onChange={(e) => setMode(e.target.value as 'custom' | 'proxy')}
+            >
+              <FormControlLabel value="custom" control={<Radio />} label="Add Custom Server URL" />
+              <FormControlLabel value="proxy" control={<Radio />} label="Use Agent Proxy" />
+            </RadioGroup>
+          </FormControl>
         )}
 
         {(!isServiceNameExist || mode === 'proxy' && (
@@ -472,7 +480,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
             />
           </>
         ))}
-        {( !isServiceNameExist || mode === 'custom') && (
+        {(!isServiceNameExist || mode === 'custom') && (
           <Controller
             name={CUSTOM_SERVER_URL_KEY}
             control={control}
