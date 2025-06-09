@@ -84,6 +84,7 @@ type MenuItemConfig = {
   label: string
   condition: (isOpenApiSpec: boolean, isSharingAvailable: boolean) => boolean
   action: (params: ActionParams) => void
+  'data-testid'?: string
 }
 
 const DOCUMENT_MENU_CONFIG: MenuItemConfig[] = [
@@ -101,6 +102,7 @@ const DOCUMENT_MENU_CONFIG: MenuItemConfig[] = [
         },
       })
     },
+    'data-testid': 'PreviewMenuItem',
   },
   {
     id: 'export',
@@ -114,6 +116,7 @@ const DOCUMENT_MENU_CONFIG: MenuItemConfig[] = [
         documentId: slug,
       })
     },
+    'data-testid': 'ExportMenuItem',
   },
   {
     id: 'download',
@@ -122,6 +125,7 @@ const DOCUMENT_MENU_CONFIG: MenuItemConfig[] = [
     action: ({ downloadPublishedDocument }) => {
       downloadPublishedDocument()
     },
+    'data-testid': 'DownloadMenuItem',
   },
   {
     id: 'copy-public-link',
@@ -136,6 +140,7 @@ const DOCUMENT_MENU_CONFIG: MenuItemConfig[] = [
         }
       })
     },
+    'data-testid': 'CopyPublicLinkMenuItem',
   },
   {
     id: 'copy-page-template',
@@ -149,6 +154,7 @@ const DOCUMENT_MENU_CONFIG: MenuItemConfig[] = [
         }
       })
     },
+    'data-testid': 'CopyPageTemplateMenuItem',
   },
 ]
 
@@ -231,7 +237,7 @@ export const DocumentActionsButton: FC<DocumentActionsButtonProps> = memo<Docume
         <MenuItem
           key={menuItem.id}
           onClick={() => menuItem.action(actionParams)}
-          data-testid={menuItem.id === 'download' ? 'DownloadMenuItem' : undefined}
+          data-testid={menuItem['data-testid']}
         >
           {menuItem.label}
         </MenuItem>
