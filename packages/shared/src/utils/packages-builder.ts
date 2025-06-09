@@ -32,7 +32,6 @@ import type { ResolvedVersionDto } from '../types/packages'
 import type { OperationDto, OperationsDto } from '../entities/operations'
 import { isRestOperationDto } from '../entities/operations'
 import type { ApiType } from '../entities/api-types'
-import { API_TYPE_REST } from '../entities/api-types'
 
 export async function getPackageVersionContent(
   packageKey: Key,

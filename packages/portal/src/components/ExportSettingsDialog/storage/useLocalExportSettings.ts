@@ -8,7 +8,10 @@ function buildKey(exportedEntity: ExportedEntityKind, field: ExportSettingsFormF
   return `export-settings.${exportedEntity}.${field}`
 }
 
-export function useLocalExportSettings(exportedEntity: ExportedEntityKind) {
+export function useLocalExportSettings(exportedEntity: ExportedEntityKind): {
+  cachedFormData?: ExportSettingsFormData
+  setCachedFormField: (field: ExportSettingsFormFieldKind, value: string) => void
+} {
   const specificationTypeKey = useMemo(
     () => buildKey(exportedEntity, ExportSettingsFormFieldKind.SPECIFICATION_TYPE),
     [exportedEntity],

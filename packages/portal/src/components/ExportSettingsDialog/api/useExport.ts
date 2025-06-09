@@ -75,11 +75,6 @@ export class RequestDataExportRestOperationsGroup extends CommonRequestDataExpor
   }
 }
 
-type RequestDataExport =
-  | RequestDataExportVersion
-  | RequestDataExportRestDocument
-  | RequestDataExportRestOperationsGroup
-
 type ExportDto = Partial<{
   exportId: Key
 }>
