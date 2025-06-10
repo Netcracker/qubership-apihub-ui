@@ -26,7 +26,7 @@ export function usePrivateWorkspace(options?: QueryOptions): [Key, IsLoading] {
   const { data, isLoading } = useQuery<Key, Error, Key>({
     queryKey: [SPACE_QUERY_KEY],
     queryFn: () => getPrivateWorkspaceUser(),
-    ...{options},
+    cacheTime: options?.cacheTime || undefined,
   })
 
   return [
