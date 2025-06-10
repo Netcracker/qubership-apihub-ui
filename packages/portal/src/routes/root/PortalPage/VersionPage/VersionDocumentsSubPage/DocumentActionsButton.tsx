@@ -17,6 +17,7 @@
 import { ExportedEntityKind } from '@apihub/components/ExportSettingsDialog/api/useExport'
 import type { ExportSettingsPopupDetail, NotificationDetail } from '@apihub/routes/EventBusProvider'
 import { useEventBus } from '@apihub/routes/EventBusProvider'
+import { useFullMainVersion } from '@apihub/routes/root/PortalPage/FullMainVersionProvider'
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
 import KeyboardArrowUpOutlinedIcon from '@mui/icons-material/KeyboardArrowUpOutlined'
 import type { SxProps } from '@mui/material'
@@ -25,15 +26,12 @@ import type { Theme } from '@mui/material/styles'
 import type { MenuButtonProps } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
 import { MenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import type { FileFormat } from '@netcracker/qubership-apihub-ui-shared/utils/files'
-import {
-  MD_FILE_FORMAT,
-} from '@netcracker/qubership-apihub-ui-shared/utils/files'
+import { MD_FILE_FORMAT } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import { REF_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import { isOpenApiSpecType, UNKNOWN_SPEC_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import type { FC, ReactNode, MouseEvent } from 'react'
+import type { FC, MouseEvent, ReactNode } from 'react'
 import { memo, useCallback, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useCopyToClipboard, useLocation } from 'react-use'
@@ -41,9 +39,9 @@ import type { DocumentPreviewDetail } from '../../../../NavigationProvider'
 import { useNavigation } from '../../../../NavigationProvider'
 import { useShowSuccessNotification } from '../../../BasePage/Notification'
 import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
+import { useRefSearchParam } from '../../useRefSearchParam'
 import { useDownloadPublishedDocument } from '../useDownloadPublishedDocument'
 import { useGetSharedKey } from './useGetSharedKey'
-import { useFullMainVersion } from '@apihub/routes/root/PortalPage/FullMainVersionProvider'
 
 export type DocumentActionsButtonProps = {
   slug: Key
@@ -63,14 +61,14 @@ const DEFAULT_ACTION_BUTTON_STYLE = {
   pl: '20px',
 }
 
-type ActionParams = {
+export type ActionParams = {
   packageId: string
   fullVersion: string
   slug: Key
   ref?: string
   protocol: string | undefined
   host: string | undefined
-  navigateToDocumentPreview: (detail?: DocumentPreviewDetail) => void
+  navigateToDocumentPreview: ((detail?: DocumentPreviewDetail) => void) | null
   downloadPublishedDocument: () => void
   showExportSettingsDialog: (detail: ExportSettingsPopupDetail) => void
   getSharedKey: () => Promise<{ data?: Key }>
@@ -93,7 +91,7 @@ const DOCUMENT_MENU_CONFIG: MenuItemConfig[] = [
     label: 'Preview',
     condition: (isOpenApiSpec) => isOpenApiSpec,
     action: ({ navigateToDocumentPreview, packageId, fullVersion, slug, ref }) => {
-      navigateToDocumentPreview({
+      navigateToDocumentPreview?.({
         packageKey: packageId,
         versionKey: fullVersion,
         documentKey: slug,
@@ -158,13 +156,16 @@ const DOCUMENT_MENU_CONFIG: MenuItemConfig[] = [
   },
 ]
 
+export const DOCUMENT_MENU_CONFIG_ON_PREVIEW_PAGE: MenuItemConfig[] =
+  DOCUMENT_MENU_CONFIG.filter(item => item.id !== 'preview')
+
 // TODO 16.04.25 // Change props for icons. They are not clear to understand
 export const DocumentActionsButton: FC<DocumentActionsButtonProps> = memo<DocumentActionsButtonProps>((props) => {
   const { slug, docType, format, sx, customProps, startIcon, openedIcon, icon } = props
 
   const { packageId } = useParams()
   const fullVersion = useFullMainVersion()
-  const ref = useSearchParam(REF_SEARCH_PARAM)
+  const [ref] = useRefSearchParam()
 
   const { host, protocol } = useLocation()
 
