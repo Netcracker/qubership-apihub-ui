@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { Key } from '@apihub/entities/keys'
 import { useBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
 import { useEventBus } from '@apihub/routes/EventBusProvider'
 import { useShowSuccessNotification } from '@apihub/routes/root/BasePage/Notification'
@@ -38,10 +37,10 @@ import { useNavigation } from '../../../../NavigationProvider'
 import { PackageBreadcrumbs } from '../../../PackageBreadcrumbs'
 import { usePackage } from '../../../usePackage'
 import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
+import type { DocumentActionParams } from '../document-actions'
+import { DOCUMENT_MENU_CONFIG_ON_PREVIEW_PAGE, useCreateTemplate } from '../document-actions'
 import { useDocument } from '../useDocument'
 import { useDownloadPublishedDocument } from '../useDownloadPublishedDocument'
-import type { ActionParams } from '../VersionDocumentsSubPage/DocumentActionsButton'
-import { DOCUMENT_MENU_CONFIG_ON_PREVIEW_PAGE } from '../VersionDocumentsSubPage/DocumentActionsButton'
 import { useGetSharedKey } from '../VersionDocumentsSubPage/useGetSharedKey'
 import { useSchemaViewMode } from './useSchemaViewMode'
 import { useSpecViewMode } from './useSpecViewMode'
@@ -92,17 +91,9 @@ export const SpecToolbar: FC = memo(() => {
   const showNotification = useShowSuccessNotification()
 
   const { host, protocol } = useLocation()
-  const createTemplate = useCallback((key?: Key): string => `
-    <script src="${protocol}//${host}/portal/apispec-view/index.js"></script>
-    <apispec-view
-      apiDescriptionUrl="${protocol}//${host}/api/v2/sharedFiles/${key}"
-      router="hash"
-      layout="stacked"
-      hideExport>
-    </apispec-view>
-  `, [host, protocol])
+  const createTemplate = useCreateTemplate(protocol, host)
 
-  const actionParams: ActionParams = {
+  const actionParams: DocumentActionParams = {
     packageId: packageId!,
     fullVersion: (versionContent ?? {}).version!,
     slug: slug,

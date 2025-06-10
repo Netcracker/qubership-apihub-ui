@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { ExportedEntityKind } from '@apihub/components/ExportSettingsDialog/api/useExport'
-import type { ExportSettingsPopupDetail, NotificationDetail } from '@apihub/routes/EventBusProvider'
 import { useEventBus } from '@apihub/routes/EventBusProvider'
 import { useFullMainVersion } from '@apihub/routes/root/PortalPage/FullMainVersionProvider'
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
@@ -28,18 +26,18 @@ import { MenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Bu
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { FileFormat } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import { MD_FILE_FORMAT } from '@netcracker/qubership-apihub-ui-shared/utils/files'
-import { REF_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import { isOpenApiSpecType, UNKNOWN_SPEC_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import type { FC, MouseEvent, ReactNode } from 'react'
 import { memo, useCallback, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useCopyToClipboard, useLocation } from 'react-use'
-import type { DocumentPreviewDetail } from '../../../../NavigationProvider'
 import { useNavigation } from '../../../../NavigationProvider'
 import { useShowSuccessNotification } from '../../../BasePage/Notification'
 import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
 import { useRefSearchParam } from '../../useRefSearchParam'
+import type { DocumentActionParams } from '../document-actions'
+import { DOCUMENT_MENU_CONFIG, useCreateTemplate } from '../document-actions'
 import { useDownloadPublishedDocument } from '../useDownloadPublishedDocument'
 import { useGetSharedKey } from './useGetSharedKey'
 
@@ -60,104 +58,6 @@ const DEFAULT_ACTION_BUTTON_STYLE = {
   pr: '20px',
   pl: '20px',
 }
-
-export type ActionParams = {
-  packageId: string
-  fullVersion: string
-  slug: Key
-  ref?: string
-  protocol: string | undefined
-  host: string | undefined
-  navigateToDocumentPreview: ((detail?: DocumentPreviewDetail) => void) | null
-  downloadPublishedDocument: () => void
-  showExportSettingsDialog: (detail: ExportSettingsPopupDetail) => void
-  getSharedKey: () => Promise<{ data?: Key }>
-  copyToClipboard: (text: string) => void
-  showNotification: (detail: NotificationDetail) => void
-  createTemplate: (key?: Key) => string
-}
-
-type MenuItemConfig = {
-  id: string
-  label: string
-  condition: (isOpenApiSpec: boolean, isSharingAvailable: boolean) => boolean
-  action: (params: ActionParams) => void
-  'data-testid'?: string
-}
-
-const DOCUMENT_MENU_CONFIG: MenuItemConfig[] = [
-  {
-    id: 'preview',
-    label: 'Preview',
-    condition: (isOpenApiSpec) => isOpenApiSpec,
-    action: ({ navigateToDocumentPreview, packageId, fullVersion, slug, ref }) => {
-      navigateToDocumentPreview?.({
-        packageKey: packageId,
-        versionKey: fullVersion,
-        documentKey: slug,
-        search: {
-          [REF_SEARCH_PARAM]: { value: ref },
-        },
-      })
-    },
-    'data-testid': 'PreviewMenuItem',
-  },
-  {
-    id: 'export',
-    label: 'Export',
-    condition: (isOpenApiSpec) => isOpenApiSpec,
-    action: ({ showExportSettingsDialog, packageId, fullVersion, slug }) => {
-      showExportSettingsDialog({
-        exportedEntity: ExportedEntityKind.REST_DOCUMENT,
-        packageId: packageId,
-        version: fullVersion,
-        documentId: slug,
-      })
-    },
-    'data-testid': 'ExportMenuItem',
-  },
-  {
-    id: 'download',
-    label: 'Download',
-    condition: (isOpenApiSpec) => !isOpenApiSpec,
-    action: ({ downloadPublishedDocument }) => {
-      downloadPublishedDocument()
-    },
-    'data-testid': 'DownloadMenuItem',
-  },
-  {
-    id: 'copy-public-link',
-    label: 'Copy public link to source',
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    condition: (_, isSharingAvailable) => isSharingAvailable,
-    action: ({ getSharedKey, protocol, host, copyToClipboard, showNotification }) => {
-      getSharedKey().then(({ data }) => {
-        if (data) {
-          copyToClipboard(`${protocol}//${host}/api/v2/sharedFiles/${data}`)
-          showNotification({ message: 'Link copied' })
-        }
-      })
-    },
-    'data-testid': 'CopyPublicLinkMenuItem',
-  },
-  {
-    id: 'copy-page-template',
-    label: 'Copy page template',
-    condition: (isOpenApiSpec, isSharingAvailable) => isOpenApiSpec && isSharingAvailable,
-    action: ({ getSharedKey, createTemplate, copyToClipboard, showNotification }) => {
-      getSharedKey().then(({ data }) => {
-        if (data) {
-          copyToClipboard(createTemplate(data))
-          showNotification({ message: 'Template copied' })
-        }
-      })
-    },
-    'data-testid': 'CopyPageTemplateMenuItem',
-  },
-]
-
-export const DOCUMENT_MENU_CONFIG_ON_PREVIEW_PAGE: MenuItemConfig[] =
-  DOCUMENT_MENU_CONFIG.filter(item => item.id !== 'preview')
 
 // TODO 16.04.25 // Change props for icons. They are not clear to understand
 export const DocumentActionsButton: FC<DocumentActionsButtonProps> = memo<DocumentActionsButtonProps>((props) => {
@@ -185,20 +85,12 @@ export const DocumentActionsButton: FC<DocumentActionsButtonProps> = memo<Docume
 
   const { showExportSettingsDialog } = useEventBus()
 
-  const createTemplate = useCallback((key?: Key): string => `
-    <script src="${protocol}//${host}/portal/apispec-view/index.js"></script>
-    <apispec-view
-      apiDescriptionUrl="${protocol}//${host}/api/v2/sharedFiles/${key}"
-      router="hash"
-      layout="stacked"
-      hideExport>
-    </apispec-view>
-  `, [host, protocol])
+  const createTemplate = useCreateTemplate(protocol, host)
 
   const isSharingAvailable = docType !== UNKNOWN_SPEC_TYPE || format === MD_FILE_FORMAT
   const isOpenApiSpecification = isOpenApiSpecType(docType)
 
-  const actionParams: ActionParams = {
+  const actionParams: DocumentActionParams = {
     packageId: packageId!,
     fullVersion: fullVersion!,
     slug: slug,
