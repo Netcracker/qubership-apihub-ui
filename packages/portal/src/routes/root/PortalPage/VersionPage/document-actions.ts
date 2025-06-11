@@ -6,10 +6,11 @@ import { REF_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/s
 import { useCallback } from 'react'
 
 export type DocumentActionParams = {
-  packageId: string
-  fullVersion: string
+  packageKey: Key
+  fullVersion: Key
+  refPackageKey?: Key
+  refFullVersion?: Key
   slug: Key
-  ref?: string
   protocol: string | undefined
   host: string | undefined
   navigateToDocumentPreview: ((detail?: DocumentPreviewDetail) => void) | null
@@ -34,13 +35,13 @@ export const DOCUMENT_MENU_CONFIG: MenuItemConfig[] = [
     id: 'preview',
     label: 'Preview',
     condition: (isOpenApiSpec) => isOpenApiSpec,
-    action: ({ navigateToDocumentPreview, packageId, fullVersion, slug, ref }) => {
+    action: ({ navigateToDocumentPreview, packageKey, fullVersion, refPackageKey, slug }) => {
       navigateToDocumentPreview?.({
-        packageKey: packageId,
+        packageKey: packageKey,
         versionKey: fullVersion,
         documentKey: slug,
         search: {
-          [REF_SEARCH_PARAM]: { value: ref },
+          [REF_SEARCH_PARAM]: { value: refPackageKey !== packageKey ? refPackageKey : undefined },
         },
       })
     },
@@ -50,11 +51,11 @@ export const DOCUMENT_MENU_CONFIG: MenuItemConfig[] = [
     id: 'export',
     label: 'Export',
     condition: (isOpenApiSpec) => isOpenApiSpec,
-    action: ({ showExportSettingsDialog, packageId, fullVersion, slug }) => {
+    action: ({ showExportSettingsDialog, packageKey, fullVersion, refPackageKey, refFullVersion, slug }) => {
       showExportSettingsDialog({
         exportedEntity: ExportedEntityKind.REST_DOCUMENT,
-        packageId: packageId,
-        version: fullVersion,
+        packageId: refPackageKey ?? packageKey!,
+        version: refFullVersion ?? fullVersion!,
         documentId: slug,
       })
     },

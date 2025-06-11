@@ -85,7 +85,7 @@ export const SpecToolbar: FC = memo(() => {
 
   const { showExportSettingsDialog } = useEventBus()
 
-  const getSharedKey = useGetSharedKey(slug, undefined)
+  const getSharedKey = useGetSharedKey(slug, docPackageKey, docPackageVersionKey)
 
   const [, copyToClipboard] = useCopyToClipboard()
   const showNotification = useShowSuccessNotification()
@@ -94,8 +94,10 @@ export const SpecToolbar: FC = memo(() => {
   const createTemplate = useCreateTemplate(protocol, host)
 
   const actionParams: DocumentActionParams = {
-    packageId: packageId!,
+    packageKey: packageId!,
     fullVersion: (versionContent ?? {}).version!,
+    refPackageKey: docPackageKey,
+    refFullVersion: docPackageVersionKey,
     slug: slug,
     protocol: protocol,
     host: host,

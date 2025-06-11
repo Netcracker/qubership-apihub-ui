@@ -35,7 +35,6 @@ import { useCopyToClipboard, useLocation } from 'react-use'
 import { useNavigation } from '../../../../NavigationProvider'
 import { useShowSuccessNotification } from '../../../BasePage/Notification'
 import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
-import { useRefSearchParam } from '../../useRefSearchParam'
 import type { DocumentActionParams } from '../document-actions'
 import { DOCUMENT_MENU_CONFIG, useCreateTemplate } from '../document-actions'
 import { useDownloadPublishedDocument } from '../useDownloadPublishedDocument'
@@ -65,14 +64,13 @@ export const DocumentActionsButton: FC<DocumentActionsButtonProps> = memo<Docume
 
   const { packageId } = useParams()
   const fullVersion = useFullMainVersion()
-  const [ref] = useRefSearchParam()
+  const [docPackageKey, docPackageVersionKey] = usePackageParamsWithRef()
 
   const { host, protocol } = useLocation()
 
-  const getSharedKey = useGetSharedKey(slug, ref)
+  const getSharedKey = useGetSharedKey(slug, docPackageKey, docPackageVersionKey)
 
   const [, copyToClipboard] = useCopyToClipboard()
-  const [docPackageKey, docPackageVersionKey] = usePackageParamsWithRef()
   const [downloadPublishedDocument] = useDownloadPublishedDocument({
     packageKey: docPackageKey,
     versionKey: docPackageVersionKey,
@@ -91,10 +89,11 @@ export const DocumentActionsButton: FC<DocumentActionsButtonProps> = memo<Docume
   const isOpenApiSpecification = isOpenApiSpecType(docType)
 
   const actionParams: DocumentActionParams = {
-    packageId: packageId!,
+    packageKey: packageId!,
     fullVersion: fullVersion!,
+    refPackageKey: docPackageKey,
+    refFullVersion: docPackageVersionKey,
     slug: slug,
-    ref: ref,
     protocol: protocol,
     host: host,
     navigateToDocumentPreview: navigateToDocumentPreview,
