@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { AUTHORIZATION_LOCAL_STORAGE_KEY } from './constants'
-import { getAuthorization } from './storages'
-import { redirectToSaml } from './redirects'
 import type { ErrorMessage } from './packages-builder'
-import type { Key } from './types'
 import { HttpError } from './responses'
+import { handleAuthentication, isTokenRefreshed } from './security'
+import type { Key } from './types'
 
 export const API_V1 = '/api/v1'
 export const API_V2 = '/api/v2'
@@ -49,19 +47,19 @@ export async function requestJson<T extends object | null>(
 ): Promise<T> {
   const { basePath = '', customErrorHandler, customRedirectHandler, ignoreNotFound = false } = options
 
-  const authorization = (init?.headers as Record<string, string>)?.authorization ?? getAuthorization()
-
   const response = await fetch(`${basePath}${input}`, {
-    headers: {
-      authorization: authorization,
-    },
     ...init,
     signal: signal,
+    credentials: 'include',
   })
-  if (!response.ok) {
-    handleAuthentication(response)
 
-    await handleFetchError(response, ignoreNotFound, customErrorHandler)
+  if (!response.ok) {
+    const tokenRefreshResult = await handleAuthentication(response.status)
+    if (isTokenRefreshed(tokenRefreshResult)) {
+      return requestJson(input, init, options, signal)
+    }
+
+    await handleFetchError(response, { 401: true, 404: ignoreNotFound }, customErrorHandler)
     return null as T
   }
 
@@ -82,18 +80,19 @@ export async function requestText(
   options: RequestTextExtraOptions = {},
 ): Promise<string> {
   const { basePath = '', customErrorHandler, customRedirectHandler } = options
-  const authorization = (init?.headers as Record<string, string>)?.authorization ?? getAuthorization()
 
   const response = await fetch(`${basePath ?? ''}${input}`, {
-    headers: {
-      authorization: authorization,
-    },
     ...init,
+    credentials: 'include',
   })
-  if (!response.ok) {
-    handleAuthentication(response)
 
-    await handleFetchError(response, false, customErrorHandler)
+  if (!response.ok) {
+    const tokenRefreshResult = await handleAuthentication(response.status)
+    if (isTokenRefreshed(tokenRefreshResult)) {
+      return requestText(input, init, options)
+    }
+
+    await handleFetchError(response, { 401: true }, customErrorHandler)
     return ''
   }
 
@@ -113,17 +112,17 @@ export async function requestBlob(
   options: RequestBlobExtraOptions = {},
 ): Promise<Response> {
   const { basePath = '', customErrorHandler, customRedirectHandler } = options
-  const authorization = (init?.headers as Record<string, string>)?.authorization ?? getAuthorization()
 
   const response = await fetch(`${basePath ?? ''}${input}`, {
-    headers: {
-      authorization: authorization,
-    },
     ...init,
+    credentials: 'include',
   })
 
   if (!response.ok) {
-    handleAuthentication(response)
+    const tokenRefreshResult = await handleAuthentication(response.status)
+    if (isTokenRefreshed(tokenRefreshResult)) {
+      return requestBlob(input, init, options)
+    }
 
     if (customErrorHandler) {
       customErrorHandler(response)
@@ -150,33 +149,30 @@ export async function requestVoid(
 ): Promise<void> {
   const { basePath = '', ignoreNotFound = false, customErrorHandler, customRedirectHandler } = options
 
-  const authorization = (init?.headers as Record<string, string>)?.authorization ?? getAuthorization()
-
   const response = await fetch(`${basePath}${input}`, {
-    headers: {
-      authorization: authorization,
-    },
     ...init,
+    credentials: 'include',
   })
-  if (!response.ok) {
-    handleAuthentication(response)
 
-    await handleFetchError(response, ignoreNotFound, customErrorHandler)
+  if (!response.ok) {
+    const tokenRefreshResult = await handleAuthentication(response.status)
+    if (isTokenRefreshed(tokenRefreshResult)) {
+      return requestVoid(input, init, options)
+    }
+
+    await handleFetchError(response, { 401: true, 404: ignoreNotFound }, customErrorHandler)
   }
 
   await handleFetchRedirect(response, customRedirectHandler)
   return
 }
 
-function handleAuthentication(response: Response): void {
-  if (response.status === 401 && !location.pathname.startsWith('/login')) {
-    localStorage.removeItem(AUTHORIZATION_LOCAL_STORAGE_KEY)
-    redirectToSaml()
-  }
-}
-
-async function handleFetchError(response: Response, ignoreNotFound: boolean, customErrorHandler?: CustomErrorHandler): Promise<void> {
-  if (ignoreNotFound && response.status === 404) {
+async function handleFetchError(
+  response: Response,
+  ignoredStatuses: Record<number, boolean>,
+  customErrorHandler?: CustomErrorHandler,
+): Promise<void> {
+  if (ignoredStatuses[response.status]) {
     return Promise.reject()
   }
 
