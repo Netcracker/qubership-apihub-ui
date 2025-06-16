@@ -14,18 +14,11 @@
  * limitations under the License.
  */
 
+import { useUser } from '../authorization'
+
 type IsAdmin = boolean
 
 export function useSuperAdminCheck(): IsAdmin {
-  // if (authorization) {
-  //   try {
-  //     const tokenPayload = getTokenPayload(authorization.token)
-  //     return tokenPayload?.extensions?.systemAdmin ?? false
-  //   } catch (e) {
-  //     /* do nothing */
-  //   }
-  // }
-
-  // TODO 28.03.25 // Fix it
-  return false
+  const [user] = useUser()
+  return user?.systemRole === 'System administrator'
 }
