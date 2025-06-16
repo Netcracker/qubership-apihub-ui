@@ -16,22 +16,17 @@
 
 import {
   fetchDeprecatedItems,
-  fetchExportTemplate,
   fetchOperations,
-  fetchVersionDocuments,
   getPackageVersionContent,
   getVersionReferences,
   toVersionOperation,
 } from './packages-builder'
 import type {
-  TemplateResolver,
   VersionDeprecatedResolver,
-  VersionDocumentsResolver,
   VersionOperationsResolver,
   VersionReferencesResolver,
   VersionResolver,
 } from '@netcracker/qubership-apihub-api-processor'
-import { NotFoundError } from './requests'
 
 export async function packageVersionResolver(): Promise<VersionResolver> {
   return async (packageId, version, includeOperations = false) => {
@@ -93,61 +88,5 @@ export async function versionOperationsResolver(): Promise<VersionOperationsReso
 export async function versionDeprecatedResolver(): Promise<VersionDeprecatedResolver> {
   return async (apiType, version, packageId, operationsIds) => {
     return await fetchDeprecatedItems(apiType, packageId, version, operationsIds)
-  }
-}
-
-// TODO: Use for documentGroup buildType transformation. Provide to builder
-export async function versionDocumentsResolver(): Promise<VersionDocumentsResolver> {
-  return async (apiType, version, packageId, filterByOperationGroup) => {
-    const EMPTY_DOCUMENTS = { documents: [] }
-    const LIMIT = 100
-    let page = 0
-
-    const response = await fetchVersionDocuments(
-      apiType,
-      packageId,
-      version,
-      filterByOperationGroup,
-      page,
-      LIMIT,
-    )
-
-    if (!response) {
-      return EMPTY_DOCUMENTS
-    }
-
-    let documentsCount = response.documents.length
-    while (documentsCount === LIMIT) {
-      page += 1
-
-      const { documents } = await fetchVersionDocuments(
-        apiType,
-        packageId,
-        version,
-        filterByOperationGroup,
-        page,
-        LIMIT,
-      ) ?? EMPTY_DOCUMENTS
-
-      response.documents = [...response.documents, ...documents]
-
-      documentsCount = documents.length
-    }
-
-    return response
-  }
-}
-
-export async function templateResolver(): Promise<TemplateResolver> {
-  return async (apiType, version, packageId, filterByOperationGroup) => {
-    try {
-      const [content] = await fetchExportTemplate(packageId, version, apiType, filterByOperationGroup)
-      return content
-    } catch (error) {
-      if (error instanceof NotFoundError) {
-        return ''
-      }
-      throw error
-    }
   }
 }
