@@ -25,9 +25,9 @@ import InfoIcon from '@mui/icons-material/Info'
 
 type SystemInfoPopupProps = {
   frontendVersionKey: string
-  frontendVersion: string
-  apiProcessorVersion: string
-  migrationInProgress: boolean
+  frontendVersion?: string
+  apiProcessorVersion?: string
+  migrationInProgress?: boolean
 }
 
 export const SystemInfoPopup: FC<SystemInfoPopupProps> = memo(({

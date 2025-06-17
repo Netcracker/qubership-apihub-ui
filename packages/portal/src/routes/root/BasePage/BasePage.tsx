@@ -62,8 +62,6 @@ export const BasePage: FC = memo(() => {
     [systemNotification],
   )
 
-  console.log()
-
   return (
     <MainPageProvider>
       <ModuleFetchingErrorBoundary showReloadPopup={packageJson.version !== frontend}>
