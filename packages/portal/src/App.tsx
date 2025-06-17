@@ -19,6 +19,7 @@ import { EventBusProvider } from '@apihub/routes/EventBusProvider'
 import { router } from '@apihub/routes/Router'
 import { CssBaseline, ThemeProvider } from '@mui/material'
 import { AppPlaceholder } from '@netcracker/qubership-apihub-ui-shared/components/AppPlaceholder'
+import { useUser } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
 import { useSystemConfiguration } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useSystemConfiguration'
 import { theme } from '@netcracker/qubership-apihub-ui-shared/themes/theme'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -40,13 +41,15 @@ const client = new QueryClient({
 
 const AppInner: FC = memo(() => {
   const [systemConfiguration] = useSystemConfiguration()
+  const isLoginPage = location.pathname === '/login'
+  const [user] = useUser(!!systemConfiguration)
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <ErrorHandler>
         <EventBusProvider>
-          {systemConfiguration
+          {systemConfiguration && (isLoginPage || user)
             ? <RouterProvider router={router} />
             : <AppPlaceholder />}
         </EventBusProvider>
