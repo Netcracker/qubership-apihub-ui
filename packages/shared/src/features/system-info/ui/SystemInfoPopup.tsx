@@ -21,12 +21,20 @@ import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { useSystemInfo } from '../api/useSystemInfo'
 import { isNotEmpty } from '../../../utils/arrays'
+import InfoIcon from '@mui/icons-material/Info'
 
 type SystemInfoPopupProps = {
   frontendVersionKey: string
+  frontendVersion: string
+  apiProcessorVersion: string
+  migrationInProgress: boolean
 }
 
-export const SystemInfoPopup: FC<SystemInfoPopupProps> = memo(({ frontendVersionKey }) => {
+export const SystemInfoPopup: FC<SystemInfoPopupProps> = memo(({
+  frontendVersion,
+  apiProcessorVersion,
+  migrationInProgress,
+}) => {
   const [anchor, setAnchor] = useState<HTMLElement>()
   const { backendVersionKey, externalLinks } = useSystemInfo()
 
@@ -38,7 +46,7 @@ export const SystemInfoPopup: FC<SystemInfoPopupProps> = memo(({ frontendVersion
         color="inherit"
         onClick={({ currentTarget }) => setAnchor(currentTarget)}
       >
-        <InfoOutlinedIcon />
+        <InfoOutlinedIcon/>
       </IconButton>
       <Popover
         sx={{ m: 0, p: 3 }}
@@ -55,7 +63,7 @@ export const SystemInfoPopup: FC<SystemInfoPopupProps> = memo(({ frontendVersion
             sx={{ position: 'absolute', right: 8, top: 8, color: '#353C4E' }}
             onClick={() => setAnchor(undefined)}
           >
-            <CloseOutlinedIcon />
+            <CloseOutlinedIcon/>
           </IconButton>
         </DialogTitle>
         <DialogContent data-testid="SystemInfoContent" sx={{ minWidth: 236, pb: 2 }}>
@@ -63,16 +71,27 @@ export const SystemInfoPopup: FC<SystemInfoPopupProps> = memo(({ frontendVersion
             display: 'grid',
             rowGap: 1,
           }}>
+            {migrationInProgress &&
+              (<Typography variant="subtitle2">
+                Data migration is in progress
+                <InfoIcon color="info" data-testid="InfoIcon"/>
+              </Typography>)
+            }
+
             <Typography variant="subtitle2">
               {`Backend v. ${backendVersionKey}`}
             </Typography>
 
             <Typography variant="subtitle2">
-              {`Frontend v. ${frontendVersionKey}`}
+              {`Frontend v. ${frontendVersion}`}
+            </Typography>
+
+            <Typography variant="subtitle2">
+              {`API Processor v. ${apiProcessorVersion}`}
             </Typography>
 
             {isNotEmpty(externalLinks) && <>
-              <Divider sx={{ mx: 0 }} orientation="horizontal" />
+              <Divider sx={{ mx: 0 }} orientation="horizontal"/>
               {externalLinks.map((link, index) => (
                 <Link
                   key={index}

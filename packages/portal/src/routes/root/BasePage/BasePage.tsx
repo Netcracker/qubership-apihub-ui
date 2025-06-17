@@ -43,12 +43,17 @@ import { matchPathname } from '@netcracker/qubership-apihub-ui-shared/utils/urls
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { SystemInfoPopup, useSystemInfo } from '@netcracker/qubership-apihub-ui-shared/features/system-info'
 import * as packageJson from '../../../../package.json'
+import { useVersionInfo } from '@netcracker/qubership-apihub-ui-shared/hooks/frontend-version/useVersionInfo'
+import {
+  ModuleFetchingErrorBoundary,
+} from '@netcracker/qubership-apihub-ui-shared/components/ModuleFetchingErrorBoundary/ModuleFetchingErrorBoundary'
 
 export const BasePage: FC = memo(() => {
   const [authorization] = useAuthorization()
-  const { notification: systemNotification } = useSystemInfo(!!authorization)
+  const { notification: systemNotification, migrationInProgress } = useSystemInfo(!!authorization)
   const showErrorNotification = useShowErrorNotification()
   const isSuperAdmin = useSuperAdminCheck()
+  const { frontend, apiProcessor } = useVersionInfo()
 
   const viewPortStyleCalculator = useCallback(
     (theme: Theme): SystemStyleObject<Theme> => {
@@ -57,43 +62,50 @@ export const BasePage: FC = memo(() => {
     [systemNotification],
   )
 
+  console.log()
+
   return (
     <MainPageProvider>
-      <Box
-        display="grid"
-        gridTemplateRows="max-content 1fr"
-        height="100vh"
-      >
-        <AppHeader
-          logo={<LogoIcon />}
-          title="APIHUB"
-          links={[
-            { name: 'Portal', pathname: '/portal', active: true, testId: 'PortalHeaderButton' },
-            { name: 'API Editor', pathname: '/editor', testId: 'EditorHeaderButton' },
-            { name: 'Agent', pathname: '/agents', testId: 'AgentHeaderButton' },
-          ]}
-          action={<>
-            <SearchButton />
-            {isSuperAdmin && <PortalSettingsButton />}
-            <SystemInfoPopup frontendVersionKey={packageJson.version} />
-            <UserPanel />
-          </>}
-        />
-        <Box sx={viewPortStyleCalculator}>
-          <ExceptionSituationHandler
-            homePath="/portal"
-            showErrorNotification={showErrorNotification}
-            redirectUrlFactory={replacePackageId}
-          >
-            <Outlet />
-          </ExceptionSituationHandler>
+      <ModuleFetchingErrorBoundary showReloadPopup={packageJson.version !== frontend}>
+        <Box
+          display="grid"
+          gridTemplateRows="max-content 1fr"
+          height="100vh"
+        >
+          <AppHeader
+            logo={<LogoIcon/>}
+            title="APIHUB"
+            links={[
+              { name: 'Portal', pathname: '/portal', active: true, testId: 'PortalHeaderButton' },
+              { name: 'API Editor', pathname: '/editor', testId: 'EditorHeaderButton' },
+              { name: 'Agent', pathname: '/agents', testId: 'AgentHeaderButton' },
+            ]}
+            action={<>
+              <SearchButton/>
+              {isSuperAdmin && <PortalSettingsButton/>}
+              <SystemInfoPopup frontendVersionKey={packageJson.version}
+                               frontendVersion={frontend}
+                               apiProcessorVersion={apiProcessor}
+                               migrationInProgress={migrationInProgress}/>
+              <UserPanel/>
+            </>}
+          />
+          <Box sx={viewPortStyleCalculator}>
+            <ExceptionSituationHandler
+              homePath="/portal"
+              showErrorNotification={showErrorNotification}
+              redirectUrlFactory={replacePackageId}
+            >
+              <Outlet/>
+            </ExceptionSituationHandler>
+          </Box>
+          <Notification/>
+          <GlobalSearchPanel/>
+          {systemNotification && (
+            <MaintenanceNotification value={systemNotification}/>
+          )}
         </Box>
-        <Notification />
-        <GlobalSearchPanel />
-        {systemNotification && (
-          <MaintenanceNotification value={systemNotification} />
-        )}
-      </Box>
+      </ModuleFetchingErrorBoundary>
     </MainPageProvider>
   )
 })
@@ -107,7 +119,7 @@ const SearchButton: FC = memo(() => {
       color="inherit"
       onClick={showGlobalSearchPanel}
     >
-      <SearchOutlinedIcon />
+      <SearchOutlinedIcon/>
     </IconButton>
   )
 })
