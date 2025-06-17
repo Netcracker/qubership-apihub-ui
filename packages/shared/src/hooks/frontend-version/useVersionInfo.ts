@@ -18,10 +18,12 @@ import { useQuery } from '@tanstack/react-query'
 import type { VersionInfo, VersionInfoDto } from '../../utils/version-info'
 import { getVersionInfoOptions } from '../../utils/version-info'
 
+const emptyVersion: VersionInfo = { frontend: 'unknown', apiProcessor: 'unknown' }
+
 export function useVersionInfo(): VersionInfo {
   const { data } = useQuery<VersionInfoDto, Error, VersionInfo>(
     getVersionInfoOptions(),
   )
 
-  return data ?? { frontend: '2.12.2', apiProcessor: 'test_2' }
+  return data ?? emptyVersion
 }
