@@ -35,7 +35,6 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import { LoadingButton } from '@mui/lab'
 import { Controller, useForm } from 'react-hook-form'
 import type { ControllerFieldState, ControllerRenderProps } from 'react-hook-form/dist/types/controller'
 import type { UseFormStateReturn } from 'react-hook-form/dist/types'
@@ -54,7 +53,6 @@ import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/Di
 import { isServiceNameExistInNamespace } from '@netcracker/qubership-apihub-ui-shared/entities/service-names'
 import CloseIcon from '@mui/icons-material/Close'
 import { useShowSuccessNotification } from '@apihub/routes/root/BasePage/Notification'
-import { portalRequestJson } from '@apihub/utils/requests'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 
 
@@ -107,8 +105,6 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const [mode, setMode] = useState<ModeType>(MODE_CUSTOM)
   const [serverUrlError, setServerUrlError] = useState<string | null>(null)
   const [serverUrlWarning, setServerUrlWarning] = useState<string | null>(null)
-  // Initialize apiSpec with an empty object as there's no backend involvement for this data
-  const [apiSpec, setApiSpec] = useState<unknown>({})
   const [showWarning, setShowWarning] = useState(false)
   const [urlInput, setUrlInput] = useState('')
 
@@ -131,9 +127,6 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     const uniqueClouds = Array.from(new Set(agents.map(agent => agent.agentDeploymentCloud).filter(Boolean)))
     return uniqueClouds as string[]
   }, [agents])
-
-
-
 
   const baseUrl = window.location.origin
 
@@ -166,37 +159,6 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     () => isServiceNameExistInNamespace(serviceNames, serviceName, selectedCloud, selectedNamespace?.namespaceKey),
     [selectedCloud, selectedNamespace?.namespaceKey, serviceName, serviceNames],
   )
-
-  const apiSpecServerUrls = useMemo(() => {
-    const servers = (apiSpec as { servers?: { url: string }[] })?.servers ?? []
-    return servers.map((s: { url: string }) => s.url).filter(Boolean)
-  }, [apiSpec])
-
-  useEffect(() => {
-    portalRequestJson(`/packages/${packageId}/spec`)
-      .then(setApiSpec)
-      .catch(console.error)
-  }, [packageId])
-
-  const firstSubPath = useMemo(() => {
-    const match = apiSpecServerUrls.find((url: string) => {
-      try {
-        const { pathname } = new URL(url)
-        return pathname !== '/' && pathname !== ''
-      } catch {
-        return url.startsWith('/')
-      }
-    })
-
-    if (!match) return ''
-
-    try {
-      const { pathname } = new URL(match)
-      return pathname
-    } catch {
-      return match
-    }
-  }, [apiSpecServerUrls])
 
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   function useUrlPathWarning(url: string, delay = 700) {
@@ -233,23 +195,10 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       setServerUrlError('The value must be an absolute URL')
       return
     }
-    const pathMatch = apiSpecServerUrls
-      ?.map((url: string | URL) => {
-        try {
-          const parsed = new URL(url, 'http://dummy-base') // for relative paths
-          return parsed.pathname
-        } catch {
-          return ''
-        }
-      })
-      .find((path: string) => path && path !== '/')
 
-    if (!hasPath(value) && firstSubPath) {
-      setServerUrlWarning(`Servers specified directly in the OpenAPI specification contain a path to a specific resource. Make sure the URL you enter is correct and does not contain an additional path (e.g. ${firstSubPath})`)
-    }
     setSelectedNamespace(null)
     setSelectedCloud('')
-  }, [apiSpecServerUrls, firstSubPath])
+  }, [])
 
   // Storing data in local storage
   const [customServersPackageMap, setCustomServersPackageMap] = useCustomServersPackageMap()
@@ -422,7 +371,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const hasPath = (url: string): boolean => {
     try {
       const { pathname } = new URL(url)
-      return pathname !== '' && pathname !== '/' // indicates subdirectory
+      return pathname !== '' && pathname !== '/' 
     } catch {
       return false
     }
