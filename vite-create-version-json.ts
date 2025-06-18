@@ -29,8 +29,8 @@ export default function createVersionJsonFilePlugin(): Plugin {
       }
 
       const versionData = {
-        frontend: lernaVersion,
-        apiProcessor: libraryVersion,
+        frontendVersion: lernaVersion,
+        apiProcessorVersion: libraryVersion,
       }
 
       if (!fs.existsSync(path.dirname(outputPath))) {
@@ -38,7 +38,7 @@ export default function createVersionJsonFilePlugin(): Plugin {
       }
 
       fs.writeFileSync(outputPath, JSON.stringify(versionData, null, 2))
-      console.log(`✔ version.json успешно создан в ${outputPath}`)
+      console.log(`✔ version.json was successfully created in ${outputPath}`)
     },
   }
 }

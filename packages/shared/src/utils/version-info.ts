@@ -20,16 +20,24 @@ import type { UseQueryOptions } from '@tanstack/react-query'
 const VERSION_INFO_QUERY_KEY = 'version-info'
 
 export type VersionInfoDto = {
-  frontend: string
-  apiProcessor: string
+  frontendVersion: string
+  apiProcessorVersion: string
 }
 export type VersionInfo = VersionInfoDto
 
-export function getVersionInfoOptions(enabled = true): UseQueryOptions<VersionInfoDto, Error, VersionInfo> {
+export const Apps = {
+  portal: 'portal',
+  agent: 'agents',
+} as const
+
+export const { portal, agent } = Apps
+export type AppTypeApiHub = typeof Apps[keyof typeof Apps]
+
+export function getVersionInfoOptions(appType: AppTypeApiHub): UseQueryOptions<VersionInfoDto, Error, VersionInfo> {
   return {
     queryKey: [VERSION_INFO_QUERY_KEY],
-    queryFn: getVersionInfo,
-    enabled: enabled,
+    queryFn: () => getVersionInfo(appType),
+    enabled: true,
     refetchInterval: DEFAULT_REFETCH_INTERVAL,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
@@ -37,8 +45,8 @@ export function getVersionInfoOptions(enabled = true): UseQueryOptions<VersionIn
   }
 }
 
-export async function getVersionInfo(): Promise<VersionInfoDto> {
-  return await requestJson<VersionInfoDto>('/portal/version.json', {
+export async function getVersionInfo(appType: AppTypeApiHub): Promise<VersionInfoDto> {
+  return await requestJson<VersionInfoDto>(`/${appType}/version.json`, {
     method: 'get',
   })
 }

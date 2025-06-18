@@ -50,10 +50,10 @@ import {
 
 export const BasePage: FC = memo(() => {
   const [authorization] = useAuthorization()
-  const { notification: systemNotification, migrationInProgress } = useSystemInfo(!!authorization)
+  const { notification: systemNotification } = useSystemInfo(!!authorization)
   const showErrorNotification = useShowErrorNotification()
   const isSuperAdmin = useSuperAdminCheck()
-  const { frontend, apiProcessor } = useVersionInfo()
+  const { frontendVersion, apiProcessorVersion } = useVersionInfo()
 
   const viewPortStyleCalculator = useCallback(
     (theme: Theme): SystemStyleObject<Theme> => {
@@ -64,7 +64,7 @@ export const BasePage: FC = memo(() => {
 
   return (
     <MainPageProvider>
-      <ModuleFetchingErrorBoundary showReloadPopup={packageJson.version !== frontend}>
+      <ModuleFetchingErrorBoundary showReloadPopup={packageJson.version !== frontendVersion}>
         <Box
           display="grid"
           gridTemplateRows="max-content 1fr"
@@ -81,10 +81,8 @@ export const BasePage: FC = memo(() => {
             action={<>
               <SearchButton/>
               {isSuperAdmin && <PortalSettingsButton/>}
-              <SystemInfoPopup frontendVersionKey={packageJson.version}
-                               frontendVersion={frontend}
-                               apiProcessorVersion={apiProcessor}
-                               migrationInProgress={migrationInProgress}/>
+              <SystemInfoPopup frontendVersionKey={frontendVersion}
+                               apiProcessorVersion={apiProcessorVersion}/>
               <UserPanel/>
             </>}
           />
