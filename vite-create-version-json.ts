@@ -7,8 +7,6 @@ export default function createVersionJsonFilePlugin(): Plugin {
   return {
     name: 'create-version-json-file',
     async closeBundle() {
-      console.log('📦 Сборка завершена. Создаём version.json...')
-
       const lernaPath = path.resolve(__dirname, 'lerna.json')
       const packagePath = path.resolve(__dirname, 'package.json')
       const outputPathPortal = path.resolve(__dirname, 'packages/portal/dist/version.json')
@@ -43,9 +41,7 @@ export default function createVersionJsonFilePlugin(): Plugin {
       }
 
       fs.writeFileSync(outputPathPortal, JSON.stringify(versionData, null, 2))
-      console.log(`✔ version.json was successfully created in ${outputPathPortal}`)
       fs.writeFileSync(outputPathAgent, JSON.stringify(versionData, null, 2))
-      console.log(`✔ version.json was successfully created in ${outputPathAgent}`)
     },
   }
 }
