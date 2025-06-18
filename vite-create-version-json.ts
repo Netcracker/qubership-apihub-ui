@@ -23,8 +23,11 @@ export default function createVersionJsonFilePlugin(): Plugin {
       if (fs.existsSync(packagePath)) {
         const pkg = JSON.parse(fs.readFileSync(packagePath, 'utf-8'))
         libraryVersion =
-          pkg.dependencies?.['@netcracker/qubership-apihub-api-processor'] ||
-          null
+          pkg.dependencies?.['@netcracker/qubership-apihub-api-processor']
+      }
+
+      if (!libraryVersion) {
+        this.error('Version not found: @netcracker/qubership-apihub-api-processor')
       }
 
       const versionData = {
