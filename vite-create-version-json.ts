@@ -17,7 +17,7 @@ export default function createVersionJsonFilePlugin(): Plugin {
 
       if (fs.existsSync(lernaPath)) {
         const lerna = JSON.parse(fs.readFileSync(lernaPath, 'utf-8'))
-        lernaVersion = lerna.version || null
+        lernaVersion = lerna.version
       }
 
       if (fs.existsSync(packagePath)) {
@@ -26,8 +26,8 @@ export default function createVersionJsonFilePlugin(): Plugin {
           pkg.dependencies?.['@netcracker/qubership-apihub-api-processor']
       }
 
-      if (!libraryVersion) {
-        this.error('Version not found: @netcracker/qubership-apihub-api-processor')
+      if (!libraryVersion || !lernaVersion) {
+        this.error('Version not found: @netcracker/qubership-apihub-api-processor or lerna.json')
       }
 
       const versionData = {
