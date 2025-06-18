@@ -18,8 +18,9 @@ import { useQuery } from '@tanstack/react-query'
 import type { AppTypeApiHub, VersionInfo, VersionInfoDto } from '../../utils/version-info'
 import { portal } from '../../utils/version-info'
 import { getVersionInfoOptions } from '../../utils/version-info'
+import * as packageJson from '../../../../portal/package.json'
 
-const emptyVersion: VersionInfo = { frontendVersion: 'unknown', apiProcessorVersion: 'unknown' }
+const emptyVersion: VersionInfo = { frontendVersion: packageJson.version, apiProcessorVersion: 'unknown' }
 
 export function useVersionInfo(appType: AppTypeApiHub = portal): VersionInfo {
   const { data } = useQuery<VersionInfoDto, Error, VersionInfo>(
