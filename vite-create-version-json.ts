@@ -11,7 +11,8 @@ export default function createVersionJsonFilePlugin(): Plugin {
 
       const lernaPath = path.resolve(__dirname, 'lerna.json')
       const packagePath = path.resolve(__dirname, 'package.json')
-      const outputPath = path.resolve(__dirname, 'packages/portal/dist/version.json')
+      const outputPathPortal = path.resolve(__dirname, 'packages/portal/dist/version.json')
+      const outputPathAgent = path.resolve(__dirname, 'packages/agents/dist/version.json')
 
       let lernaVersion = null
       let libraryVersion = null
@@ -33,12 +34,18 @@ export default function createVersionJsonFilePlugin(): Plugin {
         apiProcessorVersion: libraryVersion,
       }
 
-      if (!fs.existsSync(path.dirname(outputPath))) {
-        fs.mkdirSync(path.dirname(outputPath), { recursive: true })
+      if (!fs.existsSync(path.dirname(outputPathPortal))) {
+        fs.mkdirSync(path.dirname(outputPathPortal), { recursive: true })
       }
 
-      fs.writeFileSync(outputPath, JSON.stringify(versionData, null, 2))
-      console.log(`✔ version.json was successfully created in ${outputPath}`)
+      if (!fs.existsSync(path.dirname(outputPathAgent))) {
+        fs.mkdirSync(path.dirname(outputPathAgent), { recursive: true })
+      }
+
+      fs.writeFileSync(outputPathPortal, JSON.stringify(versionData, null, 2))
+      console.log(`✔ version.json was successfully created in ${outputPathPortal}`)
+      fs.writeFileSync(outputPathAgent, JSON.stringify(versionData, null, 2))
+      console.log(`✔ version.json was successfully created in ${outputPathAgent}`)
     },
   }
 }
