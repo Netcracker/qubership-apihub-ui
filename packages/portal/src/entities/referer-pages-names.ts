@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PRIVATE_PAGE } from '../routes'
 
 export const EMPTY_PAGE_REFERER = ''
 export const MAIN_PAGE_REFERER = 'MainPage'
