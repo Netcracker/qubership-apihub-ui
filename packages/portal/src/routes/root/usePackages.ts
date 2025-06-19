@@ -59,7 +59,6 @@ export function usePackages(options: {
     queryKey: queryKey,
     queryFn: () => getPackages(kind, limit, onlyFavorite, page, parentId, showParents, textFilter, onlyShared, lastReleaseVersionDetails, versionLabel, showAllDescendants),
     enabled: enabled,
-   // cacheTime:1000,
   })
 
   return [data ?? [], isLoading, isFetching, error]
