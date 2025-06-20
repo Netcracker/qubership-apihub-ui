@@ -94,14 +94,14 @@ function useUrlPathWarning(url: string, delay = 700): boolean {
       }
     }, delay)
 
-    //   return () => clearTimeout(checkPath)
-    // }, 
-    checkPath()
-    return () => {
+  //   return () => clearTimeout(checkPath)
+  // }, 
+  checkPath()
+  return () => {
       checkPath.cancel()
     }
   },
-    [delay, url])
+  [delay, url])
 
   return showWarning
 }
@@ -380,7 +380,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const hasPath = (url: string): boolean => {
     try {
       const { pathname } = new URL(url)
-      return pathname !== '' && pathname !== '/'
+      return pathname !== '' && pathname !== '/' 
     } catch {
       return false
     }
@@ -471,7 +471,21 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
           render={renderDescriptionInput}
         />
 
-        {showPathWarning && <Alert severity="warning" sx={{ mt: 2 }}>
+        {showPathWarning && <Alert severity="warning"
+         sx={{ 
+          mt: 2,
+            backgroundColor: '#ffffff', // White background
+            alignItems: 'flex-start',
+            '& .MuiAlert-icon': {
+              mt: '2px',
+            },
+            '& .MuiAlert-message': {
+              fontSize: '14px',
+              lineHeight: '20px',
+            },
+
+         }}
+        >
           Servers specified directly in the OpenAPI specification contain a path to a specific resource.
           Make sure the URL you enter is correct and does not contain an additional path (e.g. <code>/api/v1</code>).
         </Alert>
