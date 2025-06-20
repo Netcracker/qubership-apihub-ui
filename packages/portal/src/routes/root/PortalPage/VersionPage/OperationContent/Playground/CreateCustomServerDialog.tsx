@@ -55,6 +55,8 @@ import CloseIcon from '@mui/icons-material/Close'
 import { useShowSuccessNotification } from '@apihub/routes/root/BasePage/Notification'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { debounce } from 'lodash'
+import type { PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 
 
 const CLOUD_KEY = 'cloudKey'
@@ -386,6 +388,8 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     }
   }
 
+const kind = packageObj?.kind as PackageKind | undefined
+const kindLabel = kind ?? PACKAGE_KIND
   return (
     <DialogForm
       open={open}
@@ -398,7 +402,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
           Add Custom Server
           {!isServiceNameExist && (
             <Tooltip
-              title={`Only adding a custom server is available. To use the Agent proxy, specify the service name for the current ${packageId}.`}
+              title={`Only adding a custom server is available. To use the Agent proxy, specify the service name for the current ${kindLabel}.`}
               placement="right"
             >
               <IconButton size="small" aria-label="info" sx={{ p: '0 4px' }}>
