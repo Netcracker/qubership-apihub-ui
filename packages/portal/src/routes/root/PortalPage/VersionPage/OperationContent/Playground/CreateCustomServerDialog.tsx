@@ -54,6 +54,7 @@ import { isServiceNameExistInNamespace } from '@netcracker/qubership-apihub-ui-s
 import CloseIcon from '@mui/icons-material/Close'
 import { useShowSuccessNotification } from '@apihub/routes/root/BasePage/Notification'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import { debounce } from 'lodash'
 
 
 const CLOUD_KEY = 'cloudKey'
@@ -73,6 +74,36 @@ type CreateCustomServerForm = {
   [SERVICE_KEY]?: Key
   [CUSTOM_SERVER_URL_KEY]?: Key
   [DESCRIPTION_KEY]?: string
+}
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+function useUrlPathWarning(url: string, delay = 700): boolean {
+  const [showWarning, setShowWarning] = useState(false)
+
+  useEffect(() => {
+    if (!url) return setShowWarning(false)
+
+    // const timeout = setTimeout(() => {
+    const checkPath = debounce(() => {
+      try {
+        const parsed = new URL(url)
+        const isRootPath = parsed.pathname === '/' || parsed.pathname === ''
+        setShowWarning(isRootPath)
+      } catch {
+        setShowWarning(false)
+      }
+    }, delay)
+
+    //   return () => clearTimeout(checkPath)
+    // }, 
+    checkPath()
+    return () => {
+      checkPath.cancel()
+    }
+  },
+    [delay, url])
+
+  return showWarning
 }
 
 export const CreateCustomServerDialog: FC = memo(() => {
@@ -105,7 +136,6 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const [mode, setMode] = useState<ModeType>(MODE_CUSTOM)
   const [serverUrlError, setServerUrlError] = useState<string | null>(null)
   const [serverUrlWarning, setServerUrlWarning] = useState<string | null>(null)
-  const [showWarning, setShowWarning] = useState(false)
   const [urlInput, setUrlInput] = useState('')
 
 
@@ -160,27 +190,6 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     [selectedCloud, selectedNamespace?.namespaceKey, serviceName, serviceNames],
   )
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  function useUrlPathWarning(url: string, delay = 700) {
-
-    useEffect(() => {
-      if (!url) return setShowWarning(false)
-
-      const timeout = setTimeout(() => {
-        try {
-          const parsed = new URL(url)
-          const isRootPath = parsed.pathname === '/' || parsed.pathname === ''
-          setShowWarning(isRootPath)
-        } catch {
-          setShowWarning(false)
-        }
-      }, delay)
-
-      return () => clearTimeout(timeout)
-    }, [url, delay])
-
-    return showWarning
-  }
 
   const showPathWarning = useUrlPathWarning(urlInput)
 
@@ -371,7 +380,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const hasPath = (url: string): boolean => {
     try {
       const { pathname } = new URL(url)
-      return pathname !== '' && pathname !== '/' 
+      return pathname !== '' && pathname !== '/'
     } catch {
       return false
     }
