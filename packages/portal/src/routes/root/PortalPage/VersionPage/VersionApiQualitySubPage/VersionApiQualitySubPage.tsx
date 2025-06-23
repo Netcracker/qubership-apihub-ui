@@ -1,12 +1,15 @@
 import { LayoutWithSidebar } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/LayoutWithSidebar'
-import { memo } from 'react'
 import type { FC } from 'react'
+import { memo } from 'react'
+import { VersionApiQualityCard } from './VersionApiQualityCard'
 
 export const VersionApiQualitySubPage: FC = memo(() => {
   return (
     <LayoutWithSidebar
-      header={<div>Header</div>}
-      body={<div>Body</div>}
+      header={<div>API Quality</div>}
+      body={
+        <VersionApiQualityCard />
+      }
     />
   )
 })

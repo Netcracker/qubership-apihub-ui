@@ -14,36 +14,36 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useState } from 'react'
-import { SHOW_PUBLISH_PREVIEW_DIALOG } from '../../../../../EventBusProvider'
-import { Box, Dialog, DialogContent, DialogTitle, IconButton } from '@mui/material'
+import { DocSpecView } from '@apihub/components/DocSpecView'
+import { PORTAL_SPEC_VIEW_MODES } from '@apihub/entities/spec-view-mode'
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
-import { useSelectedPreviewFile } from '../../useSelectedPreviewFile'
-import { Resizable } from 're-resizable'
-import { useBranchCache } from '../../useBranchCache'
-import { useDereferencedSpec } from '../../useDereferencedSpec'
-import { RawSpecView } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/RawSpecView'
+import { Box, Dialog, DialogContent, DialogTitle, IconButton } from '@mui/material'
+import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
+import { RawSpecView } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/RawSpecView'
+import { SpecNavigation } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/SpecNavigation'
 import type { SpecViewMode } from '@netcracker/qubership-apihub-ui-shared/components/SpecViewToggler'
 import {
   DOC_SPEC_VIEW_MODE,
   RAW_SPEC_VIEW_MODE,
-  SpecViewToggler,
 } from '@netcracker/qubership-apihub-ui-shared/components/SpecViewToggler'
+import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'
 import { useSpecItemUriHashParam } from '@netcracker/qubership-apihub-ui-shared/hooks/hashparams/useSpecItemUriHashParam'
-import { UNKNOWN_SPEC_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import { getFileExtension, UNKNOWN_FILE_FORMAT } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import {
   NAVIGATION_DEFAULT_WIDTH,
   NAVIGATION_MAX_WIDTH,
   NAVIGATION_MIN_WIDTH,
 } from '@netcracker/qubership-apihub-ui-shared/utils/page-layouts'
-import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
-import { PORTAL_SPEC_VIEW_MODES } from '@apihub/entities/spec-view-mode'
-import { SpecNavigation } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/SpecNavigation'
-import { DocSpecView } from '@apihub/components/DocSpecView'
+import { UNKNOWN_SPEC_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import { Resizable } from 're-resizable'
+import type { FC } from 'react'
+import { memo, useState } from 'react'
+import { SHOW_PUBLISH_PREVIEW_DIALOG } from '../../../../../EventBusProvider'
+import { useBranchCache } from '../../useBranchCache'
+import { useDereferencedSpec } from '../../useDereferencedSpec'
+import { useSelectedPreviewFile } from '../../useSelectedPreviewFile'
 
 export const PublishPreviewDialog: FC = memo(() => (
   <PopupDelegate
@@ -66,7 +66,7 @@ const PublishPreviewPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen })
       <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
         {name} Preview
         <Box display="flex" marginLeft="auto" alignItems="center" gap={3}>
-          <SpecViewToggler
+          <Toggler<SpecViewMode>
             mode={specViewMode}
             modes={PORTAL_SPEC_VIEW_MODES}
             onChange={setSpecViewMode}
