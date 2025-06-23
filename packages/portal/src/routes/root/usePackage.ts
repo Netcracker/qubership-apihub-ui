@@ -16,7 +16,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useShowErrorNotification, useShowSuccessNotification } from './BasePage/Notification'
-import { PACKAGES_QUERY_KEY, useRefetchPackages } from './usePackages'
+import { useRefetchAllPackages, useRefetchPackages } from './usePackages'
 import { generatePath, useParams } from 'react-router-dom'
 import { useNavigation } from '../NavigationProvider'
 import { portalRequestJson, portalRequestVoid } from '@apihub/utils/requests'
@@ -47,7 +47,7 @@ import { toPackage } from '@netcracker/qubership-apihub-ui-shared/hooks/packages
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
 import { MAIN_PAGE_REFERER } from '@apihub/entities/referer-pages-names'
 
-export const PACKAGE_QUERY_KEY = 'package-query-key'
+const PACKAGE_QUERY_KEY = 'package-query-key'
 
 export function usePackage(options?: Partial<{
   packageKey: Key
@@ -79,12 +79,12 @@ export function useUpdatePackage(): [UpdatePackage, IsLoading, IsSuccess] {
   const client = useQueryClient()
   const showNotification = useShowSuccessNotification()
   const showErrorNotification = useShowErrorNotification()
-  const refetchPackages = useRefetchPackages({ queryKey: [PACKAGES_QUERY_KEY] })
+  const refetchAllPackages = useRefetchAllPackages()
   const { mutate, isLoading, isSuccess } = useMutation<PackageDto, Error, UpdatePackageProps>({
     mutationFn: ({ packageKey, value }) => updatePackage(packageKey, value),
     onSuccess: ({ packageId }) => {
       showNotification({ message: 'Package has been updated' })
-      refetchPackages()
+      refetchAllPackages()
       const packageKey = encodeURIComponent(packageId)
 
       return client.invalidateQueries({
@@ -103,11 +103,11 @@ export function useUpdatePackage(): [UpdatePackage, IsLoading, IsSuccess] {
 export function useDeletePackage(): [DeletePackage, IsLoading, IsSuccess] {
   const showNotification = useShowSuccessNotification()
   const showErrorNotification = useShowErrorNotification()
-  const refetchPackages = useRefetchPackages({ queryKey: [PACKAGES_QUERY_KEY] })
+  const refetchAllPackages = useRefetchAllPackages()
   const { mutate, isLoading, isSuccess } = useMutation<void, Error, Key>({
     mutationFn: packageKey => deletePackage(packageKey),
     onSuccess: (_, key) => {
-      refetchPackages()
+      refetchAllPackages()
       showNotification({ message: `Package ${key} has been deleted` })
     },
     onError: (error) => {

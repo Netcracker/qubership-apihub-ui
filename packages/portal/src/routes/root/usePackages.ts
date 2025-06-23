@@ -21,7 +21,7 @@ import type { InvalidateQuery, IsFetching, IsLoading } from '@netcracker/qubersh
 import { EMPTY_PAGE_REFERER } from '@netcracker/qubership-apihub-ui-shared/entities/referer-pages-names'
 import { getPackages } from '@netcracker/qubership-apihub-ui-shared/hooks/packages/usePackages'
 
-export const PACKAGES_QUERY_KEY = 'packages-query-key'
+const PACKAGES_QUERY_KEY = 'packages-query-key'
 
 export function usePackages(options: {
   kind: PackageKind | PackageKind[]
@@ -74,4 +74,8 @@ export function useRefetchPackages(options: Partial<{
   } = options
   const client = useQueryClient()
   return () => client.refetchQueries({ queryKey }).then()
+}
+
+export function useRefetchAllPackages(): InvalidateQuery<void> {
+  return useRefetchPackages({ queryKey: [PACKAGES_QUERY_KEY] })
 }

@@ -16,7 +16,7 @@
 
 import { useMutation } from '@tanstack/react-query'
 import { useShowErrorNotification, useShowSuccessNotification } from '../BasePage/Notification'
-import { PACKAGES_QUERY_KEY, useRefetchPackages } from '../usePackages'
+import { useRefetchAllPackages } from '../usePackages'
 import { useInvalidatePackage } from '../usePackage'
 import { generatePath } from 'react-router-dom'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
@@ -30,12 +30,12 @@ export function useFavorPackage(packageKey?: Key, refererPageName?: string, isWo
   const showErrorNotification = useShowErrorNotification()
   const showNotification = useShowSuccessNotification()
   const invalidatePackage = useInvalidatePackage()
-  const refetchPackages = useRefetchPackages({queryKey: [PACKAGES_QUERY_KEY]})
+  const refetchAllPackages = useRefetchAllPackages()
 
   const { mutate, isLoading, isSuccess } = useMutation<void, Error, Key>({
     mutationFn: packageKey => favorPackage(packageKey),
     onSuccess: () => {
-      refetchPackages()
+      refetchAllPackages()
       packageKey && invalidatePackage(packageKey)
       isWorkspace && showNotification({ message: 'List of workspaces successfully updated' })
     },
