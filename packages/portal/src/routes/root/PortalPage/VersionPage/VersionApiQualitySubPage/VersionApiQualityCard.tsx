@@ -6,6 +6,7 @@ import { memo, useMemo, useState } from 'react'
 import { ValidationResultLink } from './ValidatationRulesetLink'
 import type { OriginalDocumentFileFormat } from './types'
 import { YAML_FILE_FORMAT, JSON_FILE_FORMAT } from '@apihub/entities/file-formats'
+import { ValidatedDocumentSelector } from './ValidatedDocumentSelector'
 
 type TwoSidedCardProps = Partial<{
   leftHeader: ReactNode
@@ -32,13 +33,13 @@ const TwoSidedCard: FC<TwoSidedCardProps> = memo<TwoSidedCardProps>((props) => {
     >
       <Box
         gridArea="left-header"
-        sx={{ borderBottom: borderStyle, borderRight: borderStyle, pb: internalIndent, pr: internalIndent }}
+        sx={{ borderBottom: borderStyle, borderRight: borderStyle, pt: 1, pb: 1, pr: internalIndent }}
       >
         {leftHeader}
       </Box>
       <Box
         gridArea="right-header"
-        sx={{ borderBottom: borderStyle, borderLeft: borderStyle, pb: internalIndent, pl: internalIndent }}
+        sx={{ borderBottom: borderStyle, borderLeft: borderStyle, pt: 1, pb: 1, pl: internalIndent }}
       >
         {rightHeader}
       </Box>
@@ -60,23 +61,29 @@ const TwoSidedCard: FC<TwoSidedCardProps> = memo<TwoSidedCardProps>((props) => {
 
 export const VersionApiQualityCard: FC = memo(() => {
   const [format, setFormat] = useState<OriginalDocumentFileFormat>(YAML_FILE_FORMAT)
-  
+
   return (
     <BodyCard
       body={
         <TwoSidedCard
           leftHeader={
-            <>
-
+            <Box display='flex' justifyContent='space-between'>
+              <ValidatedDocumentSelector />
               <ValidationResultLink rulesetName='My Ruleset' status='OK' />
-            </>
+            </Box>
           }
           rightHeader={
-            <Toggler<OriginalDocumentFileFormat>
-              mode={format}
-              modes={[YAML_FILE_FORMAT, JSON_FILE_FORMAT]}
-              onChange={setFormat}
-            />
+            <Box display='flex' justifyContent='flex-end'>
+              <Toggler<OriginalDocumentFileFormat>
+                mode={format}
+                modes={[JSON_FILE_FORMAT, YAML_FILE_FORMAT]}
+                modeToText={{
+                  [JSON_FILE_FORMAT]: JSON_FILE_FORMAT.toUpperCase(),
+                  [YAML_FILE_FORMAT]: YAML_FILE_FORMAT.toUpperCase(),
+                }}
+                onChange={setFormat}
+              />
+            </Box>
           }
           leftBody={<div>Table with validation results</div>}
           rightBody={<div>Monaco Editor (RO) with validated document</div>}

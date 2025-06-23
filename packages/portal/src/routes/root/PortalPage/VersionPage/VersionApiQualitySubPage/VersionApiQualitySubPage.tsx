@@ -6,10 +6,11 @@ import { VersionApiQualityCard } from './VersionApiQualityCard'
 export const VersionApiQualitySubPage: FC = memo(() => {
   return (
     <LayoutWithSidebar
-      header={<div>API Quality</div>}
+      header={<div>Quality Validation</div>}
       body={
         <VersionApiQualityCard />
       }
+      disableHorizontalDivider
     />
   )
 })

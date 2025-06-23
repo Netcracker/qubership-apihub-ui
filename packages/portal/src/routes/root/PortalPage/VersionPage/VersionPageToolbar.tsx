@@ -59,8 +59,8 @@ export const VersionPageToolbar: FC = memo(() => {
   const [downloadVersionDocumentation] = useDownloadVersionDocumentation()
 
   const currentPackage = useCurrentPackage()
-  const isDashboard: boolean | null = useMemo(() => currentPackage?.kind === DASHBOARD_KIND ?? null, [currentPackage?.kind])
-  const isPackage: boolean | null = useMemo(() => currentPackage?.kind === PACKAGE_KIND ?? null, [currentPackage?.kind])
+  const isDashboard: boolean = useMemo(() => currentPackage?.kind === DASHBOARD_KIND, [currentPackage?.kind])
+  const isPackage: boolean = useMemo(() => currentPackage?.kind === PACKAGE_KIND, [currentPackage?.kind])
 
   const { versionContent } = usePackageVersionContent({
     packageKey: packageId,
