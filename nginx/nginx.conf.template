@@ -135,6 +135,7 @@ http {
              add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate" always;
              add_header Pragma "no-cache" always;
              add_header Expires 0 always;
+             etag off;
              try_files $uri =404;
          }
 
