@@ -69,10 +69,10 @@ export const SystemInfoPopup: FC<SystemInfoPopupProps> = memo(({
             display: 'grid',
             rowGap: 1,
           }}>
-            {migrationInProgress &&
+            {true &&
               (<Typography variant="subtitle2">
                 Data migration is in progress
-                <InfoIcon color="info" data-testid="InfoIcon"/>
+                <InfoOutlinedIcon sx={{ color: '#626D82', width: '20px', height: '20px', marginLeft: '4px' }}/>
               </Typography>)
             }
 
