@@ -54,9 +54,9 @@ import { isServiceNameExistInNamespace } from '@netcracker/qubership-apihub-ui-s
 import CloseIcon from '@mui/icons-material/Close'
 import { useShowSuccessNotification } from '@apihub/routes/root/BasePage/Notification'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
-import { debounce } from 'lodash'
 import type { PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { usePathWarning } from '@apihub/entities/usePathWarning'
 
 
 const CLOUD_KEY = 'cloudKey'
@@ -78,35 +78,6 @@ type CreateCustomServerForm = {
   [DESCRIPTION_KEY]?: string
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-function useUrlPathWarning(url: string, delay = 700): boolean {
-  const [showWarning, setShowWarning] = useState(false)
-
-  useEffect(() => {
-    if (!url) return setShowWarning(false)
-
-    // const timeout = setTimeout(() => {
-    const checkPath = debounce(() => {
-      try {
-        const parsed = new URL(url)
-        const isRootPath = parsed.pathname === '/' || parsed.pathname === ''
-        setShowWarning(isRootPath)
-      } catch {
-        setShowWarning(false)
-      }
-    }, delay)
-
-  //   return () => clearTimeout(checkPath)
-  // }, 
-  checkPath()
-  return () => {
-      checkPath.cancel()
-    }
-  },
-  [delay, url])
-
-  return showWarning
-}
 
 export const CreateCustomServerDialog: FC = memo(() => {
   return (
@@ -193,7 +164,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   )
 
 
-  const showPathWarning = useUrlPathWarning(urlInput)
+  const showPathWarning = usePathWarning(urlInput)
 
   const updateSelectedCustomUrl = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target
@@ -382,14 +353,14 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const hasPath = (url: string): boolean => {
     try {
       const { pathname } = new URL(url)
-      return pathname !== '' && pathname !== '/' 
+      return pathname !== '' && pathname !== '/'
     } catch {
       return false
     }
   }
 
-const kind = packageObj?.kind as PackageKind | undefined
-const kindLabel = kind ?? PACKAGE_KIND
+  const kind = packageObj?.kind as PackageKind | undefined
+  const kindLabel = kind ?? PACKAGE_KIND
   return (
     <DialogForm
       open={open}
@@ -475,9 +446,9 @@ const kindLabel = kind ?? PACKAGE_KIND
           render={renderDescriptionInput}
         />
 
-        {showPathWarning && <Alert severity="warning"
-         sx={{ 
-          mt: 2,
+        {showPathWarning && (<Alert severity="warning"
+          sx={{
+            mt: 2,
             backgroundColor: '#ffffff', // White background
             alignItems: 'flex-start',
             '& .MuiAlert-icon': {
@@ -488,12 +459,12 @@ const kindLabel = kind ?? PACKAGE_KIND
               lineHeight: '20px',
             },
 
-         }}
+          }}
         >
           Servers specified directly in the OpenAPI specification contain a path to a specific resource.
           Make sure the URL you enter is correct and does not contain an additional path (e.g. <code>/api/v1</code>).
         </Alert>
-        }
+        )}
       </DialogContent>
 
       <DialogActions>
