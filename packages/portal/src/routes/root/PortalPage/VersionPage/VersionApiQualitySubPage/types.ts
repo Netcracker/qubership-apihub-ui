@@ -1,4 +1,5 @@
 import type { FileFormat, MD_FILE_FORMAT, UNKNOWN_FILE_FORMAT } from '@apihub/entities/file-formats'
+import type { API_TYPE_GRAPHQL, ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 
 export const RulesetStatuses = {
   INACTIVE: 'inactive',
@@ -11,11 +12,50 @@ export type RulesetActivation = {
   activeTo?: string
 }
 
-export type Ruleset = {
+export type RulesetDto = {
   id: string
   name: string
   status: RulesetStatus
   activationHistory: readonly RulesetActivation[]
+}
+
+export type ValidatedDocumentDto = {
+  documentId: string
+  specificationType: 'openapi-2-0' | 'openapi-3-0' | 'openapi-3-1'
+  title: string
+}
+
+export const IssueSeverities = {
+  ERROR: 'error',
+  WARNING: 'warning',
+  INFO: 'info',
+} as const
+export type IssueSeverity = typeof IssueSeverities[keyof typeof IssueSeverities]
+
+export type IssueDto = {
+  jsonPath: string
+  severity: IssueSeverity
+  message: string
+}
+
+export const ValidationStatuses = {
+  SUCCESS: 'success',
+  IN_PROGRESS: 'inProgress',
+  NOT_VALIDATED: 'notValidated',
+} as const
+export type ValidationStatus = typeof ValidationStatuses[keyof typeof ValidationStatuses]
+
+export type ValidationSummaryDto = {
+  apiType: Exclude<ApiType, typeof API_TYPE_GRAPHQL>
+  ruleset: RulesetDto | null
+  status: ValidationStatus
+  issuesSummary: Record<IssueSeverity, number>
+}
+
+export type ValidationDetailsDto = {
+  ruleset: RulesetDto // TODO 24.06.25 // Why not null?
+  issues: readonly IssueDto[]
+  document: ValidatedDocumentDto
 }
 
 type ProhibitedFileFormat =

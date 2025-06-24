@@ -86,6 +86,7 @@ export const ValidatedDocumentSelector: FC = () => {
                   onClick={(e) => {
                     e.stopPropagation()
                     setSelectedDocument(document)
+                    setAnchor(undefined)
                   }}
                   data-testid="ValidatedDocumentButton"
                 >
