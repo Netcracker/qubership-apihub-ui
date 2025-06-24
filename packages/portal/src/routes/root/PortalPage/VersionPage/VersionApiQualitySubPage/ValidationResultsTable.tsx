@@ -1,86 +1,123 @@
-// import { Box, Link, Table, TableBody, TableContainer, TableHead, Typography } from '@mui/material'
-// import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
-// import { CustomTableHeadCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomTableHeadCell'
-// import { FormattedDate } from '@netcracker/qubership-apihub-ui-shared/components/FormattedDate'
-// import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
-// import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
-// import { DRAFT_VERSION_STATUS } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-// import { ArrowDown } from '@netcracker/qubership-apihub-ui-shared/icons/ArrowDown'
-// import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
-// import type { ColumnDef, ColumnSizingInfoState, ColumnSizingState, OnChangeFn } from '@tanstack/react-table'
-// import { getCoreRowModel, getExpandedRowModel, useReactTable } from '@tanstack/react-table'
-// import { memo, useMemo, useRef } from 'react'
+import { Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
+import { CustomTableHeadCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomTableHeadCell'
+import type { ColumnDef } from '@tanstack/react-table'
+import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import type { FC } from 'react'
+import { memo, useMemo, useRef } from 'react'
+import type { IssueDto, ValidationDetailsDto } from './types'
 
-// const TABLE_COLUMN_ID_TYPE = 'type'
-// const TABLE_COLUMN_ID_MESSAGE = 'message'
+const TABLE_COLUMN_ID_TYPE = 'type'
+const TABLE_COLUMN_ID_MESSAGE = 'message'
 
-// const TABLE_COLUMN_ID_LABELS = {
-//   [TABLE_COLUMN_ID_TYPE]: 'Type',
-//   [TABLE_COLUMN_ID_MESSAGE]: 'Message',
-// }
+const TABLE_COLUMN_ID_LABELS = {
+  [TABLE_COLUMN_ID_TYPE]: 'Type',
+  [TABLE_COLUMN_ID_MESSAGE]: 'Message',
+}
 
-// type TableData = {
-//   type: string
-//   message: string
-// }
+type TableData = {
+  type: string
+  message: string
+}
 
-// type ValidationResultsTableProps = {
-//   data: ReadonlyArray<>
-// }
+type ValidationResultsTableProps = {
+  data: ValidationDetailsDto
+}
 
-// export const ValidationResultsTable = memo(() => {
-//   const tableContainerRef = useRef<HTMLDivElement>(null)
+const ValidationResultsTableSkeleton: FC = memo(() => {
+  const rows = Array(5).fill(null)
 
-//   const columns: ColumnDef<TableData>[] = useMemo(() => [
-//     {
-//       id: TABLE_COLUMN_ID_TYPE,
-//       header: () => <CustomTableHeadCell title={TABLE_COLUMN_ID_LABELS[TABLE_COLUMN_ID_TYPE]} />,
-//       cell: ({ row: { original: { type } } }) => {
-//         return (
-//           <Typography>
-//             {type}
-//           </Typography>
-//         )
-//       },
-//     },
-//     {
-//       id: TABLE_COLUMN_ID_MESSAGE,
-//       header: () => <CustomTableHeadCell title={TABLE_COLUMN_ID_LABELS[TABLE_COLUMN_ID_MESSAGE]} />,
-//       cell: ({ row: { original: { message } } }) => (
-//         <Typography>
-//           {message}
-//         </Typography>
-//       ),
-//     },
-//   ], [])
+  return (
+    <TableContainer>
+      <Table>
+        <TableHead>
+          {rows.map((_, index) => (
+            <TableRow key={`skeleton-row-${index}`}>
+              <TableCell>
+                <Skeleton variant="text" width={100} height={20} />
+              </TableCell>
+              <TableCell>
+                <Skeleton variant="text" width='80%' height={20} />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableHead>
+      </Table>
+    </TableContainer>
+  )
+})
 
-//   const data: TableData[] = useMemo(() => value.map(version => ({
-//     version: version,
-//   })), [value])
+export const ValidationResultsTable: FC<ValidationResultsTableProps> = memo<ValidationResultsTableProps>(props => {
+  const { data } = props
 
-//   const { getHeaderGroups, getRowModel, setColumnSizing } = useReactTable({
-//     data: data,
-//     columns: columns,
-//     state: { expanded, columnVisibility },
-//     onExpandedChange: setExpanded,
-//     onColumnVisibilityChange: setColumnVisibility,
-//     getCoreRowModel: getCoreRowModel(),
-//     getExpandedRowModel: getExpandedRowModel(),
-//     columnResizeMode: 'onChange',
-//     onColumnSizingChange: setHandlingColumnSizing as OnChangeFn<ColumnSizingState>,
-//     onColumnSizingInfoChange: setColumnSizingInfo as OnChangeFn<ColumnSizingInfoState>,
-//   })
+  const isLoading = false
 
-//   return (
-//     <TableContainer ref={tableContainerRef}>
-//       <Table>
-//         <TableHead>
+  const tableContainerRef = useRef<HTMLDivElement>(null)
 
-//         </TableHead>
-//         <TableBody>
+  const columns: ColumnDef<TableData>[] = useMemo(() => [
+    {
+      id: TABLE_COLUMN_ID_TYPE,
+      width: 100,
+      header: () => <CustomTableHeadCell title={TABLE_COLUMN_ID_LABELS[TABLE_COLUMN_ID_TYPE]} />,
+      cell: ({ row: { original: { type } } }) => {
+        return (
+          <Typography>
+            {type}
+          </Typography>
+        )
+      },
+    },
+    {
+      id: TABLE_COLUMN_ID_MESSAGE,
+      header: () => <CustomTableHeadCell title={TABLE_COLUMN_ID_LABELS[TABLE_COLUMN_ID_MESSAGE]} />,
+      cell: ({ row: { original: { message } } }) => (
+        <Typography>
+          {message}
+        </Typography>
+      ),
+    },
+  ], [])
 
-//         </TableBody>
-//       </Table>
-//     </TableContainer>
-//   )
-// })
+  const transformedData: TableData[] = useMemo(() => data.issues.map((issue: IssueDto) => ({
+    type: issue.severity,
+    message: issue.message,
+  })), [data])
+
+  const { getHeaderGroups, getRowModel } = useReactTable({
+    data: transformedData,
+    columns: columns,
+    getCoreRowModel: getCoreRowModel(),
+  })
+
+  if (isLoading) {
+    return <ValidationResultsTableSkeleton />
+  }
+
+  return (
+    <TableContainer ref={tableContainerRef}>
+      <Table>
+        <TableHead>
+          {getHeaderGroups().map(headerGroup => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map(header => (
+                <TableCell key={header.id}>
+                  {flexRender(header.column.columnDef.header, header.getContext())}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableHead>
+        <TableBody>
+          {getRowModel().rows.map(row => (
+            <TableRow key={row.id}>
+              {row.getVisibleCells().map(cell => (
+                <TableCell key={cell.id}>
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  )
+})
