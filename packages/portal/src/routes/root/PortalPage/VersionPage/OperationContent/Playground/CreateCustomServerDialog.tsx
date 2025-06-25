@@ -54,7 +54,6 @@ import { isServiceNameExistInNamespace } from '@netcracker/qubership-apihub-ui-s
 import CloseIcon from '@mui/icons-material/Close'
 import { useShowSuccessNotification } from '@apihub/routes/root/BasePage/Notification'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
-import type { PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { usePathWarning } from '@apihub/entities/usePathWarning'
 import { generatePath } from 'react-router'
@@ -365,7 +364,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   )
 
 
-  const kind = packageObj?.kind as PackageKind | undefined
+  const kind = packageObj?.kind
   const kindLabel = kind ?? PACKAGE_KIND
   return (
     <DialogForm
