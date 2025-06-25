@@ -7,10 +7,10 @@ import { memo, useMemo, useState } from 'react'
 import { useParams } from 'react-router'
 import { ValidationResultLink } from './ValidatationRulesetLink'
 import { ValidatedDocumentSelector } from './ValidatedDocumentSelector'
-import { useValidationDetailsByDocument } from './api/useValidationDetailsByDocument'
-import type { OriginalDocumentFileFormat, ValidatedDocument } from './types'
 import { ValidationResultsTable } from './ValidationResultsTable'
 import { useListValidatedDocumentsByPackageVersion } from './api/useListValidatedDocumentsByPackageVersion'
+import { useValidationDetailsByDocument } from './api/useValidationDetailsByDocument'
+import type { OriginalDocumentFileFormat, ValidatedDocument } from './types'
 
 type TwoSidedCardProps = Partial<{
   leftHeader: ReactNode
@@ -80,6 +80,11 @@ export const VersionApiQualityCard: FC = memo(() => {
     versionId ?? '',
   )
 
+  const selectedDocumentRuleset = useMemo(
+    () => validationDetails?.ruleset ?? null,
+    [validationDetails?.ruleset],
+  )
+
   return (
     <BodyCard
       body={
@@ -92,7 +97,10 @@ export const VersionApiQualityCard: FC = memo(() => {
                 options={validatedDocuments}
                 loading={loadingValidatedDocuments}
               />
-              <ValidationResultLink rulesetName='My Ruleset' status='OK' />
+              <ValidationResultLink
+                data={selectedDocumentRuleset}
+                loading={loadingValidationDetails}
+              />
             </Box>
           }
           rightHeader={
