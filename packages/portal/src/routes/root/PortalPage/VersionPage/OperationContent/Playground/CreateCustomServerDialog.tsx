@@ -57,6 +57,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import type { PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { usePathWarning } from '@apihub/entities/usePathWarning'
+import { generatePath } from 'react-router'
 
 
 const CLOUD_KEY = 'cloudKey'
@@ -94,6 +95,45 @@ type ControllerRenderFunctionProps<FieldName extends keyof CreateCustomServerFor
   formState: UseFormStateReturn<CreateCustomServerForm>
 }
 
+const AGENT_PROXY_URL_TEMPLATE = '/apihub-nc/agents/:cloud/namespaces/:namespace/services/:service/proxy'
+const buildAgentProxyUrl = (cloud: string, namespace: string, service: string): string => {
+  return generatePath(AGENT_PROXY_URL_TEMPLATE, {
+    cloud,
+    namespace,
+    service,
+  })
+}
+
+export const renderDescriptionInput: (
+  props: ControllerRenderFunctionProps<typeof DESCRIPTION_KEY>
+) => JSX.Element = ({ field }) => (
+  <TextField
+    {...field}
+    label="Description"
+    value={field.value ?? ''}
+    onChange={field.onChange}
+    fullWidth
+    data-testid="ServerDescriptionInput"
+  />
+)
+
+const isAbsoluteUrl = (url: string): boolean => {
+  try {
+    const parsed = new URL(url)
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:'
+  } catch {
+    return false
+  }
+}
+
+const hasPath = (url: string): boolean => {
+  try {
+    const { pathname } = new URL(url)
+    return pathname !== '' && pathname !== '/'
+  } catch {
+    return false
+  }
+}
 const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }) => {
   const { packageId = '' } = useParams()
   const [packageObj] = usePackage()
@@ -133,8 +173,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
 
   const baseUrl = window.location.origin
 
-  // Corrected generatedUrl to access namespaceKey safely
-  const generatedUrl = `${baseUrl}/apihub-nc/agents/${selectedCloud}/namespaces/${selectedNamespace?.namespaceKey}/services/${selectedService}/proxy`
+  const generatedUrl = `${baseUrl}${buildAgentProxyUrl(selectedCloud, selectedNamespace?.namespaceKey ?? '', selectedService ?? '')}`
 
   // Form initializing
   const defaultFormData = useMemo<CreateCustomServerForm>(() => ({
@@ -154,7 +193,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const isUrlGenerationAvailable = isServiceNameExist && selectedAgent && selectedNamespace
 
   useEffect(
-    () => { isUrlGenerationAvailable && setSelectedCustomUrl(`/apihub-nc/agents/${selectedAgent}/namespaces/${namespaceKey}/services/${selectedService}/proxy/`) },
+    () => { isUrlGenerationAvailable && setSelectedCustomUrl(buildAgentProxyUrl(selectedAgent, namespaceKey, selectedService ?? ''))},
     [isUrlGenerationAvailable, namespaceKey, selectedAgent, selectedNamespace, selectedService],
   )
 
@@ -271,12 +310,8 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
         <TextField
           {...field}
           {...params}
-
-          label={
-            <span>
-              Namespace<span style={{ color: 'red' }}>&nbsp;*</span>
-            </span>
-          }
+          label="Namespace"
+          required
           error={!isServiceNameValid}
           helperText={!isServiceNameValid && `Service with ${serviceName} not found in selected namespace`}
         />
@@ -303,7 +338,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
         </ListItem>
       )}
       renderInput={(params) => (
-        <TextField {...field} {...params} label="Service*" />
+        <TextField {...field} {...params} label="Service" required />
       )}
       data-testid="ServiceAutocomplete"
     />
@@ -329,35 +364,6 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     [selectedCustomUrl, updateSelectedCustomUrl, serverUrlError, serverUrlWarning],
   )
 
-  const renderDescriptionInput = useCallback((
-    { field }: ControllerRenderFunctionProps<typeof DESCRIPTION_KEY>) => (
-    <TextField
-      {...field}
-      label="Description"
-      value={field.value ?? ''}
-      onChange={field.onChange}
-      fullWidth
-      data-testid="ServerDescriptionInput"
-    />
-  ), [])
-
-  const isAbsoluteUrl = (url: string): boolean => {
-    try {
-      const parsed = new URL(url)
-      return parsed.protocol === 'http:' || parsed.protocol === 'https:'
-    } catch {
-      return false
-    }
-  }
-
-  const hasPath = (url: string): boolean => {
-    try {
-      const { pathname } = new URL(url)
-      return pathname !== '' && pathname !== '/'
-    } catch {
-      return false
-    }
-  }
 
   const kind = packageObj?.kind as PackageKind | undefined
   const kindLabel = kind ?? PACKAGE_KIND
@@ -405,16 +411,12 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
           </FormControl>
         )}
 
-        {(!isServiceNameExist || mode === 'proxy' && (
+        {(!isServiceNameExist || mode === MODE_PROXY && (
           <>
             <Typography>Server URL:</Typography>
 
-            {generatedUrl ? (
-              <Typography variant="body2" >{generatedUrl}</Typography>) : (
-              <Typography variant="body2" sx={{ mt: 0.5 }}>
-                {`https://${baseUrl}/apihub-nc/agents/${selectedCloud}/namespaces/${selectedNamespace?.namespaceKey}/services/${selectedService}/proxy`}
-              </Typography>
-            )}
+            <Typography variant="body2" >{generatedUrl}</Typography>
+
             <Controller
               name={CLOUD_KEY}
               control={control}
@@ -432,7 +434,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
             />
           </>
         ))}
-        {(!isServiceNameExist || mode === 'custom') && (
+        {(!isServiceNameExist || mode === MODE_CUSTOM) && (
           <Controller
             name={CUSTOM_SERVER_URL_KEY}
             control={control}
