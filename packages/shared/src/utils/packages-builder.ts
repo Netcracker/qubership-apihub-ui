@@ -21,7 +21,7 @@ import type {
   ApiKind,
   BuildConfig,
   ResolvedDeprecatedOperations,
-  ResolvedDocuments,
+  ResolvedGroupDocuments,
   ResolvedOperation,
   ResolvedReferences,
 } from '@netcracker/qubership-apihub-api-processor'
@@ -32,7 +32,6 @@ import type { ResolvedVersionDto } from '../types/packages'
 import type { OperationDto, OperationsDto } from '../entities/operations'
 import { isRestOperationDto } from '../entities/operations'
 import type { ApiType } from '../entities/api-types'
-import { API_TYPE_REST } from '../entities/api-types'
 
 export async function getPackageVersionContent(
   packageKey: Key,
@@ -72,33 +71,31 @@ export async function fetchOperations(
   operationIds: string[] | undefined,
   includeData: boolean | undefined,
   authorization: string,
-  limit = 100,
-): Promise<OperationsDto | null> {
-  try {
-    const queryParams = optionalSearchParams({
-      ids: { value: operationIds },
-      includeData: { value: includeData },
-      limit: { value: limit },
-    })
-    const packageId = encodeURIComponent(packageKey)
-    const versionId = encodeURIComponent(versionKey)
-    const apiType = operationsApiType.toLowerCase()
+  page: number = 0,
+  limit: number = 100,
+): Promise<OperationsDto> {
+  const queryParams = optionalSearchParams({
+    ids: { value: operationIds },
+    includeData: { value: includeData },
+    page: { value: page },
+    limit: { value: limit },
+  })
+  const packageId = encodeURIComponent(packageKey)
+  const versionId = encodeURIComponent(versionKey)
+  const apiType = operationsApiType.toLowerCase()
 
-    const pathPattern = '/packages/:packageId/versions/:versionId/:apiType/operations'
-    return await requestJson<OperationsDto>(
-      `${generatePath(pathPattern, { packageId, versionId, apiType })}?${queryParams}`,
-      {
-        headers: { authorization },
-        method: 'get',
-      },
-      {
-        basePath: API_V2,
-        customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-      },
-    )
-  } catch (error) {
-    return null
-  }
+  const pathPattern = '/packages/:packageId/versions/:versionId/:apiType/operations'
+  return requestJson<OperationsDto>(
+    `${generatePath(pathPattern, { packageId, versionId, apiType })}?${queryParams}`,
+    {
+      headers: { authorization },
+      method: 'get',
+    },
+    {
+      basePath: API_V2,
+      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+    },
+  )
 }
 
 export async function fetchDeprecatedItems(
@@ -140,7 +137,7 @@ export async function fetchVersionDocuments(
   authorization: string,
   page: number,
   limit: number = 100,
-): Promise<ResolvedDocuments | null> {
+): Promise<ResolvedGroupDocuments | null> {
   const queryParams = optionalSearchParams({
     page: { value: page },
     limit: { value: limit },
@@ -151,7 +148,7 @@ export async function fetchVersionDocuments(
   const groupName = encodeURIComponent(filterByOperationGroup)
 
   const pathPattern = '/packages/:packageId/versions/:versionId/:apiType/groups/:groupName/transformation/documents'
-  return await requestJson<ResolvedDocuments>(
+  return await requestJson<ResolvedGroupDocuments>(
     `${generatePath(pathPattern, { packageId, versionId, apiType, groupName })}?${queryParams}`,
     {
       headers: { authorization },
@@ -311,7 +308,7 @@ export function toVersionOperation(value: OperationDto): ResolvedOperation {
     deprecated: value.deprecated ?? false,
     title: value.title,
     metadata: metadata,
-    apiType: API_TYPE_REST,
+    apiType: value.apiType,
   }
 }
 
@@ -326,10 +323,11 @@ export async function fetchExportTemplate(
 ): Promise<[string, string]> {
   const packageId = encodeURIComponent(packageKey)
   const versionId = encodeURIComponent(versionKey)
+  const encodedGroupName = encodeURIComponent(groupName)
 
-  const pathPattern = '/packages/:packageId/versions/:versionId/:apiType/groups/:groupName/template'
+  const pathPattern = '/packages/:packageId/versions/:versionId/:apiType/groups/:encodedGroupName/template'
   const response = await requestBlob(
-    generatePath(pathPattern, { packageId, versionId, apiType, groupName }),
+    generatePath(pathPattern, { packageId, versionId, apiType, encodedGroupName }),
     {
       headers: { authorization },
       method: 'GET',

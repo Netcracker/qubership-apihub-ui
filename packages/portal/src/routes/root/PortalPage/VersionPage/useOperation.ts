@@ -59,7 +59,7 @@ export function useOperation(options?: OperationOptions): OperationQueryState {
 
   const { fullVersion } = useVersionWithRevision(versionKey, packageKey)
   const { data, isLoading, isInitialLoading } = useQuery<OperationDto, Error, OperationData | undefined>({
-    queryKey: [OPERATION_QUERY_KEY, operationKey, packageKey, fullVersion, apiType, enabled],
+    queryKey: [OPERATION_QUERY_KEY, operationKey, packageKey, fullVersion, apiType],
     queryFn: () => getOperation(packageKey!, fullVersion!, operationKey!, apiType),
     enabled: !!operationKey && !!fullVersion && !!packageKey && enabled,
     select: (operationDto) => {

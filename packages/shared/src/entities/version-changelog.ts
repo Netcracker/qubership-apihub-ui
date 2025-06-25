@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import type { MethodType } from './method-types'
-import type { ActionType, ChangesSummary, ChangesSummaryDto } from './change-severities'
+import type { DiffTypeDto } from '@netcracker/qubership-apihub-api-processor'
+import { replacePropertyInChangesSummary } from '@netcracker/qubership-apihub-api-processor'
+import type { ActionType, ChangesSummary } from './change-severities'
 import {
   ADD_ACTION_TYPE,
   ANNOTATION_CHANGE_SEVERITY,
@@ -24,15 +25,24 @@ import {
   NON_BREAKING_CHANGE_SEVERITY,
   REMOVE_ACTION_TYPE,
   REPLACE_ACTION_TYPE,
-  SEMI_BREAKING_CHANGE_SEVERITY,
+  RISKY_CHANGE_SEVERITY,
   UNCLASSIFIED_CHANGE_SEVERITY,
 } from './change-severities'
-import type { ApiAudience, ApiKind, Operation, OperationWithDifference, PackageRef, PackagesRefs, Tags } from './operations'
-import { ALL_API_KIND, toPackageRef } from './operations'
 import type { GraphQlOperationType } from './graphql-operation-types'
 import type { Key } from './keys'
-import { API_AUDIENCE_EXTERNAL } from '@netcracker/qubership-apihub-api-processor'
+import type { MethodType } from './method-types'
+import type {
+  ApiAudience,
+  ApiKind,
+  GraphQlOperation,
+  Operation,
+  PackageRef,
+  PackagesRefs,
+  RestOperation,
+} from './operations'
+import { toPackageRef } from './operations'
 
+// DTO Types
 export type VersionChangesDto = Partial<Readonly<{
   previousVersion: Key
   previousVersionPackageId: Key
@@ -40,14 +50,43 @@ export type VersionChangesDto = Partial<Readonly<{
   packages: PackagesRefs
 }>>
 
+// Base DTO interface for operation info
+export interface OperationInfoDto {
+  readonly operationId: Key
+  readonly title: string
+  readonly apiKind: ApiKind
+  readonly apiAudience: ApiAudience
+  readonly tags: string[]
+  readonly dataHash: string
+  readonly packageRef?: string
+}
+
+export interface RestOperationInfoDto extends OperationInfoDto {
+  readonly method: MethodType
+  readonly path: string
+}
+
+export interface GraphQlOperationInfoDto extends OperationInfoDto {
+  readonly method: string
+  readonly type: GraphQlOperationType
+}
+
+// Combined DTO type for operation changes
+export interface OperationChangeDataDto {
+  readonly changeSummary: ChangesSummary<DiffTypeDto>
+  readonly currentOperation?: OperationInfoDto
+  readonly previousOperation?: OperationInfoDto
+}
+
+// Domain Types
 export type VersionChanges = Readonly<{
   previousVersion?: Key
   previousVersionPackageKey?: Key
-  operations: ReadonlyArray<OperationChangeData>
+  operations: ReadonlyArray<OperationChangeBase<Operation>>
 }>
 
 export type DifferentVersionChanges = Readonly<{
-  operations: ReadonlyArray<OperationWithDifferenceChangeData>
+  operations: ReadonlyArray<OperationChangeBase<Operation>>
 }>
 
 export type VersionChangesData = VersionChangesDto
@@ -55,54 +94,44 @@ export type VersionChangesData = VersionChangesDto
 export type PagedVersionChanges = ReadonlyArray<VersionChanges>
 export type PagedDiffVersionChanges = ReadonlyArray<DifferentVersionChanges>
 
-export type OperationChangeDataDto = RestOperationChangeDto | GraphQlOperationChangeDto
+// Base domain interface for operation info
+export interface OperationInfo {
+  readonly operationKey: Key
+  readonly title: string
+  readonly apiKind: ApiKind
+  readonly apiAudience: ApiAudience
+  readonly dataHash: string
+  readonly packageRef?: PackageRef
+}
 
-export type OperationInfoFromDifferentVersions = Readonly<{
-  title?: string
-  apiKind: ApiKind
-  apiAudience: ApiAudience
-  dataHash?: string
-  packageRef?: string
-}>
+export interface RestOperationInfo extends OperationInfo {
+  readonly method: MethodType
+  readonly path: string
+}
 
-type OperationChangeDataCommonDto = Readonly<{
-  operationId: Key
-  changeSummary: ChangesSummaryDto
-  currentOperation?: OperationInfoFromDifferentVersions
-  previousOperation?: OperationInfoFromDifferentVersions
-  tags?: Tags
-}>
+export interface GraphQlOperationInfo extends OperationInfo {
+  readonly method: string
+  readonly type: GraphQlOperationType
+}
 
-export type RestOperationChangeDto = OperationChangeDataCommonDto & Readonly<{
-  method: MethodType
-  path: string
-}>
+// Base interface for all operation change types
+export interface OperationChangeBase<T extends Operation = Operation> {
+  readonly changeSummary: ChangesSummary
+  readonly action: ActionType
+  readonly currentOperation?: T
+  readonly previousOperation?: T
+}
 
-export type GraphQlOperationChangeDto = OperationChangeDataCommonDto & Readonly<{
-  method: string
-  type: GraphQlOperationType
-}>
-
-export type OperationChangeData = Operation & Readonly<{
-  changeSummary: ChangesSummary
-  action: ActionType // Optional, but always calculated
-  currentOperation?: OperationInfoFromDifferentVersions
-  previousOperation?: OperationInfoFromDifferentVersions
-  previousPackageRef?: PackageRef
-  previousDataHash?: string
-}>
-
-export type OperationWithDifferenceChangeData = OperationWithDifference & Readonly<{
-  changeSummary: ChangesSummary
-  action: ActionType
-}>
+// Type aliases for specific operation types
+export type RestOperationChange = OperationChangeBase<RestOperation>
+export type GraphQlOperationChange = OperationChangeBase<GraphQlOperation>
 
 export const toVersionChanges = (dto: VersionChangesDto): VersionChanges => {
   return {
     previousVersion: dto?.previousVersion,
     previousVersionPackageKey: dto?.previousVersionPackageId,
     operations: dto?.operations?.map(
-      (operationChange) => toOperationChangeData(operationChange, dto?.packages),
+      (operationChange) => toOperationChange(operationChange, dto?.packages),
     ) ?? [],
   }
 }
@@ -110,32 +139,34 @@ export const toVersionChanges = (dto: VersionChangesDto): VersionChanges => {
 export const toDiffVersionChanges = (dto: VersionChangesDto): DifferentVersionChanges => {
   return {
     operations: dto?.operations?.map(
-      (operationChange) => toDiffOperationChangeData(operationChange),
+      (operationChange) => toOperationChange(operationChange, dto?.packages, false),
     ) ?? [],
   }
 }
 
-export const toOperationChangeData = (dto: OperationChangeDataDto, packagesRefs?: PackagesRefs): OperationChangeData => {
+// Unified transformation function
+export const toOperationChange = (
+  dto: OperationChangeDataDto,
+  packagesRefs?: PackagesRefs,
+  includePackageRefs: boolean = true,
+): OperationChangeBase<Operation> => {
   return {
-    ...dto,
-    operationKey: dto.operationId,
-    title: dto.currentOperation?.title ?? dto.previousOperation?.title ?? '',
-    apiKind: dto.currentOperation?.apiKind ?? dto.previousOperation?.apiKind ?? ALL_API_KIND,
-    apiAudience: dto.currentOperation?.apiAudience ?? dto.previousOperation?.apiAudience ?? API_AUDIENCE_EXTERNAL,
-    dataHash: dto.currentOperation?.dataHash ?? dto.previousOperation?.dataHash,
-    packageRef: toPackageRef(dto.currentOperation?.packageRef ?? dto.previousOperation?.packageRef, packagesRefs),
-    previousPackageRef: toPackageRef(dto.previousOperation?.packageRef, packagesRefs),
+    changeSummary: replacePropertyInChangesSummary(dto.changeSummary),
+    currentOperation: dto.currentOperation
+      ? {
+        ...dto.currentOperation,
+        operationKey: dto.currentOperation.operationId,
+        packageRef: includePackageRefs ? toPackageRef(dto.currentOperation.packageRef, packagesRefs) : undefined,
+      }
+      : undefined,
+    previousOperation: dto.previousOperation
+      ? {
+        ...dto.previousOperation,
+        operationKey: dto.previousOperation.operationId,
+        packageRef: includePackageRefs ? toPackageRef(dto.previousOperation.packageRef, packagesRefs) : undefined,
+      }
+      : undefined,
     action: calculateAction(dto.currentOperation?.dataHash, dto.previousOperation?.dataHash),
-    tags: dto.tags,
-  }
-}
-
-export const toDiffOperationChangeData = (dto: OperationChangeDataDto): OperationWithDifferenceChangeData => {
-  return {
-    ...dto,
-    operationKey: dto.operationId,
-    action: calculateAction(dto.currentOperation?.dataHash, dto.previousOperation?.dataHash),
-    tags: dto.tags,
   }
 }
 
@@ -153,7 +184,7 @@ export const EMPTY_CHANGES = {
 
 export const EMPTY_CHANGE_SUMMARY: ChangesSummary = {
   [BREAKING_CHANGE_SEVERITY]: 0,
-  [SEMI_BREAKING_CHANGE_SEVERITY]: 0,
+  [RISKY_CHANGE_SEVERITY]: 0,
   [DEPRECATED_CHANGE_SEVERITY]: 0,
   [NON_BREAKING_CHANGE_SEVERITY]: 0,
   [ANNOTATION_CHANGE_SEVERITY]: 0,

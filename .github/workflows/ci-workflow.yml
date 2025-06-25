@@ -1,4 +1,4 @@
-name: Frontend & Docker CI Workflow 
+name: build & unit test, build Docker image, run E2E tests 
 
 on:
   push:
@@ -10,14 +10,16 @@ on:
       - bugfix/*      
     tags:
       - '**'
-  delete:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    paths-ignore:
+      - 'docs/**' 
 
-jobs:
-  call-frontend-ci-workflow:
+jobs:  
+  build-and-unit-test:
     uses: netcracker/qubership-apihub-ci/.github/workflows/frontend-ci.yaml@main
-  call-docker-ci-workflow:
-    needs: call-frontend-ci-workflow
-    if: github.event_name == 'push'
+  build-docker-image:
+    needs: build-and-unit-test
     uses: netcracker/qubership-apihub-ci/.github/workflows/docker-ci.yml@main
     with:
       name: qubership-apihub-ui
@@ -26,6 +28,38 @@ jobs:
       platforms: linux/amd64,linux/arm64
       labels: |
         maintainer=qubership
-        npm-package-version=${{ needs.call-frontend-ci-workflow.outputs.package_version }}
+        npm-package-version=${{ needs.build-and-unit-test.outputs.package_version }}
     secrets:
       NPMRC: ${{ secrets.NPMRC }}
+  calculate-build-task-consumer-tag:
+    if: github.event_name == 'pull_request'
+    needs: build-docker-image
+    uses: netcracker/qubership-apihub-ci/.github/workflows/calculate-effective-tag.yaml@main
+    with:
+      branch-name: ${{ github.head_ref }} # pass PR source branch
+      repo-name: qubership-apihub-build-task-consumer
+  calculate-backend-tag:
+    if: github.event_name == 'pull_request'
+    needs: build-docker-image
+    uses: netcracker/qubership-apihub-ci/.github/workflows/calculate-effective-tag.yaml@main
+    with:
+      branch-name: ${{ github.head_ref }} # pass PR source branch
+      repo-name: qubership-apihub-backend
+  run-e2e-tests:
+    uses: netcracker/qubership-apihub-ci/.github/workflows/run-e2e-tests.yml@main
+    needs: [build-docker-image, calculate-build-task-consumer-tag, calculate-backend-tag]
+    if: github.event_name == 'pull_request'
+    with:
+      postman-collections-run: false
+      apihub-ui-image-tag: ${{ needs.build-docker-image.outputs.image_tag }}      
+      apihub-build-task-consumer-image-tag: ${{ needs.calculate-build-task-consumer-tag.outputs.tag }}
+      apihub-backend-image-tag: ${{ needs.calculate-backend-tag.outputs.tag }}
+      # pass PR source branch, will default to develop if corresponding branch for Playwright tests is not found 
+      playwright-repository-branch: ${{ github.head_ref }}
+      # pass PR source branch, will default to develop if corresponding branch for Postman tests is not found
+      postman-repository-branch: ${{ github.head_ref }}
+    secrets:
+      APIHUB_ACCESS_TOKEN: ${{ secrets.APIHUB_ACCESS_TOKEN }}
+      APIHUB_ADMIN_EMAIL: ${{ secrets.APIHUB_ADMIN_EMAIL }}
+      APIHUB_ADMIN_PASSWORD: ${{ secrets.APIHUB_ADMIN_PASSWORD }}
+      JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}   

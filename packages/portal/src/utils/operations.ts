@@ -14,15 +14,23 @@
  * limitations under the License.
  */
 
-import type { OperationChangesDto } from '@netcracker/qubership-apihub-api-processor'
-import type { Operation, OperationsGroupedByTag } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import type { OperationChanges } from '@netcracker/qubership-apihub-api-processor'
+import type {
+  Operation,
+  OperationPair,
+  OperationPairsGroupedByTag,
+  OperationsGroupedByTag,
+} from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { DEFAULT_TAG, EMPTY_TAG } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import { matchPaths, OPEN_API_PROPERTY_PATHS, PREDICATE_UNCLOSED_END } from '@netcracker/qubership-apihub-api-unifier'
 import { DiffAction } from '@netcracker/qubership-apihub-api-diff'
 
-export function groupOperationsByTags<T extends Operation>(operations: ReadonlyArray<T>): OperationsGroupedByTag<T> {
+export function groupOperationsByTags<T extends Operation>(
+  operations: ReadonlyArray<T>,
+): OperationsGroupedByTag<T> {
   const newOperationsGroupedByTag: OperationsGroupedByTag<T> = {}
+
   for (const operation of operations) {
     const operationTagsSet = handleOperationTags(operation.tags)
 
@@ -37,10 +45,35 @@ export function groupOperationsByTags<T extends Operation>(operations: ReadonlyA
   return newOperationsGroupedByTag
 }
 
-export const getActionForOperation = (change: OperationChangesDto, actionType: string): string => {
+export function groupOperationPairsByTags<T extends Operation>(
+  operationPairs: ReadonlyArray<OperationPair<T>>,
+): OperationPairsGroupedByTag {
+  const operationPairsGroupedByTag: OperationPairsGroupedByTag = {}
+
+  for (const operationsPair of operationPairs) {
+    const operationTagsSet = handleOperationTags([
+      ...operationsPair.currentOperation?.tags ?? [],
+      ...operationsPair.previousOperation?.tags ?? [],
+    ])
+
+    operationTagsSet.forEach(tag => {
+      if (!operationPairsGroupedByTag[tag]) {
+        operationPairsGroupedByTag[tag] = []
+      }
+      operationPairsGroupedByTag[tag].push({
+        currentOperation: operationsPair.currentOperation,
+        previousOperation: operationsPair.previousOperation,
+      })
+    })
+  }
+
+  return operationPairsGroupedByTag
+}
+
+export const getActionForOperation = (change: OperationChanges, actionType: string): string => {
   return !isFullyAddedOrRemovedOperationChange(change)
     ? actionType
-    : change?.changes?.[0]?.action ?? ''
+    : change?.diffs?.[0]?.action ?? ''
 }
 
 export function handleOperationTags(tags: readonly string[] | undefined): Set<string> {
@@ -54,16 +87,24 @@ export function handleOperationTags(tags: readonly string[] | undefined): Set<st
   return operationTagsSet
 }
 
-export function isFullyAddedOrRemovedOperationChange(change: OperationChangesDto): boolean {
-  if (change.changes && change.changes[0]) {
-    if (change.changes[0].action === DiffAction.remove) {
-      return isOperationChange(change.changes[0].previousDeclarationJsonPaths)
+export function isFullyAddedOrRemovedOperationChange(change: OperationChanges): boolean {
+  if (change.diffs?.[0]) {
+    if (change.diffs[0].action === DiffAction.remove) {
+      return isOperationChange(change.diffs[0].beforeDeclarationPaths)
     }
-    if (change.changes[0].action === DiffAction.add) {
-      return isOperationChange(change.changes[0].currentDeclarationJsonPaths)
+    if (change.diffs[0].action === DiffAction.add) {
+      return isOperationChange(change.diffs[0].afterDeclarationPaths)
     }
   }
   return false
+}
+
+export function isFullyRemovedOperationChange(change: OperationChanges): boolean {
+  return change.diffs?.[0]?.action === DiffAction.remove && isOperationChange(change.diffs[0].beforeDeclarationPaths)
+}
+
+export function isFullyAddedOperationChange(change: OperationChanges): boolean {
+  return change.diffs?.[0]?.action === DiffAction.add && isOperationChange(change.diffs[0].afterDeclarationPaths)
 }
 
 function isOperationChange(paths: JsonPath[]): boolean { //check

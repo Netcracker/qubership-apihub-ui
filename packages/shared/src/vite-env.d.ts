@@ -89,6 +89,10 @@ declare module '@mui/material/Chip' {
     active: true
     expired: true
   }
+
+  interface ChipPropsVariantOverrides {
+    readonly: true
+  }
 }
 
 declare module '@mui/material/Typography' {
@@ -151,4 +155,14 @@ declare class TaskPriorityChangeEvent extends Event {
       previousPriority: Priority,
     },
   )
+}
+
+declare module '@mui/material/SvgIcon' {
+  interface SvgIconPropsColorOverrides {
+    'muted': true
+  }
+
+  interface SvgIconPropsSizeOverrides {
+    'extra-small': true
+  }
 }

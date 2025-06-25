@@ -17,7 +17,7 @@
 import { useQuery } from '@tanstack/react-query'
 import type { Key, VersionKey } from '@apihub/entities/keys'
 import { useParams } from 'react-router-dom'
-import type { BuildType, VersionsComparisonDto } from '@netcracker/qubership-apihub-api-processor'
+import type { BuildType, VersionsComparison } from '@netcracker/qubership-apihub-api-processor'
 import { PackageVersionBuilder } from '../package-version-builder'
 import { useVersionWithRevision } from '../../useVersionWithRevision'
 import { useState } from 'react'
@@ -34,6 +34,7 @@ import {
 } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
 import { getAuthorization } from '@netcracker/qubership-apihub-ui-shared/utils/storages'
 import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { v4 as uuidv4 } from 'uuid'
 
 const VERSION_CHANGES_QUERY_KEY = 'version-changes-query-key'
 
@@ -43,9 +44,9 @@ export function useVersionsComparisons(options?: {
   changedVersionKey?: VersionKey
   originPackageKey?: Key
   originVersionKey?: VersionKey
-}): [VersionsComparisonDto[] | undefined, IsLoading, IsSuccess] {
+}): [VersionsComparison[] | undefined, IsLoading, IsSuccess] {
   const { packageId: packageKey, versionId: versionKey } = useParams()
-  const builderId = crypto.randomUUID()
+  const builderId = uuidv4()
   const showErrorNotification = useShowErrorNotification()
 
   const [recalculateChangelog, setRecalculateChangelog] = useState(false)
@@ -65,7 +66,7 @@ export function useVersionsComparisons(options?: {
     originPackageKey !== NO_VERSION_TO_COMPARE &&
     originVersionKey !== NO_VERSION_TO_COMPARE
 
-  const { data, isLoading, isSuccess, refetch } = useQuery<VersionsComparisonDto[] | undefined, Error>({
+  const { data, isLoading, isSuccess, refetch } = useQuery<VersionsComparison[] | undefined, Error>({
     queryKey: [VERSION_CHANGES_QUERY_KEY, originPackageKey!, originVersion, changedPackageKey, changedVersion],
     enabled: !options?.hasCache && allComparisonParamsProvided && !!changedVersion && !!originVersion,
     retry: false,
@@ -106,7 +107,7 @@ export function useVersionsComparisons(options?: {
         }, 15000)
 
         let publicationStatus: PublishStatus = NONE_PUBLISH_STATUS
-        const builtVersionComparisons: VersionsComparisonDto[] = []
+        const builtVersionComparisons: VersionsComparison[] = []
 
         try {
           const [versionsComparisons, data] = await PackageVersionBuilder.buildChangelogPackage({

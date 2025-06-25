@@ -301,7 +301,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       getOptionLabel={({ namespaceKey }: Namespace) => namespaceKey}
       value={selectedNamespace}
       renderOption={(props, { namespaceKey }) => (
-        <ListItem {...props} key={crypto.randomUUID()}>
+        <ListItem {...props} key={namespaceKey}>
           {namespaceKey}
         </ListItem>
       )}

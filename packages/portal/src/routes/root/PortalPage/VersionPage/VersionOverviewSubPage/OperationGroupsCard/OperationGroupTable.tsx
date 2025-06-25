@@ -75,6 +75,7 @@ export type OperationGroupTableProps = {
   onEdit: (group: OperationGroup) => void
   onDelete: (group: OperationGroup) => void
   onPublish: (group: OperationGroup) => void
+  onExport: (group: OperationGroup) => void
 }
 
 export const OperationGroupTable: FC<OperationGroupTableProps> = memo<OperationGroupTableProps>(({
@@ -85,6 +86,7 @@ export const OperationGroupTable: FC<OperationGroupTableProps> = memo<OperationG
   onEdit,
   onDelete,
   onPublish,
+  onExport,
 }) => {
   const [containerWidth, setContainerWidth] = useState(DEFAULT_CONTAINER_WIDTH)
   const [columnSizingInfo, setColumnSizingInfo] = useState<ColumnSizingInfoState>()
@@ -148,6 +150,7 @@ export const OperationGroupTable: FC<OperationGroupTableProps> = memo<OperationG
             onEdit={onEdit}
             onDelete={onDelete}
             onPublish={onPublish}
+            onExport={onExport}
           />
         ),
       },
@@ -164,7 +167,7 @@ export const OperationGroupTable: FC<OperationGroupTableProps> = memo<OperationG
     }
 
     return result
-  }, [isPackage, onDelete, onEdit, onEditContent, onPublish])
+  }, [isPackage, onDelete, onEdit, onEditContent, onExport, onPublish])
 
   const { getHeaderGroups, getRowModel, setColumnSizing } = useReactTable({
     data: groups,
@@ -213,9 +216,9 @@ export const OperationGroupTable: FC<OperationGroupTableProps> = memo<OperationG
             ))}
           </TableHead>
           <TableBody>
-            {getRowModel().rows.map(row => (
-              <Fragment key={crypto.randomUUID()}>
-                <TableRow key={row.id}>
+            {getRowModel().rows.map((row) => (
+              <Fragment key={row.id}>
+                <TableRow >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} data-testid={`Cell-${cell.column.id}`}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}

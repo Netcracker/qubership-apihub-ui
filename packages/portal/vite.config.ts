@@ -9,6 +9,8 @@ import ignoreDotsOnDevServer from 'vite-plugin-rewrite-all'
 import { VitePluginFonts } from 'vite-plugin-fonts'
 import { visualizer as bundleVisualizer } from 'rollup-plugin-visualizer'
 import inject from '@rollup/plugin-inject'
+import monacoWorkerHashPlugin from '../../vite-monaco-worker-hash'
+import createVersionJsonFilePlugin from '../../vite-create-version-json'
 
 const proxyServer = ''
 const devServer = 'http://localhost:3003'
@@ -32,6 +34,7 @@ export default defineConfig(({ mode }) => {
           entry: 'monaco-graphql/dist/graphql.worker',
         }],
       }),
+      monacoWorkerHashPlugin({ monacoDir: 'dist/monacoeditorwork', htmlPath: 'dist/index.html' }),
       copy({
         targets: [
           {
@@ -45,7 +48,7 @@ export default defineConfig(({ mode }) => {
           {
             src: '../../node_modules/@netcracker/qubership-apihub-apispec-view/dist/index.js.LICENSE.txt',
             dest: 'dist/apispec-view/',
-          }
+          },
         ],
         flatten: true,
         hook: 'writeBundle',
@@ -63,6 +66,7 @@ export default defineConfig(({ mode }) => {
           injectTo: 'head-prepend',
         },
       }),
+      createVersionJsonFilePlugin(),
     ],
     optimizeDeps: {
       // npm link creates a symlink that points outside node_modules and by default such packages are not optimized.

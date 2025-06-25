@@ -15,8 +15,12 @@
  */
 
 import { expose } from 'comlink'
-import type { BuildConfig, BuildResult, VersionsComparisonDto } from '@netcracker/qubership-apihub-api-processor'
-import { PackageVersionBuilder } from '@netcracker/qubership-apihub-api-processor'
+import type {
+  BuildConfig,
+  BuildResult,
+  VersionsComparison,
+} from '@netcracker/qubership-apihub-api-processor'
+import { BUILD_TYPE, PackageVersionBuilder } from '@netcracker/qubership-apihub-api-processor'
 
 import type { BuilderOptions } from './package-version-builder'
 import { safeStringify } from '@stoplight/yaml'
@@ -47,6 +51,7 @@ import {
 } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
 import { NONE_CHANGE_TYPE } from '@apihub/entities/branches'
 import { fetchFileContent } from '@apihub/utils/resolvers'
+import { v4 as uuidv4 } from 'uuid'
 
 /*
 For using worker in proxy mode you need to change common apihub-shared import
@@ -55,7 +60,7 @@ to specific directory ('@netcracker/qubership-apihub-ui-shared/utils' for exampl
 export type PackageVersionBuilderWorker = {
   init: (options: BuilderOptions) => Promise<void>
   getBranchCache: () => Promise<BranchCache>
-  checkBwc: (options: BuilderOptions) => Promise<VersionsComparisonDto[]>
+  checkBwc: (options: BuilderOptions) => Promise<VersionsComparison[]>
   dereference: (
     fileKey: FileKey,
     options: BuilderOptions,
@@ -119,7 +124,7 @@ const worker: PackageVersionBuilderWorker = {
   getBranchCache: (): Promise<BranchCache> => {
     return getBuilderCache()
   },
-  checkBwc: async (options: BuilderOptions): Promise<VersionsComparisonDto[]> => {
+  checkBwc: async (options: BuilderOptions): Promise<VersionsComparison[]> => {
     if (!builder) {
       await initializeBuilder(options)
     } else {
@@ -173,12 +178,12 @@ const worker: PackageVersionBuilderWorker = {
   },
   publishPackage: async (options, authorization): Promise<PublishDetails> => {
     const { packageId: packageKey } = options
-    const builderId = crypto.randomUUID()
+    const builderId = uuidv4()
     const sources = await fetchAllFilesBlob(options.projectId, options.metadata.branchName, authorization)
     const {
       publishId,
       config: buildConfig,
-    } = await startPackageVersionPublication(options, authorization, builderId, sources)
+    } = await startPackageVersionPublication({ ...options, buildType: BUILD_TYPE.BUILD }, authorization, builderId, sources)
 
     const abortController = new AbortController()
     const intervalId = setInterval(() => {
@@ -278,7 +283,8 @@ function toPackageVersionBuilderConfig(
     previousPackageKey,
     previousVersionKey,
     versionKey,
-  }: BuilderOptions): BuildConfig {
+  }: BuilderOptions,
+): BuildConfig {
   return {
     packageId: packageKey,
     version: versionKey,
@@ -291,6 +297,7 @@ function toPackageVersionBuilderConfig(
       blobId: blobKey,
       labels: labels,
     })) ?? [],
+    buildType: BUILD_TYPE.BUILD,
   }
 }
 

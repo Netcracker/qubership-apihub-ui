@@ -21,13 +21,12 @@ import type { OperationGroup, OperationGroupWithApiTypeDto } from './operation-g
 import type { Key, VersionKey } from './keys'
 import type { Principal } from './principals'
 import type { ApiType } from './api-types'
-import type { ChangesSummaryDto } from './change-severities'
-import type { ApiAudienceTransition } from '@netcracker/qubership-apihub-api-processor'
+import type { ApiAudienceTransition, DiffTypeDto } from '@netcracker/qubership-apihub-api-processor'
+import type { DiffType } from '@netcracker/qubership-apihub-api-diff'
 
-export type NumberOfImpactedOperations = ChangesSummaryDto
+export type NumberOfImpactedOperations = ChangesSummary
 
 export type PackageVersionContent = Readonly<{
-  key: Key
   version: Key
   packageKey: Key
   status: VersionStatus
@@ -57,9 +56,9 @@ export type PackageVersionContentDto = Readonly<{
   revisionsCount?: number
 }>
 
-export type OperationTypeSummary = Readonly<{
+export type OperationTypeSummary<T extends DiffType | DiffTypeDto = DiffType> = Readonly<{
   apiType: ApiType
-  changesSummary: ChangesSummary
+  changesSummary: ChangesSummary<T>
   numberOfImpactedOperations: NumberOfImpactedOperations
   operationsCount: number
   deprecatedCount: number
@@ -70,7 +69,7 @@ export type OperationTypeSummary = Readonly<{
   operations?: object
 }>
 
-export type OperationTypeSummaryDto = OperationTypeSummary
+export type OperationTypeSummaryDto = OperationTypeSummary<DiffTypeDto>
 
 export type VersionDeprecatedSummaryDto = PackageDeprecatedSummaryDto | DashboardDeprecatedSummaryDto
 
