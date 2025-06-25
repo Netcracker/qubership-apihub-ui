@@ -274,6 +274,9 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       options={cloud}
       value={selectedCloud}
       inputValue={selectedCloud}
+      onInputChange={(_: any, newInputValue: React.SetStateAction<string>) => {
+      setSelectedCloud(newInputValue)
+    }}
       renderOption={(props, cloud) => (
         <ListItem {...props}
           key={typeof cloud === 'string' ? cloud : crypto.randomUUID()}>
