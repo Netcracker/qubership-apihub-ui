@@ -288,6 +288,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
         <TextField {...field} {...params}
           inputProps={{
             ...params.inputProps,
+            ...field,
             'data-testid': 'CloudAutocompleteInput', 
           }}
           label="Cloud"
