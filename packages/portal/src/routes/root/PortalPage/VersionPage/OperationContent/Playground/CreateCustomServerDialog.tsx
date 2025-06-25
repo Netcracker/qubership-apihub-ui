@@ -105,7 +105,7 @@ const buildAgentProxyUrl = (cloud: string, namespace: string, service: string): 
 
 export const renderDescriptionInput: (
   props: ControllerRenderFunctionProps<typeof DESCRIPTION_KEY>
-) => React.JSX.Element = ({ field }) => (
+) => JSX.Element = ({ field }) => (
   <TextField
     {...field}
     label="Description"
