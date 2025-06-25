@@ -43,6 +43,7 @@ export function getVersionInfoOptions(appType: AppTypeApiHub): UseQueryOptions<V
     refetchOnReconnect: false,
     refetchOnMount: false,
   }
+
 }
 
 export async function getVersionInfo(appType: AppTypeApiHub): Promise<VersionInfoDto> {
