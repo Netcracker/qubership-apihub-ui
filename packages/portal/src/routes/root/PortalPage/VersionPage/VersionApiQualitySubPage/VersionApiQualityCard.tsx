@@ -1,12 +1,16 @@
+import { JSON_FILE_FORMAT, YAML_FILE_FORMAT } from '@apihub/entities/file-formats'
 import { Box } from '@mui/material'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'
 import type { FC, ReactNode } from 'react'
 import { memo, useMemo, useState } from 'react'
+import { useParams } from 'react-router'
 import { ValidationResultLink } from './ValidatationRulesetLink'
-import type { OriginalDocumentFileFormat } from './types'
-import { YAML_FILE_FORMAT, JSON_FILE_FORMAT } from '@apihub/entities/file-formats'
 import { ValidatedDocumentSelector } from './ValidatedDocumentSelector'
+import { useValidationDetailsByDocument } from './api/useValidationDetailsByDocument'
+import type { OriginalDocumentFileFormat, ValidatedDocument } from './types'
+import { ValidationResultsTable } from './ValidationResultsTable'
+import { useListValidatedDocumentsByPackageVersion } from './api/useListValidatedDocumentsByPackageVersion'
 
 type TwoSidedCardProps = Partial<{
   leftHeader: ReactNode
@@ -60,7 +64,21 @@ const TwoSidedCard: FC<TwoSidedCardProps> = memo<TwoSidedCardProps>((props) => {
 })
 
 export const VersionApiQualityCard: FC = memo(() => {
+  const { packageId, versionId } = useParams()
+
+  const [selectedDocument, setSelectedDocument] = useState<ValidatedDocument | undefined>()
   const [format, setFormat] = useState<OriginalDocumentFileFormat>(YAML_FILE_FORMAT)
+
+  const [validationDetails, loadingValidationDetails] = useValidationDetailsByDocument(
+    packageId ?? '',
+    versionId ?? '',
+    selectedDocument?.id ?? '',
+  )
+
+  const [validatedDocuments, loadingValidatedDocuments] = useListValidatedDocumentsByPackageVersion(
+    packageId ?? '',
+    versionId ?? '',
+  )
 
   return (
     <BodyCard
@@ -68,7 +86,12 @@ export const VersionApiQualityCard: FC = memo(() => {
         <TwoSidedCard
           leftHeader={
             <Box display='flex' justifyContent='space-between'>
-              <ValidatedDocumentSelector />
+              <ValidatedDocumentSelector
+                value={selectedDocument}
+                onSelect={setSelectedDocument}
+                options={validatedDocuments}
+                loading={loadingValidatedDocuments}
+              />
               <ValidationResultLink rulesetName='My Ruleset' status='OK' />
             </Box>
           }
@@ -85,7 +108,7 @@ export const VersionApiQualityCard: FC = memo(() => {
               />
             </Box>
           }
-          leftBody={<div>Table with validation results</div>}
+          leftBody={<ValidationResultsTable data={validationDetails} loading={loadingValidationDetails} />}
           rightBody={<div>Monaco Editor (RO) with validated document</div>}
         />
       }

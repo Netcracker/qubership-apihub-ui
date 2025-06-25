@@ -1,37 +1,52 @@
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
-import { Box, Button, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
+import { Box, Button, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Skeleton } from '@mui/material'
 import { MenuButtonItems } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
 import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
 import { SpecLogo } from '@netcracker/qubership-apihub-ui-shared/components/SpecLogo'
 import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
-import { useMemo, useState, type FC } from 'react'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import type { Dispatch, SetStateAction } from 'react'
+import { memo, useEffect, useMemo, useState, type FC } from 'react'
+import type { ValidatedDocument } from './types'
 
-function randomInt(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1)) + min
+type ValidatedDocumentSelectorProps = {
+  value: ValidatedDocument | undefined
+  onSelect: Dispatch<SetStateAction<ValidatedDocument | undefined>>
+  options: readonly ValidatedDocument[]
+  loading: IsLoading
 }
 
-export const ValidatedDocumentSelector: FC = () => {
+export const ValidatedDocumentSelector: FC<ValidatedDocumentSelectorProps> = memo<ValidatedDocumentSelectorProps>((props) => {
+  const { value, onSelect, options, loading } = props
+
   const [anchor, setAnchor] = useState<HTMLElement>()
 
   const [searchValue, setSearchValue] = useState('')
 
   const list = useMemo(() => {
-    const length = randomInt(10, 15)
-    const originalList = Array(length).fill(0).map((_, index) => ({
-      name: `Document ${index + 1}`,
-      type: 'openapi-3-0',
-    }))
     if (searchValue) {
-      return originalList.filter((document) => {
-        const docName = document.name.toLowerCase()
+      return options.filter((document) => {
+        const docName = document.id.toLowerCase()
         const docNameSubstring = searchValue.toLowerCase()
         return docName.includes(docNameSubstring)
       })
     }
-    return originalList
-  }, [searchValue])
+    return options
+  }, [searchValue, options])
 
-  const [selectedDocument, setSelectedDocument] = useState(list[0])
+  const [selectedDocument, setSelectedDocument] = useState<ValidatedDocument | undefined>()
+
+  useEffect(() => {
+    if (value) {
+      setSelectedDocument(value)
+    } else {
+      setSelectedDocument(options[0])
+    }
+  }, [value, options])
+
+  if (!selectedDocument || loading) {
+    return <Skeleton variant="rectangular" width={250} height={20} />
+  }
 
   return (
     <Button
@@ -48,13 +63,13 @@ export const ValidatedDocumentSelector: FC = () => {
       endIcon={<KeyboardArrowDownOutlinedIcon />}
     >
       <Box display='flex' alignItems='flex-start' gap={1}>
-        <SpecLogo value={selectedDocument.type} />
+        <SpecLogo value={selectedDocument.specificationType} />
         <TextWithOverflowTooltip
-          tooltipText={selectedDocument.name}
+          tooltipText={selectedDocument.id}
           variant="body1"
           sx={{ fontWeight: 500 }}
         >
-          {selectedDocument.name}
+          {selectedDocument.id}
         </TextWithOverflowTooltip>
       </Box>
       <MenuButtonItems
@@ -69,11 +84,11 @@ export const ValidatedDocumentSelector: FC = () => {
           <SearchBar onValueChange={setSearchValue} data-testid="ValidatedDocumentSearchBar" />
           <List sx={{ overflowX: 'hidden', overflowY: 'auto' }}>
             {list.map((document) => (
-              <ListItem key={document.name} sx={{ p: 0 }}>
+              <ListItem key={document.id} sx={{ p: 0 }}>
                 <ListItemButton
                   sx={{
                     flexDirection: 'unset',
-                    backgroundColor: document.name === selectedDocument.name ? '#ECEDEF' : 'transparent',
+                    backgroundColor: document.id === selectedDocument.id ? '#ECEDEF' : 'transparent',
                     height: '36px',
                     alignItems: 'center',
                     '&:hover': {
@@ -82,18 +97,19 @@ export const ValidatedDocumentSelector: FC = () => {
                       },
                     },
                   }}
-                  selected={document.name === selectedDocument.name}
+                  selected={document.id === selectedDocument.id}
                   onClick={(e) => {
                     e.stopPropagation()
                     setSelectedDocument(document)
                     setAnchor(undefined)
+                    onSelect(document)
                   }}
                   data-testid="ValidatedDocumentButton"
                 >
                   <ListItemIcon sx={{ minWidth: 2, mt: 0, mr: 1 }}>
-                    <SpecLogo value={document.type} />
+                    <SpecLogo value={document.specificationType} />
                   </ListItemIcon>
-                  <ListItemText primary={document.name} primaryTypographyProps={{ sx: { mt: 0.25 } }} />
+                  <ListItemText primary={document.id} primaryTypographyProps={{ sx: { mt: 0.25 } }} />
                 </ListItemButton>
               </ListItem>
             ))}
@@ -102,4 +118,4 @@ export const ValidatedDocumentSelector: FC = () => {
       </MenuButtonItems>
     </Button>
   )
-}
+})

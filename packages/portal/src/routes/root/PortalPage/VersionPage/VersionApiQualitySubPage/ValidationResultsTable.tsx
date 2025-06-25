@@ -1,10 +1,11 @@
 import { Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
 import { CustomTableHeadCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomTableHeadCell'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import type { ColumnDef } from '@tanstack/react-table'
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import type { FC } from 'react'
 import { memo, useMemo, useRef } from 'react'
-import type { IssueDto, ValidationDetailsDto } from './types'
+import type { Issue, ValidationDetails } from './types'
 
 const TABLE_COLUMN_ID_TYPE = 'type'
 const TABLE_COLUMN_ID_MESSAGE = 'message'
@@ -20,7 +21,8 @@ type TableData = {
 }
 
 type ValidationResultsTableProps = {
-  data: ValidationDetailsDto
+  data: ValidationDetails | undefined
+  loading: IsLoading
 }
 
 const ValidationResultsTableSkeleton: FC = memo(() => {
@@ -47,9 +49,7 @@ const ValidationResultsTableSkeleton: FC = memo(() => {
 })
 
 export const ValidationResultsTable: FC<ValidationResultsTableProps> = memo<ValidationResultsTableProps>(props => {
-  const { data } = props
-
-  const isLoading = false
+  const { data, loading } = props
 
   const tableContainerRef = useRef<HTMLDivElement>(null)
 
@@ -77,10 +77,10 @@ export const ValidationResultsTable: FC<ValidationResultsTableProps> = memo<Vali
     },
   ], [])
 
-  const transformedData: TableData[] = useMemo(() => data.issues.map((issue: IssueDto) => ({
+  const transformedData: TableData[] = useMemo(() => (data?.issues ?? []).map((issue: Issue) => ({
     type: issue.severity,
     message: issue.message,
-  })), [data])
+  })), [data?.issues])
 
   const { getHeaderGroups, getRowModel } = useReactTable({
     data: transformedData,
@@ -88,7 +88,7 @@ export const ValidationResultsTable: FC<ValidationResultsTableProps> = memo<Vali
     getCoreRowModel: getCoreRowModel(),
   })
 
-  if (isLoading) {
+  if (loading) {
     return <ValidationResultsTableSkeleton />
   }
 
