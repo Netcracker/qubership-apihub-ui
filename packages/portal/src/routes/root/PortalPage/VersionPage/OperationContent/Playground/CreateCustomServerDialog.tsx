@@ -105,7 +105,7 @@ const buildAgentProxyUrl = (cloud: string, namespace: string, service: string): 
 
 export const renderDescriptionInput: (
   props: ControllerRenderFunctionProps<typeof DESCRIPTION_KEY>
-) => JSX.Element = ({ field }) => (
+) => React.JSX.Element = ({ field }) => (
   <TextField
     {...field}
     label="Description"
@@ -192,7 +192,11 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const isUrlGenerationAvailable = isServiceNameExist && selectedAgent && selectedNamespace
 
   useEffect(
-    () => { isUrlGenerationAvailable && setSelectedCustomUrl(buildAgentProxyUrl(selectedAgent, namespaceKey, selectedService ?? ''))},
+    () => {
+      isUrlGenerationAvailable &&
+      setSelectedCustomUrl(buildAgentProxyUrl
+        (selectedAgent ?? '',selectedNamespace?.namespaceKey ?? '', selectedService ?? ''))
+    },
     [isUrlGenerationAvailable, namespaceKey, selectedAgent, selectedNamespace, selectedService],
   )
 
