@@ -38,7 +38,7 @@ export function getVersionInfoOptions(appType: AppTypeApiHub): UseQueryOptions<V
     queryKey: [VERSION_INFO_QUERY_KEY],
     queryFn: () => getVersionInfo(appType),
     enabled: true,
-    refetchInterval: DEFAULT_REFETCH_INTERVAL,
+    refetchInterval: (30 * 1000),
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchOnMount: false,
