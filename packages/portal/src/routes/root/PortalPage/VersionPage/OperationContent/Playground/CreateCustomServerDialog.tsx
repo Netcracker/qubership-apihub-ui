@@ -57,6 +57,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { usePathWarning } from '@apihub/entities/usePathWarning'
 import { generatePath } from 'react-router'
+import { useSpec } from '@apihub/entities/useSpec'
 
 
 const CLOUD_KEY = 'cloudKey'
@@ -173,6 +174,19 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const baseUrl = window.location.origin
 
   const generatedUrl = `${baseUrl}${buildAgentProxyUrl(selectedCloud, selectedNamespace?.namespaceKey ?? '', selectedService ?? '')}`
+
+  const { data: spec } = useSpec(packageId)
+
+  const serverPath = useMemo(() => {
+    const firstUrl = spec?.servers?.[0]?.url
+    if (!firstUrl) return ''
+    try {
+      const parsed = new URL(firstUrl)
+      return parsed.pathname
+    } catch {
+      return ''
+    }
+  }, [spec])
 
 
 
@@ -472,7 +486,11 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
           }}
         >
           Servers specified directly in the OpenAPI specification contain a path to a specific resource.
-          Make sure the URL you enter is correct and does not contain an additional path (e.g. <code>/api/v1</code>).
+          Make sure the URL you enter is correct and does not contain an additional path
+          {serverPath && serverPath !== '/' && (
+            <> (e.g. <code>{serverPath}</code>)</>
+          )}
+
         </Alert>
         )}
       </DialogContent>
