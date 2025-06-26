@@ -123,7 +123,7 @@ http {
           index /portal/index.html;
           try_files $uri $uri/ /portal/index.html;
           proxy_cookie_path / "/; secure; HttpOnly";
-
+          etag on;
           add_header Cache-Control             "no-cache"                                      always;
           add_header Strict-Transport-Security "max-age=15768000; includeSubdomains; preload;" always;
           add_header X-Frame-Options           "DENY"                                          always;
@@ -133,8 +133,6 @@ http {
          location ~ ^/(portal|agents)/version\.json$ {
              root /usr/share/nginx/html;
              add_header Cache-Control "no-store" always;
-             add_header Expires 0 always;
-             etag off;
              try_files $uri =404;
          }
 
