@@ -18,6 +18,7 @@ import type { Key } from '@apihub/entities/keys'
 import type { DocumentsTabSubPageKey } from '@apihub/routes/root/PortalPage/VersionPage/OpenApiViewer/OpenApiViewer'
 import { OPERATIONS_SUB_PAGE, OVERVIEW_SUB_PAGE } from '@apihub/routes/root/PortalPage/VersionPage/OpenApiViewer/OpenApiViewer'
 import type { ReactJSXElement } from '@emotion/react/types/jsx-namespace'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { Box, Grid, Skeleton, Typography } from '@mui/material'
 import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
 import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
@@ -142,9 +143,10 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
             docType={type}
             format={format}
             customProps={{
-              title: 'Download',
+              title: 'More',
               variant: 'outlined',
             }}
+            startIcon={<MoreVertIcon sx={{ color: '#626D82' }} fontSize="small"/>}
           />
         </Box>
       )}

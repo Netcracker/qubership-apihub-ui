@@ -45,6 +45,7 @@ import { VersionDocumentsSubPage } from './VersionDocumentsSubPage/VersionDocume
 import { VersionOperationsSubPage } from './VersionOperationsSubPage/VersionOperationsSubPage'
 import { VersionOverviewSubPage } from './VersionOverviewSubPage/VersionOverviewSubPage'
 import { VersionPageToolbar } from './VersionPageToolbar'
+import { ExportSettingsDialog } from '@apihub/components/ExportSettingsDialog/ui/ExportSettingsDialog'
 
 export const VersionPage: FC = memo(() => {
   const [menuItem] = useActiveTabs()
@@ -57,13 +58,14 @@ export const VersionPage: FC = memo(() => {
           <NoPackagePlaceholder packageObject={packageObject} isLoading={isLoading}>
             <NoPackageVersionPlaceholder packageObject={packageObject}>
               <LayoutWithToolbar
-                toolbar={<VersionPageToolbar/>}
-                body={<VersionPageBody menuItem={menuItem as VersionPageRoute}/>}
+                toolbar={<VersionPageToolbar />}
+                body={<VersionPageBody menuItem={menuItem as VersionPageRoute} />}
               />
-              <OutdatedRevisionNotification/>
+              <OutdatedRevisionNotification />
             </NoPackageVersionPlaceholder>
           </NoPackagePlaceholder>
-          {packageObject?.kind === DASHBOARD_KIND && <PublishDashboardVersionFromCSVDialog/>}
+          {packageObject?.kind === DASHBOARD_KIND && <PublishDashboardVersionFromCSVDialog />}
+          <ExportSettingsDialog />
         </ActivityHistoryFiltersProvider>
       </FullMainVersionProvider>
     </CurrentPackageProvider>
@@ -71,20 +73,20 @@ export const VersionPage: FC = memo(() => {
 })
 
 const PATH_PARAM_TO_SUB_PAGE_MAP: Record<VersionPageRoute, ReactNode> = {
-  [OVERVIEW_PAGE]: <VersionOverviewSubPage/>,
+  [OVERVIEW_PAGE]: <VersionOverviewSubPage />,
   [OPERATIONS_PAGE]: (
     <SelectedPreviewOperationProvider>
-      <VersionOperationsSubPage/>
+      <VersionOperationsSubPage />
     </SelectedPreviewOperationProvider>
   ),
   [API_CHANGES_PAGE]: (
     <PreviousReleaseOptionsProvider>
-      <VersionApiChangesSubPage/>
+      <VersionApiChangesSubPage />
     </PreviousReleaseOptionsProvider>
   ),
   [DEPRECATED_PAGE]: (
     <SelectedPreviewOperationProvider>
-      <VersionDeprecatedOperationsSubPage/>
+      <VersionDeprecatedOperationsSubPage />
     </SelectedPreviewOperationProvider>
   ),
   [API_QUALITY_PAGE]: <VersionApiQualitySubPage/>,
@@ -107,7 +109,7 @@ type VersionPageBodyProps = {
 const VersionPageBody: FC<VersionPageBodyProps> = memo<VersionPageBodyProps>(({ menuItem }) => {
   return (
     <LayoutWithTabs
-      tabs={<VersionNavigationMenu menuItems={VERSION_PAGE_MENU_ITEMS}/>}
+      tabs={<VersionNavigationMenu menuItems={VERSION_PAGE_MENU_ITEMS} />}
       body={PATH_PARAM_TO_SUB_PAGE_MAP[menuItem]}
     />
   )
