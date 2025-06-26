@@ -174,6 +174,8 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
 
   const generatedUrl = `${baseUrl}${buildAgentProxyUrl(selectedCloud, selectedNamespace?.namespaceKey ?? '', selectedService ?? '')}`
 
+
+
   // Form initializing
   const defaultFormData = useMemo<CreateCustomServerForm>(() => ({
     cloudKey: '',
@@ -272,7 +274,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       key="cloudAutocomplete"
       options={cloud}
       value={selectedCloud}
-      inputValue={selectedCloud}
+
       onInputChange={(_: any, newInputValue: React.SetStateAction<string>) => {
         setSelectedCloud(newInputValue)
       }}
@@ -285,11 +287,6 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       isOptionEqualToValue={(option, value) => option === value}
       renderInput={(params) => (
         <TextField {...field} {...params}
-          inputProps={{
-            ...params.inputProps,
-            ...field,
-            'data-testid': 'CloudAutocompleteInput',
-          }}
           label="Cloud"
           required
 
