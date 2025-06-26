@@ -8,6 +8,10 @@ RUN --mount=type=secret,id=npmrc,target=.npmrc mv $(npm pack @netcracker/qubersh
 RUN --mount=type=secret,id=npmrc,target=.npmrc mv $(npm pack @netcracker/qubership-apihub-ui-editor@"$TAG") qubership-apihub-ui-editor.tgz
 RUN --mount=type=secret,id=npmrc,target=.npmrc mv $(npm pack @netcracker/qubership-apihub-ui-portal@"$TAG") qubership-apihub-ui-portal.tgz
 
+# ✅ Выводим дату создания архивов до COPY
+RUN echo "=== Archive timestamps in builder:" && \
+    stat -c "%y %n" qubership-apihub-ui-*.tgz
+
 FROM docker.io/nginx:1.28.0-alpine3.21
 
 COPY nginx/errors                        /var/www/error
