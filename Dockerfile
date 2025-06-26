@@ -24,11 +24,13 @@ RUN tar zxvf ./qubership-apihub-ui-agents.tgz && mv ./package/dist/* /usr/share/
 RUN tar zxvf ./qubership-apihub-ui-editor.tgz && mv ./package/dist/* /usr/share/nginx/html/editor && rm -rf ./package
 RUN tar zxvf ./qubership-apihub-ui-portal.tgz && mv ./package/dist/* /usr/share/nginx/html/portal && rm -rf ./package
 
+RUN find /usr/share/nginx/html -type f -exec touch {} +
+
 # giving permissions to nginx
 RUN chmod -R 777 /var/log/nginx /var/cache/nginx/ /var/run/ /usr/share/nginx/html/ /etc/nginx/ && \
     chmod -R +x /tmp/ \
 
-RUN find /usr/share/nginx/html -type f -exec touch -d "@$(date +%s)" {} +
+
 EXPOSE 8080
 
 USER 1000
