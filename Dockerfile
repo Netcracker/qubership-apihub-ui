@@ -28,6 +28,9 @@ RUN tar zxvf ./qubership-apihub-ui-agents.tgz && mv ./package/dist/* /usr/share/
 RUN tar zxvf ./qubership-apihub-ui-editor.tgz && mv ./package/dist/* /usr/share/nginx/html/editor && rm -rf ./package
 RUN tar zxvf ./qubership-apihub-ui-portal.tgz && mv ./package/dist/* /usr/share/nginx/html/portal && rm -rf ./package
 
+RUN echo "=== File modification times:" && \
+    find /usr/share/nginx/html -type f -exec stat -c "%y %n" {} +
+
 RUN find /usr/share/nginx/html -type f -exec touch {} +
 
 # giving permissions to nginx
