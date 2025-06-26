@@ -26,8 +26,9 @@ RUN tar zxvf ./qubership-apihub-ui-portal.tgz && mv ./package/dist/* /usr/share/
 
 # giving permissions to nginx
 RUN chmod -R 777 /var/log/nginx /var/cache/nginx/ /var/run/ /usr/share/nginx/html/ /etc/nginx/ && \
-    chmod -R +x /tmp/
+    chmod -R +x /tmp/ \
 
+RUN find /usr/share/nginx/html -type f -exec touch -d "@$(date +%s)" {} +
 EXPOSE 8080
 
 USER 1000
