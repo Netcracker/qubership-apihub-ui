@@ -194,8 +194,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   useEffect(
     () => {
       isUrlGenerationAvailable &&
-        setSelectedCustomUrl(buildAgentProxyUrl
-          (selectedAgent ?? '', selectedNamespace?.namespaceKey ?? '', selectedService ?? ''))
+        setSelectedCustomUrl(buildAgentProxyUrl(selectedAgent ?? '', selectedNamespace?.namespaceKey ?? '', selectedService ?? ''))
     },
     [isUrlGenerationAvailable, namespaceKey, selectedAgent, selectedNamespace, selectedService],
   )
@@ -275,8 +274,8 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       value={selectedCloud}
       inputValue={selectedCloud}
       onInputChange={(_: any, newInputValue: React.SetStateAction<string>) => {
-      setSelectedCloud(newInputValue)
-    }}
+        setSelectedCloud(newInputValue)
+      }}
       renderOption={(props, cloud) => (
         <ListItem {...props}
           key={typeof cloud === 'string' ? cloud : crypto.randomUUID()}>
@@ -289,7 +288,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
           inputProps={{
             ...params.inputProps,
             ...field,
-            'data-testid': 'CloudAutocompleteInput', 
+            'data-testid': 'CloudAutocompleteInput',
           }}
           label="Cloud"
           required
