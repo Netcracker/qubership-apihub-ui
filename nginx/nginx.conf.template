@@ -136,6 +136,7 @@ http {
              try_files $uri =404;
          }
 
+
         location ~* \.(?:js|css|woff2?|ttf|svg|png)$ {
           add_header Cache-Control "public, max-age=604800, immutable";
           root /usr/share/nginx/html/portal;
