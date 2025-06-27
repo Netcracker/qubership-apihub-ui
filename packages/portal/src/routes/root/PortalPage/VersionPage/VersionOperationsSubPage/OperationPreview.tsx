@@ -104,7 +104,7 @@ export const OperationPreview: FC<OperationPreviewProps> = memo<OperationPreview
                     textOverflow: 'ellipsis',
                   }}
                 >
-                  <OverflowTooltip title={changedOperation?.summary ?? ''}>
+                  <Box>
                     <Box
                       component="span"
                       sx={{
@@ -121,7 +121,7 @@ export const OperationPreview: FC<OperationPreviewProps> = memo<OperationPreview
                         badgeText={changedOperation.deprecated ? 'Deprecated' : undefined}
                       />
                     </Box>
-                  </OverflowTooltip>
+                  </Box>
                 </Box>
               }
             />
