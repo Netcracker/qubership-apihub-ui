@@ -57,7 +57,6 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { usePathWarning } from '@apihub/entities/usePathWarning'
 import { generatePath } from 'react-router'
-import { useSpec } from '@apihub/entities/useSpec'
 
 
 const CLOUD_KEY = 'cloudKey'
