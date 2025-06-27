@@ -1,7 +1,7 @@
 import { NorthEastRounded } from '@mui/icons-material'
 import { memo, useCallback } from 'react'
-import { navigateToExternalPage, VS_CODE_EXTENSION_URL } from '../../entities/external-navigation'
-import { ButtonWithHint } from './ButtonWithHint'
+import { navigateToExternalPage, VS_CODE_EXTENSION_URL } from '../../../entities/external-navigation'
+import { ButtonWithHint } from '../ButtonWithHint'
 
 export const VsCodeExtensionButton = memo(() => {
   const handleClick = useCallback(() => navigateToExternalPage(VS_CODE_EXTENSION_URL), [])

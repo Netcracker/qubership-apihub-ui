@@ -1,6 +1,6 @@
 import { Divider, type DividerProps } from '@mui/material'
 import { styled } from '@mui/material/styles'
-import type { TestableProps } from '../Testable'
+import type { TestableProps } from '../../Testable'
 
 type AppHeaderDividerProps = DividerProps & TestableProps
 

@@ -20,8 +20,12 @@ import { Box, IconButton } from '@mui/material'
 import type { Theme } from '@mui/material/styles'
 import type { SystemStyleObject } from '@mui/system/styleFunctionSx/styleFunctionSx'
 import { AppHeader } from '@netcracker/qubership-apihub-ui-shared/components/AppHeader'
-import { VsCodeExtensionButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/VsCodeExtensionButton'
-import { AppHeaderDivider } from '@netcracker/qubership-apihub-ui-shared/components/Dividers/AppHeaderDivider'
+import {
+  VsCodeExtensionButton,
+} from '@netcracker/qubership-apihub-ui-shared/components/Buttons/VsCodeExtensionButton/VsCodeExtensionButton'
+import {
+  AppHeaderDivider,
+} from '@netcracker/qubership-apihub-ui-shared/components/Dividers/AppHeaderDivider/AppHeaderDivider'
 import { ExceptionSituationHandler } from '@netcracker/qubership-apihub-ui-shared/components/ExceptionSituationHandler'
 import {
   MaintenanceNotification,
