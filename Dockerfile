@@ -4,13 +4,20 @@ ARG TAG=dev
 
 WORKDIR /workspace
 
-RUN --mount=type=secret,id=npmrc,target=.npmrc mv $(npm pack @netcracker/qubership-apihub-ui-agents@"$TAG") qubership-apihub-ui-agents.tgz
+RUN --mount=type=secret,id=npmrc,target=.npmrc mv $(npm pack @netcracker/qubership-apihub-ui-agents@"$TAG") qubership-apihub-ui-age nts.tgz
 RUN --mount=type=secret,id=npmrc,target=.npmrc mv $(npm pack @netcracker/qubership-apihub-ui-editor@"$TAG") qubership-apihub-ui-editor.tgz
 RUN --mount=type=secret,id=npmrc,target=.npmrc mv $(npm pack @netcracker/qubership-apihub-ui-portal@"$TAG") qubership-apihub-ui-portal.tgz
 
 # ✅ Выводим дату создания архивов до COPY
 RUN echo "=== Archive timestamps in builder:" && \
-    stat -c "%y %n" qubership-apihub-ui-*.tgz
+    stat -c "%y %n" qubership-apihub-ui-*.tgz \
+
+RUN mkdir /tmp/portal_unpack && \
+    tar zxvf ./qubership-apihub-ui-portal.tgz -C /tmp/portal_unpack && \
+    echo "=== Files inside portal.tgz before move:" && \
+    find /tmp/portal_unpack -type f -exec stat -c "%y %n" {} + && \
+    mv /tmp/portal_unpack/package/dist/* /usr/share/nginx/html/portal && \
+    rm -rf /tmp/portal_unpack
 
 FROM docker.io/nginx:1.28.0-alpine3.21
 
