@@ -24,9 +24,9 @@ import {
   VERSION_2_6_1,
   VERSION_2_6_2,
   VERSION_2_6_3,
-} from '../packages/version-contents'
-import { ARCHIVED_VERSION_STATUS, DRAFT_VERSION_STATUS, RELEASE_VERSION_STATUS } from '../packages/version-statuses'
-import { TOKEN_SAMPLE, USER_SAMPLE } from '../packages/principal'
+} from './version-contents'
+import { ARCHIVED_VERSION_STATUS, DRAFT_VERSION_STATUS, RELEASE_VERSION_STATUS } from './version-statuses'
+import { TOKEN_SAMPLE, USER_SAMPLE } from './principal'
 
 export const VERSIONS: Writeable<PackageVersionsDto> = {
   versions: [
