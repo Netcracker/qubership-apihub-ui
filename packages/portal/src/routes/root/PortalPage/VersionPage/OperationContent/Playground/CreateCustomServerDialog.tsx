@@ -505,3 +505,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     </DialogForm>
   )
 })
+function useSpec(packageId: string): { data: any } {
+  throw new Error('Function not implemented.')
+}
+
