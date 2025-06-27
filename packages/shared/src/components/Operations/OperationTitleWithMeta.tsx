@@ -16,7 +16,7 @@
 
 import type { FC } from 'react'
 import React, { memo, useMemo } from 'react'
-import { Box, Link, Typography } from '@mui/material'
+import { Box, Link } from '@mui/material'
 import { NavLink } from 'react-router-dom'
 import type { Path } from '@remix-run/router'
 import type { Operation } from '../../entities/operations'
@@ -64,13 +64,8 @@ export const OperationTitleWithMeta: FC<OperationTitleWithMetaProps> = memo<Oper
   }, [operation])
 
   const titleNode = link
-    ? (<Box
-      sx={{
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-      }}
-    >
-      <Typography noWrap variant="subtitle1">
+    ? (
+      <TextWithOverflowTooltip tooltipText={title} variant="subtitle1">
         <Link
           component={NavLink}
           to={link}
@@ -82,19 +77,17 @@ export const OperationTitleWithMeta: FC<OperationTitleWithMetaProps> = memo<Oper
         >
           {title}
         </Link>
-      </Typography>
-    </Box>
+      </TextWithOverflowTooltip>
     )
     : (
-      <Box
-        sx={{
-          maxWidth: '90%',
-          whiteSpace: 'nowrap',
+      <TextWithOverflowTooltip tooltipText={title} variant="inherit"
+       sx={{
+          maxWidth: '60vw',
           overflow: 'hidden',
         }}
       >
-        <Typography noWrap variant="inherit">{title}</Typography>
-      </Box>
+        {title}
+      </TextWithOverflowTooltip>
     )
 
   return (
@@ -104,9 +97,25 @@ export const OperationTitleWithMeta: FC<OperationTitleWithMetaProps> = memo<Oper
         alignItems="center"
         gap={1}
         data-testid="OperationTitle"
+        sx={{
+          maxWidth: '60vw',
+          overflow: 'hidden',
+        }}
       >
         <OverflowTooltip title={title}>
-          {titleNode}
+          {/* {titleNode} */}
+           <Box
+            component="span"
+            sx={{
+              overflow: 'hidden',
+              whiteSpace: 'nowrap',
+              textOverflow: 'ellipsis',
+              display: 'inline-block',
+              width: '100%',
+            }}
+          >
+            {titleNode}
+          </Box>
         </OverflowTooltip>
 
         {badgeText &&

@@ -38,6 +38,7 @@ import { normalizeOpenApiDocument } from '@netcracker/qubership-apihub-ui-shared
 import { YAML_FILE_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/entities/file-format-view'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { removeComponents } from '@netcracker/qubership-apihub-api-processor'
+import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
 
 export type OperationPreviewProps = {
   apiType: ApiType
@@ -74,7 +75,7 @@ export const OperationPreview: FC<OperationPreviewProps> = memo<OperationPreview
 
   if (isLoading) {
     return (
-      <LoadingIndicator/>
+      <LoadingIndicator />
     )
   } else if (!changedOperation?.operationKey) {
     return (
@@ -95,20 +96,48 @@ export const OperationPreview: FC<OperationPreviewProps> = memo<OperationPreview
           header={
             <ToolbarTitle
               value={
-                <OperationTitleWithMeta
-                  onlyTitle
-                  operation={changedOperation}
-                  badgeText={changedOperation.deprecated ? 'Deprecated' : undefined}
-                />
+                <Box
+                  sx={{
+                    maxWidth: '60vw',           // restrict max width of title
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                  }}
+                >
+                  <OverflowTooltip title={changedOperation?.summary ?? ''}>
+                    <Box
+                      component="span"
+                      sx={{
+                        display: 'inline-block',
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                        textOverflow: 'ellipsis',
+                        width: '100%',
+                      }}
+                    >
+                      <OperationTitleWithMeta
+                        onlyTitle
+                        operation={changedOperation}
+                        badgeText={changedOperation.deprecated ? 'Deprecated' : undefined}
+                      />
+                    </Box>
+                  </OverflowTooltip>
+                </Box>
               }
             />
           }
-          action={<OperationViewModeSelector modes={OPERATION_PREVIEW_VIEW_MODES}/>}
+          action={<OperationViewModeSelector modes={OPERATION_PREVIEW_VIEW_MODES} />}
         />
-        <Divider orientation="horizontal" variant="fullWidth"/>
+        <Divider orientation="horizontal" variant="fullWidth" />
       </Box>
 
-      <Box>
+      <Box
+        sx={{
+          overflowX: 'hidden', // restrict sideways scroll
+          width: '100%',       // occupy full parent width
+          minWidth: 0,         // allow child truncation instead of expanding
+        }}
+      >
         {isDocViewMode && (
           <OperationView
             apiType={apiType}

@@ -43,17 +43,25 @@ export const Toolbar: FC<ToolbarProps> = memo<ToolbarProps>(({
         subheader={
           <Box
             display="flex"
-            maxWidth="55vw"
-            gap={1}
-            alignItems="baseline"
-            height={28}
+            alignItems="center"
+            gap={2}
+            maxWidth="100%"
+            sx={{ overflow: 'hidden' }}
           >
             {header}
           </Box>
         }
         subheaderTypographyProps={{ variant: 'h5', color: '#000000' }}
         action={
-          <Box display="flex" gap={1}>
+          <Box display="flex" gap={1}
+            sx={{
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              flex: 1,
+              minWidth: 0,
+            }}
+          >
             {action}
           </Box>
         }
