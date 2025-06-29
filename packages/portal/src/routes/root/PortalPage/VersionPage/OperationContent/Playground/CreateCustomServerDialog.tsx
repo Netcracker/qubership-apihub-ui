@@ -174,6 +174,24 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
 
   const generatedUrl = `${baseUrl}${buildAgentProxyUrl(selectedCloud, selectedNamespace?.namespaceKey ?? '', selectedService ?? '')}`
 
+  useEffect(() => {
+  if (!isServiceNameExist) {
+    setMode(MODE_CUSTOM)
+  }
+}, [isServiceNameExist])
+
+  const urlInputRef = React.useRef<HTMLInputElement>(null)
+
+useEffect(() => {
+  if (open && (mode === MODE_CUSTOM || !isServiceNameExist)) {
+    const timer = setTimeout(() => {
+      urlInputRef.current?.focus()
+    }, 0)
+    return () => clearTimeout(timer)
+  }
+}, [open, mode, isServiceNameExist])
+
+
   const { data: spec } = useSpec(packageId)
 
   const serverPath = useMemo(() => {
@@ -371,6 +389,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     { field, fieldState }: ControllerRenderFunctionProps<typeof CUSTOM_SERVER_URL_KEY>) => (
     <TextField
       {...field}
+      inputRef={urlInputRef}
       value={selectedCustomUrl ?? ''}
       onChange={updateSelectedCustomUrl}
       required
