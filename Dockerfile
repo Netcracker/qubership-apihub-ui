@@ -4,18 +4,9 @@ ARG TAG=dev
 
 WORKDIR /workspace
 
-RUN --mount=type=secret,id=npmrc,target=.npmrc mv $(npm pack @netcracker/qubership-apihub-ui-agents@"$TAG") qubership-apihub-ui-agents.tgz && \
-    mv $(npm pack @netcracker/qubership-apihub-ui-editor@"$TAG") qubership-apihub-ui-editor.tgz && \
-    mv $(npm pack @netcracker/qubership-apihub-ui-portal@"$TAG") qubership-apihub-ui-portal.tgz
-
-# ✅ Архивы и распаковка с выводом
-RUN echo "=== Archive timestamps in builder:" && \
-    stat -c "%y %n" qubership-apihub-ui-*.tgz && \
-    mkdir /tmp/portal_unpack && \
-    tar zxvf ./qubership-apihub-ui-portal.tgz -C /tmp/portal_unpack && \
-    echo "=== Files inside portal.tgz before move:" && \
-    find /tmp/portal_unpack -type f -exec stat -c "%y %n" {} + && \
-    rm -rf /tmp/portal_unpack
+RUN --mount=type=secret,id=npmrc,target=.npmrc mv $(npm pack @netcracker/qubership-apihub-ui-agents@"$TAG") qubership-apihub-ui-agents.tgz
+RUN --mount=type=secret,id=npmrc,target=.npmrc mv $(npm pack @netcracker/qubership-apihub-ui-editor@"$TAG") qubership-apihub-ui-editor.tgz
+RUN --mount=type=secret,id=npmrc,target=.npmrc mv $(npm pack @netcracker/qubership-apihub-ui-portal@"$TAG") qubership-apihub-ui-portal.tgz
 
 FROM docker.io/nginx:1.28.0-alpine3.21
 
@@ -32,9 +23,6 @@ COPY --from=builder /workspace/qubership-apihub-ui-portal.tgz .
 RUN tar zxvf ./qubership-apihub-ui-agents.tgz && mv ./package/dist/* /usr/share/nginx/html/agents && rm -rf ./package
 RUN tar zxvf ./qubership-apihub-ui-editor.tgz && mv ./package/dist/* /usr/share/nginx/html/editor && rm -rf ./package
 RUN tar zxvf ./qubership-apihub-ui-portal.tgz && mv ./package/dist/* /usr/share/nginx/html/portal && rm -rf ./package
-
-RUN echo "=== File modification times:" && \
-    find /usr/share/nginx/html -type f -exec stat -c "%y %n" {} +
 
 RUN find /usr/share/nginx/html -type f -exec touch {} +
 
