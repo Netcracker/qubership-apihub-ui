@@ -174,39 +174,6 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
 
   const generatedUrl = `${baseUrl}${buildAgentProxyUrl(selectedCloud, selectedNamespace?.namespaceKey ?? '', selectedService ?? '')}`
 
-  useEffect(() => {
-  if (!isServiceNameExist) {
-    setMode(MODE_CUSTOM)
-  }
-}, [isServiceNameExist])
-
-  const urlInputRef = React.useRef<HTMLInputElement>(null)
-
-useEffect(() => {
-  if (open && (mode === MODE_CUSTOM || !isServiceNameExist)) {
-    const timer = setTimeout(() => {
-      urlInputRef.current?.focus()
-    }, 0)
-    return () => clearTimeout(timer)
-  }
-}, [open, mode, isServiceNameExist])
-
-
-  const { data: spec } = useSpec(packageId)
-
-  const serverPath = useMemo(() => {
-    const firstUrl = spec?.servers?.[0]?.url
-    if (!firstUrl) return ''
-    try {
-      const parsed = new URL(firstUrl)
-      return parsed.pathname
-    } catch {
-      return ''
-    }
-  }, [spec])
-
-
-
   // Form initializing
   const defaultFormData = useMemo<CreateCustomServerForm>(() => ({
     cloudKey: '',
@@ -225,10 +192,7 @@ useEffect(() => {
   const isUrlGenerationAvailable = isServiceNameExist && selectedAgent && selectedNamespace
 
   useEffect(
-    () => {
-      isUrlGenerationAvailable &&
-        setSelectedCustomUrl(buildAgentProxyUrl(selectedAgent ?? '', selectedNamespace?.namespaceKey ?? '', selectedService ?? ''))
-    },
+    () => { isUrlGenerationAvailable && setSelectedCustomUrl(buildAgentProxyUrl(selectedAgent ?? '', selectedNamespace?.namespaceKey ?? '', selectedService ?? '')) },
     [isUrlGenerationAvailable, namespaceKey, selectedAgent, selectedNamespace, selectedService],
   )
 
@@ -236,7 +200,6 @@ useEffect(() => {
     () => isServiceNameExistInNamespace(serviceNames, serviceName, selectedCloud, selectedNamespace?.namespaceKey),
     [selectedCloud, selectedNamespace?.namespaceKey, serviceName, serviceNames],
   )
-
 
   const showPathWarning = usePathWarning(urlInput)
 
@@ -389,12 +352,10 @@ useEffect(() => {
     { field, fieldState }: ControllerRenderFunctionProps<typeof CUSTOM_SERVER_URL_KEY>) => (
     <TextField
       {...field}
-      inputRef={urlInputRef}
       value={selectedCustomUrl ?? ''}
       onChange={updateSelectedCustomUrl}
       required
       label="Server URL"
-
       error={!!fieldState.error || !!serverUrlError}
       helperText={serverUrlError || serverUrlWarning || fieldState.error?.message}
       fullWidth
@@ -450,8 +411,7 @@ useEffect(() => {
             </RadioGroup>
           </FormControl>
         )}
-
-        {(!isServiceNameExist || mode === MODE_PROXY && (
+        {(!isServiceNameExist || mode === MODE_PROXY) && (
           <>
             <Typography>Server URL:</Typography>
 
@@ -473,13 +433,12 @@ useEffect(() => {
               render={renderSelectService}
             />
           </>
-        ))}
+        )}
         {(!isServiceNameExist || mode === MODE_CUSTOM) && (
           <Controller
             name={CUSTOM_SERVER_URL_KEY}
             control={control}
             render={renderSelectUrl}
-
           />
         )}
         <Controller
@@ -487,7 +446,6 @@ useEffect(() => {
           control={control}
           render={renderDescriptionInput}
         />
-
         {showPathWarning && (<Alert severity="warning"
           sx={{
             mt: 2,
@@ -504,15 +462,10 @@ useEffect(() => {
           }}
         >
           Servers specified directly in the OpenAPI specification contain a path to a specific resource.
-          Make sure the URL you enter is correct and does not contain an additional path
-          {serverPath && serverPath !== '/' && (
-            <> (e.g. <code>{serverPath}</code>)</>
-          )}
-
+          Make sure the URL you enter is correct and does not contain an additional path (e.g. <code>/api/v1</code>)
         </Alert>
         )}
       </DialogContent>
-
       <DialogActions>
         <Button variant="contained" type="submit" data-testid="AddButton" >
           Add
@@ -524,7 +477,3 @@ useEffect(() => {
     </DialogForm>
   )
 })
-function useSpec(packageId: string): { data: any } {
-  throw new Error('Function not implemented.')
-}
-
