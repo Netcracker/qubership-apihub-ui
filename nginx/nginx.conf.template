@@ -80,7 +80,7 @@ http {
         }
 
         location = /portal/index.html {
-            root /usr/share/nginx/html/portal;
+            root /usr/share/nginx/html;
             add_header Cache-Control "no-store" always;
             add_header Strict-Transport-Security "max-age=15768000; includeSubdomains; preload;" always;
             add_header X-Frame-Options "DENY" always;
