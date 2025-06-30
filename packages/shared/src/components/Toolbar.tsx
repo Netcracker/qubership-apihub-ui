@@ -40,31 +40,9 @@ export const Toolbar: FC<ToolbarProps> = memo<ToolbarProps>(({
       <CardHeader
         sx={{ height: TOOLBAR_HEIGHT[breadcrumbs ? LARGE_TOOLBAR_SIZE : size], px: 4 }}
         title={breadcrumbs}
-        subheader={
-          <Box
-            display="flex"
-            alignItems="center"
-            gap={2}
-            maxWidth="100%"
-            sx={{ overflow: 'hidden' }}
-          >
-            {header}
-          </Box>
-        }
+        subheader={header}
         subheaderTypographyProps={{ variant: 'h5', color: '#000000' }}
-        action={
-          <Box display="flex" gap={1}
-            sx={{
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              flex: 1,
-              minWidth: 0,
-            }}
-          >
-            {action}
-          </Box>
-        }
+        action={action}
         data-testid={testId}
       />
     </Card>

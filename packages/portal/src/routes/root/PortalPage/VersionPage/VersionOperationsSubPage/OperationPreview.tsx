@@ -38,7 +38,6 @@ import { normalizeOpenApiDocument } from '@netcracker/qubership-apihub-ui-shared
 import { YAML_FILE_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/entities/file-format-view'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { removeComponents } from '@netcracker/qubership-apihub-api-processor'
-import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
 
 export type OperationPreviewProps = {
   apiType: ApiType
@@ -97,47 +96,31 @@ export const OperationPreview: FC<OperationPreviewProps> = memo<OperationPreview
             <ToolbarTitle
               value={
                 <Box
+                  component="span"
                   sx={{
-                    maxWidth: '60vw',           // restrict max width of title
+                    maxWidth: '60vw',         // restrict max width
+                    display: 'inline-block',
                     overflow: 'hidden',
                     whiteSpace: 'nowrap',
                     textOverflow: 'ellipsis',
+                    width: '100%',
                   }}
                 >
-                  <Box>
-                    <Box
-                      component="span"
-                      sx={{
-                        display: 'inline-block',
-                        overflow: 'hidden',
-                        whiteSpace: 'nowrap',
-                        textOverflow: 'ellipsis',
-                        width: '100%',
-                      }}
-                    >
-                      <OperationTitleWithMeta
-                        onlyTitle
-                        operation={changedOperation}
-                        badgeText={changedOperation.deprecated ? 'Deprecated' : undefined}
-                      />
-                    </Box>
-                  </Box>
+                  <OperationTitleWithMeta
+                    onlyTitle
+                    operation={changedOperation}
+                    badgeText={changedOperation.deprecated ? 'Deprecated' : undefined}
+                  />
                 </Box>
               }
             />
           }
-          action={<OperationViewModeSelector modes={OPERATION_PREVIEW_VIEW_MODES} />}
+          action={< OperationViewModeSelector modes={OPERATION_PREVIEW_VIEW_MODES} />}
         />
-        <Divider orientation="horizontal" variant="fullWidth" />
-      </Box>
+        < Divider orientation="horizontal" variant="fullWidth" />
+      </Box >
 
-      <Box
-        sx={{
-          overflowX: 'hidden', // restrict sideways scroll
-          width: '100%',       // occupy full parent width
-          minWidth: 0,         // allow child truncation instead of expanding
-        }}
-      >
+      <Box>
         {isDocViewMode && (
           <OperationView
             apiType={apiType}
@@ -158,6 +141,6 @@ export const OperationPreview: FC<OperationPreviewProps> = memo<OperationPreview
           />
         )}
       </Box>
-    </Box>
+    </Box >
   )
 })
