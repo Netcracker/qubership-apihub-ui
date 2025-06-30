@@ -135,6 +135,20 @@ http {
           root /usr/share/nginx/html/portal;
         }
 
+        location ~ ^/(portal|agents)/index\.html$ {
+            root /usr/share/nginx/html;
+            add_header Cache-Control             "no-store" always;
+            add_header Strict-Transport-Security "max-age=15768000; includeSubdomains; preload;" always;
+            add_header X-Frame-Options           "DENY" always;
+            add_header Content-Security-Policy   "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'" always;
+        }
+
+        location ~ ^/(portal|agents)/version\.json$ {
+          root /usr/share/nginx/html;
+          add_header Cache-Control "no-store" always;
+          try_files $uri =404;
+        }
+
         location / {
           root /usr/share/nginx/html/portal;
           index /index.html;
