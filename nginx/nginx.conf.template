@@ -135,12 +135,6 @@ http {
           root /usr/share/nginx/html/portal;
         }
 
-        location ~ ^/(portal|agents)/version\.json$ {
-          root /usr/share/nginx/html;
-          add_header Cache-Control "no-store" always;
-          try_files $uri =404;
-        }
-
         location / {
           root /usr/share/nginx/html/portal;
           index /index.html;
