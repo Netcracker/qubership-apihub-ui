@@ -5,6 +5,7 @@ import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/compone
 import { ModuleFetchingErrorBoundary } from '@netcracker/qubership-apihub-ui-shared/components/ModuleFetchingErrorBoundary/ModuleFetchingErrorBoundary'
 import { MonacoEditor } from '@netcracker/qubership-apihub-ui-shared/components/MonacoEditor'
 import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'
+import type { SpecItemUri } from '@netcracker/qubership-apihub-ui-shared/utils/specifications'
 import type { FC, ReactNode } from 'react'
 import { memo, useMemo, useState } from 'react'
 import { useParams } from 'react-router'
@@ -74,7 +75,7 @@ export const VersionApiQualityCard: FC = memo(() => {
   const [selectedDocument, setSelectedDocument] = useState<ValidatedDocument | undefined>()
   const [format, setFormat] = useState<OriginalDocumentFileFormat>(YAML_FILE_FORMAT)
 
-  const [selectedIssuePath, setSelectedIssuePath] = useState<string | undefined>()
+  const [selectedIssuePath, setSelectedIssuePath] = useState<SpecItemUri | undefined>()
 
   const [validationDetails, loadingValidationDetails] = useValidationDetailsByDocument(
     packageId ?? '',

@@ -26,7 +26,7 @@ export type MonacoEditorProps = {
   value: string
   type: SpecType
   language?: LanguageType
-  selectedUri?: SpecItemUri // Example: '#/foo/bar/baz/qux/1'
+  selectedUri?: SpecItemUri // Example: /foo/bar/baz/qux/1
   searchPhrase?: string
   onSearchPhraseChange?: (value: string | undefined) => void
 }

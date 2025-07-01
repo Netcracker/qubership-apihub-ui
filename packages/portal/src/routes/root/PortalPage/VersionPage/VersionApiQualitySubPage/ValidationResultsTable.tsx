@@ -1,6 +1,7 @@
 import { Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
 import { CustomTableHeadCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomTableHeadCell'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import type { SpecItemUri } from '@netcracker/qubership-apihub-ui-shared/utils/specifications'
 import type { ColumnDef } from '@tanstack/react-table'
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import type { FC } from 'react'
@@ -18,13 +19,13 @@ const TABLE_COLUMN_ID_LABELS = {
 type TableData = {
   type: string
   message: string
-  path: string // Example: #/foo/bar/baz/qux/1
+  path: SpecItemUri // Example: /foo/bar/baz/qux/1
 }
 
 type ValidationResultsTableProps = {
   data: ValidationDetails | undefined
   loading: IsLoading
-  onSelectIssue: (pathToIssue: string) => void
+  onSelectIssue: (pathToIssue: SpecItemUri) => void
 }
 
 const ValidationResultsTableSkeleton: FC = memo(() => {
@@ -82,7 +83,7 @@ export const ValidationResultsTable: FC<ValidationResultsTableProps> = memo<Vali
   const transformedData: TableData[] = useMemo(() => (data?.issues ?? []).map((issue: Issue) => ({
     type: issue.severity,
     message: issue.message,
-    path: `#/${issue.jsonPath.join('/')}`,
+    path: `/${issue.jsonPath.join('/')}`,
   })), [data?.issues])
 
   const { getHeaderGroups, getRowModel } = useReactTable({
