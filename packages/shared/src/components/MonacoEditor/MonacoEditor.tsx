@@ -26,7 +26,7 @@ export type MonacoEditorProps = {
   value: string
   type: SpecType
   language?: LanguageType
-  selectedUri?: SpecItemUri
+  selectedUri?: SpecItemUri // Example: '#/foo/bar/baz/qux/1'
   searchPhrase?: string
   onSearchPhraseChange?: (value: string | undefined) => void
 }
@@ -44,7 +44,7 @@ export const MonacoEditor: FC<MonacoEditorProps> = /* @__PURE__ */ memo<MonacoEd
   },
 ) => {
   return (
-    <Suspense fallback={<LoadingIndicator/>}>
+    <Suspense fallback={<LoadingIndicator />}>
       <MonacoEditorElement
         value={value}
         type={type}

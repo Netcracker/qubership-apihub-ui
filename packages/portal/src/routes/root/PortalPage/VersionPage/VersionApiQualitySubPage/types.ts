@@ -37,14 +37,17 @@ export const IssueSeverities = {
 } as const
 export type IssueSeverity = typeof IssueSeverities[keyof typeof IssueSeverities]
 
+export type IssuePathItem = string | number
+export type IssuePath = IssuePathItem[]
+
 export type IssueDto = {
-  jsonPath: string
+  jsonPath: IssuePath
   severity: IssueSeverity
   message: string
 }
 
 export type Issue = {
-  jsonPath: string // TODO 25.06.25 // How to parse it?
+  jsonPath: IssuePath
   severity: IssueSeverity
   message: string
 }

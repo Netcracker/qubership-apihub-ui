@@ -23,7 +23,7 @@ export const ValidatedDocumentSelector: FC<ValidatedDocumentSelectorProps> = mem
 
   const [searchValue, setSearchValue] = useState('')
 
-  const list = useMemo(() => {
+  const documentsList = useMemo(() => {
     if (searchValue) {
       return options.filter((document) => {
         const docName = document.id.toLowerCase()
@@ -37,12 +37,10 @@ export const ValidatedDocumentSelector: FC<ValidatedDocumentSelectorProps> = mem
   const [selectedDocument, setSelectedDocument] = useState<ValidatedDocument | undefined>()
 
   useEffect(() => {
-    if (value) {
-      setSelectedDocument(value)
-    } else {
-      setSelectedDocument(options[0])
-    }
-  }, [value, options])
+    const newSelectedDocument = value ?? options[0]
+    setSelectedDocument(newSelectedDocument)
+    onSelect(newSelectedDocument)
+  }, [value, options, onSelect])
 
   if (!selectedDocument || loading) {
     return <Skeleton variant="rectangular" width={250} height={20} />
@@ -83,7 +81,7 @@ export const ValidatedDocumentSelector: FC<ValidatedDocumentSelectorProps> = mem
         >
           <SearchBar onValueChange={setSearchValue} data-testid="ValidatedDocumentSearchBar" />
           <List sx={{ overflowX: 'hidden', overflowY: 'auto' }}>
-            {list.map((document) => (
+            {documentsList.map((document) => (
               <ListItem key={document.id} sx={{ p: 0 }}>
                 <ListItemButton
                   sx={{

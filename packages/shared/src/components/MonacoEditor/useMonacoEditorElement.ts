@@ -33,7 +33,7 @@ export function useMonacoEditorElement(options: {
   value: string
   type: SpecType
   language?: LanguageType
-  selectedUri?: SpecItemUri
+  selectedUri?: SpecItemUri // Example: '#/foo/bar/baz/qux/1'
   searchPhrase?: string
   onSearchPhraseChange?: (value: string | undefined) => void
 }): RefObject<HTMLDivElement> {
