@@ -21,7 +21,7 @@ import { useEvent } from 'react-use'
 import { createEventBus, slot } from 'ts-event-bus'
 
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { AGENT_ROUTE, EDITOR_ROUTE } from '@netcracker/qubership-apihub-ui-shared/entities/application-routes'
+import { AGENT_ROUTE } from '@netcracker/qubership-apihub-ui-shared/entities/application-routes'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type {
   API_TYPE_SEARCH_PARAM,
@@ -88,7 +88,6 @@ export const NAVIGATE_TO_PACKAGE = 'navigate-to-package'
 export const NAVIGATE_TO_VERSION = 'navigate-to-version'
 export const NAVIGATE_TO_SETTINGS = 'navigate-to-settings'
 export const NAVIGATE_TO_AGENT = 'navigate-to-agent'
-export const NAVIGATE_TO_EDITOR = 'navigate-to-editor'
 
 export type PackageDetail = {
   packageKey: Key
@@ -313,7 +312,6 @@ type NavigationEventBus = {
   navigateToVersion: (detail?: VersionDetail) => void
   navigateToSettings: (detail?: SettingsDetail) => void
   navigateToAgent: () => void
-  navigateToEditor: () => void
 }
 
 function navigationProvider(): NavigationEventBus {
@@ -337,7 +335,6 @@ function navigationProvider(): NavigationEventBus {
       navigateToVersion: slot<VersionDetail>(),
       navigateToSettings: slot<SettingsDetail>(),
       navigateToAgent: slot(),
-      navigateToEditor: slot(),
     },
   })
 
@@ -395,9 +392,6 @@ function navigationProvider(): NavigationEventBus {
   eventBus.navigateToAgent.on(() => {
     dispatchEvent(new CustomEvent(NAVIGATE_TO_AGENT))
   })
-  eventBus.navigateToEditor.on(() => {
-    dispatchEvent(new CustomEvent(NAVIGATE_TO_EDITOR))
-  })
 
   return eventBus as unknown as NavigationEventBus
 }
@@ -413,25 +407,75 @@ export const NavigationProvider: FC<PropsWithChildren> = memo<PropsWithChildren>
   const navigate = useNavigate()
 
   /* eslint-disable react-hooks/exhaustive-deps */
-  const handleNavigateToOverview = useCallback(({ detail }: CustomEvent<OverviewDetail>) => navigate(getOverviewPath(detail)), [])
-  const handleNavigateToOperations = useCallback(({ detail }: CustomEvent<OperationsDetail>) => navigate(getOperationsPath(detail)), [])
-  const handleNavigateToVersionsComparison = useCallback(({ detail }: CustomEvent<ComparisonDetail>) => navigate(getComparisonPath(detail)), [])
-  const handleNavigateToOperationsComparison = useCallback(({ detail }: CustomEvent<OperationsComparisonDetail>) => navigate(getOperationsComparisonPath(detail)), [])
-  const handleNavigateToGroupsOperationsComparison = useCallback(({ detail }: CustomEvent<GroupsOperationsComparisonDetail>) => navigate(getGroupsOperationsPath(detail)), [])
-  const handleNavigateToFirstGroupOperation = useCallback(({ detail }: CustomEvent<FirstGroupOperationDetail>) => navigate(getFirstGroupOperationPath(detail)), [])
-  const handleNavigateToGroup = useCallback(({ detail }: CustomEvent<GroupDetail>) => navigate(getGroupPath(detail)), [])
-  const handleNavigateToGroupsOperationsSwapper = useCallback(({ detail }: CustomEvent<GroupsOperationsSwapperDetail>) => navigate(getGroupsOperationsSwapperPath(detail)), [])
-  const handleNavigateToOperationsSwapper = useCallback(({ detail }: CustomEvent<OperationsSwapperDetail>) => navigate(getOperationsSwapperPath(detail)), [])
-  const handleNavigateToComparison = useCallback(({ detail }: CustomEvent<ComparisonDetail>) => navigate(getComparisonPath(detail)), [])
-  const handleNavigateToGroupCompareContent = useCallback(({ detail }: CustomEvent<GroupCompareContentDetail>) => navigate(getGroupCompareContentPath(detail)), [])
-  const handleNavigateToWorkspace = useCallback(({ detail }: CustomEvent<WorkspaceDetail>) => navigate(getWorkspacePath(detail)), [])
-  const handleNavigateToDocuments = useCallback(({ detail }: CustomEvent<DocumentsDetail>) => navigate(getDocumentPath(detail)), [])
-  const handleNavigateToDocumentPreview = useCallback(({ detail }: CustomEvent<DocumentPreviewDetail>) => navigate(getDocumentPreviewPath(detail)), [])
-  const handleNavigateToPackage = useCallback(({ detail }: CustomEvent<PackageDetail>) => navigate(getPackagePath(detail)), [])
-  const handleNavigateToVersion = useCallback(({ detail }: CustomEvent<VersionDetail>) => navigate(getVersionPath(detail)), [])
-  const handleNavigateToSettings = useCallback(({ detail }: CustomEvent<SettingsDetail>) => navigate(getSettingsPath(detail)), [])
+  const handleNavigateToOverview = useCallback(
+    ({ detail }: CustomEvent<OverviewDetail>) => navigate(getOverviewPath(detail)),
+    [],
+  )
+  const handleNavigateToOperations = useCallback(
+    ({ detail }: CustomEvent<OperationsDetail>) => navigate(getOperationsPath(detail)),
+    [],
+  )
+  const handleNavigateToVersionsComparison = useCallback(
+    ({ detail }: CustomEvent<ComparisonDetail>) => navigate(getComparisonPath(detail)),
+    [],
+  )
+  const handleNavigateToOperationsComparison = useCallback(
+    ({ detail }: CustomEvent<OperationsComparisonDetail>) => navigate(getOperationsComparisonPath(detail)),
+    [],
+  )
+  const handleNavigateToGroupsOperationsComparison = useCallback(
+    ({ detail }: CustomEvent<GroupsOperationsComparisonDetail>) => navigate(getGroupsOperationsPath(detail)),
+    [],
+  )
+  const handleNavigateToFirstGroupOperation = useCallback(
+    ({ detail }: CustomEvent<FirstGroupOperationDetail>) => navigate(getFirstGroupOperationPath(detail)),
+    [],
+  )
+  const handleNavigateToGroup = useCallback(
+    ({ detail }: CustomEvent<GroupDetail>) => navigate(getGroupPath(detail)),
+    [],
+  )
+  const handleNavigateToGroupsOperationsSwapper = useCallback(
+    ({ detail }: CustomEvent<GroupsOperationsSwapperDetail>) => navigate(getGroupsOperationsSwapperPath(detail)),
+    [],
+  )
+  const handleNavigateToOperationsSwapper = useCallback(
+    ({ detail }: CustomEvent<OperationsSwapperDetail>) => navigate(getOperationsSwapperPath(detail)),
+    [],
+  )
+  const handleNavigateToComparison = useCallback(
+    ({ detail }: CustomEvent<ComparisonDetail>) => navigate(getComparisonPath(detail)),
+    [],
+  )
+  const handleNavigateToGroupCompareContent = useCallback(
+    ({ detail }: CustomEvent<GroupCompareContentDetail>) => navigate(getGroupCompareContentPath(detail)),
+    [],
+  )
+  const handleNavigateToWorkspace = useCallback(
+    ({ detail }: CustomEvent<WorkspaceDetail>) => navigate(getWorkspacePath(detail)),
+    [],
+  )
+  const handleNavigateToDocuments = useCallback(
+    ({ detail }: CustomEvent<DocumentsDetail>) => navigate(getDocumentPath(detail)),
+    [],
+  )
+  const handleNavigateToDocumentPreview = useCallback(
+    ({ detail }: CustomEvent<DocumentPreviewDetail>) => navigate(getDocumentPreviewPath(detail)),
+    [],
+  )
+  const handleNavigateToPackage = useCallback(
+    ({ detail }: CustomEvent<PackageDetail>) => navigate(getPackagePath(detail)),
+    [],
+  )
+  const handleNavigateToVersion = useCallback(
+    ({ detail }: CustomEvent<VersionDetail>) => navigate(getVersionPath(detail)),
+    [],
+  )
+  const handleNavigateToSettings = useCallback(
+    ({ detail }: CustomEvent<SettingsDetail>) => navigate(getSettingsPath(detail)),
+    [],
+  )
   const handleNavigateToAgent = useCallback(() => navigateToApplication(AGENT_ROUTE), [])
-  const handleNavigateToEditor = useCallback(() => navigateToApplication(EDITOR_ROUTE), [])
   /* eslint-enable */
 
   useEvent(NAVIGATE_TO_OVERVIEW, handleNavigateToOverview)
@@ -452,7 +496,6 @@ export const NavigationProvider: FC<PropsWithChildren> = memo<PropsWithChildren>
   useEvent(NAVIGATE_TO_VERSION, handleNavigateToVersion)
   useEvent(NAVIGATE_TO_SETTINGS, handleNavigateToSettings)
   useEvent(NAVIGATE_TO_AGENT, handleNavigateToAgent)
-  useEvent(NAVIGATE_TO_EDITOR, handleNavigateToEditor)
 
   return (
     <EventBusContext.Provider value={navigationEventBus}>
@@ -461,7 +504,7 @@ export const NavigationProvider: FC<PropsWithChildren> = memo<PropsWithChildren>
   )
 })
 
-//all pathnames in these functions should use PATH_PATTERNS from 'routes.ts'
+// all pathnames in these functions should use PATH_PATTERNS from 'routes.ts'
 export function getOverviewPath({
   packageKey,
   versionKey,
@@ -768,7 +811,7 @@ export function getVersionPath({
   }
 }
 
-//For navigation between different applications within the same window
+// For navigation between different applications within the same window
 export function navigateToApplication(pathname: string): void {
   window.open(`/${pathname}`, '_self')
 }

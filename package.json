@@ -14,7 +14,6 @@
     "development:link": "npm link @netcracker/qubership-apihub-api-processor",
     "development:unlink": "npm unlink @netcracker/qubership-apihub-api-processor",
     "dev:agents": "npx lerna run dev:backend,dev:frontend --stream --scope=@netcracker/qubership-apihub-ui-agents",
-    "dev:editor": "npx lerna run dev:backend,dev:frontend --stream --scope=@netcracker/qubership-apihub-ui-editor",
     "dev:portal": "npx lerna run dev:backend,dev:frontend --stream --scope=@netcracker/qubership-apihub-ui-portal",
     "update-lock-file": "update-lock-file @netcracker"
   },
@@ -37,7 +36,7 @@
     "@netcracker/qubership-apihub-api-visitor": "dev",
     "@netcracker/qubership-apihub-apispec-view": "dev",
     "@netcracker/qubership-apihub-class-view": "1.0.3",
-    "@netcracker/qubership-apihub-rest-playground": "dev",
+    "@netcracker/qubership-apihub-rest-playground": "1.1.0",
     "@otjs/monaco": "0.2.2",
     "@otjs/plaintext": "0.2.2",
     "@otjs/plaintext-editor": "0.2.2",
