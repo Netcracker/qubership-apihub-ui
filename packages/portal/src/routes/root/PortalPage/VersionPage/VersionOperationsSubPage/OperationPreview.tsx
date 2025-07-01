@@ -95,23 +95,11 @@ export const OperationPreview: FC<OperationPreviewProps> = memo<OperationPreview
           header={
             <ToolbarTitle
               value={
-                <Box
-                  component="span"
-                  sx={{
-                    maxWidth: '60vw',         // restrict max width
-                    display: 'inline-block',
-                    overflow: 'hidden',
-                    whiteSpace: 'nowrap',
-                    textOverflow: 'ellipsis',
-                    width: '100%',
-                  }}
-                >
-                  <OperationTitleWithMeta
-                    onlyTitle
-                    operation={changedOperation}
-                    badgeText={changedOperation.deprecated ? 'Deprecated' : undefined}
-                  />
-                </Box>
+                <OperationTitleWithMeta
+                  onlyTitle
+                  operation={changedOperation}
+                  badgeText={changedOperation.deprecated ? 'Deprecated' : undefined}
+                />
               }
             />
           }

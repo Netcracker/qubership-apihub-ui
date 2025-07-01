@@ -119,8 +119,8 @@ export const OperationWithMetaClickableList: FC<OperationWithMetaClickableListPr
           <Box overflow="auto" height="inherit">
             {operationsList}
 
-            {isLoading && <ListSkeleton/>}
-            {hasNextPage && <Box ref={ref}><Skeleton variant="rectangular" width="100%"/></Box>}
+            {isLoading && <ListSkeleton />}
+            {hasNextPage && <Box ref={ref}><Skeleton variant="rectangular" width="100%" /></Box>}
           </Box>
         </Placeholder>
       </ListBox>
@@ -158,7 +158,7 @@ const ListSkeleton: FC = memo(() => {
     <Box>
       {[...Array(5)].map((_, index) => (
         <Box key={index} mb={2}>
-          <Skeleton variant="rectangular" height={20} width="100%"/>
+          <Skeleton variant="rectangular" height={20} width="100%" />
         </Box>
       ))}
     </Box>
@@ -175,32 +175,32 @@ type OperationItemButtonProps = {
 }
 
 const OperationItemButton: FC<OperationItemButtonProps> = memo<OperationItemButtonProps>(({
-    title,
-    operation,
-    expandable,
-    onClick,
-    SubComponent,
-    selected,
-  }) => {
-    const [expanded, setExpanded] = useState<boolean>(false)
+  title,
+  operation,
+  expandable,
+  onClick,
+  SubComponent,
+  selected,
+}) => {
+  const [expanded, setExpanded] = useState<boolean>(false)
 
-    return (
-      <>
-        <CustomListItemButton<OperationData>
-          keyProp={operation.operationKey}
-          data={operation}
-          itemComponent={<ExpandableItem showToggler={expandable} onToggle={setExpanded}>{title}</ExpandableItem>}
-          onClick={onClick}
-          size={LIST_ITEM_SIZE_BIG}
-          isSelected={selected}
-          testId="Cell-endpoints"
-        />
-        <Divider orientation="horizontal" variant="fullWidth"/>
+  return (
+    <>
+      <CustomListItemButton<OperationData>
+        keyProp={operation.operationKey}
+        data={operation}
+        itemComponent={<ExpandableItem showToggler={expandable} onToggle={setExpanded}>{title}</ExpandableItem>}
+        onClick={onClick}
+        size={LIST_ITEM_SIZE_BIG}
+        isSelected={selected}
+        testId="Cell-endpoints"
+      />
+      <Divider orientation="horizontal" variant="fullWidth" />
 
-        {expanded && SubComponent && (
-          <SubComponent operation={operation}/>
-        )}
-      </>
-    )
-  },
+      {expanded && SubComponent && (
+        <SubComponent operation={operation} />
+      )}
+    </>
+  )
+},
 )

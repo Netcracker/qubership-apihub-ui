@@ -16,7 +16,7 @@
 
 import type { FC } from 'react'
 import React, { memo, useMemo } from 'react'
-import { Box, Link } from '@mui/material'
+import { Box, Link, Typography } from '@mui/material'
 import { NavLink } from 'react-router-dom'
 import type { Path } from '@remix-run/router'
 import type { Operation } from '../../entities/operations'
@@ -63,31 +63,21 @@ export const OperationTitleWithMeta: FC<OperationTitleWithMetaProps> = memo<Oper
   }, [operation])
 
   const titleNode = link
-    ? (
-      <TextWithOverflowTooltip tooltipText={title} variant="subtitle1">
-        <Link
-          component={NavLink}
-          to={link}
-          target={openLinkInNewTab ? '_blank' : '_self'}
-          onClick={(event) => {
-            event.stopPropagation()
-            onLinkClick?.()
-          }}
-        >
-          {title}
-        </Link>
-      </TextWithOverflowTooltip>
-    )
-    : (
-      <TextWithOverflowTooltip tooltipText={title} variant="inherit"
-        sx={{
-          maxWidth: '60vw',
-          overflow: 'hidden',
+      ? <Typography noWrap variant="subtitle1">
+      <Link
+        component={NavLink}
+        to={link}
+        target={openLinkInNewTab ? '_blank' : '_self'}
+        onClick={(event) => {
+          event.stopPropagation()
+          onLinkClick?.()
         }}
       >
         {title}
-      </TextWithOverflowTooltip>
-    )
+       </Link>
+    </Typography>
+    : <Typography noWrap variant="inherit">{title}</Typography>
+    
 
   return (
     <Box display="flex" flexDirection="column" width="100%">
@@ -96,11 +86,6 @@ export const OperationTitleWithMeta: FC<OperationTitleWithMetaProps> = memo<Oper
         alignItems="center"
         gap={1}
         data-testid="OperationTitle"
-        sx={{
-          maxWidth: '60vw',
-          overflow: 'hidden',
-          whiteSpace: 'nowrap',
-        }}
       >
         {titleNode}
 
