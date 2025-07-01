@@ -239,7 +239,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       url: url,
       description: caption,
       custom: true,
-      shouldUseProxyEndpoint: mode === 'proxy', // Set based on the selected mode
+      shouldUseProxyEndpoint: mode === 'proxy', 
     }
 
     const servers = [...(customServersPackageMap?.[packageId] ?? []), newServer]
