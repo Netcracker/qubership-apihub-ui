@@ -2,11 +2,11 @@ import { JSON_FILE_FORMAT, YAML_FILE_FORMAT } from '@apihub/entities/file-format
 import { Box } from '@mui/material'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
+import { ModuleFetchingErrorBoundary } from '@netcracker/qubership-apihub-ui-shared/components/ModuleFetchingErrorBoundary/ModuleFetchingErrorBoundary'
 import { MonacoEditor } from '@netcracker/qubership-apihub-ui-shared/components/MonacoEditor'
 import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'
-import YAML from 'js-yaml'
 import type { FC, ReactNode } from 'react'
-import { memo, useEffect, useMemo, useState } from 'react'
+import { memo, useMemo, useState } from 'react'
 import { useParams } from 'react-router'
 import { usePublishedDocumentRaw } from '../usePublishedDocumentRaw'
 import { ValidationResultLink } from './ValidatationRulesetLink'
@@ -14,7 +14,7 @@ import { ValidatedDocumentSelector } from './ValidatedDocumentSelector'
 import { ValidationResultsTable } from './ValidationResultsTable'
 import { useListValidatedDocumentsByPackageVersion } from './api/useListValidatedDocumentsByPackageVersion'
 import { useValidationDetailsByDocument } from './api/useValidationDetailsByDocument'
-import type { Issue, OriginalDocumentFileFormat, ValidatedDocument } from './types'
+import type { OriginalDocumentFileFormat, ValidatedDocument } from './types'
 
 type TwoSidedCardProps = Partial<{
   leftHeader: ReactNode
@@ -74,17 +74,13 @@ export const VersionApiQualityCard: FC = memo(() => {
   const [selectedDocument, setSelectedDocument] = useState<ValidatedDocument | undefined>()
   const [format, setFormat] = useState<OriginalDocumentFileFormat>(YAML_FILE_FORMAT)
 
-  const [selectedIssue, setSelectedIssue] = useState<Issue | undefined>()
+  const [selectedIssuePath, setSelectedIssuePath] = useState<string | undefined>()
 
   const [validationDetails, loadingValidationDetails] = useValidationDetailsByDocument(
     packageId ?? '',
     versionId ?? '',
     selectedDocument?.id ?? '',
   )
-
-  useEffect(() => {
-    setSelectedIssue(validationDetails?.issues[0])
-  }, [validationDetails?.issues])
 
   const [validatedDocuments, loadingValidatedDocuments] = useListValidatedDocumentsByPackageVersion(
     packageId ?? '',
@@ -101,20 +97,8 @@ export const VersionApiQualityCard: FC = memo(() => {
     packageKey: packageId,
     versionKey: versionId,
     slug: selectedDocument?.id ?? '',
+    format: format,
   })
-
-  const cont = useMemo(() => {
-    if (format === YAML_FILE_FORMAT) {
-      return selectedDocumentContent
-    }
-    const parsed = YAML.load(selectedDocumentContent)
-    return JSON.stringify(parsed, null, 2)
-  }, [format, selectedDocumentContent])
-
-  const selectedDocumentUri = useMemo(
-    () => `#/${selectedIssue ? selectedIssue.jsonPath.join('/') : ''}`,
-    [selectedIssue],
-  )
 
   return (
     <BodyCard
@@ -151,18 +135,21 @@ export const VersionApiQualityCard: FC = memo(() => {
             <ValidationResultsTable
               data={validationDetails}
               loading={loadingValidationDetails}
+              onSelectIssue={setSelectedIssuePath}
             />
           }
           rightBody={
             loadingSelectedDocumentContent ? <LoadingIndicator /> : (
-              <Box height="100%">
-                <MonacoEditor
-                  value={cont}
-                  type={'openapi-3-0'}
-                  language={format}
-                  selectedUri={selectedDocumentUri}
-                />
-              </Box>
+              <ModuleFetchingErrorBoundary>
+                <Box height="100%">
+                  <MonacoEditor
+                    value={selectedDocumentContent}
+                    type={'openapi-3-0'}
+                    language={format}
+                    selectedUri={selectedIssuePath}
+                  />
+                </Box>
+              </ModuleFetchingErrorBoundary>
             )
           }
         />

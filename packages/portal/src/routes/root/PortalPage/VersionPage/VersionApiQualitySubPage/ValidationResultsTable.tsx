@@ -18,11 +18,13 @@ const TABLE_COLUMN_ID_LABELS = {
 type TableData = {
   type: string
   message: string
+  path: string // Example: #/foo/bar/baz/qux/1
 }
 
 type ValidationResultsTableProps = {
   data: ValidationDetails | undefined
   loading: IsLoading
+  onSelectIssue: (pathToIssue: string) => void
 }
 
 const ValidationResultsTableSkeleton: FC = memo(() => {
@@ -49,7 +51,7 @@ const ValidationResultsTableSkeleton: FC = memo(() => {
 })
 
 export const ValidationResultsTable: FC<ValidationResultsTableProps> = memo<ValidationResultsTableProps>(props => {
-  const { data, loading } = props
+  const { data, loading, onSelectIssue } = props
 
   const tableContainerRef = useRef<HTMLDivElement>(null)
 
@@ -80,6 +82,7 @@ export const ValidationResultsTable: FC<ValidationResultsTableProps> = memo<Vali
   const transformedData: TableData[] = useMemo(() => (data?.issues ?? []).map((issue: Issue) => ({
     type: issue.severity,
     message: issue.message,
+    path: `#/${issue.jsonPath.join('/')}`,
   })), [data?.issues])
 
   const { getHeaderGroups, getRowModel } = useReactTable({
@@ -108,7 +111,7 @@ export const ValidationResultsTable: FC<ValidationResultsTableProps> = memo<Vali
         </TableHead>
         <TableBody>
           {getRowModel().rows.map(row => (
-            <TableRow key={row.id}>
+            <TableRow key={row.id} onClick={() => onSelectIssue(row.original.path)}>
               {row.getVisibleCells().map(cell => (
                 <TableCell key={cell.id}>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
