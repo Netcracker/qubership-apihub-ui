@@ -64,7 +64,7 @@ export const ValidatedDocumentSelector: FC<ValidatedDocumentSelectorProps> = mem
         <SpecLogo value={selectedDocument.specificationType} />
         <TextWithOverflowTooltip
           tooltipText={selectedDocument.id}
-          variant="body1"
+          variant="body2"
           sx={{ fontWeight: 500 }}
         >
           {selectedDocument.id}

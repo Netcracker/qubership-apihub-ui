@@ -63,7 +63,7 @@ export const ValidationResultsTable: FC<ValidationResultsTableProps> = memo<Vali
       header: () => <CustomTableHeadCell title={TABLE_COLUMN_ID_LABELS[TABLE_COLUMN_ID_TYPE]} />,
       cell: ({ row: { original: { type } } }) => {
         return (
-          <Typography>
+          <Typography variant="body2">
             {type}
           </Typography>
         )
@@ -73,7 +73,7 @@ export const ValidationResultsTable: FC<ValidationResultsTableProps> = memo<Vali
       id: TABLE_COLUMN_ID_MESSAGE,
       header: () => <CustomTableHeadCell title={TABLE_COLUMN_ID_LABELS[TABLE_COLUMN_ID_MESSAGE]} />,
       cell: ({ row: { original: { message } } }) => (
-        <Typography>
+        <Typography variant="body2">
           {message}
         </Typography>
       ),

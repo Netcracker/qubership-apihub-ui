@@ -43,12 +43,16 @@ const TwoSidedCard: FC<TwoSidedCardProps> = memo<TwoSidedCardProps>((props) => {
     >
       <Box
         gridArea="left-header"
+        display='flex'
+        alignItems='center'
         sx={{ borderBottom: borderStyle, borderRight: borderStyle, pt: 1, pb: 1, pr: internalIndent }}
       >
         {leftHeader}
       </Box>
       <Box
         gridArea="right-header"
+        display='flex'
+        alignItems='center'
         sx={{ borderBottom: borderStyle, borderLeft: borderStyle, pt: 1, pb: 1, pl: internalIndent }}
       >
         {rightHeader}
@@ -106,7 +110,7 @@ export const VersionApiQualityCard: FC = memo(() => {
       body={
         <TwoSidedCard
           leftHeader={
-            <Box display='flex' justifyContent='space-between'>
+            <Box display='flex' justifyContent='space-between' width="100%">
               <ValidatedDocumentSelector
                 value={selectedDocument}
                 onSelect={setSelectedDocument}
@@ -120,7 +124,7 @@ export const VersionApiQualityCard: FC = memo(() => {
             </Box>
           }
           rightHeader={
-            <Box display='flex' justifyContent='flex-end'>
+            <Box display='flex' justifyContent='flex-end' width="100%">
               <Toggler<OriginalDocumentFileFormat>
                 mode={format}
                 modes={[JSON_FILE_FORMAT, YAML_FILE_FORMAT]}
