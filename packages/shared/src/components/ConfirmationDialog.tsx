@@ -16,10 +16,11 @@
 
 import type { FC } from 'react'
 import { memo, useEffect } from 'react'
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material'
+import { Button, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material'
 import { LoadingButton } from '@mui/lab'
 import type { ButtonPropsColorOverrides } from '@mui/material/Button/Button'
 import type { OverridableStringUnion } from '@mui/types'
+import { DialogForm } from './DialogForm'
 
 export type ConfirmationDialogProps = {
   open: boolean
@@ -45,7 +46,7 @@ export const ConfirmationDialog: FC<ConfirmationDialogProps> = memo<Confirmation
   useCloseOnSuccess(loading, onCancel)
 
   return (
-    <Dialog
+    <DialogForm
       open={open}
       onClose={onCancel}
     >
@@ -53,7 +54,7 @@ export const ConfirmationDialog: FC<ConfirmationDialogProps> = memo<Confirmation
         {title}
       </DialogTitle>
 
-      <DialogContent>
+      <DialogContent sx={{ minWidth: 240, maxWidth: 352, width: '100%' }}>
         <DialogContentText
           variant="body2"
           data-testid="ConfirmationDialogContent"
@@ -80,7 +81,7 @@ export const ConfirmationDialog: FC<ConfirmationDialogProps> = memo<Confirmation
           Cancel
         </Button>
       </DialogActions>
-    </Dialog>
+    </DialogForm>
   )
 })
 
