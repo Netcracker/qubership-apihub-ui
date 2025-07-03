@@ -283,7 +283,6 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
         <TextField {...field} {...params}
           label="Cloud"
           required
-
         />
       )}
       onChange={(_, value) => {
