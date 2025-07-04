@@ -41,6 +41,7 @@ import { ApiQualityValidationSummaryProvider } from './ApiQualityValidationSumma
 import { OutdatedRevisionNotification } from './OutdatedRevisionNotification/OutdatedRevisionNotification'
 import { VersionApiChangesSubPage } from './VersionApiChangesSubPage/VersionApiChangesSubPage'
 import { useValidationSummaryByPackageVersion } from './VersionApiQualitySubPage/api/useValidationSummaryByPackageVersion'
+import { RulesetInfoDialog } from './VersionApiQualitySubPage/RulesetInfoDialog'
 import { VersionApiQualitySubPage } from './VersionApiQualitySubPage/VersionApiQualitySubPage'
 import {
   VersionDeprecatedOperationsSubPage,
@@ -51,11 +52,11 @@ import { VersionOverviewSubPage } from './VersionOverviewSubPage/VersionOverview
 import { VersionPageToolbar } from './VersionPageToolbar'
 
 export const VersionPage: FC = memo(() => {
-  const { packageId, version } = useParams()
+  const { packageId, versionId } = useParams()
   const [menuItem] = useActiveTabs()
 
   const [packageObject, isLoading] = usePackage({ showParents: true })
-  const [validationSummary] = useValidationSummaryByPackageVersion(packageId!, version!)
+  const [validationSummary] = useValidationSummaryByPackageVersion(packageId!, versionId!)
 
   return (
     <CurrentPackageProvider value={packageObject}>
@@ -73,6 +74,7 @@ export const VersionPage: FC = memo(() => {
             </NoPackagePlaceholder>
             {packageObject?.kind === DASHBOARD_KIND && <PublishDashboardVersionFromCSVDialog />}
             <ExportSettingsDialog />
+            <RulesetInfoDialog />
           </ApiQualityValidationSummaryProvider>
         </ActivityHistoryFiltersProvider>
       </FullMainVersionProvider>

@@ -52,6 +52,8 @@ import type { Path } from '@remix-run/router'
 import type { FC, PropsWithChildren } from 'react'
 import { createContext, memo, useContext, useState } from 'react'
 import { createEventBus, slot } from 'ts-event-bus'
+import { SHOW_RULESET_INFO_DIALOG } from './root/PortalPage/VersionPage/VersionApiQualitySubPage/RulesetInfoDialog'
+import type { Ruleset } from './root/PortalPage/VersionPage/VersionApiQualitySubPage/types'
 
 // base
 export const SHOW_SUCCESS_NOTIFICATION = 'show-success-notification'
@@ -182,6 +184,8 @@ export type ExportSettingsPopupDetail = {
   groupName?: string
 }
 
+export type RulesetInfoPopupDetails = Ruleset
+
 type EventBus = {
   // base
   showSuccessNotification: (detail: NotificationDetail) => void
@@ -233,6 +237,8 @@ type EventBus = {
   onOperationMoved: (value: OperationsMovementDetails) => void
   // Feature "Export Settings Dialog"
   showExportSettingsDialog: (value: ExportSettingsPopupDetail) => void
+  // Feature "Ruleset Info Dialog"
+  showRulesetInfoDialog: (value: RulesetInfoPopupDetails) => void
 }
 
 function eventBusProvider(): EventBus {
@@ -288,6 +294,8 @@ function eventBusProvider(): EventBus {
       onOperationMoved: slot<OperationsMovementDetails>(),
       // Feature "Export Settings Dialog"
       showExportSettingsDialog: slot<ExportSettingsPopupDetail>(),
+      // Feature "Ruleset Info Dialog"
+      showRulesetInfoDialog: slot<RulesetInfoPopupDetails>(),
     },
   })
 
@@ -411,6 +419,9 @@ function eventBusProvider(): EventBus {
   })
   eventBus.showExportSettingsDialog.on((detail: ExportSettingsPopupDetail) => {
     dispatchEvent(new CustomEvent(SHOW_EXPORT_SETTINGS_DIALOG, { detail }))
+  })
+  eventBus.showRulesetInfoDialog.on((detail: RulesetInfoPopupDetails) => {
+    dispatchEvent(new CustomEvent(SHOW_RULESET_INFO_DIALOG, { detail }))
   })
   eventBus.showSpecificationDialog.on((detail: SpecificationDialogDetail) => {
     dispatchEvent(new CustomEvent(SHOW_SPECIFICATION_DIALOG, { detail }))

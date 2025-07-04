@@ -75,13 +75,13 @@ export type ValidationSummaryRecord = Omit<ValidationSummaryRecordDto, 'ruleset'
 export type ValidationSummary = ValidationSummaryRecord[]
 
 export type ValidationDetailsDto = {
-  ruleset: RulesetDto // TODO 24.06.25 // Why not null?
+  ruleset: RulesetDto
   issues: readonly IssueDto[]
   document: ValidatedDocumentDto
 }
 
 export type ValidationDetails = {
-  ruleset: Ruleset | null
+  ruleset: Ruleset
   issues: readonly Issue[]
   document: ValidatedDocument
 }

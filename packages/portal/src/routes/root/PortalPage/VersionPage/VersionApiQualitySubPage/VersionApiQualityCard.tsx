@@ -92,11 +92,6 @@ export const VersionApiQualityCard: FC = memo(() => {
     versionId ?? '',
   )
 
-  const selectedDocumentRuleset = useMemo(
-    () => validationDetails?.ruleset ?? null,
-    [validationDetails?.ruleset],
-  )
-
   // TODO 01.07.25 // Check if this is not re-fetched each time we change format
   const [selectedDocumentContent, loadingSelectedDocumentContent] = usePublishedDocumentRaw({
     packageKey: packageId,
@@ -118,7 +113,7 @@ export const VersionApiQualityCard: FC = memo(() => {
                 loading={loadingValidatedDocuments}
               />
               <ValidationResultLink
-                data={selectedDocumentRuleset}
+                data={validationDetails?.ruleset}
                 loading={loadingValidationDetails}
               />
             </Box>
