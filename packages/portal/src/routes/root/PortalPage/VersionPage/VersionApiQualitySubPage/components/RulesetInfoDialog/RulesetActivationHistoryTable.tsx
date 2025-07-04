@@ -18,22 +18,22 @@ type RulesetActivationHistoryTableProps = {
   data: readonly RulesetActivation[]
 }
 
+const COLUMNS: ColumnDef<TableData>[] = [
+  {
+    id: TABLE_COLUMN_ID_ACTIVATION_HISTORY,
+    header: () => <CustomTableHeadCell title={TABLE_COLUMN_ID_LABELS[TABLE_COLUMN_ID_ACTIVATION_HISTORY]} />,
+    cell: ({ row: { original: { rulesetActivation } } }) => {
+      return (
+        <Typography variant="body2">
+          {rulesetActivation.activeFrom || '...'} - {rulesetActivation.activeTo || '...'}
+        </Typography>
+      )
+    },
+  },
+]
+
 export const RulesetActivationHistoryTable: FC<RulesetActivationHistoryTableProps> = ({ data }) => {
   const tableContainerRef = useRef<HTMLDivElement>(null)
-
-  const columns: ColumnDef<TableData>[] = useMemo(() => [
-    {
-      id: TABLE_COLUMN_ID_ACTIVATION_HISTORY,
-      header: () => <CustomTableHeadCell title={TABLE_COLUMN_ID_LABELS[TABLE_COLUMN_ID_ACTIVATION_HISTORY]} />,
-      cell: ({ row: { original: { rulesetActivation } } }) => {
-        return (
-          <Typography variant="body2">
-            {rulesetActivation.activeFrom || '...'} - {rulesetActivation.activeTo || '...'}
-          </Typography>
-        )
-      },
-    },
-  ], [])
 
   const transformedData: TableData[] = useMemo(
     () => data.map((rulesetActivation: RulesetActivation) => ({ rulesetActivation })),
@@ -42,7 +42,7 @@ export const RulesetActivationHistoryTable: FC<RulesetActivationHistoryTableProp
 
   const { getHeaderGroups, getRowModel } = useReactTable({
     data: transformedData,
-    columns: columns,
+    columns: COLUMNS,
     getCoreRowModel: getCoreRowModel(),
   })
 

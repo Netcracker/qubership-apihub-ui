@@ -71,33 +71,33 @@ const TABLE_COLUMNS_LAYOUT_CONFIG: Record<string, TableColumnLayoutConfig> = {
   },
 }
 
+const COLUMNS: ColumnDef<TableData>[] = [
+  {
+    id: TABLE_COLUMN_ID_TYPE,
+    header: () => <CustomTableHeadCell title={TABLE_COLUMN_ID_LABELS[TABLE_COLUMN_ID_TYPE]} />,
+    cell: ({ row: { original: { type } } }) => {
+      return (
+        <Typography variant="body2">
+          <IssueSeverityMarker severity={type} />
+        </Typography>
+      )
+    },
+  },
+  {
+    id: TABLE_COLUMN_ID_MESSAGE,
+    header: () => <CustomTableHeadCell title={TABLE_COLUMN_ID_LABELS[TABLE_COLUMN_ID_MESSAGE]} />,
+    cell: ({ row: { original: { message } } }) => (
+      <Typography variant="body2">
+        {message}
+      </Typography>
+    ),
+  },
+]
+
 export const ValidationResultsTable: FC<ValidationResultsTableProps> = memo<ValidationResultsTableProps>(props => {
   const { data, loading, onSelectIssue } = props
 
   const tableContainerRef = useRef<HTMLDivElement>(null)
-
-  const columns: ColumnDef<TableData>[] = useMemo(() => [
-    {
-      id: TABLE_COLUMN_ID_TYPE,
-      header: () => <CustomTableHeadCell title={TABLE_COLUMN_ID_LABELS[TABLE_COLUMN_ID_TYPE]} />,
-      cell: ({ row: { original: { type } } }) => {
-        return (
-          <Typography variant="body2">
-            <IssueSeverityMarker severity={type} />
-          </Typography>
-        )
-      },
-    },
-    {
-      id: TABLE_COLUMN_ID_MESSAGE,
-      header: () => <CustomTableHeadCell title={TABLE_COLUMN_ID_LABELS[TABLE_COLUMN_ID_MESSAGE]} />,
-      cell: ({ row: { original: { message } } }) => (
-        <Typography variant="body2">
-          {message}
-        </Typography>
-      ),
-    },
-  ], [])
 
   const transformedData: TableData[] = useMemo(() => (data?.issues ?? []).map((issue: Issue) => ({
     type: issue.severity,
@@ -107,7 +107,7 @@ export const ValidationResultsTable: FC<ValidationResultsTableProps> = memo<Vali
 
   const { getHeaderGroups, getRowModel } = useReactTable({
     data: transformedData,
-    columns: columns,
+    columns: COLUMNS,
     getCoreRowModel: getCoreRowModel(),
   })
 
