@@ -65,7 +65,8 @@ import { API_TYPE_GRAPHQL, API_TYPE_REST } from '@netcracker/qubership-apihub-ui
 import { normalizeOpenApiDocument } from '@netcracker/qubership-apihub-ui-shared/utils/normalize'
 import {
   useApiDiffResult,
-  useIsApiDiffResultLoading, useSetApiDiffResult,
+  useIsApiDiffResultLoading,
+  useSetApiDiffResult,
 } from '@apihub/routes/root/ApiDiffResultProvider'
 import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'
 import { RawSpecDiffView } from '@netcracker/qubership-apihub-ui-shared/components/RawSpecDiffView'
@@ -169,7 +170,7 @@ export const OperationContent: FC<OperationContentProps> = memo<OperationContent
     return () => {
       setApiDiffResult(undefined)
     }
-  }, [])
+  }, [setApiDiffResult])
 
   if (isLoading || isApiDiffResultLoading) {
     operationContentElement = <LoadingIndicator/>
