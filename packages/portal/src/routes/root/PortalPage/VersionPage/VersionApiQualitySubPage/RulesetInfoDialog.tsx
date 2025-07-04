@@ -5,7 +5,7 @@ import type { FC } from 'react'
 import type { Ruleset } from './types'
 
 import { RulesetControls } from './RulesetControls'
-
+import { RulesetActivationHistoryTable } from './RulesetActivationHistoryTable'
 
 export const SHOW_RULESET_INFO_DIALOG = 'show-ruleset-info-dialog'
 
@@ -20,6 +20,7 @@ const RulesetInfoPopup: FC<PopupProps> = (props) => {
       <DialogContent>
         <Box display='flex' flexDirection='column' gap={1}>
           <RulesetControls ruleset={detail} />
+          <RulesetActivationHistoryTable data={detail.activationHistory} />
         </Box>
       </DialogContent>
     </Dialog>
