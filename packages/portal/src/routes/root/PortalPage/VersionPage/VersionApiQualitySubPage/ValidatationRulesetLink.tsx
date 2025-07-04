@@ -1,5 +1,5 @@
 import { useEventBus } from '@apihub/routes/EventBusProvider'
-import { Box, Skeleton, Typography } from '@mui/material'
+import { Box, Link, Skeleton, Typography } from '@mui/material'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import type { FC } from 'react'
 import { memo } from 'react'
@@ -30,7 +30,9 @@ export const ValidationResultLink: FC<ValidationResultLinkProps> = memo<Validati
         Validated using
       </Typography>
       <Typography variant='body2' onClick={() => showRulesetInfoDialog(data)}>
-        {data.name} ({data.status})
+        <Link>
+          {data.name} ({data.status})
+        </Link>
       </Typography>
     </Box>
   </>

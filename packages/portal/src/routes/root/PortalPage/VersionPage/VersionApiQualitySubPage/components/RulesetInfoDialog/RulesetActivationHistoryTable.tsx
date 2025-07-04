@@ -28,7 +28,7 @@ export const RulesetActivationHistoryTable: FC<RulesetActivationHistoryTableProp
       cell: ({ row: { original: { rulesetActivation } } }) => {
         return (
           <Typography variant="body2">
-            {rulesetActivation.activeFrom} - {rulesetActivation.activeTo}
+            {rulesetActivation.activeFrom || '...'} - {rulesetActivation.activeTo || '...'}
           </Typography>
         )
       },
