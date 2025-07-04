@@ -2,10 +2,10 @@ import { Box, Dialog, DialogContent, DialogTitle } from '@mui/material'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import type { FC } from 'react'
-import type { Ruleset } from './types'
+import type { Ruleset } from '../../types'
 
-import { RulesetControls } from './RulesetControls'
 import { RulesetActivationHistoryTable } from './RulesetActivationHistoryTable'
+import { RulesetControls } from './RulesetControls'
 
 export const SHOW_RULESET_INFO_DIALOG = 'show-ruleset-info-dialog'
 

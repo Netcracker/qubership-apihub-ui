@@ -41,7 +41,7 @@ import { ApiQualityValidationSummaryProvider } from './ApiQualityValidationSumma
 import { OutdatedRevisionNotification } from './OutdatedRevisionNotification/OutdatedRevisionNotification'
 import { VersionApiChangesSubPage } from './VersionApiChangesSubPage/VersionApiChangesSubPage'
 import { useValidationSummaryByPackageVersion } from './VersionApiQualitySubPage/api/useValidationSummaryByPackageVersion'
-import { RulesetInfoDialog } from './VersionApiQualitySubPage/RulesetInfoDialog'
+import { RulesetInfoDialog } from './VersionApiQualitySubPage/components/RulesetInfoDialog/RulesetInfoDialog'
 import { VersionApiQualitySubPage } from './VersionApiQualitySubPage/VersionApiQualitySubPage'
 import {
   VersionDeprecatedOperationsSubPage,

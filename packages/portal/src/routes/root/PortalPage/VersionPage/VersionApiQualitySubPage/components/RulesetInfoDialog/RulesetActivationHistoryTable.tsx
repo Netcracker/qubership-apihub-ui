@@ -2,7 +2,7 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typog
 import { CustomTableHeadCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomTableHeadCell'
 import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from '@tanstack/react-table'
 import { useMemo, useRef, type FC } from 'react'
-import type { RulesetActivation } from './types'
+import type { RulesetActivation } from '../../types'
 
 const TABLE_COLUMN_ID_ACTIVATION_HISTORY = 'activationHistory'
 

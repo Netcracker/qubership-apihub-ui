@@ -1,7 +1,7 @@
 import { Box, Typography } from '@mui/material'
 import type { FC } from 'react'
 import { FileIcon } from '@netcracker/qubership-apihub-ui-shared/icons/FileIcon'
-import type { Ruleset } from './types'
+import type { Ruleset } from '../../types'
 import { DownloadIcon } from '@netcracker/qubership-apihub-ui-shared/icons/DownloadIcon'
 import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
 import { LinkIcon } from '@netcracker/qubership-apihub-ui-shared/icons/LinkIcon'
