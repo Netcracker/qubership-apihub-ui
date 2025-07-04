@@ -2,11 +2,12 @@ import { Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, Table
 import { CustomTableHeadCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomTableHeadCell'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import type { SpecItemUri } from '@netcracker/qubership-apihub-ui-shared/utils/specifications'
-import type { ColumnDef } from '@tanstack/react-table'
+import type { ColumnDef, Header } from '@tanstack/react-table'
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import type { FC } from 'react'
 import { memo, useMemo, useRef } from 'react'
-import type { Issue, ValidationDetails } from './types'
+import { IssueSeverityMarker } from './IssueSeverityMarker'
+import type { Issue, IssueSeverity, ValidationDetails } from './types'
 
 const TABLE_COLUMN_ID_TYPE = 'type'
 const TABLE_COLUMN_ID_MESSAGE = 'message'
@@ -17,7 +18,7 @@ const TABLE_COLUMN_ID_LABELS = {
 }
 
 type TableData = {
-  type: string
+  type: IssueSeverity
   message: string
   path: SpecItemUri // Example: /foo/bar/baz/qux/1
 }
@@ -51,6 +52,25 @@ const ValidationResultsTableSkeleton: FC = memo(() => {
   )
 })
 
+type TableColumnLayoutConfig = {
+  width: string
+  whiteSpace: string
+  textAlign: string
+}
+
+const TABLE_COLUMNS_LAYOUT_CONFIG: Record<string, TableColumnLayoutConfig> = {
+  [TABLE_COLUMN_ID_TYPE]: {
+    width: '50px',
+    whiteSpace: 'nowrap',
+    textAlign: 'center',
+  },
+  [TABLE_COLUMN_ID_MESSAGE]: {
+    width: 'auto',
+    whiteSpace: 'normal',
+    textAlign: 'left',
+  },
+}
+
 export const ValidationResultsTable: FC<ValidationResultsTableProps> = memo<ValidationResultsTableProps>(props => {
   const { data, loading, onSelectIssue } = props
 
@@ -59,12 +79,11 @@ export const ValidationResultsTable: FC<ValidationResultsTableProps> = memo<Vali
   const columns: ColumnDef<TableData>[] = useMemo(() => [
     {
       id: TABLE_COLUMN_ID_TYPE,
-      width: 100,
       header: () => <CustomTableHeadCell title={TABLE_COLUMN_ID_LABELS[TABLE_COLUMN_ID_TYPE]} />,
       cell: ({ row: { original: { type } } }) => {
         return (
           <Typography variant="body2">
-            {type}
+            <IssueSeverityMarker severity={type} />
           </Typography>
         )
       },
@@ -102,8 +121,15 @@ export const ValidationResultsTable: FC<ValidationResultsTableProps> = memo<Vali
         <TableHead>
           {getHeaderGroups().map(headerGroup => (
             <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map(header => (
-                <TableCell key={header.id}>
+              {headerGroup.headers.map((header: Header<TableData, unknown>) => (
+                <TableCell
+                  key={header.id}
+                  sx={{
+                    width: TABLE_COLUMNS_LAYOUT_CONFIG[header.id].width,
+                    whiteSpace: TABLE_COLUMNS_LAYOUT_CONFIG[header.id].whiteSpace,
+                    textAlign: TABLE_COLUMNS_LAYOUT_CONFIG[header.id].textAlign,
+                  }}
+                >
                   {flexRender(header.column.columnDef.header, header.getContext())}
                 </TableCell>
               ))}
@@ -112,12 +138,20 @@ export const ValidationResultsTable: FC<ValidationResultsTableProps> = memo<Vali
         </TableHead>
         <TableBody>
           {getRowModel().rows.map(row => (
-            <TableRow key={row.id} onClick={() => onSelectIssue(row.original.path)}>
-              {row.getVisibleCells().map(cell => (
-                <TableCell key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
+            <TableRow key={row.id} sx={{ cursor: 'pointer' }} onClick={() => onSelectIssue(row.original.path)}>
+              {row.getVisibleCells().map(cell => {
+                console.log(row, cell)
+                return (
+                  <TableCell
+                    key={cell.column.id}
+                    sx={{
+                      textAlign: TABLE_COLUMNS_LAYOUT_CONFIG[cell.column.id].textAlign,
+                    }}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                )
+              })}
             </TableRow>
           ))}
         </TableBody>
