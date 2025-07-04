@@ -22,7 +22,7 @@ export const RulesetControls: FC<RulesetControlsProps> = (props) => {
       </Typography>
       <Box display='flex' justifyContent='space-between'>
         <Box display='flex' alignItems='center' gap={1}>
-          <FileIcon />
+          <FileIcon color='black' />
           <Typography variant='body2'>
             {ruleset.name}
           </Typography>

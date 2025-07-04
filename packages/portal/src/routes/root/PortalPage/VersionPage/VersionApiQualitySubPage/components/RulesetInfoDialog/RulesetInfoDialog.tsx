@@ -29,7 +29,7 @@ const RulesetInfoPopup: FC<PopupProps> = (props) => {
           </IconButton>
         </Box>
       </DialogTitle>
-      <DialogContent>
+      <DialogContent sx={{ pb: 2 }}>
         <Box display='flex' flexDirection='column' gap={1}>
           <RulesetControls ruleset={detail} />
           <RulesetActivationHistoryTable data={detail.activationHistory} />
