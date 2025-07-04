@@ -15,6 +15,7 @@
  */
 
 import { CurrentPackageProvider } from '@apihub/components/CurrentPackageProvider'
+import { ExportSettingsDialog } from '@apihub/components/ExportSettingsDialog/ui/ExportSettingsDialog'
 import {
   PublishDashboardVersionFromCSVDialog,
 } from '@apihub/routes/root/PortalPage/DashboardPage/PublishDashboardVersionFromCSVDialog'
@@ -26,6 +27,7 @@ import { useActiveTabs } from '@netcracker/qubership-apihub-ui-shared/hooks/path
 import { PreviousReleaseOptionsProvider } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget'
 import type { FC, ReactNode } from 'react'
 import { memo } from 'react'
+import { useParams } from 'react-router-dom'
 import type { VersionPageRoute } from '../../../../routes'
 import { API_CHANGES_PAGE, API_QUALITY_PAGE, DEPRECATED_PAGE, DOCUMENTS_PAGE, OPERATIONS_PAGE, OVERVIEW_PAGE } from '../../../../routes'
 import { ActivityHistoryFiltersProvider } from '../../MainPage/ActivityHistoryFiltersProvider'
@@ -35,8 +37,10 @@ import { usePackage } from '../../usePackage'
 import { FullMainVersionProvider } from '../FullMainVersionProvider'
 import { SelectedPreviewOperationProvider } from '../SelectedPreviewOperationProvider'
 import { VersionNavigationMenu } from '../VersionNavigationMenu'
+import { ApiQualityValidationSummaryProvider } from './ApiQualityValidationSummaryProvider'
 import { OutdatedRevisionNotification } from './OutdatedRevisionNotification/OutdatedRevisionNotification'
 import { VersionApiChangesSubPage } from './VersionApiChangesSubPage/VersionApiChangesSubPage'
+import { useValidationSummaryByPackageVersion } from './VersionApiQualitySubPage/api/useValidationSummaryByPackageVersion'
 import { VersionApiQualitySubPage } from './VersionApiQualitySubPage/VersionApiQualitySubPage'
 import {
   VersionDeprecatedOperationsSubPage,
@@ -45,27 +49,31 @@ import { VersionDocumentsSubPage } from './VersionDocumentsSubPage/VersionDocume
 import { VersionOperationsSubPage } from './VersionOperationsSubPage/VersionOperationsSubPage'
 import { VersionOverviewSubPage } from './VersionOverviewSubPage/VersionOverviewSubPage'
 import { VersionPageToolbar } from './VersionPageToolbar'
-import { ExportSettingsDialog } from '@apihub/components/ExportSettingsDialog/ui/ExportSettingsDialog'
 
 export const VersionPage: FC = memo(() => {
+  const { packageId, version } = useParams()
   const [menuItem] = useActiveTabs()
+
   const [packageObject, isLoading] = usePackage({ showParents: true })
+  const [validationSummary] = useValidationSummaryByPackageVersion(packageId!, version!)
 
   return (
     <CurrentPackageProvider value={packageObject}>
       <FullMainVersionProvider>
         <ActivityHistoryFiltersProvider>
-          <NoPackagePlaceholder packageObject={packageObject} isLoading={isLoading}>
-            <NoPackageVersionPlaceholder packageObject={packageObject}>
-              <LayoutWithToolbar
-                toolbar={<VersionPageToolbar />}
-                body={<VersionPageBody menuItem={menuItem as VersionPageRoute} />}
-              />
-              <OutdatedRevisionNotification />
-            </NoPackageVersionPlaceholder>
-          </NoPackagePlaceholder>
-          {packageObject?.kind === DASHBOARD_KIND && <PublishDashboardVersionFromCSVDialog />}
-          <ExportSettingsDialog />
+          <ApiQualityValidationSummaryProvider value={validationSummary}>
+            <NoPackagePlaceholder packageObject={packageObject} isLoading={isLoading}>
+              <NoPackageVersionPlaceholder packageObject={packageObject}>
+                <LayoutWithToolbar
+                  toolbar={<VersionPageToolbar />}
+                  body={<VersionPageBody menuItem={menuItem as VersionPageRoute} />}
+                />
+                <OutdatedRevisionNotification />
+              </NoPackageVersionPlaceholder>
+            </NoPackagePlaceholder>
+            {packageObject?.kind === DASHBOARD_KIND && <PublishDashboardVersionFromCSVDialog />}
+            <ExportSettingsDialog />
+          </ApiQualityValidationSummaryProvider>
         </ActivityHistoryFiltersProvider>
       </FullMainVersionProvider>
     </CurrentPackageProvider>
@@ -89,8 +97,8 @@ const PATH_PARAM_TO_SUB_PAGE_MAP: Record<VersionPageRoute, ReactNode> = {
       <VersionDeprecatedOperationsSubPage />
     </SelectedPreviewOperationProvider>
   ),
-  [API_QUALITY_PAGE]: <VersionApiQualitySubPage/>,
-  [DOCUMENTS_PAGE]: <VersionDocumentsSubPage/>,
+  [API_QUALITY_PAGE]: <VersionApiQualitySubPage />,
+  [DOCUMENTS_PAGE]: <VersionDocumentsSubPage />,
 }
 
 const VERSION_PAGE_MENU_ITEMS = [
