@@ -77,7 +77,7 @@ export const VersionNavigationMenu: FC<VersionNavigationMenuProps> = memo<Versio
   showSettings = false,
 }) => {
   const navigate = useNavigate()
-  const { productionMode } = useSystemInfo()
+  const { productionMode, linterEnabled } = useSystemInfo()
 
   const { packageId, versionId } = useParams()
   const { versionContent } = usePackageVersionContent({
@@ -92,8 +92,8 @@ export const VersionNavigationMenu: FC<VersionNavigationMenuProps> = memo<Versio
 
   const [currentMenuItem] = useActiveTabs()
   const sidebarMenuItems = useMemo(
-    () => getAvailableSidebarMenuItems(previousVersion, defaultApiType, productionMode).filter(({ id }) => menuItems.includes(id)),
-    [defaultApiType, menuItems, previousVersion, productionMode],
+    () => getAvailableSidebarMenuItems(previousVersion, defaultApiType, productionMode, linterEnabled).filter(({ id }) => menuItems.includes(id)),
+    [defaultApiType, menuItems, previousVersion, productionMode, linterEnabled],
   )
   const sidebarServiceMenuItems = useMemo(
     () => getAvailableSidebarServiceMenuItems(showSettings).filter(({ id }) => menuItems.includes(id)),
@@ -185,29 +185,30 @@ const getAvailableSidebarMenuItems = (
   previousVersion: Key | undefined,
   defaultApiType: ApiType,
   productionMode: boolean,
+  linterEnabled: boolean,
 ): SidebarMenu[] => {
   const disableTab = API_TYPE_DISABLE_TAB_MAP[defaultApiType](productionMode)
 
-  return [
+  const menuItems = [
     {
       id: CONFIGURATION_PAGE,
       title: 'Configuration',
       tooltip: 'Configuration',
-      icon: <ConfigureIcon/>,
+      icon: <ConfigureIcon />,
       testId: 'ConfigureDashboardButton',
     },
     {
       id: OVERVIEW_PAGE,
       title: 'Overview',
       tooltip: 'Overview',
-      icon: <ServicesIcon/>,
+      icon: <ServicesIcon />,
       testId: 'OverviewButton',
     },
     {
       id: OPERATIONS_PAGE,
       title: 'Operations',
       tooltip: 'Operations',
-      icon: <ApiIcon/>,
+      icon: <ApiIcon />,
       testId: 'OperationsButton',
     },
     {
@@ -215,7 +216,7 @@ const getAvailableSidebarMenuItems = (
       title: 'API Changes',
       tooltip: !previousVersion ? 'No API changes since there is no previous version' : 'API Changes',
       disabled: !previousVersion || disableTab,
-      icon: <ComparisonIcon/>,
+      icon: <ComparisonIcon />,
       testId: 'ApiChangesButton',
     },
     {
@@ -223,24 +224,38 @@ const getAvailableSidebarMenuItems = (
       title: 'Deprecated',
       tooltip: 'Deprecated',
       disabled: disableTab,
-      icon: <DefaultWarningIcon/>,
+      icon: <DefaultWarningIcon />,
       testId: 'DeprecatedButton',
-    },
-    {
-      id: API_QUALITY_PAGE,
-      title: 'API Quality',
-      tooltip: 'API Quality',
-      icon: <CertifiedFileIcon/>,
-      testId: 'ApiQualityButton',
     },
     {
       id: DOCUMENTS_PAGE,
       title: 'Documents',
       tooltip: 'Documents',
-      icon: <FileIcon/>,
+      icon: <FileIcon />,
       testId: 'DocumentsButton',
     },
   ]
+
+  if (linterEnabled) {
+    let index = -1
+    for (let i = 0; i < menuItems.length; i++) {
+      if (menuItems[i].id === DEPRECATED_PAGE) {
+        index = i
+        break
+      }
+    }
+    if (index !== -1) {
+      menuItems.splice(index + 1, 0, {
+        id: API_QUALITY_PAGE,
+        title: 'API Quality',
+        tooltip: 'API Quality',
+        icon: <CertifiedFileIcon />,
+        testId: 'ApiQualityButton',
+      })
+    }
+  }
+
+  return menuItems
 }
 
 const getAvailableSidebarServiceMenuItems = (
@@ -253,7 +268,7 @@ const getAvailableSidebarServiceMenuItems = (
       id: PACKAGE_SETTINGS_PAGE,
       title: 'Settings',
       tooltip: 'Package Settings',
-      icon: <SettingIcon color="#626D82"/>,
+      icon: <SettingIcon color="#626D82" />,
       testId: 'SettingsButton',
     })
   }
