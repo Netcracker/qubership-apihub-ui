@@ -65,6 +65,8 @@ import {
   getPackageSettingsPath,
   getVersionPath,
 } from '../../NavigationProvider'
+import type { ApiQualityTabTooltip, IsApiQualityTabDisabled } from './VersionPage/ApiQualityValidationSummaryProvider'
+import { useApiQualityTabResolution } from './VersionPage/ApiQualityValidationSummaryProvider'
 import { useOperationsView } from './VersionPage/useOperationsView'
 
 export type VersionNavigationMenuProps = {
@@ -90,10 +92,21 @@ export const VersionNavigationMenu: FC<VersionNavigationMenuProps> = memo<Versio
   const { expandMainMenu, toggleExpandMainMenu, operationsViewMode } = usePortalPageSettingsContext()
   const [operationsView] = useOperationsView(operationsViewMode)
 
+  const [apiQualityTabTooltip, isApiQualityTabDisabled] = useApiQualityTabResolution()
+
   const [currentMenuItem] = useActiveTabs()
   const sidebarMenuItems = useMemo(
-    () => getAvailableSidebarMenuItems(previousVersion, defaultApiType, productionMode, linterEnabled).filter(({ id }) => menuItems.includes(id)),
-    [defaultApiType, menuItems, previousVersion, productionMode, linterEnabled],
+    () => getAvailableSidebarMenuItems(
+      previousVersion,
+      defaultApiType,
+      productionMode,
+      {
+        linterEnabled: linterEnabled,
+        tooltip: apiQualityTabTooltip,
+        tabDisabled: isApiQualityTabDisabled,
+      },
+    ).filter(({ id }) => menuItems.includes(id)),
+    [defaultApiType, menuItems, previousVersion, productionMode, linterEnabled, apiQualityTabTooltip, isApiQualityTabDisabled],
   )
   const sidebarServiceMenuItems = useMemo(
     () => getAvailableSidebarServiceMenuItems(showSettings).filter(({ id }) => menuItems.includes(id)),
@@ -181,11 +194,17 @@ const getPagePathsMap = (
   }
 }
 
+type ApiQualityTabOptions = {
+  linterEnabled: boolean
+  tooltip: ApiQualityTabTooltip
+  tabDisabled: IsApiQualityTabDisabled
+}
+
 const getAvailableSidebarMenuItems = (
   previousVersion: Key | undefined,
   defaultApiType: ApiType,
   productionMode: boolean,
-  linterEnabled: boolean,
+  apiQualityTabOptions: ApiQualityTabOptions,
 ): SidebarMenu[] => {
   const disableTab = API_TYPE_DISABLE_TAB_MAP[defaultApiType](productionMode)
 
@@ -236,7 +255,7 @@ const getAvailableSidebarMenuItems = (
     },
   ]
 
-  if (linterEnabled) {
+  if (apiQualityTabOptions.linterEnabled) {
     let index = -1
     for (let i = 0; i < menuItems.length; i++) {
       if (menuItems[i].id === DEPRECATED_PAGE) {
@@ -248,7 +267,8 @@ const getAvailableSidebarMenuItems = (
       menuItems.splice(index + 1, 0, {
         id: API_QUALITY_PAGE,
         title: 'API Quality',
-        tooltip: 'API Quality',
+        disabled: apiQualityTabOptions.tabDisabled,
+        tooltip: apiQualityTabOptions.tooltip ?? 'API Quality',
         icon: <CertifiedFileIcon />,
         testId: 'ApiQualityButton',
       })
