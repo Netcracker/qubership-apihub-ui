@@ -3,7 +3,7 @@ import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/ali
 import { requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { useQuery } from '@tanstack/react-query'
 import { generatePath } from 'react-router'
-import type { ValidationSummaryDto } from '../types'
+import type { ValidationSummary, ValidationSummaryDto } from '../types'
 import { STUB_API_V1 } from './temp'
 
 const QUERY_KEY_VALIDATION_SUMMARY_FOR_PACKAGE_VERSION = 'validation-summary-for-package-version'
@@ -11,11 +11,11 @@ const QUERY_KEY_VALIDATION_SUMMARY_FOR_PACKAGE_VERSION = 'validation-summary-for
 export function useValidationSummaryByPackageVersion(
   packageId: Key,
   version: Key,
-): [ValidationSummaryDto | undefined, IsLoading, Error | null] {
+): [ValidationSummary | undefined, IsLoading, Error | null] {
   const packageKey = encodeURIComponent(packageId)
   const versionKey = encodeURIComponent(version)
 
-  const { data, isLoading, error } = useQuery<ValidationSummaryDto, Error, ValidationSummaryDto>({
+  const { data, isLoading, error } = useQuery<ValidationSummaryDto, Error, ValidationSummary>({
     queryKey: [QUERY_KEY_VALIDATION_SUMMARY_FOR_PACKAGE_VERSION, packageKey, versionKey],
     queryFn: () => getValidationSummaryByPackageVersion(packageKey, versionKey),
   })

@@ -59,16 +59,20 @@ export const ValidationStatuses = {
 } as const
 export type ValidationStatus = typeof ValidationStatuses[keyof typeof ValidationStatuses]
 
-export type ValidationSummaryDto = {
+export type ValidationSummaryRecordDto = {
   apiType: Exclude<ApiType, typeof API_TYPE_GRAPHQL>
   ruleset: RulesetDto | null
   status: ValidationStatus
   issuesSummary: Record<IssueSeverity, number>
 }
 
-export type ValidationSummary = Omit<ValidationSummaryDto, 'ruleset'> & {
+export type ValidationSummaryDto = ValidationSummaryRecordDto[]
+
+export type ValidationSummaryRecord = Omit<ValidationSummaryRecordDto, 'ruleset'> & {
   ruleset: Ruleset | null
 }
+
+export type ValidationSummary = ValidationSummaryRecord[]
 
 export type ValidationDetailsDto = {
   ruleset: RulesetDto // TODO 24.06.25 // Why not null?
