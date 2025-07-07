@@ -3,15 +3,15 @@ import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/ali
 import { requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { useQuery } from '@tanstack/react-query'
 import { generatePath } from 'react-router'
-import type { RulesetDto } from '../types'
+import type { Ruleset, RulesetDto } from '../types'
 import { STUB_API_V1 } from './temp'
 
 const QUERY_KEY_RULESET_METADATA = 'ruleset-metadata'
 
-export function useRulesetMetadata(rulesetId: Key): [RulesetDto | undefined, IsLoading, Error | null] {
+export function useRulesetMetadata(rulesetId: Key): [Ruleset | undefined, IsLoading, Error | null] {
   const rulesetKey = encodeURIComponent(rulesetId)
 
-  const { data, isLoading, error } = useQuery<RulesetDto, Error, RulesetDto>({
+  const { data, isLoading, error } = useQuery<RulesetDto, Error, Ruleset>({
     queryKey: [QUERY_KEY_RULESET_METADATA, rulesetKey],
     queryFn: () => getRulesetMetadata(rulesetKey),
   })

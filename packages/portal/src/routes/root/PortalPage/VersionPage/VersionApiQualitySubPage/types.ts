@@ -13,10 +13,18 @@ export type RulesetActivation = {
   activeTo?: string
 }
 
-export type RulesetDto = {
+// Ruleset without activation history
+
+export type RulesetLiteDto = {
   id: string
   name: string
   status: RulesetStatus
+}
+export type RulesetLite = Omit<RulesetLiteDto, 'id'> & { id: Key }
+
+// Full ruleset
+
+export type RulesetDto = RulesetLiteDto & {
   activationHistory: readonly RulesetActivation[]
 }
 
@@ -61,7 +69,7 @@ export type ValidationStatus = typeof ValidationStatuses[keyof typeof Validation
 
 export type ValidationSummaryRecordDto = {
   apiType: Exclude<ApiType, typeof API_TYPE_GRAPHQL>
-  ruleset: RulesetDto | null
+  ruleset: RulesetLiteDto | null
   status: ValidationStatus
   issuesSummary: Record<IssueSeverity, number>
 }
@@ -69,19 +77,19 @@ export type ValidationSummaryRecordDto = {
 export type ValidationSummaryDto = ValidationSummaryRecordDto[]
 
 export type ValidationSummaryRecord = Omit<ValidationSummaryRecordDto, 'ruleset'> & {
-  ruleset: Ruleset | null
+  ruleset: RulesetLite | null
 }
 
 export type ValidationSummary = ValidationSummaryRecord[]
 
 export type ValidationDetailsDto = {
-  ruleset: RulesetDto
+  ruleset: RulesetLiteDto
   issues: readonly IssueDto[]
   document: ValidatedDocumentDto
 }
 
 export type ValidationDetails = {
-  ruleset: Ruleset
+  ruleset: RulesetLite
   issues: readonly Issue[]
   document: ValidatedDocument
 }

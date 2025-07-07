@@ -3,10 +3,10 @@ import { Box, Link, Skeleton, Typography } from '@mui/material'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import type { FC } from 'react'
 import { memo } from 'react'
-import type { Ruleset } from './types'
+import type { RulesetLite } from './types'
 
 type ValidationResultLinkProps = {
-  data: Ruleset | undefined
+  data: RulesetLite | undefined
   loading: IsLoading
 }
 
