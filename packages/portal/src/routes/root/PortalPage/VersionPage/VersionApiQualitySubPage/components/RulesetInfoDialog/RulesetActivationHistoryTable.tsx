@@ -1,5 +1,6 @@
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
 import { CustomTableHeadCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomTableHeadCell'
+import { FormattedDate } from '@netcracker/qubership-apihub-ui-shared/components/FormattedDate'
 import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from '@tanstack/react-table'
 import { useMemo, useRef, type FC } from 'react'
 import type { RulesetActivation } from '../../types'
@@ -25,7 +26,13 @@ const COLUMNS: ColumnDef<TableData>[] = [
     cell: ({ row: { original: { rulesetActivation } } }) => {
       return (
         <Typography variant="body2">
-          {rulesetActivation.activeFrom || '...'} - {rulesetActivation.activeTo || '...'}
+          {rulesetActivation.activeFrom
+            ? <FormattedDate value={rulesetActivation.activeFrom} />
+            : '...'}
+          {' - '}
+          {rulesetActivation.activeTo
+            ? <FormattedDate value={rulesetActivation.activeTo} />
+            : '...'}
         </Typography>
       )
     },
