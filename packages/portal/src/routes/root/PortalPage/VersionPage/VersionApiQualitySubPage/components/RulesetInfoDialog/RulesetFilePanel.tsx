@@ -9,14 +9,14 @@ import { useCopyToClipboard, useLocation } from 'react-use'
 import { getPublicLink, useDownloadRuleset } from '../../../useDownloadRuleset'
 import type { RulesetLite } from '../../types'
 
-type RulesetControlsProps = {
+type RulesetFilePanelProps = {
   ruleset: RulesetLite
 }
 
 const ICON_COLOR = '#626D82'
 const ICON_SIZE = '20px'
 
-export const RulesetControls: FC<RulesetControlsProps> = (props) => {
+export const RulesetFilePanel: FC<RulesetFilePanelProps> = (props) => {
   const { ruleset } = props
 
   const downloadRuleset = useDownloadRuleset()

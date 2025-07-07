@@ -8,7 +8,7 @@ import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import { NAVIGATION_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import { useRulesetMetadata } from '../../api/useRulesetMetadata'
 import { RulesetActivationHistoryTable } from './RulesetActivationHistoryTable'
-import { RulesetControls } from './RulesetControls'
+import { RulesetFilePanel } from './RulesetFilePanel'
 
 export const SHOW_RULESET_INFO_DIALOG = 'show-ruleset-info-dialog'
 
@@ -44,7 +44,7 @@ const RulesetInfoPopup: FC<PopupProps> = (props) => {
             message='No ruleset found'
           >
             <Box display='flex' flexDirection='column' gap={1}>
-              <RulesetControls ruleset={detail} />
+              <RulesetFilePanel ruleset={detail} />
               <RulesetActivationHistoryTable data={ruleset!.activationHistory} />
             </Box>
           </Placeholder>
