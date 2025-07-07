@@ -1,10 +1,13 @@
+import { useShowSuccessNotification } from '@apihub/routes/root/BasePage/Notification'
 import { Box, Typography } from '@mui/material'
-import type { FC } from 'react'
-import { FileIcon } from '@netcracker/qubership-apihub-ui-shared/icons/FileIcon'
-import type { RulesetLite } from '../../types'
-import { DownloadIcon } from '@netcracker/qubership-apihub-ui-shared/icons/DownloadIcon'
 import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
+import { DownloadIcon } from '@netcracker/qubership-apihub-ui-shared/icons/DownloadIcon'
+import { FileIcon } from '@netcracker/qubership-apihub-ui-shared/icons/FileIcon'
 import { LinkIcon } from '@netcracker/qubership-apihub-ui-shared/icons/LinkIcon'
+import type { FC } from 'react'
+import { useCopyToClipboard, useLocation } from 'react-use'
+import { getPublicLink, useDownloadRuleset } from '../../../useDownloadRuleset'
+import type { RulesetLite } from '../../types'
 
 type RulesetControlsProps = {
   ruleset: RulesetLite
@@ -15,6 +18,13 @@ const ICON_SIZE = '20px'
 
 export const RulesetControls: FC<RulesetControlsProps> = (props) => {
   const { ruleset } = props
+
+  const downloadRuleset = useDownloadRuleset()
+
+  const { host, protocol } = useLocation()
+  const [, copyToClipboard] = useCopyToClipboard()
+  const showNotification = useShowSuccessNotification()
+
   return (
     <Box display='flex' flexDirection='column' gap={1}>
       <Typography variant='h6' color='black' fontWeight='bold'>
@@ -35,7 +45,7 @@ export const RulesetControls: FC<RulesetControlsProps> = (props) => {
             className="hoverable"
             startIcon={<DownloadIcon color={ICON_COLOR} />}
             sx={{ height: ICON_SIZE }}
-            onClick={() => console.log('download')}
+            onClick={() => downloadRuleset({ rulesetId: ruleset.id })}
           />
           <ButtonWithHint
             size="small"
@@ -44,7 +54,13 @@ export const RulesetControls: FC<RulesetControlsProps> = (props) => {
             className="hoverable"
             startIcon={<LinkIcon color={ICON_COLOR} />}
             sx={{ height: ICON_SIZE }}
-            onClick={() => console.log('copy public link')}
+            onClick={() => {
+              if (host && protocol) {
+                const publicLink = getPublicLink(host, protocol, ruleset.id)
+                copyToClipboard(publicLink)
+                showNotification({ message: 'Public URL copied' })
+              }
+            }}
           />
         </Box>
       </Box>

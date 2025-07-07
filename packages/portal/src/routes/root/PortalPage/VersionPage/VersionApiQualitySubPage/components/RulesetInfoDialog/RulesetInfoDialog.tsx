@@ -18,8 +18,6 @@ const RulesetInfoPopup: FC<PopupProps> = (props) => {
 
   const [ruleset, loadingRuleset] = useRulesetMetadata(detail.id)
 
-  console.log('ruleset', ruleset)
-
   const onClose = useCallback(() => { setOpen(false) }, [setOpen])
 
   return (
