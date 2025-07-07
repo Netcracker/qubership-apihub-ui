@@ -6,8 +6,8 @@ import { FileIcon } from '@netcracker/qubership-apihub-ui-shared/icons/FileIcon'
 import { LinkIcon } from '@netcracker/qubership-apihub-ui-shared/icons/LinkIcon'
 import type { FC } from 'react'
 import { useCopyToClipboard, useLocation } from 'react-use'
-import { getPublicLink, useDownloadRuleset } from '../../../useDownloadRuleset'
-import type { RulesetLite } from '../../types'
+import { getPublicLink, useDownloadRuleset } from './useDownloadRuleset'
+import type { RulesetLite } from './api-quality-ruleset'
 
 type RulesetFilePanelProps = {
   ruleset: RulesetLite
