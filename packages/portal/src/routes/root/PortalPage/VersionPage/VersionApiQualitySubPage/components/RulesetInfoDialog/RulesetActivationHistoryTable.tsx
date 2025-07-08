@@ -3,7 +3,7 @@ import { CustomTableHeadCell } from '@netcracker/qubership-apihub-ui-shared/comp
 import { FormattedDate } from '@netcracker/qubership-apihub-ui-shared/components/FormattedDate'
 import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from '@tanstack/react-table'
 import { useMemo, useRef, type FC } from 'react'
-import type { RulesetActivation } from '@apihub/routes/root/PortalPage/VersionPage/api-quality-ruleset'
+import type { RulesetActivation } from '@apihub/routes/root/api-quality-ruleset'
 
 const TABLE_COLUMN_ID_ACTIVATION_HISTORY = 'activationHistory'
 
