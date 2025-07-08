@@ -188,14 +188,14 @@ export const OperationTypeChanges: FC<OperationTypeChangesProps> = memo<Operatio
                 ? [
                   '\'title empty\'',
                   '\'bwcNumberTitle bwcNumber\'',
-                  '\'changesTitle changes\'',
+                  '\'changesNumberTitle changesNumber\'',
                   '\'affectedOperationTitle affectedOperation\'',
                 ].join('\n')
                 : [
                   '\'title empty1\'',
                   '\'bwcValidationTitle empty2\'',
                   '\'bwcNumberTitle bwcNumber\'',
-                  '\'changesTitle changes\'',
+                  '\'changesNumberTitle changesNumber\'',
                   '\'affectedOperationTitle affectedOperation\'',
                   '\'linterValidationTitle empty3\'',
                   showApiQualityPlaceholder
@@ -231,12 +231,12 @@ export const OperationTypeChanges: FC<OperationTypeChangesProps> = memo<Operatio
             {changeCounter[BREAKING_CHANGE_SEVERITY]}
           </Typography>
 
-          <Typography sx={{ gridArea: 'changesTitle' }} variant="subtitle2">
-            Changes
+          <Typography sx={{ gridArea: 'changesNumberTitle' }} variant="subtitle2">
+            Number of changes
           </Typography>
           <Box
             sx={{
-              gridArea: 'changes',
+              gridArea: 'changesNumber',
               display: 'flex',
               alignItems: 'center',
             }}
