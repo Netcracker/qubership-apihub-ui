@@ -29,7 +29,7 @@ import type { NumberOfImpactedOperations } from '@netcracker/qubership-apihub-ui
 import { DefaultWarningIcon } from '@netcracker/qubership-apihub-ui-shared/icons/WarningIcon'
 import type { FC } from 'react'
 import { memo, useMemo } from 'react'
-import { useApiQualityLinterEnabled } from '../../ApiQualityValidationSummaryProvider'
+import { useApiQualityLinterEnabled, useApiQualitySummarySectionProperties } from '../../ApiQualityValidationSummaryProvider'
 
 export type OperationTypeChangesProps = Readonly<{
   apiType: ApiType
@@ -56,6 +56,9 @@ export const OperationTypeChanges: FC<OperationTypeChangesProps> = memo<Operatio
 }) => {
 
   const linterEnabled = useApiQualityLinterEnabled()
+  const [apiQualitySummaryPlaceholder, apiQualitySummaryDisabled] = useApiQualitySummarySectionProperties()
+  const showApiQualityPlaceholder = apiQualitySummaryPlaceholder && apiQualitySummaryDisabled
+  const showApiQualitySummary = !apiQualitySummaryPlaceholder && !apiQualitySummaryDisabled
 
   const changeCounter = useMemo(() => changesSummary ?? DEFAULT_CHANGE_SEVERITY_MAP, [changesSummary])
   const affectedOperationCounter = useMemo(() => numberOfImpactedOperations ?? DEFAULT_CHANGE_SEVERITY_MAP, [numberOfImpactedOperations])
@@ -191,7 +194,13 @@ export const OperationTypeChanges: FC<OperationTypeChangesProps> = memo<Operatio
                   '\'changesTitle changes\'',
                   '\'affectedOperationTitle affectedOperation\'',
                   '\'linterValidationTitle empty3\'',
-                ].join('\n'),
+                  showApiQualityPlaceholder
+                    ? '\'linterValidationPlaceholder linterValidationPlaceholder\''
+                    : undefined,
+                  showApiQualitySummary
+                    ? '\'validationRulesetTitle validationRuleset\''
+                    : undefined,
+                ].filter(Boolean).join('\n'),
           }}
         >
           <Typography sx={{ gridAria: 'title' }} variant="subtitle1">
@@ -253,14 +262,26 @@ export const OperationTypeChanges: FC<OperationTypeChangesProps> = memo<Operatio
 
               <Box sx={{ gridArea: 'empty3' }} />
 
-              <Typography sx={{ gridArea: 'validationRulesetTitle' }} variant="subtitle2">
-                Validation ruleset
-              </Typography>
-              <Box sx={{ gridArea: 'validationRuleset' }}>
-                <Link>
-                  Link to ruleset
-                </Link>
-              </Box>
+              {showApiQualityPlaceholder && (
+                <Typography sx={{ gridArea: 'linterValidationPlaceholder' }} variant="subtitle2">
+                  {apiQualitySummaryPlaceholder}
+                </Typography>
+              )}
+
+              {showApiQualitySummary && (
+                <>
+                  <Typography sx={{ gridArea: 'validationRulesetTitle' }} variant="subtitle2">
+                    Validation ruleset
+                  </Typography>
+                  <Box sx={{ gridArea: 'validationRuleset' }}>
+                    <Typography variant="body2">
+                      <Link>
+                        Link to ruleset
+                      </Link>
+                    </Typography>
+                  </Box>
+                </>
+              )}
             </>
           )}
         </Box>

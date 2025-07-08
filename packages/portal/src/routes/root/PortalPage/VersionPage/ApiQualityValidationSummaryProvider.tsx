@@ -1,6 +1,8 @@
-import type { FC, PropsWithChildren } from 'react'
+import type { FC, PropsWithChildren, ReactNode } from 'react'
 import { createContext, useContext } from 'react'
 import { ValidationStatuses, type ValidationStatus, type ValidationSummary } from './VersionApiQualitySubPage/types'
+
+// Raw contexts
 
 export const ApiQualityValidationSummaryContext = createContext<ValidationSummary | undefined>(undefined)
 export const ApiQualityLinterEnabledContext = createContext<boolean>(false)
@@ -13,6 +15,12 @@ type ApiQualityDataProviderProps = PropsWithChildren & {
 export function useApiQualityValidationSummary(): ValidationSummary | undefined {
   return useContext(ApiQualityValidationSummaryContext)
 }
+
+export function useApiQualityLinterEnabled(): boolean {
+  return useContext(ApiQualityLinterEnabledContext)
+}
+
+// High-order hooks
 
 export function useApiQualityValidationStatus(): ValidationStatus | undefined {
   const summary = useApiQualityValidationSummary()
@@ -62,9 +70,26 @@ export function useApiQualityTabVisibilityParams(): ApiQualityTabVisibilityParam
   }
 }
 
-export function useApiQualityLinterEnabled(): boolean {
-  return useContext(ApiQualityLinterEnabledContext)
+type ApiQualitySummaryPlaceholder = string | ReactNode | undefined
+type ApiQualitySummaryDisabled = boolean
+type ApiQualitySummarySectionProperties = [ApiQualitySummaryPlaceholder, ApiQualitySummaryDisabled]
+
+export function useApiQualitySummarySectionProperties(): ApiQualitySummarySectionProperties {
+  const status = useApiQualityValidationStatus()
+  if (!status) {
+    return [undefined, true]
+  }
+  switch (status) {
+    case ValidationStatuses.IN_PROGRESS:
+      return ['Validation is in progress, please wait...', true]
+    case ValidationStatuses.NOT_VALIDATED:
+      return [<>No validation results.<br />Republish the version to start quality validation for the new revision.</>, true]
+    case ValidationStatuses.SUCCESS:
+      return [undefined, false]
+  }
 }
+
+// Public provider
 
 export const ApiQualityDataProvider: FC<ApiQualityDataProviderProps> = ({ children, linterEnabled, validationSummary }) => {
   return (
