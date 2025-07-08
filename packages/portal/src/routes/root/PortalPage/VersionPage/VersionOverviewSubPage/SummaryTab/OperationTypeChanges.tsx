@@ -29,7 +29,8 @@ import type { NumberOfImpactedOperations } from '@netcracker/qubership-apihub-ui
 import { DefaultWarningIcon } from '@netcracker/qubership-apihub-ui-shared/icons/WarningIcon'
 import type { FC } from 'react'
 import { memo, useMemo } from 'react'
-import { useApiQualityLinterEnabled, useApiQualitySummarySectionProperties } from '../../ApiQualityValidationSummaryProvider'
+import { useApiQualityLinterEnabled, useApiQualitySummarySectionProperties, useApiQualityValidationSummary } from '../../ApiQualityValidationSummaryProvider'
+import { useEventBus } from '@apihub/routes/EventBusProvider'
 
 export type OperationTypeChangesProps = Readonly<{
   apiType: ApiType
@@ -59,6 +60,9 @@ export const OperationTypeChanges: FC<OperationTypeChangesProps> = memo<Operatio
   const [apiQualitySummaryPlaceholder, apiQualitySummaryDisabled] = useApiQualitySummarySectionProperties()
   const showApiQualityPlaceholder = apiQualitySummaryPlaceholder && apiQualitySummaryDisabled
   const showApiQualitySummary = !apiQualitySummaryPlaceholder && !apiQualitySummaryDisabled
+  const validationSummary = useApiQualityValidationSummary()
+  const { showRulesetInfoDialog } = useEventBus()
+  const validationRuleset = validationSummary?.[0]?.ruleset
 
   const changeCounter = useMemo(() => changesSummary ?? DEFAULT_CHANGE_SEVERITY_MAP, [changesSummary])
   const affectedOperationCounter = useMemo(() => numberOfImpactedOperations ?? DEFAULT_CHANGE_SEVERITY_MAP, [numberOfImpactedOperations])
@@ -268,20 +272,20 @@ export const OperationTypeChanges: FC<OperationTypeChangesProps> = memo<Operatio
                 </Typography>
               )}
 
-              {showApiQualitySummary && (
-                <>
+              {showApiQualitySummary && <>
+                {validationRuleset && <>
                   <Typography sx={{ gridArea: 'validationRulesetTitle' }} variant="subtitle2">
                     Validation ruleset
                   </Typography>
                   <Box sx={{ gridArea: 'validationRuleset' }}>
                     <Typography variant="body2">
-                      <Link>
-                        Link to ruleset
+                      <Link onClick={() => { showRulesetInfoDialog(validationRuleset) }}>
+                        {validationRuleset.name} ({validationRuleset.status})
                       </Link>
                     </Typography>
                   </Box>
-                </>
-              )}
+                </>}
+              </>}
             </>
           )}
         </Box>
