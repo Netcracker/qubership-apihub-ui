@@ -56,7 +56,7 @@ export const OperationTypeChanges: FC<OperationTypeChangesProps> = memo<Operatio
   apiAudienceTransitions,
 }) => {
 
-  const linterEnabled = useApiQualityLinterEnabled()
+  const linterEnabled = useApiQualityLinterEnabled(apiType)
   const [apiQualitySummaryPlaceholder, apiQualitySummaryDisabled] = useApiQualitySummarySectionProperties()
   const showApiQualityPlaceholder = apiQualitySummaryPlaceholder && apiQualitySummaryDisabled
   const showApiQualitySummary = !apiQualitySummaryPlaceholder && !apiQualitySummaryDisabled

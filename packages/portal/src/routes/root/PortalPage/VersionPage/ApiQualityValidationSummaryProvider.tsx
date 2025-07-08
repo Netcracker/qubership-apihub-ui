@@ -1,3 +1,5 @@
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { API_TYPE_GRAPHQL } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { FC, PropsWithChildren, ReactNode } from 'react'
 import { createContext, useContext } from 'react'
 import { ValidationStatuses, type ValidationStatus, type ValidationSummary } from './VersionApiQualitySubPage/types'
@@ -16,8 +18,12 @@ export function useApiQualityValidationSummary(): ValidationSummary | undefined 
   return useContext(ApiQualityValidationSummaryContext)
 }
 
-export function useApiQualityLinterEnabled(): boolean {
-  return useContext(ApiQualityLinterEnabledContext)
+const NOT_LINTED_API_TYPES: ApiType[] = [API_TYPE_GRAPHQL]
+
+export function useApiQualityLinterEnabled(apiType: ApiType): boolean {
+  const linterEnabled = useContext(ApiQualityLinterEnabledContext) &&
+    !NOT_LINTED_API_TYPES.some(notLintedApiType => notLintedApiType === apiType)
+  return linterEnabled
 }
 
 // High-order hooks
