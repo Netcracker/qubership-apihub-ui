@@ -17,6 +17,11 @@ export const IssueSeverities = {
   INFO: 'info',
 } as const
 export type IssueSeverity = typeof IssueSeverities[keyof typeof IssueSeverities]
+export const ISSUE_SEVERITIES_LIST = [
+  IssueSeverities.ERROR,
+  IssueSeverities.INFO,
+  IssueSeverities.WARNING,
+] as const
 
 export type IssuePathItem = string | number
 export type IssuePath = IssuePathItem[]

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { useEventBus } from '@apihub/routes/EventBusProvider'
 import { Box, Link, Tooltip, Typography } from '@mui/material'
 import { API_AUDIENCE_EXTERNAL, API_AUDIENCE_INTERNAL, API_AUDIENCE_UNKNOWN, type ApiAudienceTransition } from '@netcracker/qubership-apihub-api-processor'
 import { Changes } from '@netcracker/qubership-apihub-ui-shared/components/Changes'
@@ -28,9 +29,11 @@ import {
 import type { NumberOfImpactedOperations } from '@netcracker/qubership-apihub-ui-shared/entities/version-contents'
 import { DefaultWarningIcon } from '@netcracker/qubership-apihub-ui-shared/icons/WarningIcon'
 import type { FC } from 'react'
-import { memo, useMemo } from 'react'
+import { Fragment, memo, useMemo } from 'react'
 import { useApiQualityLinterEnabled, useApiQualitySummarySectionProperties, useApiQualityValidationSummary } from '../../ApiQualityValidationSummaryProvider'
-import { useEventBus } from '@apihub/routes/EventBusProvider'
+import { IssueSeverityMarker } from '../../VersionApiQualitySubPage/IssueSeverityMarker'
+import type { IssueSeverity } from '../../VersionApiQualitySubPage/types'
+import { ISSUE_SEVERITIES_LIST, IssueSeverities } from '../../VersionApiQualitySubPage/types'
 
 export type OperationTypeChangesProps = Readonly<{
   apiType: ApiType
@@ -63,6 +66,20 @@ export const OperationTypeChanges: FC<OperationTypeChangesProps> = memo<Operatio
   const validationSummary = useApiQualityValidationSummary()
   const { showRulesetInfoDialog } = useEventBus()
   const validationRuleset = validationSummary?.[0]?.ruleset
+  const aggregatedValidationSummary: Record<IssueSeverity, number> = useMemo(() => {
+    const emptyValidationSummary: Record<IssueSeverity, number> = {
+      [IssueSeverities.INFO]: 0,
+      [IssueSeverities.WARNING]: 0,
+      [IssueSeverities.ERROR]: 0,
+    }
+    return (validationSummary ?? []).reduce((aggregated, currentSummaryRecord) => {
+      const summary = currentSummaryRecord.issuesSummary
+      aggregated[IssueSeverities.INFO] += summary.info ?? 0
+      aggregated[IssueSeverities.WARNING] += summary.warning ?? 0
+      aggregated[IssueSeverities.ERROR] += summary.error ?? 0
+      return aggregated
+    }, emptyValidationSummary)
+  }, [validationSummary])
 
   const changeCounter = useMemo(() => changesSummary ?? DEFAULT_CHANGE_SEVERITY_MAP, [changesSummary])
   const affectedOperationCounter = useMemo(() => numberOfImpactedOperations ?? DEFAULT_CHANGE_SEVERITY_MAP, [numberOfImpactedOperations])
@@ -204,6 +221,9 @@ export const OperationTypeChanges: FC<OperationTypeChangesProps> = memo<Operatio
                   showApiQualitySummary
                     ? '\'validationRulesetTitle validationRuleset\''
                     : undefined,
+                  showApiQualitySummary
+                    ? '\'qualityIssuesNumberTitle qualityIssuesNumber\''
+                    : undefined,
                 ].filter(Boolean).join('\n'),
           }}
         >
@@ -283,6 +303,26 @@ export const OperationTypeChanges: FC<OperationTypeChangesProps> = memo<Operatio
                         {validationRuleset.name} ({validationRuleset.status})
                       </Link>
                     </Typography>
+                  </Box>
+                </>}
+
+                {validationSummary && <>
+                  <Typography sx={{ gridArea: 'qualityIssuesNumberTitle' }} variant="subtitle2">
+                    Number of quality issues
+                  </Typography>
+                  <Box sx={{ gridArea: 'qualityIssuesNumber' }} display="flex" alignItems="center" gap={1}>
+                    {ISSUE_SEVERITIES_LIST.map(severity => (
+                      <Fragment key={severity}>
+                        <IssueSeverityMarker severity={severity} size='small' />
+                        <Typography
+                          variant="body2"
+                          component="span"
+                          sx={{ fontSize: 12, fontWeight: 500, color: '#8F9EB4' }}
+                        >
+                          {aggregatedValidationSummary[severity]}
+                        </Typography>
+                      </Fragment>
+                    ))}
                   </Box>
                 </>}
               </>}

@@ -1,9 +1,16 @@
+import ErrorIcon from '@mui/icons-material/Error'
 import type { FC } from 'react'
 import { IssueSeverities, type IssueSeverity } from './types'
-import ErrorIcon from '@mui/icons-material/Error'
+
+const Size = {
+  SMALL: 'small',
+  MEDIUM: 'medium',
+} as const
+type Size = typeof Size[keyof typeof Size]
 
 type IssueSeverityMarkerProps = {
   severity: IssueSeverity
+  size?: Size
 }
 
 const COLOR_BY_SEVERITY: Record<IssueSeverity, string> = {
@@ -12,6 +19,24 @@ const COLOR_BY_SEVERITY: Record<IssueSeverity, string> = {
   [IssueSeverities.INFO]: '#0068FF',
 }
 
-export const IssueSeverityMarker: FC<IssueSeverityMarkerProps> = ({ severity }) => {
-  return <ErrorIcon fontSize="small" sx={{ color: COLOR_BY_SEVERITY[severity] }} />
+export const IssueSeverityMarker: FC<IssueSeverityMarkerProps> = ({ severity, size = Size.MEDIUM }) => {
+  let sizePx: string
+  switch (size) {
+    case Size.SMALL:
+      sizePx = '12px'
+      break
+    default:
+    case Size.MEDIUM:
+      sizePx = '16px'
+      break
+  }
+  return (
+    <ErrorIcon
+      sx={{
+        color: COLOR_BY_SEVERITY[severity],
+        width: sizePx,
+        height: sizePx,
+      }}
+    />
+  )
 }
