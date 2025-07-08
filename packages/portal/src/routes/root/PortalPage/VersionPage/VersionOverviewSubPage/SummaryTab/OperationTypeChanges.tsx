@@ -29,6 +29,7 @@ import type { NumberOfImpactedOperations } from '@netcracker/qubership-apihub-ui
 import { DefaultWarningIcon } from '@netcracker/qubership-apihub-ui-shared/icons/WarningIcon'
 import type { FC } from 'react'
 import { memo, useMemo } from 'react'
+import { useApiQualityLinterEnabled } from '../../ApiQualityValidationSummaryProvider'
 
 export type OperationTypeChangesProps = Readonly<{
   apiType: ApiType
@@ -53,6 +54,8 @@ export const OperationTypeChanges: FC<OperationTypeChangesProps> = memo<Operatio
   unknownAudienceOperationsCount,
   apiAudienceTransitions,
 }) => {
+
+  const linterEnabled = useApiQualityLinterEnabled()
 
   const changeCounter = useMemo(() => changesSummary ?? DEFAULT_CHANGE_SEVERITY_MAP, [changesSummary])
   const affectedOperationCounter = useMemo(() => numberOfImpactedOperations ?? DEFAULT_CHANGE_SEVERITY_MAP, [numberOfImpactedOperations])
@@ -173,28 +176,40 @@ export const OperationTypeChanges: FC<OperationTypeChangesProps> = memo<Operatio
         <Box
           sx={{
             ...OPERATION_TYPE_SUMMARY_STYLE,
-            gridTemplateAreas: `
-              'title empty1'
-              'bwcValidationTitle empty2'
-              'bwcNumberTitle bwcNumber'
-              'changesTitle changes'
-              'affectedOperationTitle affectedOperation'
-              'linterValidationTitle empty3'
-            `,
+            gridTemplateAreas:
+              !linterEnabled
+                ? [
+                  '\'title empty\'',
+                  '\'bwcNumberTitle bwcNumber\'',
+                  '\'changesTitle changes\'',
+                  '\'affectedOperationTitle affectedOperation\'',
+                ].join('\n')
+                : [
+                  '\'title empty1\'',
+                  '\'bwcValidationTitle empty2\'',
+                  '\'bwcNumberTitle bwcNumber\'',
+                  '\'changesTitle changes\'',
+                  '\'affectedOperationTitle affectedOperation\'',
+                  '\'linterValidationTitle empty3\'',
+                ].join('\n'),
           }}
         >
           <Typography sx={{ gridAria: 'title' }} variant="subtitle1">
             {`${API_TYPE_TITLE_MAP[apiType]} Validation`}
           </Typography>
 
-          <Box sx={{ gridArea: 'empty1' }} />
+          {linterEnabled && <Box sx={{ gridArea: 'empty1' }} />}
 
           {/* Sub-section "Backward Compatibility Validation" */}
-          <Typography sx={{ gridArea: 'bwcValidationTitle', fontWeight: 500 }} variant="body2">
-            Backward Compatibility Validation
-          </Typography>
+          {linterEnabled && (
+            <>
+              <Typography sx={{ gridArea: 'bwcValidationTitle', fontWeight: 500 }} variant="body2">
+                Backward Compatibility Validation
+              </Typography>
 
-          <Box sx={{ gridArea: 'empty2' }} />
+              <Box sx={{ gridArea: 'empty2' }} />
+            </>
+          )}
 
           <Typography sx={{ gridArea: 'bwcNumberTitle' }} variant="subtitle2">
             Number of BWC errors
@@ -230,20 +245,24 @@ export const OperationTypeChanges: FC<OperationTypeChangesProps> = memo<Operatio
           </Box>
 
           {/* Sub-section "Quality Validation" */}
-          <Typography sx={{ gridArea: 'linterValidationTitle', fontWeight: 500 }} variant="body2">
-            Quality Validation
-          </Typography>
+          {linterEnabled && (
+            <>
+              <Typography sx={{ gridArea: 'linterValidationTitle', fontWeight: 500 }} variant="body2">
+                Quality Validation
+              </Typography>
 
-          <Box sx={{ gridArea: 'empty3' }} />
+              <Box sx={{ gridArea: 'empty3' }} />
 
-          <Typography sx={{ gridArea: 'validationRulesetTitle' }} variant="subtitle2">
-            Validation ruleset
-          </Typography>
-          <Box sx={{ gridArea: 'validationRuleset' }}>
-            <Link>
-              Link to ruleset
-            </Link>
-          </Box>
+              <Typography sx={{ gridArea: 'validationRulesetTitle' }} variant="subtitle2">
+                Validation ruleset
+              </Typography>
+              <Box sx={{ gridArea: 'validationRuleset' }}>
+                <Link>
+                  Link to ruleset
+                </Link>
+              </Box>
+            </>
+          )}
         </Box>
       </Box>
     </Box>

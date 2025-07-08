@@ -37,7 +37,7 @@ import { usePackage } from '../../usePackage'
 import { FullMainVersionProvider } from '../FullMainVersionProvider'
 import { SelectedPreviewOperationProvider } from '../SelectedPreviewOperationProvider'
 import { VersionNavigationMenu } from '../VersionNavigationMenu'
-import { ApiQualityValidationSummaryProvider } from './ApiQualityValidationSummaryProvider'
+import { ApiQualityDataProvider } from './ApiQualityValidationSummaryProvider'
 import { OutdatedRevisionNotification } from './OutdatedRevisionNotification/OutdatedRevisionNotification'
 import { VersionApiChangesSubPage } from './VersionApiChangesSubPage/VersionApiChangesSubPage'
 import { useValidationSummaryByPackageVersion } from './VersionApiQualitySubPage/api/useValidationSummaryByPackageVersion'
@@ -50,6 +50,7 @@ import { VersionDocumentsSubPage } from './VersionDocumentsSubPage/VersionDocume
 import { VersionOperationsSubPage } from './VersionOperationsSubPage/VersionOperationsSubPage'
 import { VersionOverviewSubPage } from './VersionOverviewSubPage/VersionOverviewSubPage'
 import { VersionPageToolbar } from './VersionPageToolbar'
+import { useSystemInfo } from '@netcracker/qubership-apihub-ui-shared/features/system-info'
 
 export const VersionPage: FC = memo(() => {
   const { packageId, versionId } = useParams()
@@ -58,11 +59,13 @@ export const VersionPage: FC = memo(() => {
   const [packageObject, isLoading] = usePackage({ showParents: true })
   const [validationSummary] = useValidationSummaryByPackageVersion(packageId!, versionId!)
 
+  const { linterEnabled } = useSystemInfo()
+
   return (
     <CurrentPackageProvider value={packageObject}>
       <FullMainVersionProvider>
         <ActivityHistoryFiltersProvider>
-          <ApiQualityValidationSummaryProvider value={validationSummary}>
+          <ApiQualityDataProvider linterEnabled={linterEnabled} validationSummary={validationSummary}>
             <NoPackagePlaceholder packageObject={packageObject} isLoading={isLoading}>
               <NoPackageVersionPlaceholder packageObject={packageObject}>
                 <LayoutWithToolbar
@@ -75,7 +78,7 @@ export const VersionPage: FC = memo(() => {
             {packageObject?.kind === DASHBOARD_KIND && <PublishDashboardVersionFromCSVDialog />}
             <ExportSettingsDialog />
             <RulesetInfoDialog />
-          </ApiQualityValidationSummaryProvider>
+          </ApiQualityDataProvider>
         </ActivityHistoryFiltersProvider>
       </FullMainVersionProvider>
     </CurrentPackageProvider>

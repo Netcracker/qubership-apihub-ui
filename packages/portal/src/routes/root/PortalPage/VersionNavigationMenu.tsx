@@ -66,7 +66,7 @@ import {
   getVersionPath,
 } from '../../NavigationProvider'
 import type { ApiQualityTabTooltip, IsApiQualityTabDisabled } from './VersionPage/ApiQualityValidationSummaryProvider'
-import { useApiQualityTabResolution } from './VersionPage/ApiQualityValidationSummaryProvider'
+import { useApiQualityTabVisibilityParams } from './VersionPage/ApiQualityValidationSummaryProvider'
 import { useOperationsView } from './VersionPage/useOperationsView'
 
 export type VersionNavigationMenuProps = {
@@ -92,7 +92,7 @@ export const VersionNavigationMenu: FC<VersionNavigationMenuProps> = memo<Versio
   const { expandMainMenu, toggleExpandMainMenu, operationsViewMode } = usePortalPageSettingsContext()
   const [operationsView] = useOperationsView(operationsViewMode)
 
-  const [apiQualityTabTooltip, isApiQualityTabDisabled] = useApiQualityTabResolution()
+  const [apiQualityTabTooltip, isApiQualityTabDisabled] = useApiQualityTabVisibilityParams()
 
   const [currentMenuItem] = useActiveTabs()
   const sidebarMenuItems = useMemo(

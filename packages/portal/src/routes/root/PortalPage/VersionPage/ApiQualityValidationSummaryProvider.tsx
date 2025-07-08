@@ -3,9 +3,11 @@ import { createContext, useContext } from 'react'
 import { ValidationStatuses, type ValidationStatus, type ValidationSummary } from './VersionApiQualitySubPage/types'
 
 export const ApiQualityValidationSummaryContext = createContext<ValidationSummary | undefined>(undefined)
+export const ApiQualityLinterEnabledContext = createContext<boolean>(false)
 
-type ApiQualityValidationSummaryProviderProps = PropsWithChildren & {
-  value: ValidationSummary | undefined
+type ApiQualityDataProviderProps = PropsWithChildren & {
+  linterEnabled: boolean
+  validationSummary: ValidationSummary | undefined
 }
 
 export function useApiQualityValidationSummary(): ValidationSummary | undefined {
@@ -43,9 +45,9 @@ function compareValidationStatuses(status1: ValidationStatus, status2: Validatio
 
 export type IsApiQualityTabDisabled = boolean
 export type ApiQualityTabTooltip = string | undefined
-export type ApiQualityTabResolution = [ApiQualityTabTooltip, IsApiQualityTabDisabled]
+export type ApiQualityTabVisibilityParams = [ApiQualityTabTooltip, IsApiQualityTabDisabled]
 
-export function useApiQualityTabResolution(): ApiQualityTabResolution {
+export function useApiQualityTabVisibilityParams(): ApiQualityTabVisibilityParams {
   const status = useApiQualityValidationStatus()
   if (!status) {
     return [undefined, true]
@@ -60,10 +62,16 @@ export function useApiQualityTabResolution(): ApiQualityTabResolution {
   }
 }
 
-export const ApiQualityValidationSummaryProvider: FC<ApiQualityValidationSummaryProviderProps> = ({ children, value }) => {
+export function useApiQualityLinterEnabled(): boolean {
+  return useContext(ApiQualityLinterEnabledContext)
+}
+
+export const ApiQualityDataProvider: FC<ApiQualityDataProviderProps> = ({ children, linterEnabled, validationSummary }) => {
   return (
-    <ApiQualityValidationSummaryContext.Provider value={value}>
-      {children}
+    <ApiQualityValidationSummaryContext.Provider value={validationSummary}>
+      <ApiQualityLinterEnabledContext.Provider value={linterEnabled}>
+        {children}
+      </ApiQualityLinterEnabledContext.Provider>
     </ApiQualityValidationSummaryContext.Provider>
   )
 }
