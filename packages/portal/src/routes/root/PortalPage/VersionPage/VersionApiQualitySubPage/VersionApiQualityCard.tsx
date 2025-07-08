@@ -144,7 +144,7 @@ export const VersionApiQualityCard: FC = memo(() => {
                 <Box height="100%">
                   <MonacoEditor
                     value={selectedDocumentContent}
-                    type={'openapi-3-0'}
+                    type={selectedDocument!.specificationType}
                     language={format}
                     selectedUri={selectedIssuePath}
                   />

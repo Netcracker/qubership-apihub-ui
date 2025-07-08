@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import React, { memo, useMemo } from 'react'
-import { Box, Tooltip, Typography } from '@mui/material'
+import { Box, Link, Tooltip, Typography } from '@mui/material'
+import { API_AUDIENCE_EXTERNAL, API_AUDIENCE_INTERNAL, API_AUDIENCE_UNKNOWN, type ApiAudienceTransition } from '@netcracker/qubership-apihub-api-processor'
+import { Changes } from '@netcracker/qubership-apihub-ui-shared/components/Changes'
+import { CATEGORY_OPERATION } from '@netcracker/qubership-apihub-ui-shared/components/ChangesTooltip'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { API_TYPE_TITLE_MAP } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { ChangesSummary } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
 import {
   BREAKING_CHANGE_SEVERITY,
   DEFAULT_CHANGE_SEVERITY_MAP,
 } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
-import { Changes } from '@netcracker/qubership-apihub-ui-shared/components/Changes'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { API_TYPE_TITLE_MAP } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { NumberOfImpactedOperations } from '@netcracker/qubership-apihub-ui-shared/entities/version-contents'
-import { CATEGORY_OPERATION } from '@netcracker/qubership-apihub-ui-shared/components/ChangesTooltip'
 import { DefaultWarningIcon } from '@netcracker/qubership-apihub-ui-shared/icons/WarningIcon'
-import { API_AUDIENCE_EXTERNAL, API_AUDIENCE_INTERNAL, API_AUDIENCE_UNKNOWN, type ApiAudienceTransition } from '@netcracker/qubership-apihub-api-processor'
+import type { FC } from 'react'
+import { memo, useMemo } from 'react'
 
 export type OperationTypeChangesProps = Readonly<{
   apiType: ApiType
@@ -87,7 +87,8 @@ export const OperationTypeChanges: FC<OperationTypeChangesProps> = memo<Operatio
 
   return (
     <Box mt={4} data-testid={`ValidationsContent-${apiType}`}>
-      <Box display="flex">
+      <Box display="flex" alignItems="flex-start">
+        {/* Section "API Operations" */}
         <Box
           sx={{
             ...OPERATION_TYPE_SUMMARY_STYLE,
@@ -167,20 +168,34 @@ export const OperationTypeChanges: FC<OperationTypeChangesProps> = memo<Operatio
             </>
           )}
         </Box>
+
+        {/* Section "API Validation" */}
         <Box
           sx={{
             ...OPERATION_TYPE_SUMMARY_STYLE,
             gridTemplateAreas: `
-              'title empty'
+              'title empty1'
+              'bwcValidationTitle empty2'
               'bwcNumberTitle bwcNumber'
               'changesTitle changes'
               'affectedOperationTitle affectedOperation'
+              'linterValidationTitle empty3'
             `,
           }}
         >
           <Typography sx={{ gridAria: 'title' }} variant="subtitle1">
             {`${API_TYPE_TITLE_MAP[apiType]} Validation`}
           </Typography>
+
+          <Box sx={{ gridArea: 'empty1' }} />
+
+          {/* Sub-section "Backward Compatibility Validation" */}
+          <Typography sx={{ gridArea: 'bwcValidationTitle', fontWeight: 500 }} variant="body2">
+            Backward Compatibility Validation
+          </Typography>
+
+          <Box sx={{ gridArea: 'empty2' }} />
+
           <Typography sx={{ gridArea: 'bwcNumberTitle' }} variant="subtitle2">
             Number of BWC errors
           </Typography>
@@ -212,6 +227,22 @@ export const OperationTypeChanges: FC<OperationTypeChangesProps> = memo<Operatio
             }}
           >
             <Changes value={affectedOperationCounter} mode="compact" category={CATEGORY_OPERATION} zeroView={true} />
+          </Box>
+
+          {/* Sub-section "Quality Validation" */}
+          <Typography sx={{ gridArea: 'linterValidationTitle', fontWeight: 500 }} variant="body2">
+            Quality Validation
+          </Typography>
+
+          <Box sx={{ gridArea: 'empty3' }} />
+
+          <Typography sx={{ gridArea: 'validationRulesetTitle' }} variant="subtitle2">
+            Validation ruleset
+          </Typography>
+          <Box sx={{ gridArea: 'validationRuleset' }}>
+            <Link>
+              Link to ruleset
+            </Link>
           </Box>
         </Box>
       </Box>
