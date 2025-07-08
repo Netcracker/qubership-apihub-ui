@@ -53,7 +53,7 @@ import type { FC, PropsWithChildren } from 'react'
 import { createContext, memo, useContext, useState } from 'react'
 import { createEventBus, slot } from 'ts-event-bus'
 import { SHOW_RULESET_INFO_DIALOG } from './root/PortalPage/VersionPage/VersionApiQualitySubPage/components/RulesetInfoDialog/RulesetInfoDialog'
-import type { RulesetBase } from './root/api-quality-ruleset'
+import type { RulesetBase } from '@apihub/entities/api-quality-ruleset'
 
 // base
 export const SHOW_SUCCESS_NOTIFICATION = 'show-success-notification'

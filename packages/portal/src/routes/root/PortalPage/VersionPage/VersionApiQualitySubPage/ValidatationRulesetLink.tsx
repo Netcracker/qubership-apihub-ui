@@ -3,7 +3,7 @@ import { Box, Link, Skeleton, Typography } from '@mui/material'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import type { FC } from 'react'
 import { memo } from 'react'
-import type { RulesetBase } from '../../../api-quality-ruleset'
+import type { RulesetBase } from '@apihub/entities/api-quality-ruleset'
 
 type ValidationResultLinkProps = {
   data: RulesetBase | undefined

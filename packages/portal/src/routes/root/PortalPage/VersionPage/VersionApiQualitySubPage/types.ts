@@ -1,7 +1,7 @@
 import type { FileFormat, MD_FILE_FORMAT, UNKNOWN_FILE_FORMAT } from '@apihub/entities/file-formats'
 import type { Key } from '@apihub/entities/keys'
 import type { API_TYPE_GRAPHQL, ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import type { RulesetBase, RulesetBaseDto } from '../../../api-quality-ruleset'
+import type { RulesetBase, RulesetBaseDto } from '@apihub/entities/api-quality-ruleset'
 
 export type ValidatedDocumentDto = {
   documentId: string
