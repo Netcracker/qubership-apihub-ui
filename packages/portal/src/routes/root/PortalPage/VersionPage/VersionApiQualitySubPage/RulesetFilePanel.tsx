@@ -2,7 +2,7 @@ import { Box, Typography } from '@mui/material'
 import { FileIcon } from '@netcracker/qubership-apihub-ui-shared/icons/FileIcon'
 import type { FC } from 'react'
 import type { RulesetBase } from '@apihub/entities/api-quality-ruleset'
-import { RulesetFileControls } from '../../../RulesetFileControls'
+import { RulesetFileControls } from '@apihub/components/RulesetFileControls'
 
 type RulesetFilePanelProps = {
   ruleset: RulesetBase
