@@ -1,7 +1,7 @@
 import type { FileFormat, MD_FILE_FORMAT, UNKNOWN_FILE_FORMAT } from '@apihub/entities/file-formats'
 import type { Key } from '@apihub/entities/keys'
 import type { API_TYPE_GRAPHQL, ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import type { RulesetLite, RulesetLiteDto } from '../../../api-quality-ruleset'
+import type { RulesetBase, RulesetBaseDto } from '../../../api-quality-ruleset'
 
 export type ValidatedDocumentDto = {
   documentId: string
@@ -42,7 +42,7 @@ export type ValidationStatus = typeof ValidationStatuses[keyof typeof Validation
 
 export type ValidationSummaryRecordDto = {
   apiType: Exclude<ApiType, typeof API_TYPE_GRAPHQL>
-  ruleset: RulesetLiteDto | null
+  ruleset: RulesetBaseDto | null
   status: ValidationStatus
   issuesSummary: Record<IssueSeverity, number>
 }
@@ -50,19 +50,19 @@ export type ValidationSummaryRecordDto = {
 export type ValidationSummaryDto = ValidationSummaryRecordDto[]
 
 export type ValidationSummaryRecord = Omit<ValidationSummaryRecordDto, 'ruleset'> & {
-  ruleset: RulesetLite | null
+  ruleset: RulesetBase | null
 }
 
 export type ValidationSummary = ValidationSummaryRecord[]
 
 export type ValidationDetailsDto = {
-  ruleset: RulesetLiteDto
+  ruleset: RulesetBaseDto
   issues: readonly IssueDto[]
   document: ValidatedDocumentDto
 }
 
 export type ValidationDetails = {
-  ruleset: RulesetLite
+  ruleset: RulesetBase
   issues: readonly Issue[]
   document: ValidatedDocument
 }

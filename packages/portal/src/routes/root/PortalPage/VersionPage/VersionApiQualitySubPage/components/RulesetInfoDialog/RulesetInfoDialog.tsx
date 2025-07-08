@@ -2,7 +2,7 @@ import { Box, Dialog, DialogContent, DialogTitle, IconButton, Skeleton } from '@
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { useCallback, type FC } from 'react'
-import type { RulesetLite } from '@apihub/routes/root/api-quality-ruleset'
+import type { RulesetBase } from '@apihub/routes/root/api-quality-ruleset'
 
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import { NAVIGATION_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
@@ -14,7 +14,7 @@ export const SHOW_RULESET_INFO_DIALOG = 'show-ruleset-info-dialog'
 
 const RulesetInfoPopup: FC<PopupProps> = (props) => {
   const { open, setOpen } = props
-  const detail = props.detail as RulesetLite
+  const detail = props.detail as RulesetBase
 
   const [ruleset, loadingRuleset] = useRulesetMetadata(detail.id)
 
