@@ -1,25 +1,28 @@
-/**
- * Copyright 2024-2025 NetCracker Technology Corporation
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import type { FC } from 'react'
 import { memo, useEffect } from 'react'
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material'
+import { Button, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material'
 import { LoadingButton } from '@mui/lab'
 import type { ButtonPropsColorOverrides } from '@mui/material/Button/Button'
 import type { OverridableStringUnion } from '@mui/types'
+import { DialogForm } from '../DialogForm'
+
+const STYLE_DIALOG_TITLE = {
+  fontSize: '13px',
+  px: 1.5,
+  py: 1.3,
+}
+
+const STYLE_DIALOG_CONTENT = {
+  minWidth: 240,
+  width: '100%',
+  px: 1.5,
+  pb: 1,
+}
+
+const STYLE_DIALOG_ACTIONS = {
+  px: 1.5,
+  py: 1.3,
+}
 
 export type ConfirmationDialogProps = {
   open: boolean
@@ -45,26 +48,32 @@ export const ConfirmationDialog: FC<ConfirmationDialogProps> = memo<Confirmation
   useCloseOnSuccess(loading, onCancel)
 
   return (
-    <Dialog
+    <DialogForm
       open={open}
       onClose={onCancel}
+      maxWidth="xxs"
     >
-      <DialogTitle>
+      <DialogTitle
+        sx={STYLE_DIALOG_TITLE}
+      >
         {title}
       </DialogTitle>
 
-      <DialogContent>
-        <DialogContentText
-          variant="body2"
-          data-testid="ConfirmationDialogContent"
-        >
-          {message}
-        </DialogContentText>
-      </DialogContent>
+      {message && (
+        <DialogContent sx={STYLE_DIALOG_CONTENT}>
+          <DialogContentText
+            variant="body2"
+            data-testid="ConfirmationDialogContent"
+          >
+            {message}
+          </DialogContentText>
+        </DialogContent>
+      )}
 
-      <DialogActions>
+      <DialogActions sx={STYLE_DIALOG_ACTIONS}>
         <LoadingButton
           variant="contained"
+          size="extra-small"
           color={confirmButtonColor}
           loading={loading}
           onClick={onConfirm}
@@ -74,13 +83,15 @@ export const ConfirmationDialog: FC<ConfirmationDialogProps> = memo<Confirmation
         </LoadingButton>
         <Button
           variant="outlined"
+          size="extra-small"
+          disabled={loading}
           onClick={onCancel}
           data-testid="CancelButton"
         >
           Cancel
         </Button>
       </DialogActions>
-    </Dialog>
+    </DialogForm>
   )
 })
 
