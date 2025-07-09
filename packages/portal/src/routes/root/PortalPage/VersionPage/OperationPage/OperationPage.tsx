@@ -61,10 +61,18 @@ import { SidebarPanel } from '@netcracker/qubership-apihub-ui-shared/components/
 import { OperationContent } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationContent'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { API_TYPE_GRAPHQL, API_TYPE_REST, API_TYPE_TITLE_MAP } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { WarningApiProcessorVersion } from '@apihub/components/WarningApiProcessorVersion'
+import { Box } from '@mui/material'
+import { usePackageVersionContent } from '@apihub/routes/root/usePackageVersionContent'
 
 // High Order Component //
 export const OperationPage: FC = memo(() => {
   const { packageId, versionId, apiType = DEFAULT_API_TYPE, operationId: operationKey } = useParams()
+  const { versionContent} = usePackageVersionContent({
+    versionKey: versionId,
+    packageKey: packageId,
+  })
+  const {apiProcessorVersion} = versionContent ?? {}
   // TODO 07.08.23 // Make a context!
   const [operationPackageKey, operationPackageVersion] = usePackageParamsWithRef()
   const [documentId] = useDocumentSearchParam()
@@ -186,6 +194,7 @@ export const OperationPage: FC = memo(() => {
                 />
               }
               header={
+              <Box display="flex" alignItems="center">
                 <OperationToolbarHeader
                   title={toolbarTitle}
                   handleBackClick={handleBackClick}
@@ -196,6 +205,8 @@ export const OperationPage: FC = memo(() => {
                   isRelatedOperationsLoading={areOperationsLoading || isOperationLoading}
                   prepareLinkFn={prepareLinkFn}
                 />
+                <WarningApiProcessorVersion versionKey={versionId} packageKey={packageId} />
+              </Box>
               }
               action={
                 <OperationToolbarActions

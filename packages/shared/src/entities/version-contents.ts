@@ -39,6 +39,7 @@ export type PackageVersionContent = Readonly<{
   versionLabels?: string[]
   operationTypes?: Record<ApiType, OperationTypeSummary>
   revisionsCount: number
+  apiProcessorVersion: string
 }>
 
 export type PackageVersionContentDto = Readonly<{
@@ -54,6 +55,7 @@ export type PackageVersionContentDto = Readonly<{
   operationTypes?: ReadonlyArray<OperationTypeSummaryDto>
   notLatestRevision?: boolean
   revisionsCount?: number
+  apiProcessorVersion: string
 }>
 
 export type OperationTypeSummary<T extends DiffType | DiffTypeDto = DiffType> = Readonly<{

@@ -70,6 +70,10 @@ import {
 import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'
 import { RawSpecDiffView } from '@netcracker/qubership-apihub-ui-shared/components/RawSpecDiffView'
 import { removeComponents } from '@netcracker/qubership-apihub-api-processor'
+import { WarningApiProcessorVersion } from '@apihub/components/WarningApiProcessorVersion'
+import {
+  useVersionsComparisonGlobalParams,
+} from '@apihub/routes/root/PortalPage/VersionPage/VersionsComparisonGlobalParams'
 
 export type OperationContentProps = {
   changedOperation?: OperationData
@@ -91,7 +95,13 @@ export const OperationContent: FC<OperationContentProps> = memo<OperationContent
     paddingBottom,
     operationModels,
   } = props
-  const { packageId = '', apiType = DEFAULT_API_TYPE } = useParams<{ packageId: string; apiType: ApiType }>()
+  const {
+    originPackageKey: packageId = '',
+    originVersionKey,
+    changedVersionKey,
+    apiType = DEFAULT_API_TYPE,
+  } = useVersionsComparisonGlobalParams()
+
   const { productionMode } = useSystemInfo()
 
   const setChangesLoadingStatus = useSetChangesLoadingStatus()
@@ -111,7 +121,6 @@ export const OperationContent: FC<OperationContentProps> = memo<OperationContent
   const [navigationDetails] = useOperationNavigationDetails()
 
   const breadcrumbsData = useBreadcrumbsData()
-
   let operationContentElement
   const isDocViewMode = useIsDocOperationViewMode(mode)
   const isRawViewMode = useIsRawOperationViewMode(mode)
@@ -198,6 +207,10 @@ export const OperationContent: FC<OperationContentProps> = memo<OperationContent
             displayMode={displayMode}
             breadcrumbsData={breadcrumbsData}
             actions={isRawViewMode && rawViewActions}
+            swapperBreadcrumbsBeforeComponent={<WarningApiProcessorVersion packageKey={packageId}
+                                                                           versionKey={originVersionKey}/>}
+            swapperBreadcrumbsAfterComponent={<WarningApiProcessorVersion packageKey={packageId}
+                                                                          versionKey={changedVersionKey}/>}
           />
           {isDocViewMode && !!mergedDocument && (
             <OperationView

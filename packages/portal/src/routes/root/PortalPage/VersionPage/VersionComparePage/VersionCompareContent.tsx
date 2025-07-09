@@ -21,7 +21,9 @@ import { type ChangeSummary } from '@netcracker/qubership-apihub-api-processor'
 import { ChangeSeverityIndicator } from '@netcracker/qubership-apihub-ui-shared/components/ChangeSeverityIndicator'
 import { Changes } from '@netcracker/qubership-apihub-ui-shared/components/Changes'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
-import { OperationTitleWithMeta } from '@netcracker/qubership-apihub-ui-shared/components/Operations/OperationTitleWithMeta'
+import {
+  OperationTitleWithMeta,
+} from '@netcracker/qubership-apihub-ui-shared/components/Operations/OperationTitleWithMeta'
 import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import type { ChangeSeverity } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
 import {
@@ -35,7 +37,10 @@ import {
   useSeverityFiltersSearchParam,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/change-severities/useSeverityFiltersSearchParam'
 import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import { filterChangesBySeverity, getMajorSeverity } from '@netcracker/qubership-apihub-ui-shared/utils/change-severities'
+import {
+  filterChangesBySeverity,
+  getMajorSeverity,
+} from '@netcracker/qubership-apihub-ui-shared/utils/change-severities'
 import {
   API_TYPE_SEARCH_PARAM,
   FILTERS_SEARCH_PARAM,
@@ -69,6 +74,8 @@ import { ComparisonSwapper } from '../ComparisonSwapper'
 import { useVersionsComparisonGlobalParams } from '../VersionsComparisonGlobalParams'
 import { VERSION_SWAPPER_HEIGHT } from '../shared-styles'
 import { useTagSearchFilter } from '../useTagSearchFilter'
+import { WarningApiProcessorVersion } from '@apihub/components/WarningApiProcessorVersion'
+import { usePackageVersionContent } from '@apihub/routes/root/usePackageVersionContent'
 
 export function isRevisionCompare(originVersion: Key, changedVersion: Key): boolean {
   const {
@@ -174,17 +181,22 @@ export const VersionCompareContent: FC = memo(() => {
 
   if (changesLoadingStatus) {
     return (
-      <LoadingIndicator />
+      <LoadingIndicator/>
     )
   }
 
   return (
     <Card>
-      <ComparisonSwapper
-        breadcrumbsData={breadcrumbsData}
-        handleSwap={handleSwap}
-        showCompareDialog={showCompareDialog}
-      />
+      <Box>
+        <ComparisonSwapper
+          breadcrumbsData={breadcrumbsData}
+          handleSwap={handleSwap}
+          showCompareDialog={showCompareDialog}
+          swapperBreadcrumbsBeforeComponent={<WarningApiProcessorVersion packageKey={originPackageKey} versionKey={originVersionKey} />}
+          swapperBreadcrumbsAfterComponent={<WarningApiProcessorVersion packageKey={changedPackageKey} versionKey={changedVersionKey} />}
+        />
+      </Box>
+
       <Placeholder
         invisible={isNotEmpty(filteredPackageChanges)}
         area={CONTENT_PLACEHOLDER_AREA}
@@ -330,9 +342,9 @@ const OperationChangesSummary: FC<OperationChangesSummaryProps> = memo<Operation
         gap: '2px',
       }}
     >
-      {operation && <OperationTitleWithMeta operation={operation} />}
+      {operation && <OperationTitleWithMeta operation={operation}/>}
       {changes && (
-        <Changes value={changes} mode="compact" />
+        <Changes value={changes} mode="compact"/>
       )}
     </ListItem>
   )
