@@ -11,10 +11,9 @@ import { useDeleteRuleset } from './hooks/api/useDeleteRuleset'
 
 export interface RulesetActionsProps {
   ruleset: RulesetDto
-  visible: boolean
 }
 
-export const RulesetActions: FC<RulesetActionsProps> = memo(({ ruleset, visible }) => {
+export const RulesetActions: FC<RulesetActionsProps> = memo(({ ruleset }) => {
   const [deleteRuleset, isDeleting] = useDeleteRuleset()
   const [activateRuleset, isActivating] = useActivateRuleset()
 
@@ -31,7 +30,7 @@ export const RulesetActions: FC<RulesetActionsProps> = memo(({ ruleset, visible 
 
   return (
     <>
-      <Box sx={{ opacity: visible ? 1 : 0, transition: 'opacity 0.2s' }}>
+      <Box display="flex" gap={2} visibility="hidden" className="hoverable">
         {/* Activate button - disabled if already active */}
         <Tooltip title={ruleset.status === 'active' ? 'Already active' : 'Activate ruleset'}>
           <span>
