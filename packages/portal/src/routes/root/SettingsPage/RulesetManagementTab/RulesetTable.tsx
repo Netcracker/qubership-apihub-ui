@@ -110,7 +110,8 @@ export const RulesetTable: FC<RulesetTableProps> = memo<RulesetTableProps>(({
           <Chip
             label={capitalize(status)}
             size="small"
-            color="release"
+            color={status === 'active' ? 'release' : 'default'}
+            sx={{ fontWeight: 500 }}
           />
         ),
       },
