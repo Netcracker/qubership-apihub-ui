@@ -46,6 +46,12 @@ const COLUMNS_MODELS: ColumnModel[] = [
   { name: CONTROLS_COLUMN_ID, fixedWidth: 169 },
 ]
 
+const tableContainerStyles = {
+  mt: 1,
+  maxHeight: 'calc(100vh - 260px)',
+  overflowX: 'hidden',
+} as const
+
 export type RulesetTableProps = {
   rulesets: Ruleset[]
   isLoading: boolean
@@ -139,8 +145,11 @@ export const RulesetTable: FC<RulesetTableProps> = memo<RulesetTableProps>(({
   )
 
   return (
-    <TableContainer ref={tableContainerRef} sx={{ mt: 1, overflow: 'hidden' }}>
-      <Table>
+    <TableContainer 
+      ref={tableContainerRef} 
+      sx={tableContainerStyles}
+    >
+      <Table stickyHeader>
         <TableHead>
           {getHeaderGroups().map(headerGroup => (
             <TableRow key={headerGroup.id}>
