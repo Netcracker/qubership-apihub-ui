@@ -5,13 +5,12 @@ import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/Sea
 import { SpecLogo } from '@netcracker/qubership-apihub-ui-shared/components/SpecLogo'
 import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import type { Dispatch, SetStateAction } from 'react'
 import { memo, useEffect, useMemo, useState, type FC } from 'react'
 import type { ValidatedDocument } from './types'
 
 type ValidatedDocumentSelectorProps = {
   value: ValidatedDocument | undefined
-  onSelect: Dispatch<SetStateAction<ValidatedDocument | undefined>>
+  onSelect: (value: ValidatedDocument | undefined) => void
   options: readonly ValidatedDocument[]
   loading: IsLoading
 }

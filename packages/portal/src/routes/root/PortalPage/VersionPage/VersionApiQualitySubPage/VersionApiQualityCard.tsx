@@ -7,7 +7,7 @@ import { MonacoEditor } from '@netcracker/qubership-apihub-ui-shared/components/
 import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'
 import type { SpecItemUri } from '@netcracker/qubership-apihub-ui-shared/utils/specifications'
 import type { FC, ReactNode } from 'react'
-import { memo, useMemo, useState } from 'react'
+import { memo, useCallback, useMemo, useState } from 'react'
 import { useParams } from 'react-router'
 import { usePublishedDocumentRaw } from '../usePublishedDocumentRaw'
 import { ValidationResultLink } from './ValidatationRulesetLink'
@@ -99,6 +99,11 @@ export const VersionApiQualityCard: FC = memo(() => {
     slug: selectedDocument?.id ?? '',
   })
 
+  const onSelectDocument = useCallback((value: ValidatedDocument | undefined) => {
+    setSelectedDocument(value)
+    setSelectedIssuePath(undefined)
+  }, [])
+
   return (
     <BodyCard
       body={
@@ -107,7 +112,7 @@ export const VersionApiQualityCard: FC = memo(() => {
             <Box display='flex' justifyContent='space-between' width="100%">
               <ValidatedDocumentSelector
                 value={selectedDocument}
-                onSelect={setSelectedDocument}
+                onSelect={onSelectDocument}
                 options={validatedDocuments}
                 loading={loadingValidatedDocuments}
               />
