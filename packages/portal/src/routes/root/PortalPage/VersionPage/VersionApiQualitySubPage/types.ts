@@ -1,7 +1,8 @@
+import type { RulesetBase, RulesetBaseDto } from '@apihub/entities/api-quality-ruleset'
 import type { FileFormat, MD_FILE_FORMAT, UNKNOWN_FILE_FORMAT } from '@apihub/entities/file-formats'
 import type { Key } from '@apihub/entities/keys'
+import type { IssueSeverity } from '@apihub/entities/validation-issue-severities'
 import type { API_TYPE_GRAPHQL, ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import type { RulesetBase, RulesetBaseDto } from '@apihub/entities/api-quality-ruleset'
 
 export type ValidatedDocumentDto = {
   documentId: string
@@ -10,18 +11,6 @@ export type ValidatedDocumentDto = {
 }
 
 export type ValidatedDocument = Omit<ValidatedDocumentDto, 'documentId'> & { id: Key }
-
-export const IssueSeverities = {
-  ERROR: 'error',
-  WARNING: 'warning',
-  INFO: 'info',
-} as const
-export type IssueSeverity = typeof IssueSeverities[keyof typeof IssueSeverities]
-export const ISSUE_SEVERITIES_LIST = [
-  IssueSeverities.ERROR,
-  IssueSeverities.INFO,
-  IssueSeverities.WARNING,
-] as const
 
 export type IssuePathItem = string | number
 export type IssuePath = IssuePathItem[]

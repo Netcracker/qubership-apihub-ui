@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ISSUE_SEVERITY_COLOR_MAP } from '@apihub/entities/validation-issue-severities'
 import { useEventBus } from '@apihub/routes/EventBusProvider'
 import { Box, Link, Tooltip, Typography } from '@mui/material'
 import { API_AUDIENCE_EXTERNAL, API_AUDIENCE_INTERNAL, API_AUDIENCE_UNKNOWN, type ApiAudienceTransition } from '@netcracker/qubership-apihub-api-processor'
@@ -31,9 +32,8 @@ import { DefaultWarningIcon } from '@netcracker/qubership-apihub-ui-shared/icons
 import type { FC } from 'react'
 import { Fragment, memo, useMemo } from 'react'
 import { useApiQualityLinterEnabled, useApiQualitySummarySectionProperties, useApiQualityValidationSummary } from '../../ApiQualityValidationSummaryProvider'
-import { IssueSeverityMarker } from '../../VersionApiQualitySubPage/IssueSeverityMarker'
-import type { IssueSeverity } from '../../VersionApiQualitySubPage/types'
-import { ISSUE_SEVERITIES_LIST, IssueSeverities } from '../../VersionApiQualitySubPage/types'
+import type { IssueSeverity } from '@apihub/entities/validation-issue-severities'
+import { ISSUE_SEVERITIES_LIST, IssueSeverities } from '@apihub/entities/validation-issue-severities'
 
 export type OperationTypeChangesProps = Readonly<{
   apiType: ApiType
@@ -313,7 +313,10 @@ export const OperationTypeChanges: FC<OperationTypeChangesProps> = memo<Operatio
                   <Box sx={{ gridArea: 'qualityIssuesNumber' }} display="flex" alignItems="center" gap={1}>
                     {ISSUE_SEVERITIES_LIST.map(severity => (
                       <Fragment key={severity}>
-                        <IssueSeverityMarker severity={severity} size='small' />
+                        <Box
+                          component="span"
+                          sx={{ background: ISSUE_SEVERITY_COLOR_MAP[severity], width: 8, height: 8, borderRadius: '50%' }}
+                        />
                         <Typography
                           variant="body2"
                           component="span"
