@@ -16,6 +16,7 @@ import { ValidationResultsTable } from './ValidationResultsTable'
 import { useListValidatedDocumentsByPackageVersion } from './api/useListValidatedDocumentsByPackageVersion'
 import { useValidationDetailsByDocument } from './api/useValidationDetailsByDocument'
 import type { OriginalDocumentFileFormat, ValidatedDocument } from './types'
+import { useTransformedRawDocumentByFormat } from './utilities/hooks'
 
 type TwoSidedCardProps = Partial<{
   leftHeader: ReactNode
@@ -99,6 +100,8 @@ export const VersionApiQualityCard: FC = memo(() => {
     slug: selectedDocument?.id ?? '',
   })
 
+  const transformedSelectedDocumentContent = useTransformedRawDocumentByFormat(selectedDocumentContent, format)
+
   const onSelectDocument = useCallback((value: ValidatedDocument | undefined) => {
     setSelectedDocument(value)
     setSelectedIssuePath(undefined)
@@ -147,7 +150,7 @@ export const VersionApiQualityCard: FC = memo(() => {
               <ModuleFetchingErrorBoundary>
                 <Box height="100%">
                   <MonacoEditor
-                    value={selectedDocumentContent}
+                    value={transformedSelectedDocumentContent}
                     type={selectedDocument!.specificationType}
                     language={format}
                     selectedUri={selectedIssuePath}

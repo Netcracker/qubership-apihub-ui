@@ -8,7 +8,7 @@ import type { FC } from 'react'
 import { memo, useMemo, useRef } from 'react'
 import { IssueSeverityMarker } from './IssueSeverityMarker'
 import type { Issue, IssueSeverity, ValidationDetails } from './types'
-import { issuePathToSpecItemUri } from './utilities/utilities'
+import { issuePathToSpecItemUri } from './utilities/transformers'
 
 const TABLE_COLUMN_ID_TYPE = 'type'
 const TABLE_COLUMN_ID_MESSAGE = 'message'
