@@ -97,7 +97,6 @@ export const VersionApiQualityCard: FC = memo(() => {
     packageKey: packageId,
     versionKey: versionId,
     slug: selectedDocument?.id ?? '',
-    format: format,
   })
 
   return (

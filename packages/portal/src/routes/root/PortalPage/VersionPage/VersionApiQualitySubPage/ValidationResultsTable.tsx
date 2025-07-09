@@ -8,6 +8,7 @@ import type { FC } from 'react'
 import { memo, useMemo, useRef } from 'react'
 import { IssueSeverityMarker } from './IssueSeverityMarker'
 import type { Issue, IssueSeverity, ValidationDetails } from './types'
+import { issuePathToSpecItemUri } from './utilities/utilities'
 
 const TABLE_COLUMN_ID_TYPE = 'type'
 const TABLE_COLUMN_ID_MESSAGE = 'message'
@@ -102,7 +103,7 @@ export const ValidationResultsTable: FC<ValidationResultsTableProps> = memo<Vali
   const transformedData: TableData[] = useMemo(() => (data?.issues ?? []).map((issue: Issue) => ({
     type: issue.severity,
     message: issue.message,
-    path: `/${issue.jsonPath.join('/')}`,
+    path: issuePathToSpecItemUri(issue.jsonPath),
   })), [data?.issues])
 
   const { getHeaderGroups, getRowModel } = useReactTable({
