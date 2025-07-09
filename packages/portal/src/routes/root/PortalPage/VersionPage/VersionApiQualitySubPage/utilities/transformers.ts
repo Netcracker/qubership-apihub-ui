@@ -3,7 +3,8 @@ import type { SpecItemUri } from '@netcracker/qubership-apihub-ui-shared/utils/s
 import { encodeKey } from '@netcracker/qubership-apihub-ui-shared/utils/specifications'
 import { safeParse } from '@stoplight/json'
 import YAML from 'js-yaml'
-import type { IssuePath, OriginalDocumentFileFormat } from '../types'
+import type { OriginalDocumentFileFormat } from '../types'
+import type { IssuePath } from '@apihub/entities/api-quality/issue-paths'
 
 export function issuePathToSpecItemUri(issuePath: IssuePath): SpecItemUri {
   return `/${issuePath.map(pathItem => encodeKey(`${pathItem}`)).join('/')}`

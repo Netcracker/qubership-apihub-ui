@@ -3,15 +3,15 @@ import { Box, Link, Skeleton, Typography } from '@mui/material'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import type { FC } from 'react'
 import { memo } from 'react'
-import type { RulesetBase } from '@apihub/entities/api-quality-ruleset'
+import type { RulesetBase } from '@apihub/entities/api-quality/rulesets'
 
-type ValidationResultLinkProps = {
+type ValidationRulesetLinkProps = {
   data: RulesetBase | undefined
   loading: IsLoading
 }
 
 // First Order Component
-export const ValidationResultLink: FC<ValidationResultLinkProps> = memo<ValidationResultLinkProps>(props => {
+export const ValidationRulesettLink: FC<ValidationRulesetLinkProps> = memo<ValidationRulesetLinkProps>(props => {
   const { data, loading } = props
 
   const { showRulesetInfoDialog } = useEventBus()

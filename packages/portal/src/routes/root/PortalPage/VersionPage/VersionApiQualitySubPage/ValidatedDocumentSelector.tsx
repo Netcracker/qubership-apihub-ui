@@ -6,7 +6,7 @@ import { SpecLogo } from '@netcracker/qubership-apihub-ui-shared/components/Spec
 import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { memo, useEffect, useMemo, useState, type FC } from 'react'
-import type { ValidatedDocument } from './types'
+import type { ValidatedDocument } from '@apihub/entities/api-quality/validated-documents'
 
 type ValidatedDocumentSelectorProps = {
   value: ValidatedDocument | undefined

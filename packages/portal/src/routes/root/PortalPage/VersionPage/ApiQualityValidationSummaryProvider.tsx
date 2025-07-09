@@ -2,7 +2,8 @@ import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/ap
 import { API_TYPE_GRAPHQL } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { FC, PropsWithChildren, ReactNode } from 'react'
 import { createContext, useContext } from 'react'
-import { ValidationStatuses, type ValidationStatus, type ValidationSummary } from './VersionApiQualitySubPage/types'
+import { type ValidationSummary } from '@apihub/entities/api-quality/package-version-validation-summary'
+import { ValidationStatuses, type ValidationStatus } from '@apihub/entities/api-quality/validation-statuses'
 
 // Raw contexts
 

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { ISSUE_SEVERITY_COLOR_MAP } from '@apihub/entities/validation-issue-severities'
+import type { IssueSeverity } from '@apihub/entities/api-quality/issue-severities'
+import { ISSUE_SEVERITIES_LIST, ISSUE_SEVERITY_COLOR_MAP, IssueSeverities } from '@apihub/entities/api-quality/issue-severities'
 import { useEventBus } from '@apihub/routes/EventBusProvider'
 import { Box, Link, Tooltip, Typography } from '@mui/material'
 import { API_AUDIENCE_EXTERNAL, API_AUDIENCE_INTERNAL, API_AUDIENCE_UNKNOWN, type ApiAudienceTransition } from '@netcracker/qubership-apihub-api-processor'
@@ -32,8 +33,6 @@ import { DefaultWarningIcon } from '@netcracker/qubership-apihub-ui-shared/icons
 import type { FC } from 'react'
 import { Fragment, memo, useMemo } from 'react'
 import { useApiQualityLinterEnabled, useApiQualitySummarySectionProperties, useApiQualityValidationSummary } from '../../ApiQualityValidationSummaryProvider'
-import type { IssueSeverity } from '@apihub/entities/validation-issue-severities'
-import { ISSUE_SEVERITIES_LIST, IssueSeverities } from '@apihub/entities/validation-issue-severities'
 
 export type OperationTypeChangesProps = Readonly<{
   apiType: ApiType

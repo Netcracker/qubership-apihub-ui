@@ -10,12 +10,13 @@ import type { FC, ReactNode } from 'react'
 import { memo, useCallback, useMemo, useState } from 'react'
 import { useParams } from 'react-router'
 import { usePublishedDocumentRaw } from '../usePublishedDocumentRaw'
-import { ValidationResultLink } from './ValidatationRulesetLink'
+import { ValidationRulesettLink } from './ValidatationRulesetLink'
 import { ValidatedDocumentSelector } from './ValidatedDocumentSelector'
 import { ValidationResultsTable } from './ValidationResultsTable'
 import { useListValidatedDocumentsByPackageVersion } from './api/useListValidatedDocumentsByPackageVersion'
 import { useValidationDetailsByDocument } from './api/useValidationDetailsByDocument'
-import type { OriginalDocumentFileFormat, ValidatedDocument } from './types'
+import type { OriginalDocumentFileFormat } from './types'
+import type { ValidatedDocument } from '@apihub/entities/api-quality/validated-documents'
 import { useTransformedRawDocumentByFormat } from './utilities/hooks'
 
 type TwoSidedCardProps = Partial<{
@@ -119,7 +120,7 @@ export const VersionApiQualityCard: FC = memo(() => {
                 options={validatedDocuments}
                 loading={loadingValidatedDocuments}
               />
-              <ValidationResultLink
+              <ValidationRulesettLink
                 data={validationDetails?.ruleset}
                 loading={loadingValidationDetails}
               />

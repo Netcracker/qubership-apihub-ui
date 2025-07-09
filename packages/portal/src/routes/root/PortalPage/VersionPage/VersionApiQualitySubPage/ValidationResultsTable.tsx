@@ -7,8 +7,9 @@ import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-tabl
 import type { FC } from 'react'
 import { memo, useMemo, useRef } from 'react'
 import { IssueSeverityMarker } from './IssueSeverityMarker'
-import type { Issue, ValidationDetails } from './types'
-import type { IssueSeverity } from '@apihub/entities/validation-issue-severities'
+import type { ValidationDetails } from '@apihub/entities/api-quality/document-validation-details'
+import type { Issue } from '@apihub/entities/api-quality/issues'
+import type { IssueSeverity } from '@apihub/entities/api-quality/issue-severities'
 import { issuePathToSpecItemUri } from './utilities/transformers'
 
 const TABLE_COLUMN_ID_TYPE = 'type'

@@ -3,7 +3,7 @@ import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/ali
 import { requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { useQuery } from '@tanstack/react-query'
 import { generatePath } from 'react-router'
-import type { ValidationSummary, ValidationSummaryDto } from '../types'
+import type { ValidationSummary, ValidationSummaryDto } from '@apihub/entities/api-quality/package-version-validation-summary'
 import { STUB_API_V1 } from './temp'
 
 const QUERY_KEY_VALIDATION_SUMMARY_FOR_PACKAGE_VERSION = 'validation-summary-for-package-version'
