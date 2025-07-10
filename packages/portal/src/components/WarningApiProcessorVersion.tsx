@@ -24,9 +24,7 @@ import { useSystemInfo } from '@netcracker/qubership-apihub-ui-shared/features/s
 
 import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
 import { RedWarningIcon } from '@netcracker/qubership-apihub-ui-shared/icons/WarningIcon'
-import {
-  usePackageVersionContent,
-} from '@apihub/routes/root/usePackageVersionContent'
+import { usePackageVersionContent } from '../routes/root/usePackageVersionContent'
 
 export const WARNING_API_PROCESSOR_TOOLTIP = 'TooltipWarning'
 export const WARNING_API_PROCESSOR_TEXT = 'TextWarning'
