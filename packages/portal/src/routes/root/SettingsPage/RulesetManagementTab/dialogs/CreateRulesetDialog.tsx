@@ -1,23 +1,11 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography } from '@mui/material'
-import { CloudUpload as CloudUploadIcon } from '@mui/icons-material'
-import { styled } from '@mui/material/styles'
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material'
 import type { FC } from 'react'
 import { memo, useEffect, useState } from 'react'
 import { LoadingButton } from '@mui/lab'
+import { FileUploadField } from '@netcracker/qubership-apihub-ui-shared/components/FileUploadField'
 import { validateYamlFile } from '../utils/rulesetFileUtils'
 import { useCreateRuleset } from '../hooks/api/useCreateRuleset'
-
-const VisuallyHiddenInput = styled('input')({
-  clip: 'rect(0 0 0 0)',
-  clipPath: 'inset(50%)',
-  height: 1,
-  overflow: 'hidden',
-  position: 'absolute',
-  bottom: 0,
-  left: 0,
-  whiteSpace: 'nowrap',
-  width: 1,
-})
+import { YAML_FILE_EXTENSION, YML_FILE_EXTENSION } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 
 export interface CreateRulesetDialogProps {
   open: boolean
@@ -88,11 +76,10 @@ export const CreateRulesetDialog: FC<CreateRulesetDialogProps> = memo(
       if (nameError) validateName()
     }
 
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-      const [selectedFile] = event.target.files || []
-      if (selectedFile) {
-        setFile(selectedFile)
+    const handleFileChange = (selectedFile: File | undefined): void => {
+      setFile(selectedFile || null)
 
+      if (selectedFile) {
         // Validate immediately after selection
         const validationResult = validateYamlFile(selectedFile)
         if (!validationResult.isValid) {
@@ -100,6 +87,8 @@ export const CreateRulesetDialog: FC<CreateRulesetDialogProps> = memo(
         } else {
           setFileError(null)
         }
+      } else {
+        setFileError(null)
       }
     }
 
@@ -143,26 +132,13 @@ export const CreateRulesetDialog: FC<CreateRulesetDialogProps> = memo(
           </Box>
 
           <Box mt={2} mb={1}>
-            <Button
-              component="label"
-              variant="outlined"
-              startIcon={<CloudUploadIcon />}
-              disabled={isCreating}
-              fullWidth
-            >
-              Upload YAML File
-              <VisuallyHiddenInput type="file" onChange={handleFileChange} accept=".yml,.yaml" />
-            </Button>
-            {file && (
-              <Typography variant="body2" mt={1} color="text.secondary">
-                Selected file: {file.name}
-              </Typography>
-            )}
-            {fileError && (
-              <Typography variant="body2" color="error" mt={1}>
-                {fileError}
-              </Typography>
-            )}
+            <FileUploadField
+              uploadedFile={file || undefined}
+              setUploadedFile={handleFileChange}
+              downloadAvailable={false}
+              acceptableExtensions={[YAML_FILE_EXTENSION, YML_FILE_EXTENSION]}
+              errorMessage={fileError || undefined}
+            />
           </Box>
         </DialogContent>
         <DialogActions>
