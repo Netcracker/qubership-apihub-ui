@@ -45,7 +45,7 @@ export const WarningApiProcessorVersion: FC<WarningApiProcessorVersionProps> = m
   packageKey,
   type = WARNING_API_PROCESSOR_TOOLTIP,
   onWarningTextChange,
-  hidden = true,
+  hidden = false,
 }) => {
   const { apiProcessorVersion: apiProcessorVersionApp } = useVersionInfo()
   const { migrationInProgress } = useSystemInfo()
@@ -79,7 +79,7 @@ export const WarningApiProcessorVersion: FC<WarningApiProcessorVersionProps> = m
     }
   }, [textHintState, onWarningTextChange])
 
-  return hidden && apiProcessorVersion && apiProcessorVersion !== apiProcessorVersionApp && !migrationInProgress
+  return !hidden && apiProcessorVersion && apiProcessorVersion !== apiProcessorVersionApp && !migrationInProgress
     ? type === WARNING_API_PROCESSOR_TOOLTIP
       ? <ButtonWithHint
         hint={textHintState}

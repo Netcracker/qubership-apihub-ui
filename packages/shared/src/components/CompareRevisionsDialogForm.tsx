@@ -159,7 +159,7 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
           versionKey={previousRevision?.version}
           packageKey={originPackageKey}
           type={WARNING_API_PROCESSOR_TEXT}
-          hidden={!warningApiProcessorStateCurrent}
+          hidden={!!warningApiProcessorStateCurrent}
           data-testid="WarningApiProcessorVersionPrevios"
           onWarningTextChange={setWarningApiProcessorStatePrevious}/>)}
         {(<WarningApiProcessorVersion
