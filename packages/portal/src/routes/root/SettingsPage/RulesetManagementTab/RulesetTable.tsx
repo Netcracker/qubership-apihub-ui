@@ -1,18 +1,7 @@
 import type { FC } from 'react'
 import { Fragment, memo, useEffect, useMemo, useRef, useState } from 'react'
 import type { ColumnDef } from '@tanstack/table-core'
-import {
-  Box,
-  capitalize,
-  Chip,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-} from '@mui/material'
+import { Box, capitalize, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import type { ColumnSizingInfoState, ColumnSizingState, OnChangeFn } from '@tanstack/react-table'
 import { flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from '@tanstack/react-table'
 import type { ColumnModel } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
@@ -31,6 +20,9 @@ import type { Ruleset } from '@apihub/entities/api-quality-ruleset'
 import { FormattedDate } from '@netcracker/qubership-apihub-ui-shared/components/FormattedDate'
 import { RulesetActions } from '@apihub/routes/root/SettingsPage/RulesetManagementTab/RulesetActions'
 import { TableCellSkeleton } from '@netcracker/qubership-apihub-ui-shared/components/TableCellSkeleton'
+import {
+  ActivationHistoryContent,
+} from '@apihub/routes/root/SettingsPage/RulesetManagementTab/ActivationHistoryContent'
 
 const RULESET_NAME_COLUMN_ID = 'ruleset-name'
 const ACTIVATION_HISTORY_COLUMN_ID = 'activation-history'
@@ -91,16 +83,8 @@ export const RulesetTable: FC<RulesetTableProps> = memo<RulesetTableProps>(({
       {
         id: ACTIVATION_HISTORY_COLUMN_ID,
         header: () => <CustomTableHeadCell title="Activation History" />,
-        cell: ({ row: { original: { activationHistory } } }) => (
-          <Typography variant="body2">
-            {activationHistory[0]?.activeFrom
-              ? <FormattedDate value={activationHistory[0]?.activeFrom} />
-              : '...'}
-            {' - '}
-            {activationHistory[0]?.activeTo
-              ? <FormattedDate value={activationHistory[0]?.activeTo} />
-              : '...'}
-          </Typography>
+        cell: ({ row: { original: ruleset } }) => (
+          <ActivationHistoryContent ruleset={ruleset}/>
         ),
       },
       {
