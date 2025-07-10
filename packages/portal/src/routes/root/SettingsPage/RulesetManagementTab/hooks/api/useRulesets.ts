@@ -17,7 +17,7 @@ export const useRulesets = (): [Ruleset[], IsLoading] => {
   })
 
   // TODO: remove after BE is implemented
-  // Sort rulesets by status (active first) and then by creation date (newest first)
+  // Sort rulesets by status (active first), then empty activationHistory, then by creation date (newest first)
   const sortedRulesets = useMemo(() => {
     if (!data) return []
 
@@ -26,7 +26,13 @@ export const useRulesets = (): [Ruleset[], IsLoading] => {
       if (a.status === 'active' && b.status !== 'active') return -1
       if (a.status !== 'active' && b.status === 'active') return 1
 
-      // Then sort by creation date (newest first)
+      // Then sort by empty activationHistory (empty before non-empty)
+      const aHasEmptyHistory = a.activationHistory.length === 0
+      const bHasEmptyHistory = b.activationHistory.length === 0
+      if (aHasEmptyHistory && !bHasEmptyHistory) return -1
+      if (!aHasEmptyHistory && bHasEmptyHistory) return 1
+
+      // Finally sort by creation date (newest first)
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     })
   }, [data])
