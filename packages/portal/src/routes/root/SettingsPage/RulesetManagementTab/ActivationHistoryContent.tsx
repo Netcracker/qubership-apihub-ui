@@ -1,9 +1,10 @@
 import type { FC } from 'react'
 import { memo } from 'react'
 import type { Ruleset, RulesetActivation } from '@apihub/entities/api-quality-ruleset'
-import { List, ListItem, ListSubheader, Tooltip, Typography } from '@mui/material'
+import { Box, List, ListItem, ListSubheader, Tooltip, Typography } from '@mui/material'
 import { toDateFormat } from '@netcracker/qubership-apihub-ui-shared/utils/date'
 import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded'
 
 export interface ActivationHistoryContentProps {
   ruleset: Ruleset
@@ -48,12 +49,18 @@ export const ActivationHistoryContent: FC<ActivationHistoryContentProps> = memo(
   const lastActiveTo = lastActivation?.activeTo
 
   return (
-    <Tooltip title={<ActivationHistoryTooltip activationHistory={activationHistory} />}>
-      <Typography variant="body2">
-        {lastActiveFrom ? toDateFormat(lastActiveFrom) : '...'}
-        {' - '}
-        {lastActiveTo ? toDateFormat(lastActiveTo) : '...'}
-      </Typography>
+    <Tooltip
+      arrow={false}
+      title={activationHistory.length > 1 && <ActivationHistoryTooltip activationHistory={activationHistory} />}
+    >
+      <Box display="flex" gap={1} alignItems="center">
+        <Typography variant="body2">
+          {lastActiveFrom ? toDateFormat(lastActiveFrom) : '...'}
+          {' - '}
+          {lastActiveTo ? toDateFormat(lastActiveTo) : '...'}
+        </Typography>
+        {activationHistory.length > 1 && <ExpandMoreRoundedIcon color="muted" fontSize="extra-small" />}
+      </Box>
     </Tooltip>
   )
 })

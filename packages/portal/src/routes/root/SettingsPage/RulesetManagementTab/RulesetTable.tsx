@@ -32,10 +32,10 @@ const CONTROLS_COLUMN_ID = 'controls'
 
 const COLUMNS_MODELS: ColumnModel[] = [
   { name: RULESET_NAME_COLUMN_ID },
-  { name: ACTIVATION_HISTORY_COLUMN_ID, fixedWidth: 195 },
+  { name: ACTIVATION_HISTORY_COLUMN_ID, fixedWidth: 224 },
   { name: STATUS_COLUMN_ID, fixedWidth: 116 },
   { name: CREATED_AT_COLUMN_ID, fixedWidth: 132 },
-  { name: CONTROLS_COLUMN_ID, fixedWidth: 169 },
+  { name: CONTROLS_COLUMN_ID, fixedWidth: 168 },
 ]
 
 const tableContainerStyles = {
