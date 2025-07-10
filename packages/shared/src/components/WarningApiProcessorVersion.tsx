@@ -21,11 +21,12 @@ import { compareVersions } from 'compare-versions'
 import { Box, Typography } from '@mui/material'
 import { useVersionInfo } from '../hooks/frontend-version/useVersionInfo'
 import { useSystemInfo } from '../features/system-info'
-import {
-  usePackageVersionContent,
-} from '../../../portal/src/routes/root/usePackageVersionContent'
+
 import { ButtonWithHint } from './Buttons/ButtonWithHint'
 import { RedWarningIcon } from '../icons/WarningIcon'
+import {
+  usePackageVersionContent,
+} from '@netcracker/qubership-apihub-ui-portal/src/routes/root/usePackageVersionContent'
 
 export const WARNING_API_PROCESSOR_TOOLTIP = 'TooltipWarning'
 export const WARNING_API_PROCESSOR_TEXT = 'TextWarning'
