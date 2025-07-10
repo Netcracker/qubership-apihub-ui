@@ -1,4 +1,4 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material'
+import { Box, Button, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material'
 import type { FC } from 'react'
 import { memo, useEffect, useState } from 'react'
 import { LoadingButton } from '@mui/lab'
@@ -6,6 +6,7 @@ import { FileUploadField } from '@netcracker/qubership-apihub-ui-shared/componen
 import { validateYamlFile } from '../utils/rulesetFileUtils'
 import { useCreateRuleset } from '../hooks/api/useCreateRuleset'
 import { YAML_FILE_EXTENSION, YML_FILE_EXTENSION } from '@netcracker/qubership-apihub-ui-shared/utils/files'
+import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 
 export interface CreateRulesetDialogProps {
   open: boolean
@@ -104,23 +105,16 @@ export const CreateRulesetDialog: FC<CreateRulesetDialogProps> = memo(
     }
 
     return (
-      <Dialog
+      <DialogForm
         open={open}
         onClose={onClose}
-        aria-labelledby="create-ruleset-dialog-title"
-        maxWidth="sm"
-        fullWidth
+        onSubmit={handleSubmit}
       >
-        <DialogTitle id="create-ruleset-dialog-title">Add New Ruleset</DialogTitle>
+        <DialogTitle>Add New Ruleset</DialogTitle>
         <DialogContent>
           <Box mt={1}>
             <TextField
-              autoFocus
-              margin="normal"
-              id="ruleset-name"
               label="Ruleset Name"
-              type="text"
-              fullWidth
               required
               value={name}
               onChange={handleNameChange}
@@ -142,21 +136,24 @@ export const CreateRulesetDialog: FC<CreateRulesetDialogProps> = memo(
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose} disabled={isCreating}>
-            Cancel
-          </Button>
           <LoadingButton
-            onClick={handleSubmit}
-            loading={isCreating}
-            color="primary"
             variant="contained"
+            type="submit"
+            loading={isCreating}
             disabled={!name || !file || !!nameError || !!fileError}
-            data-testid="CreateRulesetButton"
+            data-testid="CreateButton"
           >
             Create
           </LoadingButton>
+          <Button
+            onClick={onClose}
+            disabled={isCreating}
+            data-testid="CancelButton"
+          >
+            Cancel
+          </Button>
         </DialogActions>
-      </Dialog>
+      </DialogForm>
     )
   },
 )

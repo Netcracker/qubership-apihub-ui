@@ -24,27 +24,29 @@ export const RulesetManagementTab: FC = memo(() => {
   }
 
   return (
-    <>
-      <BodyCard
-        header="OpenAPI Ruleset Management"
-        action={
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={handleOpenCreateDialog}
-            data-testid="AddRulesetButton"
-          >
-            Add Ruleset
-          </Button>
-        }
-        body={<RulesetTable rulesets={rulesets} isLoading={isLoading} />}
-      />
-      <CreateRulesetDialog
-        open={isCreateDialogOpen}
-        onClose={handleCloseCreateDialog}
-        onCreated={handleRulesetCreated}
-      />
-    </>
+    <BodyCard
+      header="OpenAPI Ruleset Management"
+      action={
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<AddIcon />}
+          onClick={handleOpenCreateDialog}
+          data-testid="AddRulesetButton"
+        >
+          Add Ruleset
+        </Button>
+      }
+      body={
+        <>
+          <RulesetTable rulesets={rulesets} isLoading={isLoading} />
+          <CreateRulesetDialog
+            open={isCreateDialogOpen}
+            onClose={handleCloseCreateDialog}
+            onCreated={handleRulesetCreated}
+          />
+        </>
+      }
+    />
   )
 })
