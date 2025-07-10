@@ -40,7 +40,7 @@ import { REVISION_DELIMITER } from '../entities/versions'
 import {
   useComparisonParams,
 } from '../../../portal/src/routes/root/PortalPage/VersionPage/useComparisonParams'
-import { WARNING_API_PROCESSOR_TEXT, WarningApiProcessorVersion } from './WarningApiProcessorVersion'
+import { WARNING_API_PROCESSOR_TEXT, WarningApiProcessorVersion } from '../../../portal/src/components/WarningApiProcessorVersion'
 
 export type CompareRevisionsDialogFormData = {
   originalRevision: Revision | null

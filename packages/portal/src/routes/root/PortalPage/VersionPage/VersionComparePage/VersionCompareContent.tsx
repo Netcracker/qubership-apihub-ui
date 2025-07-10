@@ -74,7 +74,7 @@ import { ComparisonSwapper } from '../ComparisonSwapper'
 import { useVersionsComparisonGlobalParams } from '../VersionsComparisonGlobalParams'
 import { VERSION_SWAPPER_HEIGHT } from '../shared-styles'
 import { useTagSearchFilter } from '../useTagSearchFilter'
-import { WarningApiProcessorVersion } from '@netcracker/qubership-apihub-ui-shared/components/WarningApiProcessorVersion'
+import { WarningApiProcessorVersion } from '@apihub/components/WarningApiProcessorVersion'
 
 export function isRevisionCompare(originVersion: Key, changedVersion: Key): boolean {
   const {

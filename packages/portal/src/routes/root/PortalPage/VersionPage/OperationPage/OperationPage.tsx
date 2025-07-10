@@ -63,7 +63,7 @@ import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/ap
 import { API_TYPE_GRAPHQL, API_TYPE_REST, API_TYPE_TITLE_MAP } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import {
   WarningApiProcessorVersion,
-} from '@netcracker/qubership-apihub-ui-shared/components/WarningApiProcessorVersion'
+} from '@apihub/components/WarningApiProcessorVersion'
 import { Box } from '@mui/material'
 
 // High Order Component //

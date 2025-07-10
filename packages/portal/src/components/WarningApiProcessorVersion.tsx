@@ -19,14 +19,14 @@ import { memo, useEffect, useState } from 'react'
 
 import { compareVersions } from 'compare-versions'
 import { Box, Typography } from '@mui/material'
-import { useVersionInfo } from '../hooks/frontend-version/useVersionInfo'
-import { useSystemInfo } from '../features/system-info'
+import { useVersionInfo } from '@netcracker/qubership-apihub-ui-shared/hooks/frontend-version/useVersionInfo'
+import { useSystemInfo } from '@netcracker/qubership-apihub-ui-shared/features/system-info'
 
-import { ButtonWithHint } from './Buttons/ButtonWithHint'
-import { RedWarningIcon } from '../icons/WarningIcon'
+import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
+import { RedWarningIcon } from '@netcracker/qubership-apihub-ui-shared/icons/WarningIcon'
 import {
   usePackageVersionContent,
-} from '@netcracker/qubership-apihub-ui-portal/src/routes/root/usePackageVersionContent'
+} from '@apihub/routes/root/usePackageVersionContent'
 
 export const WARNING_API_PROCESSOR_TOOLTIP = 'TooltipWarning'
 export const WARNING_API_PROCESSOR_TEXT = 'TextWarning'

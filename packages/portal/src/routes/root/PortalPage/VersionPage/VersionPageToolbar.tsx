@@ -47,7 +47,7 @@ import { VersionSelector } from '../VersionSelector'
 import { ComparisonSelectorButton } from './ComparisonSelectorButton'
 import { EditButton } from './EditButton'
 import { useDownloadVersionDocumentation } from './useDownloadVersionDocumentation'
-import { WarningApiProcessorVersion } from '@netcracker/qubership-apihub-ui-shared/components/WarningApiProcessorVersion'
+import { WarningApiProcessorVersion } from '@apihub/components/WarningApiProcessorVersion'
 
 export const VersionPageToolbar: FC = memo(() => {
   const { packageId, versionId } = useParams()

@@ -57,7 +57,7 @@ import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
 import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 import { usePagedPackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
-import { WARNING_API_PROCESSOR_TEXT, WarningApiProcessorVersion } from '@netcracker/qubership-apihub-ui-shared/components/WarningApiProcessorVersion'
+import { WARNING_API_PROCESSOR_TEXT, WarningApiProcessorVersion } from '@apihub/components/WarningApiProcessorVersion'
 
 const WORKSPACE_KEY = 'workspaceKey'
 const PACKAGE_KEY = 'packageKey'
