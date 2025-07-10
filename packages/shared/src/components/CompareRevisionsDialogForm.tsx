@@ -16,7 +16,7 @@
 
 import type { FC } from 'react'
 import * as React from 'react'
-import { memo } from 'react'
+import { memo, useState } from 'react'
 import {
   Autocomplete,
   Box,
@@ -29,7 +29,7 @@ import {
   Typography,
 } from '@mui/material'
 import type { Control, UseFormSetValue } from 'react-hook-form'
-import { Controller } from 'react-hook-form'
+import { Controller, useWatch } from 'react-hook-form'
 import { LoadingButton } from '@mui/lab'
 import { DialogForm } from './DialogForm'
 import { CustomChip } from './CustomChip'
@@ -37,6 +37,10 @@ import { Swapper } from './Swapper'
 import { LatestRevisionMark } from './LatestRevisionMark'
 import type { Revision, Revisions } from '../entities/revisions'
 import { REVISION_DELIMITER } from '../entities/versions'
+import {
+  useComparisonParams,
+} from '../../../portal/src/routes/root/PortalPage/VersionPage/useComparisonParams'
+import { WARNING_API_PROCESSOR_TEXT, WarningApiProcessorVersion } from './WarningApiProcessorVersion'
 
 export type CompareRevisionsDialogFormData = {
   originalRevision: Revision | null
@@ -72,6 +76,12 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
   changedRevisions,
   isRevisionsLoading,
 }) => {
+  const { originPackageKey } = useComparisonParams()
+  const [warningApiProcessorStatePrevious, setWarningApiProcessorStatePrevious] = useState('')
+  const [warningApiProcessorStateCurrent, setWarningApiProcessorStateCurrent] = useState('')
+  const previousRevision = useWatch({ control: control, name: 'originalRevision' })
+  const currentRevisions = useWatch({ control: control, name: 'changedRevision' })
+
   return (
     <DialogForm
       open={open}
@@ -97,7 +107,12 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
           render={({ field: { value, onChange } }) => (
             <RevisionAutocomplete
               value={value}
-              onChange={onChange}
+              onChange={(value) => {
+                if (!value) {
+                  setWarningApiProcessorStatePrevious('')
+                }
+                onChange(value)
+              }}
               controllerName="originalRevision"
               revisions={originalRevisions}
               isLoading={isRevisionsLoading}
@@ -124,7 +139,12 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
           render={({ field: { value, onChange } }) => (
             <RevisionAutocomplete
               value={value}
-              onChange={onChange}
+              onChange={(value) => {
+                if (!value) {
+                  setWarningApiProcessorStateCurrent('')
+                }
+                onChange(value)
+              }}
               controllerName="changedRevision"
               revisions={changedRevisions}
               isLoading={isRevisionsLoading}
@@ -133,12 +153,27 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
             />
           )}
         />
-
       </DialogContent>
+      <Box sx={{ maxWidth: '692px', padding: '0 24px' }}>
+        {(<WarningApiProcessorVersion
+          versionKey={previousRevision?.version}
+          packageKey={originPackageKey}
+          type={WARNING_API_PROCESSOR_TEXT}
+          hidden={!warningApiProcessorStateCurrent}
+          data-testid="WarningApiProcessorVersionPrevios"
+          onWarningTextChange={setWarningApiProcessorStatePrevious}/>)}
+        {(<WarningApiProcessorVersion
+          data-testid="WarningApiProcessorVersionCurrent"
+          versionKey={currentRevisions?.version}
+          packageKey={originPackageKey}
+          type={WARNING_API_PROCESSOR_TEXT}
+          onWarningTextChange={setWarningApiProcessorStateCurrent}/>)}
+      </Box>
       <DialogActions>
         <LoadingButton
           variant="contained"
           type="submit"
+          disabled={!!warningApiProcessorStatePrevious || !!warningApiProcessorStateCurrent}
           loading={isApiTypeFetching}
           data-testid="CompareButton"
         >

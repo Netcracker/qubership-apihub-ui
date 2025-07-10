@@ -61,7 +61,7 @@ import { SidebarPanel } from '@netcracker/qubership-apihub-ui-shared/components/
 import { OperationContent } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationContent'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { API_TYPE_GRAPHQL, API_TYPE_REST, API_TYPE_TITLE_MAP } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { WarningApiProcessorVersion } from '@apihub/components/WarningApiProcessorVersion'
+import { WarningApiProcessorVersion } from '@netcracker/qubership-apihub-ui-shared/components/WarningApiProcessorVersion'
 import { Box } from '@mui/material'
 import { usePackageVersionContent } from '@apihub/routes/root/usePackageVersionContent'
 

@@ -66,7 +66,7 @@ import { ComparisonSwapper } from '../ComparisonSwapper'
 import { useVersionsComparisonGlobalParams } from '../VersionsComparisonGlobalParams'
 import { VERSION_SWAPPER_HEIGHT } from '../shared-styles'
 import { useFilteredDashboardChanges } from './useFilteredDashboardChanges'
-import { WarningApiProcessorVersion } from '@apihub/components/WarningApiProcessorVersion'
+import { WarningApiProcessorVersion } from '@netcracker/qubership-apihub-ui-shared/components/WarningApiProcessorVersion'
 
 export const DashboardsCompareContent: FC = memo(() => {
   const location = useBackwardLocation()

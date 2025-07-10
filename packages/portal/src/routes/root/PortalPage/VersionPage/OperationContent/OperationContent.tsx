@@ -70,7 +70,7 @@ import {
 import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'
 import { RawSpecDiffView } from '@netcracker/qubership-apihub-ui-shared/components/RawSpecDiffView'
 import { removeComponents } from '@netcracker/qubership-apihub-api-processor'
-import { WarningApiProcessorVersion } from '@apihub/components/WarningApiProcessorVersion'
+import { WarningApiProcessorVersion } from '@netcracker/qubership-apihub-ui-shared/components/WarningApiProcessorVersion'
 import {
   useVersionsComparisonGlobalParams,
 } from '@apihub/routes/root/PortalPage/VersionPage/VersionsComparisonGlobalParams'

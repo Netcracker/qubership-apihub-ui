@@ -42,10 +42,8 @@ import { getSplittedVersionKey } from '../utils/versions'
 import { CustomChip } from './CustomChip'
 import { VersionTitle } from './Titles/VersionTitle'
 import { Swapper } from './Swapper'
-import {
-  WARNING_API_PROCESSOR_TEXT,
-  WarningApiProcessorVersion,
-} from '@netcracker/qubership-apihub-ui-portal/src/components/WarningApiProcessorVersion'
+import { WARNING_API_PROCESSOR_TEXT, WarningApiProcessorVersion } from './WarningApiProcessorVersion'
+
 
 //todo need retest (without nested value)
 export type CompareVersionsDialogFormData = {

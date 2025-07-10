@@ -16,13 +16,16 @@
 
 import type { FC } from 'react'
 import { memo, useEffect, useState } from 'react'
-import { RedWarningIcon } from '@netcracker/qubership-apihub-ui-shared/icons/WarningIcon'
-import { useVersionInfo } from '@netcracker/qubership-apihub-ui-shared/hooks/frontend-version/useVersionInfo'
-import { useSystemInfo } from '@netcracker/qubership-apihub-ui-shared/features/system-info'
-import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
+
 import { compareVersions } from 'compare-versions'
-import { usePackageVersionContent } from '@apihub/routes/root/usePackageVersionContent'
 import { Box, Typography } from '@mui/material'
+import { useVersionInfo } from '../hooks/frontend-version/useVersionInfo'
+import { useSystemInfo } from '../features/system-info'
+import {
+  usePackageVersionContent,
+} from '../../../portal/src/routes/root/usePackageVersionContent'
+import { ButtonWithHint } from './Buttons/ButtonWithHint'
+import { RedWarningIcon } from '../icons/WarningIcon'
 
 export const WARNING_API_PROCESSOR_TOOLTIP = 'TooltipWarning'
 export const WARNING_API_PROCESSOR_TEXT = 'TextWarning'
@@ -92,6 +95,6 @@ export const WarningApiProcessorVersion: FC<WarningApiProcessorVersionProps> = m
         <Typography marginLeft="4px" data-testid="WarningApiProcessorTypography"
                     variant="body2">{textHintState}</Typography>
       </Box>
-    : ''
+    : null
 
 })
