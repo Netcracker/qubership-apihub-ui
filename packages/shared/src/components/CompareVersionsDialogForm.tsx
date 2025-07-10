@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { FC, SyntheticEvent } from 'react'
 import * as React from 'react'
+import type { FC, SyntheticEvent} from 'react'
 import { memo, useState } from 'react'
 import {
   Autocomplete,
@@ -30,8 +30,8 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
-import type { Control, UseFormSetValue } from 'react-hook-form'
-import { Controller } from 'react-hook-form'
+import type { Control, UseFormSetValue} from 'react-hook-form'
+import { Controller, useWatch } from 'react-hook-form'
 import { LoadingButton } from '@mui/lab'
 import { DialogForm } from './DialogForm'
 import type { Package } from '../entities/packages'
@@ -42,6 +42,10 @@ import { getSplittedVersionKey } from '../utils/versions'
 import { CustomChip } from './CustomChip'
 import { VersionTitle } from './Titles/VersionTitle'
 import { Swapper } from './Swapper'
+import {
+  WARNING_API_PROCESSOR_TEXT,
+  WarningApiProcessorVersion,
+} from '@netcracker/qubership-apihub-ui-portal/src/components/WarningApiProcessorVersion'
 
 //todo need retest (without nested value)
 export type CompareVersionsDialogFormData = {
@@ -112,6 +116,12 @@ export const CompareVersionsDialogForm: FC<CompareVersionsDialogFormProps> = mem
 
   const packageFieldLabel = isDashboard ? 'Dashboard' : 'Package'
   const changeButtonLabel = isDashboard ? 'Change Dashboards' : 'Change Packages'
+  const [warningApiProcessorStatePrevious, setWarningApiProcessorStatePrevious] = useState('')
+  const [warningApiProcessorStateCurrent, setWarningApiProcessorStateCurrent] = useState('')
+  const previousVersion = useWatch({ control: control, name: 'originalVersion' })
+  const previousPackage = useWatch({ control: control, name: 'originalPackage' })
+  const currentVersion = useWatch({ control: control, name: 'changedVersion' })
+  const currentPackage = useWatch({ control: control, name: 'changedPackage' })
 
   return (
     <DialogForm
@@ -151,6 +161,7 @@ export const CompareVersionsDialogForm: FC<CompareVersionsDialogFormProps> = mem
                   onChange={(_, value) => {
                     setValue('originalPackage', null)
                     setValue('originalVersion', null)
+                    setWarningApiProcessorStatePrevious('')
                     onChange(value)
                   }}
                   data-testid="PreviousWorkspaceAutocomplete"
@@ -174,6 +185,8 @@ export const CompareVersionsDialogForm: FC<CompareVersionsDialogFormProps> = mem
                   renderInput={(params) => <TextField {...params} required label={packageFieldLabel}/>}
                   onChange={(_, value) => {
                     setValue('originalVersion', null)
+                    !packageMode && setWarningApiProcessorStateCurrent('')
+                    packageMode && setWarningApiProcessorStatePrevious('')
                     onChange(value)
                   }}
                   data-testid="PreviousPackageAutocomplete"
@@ -215,7 +228,12 @@ export const CompareVersionsDialogForm: FC<CompareVersionsDialogFormProps> = mem
                   )
                 }}
                 renderInput={(params) => <TextField {...params} required label="Version"/>}
-                onChange={(_, value) => onChange(value)}
+                onChange={(_, value) => {
+                  if (!value) {
+                    setWarningApiProcessorStatePrevious('')
+                  }
+                  onChange(value)
+                }}
                 data-testid="PreviousVersionAutocomplete"
               />
             )
@@ -251,6 +269,7 @@ export const CompareVersionsDialogForm: FC<CompareVersionsDialogFormProps> = mem
                   renderInput={(params) => <TextField {...params} required label="Workspace"/>}
                   onChange={(_, value) => {
                     setValue('changedPackage', null)
+                    setWarningApiProcessorStateCurrent('')
                     setValue('changedVersion', null)
                     onChange(value)
                   }}
@@ -274,6 +293,8 @@ export const CompareVersionsDialogForm: FC<CompareVersionsDialogFormProps> = mem
                   renderOption={(props, { key, name }) => <ListItem {...props} key={key}>{name}</ListItem>}
                   renderInput={(params) => <TextField {...params} required label={packageFieldLabel}/>}
                   onChange={(_, value) => {
+                    packageMode && setWarningApiProcessorStateCurrent('')
+                    !packageMode && setWarningApiProcessorStatePrevious('')
                     setValue('changedVersion', null)
                     onChange(value)
                   }}
@@ -316,18 +337,41 @@ export const CompareVersionsDialogForm: FC<CompareVersionsDialogFormProps> = mem
                   )
                 }}
                 renderInput={(params) => <TextField {...params} required label="Version"/>}
-                onChange={(_, value) => onChange(value)}
+                onChange={(_, value) => {
+                  if (!value) {
+                    setWarningApiProcessorStateCurrent('')
+                  }
+
+                  onChange(value)
+                }}
                 data-testid="CurrentVersionAutocomplete"
               />
             )
           }}
         />
       </DialogContent>
+      <Box sx={{ maxWidth: '692px', padding: '0 24px' }}>
+        {(<WarningApiProcessorVersion
+          versionKey={previousVersion?.key}
+          packageKey={previousPackage?.key}
+          type={WARNING_API_PROCESSOR_TEXT}
+          hidden={!warningApiProcessorStateCurrent}
+          data-testid="WarningApiProcessorVersionPrevios"
+          onWarningTextChange={setWarningApiProcessorStatePrevious}/>)}
+        {(<WarningApiProcessorVersion
+          data-testid="WarningApiProcessorVersionCurrent"
+          versionKey={currentVersion?.key}
+          packageKey={packageMode ? currentPackage?.key : previousPackage?.key}
+          type={WARNING_API_PROCESSOR_TEXT}
+          onWarningTextChange={setWarningApiProcessorStateCurrent}/>)}
+      </Box>
       <DialogActions>
+
         <LoadingButton
           variant="contained"
           type="submit"
           loading={isApiTypeFetching}
+          disabled={!!warningApiProcessorStateCurrent || !!warningApiProcessorStatePrevious}
           data-testid="CompareButton"
         >
           Compare

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { FC} from 'react'
+import type { FC } from 'react'
 import { memo, useEffect, useState } from 'react'
 import { RedWarningIcon } from '@netcracker/qubership-apihub-ui-shared/icons/WarningIcon'
 import { useVersionInfo } from '@netcracker/qubership-apihub-ui-shared/hooks/frontend-version/useVersionInfo'
@@ -22,15 +22,27 @@ import { useSystemInfo } from '@netcracker/qubership-apihub-ui-shared/features/s
 import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
 import { compareVersions } from 'compare-versions'
 import { usePackageVersionContent } from '@apihub/routes/root/usePackageVersionContent'
+import { Box, Typography } from '@mui/material'
 
+export const WARNING_API_PROCESSOR_TOOLTIP = 'TooltipWarning'
+export const WARNING_API_PROCESSOR_TEXT = 'TextWarning'
+
+export type WARNING_API_PROCESSOR_TOOLTIP_TYPE = 'TooltipWarning'
+export type WARNING_API_PROCESSOR_TEXT_TYPE = 'TextWarning'
 export type WarningApiProcessorVersionProps = {
   packageKey?: string | undefined
   versionKey?: string | undefined
+  type?: WARNING_API_PROCESSOR_TOOLTIP_TYPE | WARNING_API_PROCESSOR_TEXT_TYPE
+  onWarningTextChange?: (text: string) => void
+  hidden?: boolean
 }
 
 export const WarningApiProcessorVersion: FC<WarningApiProcessorVersionProps> = memo<WarningApiProcessorVersionProps>(({
   versionKey,
   packageKey,
+  type = WARNING_API_PROCESSOR_TOOLTIP,
+  onWarningTextChange,
+  hidden = true,
 }) => {
   const { apiProcessorVersion: apiProcessorVersionApp } = useVersionInfo()
   const { migrationInProgress } = useSystemInfo()
@@ -53,18 +65,33 @@ export const WarningApiProcessorVersion: FC<WarningApiProcessorVersionProps> = m
 
   useEffect(() => {
     createTextHint()
+    return () => {
+      setTextHintState('')
+    }
   }, [apiProcessorVersion, apiProcessorVersionApp])
 
-  return apiProcessorVersion && apiProcessorVersion !== apiProcessorVersionApp && !migrationInProgress
-    ? <ButtonWithHint
-      hint={textHintState}
-      color="inherit"
-      size="small"
-      disabled={true}
-      tooltipMaxWidth={668}
-      startIcon={<RedWarningIcon/>}
-      data-testid="WarningApiProcessorVersion"
-    />
+  useEffect(() => {
+    if (textHintState && onWarningTextChange) {
+      onWarningTextChange(textHintState)
+    }
+  }, [textHintState, onWarningTextChange])
+
+  return hidden && apiProcessorVersion && apiProcessorVersion !== apiProcessorVersionApp && !migrationInProgress
+    ? type === WARNING_API_PROCESSOR_TOOLTIP
+      ? <ButtonWithHint
+        hint={textHintState}
+        color="inherit"
+        size="small"
+        disabled={true}
+        tooltipMaxWidth={668}
+        startIcon={<RedWarningIcon/>}
+        data-testid="WarningApiProcessorVersion"
+      />
+      : <Box display="flex">
+        <RedWarningIcon/>
+        <Typography marginLeft="4px" data-testid="WarningApiProcessorTypography"
+                    variant="body2">{textHintState}</Typography>
+      </Box>
     : ''
 
 })
