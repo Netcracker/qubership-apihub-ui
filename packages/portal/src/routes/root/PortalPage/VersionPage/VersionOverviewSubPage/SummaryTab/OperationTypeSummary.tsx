@@ -29,12 +29,18 @@ import {
   DEFAULT_CHANGE_SEVERITY_MAP,
 } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
 import type { NumberOfImpactedOperations } from '@netcracker/qubership-apihub-ui-shared/entities/version-contents'
-import { DefaultWarningIcon } from '@netcracker/qubership-apihub-ui-shared/icons/WarningIcon'
+import { DefaultWarningIcon, RedWarningIcon } from '@netcracker/qubership-apihub-ui-shared/icons/WarningIcon'
 import type { FC } from 'react'
 import { Fragment, memo, useMemo } from 'react'
-import { useApiQualityLinterEnabled, useApiQualitySummarySectionProperties, useApiQualityValidationSummary } from '../../ApiQualityValidationSummaryProvider'
+import {
+  useApiQualityLinterEnabled,
+  useApiQualitySummarySectionProperties,
+  useApiQualityValidationFailed,
+  useApiQualityValidationSummary,
+} from '../../ApiQualityValidationSummaryProvider'
+import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoContextIcon'
 
-export type OperationTypeChangesProps = Readonly<{
+export type OperationTypeSummaryProps = Readonly<{
   apiType: ApiType
   operationsCount: number
   deprecatedOperationsCount: number
@@ -46,7 +52,7 @@ export type OperationTypeChangesProps = Readonly<{
   apiAudienceTransitions: ApiAudienceTransition[]
 }>
 
-export const OperationTypeChanges: FC<OperationTypeChangesProps> = memo<OperationTypeChangesProps>(({
+export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<OperationTypeSummaryProps>(({
   apiType,
   changesSummary,
   numberOfImpactedOperations,
@@ -59,9 +65,10 @@ export const OperationTypeChanges: FC<OperationTypeChangesProps> = memo<Operatio
 }) => {
 
   const linterEnabled = useApiQualityLinterEnabled(apiType)
+  const validationFailed = useApiQualityValidationFailed()
   const [apiQualitySummaryPlaceholder, apiQualitySummaryDisabled] = useApiQualitySummarySectionProperties()
   const showApiQualityPlaceholder = apiQualitySummaryPlaceholder && apiQualitySummaryDisabled
-  const showApiQualitySummary = !apiQualitySummaryPlaceholder && !apiQualitySummaryDisabled
+  const showApiQualitySummary = validationFailed || (!apiQualitySummaryPlaceholder && !apiQualitySummaryDisabled)
   const validationSummary = useApiQualityValidationSummary()
   const { showRulesetInfoDialog } = useEventBus()
   const validationRuleset = validationSummary?.[0]?.ruleset
@@ -79,6 +86,7 @@ export const OperationTypeChanges: FC<OperationTypeChangesProps> = memo<Operatio
       return aggregated
     }, emptyValidationSummary)
   }, [validationSummary])
+  const documentsWithFailedValidation = ['document 1', 'Document 2', 'doCuMeNt 3']
 
   const changeCounter = useMemo(() => changesSummary ?? DEFAULT_CHANGE_SEVERITY_MAP, [changesSummary])
   const affectedOperationCounter = useMemo(() => numberOfImpactedOperations ?? DEFAULT_CHANGE_SEVERITY_MAP, [numberOfImpactedOperations])
@@ -223,6 +231,9 @@ export const OperationTypeChanges: FC<OperationTypeChangesProps> = memo<Operatio
                   showApiQualitySummary
                     ? '\'qualityIssuesNumberTitle qualityIssuesNumber\''
                     : undefined,
+                  showApiQualitySummary && validationFailed
+                    ? '\'failedDocumentsNumberTitle failedDocumentsNumber\''
+                    : undefined,
                 ].filter(Boolean).join('\n'),
           }}
         >
@@ -279,9 +290,18 @@ export const OperationTypeChanges: FC<OperationTypeChangesProps> = memo<Operatio
           {/* Sub-section "Quality Validation" */}
           {linterEnabled && (
             <>
-              <Typography sx={{ gridArea: 'linterValidationTitle', fontWeight: 500 }} variant="body2">
-                Quality Validation
-              </Typography>
+              <Box display="flex" alignItems="center" gap={1} gridArea="linterValidationTitle">
+                <Typography sx={{ fontWeight: 500 }} variant="body2">
+                  Quality Validation
+                </Typography>
+                {validationFailed && (
+                  <Tooltip title="Validation failed" placement="right">
+                    <Box data-testid="ValidationFailedAlert">
+                      <RedWarningIcon />
+                    </Box>
+                  </Tooltip>
+                )}
+              </Box>
 
               <Box sx={{ gridArea: 'empty3' }} />
 
@@ -325,6 +345,24 @@ export const OperationTypeChanges: FC<OperationTypeChangesProps> = memo<Operatio
                         </Typography>
                       </Fragment>
                     ))}
+                  </Box>
+                </>}
+
+                {documentsWithFailedValidation.length > 0 && <>
+                  <Typography sx={{ gridArea: 'failedDocumentsNumberTitle' }} variant="subtitle2">
+                    Number of failed documents
+                  </Typography>
+                  <Box display="flex" alignItems="center" gap={1} gridArea="failedDocumentsNumber">
+                    <Typography variant="body2">
+                      {documentsWithFailedValidation.length}
+                    </Typography>
+                    <Tooltip
+                      disableHoverListener={false}
+                      title={<Box>List of docs here</Box>}
+                      placement="right"
+                    >
+                      <InfoContextIcon sx={{ fontSize: 16 }} />
+                    </Tooltip>
                   </Box>
                 </>}
               </>}

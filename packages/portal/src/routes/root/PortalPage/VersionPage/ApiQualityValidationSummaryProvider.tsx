@@ -1,9 +1,9 @@
+import { type ValidationSummary } from '@apihub/entities/api-quality/package-version-validation-summary'
+import { ValidationStatuses, type ValidationStatus } from '@apihub/entities/api-quality/validation-statuses'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { API_TYPE_GRAPHQL } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { FC, PropsWithChildren, ReactNode } from 'react'
-import { createContext, useContext } from 'react'
-import { type ValidationSummary } from '@apihub/entities/api-quality/package-version-validation-summary'
-import { ValidationStatuses, type ValidationStatus } from '@apihub/entities/api-quality/validation-statuses'
+import { createContext, useContext, useMemo } from 'react'
 
 // Raw contexts
 
@@ -31,24 +31,27 @@ export function useApiQualityLinterEnabled(apiType: ApiType): boolean {
 
 export function useApiQualityValidationStatus(): ValidationStatus | undefined {
   const summary = useApiQualityValidationSummary()
-  if (!summary) {
-    return undefined
-  }
-  let finalValidationStatus: ValidationStatus | undefined
-  for (const { status } of summary) {
-    if (finalValidationStatus === undefined) {
-      finalValidationStatus = status
-    } else {
-      const comparisonResult = compareValidationStatuses(status, finalValidationStatus)
-      if (comparisonResult > 0) {
+  return useMemo(() => {
+    if (!summary) {
+      return undefined
+    }
+    let finalValidationStatus: ValidationStatus | undefined
+    for (const { status } of summary) {
+      if (finalValidationStatus === undefined) {
         finalValidationStatus = status
+      } else {
+        const comparisonResult = compareValidationStatuses(status, finalValidationStatus)
+        if (comparisonResult > 0) {
+          finalValidationStatus = status
+        }
       }
     }
-  }
-  return finalValidationStatus
+    return finalValidationStatus
+  }, [summary])
 }
 
 const VALIDATION_STATUS_PRIORITY: Record<ValidationStatus, number> = {
+  [ValidationStatuses.FAILED]: 3,
   [ValidationStatuses.IN_PROGRESS]: 2,
   [ValidationStatuses.NOT_VALIDATED]: 1,
   [ValidationStatuses.SUCCESS]: 0,
@@ -75,6 +78,7 @@ export function useApiQualityTabVisibilityParams(): ApiQualityTabVisibilityParam
     case ValidationStatuses.SUCCESS:
       return [undefined, false]
   }
+  return [undefined, false]
 }
 
 type ApiQualitySummaryPlaceholder = string | ReactNode | undefined
@@ -83,9 +87,6 @@ type ApiQualitySummarySectionProperties = [ApiQualitySummaryPlaceholder, ApiQual
 
 export function useApiQualitySummarySectionProperties(): ApiQualitySummarySectionProperties {
   const status = useApiQualityValidationStatus()
-  if (!status) {
-    return [undefined, true]
-  }
   switch (status) {
     case ValidationStatuses.IN_PROGRESS:
       return ['Validation is in progress, please wait...', true]
@@ -94,6 +95,12 @@ export function useApiQualitySummarySectionProperties(): ApiQualitySummarySectio
     case ValidationStatuses.SUCCESS:
       return [undefined, false]
   }
+  return [undefined, true]
+}
+
+export function useApiQualityValidationFailed(): boolean {
+  const status = useApiQualityValidationStatus()
+  return status === ValidationStatuses.FAILED
 }
 
 // Public provider
