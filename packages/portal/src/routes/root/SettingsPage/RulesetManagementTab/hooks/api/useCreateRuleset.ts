@@ -15,11 +15,12 @@ export const useCreateRuleset = (): [
   (request: CreateRulesetRequest) => void,
   IsLoading,
   IsSuccess,
+  () => void,
 ] => {
   const queryClient = useQueryClient()
   const showNotification = useShowSuccessNotification()
 
-  const { mutate, isLoading, isSuccess } = useMutation<RulesetDto, Error, CreateRulesetRequest>({
+  const { mutate, isLoading, isSuccess, reset } = useMutation<RulesetDto, Error, CreateRulesetRequest>({
     mutationFn: ({ name, file }) => createRuleset(name, file),
     onSuccess: async (data) => {
       showNotification({ message: `${data.name} ruleset has been created` })
@@ -27,7 +28,7 @@ export const useCreateRuleset = (): [
     },
   })
 
-  return [mutate, isLoading, isSuccess]
+  return [mutate, isLoading, isSuccess, reset]
 }
 
 async function createRuleset(name: string, file: File): Promise<RulesetDto> {

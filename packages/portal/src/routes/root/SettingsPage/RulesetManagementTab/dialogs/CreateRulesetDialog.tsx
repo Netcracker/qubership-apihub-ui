@@ -21,7 +21,7 @@ export interface CreateRulesetDialogProps {
 
 export const CreateRulesetDialog: FC<CreateRulesetDialogProps> = memo(
   ({ open, onClose }) => {
-    const [createRuleset, isCreating, isCreated] = useCreateRuleset()
+    const [createRuleset, isCreating, isCreated, resetMutation] = useCreateRuleset()
 
     const { control, handleSubmit, formState, reset, setValue } = useForm<CreateRulesetFormData>({
       defaultValues: {
@@ -42,8 +42,9 @@ export const CreateRulesetDialog: FC<CreateRulesetDialogProps> = memo(
           name: '',
           file: null,
         })
+        resetMutation()
       }
-    }, [open, reset])
+    }, [open, reset, resetMutation])
 
     // Handle successful creation
     useEffect(() => {
