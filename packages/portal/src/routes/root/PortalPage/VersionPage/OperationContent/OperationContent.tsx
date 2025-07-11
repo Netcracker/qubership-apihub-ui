@@ -23,7 +23,6 @@ import { DEFAULT_DISPLAY_MODE, isComparisonMode } from './OperationView/Operatio
 import { useOperationViewMode } from '../useOperationViewMode'
 import { useSetChangesLoadingStatus } from '../ChangesLoadingStatusProvider'
 import { useBreadcrumbsData } from '../ComparedPackagesBreadcrumbsProvider'
-import { useParams } from 'react-router-dom'
 import { OperationWithPlayground } from './OperationWithPlayground'
 import { useSelectOperationTags } from './useSelectOperationTags'
 import { useFileViewMode } from '../useFileViewMode'
@@ -66,14 +65,14 @@ import { normalizeOpenApiDocument } from '@netcracker/qubership-apihub-ui-shared
 import {
   useApiDiffResult,
   useIsApiDiffResultLoading, useSetApiDiffResult,
-} from '@apihub/routes/root/ApiDiffResultProvider'
+} from '../../../ApiDiffResultProvider'
 import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'
 import { RawSpecDiffView } from '@netcracker/qubership-apihub-ui-shared/components/RawSpecDiffView'
 import { removeComponents } from '@netcracker/qubership-apihub-api-processor'
-import { WarningApiProcessorVersion } from '@netcracker/qubership-apihub-ui-shared/components/WarningApiProcessorVersion'
 import {
-  useVersionsComparisonGlobalParams,
-} from '@apihub/routes/root/PortalPage/VersionPage/VersionsComparisonGlobalParams'
+  WarningApiProcessorVersion,
+} from '@netcracker/qubership-apihub-ui-shared/components/WarningApiProcessorVersion'
+import { useVersionsComparisonGlobalParams } from '../../..//PortalPage/VersionPage/VersionsComparisonGlobalParams'
 
 export type OperationContentProps = {
   changedOperation?: OperationData
