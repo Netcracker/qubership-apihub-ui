@@ -60,9 +60,9 @@ export const WarningApiProcessorVersion: FC<WarningApiProcessorVersionProps> = m
     if (apiProcessorVersion && apiProcessorVersionApp) {
       const calculateMatchVersion: number = compareVersions(apiProcessorVersion, apiProcessorVersionApp)
       if (calculateMatchVersion > 0) {
-        setTextHintState(`The data in the version ${apiProcessorVersion} may be incorrect, please contact the system administrators`)
+        setTextHintState(`The data in the version '${versionKey}' may be incorrect, please contact the system administrators`)
       } else if (calculateMatchVersion < 0) {
-        setTextHintState(`The data in the version ${apiProcessorVersion} may be incorrect, as the data has not been processed according to the latest system rules. Please republish the version and if this does not help, contact the system administrators.`)
+        setTextHintState(`The data in the version '${versionKey}' may be incorrect, as the data has not been processed according to the latest system rules. Please republish the version and if this does not help, contact the system administrators.`)
       }
     }
   }
