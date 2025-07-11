@@ -25,6 +25,7 @@ export const RulesetManagementTab: FC = memo(() => {
           startIcon={<AddIcon />}
           onClick={handleOpenCreateDialog}
           data-testid="AddRulesetButton"
+          aria-label="Add new ruleset"
         >
           Add Ruleset
         </Button>
@@ -38,3 +39,5 @@ export const RulesetManagementTab: FC = memo(() => {
     />
   )
 })
+
+RulesetManagementTab.displayName = 'RulesetManagementTab'
