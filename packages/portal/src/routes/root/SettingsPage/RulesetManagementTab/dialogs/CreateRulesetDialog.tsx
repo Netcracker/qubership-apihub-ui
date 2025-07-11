@@ -1,4 +1,4 @@
-import { Box, Button, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material'
+import { Button, DialogActions, DialogContent, DialogTitle, TextField, Typography } from '@mui/material'
 import type { FC } from 'react'
 import { memo, useEffect, useState } from 'react'
 import { LoadingButton } from '@mui/lab'
@@ -112,28 +112,30 @@ export const CreateRulesetDialog: FC<CreateRulesetDialogProps> = memo(
       >
         <DialogTitle>Add New Ruleset</DialogTitle>
         <DialogContent>
-          <Box mt={1}>
-            <TextField
-              label="Ruleset Name"
-              required
-              value={name}
-              onChange={handleNameChange}
-              error={!!nameError}
-              helperText={nameError}
-              disabled={isCreating}
-              data-testid="RulesetNameInput"
-            />
-          </Box>
-
-          <Box mt={2} mb={1}>
-            <FileUploadField
-              uploadedFile={file || undefined}
-              setUploadedFile={handleFileChange}
-              downloadAvailable={false}
-              acceptableExtensions={[YAML_FILE_EXTENSION, YML_FILE_EXTENSION]}
-              errorMessage={fileError || undefined}
-            />
-          </Box>
+          <Typography variant="button">
+            Main info
+          </Typography>
+          <TextField
+            label="Ruleset Name"
+            required
+            value={name}
+            onChange={handleNameChange}
+            error={!!nameError}
+            helperText={nameError}
+            disabled={isCreating}
+            data-testid="RulesetNameInput"
+            sx={{ mt: 0 }}
+          />
+          <Typography variant="button">
+            Ruleset
+          </Typography>
+          <FileUploadField
+            uploadedFile={file || undefined}
+            setUploadedFile={handleFileChange}
+            downloadAvailable={false}
+            acceptableExtensions={[YAML_FILE_EXTENSION, YML_FILE_EXTENSION]}
+            errorMessage={fileError || undefined}
+          />
         </DialogContent>
         <DialogActions>
           <LoadingButton
@@ -146,6 +148,7 @@ export const CreateRulesetDialog: FC<CreateRulesetDialogProps> = memo(
             Create
           </LoadingButton>
           <Button
+            variant="outlined"
             onClick={onClose}
             disabled={isCreating}
             data-testid="CancelButton"
