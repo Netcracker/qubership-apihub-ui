@@ -19,10 +19,6 @@ export const RulesetManagementTab: FC = memo(() => {
     setIsCreateDialogOpen(false)
   }
 
-  const handleRulesetCreated = (): void => {
-    setIsCreateDialogOpen(false)
-  }
-
   return (
     <BodyCard
       header="OpenAPI Ruleset Management"
@@ -43,7 +39,6 @@ export const RulesetManagementTab: FC = memo(() => {
           <CreateRulesetDialog
             open={isCreateDialogOpen}
             onClose={handleCloseCreateDialog}
-            onCreated={handleRulesetCreated}
           />
         </>
       }

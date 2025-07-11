@@ -11,11 +11,10 @@ import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/Di
 export interface CreateRulesetDialogProps {
   open: boolean
   onClose: () => void
-  onCreated: () => void
 }
 
 export const CreateRulesetDialog: FC<CreateRulesetDialogProps> = memo(
-  ({ open, onClose, onCreated }) => {
+  ({ open, onClose }) => {
     const [createRuleset, isCreating, isCreated] = useCreateRuleset()
 
     const [name, setName] = useState('')
@@ -36,10 +35,9 @@ export const CreateRulesetDialog: FC<CreateRulesetDialogProps> = memo(
     // Handle successful creation
     useEffect(() => {
       if (isCreated) {
-        onCreated()
         onClose()
       }
-    }, [isCreated, onCreated, onClose])
+    }, [isCreated, onClose])
 
     const validateName = (): boolean => {
       if (!name.trim()) {
