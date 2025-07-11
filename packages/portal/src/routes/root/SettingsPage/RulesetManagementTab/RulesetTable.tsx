@@ -16,7 +16,8 @@ import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/
 import { createComponents } from '@netcracker/qubership-apihub-ui-shared/utils/components'
 import { DEFAULT_NUMBER_SKELETON_ROWS } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
 import { useResizeObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useResizeObserver'
-import type { Ruleset } from '@apihub/entities/api-quality-ruleset'
+import type { Ruleset} from '@apihub/entities/api-quality-ruleset'
+import { RulesetStatuses } from '@apihub/entities/api-quality-ruleset'
 import { FormattedDate } from '@netcracker/qubership-apihub-ui-shared/components/FormattedDate'
 import { RulesetActions } from '@apihub/routes/root/SettingsPage/RulesetManagementTab/RulesetActions'
 import { TableCellSkeleton } from '@netcracker/qubership-apihub-ui-shared/components/TableCellSkeleton'
@@ -94,7 +95,7 @@ export const RulesetTable: FC<RulesetTableProps> = memo<RulesetTableProps>(({
           <Chip
             label={capitalize(status)}
             size="small"
-            color={status === 'active' ? 'release' : 'default'}
+            color={status === RulesetStatuses.ACTIVE ? 'release' : 'default'}
             sx={{ fontWeight: 500 }}
           />
         ),
