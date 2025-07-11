@@ -1,12 +1,18 @@
 import { Button, DialogActions, DialogContent, DialogTitle, TextField, Typography } from '@mui/material'
 import type { FC } from 'react'
-import { memo, useEffect, useState } from 'react'
+import { memo, useEffect } from 'react'
 import { LoadingButton } from '@mui/lab'
+import { Controller, useForm, useWatch } from 'react-hook-form'
 import { FileUploadField } from '@netcracker/qubership-apihub-ui-shared/components/FileUploadField'
-import { validateYamlFile } from '../utils/rulesetFileUtils'
 import { useCreateRuleset } from '../hooks/api/useCreateRuleset'
 import { YAML_FILE_EXTENSION, YML_FILE_EXTENSION } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
+import { checkFileType } from '@netcracker/qubership-apihub-ui-shared/utils/validations'
+
+export type CreateRulesetFormData = {
+  name: string
+  file: File | null
+}
 
 export interface CreateRulesetDialogProps {
   open: boolean
@@ -17,20 +23,27 @@ export const CreateRulesetDialog: FC<CreateRulesetDialogProps> = memo(
   ({ open, onClose }) => {
     const [createRuleset, isCreating, isCreated] = useCreateRuleset()
 
-    const [name, setName] = useState('')
-    const [file, setFile] = useState<File | null>(null)
-    const [nameError, setNameError] = useState<string | null>(null)
-    const [fileError, setFileError] = useState<string | null>(null)
+    const { control, handleSubmit, formState, reset, setValue } = useForm<CreateRulesetFormData>({
+      defaultValues: {
+        name: '',
+        file: null,
+      },
+    })
+
+    const { errors } = formState
+
+    const name = useWatch({ control: control, name: 'name' })
+    const file = useWatch({ control: control, name: 'file' })
 
     // Reset form on open
     useEffect(() => {
       if (open) {
-        setName('')
-        setFile(null)
-        setNameError(null)
-        setFileError(null)
+        reset({
+          name: '',
+          file: null,
+        })
       }
-    }, [open])
+    }, [open, reset])
 
     // Handle successful creation
     useEffect(() => {
@@ -39,100 +52,61 @@ export const CreateRulesetDialog: FC<CreateRulesetDialogProps> = memo(
       }
     }, [isCreated, onClose])
 
-    const validateName = (): boolean => {
-      if (!name.trim()) {
-        setNameError('Ruleset name is required')
-        return false
-      }
-
-      if (name.length > 100) {
-        setNameError('Ruleset name must be 100 characters or less')
-        return false
-      }
-
-      setNameError(null)
-      return true
-    }
-
-    const validateFile = (): boolean => {
-      if (!file) {
-        setFileError('Please select a file')
-        return false
-      }
-
-      const validationResult = validateYamlFile(file)
-      if (!validationResult.isValid) {
-        setFileError(validationResult.errorMessage || 'Invalid file')
-        return false
-      }
-
-      setFileError(null)
-      return true
-    }
-
-    const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-      setName(event.target.value)
-      if (nameError) validateName()
-    }
-
-    const handleFileChange = (selectedFile: File | undefined): void => {
-      setFile(selectedFile || null)
-
-      if (selectedFile) {
-        // Validate immediately after selection
-        const validationResult = validateYamlFile(selectedFile)
-        if (!validationResult.isValid) {
-          setFileError(validationResult.errorMessage || 'Invalid file')
-        } else {
-          setFileError(null)
-        }
-      } else {
-        setFileError(null)
-      }
-    }
-
-    const handleSubmit = async (): Promise<void> => {
-      const isNameValid = validateName()
-      const isFileValid = validateFile()
-
-      if (!isNameValid || !isFileValid || !file) {
-        return
-      }
-
-      createRuleset({ name, file })
+    const onSubmit = (data: CreateRulesetFormData): void => {
+      createRuleset({ name: data.name, file: data.file! })
     }
 
     return (
       <DialogForm
         open={open}
         onClose={onClose}
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmit(onSubmit)}
       >
         <DialogTitle>Add New Ruleset</DialogTitle>
         <DialogContent>
           <Typography variant="button">
             Main info
           </Typography>
-          <TextField
-            label="Ruleset Name"
-            required
-            value={name}
-            onChange={handleNameChange}
-            error={!!nameError}
-            helperText={nameError}
-            disabled={isCreating}
-            data-testid="RulesetNameInput"
-            sx={{ mt: 0 }}
+          <Controller
+            name="name"
+            control={control}
+            rules={{
+              required: 'Ruleset name is required',
+            }}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Ruleset Name"
+                required
+                disabled={isCreating}
+                error={!!errors.name}
+                helperText={errors.name?.message}
+                data-testid="RulesetNameInput"
+                sx={{ mt: 0 }}
+              />
+            )}
           />
           <Typography variant="button">
             Ruleset
           </Typography>
-          <FileUploadField
-            uploadedFile={file || undefined}
-            setUploadedFile={handleFileChange}
-            downloadAvailable={false}
-            acceptableExtensions={[YAML_FILE_EXTENSION, YML_FILE_EXTENSION]}
-            errorMessage={fileError || undefined}
+          <Controller
+            name="file"
+            control={control}
+            rules={{
+              required: 'Please upload a file',
+              validate: {
+                checkFileType: (file) => checkFileType(file!, [YAML_FILE_EXTENSION, YML_FILE_EXTENSION]),
+              },
+            }}
+            render={({ field: { value, onChange } }) => (
+              <FileUploadField
+                uploadedFile={value || undefined}
+                setUploadedFile={(selectedFile) => onChange(selectedFile || null)}
+                downloadAvailable={false}
+                acceptableExtensions={[YAML_FILE_EXTENSION, YML_FILE_EXTENSION]}
+                errorMessage={errors.file?.message}
+              />
+            )}
           />
         </DialogContent>
         <DialogActions>
@@ -140,7 +114,7 @@ export const CreateRulesetDialog: FC<CreateRulesetDialogProps> = memo(
             variant="contained"
             type="submit"
             loading={isCreating}
-            disabled={!name || !file || !!nameError || !!fileError}
+            disabled={!name || !file || isCreating}
             data-testid="CreateButton"
           >
             Create
