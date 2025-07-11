@@ -16,15 +16,13 @@
 
 import type { FC } from 'react'
 import { memo, useEffect, useState } from 'react'
-
+import { useVersionInfo } from '../hooks/frontend-version/useVersionInfo'
+import { useSystemInfo } from '../features/system-info'
+import { useApiProcessorVersion } from '../hooks/package-version-content/usePackageVersionContent'
 import { compareVersions } from 'compare-versions'
+import { ButtonWithHint } from './Buttons/ButtonWithHint'
+import { RedWarningIcon } from '../icons/WarningIcon'
 import { Box, Typography } from '@mui/material'
-import { useVersionInfo } from '@netcracker/qubership-apihub-ui-shared/hooks/frontend-version/useVersionInfo'
-import { useSystemInfo } from '@netcracker/qubership-apihub-ui-shared/features/system-info'
-
-import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
-import { RedWarningIcon } from '@netcracker/qubership-apihub-ui-shared/icons/WarningIcon'
-import { usePackageVersionContent } from '../routes/root/usePackageVersionContent'
 
 export const WARNING_API_PROCESSOR_TOOLTIP = 'TooltipWarning'
 export const WARNING_API_PROCESSOR_TEXT = 'TextWarning'
@@ -48,13 +46,17 @@ export const WarningApiProcessorVersion: FC<WarningApiProcessorVersionProps> = m
 }) => {
   const { apiProcessorVersion: apiProcessorVersionApp } = useVersionInfo()
   const { migrationInProgress } = useSystemInfo()
-  const { versionContent } = usePackageVersionContent({
+  const apiProcessorVersion = useApiProcessorVersion({
     versionKey: versionKey,
     packageKey: packageKey,
   })
-  const { apiProcessorVersion } = versionContent ?? {}
+
   const [textHintState, setTextHintState] = useState('')
   const createTextHint = (): void => {
+    if (migrationInProgress) {
+      setTextHintState('')
+      return
+    }
     if (apiProcessorVersion && apiProcessorVersionApp) {
       const calculateMatchVersion: number = compareVersions(apiProcessorVersion, apiProcessorVersionApp)
       if (calculateMatchVersion > 0) {

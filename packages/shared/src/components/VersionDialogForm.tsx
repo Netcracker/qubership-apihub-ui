@@ -67,7 +67,7 @@ import { InfoContextIcon } from '../icons/InfoContextIcon'
 import { CSV_FILE_EXTENSION } from '../utils/files'
 import { FileUploadField } from './FileUploadField'
 import type { AutocompleteInputChangeReason } from '@mui/base/AutocompleteUnstyled/useAutocomplete'
-import { WARNING_API_PROCESSOR_TEXT, WarningApiProcessorVersion } from '../../../portal/src/components/WarningApiProcessorVersion'
+import { WARNING_API_PROCESSOR_TEXT, WarningApiProcessorVersion } from './WarningApiProcessorVersion'
 
 
 export type VersionFormData = {

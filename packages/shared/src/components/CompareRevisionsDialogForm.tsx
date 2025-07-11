@@ -37,10 +37,9 @@ import { Swapper } from './Swapper'
 import { LatestRevisionMark } from './LatestRevisionMark'
 import type { Revision, Revisions } from '../entities/revisions'
 import { REVISION_DELIMITER } from '../entities/versions'
-import {
-  useComparisonParams,
-} from '../../../portal/src/routes/root/PortalPage/VersionPage/useComparisonParams'
-import { WARNING_API_PROCESSOR_TEXT, WarningApiProcessorVersion } from '../../../portal/src/components/WarningApiProcessorVersion'
+import { WARNING_API_PROCESSOR_TEXT, WarningApiProcessorVersion } from './WarningApiProcessorVersion'
+import { useParams } from 'react-router-dom'
+import { usePackageSearchParam } from '../hooks/routes/package/usePackageSearchParam'
 
 export type CompareRevisionsDialogFormData = {
   originalRevision: Revision | null
@@ -76,7 +75,9 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
   changedRevisions,
   isRevisionsLoading,
 }) => {
-  const { originPackageKey } = useComparisonParams()
+  const { packageId: changedPackageKey } = useParams()
+  const [packageSearchParam] = usePackageSearchParam()
+  const originPackageKey = packageSearchParam ?? changedPackageKey
   const [warningApiProcessorStatePrevious, setWarningApiProcessorStatePrevious] = useState('')
   const [warningApiProcessorStateCurrent, setWarningApiProcessorStateCurrent] = useState('')
   const previousRevision = useWatch({ control: control, name: 'originalRevision' })
