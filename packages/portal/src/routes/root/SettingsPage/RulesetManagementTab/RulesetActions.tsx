@@ -5,7 +5,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import { useActivateRuleset } from './hooks/api/useActivateRuleset'
 import { ConfirmationDialog } from '@netcracker/qubership-apihub-ui-shared/components/ConfirmationDialog'
-import type { RulesetDto } from '@apihub/entities/api-quality-ruleset'
+import type { RulesetDto } from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
 import { RulesetFileControls } from '@apihub/components/RulesetFileControls'
 import { useDeleteRuleset } from './hooks/api/useDeleteRuleset'
 

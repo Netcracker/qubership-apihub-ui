@@ -1,6 +1,9 @@
 import type { FC } from 'react'
 import { memo, useMemo } from 'react'
-import type { Ruleset, RulesetActivation } from '@apihub/entities/api-quality-ruleset'
+import type {
+  Ruleset,
+  RulesetActivation,
+} from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
 import { Box, List, ListItem, ListSubheader, Tooltip, Typography } from '@mui/material'
 import { toDateFormat } from '@netcracker/qubership-apihub-ui-shared/utils/date'
 import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'

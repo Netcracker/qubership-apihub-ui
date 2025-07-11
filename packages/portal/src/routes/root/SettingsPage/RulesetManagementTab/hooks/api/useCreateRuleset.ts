@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { useShowSuccessNotification } from '@apihub/routes/root/BasePage/Notification'
-import type { RulesetDto } from '@apihub/entities/api-quality-ruleset'
+import type { RulesetDto } from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
 import { portalRequestJson } from '@apihub/utils/requests'
 import { API_V1 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { QUERY_KEY_RULESETS } from './useRulesets'
@@ -19,7 +19,7 @@ export const useCreateRuleset = (): [
   const queryClient = useQueryClient()
   const showNotification = useShowSuccessNotification()
 
-  const { mutate, isLoading, isSuccess, reset } = useMutation<RulesetDto, Error, CreateRulesetRequest>({
+  const { mutate, isLoading, isSuccess } = useMutation<RulesetDto, Error, CreateRulesetRequest>({
     mutationFn: ({ name, file }) => createRuleset(name, file),
     onSuccess: async (data) => {
       showNotification({ message: `${data.name} ruleset has been created` })

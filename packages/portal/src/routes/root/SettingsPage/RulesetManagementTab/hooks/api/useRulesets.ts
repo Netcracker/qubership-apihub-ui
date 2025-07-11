@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import type { Ruleset, RulesetDto } from '@apihub/entities/api-quality-ruleset'
+import type { Ruleset, RulesetDto } from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
 import { portalRequestJson } from '@apihub/utils/requests'
 import { API_V1 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 

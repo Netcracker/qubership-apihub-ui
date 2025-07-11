@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { useShowSuccessNotification } from '@apihub/routes/root/BasePage/Notification'
-import type { Ruleset } from '@apihub/entities/api-quality-ruleset'
+import type { Ruleset } from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
 import { portalRequestVoid } from '@apihub/utils/requests'
 import { API_V1 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { generatePath } from 'react-router-dom'
