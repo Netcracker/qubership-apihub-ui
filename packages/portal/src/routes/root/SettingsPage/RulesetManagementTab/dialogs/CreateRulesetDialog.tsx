@@ -34,20 +34,15 @@ export const CreateRulesetDialog = memo(
     const { errors } = formState
     const watchedValues = watch()
 
-    // Memoized validation rules for better performance
-    const validationRules = useMemo(() => ({
-      name: {
-        required: 'Ruleset name is required',
-      },
-      file: {
-        required: 'Please upload a file',
-        validate: {
-          checkFileType: (file: File | null) => checkFileType(file!, [YAML_FILE_EXTENSION, YML_FILE_EXTENSION]),
+    const fileValidationRules = useMemo(() => ({
+      validate: {
+        checkFileType: (file: File | null) => {
+          if (!file) return true // No validation needed when file is null
+          return checkFileType(file, [YAML_FILE_EXTENSION, YML_FILE_EXTENSION])
         },
       },
     }), [])
 
-    // Expose open method via ref
     useImperativeHandle(ref, () => ({
       open: () => {
         setOpen(true)
@@ -55,7 +50,6 @@ export const CreateRulesetDialog = memo(
       },
     }), [reset])
 
-    // Close dialog when ruleset is successfully created
     useEffect(() => {
       if (isCreated) {
         setOpen(false)
@@ -67,13 +61,12 @@ export const CreateRulesetDialog = memo(
     }, [])
 
     const onSubmit = useCallback((data: CreateRulesetFormData): void => {
-      if (!data.file) {
+      if (!data.name?.trim() || !data.file) {
         return
       }
       createRuleset({ name: data.name, file: data.file })
     }, [createRuleset])
 
-    // Memoized submit button disabled state
     const isSubmitDisabled = useMemo(() => {
       return !watchedValues.name?.trim() || !watchedValues.file || isCreating
     }, [watchedValues.name, watchedValues.file, isCreating])
@@ -92,7 +85,6 @@ export const CreateRulesetDialog = memo(
           <Controller
             name="name"
             control={control}
-            rules={validationRules.name}
             render={({ field }) => (
               <TextField
                 {...field}
@@ -112,7 +104,7 @@ export const CreateRulesetDialog = memo(
           <Controller
             name="file"
             control={control}
-            rules={validationRules.file}
+            rules={fileValidationRules}
             render={({ field: { value, onChange } }) => (
               <FileUploadField
                 uploadedFile={value || undefined}
