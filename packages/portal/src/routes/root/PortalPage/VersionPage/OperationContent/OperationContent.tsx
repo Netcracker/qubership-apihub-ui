@@ -73,6 +73,7 @@ import {
   WarningApiProcessorVersion,
 } from '@netcracker/qubership-apihub-ui-shared/components/WarningApiProcessorVersion'
 import { useVersionsComparisonGlobalParams } from '../../..//PortalPage/VersionPage/VersionsComparisonGlobalParams'
+import { useParams } from 'react-router-dom'
 
 export type OperationContentProps = {
   changedOperation?: OperationData
@@ -94,11 +95,10 @@ export const OperationContent: FC<OperationContentProps> = memo<OperationContent
     paddingBottom,
     operationModels,
   } = props
+  const { packageId = '', apiType = DEFAULT_API_TYPE } = useParams<{ packageId: string; apiType: ApiType }>()
   const {
-    originPackageKey: packageId = '',
     originVersionKey,
     changedVersionKey,
-    apiType = DEFAULT_API_TYPE,
   } = useVersionsComparisonGlobalParams()
 
   const { productionMode } = useSystemInfo()
@@ -137,6 +137,7 @@ export const OperationContent: FC<OperationContentProps> = memo<OperationContent
 
   const customServersPackageMap = useCustomServersContext()
   const currentServers = customServersPackageMap?.[packageId]
+  console.log('OperationContent', currentServers, packageId)
 
   const {
     values: [originalValue, changedValue],
