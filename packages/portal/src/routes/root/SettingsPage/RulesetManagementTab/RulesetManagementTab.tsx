@@ -1,22 +1,18 @@
 import { Button } from '@mui/material'
 import type { FC } from 'react'
-import { memo, useState } from 'react'
+import { memo, useRef } from 'react'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import { RulesetTable } from './RulesetTable'
-import { CreateRulesetDialog } from './dialogs/CreateRulesetDialog'
+import { CreateRulesetDialog, type CreateRulesetDialogRef } from './dialogs/CreateRulesetDialog'
 import { AddIcon } from '@netcracker/qubership-apihub-ui-shared/icons/AddIcon'
 import { useRulesets } from './hooks/api/useRulesets'
 
 export const RulesetManagementTab: FC = memo(() => {
   const [rulesets, isLoading] = useRulesets()
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const createDialogRef = useRef<CreateRulesetDialogRef>(null)
 
   const handleOpenCreateDialog = (): void => {
-    setIsCreateDialogOpen(true)
-  }
-
-  const handleCloseCreateDialog = (): void => {
-    setIsCreateDialogOpen(false)
+    createDialogRef.current?.open()
   }
 
   return (
@@ -36,10 +32,7 @@ export const RulesetManagementTab: FC = memo(() => {
       body={
         <>
           <RulesetTable rulesets={rulesets} isLoading={isLoading} />
-          <CreateRulesetDialog
-            open={isCreateDialogOpen}
-            onClose={handleCloseCreateDialog}
-          />
+          <CreateRulesetDialog ref={createDialogRef} />
         </>
       }
     />

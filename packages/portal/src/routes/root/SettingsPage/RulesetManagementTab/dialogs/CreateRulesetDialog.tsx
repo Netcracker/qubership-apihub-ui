@@ -1,6 +1,5 @@
 import { Button, DialogActions, DialogContent, DialogTitle, TextField, Typography } from '@mui/material'
-import type { FC } from 'react'
-import { memo, useEffect } from 'react'
+import { forwardRef, memo, useEffect, useImperativeHandle, useState } from 'react'
 import { LoadingButton } from '@mui/lab'
 import { Controller, useForm, useWatch } from 'react-hook-form'
 import { FileUploadField } from '@netcracker/qubership-apihub-ui-shared/components/FileUploadField'
@@ -14,16 +13,16 @@ export type CreateRulesetFormData = {
   file: File | null
 }
 
-export interface CreateRulesetDialogProps {
-  open: boolean
-  onClose: () => void
+export interface CreateRulesetDialogRef {
+  open: () => void
 }
 
-export const CreateRulesetDialog: FC<CreateRulesetDialogProps> = memo(
-  ({ open, onClose }) => {
-    const [createRuleset, isCreating, isCreated, resetMutation] = useCreateRuleset()
+export const CreateRulesetDialog = memo(
+  forwardRef<CreateRulesetDialogRef>((_, ref) => {
+    const [open, setOpen] = useState(false)
+    const [createRuleset, isCreating, isCreated] = useCreateRuleset()
 
-    const { control, handleSubmit, formState, reset, setValue } = useForm<CreateRulesetFormData>({
+    const { control, handleSubmit, formState, reset } = useForm<CreateRulesetFormData>({
       defaultValues: {
         name: '',
         file: null,
@@ -35,23 +34,27 @@ export const CreateRulesetDialog: FC<CreateRulesetDialogProps> = memo(
     const name = useWatch({ control: control, name: 'name' })
     const file = useWatch({ control: control, name: 'file' })
 
-    // Reset form on open
-    useEffect(() => {
-      if (open) {
+    // Expose open method via ref
+    useImperativeHandle(ref, () => ({
+      open: () => {
+        setOpen(true)
         reset({
           name: '',
           file: null,
         })
-        resetMutation()
-      }
-    }, [open, reset, resetMutation])
+      },
+    }), [reset])
 
-    // Handle successful creation
+    // Close dialog when ruleset is successfully created
     useEffect(() => {
       if (isCreated) {
-        onClose()
+        setOpen(false)
       }
-    }, [isCreated, onClose])
+    }, [isCreated])
+
+    const handleClose = (): void => {
+      setOpen(false)
+    }
 
     const onSubmit = (data: CreateRulesetFormData): void => {
       createRuleset({ name: data.name, file: data.file! })
@@ -60,7 +63,7 @@ export const CreateRulesetDialog: FC<CreateRulesetDialogProps> = memo(
     return (
       <DialogForm
         open={open}
-        onClose={onClose}
+        onClose={handleClose}
         onSubmit={handleSubmit(onSubmit)}
       >
         <DialogTitle>Add New Ruleset</DialogTitle>
@@ -122,7 +125,7 @@ export const CreateRulesetDialog: FC<CreateRulesetDialogProps> = memo(
           </LoadingButton>
           <Button
             variant="outlined"
-            onClick={onClose}
+            onClick={handleClose}
             disabled={isCreating}
             data-testid="CancelButton"
           >
@@ -131,5 +134,7 @@ export const CreateRulesetDialog: FC<CreateRulesetDialogProps> = memo(
         </DialogActions>
       </DialogForm>
     )
-  },
+  }),
 )
+
+CreateRulesetDialog.displayName = 'CreateRulesetDialog'

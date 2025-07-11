@@ -15,7 +15,6 @@ export const useCreateRuleset = (): [
   (request: CreateRulesetRequest) => void,
   IsLoading,
   IsSuccess,
-  () => void,
 ] => {
   const queryClient = useQueryClient()
   const showNotification = useShowSuccessNotification()
@@ -28,7 +27,7 @@ export const useCreateRuleset = (): [
     },
   })
 
-  return [mutate, isLoading, isSuccess, reset]
+  return [mutate, isLoading, isSuccess]
 }
 
 async function createRuleset(name: string, file: File): Promise<RulesetDto> {
