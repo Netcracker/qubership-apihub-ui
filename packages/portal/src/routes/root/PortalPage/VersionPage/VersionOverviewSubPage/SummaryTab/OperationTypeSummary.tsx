@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ValidationIssuesTooltip } from '@apihub/components/ValidationIssuesTooltip'
 import type { IssueSeverity } from '@apihub/entities/api-quality/issue-severities'
 import { ISSUE_SEVERITIES_LIST, ISSUE_SEVERITY_COLOR_MAP, IssueSeverities } from '@apihub/entities/api-quality/issue-severities'
 import { useEventBus } from '@apihub/routes/EventBusProvider'
@@ -29,16 +30,16 @@ import {
   DEFAULT_CHANGE_SEVERITY_MAP,
 } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
 import type { NumberOfImpactedOperations } from '@netcracker/qubership-apihub-ui-shared/entities/version-contents'
+import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoContextIcon'
 import { DefaultWarningIcon, RedWarningIcon } from '@netcracker/qubership-apihub-ui-shared/icons/WarningIcon'
 import type { FC } from 'react'
-import { Fragment, memo, useMemo } from 'react'
+import { memo, useMemo } from 'react'
 import {
   useApiQualityLinterEnabled,
   useApiQualitySummarySectionProperties,
   useApiQualityValidationFailed,
   useApiQualityValidationSummary,
 } from '../../ApiQualityValidationSummaryProvider'
-import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoContextIcon'
 
 export type OperationTypeSummaryProps = Readonly<{
   apiType: ApiType
@@ -331,19 +332,21 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
                   </Typography>
                   <Box sx={{ gridArea: 'qualityIssuesNumber' }} display="flex" alignItems="center" gap={1}>
                     {ISSUE_SEVERITIES_LIST.map(severity => (
-                      <Fragment key={severity}>
-                        <Box
-                          component="span"
-                          sx={{ background: ISSUE_SEVERITY_COLOR_MAP[severity], width: 8, height: 8, borderRadius: '50%' }}
-                        />
-                        <Typography
-                          variant="body2"
-                          component="span"
-                          sx={{ fontSize: 12, fontWeight: 500, color: '#8F9EB4' }}
-                        >
-                          {aggregatedValidationSummary[severity]}
-                        </Typography>
-                      </Fragment>
+                      <ValidationIssuesTooltip key={severity} issueSeverity={severity}>
+                        <Box key={severity} display="flex" alignItems="center" gap={1}>
+                          <Box
+                            component="span"
+                            sx={{ background: ISSUE_SEVERITY_COLOR_MAP[severity], width: 8, height: 8, borderRadius: '50%' }}
+                          />
+                          <Typography
+                            variant="body2"
+                            component="span"
+                            sx={{ fontSize: 12, fontWeight: 500, color: '#8F9EB4' }}
+                          >
+                            {aggregatedValidationSummary[severity]}
+                          </Typography>
+                        </Box>
+                      </ValidationIssuesTooltip>
                     ))}
                   </Box>
                 </>}

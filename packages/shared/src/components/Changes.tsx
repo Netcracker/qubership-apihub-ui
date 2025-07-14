@@ -56,9 +56,12 @@ export const Changes: FC<ChangesProps> = memo<ChangesProps>(({
         const changeName = CHANGE_SEVERITY_NAME_MAP[type as keyof ChangesSummary]
         const changeColor = CHANGE_SEVERITY_COLOR_MAP[type as keyof ChangesSummary]
         return (
-          <ListItem component="span" key={type} sx={{ p: 0 }}>
-            <ChangesTooltip changeType={type as ChangeSeverity} category={category}
-                            disableHoverListener={mode === 'default'}>
+          <ListItem key={type} component="span" sx={{ p: 0 }}>
+            <ChangesTooltip
+              changeType={type as ChangeSeverity}
+              category={category}
+              disableHoverListener={mode === 'default'}
+            >
               <Box data-testid={type} display="flex" alignItems="baseline">
                 <Box
                   component="span"

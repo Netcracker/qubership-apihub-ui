@@ -1,0 +1,41 @@
+import { MarkerTooltip } from '@netcracker/qubership-apihub-ui-shared/components/MarkerTooltip'
+import type { FC, PropsWithChildren } from 'react'
+import { memo } from 'react'
+import { ISSUE_SEVERITY_COLOR_MAP, IssueSeverities, type IssueSeverity } from '../entities/api-quality/issue-severities'
+
+export type ValidationIssuesTooltipProps = PropsWithChildren<{
+  issueSeverity: IssueSeverity
+  disableHoverListener?: boolean
+}>
+
+export const ValidationIssuesTooltip: FC<ValidationIssuesTooltipProps> = memo<ValidationIssuesTooltipProps>(props => {
+  const {
+    children,
+    issueSeverity,
+    disableHoverListener = false,
+  } = props
+
+  return (
+    <MarkerTooltip<IssueSeverity>
+      disableHoverListener={disableHoverListener}
+      variant={issueSeverity}
+      variantToDescription={ISSUE_SEVERITY_DESCRIPTION_MAP}
+      variantToTooltipTitle={ISSUE_SEVERITY_TOOLTIP_TITLE_MAP}
+      variantToColor={ISSUE_SEVERITY_COLOR_MAP}
+    >
+      {children}
+    </MarkerTooltip>
+  )
+})
+
+const ISSUE_SEVERITY_DESCRIPTION_MAP: Record<IssueSeverity, string> = {
+  [IssueSeverities.ERROR]: 'Error description',
+  [IssueSeverities.WARNING]: 'Warning description',
+  [IssueSeverities.INFO]: 'Info description',
+}
+
+const ISSUE_SEVERITY_TOOLTIP_TITLE_MAP: Record<IssueSeverity, string> = {
+  [IssueSeverities.ERROR]: 'Error title',
+  [IssueSeverities.WARNING]: 'Warning title',
+  [IssueSeverities.INFO]: 'Info title',
+}

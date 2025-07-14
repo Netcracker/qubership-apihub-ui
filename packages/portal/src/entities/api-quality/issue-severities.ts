@@ -10,7 +10,7 @@ export const ISSUE_SEVERITIES_LIST = [
   IssueSeverities.INFO,
 ] as const
 
-export const ISSUE_SEVERITY_COLOR_MAP = {
+export const ISSUE_SEVERITY_COLOR_MAP: Record<IssueSeverity, string> = {
   [IssueSeverities.INFO]: '#61AAF2',
   [IssueSeverities.WARNING]: '#FFB02E',
   [IssueSeverities.ERROR]: '#ED4A54',
