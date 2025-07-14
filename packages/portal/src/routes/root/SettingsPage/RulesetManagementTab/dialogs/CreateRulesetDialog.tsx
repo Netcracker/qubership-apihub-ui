@@ -67,14 +67,14 @@ const CreateRulesetPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }) 
   }, [setOpen])
 
   const onSubmit = useCallback((data: CreateRulesetFormData): void => {
-    if (!data.name?.trim() || !data.file) {
+    if (!data.name || !data.file) {
       return
     }
     createRuleset({ name: data.name, file: data.file })
   }, [createRuleset])
 
   const isSubmitDisabled = useMemo(() => {
-    return !watchedValues.name?.trim() || !watchedValues.file || isCreating
+    return !watchedValues.name || !watchedValues.file || isCreating
   }, [watchedValues.name, watchedValues.file, isCreating])
 
   return (

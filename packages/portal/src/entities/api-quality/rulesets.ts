@@ -14,6 +14,7 @@ export type RulesetActivation = {
 export type RulesetDto = Readonly<{
   id: string
   name: string
+  fileName: string
   status: RulesetStatus
   activationHistory: RulesetActivation[]
   createdAt: string // Format: date-time

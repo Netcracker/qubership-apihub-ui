@@ -23,6 +23,7 @@ export const RulesetManagementTab: FC = memo(() => {
         <Button
           variant="contained"
           color="primary"
+          disabled={isLoading}
           startIcon={<AddIcon />}
           onClick={handleOpenCreateDialog}
           data-testid="AddRulesetButton"

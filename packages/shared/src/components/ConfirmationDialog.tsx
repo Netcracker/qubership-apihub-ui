@@ -75,6 +75,7 @@ export const ConfirmationDialog: FC<ConfirmationDialogProps> = memo<Confirmation
         </LoadingButton>
         <Button
           variant="outlined"
+          disabled={loading}
           onClick={onCancel}
           data-testid="CancelButton"
         >

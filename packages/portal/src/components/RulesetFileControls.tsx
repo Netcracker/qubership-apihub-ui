@@ -28,16 +28,17 @@ export const RulesetFileControls: FC<RulesetFileControlsProps> = (props) => {
       size="small"
       area-label="Download Ruleset"
       hint='Download'
-      className="hoverable"
+      // className="hoverable"
       startIcon={<DownloadIcon color={ICON_COLOR} />}
       sx={{ height: ICON_SIZE }}
       onClick={() => downloadRuleset({ rulesetId })}
+      data-testid="DownloadButton"
     />
     <ButtonWithHint
       size="small"
       area-label="Copy public link to ruleset"
       hint='Copy public URL'
-      className="hoverable"
+      // className="hoverable"
       startIcon={<LinkIcon color={ICON_COLOR} />}
       sx={{ height: ICON_SIZE }}
       onClick={() => {
@@ -47,6 +48,7 @@ export const RulesetFileControls: FC<RulesetFileControlsProps> = (props) => {
           showNotification({ message: 'Public URL copied' })
         }
       }}
+      data-testid="CopyPublicUrlButton"
     />
   </>
 }
