@@ -75,18 +75,21 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
   const validationRuleset = validationSummary?.[0]?.ruleset
   const aggregatedValidationSummary: Record<IssueSeverity, number> = useMemo(() => {
     const emptyValidationSummary: Record<IssueSeverity, number> = {
-      [IssueSeverities.INFO]: 0,
-      [IssueSeverities.WARNING]: 0,
       [IssueSeverities.ERROR]: 0,
+      [IssueSeverities.WARNING]: 0,
+      [IssueSeverities.INFO]: 0,
+      [IssueSeverities.HINT]: 0,
     }
     return (validationSummary ?? []).reduce((aggregated, currentSummaryRecord) => {
       const summary = currentSummaryRecord.issuesSummary
-      aggregated[IssueSeverities.INFO] += summary.info ?? 0
-      aggregated[IssueSeverities.WARNING] += summary.warning ?? 0
       aggregated[IssueSeverities.ERROR] += summary.error ?? 0
+      aggregated[IssueSeverities.WARNING] += summary.warning ?? 0
+      aggregated[IssueSeverities.INFO] += summary.info ?? 0
+      aggregated[IssueSeverities.HINT] += summary.hint ?? 0
       return aggregated
     }, emptyValidationSummary)
   }, [validationSummary])
+  // TODO 14.07.25 // Replace with actual data
   const documentsWithFailedValidation = ['document 1', 'Document 2', 'doCuMeNt 3']
 
   const changeCounter = useMemo(() => changesSummary ?? DEFAULT_CHANGE_SEVERITY_MAP, [changesSummary])

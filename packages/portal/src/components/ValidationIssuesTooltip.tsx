@@ -32,10 +32,12 @@ const ISSUE_SEVERITY_DESCRIPTION_MAP: Record<IssueSeverity, string> = {
   [IssueSeverities.ERROR]: 'Error description',
   [IssueSeverities.WARNING]: 'Warning description',
   [IssueSeverities.INFO]: 'Info description',
+  [IssueSeverities.HINT]: 'Hint description',
 }
 
 const ISSUE_SEVERITY_TOOLTIP_TITLE_MAP: Record<IssueSeverity, string> = {
-  [IssueSeverities.ERROR]: 'Error title',
-  [IssueSeverities.WARNING]: 'Warning title',
-  [IssueSeverities.INFO]: 'Info title',
+  [IssueSeverities.ERROR]: 'Error',
+  [IssueSeverities.WARNING]: 'Warning',
+  [IssueSeverities.INFO]: 'Info',
+  [IssueSeverities.HINT]: 'Hint',
 }
