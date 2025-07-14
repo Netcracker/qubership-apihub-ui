@@ -348,7 +348,7 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
                   </Box>
                 </>}
 
-                {documentsWithFailedValidation.length > 0 && <>
+                {validationFailed && <>
                   <Typography sx={{ gridArea: 'failedDocumentsNumberTitle' }} variant="subtitle2">
                     Number of failed documents
                   </Typography>
@@ -358,7 +358,15 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
                     </Typography>
                     <Tooltip
                       disableHoverListener={false}
-                      title={<Box>List of docs here</Box>}
+                      title={
+                        <Box display="flex" flexDirection="column" gap={1} p={1}>
+                          {documentsWithFailedValidation.map(doc => (
+                            <Typography key={doc} variant="body2">
+                              {doc}
+                            </Typography>
+                          ))}
+                        </Box>
+                      }
                       placement="right"
                     >
                       <InfoContextIcon sx={{ fontSize: 16 }} />
