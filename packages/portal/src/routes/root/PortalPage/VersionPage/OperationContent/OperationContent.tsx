@@ -103,9 +103,6 @@ export const OperationContent: FC<OperationContentProps> = memo<OperationContent
     originVersionKey,
   } = useVersionsComparisonGlobalParams()
 
-  console.log('packageId', packageId, originPackageKey, changedPackageKey)
-  console.log('originVersionKey/changedVersionKey', originVersionKey, changedVersionKey)
-
   const { productionMode } = useSystemInfo()
 
   const setChangesLoadingStatus = useSetChangesLoadingStatus()
