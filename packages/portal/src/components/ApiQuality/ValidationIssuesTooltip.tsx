@@ -1,7 +1,7 @@
+import { ISSUE_SEVERITY_COLOR_MAP, IssueSeverities, type IssueSeverity } from '@apihub/entities/api-quality/issue-severities'
 import { MarkerTooltip } from '@netcracker/qubership-apihub-ui-shared/components/MarkerTooltip'
 import type { FC, PropsWithChildren } from 'react'
 import { memo } from 'react'
-import { ISSUE_SEVERITY_COLOR_MAP, IssueSeverities, type IssueSeverity } from '../entities/api-quality/issue-severities'
 
 export type ValidationIssuesTooltipProps = PropsWithChildren<{
   issueSeverity: IssueSeverity

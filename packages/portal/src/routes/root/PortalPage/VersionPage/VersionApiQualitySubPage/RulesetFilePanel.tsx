@@ -1,8 +1,8 @@
+import { ValidationRulesetFileControls } from '@apihub/components/ApiQuality/ValidationRulesetFileControls'
+import type { RulesetBase } from '@apihub/entities/api-quality/rulesets'
 import { Box, Typography } from '@mui/material'
 import { FileIcon } from '@netcracker/qubership-apihub-ui-shared/icons/FileIcon'
 import type { FC } from 'react'
-import type { RulesetBase } from '@apihub/entities/api-quality/rulesets'
-import { RulesetFileControls } from '@apihub/components/RulesetFileControls'
 
 type RulesetFilePanelProps = {
   ruleset: RulesetBase
@@ -24,7 +24,7 @@ export const RulesetFilePanel: FC<RulesetFilePanelProps> = (props) => {
           </Typography>
         </Box>
         <Box display='flex' alignItems='center' gap={1}>
-          <RulesetFileControls rulesetId={ruleset.id} />
+          <ValidationRulesetFileControls rulesetId={ruleset.id} />
         </Box>
       </Box>
     </Box>

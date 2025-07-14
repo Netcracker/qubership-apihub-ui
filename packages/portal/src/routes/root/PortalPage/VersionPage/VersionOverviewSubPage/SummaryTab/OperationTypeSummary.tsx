@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { ValidationIssuesTooltip } from '@apihub/components/ValidationIssuesTooltip'
+import { ValidationRulesettLink } from '@apihub/components/ApiQuality/ValidatationRulesetLink'
+import { ValidationIssuesTooltip } from '@apihub/components/ApiQuality/ValidationIssuesTooltip'
 import type { IssueSeverity } from '@apihub/entities/api-quality/issue-severities'
 import { ISSUE_SEVERITIES_LIST, ISSUE_SEVERITY_COLOR_MAP, IssueSeverities } from '@apihub/entities/api-quality/issue-severities'
 import { Box, Tooltip, Typography } from '@mui/material'
@@ -39,7 +40,6 @@ import {
   useApiQualityValidationFailed,
   useApiQualityValidationSummary,
 } from '../../ApiQualityValidationSummaryProvider'
-import { ValidationRulesettLink } from '../../VersionApiQualitySubPage/ValidatationRulesetLink'
 
 export type OperationTypeSummaryProps = Readonly<{
   apiType: ApiType
