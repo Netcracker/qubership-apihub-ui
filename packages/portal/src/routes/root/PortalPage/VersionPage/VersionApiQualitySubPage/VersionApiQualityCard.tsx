@@ -108,6 +108,11 @@ export const VersionApiQualityCard: FC = memo(() => {
     setSelectedIssuePath(undefined)
   }, [])
 
+  const onFormatChange = useCallback((value: OriginalDocumentFileFormat) => {
+    setFormat(value)
+    setSelectedIssuePath(undefined)
+  }, [])
+
   return (
     <BodyCard
       body={
@@ -135,7 +140,7 @@ export const VersionApiQualityCard: FC = memo(() => {
                   [JSON_FILE_FORMAT]: JSON_FILE_FORMAT.toUpperCase(),
                   [YAML_FILE_FORMAT]: YAML_FILE_FORMAT.toUpperCase(),
                 }}
-                onChange={setFormat}
+                onChange={onFormatChange}
               />
             </Box>
           }
