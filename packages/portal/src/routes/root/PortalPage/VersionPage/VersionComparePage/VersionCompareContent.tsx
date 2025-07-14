@@ -74,7 +74,9 @@ import { ComparisonSwapper } from '../ComparisonSwapper'
 import { useVersionsComparisonGlobalParams } from '../VersionsComparisonGlobalParams'
 import { VERSION_SWAPPER_HEIGHT } from '../shared-styles'
 import { useTagSearchFilter } from '../useTagSearchFilter'
-import { WarningApiProcessorVersion } from '@netcracker/qubership-apihub-ui-shared/components/WarningApiProcessorVersion'
+import {
+  WarningApiProcessorVersion,
+} from '@netcracker/qubership-apihub-ui-shared/components/WarningApiProcessorVersion'
 
 export function isRevisionCompare(originVersion: Key, changedVersion: Key): boolean {
   const {
@@ -186,16 +188,13 @@ export const VersionCompareContent: FC = memo(() => {
 
   return (
     <Card>
-      <Box>
-        <ComparisonSwapper
-          breadcrumbsData={breadcrumbsData}
-          handleSwap={handleSwap}
-          showCompareDialog={showCompareDialog}
-          swapperBreadcrumbsBeforeComponent={<WarningApiProcessorVersion packageKey={originPackageKey} versionKey={originVersionKey} />}
-          swapperBreadcrumbsAfterComponent={<WarningApiProcessorVersion packageKey={changedPackageKey} versionKey={changedVersionKey} />}
-        />
-      </Box>
-
+      <ComparisonSwapper
+        breadcrumbsData={breadcrumbsData}
+        handleSwap={handleSwap}
+        showCompareDialog={showCompareDialog}
+        customComponentBeforeSwapperBreadcrumbs={<WarningApiProcessorVersion packageKey={originPackageKey} versionKey={originVersionKey}/>}
+        customComponentAfterSwapperBreadcrumbs={<WarningApiProcessorVersion packageKey={changedPackageKey} versionKey={changedVersionKey}/>}
+      />
       <Placeholder
         invisible={isNotEmpty(filteredPackageChanges)}
         area={CONTENT_PLACEHOLDER_AREA}

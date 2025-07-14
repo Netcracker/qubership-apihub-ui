@@ -27,22 +27,22 @@ export type ComparisonSwapper = {
   breadcrumbsData: ComparedPackagesBreadcrumbsData | null
   handleSwap: () => void
   showCompareDialog: () => void
-  swapperBreadcrumbsBeforeComponent?: ReactElement
-  swapperBreadcrumbsAfterComponent?: ReactElement
+  customComponentBeforeSwapperBreadcrumbs?: ReactElement
+  customComponentAfterSwapperBreadcrumbs?: ReactElement
 }
 
 export const ComparisonSwapper: FC<ComparisonSwapper> = memo<ComparisonSwapper>(({
   breadcrumbsData,
   handleSwap,
   showCompareDialog,
-  swapperBreadcrumbsBeforeComponent,
-  swapperBreadcrumbsAfterComponent,
+  customComponentBeforeSwapperBreadcrumbs,
+  customComponentAfterSwapperBreadcrumbs,
 }) => {
   return (
     <Box sx={SWAPPER_STYLES}>
       <Box sx={SWAPPER_HEADER_STYLES} data-testid="LeftSwapperHeader">
         <SwapperBreadcrumbs side="before"
-                            customComponentAfterContent={swapperBreadcrumbsBeforeComponent}
+                            customComponentAfterContent={customComponentBeforeSwapperBreadcrumbs}
                             data={breadcrumbsData}/>
       </Box>
       <Box sx={SWAPPER_DELIMITER_STYLES}>
@@ -53,7 +53,7 @@ export const ComparisonSwapper: FC<ComparisonSwapper> = memo<ComparisonSwapper>(
       <Box sx={SECOND_SWAPPER_HEADER_STYLES}>
         <Box gridArea="data" data-testid="RightSwapperHeader">
           <SwapperBreadcrumbs side="after"
-                              customComponentAfterContent={swapperBreadcrumbsAfterComponent}
+                              customComponentAfterContent={customComponentAfterSwapperBreadcrumbs}
                               data={breadcrumbsData}/>
         </Box>
         <IconButton

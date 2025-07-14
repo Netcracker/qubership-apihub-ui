@@ -295,7 +295,10 @@ const AddPackagePopup: FC<AddPackagePopupProps> = memo<AddPackagePopupProps>(({ 
 
 
       <DialogActions>
-        <LoadingButton variant="contained" type="submit" loading={false} data-testid="AddButton"
+        <LoadingButton variant="contained"
+                       type="submit"
+                       loading={false}
+                       data-testid="AddButton"
                        disabled={!!warningApiProcessorState}>
           Add
         </LoadingButton>

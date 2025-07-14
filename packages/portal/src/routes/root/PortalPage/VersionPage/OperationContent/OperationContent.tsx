@@ -139,7 +139,6 @@ export const OperationContent: FC<OperationContentProps> = memo<OperationContent
 
   const customServersPackageMap = useCustomServersContext()
   const currentServers = customServersPackageMap?.[packageId]
-  console.log('OperationContent', currentServers, packageId)
 
   const {
     values: [originalValue, changedValue],

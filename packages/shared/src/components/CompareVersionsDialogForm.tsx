@@ -349,19 +349,17 @@ export const CompareVersionsDialogForm: FC<CompareVersionsDialogFormProps> = mem
         />
       </DialogContent>
       <Box sx={{ maxWidth: '692px', padding: '0 24px' }}>
-        {(<WarningApiProcessorVersion
+        {<WarningApiProcessorVersion
           versionKey={previousVersion?.key}
           packageKey={previousPackage?.key}
           type={WARNING_API_PROCESSOR_TEXT}
           hidden={!!warningApiProcessorStateCurrent}
-          data-testid="WarningApiProcessorVersionPrevios"
-          onWarningTextChange={setWarningApiProcessorStatePrevious}/>)}
-        {(<WarningApiProcessorVersion
-          data-testid="WarningApiProcessorVersionCurrent"
+          onWarningTextChange={setWarningApiProcessorStatePrevious}/>}
+        {<WarningApiProcessorVersion
           versionKey={currentVersion?.key}
           packageKey={packageMode ? currentPackage?.key : previousPackage?.key}
           type={WARNING_API_PROCESSOR_TEXT}
-          onWarningTextChange={setWarningApiProcessorStateCurrent}/>)}
+          onWarningTextChange={setWarningApiProcessorStateCurrent}/>}
       </Box>
       <DialogActions>
 
