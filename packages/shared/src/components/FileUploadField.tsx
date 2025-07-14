@@ -77,7 +77,7 @@ export const FileUploadField: FC<FileUploadFieldProps> = memo<FileUploadFieldPro
           file={uploadedFile}
           onDelete={onDelete}
           onDownload={downloadAvailable ? onDownload : undefined}
-          testId={downloadAvailable ? 'DownloadableFilePreview' : 'NotDownloadableFilePreview'}
+          data-testid={downloadAvailable ? 'DownloadableFilePreview' : 'NotDownloadableFilePreview'}
         />
         {alert}
       </>

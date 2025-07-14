@@ -60,6 +60,7 @@ export const FileUpload: FC<FileUploadProps> = memo<FileUploadProps>(({ acceptab
         {...dragEvents}
         sx={{ border: '1px dashed transparent' }} // prevents dialog resizes when border appears on drag and drop
         children={children}
+        data-testid="FileUpload"
       />
     )
   }

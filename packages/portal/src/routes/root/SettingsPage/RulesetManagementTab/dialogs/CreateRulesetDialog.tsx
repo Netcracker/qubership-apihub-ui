@@ -94,12 +94,12 @@ const CreateRulesetPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }) 
           render={({ field }) => (
             <TextField
               {...field}
-              label="Ruleset Name"
+              label="Name"
               required
               disabled={isCreating}
               error={!!errors.name}
               helperText={errors.name?.message}
-              data-testid="RulesetNameInput"
+              data-testid="NameTextField"
               sx={{ mt: 0 }}
             />
           )}

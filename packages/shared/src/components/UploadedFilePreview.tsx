@@ -32,12 +32,12 @@ export const UploadedFilePreview: FC<UploadedFilePreviewProps> = memo<UploadedFi
   file,
   onDelete,
   onDownload,
-  testId,
+  'data-testid': dataTestId,
 }) => {
   const color = onDownload ? DOWNLOAD_AVAILABLE_COLOR : 'black'
 
   return (
-    <Box display="flex" alignItems="center" data-testid={testId}>
+    <Box display="flex" alignItems="center" data-testid={dataTestId}>
       <Box onClick={onDownload} sx={{ display: 'flex', gap: 0.5, cursor: onDownload ? 'pointer' : 'default' }}>
         <FileIcon color={color}/>
         <Typography variant="subtitle2" fontSize={13} color={color}>{file.name}</Typography>

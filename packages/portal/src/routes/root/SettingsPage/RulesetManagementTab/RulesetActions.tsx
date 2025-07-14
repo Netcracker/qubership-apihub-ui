@@ -1,13 +1,16 @@
 import { Box, IconButton, Tooltip } from '@mui/material'
 import type { FC } from 'react'
 import { memo, useState } from 'react'
-import DeleteIcon from '@mui/icons-material/Delete'
-import PlayArrowIcon from '@mui/icons-material/PlayArrow'
+import PlayCircleOutlineRoundedIcon from '@mui/icons-material/PlayCircleOutlineRounded'
 import { useActivateRuleset } from './hooks/api/useActivateRuleset'
 import { ConfirmationDialog } from '@netcracker/qubership-apihub-ui-shared/components/ConfirmationDialog'
 import type { RulesetDto } from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
+import { RulesetStatuses } from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
 import { RulesetFileControls } from '@apihub/components/RulesetFileControls'
 import { useDeleteRuleset } from './hooks/api/useDeleteRuleset'
+import { DeleteIcon } from '@netcracker/qubership-apihub-ui-shared/icons/DeleteIcon'
+import { SECONDARY_TEXT_COLOR } from '@netcracker/qubership-apihub-ui-shared/themes/colors'
+import { DISABLED_BUTTON_COLOR } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
 
 export interface RulesetActionsProps {
   ruleset: RulesetDto
@@ -20,8 +23,8 @@ export const RulesetActions: FC<RulesetActionsProps> = memo(({ ruleset }) => {
   const [isActivateDialogOpen, setIsActivateDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
-  const handleActivate =  (): void => {
-      activateRuleset(ruleset)
+  const handleActivate = (): void => {
+    activateRuleset(ruleset)
   }
 
   const handleDelete = (): void => {
@@ -30,33 +33,45 @@ export const RulesetActions: FC<RulesetActionsProps> = memo(({ ruleset }) => {
 
   return (
     <>
-      <Box display="flex" gap={2} visibility="hidden" className="hoverable">
-        {/* Activate button - disabled if already active */}
-        <Tooltip title={ruleset.status === 'active' ? 'Already active' : 'Activate ruleset'}>
+      <Box display="flex" gap={2} visibility="hidden" className="hoverable" alignItems="center">
+        <Tooltip title={ruleset.status === RulesetStatuses.ACTIVE ? 'The ruleset is already active' : 'Activate'}>
           <span>
             <IconButton
               size="small"
               onClick={() => setIsActivateDialogOpen(true)}
-              disabled={ruleset.status === 'active' || isActivating}
-              data-testid="ActivateRulesetButton"
+              disabled={ruleset.status === RulesetStatuses.ACTIVE}
+              data-testid="ActivateButton"
             >
-              <PlayArrowIcon fontSize="small" color={ruleset.status === 'active' ? 'disabled' : 'primary'} />
+              <PlayCircleOutlineRoundedIcon
+                fontSize="small"
+                color={ruleset.status === RulesetStatuses.ACTIVE ? 'disabled' : 'muted'}
+              />
             </IconButton>
           </span>
         </Tooltip>
 
-        <RulesetFileControls rulesetId={ruleset.id}/>
+        <RulesetFileControls rulesetId={ruleset.id} />
 
-        {/* Delete button - disabled if cannot be deleted */}
-        <Tooltip title={ruleset.canBeDeleted ? 'Delete ruleset' : 'Cannot delete active ruleset'}>
+        <Tooltip
+          title={ruleset.status === RulesetStatuses.ACTIVE
+            ? 'Cannot delete active ruleset'
+            : ruleset.canBeDeleted
+            ? 'Delete'
+            : 'The ruleset cannot be deleted due to existing versions that have been validated against this ruleset'}
+        >
           <span>
             <IconButton
               size="small"
               onClick={() => setIsDeleteDialogOpen(true)}
-              disabled={!ruleset.canBeDeleted || isDeleting}
-              data-testid="DeleteRulesetButton"
+              disabled={ruleset.status === RulesetStatuses.ACTIVE || !ruleset.canBeDeleted}
+              data-testid="DeleteButton"
+              sx={{ height: '20px' }}
             >
-              <DeleteIcon fontSize="small" color={ruleset.canBeDeleted ? 'error' : 'disabled'} />
+              <DeleteIcon
+                color={ruleset.status === RulesetStatuses.ACTIVE || !ruleset.canBeDeleted
+                  ? DISABLED_BUTTON_COLOR
+                  : SECONDARY_TEXT_COLOR}
+              />
             </IconButton>
           </span>
         </Tooltip>
@@ -75,7 +90,7 @@ export const RulesetActions: FC<RulesetActionsProps> = memo(({ ruleset }) => {
 
       <ConfirmationDialog
         open={isDeleteDialogOpen}
-        title={`Delete ${ruleset.name} ruleset? ruleset? ruleset? ruleset? ruleset? ruleset? ruleset? ruleset?`}
+        title={`Delete ${ruleset.name} ruleset?`}
         loading={isDeleting}
         onConfirm={handleDelete}
         onCancel={() => setIsDeleteDialogOpen(false)}
