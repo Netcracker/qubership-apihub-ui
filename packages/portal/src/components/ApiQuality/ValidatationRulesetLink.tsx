@@ -1,9 +1,10 @@
+import { RulesetStatuses, type RulesetBase } from '@apihub/entities/api-quality/rulesets'
 import { useEventBus } from '@apihub/routes/EventBusProvider'
 import { Box, Link, Skeleton, Typography } from '@mui/material'
+import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import type { FC } from 'react'
 import { memo } from 'react'
-import type { RulesetBase } from '@apihub/entities/api-quality/rulesets'
 
 type ValidationRulesetLinkProps = {
   data: RulesetBase | undefined
@@ -25,13 +26,22 @@ export const ValidationRulesettLink: FC<ValidationRulesetLinkProps> = memo<Valid
     return null
   }
 
-  const linkElement = (
+  let linkElement = (
     <Typography variant='body2' onClick={() => showRulesetInfoDialog(data)}>
       <Link>
-        {data.name} ({data.status})
+        {data.name}
       </Link>
     </Typography>
   )
+
+  if (data.status === RulesetStatuses.INACTIVE) {
+    linkElement = (
+      <Box display='flex' alignItems='center' gap={1}>
+        {linkElement}
+        <CustomChip value='secondary' sx={{ m: 0 }} label={data.status} />
+      </Box>
+    )
+  }
 
   if (noLabel) {
     return linkElement
