@@ -17,8 +17,7 @@
 import { ValidationIssuesTooltip } from '@apihub/components/ValidationIssuesTooltip'
 import type { IssueSeverity } from '@apihub/entities/api-quality/issue-severities'
 import { ISSUE_SEVERITIES_LIST, ISSUE_SEVERITY_COLOR_MAP, IssueSeverities } from '@apihub/entities/api-quality/issue-severities'
-import { useEventBus } from '@apihub/routes/EventBusProvider'
-import { Box, Link, Tooltip, Typography } from '@mui/material'
+import { Box, Tooltip, Typography } from '@mui/material'
 import { API_AUDIENCE_EXTERNAL, API_AUDIENCE_INTERNAL, API_AUDIENCE_UNKNOWN, type ApiAudienceTransition } from '@netcracker/qubership-apihub-api-processor'
 import { Changes } from '@netcracker/qubership-apihub-ui-shared/components/Changes'
 import { CATEGORY_OPERATION } from '@netcracker/qubership-apihub-ui-shared/components/ChangesTooltip'
@@ -40,6 +39,7 @@ import {
   useApiQualityValidationFailed,
   useApiQualityValidationSummary,
 } from '../../ApiQualityValidationSummaryProvider'
+import { ValidationRulesettLink } from '../../VersionApiQualitySubPage/ValidatationRulesetLink'
 
 export type OperationTypeSummaryProps = Readonly<{
   apiType: ApiType
@@ -71,7 +71,6 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
   const showApiQualityPlaceholder = apiQualitySummaryPlaceholder && apiQualitySummaryDisabled
   const showApiQualitySummary = validationFailed || (!apiQualitySummaryPlaceholder && !apiQualitySummaryDisabled)
   const validationSummary = useApiQualityValidationSummary()
-  const { showRulesetInfoDialog } = useEventBus()
   const validationRuleset = validationSummary?.[0]?.ruleset
   const aggregatedValidationSummary: Record<IssueSeverity, number> = useMemo(() => {
     const emptyValidationSummary: Record<IssueSeverity, number> = {
@@ -320,12 +319,9 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
                   <Typography sx={{ gridArea: 'validationRulesetTitle' }} variant="subtitle2">
                     Validation ruleset
                   </Typography>
+
                   <Box sx={{ gridArea: 'validationRuleset' }}>
-                    <Typography variant="body2">
-                      <Link onClick={() => { showRulesetInfoDialog(validationRuleset) }}>
-                        {validationRuleset.name} ({validationRuleset.status})
-                      </Link>
-                    </Typography>
+                    <ValidationRulesettLink data={validationRuleset} loading={!validationRuleset} noLabel />
                   </Box>
                 </>}
 

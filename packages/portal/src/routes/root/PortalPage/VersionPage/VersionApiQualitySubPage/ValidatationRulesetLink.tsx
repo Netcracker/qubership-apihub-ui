@@ -8,11 +8,12 @@ import type { RulesetBase } from '@apihub/entities/api-quality/rulesets'
 type ValidationRulesetLinkProps = {
   data: RulesetBase | undefined
   loading: IsLoading
+  noLabel?: boolean
 }
 
 // First Order Component
 export const ValidationRulesettLink: FC<ValidationRulesetLinkProps> = memo<ValidationRulesetLinkProps>(props => {
-  const { data, loading } = props
+  const { data, loading, noLabel = false } = props
 
   const { showRulesetInfoDialog } = useEventBus()
 
@@ -24,16 +25,24 @@ export const ValidationRulesettLink: FC<ValidationRulesetLinkProps> = memo<Valid
     return null
   }
 
+  const linkElement = (
+    <Typography variant='body2' onClick={() => showRulesetInfoDialog(data)}>
+      <Link>
+        {data.name} ({data.status})
+      </Link>
+    </Typography>
+  )
+
+  if (noLabel) {
+    return linkElement
+  }
+
   return <>
     <Box display='flex' gap={1}>
       <Typography variant='body2' component='span'>
         Validated using
       </Typography>
-      <Typography variant='body2' onClick={() => showRulesetInfoDialog(data)}>
-        <Link>
-          {data.name} ({data.status})
-        </Link>
-      </Typography>
+      {linkElement}
     </Box>
   </>
 })
