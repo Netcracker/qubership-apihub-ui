@@ -97,9 +97,14 @@ export const OperationContent: FC<OperationContentProps> = memo<OperationContent
   } = props
   const { packageId = '', apiType = DEFAULT_API_TYPE } = useParams<{ packageId: string; apiType: ApiType }>()
   const {
-    originVersionKey,
+    originPackageKey,
+    changedPackageKey,
     changedVersionKey,
+    originVersionKey,
   } = useVersionsComparisonGlobalParams()
+
+  console.log('packageId', packageId, originPackageKey, changedPackageKey)
+  console.log('originVersionKey/changedVersionKey', originVersionKey, changedVersionKey)
 
   const { productionMode } = useSystemInfo()
 
@@ -207,9 +212,9 @@ export const OperationContent: FC<OperationContentProps> = memo<OperationContent
             displayMode={displayMode}
             breadcrumbsData={breadcrumbsData}
             actions={isRawViewMode && rawViewActions}
-            swapperBreadcrumbsBeforeComponent={<WarningApiProcessorVersion packageKey={packageId}
+            swapperBreadcrumbsBeforeComponent={<WarningApiProcessorVersion packageKey={originPackageKey}
                                                                            versionKey={originVersionKey}/>}
-            swapperBreadcrumbsAfterComponent={<WarningApiProcessorVersion packageKey={packageId}
+            swapperBreadcrumbsAfterComponent={<WarningApiProcessorVersion packageKey={changedPackageKey}
                                                                           versionKey={changedVersionKey}/>}
           />
           {isDocViewMode && !!mergedDocument && (
