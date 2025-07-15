@@ -90,8 +90,10 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
       return aggregated
     }, emptyValidationSummary)
   }, [validationSummary])
-  // TODO 14.07.25 // Replace with actual data
-  const documentsWithFailedValidation = ['document 1', 'Document 2', 'doCuMeNt 3']
+  const documentsWithFailedValidation = useMemo(
+    () => validationSummary?.[0]?.failedDocuments ?? [],
+    [validationSummary],
+  )
 
   const changeCounter = useMemo(() => changesSummary ?? DEFAULT_CHANGE_SEVERITY_MAP, [changesSummary])
   const affectedOperationCounter = useMemo(() => numberOfImpactedOperations ?? DEFAULT_CHANGE_SEVERITY_MAP, [numberOfImpactedOperations])

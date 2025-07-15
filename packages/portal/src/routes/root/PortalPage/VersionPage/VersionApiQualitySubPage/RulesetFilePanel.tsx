@@ -20,7 +20,7 @@ export const RulesetFilePanel: FC<RulesetFilePanelProps> = (props) => {
         <Box display='flex' alignItems='center' gap={1}>
           <FileIcon color='black' />
           <Typography variant='body2'>
-            {ruleset.name}
+            {ruleset.fileName}
           </Typography>
         </Box>
         <Box display='flex' alignItems='center' gap={1}>

@@ -3,6 +3,8 @@ import type { RulesetBaseDto } from './rulesets'
 import type { IssueSeverity } from './issue-severities'
 import type { ValidationStatus } from './validation-statuses'
 
+type FailedDocumentName = string
+
 // DTO
 
 export type ApiTypeValidationSummaryDto = {
@@ -10,6 +12,7 @@ export type ApiTypeValidationSummaryDto = {
   ruleset: RulesetBaseDto | null
   status: ValidationStatus
   issuesSummary: Record<IssueSeverity, number>
+  failedDocuments: FailedDocumentName[]
 }
 
 export type ValidationSummaryDto = ApiTypeValidationSummaryDto[]

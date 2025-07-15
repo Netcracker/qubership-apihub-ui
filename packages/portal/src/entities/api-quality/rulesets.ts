@@ -14,6 +14,7 @@ export type RulesetActivation = {
 export type RulesetDto = Readonly<{
   id: string
   name: string
+  fileName: string
   status: RulesetStatus
   activationHistory: RulesetActivation[]
   createdAt: string // Format: date-time
@@ -24,10 +25,10 @@ export type Ruleset = RulesetDto
 
 // The only identifiers
 
-export type RulesetBaseDto = Pick<RulesetDto, 'id' | 'name' | 'status'>
+export type RulesetBaseDto = Pick<RulesetDto, 'id' | 'name' | 'fileName' | 'status'>
 export type RulesetBase = RulesetBaseDto
 
 // Identifiers with activation history
 
-export type RulesetBaseWithActivationHistoryDto = Pick<RulesetDto, 'id' | 'name' | 'status' | 'activationHistory'>
+export type RulesetBaseWithActivationHistoryDto = Pick<RulesetDto, 'id' | 'name' | 'fileName' | 'status' | 'activationHistory'>
 export type RulesetBaseWithActivationHistory = RulesetBaseWithActivationHistoryDto
