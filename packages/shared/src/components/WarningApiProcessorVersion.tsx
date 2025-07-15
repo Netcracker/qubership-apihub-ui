@@ -112,26 +112,5 @@ export const WarningApiProcessorVersion: FC<WarningApiProcessorVersionProps> = m
       }
     }
     return null
-
-    // return !hidden && apiProcessorVersion && apiProcessorVersion !== apiProcessorVersionApp && !migrationInProgress
-    //   ? type === WARNING_API_PROCESSOR_TOOLTIP
-    //     ? <ButtonWithHint
-    //       hint={textHintState}
-    //       color="inherit"
-    //       size="small"
-    //       disabled={true}
-    //       tooltipMaxWidth={668}
-    //       startIcon={<RedWarningIcon/>}
-    //       data-testid="WarningApiProcessorVersion"
-    //     />
-    //     : <Box display="flex">
-    //       <RedWarningIcon/>
-    //       <Typography marginLeft="4px"
-    //                   data-testid="WarningApiProcessorTypography"
-    //                   variant="body2">
-    //         {textHintState}
-    //       </Typography>
-    //     </Box>
-    //   : null
   },
 )
