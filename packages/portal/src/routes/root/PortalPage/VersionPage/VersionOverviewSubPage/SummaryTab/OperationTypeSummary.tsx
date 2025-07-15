@@ -310,7 +310,10 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
                   Quality Validation
                 </Typography>
                 {validationFailed && (
-                  <Tooltip title="Validation failed" placement="right">
+                  <Tooltip
+                    title="Validation failed. Some documents could not be processed during quality validation. See information icon below for details about failed documents."
+                    placement="right"
+                  >
                     <Box data-testid="ValidationFailedAlert">
                       <RedWarningIcon />
                     </Box>

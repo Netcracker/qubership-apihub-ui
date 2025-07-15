@@ -16,5 +16,5 @@ export const ISSUE_SEVERITY_COLOR_MAP: Record<IssueSeverity, string> = {
   [IssueSeverities.INFO]: '#61AAF2',
   [IssueSeverities.WARNING]: '#FFB02E',
   [IssueSeverities.ERROR]: '#ED4A54',
-  [IssueSeverities.HINT]: '#626D82',
+  [IssueSeverities.HINT]: '#B4BFCF',
 }
