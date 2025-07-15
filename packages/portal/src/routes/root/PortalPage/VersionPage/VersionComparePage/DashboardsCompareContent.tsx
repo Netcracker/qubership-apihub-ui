@@ -136,8 +136,8 @@ export const DashboardsCompareContent: FC = memo(() => {
         breadcrumbsData={breadcrumbsData}
         handleSwap={handleSwap}
         showCompareDialog={showCompareDialog}
-        swapperBreadcrumbsBeforeComponent={<WarningApiProcessorVersion packageKey={originPackageKey} versionKey={originVersionKey} />}
-        swapperBreadcrumbsAfterComponent={<WarningApiProcessorVersion packageKey={changedPackageKey} versionKey={changedVersionKey} />}
+        customComponentBeforeSwapperBreadcrumbs={<WarningApiProcessorVersion packageKey={originPackageKey} versionKey={originVersionKey} />}
+        customComponentAfterSwapperBreadcrumbs={<WarningApiProcessorVersion packageKey={changedPackageKey} versionKey={changedVersionKey} />}
       />
       <Placeholder
         invisible={isNotEmpty(filteredDashboardChanges)}
