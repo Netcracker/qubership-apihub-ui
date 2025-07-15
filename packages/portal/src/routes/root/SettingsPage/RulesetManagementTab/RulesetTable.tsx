@@ -129,6 +129,17 @@ export const RulesetTable: FC<RulesetTableProps> = memo<RulesetTableProps>(({
     [setColumnSizing, actualColumnSizing],
   )
 
+  if (isEmpty(rulesets) && !isLoading) {
+    return (
+      <Placeholder
+        sx={{ width: 'inherit' }}
+        invisible={isLoading}
+        area={CONTENT_PLACEHOLDER_AREA}
+        message="No Rulesets"
+      />
+    )
+  }
+
   return (
     <TableContainer 
       ref={tableContainerRef} 
@@ -165,16 +176,6 @@ export const RulesetTable: FC<RulesetTableProps> = memo<RulesetTableProps>(({
           {isLoading && <TableSkeleton />}
         </TableBody>
       </Table>
-      {isEmpty(rulesets) && !isLoading
-        ? (
-          <Placeholder
-            sx={{ width: 'inherit' }}
-            invisible={isLoading}
-            area={CONTENT_PLACEHOLDER_AREA}
-            message="No Rulesets"
-          />
-        )
-        : null}
     </TableContainer>
   )
 })
