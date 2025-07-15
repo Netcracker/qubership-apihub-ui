@@ -29,6 +29,6 @@ function manualRunApiQualityValidation(packageId: Key, versionId: Key): Promise<
   return requestVoid(
     endpoint,
     { method: 'POST' },
-    { basePath: API_V1 },
+    { basePath: `/stub${API_V1}` }, // TODO 15.07.25 // Remove stub
   )
 }

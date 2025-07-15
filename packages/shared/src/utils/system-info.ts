@@ -74,7 +74,8 @@ export function toSystemInfo(value: SystemInfoDto): SystemInfo {
     externalLinks: externalLinks,
     notification: value.notification,
     migrationInProgress: value.migrationInProgress,
-    linterEnabled: value.linterEnabled,
+    // TODO 15.07.25 // Remove stub
+    linterEnabled: value.linterEnabled || true,
   }
 }
 

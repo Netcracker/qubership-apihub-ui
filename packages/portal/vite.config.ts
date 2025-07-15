@@ -117,6 +117,12 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: false,
         },
+        // TODO 15.07.25 // Remove stub
+        '/stub/api': {
+          target: devServer,
+          changeOrigin: true,
+          secure: false,
+        },
         '/api': {
           target: isProxyMode ? `${proxyServer}/api` : devServer,
           rewrite: isProxyMode ? path => path.replace(/^\/api/, '') : undefined,
