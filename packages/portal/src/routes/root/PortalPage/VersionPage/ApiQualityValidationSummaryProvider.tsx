@@ -1,5 +1,6 @@
 import { type ValidationSummary } from '@apihub/entities/api-quality/package-version-validation-summary'
 import { ValidationStatuses, type ValidationStatus } from '@apihub/entities/api-quality/validation-statuses'
+import { Link } from '@mui/material'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { API_TYPE_GRAPHQL } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { FC, PropsWithChildren, ReactNode } from 'react'
@@ -85,13 +86,16 @@ type ApiQualitySummaryPlaceholder = string | ReactNode | undefined
 type ApiQualitySummaryDisabled = boolean
 type ApiQualitySummarySectionProperties = [ApiQualitySummaryPlaceholder, ApiQualitySummaryDisabled]
 
-export function useApiQualitySummarySectionProperties(): ApiQualitySummarySectionProperties {
+export function useApiQualitySummarySectionProperties(
+  onManualRunLinter: () => void,
+): ApiQualitySummarySectionProperties {
   const status = useApiQualityValidationStatus()
   switch (status) {
     case ValidationStatuses.IN_PROGRESS:
       return ['Validation is in progress, please wait...', true]
     case ValidationStatuses.NOT_VALIDATED:
-      return [<>No validation results.<br />Republish the version to start quality validation for the new revision.</>, true]
+      // return [<>No validation results.<br />Republish the version to start quality validation for the new revision.</>, true]
+      return [<>No validation results.<br /><Link onClick={onManualRunLinter}>Run linter</Link></>, true]
     case ValidationStatuses.SUCCESS:
       return [undefined, false]
   }

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { useManualRunApiQualityValidation } from '@apihub/api-hooks/ApiQuality/useManualRunApiQualityValidation'
 import { ValidationRulesettLink } from '@apihub/components/ApiQuality/ValidatationRulesetLink'
 import { ValidationIssuesTooltip } from '@apihub/components/ApiQuality/ValidationIssuesTooltip'
 import type { IssueSeverity } from '@apihub/entities/api-quality/issue-severities'
@@ -34,13 +35,14 @@ import type { NumberOfImpactedOperations } from '@netcracker/qubership-apihub-ui
 import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoContextIcon'
 import { DefaultWarningIcon, RedWarningIcon } from '@netcracker/qubership-apihub-ui-shared/icons/WarningIcon'
 import type { FC } from 'react'
-import { memo, useMemo } from 'react'
+import { memo, useCallback, useMemo } from 'react'
 import {
   useApiQualityLinterEnabled,
   useApiQualitySummarySectionProperties,
   useApiQualityValidationFailed,
   useApiQualityValidationSummary,
 } from '../../ApiQualityValidationSummaryProvider'
+import { useParams } from 'react-router-dom'
 
 export type OperationTypeSummaryProps = Readonly<{
   apiType: ApiType
@@ -65,10 +67,16 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
   unknownAudienceOperationsCount,
   apiAudienceTransitions,
 }) => {
-
+  const [manualRunLinter] = useManualRunApiQualityValidation()
+  const { packageId, versionId } = useParams()
+  const onManualRunLinter = useCallback(() => {
+    if (packageId && versionId) {
+      manualRunLinter({ packageId, versionId })
+    }
+  }, [manualRunLinter, packageId, versionId])
   const linterEnabled = useApiQualityLinterEnabled(apiType)
   const validationFailed = useApiQualityValidationFailed()
-  const [apiQualitySummaryPlaceholder, apiQualitySummaryDisabled] = useApiQualitySummarySectionProperties()
+  const [apiQualitySummaryPlaceholder, apiQualitySummaryDisabled] = useApiQualitySummarySectionProperties(onManualRunLinter)
   const showApiQualityPlaceholder = apiQualitySummaryPlaceholder && apiQualitySummaryDisabled
   const showApiQualitySummary = validationFailed || (!apiQualitySummaryPlaceholder && !apiQualitySummaryDisabled)
   const validationSummary = useApiQualityValidationSummary()
