@@ -1,11 +1,10 @@
 import type { Key } from '@apihub/entities/keys'
 import { requestBlob } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
-import { useMutation } from '@tanstack/react-query'
-import { generatePath } from 'react-router'
-import fileDownload from 'js-file-download'
 import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-
-const STUB_API_V1 = '/stub/api/v1'
+import { useMutation } from '@tanstack/react-query'
+import fileDownload from 'js-file-download'
+import { generatePath } from 'react-router'
+import { STUB_API_V1 } from './temp'
 
 type CallbackOptionsDownloadRuleset = { rulesetId: Key }
 
