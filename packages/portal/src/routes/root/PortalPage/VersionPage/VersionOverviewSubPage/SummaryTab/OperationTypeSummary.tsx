@@ -36,13 +36,13 @@ import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/In
 import { DefaultWarningIcon, RedWarningIcon } from '@netcracker/qubership-apihub-ui-shared/icons/WarningIcon'
 import type { FC } from 'react'
 import { memo, useCallback, useMemo } from 'react'
+import { useParams } from 'react-router-dom'
 import {
   useApiQualityLinterEnabled,
   useApiQualitySummarySectionProperties,
   useApiQualityValidationFailed,
   useApiQualityValidationSummary,
 } from '../../ApiQualityValidationSummaryProvider'
-import { useParams } from 'react-router-dom'
 
 export type OperationTypeSummaryProps = Readonly<{
   apiType: ApiType

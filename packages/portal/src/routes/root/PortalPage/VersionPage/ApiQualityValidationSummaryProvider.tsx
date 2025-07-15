@@ -4,7 +4,7 @@ import { Link } from '@mui/material'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { API_TYPE_GRAPHQL } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { FC, PropsWithChildren, ReactNode } from 'react'
-import { createContext, useContext, useMemo } from 'react'
+import { createContext, useCallback, useContext, useMemo, useState } from 'react'
 
 // Raw contexts
 
@@ -30,25 +30,37 @@ export function useApiQualityLinterEnabled(apiType: ApiType): boolean {
 
 // High-order hooks
 
-export function useApiQualityValidationStatus(): ValidationStatus | undefined {
+type RunLinter = () => void
+
+export function useApiQualityValidationStatus(): [ValidationStatus | undefined, RunLinter] {
   const summary = useApiQualityValidationSummary()
-  return useMemo(() => {
-    if (!summary) {
-      return undefined
-    }
-    let finalValidationStatus: ValidationStatus | undefined
-    for (const { status } of summary) {
-      if (finalValidationStatus === undefined) {
-        finalValidationStatus = status
-      } else {
-        const comparisonResult = compareValidationStatuses(status, finalValidationStatus)
-        if (comparisonResult > 0) {
+  const [overriddenStatus, setOverriddenStatus] = useState<ValidationStatus | undefined>(undefined)
+  const onRunLinter = useCallback(() => {
+    setOverriddenStatus(ValidationStatuses.IN_PROGRESS)
+  }, [])
+  return [
+    useMemo(() => {
+      if (overriddenStatus) {
+        return overriddenStatus
+      }
+      if (!summary) {
+        return undefined
+      }
+      let finalValidationStatus: ValidationStatus | undefined
+      for (const { status } of summary) {
+        if (finalValidationStatus === undefined) {
           finalValidationStatus = status
+        } else {
+          const comparisonResult = compareValidationStatuses(status, finalValidationStatus)
+          if (comparisonResult > 0) {
+            finalValidationStatus = status
+          }
         }
       }
-    }
-    return finalValidationStatus
-  }, [summary])
+      return finalValidationStatus
+    }, [summary, overriddenStatus]),
+    onRunLinter,
+  ]
 }
 
 const VALIDATION_STATUS_PRIORITY: Record<ValidationStatus, number> = {
@@ -67,7 +79,7 @@ export type ApiQualityTabTooltip = string | undefined
 export type ApiQualityTabVisibilityParams = [ApiQualityTabTooltip, IsApiQualityTabDisabled]
 
 export function useApiQualityTabVisibilityParams(): ApiQualityTabVisibilityParams {
-  const status = useApiQualityValidationStatus()
+  const [status] = useApiQualityValidationStatus()
   if (!status) {
     return [undefined, true]
   }
@@ -87,15 +99,27 @@ type ApiQualitySummaryDisabled = boolean
 type ApiQualitySummarySectionProperties = [ApiQualitySummaryPlaceholder, ApiQualitySummaryDisabled]
 
 export function useApiQualitySummarySectionProperties(
-  onManualRunLinter: () => void,
+  onManualRunLinter: RunLinter,
 ): ApiQualitySummarySectionProperties {
-  const status = useApiQualityValidationStatus()
+  const [status, updateStatus] = useApiQualityValidationStatus()
+  const onManualRunLinterWithStatusUpdate = useCallback(() => {
+    updateStatus()
+    onManualRunLinter()
+  }, [updateStatus, onManualRunLinter])
   switch (status) {
     case ValidationStatuses.IN_PROGRESS:
       return ['Validation is in progress, please wait...', true]
     case ValidationStatuses.NOT_VALIDATED:
-      // return [<>No validation results.<br />Republish the version to start quality validation for the new revision.</>, true]
-      return [<>No validation results.<br /><Link onClick={onManualRunLinter}>Run linter</Link></>, true]
+      return [
+        <>
+          No validation results.
+          <br />
+          <Link onClick={onManualRunLinterWithStatusUpdate}>
+            Run linter
+          </Link>
+        </>,
+        true,
+      ]
     case ValidationStatuses.SUCCESS:
       return [undefined, false]
   }
@@ -103,7 +127,7 @@ export function useApiQualitySummarySectionProperties(
 }
 
 export function useApiQualityValidationFailed(): boolean {
-  const status = useApiQualityValidationStatus()
+  const [status] = useApiQualityValidationStatus()
   return status === ValidationStatuses.FAILED
 }
 
