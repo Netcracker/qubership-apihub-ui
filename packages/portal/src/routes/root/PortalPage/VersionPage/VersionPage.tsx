@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import { useValidationSummaryByPackageVersion } from '@apihub/api-hooks/ApiQuality/useValidationSummaryByPackageVersion'
 import { CurrentPackageProvider } from '@apihub/components/CurrentPackageProvider'
 import { ExportSettingsDialog } from '@apihub/components/ExportSettingsDialog/ui/ExportSettingsDialog'
-import {
-  PublishDashboardVersionFromCSVDialog,
-} from '@apihub/routes/root/PortalPage/DashboardPage/PublishDashboardVersionFromCSVDialog'
+import { PublishDashboardVersionFromCSVDialog } from '@apihub/routes/root/PortalPage/DashboardPage/PublishDashboardVersionFromCSVDialog'
 import { TOGGLE_SIDEBAR_BUTTON } from '@netcracker/qubership-apihub-ui-shared/components/NavigationMenu'
 import { LayoutWithTabs } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/LayoutWithTabs'
 import { LayoutWithToolbar } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/LayoutWithToolbar'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { useSystemInfo } from '@netcracker/qubership-apihub-ui-shared/features/system-info'
 import { useActiveTabs } from '@netcracker/qubership-apihub-ui-shared/hooks/pathparams/useActiveTabs'
 import { PreviousReleaseOptionsProvider } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget'
 import type { FC, ReactNode } from 'react'
@@ -40,17 +40,13 @@ import { VersionNavigationMenu } from '../VersionNavigationMenu'
 import { ApiQualityDataProvider } from './ApiQualityValidationSummaryProvider'
 import { OutdatedRevisionNotification } from './OutdatedRevisionNotification/OutdatedRevisionNotification'
 import { VersionApiChangesSubPage } from './VersionApiChangesSubPage/VersionApiChangesSubPage'
-import { useValidationSummaryByPackageVersion } from './VersionApiQualitySubPage/api/useValidationSummaryByPackageVersion'
 import { RulesetInfoDialog } from './VersionApiQualitySubPage/components/RulesetInfoDialog/RulesetInfoDialog'
 import { VersionApiQualitySubPage } from './VersionApiQualitySubPage/VersionApiQualitySubPage'
-import {
-  VersionDeprecatedOperationsSubPage,
-} from './VersionDeprecatedOperationsSubPage/VersionDeprecatedOperationsSubPage'
+import { VersionDeprecatedOperationsSubPage } from './VersionDeprecatedOperationsSubPage/VersionDeprecatedOperationsSubPage'
 import { VersionDocumentsSubPage } from './VersionDocumentsSubPage/VersionDocumentsSubPage'
 import { VersionOperationsSubPage } from './VersionOperationsSubPage/VersionOperationsSubPage'
 import { VersionOverviewSubPage } from './VersionOverviewSubPage/VersionOverviewSubPage'
 import { VersionPageToolbar } from './VersionPageToolbar'
-import { useSystemInfo } from '@netcracker/qubership-apihub-ui-shared/features/system-info'
 
 export const VersionPage: FC = memo(() => {
   const { packageId, versionId } = useParams()

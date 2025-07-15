@@ -1,14 +1,14 @@
+import type { RulesetBase } from '@apihub/entities/api-quality/rulesets'
 import { Box, Dialog, DialogContent, DialogTitle, IconButton, Skeleton } from '@mui/material'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { useCallback, type FC } from 'react'
-import type { RulesetBase } from '@apihub/entities/api-quality/rulesets'
 
+import { useRulesetMetadata } from '@apihub/api-hooks/ApiQuality/useRulesetMetadata'
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import { NAVIGATION_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
-import { useRulesetMetadata } from '../../api/useRulesetMetadata'
-import { RulesetActivationHistoryTable } from './RulesetActivationHistoryTable'
 import { RulesetFilePanel } from '../../RulesetFilePanel'
+import { RulesetActivationHistoryTable } from './RulesetActivationHistoryTable'
 
 export const SHOW_RULESET_INFO_DIALOG = 'show-ruleset-info-dialog'
 

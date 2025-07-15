@@ -1,3 +1,5 @@
+import { useListValidatedDocumentsByPackageVersion } from '@apihub/api-hooks/ApiQuality/useListValidatedDocumentsByPackageVersion'
+import { useValidationDetailsByDocument } from '@apihub/api-hooks/ApiQuality/useValidationDetailsByDocument'
 import { ValidationRulesettLink } from '@apihub/components/ApiQuality/ValidatationRulesetLink'
 import type { ValidatedDocument } from '@apihub/entities/api-quality/validated-documents'
 import { JSON_FILE_FORMAT, YAML_FILE_FORMAT } from '@apihub/entities/file-formats'
@@ -12,12 +14,10 @@ import type { FC, ReactNode } from 'react'
 import { memo, useCallback, useMemo, useState } from 'react'
 import { useParams } from 'react-router'
 import { usePublishedDocumentRaw } from '../usePublishedDocumentRaw'
-import { ValidatedDocumentSelector } from './ValidatedDocumentSelector'
-import { ValidationResultsTable } from './ValidationResultsTable'
-import { useListValidatedDocumentsByPackageVersion } from './api/useListValidatedDocumentsByPackageVersion'
-import { useValidationDetailsByDocument } from './api/useValidationDetailsByDocument'
 import type { OriginalDocumentFileFormat } from './types'
 import { useTransformedRawDocumentByFormat } from './utilities/hooks'
+import { ValidatedDocumentSelector } from './ValidatedDocumentSelector'
+import { ValidationResultsTable } from './ValidationResultsTable'
 
 type TwoSidedCardProps = Partial<{
   leftHeader: ReactNode

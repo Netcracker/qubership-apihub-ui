@@ -1,11 +1,11 @@
+import { getPublicLink, useDownloadRuleset } from '@apihub/api-hooks/ApiQuality/useDownloadRuleset'
 import type { Key } from '@apihub/entities/keys'
+import { useShowSuccessNotification } from '@apihub/routes/root/BasePage/Notification'
 import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
 import { DownloadIcon } from '@netcracker/qubership-apihub-ui-shared/icons/DownloadIcon'
 import { LinkIcon } from '@netcracker/qubership-apihub-ui-shared/icons/LinkIcon'
 import type { FC } from 'react'
 import { useCopyToClipboard, useLocation } from 'react-use'
-import { useShowSuccessNotification } from '../../routes/root/BasePage/Notification'
-import { getPublicLink, useDownloadRuleset } from '../../routes/root/useDownloadRuleset'
 
 const ICON_COLOR = '#626D82'
 const ICON_SIZE = '20px'
