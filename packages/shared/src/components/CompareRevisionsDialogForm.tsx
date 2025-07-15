@@ -78,8 +78,8 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
   const { packageId: changedPackageKey } = useParams()
   const [packageSearchParam] = usePackageSearchParam()
   const originPackageKey = packageSearchParam ?? changedPackageKey
-  const [warningApiProcessorStatePrevious, setWarningApiProcessorStatePrevious] = useState('')
-  const [warningApiProcessorStateCurrent, setWarningApiProcessorStateCurrent] = useState('')
+  const [warningApiProcessorStatePrevious, setWarningApiProcessorStatePrevious] = useState(false)
+  const [warningApiProcessorStateCurrent, setWarningApiProcessorStateCurrent] = useState(false)
   const previousRevision = useWatch({ control: control, name: 'originalRevision' })
   const currentRevisions = useWatch({ control: control, name: 'changedRevision' })
 
@@ -110,7 +110,7 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
               value={value}
               onChange={(value) => {
                 if (!value) {
-                  setWarningApiProcessorStatePrevious('')
+                  setWarningApiProcessorStatePrevious(false)
                 }
                 onChange(value)
               }}
@@ -142,7 +142,7 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
               value={value}
               onChange={(value) => {
                 if (!value) {
-                  setWarningApiProcessorStateCurrent('')
+                  setWarningApiProcessorStateCurrent(false)
                 }
                 onChange(value)
               }}
@@ -156,25 +156,25 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
         />
       </DialogContent>
       <Box sx={{ maxWidth: '692px', padding: '0 24px' }}>
-        {(<WarningApiProcessorVersion
+        <WarningApiProcessorVersion
           versionKey={previousRevision?.version}
           packageKey={originPackageKey}
           type={WARNING_API_PROCESSOR_TEXT}
-          hidden={!!warningApiProcessorStateCurrent}
+          hidden={warningApiProcessorStateCurrent}
           data-testid="WarningApiProcessorVersionPrevios"
-          onWarningTextChange={setWarningApiProcessorStatePrevious}/>)}
-        {(<WarningApiProcessorVersion
+          onWarningTextChange={(value) => setWarningApiProcessorStatePrevious(!!value)} />
+        <WarningApiProcessorVersion
           data-testid="WarningApiProcessorVersionCurrent"
           versionKey={currentRevisions?.version}
           packageKey={originPackageKey}
           type={WARNING_API_PROCESSOR_TEXT}
-          onWarningTextChange={setWarningApiProcessorStateCurrent}/>)}
+          onWarningTextChange={(value) => setWarningApiProcessorStateCurrent(!!value)} />
       </Box>
       <DialogActions>
         <LoadingButton
           variant="contained"
           type="submit"
-          disabled={!!warningApiProcessorStatePrevious || !!warningApiProcessorStateCurrent}
+          disabled={warningApiProcessorStatePrevious || warningApiProcessorStateCurrent}
           loading={isApiTypeFetching}
           data-testid="CompareButton"
         >

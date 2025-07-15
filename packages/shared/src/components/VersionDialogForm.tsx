@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react'
-import type { ChangeEvent, FC, SyntheticEvent} from 'react'
+import type { ChangeEvent, FC, SyntheticEvent } from 'react'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import type { Control, FormState, UseFormSetValue } from 'react-hook-form'
 import { Controller, useWatch } from 'react-hook-form'
@@ -68,7 +68,6 @@ import { CSV_FILE_EXTENSION } from '../utils/files'
 import { FileUploadField } from './FileUploadField'
 import type { AutocompleteInputChangeReason } from '@mui/base/AutocompleteUnstyled/useAutocomplete'
 import { WARNING_API_PROCESSOR_TEXT, WarningApiProcessorVersion } from './WarningApiProcessorVersion'
-
 
 export type VersionFormData = {
   message?: string
@@ -192,14 +191,14 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
   }, [onVersionsFilter, onSetTargetVersion])
   const onLabelsChange = useCallback((_: SyntheticEvent, value: string[]): void => onSetTargetLabels?.(value), [onSetTargetLabels])
   const onStatusChange = useCallback((_: SyntheticEvent, value: VersionStatus): void => onSetTargetStatus?.(value), [onSetTargetStatus])
-  const [warningApiProcessorState, setWarningApiProcessorState] = useState('')
+  const [warningApiProcessorState, setWarningApiProcessorState] = useState(false)
 
   const debouncedOnWorkspacesChange = useMemo(() => debounce(onWorkspacesChange, DEFAULT_DEBOUNCE), [onWorkspacesChange])
   const debouncedOnPackagesChange = useMemo(() => debounce(onPackagesChange, DEFAULT_DEBOUNCE), [onPackagesChange])
   const debouncedOnVersionsChange = useMemo(() => debounce(onVersionsChange, DEFAULT_DEBOUNCE), [onVersionsChange])
 
   const [descriptorContent, setDescriptorContent] = useState<string | null>(null)
-  const [isFileReading, setIsFileReading] = useState<boolean>(false)  
+  const [isFileReading, setIsFileReading] = useState<boolean>(false)
   const onFileContentLoaded = useCallback((event: ProgressEvent<FileReader>): void => {
     setDescriptorContent(event?.target?.result ? String(event.target.result) : null)
     setIsFileReading(false)
@@ -503,7 +502,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
                   setValue('package', value)
                   onSetTargetPackage?.(value)
                   previousVersion !== NO_PREVIOUS_RELEASE_VERSION_OPTION && setValue('previousVersion', NO_PREVIOUS_RELEASE_VERSION_OPTION)
-                  setWarningApiProcessorState('')
+                  setWarningApiProcessorState(false)
                 }}
                 onClose={clearFilter(onPackagesFilter)}
                 data-testid="PackageAutocomplete"
@@ -659,7 +658,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
                     setValue('previousVersion', value ?? NO_PREVIOUS_RELEASE_VERSION_OPTION)
                     setSelectedPreviousVersion?.(value ?? NO_PREVIOUS_RELEASE_VERSION_OPTION)
                     if (!value || value === NO_PREVIOUS_RELEASE_VERSION_OPTION) {
-                      setWarningApiProcessorState('')
+                      setWarningApiProcessorState(false)
                     }
 
                   }}
@@ -675,18 +674,18 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
             <ErrorTypography>{errors.version?.message}</ErrorTypography>
           </Box>
         )}
-        {(<WarningApiProcessorVersion
+        <WarningApiProcessorVersion
           versionKey={NO_PREVIOUS_RELEASE_VERSION_OPTION !== previousVersion ? previousVersion : undefined}
           packageKey={targetPackage?.key || currentPackageKey}
           type={WARNING_API_PROCESSOR_TEXT}
-          onWarningTextChange={setWarningApiProcessorState}/>)}
+          onWarningTextChange={(value) => setWarningApiProcessorState(!!value)}/>
       </DialogContent>
       <DialogActions>
         <LoadingButton
           variant="contained"
           type="submit"
           loading={isPublishing}
-          disabled={isFileReading || publishButtonDisabled || publishFieldsDisabled || !!warningApiProcessorState}
+          disabled={isFileReading || publishButtonDisabled || publishFieldsDisabled || warningApiProcessorState}
           data-testid={submitButtonTittle ? `${submitButtonTittle}Button` : 'PublishButton'}
         >
           {submitButtonTittle ?? 'Publish'}
