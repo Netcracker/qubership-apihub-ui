@@ -77,7 +77,7 @@ export const WarningApiProcessorVersion: FC<WarningApiProcessorVersionProps> = m
     }, [createTextHint])
 
     useEffect(() => {
-      if (textHintState && onWarningTextChange) {
+      if (onWarningTextChange) {
         onWarningTextChange(textHintState)
       }
     }, [textHintState, onWarningTextChange])
