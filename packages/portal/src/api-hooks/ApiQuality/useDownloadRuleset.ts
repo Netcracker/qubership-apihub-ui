@@ -22,10 +22,7 @@ export function getPublicLink(
   rulesetId: Key,
 ): string {
   const endpoint = getEndpoint(rulesetId)
-  const searchParams = optionalSearchParams({
-    disposition: { value: 'inline' },
-  })
-  return `${protocol}://${host}${STUB_API_V1}${endpoint}?${searchParams}`
+  return `${protocol}://${host}${STUB_API_V1}${endpoint}`
 }
 
 export function useDownloadRuleset(): CallbackDownloadRuleset {
