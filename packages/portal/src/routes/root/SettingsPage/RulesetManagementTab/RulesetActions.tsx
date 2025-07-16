@@ -6,7 +6,7 @@ import { useActivateRuleset } from './hooks/api/useActivateRuleset'
 import { ConfirmationDialog } from '@netcracker/qubership-apihub-ui-shared/components/ConfirmationDialog'
 import type { RulesetDto } from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
 import { RulesetStatuses } from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
-import { RulesetFileControls } from '@apihub/components/RulesetFileControls'
+import { ValidationRulesetFileControls } from '@apihub/components/ApiQuality/ValidationRulesetFileControls'
 import { useDeleteRuleset } from './hooks/api/useDeleteRuleset'
 import { DeleteIcon } from '@netcracker/qubership-apihub-ui-shared/icons/DeleteIcon'
 import { SECONDARY_TEXT_COLOR } from '@netcracker/qubership-apihub-ui-shared/themes/colors'
@@ -50,7 +50,7 @@ export const RulesetActions: FC<RulesetActionsProps> = memo(({ ruleset }) => {
           </span>
         </Tooltip>
 
-        <RulesetFileControls rulesetId={ruleset.id} />
+        <ValidationRulesetFileControls rulesetId={ruleset.id} />
 
         <Tooltip
           title={ruleset.status === RulesetStatuses.ACTIVE

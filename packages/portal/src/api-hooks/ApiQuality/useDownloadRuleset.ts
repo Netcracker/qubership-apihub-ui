@@ -1,9 +1,9 @@
 import type { Key } from '@apihub/entities/keys'
 import { API_V1, requestBlob } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
-import { useMutation } from '@tanstack/react-query'
-import { generatePath } from 'react-router'
-import fileDownload from 'js-file-download'
 import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { useMutation } from '@tanstack/react-query'
+import fileDownload from 'js-file-download'
+import { generatePath } from 'react-router'
 
 type CallbackOptionsDownloadRuleset = { rulesetId: Key }
 
@@ -21,10 +21,7 @@ export function getPublicLink(
   rulesetId: Key,
 ): string {
   const endpoint = getEndpoint(rulesetId)
-  const searchParams = optionalSearchParams({
-    disposition: { value: 'inline' },
-  })
-  return `${protocol}://${host}${API_V1}${endpoint}?${searchParams}`
+  return `${protocol}://${host}${API_V1}${endpoint}`
 }
 
 export function useDownloadRuleset(): CallbackDownloadRuleset {
