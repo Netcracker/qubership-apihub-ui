@@ -99,13 +99,10 @@ export function toPackageVersionContent(value: PackageVersionContentDto): Packag
 export function convertDtoFieldOperationTypesWithApiType(operationTypes: ReadonlyArray<OperationTypeSummaryDto> | undefined): ReadonlyArray<OperationTypeSummary> {
   return operationTypes?.map((type) => {
     const { changesSummary, numberOfImpactedOperations } = type
-    if (!changesSummary || !numberOfImpactedOperations) {
-      return { ...type }
-    }
     return {
       ...type,
-      changesSummary: replacePropertyInChangesSummary(type.changesSummary),
-      numberOfImpactedOperations: replacePropertyInChangesSummary(type.numberOfImpactedOperations),
+      changesSummary: changesSummary && replacePropertyInChangesSummary(changesSummary),
+      numberOfImpactedOperations: numberOfImpactedOperations && replacePropertyInChangesSummary(numberOfImpactedOperations),
     }
-  }) as ReadonlyArray<OperationTypeSummary>
+  }) ?? []
 }
