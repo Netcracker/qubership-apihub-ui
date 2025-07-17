@@ -52,8 +52,8 @@ type TokenAndJobViewProps = {
 }
 
 const TokenAndJobView: FC<TokenAndJobViewProps> = memo<TokenAndJobViewProps>(({ name, type }) => {
-  let viewName: string = ''
-  let viewIcon = <></>
+  let viewName: string | undefined
+  let viewIcon: JSX.Element = <></>
   switch (type) {
     case API_KEY:
       viewName = `API key: ${name}`
