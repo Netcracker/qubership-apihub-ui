@@ -1,2 +1,0 @@
-import{j as e}from"./createTheme-e504d7a1.js";import{T as a,t}from"./theme-c443f225.js";import{B as o}from"./Box-3dbc4f20.js";function p(r,i){return e("div",{style:{height:"100vh"},children:e(r,{...i})})}function d(r,i){return e(a,{theme:t,children:e(o,{sx:{display:"flex",alignItems:"center",gap:2,backgroundColor:t.palette.primary.main,color:"white",padding:2,height:"44px"},children:e(r,{...i})})})}export{d as a,p as f};
-//# sourceMappingURL=decorators-968c7ce7.js.map
