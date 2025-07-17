@@ -90,7 +90,7 @@ export default defineConfig(({ mode }) => {
       alias: {
         '@apihub/components': path.resolve(__dirname, './src/components/'),
         '@apihub/entities': path.resolve(__dirname, './src/entities/'),
-        '@apihub/hooks': path.resolve(__dirname, './src/hooks/'),
+        '@apihub/api-hooks': path.resolve(__dirname, './src/api-hooks/'),
         '@apihub/routes': path.resolve(__dirname, './src/routes/'),
         '@apihub/utils': path.resolve(__dirname, './src/utils/'),
         '@netcracker/qubership-apihub-ui-shared': path.resolve(__dirname, './../shared/src'),
@@ -114,6 +114,12 @@ export default defineConfig(({ mode }) => {
         '/playground': {
           target: isProxyMode ? `${proxyServer}/playground` : devServer,
           rewrite: isProxyMode ? path => path.replace(/^\/playground/, '') : undefined,
+          changeOrigin: true,
+          secure: false,
+        },
+        // TODO 15.07.25 // Remove stub
+        '/stub/api': {
+          target: devServer,
           changeOrigin: true,
           secure: false,
         },
