@@ -101,8 +101,12 @@ export function convertDtoFieldOperationTypesWithApiType(operationTypes: Readonl
     const { changesSummary, numberOfImpactedOperations } = type
     return {
       ...type,
-      changesSummary: changesSummary && replacePropertyInChangesSummary(changesSummary),
-      numberOfImpactedOperations: numberOfImpactedOperations && replacePropertyInChangesSummary(numberOfImpactedOperations),
+      changesSummary:
+        changesSummary &&
+        replacePropertyInChangesSummary(changesSummary),
+      numberOfImpactedOperations:
+        numberOfImpactedOperations &&
+        replacePropertyInChangesSummary(numberOfImpactedOperations),
     }
   }) ?? []
 }
