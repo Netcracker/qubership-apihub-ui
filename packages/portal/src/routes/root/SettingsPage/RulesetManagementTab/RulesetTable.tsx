@@ -41,7 +41,6 @@ const COLUMNS_MODELS: ColumnModel[] = [
 const tableContainerStyles = {
   mt: 1,
   maxHeight: 'calc(100vh - 260px)',
-  overflowX: 'hidden',
 } as const
 
 export type RulesetTableProps = {
@@ -83,9 +82,7 @@ export const RulesetTable: FC<RulesetTableProps> = memo<RulesetTableProps>(({
       {
         id: ACTIVATION_HISTORY_COLUMN_ID,
         header: () => <CustomTableHeadCell title="Activation History" />,
-        cell: ({ row: { original: ruleset } }) => (
-          <ActivationHistoryContent ruleset={ruleset}/>
-        ),
+        cell: ({ row: { original: ruleset } }) => <ActivationHistoryContent ruleset={ruleset} />,
       },
       {
         id: STATUS_COLUMN_ID,
@@ -141,8 +138,8 @@ export const RulesetTable: FC<RulesetTableProps> = memo<RulesetTableProps>(({
   }
 
   return (
-    <TableContainer 
-      ref={tableContainerRef} 
+    <TableContainer
+      ref={tableContainerRef}
       sx={tableContainerStyles}
     >
       <Table stickyHeader>
