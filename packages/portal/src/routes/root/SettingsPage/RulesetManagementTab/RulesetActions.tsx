@@ -1,16 +1,15 @@
-import { Box, IconButton, Tooltip } from '@mui/material'
+import { Box } from '@mui/material'
 import type { FC } from 'react'
 import { memo, useState } from 'react'
-import PlayCircleOutlineRoundedIcon from '@mui/icons-material/PlayCircleOutlineRounded'
 import { useActivateRuleset } from './hooks/api/useActivateRuleset'
 import { ConfirmationDialog } from '@netcracker/qubership-apihub-ui-shared/components/ConfirmationDialog'
 import type { RulesetDto } from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
 import { RulesetStatuses } from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
 import { ValidationRulesetFileControls } from '@apihub/components/ApiQuality/ValidationRulesetFileControls'
 import { useDeleteRuleset } from './hooks/api/useDeleteRuleset'
-import { DeleteIcon } from '@netcracker/qubership-apihub-ui-shared/icons/DeleteIcon'
-import { SECONDARY_TEXT_COLOR } from '@netcracker/qubership-apihub-ui-shared/themes/colors'
-import { DISABLED_BUTTON_COLOR } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
+import { PlayIcon } from '@netcracker/qubership-apihub-ui-shared/icons/PlayIcon'
+import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
+import { DeleteIconMui } from '@netcracker/qubership-apihub-ui-shared/icons/DeleteIconMui'
 
 export interface RulesetActionsProps {
   ruleset: RulesetDto
@@ -34,47 +33,31 @@ export const RulesetActions: FC<RulesetActionsProps> = memo(({ ruleset }) => {
   return (
     <>
       <Box display="flex" gap={2} visibility="hidden" className="hoverable" alignItems="center">
-        <Tooltip title={ruleset.status === RulesetStatuses.ACTIVE ? 'The ruleset is already active' : 'Activate'}>
-          <span>
-            <IconButton
-              size="small"
-              onClick={() => setIsActivateDialogOpen(true)}
-              disabled={ruleset.status === RulesetStatuses.ACTIVE}
-              data-testid="ActivateButton"
-            >
-              <PlayCircleOutlineRoundedIcon
-                fontSize="small"
-                color={ruleset.status === RulesetStatuses.ACTIVE ? 'disabled' : 'muted'}
-              />
-            </IconButton>
-          </span>
-        </Tooltip>
+        <ButtonWithHint
+          size="small"
+          area-label="Activate Ruleset"
+          hint={ruleset.status === RulesetStatuses.ACTIVE ? 'The ruleset is already active' : 'Activate'}
+          disabled={ruleset.status === RulesetStatuses.ACTIVE}
+          startIcon={<PlayIcon fontSize="small" />}
+          onClick={() => setIsActivateDialogOpen(true)}
+          data-testid="ActivateButton"
+        />
 
         <ValidationRulesetFileControls rulesetId={ruleset.id} />
 
-        <Tooltip
-          title={ruleset.status === RulesetStatuses.ACTIVE
+        <ButtonWithHint
+          size="small"
+          area-label="Delete Ruleset"
+          hint={ruleset.status === RulesetStatuses.ACTIVE
             ? 'Cannot delete active ruleset'
             : ruleset.canBeDeleted
             ? 'Delete'
             : 'The ruleset cannot be deleted due to existing versions that have been validated against this ruleset'}
-        >
-          <span>
-            <IconButton
-              size="small"
-              onClick={() => setIsDeleteDialogOpen(true)}
-              disabled={ruleset.status === RulesetStatuses.ACTIVE || !ruleset.canBeDeleted}
-              data-testid="DeleteButton"
-              sx={{ height: '20px' }}
-            >
-              <DeleteIcon
-                color={ruleset.status === RulesetStatuses.ACTIVE || !ruleset.canBeDeleted
-                  ? DISABLED_BUTTON_COLOR
-                  : SECONDARY_TEXT_COLOR}
-              />
-            </IconButton>
-          </span>
-        </Tooltip>
+          disabled={ruleset.status === RulesetStatuses.ACTIVE || !ruleset.canBeDeleted}
+          startIcon={<DeleteIconMui fontSize="small" />}
+          onClick={() => setIsDeleteDialogOpen(true)}
+          data-testid="DeleteButton"
+        />
       </Box>
 
       <ConfirmationDialog

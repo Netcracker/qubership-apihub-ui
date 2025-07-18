@@ -4,9 +4,9 @@ import { memo } from 'react'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import { RulesetTable } from './RulesetTable'
 import { CreateRulesetDialog } from './dialogs/CreateRulesetDialog'
-import { AddIcon } from '@netcracker/qubership-apihub-ui-shared/icons/AddIcon'
 import { useRulesets } from './hooks/api/useRulesets'
 import { useEventBus } from '@apihub/routes/EventBusProvider'
+import { PlusIcon } from '@netcracker/qubership-apihub-ui-shared/icons/PlusIcon'
 
 export const RulesetManagementTab: FC = memo(() => {
   const [rulesets, isLoading] = useRulesets()
@@ -22,9 +22,8 @@ export const RulesetManagementTab: FC = memo(() => {
       action={
         <Button
           variant="contained"
-          color="primary"
           disabled={isLoading}
-          startIcon={<AddIcon />}
+          startIcon={<PlusIcon />}
           onClick={handleOpenCreateDialog}
           data-testid="AddRulesetButton"
           aria-label="Add new ruleset"

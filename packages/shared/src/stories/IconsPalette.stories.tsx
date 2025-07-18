@@ -25,6 +25,7 @@ import { ConfigureIcon } from '../icons/ConfigureIcon'
 import { DashboardIcon } from '../icons/DashboardIcon'
 import { DefaultSideBarIcon } from '../icons/DefaultSideBarIcon'
 import { DeleteIcon } from '../icons/DeleteIcon'
+import { DeleteIconMui } from '../icons/DeleteIconMui'
 import { DoneIcon } from '../icons/DoneIcon'
 import { DownloadIcon } from '../icons/DownloadIcon'
 import { DragIcon } from '../icons/DragIcon'
@@ -53,6 +54,8 @@ import { MinusIcon } from '../icons/MinusIcon'
 import { OpenapiIcon } from '../icons/OpenapiIcon'
 import { OverviewIcon } from '../icons/OverviewIcon'
 import { PackageIcon } from '../icons/PackageIcon'
+import { PlayIcon } from '../icons/PlayIcon'
+import { PlusIcon } from '../icons/PlusIcon'
 import { PortalSettingsIcon } from '../icons/PortalSettingsIcon'
 import { ProtobufIcon } from '../icons/ProtobufIcon'
 import { PublishIcon } from '../icons/PublishIcon'
@@ -166,6 +169,9 @@ const MUI_ICONS_REGISTRY: readonly IconItem<MuiIconComponent>[] = [
   { name: 'InfoContextIcon', component: InfoContextIcon },
   { name: 'ClockBackwardIcon', component: ClockBackwardIcon },
   { name: 'CloudUploadIcon', component: CloudUploadIcon },
+  { name: 'DeleteIconMui', component: DeleteIconMui },
+  { name: 'PlayIcon', component: PlayIcon },
+  { name: 'PlusIcon', component: PlusIcon },
 ] as const
 
 const BACKGROUND_COLORS: Record<BackgroundColor, string> = {
