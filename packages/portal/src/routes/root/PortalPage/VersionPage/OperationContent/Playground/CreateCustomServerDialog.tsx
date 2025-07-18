@@ -18,16 +18,23 @@ import type { ChangeEvent, FC } from 'react'
 import * as React from 'react'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import {
+  Alert,
   Autocomplete,
+  Box,
   Button,
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControl,
+  FormControlLabel,
+  IconButton,
   ListItem,
+  Radio,
+  RadioGroup,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material'
-import { LoadingButton } from '@mui/lab'
 import { Controller, useForm } from 'react-hook-form'
 import type { ControllerFieldState, ControllerRenderProps } from 'react-hook-form/dist/types/controller'
 import type { UseFormStateReturn } from 'react-hook-form/dist/types'
@@ -44,24 +51,39 @@ import { SHOW_CREATE_CUSTOM_SERVER_DIALOG } from '@apihub/routes/EventBusProvide
 import type { Namespace } from '@netcracker/qubership-apihub-ui-shared/entities/namespaces'
 import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 import { isServiceNameExistInNamespace } from '@netcracker/qubership-apihub-ui-shared/entities/service-names'
+import CloseIcon from '@mui/icons-material/Close'
+import { useShowSuccessNotification } from '@apihub/routes/root/BasePage/Notification'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import { PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { usePathWarning } from '@apihub/entities/usePathWarning'
+import { generatePath } from 'react-router'
+
 
 const CLOUD_KEY = 'cloudKey'
 const NAMESPACE_KEY = 'namespaceKey'
 const SERVICE_KEY = 'serviceKey'
 const CUSTOM_SERVER_URL_KEY = 'customServerUrl'
+const DESCRIPTION_KEY = 'description'
+
+const MODE_CUSTOM = 'custom' as const
+const MODE_PROXY = 'proxy' as const
+
+type ModeType = typeof MODE_CUSTOM | typeof MODE_PROXY
 
 type CreateCustomServerForm = {
   [CLOUD_KEY]?: Key
   [NAMESPACE_KEY]?: Key
   [SERVICE_KEY]?: Key
   [CUSTOM_SERVER_URL_KEY]?: Key
+  [DESCRIPTION_KEY]?: string
 }
+
 
 export const CreateCustomServerDialog: FC = memo(() => {
   return (
     <PopupDelegate
       type={SHOW_CREATE_CUSTOM_SERVER_DIALOG}
-      render={props => <CreateCustomServerPopup {...props}/>}
+      render={props => <CreateCustomServerPopup {...props} />}
     />
   )
 })
@@ -72,6 +94,45 @@ type ControllerRenderFunctionProps<FieldName extends keyof CreateCustomServerFor
   formState: UseFormStateReturn<CreateCustomServerForm>
 }
 
+const AGENT_PROXY_URL_TEMPLATE = '/apihub-nc/agents/:cloud/namespaces/:namespace/services/:service/proxy'
+const buildAgentProxyUrl = (cloud: string, namespace: string, service: string): string => {
+  return generatePath(AGENT_PROXY_URL_TEMPLATE, {
+    cloud,
+    namespace,
+    service,
+  })
+}
+
+export const renderDescriptionInput: (
+  props: ControllerRenderFunctionProps<typeof DESCRIPTION_KEY>
+) => JSX.Element = ({ field }) => (
+  <TextField
+    {...field}
+    label="Description"
+    value={field.value ?? ''}
+    onChange={field.onChange}
+    fullWidth
+    data-testid="ServerDescriptionInput"
+  />
+)
+
+const isAbsoluteUrl = (url: string): boolean => {
+  try {
+    const parsed = new URL(url)
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:'
+  } catch {
+    return false
+  }
+}
+
+const hasPath = (url: string): boolean => {
+  try {
+    const { pathname } = new URL(url)
+    return pathname !== '' && pathname !== '/'
+  } catch {
+    return false
+  }
+}
 const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }) => {
   const { packageId = '' } = useParams()
   const [packageObj] = usePackage()
@@ -84,20 +145,34 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const [selectedService] = useState<string | null>(serviceName ?? '')
   const [selectedAgent, setSelectedAgent] = useState<string | undefined>()
   const [selectedCustomUrl, setSelectedCustomUrl] = useState<string>('')
+  const [mode, setMode] = useState<ModeType>(MODE_CUSTOM)
+  const [serverUrlError, setServerUrlError] = useState<string | null>(null)
+  const [serverUrlWarning, setServerUrlWarning] = useState<string | null>(null)
+  const [urlInput, setUrlInput] = useState('')
 
-  //  Load data for connected fields
+
+  // Load data for connected fields
   const [agents] = useAgents()
-  const clouds = useMemo(() => agents?.map(({ agentDeploymentCloud }) => agentDeploymentCloud), [agents])
   const cloudAgentIdMap = useMemo(
     () => new Map(agents.map(({ agentId, agentDeploymentCloud }) => [agentDeploymentCloud, agentId])),
     [agents],
   )
   useEffect(
-    () => {selectedCloud && cloudAgentIdMap.has(selectedCloud) && setSelectedAgent(cloudAgentIdMap.get(selectedCloud) ?? '')},
+    () => { selectedCloud && cloudAgentIdMap.has(selectedCloud) && setSelectedAgent(cloudAgentIdMap.get(selectedCloud) ?? '') },
     [cloudAgentIdMap, selectedCloud],
   )
   const [namespaces] = useNamespaces(selectedAgent!)
   const [serviceNames] = useServiceNames(selectedAgent!, selectedNamespace?.namespaceKey)
+
+  // Derive cloud options from useAgents hook directly
+  const cloud = useMemo(() => {
+    const uniqueClouds = Array.from(new Set(agents.map(agent => agent.agentDeploymentCloud).filter(Boolean)))
+    return uniqueClouds as string[]
+  }, [agents])
+
+  const baseUrl = window.location.origin
+
+  const generatedUrl = `${baseUrl}${buildAgentProxyUrl(selectedCloud, selectedNamespace?.namespaceKey ?? '', selectedService ?? '')}`
 
   // Form initializing
   const defaultFormData = useMemo<CreateCustomServerForm>(() => ({
@@ -117,7 +192,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const isUrlGenerationAvailable = isServiceNameExist && selectedAgent && selectedNamespace
 
   useEffect(
-    () => {isUrlGenerationAvailable && setSelectedCustomUrl(`/apihub-nc/agents/${selectedAgent}/namespaces/${namespaceKey}/services/${selectedService}/proxy/`)},
+    () => { isUrlGenerationAvailable && setSelectedCustomUrl(buildAgentProxyUrl(selectedAgent ?? '', selectedNamespace?.namespaceKey ?? '', selectedService ?? '')) },
     [isUrlGenerationAvailable, namespaceKey, selectedAgent, selectedNamespace, selectedService],
   )
 
@@ -126,8 +201,20 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     [selectedCloud, selectedNamespace?.namespaceKey, serviceName, serviceNames],
   )
 
+  const showPathWarning = usePathWarning(urlInput)
+
   const updateSelectedCustomUrl = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    setSelectedCustomUrl(event.target.value)
+    const { value } = event.target
+    setUrlInput(value)
+    setSelectedCustomUrl(value)
+    setServerUrlError(null)
+    setServerUrlWarning(null)
+
+    if (!isAbsoluteUrl(value)) {
+      setServerUrlError('The value must be an absolute URL')
+      return
+    }
+
     setSelectedNamespace(null)
     setSelectedCloud('')
   }, [])
@@ -140,37 +227,73 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     description: cloudKey ? `Proxy via agent ${selectedAgent} to ${selectedNamespace?.namespaceKey}` : '',
   }), [cloudKey, selectedAgent, selectedCustomUrl, selectedNamespace?.namespaceKey])
 
+  const showSuccessNotification = useShowSuccessNotification()
+
   const onAddCustomServer = useCallback(() => {
-    if (isServiceNameValid) {
-      setCustomServersPackageMap(packageId, [...customServersPackageMap?.[packageId] ?? [], server])
-      setTimeout(() => setOpen(false), 50)
+
+    const url = server?.url
+    if (serverUrlError || !isServiceNameValid || !url) return
+
+    const caption = server?.description?.trim() || '-'
+    const newServer = {
+      url: url,
+      description: caption,
+      custom: true,
+      shouldUseProxyEndpoint: mode === 'proxy', 
     }
-  }, [isServiceNameValid, setCustomServersPackageMap, packageId, customServersPackageMap, server, setOpen])
+
+    const servers = [...(customServersPackageMap?.[packageId] ?? []), newServer]
+    setCustomServersPackageMap(packageId, servers)
+
+    setSelectedCustomUrl(server.url)
+
+    // Store in localStorage for Playground to pick up
+    const currentLocalServers = JSON.parse(localStorage.getItem('apihub_custom_servers') || '[]') as typeof servers
+    const updatedLocalServers = [...currentLocalServers, newServer]
+    localStorage.setItem('apihub_custom_servers', JSON.stringify(updatedLocalServers))
+
+
+    showSuccessNotification?.({
+      title: 'Success',
+      message: 'Server has been added',
+    })
+    setTimeout(() => setOpen(false), 50)
+
+  }, [isServiceNameValid, showSuccessNotification, serverUrlError, setCustomServersPackageMap, packageId, customServersPackageMap, server, setOpen, setSelectedCustomUrl, mode])
+
 
   // Rendering functions
   const renderSelectCloud = useCallback(({ field }: ControllerRenderFunctionProps<typeof CLOUD_KEY>) => (
     <Autocomplete
       key="cloudAutocomplete"
-      options={clouds}
+      options={cloud}
       value={selectedCloud}
+
+      onInputChange={(_: any, newInputValue: React.SetStateAction<string>) => {
+        setSelectedCloud(newInputValue)
+      }}
       renderOption={(props, cloud) => (
-        <ListItem {...props} key={cloud}>
+        <ListItem {...props}
+          key={typeof cloud === 'string' ? cloud : crypto.randomUUID()}>
           {cloud}
         </ListItem>
       )}
       isOptionEqualToValue={(option, value) => option === value}
       renderInput={(params) => (
-        <TextField {...field} {...params} label="Cloud"/>
+        <TextField {...field} {...params}
+          label="Cloud"
+          required
+        />
       )}
       onChange={(_, value) => {
-        setValue(CLOUD_KEY, value ?? '')
+        setValue(CLOUD_KEY, value ?? '', { shouldValidate: true })
         setSelectedCloud(value ?? '')
         setSelectedNamespace(null)
         setSelectedCustomUrl('')
       }}
       data-testid="CloudAutocomplete"
     />
-  ), [clouds, selectedCloud, setValue])
+  ), [cloud, selectedCloud, setValue])
 
   const renderSelectNamespace = useCallback((
     { field }: ControllerRenderFunctionProps<typeof NAMESPACE_KEY>) => (
@@ -189,6 +312,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
           {...field}
           {...params}
           label="Namespace"
+          required
           error={!isServiceNameValid}
           helperText={!isServiceNameValid && `Service with ${serviceName} not found in selected namespace`}
         />
@@ -203,84 +327,148 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   ), [isServiceNameValid, namespaces, selectedNamespace, serviceName, setValue])
 
   const renderSelectService = useCallback((
-      { field }: ControllerRenderFunctionProps<typeof SERVICE_KEY>) => (
-      <Autocomplete
-        disabled={true}
-        key="serviceAutocomplete"
-        options={[serviceName]}
-        value={selectedService}
-        renderOption={(props, serviceName) => (
-          <ListItem {...props} key={serviceName}>
-            {serviceName}
-          </ListItem>
-        )}
-        renderInput={(params) => (
-          <TextField {...field} {...params} label="Service"/>
-        )}
-        data-testid="ServiceAutocomplete"
-      />
-    ),
+    { field }: ControllerRenderFunctionProps<typeof SERVICE_KEY>) => (
+    <Autocomplete
+      disabled={true}
+      key="serviceAutocomplete"
+      options={[serviceName]}
+      value={selectedService}
+      renderOption={(props, serviceName) => (
+        <ListItem {...props} key={crypto.randomUUID()}>
+          {serviceName}
+        </ListItem>
+      )}
+      renderInput={(params) => (
+        <TextField {...field} {...params} label="Service" required />
+      )}
+      data-testid="ServiceAutocomplete"
+    />
+  ),
     [selectedService, serviceName],
   )
 
   const renderSelectUrl = useCallback((
-      { field }: ControllerRenderFunctionProps<typeof CUSTOM_SERVER_URL_KEY>) => (
-      <TextField
-        {...field}
-        value={selectedCustomUrl ?? ''}
-        onChange={updateSelectedCustomUrl}
-        required
-        label="Server URL"
-        data-testid="ServerUrlTextInput"
-      />
-    ),
-    [selectedCustomUrl, updateSelectedCustomUrl],
+    { field, fieldState }: ControllerRenderFunctionProps<typeof CUSTOM_SERVER_URL_KEY>) => (
+    <TextField
+      {...field}
+      value={selectedCustomUrl ?? ''}
+      onChange={updateSelectedCustomUrl}
+      required
+      label="Server URL"
+      error={!!fieldState.error || !!serverUrlError}
+      helperText={serverUrlError || serverUrlWarning || fieldState.error?.message}
+      fullWidth
+      data-testid="ServerUrlTextInput"
+    />
+  ),
+    [selectedCustomUrl, updateSelectedCustomUrl, serverUrlError, serverUrlWarning],
   )
 
+
+  const kind = packageObj?.kind
+  const kindLabel = kind ?? PACKAGE_KIND
   return (
     <DialogForm
       open={open}
       onClose={() => setOpen(false)}
       onSubmit={handleSubmit(onAddCustomServer)}
     >
-      <DialogTitle>
-        Add Custom Server
+
+      <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pr: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          Add Custom Server
+          {!isServiceNameExist && (
+            <Tooltip
+              title={`Only adding a custom server is available. To use the Agent proxy, specify the service name for the current ${kindLabel}.`}
+              placement="right"
+            >
+              <IconButton size="small" aria-label="info" sx={{ p: '0 4px' }}>
+                <InfoOutlinedIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          )}
+        </Box>
+        <IconButton
+          onClick={() => setOpen(false)}
+          size="small"
+          data-testid="CloseButton"
+          aria-label="close"
+        >
+          <CloseIcon />
+        </IconButton>
       </DialogTitle>
 
       <DialogContent>
-        {isServiceNameExist && (<>
-          <Typography variant="subtitle2">Use Agent Proxy</Typography>
+        {isServiceNameExist && (
+          <FormControl component="fieldset">
+            <RadioGroup
+              value={mode}
+              onChange={(e) => setMode(e.target.value as 'custom' | 'proxy')}
+            >
+              <FormControlLabel value="custom" control={<Radio />} label="Add Custom Server URL" />
+              <FormControlLabel value="proxy" control={<Radio />} label="Use Agent Proxy" />
+            </RadioGroup>
+          </FormControl>
+        )}
+        {(!isServiceNameExist || mode === MODE_PROXY) && (
+          <>
+            <Typography>Server URL:</Typography>
 
-          <Controller
-            name={CLOUD_KEY}
-            control={control}
-            render={renderSelectCloud}
-          />
-          <Controller
-            name={NAMESPACE_KEY}
-            control={control}
-            render={renderSelectNamespace}
-          />
-          <Controller
-            name={SERVICE_KEY}
-            control={control}
-            render={renderSelectService}
-          />
-        </>)}
+            <Typography variant="body2" >{generatedUrl}</Typography>
 
-        <Typography variant="subtitle2" mt={2}>Custom Server URL</Typography>
-
+            <Controller
+              name={CLOUD_KEY}
+              control={control}
+              render={renderSelectCloud}
+            />
+            <Controller
+              name={NAMESPACE_KEY}
+              control={control}
+              render={renderSelectNamespace}
+            />
+            <Controller
+              name={SERVICE_KEY}
+              control={control}
+              render={renderSelectService}
+            />
+          </>
+        )}
+        {(!isServiceNameExist || mode === MODE_CUSTOM) && (
+          <Controller
+            name={CUSTOM_SERVER_URL_KEY}
+            control={control}
+            render={renderSelectUrl}
+          />
+        )}
         <Controller
-          name={CUSTOM_SERVER_URL_KEY}
+          name={DESCRIPTION_KEY}
           control={control}
-          render={renderSelectUrl}
+          render={renderDescriptionInput}
         />
-      </DialogContent>
+        {showPathWarning && (<Alert severity="warning"
+          sx={{
+            mt: 2,
+            backgroundColor: '#ffffff', // White background
+            alignItems: 'flex-start',
+            '& .MuiAlert-icon': {
+              mt: '2px',
+            },
+            '& .MuiAlert-message': {
+              fontSize: '14px',
+              lineHeight: '20px',
+            },
 
+          }}
+        >
+          Servers specified directly in the OpenAPI specification contain a path to a specific resource.
+          Make sure the URL you enter is correct and does not contain an additional path (e.g. <code>/api/v1</code>)
+        </Alert>
+        )}
+      </DialogContent>
       <DialogActions>
-        <LoadingButton variant="contained" type="submit" loading={false} data-testid="AddButton">
+        <Button variant="contained" type="submit" data-testid="AddButton" >
           Add
-        </LoadingButton>
+        </Button>
         <Button variant="outlined" onClick={() => setOpen(false)} data-testid="CancelButton">
           Cancel
         </Button>
