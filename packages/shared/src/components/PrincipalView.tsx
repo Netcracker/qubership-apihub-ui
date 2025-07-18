@@ -61,7 +61,7 @@ const TokenAndJobView: FC<TokenAndJobViewProps> = memo<TokenAndJobViewProps>(({ 
       break
     case JOB:
       viewName = `Job: ${name}`
-      viewIcon = <RobotIcon/>
+      viewIcon = <RobotIcon color="muted" fontSize="small"/>
       break
   }
 
