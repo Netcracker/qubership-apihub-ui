@@ -1,4 +1,4 @@
-import { Box, Button, DialogActions, DialogContent, DialogTitle, TextField, Typography } from '@mui/material'
+import { Button, DialogActions, DialogContent, DialogTitle, TextField, Typography } from '@mui/material'
 import type { FC } from 'react'
 import React, { memo, useCallback, useEffect, useMemo } from 'react'
 import { LoadingButton } from '@mui/lab'
@@ -112,15 +112,13 @@ const CreateRulesetPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }) 
           control={control}
           rules={fileValidationRules}
           render={({ field: { value, onChange } }) => (
-            <Box height="46px" display="grid" alignItems="center">
-              <FileUploadField
-                uploadedFile={value || undefined}
-                setUploadedFile={(selectedFile) => onChange(selectedFile || null)}
-                downloadAvailable={false}
-                acceptableExtensions={[YAML_FILE_EXTENSION, YML_FILE_EXTENSION]}
-                errorMessage={errors.file?.message}
-              />
-            </Box>
+            <FileUploadField
+              uploadedFile={value || undefined}
+              setUploadedFile={(selectedFile) => onChange(selectedFile || null)}
+              downloadAvailable={false}
+              acceptableExtensions={[YAML_FILE_EXTENSION, YML_FILE_EXTENSION]}
+              errorMessage={errors.file?.message}
+            />
           )}
         />
       </DialogContent>
