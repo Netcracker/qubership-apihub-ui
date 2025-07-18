@@ -227,7 +227,7 @@ class PublishAndDeleteVersionActivityMessageService extends BasicActivityMessage
   }
 }
 
-class PublishAndDeletedActivityMessageService extends BasicActivityMessageService {
+class PublishAndDeletedRevisionActivityMessageService extends BasicActivityMessageService {
   mapActivityToMessage(): ActivityMessage {
     const { activityType, packageId, packageName, kind } = this.activity
     const { version, status, notLatestRevision } = this.activity.details as PublishNewRevisionActivityDetails
@@ -372,7 +372,7 @@ export function getActivityMessageServiceInstance(activity: Activity): ActivityM
       return new PublishAndDeleteVersionActivityMessageService(activity)
     case ActivityType.PUBLISH_NEW_REVISION_EVENT:
     case ActivityType.DELETE_REVISION_EVENT:
-      return new PublishAndDeletedActivityMessageService(activity)
+      return new PublishAndDeletedRevisionActivityMessageService(activity)
     case ActivityType.PATCH_VERSION_META_EVENT:
       return new PatchVersionMetaActivityMessageService(activity)
     case ActivityType.PATCH_PACKAGE_META_EVENT:
