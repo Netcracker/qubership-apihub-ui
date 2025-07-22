@@ -77,7 +77,7 @@ export const OperationPreview: FC<OperationPreviewProps> = memo<OperationPreview
 
   if (isLoading) {
     return (
-      <LoadingIndicator/>
+      <LoadingIndicator />
     )
   } else if (!changedOperation?.operationKey) {
     return (
@@ -107,10 +107,10 @@ export const OperationPreview: FC<OperationPreviewProps> = memo<OperationPreview
               }
             />
           }
-          action={<OperationViewModeSelector modes={OPERATION_PREVIEW_VIEW_MODES}/>}
+          action={< OperationViewModeSelector modes={OPERATION_PREVIEW_VIEW_MODES} />}
         />
-        <Divider orientation="horizontal" variant="fullWidth"/>
-      </Box>
+        < Divider orientation="horizontal" variant="fullWidth" />
+      </Box >
 
       <Box>
         {isDocViewMode && (
@@ -133,6 +133,6 @@ export const OperationPreview: FC<OperationPreviewProps> = memo<OperationPreview
           />
         )}
       </Box>
-    </Box>
+    </Box >
   )
 })

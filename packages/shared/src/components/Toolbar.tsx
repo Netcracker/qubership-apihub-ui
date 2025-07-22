@@ -42,23 +42,9 @@ export const Toolbar: FC<ToolbarProps> = memo<ToolbarProps>(({
       <CardHeader
         sx={{ height: TOOLBAR_HEIGHT[breadcrumbs ? LARGE_TOOLBAR_SIZE : size], px: 4, maxWidth: maxWidthHeaderToolbar }}
         title={breadcrumbs}
-        subheader={
-          <Box
-            display="flex"
-            maxWidth="55vw"
-            gap={1}
-            alignItems="baseline"
-            height={28}
-          >
-            {header}
-          </Box>
-        }
+        subheader={header}
         subheaderTypographyProps={{ variant: 'h5', color: '#000000' }}
-        action={
-          <Box display="flex" gap={1}>
-            {action}
-          </Box>
-        }
+        action={action}
         data-testid={testId}
       />
     </Card>

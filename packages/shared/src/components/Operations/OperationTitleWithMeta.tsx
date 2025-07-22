@@ -21,7 +21,6 @@ import { NavLink } from 'react-router-dom'
 import type { Path } from '@remix-run/router'
 import type { Operation } from '../../entities/operations'
 import { isGraphQlOperation, isRestOperation } from '../../entities/operations'
-import { OverflowTooltip } from '../OverflowTooltip'
 import { CustomChip } from '../CustomChip'
 import { TextWithOverflowTooltip } from '../TextWithOverflowTooltip'
 
@@ -52,19 +51,19 @@ export const OperationTitleWithMeta: FC<OperationTitleWithMetaProps> = memo<Oper
         subtitle: operation.path,
         type: operation.method,
       }
-    }
-    if (isGraphQlOperation(operation)) {
+    } else if (isGraphQlOperation(operation)) {
       return {
         title: operation.title,
         subtitle: operation.method,
         type: operation.type,
       }
+    } else {
+      throw new Error('Operation must be either a REST or GraphQL operation')
     }
-    throw new Error('Operation must be either a REST or GraphQL operation')
   }, [operation])
 
   const titleNode = link
-    ? <Typography noWrap variant="subtitle1">
+      ? <Typography noWrap variant="subtitle1">
       <Link
         component={NavLink}
         to={link}
@@ -75,9 +74,10 @@ export const OperationTitleWithMeta: FC<OperationTitleWithMetaProps> = memo<Oper
         }}
       >
         {title}
-      </Link>
+       </Link>
     </Typography>
     : <Typography noWrap variant="inherit">{title}</Typography>
+    
 
   return (
     <Box display="flex" flexDirection="column" width="100%">
@@ -87,17 +87,15 @@ export const OperationTitleWithMeta: FC<OperationTitleWithMetaProps> = memo<Oper
         gap={1}
         data-testid="OperationTitle"
       >
-        <OverflowTooltip title={title}>
-          {titleNode}
-        </OverflowTooltip>
+        {titleNode}
 
-        {badgeText &&
+        {badgeText && (
           <CustomChip
             value={badgeText.toLowerCase()}
             label={badgeText}
             isExtraSmall
           />
-        }
+        )}
       </Box>
       {!onlyTitle && (
         <Box display="flex" alignItems="center" gap={1} data-testid="OperationPath">
