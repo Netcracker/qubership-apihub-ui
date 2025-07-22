@@ -4,7 +4,7 @@ import { requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/reques
 import { useQuery } from '@tanstack/react-query'
 import { generatePath } from 'react-router'
 import type { ValidationDetails, ValidationDetailsDto } from '@apihub/entities/api-quality/document-validation-details'
-import { STUB_API_V1 } from './temp'
+import { API_LINTER_API_V1 } from './constants'
 import { toValidatedDocument } from './transformers'
 
 const QUERY_KEY_VALIDATION_DETAILS_BY_DOCUMENT = 'validation-details-by-document'
@@ -43,7 +43,7 @@ function getValidationDetailsByDocument(
   return requestJson<ValidationDetailsDto>(
     endpoint,
     { method: 'GET' },
-    { basePath: STUB_API_V1 },
+    { basePath: API_LINTER_API_V1 },
   )
 }
 

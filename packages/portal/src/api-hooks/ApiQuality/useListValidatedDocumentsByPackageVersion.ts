@@ -4,7 +4,7 @@ import { requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/reques
 import { useQuery } from '@tanstack/react-query'
 import { generatePath } from 'react-router'
 import type { ValidatedDocument, ValidatedDocumentDto } from '@apihub/entities/api-quality/validated-documents'
-import { STUB_API_V1 } from './temp'
+import { API_LINTER_API_V1 } from './constants'
 import { toValidatedDocuments } from './transformers'
 
 const QUERY_KEY_LIST_VALIDATED_DOCUMENTS_BY_PACKAGE_VERSION = 'list-validated-documents-by-package-version'
@@ -39,6 +39,6 @@ function getListValidatedDocumentsByPackageVersion(
   return requestJson<ValidatedDocumentDto[]>(
     endpoint,
     { method: 'GET' },
-    { basePath: STUB_API_V1 },
+    { basePath: API_LINTER_API_V1 },
   )
 }

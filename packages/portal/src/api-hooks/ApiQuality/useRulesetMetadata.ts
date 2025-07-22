@@ -4,7 +4,7 @@ import { requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/reques
 import { useQuery } from '@tanstack/react-query'
 import { generatePath } from 'react-router'
 import type { RulesetBaseWithActivationHistory, RulesetBaseWithActivationHistoryDto } from '@apihub/entities/api-quality/rulesets'
-import { STUB_API_V1 } from './temp'
+import { API_LINTER_API_V1 } from './constants'
 
 const QUERY_KEY_RULESET_METADATA = 'ruleset-metadata'
 
@@ -26,6 +26,6 @@ function getRulesetMetadata(rulesetKey: Key): Promise<RulesetBaseWithActivationH
   return requestJson<RulesetBaseWithActivationHistoryDto>(
     endpoint,
     { method: 'GET' },
-    { basePath: STUB_API_V1 },
+    { basePath: API_LINTER_API_V1 },
   )
 }

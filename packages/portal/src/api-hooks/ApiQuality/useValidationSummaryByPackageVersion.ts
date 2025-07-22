@@ -4,7 +4,7 @@ import { requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/reques
 import { useQuery } from '@tanstack/react-query'
 import { generatePath } from 'react-router'
 import type { ValidationSummary, ValidationSummaryDto } from '@apihub/entities/api-quality/package-version-validation-summary'
-import { STUB_API_V1 } from './temp'
+import { API_LINTER_API_V1 } from './constants'
 
 const QUERY_KEY_VALIDATION_SUMMARY_FOR_PACKAGE_VERSION = 'validation-summary-for-package-version'
 
@@ -36,6 +36,6 @@ function getValidationSummaryByPackageVersion(
   return requestJson<ValidationSummaryDto>(
     endpoint,
     { method: 'GET' },
-    { basePath: STUB_API_V1 },
+    { basePath: API_LINTER_API_V1 },
   )
 }

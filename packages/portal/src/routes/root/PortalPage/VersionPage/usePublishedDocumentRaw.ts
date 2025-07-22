@@ -22,7 +22,6 @@ import type { FileContent } from '@apihub/entities/project-files'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { toFormattedJsonString } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
-import { requestText } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 
 const PUBLISHED_DOCUMENT_RAW_QUERY_KEY = 'published-document-raw-query-key'
 
@@ -42,7 +41,7 @@ export function usePublishedDocumentRaw(options?: {
 
   const { data, isLoading } = useQuery<string, Error, string>({
     queryKey: [PUBLISHED_DOCUMENT_RAW_QUERY_KEY, packageKey, versionKey, slug],
-    queryFn: () => _getPublishedDocumentRaw(packageKey!, versionKey!, slug!),
+    queryFn: () => getPublishedDocumentRaw(packageKey!, versionKey!, slug!),
     enabled: !!packageKey && !!versionKey && !!slug && enabled,
     select: transform,
   })
@@ -67,27 +66,6 @@ export async function getPublishedDocumentRaw(
     },
     {
       customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-    },
-  )
-}
-
-// TODO 15.07.25 // Remove stub
-async function _getPublishedDocumentRaw(
-  packageKey: Key,
-  versionKey: Key,
-  slug: Key,
-): Promise<FileContent> {
-  const packageId = encodeURIComponent(packageKey)
-  const versionId = encodeURIComponent(versionKey)
-  const fileId = encodeURIComponent(slug)
-
-  const pathPattern = '/packages/:packageId/versions/:versionId/files/:fileId/raw'
-  return await requestText(
-    generatePath(pathPattern, { packageId, versionId, fileId }),
-    { method: 'get' },
-    {
-      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-      basePath: '/stub/api/v1',
     },
   )
 }

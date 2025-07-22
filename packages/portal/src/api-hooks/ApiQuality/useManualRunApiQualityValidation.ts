@@ -3,7 +3,7 @@ import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/ali
 import { requestVoid } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { useMutation } from '@tanstack/react-query'
 import { generatePath } from 'react-router-dom'
-import { STUB_API_V1 } from './temp'
+import { API_LINTER_API_V1 } from './constants'
 
 type ManualRunApiQualityValidation = (options: ManualRunApiQualityValidationOptions) => void
 
@@ -30,6 +30,6 @@ function manualRunApiQualityValidation(packageId: Key, versionId: Key): Promise<
   return requestVoid(
     endpoint,
     { method: 'POST' },
-    { basePath: STUB_API_V1 }, // TODO 15.07.25 // Remove stub
+    { basePath: API_LINTER_API_V1 }, // TODO 15.07.25 // Remove stub
   )
 }

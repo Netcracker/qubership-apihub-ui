@@ -4,7 +4,7 @@ import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/uti
 import { useMutation } from '@tanstack/react-query'
 import fileDownload from 'js-file-download'
 import { generatePath } from 'react-router'
-import { STUB_API_V1 } from './temp'
+import { API_LINTER_API_V1 } from './constants'
 
 type CallbackOptionsDownloadRuleset = { rulesetId: Key }
 
@@ -22,7 +22,7 @@ export function getPublicLink(
   rulesetId: Key,
 ): string {
   const endpoint = getEndpoint(rulesetId)
-  return `${protocol}://${host}${STUB_API_V1}${endpoint}`
+  return `${protocol}://${host}${API_LINTER_API_V1}${endpoint}`
 }
 
 export function useDownloadRuleset(): CallbackDownloadRuleset {
@@ -42,7 +42,7 @@ async function downloadRuleset(rulesetId: Key): Promise<void> {
   const response = await requestBlob(
     `${endpoint}?${searchParams}`,
     { method: 'GET' },
-    { basePath: STUB_API_V1 },
+    { basePath: API_LINTER_API_V1 },
   )
 
   const data = await response.text()
