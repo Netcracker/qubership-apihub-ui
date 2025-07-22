@@ -31,7 +31,6 @@ import {
   BREAKING_CHANGE_SEVERITY,
   DEFAULT_CHANGE_SEVERITY_MAP,
 } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
-import type { NumberOfImpactedOperations } from '@netcracker/qubership-apihub-ui-shared/entities/version-contents'
 import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoContextIcon'
 import { DefaultWarningIcon, RedWarningIcon } from '@netcracker/qubership-apihub-ui-shared/icons/WarningIcon'
 import type { FC } from 'react'
@@ -50,7 +49,7 @@ export type OperationTypeSummaryProps = Readonly<{
   deprecatedOperationsCount: number
   noBwcOperationsCount: number
   changesSummary: ChangesSummary
-  numberOfImpactedOperations: NumberOfImpactedOperations
+  numberOfImpactedOperations: ChangesSummary
   internalAudienceOperationsCount: number
   unknownAudienceOperationsCount: number
   apiAudienceTransitions: ApiAudienceTransition[]
