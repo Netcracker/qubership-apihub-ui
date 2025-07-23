@@ -105,7 +105,7 @@ export const ValidationResultsTable: FC<ValidationResultsTableProps> = memo<Vali
   const transformedData: TableData[] = useMemo(() => (data?.issues ?? []).map((issue: Issue) => ({
     type: issue.severity,
     message: issue.message,
-    path: issuePathToSpecItemUri(issue.jsonPath),
+    path: issuePathToSpecItemUri(issue.path),
   })), [data?.issues])
 
   const { getHeaderGroups, getRowModel } = useReactTable({
