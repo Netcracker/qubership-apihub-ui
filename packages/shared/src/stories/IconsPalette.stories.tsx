@@ -29,6 +29,7 @@ import { DeleteIcon } from '../icons/DeleteIcon'
 import { DeleteIconMui } from '../icons/DeleteIconMui'
 import { DoneIcon } from '../icons/DoneIcon'
 import { DownloadIcon } from '../icons/DownloadIcon'
+import { DownloadIconMui } from '../icons/DownloadIconMui'
 import { DragIcon } from '../icons/DragIcon'
 import { EditIcon } from '../icons/EditIcon'
 import { EmptyUserIcon } from '../icons/EmptyUserIcon'
@@ -130,7 +131,6 @@ const CUSTOM_ICONS_REGISTRY: readonly IconItem<CustomIconComponent>[] = [
   { name: 'KeyboardDoubleArrowLeftIcon', component: KeyboardDoubleArrowLeftIcon },
   { name: 'KeyboardDoubleArrowRightIcon', component: KeyboardDoubleArrowRightIcon },
   { name: 'LayersIcon', component: LayersIcon },
-  { name: 'LinkIcon', component: LinkIcon },
   { name: 'LockIcon', component: LockIcon },
   { name: 'LockOpenIcon', component: LockOpenIcon },
   { name: 'LogoIcon', component: LogoIcon },
@@ -169,6 +169,8 @@ const MUI_ICONS_REGISTRY: readonly IconItem<MuiIconComponent>[] = [
   { name: 'ClockBackwardIcon', component: ClockBackwardIcon },
   { name: 'CloudUploadIcon', component: CloudUploadIcon },
   { name: 'DeleteIconMui', component: DeleteIconMui },
+  { name: 'DownloadIconMui', component: DownloadIconMui },
+  { name: 'LinkIcon', component: LinkIcon },
   { name: 'PlayIcon', component: PlayIcon },
   { name: 'PlusIcon', component: PlusIcon },
   { name: 'RobotIcon', component: RobotIcon },

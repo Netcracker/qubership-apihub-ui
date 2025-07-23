@@ -2,13 +2,10 @@ import { getPublicLink, useDownloadRuleset } from '../../api-hooks/ApiQuality/us
 import type { Key } from '@apihub/entities/keys'
 import { useShowSuccessNotification } from '@apihub/routes/root/BasePage/Notification'
 import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
-import { DownloadIcon } from '@netcracker/qubership-apihub-ui-shared/icons/DownloadIcon'
+import { DownloadIconMui } from '@netcracker/qubership-apihub-ui-shared/icons/DownloadIconMui'
 import { LinkIcon } from '@netcracker/qubership-apihub-ui-shared/icons/LinkIcon'
 import type { FC } from 'react'
 import { useCopyToClipboard, useLocation } from 'react-use'
-
-const ICON_COLOR = '#626D82'
-const ICON_SIZE = '20px'
 
 type ValidationRulesetFileControlsProps = {
   rulesetId: Key
@@ -28,8 +25,7 @@ export const ValidationRulesetFileControls: FC<ValidationRulesetFileControlsProp
       size="small"
       area-label="Download Ruleset"
       hint="Download"
-      startIcon={<DownloadIcon color={ICON_COLOR} />}
-      sx={{ height: ICON_SIZE }}
+      startIcon={<DownloadIconMui color="action" fontSize="small" />}
       onClick={() => downloadRuleset({ rulesetId })}
       data-testid="DownloadButton"
     />
@@ -37,10 +33,11 @@ export const ValidationRulesetFileControls: FC<ValidationRulesetFileControlsProp
       size="small"
       area-label="Copy public link to ruleset"
       hint="Copy public URL"
-      startIcon={<LinkIcon color={ICON_COLOR} />}
-      sx={{ height: ICON_SIZE }}
-      onClick={() => {
+      startIcon={<LinkIcon color="action" fontSize="small" />}
+      onClick={(event) => {
         if (host && protocol) {
+          // prevents the Notification from closing by avoiding the Snackbar's "clickaway" event handling
+          event.stopPropagation()
           const publicLink = getPublicLink(host, protocol, rulesetId)
           copyToClipboard(publicLink)
           showNotification({ message: 'Public URL copied' })
