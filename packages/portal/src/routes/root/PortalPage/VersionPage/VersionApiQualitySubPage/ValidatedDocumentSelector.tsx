@@ -25,7 +25,7 @@ export const ValidatedDocumentSelector: FC<ValidatedDocumentSelectorProps> = mem
   const documentsList = useMemo(() => {
     if (searchValue) {
       return options.filter((document) => {
-        const docName = document.id.toLowerCase()
+        const docName = document.slug.toLowerCase()
         const docNameSubstring = searchValue.toLowerCase()
         return docName.includes(docNameSubstring)
       })
@@ -62,11 +62,11 @@ export const ValidatedDocumentSelector: FC<ValidatedDocumentSelectorProps> = mem
       <Box display='flex' alignItems='flex-start' gap={1}>
         <SpecLogo value={selectedDocument.specificationType} />
         <TextWithOverflowTooltip
-          tooltipText={selectedDocument.id}
+          tooltipText={selectedDocument.documentName}
           variant="body2"
           sx={{ fontWeight: 500 }}
         >
-          {selectedDocument.id}
+          {selectedDocument.documentName}
         </TextWithOverflowTooltip>
       </Box>
       <MenuButtonItems
@@ -81,11 +81,11 @@ export const ValidatedDocumentSelector: FC<ValidatedDocumentSelectorProps> = mem
           <SearchBar onValueChange={setSearchValue} data-testid="ValidatedDocumentSearchBar" />
           <List sx={{ overflowX: 'hidden', overflowY: 'auto' }}>
             {documentsList.map((document) => (
-              <ListItem key={document.id} sx={{ p: 0 }}>
+              <ListItem key={document.slug} sx={{ p: 0 }}>
                 <ListItemButton
                   sx={{
                     flexDirection: 'unset',
-                    backgroundColor: document.id === selectedDocument.id ? '#ECEDEF' : 'transparent',
+                    backgroundColor: document.slug === selectedDocument.slug ? '#ECEDEF' : 'transparent',
                     height: '36px',
                     alignItems: 'center',
                     '&:hover': {
@@ -94,7 +94,7 @@ export const ValidatedDocumentSelector: FC<ValidatedDocumentSelectorProps> = mem
                       },
                     },
                   }}
-                  selected={document.id === selectedDocument.id}
+                  selected={document.slug === selectedDocument.slug}
                   onClick={(e) => {
                     e.stopPropagation()
                     setSelectedDocument(document)
@@ -106,7 +106,7 @@ export const ValidatedDocumentSelector: FC<ValidatedDocumentSelectorProps> = mem
                   <ListItemIcon sx={{ minWidth: 2, mt: 0, mr: 1 }}>
                     <SpecLogo value={document.specificationType} />
                   </ListItemIcon>
-                  <ListItemText primary={document.id} primaryTypographyProps={{ sx: { mt: 0.25 } }} />
+                  <ListItemText primary={document.documentName} primaryTypographyProps={{ sx: { mt: 0.25 } }} />
                 </ListItemButton>
               </ListItem>
             ))}

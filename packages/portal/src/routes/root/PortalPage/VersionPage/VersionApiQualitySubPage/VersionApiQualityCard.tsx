@@ -86,7 +86,7 @@ export const VersionApiQualityCard: FC = memo(() => {
   const [validationDetails, loadingValidationDetails] = useValidationDetailsByDocument(
     packageId ?? '',
     versionId ?? '',
-    selectedDocument?.id ?? '',
+    selectedDocument?.slug ?? '',
   )
 
   const [validatedDocuments, loadingValidatedDocuments] = useListValidatedDocumentsByPackageVersion(
@@ -98,7 +98,7 @@ export const VersionApiQualityCard: FC = memo(() => {
   const [selectedDocumentContent, loadingSelectedDocumentContent] = usePublishedDocumentRaw({
     packageKey: packageId,
     versionKey: versionId,
-    slug: selectedDocument?.id ?? '',
+    slug: selectedDocument?.slug ?? '',
   })
 
   const transformedSelectedDocumentContent = useTransformedRawDocumentByFormat(selectedDocumentContent, format)

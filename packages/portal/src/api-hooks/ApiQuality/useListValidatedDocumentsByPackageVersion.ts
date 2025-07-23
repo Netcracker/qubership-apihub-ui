@@ -5,7 +5,6 @@ import { useQuery } from '@tanstack/react-query'
 import { generatePath } from 'react-router'
 import type { ValidatedDocument, ValidatedDocumentDto } from '@apihub/entities/api-quality/validated-documents'
 import { API_LINTER_API_V1 } from './constants'
-import { toValidatedDocuments } from './transformers'
 
 const QUERY_KEY_LIST_VALIDATED_DOCUMENTS_BY_PACKAGE_VERSION = 'list-validated-documents-by-package-version'
 
@@ -19,7 +18,6 @@ export function useListValidatedDocumentsByPackageVersion(
   const { data = [], isLoading, error } = useQuery<ValidatedDocumentDto[], Error, readonly ValidatedDocument[]>({
     queryKey: [QUERY_KEY_LIST_VALIDATED_DOCUMENTS_BY_PACKAGE_VERSION, packageKey, versionKey],
     queryFn: () => getListValidatedDocumentsByPackageVersion(packageKey, versionKey),
-    select: toValidatedDocuments,
     enabled: !!packageId && !!version,
   })
 

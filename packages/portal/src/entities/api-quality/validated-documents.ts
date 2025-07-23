@@ -1,9 +1,7 @@
-import type { Key } from '../keys'
-
 export type ValidatedDocumentDto = {
-  documentId: string
+  slug: string
   specificationType: 'openapi-2-0' | 'openapi-3-0' | 'openapi-3-1'
-  title: string
+  documentName: string // E.g. Public API.yaml
 }
 
-export type ValidatedDocument = Omit<ValidatedDocumentDto, 'documentId'> & { id: Key }
+export type ValidatedDocument = ValidatedDocumentDto
