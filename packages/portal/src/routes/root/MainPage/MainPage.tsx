@@ -37,7 +37,6 @@ export const MainPage: FC = memo(() => {
   const { packages, isLoading } = usePagedPackages({
     kind: [PACKAGE_KIND, GROUP_KIND, DASHBOARD_KIND],
     onlyFavorite: true,
-    lastReleaseVersionDetails: true,
     refererPageName: FAVORITE_PAGE_REFERER,
   })
   const { navigateToWorkspace } = useNavigation()
