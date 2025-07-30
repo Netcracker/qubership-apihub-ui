@@ -21,10 +21,10 @@ import { Outlet } from 'react-router-dom'
 import { DEFAULT_PAPER_SHADOW } from '@netcracker/qubership-apihub-ui-shared/themes/palette'
 import { DEFAULT_PAGE_LAYOUT_GAP } from '@netcracker/qubership-apihub-ui-shared/utils/page-layouts'
 import { MainPageNavigation } from '@apihub/routes/root/MainPage/MainPageNavigation/MainPageNavigation'
-import { useActivityHistory } from '@apihub/routes/root/useActivityHistory'
 import { DASHBOARD_KIND, GROUP_KIND, PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { useActivityHistoryFiltersContext } from '@apihub/routes/root/MainPage/ActivityHistoryFiltersProvider'
 import { useNavigation } from '@apihub/routes/NavigationProvider'
+import { usePagedPackages } from '@apihub/routes/root/usePagedPackages'
+import { FAVORITE_PAGE_REFERER } from '@apihub/entities/referer-pages-names'
 
 export const MAIN_CARD_STYLES = {
   display: 'grid',
@@ -34,17 +34,16 @@ export const MAIN_CARD_STYLES = {
 }
 
 export const MainPage: FC = memo(() => {
-  const { textFilter, types } = useActivityHistoryFiltersContext()
-  const { activities, isLoading } = useActivityHistory({
+  const { packages, isLoading } = usePagedPackages({
     kind: [PACKAGE_KIND, GROUP_KIND, DASHBOARD_KIND],
-    types: types,
-    textFilter: textFilter,
     onlyFavorite: true,
+    lastReleaseVersionDetails: true,
+    refererPageName: FAVORITE_PAGE_REFERER,
   })
   const { navigateToWorkspace } = useNavigation()
 
   useEffect(() => {
-    if (!activities.length && !isLoading) {
+    if (!packages.length && !isLoading) {
       navigateToWorkspace({ workspaceKey: '' })
     }
   }, [isLoading])
