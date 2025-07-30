@@ -25,6 +25,7 @@ import { DASHBOARD_KIND, GROUP_KIND, PACKAGE_KIND } from '@netcracker/qubership-
 import { useNavigation } from '@apihub/routes/NavigationProvider'
 import { usePagedPackages } from '@apihub/routes/root/usePagedPackages'
 import { FAVORITE_PAGE_REFERER } from '@apihub/entities/referer-pages-names'
+import { usePackages } from '@apihub/routes/root/usePackages'
 
 export const MAIN_CARD_STYLES = {
   display: 'grid',
@@ -34,10 +35,10 @@ export const MAIN_CARD_STYLES = {
 }
 
 export const MainPage: FC = memo(() => {
-  const { packages, isLoading } = usePagedPackages({
+  const [packages, isLoading] = usePackages({
     kind: [PACKAGE_KIND, GROUP_KIND, DASHBOARD_KIND],
     onlyFavorite: true,
-    refererPageName: FAVORITE_PAGE_REFERER,
+    refererPageKey: FAVORITE_PAGE_REFERER,
   })
   const { navigateToWorkspace } = useNavigation()
 
