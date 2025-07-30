@@ -75,7 +75,7 @@ export const router = createBrowserRouter(
       <Route index element={<Navigate to="portal" replace/>}/>
       <Route path="portal">
         <Route element={<MainPage/>}>
-          <Route index element={<Navigate to={FAVORITE_PAGE} replace/>}/>
+          <Route index element={<Navigate to={WORKSPACES_PAGE} replace/>}/>
           <Route path={FAVORITE_PAGE} element={<FavoritePage/>}/>
           <Route path={SHARED_PAGE} element={<SharedPage/>}/>
           <Route path={PRIVATE_PAGE} element={<PrivatePage/>}/>
