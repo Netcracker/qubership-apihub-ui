@@ -23,7 +23,6 @@ import { DEFAULT_PAGE_LAYOUT_GAP } from '@netcracker/qubership-apihub-ui-shared/
 import { MainPageNavigation } from '@apihub/routes/root/MainPage/MainPageNavigation/MainPageNavigation'
 import { DASHBOARD_KIND, GROUP_KIND, PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { useNavigation } from '@apihub/routes/NavigationProvider'
-import { usePagedPackages } from '@apihub/routes/root/usePagedPackages'
 import { FAVORITE_PAGE_REFERER } from '@apihub/entities/referer-pages-names'
 import { usePackages } from '@apihub/routes/root/usePackages'
 
