@@ -15,12 +15,16 @@
  */
 
 import type { FC } from 'react'
-import { memo } from 'react'
+import { memo, useEffect } from 'react'
 import { Box } from '@mui/material'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 import { DEFAULT_PAPER_SHADOW } from '@netcracker/qubership-apihub-ui-shared/themes/palette'
 import { DEFAULT_PAGE_LAYOUT_GAP } from '@netcracker/qubership-apihub-ui-shared/utils/page-layouts'
 import { MainPageNavigation } from '@apihub/routes/root/MainPage/MainPageNavigation/MainPageNavigation'
+import { useActivityHistory } from '@apihub/routes/root/useActivityHistory'
+import { DASHBOARD_KIND, GROUP_KIND, PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { useActivityHistoryFiltersContext } from '@apihub/routes/root/MainPage/ActivityHistoryFiltersProvider'
+import { WORKSPACES_PAGE } from '../../../routes'
 
 export const MAIN_CARD_STYLES = {
   display: 'grid',
@@ -30,6 +34,20 @@ export const MAIN_CARD_STYLES = {
 }
 
 export const MainPage: FC = memo(() => {
+  const { textFilter, types } = useActivityHistoryFiltersContext()
+  const { activities, isLoading } = useActivityHistory({
+    kind: [PACKAGE_KIND, GROUP_KIND, DASHBOARD_KIND],
+    types: types,
+    textFilter: textFilter,
+    onlyFavorite: true,
+  })
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!activities.length && !isLoading) {
+       navigate(`${WORKSPACES_PAGE}`)
+    }
+  }, [isLoading])
 
   return (
     <Box sx={{
