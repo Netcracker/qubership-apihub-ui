@@ -17,14 +17,14 @@
 import type { FC } from 'react'
 import { memo, useEffect } from 'react'
 import { Box } from '@mui/material'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Outlet } from 'react-router-dom'
 import { DEFAULT_PAPER_SHADOW } from '@netcracker/qubership-apihub-ui-shared/themes/palette'
 import { DEFAULT_PAGE_LAYOUT_GAP } from '@netcracker/qubership-apihub-ui-shared/utils/page-layouts'
 import { MainPageNavigation } from '@apihub/routes/root/MainPage/MainPageNavigation/MainPageNavigation'
 import { useActivityHistory } from '@apihub/routes/root/useActivityHistory'
 import { DASHBOARD_KIND, GROUP_KIND, PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { useActivityHistoryFiltersContext } from '@apihub/routes/root/MainPage/ActivityHistoryFiltersProvider'
-import { WORKSPACES_PAGE } from '../../../routes'
+import { useNavigation } from '@apihub/routes/NavigationProvider'
 
 export const MAIN_CARD_STYLES = {
   display: 'grid',
@@ -41,11 +41,11 @@ export const MainPage: FC = memo(() => {
     textFilter: textFilter,
     onlyFavorite: true,
   })
-  const navigate = useNavigate()
+  const { navigateToWorkspace } = useNavigation()
 
   useEffect(() => {
     if (!activities.length && !isLoading) {
-       navigate(`${WORKSPACES_PAGE}`)
+      navigateToWorkspace({ workspaceKey: '' })
     }
   }, [isLoading])
 
