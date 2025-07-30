@@ -119,8 +119,7 @@ export const PackagesTree: FC<PackagesTreeProps> = memo<PackagesTreeProps>(({ ro
 
   const ref = useRef<HTMLTableRowElement>(null)
   useIntersectionObserver(ref, fetchingNextPage, hasNextPage, fetchNextPage)
-  const refGroup = useRef<HTMLTableRowElement>(null)
-  useIntersectionObserver(refGroup, fetchingNextPageGroup, hasNextPageGroup, fetchNextPageGroup)
+  useIntersectionObserver(ref, fetchingNextPageGroup, hasNextPageGroup, fetchNextPageGroup)
 
   const tableContainerRef = useRef<HTMLDivElement>(null)
   useResizeObserver(tableContainerRef, setContainerWidth)
@@ -231,9 +230,7 @@ export const PackagesTree: FC<PackagesTreeProps> = memo<PackagesTreeProps>(({ ro
               />
             ))}
           </TableBody>
-          {hasNextPage && <RowSkeleton refObject={ref}/>}
-          {hasNextPageGroup && <RowSkeleton refObject={refGroup}/>}
-          {isLoading && <TableSkeleton/>}
+          {(hasNextPage || hasNextPageGroup) && <RowSkeleton refObject={ref}/>}
           {isLoading && <TableSkeleton/>}
         </Table>
       </TableContainer>
@@ -314,9 +311,7 @@ const GroupRow: FC<GroupRowProps> = memo<GroupRowProps>(props => {
 
   const ref = useRef<HTMLTableRowElement>(null)
   useIntersectionObserver(ref, fetchingNextPage, hasNextPage, fetchNextPage)
-
-  const refGroup = useRef<HTMLTableRowElement>(null)
-  useIntersectionObserver(refGroup, fetchingNextPageGroup, hasNextPageGroup, fetchNextPageGroup)
+  useIntersectionObserver(ref, fetchingNextPageGroup, hasNextPageGroup, fetchNextPageGroup)
 
   return (
     <>
@@ -451,8 +446,7 @@ const GroupRow: FC<GroupRowProps> = memo<GroupRowProps>(props => {
           isFetching={isFetching && updatingPackageKey === packageItem.key}
         />
       ))}
-      {hasNextPage && <RowSkeleton refObject={ref}/>}
-      {hasNextPageGroup && <RowSkeleton refObject={refGroup}/>}
+      {(hasNextPage || hasNextPageGroup) && <RowSkeleton refObject={ref}/>}
       {isLoading && <RowSkeleton/>}
     </>
   )
