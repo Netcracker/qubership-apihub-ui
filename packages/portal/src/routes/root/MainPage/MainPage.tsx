@@ -34,18 +34,18 @@ export const MAIN_CARD_STYLES = {
 }
 
 export const MainPage: FC = memo(() => {
-  const [packages, isLoading] = usePackages({
-    kind: [PACKAGE_KIND, GROUP_KIND, DASHBOARD_KIND],
-    onlyFavorite: true,
-    refererPageKey: FAVORITE_PAGE_REFERER,
-  })
-  const { navigateToWorkspace } = useNavigation()
-
-  useEffect(() => {
-    if (!packages.length && !isLoading) {
-      navigateToWorkspace({ workspaceKey: '' })
-    }
-  }, [isLoading])
+  // const [packages, isLoading] = usePackages({
+  //   kind: [PACKAGE_KIND, GROUP_KIND, DASHBOARD_KIND],
+  //   onlyFavorite: true,
+  //   refererPageKey: FAVORITE_PAGE_REFERER,
+  // })
+  // const { navigateToWorkspace } = useNavigation()
+  //
+  // useEffect(() => {
+  //   if (!packages.length && !isLoading) {
+  //     navigateToWorkspace({ workspaceKey: '' })
+  //   }
+  // }, [isLoading])
 
   return (
     <Box sx={{
