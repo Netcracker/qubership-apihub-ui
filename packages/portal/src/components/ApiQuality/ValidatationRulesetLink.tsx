@@ -1,0 +1,74 @@
+import { RulesetStatuses, type RulesetBase } from '@apihub/entities/api-quality/rulesets'
+import { useEventBus } from '@apihub/routes/EventBusProvider'
+import { Box, Link, Skeleton, Typography } from '@mui/material'
+import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import type { FC, ReactElement } from 'react'
+import { memo } from 'react'
+
+type ValidationRulesetLinkProps = {
+  data: RulesetBase | undefined
+  loading: IsLoading
+  showLabel?: boolean
+}
+
+// First Order Component
+export const ValidationRulesettLink: FC<ValidationRulesetLinkProps> = memo<ValidationRulesetLinkProps>(props => {
+  const { data, loading, showLabel = true } = props
+
+  const { showRulesetInfoDialog } = useEventBus()
+
+  if (loading) {
+    return <Skeleton variant="rectangular" width={100} height={20} />
+  }
+
+  if (!data) { // Just type guard
+    return null
+  }
+
+  const elements: ReactElement[] = []
+
+  elements.push(
+    <Typography
+      key='validation-ruleset-link-name'
+      variant='body2'
+      onClick={() => showRulesetInfoDialog(data)}
+    >
+      <Link>
+        {data.name}
+      </Link>
+    </Typography>,
+  )
+
+  if (data.status === RulesetStatuses.INACTIVE) {
+    elements.push(
+      <CustomChip
+        key='validation-ruleset-link-status'
+        value='secondary'
+        sx={{ m: 0 }} label={data.status}
+      />,
+    )
+  }
+
+  if (showLabel) {
+    elements.splice(0, 0, (
+      <Typography
+        key='validation-ruleset-link-label'
+        variant='body2'
+        component='span'
+      >
+        Validated using
+      </Typography>
+    ))
+  }
+
+  if (elements.length === 0) {
+    return elements[0]
+  }
+
+  return (
+    <Box display='flex' alignItems='center' gap={1}>
+      {elements}
+    </Box>
+  )
+})
