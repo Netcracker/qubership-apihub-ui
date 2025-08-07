@@ -17,12 +17,18 @@
 import { useEvent } from 'react-use'
 import { useEventBus } from '@apihub/routes/EventBusProvider'
 
-const CREATE_CUSTOM_SERVICE_EVENT = 'createCustomService'
+const CREATE_CUSTOM_SERVER_EVENT = 'createCustomServer'
+const DELETE_CUSTOM_SERVER_EVENT = 'deleteCustomServer'
 const OPEN_FULLSCREEN_EXAMPLES_POPUP_EVENT = 'openFullscreenExamplesPopup'
 
 export function usePlaygroundEvents(): void {
-  const { showCreateCustomServerDialog, showExamplesDialog } = useEventBus()
+  const { showCreateCustomServerDialog, showExamplesDialog, showDeleteCustomServerDialog } = useEventBus()
 
-  useEvent(CREATE_CUSTOM_SERVICE_EVENT, () => showCreateCustomServerDialog())
+  useEvent(CREATE_CUSTOM_SERVER_EVENT, () => showCreateCustomServerDialog())
+
+  useEvent(DELETE_CUSTOM_SERVER_EVENT, (event: CustomEvent<{ url: string }>) => {
+    showDeleteCustomServerDialog(event.detail)
+  })
+
   useEvent(OPEN_FULLSCREEN_EXAMPLES_POPUP_EVENT, () => showExamplesDialog())
 }

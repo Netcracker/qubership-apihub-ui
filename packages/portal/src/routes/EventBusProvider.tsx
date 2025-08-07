@@ -79,6 +79,7 @@ export const SHOW_PUBLISH_PACKAGE_VERSION_DIALOG = 'show-publish-package-version
 export const SHOW_PUBLISH_OPERATION_GROUP_PACKAGE_VERSION_DIALOG = 'show-publish-operation-group-package-version-dialog'
 export const SHOW_COPY_PACKAGE_VERSION_DIALOG = 'show-copy-package-version-dialog'
 export const SHOW_CREATE_CUSTOM_SERVER_DIALOG = 'show-create-custom-server-dialog'
+export const SHOW_DELETE_CUSTOM_SERVER_DIALOG = 'show-delete-custom-server-dialog'
 export const SHOW_EXAMPLES_DIALOG = 'show-examples-dialog'
 // Feature 'Edit Manual Operation Group'
 export const SHOW_CREATE_OPERATION_GROUP_DIALOG = 'show-create-operation-group-dialog'
@@ -182,6 +183,10 @@ export type ExportSettingsPopupDetail = {
   groupName?: string
 }
 
+export type ShowDeleteCustomServerDetail = {
+  url: string
+}
+
 type EventBus = {
   // base
   showSuccessNotification: (detail: NotificationDetail) => void
@@ -213,6 +218,7 @@ type EventBus = {
   showPublishOperationGroupPackageVersionDialog: (detail: PublishOperationGroupPackageVersionDetail) => void
   showCopyPackageVersionDialog: () => void
   showCreateCustomServerDialog: () => void
+  showDeleteCustomServerDialog: (detail: ShowDeleteCustomServerDetail) => void
   showExamplesDialog: () => void
   showEmptyPackageDialog: (detail: ShowEmptyPackageDetail) => void
   showDeleteRoleDialog: (detail: ShowDeleteRoleDetail) => void
@@ -277,6 +283,7 @@ function eventBusProvider(): EventBus {
       showUserRolesDialog: slot(),
       // Feature "Edit Manual Operation Groups"
       showCreateCustomServerDialog: slot(),
+      showDeleteCustomServerDialog: slot<ShowDeleteCustomServerDetail>(),
       showCreateOperationGroupDialog: slot<CreateOperationGroupDetail>(),
       showEditOperationGroupDialog: slot<EditOperationGroupDetail>(),
       showEditOperationGroupContentDialog: slot<EditOperationGroupContentDetails>(),
@@ -365,6 +372,9 @@ function eventBusProvider(): EventBus {
   })
   eventBus.showCreateCustomServerDialog.on(() => {
     dispatchEvent(new CustomEvent(SHOW_CREATE_CUSTOM_SERVER_DIALOG))
+  })
+  eventBus.showDeleteCustomServerDialog.on((detail: ShowDeleteCustomServerDetail) => {
+    dispatchEvent(new CustomEvent(SHOW_DELETE_CUSTOM_SERVER_DIALOG, { detail }))
   })
   eventBus.showExamplesDialog.on(() => {
     dispatchEvent(new CustomEvent(SHOW_EXAMPLES_DIALOG))

@@ -26,6 +26,7 @@ import { Resizable } from 're-resizable'
 import type { FC, ReactNode } from 'react'
 import { memo } from 'react'
 import { CreateCustomServerDialog } from './Playground/CreateCustomServerDialog'
+import { DeleteCustomServerDialog } from './Playground/DeleteCustomServerDialog'
 import { ExamplesDialog } from './Playground/Examples/ExamplesDialog'
 
 export type OperationWithPlaygroundProps = {
@@ -85,6 +86,7 @@ export const OperationWithPlayground: FC<OperationWithPlaygroundProps> = memo<Op
       )}
 
       <CreateCustomServerDialog />
+      <DeleteCustomServerDialog />
       <ExamplesDialog document={changedOperationContent} />
     </Box>
   )

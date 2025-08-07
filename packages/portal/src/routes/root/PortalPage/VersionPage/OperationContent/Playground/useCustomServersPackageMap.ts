@@ -41,11 +41,12 @@ export function useCustomServersPackageMap(): [CustomServersPackageMap, SetCusto
   ]
 }
 
-export const CUSTOM_SERVERS_KEY = 'custom-servers'
+export const CUSTOM_SERVERS_KEY = 'playground-custom-servers'
 export type CustomServersPackageMap = Record<Key, CustomServer[]>
 export type SetCustomServersPackageMap = (key: string, value: CustomServer[]) => void
 
 export type CustomServer = {
   url: string
   description?: string
+  shouldUseProxyEndpoint: boolean
 }

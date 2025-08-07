@@ -34,7 +34,7 @@ import type { UseFormStateReturn } from 'react-hook-form/dist/types'
 import { usePackage } from '../../../../usePackage'
 import { useAgents } from './useAgents'
 import { useNamespaces } from './useNamespaces'
-import { useCustomServersPackageMap } from './useCustomServersPackageMap'
+import { type CustomServer, useCustomServersPackageMap } from './useCustomServersPackageMap'
 import { useParams } from 'react-router-dom'
 import { useServiceNames } from './useServiceNames'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
@@ -135,9 +135,10 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   // Storing data in local storage
   const [customServersPackageMap, setCustomServersPackageMap] = useCustomServersPackageMap()
 
-  const server = useMemo(() => ({
+  const server = useMemo((): CustomServer => ({
     url: selectedCustomUrl ?? '',
     description: cloudKey ? `Proxy via agent ${selectedAgent} to ${selectedNamespace?.namespaceKey}` : '',
+    shouldUseProxyEndpoint: !cloudKey,
   }), [cloudKey, selectedAgent, selectedCustomUrl, selectedNamespace?.namespaceKey])
 
   const onAddCustomServer = useCallback(() => {
