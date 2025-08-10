@@ -37,7 +37,6 @@
     "@netcracker/qubership-apihub-apispec-view": "1.1.6",
     "@netcracker/qubership-apihub-class-view": "1.0.3",
     "@netcracker/qubership-apihub-rest-playground": "1.1.1-feature-configure-monaco-bundling-test.20250810220553",
-    "@otjs/monaco": "0.2.2",
     "@otjs/plaintext": "0.2.2",
     "@otjs/plaintext-editor": "0.2.2",
     "@stoplight/json-ref-resolver": "3.1.4",
