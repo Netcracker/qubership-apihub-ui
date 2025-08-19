@@ -36,7 +36,7 @@ export const SystemAdministratorsTab: FC = memo(() => {
   const [addSystemAdmin, isAddSystemAdminLoading] = useAddSystemAdmin()
 
   const [userSearch, setUserSearch] = useState<string>('')
-  const [usersData, isUsersDataLoading] = useUsers(userSearch)
+  const [usersData, isUsersDataLoading] = useUsers({searchValue: userSearch})
 
   const [confirmationOpen, setConfirmationOpen] = useState(false)
   const [deleteConfirmationData, setDeleteConfirmationData] = useState<SystemAdmin | undefined>(undefined)

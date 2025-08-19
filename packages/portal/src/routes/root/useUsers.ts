@@ -24,14 +24,17 @@ import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/uti
 
 const USERS_QUERY_KEY = 'users-query-key'
 
-export function useUsers(searchValue: string, packageKey?: Key, limit?: number, page?: number): [Users | null, IsLoading, Error | null] {
-  const { data, isLoading, error } = useQuery<UsersDto, Error, Users>({
-    queryKey: [USERS_QUERY_KEY, packageKey, searchValue],
-    queryFn: () => getUsersByFilter(searchValue, limit, page),
-    select: toUsers,
-  })
+export function useUsers(
+    {searchValue, packageKey, enabled = true}: { searchValue: string; packageKey?: Key | undefined; enabled?: boolean },
+): [Users | null, IsLoading, Error | null] {
+    const {data, isLoading, error} = useQuery<UsersDto, Error, Users>({
+        queryKey: [USERS_QUERY_KEY, packageKey, searchValue],
+        queryFn: () => getUsersByFilter(searchValue),
+        select: toUsers,
+        enabled: enabled,
+    })
 
-  return [data ?? null, isLoading, error]
+    return [data ?? null, enabled ? isLoading : enabled, error]
 }
 
 export async function getUsersByFilter(
@@ -39,11 +42,11 @@ export async function getUsersByFilter(
   limit: number = 10,
   page: number = 0,
 ): Promise<UsersDto> {
-  const searchParams = optionalSearchParams({
-    filter: { value: searchValue },
-    limit: { value: limit },
-    page: { value: page },
-  })
+    const searchParams = optionalSearchParams({
+        filter: {value: searchValue},
+        limit: {value: limit},
+        page: {value: page},
+    })
 
   return await portalRequestJson<UsersDto>(`/users?${searchParams}`, {
     method: 'GET',

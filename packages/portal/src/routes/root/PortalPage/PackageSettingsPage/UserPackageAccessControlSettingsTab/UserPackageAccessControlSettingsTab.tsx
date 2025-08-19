@@ -60,15 +60,15 @@ export const UserPackageAccessControlSettingsTab: FC<PackageSettingsTabProps> = 
 
   const [user] = useUser()
   const [availablePackageRoles, isRolesPackageLoading] = useAvailablePackageRoles(packageObject.key, user?.key ?? '')
-  const [packageMembers, isPackageMembersLoading] = usePackageMembers(packageObject.key)
+  const [packageMembers, isPackageMembersLoading] = usePackageMembers(packageObject.key, hasUserAccessManagementPermission)
 
   const isLoading = useMemo(() => isRolesPackageLoading && isPackageMembersLoading, [isRolesPackageLoading, isPackageMembersLoading])
 
-  const { data: roles, isLoading: isRolesLoading } = useRoles()
-  const [permissions, isPermissionsLoading] = usePermissions()
+  const { data: roles, isLoading: isRolesLoading } = useRoles(hasUserAccessManagementPermission)
+  const [permissions, isPermissionsLoading] = usePermissions(hasUserAccessManagementPermission)
 
   const [usersSearch, setUsersSearch] = useState('')
-  const [usersData, isUsersDataLoading] = useUsers(usersSearch, packageObject.key)
+  const [usersData, isUsersDataLoading] = useUsers({searchValue: usersSearch, packageKey:packageObject.key, enabled: hasUserAccessManagementPermission})
   const handleSetUserSearch = useCallback((search: string) => {
     setUsersSearch(search)
   }, [])

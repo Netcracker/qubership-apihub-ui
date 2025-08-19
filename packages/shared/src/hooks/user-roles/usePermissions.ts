@@ -21,18 +21,19 @@ import { requestJson } from '../../utils/requests'
 
 const PERMISSIONS_QUERY_KEY = 'permissions-query-key'
 
-export function usePermissions(): [Permissions, IsLoading, Error | null] {
-  const { data, isLoading, error } = useQuery<PermissionsDto, Error, Permissions>({
-    queryKey: [PERMISSIONS_QUERY_KEY],
-    queryFn: () => getPermissions(),
-    select: (value: PermissionsDto) => value.permissions,
-  })
+export function usePermissions(enabled = true): [Permissions, IsLoading, Error | null] {
+    const {data, isLoading, error} = useQuery<PermissionsDto, Error, Permissions>({
+        queryKey: [PERMISSIONS_QUERY_KEY],
+        queryFn: () => getPermissions(),
+        select: (value: PermissionsDto) => value.permissions,
+        enabled,
+    })
 
-  return [data ?? [], isLoading, error]
+    return [data ?? [], enabled ? isLoading: enabled, error]
 }
 
 export async function getPermissions(): Promise<PermissionsDto> {
-  return await requestJson<PermissionsDto>('/api/v2/permissions', {
-    method: 'GET',
-  })
+    return await requestJson<PermissionsDto>('/api/v2/permissions', {
+        method: 'GET',
+    })
 }
