@@ -40,7 +40,7 @@ import type { UseFormStateReturn } from 'react-hook-form/dist/types'
 import { usePackage } from '../../../../usePackage'
 import { useAgents } from './useAgents'
 import { useNamespaces } from './useNamespaces'
-import { type CustomServer, useCustomServersPackageMap } from './useCustomServersPackageMap'
+import { type PlaygroundServer, useCustomServersPackageMap } from './useCustomServersPackageMap'
 import { generatePath, useParams } from 'react-router-dom'
 import { useServiceNames } from './useServiceNames'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
@@ -55,6 +55,17 @@ import { ErrorIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ErrorIco
 import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoContextIcon'
 import { PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { usePathWarning } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/Playground/usePathWarning'
+import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { useOperation } from '@apihub/routes/root/PortalPage/VersionPage/useOperation'
+import { useOperationInfo } from './hooks/useSpecServers'
+import {
+  isAbsoluteUrl,
+  useCombinedServers,
+  useProcessedCustomServers,
+  useProcessedSpecServers,
+} from './hooks/useServerProcessing'
+import type { ServerObject } from 'openapi3-ts'
 
 const CLOUD_KEY = 'cloudKey'
 const NAMESPACE_KEY = 'namespaceKey'
@@ -90,18 +101,6 @@ type ControllerRenderFunctionProps<FieldName extends keyof CreateCustomServerFor
   formState: UseFormStateReturn<CreateCustomServerForm>
 }
 
-const isAbsoluteUrl = (url: string | undefined): boolean => {
-  if (!url) {
-    return false
-  }
-  try {
-    const parsed = new URL(url)
-    return parsed.protocol === 'http:' || parsed.protocol === 'https:'
-  } catch {
-    return false
-  }
-}
-
 const AGENT_PROXY_URL_TEMPLATE = ':baseUrl/apihub-nc/agents/:cloud/namespaces/:namespace/services/:service/proxy'
 const buildAgentProxyUrl = (baseUrl: string, cloud: string, namespace: string, service: string): string => {
   return generatePath(AGENT_PROXY_URL_TEMPLATE, {
@@ -112,11 +111,28 @@ const buildAgentProxyUrl = (baseUrl: string, cloud: string, namespace: string, s
   })
 }
 
+const isUrlAlreadyExist = (servers: ServerObject[], url: string | undefined): boolean => {
+  if (!url) return true
+  return servers.some(server => server.url === url.toLowerCase())
+}
+
 const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }) => {
-  const { packageId = '' } = useParams()
+  const { packageId = '', versionId, apiType = DEFAULT_API_TYPE, operationId: operationKey } = useParams()
   const [packageObj] = usePackage()
   const serviceName = packageObj?.serviceName
   const isServiceNameExist = !!serviceName
+
+  // Get operation
+  const { data: operationData } = useOperation({
+    packageKey: packageId,
+    versionKey: versionId,
+    operationKey: operationKey,
+    apiType: apiType as ApiType,
+  })
+
+  const operationInfo = useOperationInfo(operationData?.data)
+  console.log('OPERATION_INFO:', operationInfo)
+  // console.log('data:', operationData)
 
   // States for selections
   const [mode, setMode] = useState<ModeType>(MODE_MANUAL)
@@ -188,6 +204,12 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   // Storing data in local storage
   const [customServersPackageMap, setCustomServersPackageMap] = useCustomServersPackageMap()
 
+  // Servers
+  const processedSpecServers = useProcessedSpecServers(operationInfo?.servers)
+  const processedCustomServers = useProcessedCustomServers(customServersPackageMap?.[packageId])
+  const servers = useCombinedServers(processedSpecServers, processedCustomServers)
+
+  // Add server
   const showSuccessNotification = useShowSuccessNotification()
 
   const addCustomServer = useCallback((formData: CreateCustomServerForm) => {
@@ -195,7 +217,12 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       return
     }
 
-    const newServer: CustomServer = {
+    if (mode === MODE_AGENT && isUrlAlreadyExist(servers, agentProxyUrl)) {
+      console.log('Server URL with the same cloud, namespace, and service already exists')
+      return
+    }
+
+    const newServer: PlaygroundServer = {
       url: mode === MODE_MANUAL ? formData[CUSTOM_SERVER_URL_KEY]! : agentProxyUrl,
       description: formData[DESCRIPTION_KEY] ?? '',
       shouldUseProxyEndpoint: !formData[CLOUD_KEY],
@@ -210,6 +237,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   }, [
     isServiceNameValid,
     mode,
+    servers,
     agentProxyUrl,
     setCustomServersPackageMap,
     packageId,
@@ -217,6 +245,8 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     showSuccessNotification,
     setOpen,
   ])
+
+  console.log('SERVERS:', servers)
 
   // Rendering functions
   const renderSelectUrl = useCallback((
@@ -391,7 +421,15 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
             name={CUSTOM_SERVER_URL_KEY}
             rules={{
               required: 'The field must be filled',
-              validate: (url) => isAbsoluteUrl(url) || 'The value must be an absolute URL',
+              validate: url => {
+                if (!isAbsoluteUrl(url)) {
+                  return 'The value must be an absolute URL'
+                }
+                if (mode === MODE_MANUAL && isUrlAlreadyExist(servers, url)) {
+                  return 'Server URL already exists'
+                }
+                return true
+              },
             }}
             control={control}
             render={renderSelectUrl}

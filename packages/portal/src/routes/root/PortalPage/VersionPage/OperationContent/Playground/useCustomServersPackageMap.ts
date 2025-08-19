@@ -18,16 +18,19 @@ import { useCallback, useState } from 'react'
 import { safeParse } from '@stoplight/json'
 import { useSetCustomServersContext } from './CustomServersProvider'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { Dictionary, INodeVariable } from '@stoplight/types'
 
 export function getCustomServersPackageMapFromLocalStorage(): CustomServersPackageMap {
   return safeParse(localStorage.getItem(CUSTOM_SERVERS_KEY) ?? '') ?? {}
 }
 
 export function useCustomServersPackageMap(): [CustomServersPackageMap, SetCustomServersPackageMap] {
-  const [customServers, setCustomServers] = useState<CustomServersPackageMap>(getCustomServersPackageMapFromLocalStorage)
+  const [customServers, setCustomServers] = useState<CustomServersPackageMap>(
+    getCustomServersPackageMapFromLocalStorage,
+  )
   const setCustomServersMap = useSetCustomServersContext()
 
-  const updateCustomServers = useCallback((key: string, value: CustomServer[]) => {
+  const updateCustomServers = useCallback((key: string, value: PlaygroundServer[]) => {
     const data = { ...customServers, [key]: value }
 
     localStorage.setItem(CUSTOM_SERVERS_KEY, JSON.stringify(data))
@@ -42,11 +45,12 @@ export function useCustomServersPackageMap(): [CustomServersPackageMap, SetCusto
 }
 
 export const CUSTOM_SERVERS_KEY = 'playground-custom-servers'
-export type CustomServersPackageMap = Record<Key, CustomServer[]>
-export type SetCustomServersPackageMap = (key: string, value: CustomServer[]) => void
+export type CustomServersPackageMap = Record<Key, PlaygroundServer[]>
+export type SetCustomServersPackageMap = (key: string, value: PlaygroundServer[]) => void
 
-export type CustomServer = {
+export type PlaygroundServer = {
   url: string
   description?: string
   shouldUseProxyEndpoint: boolean
+  variables?: Dictionary<INodeVariable, string>
 }
