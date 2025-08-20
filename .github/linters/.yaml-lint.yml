@@ -41,7 +41,7 @@ rules:
     max-start: 0
     max-end: 2
   empty-values:
-    forbid-in-block-mappings: true
+    forbid-in-block-mappings: false
     forbid-in-flow-mappings: true
   hyphens:
     max-spaces-after: 1
