@@ -51,7 +51,7 @@ export function usePublishPackageVersion(): [PublishPackageVersion, IsLoading, I
         toPublishOptions(packageId!, options, user!.key),
       )
     },
-    onSuccess: async ({ status, message }, { version, sources }) => {
+    onSuccess: async ({ status, errorMessage }, { version, sources }) => {
       await invalidatePackageVersions()
       await invalidateVersionContent({
         packageKey: packageId!,
@@ -67,7 +67,7 @@ export function usePublishPackageVersion(): [PublishPackageVersion, IsLoading, I
       if (status === COMPLETE_PUBLISH_STATUS) {
         navigateToVersion({ packageKey: packageId!, versionKey: version })
       } else if (status === ERROR_PUBLISH_STATUS) {
-        showErrorNotification({ message: message! })
+        showErrorNotification({ message: errorMessage! })
       }
     },
     onError: async (error, variables, context) => {
