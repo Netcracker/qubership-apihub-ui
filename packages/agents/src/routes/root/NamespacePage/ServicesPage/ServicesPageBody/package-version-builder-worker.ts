@@ -81,7 +81,7 @@ const worker: PackageVersionBuilderWorker = {
       })
 
     let status: PublishStatus = NONE_PUBLISH_STATUS
-    let errorMessage
+    let message
 
     try {
       await builder.run()
@@ -101,7 +101,7 @@ const worker: PackageVersionBuilderWorker = {
       stopSendingRunningStatus()
 
       status = ERROR_PUBLISH_STATUS
-      errorMessage = error instanceof Error ? error.message : `${error}`
+      message = error instanceof Error ? error.message : `${error}`
       await setPublicationDetails({
         packageKey: serviceConfig.packageId,
         publishKey: serviceConfig.publishId,
@@ -115,7 +115,7 @@ const worker: PackageVersionBuilderWorker = {
     return {
       publishId: serviceConfig.publishId,
       status: status,
-      errorMessage: errorMessage,
+      message: message,
     }
   },
 }

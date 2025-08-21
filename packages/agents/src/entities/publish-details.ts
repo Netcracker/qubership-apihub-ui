@@ -29,7 +29,7 @@ export type PublishDetails = PublishDetailsDto
 export type PublishDetailsDto = {
   publishId: PublishKey
   status: PublishStatus
-  errorMessage?: string
+  message?: string
 }
 
 export const EMPTY_PUBLISH_DETAILS: PublishDetails = {

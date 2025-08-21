@@ -382,7 +382,7 @@ const PromoteVersionDetailsTableCell: FC<PromoteVersionDetailsTableCellProps> = 
   return (
     <Box display="flex" gap={1}>
       <StatusMarker value={PUBLISH_STATUS_TO_STATUS_MARKER_VARIANT_MAP[promoteDetails.status]}/>
-      <Typography noWrap variant="inherit">{promoteDetails.errorMessage}</Typography>
+      <Typography noWrap variant="inherit">{promoteDetails.message}</Typography>
     </Box>
   )
 })

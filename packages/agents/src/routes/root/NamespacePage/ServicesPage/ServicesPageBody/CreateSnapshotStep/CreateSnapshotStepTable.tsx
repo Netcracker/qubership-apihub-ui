@@ -343,7 +343,7 @@ const CreateSnapshotDetailsTableCell: FC<CreateSnapshotDetailsTableCellProps> = 
     <Box display="flex" gap={1}>
       <StatusMarker
         value={PUBLISH_STATUS_TO_STATUS_MARKER_VARIANT_MAP[publishDetails.status]}
-        title={publishDetails.errorMessage}
+        title={publishDetails.message}
       />
       <Typography noWrap variant="inherit">
         {PUBLISH_STATUS_TO_STATUS_DESCRIPTION_MAP[publishDetails.status]}

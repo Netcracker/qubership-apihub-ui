@@ -259,7 +259,7 @@ export type PublishDetails = PublishDetailsDto
 export type PublishDetailsDto = {
   publishId: string
   status: PublishStatus
-  errorMessage?: string
+  message?: string
 }
 
 export function toVersionOperation(value: OperationDto): ResolvedOperation {
