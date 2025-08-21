@@ -195,8 +195,6 @@ Let's rename \*our-new-project\* to \*our-old-project\*.
 
 [I'm a reference-style link][Arbitrary case-insensitive reference text]
 
-[I'm a relative reference to a repository file](../blob/main/LICENSE)
-
 [You can use numbers for reference-style link definitions][1]
 
 Or leave it empty and use the [link text itself].
@@ -207,9 +205,9 @@ example.com (but not on Github, for example).
 
 Some text to show that the reference links can follow later.
 
-[arbitrary case-insensitive reference text]: https://www.mozilla.org
+[arbitrary case-insensitive reference text]: http://www.example.com
 [1]: http://slashdot.org
-[link text itself]: http://www.reddit.com
+[link text itself]: http://www.example.com
 ```
 
 [I'm an inline-style link](https://www.google.com)
@@ -218,8 +216,6 @@ Some text to show that the reference links can follow later.
 
 [I'm a reference-style link][Arbitrary case-insensitive reference text]
 
-[I'm a relative reference to a repository file](../blob/main/LICENSE)
-
 [You can use numbers for reference-style link definitions][1]
 
 Or leave it empty and use the [link text itself].
@@ -230,9 +226,9 @@ example.com (but not on Github, for example).
 
 Some text to show that the reference links can follow later.
 
-[arbitrary case-insensitive reference text]: https://www.mozilla.org
+[arbitrary case-insensitive reference text]: http://www.example.com
 [1]: http://slashdot.org
-[link text itself]: http://www.reddit.com
+[link text itself]: http://www.example.com
 
 ------
 
@@ -241,13 +237,8 @@ Some text to show that the reference links can follow later.
 ```
 Here's our logo (hover to see the title text):
 
-Inline-style:
-![alt text](https://github.com/adam-p/markdown-here/raw/main/src/common/images/icon48.png "Logo Title Text 1")
-
 Reference-style:
 ![alt text][logo]
-
-[logo]: https://github.com/adam-p/markdown-here/raw/main/src/common/images/icon48.png "Logo Title Text 2"
 
 ![Minion](https://octodex.github.com/images/minion.png)
 ![Stormtroopocat](https://octodex.github.com/images/stormtroopocat.jpg "The Stormtroopocat")
@@ -263,13 +254,8 @@ With a reference later in the document defining the URL location:
 
 Here's our logo (hover to see the title text):
 
-Inline-style:
-![alt text](https://github.com/adam-p/markdown-here/raw/main/src/common/images/icon48.png "Logo Title Text 1")
-
 Reference-style:
 ![alt text][logo]
-
-[logo]: https://github.com/adam-p/markdown-here/raw/main/src/common/images/icon48.png "Logo Title Text 2"
 
 ![Minion](https://octodex.github.com/images/minion.png)
 ![Stormtroopocat](https://octodex.github.com/images/stormtroopocat.jpg "The Stormtroopocat")
@@ -611,21 +597,3 @@ ___
 Underscores
 
 ------
-
-# YouTube Videos
-
-```
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=YOUTUBE_VIDEO_ID_HERE" target="_blank">
-<img src="http://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg" alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10">
-</a>
-```
-
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=YOUTUBE_VIDEO_ID_HERE" target="_blank">
-<img src="http://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg" alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10">
-</a>
-
-```
-[![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](http://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE)
-```
-
-[![IMAGE ALT TEXT HERE](https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/YouTube_logo_2015.svg/1200px-YouTube_logo_2015.svg.png)](https://www.youtube.com/watch?v=ciawICBvQoE)
