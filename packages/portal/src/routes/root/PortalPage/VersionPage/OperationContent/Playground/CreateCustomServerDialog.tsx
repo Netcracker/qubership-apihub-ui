@@ -67,11 +67,12 @@ import {
 } from './hooks/useServerProcessing'
 import type { ServerObject } from 'openapi3-ts'
 
+const CUSTOM_SERVER_URL_KEY = 'customServerUrlKey'
+const DESCRIPTION_KEY = 'descriptionKey'
 const CLOUD_KEY = 'cloudKey'
 const NAMESPACE_KEY = 'namespaceKey'
 const SERVICE_KEY = 'serviceKey'
-const CUSTOM_SERVER_URL_KEY = 'customServerUrl'
-const DESCRIPTION_KEY = 'description'
+const ADDITIONAL_PATH_KEY = 'additionalPathKey'
 
 const MODE_MANUAL = 'manual' as const
 const MODE_AGENT = 'agent' as const
@@ -79,11 +80,12 @@ const MODE_AGENT = 'agent' as const
 type ModeType = typeof MODE_MANUAL | typeof MODE_AGENT
 
 type CreateCustomServerForm = {
+  [CUSTOM_SERVER_URL_KEY]?: Key
+  [DESCRIPTION_KEY]?: Key
   [CLOUD_KEY]?: Key
   [NAMESPACE_KEY]?: Key
   [SERVICE_KEY]?: Key
-  [CUSTOM_SERVER_URL_KEY]?: Key
-  [DESCRIPTION_KEY]?: string
+  [ADDITIONAL_PATH_KEY]?: Key
 }
 
 export const CreateCustomServerDialog: FC = memo(() => {
@@ -101,13 +103,14 @@ type ControllerRenderFunctionProps<FieldName extends keyof CreateCustomServerFor
   formState: UseFormStateReturn<CreateCustomServerForm>
 }
 
-const AGENT_PROXY_URL_TEMPLATE = ':baseUrl/apihub-nc/agents/:cloud/namespaces/:namespace/services/:service/proxy'
-const buildAgentProxyUrl = (baseUrl: string, cloud: string, namespace: string, service: string): string => {
+const AGENT_PROXY_URL_TEMPLATE = ':baseUrl/apihub-nc/agents/:cloud/namespaces/:namespace/services/:service/proxy/:additionalPath'
+const buildAgentProxyUrl = (baseUrl: string, cloud: string, namespace: string, service: string, additionalPath: string): string => {
   return generatePath(AGENT_PROXY_URL_TEMPLATE, {
     baseUrl,
     cloud,
     namespace,
     service,
+    additionalPath,
   })
 }
 
@@ -140,6 +143,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const [selectedCloud, setSelectedCloud] = useState<string>('')
   const [selectedNamespace, setSelectedNamespace] = useState<Namespace | null>(null)
   const [selectedAgent, setSelectedAgent] = useState<string>('')
+  const [additionalPath, setAdditionalPath] = useState<string>('')
 
   //  Load data for connected fields
   const [agents] = useAgents()
@@ -190,10 +194,11 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
           selectedAgent || '<cloud>',
           selectedNamespace?.namespaceKey ?? '<namespace>',
           serviceName,
+          additionalPath,
         ),
       )
     },
-    [baseUrl, isServiceNameExist, selectedAgent, selectedNamespace?.namespaceKey, serviceName],
+    [additionalPath, baseUrl, isServiceNameExist, selectedAgent, selectedNamespace?.namespaceKey, serviceName],
   )
 
   const isServiceNameValid = useMemo(
@@ -351,6 +356,21 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     />
   ), [])
 
+  const renderAdditionalPathInput = useCallback((
+    { field }: ControllerRenderFunctionProps<typeof ADDITIONAL_PATH_KEY>,
+  ) => (
+    <TextField
+      {...field}
+      disabled={!selectedNamespace}
+      label="Additional Path"
+      placeholder="e.g. api/v1"
+      onChange={(event) => {
+        setAdditionalPath(event.target.value)
+      }}
+      data-testid="AdditionalPathTextField"
+    />
+  ), [selectedNamespace])
+
   const packageKind = packageObj?.kind || PACKAGE_KIND
 
   const showPathWarning = usePathWarning(customServerUrl)
@@ -412,6 +432,11 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
               name={SERVICE_KEY}
               control={control}
               render={renderSelectService}
+            />
+            <Controller
+              name={ADDITIONAL_PATH_KEY}
+              control={control}
+              render={renderAdditionalPathInput}
             />
           </>
         )}
