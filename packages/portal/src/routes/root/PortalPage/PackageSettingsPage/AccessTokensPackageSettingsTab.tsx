@@ -47,7 +47,6 @@ export const AccessTokensPackageSettingsTab: FC<PackageSettingsTabProps> = memo<
   const [tokensList, isTokensLoading] = useTokens(packageKey!, hasTokenManagementPermission)
   const [deleteAPIKey] = useDeleteApiKey()
   const [generatedApiKey, generateApiKey, isLoading] = useGenerateApiKey()
-
   const [userSearch, setUserSearch] = useState<string>('')
   const [usersData, isUsersDataLoading] = useUsers({searchValue:userSearch, enabled:hasTokenManagementPermission})
 
