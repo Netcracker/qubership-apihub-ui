@@ -32,8 +32,8 @@ import {
   RadioGroup,
   TextField,
   Tooltip,
-  Typography,
 } from '@mui/material'
+import { AgentServerUrlBox } from './AgentServerUrlBox'
 import { Controller, useForm } from 'react-hook-form'
 import type { ControllerFieldState, ControllerRenderProps } from 'react-hook-form/dist/types/controller'
 import type { UseFormStateReturn } from 'react-hook-form/dist/types'
@@ -103,8 +103,15 @@ type ControllerRenderFunctionProps<FieldName extends keyof CreateCustomServerFor
   formState: UseFormStateReturn<CreateCustomServerForm>
 }
 
-const AGENT_PROXY_URL_TEMPLATE = ':baseUrl/apihub-nc/agents/:cloud/namespaces/:namespace/services/:service/proxy/:additionalPath'
-const buildAgentProxyUrl = (baseUrl: string, cloud: string, namespace: string, service: string, additionalPath: string): string => {
+const AGENT_PROXY_URL_TEMPLATE =
+  ':baseUrl/apihub-nc/agents/:cloud/namespaces/:namespace/services/:service/proxy/:additionalPath'
+const buildAgentProxyUrl = (
+  baseUrl: string,
+  cloud: string,
+  namespace: string,
+  service: string,
+  additionalPath: string,
+): string => {
   return generatePath(AGENT_PROXY_URL_TEMPLATE, {
     baseUrl,
     cloud,
@@ -144,6 +151,9 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const [selectedNamespace, setSelectedNamespace] = useState<Namespace | null>(null)
   const [selectedAgent, setSelectedAgent] = useState<string>('')
   const [additionalPath, setAdditionalPath] = useState<string>('')
+
+  const isAgentMode = mode === MODE_AGENT
+  const isManualMode = mode === MODE_MANUAL
 
   //  Load data for connected fields
   const [agents] = useAgents()
@@ -192,7 +202,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
         buildAgentProxyUrl(
           baseUrl,
           selectedAgent || '<cloud>',
-          selectedNamespace?.namespaceKey ?? '<namespace>',
+          selectedNamespace?.namespaceKey || '<namespace>',
           serviceName,
           additionalPath,
         ),
@@ -222,13 +232,13 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       return
     }
 
-    if (mode === MODE_AGENT && isUrlAlreadyExist(servers, agentProxyUrl)) {
+    if (isAgentMode && isUrlAlreadyExist(servers, agentProxyUrl)) {
       console.log('Server URL with the same cloud, namespace, and service already exists')
       return
     }
 
     const newServer: PlaygroundServer = {
-      url: mode === MODE_MANUAL ? formData[CUSTOM_SERVER_URL_KEY]! : agentProxyUrl,
+      url: isManualMode ? formData[CUSTOM_SERVER_URL_KEY]! : agentProxyUrl,
       description: formData[DESCRIPTION_KEY] ?? '',
       shouldUseProxyEndpoint: !formData[CLOUD_KEY],
     }
@@ -241,9 +251,10 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     setOpen(false)
   }, [
     isServiceNameValid,
-    mode,
+    isAgentMode,
     servers,
     agentProxyUrl,
+    isManualMode,
     setCustomServersPackageMap,
     packageId,
     customServersPackageMap,
@@ -361,7 +372,6 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   ) => (
     <TextField
       {...field}
-      disabled={!selectedNamespace}
       label="Additional Path"
       placeholder="e.g. api/v1"
       onChange={(event) => {
@@ -369,7 +379,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       }}
       data-testid="AdditionalPathTextField"
     />
-  ), [selectedNamespace])
+  ), [])
 
   const packageKind = packageObj?.kind || PACKAGE_KIND
 
@@ -408,16 +418,9 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
           </FormControl>
         )}
 
-        {mode === MODE_AGENT && (
+        {isAgentMode && (
           <>
-            <Typography variant="subtitle2">Server URL:</Typography>
-            <Typography variant="body2">{agentProxyUrl}</Typography>
-            {/*<TextField*/}
-            {/*  multiline*/}
-            {/*  label="Server URL"*/}
-            {/*  value={agentProxyUrl}*/}
-            {/*  inputProps={{ readOnly: true }}*/}
-            {/*/>*/}
+            <AgentServerUrlBox agentProxyUrl={agentProxyUrl} />
             <Controller
               name={CLOUD_KEY}
               control={control}
@@ -441,7 +444,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
           </>
         )}
 
-        {mode === MODE_MANUAL && (
+        {isManualMode && (
           <Controller
             name={CUSTOM_SERVER_URL_KEY}
             rules={{
@@ -450,7 +453,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
                 if (!isAbsoluteUrl(url)) {
                   return 'The value must be an absolute URL'
                 }
-                if (mode === MODE_MANUAL && isUrlAlreadyExist(servers, url)) {
+                if (isUrlAlreadyExist(servers, url)) {
                   return 'Server URL already exists'
                 }
                 return true
@@ -467,7 +470,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
           render={renderDescriptionInput}
         />
 
-        {mode === MODE_MANUAL && showPathWarning && (
+        {isManualMode && showPathWarning && (
           <Alert
             severity="warning"
             sx={{
@@ -491,7 +494,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       </DialogContent>
 
       <DialogActions>
-        <Button variant="contained" type="submit" data-testid="AddButton">
+        <Button variant="contained" type="submit" disabled={isAgentMode ? !selectedNamespace : false} data-testid="AddButton">
           Add
         </Button>
         <Button variant="outlined" onClick={() => setOpen(false)} data-testid="CancelButton">
