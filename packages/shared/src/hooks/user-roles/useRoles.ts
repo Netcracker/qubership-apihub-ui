@@ -82,7 +82,7 @@ type RolesQueryState = {
 }
 
 export function useRoles(enabled = true): RolesQueryState {
-  const { data, isLoading, error } = useQuery<RolesDto, Error, Roles>({
+  const { data, isInitialLoading, error } = useQuery<RolesDto, Error, Roles>({
     queryKey: [ROLES_QUERY_KEY],
     queryFn: () => getRoles(),
     select: toRoles,
@@ -95,7 +95,7 @@ export function useRoles(enabled = true): RolesQueryState {
 
   return {
     data: result,
-    isLoading: enabled ? isLoading : enabled,
+    isLoading: isInitialLoading,
     error: error,
   }
 }

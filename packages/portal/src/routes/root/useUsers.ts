@@ -27,14 +27,14 @@ const USERS_QUERY_KEY = 'users-query-key'
 export function useUsers(
   { searchValue, packageKey, enabled = true }: { searchValue: string; packageKey?: Key | undefined; enabled?: boolean },
 ): [Users | null, IsLoading, Error | null] {
-  const { data, isLoading, error } = useQuery<UsersDto, Error, Users>({
+  const { data, error, isInitialLoading } = useQuery<UsersDto, Error, Users>({
     queryKey: [USERS_QUERY_KEY, packageKey, searchValue],
     queryFn: () => getUsersByFilter(searchValue),
     select: toUsers,
     enabled: enabled,
   })
 
-  return [data ?? null, enabled ? isLoading : enabled, error]
+  return [data ?? null, isInitialLoading, error]
 }
 
 export async function getUsersByFilter(

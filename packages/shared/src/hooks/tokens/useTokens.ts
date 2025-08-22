@@ -40,7 +40,7 @@ const ACCESS_TOKENS_QUERY_KEY = 'access-tokens-query-key'
 const AVAILABLE_ROLES_FOR_PACKAGE_QUERY_KEY = 'available-roles-for-package-query-key'
 
 export function useTokens(packageKey?: Key, enabled = true): [Tokens, IsLoading, Error | null] {
-  const { data, isLoading, error } = useQuery<SystemTokensDto, Error, Tokens>({
+  const { data, isInitialLoading, error } = useQuery<SystemTokensDto, Error, Tokens>({
     queryKey: [ACCESS_TOKENS_QUERY_KEY, packageKey],
     queryFn: () => getTokens(packageKey),
     select: toSystemTokens,
@@ -49,7 +49,7 @@ export function useTokens(packageKey?: Key, enabled = true): [Tokens, IsLoading,
 
   return [
     useMemo(() => data ?? [], [data]),
-    enabled ? isLoading : enabled,
+    isInitialLoading,
     error,
   ]
 }

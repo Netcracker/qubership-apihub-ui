@@ -66,7 +66,7 @@ type AddPackageMemberRoleData = {
 }
 
 export function usePackageMembers(packageKey: Key, enabled = true): [PackageMembers, IsLoading, Error | null] {
-  const { data, isLoading, error } = useQuery<PackageMembersDto, Error, PackageMembers>({
+  const { data, isInitialLoading, error } = useQuery<PackageMembersDto, Error, PackageMembers>({
     queryKey: [USER_PACKAGE_ACCESS_QUERY_KEY, packageKey],
     queryFn: () => getPackageMembers(packageKey!),
     enabled: !!packageKey && enabled,
@@ -75,7 +75,7 @@ export function usePackageMembers(packageKey: Key, enabled = true): [PackageMemb
 
   return [
     data ?? [],
-    enabled ? isLoading : enabled,
+    isInitialLoading,
     error,
   ]
 }
