@@ -86,7 +86,7 @@ _This is italic text_
 ⋅⋅1. Ordered sub-list
 4. And another item.
 
-⋅⋅⋅You can have properly indented paragraphs within list items. Notice the blank line above, and the leading spaces (at least one, but we'll use three here to also align the raw Markdown).
+⋅⋅⋅You can have properly indented paragraphs within list items. Notice the empty line above, and the leading spaces (at least one, but we'll use three here to also align the raw Markdown).
 
 ⋅⋅⋅To have a line break without a paragraph, you will need to use two trailing spaces.⋅⋅
 ⋅⋅⋅Note that this line is separate, but within the same paragraph.⋅⋅
@@ -201,7 +201,7 @@ Or leave it empty and use the [link text itself].
 
 URLs and URLs in angle brackets will automatically get turned into links.
 http://www.example.com or <http://www.example.com> and sometimes
-example.com (but not on Github, for example).
+example.com (but not on GitHub, for example).
 
 Some text to show that the reference links can follow later.
 
@@ -222,7 +222,7 @@ Or leave it empty and use the [link text itself].
 
 URLs and URLs in angle brackets will automatically get turned into links.
 http://www.example.com or <http://www.example.com> and sometimes
-example.com (but not on Github, for example).
+example.com (but not on GitHub, for example).
 
 Some text to show that the reference links can follow later.
 
@@ -451,8 +451,8 @@ Markdown | Less | Pretty
 
 | Command | Description |
 | --- | --- |
-| git status | List all new or modified files |
-| git diff | Show file differences that haven't been staged |
+| `git status` | List all new or modified files |
+| `git diff` | Show file differences that haven't been staged |
 
 | Command | Description |
 | --- | --- |
@@ -461,8 +461,8 @@ Markdown | Less | Pretty
 
 | Left-aligned | Center-aligned | Right-aligned |
 | :---         |     :---:      |          ---: |
-| git status   | git status     | git status    |
-| git diff     | git diff       | git diff      |
+| `git status`   | `git status`     | `git status`    |
+| `git diff`     | `git diff`       | `git diff`      |
 
 | Name     | Character |
 | ---      | ---       |
@@ -494,8 +494,8 @@ Markdown | Less | Pretty
 
 | Command | Description |
 | --- | --- |
-| git status | List all new or modified files |
-| git diff | Show file differences that haven't been staged |
+| `git status` | List all new or modified files |
+| `git diff` | Show file differences that haven't been staged |
 
 | Command | Description |
 | --- | --- |
@@ -504,8 +504,8 @@ Markdown | Less | Pretty
 
 | Left-aligned | Center-aligned | Right-aligned |
 | :---         |     :---:      |          ---: |
-| git status   | git status     | git status    |
-| git diff     | git diff       | git diff      |
+| `git status`   | `git status`     | `git status`    |
+| `git diff`     | `git diff`       | `git diff`      |
 
 | Name     | Character |
 | ---      | ---       |
