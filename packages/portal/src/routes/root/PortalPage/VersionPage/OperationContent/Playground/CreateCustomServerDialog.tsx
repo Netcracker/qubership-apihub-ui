@@ -1,8 +1,5 @@
-import type { FC } from 'react'
-import * as React from 'react'
-import { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import { type FC, memo, useCallback, useEffect, useMemo, useState } from 'react'
 import {
-  Alert,
   Autocomplete,
   Button,
   DialogActions,
@@ -37,12 +34,12 @@ import { isServiceNameExistInNamespace } from '@netcracker/qubership-apihub-ui-s
 import { useShowSuccessNotification } from '@apihub/routes/root/BasePage/Notification'
 import { ErrorIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ErrorIcon'
 import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoContextIcon'
+import { useFirstSpecPath } from './hooks/useFirstSpecPath'
+import { SpecPathWarningAlert } from './components/SpecPathWarningAlert'
 import { PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { usePathWarning } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/Playground/usePathWarning'
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { useOperation } from '@apihub/routes/root/PortalPage/VersionPage/useOperation'
-import { useOperationInfo } from './hooks/useSpecServers'
 import {
   isAbsoluteUrl,
   useCombinedServers,
@@ -50,6 +47,9 @@ import {
   useProcessedSpecServers,
 } from './hooks/useServerProcessing'
 import type { ServerObject } from 'openapi3-ts'
+import {
+  useSpecServers,
+} from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/Playground/hooks/useSpecServers'
 
 const MODE_MANUAL = 'manual' as const
 const MODE_AGENT = 'agent' as const
@@ -78,9 +78,6 @@ const ERROR_REQUIRED_FIELD = 'The field must be filled'
 const ERROR_SERVER_URL_EXISTS = 'Server URL already exists'
 const ERROR_SERVICE_NOT_FOUND = (serviceName: string): string =>
   `Service ${serviceName} not found in selected namespace`
-
-const WARNING_SPEC_SERVER_PATH =
-  'Servers specified directly in the OpenAPI specification contain a path to a specific resource. Make sure the URL you enter is correct and does not contain an additional path (e.g. /api/v1).'
 
 const SUCCESS_SERVER_ADDED = 'Server has been added'
 const SUCCESS_TITLE = 'Success'
@@ -139,6 +136,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const { packageId = '', versionId, apiType = DEFAULT_API_TYPE, operationId: operationKey } = useParams()
   const [packageObj] = usePackage()
   const serviceName = packageObj?.serviceName
+  const packageKind = packageObj?.kind || PACKAGE_KIND
   const isServiceNameExist = !!serviceName
 
   // Get operation
@@ -149,12 +147,11 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     apiType: apiType as ApiType,
   })
 
-  const operationInfo = useOperationInfo(operationData?.data)
-  console.log('OPERATION_INFO:', operationInfo)
+  const specServers = useSpecServers(operationData?.data)
+  console.log('SPEC_SERVERS:', specServers)
   // console.log('data:', operationData)
 
   // States for selections
-  const [mode, setMode] = useState<ModeType>(MODE_MANUAL)
   const [agentProxyUrl, setAgentProxyUrl] = useState<string>('')
   const [agentProxyUrlError, setAgentProxyUrlError] = useState<string>('')
   const [selectedCloud, setSelectedCloud] = useState<string>('')
@@ -162,6 +159,14 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const [selectedAgent, setSelectedAgent] = useState<string>('')
   const [additionalPath, setAdditionalPath] = useState<string>('')
 
+  const allSpecServers = useProcessedSpecServers(specServers, true)
+  const firstSpecPath = useFirstSpecPath(allSpecServers)
+
+  useEffect(() => {
+    console.log('allSpecServers:', allSpecServers)
+  }, [allSpecServers])
+
+  const [mode, setMode] = useState<ModeType>(MODE_MANUAL)
   const isAgentMode = mode === MODE_AGENT
   const isManualMode = mode === MODE_MANUAL
 
@@ -196,14 +201,11 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     control,
     setValue,
     clearErrors,
-    watch,
   } = useForm<CreateCustomServerForm>({
     defaultValues: defaultFormData,
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
   })
-
-  const customServerUrl = watch(KEY_CUSTOM_SERVER_URL)
 
   const baseUrl = window.location.origin
 
@@ -232,7 +234,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const [customServersPackageMap, setCustomServersPackageMap] = useCustomServersPackageMap()
 
   // Servers
-  const processedSpecServers = useProcessedSpecServers(operationInfo?.servers)
+  const processedSpecServers = useProcessedSpecServers(specServers)
   const processedCustomServers = useProcessedCustomServers(customServersPackageMap?.[packageId])
   const servers = useCombinedServers(processedSpecServers, processedCustomServers)
 
@@ -372,7 +374,6 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     <TextField
       {...field}
       disabled
-      // inputProps={{readOnly: true}}
       required
       label={LABEL_SERVICE}
       data-testid="ServerUrlTextField"
@@ -387,15 +388,12 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       label={LABEL_ADDITIONAL_PATH}
       placeholder={PLACEHOLDER_ADDITIONAL_PATH}
       onChange={(event) => {
+        field.onChange(event)
         setAdditionalPath(event.target.value)
       }}
       data-testid="AdditionalPathTextField"
     />
   ), [])
-
-  const packageKind = packageObj?.kind || PACKAGE_KIND
-
-  const showPathWarning = usePathWarning(customServerUrl)
 
   return (
     <DialogForm
@@ -482,26 +480,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
           render={renderDescriptionInput}
         />
 
-        {isManualMode && showPathWarning && (
-          <Alert
-            severity="warning"
-            sx={{
-              p: 0,
-              color: 'black',
-              backgroundColor: '#ffffff', // White background
-              alignItems: 'flex-start',
-              '& .MuiAlert-icon': {
-                mt: '2px',
-              },
-              '& .MuiAlert-message': {
-                fontSize: '12px',
-                lineHeight: '16px',
-              },
-            }}
-          >
-            {WARNING_SPEC_SERVER_PATH}
-          </Alert>
-        )}
+        {!!firstSpecPath && <SpecPathWarningAlert path={firstSpecPath} />}
       </DialogContent>
 
       <DialogActions>

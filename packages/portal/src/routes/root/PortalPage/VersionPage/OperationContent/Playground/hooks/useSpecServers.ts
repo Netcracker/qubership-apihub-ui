@@ -2,27 +2,20 @@ import { transformOas2Operation } from '@netcracker/qubership-apihub-http-spec/o
 import { transformOas3Operation } from '@netcracker/qubership-apihub-http-spec/oas3'
 import { isObject } from 'lodash'
 import type { ServerObject } from 'openapi3-ts'
-import * as React from 'react'
+import { useMemo } from 'react'
 
-interface OperationInfo {
-  path: string
-  servers: ServerObject[]
-}
-
-export function useOperationInfo(document: object | undefined): OperationInfo | null {
-  return React.useMemo(() => {
-    const operationInfoStoplight = getOperationInfoStoplight(document)
-    console.log('operationInfoInHook:', operationInfoStoplight)
-    return operationInfoStoplight
+export function useSpecServers(document: object | undefined): ServerObject[] {
+  return useMemo(() => {
+    return getSpecServers(document)
   }, [document])
 }
 
-function getOperationInfoStoplight(document: unknown): { path: string; servers: Array<{ url: string }> } | null {
-  if (!isObject(document)) return null
+function getSpecServers(document: unknown): ServerObject[] {
+  if (!isObject(document)) return []
 
   // First, try to find any operation in the document
   const paths = 'paths' in document ? document.paths : null
-  if (!isObject(paths)) return null
+  if (!isObject(paths)) return []
 
   // Get the first path and its first method
   const [path, pathItem] = Object.entries(paths).find(([, methods]) =>
@@ -32,20 +25,17 @@ function getOperationInfoStoplight(document: unknown): { path: string; servers: 
     ),
   ) || []
 
-  if (!path || !pathItem) return null
+  if (!path || !pathItem) return []
 
   const method = Object.keys(pathItem).find(m =>
     ['get', 'post', 'put', 'delete', 'patch', 'options', 'head'].includes(m.toLowerCase()),
   )
 
-  if (!method) return null
+  if (!method) return []
 
   // Use Stoplight's transform function to get the operation with resolved servers
   const transformFn = 'swagger' in document ? transformOas2Operation : transformOas3Operation
   const operation = transformFn({ document, path, method })
 
-  return {
-    path: path,
-    servers: operation.servers || [],
-  }
+  return operation.servers || []
 }
