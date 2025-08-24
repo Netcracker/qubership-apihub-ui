@@ -1,11 +1,12 @@
-import { Box, Typography } from '@mui/material'
-import type { FC } from 'react'
+import { Box, FormHelperText, Typography } from '@mui/material'
+import { memo } from 'react'
 
-interface AgentServerUrlBoxProps {
-  agentProxyUrl?: string
+interface ServerUrlDisplayProps {
+  serverUrl?: string
+  errorMessage?: string
 }
 
-export const AgentServerUrlBox: FC<AgentServerUrlBoxProps> = ({ agentProxyUrl }) => (
+export const ServerUrlDisplay = memo<ServerUrlDisplayProps>(({ serverUrl, errorMessage }) => (
   <Box sx={{ display: 'flex', flexDirection: 'column', my: 1 }}>
     <Typography variant="subtitle2">Server URL:</Typography>
     <Typography
@@ -13,9 +14,10 @@ export const AgentServerUrlBox: FC<AgentServerUrlBoxProps> = ({ agentProxyUrl })
       sx={{ wordBreak: 'break-word' }}
     >
       {/*Break at "/" by inserting a zero‑width space*/}
-      {agentProxyUrl?.replace(/\//g, '/\u200B')}
+      {serverUrl?.replace(/\//g, '/\u200B')}
     </Typography>
+    {!!errorMessage && <FormHelperText error>{errorMessage}</FormHelperText>}
   </Box>
-)
+))
 
-AgentServerUrlBox.displayName = 'AgentServerUrlBox'
+ServerUrlDisplay.displayName = 'ServerUrlDisplay'

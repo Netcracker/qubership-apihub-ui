@@ -33,7 +33,7 @@ import {
   TextField,
   Tooltip,
 } from '@mui/material'
-import { AgentServerUrlBox } from './AgentServerUrlBox'
+import { ServerUrlDisplay } from './AgentServerUrlBox'
 import { Controller, useForm } from 'react-hook-form'
 import type { ControllerFieldState, ControllerRenderProps } from 'react-hook-form/dist/types/controller'
 import type { UseFormStateReturn } from 'react-hook-form/dist/types'
@@ -147,6 +147,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   // States for selections
   const [mode, setMode] = useState<ModeType>(MODE_MANUAL)
   const [agentProxyUrl, setAgentProxyUrl] = useState<string>('')
+  const [agentProxyUrlError, setAgentProxyUrlError] = useState<string>('')
   const [selectedCloud, setSelectedCloud] = useState<string>('')
   const [selectedNamespace, setSelectedNamespace] = useState<Namespace | null>(null)
   const [selectedAgent, setSelectedAgent] = useState<string>('')
@@ -207,6 +208,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
           additionalPath,
         ),
       )
+      setAgentProxyUrlError('')
     },
     [additionalPath, baseUrl, isServiceNameExist, selectedAgent, selectedNamespace?.namespaceKey, serviceName],
   )
@@ -233,7 +235,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     }
 
     if (isAgentMode && isUrlAlreadyExist(servers, agentProxyUrl)) {
-      console.log('Server URL with the same cloud, namespace, and service already exists')
+      setAgentProxyUrlError('Server URL already exists')
       return
     }
 
@@ -420,7 +422,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
 
         {isAgentMode && (
           <>
-            <AgentServerUrlBox agentProxyUrl={agentProxyUrl} />
+            <ServerUrlDisplay serverUrl={agentProxyUrl} errorMessage={agentProxyUrlError}/>
             <Controller
               name={CLOUD_KEY}
               control={control}
