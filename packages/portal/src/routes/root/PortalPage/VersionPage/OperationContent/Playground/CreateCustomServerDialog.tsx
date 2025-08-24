@@ -1,19 +1,3 @@
-/**
- * Copyright 2024-2025 NetCracker Technology Corporation
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import type { FC } from 'react'
 import * as React from 'react'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
@@ -67,25 +51,49 @@ import {
 } from './hooks/useServerProcessing'
 import type { ServerObject } from 'openapi3-ts'
 
-const CUSTOM_SERVER_URL_KEY = 'customServerUrlKey'
-const DESCRIPTION_KEY = 'descriptionKey'
-const CLOUD_KEY = 'cloudKey'
-const NAMESPACE_KEY = 'namespaceKey'
-const SERVICE_KEY = 'serviceKey'
-const ADDITIONAL_PATH_KEY = 'additionalPathKey'
-
 const MODE_MANUAL = 'manual' as const
 const MODE_AGENT = 'agent' as const
+
+const KEY_CUSTOM_SERVER_URL = 'customServerUrlKey'
+const KEY_CLOUD = 'cloudKey'
+const KEY_NAMESPACE = 'namespaceKey'
+const KEY_SERVICE = 'serviceKey'
+const KEY_ADDITIONAL_PATH = 'additionalPathKey'
+const KEY_DESCRIPTION = 'descriptionKey'
+
+const LABEL_SERVER_URL = 'Server URL'
+const LABEL_CLOUD = 'Cloud'
+const LABEL_NAMESPACE = 'Namespace'
+const LABEL_SERVICE = 'Service'
+const LABEL_ADDITIONAL_PATH = 'Additional path'
+const LABEL_DESCRIPTION = 'Description'
+
+const PLACEHOLDER_ADDITIONAL_PATH = 'e.g. api/v1'
+
+const TOOLTIP_CUSTOM_SERVER_ONLY = (packageKind: string): string =>
+  `Only adding a custom server is available. To use the Agent proxy, specify the service name for the current ${packageKind}`
+
+const ERROR_ABSOLUTE_URL_REQUIRED = 'The value must be an absolute URL'
+const ERROR_REQUIRED_FIELD = 'The field must be filled'
+const ERROR_SERVER_URL_EXISTS = 'Server URL already exists'
+const ERROR_SERVICE_NOT_FOUND = (serviceName: string): string =>
+  `Service ${serviceName} not found in selected namespace`
+
+const WARNING_SPEC_SERVER_PATH =
+  'Servers specified directly in the OpenAPI specification contain a path to a specific resource. Make sure the URL you enter is correct and does not contain an additional path (e.g. /api/v1).'
+
+const SUCCESS_SERVER_ADDED = 'Server has been added'
+const SUCCESS_TITLE = 'Success'
 
 type ModeType = typeof MODE_MANUAL | typeof MODE_AGENT
 
 type CreateCustomServerForm = {
-  [CUSTOM_SERVER_URL_KEY]?: Key
-  [DESCRIPTION_KEY]?: Key
-  [CLOUD_KEY]?: Key
-  [NAMESPACE_KEY]?: Key
-  [SERVICE_KEY]?: Key
-  [ADDITIONAL_PATH_KEY]?: Key
+  [KEY_CUSTOM_SERVER_URL]?: Key
+  [KEY_DESCRIPTION]?: Key
+  [KEY_CLOUD]?: Key
+  [KEY_NAMESPACE]?: Key
+  [KEY_SERVICE]?: Key
+  [KEY_ADDITIONAL_PATH]?: Key
 }
 
 export const CreateCustomServerDialog: FC = memo(() => {
@@ -105,6 +113,7 @@ type ControllerRenderFunctionProps<FieldName extends keyof CreateCustomServerFor
 
 const AGENT_PROXY_URL_TEMPLATE =
   ':baseUrl/apihub-nc/agents/:cloud/namespaces/:namespace/services/:service/proxy/:additionalPath'
+
 const buildAgentProxyUrl = (
   baseUrl: string,
   cloud: string,
@@ -175,12 +184,13 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
 
   // Form initializing
   const defaultFormData = useMemo<CreateCustomServerForm>(() => ({
-    customServerUrl: '',
-    description: '',
-    cloudKey: '',
-    namespaceKey: '',
-    serviceKey: serviceName ?? '',
+    [KEY_CUSTOM_SERVER_URL]: '',
+    [KEY_DESCRIPTION]: '',
+    [KEY_CLOUD]: '',
+    [KEY_NAMESPACE]: '',
+    [KEY_SERVICE]: serviceName ?? '',
   }), [serviceName])
+
   const {
     handleSubmit,
     control,
@@ -193,7 +203,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     reValidateMode: 'onSubmit',
   })
 
-  const customServerUrl = watch(CUSTOM_SERVER_URL_KEY)
+  const customServerUrl = watch(KEY_CUSTOM_SERVER_URL)
 
   const baseUrl = window.location.origin
 
@@ -235,20 +245,20 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     }
 
     if (isAgentMode && isUrlAlreadyExist(servers, agentProxyUrl)) {
-      setAgentProxyUrlError('Server URL already exists')
+      setAgentProxyUrlError(ERROR_SERVER_URL_EXISTS)
       return
     }
 
     const newServer: PlaygroundServer = {
-      url: isManualMode ? formData[CUSTOM_SERVER_URL_KEY]! : agentProxyUrl,
-      description: formData[DESCRIPTION_KEY] ?? '',
-      shouldUseProxyEndpoint: !formData[CLOUD_KEY],
+      url: isManualMode ? formData[KEY_CUSTOM_SERVER_URL]! : agentProxyUrl,
+      description: formData[KEY_DESCRIPTION] ?? '',
+      shouldUseProxyEndpoint: !formData[KEY_CLOUD],
     }
 
     setCustomServersPackageMap(packageId, [...customServersPackageMap?.[packageId] ?? [], newServer])
     showSuccessNotification?.({
-      title: 'Success',
-      message: 'Server has been added',
+      title: SUCCESS_TITLE,
+      message: SUCCESS_SERVER_ADDED,
     })
     setOpen(false)
   }, [
@@ -268,13 +278,13 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
 
   // Rendering functions
   const renderSelectUrl = useCallback((
-    { field, fieldState }: ControllerRenderFunctionProps<typeof CUSTOM_SERVER_URL_KEY>,
+    { field, fieldState }: ControllerRenderFunctionProps<typeof KEY_CUSTOM_SERVER_URL>,
   ) => (
     <TextField
       {...field}
       required
       inputProps={{ required: false }} // disables the browser native "please fill out this field" prompt
-      label="Server URL"
+      label={LABEL_SERVER_URL}
       error={!!fieldState.error}
       helperText={fieldState.error?.message}
       onChange={(event) => {
@@ -293,17 +303,17 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   ), [clearErrors])
 
   const renderDescriptionInput = useCallback(
-    ({ field }: ControllerRenderFunctionProps<typeof DESCRIPTION_KEY>) => (
+    ({ field }: ControllerRenderFunctionProps<typeof KEY_DESCRIPTION>) => (
       <TextField
         {...field}
-        label="Description"
+        label={LABEL_DESCRIPTION}
         data-testid="DescriptionTextField"
       />
     ),
     [],
   )
 
-  const renderSelectCloud = useCallback(({ field }: ControllerRenderFunctionProps<typeof CLOUD_KEY>) => (
+  const renderSelectCloud = useCallback(({ field }: ControllerRenderFunctionProps<typeof KEY_CLOUD>) => (
     <Autocomplete
       key="cloudAutocomplete"
       options={clouds}
@@ -314,9 +324,9 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
         </ListItem>
       )}
       isOptionEqualToValue={(option, value) => option === value}
-      renderInput={(params) => <TextField {...field} {...params} required label="Cloud" />}
+      renderInput={(params) => <TextField {...field} {...params} required label={LABEL_CLOUD} />}
       onChange={(_, value) => {
-        setValue(CLOUD_KEY, value ?? '')
+        setValue(KEY_CLOUD, value ?? '')
         setSelectedCloud(value ?? '')
         setSelectedNamespace(null)
       }}
@@ -325,7 +335,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   ), [clouds, selectedCloud, setValue, setSelectedCloud, setSelectedNamespace])
 
   const renderSelectNamespace = useCallback((
-    { field }: ControllerRenderFunctionProps<typeof NAMESPACE_KEY>,
+    { field }: ControllerRenderFunctionProps<typeof KEY_NAMESPACE>,
   ) => (
     <Autocomplete
       key="namespaceAutocomplete"
@@ -343,13 +353,13 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
           {...field}
           {...params}
           required
-          label="Namespace"
+          label={LABEL_NAMESPACE}
           error={!isServiceNameValid}
-          helperText={!isServiceNameValid && `Service ${serviceName} not found in selected namespace`}
+          helperText={!isServiceNameValid && ERROR_SERVICE_NOT_FOUND(serviceName!)}
         />
       )}
       onChange={(_, value) => {
-        setValue(NAMESPACE_KEY, value?.namespaceKey ?? '')
+        setValue(KEY_NAMESPACE, value?.namespaceKey ?? '')
         setSelectedNamespace(value)
       }}
       data-testid="NamespaceAutocomplete"
@@ -357,25 +367,25 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   ), [isServiceNameValid, namespaces, selectedCloud, selectedNamespace, serviceName, setValue])
 
   const renderSelectService = useCallback((
-    { field }: ControllerRenderFunctionProps<typeof SERVICE_KEY>,
+    { field }: ControllerRenderFunctionProps<typeof KEY_SERVICE>,
   ) => (
     <TextField
       {...field}
       disabled
       // inputProps={{readOnly: true}}
       required
-      label="Service"
+      label={LABEL_SERVICE}
       data-testid="ServerUrlTextField"
     />
   ), [])
 
   const renderAdditionalPathInput = useCallback((
-    { field }: ControllerRenderFunctionProps<typeof ADDITIONAL_PATH_KEY>,
+    { field }: ControllerRenderFunctionProps<typeof KEY_ADDITIONAL_PATH>,
   ) => (
     <TextField
       {...field}
-      label="Additional Path"
-      placeholder="e.g. api/v1"
+      label={LABEL_ADDITIONAL_PATH}
+      placeholder={PLACEHOLDER_ADDITIONAL_PATH}
       onChange={(event) => {
         setAdditionalPath(event.target.value)
       }}
@@ -398,7 +408,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
           Add Custom Server
           {!isServiceNameExist && (
             <Tooltip
-              title={`Only adding a custom server is available. To use the Agent proxy, specify the service name for the current ${packageKind}`}
+              title={TOOLTIP_CUSTOM_SERVER_ONLY(packageKind)}
               placement="right"
             >
               <InfoContextIcon fontSize="extra-small" color="action" />
@@ -422,24 +432,24 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
 
         {isAgentMode && (
           <>
-            <ServerUrlDisplay serverUrl={agentProxyUrl} errorMessage={agentProxyUrlError}/>
+            <ServerUrlDisplay serverUrl={agentProxyUrl} errorMessage={agentProxyUrlError} />
             <Controller
-              name={CLOUD_KEY}
+              name={KEY_CLOUD}
               control={control}
               render={renderSelectCloud}
             />
             <Controller
-              name={NAMESPACE_KEY}
+              name={KEY_NAMESPACE}
               control={control}
               render={renderSelectNamespace}
             />
             <Controller
-              name={SERVICE_KEY}
+              name={KEY_SERVICE}
               control={control}
               render={renderSelectService}
             />
             <Controller
-              name={ADDITIONAL_PATH_KEY}
+              name={KEY_ADDITIONAL_PATH}
               control={control}
               render={renderAdditionalPathInput}
             />
@@ -448,15 +458,15 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
 
         {isManualMode && (
           <Controller
-            name={CUSTOM_SERVER_URL_KEY}
+            name={KEY_CUSTOM_SERVER_URL}
             rules={{
-              required: 'The field must be filled',
+              required: ERROR_REQUIRED_FIELD,
               validate: url => {
                 if (!isAbsoluteUrl(url)) {
-                  return 'The value must be an absolute URL'
+                  return ERROR_ABSOLUTE_URL_REQUIRED
                 }
                 if (isUrlAlreadyExist(servers, url)) {
-                  return 'Server URL already exists'
+                  return ERROR_SERVER_URL_EXISTS
                 }
                 return true
               },
@@ -467,7 +477,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
         )}
 
         <Controller
-          name={DESCRIPTION_KEY}
+          name={KEY_DESCRIPTION}
           control={control}
           render={renderDescriptionInput}
         />
@@ -489,14 +499,18 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
               },
             }}
           >
-            Servers specified directly in the OpenAPI specification contain a path to a specific resource. Make sure the
-            URL you enter is correct and does not contain an additional path (e.g. /api/v1).
+            {WARNING_SPEC_SERVER_PATH}
           </Alert>
         )}
       </DialogContent>
 
       <DialogActions>
-        <Button variant="contained" type="submit" disabled={isAgentMode ? !selectedNamespace : false} data-testid="AddButton">
+        <Button
+          variant="contained"
+          type="submit"
+          disabled={isAgentMode ? !selectedNamespace : false}
+          data-testid="AddButton"
+        >
           Add
         </Button>
         <Button variant="outlined" onClick={() => setOpen(false)} data-testid="CancelButton">
