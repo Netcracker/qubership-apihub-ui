@@ -1,2 +1,2 @@
-export type IssuePathItem = string | number
+export type IssuePathItem = string
 export type IssuePath = IssuePathItem[]

@@ -32,9 +32,6 @@ function jsonFindLocationByPath(
     return undefined
   }
 
-  console.log('jsonParseWithPointers(content)', jsonParseWithPointers(content))
-  console.log('path.map(decodeKey)', path.map(decodeKey))
-
   return jsonGetLocationForJsonPath(
     jsonParseWithPointers(content),
     path.map(decodeKey),
@@ -49,9 +46,6 @@ function yamlFindLocationByPath(
   if (!path.length) {
     return undefined
   }
-
-  console.log('yamlParseWithPointers(content)', yamlParseWithPointers(content))
-  console.log('path.map(decodeKey)', path.map(decodeKey))
 
   return yamlGetLocationForJsonPath(
     yamlParseWithPointers(content),
