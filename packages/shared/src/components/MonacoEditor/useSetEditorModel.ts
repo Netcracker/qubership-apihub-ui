@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { editor as Editor, Uri } from 'monaco-editor'
+import { editor as Editor, MarkerSeverity, Uri } from 'monaco-editor'
 import type { MutableRefObject } from 'react'
 import { useEffect } from 'react'
-import type { SpecType } from '../../utils/specs'
 import type { LanguageType } from '../../types/languages'
+import type { SpecType } from '../../utils/specs'
 
 export function useSetEditorModel(
   editor: MutableRefObject<Editor.IStandaloneCodeEditor | undefined>,
@@ -34,7 +34,73 @@ export function useSetEditorModel(
       return
     }
 
-    currentEditor.setModel(Editor.createModel(value, language, Uri.parse(filename)))
+    console.log('filename', filename)
+    // const model = Editor.createModel(value, language, Uri.parse(filename))
+    const model = currentEditor.getModel()
+    currentEditor.setModel(model)
+
+    model && Editor.setModelMarkers(model, 'owner', [
+      {
+        startLineNumber: 2,
+        startColumn: 1,
+        endLineNumber: 2,
+        endColumn: 4,
+        message: 'Error msg',
+        severity: MarkerSeverity.Error,
+        tags: [],
+        source: 'my-linter',
+      },
+      {
+        startLineNumber: 3,
+        startColumn: 1,
+        endLineNumber: 7,
+        endColumn: 4,
+        message: 'Warning msg',
+        severity: MarkerSeverity.Warning,
+        tags: [],
+        source: 'my-linter',
+      },
+      {
+        startLineNumber: 8,
+        startColumn: 1,
+        endLineNumber: 10,
+        endColumn: 4,
+        message: 'Info msg',
+        severity: MarkerSeverity.Info,
+        tags: [],
+        source: 'my-linter',
+      },
+      {
+        startLineNumber: 11,
+        startColumn: 1,
+        endLineNumber: 11,
+        endColumn: 7,
+        message: 'Hint msg',
+        severity: MarkerSeverity.Hint,
+        tags: [],
+        source: 'my-linter',
+      },
+      {
+        startLineNumber: 12,
+        startColumn: 1,
+        endLineNumber: 15,
+        endColumn: 14,
+        message: 'Error msg',
+        severity: MarkerSeverity.Error,
+        tags: [],
+        source: 'my-linter',
+      },
+      {
+        startLineNumber: 13,
+        startColumn: 1,
+        endLineNumber: 14,
+        endColumn: 4,
+        message: 'Warning msg',
+        severity: MarkerSeverity.Warning,
+        tags: [],
+        source: 'my-linter',
+      },
+    ])
 
     return () => {
       currentEditor.getModel()?.dispose()

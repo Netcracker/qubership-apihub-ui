@@ -17,7 +17,7 @@ const COLOR_BY_SEVERITY: Record<IssueSeverity, string> = {
   [IssueSeverities.ERROR]: '#FF5260',
   [IssueSeverities.WARNING]: '#FFB02E',
   [IssueSeverities.INFO]: '#0068FF',
-  [IssueSeverities.HINT]: '#626D82',
+  [IssueSeverities.HINT]: '#B4BFCF',
 }
 
 export const IssueSeverityMarker: FC<IssueSeverityMarkerProps> = ({ severity, size = Size.MEDIUM }) => {
