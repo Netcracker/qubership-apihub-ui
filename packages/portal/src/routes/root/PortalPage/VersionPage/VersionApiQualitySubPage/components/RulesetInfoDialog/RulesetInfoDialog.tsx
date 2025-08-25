@@ -18,7 +18,7 @@ const RulesetInfoPopup: FC<PopupProps> = (props) => {
   const detail = props.detail as RulesetBase
 
   const [ruleset, loadingRuleset] = useRulesetMetadata(detail.id)
-  const [activationHistory, loadingActivationHistory] = useRulesetActivationHistory(detail.id)
+  const [{ activationHistory }, loadingActivationHistory] = useRulesetActivationHistory(detail.id)
 
   const onClose = useCallback(() => { setOpen(false) }, [setOpen])
 
