@@ -9,6 +9,7 @@ import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import { NAVIGATION_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import { RulesetFilePanel } from '../../RulesetFilePanel'
 import { RulesetActivationHistoryTable } from './RulesetActivationHistoryTable'
+import { useRulesetActivationHistory } from '@apihub/api-hooks/ApiQuality/useRulesetActivationHistory'
 
 export const SHOW_RULESET_INFO_DIALOG = 'show-ruleset-info-dialog'
 
@@ -17,6 +18,7 @@ const RulesetInfoPopup: FC<PopupProps> = (props) => {
   const detail = props.detail as RulesetBase
 
   const [ruleset, loadingRuleset] = useRulesetMetadata(detail.id)
+  const [activationHistory, loadingActivationHistory] = useRulesetActivationHistory(detail.id)
 
   const onClose = useCallback(() => { setOpen(false) }, [setOpen])
 
@@ -34,10 +36,10 @@ const RulesetInfoPopup: FC<PopupProps> = (props) => {
         </Box>
       </DialogTitle>
       <DialogContent sx={{ pb: 2 }}>
-        {loadingRuleset && (
+        {(loadingRuleset || loadingActivationHistory) && (
           <Skeleton variant='text' height={20} />
         )}
-        {!loadingRuleset && (
+        {!loadingRuleset && !loadingActivationHistory && (
           <Placeholder
             invisible={!!ruleset}
             area={NAVIGATION_PLACEHOLDER_AREA}
@@ -45,7 +47,7 @@ const RulesetInfoPopup: FC<PopupProps> = (props) => {
           >
             <Box display='flex' flexDirection='column' gap={1}>
               <RulesetFilePanel ruleset={detail} />
-              <RulesetActivationHistoryTable data={ruleset!.activationHistory} />
+              <RulesetActivationHistoryTable data={activationHistory} />
             </Box>
           </Placeholder>
         )}

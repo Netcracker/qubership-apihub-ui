@@ -12,7 +12,7 @@ type CallbackDownloadRuleset = (options: CallbackOptionsDownloadRuleset) => void
 
 function getEndpoint(rulesetId: Key): string {
   const rulesetKey = encodeURIComponent(rulesetId)
-  const pattern = '/rulesets/:rulesetId/download'
+  const pattern = '/rulesets/:rulesetId/data'
   return generatePath(pattern, { rulesetId: rulesetKey })
 }
 
