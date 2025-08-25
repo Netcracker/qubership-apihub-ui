@@ -22,7 +22,7 @@ import { TOGGLE_SIDEBAR_BUTTON } from '@netcracker/qubership-apihub-ui-shared/co
 import { LayoutWithTabs } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/LayoutWithTabs'
 import { LayoutWithToolbar } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/LayoutWithToolbar'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { useSystemInfo } from '@netcracker/qubership-apihub-ui-shared/features/system-info'
+import { useLinterEnabled } from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
 import { useActiveTabs } from '@netcracker/qubership-apihub-ui-shared/hooks/pathparams/useActiveTabs'
 import { PreviousReleaseOptionsProvider } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget'
 import type { FC, ReactNode } from 'react'
@@ -55,7 +55,7 @@ export const VersionPage: FC = memo(() => {
   const [packageObject, isLoading] = usePackage({ showParents: true })
   const [validationSummary] = useValidationSummaryByPackageVersion(packageId!, versionId!)
 
-  const { linterEnabled } = useSystemInfo()
+  const linterEnabled = useLinterEnabled()
 
   return (
     <CurrentPackageProvider value={packageObject}>

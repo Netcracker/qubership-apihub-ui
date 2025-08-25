@@ -39,6 +39,7 @@ import { NavigationMenu } from '@netcracker/qubership-apihub-ui-shared/component
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { API_TYPE_GRAPHQL, API_TYPE_REST } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { SPECIAL_VERSION_KEY } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
+import { useLinterEnabled } from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
 import { useSystemInfo } from '@netcracker/qubership-apihub-ui-shared/features/system-info'
 import { useActiveTabs } from '@netcracker/qubership-apihub-ui-shared/hooks/pathparams/useActiveTabs'
 import { EXPAND_NAVIGATION_MENU } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useExpandNavigationMenuSearchParam'
@@ -79,7 +80,8 @@ export const VersionNavigationMenu: FC<VersionNavigationMenuProps> = memo<Versio
   showSettings = false,
 }) => {
   const navigate = useNavigate()
-  const { productionMode, linterEnabled } = useSystemInfo()
+  const { productionMode } = useSystemInfo()
+  const linterEnabled = useLinterEnabled()
 
   const { packageId, versionId } = useParams()
   const { versionContent } = usePackageVersionContent({

@@ -32,7 +32,6 @@ export type SystemInfo = {
   externalLinks: Link[]
   notification?: string
   migrationInProgress: boolean
-  linterEnabled: boolean
 }
 
 export type SystemInfoDto = {
@@ -42,7 +41,6 @@ export type SystemInfoDto = {
   externalLinks: string[]
   notification?: string
   migrationInProgress: boolean
-  linterEnabled: boolean
 }
 
 export const EMPTY_SYSTEM_INFO: SystemInfo = {
@@ -51,7 +49,6 @@ export const EMPTY_SYSTEM_INFO: SystemInfo = {
   productionMode: false,
   externalLinks: [],
   migrationInProgress: false,
-  linterEnabled: false,
 }
 
 export function toSystemInfo(value: SystemInfoDto): SystemInfo {
@@ -74,8 +71,6 @@ export function toSystemInfo(value: SystemInfoDto): SystemInfo {
     externalLinks: externalLinks,
     notification: value.notification,
     migrationInProgress: value.migrationInProgress,
-    // TODO 15.07.25 // Remove stub
-    linterEnabled: value.linterEnabled || true,
   }
 }
 
