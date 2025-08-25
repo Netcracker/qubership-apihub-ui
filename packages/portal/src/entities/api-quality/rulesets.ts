@@ -43,7 +43,7 @@ export type RulesetDto = Readonly<{
 
 export type Ruleset = RulesetDto
 
-// The only identifiers
+// The only main data of ruleset
 
-export type RulesetBaseDto = Pick<RulesetDto, 'id' | 'name' | 'fileName' | 'status'>
-export type RulesetBase = RulesetBaseDto
+export type RulesetMetadataDto = Pick<RulesetDto, 'id' | 'name' | 'fileName' | 'status'>
+export type RulesetMetadata = RulesetMetadataDto

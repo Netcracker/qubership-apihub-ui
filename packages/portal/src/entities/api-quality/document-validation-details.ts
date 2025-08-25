@@ -1,15 +1,15 @@
-import type { RulesetBaseDto, RulesetBase } from './rulesets'
+import type { RulesetMetadataDto, RulesetMetadata } from './rulesets'
 import type { IssueDto, Issue } from './issues'
 import type { ValidatedDocumentDto, ValidatedDocument } from './validated-documents'
 
 export type ValidationDetailsDto = {
-  ruleset: RulesetBaseDto
+  ruleset: RulesetMetadataDto
   issues: readonly IssueDto[]
   document: ValidatedDocumentDto
 }
 
 export type ValidationDetails = {
-  ruleset: RulesetBase
+  ruleset: RulesetMetadata
   issues: readonly Issue[]
   document: ValidatedDocument
 }

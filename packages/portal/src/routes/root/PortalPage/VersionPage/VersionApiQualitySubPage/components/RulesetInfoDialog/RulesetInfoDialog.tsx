@@ -1,21 +1,21 @@
-import type { RulesetBase } from '@apihub/entities/api-quality/rulesets'
+import type { Ruleset } from '@apihub/entities/api-quality/rulesets'
 import { Box, Dialog, DialogContent, DialogTitle, IconButton, Skeleton } from '@mui/material'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { useCallback, type FC } from 'react'
 
+import { useRulesetActivationHistory } from '@apihub/api-hooks/ApiQuality/useRulesetActivationHistory'
 import { useRulesetMetadata } from '@apihub/api-hooks/ApiQuality/useRulesetMetadata'
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import { NAVIGATION_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import { RulesetFilePanel } from '../../RulesetFilePanel'
 import { RulesetActivationHistoryTable } from './RulesetActivationHistoryTable'
-import { useRulesetActivationHistory } from '@apihub/api-hooks/ApiQuality/useRulesetActivationHistory'
 
 export const SHOW_RULESET_INFO_DIALOG = 'show-ruleset-info-dialog'
 
 const RulesetInfoPopup: FC<PopupProps> = (props) => {
   const { open, setOpen } = props
-  const detail = props.detail as RulesetBase
+  const detail = props.detail as Ruleset
 
   const [ruleset, loadingRuleset] = useRulesetMetadata(detail.id)
   const [{ activationHistory }, loadingActivationHistory] = useRulesetActivationHistory(detail.id)

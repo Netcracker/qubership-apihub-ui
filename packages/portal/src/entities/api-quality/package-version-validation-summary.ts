@@ -1,5 +1,5 @@
 import type { API_TYPE_GRAPHQL, ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import type { RulesetBaseDto } from './rulesets'
+import type { RulesetMetadataDto } from './rulesets'
 import type { IssueSeverity } from './issue-severities'
 import type { ValidationStatus } from './validation-statuses'
 
@@ -9,7 +9,7 @@ type FailedDocumentName = string
 
 export type ApiTypeValidationSummaryDto = {
   apiType: Exclude<ApiType, typeof API_TYPE_GRAPHQL>
-  ruleset: RulesetBaseDto | null
+  ruleset?: RulesetMetadataDto
   status: ValidationStatus
   issuesSummary: Record<IssueSeverity, number>
   failedDocuments: FailedDocumentName[]

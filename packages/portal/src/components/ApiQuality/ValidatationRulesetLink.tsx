@@ -1,4 +1,4 @@
-import { RulesetStatuses, type RulesetBase } from '@apihub/entities/api-quality/rulesets'
+import { RulesetStatuses, type RulesetMetadata } from '@apihub/entities/api-quality/rulesets'
 import { useEventBus } from '@apihub/routes/EventBusProvider'
 import { Box, Link, Skeleton, Typography } from '@mui/material'
 import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
@@ -7,7 +7,7 @@ import type { FC, ReactElement } from 'react'
 import { memo } from 'react'
 
 type ValidationRulesetLinkProps = {
-  data: RulesetBase | undefined
+  data: RulesetMetadata | undefined
   loading: IsLoading
   showLabel?: boolean
 }
