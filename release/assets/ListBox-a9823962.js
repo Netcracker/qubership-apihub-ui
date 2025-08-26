@@ -1,0 +1,2 @@
+import{j as t}from"./createTheme-1c3fdb4c.js";import{r as e}from"./index-37ba2b57.js";import{B as i}from"./Box-315038cd.js";const r=e.memo(({children:o})=>t(i,{display:"flex",boxSizing:"border-box",height:"100%",flexDirection:"column",p:2,pb:"0",overflow:"auto",children:o}));try{r.displayName="ListBox",r.__docgenInfo={description:"",displayName:"ListBox",props:{}}}catch{}export{r as L};
+//# sourceMappingURL=ListBox-a9823962.js.map
