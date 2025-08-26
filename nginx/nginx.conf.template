@@ -79,7 +79,7 @@ http {
             proxy_pass http://${APIHUB_AGENTS_BACKEND_ADDRESS};
 		}
 
-		location ~ ^/apihub-nc/api/v2/agents(/.*)?$ {
+		location ~ ^/apihub-nc/api/v(1|2)/agents(/.*)?$ {
 			add_header Cache-Control "no-store" always;
 			rewrite ^/apihub-nc(/api/v2/agents.*)$ $1 break;
 			proxy_pass http://${APIHUB_AGENTS_BACKEND_ADDRESS};
