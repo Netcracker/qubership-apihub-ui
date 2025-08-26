@@ -21,6 +21,7 @@ import type { MonacoEditorElementProps } from './MonacoEditorElement'
 import type { SpecType } from '../../utils/specs'
 import type { SpecItemUri } from '../../utils/specifications'
 import type { LanguageType } from '../../types/languages'
+import type { editor as Editor } from 'monaco-editor'
 
 export type MonacoEditorProps = {
   value: string
@@ -29,6 +30,7 @@ export type MonacoEditorProps = {
   selectedUri?: SpecItemUri // Example: /foo/bar/baz/qux/1
   searchPhrase?: string
   onSearchPhraseChange?: (value: string | undefined) => void
+  markers?: Editor.IMarkerData[]
 }
 
 const MonacoEditorElement: FC<MonacoEditorElementProps> = lazy(() => import('./MonacoEditorElement'))
@@ -41,6 +43,7 @@ export const MonacoEditor: FC<MonacoEditorProps> = /* @__PURE__ */ memo<MonacoEd
     selectedUri,
     searchPhrase,
     onSearchPhraseChange,
+    markers,
   },
 ) => {
   return (
@@ -52,6 +55,7 @@ export const MonacoEditor: FC<MonacoEditorProps> = /* @__PURE__ */ memo<MonacoEd
         selectedUri={selectedUri}
         searchPhrase={searchPhrase}
         onSearchPhraseChange={onSearchPhraseChange}
+        markers={markers}
       />
     </Suspense>
   )
