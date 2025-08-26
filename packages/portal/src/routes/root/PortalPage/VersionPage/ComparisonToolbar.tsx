@@ -144,7 +144,7 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
 
   const title = useMemo(() => (
     isOperationsComparison
-      ? `${TITLE_BY_COMPARE_MODE[compareToolbarMode]} ${API_TYPE_TITLE_MAP[apiType as ApiType]}`
+      ? `${TITLE_BY_COMPARE_MODE[compareToolbarMode]} ${API_TYPE_TITLE_MAP[apiType]}`
       : group
         ? COMPARE_API_BY_GROUPS
         : TITLE_BY_COMPARE_MODE[compareToolbarMode]
