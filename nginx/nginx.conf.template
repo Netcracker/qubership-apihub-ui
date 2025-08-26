@@ -81,20 +81,20 @@ http {
 
 		location ~ ^/apihub-nc/api/v(1|2)/agents(/.*)?$ {
 			add_header Cache-Control "no-store" always;
-			rewrite ^/apihub-nc(/api/v2/agents.*)$ $1 break;
-			proxy_pass http://${APIHUB_AGENTS_BACKEND_ADDRESS};
+			rewrite ^/apihub-nc(/api/v[12]/agents.*)$ $1 break;
+			proxy_pass http://${APIHUB_AGENTS_BACKEND_ADDRESS}/;
 		}
 		
 		location ~ ^/apihub-nc/api/v(2|3)/security/authCheck(/.*)?$ {
 			add_header Cache-Control "no-store" always;
-			rewrite ^/apihub-nc(/api/v2/authCheck.*)$ $1 break;
-			proxy_pass http://${APIHUB_AGENTS_BACKEND_ADDRESS};
+			rewrite ^/apihub-nc(/api/v[23]/authCheck.*)$ $1 break;
+			proxy_pass http://${APIHUB_AGENTS_BACKEND_ADDRESS}/;
 		}
 		
 		location ~ ^/apihub-nc/agents/[^/]+/namespaces/[^/]+/services/[^/]+/proxy/(.+)$ {
 			add_header Cache-Control "no-store" always;
 			rewrite ^/apihub-nc(/agents/[^/]+/namespaces/[^/]+/services/[^/]+/proxy/.*)$ $1 break;
-			proxy_pass http://${APIHUB_AGENTS_BACKEND_ADDRESS};
+			proxy_pass http://${APIHUB_AGENTS_BACKEND_ADDRESS}/;
 		}
 
         # API endpoints proxifying to backend
