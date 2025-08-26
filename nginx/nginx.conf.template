@@ -67,6 +67,12 @@ http {
         if ($request_uri ~* "%[0-1][0-9A-Fa-f]") {
             return 400;
         }
+		
+		# API endpoints proxying to agents-backend
+        location ~ ^/api/v2/agents(/.*)?$ {
+            add_header Cache-Control "no-store" always;
+            proxy_pass http://${APIHUB_AGENTS_BACKEND_ADDRESS};
+        }
 
         # API endpoints proxifying to backend
         location ~ ^/(?:api|ws|saml|login/gitlab|login/sso|debug|playground)(?:/.*)?$ {
