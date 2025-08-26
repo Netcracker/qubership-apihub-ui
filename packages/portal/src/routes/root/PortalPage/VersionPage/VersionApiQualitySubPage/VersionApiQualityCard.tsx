@@ -1,6 +1,7 @@
 import { useListValidatedDocumentsByPackageVersion } from '@apihub/api-hooks/ApiQuality/useListValidatedDocumentsByPackageVersion'
 import { useValidationDetailsByDocument } from '@apihub/api-hooks/ApiQuality/useValidationDetailsByDocument'
 import { ValidationRulesettLink } from '@apihub/components/ApiQuality/ValidatationRulesetLink'
+import { transformIssuesToMarkers } from '@apihub/entities/api-quality/issues'
 import type { ValidatedDocument } from '@apihub/entities/api-quality/validated-documents'
 import { JSON_FILE_FORMAT, YAML_FILE_FORMAT } from '@apihub/entities/file-formats'
 import { Box } from '@mui/material'
@@ -103,6 +104,17 @@ export const VersionApiQualityCard: FC = memo(() => {
 
   const transformedSelectedDocumentContent = useTransformedRawDocumentByFormat(selectedDocumentContent, format)
 
+  const selectedDocumentMarkers = useMemo(() => {
+    if (!selectedDocumentContent) {
+      return []
+    }
+    if (!validationDetails) {
+      return []
+    }
+    const { issues } = validationDetails
+    return transformIssuesToMarkers(selectedDocumentContent, format, issues)
+  }, [validationDetails, selectedDocumentContent, format])
+
   const onSelectDocument = useCallback((value: ValidatedDocument | undefined) => {
     setSelectedDocument(value)
     setSelectedIssuePath(undefined)
@@ -160,6 +172,7 @@ export const VersionApiQualityCard: FC = memo(() => {
                     type={selectedDocument!.specificationType}
                     language={format}
                     selectedUri={selectedIssuePath}
+                    markers={selectedDocumentMarkers}
                   />
                 </Box>
               </ModuleFetchingErrorBoundary>
