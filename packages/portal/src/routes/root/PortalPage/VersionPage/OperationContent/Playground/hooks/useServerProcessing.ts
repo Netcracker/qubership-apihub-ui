@@ -7,11 +7,11 @@ export const useProcessedSpecServers = (
   withRelativeUrls = false,
 ): ServerObject[] => {
   return useMemo(() => {
-    console.log(`📋 Spec servers: Processing ${specServers!.length} servers`)
 
     if (isEmpty(specServers)) {
       return []
     }
+    console.log(`📋 Spec servers: Processing ${specServers!.length} servers`)
 
     const validServers = filterValidServers(specServers!)
     const filteredServers = withRelativeUrls ? specServers! : specServers!.filter(server => isAbsoluteUrl(server.url))
@@ -25,11 +25,11 @@ export const useProcessedSpecServers = (
 
 export const useProcessedCustomServers = (customServers: ServerObject[] | undefined): ServerObject[] => {
   return useMemo(() => {
-    console.log(`🔧 Custom servers: Processing ${customServers!.length} servers`)
 
     if (isEmpty(customServers)) {
       return []
     }
+    console.log(`🔧 Custom servers: Processing ${customServers!.length} servers`)
 
     const validServers = filterValidServers(customServers!)
     const processedServers = processServers(validServers)
