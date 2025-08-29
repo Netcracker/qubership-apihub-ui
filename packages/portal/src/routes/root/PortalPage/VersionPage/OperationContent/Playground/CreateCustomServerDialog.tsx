@@ -258,6 +258,14 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     }
 
     setCustomServersPackageMap(packageId, [...customServersPackageMap?.[packageId] ?? [], newServer])
+
+    // Generate event to select the newly created server in playground
+    document.dispatchEvent(new CustomEvent('selectCustomServer', {
+      detail: { url: newServer.url },
+      composed: true,
+      bubbles: true,
+    }))
+
     showSuccessNotification?.({
       title: SUCCESS_TITLE,
       message: SUCCESS_SERVER_ADDED,
