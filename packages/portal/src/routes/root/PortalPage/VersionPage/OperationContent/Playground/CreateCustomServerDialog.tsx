@@ -158,6 +158,9 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const [selectedNamespace, setSelectedNamespace] = useState<Namespace | null>(null)
   const [selectedAgent, setSelectedAgent] = useState<string>('')
   const [additionalPath, setAdditionalPath] = useState<string>('')
+  
+  // State for deferred server selection event dispatch
+  const [pendingServerSelection, setPendingServerSelection] = useState<string | null>(null)
 
   const allSpecServers = useProcessedSpecServers(specServers, true)
   const firstSpecPath = useFirstSpecPath(allSpecServers)
@@ -242,11 +245,20 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const showSuccessNotification = useShowSuccessNotification()
 
   const addCustomServer = useCallback((formData: CreateCustomServerForm) => {
+    console.log('🚀 addCustomServer called with:', {
+      formData,
+      isServiceNameValid,
+      isAgentMode,
+      isManualMode,
+    })
+
     if (!isServiceNameValid) {
+      console.log('❌ Early return: isServiceNameValid is false')
       return
     }
 
     if (isAgentMode && isUrlAlreadyExist(servers, agentProxyUrl)) {
+      console.log('❌ Early return: URL already exists')
       setAgentProxyUrlError(ERROR_SERVER_URL_EXISTS)
       return
     }
@@ -257,20 +269,20 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       shouldUseProxyEndpoint: !formData[KEY_CLOUD],
     }
 
+    console.log('✅ Creating new server:', newServer)
+
+    // Update server list
     setCustomServersPackageMap(packageId, [...customServersPackageMap?.[packageId] ?? [], newServer])
 
-    // Generate event to select the newly created server in playground
-    document.dispatchEvent(new CustomEvent('selectCustomServer', {
-      detail: { url: newServer.url },
-      composed: true,
-      bubbles: true,
-    }))
+    // Schedule event dispatch for next render cycle (after React state update completes)
+    console.log('📅 Setting pendingServerSelection:', newServer.url)
+    setPendingServerSelection(newServer.url)
 
     showSuccessNotification?.({
       title: SUCCESS_TITLE,
       message: SUCCESS_SERVER_ADDED,
     })
-    setOpen(false)
+    // Note: setOpen(false) is now called after event dispatch in useEffect
   }, [
     isServiceNameValid,
     isAgentMode,
@@ -281,10 +293,39 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     packageId,
     customServersPackageMap,
     showSuccessNotification,
-    setOpen,
   ])
 
   console.log('SERVERS:', servers)
+  console.log('📈 Component state:', {
+    isServiceNameValid,
+    isAgentMode,
+    isManualMode,
+    pendingServerSelection,
+    packageId,
+    serviceName,
+  })
+
+  // Deferred event dispatch - runs after React completes state update
+  useEffect(() => {
+    console.log('🔄 useEffect pendingServerSelection changed:', pendingServerSelection)
+    if (pendingServerSelection) {
+      console.log('📡 Dispatching selectCustomServer event for:', pendingServerSelection)
+      
+      document.dispatchEvent(
+        new CustomEvent('selectCustomServer', {
+          detail: { url: pendingServerSelection },
+          composed: true,
+          bubbles: true,
+        }),
+      )
+      
+      setPendingServerSelection(null)
+      
+      // Close dialog after event is dispatched
+      console.log('🚪 Closing dialog after event dispatch')
+      setOpen(false)
+    }
+  }, [pendingServerSelection, setOpen])
 
   // Rendering functions
   const renderSelectUrl = useCallback((
