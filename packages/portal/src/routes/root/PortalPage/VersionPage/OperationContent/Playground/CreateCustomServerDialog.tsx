@@ -27,7 +27,7 @@ import { useServiceNames } from './useServiceNames'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import { SHOW_CREATE_CUSTOM_SERVER_DIALOG } from '@apihub/routes/EventBusProvider'
+import { SHOW_CREATE_CUSTOM_SERVER_DIALOG, useEventBus } from '@apihub/routes/EventBusProvider'
 import type { Namespace } from '@netcracker/qubership-apihub-ui-shared/entities/namespaces'
 import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 import { isServiceNameExistInNamespace } from '@netcracker/qubership-apihub-ui-shared/entities/service-names'
@@ -44,7 +44,7 @@ import {
   isAbsoluteUrl,
   useCombinedServers,
   useProcessedCustomServers,
-  useProcessedSpecServers,
+  useOptimizedSpecServers,
 } from './hooks/useServerProcessing'
 import type { ServerObject } from 'openapi3-ts'
 import {
@@ -133,6 +133,7 @@ const isUrlAlreadyExist = (servers: ServerObject[], url: string | undefined): bo
 }
 
 const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }) => {
+  const eventBus = useEventBus()
   const { packageId = '', versionId, apiType = DEFAULT_API_TYPE, operationId: operationKey } = useParams()
   const [packageObj] = usePackage()
   const serviceName = packageObj?.serviceName
@@ -148,8 +149,9 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   })
 
   const specServers = useSpecServers(operationData?.data)
-  console.log('SPEC_SERVERS:', specServers)
-  // console.log('data:', operationData)
+
+  // Development-only debug logging
+  const isDevelopment = process.env.NODE_ENV === 'development'
 
   // States for selections
   const [agentProxyUrl, setAgentProxyUrl] = useState<string>('')
@@ -158,16 +160,19 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const [selectedNamespace, setSelectedNamespace] = useState<Namespace | null>(null)
   const [selectedAgent, setSelectedAgent] = useState<string>('')
   const [additionalPath, setAdditionalPath] = useState<string>('')
-  
+
   // State for deferred server selection event dispatch
   const [pendingServerSelection, setPendingServerSelection] = useState<string | null>(null)
 
-  const allSpecServers = useProcessedSpecServers(specServers, true)
-  const firstSpecPath = useFirstSpecPath(allSpecServers)
+  // Storing data in local storage
+  const [customServersPackageMap, setCustomServersPackageMap] = useCustomServersPackageMap()
 
-  useEffect(() => {
-    console.log('allSpecServers:', allSpecServers)
-  }, [allSpecServers])
+  // REAL PERFORMANCE FIX: Single optimized server processing call
+  const { processedSpecServers, allSpecServers } = useOptimizedSpecServers(specServers)
+  const processedCustomServers = useProcessedCustomServers(customServersPackageMap?.[packageId])
+  const servers = useCombinedServers(processedSpecServers, processedCustomServers)
+
+  const firstSpecPath = useFirstSpecPath(allSpecServers)
 
   const [mode, setMode] = useState<ModeType>(MODE_MANUAL)
   const isAgentMode = mode === MODE_AGENT
@@ -233,32 +238,26 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     [selectedCloud, selectedNamespace?.namespaceKey, serviceName, serviceNames],
   )
 
-  // Storing data in local storage
-  const [customServersPackageMap, setCustomServersPackageMap] = useCustomServersPackageMap()
-
-  // Servers
-  const processedSpecServers = useProcessedSpecServers(specServers)
-  const processedCustomServers = useProcessedCustomServers(customServersPackageMap?.[packageId])
-  const servers = useCombinedServers(processedSpecServers, processedCustomServers)
-
-  // Add server
+  // Add server - memoize callback to prevent unnecessary re-renders
   const showSuccessNotification = useShowSuccessNotification()
 
   const addCustomServer = useCallback((formData: CreateCustomServerForm) => {
-    console.log('🚀 addCustomServer called with:', {
-      formData,
-      isServiceNameValid,
-      isAgentMode,
-      isManualMode,
-    })
+    if (isDevelopment) {
+      console.log('🚀 addCustomServer called with:', {
+        formData,
+        isServiceNameValid,
+        isAgentMode,
+        isManualMode,
+      })
+    }
 
     if (!isServiceNameValid) {
-      console.log('❌ Early return: isServiceNameValid is false')
+      if (isDevelopment) console.log('❌ Early return: isServiceNameValid is false')
       return
     }
 
     if (isAgentMode && isUrlAlreadyExist(servers, agentProxyUrl)) {
-      console.log('❌ Early return: URL already exists')
+      if (isDevelopment) console.log('❌ Early return: URL already exists')
       setAgentProxyUrlError(ERROR_SERVER_URL_EXISTS)
       return
     }
@@ -269,13 +268,17 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       shouldUseProxyEndpoint: !formData[KEY_CLOUD],
     }
 
-    console.log('✅ Creating new server:', newServer)
+    if (isDevelopment) {
+      console.log('✅ Creating new server:', newServer)
+    }
 
     // Update server list
     setCustomServersPackageMap(packageId, [...customServersPackageMap?.[packageId] ?? [], newServer])
 
     // Schedule event dispatch for next render cycle (after React state update completes)
-    console.log('📅 Setting pendingServerSelection:', newServer.url)
+    if (isDevelopment) {
+      console.log('📅 Setting pendingServerSelection:', newServer.url)
+    }
     setPendingServerSelection(newServer.url)
 
     showSuccessNotification?.({
@@ -284,6 +287,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     })
     // Note: setOpen(false) is now called after event dispatch in useEffect
   }, [
+    isDevelopment,
     isServiceNameValid,
     isAgentMode,
     servers,
@@ -295,37 +299,61 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     showSuccessNotification,
   ])
 
-  console.log('SERVERS:', servers)
-  console.log('📈 Component state:', {
+  // Ultra-targeted development logging - only during actual server creation
+  useEffect(() => {
+    if (isDevelopment && pendingServerSelection) {
+      // Only log during actual server creation, not on every render
+      console.log('SPEC_SERVERS:', specServers)
+      console.log('allSpecServers:', allSpecServers)
+      console.log('SERVERS:', servers)
+      console.log('📈 Component state:', {
+        isServiceNameValid,
+        isAgentMode,
+        isManualMode,
+        pendingServerSelection,
+        packageId,
+        serviceName,
+      })
+    }
+  }, [
+    isDevelopment,
+    pendingServerSelection,
+    specServers,
+    allSpecServers,
+    servers,
     isServiceNameValid,
     isAgentMode,
     isManualMode,
-    pendingServerSelection,
     packageId,
     serviceName,
-  })
+  ]) // Include all logged variables
 
-  // Deferred event dispatch - runs after React completes state update
+  // Optimized deferred event dispatch - runs after React completes state update
   useEffect(() => {
-    console.log('🔄 useEffect pendingServerSelection changed:', pendingServerSelection)
-    if (pendingServerSelection) {
-      console.log('📡 Dispatching selectCustomServer event for:', pendingServerSelection)
-      
-      document.dispatchEvent(
-        new CustomEvent('selectCustomServer', {
-          detail: { url: pendingServerSelection },
-          composed: true,
-          bubbles: true,
-        }),
-      )
-      
-      setPendingServerSelection(null)
-      
-      // Close dialog after event is dispatched
-      console.log('🚪 Closing dialog after event dispatch')
-      setOpen(false)
+    if (isDevelopment) {
+      console.log('🔄 useEffect pendingServerSelection changed:', pendingServerSelection)
     }
-  }, [pendingServerSelection, setOpen])
+
+    if (pendingServerSelection) {
+      if (isDevelopment) {
+        console.log('📡 Dispatching selectCustomServer event for:', pendingServerSelection)
+      }
+
+      // Dispatch event first using eventBus
+      eventBus.selectCreatedCustomServer({ url: pendingServerSelection })
+
+      // Clear pending state immediately to prevent re-renders
+      setPendingServerSelection(null)
+
+      // Defer dialog closing to next tick to ensure event propagation
+      setTimeout(() => {
+        if (isDevelopment) {
+          console.log('🚪 Closing dialog after event dispatch')
+        }
+        setOpen(false)
+      }, 0)
+    }
+  }, [pendingServerSelection, setOpen, isDevelopment, eventBus])
 
   // Rendering functions
   const renderSelectUrl = useCallback((

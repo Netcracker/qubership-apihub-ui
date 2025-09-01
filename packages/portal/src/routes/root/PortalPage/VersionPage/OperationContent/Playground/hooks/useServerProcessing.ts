@@ -2,6 +2,35 @@ import { isEmpty } from 'lodash'
 import { useMemo } from 'react'
 import type { ServerObject } from 'openapi3-ts'
 
+/**
+ * Optimized hook that processes spec servers once and returns both filtered and unfiltered results.
+ * This prevents duplicate processing when you need both absolute-only and relative-inclusive servers.
+ */
+export const useOptimizedSpecServers = (
+  specServers: ServerObject[] | undefined,
+): { processedSpecServers: ServerObject[]; allSpecServers: ServerObject[] } => {
+  return useMemo(() => {
+    if (isEmpty(specServers)) {
+      return { processedSpecServers: [], allSpecServers: [] }
+    }
+
+    console.log(`📋 Spec servers: Optimized processing ${specServers!.length} servers`)
+    
+    // Process absolute URLs only (for main server list)
+    const absoluteServers = specServers!.filter(server => isAbsoluteUrl(server.url))
+    const expandedAbsoluteServers = expandSpecServersWithEnumVariables(absoluteServers)
+    const processedSpecServers = processServers(expandedAbsoluteServers)
+    
+    // Process all servers including relative URLs (for firstSpecPath)
+    const expandedAllServers = expandSpecServersWithEnumVariables(specServers!)
+    const allSpecServers = processServers(expandedAllServers)
+
+    console.log(`📋 Spec servers: Result ${processedSpecServers.length} absolute, ${allSpecServers.length} total`)
+    
+    return { processedSpecServers, allSpecServers }
+  }, [specServers])
+}
+
 export const useProcessedSpecServers = (
   specServers: ServerObject[] | undefined,
   withRelativeUrls = false,
