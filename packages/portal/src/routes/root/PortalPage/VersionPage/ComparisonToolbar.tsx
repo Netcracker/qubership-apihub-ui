@@ -16,7 +16,7 @@
 
 import type { FC } from 'react'
 import { memo, useCallback, useMemo } from 'react'
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { Box, IconButton, Typography } from '@mui/material'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { ComparisonOperationChangeSeverityFilters } from './ComparisonOperationChangeSeverityFilters'
@@ -60,7 +60,9 @@ import {
 import { useTagSearchFilter } from '@apihub/routes/root/PortalPage/VersionPage/useTagSearchFilter'
 import { useVersionSearchParam } from '@apihub/routes/root/useVersionSearchParam'
 import { useDownloadChangesAsExcel } from '@apihub/routes/root/PortalPage/VersionPage/useDownloadChangesAsExcel'
-import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import {
+  usePackageSearchParam,
+} from '@netcracker/qubership-apihub-ui-shared/hooks/routes/package/usePackageSearchParam'
 
 export type ComparisonPageToolbarProps = {
   compareToolbarMode: CompareToolbarMode
@@ -68,8 +70,8 @@ export type ComparisonPageToolbarProps = {
 
 export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<ComparisonPageToolbarProps>((props) => {
   const { compareToolbarMode, isChangelogAvailable } = props
-  const { apiType: apiTypeSearchParam } = useApiTypeSearchParam() // in case of package/dashboard comparison we don't hase apiType in url, we have it in searchParams
-  const [searchParams] = useSearchParams()
+  const { apiType: apiTypeSearchParam } = useApiTypeSearchParam()
+  const [packageSearchParam] = usePackageSearchParam()// in case of package/dashboard comparison we don't hase apiType in url, we have it in searchParams
   const {
     packageId: mainPackageId,
     versionId: mainVersionId,
@@ -81,8 +83,8 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
     group: Key
     apiType: ApiType
   }>()
-  const apiType = (operationApiTypeInUrl ?? searchParams.get('apiType') ?? DEFAULT_API_TYPE) as ApiType
-  const previousVersionPackageId = searchParams.get('package') ?? mainPackageId
+  const apiType = operationApiTypeInUrl ?? apiTypeSearchParam
+  const previousVersionPackageId = packageSearchParam ?? mainPackageId
 
   const { isPackageFromDashboard } = useIsPackageFromDashboard(true)
   const [severityFilter] = useSeverityFiltersSearchParam()
@@ -90,7 +92,7 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
   const [previousVersion] = useVersionSearchParam()
   const [downloadChangesAsExcel] = useDownloadChangesAsExcel()
 
-  const onDownloadAllChanges = (): void => {
+  const onDownloadAllChanges = useCallback((): void => {
     downloadChangesAsExcel({
       packageKey: mainPackageId!,
       version: mainVersionId!,
@@ -98,7 +100,7 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
       previousVersion: previousVersion!,
       previousVersionPackageId: previousVersionPackageId,
     })
-  }
+  }, [downloadChangesAsExcel, mainPackageId, mainVersionId, apiType, previousVersion, previousVersionPackageId])
 
   const navigate = useNavigate()
   const backwardLocation = useBackwardLocationContext()
