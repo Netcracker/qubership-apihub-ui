@@ -40,16 +40,7 @@ import { PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/pa
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { useOperation } from '@apihub/routes/root/PortalPage/VersionPage/useOperation'
-import {
-  isAbsoluteUrl,
-  useCombinedServers,
-  useProcessedCustomServers,
-  useOptimizedSpecServers,
-} from './hooks/useServerProcessing'
-import type { ServerObject } from 'openapi3-ts'
-import {
-  useSpecServers,
-} from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/Playground/hooks/useSpecServers'
+import { useSpecUrls, useCustomUrls, isAbsoluteUrl } from './hooks/useUrls'
 
 const MODE_MANUAL = 'manual' as const
 const MODE_AGENT = 'agent' as const
@@ -127,9 +118,9 @@ const buildAgentProxyUrl = (
   })
 }
 
-const isUrlAlreadyExist = (servers: ServerObject[], url: string | undefined): boolean => {
+const isUrlAlreadyExist = (urls: string[], url: string | undefined): boolean => {
   if (!url) return true
-  return servers.some(server => server.url === url.toLowerCase())
+  return urls.includes(url.toLowerCase())
 }
 
 const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }) => {
@@ -148,8 +139,6 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     apiType: apiType as ApiType,
   })
 
-  const specServers = useSpecServers(operationData?.data)
-
   // Development-only debug logging
   const isDevelopment = process.env.NODE_ENV === 'development'
 
@@ -167,12 +156,14 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   // Storing data in local storage
   const [customServersPackageMap, setCustomServersPackageMap] = useCustomServersPackageMap()
 
-  // REAL PERFORMANCE FIX: Single optimized server processing call
-  const { processedSpecServers, allSpecServers } = useOptimizedSpecServers(specServers)
-  const processedCustomServers = useProcessedCustomServers(customServersPackageMap?.[packageId])
-  const servers = useCombinedServers(processedSpecServers, processedCustomServers)
+  // Process URLs for duplicate checking
+  const specUrls = useSpecUrls(operationData?.data)
+  const customUrls = useCustomUrls(customServersPackageMap?.[packageId])
+  const availableUrls = useMemo(() => {
+    return [...specUrls, ...customUrls]
+  }, [specUrls, customUrls])
 
-  const firstSpecPath = useFirstSpecPath(allSpecServers)
+  const firstSpecPath = useFirstSpecPath(specUrls)
 
   const [mode, setMode] = useState<ModeType>(MODE_MANUAL)
   const isAgentMode = mode === MODE_AGENT
@@ -256,7 +247,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       return
     }
 
-    if (isAgentMode && isUrlAlreadyExist(servers, agentProxyUrl)) {
+    if (isAgentMode && isUrlAlreadyExist(availableUrls, agentProxyUrl)) {
       if (isDevelopment) console.log('❌ Early return: URL already exists')
       setAgentProxyUrlError(ERROR_SERVER_URL_EXISTS)
       return
@@ -290,7 +281,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     isDevelopment,
     isServiceNameValid,
     isAgentMode,
-    servers,
+    availableUrls,
     agentProxyUrl,
     isManualMode,
     setCustomServersPackageMap,
@@ -303,9 +294,8 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   useEffect(() => {
     if (isDevelopment && pendingServerSelection) {
       // Only log during actual server creation, not on every render
-      console.log('SPEC_SERVERS:', specServers)
-      console.log('allSpecServers:', allSpecServers)
-      console.log('SERVERS:', servers)
+      console.log('SPEC_URLS:', specUrls)
+      console.log('AVAILABLE_URLS:', availableUrls)
       console.log('📈 Component state:', {
         isServiceNameValid,
         isAgentMode,
@@ -318,9 +308,8 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   }, [
     isDevelopment,
     pendingServerSelection,
-    specServers,
-    allSpecServers,
-    servers,
+    specUrls,
+    availableUrls,
     isServiceNameValid,
     isAgentMode,
     isManualMode,
@@ -536,11 +525,11 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
             name={KEY_CUSTOM_SERVER_URL}
             rules={{
               required: ERROR_REQUIRED_FIELD,
-              validate: url => {
-                if (!isAbsoluteUrl(url)) {
+              validate: customServerUrl => {
+                if (!isAbsoluteUrl(customServerUrl)) {
                   return ERROR_ABSOLUTE_URL_REQUIRED
                 }
-                if (isUrlAlreadyExist(servers, url)) {
+                if (isUrlAlreadyExist(availableUrls, customServerUrl)) {
                   return ERROR_SERVER_URL_EXISTS
                 }
                 return true

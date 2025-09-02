@@ -1,15 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
-import type { ServerObject } from 'openapi3-ts'
-import { isAbsoluteUrl } from './useServerProcessing'
+import { isAbsoluteUrl } from './useUrls'
 
-export const useFirstSpecPath = (allSpecServers: ServerObject[] | undefined): string => {
+export const useFirstSpecPath = (specUrls: string[] | undefined): string => {
   const [specPath, setSpecPath] = useState<string>('')
 
   const getFirstSpecPath = useCallback((): string => {
-    if (!allSpecServers || allSpecServers.length === 0) return ''
+    if (!specUrls || specUrls.length === 0) return ''
 
-    for (const s of allSpecServers) {
-      const url = s?.url
+    for (const url of specUrls) {
       if (!url) continue
 
       if (isAbsoluteUrl(url)) {
@@ -22,8 +20,8 @@ export const useFirstSpecPath = (allSpecServers: ServerObject[] | undefined): st
         }
       }
 
-      // TODO: move this filtration into the useProcessedSpecServers and maybe remove leading ./ or ../ segments
-      // relative URL candidates (already normalized by processor: lowercased, no trailing slash)
+      // TODO: move this filtration into the useSpecUrls (Allow relative URLs section) and maybe remove leading ./ or ../ segments
+      // Relative URL candidates (already normalized: lowercased, no trailing slash)
       if (url.startsWith('?') || url.startsWith('#')) {
         continue
       }
@@ -32,11 +30,11 @@ export const useFirstSpecPath = (allSpecServers: ServerObject[] | undefined): st
     }
 
     return ''
-  }, [allSpecServers])
+  }, [specUrls])
 
   useEffect(() => {
     setSpecPath(getFirstSpecPath())
-  }, [allSpecServers, getFirstSpecPath])
+  }, [specUrls, getFirstSpecPath])
 
   return specPath
 }
