@@ -40,7 +40,7 @@ export type PackageSettingsNavItemProps = Readonly<{
   description: string
   value: PackageSettingsPageRoute
   url: To
-  permission?: PackagePermissions
+  permissions?: PackagePermissions
 }>
 
 export type PackageSettingsTabProps = Readonly<{

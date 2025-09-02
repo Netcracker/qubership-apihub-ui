@@ -47,10 +47,10 @@ export function useSidebarItems(packageObject: Package): PackageSettingsNavItemP
     filters.push(({ value }) => value !== API_SPECIFIC_CONFIGURATION_PAGE)
   }
   const hasPermissions = (source: PackagePermissions, probe: PackagePermissions): boolean => {
-    return probe.some(v => source.includes(v))
+    return !probe?.length || probe.some(v => source.includes(v))
   }
 
-  filters.push(({ permission }) => !permission?.length || hasPermissions(packageObject?.permissions ?? [], permission ?? []))
+  filters.push(({ permissions }) => hasPermissions(packageObject?.permissions ?? [], permissions ?? []))
 
   return SETTINGS_SIDEBAR_ITEM(key, kind).filter(item => filters.every(filter => filter(item)))
 }
@@ -87,14 +87,14 @@ const SETTINGS_SIDEBAR_ITEM = (
     label: 'Access Tokens',
     description: `Add a ${packageKind} access token`,
     value: ACCESS_TOKENS_PAGE,
-    permission: [ACCESS_TOKEN_MANAGEMENT_PERMISSION],
+    permissions: [ACCESS_TOKEN_MANAGEMENT_PERMISSION],
     url: getPackageSettingsPath({ packageKey: packageKey, tab: ACCESS_TOKENS_PAGE }),
   },
   {
     label: 'User Access Control',
     description: `Add users to ${packageKind}`,
     value: USER_ACCESS_CONTROLS_PAGE,
-    permission: [ACCESS_TOKEN_MANAGEMENT_PERMISSION],
+    permissions: [ACCESS_TOKEN_MANAGEMENT_PERMISSION],
     url: getPackageSettingsPath({ packageKey: packageKey, tab: USER_ACCESS_CONTROLS_PAGE }),
   },
 ]
