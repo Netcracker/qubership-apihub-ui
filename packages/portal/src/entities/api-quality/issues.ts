@@ -20,7 +20,7 @@ export function transformIssuesToMarkers(
   format: 'json' | 'yaml',
   issues: readonly Issue[],
 ): Editor.IMarkerData[] {
-  return issues
+  const notFilteredMarkers: (Editor.IMarkerData | null)[] = issues
     .map(issue => {
       const { path } = issue
       const location = findLocationByPath(content, path, format)
@@ -52,5 +52,5 @@ export function transformIssuesToMarkers(
         source: 'spectral',
       }
     })
-    .filter(marker => marker !== null)
+  return notFilteredMarkers.filter((marker): marker is Editor.IMarkerData => marker !== null)
 }
