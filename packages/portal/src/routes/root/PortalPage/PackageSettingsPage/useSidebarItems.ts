@@ -46,11 +46,11 @@ export function useSidebarItems(packageObject: Package): PackageSettingsNavItemP
   if (PACKAGE_KINDS_WITHOUT_API_SPECIFIC_CONFIGURATION.includes(kind)) {
     filters.push(({ value }) => value !== API_SPECIFIC_CONFIGURATION_PAGE)
   }
-  const hasPermissions = (source: PackagePermissions, probe: PackagePermissions): boolean => {
+  const hasPermissions = (source: PackagePermissions, probe: PackagePermissions | undefined): boolean => {
     return !probe?.length || probe.some(v => source.includes(v))
   }
 
-  filters.push(({ permissions }) => hasPermissions(packageObject?.permissions ?? [], permissions ?? []))
+  filters.push(({ permissions }) => hasPermissions(packageObject?.permissions ?? [], permissions))
 
   return SETTINGS_SIDEBAR_ITEM(key, kind).filter(item => filters.every(filter => filter(item)))
 }
