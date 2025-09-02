@@ -9,6 +9,7 @@ import { API_LINTER_API_V1 } from './constants'
 const QUERY_KEY_VALIDATION_SUMMARY_FOR_PACKAGE_VERSION = 'validation-summary-for-package-version'
 
 export function useValidationSummaryByPackageVersion(
+  linterEnabled: boolean,
   packageId: Key,
   version: Key,
 ): [ValidationSummary | undefined, IsLoading, Error | null] {
@@ -18,6 +19,7 @@ export function useValidationSummaryByPackageVersion(
   const { data, isLoading, error } = useQuery<ValidationSummaryDto, Error, ValidationSummary>({
     queryKey: [QUERY_KEY_VALIDATION_SUMMARY_FOR_PACKAGE_VERSION, packageKey, versionKey],
     queryFn: () => getValidationSummaryByPackageVersion(packageKey, versionKey),
+    enabled: linterEnabled,
   })
 
   return [data, isLoading, error]

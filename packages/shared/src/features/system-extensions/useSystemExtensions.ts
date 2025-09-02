@@ -11,5 +11,5 @@ function useSystemExtensions(): SystemExtension[] {
 export function useLinterEnabled(): boolean {
   const extensions = useSystemExtensions()
 
-  return useMemo(() => extensions.some(extension => extension.name === 'linter'), [extensions])
+  return useMemo(() => extensions.some(extension => extension.name === 'api-linter'), [extensions])
 }

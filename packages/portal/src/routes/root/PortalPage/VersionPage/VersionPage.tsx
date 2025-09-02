@@ -53,9 +53,9 @@ export const VersionPage: FC = memo(() => {
   const [menuItem] = useActiveTabs()
 
   const [packageObject, isLoading] = usePackage({ showParents: true })
-  const [validationSummary] = useValidationSummaryByPackageVersion(packageId!, versionId!)
 
   const linterEnabled = useLinterEnabled()
+  const [validationSummary] = useValidationSummaryByPackageVersion(linterEnabled, packageId!, versionId!)
 
   return (
     <CurrentPackageProvider value={packageObject}>
