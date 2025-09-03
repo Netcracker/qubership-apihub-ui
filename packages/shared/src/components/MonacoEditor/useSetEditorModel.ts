@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { editor as Editor } from 'monaco-editor'
+import { editor as Editor } from 'monaco-editor'
 import type { MutableRefObject } from 'react'
 import { useEffect } from 'react'
 import type { LanguageType } from '../../types/languages'
@@ -33,6 +33,17 @@ export function useSetEditorModel(
     if (!currentEditor) {
       return
     }
+
+    const model = Editor.createModel(value, language)
+    Editor.defineTheme('custom', {
+      base: 'vs',
+      inherit: true,
+      rules: [],
+      colors: {
+        'editor.background': '#FFFFFF',
+      },
+    })
+    currentEditor.setModel(model)
 
     return () => {
       currentEditor.getModel()?.dispose()
