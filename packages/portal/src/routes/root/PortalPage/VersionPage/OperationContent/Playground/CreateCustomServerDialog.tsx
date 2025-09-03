@@ -7,7 +7,6 @@ import {
   DialogTitle,
   FormControl,
   FormControlLabel,
-  InputAdornment,
   ListItem,
   Radio,
   RadioGroup,
@@ -32,7 +31,7 @@ import type { Namespace } from '@netcracker/qubership-apihub-ui-shared/entities/
 import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 import { isServiceNameExistInNamespace } from '@netcracker/qubership-apihub-ui-shared/entities/service-names'
 import { useShowSuccessNotification } from '@apihub/routes/root/BasePage/Notification'
-import { ErrorIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ErrorIcon'
+import { ErrorTextField } from '@netcracker/qubership-apihub-ui-portal/src/components/ErrorTextField'
 import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoContextIcon'
 import { useFirstSpecPath } from './hooks/useFirstSpecPath'
 import { SpecPathWarningAlert } from './components/SpecPathWarningAlert'
@@ -348,24 +347,12 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const renderSelectUrl = useCallback((
     { field, fieldState }: ControllerRenderFunctionProps<typeof KEY_CUSTOM_SERVER_URL>,
   ) => (
-    <TextField
-      {...field}
+    <ErrorTextField
+      field={field}
+      fieldState={fieldState}
+      clearErrors={clearErrors}
       required
-      inputProps={{ required: false }} // disables the browser native "please fill out this field" prompt
       label={LABEL_SERVER_URL}
-      error={!!fieldState.error}
-      helperText={fieldState.error?.message}
-      onChange={(event) => {
-        field.onChange(event)
-        clearErrors(field.name)
-      }}
-      InputProps={{
-        endAdornment: !!fieldState.error && (
-          <InputAdornment position="end">
-            <ErrorIcon fontSize="small" color="error" />
-          </InputAdornment>
-        ),
-      }}
       data-testid="ServerUrlTextField"
     />
   ), [clearErrors])
