@@ -38,7 +38,7 @@ const DeleteCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   return (
     <ConfirmationDialog
       open={open}
-      title={`Delete ${url} server?`}
+      title={`Delete "${url}" server?`}
       onConfirm={handleDeleteCustomServer}
       onCancel={() => setOpen(false)}
     />
