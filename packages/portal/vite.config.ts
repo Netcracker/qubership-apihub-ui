@@ -13,6 +13,7 @@ import monacoWorkerHashPlugin from '../../vite-monaco-worker-hash'
 import createVersionJsonFilePlugin from '../../vite-create-version-json'
 
 const proxyServer = 'http://host.docker.internal:8081'
+const apiLinterProxyServer = 'http://host.docker.internal:8091'
 const devServer = 'http://localhost:3003'
 
 export default defineConfig(({ mode }) => {
@@ -117,9 +118,11 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: false,
         },
-        // TODO 15.07.25 // Remove stub
-        '/stub/api': {
-          target: devServer,
+        // Endpoint prefix related to extension which is equal to "qubership-api-linter" has name defined in following file:
+        // https://github.com/Netcracker/qubership-apihub/blob/linter/helm-templates/qubership-apihub/values.yaml#L210
+        '/api-linter': {
+          target: apiLinterProxyServer,
+          rewrite: path => path.replace(/^\/api-linter/, ''),
           changeOrigin: true,
           secure: false,
         },
