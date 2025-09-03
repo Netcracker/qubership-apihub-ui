@@ -30,7 +30,7 @@ import { DASHBOARD_KIND, GROUP_KIND, WORKSPACE_KIND } from '@netcracker/qubershi
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import {
   ACCESS_TOKEN_MANAGEMENT_PERMISSION,
-  type PackagePermissions,
+  type PackagePermissions, USER_ACCESS_MANAGEMENT_PERMISSION,
 } from '@netcracker/qubership-apihub-ui-shared/entities/package-permissions'
 
 const PACKAGE_KINDS_WITHOUT_VERSIONS = [GROUP_KIND, WORKSPACE_KIND]
@@ -94,7 +94,7 @@ const SETTINGS_SIDEBAR_ITEM = (
     label: 'User Access Control',
     description: `Add users to ${packageKind}`,
     value: USER_ACCESS_CONTROLS_PAGE,
-    permissions: [ACCESS_TOKEN_MANAGEMENT_PERMISSION],
+    permissions: [USER_ACCESS_MANAGEMENT_PERMISSION],
     url: getPackageSettingsPath({ packageKey: packageKey, tab: USER_ACCESS_CONTROLS_PAGE }),
   },
 ]
