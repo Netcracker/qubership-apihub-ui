@@ -12,6 +12,6 @@ export function useLinterEnabled(): boolean {
   const extensions = useSystemExtensions()
 
   // Extension which is equal to "qubership-api-linter" has name defined in following file:
-  // https://github.com/Netcracker/qubership-apihub/blob/linter/helm-templates/qubership-apihub/values.yaml
+  // https://github.com/Netcracker/qubership-apihub/blob/linter/helm-templates/qubership-apihub/values.yaml#L210
   return useMemo(() => extensions.some(extension => extension.name === 'api-linter'), [extensions])
 }
