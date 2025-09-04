@@ -43,9 +43,9 @@ export function transformIssuesToMarkers(
           break
       }
       return {
-        startLineNumber: location.range.start.line,
+        startLineNumber: location.range.start.line + 1,
         startColumn: location.range.start.character,
-        endLineNumber: location.range.end.line,
+        endLineNumber: location.range.end.line + 1,
         endColumn: location.range.end.character,
         message: issue.message,
         severity: severity,

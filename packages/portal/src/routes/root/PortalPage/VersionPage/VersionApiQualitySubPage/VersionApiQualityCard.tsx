@@ -105,15 +105,15 @@ export const VersionApiQualityCard: FC = memo(() => {
   const transformedSelectedDocumentContent = useTransformedRawDocumentByFormat(selectedDocumentContent, format)
 
   const selectedDocumentMarkers = useMemo(() => {
-    if (!selectedDocumentContent) {
+    if (!transformedSelectedDocumentContent) {
       return []
     }
     if (!validationDetails) {
       return []
     }
     const { issues } = validationDetails
-    return transformIssuesToMarkers(selectedDocumentContent, format, issues)
-  }, [validationDetails, selectedDocumentContent, format])
+    return transformIssuesToMarkers(transformedSelectedDocumentContent, format, issues)
+  }, [validationDetails, transformedSelectedDocumentContent, format])
 
   const onSelectDocument = useCallback((value: ValidatedDocument | undefined) => {
     setSelectedDocument(value)
