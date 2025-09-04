@@ -29,10 +29,10 @@ export const ValidationIssuesTooltip: FC<ValidationIssuesTooltipProps> = memo<Va
 })
 
 const ISSUE_SEVERITY_DESCRIPTION_MAP: Record<IssueSeverity, string> = {
-  [IssueSeverities.ERROR]: 'Error is a critical issue that violates OpenAPI specification standards and must be fixed. These issues can prevent proper API functionality or cause integration failures.',
-  [IssueSeverities.WARNING]: 'Warning is an issue that indicates potential problems or deviations from recommended practices that should be addressed. While these issues don\'t break the API specification, they may cause confusion for API consumers.',
-  [IssueSeverities.INFO]: 'Info is a suggestion for improvement that enhances API documentation quality and developer experience. These issues don\'t affect API functionality but provide opportunities to make the API more comprehensive.',
-  [IssueSeverities.HINT]: 'Hint is a recommendation for following advanced best practices or optimization opportunities that can further improve API quality. These suggestions help create more robust and maintainable APIs.',
+  [IssueSeverities.ERROR]: 'A critical violation of the OpenAPI specification that must be fixed. These issues break compliance and may prevent the API from functioning or integrating correctly.',
+  [IssueSeverities.WARNING]: 'A significant deviation from recommended practices that should be addressed. While not invalid, it may lead to misunderstandings or misuse by API consumers.',
+  [IssueSeverities.INFO]: 'A non-blocking suggestion to improve clarity, completeness, or usability. These enhancements help make the API more developer-friendly.',
+  [IssueSeverities.HINT]: 'An optional recommendation for advanced design improvements or optimizations. Helps raise the overall quality, consistency, and maintainability of the API.',
 }
 
 const ISSUE_SEVERITY_TOOLTIP_TITLE_MAP: Record<IssueSeverity, string> = {

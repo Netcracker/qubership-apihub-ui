@@ -3,6 +3,7 @@ import { useEventBus } from '@apihub/routes/EventBusProvider'
 import { Box, Link, Skeleton, Typography } from '@mui/material'
 import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import capitalize from 'lodash-es/capitalize'
 import type { FC, ReactElement } from 'react'
 import { memo } from 'react'
 
@@ -40,12 +41,23 @@ export const ValidationRulesettLink: FC<ValidationRulesetLinkProps> = memo<Valid
     </Typography>,
   )
 
+  elements.push(
+    <CustomChip
+      key='validation-ruleset-link-status'
+      value='rulesetSpecType'
+      sx={{ m: 0 }}
+      // @ts-expect-error Now this field is actually absent
+      label={data.specType}
+    />,
+  )
+
   if (data.status === RulesetStatuses.INACTIVE) {
     elements.push(
       <CustomChip
         key='validation-ruleset-link-status'
-        value='secondary'
-        sx={{ m: 0 }} label={data.status}
+        value='rulesetInactive'
+        sx={{ m: 0 }}
+        label={capitalize(data.status)}
       />,
     )
   }
