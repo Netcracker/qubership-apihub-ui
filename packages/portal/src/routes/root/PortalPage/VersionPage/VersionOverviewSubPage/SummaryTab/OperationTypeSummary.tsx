@@ -362,7 +362,7 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
                   <Typography sx={{ gridArea: 'qualityIssuesNumberTitle' }} variant="subtitle2">
                     Number of quality issues
                   </Typography>
-                  <Box sx={{ gridArea: 'qualityIssuesNumber' }} display="flex" alignItems="center" gap={1}>
+                  <Box sx={{ gridArea: 'qualityIssuesNumber' }} display="flex" alignItems="center" gap={1.5}>
                     {ISSUE_SEVERITIES_LIST.map(severity => (
                       <ValidationIssuesTooltip key={severity} issueSeverity={severity}>
                         <Box key={severity} display="flex" alignItems="center" gap={1}>
@@ -370,11 +370,7 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
                             component="span"
                             sx={{ background: ISSUE_SEVERITY_COLOR_MAP[severity], width: 8, height: 8, borderRadius: '50%' }}
                           />
-                          <Typography
-                            variant="body2"
-                            component="span"
-                            sx={{ fontSize: 12, fontWeight: 500, color: '#8F9EB4' }}
-                          >
+                          <Typography variant="body2" component="span" sx={{ fontSize: 13 }}>
                             {aggregatedValidationSummary[severity]}
                           </Typography>
                         </Box>

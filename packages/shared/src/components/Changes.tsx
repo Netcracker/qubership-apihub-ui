@@ -67,7 +67,7 @@ export const Changes: FC<ChangesProps> = memo<ChangesProps>(({
                   component="span"
                   sx={{ background: changeColor, width: 8, height: 8, borderRadius: '50%', mr: 1 }}
                 />
-                <Typography noWrap component="span" sx={{ fontSize: 12, fontWeight: 500, color: '#8F9EB4', mr: 1.5 }}>
+                <Typography noWrap component="span" sx={{ fontSize: 13, mr: 1.5 }}>
                   {mode === 'default' ? `${changeName}: ${count}` : count}
                 </Typography>
               </Box>
