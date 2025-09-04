@@ -33,6 +33,7 @@ import { isServiceNameExistInNamespace } from '@netcracker/qubership-apihub-ui-s
 import { useShowSuccessNotification } from '@apihub/routes/root/BasePage/Notification'
 import { ErrorTextField } from '@netcracker/qubership-apihub-ui-portal/src/components/ErrorTextField'
 import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoContextIcon'
+import { ErrorIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ErrorIcon'
 import { useFirstSpecPath } from './hooks/useFirstSpecPath'
 import { SpecPathWarningAlert } from './components/SpecPathWarningAlert'
 import { PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
@@ -403,6 +404,23 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
           {namespaceKey}
         </ListItem>
       )}
+      // Display error icon instead of standard clear icon when duplicate extension error occurs
+      clearIcon={!isServiceNameValid ? <ErrorIcon fontSize="small" color="error" /> : undefined}
+      componentsProps={{
+        clearIndicator: !isServiceNameValid
+          ? {
+            onClick: (event) => {
+              event.preventDefault()
+              event.stopPropagation()
+            },
+            title: '',
+            sx: {
+              cursor: 'default',
+              visibility: 'visible',
+            },
+          }
+          : undefined,
+      }}
       renderInput={(params) => (
         <TextField
           {...field}
