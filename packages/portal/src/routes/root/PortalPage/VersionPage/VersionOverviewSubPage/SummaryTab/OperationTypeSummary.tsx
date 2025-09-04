@@ -88,8 +88,14 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
       [IssueSeverities.INFO]: 0,
       [IssueSeverities.HINT]: 0,
     }
-    return (validationSummary ?? []).reduce((aggregated, currentSummaryRecord) => {
+    if (!validationSummary) {
+      return emptyValidationSummary
+    }
+    return validationSummary.reduce((aggregated, currentSummaryRecord) => {
       const summary = currentSummaryRecord.issuesSummary
+      if (!summary) {
+        return aggregated
+      }
       aggregated[IssueSeverities.ERROR] += summary.error ?? 0
       aggregated[IssueSeverities.WARNING] += summary.warning ?? 0
       aggregated[IssueSeverities.INFO] += summary.info ?? 0

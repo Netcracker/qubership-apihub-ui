@@ -11,8 +11,8 @@ export type ApiTypeValidationSummaryDto = {
   apiType: Exclude<ApiType, typeof API_TYPE_GRAPHQL>
   ruleset?: RulesetMetadataDto
   status: ValidationStatus
-  issuesSummary: Record<IssueSeverity, number>
-  failedDocuments: FailedDocumentName[]
+  issuesSummary?: Record<IssueSeverity, number>
+  failedDocuments?: FailedDocumentName[]
 }
 
 export type ValidationSummaryDto = ApiTypeValidationSummaryDto[]

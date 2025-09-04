@@ -123,7 +123,7 @@ export function useApiQualitySummarySectionProperties(
     case ValidationStatuses.SUCCESS:
       return [undefined, false]
   }
-  return [undefined, true]
+  return ['Starting validation...', true]
 }
 
 export function useApiQualityValidationFailed(): boolean {
