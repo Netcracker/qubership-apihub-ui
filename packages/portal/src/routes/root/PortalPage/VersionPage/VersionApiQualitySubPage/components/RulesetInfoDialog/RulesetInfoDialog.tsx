@@ -1,4 +1,4 @@
-import type { Ruleset } from '@apihub/entities/api-quality/rulesets'
+import { RulesetStatuses, type Ruleset } from '@apihub/entities/api-quality/rulesets'
 import { Box, Dialog, DialogContent, DialogTitle, IconButton, Skeleton } from '@mui/material'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
@@ -9,6 +9,7 @@ import { useRulesetMetadata } from '@apihub/api-hooks/ApiQuality/useRulesetMetad
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
 import { NAVIGATION_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
+import capitalize from 'lodash-es/capitalize'
 import { RulesetFilePanel } from '../../RulesetFilePanel'
 import { RulesetActivationHistoryTable } from './RulesetActivationHistoryTable'
 
@@ -37,9 +38,15 @@ const RulesetInfoPopup: FC<PopupProps> = (props) => {
         </Box>
         {ruleset && (
           <Box display='flex' gap={1} mt={1} fontWeight={500}>
-            {/* @ts-expect-error Now this field is actually absent */}
-            <CustomChip value='rulesetSpecType' label={ruleset.specType} />
-            <CustomChip value='rulesetStatus' label={ruleset.status} />
+            <CustomChip
+              value='rulesetSpecType'
+              // @ts-expect-error Now this field is actually absent 
+              label={ruleset.specType}
+            />
+            <CustomChip
+              value={ruleset.status === RulesetStatuses.ACTIVE ? 'rulesetActive' : 'rulesetInactive'}
+              label={capitalize(ruleset.status)}
+            />
           </Box>
         )}
       </DialogTitle>
