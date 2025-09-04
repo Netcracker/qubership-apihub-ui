@@ -71,6 +71,7 @@ export function usePublishPackageVersion(): [PublishPackageVersion, IsLoading, I
       }
     },
     onError: async (error, variables, context) => {
+      //method for update token
       const tokenRefreshResult = await onMutationUnauthorized<PublishDetails, Error, Options>(mutate)(error, variables, context)
       if (!isTokenRefreshed(tokenRefreshResult)) {
         const { message } = error
@@ -128,7 +129,7 @@ function toBuildConfigRef(reference: PackageReference): BuildConfigRef {
 
 type PublishPackageVersion = (options: Options) => void
 
-type Options = {
+export type Options = {
   version: string
   status: string
   previousVersion?: string

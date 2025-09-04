@@ -29,6 +29,7 @@ import type {
 } from '@netcracker/qubership-apihub-api-processor'
 
 export async function packageVersionResolver(): Promise<VersionResolver> {
+  //should update token
   return async (packageId, version, includeOperations = false) => {
     const versionConfig = await getPackageVersionContent(packageId, version, includeOperations)
     if (!versionConfig) {
@@ -43,6 +44,7 @@ export async function packageVersionResolver(): Promise<VersionResolver> {
 }
 
 export async function versionReferencesResolver(): Promise<VersionReferencesResolver> {
+  //should update token
   return async (version, packageId) => {
     const references = await getVersionReferences(packageId, version)
 
@@ -55,6 +57,7 @@ export async function versionReferencesResolver(): Promise<VersionReferencesReso
 }
 
 export async function versionOperationsResolver(): Promise<VersionOperationsResolver> {
+  //should update token
   return async (apiType, version, packageId, operationsIds, includeData) => {
     const EMPTY_OPERATIONS = { operations: [] }
     const limit = includeData ? 100 : 1000
@@ -86,6 +89,7 @@ export async function versionOperationsResolver(): Promise<VersionOperationsReso
 }
 
 export async function versionDeprecatedResolver(): Promise<VersionDeprecatedResolver> {
+  //should update token
   return async (apiType, version, packageId, operationsIds) => {
     return await fetchDeprecatedItems(apiType, packageId, version, operationsIds)
   }

@@ -113,6 +113,7 @@ const worker: PackageVersionBuilderWorker = {
     return [builder.buildResult.comparisons, await builder.createVersionPackage({ type: 'blob' })]
   },
   publishPackage: async (options): Promise<PublishDetails> => {
+    //
     const { packageId, sources } = options
     const builderId = uuidv4()
     const sourcesZip = sources && await packToZip(sources)
@@ -171,6 +172,7 @@ const worker: PackageVersionBuilderWorker = {
 
       publicationStatus = ERROR_PUBLISH_STATUS
       message = error instanceof Error ? error.message : `${error}`
+      //
       await setPublicationDetails({
         packageKey: packageId,
         publishKey: publishId,
