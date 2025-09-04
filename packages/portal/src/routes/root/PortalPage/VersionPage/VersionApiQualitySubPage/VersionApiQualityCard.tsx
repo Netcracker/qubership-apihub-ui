@@ -36,7 +36,7 @@ const TwoSidedCard: FC<TwoSidedCardProps> = memo<TwoSidedCardProps>((props) => {
   return (
     <Box
       display="grid"
-      height="100%"
+      height="calc(100% - 75px)"
       gridTemplateAreas={`
         "left-header right-header"
         "left-body right-body"
