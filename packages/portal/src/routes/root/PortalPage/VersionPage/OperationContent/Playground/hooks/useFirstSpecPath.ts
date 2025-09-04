@@ -20,8 +20,7 @@ export const useFirstSpecPath = (specUrls: string[] | undefined): string => {
         }
       }
 
-      // TODO: move this filtration into the useSpecUrls (Allow relative URLs section) and maybe remove leading ./ or ../ segments
-      // Relative URL candidates (already normalized: lowercased, no trailing slash)
+      // Exclude Query-only and Fragment-only paths from relative URLs
       if (url.startsWith('?') || url.startsWith('#')) {
         continue
       }
