@@ -7,6 +7,7 @@ import { useCallback, type FC } from 'react'
 import { useRulesetActivationHistory } from '@apihub/api-hooks/ApiQuality/useRulesetActivationHistory'
 import { useRulesetMetadata } from '@apihub/api-hooks/ApiQuality/useRulesetMetadata'
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
+import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
 import { NAVIGATION_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import { RulesetFilePanel } from '../../RulesetFilePanel'
 import { RulesetActivationHistoryTable } from './RulesetActivationHistoryTable'
@@ -26,7 +27,7 @@ const RulesetInfoPopup: FC<PopupProps> = (props) => {
     <Dialog open={open} onClose={() => setOpen(false)}>
       <DialogTitle>
         <Box display='flex' justifyContent='space-between' alignItems='center'>
-          {detail.name} Ruleset ({detail.status})
+          {detail.name}
           <IconButton
             sx={{ color: '#353C4E', p: 0 }}
             onClick={onClose}
@@ -34,6 +35,13 @@ const RulesetInfoPopup: FC<PopupProps> = (props) => {
             <CloseOutlinedIcon />
           </IconButton>
         </Box>
+        {ruleset && (
+          <Box display='flex' gap={1} mt={1} fontWeight={500}>
+            {/* @ts-expect-error Now this field is actually absent */}
+            <CustomChip value='rulesetSpecType' label={ruleset.specType} />
+            <CustomChip value='rulesetStatus' label={ruleset.status} />
+          </Box>
+        )}
       </DialogTitle>
       <DialogContent sx={{ pb: 2 }}>
         {(loadingRuleset || loadingActivationHistory) && (

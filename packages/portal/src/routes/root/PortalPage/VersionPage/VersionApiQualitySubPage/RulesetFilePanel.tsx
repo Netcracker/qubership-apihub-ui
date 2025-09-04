@@ -12,8 +12,8 @@ export const RulesetFilePanel: FC<RulesetFilePanelProps> = (props) => {
   const { ruleset } = props
 
   return (
-    <Box display='flex' flexDirection='column' gap={1}>
-      <Typography variant='h6' color='black' fontWeight='bold'>
+    <Box display='flex' flexDirection='column'>
+      <Typography fontSize={13} color='black' fontWeight='bold'>
         Spectral Ruleset
       </Typography>
       <Box display='flex' justifyContent='space-between'>
