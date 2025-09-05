@@ -27,7 +27,6 @@ import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { SHOW_CREATE_CUSTOM_SERVER_DIALOG, useEventBus } from '@apihub/routes/EventBusProvider'
-import type { Namespace } from '@netcracker/qubership-apihub-ui-shared/entities/namespaces'
 import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 import { isServiceNameExistInNamespace } from '@netcracker/qubership-apihub-ui-shared/entities/service-names'
 import { useShowSuccessNotification } from '@apihub/routes/root/BasePage/Notification'
@@ -40,7 +39,7 @@ import { PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/pa
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { useOperation } from '@apihub/routes/root/PortalPage/VersionPage/useOperation'
-import { useSpecUrls, useCustomUrls, isAbsoluteUrl } from './hooks/useUrls'
+import { isAbsoluteUrl, useCustomUrls, useSpecUrls } from './hooks/useUrls'
 
 const MODE_MANUAL = 'manual' as const
 const MODE_AGENT = 'agent' as const
@@ -146,7 +145,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const [agentProxyUrl, setAgentProxyUrl] = useState<string>('')
   const [agentProxyUrlError, setAgentProxyUrlError] = useState<string>('')
   const [selectedCloud, setSelectedCloud] = useState<string>('')
-  const [selectedNamespace, setSelectedNamespace] = useState<Namespace | null>(null)
+  const [selectedNamespace, setSelectedNamespace] = useState<string>('')
   const [selectedAgent, setSelectedAgent] = useState<string>('')
   const [additionalPath, setAdditionalPath] = useState<string>('')
 
@@ -183,8 +182,10 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     },
     [cloudAgentIdMap, selectedCloud],
   )
-  const [namespaces] = useNamespaces(selectedAgent!)
-  const [serviceNames] = useServiceNames(selectedAgent!, selectedNamespace?.namespaceKey)
+
+  const [serviceNames] = useServiceNames(selectedAgent!, selectedNamespace)
+  const [namespaceObjects] = useNamespaces(selectedAgent!)
+  const namespaces = namespaceObjects.map((namespace) => namespace.namespaceKey)
 
   // Form initializing
   const defaultFormData = useMemo<CreateCustomServerForm>(() => ({
@@ -214,19 +215,19 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
         buildAgentProxyUrl(
           baseUrl,
           selectedAgent || '<cloud>',
-          selectedNamespace?.namespaceKey || '<namespace>',
+          selectedNamespace || '<namespace>',
           serviceName,
           additionalPath,
         ),
       )
       setAgentProxyUrlError('')
     },
-    [additionalPath, baseUrl, isServiceNameExist, selectedAgent, selectedNamespace?.namespaceKey, serviceName],
+    [additionalPath, baseUrl, isServiceNameExist, selectedAgent, selectedNamespace, serviceName],
   )
 
   const isServiceNameValid = useMemo(
-    () => isServiceNameExistInNamespace(serviceNames, serviceName, selectedCloud, selectedNamespace?.namespaceKey),
-    [selectedCloud, selectedNamespace?.namespaceKey, serviceName, serviceNames],
+    () => isServiceNameExistInNamespace(serviceNames, serviceName, selectedCloud, selectedNamespace),
+    [selectedCloud, selectedNamespace, serviceName, serviceNames],
   )
 
   // Add server - memoize callback to prevent unnecessary re-renders
@@ -373,7 +374,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     <Autocomplete
       key="cloudAutocomplete"
       options={clouds}
-      value={selectedCloud}
+      value={selectedCloud === '' ? null : selectedCloud}
       renderOption={(props, cloud) => (
         <ListItem {...props} key={cloud}>
           {cloud}
@@ -384,7 +385,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       onChange={(_, value) => {
         setValue(KEY_CLOUD, value ?? '')
         setSelectedCloud(value ?? '')
-        setSelectedNamespace(null)
+        setSelectedNamespace('')
       }}
       data-testid="CloudAutocomplete"
     />
@@ -397,13 +398,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       key="namespaceAutocomplete"
       disabled={!selectedCloud}
       options={namespaces}
-      getOptionLabel={({ namespaceKey }: Namespace) => namespaceKey}
-      value={selectedNamespace}
-      renderOption={(props, { namespaceKey }) => (
-        <ListItem {...props} key={namespaceKey}>
-          {namespaceKey}
-        </ListItem>
-      )}
+      value={selectedNamespace === '' ? null : selectedNamespace}
       // Display error icon instead of standard clear icon when duplicate extension error occurs
       clearIcon={!isServiceNameValid ? <ErrorIcon fontSize="small" color="error" /> : undefined}
       componentsProps={{
@@ -432,8 +427,8 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
         />
       )}
       onChange={(_, value) => {
-        setValue(KEY_NAMESPACE, value?.namespaceKey ?? '')
-        setSelectedNamespace(value)
+        setValue(KEY_NAMESPACE, value ?? '')
+        setSelectedNamespace(value ?? '')
       }}
       data-testid="NamespaceAutocomplete"
     />
@@ -447,7 +442,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       disabled
       required
       label={LABEL_SERVICE}
-      data-testid="ServerUrlTextField"
+      data-testid="ServiceTextField"
     />
   ), [])
 
@@ -458,13 +453,14 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       {...field}
       label={LABEL_ADDITIONAL_PATH}
       placeholder={PLACEHOLDER_ADDITIONAL_PATH}
+      value={additionalPath}
       onChange={(event) => {
         field.onChange(event)
         setAdditionalPath(event.target.value)
       }}
       data-testid="AdditionalPathTextField"
     />
-  ), [])
+  ), [additionalPath])
 
   return (
     <DialogForm
