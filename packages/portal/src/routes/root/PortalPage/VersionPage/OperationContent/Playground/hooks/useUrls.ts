@@ -15,7 +15,7 @@ export const useSpecUrls = (document: object | undefined): string[] => {
     }
 
     const urls = generateAllUrlCombinations(servers)
-    return normalizeUrls(urls.filter(isValidUrl))
+    return urls.filter(isValidUrl)
   }, [document])
 }
 
@@ -26,7 +26,7 @@ export const useCustomUrls = (customServers: { url: string }[] | undefined): str
     }
 
     const urls = customServers!.map(server => server.url)
-    return normalizeUrls(urls.filter(isValidUrl))
+    return urls.filter(isValidUrl)
   }, [customServers])
 }
 
@@ -127,11 +127,6 @@ function replacePlaceholders(template: string, values: Record<string, string>): 
   return result
 }
 
-// Normalize URLs (lowercase, remove trailing slash)
-function normalizeUrls(urls: string[]): string[] {
-  return urls.map(url => removeTrailingSlash(url.toLowerCase()))
-}
-
 // Check if URL is absolute HTTP/HTTPS
 export function isAbsoluteUrl(url: string | undefined): boolean {
   if (!url) return false
@@ -171,8 +166,4 @@ function isValidUrl(url: string): boolean {
   } catch {
     return false
   }
-}
-
-function removeTrailingSlash(url: string): string {
-  return url.replace(/\/$/, '')
 }

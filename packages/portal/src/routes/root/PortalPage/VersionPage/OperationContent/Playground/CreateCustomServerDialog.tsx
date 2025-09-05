@@ -119,7 +119,7 @@ const buildAgentProxyUrl = (
 
 const isUrlAlreadyExist = (urls: string[], url: string | undefined): boolean => {
   if (!url) return true
-  return urls.includes(url.toLowerCase())
+  return urls.includes(url.trim())
 }
 
 const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }) => {
@@ -255,7 +255,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     }
 
     const newServer: PlaygroundServer = {
-      url: isManualMode ? formData[KEY_CUSTOM_SERVER_URL]! : agentProxyUrl,
+      url: isManualMode ? formData[KEY_CUSTOM_SERVER_URL]!.trim() : agentProxyUrl.trim(),
       description: formData[KEY_DESCRIPTION] ?? '',
       shouldUseProxyEndpoint: !formData[KEY_CLOUD],
     }

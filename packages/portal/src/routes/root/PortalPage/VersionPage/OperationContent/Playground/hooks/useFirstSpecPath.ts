@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useState } from 'react'
 import { isAbsoluteUrl } from './useUrls'
+import { isEmpty } from 'lodash'
 
 export const useFirstSpecPath = (specUrls: string[] | undefined): string => {
   const [specPath, setSpecPath] = useState<string>('')
 
   const getFirstSpecPath = useCallback((): string => {
-    if (!specUrls || specUrls.length === 0) return ''
+    if (isEmpty(specUrls)) return ''
 
-    for (const url of specUrls) {
+    for (const url of specUrls!) {
       if (!url) continue
 
       if (isAbsoluteUrl(url)) {
