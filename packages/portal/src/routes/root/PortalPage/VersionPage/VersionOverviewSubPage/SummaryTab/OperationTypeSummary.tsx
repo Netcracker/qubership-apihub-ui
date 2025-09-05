@@ -78,7 +78,7 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
   const showApiQualityPlaceholder = apiQualitySummaryPlaceholder && apiQualitySummaryDisabled
   const showApiQualitySummary = validationFailed || (!apiQualitySummaryPlaceholder && !apiQualitySummaryDisabled)
   const validationSummary = useApiQualityValidationSummary()
-  const validationRuleset = validationSummary?.[0]?.ruleset
+  const validationRulesets = validationSummary?.rulesets ?? []
   const aggregatedValidationSummary: Record<IssueSeverity, number> = useMemo(() => {
     const emptyValidationSummary: Record<IssueSeverity, number> = {
       [IssueSeverities.ERROR]: 0,
@@ -86,10 +86,10 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
       [IssueSeverities.INFO]: 0,
       [IssueSeverities.HINT]: 0,
     }
-    if (!validationSummary) {
+    if (!validationSummary || !validationSummary.documents) {
       return emptyValidationSummary
     }
-    return validationSummary.reduce((aggregated, currentSummaryRecord) => {
+    return validationSummary.documents.reduce((aggregated, currentSummaryRecord) => {
       const summary = currentSummaryRecord.issuesSummary
       if (!summary) {
         return aggregated
@@ -102,7 +102,13 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
     }, emptyValidationSummary)
   }, [validationSummary])
   const documentsWithFailedValidation = useMemo(
-    () => validationSummary?.[0]?.failedDocuments ?? [],
+    // TODO 05.09.25 // Change it
+    () => (validationSummary?.documents ?? []).reduce((result, document) => {
+      if (document.status === 'failed') {
+        result.push(document.documentName)
+      }
+      return result
+    }, [] as string[]),
     [validationSummary],
   )
 
@@ -333,7 +339,7 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
               )}
 
               {showApiQualitySummary && <>
-                {validationRuleset && <>
+                {validationRulesets && <>
                   <Typography
                     sx={{
                       gridArea: 'validationRulesetTitle',
@@ -342,19 +348,24 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
                     }}
                     variant="subtitle2"
                   >
-                    Validation ruleset
+                    Validation rulesets
                   </Typography>
 
-                  <Box sx={{
-                    gridArea: 'validationRuleset',
-                    display: 'flex',
-                    alignItems: 'center',
-                  }}>
-                    <ValidationRulesettLink
-                      data={validationRuleset}
-                      loading={!validationRuleset}
-                      showLabel={false}
-                    />
+                  <Box
+                    gridArea='validationRuleset'
+                    display='flex'
+                    flexDirection='column'
+                    gap={1}
+                  >
+                    {validationRulesets.map(ruleset => (
+                      <Box key={ruleset.id} display='flex' alignItems='center'>
+                        <ValidationRulesettLink
+                          data={ruleset}
+                          loading={false}
+                          showLabel={false}
+                        />
+                      </Box>
+                    ))}
                   </Box>
                 </>}
 

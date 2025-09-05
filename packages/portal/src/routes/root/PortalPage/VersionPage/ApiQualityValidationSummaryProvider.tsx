@@ -46,32 +46,11 @@ export function useApiQualityValidationStatus(): [ValidationStatus | undefined, 
       if (!summary) {
         return undefined
       }
-      let finalValidationStatus: ValidationStatus | undefined
-      for (const { status } of summary) {
-        if (finalValidationStatus === undefined) {
-          finalValidationStatus = status
-        } else {
-          const comparisonResult = compareValidationStatuses(status, finalValidationStatus)
-          if (comparisonResult > 0) {
-            finalValidationStatus = status
-          }
-        }
-      }
-      return finalValidationStatus
+      return summary.status
+
     }, [summary, overriddenStatus]),
     onRunLinter,
   ]
-}
-
-const VALIDATION_STATUS_PRIORITY: Record<ValidationStatus, number> = {
-  [ValidationStatuses.FAILED]: 3,
-  [ValidationStatuses.IN_PROGRESS]: 2,
-  [ValidationStatuses.NOT_VALIDATED]: 1,
-  [ValidationStatuses.SUCCESS]: 0,
-}
-
-function compareValidationStatuses(status1: ValidationStatus, status2: ValidationStatus): number {
-  return VALIDATION_STATUS_PRIORITY[status1] - VALIDATION_STATUS_PRIORITY[status2]
 }
 
 export type IsApiQualityTabDisabled = boolean

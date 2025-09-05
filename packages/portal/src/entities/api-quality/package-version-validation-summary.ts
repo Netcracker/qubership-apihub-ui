@@ -1,24 +1,28 @@
-import type { API_TYPE_GRAPHQL, ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import type { RulesetMetadataDto } from './rulesets'
 import type { IssueSeverity } from './issue-severities'
+import type { RulesetMetadataDto } from './rulesets'
 import type { ValidationStatus } from './validation-statuses'
-
-type FailedDocumentName = string
 
 // DTO
 
-export type ApiTypeValidationSummaryDto = {
-  apiType: Exclude<ApiType, typeof API_TYPE_GRAPHQL>
-  ruleset?: RulesetMetadataDto
-  status: ValidationStatus
+export type DocumentValidationSummaryDto = {
+  slug: string
+  documentName: string
+  // TODO 05.09.25 // Extract common type for validation API Quality feature
+  apiType: 'openapi-2-0' | 'openapi-3-0' | 'openapi-3-1'
+  rulesetId?: RulesetMetadataDto['id']
   issuesSummary?: Record<IssueSeverity, number>
-  failedDocuments?: FailedDocumentName[]
+  // TODO 05.09.25 // Change it
+  status: 'failed' | 'passed' | 'in-progress'
+  // TODO 05.09.25 // Change it
+  details?: Record<PropertyKey, unknown>
 }
 
-export type ValidationSummaryDto = ApiTypeValidationSummaryDto[]
+export type ValidationSummaryDto = {
+  status: ValidationStatus
+  rulesets: RulesetMetadataDto[]
+  documents: DocumentValidationSummaryDto[]
+}
 
 // UI
 
-export type ApiTypeValidationSummary = ApiTypeValidationSummaryDto
-
-export type ValidationSummary = ApiTypeValidationSummary[]
+export type ValidationSummary = ValidationSummaryDto
