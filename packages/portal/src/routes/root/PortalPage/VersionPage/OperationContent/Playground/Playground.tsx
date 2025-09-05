@@ -28,14 +28,14 @@ export type PlaygroundProps = PropsWithChildren<{
 const PlaygroundElement: FC<PlaygroundElementProps> = lazy(() => import('./PlaygroundElement'))
 
 export const Playground: FC<PlaygroundProps> = memo<PlaygroundProps>(({ document, customServers }) => {
-  // Create a stable key that updates only when customServers content changes
+  // This key allows you to update the list of servers after adding a new one.
+  //TODO: It is necessary to find out why the list is not updated independently
   const playgroundKey = `playground-${customServers || 'empty'}`
 
   return (
     <Suspense fallback={<LoadingIndicator/>}>
       <Box lineHeight={1.5} height="100%" width="100%" data-testid="PlaygroundPanel">
         <PlaygroundElement
-          // Key based on actual customServers content to force update when servers change
           key={playgroundKey}
           document={document}
           customServers={customServers}
