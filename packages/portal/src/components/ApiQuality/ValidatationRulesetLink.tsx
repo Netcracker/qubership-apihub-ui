@@ -51,16 +51,14 @@ export const ValidationRulesettLink: FC<ValidationRulesetLinkProps> = memo<Valid
     />,
   )
 
-  if (data.status === RulesetStatuses.INACTIVE) {
-    elements.push(
-      <CustomChip
-        key='validation-ruleset-link-status'
-        value='rulesetInactive'
-        sx={{ m: 0 }}
-        label={capitalize(data.status)}
-      />,
-    )
-  }
+  elements.push(
+    <CustomChip
+      key='validation-ruleset-link-status'
+      value={data.status === RulesetStatuses.ACTIVE ? 'rulesetActive' : 'rulesetInactive'}
+      sx={{ m: 0 }}
+      label={capitalize(data.status)}
+    />,
+  )
 
   if (showLabel) {
     elements.splice(0, 0, (

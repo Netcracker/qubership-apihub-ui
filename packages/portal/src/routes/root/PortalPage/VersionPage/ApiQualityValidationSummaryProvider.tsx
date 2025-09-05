@@ -115,7 +115,7 @@ export function useApiQualitySummarySectionProperties(
           No validation results.
           <br />
           <Link onClick={onManualRunLinterWithStatusUpdate}>
-            Run linter
+            Run Validation
           </Link>
         </>,
         true,
