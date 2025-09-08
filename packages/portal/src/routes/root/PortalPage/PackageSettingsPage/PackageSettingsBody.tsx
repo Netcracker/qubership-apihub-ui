@@ -43,7 +43,7 @@ import {
   NO_PERMISSION,
   Placeholder,
 } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
-import { 
+import {
   ACCESS_TOKEN_MANAGEMENT_PERMISSION,
   USER_ACCESS_MANAGEMENT_PERMISSION,
 } from '@netcracker/qubership-apihub-ui-shared/entities/package-permissions'
