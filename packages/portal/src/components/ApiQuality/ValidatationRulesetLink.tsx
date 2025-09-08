@@ -77,7 +77,7 @@ export const ValidationRulesettLink: FC<ValidationRulesetLinkProps> = memo<Valid
         variant='body2'
         component='span'
       >
-        Validated using
+        Ruleset
       </Typography>
     ))
   }

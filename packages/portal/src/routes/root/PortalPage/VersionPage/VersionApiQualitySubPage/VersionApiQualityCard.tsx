@@ -34,43 +34,32 @@ const TwoSidedCard: FC<TwoSidedCardProps> = memo<TwoSidedCardProps>((props) => {
   const internalIndent = 2
 
   return (
-    <Box
-      display="grid"
-      height="calc(100% - 75px)"
-      gridTemplateAreas={`
-        "left-header right-header"
-        "left-body right-body"
-      `}
-      gridTemplateColumns="50% 50%"
-      gridTemplateRows="max-content 100%"
-    >
-      <Box
-        gridArea="left-header"
-        display='flex'
-        alignItems='center'
-        sx={{ borderBottom: borderStyle, borderRight: borderStyle, pt: 1, pb: 1, pr: internalIndent }}
-      >
+    <Box display='flex' flexDirection='column' height="100%">
+      <Box display='flex' justifyContent='space-between' alignItems='center' width="100%">
         {leftHeader}
-      </Box>
-      <Box
-        gridArea="right-header"
-        display='flex'
-        alignItems='center'
-        sx={{ borderBottom: borderStyle, borderLeft: borderStyle, pt: 1, pb: 1, pl: internalIndent }}
-      >
         {rightHeader}
       </Box>
       <Box
-        gridArea="left-body"
-        sx={{ borderTop: borderStyle, borderRight: borderStyle, pt: internalIndent, pr: internalIndent }}
+        display="grid"
+        height="calc(100% - 75px)"
+        gridTemplateAreas={`
+          "left-body right-body"
+        `}
+        gridTemplateColumns="50% 50%"
+        gridTemplateRows="max-content 100%"
       >
-        {leftBody}
-      </Box>
-      <Box
-        gridArea="right-body"
-        sx={{ borderTop: borderStyle, borderLeft: borderStyle, pt: internalIndent, pl: internalIndent }}
-      >
-        {rightBody}
+        <Box
+          gridArea="left-body"
+          sx={{ borderTop: borderStyle, borderRight: borderStyle, pt: internalIndent, pr: internalIndent }}
+        >
+          {leftBody}
+        </Box>
+        <Box
+          gridArea="right-body"
+          sx={{ borderTop: borderStyle, borderLeft: borderStyle, pt: internalIndent, pl: internalIndent }}
+        >
+          {rightBody}
+        </Box>
       </Box>
     </Box>
   )
@@ -141,6 +130,7 @@ export const VersionApiQualityCard: FC = memo(() => {
             <Box
               display='flex'
               justifyContent='flex-start'
+              gap={1}
               width="100%"
             >
               <ValidatedDocumentSelector
@@ -157,14 +147,12 @@ export const VersionApiQualityCard: FC = memo(() => {
             </Box>
           }
           rightHeader={
-            <Box display='flex' justifyContent='flex-end' width="100%">
-              <Toggler<OriginalDocumentFileFormat>
-                mode={format}
-                modes={MODES}
-                modeToText={MODES_TO_TEXT}
-                onChange={onFormatChange}
-              />
-            </Box>
+            <Toggler<OriginalDocumentFileFormat>
+              mode={format}
+              modes={MODES}
+              modeToText={MODES_TO_TEXT}
+              onChange={onFormatChange}
+            />
           }
           leftBody={
             <ValidationResultsTable
