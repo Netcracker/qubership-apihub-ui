@@ -59,9 +59,8 @@ export const ValidatedDocumentSelector: FC<ValidatedDocumentSelectorProps> = mem
       }}
       variant="text"
       onClick={({ currentTarget }) => setAnchor(currentTarget)}
-      endIcon={<KeyboardArrowDownOutlinedIcon />}
     >
-      <Box display='flex' alignItems='flex-start' gap={1} width='80%'>
+      <Box display='flex' alignItems='center' gap={1} width='100%'>
         <SpecLogo value={selectedDocument.apiType} />
         <TextWithOverflowTooltip
           tooltipText={selectedDocument.documentName}
@@ -70,6 +69,7 @@ export const ValidatedDocumentSelector: FC<ValidatedDocumentSelectorProps> = mem
         >
           {selectedDocument.documentName}
         </TextWithOverflowTooltip>
+        <KeyboardArrowDownOutlinedIcon />
       </Box>
       <MenuButtonItems
         anchorEl={anchor}

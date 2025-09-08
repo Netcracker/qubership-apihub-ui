@@ -138,7 +138,11 @@ export const VersionApiQualityCard: FC = memo(() => {
       body={
         <TwoSidedCard
           leftHeader={
-            <Box data-testid="VersionApiQualityCardLeftHeader" display='flex' justifyContent='space-between' width="100%">
+            <Box
+              display='flex'
+              justifyContent='flex-start'
+              width="100%"
+            >
               <ValidatedDocumentSelector
                 value={selectedDocument}
                 onSelect={onSelectDocument}
