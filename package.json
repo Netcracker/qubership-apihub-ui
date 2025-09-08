@@ -36,7 +36,6 @@
     "@netcracker/qubership-apihub-api-visitor": "1.0.10",
     "@netcracker/qubership-apihub-apispec-view": "1.1.7",
     "@netcracker/qubership-apihub-class-view": "1.0.3",
-    "@netcracker/qubership-apihub-http-spec": "5.5.9",
     "@netcracker/qubership-apihub-rest-playground": "feature-server-refactor-new",
     "@otjs/plaintext": "0.2.2",
     "@otjs/plaintext-editor": "0.2.2",

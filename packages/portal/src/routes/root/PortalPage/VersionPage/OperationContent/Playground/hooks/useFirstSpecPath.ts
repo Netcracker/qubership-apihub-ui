@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
-import { isAbsoluteUrl } from './useUrls'
 import { isEmpty } from 'lodash'
+import {isAbsoluteUrl} from '@netcracker/qubership-apihub-ui-shared/utils/urls'
 
 export const useFirstSpecPath = (specUrls: string[] | undefined): string => {
   const [specPath, setSpecPath] = useState<string>('')

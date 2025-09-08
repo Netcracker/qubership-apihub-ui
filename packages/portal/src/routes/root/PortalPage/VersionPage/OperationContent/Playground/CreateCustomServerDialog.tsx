@@ -39,7 +39,8 @@ import { PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/pa
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { useOperation } from '@apihub/routes/root/PortalPage/VersionPage/useOperation'
-import { isAbsoluteUrl, useCustomUrls, useSpecUrls } from './hooks/useUrls'
+import { useCustomUrls, useSpecUrls } from './hooks/useUrls'
+import { isAbsoluteUrl } from '@netcracker/qubership-apihub-ui-shared/utils/urls'
 
 const MODE_MANUAL = 'manual' as const
 const MODE_AGENT = 'agent' as const
