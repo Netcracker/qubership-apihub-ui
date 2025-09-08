@@ -1,8 +1,7 @@
-import { useListValidatedDocumentsByPackageVersion } from '@apihub/api-hooks/ApiQuality/useListValidatedDocumentsByPackageVersion'
 import { useValidationDetailsByDocument } from '@apihub/api-hooks/ApiQuality/useValidationDetailsByDocument'
 import { ValidationRulesettLink } from '@apihub/components/ApiQuality/ValidatationRulesetLink'
 import { transformIssuesToMarkers } from '@apihub/entities/api-quality/issues'
-import type { ValidatedDocument } from '@apihub/entities/api-quality/validated-documents'
+import type { DocumentValidationSummary } from '@apihub/entities/api-quality/package-version-validation-summary'
 import { JSON_FILE_FORMAT, YAML_FILE_FORMAT } from '@apihub/entities/file-formats'
 import { Box } from '@mui/material'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
@@ -14,6 +13,7 @@ import type { SpecItemUri } from '@netcracker/qubership-apihub-ui-shared/utils/s
 import type { FC, ReactNode } from 'react'
 import { memo, useCallback, useMemo, useState } from 'react'
 import { useParams } from 'react-router'
+import { useApiQualityValidationSummary } from '../ApiQualityValidationSummaryProvider'
 import { usePublishedDocumentRaw } from '../usePublishedDocumentRaw'
 import type { OriginalDocumentFileFormat } from './types'
 import { useTransformedRawDocumentByFormat } from './utilities/hooks'
@@ -76,10 +76,17 @@ const TwoSidedCard: FC<TwoSidedCardProps> = memo<TwoSidedCardProps>((props) => {
   )
 })
 
+const MODES: readonly OriginalDocumentFileFormat[] = [JSON_FILE_FORMAT, YAML_FILE_FORMAT]
+
+const MODES_TO_TEXT = {
+  [JSON_FILE_FORMAT]: JSON_FILE_FORMAT.toUpperCase(),
+  [YAML_FILE_FORMAT]: YAML_FILE_FORMAT.toUpperCase(),
+}
+
 export const VersionApiQualityCard: FC = memo(() => {
   const { packageId, versionId } = useParams()
 
-  const [selectedDocument, setSelectedDocument] = useState<ValidatedDocument | undefined>()
+  const [selectedDocument, setSelectedDocument] = useState<DocumentValidationSummary | undefined>()
   const [format, setFormat] = useState<OriginalDocumentFileFormat>(YAML_FILE_FORMAT)
 
   const [selectedIssuePath, setSelectedIssuePath] = useState<SpecItemUri | undefined>()
@@ -90,10 +97,7 @@ export const VersionApiQualityCard: FC = memo(() => {
     selectedDocument?.slug ?? '',
   )
 
-  const [validatedDocuments, loadingValidatedDocuments] = useListValidatedDocumentsByPackageVersion(
-    packageId ?? '',
-    versionId ?? '',
-  )
+  const validatedDocuments = useApiQualityValidationSummary()?.documents ?? []
 
   // TODO 01.07.25 // Check if this is not re-fetched each time we change format
   const [selectedDocumentContent, loadingSelectedDocumentContent] = usePublishedDocumentRaw({
@@ -115,7 +119,11 @@ export const VersionApiQualityCard: FC = memo(() => {
     return transformIssuesToMarkers(transformedSelectedDocumentContent, format, issues)
   }, [validationDetails, transformedSelectedDocumentContent, format])
 
-  const onSelectDocument = useCallback((value: ValidatedDocument | undefined) => {
+  const selectedDocumentApiTypes = useMemo(() => {
+    return selectedDocument ? [selectedDocument.apiType] : []
+  }, [selectedDocument])
+
+  const onSelectDocument = useCallback((value: DocumentValidationSummary | undefined) => {
     setSelectedDocument(value)
     setSelectedIssuePath(undefined)
   }, [])
@@ -130,15 +138,16 @@ export const VersionApiQualityCard: FC = memo(() => {
       body={
         <TwoSidedCard
           leftHeader={
-            <Box display='flex' justifyContent='space-between' width="100%">
+            <Box data-testid="VersionApiQualityCardLeftHeader" display='flex' justifyContent='space-between' width="100%">
               <ValidatedDocumentSelector
                 value={selectedDocument}
                 onSelect={onSelectDocument}
                 options={validatedDocuments}
-                loading={loadingValidatedDocuments}
+                loading={validatedDocuments.length === 0}
               />
               <ValidationRulesettLink
                 data={validationDetails?.ruleset}
+                apiTypes={selectedDocumentApiTypes}
                 loading={loadingValidationDetails}
               />
             </Box>
@@ -147,11 +156,8 @@ export const VersionApiQualityCard: FC = memo(() => {
             <Box display='flex' justifyContent='flex-end' width="100%">
               <Toggler<OriginalDocumentFileFormat>
                 mode={format}
-                modes={[JSON_FILE_FORMAT, YAML_FILE_FORMAT]}
-                modeToText={{
-                  [JSON_FILE_FORMAT]: JSON_FILE_FORMAT.toUpperCase(),
-                  [YAML_FILE_FORMAT]: YAML_FILE_FORMAT.toUpperCase(),
-                }}
+                modes={MODES}
+                modeToText={MODES_TO_TEXT}
                 onChange={onFormatChange}
               />
             </Box>
@@ -169,7 +175,7 @@ export const VersionApiQualityCard: FC = memo(() => {
                 <Box height="100%">
                   <MonacoEditor
                     value={transformedSelectedDocumentContent}
-                    type={selectedDocument!.specificationType}
+                    type={selectedDocument!.apiType}
                     language={format}
                     selectedUri={selectedIssuePath}
                     markers={selectedDocumentMarkers}

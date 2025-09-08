@@ -19,6 +19,7 @@ import { ValidationRulesettLink } from '@apihub/components/ApiQuality/Validatati
 import { ValidationIssuesTooltip } from '@apihub/components/ApiQuality/ValidationIssuesTooltip'
 import type { IssueSeverity } from '@apihub/entities/api-quality/issue-severities'
 import { ISSUE_SEVERITIES_LIST, ISSUE_SEVERITY_COLOR_MAP, IssueSeverities } from '@apihub/entities/api-quality/issue-severities'
+import type { RulesetApiType } from '@apihub/entities/api-quality/rulesets'
 import { Box, Tooltip, Typography } from '@mui/material'
 import { API_AUDIENCE_EXTERNAL, API_AUDIENCE_INTERNAL, API_AUDIENCE_UNKNOWN, type ApiAudienceTransition } from '@netcracker/qubership-apihub-api-processor'
 import { Changes } from '@netcracker/qubership-apihub-ui-shared/components/Changes'
@@ -79,6 +80,21 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
   const showApiQualitySummary = validationFailed || (!apiQualitySummaryPlaceholder && !apiQualitySummaryDisabled)
   const validationSummary = useApiQualityValidationSummary()
   const validationRulesets = validationSummary?.rulesets ?? []
+  const validationRulesetsApiType: Map<string, RulesetApiType[]> = useMemo(() => {
+    const result: Map<string, RulesetApiType[]> = new Map()
+    const docs = validationSummary?.documents ?? []
+    for (const doc of docs) {
+      const { rulesetId } = doc
+      if (!rulesetId) {
+        continue
+      }
+      if (!result.has(rulesetId)) {
+        result.set(rulesetId, [])
+      }
+      result.get(rulesetId)?.push(doc.apiType)
+    }
+    return result
+  }, [validationSummary?.documents])
   const aggregatedValidationSummary: Record<IssueSeverity, number> = useMemo(() => {
     const emptyValidationSummary: Record<IssueSeverity, number> = {
       [IssueSeverities.ERROR]: 0,
@@ -361,6 +377,7 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
                       <Box key={ruleset.id} display='flex' alignItems='center'>
                         <ValidationRulesettLink
                           data={ruleset}
+                          apiTypes={validationRulesetsApiType.get(ruleset.id)}
                           loading={false}
                           showLabel={false}
                         />

@@ -1,5 +1,5 @@
 import type { IssueSeverity } from './issue-severities'
-import type { RulesetMetadataDto } from './rulesets'
+import type { RulesetApiType, RulesetMetadataDto } from './rulesets'
 import type { ValidationStatus } from './validation-statuses'
 
 // DTO
@@ -7,8 +7,7 @@ import type { ValidationStatus } from './validation-statuses'
 export type DocumentValidationSummaryDto = {
   slug: string
   documentName: string
-  // TODO 05.09.25 // Extract common type for validation API Quality feature
-  apiType: 'openapi-2-0' | 'openapi-3-0' | 'openapi-3-1'
+  apiType: RulesetApiType
   rulesetId?: RulesetMetadataDto['id']
   issuesSummary?: Record<IssueSeverity, number>
   // TODO 05.09.25 // Change it
@@ -24,5 +23,7 @@ export type ValidationSummaryDto = {
 }
 
 // UI
+
+export type DocumentValidationSummary = DocumentValidationSummaryDto
 
 export type ValidationSummary = ValidationSummaryDto

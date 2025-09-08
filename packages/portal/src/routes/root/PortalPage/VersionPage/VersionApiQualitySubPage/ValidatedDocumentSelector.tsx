@@ -1,3 +1,4 @@
+import type { DocumentValidationSummary } from '@apihub/entities/api-quality/package-version-validation-summary'
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
 import { Box, Button, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Skeleton } from '@mui/material'
 import { MenuButtonItems } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
@@ -6,12 +7,11 @@ import { SpecLogo } from '@netcracker/qubership-apihub-ui-shared/components/Spec
 import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { memo, useEffect, useMemo, useState, type FC } from 'react'
-import type { ValidatedDocument } from '@apihub/entities/api-quality/validated-documents'
 
 type ValidatedDocumentSelectorProps = {
-  value: ValidatedDocument | undefined
-  onSelect: (value: ValidatedDocument | undefined) => void
-  options: readonly ValidatedDocument[]
+  value: DocumentValidationSummary | undefined
+  onSelect: (value: DocumentValidationSummary | undefined) => void
+  options: readonly DocumentValidationSummary[]
   loading: IsLoading
 }
 
@@ -33,7 +33,7 @@ export const ValidatedDocumentSelector: FC<ValidatedDocumentSelectorProps> = mem
     return options
   }, [searchValue, options])
 
-  const [selectedDocument, setSelectedDocument] = useState<ValidatedDocument | undefined>()
+  const [selectedDocument, setSelectedDocument] = useState<DocumentValidationSummary | undefined>()
 
   useEffect(() => {
     const newSelectedDocument = value ?? options[0]
@@ -48,19 +48,21 @@ export const ValidatedDocumentSelector: FC<ValidatedDocumentSelectorProps> = mem
   return (
     <Button
       sx={{
+        justifyContent: 'flex-start',
         minWidth: 4,
         height: 20,
         p: 0,
+        m: 0,
+        color: 'black',
         boxShadow: 'none',
         '&:hover': { boxShadow: 'none' },
-        color: 'black',
       }}
       variant="text"
       onClick={({ currentTarget }) => setAnchor(currentTarget)}
       endIcon={<KeyboardArrowDownOutlinedIcon />}
     >
-      <Box display='flex' alignItems='flex-start' gap={1}>
-        <SpecLogo value={selectedDocument.specificationType} />
+      <Box display='flex' alignItems='flex-start' gap={1} width='80%'>
+        <SpecLogo value={selectedDocument.apiType} />
         <TextWithOverflowTooltip
           tooltipText={selectedDocument.documentName}
           variant="body2"
@@ -104,7 +106,7 @@ export const ValidatedDocumentSelector: FC<ValidatedDocumentSelectorProps> = mem
                   data-testid="ValidatedDocumentButton"
                 >
                   <ListItemIcon sx={{ minWidth: 2, mt: 0, mr: 1 }}>
-                    <SpecLogo value={document.specificationType} />
+                    <SpecLogo value={document.apiType} />
                   </ListItemIcon>
                   <ListItemText primary={document.documentName} primaryTypographyProps={{ sx: { mt: 0.25 } }} />
                 </ListItemButton>
