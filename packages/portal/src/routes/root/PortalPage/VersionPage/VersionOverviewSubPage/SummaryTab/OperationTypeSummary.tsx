@@ -42,6 +42,7 @@ import {
   useApiQualityValidationFailed,
   useApiQualityValidationSummary,
 } from '../../ApiQualityValidationSummaryProvider'
+import { usePollingForValidationSummaryReadiness } from './usePollingForValidationSummaryReadiness'
 
 export type OperationTypeSummaryProps = Readonly<{
   apiType: ApiType
@@ -78,7 +79,7 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
   const [apiQualitySummaryPlaceholder, apiQualitySummaryDisabled] = useApiQualitySummarySectionProperties(onManualRunLinter)
   const showApiQualityPlaceholder = apiQualitySummaryPlaceholder && apiQualitySummaryDisabled
   const showApiQualitySummary = validationFailed || (!apiQualitySummaryPlaceholder && !apiQualitySummaryDisabled)
-  const validationSummary = useApiQualityValidationSummary()
+  const [validationSummary, refetchValidationSummary] = useApiQualityValidationSummary()
   const validationRulesets = validationSummary?.rulesets ?? []
   const validationRulesetsApiType: Map<string, RulesetApiType[]> = useMemo(() => {
     const result: Map<string, RulesetApiType[]> = new Map()
@@ -127,6 +128,7 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
     }, [] as string[]),
     [validationSummary],
   )
+  usePollingForValidationSummaryReadiness(refetchValidationSummary)
 
   const changeCounter = useMemo(() => changesSummary ?? DEFAULT_CHANGE_SEVERITY_MAP, [changesSummary])
   const affectedOperationCounter = useMemo(() => numberOfImpactedOperations ?? DEFAULT_CHANGE_SEVERITY_MAP, [numberOfImpactedOperations])

@@ -6,18 +6,25 @@ import { API_TYPE_GRAPHQL } from '@netcracker/qubership-apihub-ui-shared/entitie
 import type { FC, PropsWithChildren, ReactNode } from 'react'
 import { createContext, useCallback, useContext, useMemo, useState } from 'react'
 
+type RefetchValidationSummary = () => void
+
 // Raw contexts
 
 export const ApiQualityValidationSummaryContext = createContext<ValidationSummary | undefined>(undefined)
 export const ApiQualityLinterEnabledContext = createContext<boolean>(false)
+export const RefetchApiQualityValidationSummaryContext = createContext<RefetchValidationSummary | undefined>(undefined)
 
 type ApiQualityDataProviderProps = PropsWithChildren & {
   linterEnabled: boolean
   validationSummary: ValidationSummary | undefined
+  refetchValidationSummary: RefetchValidationSummary | undefined
 }
 
-export function useApiQualityValidationSummary(): ValidationSummary | undefined {
-  return useContext(ApiQualityValidationSummaryContext)
+export function useApiQualityValidationSummary(): [ValidationSummary | undefined, RefetchValidationSummary | undefined] {
+  return [
+    useContext(ApiQualityValidationSummaryContext),
+    useContext(RefetchApiQualityValidationSummaryContext),
+  ]
 }
 
 const NOT_LINTED_API_TYPES: ApiType[] = [API_TYPE_GRAPHQL]
@@ -33,7 +40,7 @@ export function useApiQualityLinterEnabled(apiType: ApiType): boolean {
 type RunLinter = () => void
 
 export function useApiQualityValidationStatus(): [ValidationStatus | undefined, RunLinter] {
-  const summary = useApiQualityValidationSummary()
+  const [summary] = useApiQualityValidationSummary()
   const [overriddenStatus, setOverriddenStatus] = useState<ValidationStatus | undefined>(undefined)
   const onRunLinter = useCallback(() => {
     setOverriddenStatus(ValidationStatuses.IN_PROGRESS)
@@ -112,12 +119,14 @@ export function useApiQualityValidationFailed(): boolean {
 
 // Public provider
 
-export const ApiQualityDataProvider: FC<ApiQualityDataProviderProps> = ({ children, linterEnabled, validationSummary }) => {
+export const ApiQualityDataProvider: FC<ApiQualityDataProviderProps> = ({ children, linterEnabled, validationSummary, refetchValidationSummary }) => {
   return (
-    <ApiQualityValidationSummaryContext.Provider value={validationSummary}>
-      <ApiQualityLinterEnabledContext.Provider value={linterEnabled}>
-        {children}
-      </ApiQualityLinterEnabledContext.Provider>
-    </ApiQualityValidationSummaryContext.Provider>
+    <ApiQualityLinterEnabledContext.Provider value={linterEnabled}>
+      <ApiQualityValidationSummaryContext.Provider value={validationSummary}>
+        <RefetchApiQualityValidationSummaryContext.Provider value={refetchValidationSummary}>
+          {children}
+        </RefetchApiQualityValidationSummaryContext.Provider>
+      </ApiQualityValidationSummaryContext.Provider>
+    </ApiQualityLinterEnabledContext.Provider>
   )
 }

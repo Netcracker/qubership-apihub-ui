@@ -55,13 +55,20 @@ export const VersionPage: FC = memo(() => {
   const [packageObject, isLoading] = usePackage({ showParents: true })
 
   const linterEnabled = useLinterEnabled()
-  const [validationSummary] = useValidationSummaryByPackageVersion(linterEnabled, packageId!, versionId!)
+  const {
+    data: validationSummary,
+    refetch: refetchValidationSummary,
+  } = useValidationSummaryByPackageVersion(linterEnabled, packageId!, versionId!)
 
   return (
     <CurrentPackageProvider value={packageObject}>
       <FullMainVersionProvider>
         <ActivityHistoryFiltersProvider>
-          <ApiQualityDataProvider linterEnabled={linterEnabled} validationSummary={validationSummary}>
+          <ApiQualityDataProvider
+            linterEnabled={linterEnabled}
+            validationSummary={validationSummary}
+            refetchValidationSummary={refetchValidationSummary}
+          >
             <NoPackagePlaceholder packageObject={packageObject} isLoading={isLoading}>
               <NoPackageVersionPlaceholder packageObject={packageObject}>
                 <LayoutWithToolbar

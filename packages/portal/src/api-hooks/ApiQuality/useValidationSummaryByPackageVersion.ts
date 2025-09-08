@@ -8,15 +8,24 @@ import { API_LINTER_API_V1 } from './constants'
 
 const QUERY_KEY_VALIDATION_SUMMARY_FOR_PACKAGE_VERSION = 'validation-summary-for-package-version'
 
+export type RefetchValidationSummary = () => void
+
+export type ValidationSummaryQueryState = {
+  data: ValidationSummary | undefined
+  isLoading: IsLoading
+  error: Error | null
+  refetch: RefetchValidationSummary
+}
+
 export function useValidationSummaryByPackageVersion(
   linterEnabled: boolean,
   packageId: Key,
   version: Key,
-): [ValidationSummary | undefined, IsLoading, Error | null] {
+): ValidationSummaryQueryState {
   const packageKey = encodeURIComponent(packageId)
   const versionKey = encodeURIComponent(version)
 
-  const { data, isLoading, error } = useQuery<ValidationSummaryDto, Error, ValidationSummary>({
+  const { data, isLoading, error, refetch } = useQuery<ValidationSummaryDto, Error, ValidationSummary>({
     queryKey: [QUERY_KEY_VALIDATION_SUMMARY_FOR_PACKAGE_VERSION, packageKey, versionKey],
     queryFn: () => getValidationSummaryByPackageVersion(packageKey, versionKey),
     enabled: linterEnabled,
@@ -26,7 +35,7 @@ export function useValidationSummaryByPackageVersion(
     retryDelay: 1000,
   })
 
-  return [data, isLoading, error]
+  return { data, isLoading, error, refetch }
 }
 
 function getValidationSummaryByPackageVersion(
