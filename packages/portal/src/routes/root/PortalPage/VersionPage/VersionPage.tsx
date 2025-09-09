@@ -26,7 +26,7 @@ import { useLinterEnabled } from '@netcracker/qubership-apihub-ui-shared/feature
 import { useActiveTabs } from '@netcracker/qubership-apihub-ui-shared/hooks/pathparams/useActiveTabs'
 import { PreviousReleaseOptionsProvider } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget'
 import type { FC, ReactNode } from 'react'
-import { memo } from 'react'
+import { memo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import type { VersionPageRoute } from '../../../../routes'
 import { API_CHANGES_PAGE, API_QUALITY_PAGE, DEPRECATED_PAGE, DOCUMENTS_PAGE, OPERATIONS_PAGE, OVERVIEW_PAGE } from '../../../../routes'
@@ -37,7 +37,8 @@ import { usePackage } from '../../usePackage'
 import { FullMainVersionProvider } from '../FullMainVersionProvider'
 import { SelectedPreviewOperationProvider } from '../SelectedPreviewOperationProvider'
 import { VersionNavigationMenu } from '../VersionNavigationMenu'
-import { ApiQualityDataProvider } from './ApiQualityValidationSummaryProvider'
+import type { ClientValidationStatus } from './ApiQualityValidationSummaryProvider'
+import { ApiQualityDataProvider, ClientValidationStatuses } from './ApiQualityValidationSummaryProvider'
 import { OutdatedRevisionNotification } from './OutdatedRevisionNotification/OutdatedRevisionNotification'
 import { VersionApiChangesSubPage } from './VersionApiChangesSubPage/VersionApiChangesSubPage'
 import { RulesetInfoDialog } from './VersionApiQualitySubPage/components/RulesetInfoDialog/RulesetInfoDialog'
@@ -55,10 +56,11 @@ export const VersionPage: FC = memo(() => {
   const [packageObject, isLoading] = usePackage({ showParents: true })
 
   const linterEnabled = useLinterEnabled()
+  const [validationStatus, setValidationStatus] = useState<ClientValidationStatus>(ClientValidationStatuses.CHECKING)
   const {
     data: validationSummary,
     refetch: refetchValidationSummary,
-  } = useValidationSummaryByPackageVersion(linterEnabled, packageId!, versionId!)
+  } = useValidationSummaryByPackageVersion(linterEnabled, packageId!, versionId!, setValidationStatus)
 
   return (
     <CurrentPackageProvider value={packageObject}>
@@ -67,6 +69,8 @@ export const VersionPage: FC = memo(() => {
           <ApiQualityDataProvider
             linterEnabled={linterEnabled}
             validationSummary={validationSummary}
+            clientValidationStatus={validationStatus}
+            setClientValidationStatus={setValidationStatus}
             refetchValidationSummary={refetchValidationSummary}
           >
             <NoPackagePlaceholder packageObject={packageObject} isLoading={isLoading}>

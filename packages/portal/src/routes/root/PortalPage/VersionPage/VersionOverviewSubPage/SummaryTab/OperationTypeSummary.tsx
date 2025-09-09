@@ -36,6 +36,7 @@ import type { FC } from 'react'
 import { memo, useCallback, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import {
+  useApiQualityClientValidationStatus,
   useApiQualityLinterEnabled,
   useApiQualitySummarySectionProperties,
   useApiQualityValidationFailed,
@@ -74,6 +75,7 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
     }
   }, [manualRunLinter, packageId, versionId])
   const linterEnabled = useApiQualityLinterEnabled(apiType)
+  const [clientValidationStatus] = useApiQualityClientValidationStatus()
   const validationFailed = useApiQualityValidationFailed()
   const [apiQualitySummaryPlaceholder, apiQualitySummaryDisabled] = useApiQualitySummarySectionProperties(onManualRunLinter)
   const showApiQualityPlaceholder = apiQualitySummaryPlaceholder && apiQualitySummaryDisabled

@@ -4,26 +4,47 @@ import { Link } from '@mui/material'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { API_TYPE_GRAPHQL } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { FC, PropsWithChildren, ReactNode } from 'react'
-import { createContext, useCallback, useContext, useMemo, useState } from 'react'
+import { createContext, memo, useCallback, useContext, useMemo, useState } from 'react'
+
+export const ClientValidationStatuses = {
+  CHECKING: 'checking',
+  IN_PROGRESS: 'in-progress',
+  VALIDATED: 'validated',
+  NOT_VALIDATED: 'not-validated',
+} as const
+export type ClientValidationStatus = (typeof ClientValidationStatuses)[keyof typeof ClientValidationStatuses]
 
 type RefetchValidationSummary = () => void
 
+export type SetClientValidationStatus = (status: ClientValidationStatus) => void
+
 // Raw contexts
 
-export const ApiQualityValidationSummaryContext = createContext<ValidationSummary | undefined>(undefined)
 export const ApiQualityLinterEnabledContext = createContext<boolean>(false)
+export const ApiQualityValidationSummaryContext = createContext<ValidationSummary | undefined>(undefined)
+export const ClientValidationStatusContext = createContext<ClientValidationStatus>(ClientValidationStatuses.CHECKING)
+export const SetClientValidationStatusContext = createContext<SetClientValidationStatus | undefined>(undefined)
 export const RefetchApiQualityValidationSummaryContext = createContext<RefetchValidationSummary | undefined>(undefined)
 
 type ApiQualityDataProviderProps = PropsWithChildren & {
   linterEnabled: boolean
   validationSummary: ValidationSummary | undefined
   refetchValidationSummary: RefetchValidationSummary | undefined
+  clientValidationStatus: ClientValidationStatus
+  setClientValidationStatus: SetClientValidationStatus
 }
 
 export function useApiQualityValidationSummary(): [ValidationSummary | undefined, RefetchValidationSummary | undefined] {
   return [
     useContext(ApiQualityValidationSummaryContext),
     useContext(RefetchApiQualityValidationSummaryContext),
+  ]
+}
+
+export function useApiQualityClientValidationStatus(): [ClientValidationStatus | undefined, SetClientValidationStatus | undefined] {
+  return [
+    useContext(ClientValidationStatusContext),
+    useContext(SetClientValidationStatusContext),
   ]
 }
 
@@ -119,14 +140,26 @@ export function useApiQualityValidationFailed(): boolean {
 
 // Public provider
 
-export const ApiQualityDataProvider: FC<ApiQualityDataProviderProps> = ({ children, linterEnabled, validationSummary, refetchValidationSummary }) => {
+export const ApiQualityDataProvider: FC<ApiQualityDataProviderProps> = memo((props) => {
+  const {
+    children,
+    linterEnabled,
+    validationSummary,
+    clientValidationStatus,
+    setClientValidationStatus,
+    refetchValidationSummary,
+  } = props
   return (
     <ApiQualityLinterEnabledContext.Provider value={linterEnabled}>
-      <ApiQualityValidationSummaryContext.Provider value={validationSummary}>
-        <RefetchApiQualityValidationSummaryContext.Provider value={refetchValidationSummary}>
-          {children}
-        </RefetchApiQualityValidationSummaryContext.Provider>
-      </ApiQualityValidationSummaryContext.Provider>
+      <ClientValidationStatusContext.Provider value={clientValidationStatus}>
+        <SetClientValidationStatusContext.Provider value={setClientValidationStatus}>
+          <ApiQualityValidationSummaryContext.Provider value={validationSummary}>
+            <RefetchApiQualityValidationSummaryContext.Provider value={refetchValidationSummary}>
+              {children}
+            </RefetchApiQualityValidationSummaryContext.Provider>
+          </ApiQualityValidationSummaryContext.Provider>
+        </SetClientValidationStatusContext.Provider>
+      </ClientValidationStatusContext.Provider>
     </ApiQualityLinterEnabledContext.Provider>
   )
-}
+})

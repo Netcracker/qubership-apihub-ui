@@ -5,7 +5,7 @@ import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/Cu
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import capitalize from 'lodash-es/capitalize'
 import type { FC, ReactElement } from 'react'
-import { memo } from 'react'
+import { memo, useCallback } from 'react'
 
 type ValidationRulesetLinkProps = {
   data: RulesetMetadata | undefined
@@ -18,6 +18,11 @@ export const ValidationRulesettLink: FC<ValidationRulesetLinkProps> = memo<Valid
   const { data, loading, showLabel = true } = props
 
   const { showRulesetInfoDialog } = useEventBus()
+
+  const onClickRulesetName = useCallback(
+    () => data && showRulesetInfoDialog(data),
+    [data, showRulesetInfoDialog],
+  )
 
   if (loading) {
     return <Skeleton variant="rectangular" width={100} height={20} />
@@ -33,7 +38,7 @@ export const ValidationRulesettLink: FC<ValidationRulesetLinkProps> = memo<Valid
     <Typography
       key='validation-ruleset-link-name'
       variant='body2'
-      onClick={() => showRulesetInfoDialog(data)}
+      onClick={onClickRulesetName}
     >
       <Link>
         {data.name}
