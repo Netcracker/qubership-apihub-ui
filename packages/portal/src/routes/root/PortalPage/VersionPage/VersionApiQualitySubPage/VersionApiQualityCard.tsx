@@ -34,19 +34,19 @@ const TwoSidedCard: FC<TwoSidedCardProps> = memo<TwoSidedCardProps>((props) => {
   const internalIndent = 2
 
   return (
-    <Box display='flex' flexDirection='column' height="100%">
+    <Box display='flex' flexDirection='column' height="calc(100% - 50px)">
       <Box display='flex' justifyContent='space-between' alignItems='center' width="100%">
         {leftHeader}
         {rightHeader}
       </Box>
       <Box
         display="grid"
-        height="calc(100% - 75px)"
+        height="100%"
         gridTemplateAreas={`
           "left-body right-body"
         `}
         gridTemplateColumns="50% 50%"
-        gridTemplateRows="max-content 100%"
+        gridTemplateRows="100%"
       >
         <Box
           gridArea="left-body"
@@ -65,9 +65,9 @@ const TwoSidedCard: FC<TwoSidedCardProps> = memo<TwoSidedCardProps>((props) => {
   )
 })
 
-const MODES: readonly OriginalDocumentFileFormat[] = [JSON_FILE_FORMAT, YAML_FILE_FORMAT]
+const MONACO_EDITOR_FORMATS: readonly OriginalDocumentFileFormat[] = [JSON_FILE_FORMAT, YAML_FILE_FORMAT]
 
-const MODES_TO_TEXT = {
+const MONACO_EDITOR_PRETTY_FORMATS = {
   [JSON_FILE_FORMAT]: JSON_FILE_FORMAT.toUpperCase(),
   [YAML_FILE_FORMAT]: YAML_FILE_FORMAT.toUpperCase(),
 }
@@ -86,7 +86,9 @@ export const VersionApiQualityCard: FC = memo(() => {
     selectedDocument?.slug ?? '',
   )
 
-  const validatedDocuments = useApiQualityValidationSummary()?.documents ?? []
+  const [validationSummary] = useApiQualityValidationSummary()
+  const validatedDocuments = useMemo(() => validationSummary?.documents ?? [], [validationSummary])
+  const loadingValidatedDocuments = useMemo(() => validationSummary === undefined, [validationSummary])
 
   // TODO 01.07.25 // Check if this is not re-fetched each time we change format
   const [selectedDocumentContent, loadingSelectedDocumentContent] = usePublishedDocumentRaw({
@@ -137,7 +139,7 @@ export const VersionApiQualityCard: FC = memo(() => {
                 value={selectedDocument}
                 onSelect={onSelectDocument}
                 options={validatedDocuments}
-                loading={validatedDocuments.length === 0}
+                loading={loadingValidatedDocuments}
               />
               <ValidationRulesettLink
                 data={validationDetails?.ruleset}
@@ -149,8 +151,8 @@ export const VersionApiQualityCard: FC = memo(() => {
           rightHeader={
             <Toggler<OriginalDocumentFileFormat>
               mode={format}
-              modes={MODES}
-              modeToText={MODES_TO_TEXT}
+              modes={MONACO_EDITOR_FORMATS}
+              modeToText={MONACO_EDITOR_PRETTY_FORMATS}
               onChange={onFormatChange}
             />
           }

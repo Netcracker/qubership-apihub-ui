@@ -1,3 +1,4 @@
+import type { OriginalDocumentFileFormat } from '@apihub/routes/root/PortalPage/VersionPage/VersionApiQualitySubPage/types'
 import type { IssuePath } from './issue-paths'
 import type { IssueSeverity } from './issue-severities'
 import { IssueSeverities } from './issue-severities'
@@ -10,6 +11,7 @@ export type IssueDto = {
   path: IssuePath
   severity: IssueSeverity
   message: string
+  code: string
 }
 
 export type Issue = IssueDto
@@ -17,7 +19,7 @@ export type Issue = IssueDto
 // TODO 26.08.25 // Move it somewhere else
 export function transformIssuesToMarkers(
   content: string,
-  format: 'json' | 'yaml',
+  format: OriginalDocumentFileFormat,
   issues: readonly Issue[],
 ): Editor.IMarkerData[] {
   const notFilteredMarkers: (Editor.IMarkerData | null)[] = issues
@@ -49,7 +51,7 @@ export function transformIssuesToMarkers(
         endColumn: location.range.end.character,
         message: issue.message,
         severity: severity,
-        source: 'spectral',
+        source: `spectral (${issue.code})`,
       }
     })
   return notFilteredMarkers.filter((marker): marker is Editor.IMarkerData => marker !== null)
