@@ -110,10 +110,6 @@ export const VersionApiQualityCard: FC = memo(() => {
     return transformIssuesToMarkers(transformedSelectedDocumentContent, format, issues)
   }, [validationDetails, transformedSelectedDocumentContent, format])
 
-  const selectedDocumentApiTypes = useMemo(() => {
-    return selectedDocument ? [selectedDocument.apiType] : []
-  }, [selectedDocument])
-
   const onSelectDocument = useCallback((value: DocumentValidationSummary | undefined) => {
     setSelectedDocument(value)
     setSelectedIssuePath(undefined)
@@ -143,7 +139,6 @@ export const VersionApiQualityCard: FC = memo(() => {
               />
               <ValidationRulesettLink
                 data={validationDetails?.ruleset}
-                apiTypes={selectedDocumentApiTypes}
                 loading={loadingValidationDetails}
               />
             </Box>

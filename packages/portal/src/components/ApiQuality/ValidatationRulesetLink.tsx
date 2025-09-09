@@ -1,6 +1,4 @@
-
-import type { RulesetApiType } from '@apihub/entities/api-quality/rulesets'
-import { RulesetApiTypes, RulesetStatuses, type RulesetMetadata } from '@apihub/entities/api-quality/rulesets'
+import { RULESET_API_TYPE_TITLE_MAP, RulesetStatuses, type RulesetMetadata } from '@apihub/entities/api-quality/rulesets'
 import { useEventBus } from '@apihub/routes/EventBusProvider'
 import { Box, Link, Skeleton, Typography } from '@mui/material'
 import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
@@ -11,20 +9,13 @@ import { memo } from 'react'
 
 type ValidationRulesetLinkProps = {
   data: RulesetMetadata | undefined
-  apiTypes: RulesetApiType[] | undefined
   loading: IsLoading
   showLabel?: boolean
 }
 
-const API_TYPE_TITLE_MAP = {
-  [RulesetApiTypes.OAS_2_0]: 'OAS 2.0',
-  [RulesetApiTypes.OAS_3_0]: 'OAS 3.0',
-  [RulesetApiTypes.OAS_3_1]: 'OAS 3.1',
-}
-
 // First Order Component
 export const ValidationRulesettLink: FC<ValidationRulesetLinkProps> = memo<ValidationRulesetLinkProps>(props => {
-  const { data, apiTypes = [], loading, showLabel = true } = props
+  const { data, loading, showLabel = true } = props
 
   const { showRulesetInfoDialog } = useEventBus()
 
@@ -50,16 +41,14 @@ export const ValidationRulesettLink: FC<ValidationRulesetLinkProps> = memo<Valid
     </Typography>,
   )
 
-  apiTypes.forEach(apiType => {
-    elements.push(
-      <CustomChip
-        key={`validation-ruleset-link-api-type-${apiType}`}
-        value='rulesetSpecType'
-        sx={{ m: 0 }}
-        label={API_TYPE_TITLE_MAP[apiType]}
-      />,
-    )
-  })
+  elements.push(
+    <CustomChip
+      key={`validation-ruleset-link-api-type-${data.apiType}`}
+      value='rulesetSpecType'
+      sx={{ m: 0 }}
+      label={RULESET_API_TYPE_TITLE_MAP[data.apiType]}
+    />,
+  )
 
   elements.push(
     <CustomChip

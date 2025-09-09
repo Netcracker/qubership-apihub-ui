@@ -1,4 +1,4 @@
-import { RulesetStatuses, type Ruleset } from '@apihub/entities/api-quality/rulesets'
+import { RULESET_API_TYPE_TITLE_MAP, RulesetStatuses, type Ruleset } from '@apihub/entities/api-quality/rulesets'
 import { Box, Dialog, DialogContent, DialogTitle, IconButton, Skeleton } from '@mui/material'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
@@ -40,8 +40,7 @@ const RulesetInfoPopup: FC<PopupProps> = (props) => {
           <Box display='flex' gap={1} mt={1} fontWeight={500}>
             <CustomChip
               value='rulesetSpecType'
-              // @ts-expect-error Now this field is actually absent 
-              label={ruleset.specType}
+              label={RULESET_API_TYPE_TITLE_MAP[ruleset.apiType]}
             />
             <CustomChip
               value={ruleset.status === RulesetStatuses.ACTIVE ? 'rulesetActive' : 'rulesetInactive'}

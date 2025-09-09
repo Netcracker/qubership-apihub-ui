@@ -22,6 +22,11 @@ export const RulesetApiTypes = {
   OAS_3_1: 'openapi-3-1',
 } as const
 export type RulesetApiType = (typeof RulesetApiTypes)[keyof typeof RulesetApiTypes]
+export const RULESET_API_TYPE_TITLE_MAP = {
+  [RulesetApiTypes.OAS_2_0]: 'OAS 2.0',
+  [RulesetApiTypes.OAS_3_0]: 'OAS 3.0',
+  [RulesetApiTypes.OAS_3_1]: 'OAS 3.1',
+}
 
 export const RulesetLinters = {
   SPECTRAL: 'spectral',
@@ -45,5 +50,5 @@ export type Ruleset = RulesetDto
 
 // The only main data of ruleset
 
-export type RulesetMetadataDto = Pick<RulesetDto, 'id' | 'name' | 'fileName' | 'status'>
+export type RulesetMetadataDto = Pick<RulesetDto, 'id' | 'name' | 'fileName' | 'status' | 'apiType'>
 export type RulesetMetadata = RulesetMetadataDto
