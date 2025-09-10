@@ -11,7 +11,7 @@ export function isUrl(url: string): boolean {
 }
 
 // Check if URL is absolute HTTP/HTTPS
-export function isAbsoluteUrl(url: string | undefined): boolean {
+export function isAbsoluteHttpUrl(url: string | undefined): boolean {
   return url ? /^https?:\/\//i.test(url) : false
 }
 

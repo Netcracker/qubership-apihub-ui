@@ -43,7 +43,7 @@ import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entitie
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { useOperation } from '@netcracker/qubership-apihub-ui-portal/src/routes/root/PortalPage/VersionPage/useOperation'
 import { useCustomUrls, useSpecUrls } from '../hooks/useUrls'
-import { isAbsoluteUrl } from '@netcracker/qubership-apihub-ui-shared/utils/urls'
+import { isAbsoluteHttpUrl } from '@netcracker/qubership-apihub-ui-shared/utils/urls'
 
 const MODE_MANUAL = 'manual' as const
 const MODE_AGENT = 'agent' as const
@@ -502,7 +502,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
             rules={{
               required: ERROR_REQUIRED_FIELD,
               validate: customServerUrl => {
-                if (!isAbsoluteUrl(customServerUrl)) {
+                if (!isAbsoluteHttpUrl(customServerUrl)) {
                   return ERROR_ABSOLUTE_URL_REQUIRED
                 }
                 if (isUrlAlreadyExist(availableUrls, customServerUrl)) {

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { isEmpty } from 'lodash'
-import {isAbsoluteUrl} from '@netcracker/qubership-apihub-ui-shared/utils/urls'
+import { isAbsoluteHttpUrl } from '@netcracker/qubership-apihub-ui-shared/utils/urls'
 
 export const useFirstSpecPath = (specUrls: string[] | undefined): string => {
   const [specPath, setSpecPath] = useState<string>('')
@@ -11,7 +11,7 @@ export const useFirstSpecPath = (specUrls: string[] | undefined): string => {
     for (const url of specUrls!) {
       if (!url) continue
 
-      if (isAbsoluteUrl(url)) {
+      if (isAbsoluteHttpUrl(url)) {
         try {
           const { pathname } = new URL(url)
           if (pathname && pathname !== '/') return pathname
