@@ -30,7 +30,7 @@ export function useCustomServersPackageMap(): [CustomServersPackageMap, SetCusto
   )
   const setCustomServersMap = useSetCustomServersContext()
 
-  const updateCustomServers = useCallback((key: string, value: PlaygroundServer[]) => {
+  const updateCustomServers = useCallback((key: string, value: PlaygroundCustomServer[]) => {
     const data = { ...customServers, [key]: value }
 
     localStorage.setItem(CUSTOM_SERVERS_KEY, JSON.stringify(data))
@@ -45,10 +45,10 @@ export function useCustomServersPackageMap(): [CustomServersPackageMap, SetCusto
 }
 
 export const CUSTOM_SERVERS_KEY = 'playground-custom-servers'
-export type CustomServersPackageMap = Record<Key, PlaygroundServer[]>
-export type SetCustomServersPackageMap = (key: string, value: PlaygroundServer[]) => void
+export type CustomServersPackageMap = Record<Key, PlaygroundCustomServer[]>
+export type SetCustomServersPackageMap = (key: string, value: PlaygroundCustomServer[]) => void
 
-export type PlaygroundServer = {
+export type PlaygroundCustomServer = {
   url: string
   description?: string
   shouldUseProxyEndpoint: boolean

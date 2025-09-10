@@ -20,7 +20,7 @@ import type { UseFormStateReturn } from 'react-hook-form/dist/types'
 import { usePackage } from '@netcracker/qubership-apihub-ui-portal/src/routes/root/usePackage'
 import { useAgents } from '../hooks/api/useAgents'
 import { useNamespaces } from '../hooks/api/useNamespaces'
-import { type PlaygroundServer, useCustomServersPackageMap } from '../hooks/useCustomServersPackageMap'
+import { type PlaygroundCustomServer, useCustomServersPackageMap } from '../hooks/useCustomServersPackageMap'
 import { generatePath, useParams } from 'react-router-dom'
 import { useServiceNames } from '../hooks/api/useServiceNames'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
@@ -306,7 +306,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       return
     }
 
-    const newServer: PlaygroundServer = {
+    const newServer: PlaygroundCustomServer = {
       url: isManualMode ? formData[KEY_CUSTOM_SERVER_URL]!.trim() : agentProxyUrl.trim(),
       description: formData[KEY_DESCRIPTION] ?? '',
       shouldUseProxyEndpoint: !formData[KEY_CLOUD],

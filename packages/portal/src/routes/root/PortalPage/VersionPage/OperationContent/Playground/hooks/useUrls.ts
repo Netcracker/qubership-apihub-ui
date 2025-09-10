@@ -5,7 +5,7 @@ import {
   useProcessedSpecServers,
   useTransformDocumentToNode,
 } from '@netcracker/qubership-apihub-rest-playground/hooks'
-import type { PlaygroundServer } from './useCustomServersPackageMap'
+import type { PlaygroundCustomServer } from './useCustomServersPackageMap'
 
 export const useSpecUrls = (document: object | undefined): string[] => {
   const documentString = useMemo(() => {
@@ -24,7 +24,7 @@ export const useSpecUrls = (document: object | undefined): string[] => {
   }, [servers])
 }
 
-export const useCustomUrls = (customServers: PlaygroundServer[] | undefined): string[] => {
+export const useCustomUrls = (customServers: PlaygroundCustomServer[] | undefined): string[] => {
   const servers = useProcessedCustomServers(customServers)
 
   return useMemo(() => {
