@@ -13,33 +13,36 @@ import {
   TextField,
   Tooltip,
 } from '@mui/material'
-import { ServerUrlDisplay } from './AgentServerUrlBox'
+import { ServerUrlDisplay } from './ServerUrlDisplay'
 import { Controller, useForm } from 'react-hook-form'
 import type { ControllerFieldState, ControllerRenderProps } from 'react-hook-form/dist/types/controller'
 import type { UseFormStateReturn } from 'react-hook-form/dist/types'
-import { usePackage } from '../../../../usePackage'
-import { useAgents } from './useAgents'
-import { useNamespaces } from './useNamespaces'
-import { type PlaygroundServer, useCustomServersPackageMap } from './useCustomServersPackageMap'
+import { usePackage } from '@netcracker/qubership-apihub-ui-portal/src/routes/root/usePackage'
+import { useAgents } from '../hooks/api/useAgents'
+import { useNamespaces } from '../hooks/api/useNamespaces'
+import { type PlaygroundServer, useCustomServersPackageMap } from '../hooks/useCustomServersPackageMap'
 import { generatePath, useParams } from 'react-router-dom'
-import { useServiceNames } from './useServiceNames'
+import { useServiceNames } from '../hooks/api/useServiceNames'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import { SHOW_CREATE_CUSTOM_SERVER_DIALOG, useEventBus } from '@apihub/routes/EventBusProvider'
+import {
+  SHOW_CREATE_CUSTOM_SERVER_DIALOG,
+  useEventBus,
+} from '@netcracker/qubership-apihub-ui-portal/src/routes/EventBusProvider'
 import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 import { isServiceNameExistInNamespace } from '@netcracker/qubership-apihub-ui-shared/entities/service-names'
-import { useShowSuccessNotification } from '@apihub/routes/root/BasePage/Notification'
+import { useShowSuccessNotification } from '@netcracker/qubership-apihub-ui-portal/src/routes/root/BasePage/Notification'
 import { ErrorTextField } from '@netcracker/qubership-apihub-ui-portal/src/components/ErrorTextField'
 import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoContextIcon'
 import { ErrorIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ErrorIcon'
-import { useFirstSpecPath } from './hooks/useFirstSpecPath'
-import { SpecPathWarningAlert } from './components/SpecPathWarningAlert'
+import { useFirstSpecPath } from '../hooks/useFirstSpecPath'
+import { SpecPathWarningAlert } from './SpecPathWarningAlert'
 import { PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { useOperation } from '@apihub/routes/root/PortalPage/VersionPage/useOperation'
-import { useCustomUrls, useSpecUrls } from './hooks/useUrls'
+import { useOperation } from '@netcracker/qubership-apihub-ui-portal/src/routes/root/PortalPage/VersionPage/useOperation'
+import { useCustomUrls, useSpecUrls } from '../hooks/useUrls'
 import { isAbsoluteUrl } from '@netcracker/qubership-apihub-ui-shared/utils/urls'
 
 const MODE_MANUAL = 'manual' as const
@@ -139,9 +142,6 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     apiType: apiType as ApiType,
   })
 
-  // Development-only debug logging
-  const isDevelopment = process.env.NODE_ENV === 'development'
-
   // States for selections
   const [agentProxyUrl, setAgentProxyUrl] = useState<string>('')
   const [agentProxyUrlError, setAgentProxyUrlError] = useState<string>('')
@@ -231,26 +231,14 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     [selectedCloud, selectedNamespace, serviceName, serviceNames],
   )
 
-  // Add server - memoize callback to prevent unnecessary re-renders
   const showSuccessNotification = useShowSuccessNotification()
 
   const addCustomServer = useCallback((formData: CreateCustomServerForm) => {
-    if (isDevelopment) {
-      console.log('🚀 addCustomServer called with:', {
-        formData,
-        isServiceNameValid,
-        isAgentMode,
-        isManualMode,
-      })
-    }
-
     if (!isServiceNameValid) {
-      if (isDevelopment) console.log('❌ Early return: isServiceNameValid is false')
       return
     }
 
     if (isAgentMode && isUrlAlreadyExist(availableUrls, agentProxyUrl)) {
-      if (isDevelopment) console.log('❌ Early return: URL already exists')
       setAgentProxyUrlError(ERROR_SERVER_URL_EXISTS)
       return
     }
@@ -261,17 +249,10 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       shouldUseProxyEndpoint: !formData[KEY_CLOUD],
     }
 
-    if (isDevelopment) {
-      console.log('✅ Creating new server:', newServer)
-    }
-
     // Update server list
     setCustomServersPackageMap(packageId, [...customServersPackageMap?.[packageId] ?? [], newServer])
 
     // Schedule event dispatch for next render cycle (after React state update completes)
-    if (isDevelopment) {
-      console.log('📅 Setting pendingServerSelection:', newServer.url)
-    }
     setPendingServerSelection(newServer.url)
 
     showSuccessNotification?.({
@@ -280,7 +261,6 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     })
     // Note: setOpen(false) is now called after event dispatch in useEffect
   }, [
-    isDevelopment,
     isServiceNameValid,
     isAgentMode,
     availableUrls,
@@ -292,59 +272,18 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     showSuccessNotification,
   ])
 
-  // Ultra-targeted development logging - only during actual server creation
-  useEffect(() => {
-    if (isDevelopment && pendingServerSelection) {
-      // Only log during actual server creation, not on every render
-      console.log('SPEC_URLS:', specUrls)
-      console.log('AVAILABLE_URLS:', availableUrls)
-      console.log('📈 Component state:', {
-        isServiceNameValid,
-        isAgentMode,
-        isManualMode,
-        pendingServerSelection,
-        packageId,
-        serviceName,
-      })
-    }
-  }, [
-    isDevelopment,
-    pendingServerSelection,
-    specUrls,
-    availableUrls,
-    isServiceNameValid,
-    isAgentMode,
-    isManualMode,
-    packageId,
-    serviceName,
-  ]) // Include all logged variables
-
   // Optimized deferred event dispatch - runs after React completes state update
   useEffect(() => {
-    if (isDevelopment) {
-      console.log('🔄 useEffect pendingServerSelection changed:', pendingServerSelection)
-    }
-
     if (pendingServerSelection) {
-      if (isDevelopment) {
-        console.log('📡 Dispatching selectCustomServer event for:', pendingServerSelection)
-      }
-
       // Dispatch event first using eventBus
       eventBus.selectCreatedCustomServer({ url: pendingServerSelection })
 
       // Clear pending state immediately to prevent re-renders
       setPendingServerSelection(null)
 
-      // Defer dialog closing to next tick to ensure event propagation
-      setTimeout(() => {
-        if (isDevelopment) {
-          console.log('🚪 Closing dialog after event dispatch')
-        }
-        setOpen(false)
-      }, 0)
+      setOpen(false)
     }
-  }, [pendingServerSelection, setOpen, isDevelopment, eventBus])
+  }, [pendingServerSelection, setOpen, eventBus])
 
   // Rendering functions
   const renderSelectUrl = useCallback((
@@ -560,7 +499,11 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
         >
           Add
         </Button>
-        <Button variant="outlined" onClick={() => setOpen(false)} data-testid="CancelButton">
+        <Button
+          variant="outlined"
+          onClick={() => setOpen(false)}
+          data-testid="CancelButton"
+        >
           Cancel
         </Button>
       </DialogActions>
