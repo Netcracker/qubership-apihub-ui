@@ -36,10 +36,10 @@ import type { FC } from 'react'
 import { memo, useCallback, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import {
+  ClientValidationStatuses,
+  getApiQualitySummaryPlaceholder,
   useApiQualityClientValidationStatus,
   useApiQualityLinterEnabled,
-  useApiQualitySummarySectionProperties,
-  useApiQualityValidationFailed,
   useApiQualityValidationSummary,
 } from '../../ApiQualityValidationSummaryProvider'
 import { usePollingForValidationSummaryReadiness } from './usePollingForValidationSummaryReadiness'
@@ -55,6 +55,17 @@ export type OperationTypeSummaryProps = Readonly<{
   unknownAudienceOperationsCount: number
   apiAudienceTransitions: ApiAudienceTransition[]
 }>
+
+const API_QUALITY_PLACEHOLDER_STATUSES = [
+  ClientValidationStatuses.CHECKING,
+  ClientValidationStatuses.IN_PROGRESS,
+  ClientValidationStatuses.NOT_VALIDATED,
+]
+
+const API_QUALITY_RESULTS_STATUSES = [
+  ClientValidationStatuses.FAILED,
+  ClientValidationStatuses.SUCCESS,
+]
 
 export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<OperationTypeSummaryProps>(({
   apiType,
@@ -75,11 +86,11 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
     }
   }, [manualRunLinter, packageId, versionId])
   const linterEnabled = useApiQualityLinterEnabled(apiType)
-  const [clientValidationStatus] = useApiQualityClientValidationStatus()
-  const validationFailed = useApiQualityValidationFailed()
-  const [apiQualitySummaryPlaceholder, apiQualitySummaryDisabled] = useApiQualitySummarySectionProperties(onManualRunLinter)
-  const showApiQualityPlaceholder = apiQualitySummaryPlaceholder && apiQualitySummaryDisabled
-  const showApiQualitySummary = validationFailed || (!apiQualitySummaryPlaceholder && !apiQualitySummaryDisabled)
+  const [clientValidationStatus = ClientValidationStatuses.CHECKING] = useApiQualityClientValidationStatus()
+  const validationFailed = clientValidationStatus === ClientValidationStatuses.FAILED
+  const apiQualitySummaryPlaceholder = getApiQualitySummaryPlaceholder(onManualRunLinter, clientValidationStatus)
+  const showApiQualityPlaceholder = API_QUALITY_PLACEHOLDER_STATUSES.some(status => status === clientValidationStatus)
+  const showApiQualitySummary = API_QUALITY_RESULTS_STATUSES.some(status => status === clientValidationStatus)
   const [validationSummary, refetchValidationSummary] = useApiQualityValidationSummary()
   const validationRulesets = validationSummary?.rulesets ?? []
   const aggregatedValidationSummary: Record<IssueSeverity, number> = useMemo(() => {
@@ -105,7 +116,7 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
     }, emptyValidationSummary)
   }, [validationSummary])
   const documentsWithFailedValidation = useMemo(
-    // TODO 05.09.25 // Change it
+    // TODO 05.09.25 // Adapt for actual status values
     () => (validationSummary?.documents ?? []).reduce((result, document) => {
       if (document.status === 'failed') {
         result.push(document.documentName)

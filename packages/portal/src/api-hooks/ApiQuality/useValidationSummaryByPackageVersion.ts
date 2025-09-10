@@ -3,7 +3,7 @@ import { ValidationStatuses } from '@apihub/entities/api-quality/validation-stat
 import type { Key } from '@apihub/entities/keys'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { generatePath } from 'react-router'
 import type { SetClientValidationStatus } from '../../routes/root/PortalPage/VersionPage/ApiQualityValidationSummaryProvider'
 import { ClientValidationStatuses } from '../../routes/root/PortalPage/VersionPage/ApiQualityValidationSummaryProvider'
@@ -38,8 +38,11 @@ export function useValidationSummaryByPackageVersion(
         case ValidationStatuses.IN_PROGRESS:
           setClientValidationStatus(ClientValidationStatuses.IN_PROGRESS)
           break
+        case ValidationStatuses.FAILED:
+          setClientValidationStatus(ClientValidationStatuses.FAILED)
+          break
         case ValidationStatuses.SUCCESS:
-          setClientValidationStatus(ClientValidationStatuses.VALIDATED)
+          setClientValidationStatus(ClientValidationStatuses.SUCCESS)
           break
       }
     },
@@ -76,4 +79,15 @@ function getValidationSummaryByPackageVersion(
       },
     },
   )
+}
+
+type CallbackInvalidateValidationSummaryByPackageVersion = () => void
+
+export function useInvalidateValidationSummaryByPackageVersion(): CallbackInvalidateValidationSummaryByPackageVersion {
+  const queryClient = useQueryClient()
+  return () => {
+    queryClient.invalidateQueries({
+      queryKey: [QUERY_KEY_VALIDATION_SUMMARY_FOR_PACKAGE_VERSION],
+    })
+  }
 }

@@ -1,15 +1,15 @@
 import { type ValidationSummary } from '@apihub/entities/api-quality/package-version-validation-summary'
-import { ValidationStatuses, type ValidationStatus } from '@apihub/entities/api-quality/validation-statuses'
 import { Link } from '@mui/material'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { API_TYPE_GRAPHQL } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { FC, PropsWithChildren, ReactNode } from 'react'
-import { createContext, memo, useCallback, useContext, useMemo, useState } from 'react'
+import { createContext, memo, useContext } from 'react'
 
 export const ClientValidationStatuses = {
   CHECKING: 'checking',
   IN_PROGRESS: 'in-progress',
-  VALIDATED: 'validated',
+  SUCCESS: 'success',
+  FAILED: 'failed',
   NOT_VALIDATED: 'not-validated',
 } as const
 export type ClientValidationStatus = (typeof ClientValidationStatuses)[keyof typeof ClientValidationStatuses]
@@ -51,91 +51,57 @@ export function useApiQualityClientValidationStatus(): [ClientValidationStatus |
 const NOT_LINTED_API_TYPES: ApiType[] = [API_TYPE_GRAPHQL]
 
 export function useApiQualityLinterEnabled(apiType: ApiType): boolean {
-  const linterEnabled = useContext(ApiQualityLinterEnabledContext) &&
+  const linterEnabled = (
+    useContext(ApiQualityLinterEnabledContext) &&
     !NOT_LINTED_API_TYPES.some(notLintedApiType => notLintedApiType === apiType)
+  )
   return linterEnabled
 }
 
 // High-order hooks
-
-type RunLinter = () => void
-
-export function useApiQualityValidationStatus(): [ValidationStatus | undefined, RunLinter] {
-  const [summary] = useApiQualityValidationSummary()
-  const [overriddenStatus, setOverriddenStatus] = useState<ValidationStatus | undefined>(undefined)
-  const onRunLinter = useCallback(() => {
-    setOverriddenStatus(ValidationStatuses.IN_PROGRESS)
-  }, [])
-  return [
-    useMemo(() => {
-      if (overriddenStatus) {
-        return overriddenStatus
-      }
-      if (!summary) {
-        return undefined
-      }
-      return summary.status
-
-    }, [summary, overriddenStatus]),
-    onRunLinter,
-  ]
-}
 
 export type IsApiQualityTabDisabled = boolean
 export type ApiQualityTabTooltip = string | undefined
 export type ApiQualityTabVisibilityParams = [ApiQualityTabTooltip, IsApiQualityTabDisabled]
 
 export function useApiQualityTabVisibilityParams(): ApiQualityTabVisibilityParams {
-  const [status] = useApiQualityValidationStatus()
-  if (!status) {
-    return [undefined, true]
-  }
+  const [status] = useApiQualityClientValidationStatus()
   switch (status) {
-    case ValidationStatuses.IN_PROGRESS:
+    case ClientValidationStatuses.IN_PROGRESS:
       return ['API quality check is in progress', true]
-    case ValidationStatuses.NOT_VALIDATED:
+    case ClientValidationStatuses.NOT_VALIDATED:
       return ['API quality is not validated', true]
-    case ValidationStatuses.SUCCESS:
+    case ClientValidationStatuses.FAILED:
+    case ClientValidationStatuses.SUCCESS:
       return [undefined, false]
   }
-  return [undefined, false]
+  // just type guard
+  return [undefined, true]
 }
 
+type CallbackRunLinter = () => void
 type ApiQualitySummaryPlaceholder = string | ReactNode | undefined
-type ApiQualitySummaryDisabled = boolean
-type ApiQualitySummarySectionProperties = [ApiQualitySummaryPlaceholder, ApiQualitySummaryDisabled]
 
-export function useApiQualitySummarySectionProperties(
-  onManualRunLinter: RunLinter,
-): ApiQualitySummarySectionProperties {
-  const [status, updateStatus] = useApiQualityValidationStatus()
-  const onManualRunLinterWithStatusUpdate = useCallback(() => {
-    updateStatus()
-    onManualRunLinter()
-  }, [updateStatus, onManualRunLinter])
+export function getApiQualitySummaryPlaceholder(
+  onManualRunLinter: CallbackRunLinter,
+  status: ClientValidationStatus,
+): ApiQualitySummaryPlaceholder {
   switch (status) {
-    case ValidationStatuses.IN_PROGRESS:
-      return ['Validation is in progress, please wait...', true]
-    case ValidationStatuses.NOT_VALIDATED:
-      return [
-        <>
-          No validation results.
-          <br />
-          <Link onClick={onManualRunLinterWithStatusUpdate}>
-            Run Validation
-          </Link>
-        </>,
-        true,
-      ]
-    case ValidationStatuses.SUCCESS:
-      return [undefined, false]
+    case ClientValidationStatuses.CHECKING:
+      return 'Checking validation status...'
+    case ClientValidationStatuses.IN_PROGRESS:
+      return 'Validation is in progress, please wait...'
+    case ClientValidationStatuses.NOT_VALIDATED:
+      return <>
+        No validation results.
+        <br />
+        <Link onClick={onManualRunLinter}>
+          Run Validation
+        </Link>
+      </>
   }
-  return ['Starting validation...', true]
-}
-
-export function useApiQualityValidationFailed(): boolean {
-  const [status] = useApiQualityValidationStatus()
-  return status === ValidationStatuses.FAILED
+  // just type guard
+  return undefined
 }
 
 // Public provider
