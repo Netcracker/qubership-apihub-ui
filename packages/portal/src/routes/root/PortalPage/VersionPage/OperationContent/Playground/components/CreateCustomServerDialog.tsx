@@ -1,4 +1,4 @@
-import { type FC, memo, useCallback, useEffect, useMemo, useState } from 'react'
+import { type FC, memo, useCallback, useEffect, useMemo, useReducer, useState } from 'react'
 import {
   Autocomplete,
   Button,
@@ -87,7 +87,60 @@ type CreateCustomServerForm = {
   [KEY_ADDITIONAL_PATH]?: Key
 }
 
+interface AgentState {
+  selectedCloud: string
+  selectedNamespace: string
+  selectedAgent: string
+  additionalPath: string
+  agentProxyUrl: string
+  agentProxyUrlError: string
+}
+
+type AgentAction =
+  | { type: 'SET_CLOUD'; payload: string }
+  | { type: 'SET_NAMESPACE'; payload: string }
+  | { type: 'SET_AGENT'; payload: string }
+  | { type: 'SET_ADDITIONAL_PATH'; payload: string }
+  | { type: 'SET_PROXY_URL'; payload: string }
+  | { type: 'SET_PROXY_URL_ERROR'; payload: string }
+  | { type: 'RESET_NAMESPACE' }
+  | { type: 'RESET_AGENT' }
+
+const initialAgentState: AgentState = {
+  selectedCloud: '',
+  selectedNamespace: '',
+  selectedAgent: '',
+  additionalPath: '',
+  agentProxyUrl: '',
+  agentProxyUrlError: '',
+}
+
+const agentReducer = (state: AgentState, action: AgentAction): AgentState => {
+  switch (action.type) {
+    case 'SET_CLOUD':
+      return { ...state, selectedCloud: action.payload }
+    case 'SET_NAMESPACE':
+      return { ...state, selectedNamespace: action.payload }
+    case 'SET_AGENT':
+      return { ...state, selectedAgent: action.payload }
+    case 'SET_ADDITIONAL_PATH':
+      return { ...state, additionalPath: action.payload }
+    case 'SET_PROXY_URL':
+      return { ...state, agentProxyUrl: action.payload }
+    case 'SET_PROXY_URL_ERROR':
+      return { ...state, agentProxyUrlError: action.payload }
+    case 'RESET_NAMESPACE':
+      return { ...state, selectedNamespace: '', agentProxyUrlError: '' }
+    case 'RESET_AGENT':
+      return { ...state, selectedAgent: '', agentProxyUrlError: '' }
+    default:
+      return state
+  }
+}
+
 export const CreateCustomServerDialog: FC = memo(() => {
+  CreateCustomServerDialog.displayName = 'CreateCustomServerDialog'
+
   return (
     <PopupDelegate
       type={SHOW_CREATE_CUSTOM_SERVER_DIALOG}
@@ -121,12 +174,14 @@ const buildAgentProxyUrl = (
   })
 }
 
-const isUrlAlreadyExist = (urls: string[], url: string | undefined): boolean => {
+const isUrlAlreadyExist = (urls: readonly string[], url: string | undefined): boolean => {
   if (!url) return true
   return urls.includes(url.trim())
 }
 
 const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }) => {
+  CreateCustomServerPopup.displayName = 'CreateCustomServerPopup'
+
   const eventBus = useEventBus()
   const { packageId = '', versionId, apiType = DEFAULT_API_TYPE, operationId: operationKey } = useParams()
   const [packageObj] = usePackage()
@@ -134,7 +189,16 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const packageKind = packageObj?.kind || PACKAGE_KIND
   const isServiceNameExist = !!serviceName
 
-  // Get operation
+  // Use reducer for related state management
+  const [agentState, dispatch] = useReducer(agentReducer, initialAgentState)
+  const { selectedCloud, selectedNamespace, selectedAgent, additionalPath, agentProxyUrl, agentProxyUrlError } =
+    agentState
+
+  // Single state for deferred server selection
+  const [pendingServerSelection, setPendingServerSelection] = useState<string | null>(null)
+  const [mode, setMode] = useState<ModeType>(MODE_MANUAL)
+
+  // Get operation data
   const { data: operationData } = useOperation({
     packageKey: packageId,
     versionKey: versionId,
@@ -142,53 +206,40 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     apiType: apiType as ApiType,
   })
 
-  // States for selections
-  const [agentProxyUrl, setAgentProxyUrl] = useState<string>('')
-  const [agentProxyUrlError, setAgentProxyUrlError] = useState<string>('')
-  const [selectedCloud, setSelectedCloud] = useState<string>('')
-  const [selectedNamespace, setSelectedNamespace] = useState<string>('')
-  const [selectedAgent, setSelectedAgent] = useState<string>('')
-  const [additionalPath, setAdditionalPath] = useState<string>('')
-
-  // State for deferred server selection event dispatch
-  const [pendingServerSelection, setPendingServerSelection] = useState<string | null>(null)
-
-  // Storing data in local storage
+  // Server management
   const [customServersPackageMap, setCustomServersPackageMap] = useCustomServersPackageMap()
 
-  // Process URLs for duplicate checking
-  const specUrls = useSpecUrls(operationData?.data)
-  const customUrls = useCustomUrls(customServersPackageMap?.[packageId])
-  const availableUrls = useMemo(() => {
-    return [...specUrls, ...customUrls]
-  }, [specUrls, customUrls])
-
-  const firstSpecPath = useFirstSpecPath(specUrls)
-
-  const [mode, setMode] = useState<ModeType>(MODE_MANUAL)
-  const isAgentMode = mode === MODE_AGENT
-  const isManualMode = mode === MODE_MANUAL
-
-  //  Load data for connected fields
+  // API data loading
   const [agents] = useAgents()
-  const clouds = useMemo(() => agents?.map(({ agentDeploymentCloud }) => agentDeploymentCloud), [agents])
+  const [serviceNames] = useServiceNames(selectedAgent, selectedNamespace)
+  const [namespaceObjects] = useNamespaces(selectedAgent)
+
+  const clouds = useMemo(() => agents?.map(({ agentDeploymentCloud }) => agentDeploymentCloud) ?? [], [agents])
+
   const cloudAgentIdMap = useMemo(
     () => new Map(agents.map(({ agentId, agentDeploymentCloud }) => [agentDeploymentCloud, agentId])),
     [agents],
   )
-  useEffect(
-    () => {
-      selectedCloud && cloudAgentIdMap.has(selectedCloud) && setSelectedAgent(cloudAgentIdMap.get(selectedCloud) ?? '')
-      !selectedCloud && setSelectedAgent('')
-    },
-    [cloudAgentIdMap, selectedCloud],
+
+  const namespaces = useMemo(() => namespaceObjects.map((namespace) => namespace.namespaceKey), [namespaceObjects])
+
+  // URL processing
+  const specUrls = useSpecUrls(operationData?.data)
+  const customUrls = useCustomUrls(customServersPackageMap?.[packageId])
+  const availableUrls = useMemo(() => [...specUrls, ...customUrls] as const, [specUrls, customUrls])
+
+  const firstSpecPath = useFirstSpecPath(specUrls)
+  const baseUrl = window.location.origin
+  const isAgentMode = mode === MODE_AGENT
+  const isManualMode = mode === MODE_MANUAL
+
+  // Service validation
+  const isServiceNameValid = useMemo(
+    () => isServiceNameExistInNamespace(serviceNames, serviceName, selectedCloud, selectedNamespace),
+    [selectedCloud, selectedNamespace, serviceName, serviceNames],
   )
 
-  const [serviceNames] = useServiceNames(selectedAgent!, selectedNamespace)
-  const [namespaceObjects] = useNamespaces(selectedAgent!)
-  const namespaces = namespaceObjects.map((namespace) => namespace.namespaceKey)
-
-  // Form initializing
+  // Form setup
   const defaultFormData = useMemo<CreateCustomServerForm>(() => ({
     [KEY_CUSTOM_SERVER_URL]: '',
     [KEY_DESCRIPTION]: '',
@@ -197,49 +248,61 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     [KEY_SERVICE]: serviceName ?? '',
   }), [serviceName])
 
-  const {
-    handleSubmit,
-    control,
-    setValue,
-    clearErrors,
-  } = useForm<CreateCustomServerForm>({
+  const { handleSubmit, control, setValue, clearErrors } = useForm<CreateCustomServerForm>({
     defaultValues: defaultFormData,
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
   })
 
-  const baseUrl = window.location.origin
-
-  useEffect(
-    () => {
-      isServiceNameExist && setAgentProxyUrl(
-        buildAgentProxyUrl(
-          baseUrl,
-          selectedAgent || '<cloud>',
-          selectedNamespace || '<namespace>',
-          serviceName,
-          additionalPath,
-        ),
-      )
-      setAgentProxyUrlError('')
-    },
-    [additionalPath, baseUrl, isServiceNameExist, selectedAgent, selectedNamespace, serviceName],
-  )
-
-  const isServiceNameValid = useMemo(
-    () => isServiceNameExistInNamespace(serviceNames, serviceName, selectedCloud, selectedNamespace),
-    [selectedCloud, selectedNamespace, serviceName, serviceNames],
-  )
-
   const showSuccessNotification = useShowSuccessNotification()
 
-  const addCustomServer = useCallback((formData: CreateCustomServerForm) => {
-    if (!isServiceNameValid) {
-      return
+  // Combined effect for agent-related updates
+  useEffect(() => {
+    // Update agent when cloud changes
+    if (selectedCloud && cloudAgentIdMap.has(selectedCloud)) {
+      dispatch({ type: 'SET_AGENT', payload: cloudAgentIdMap.get(selectedCloud) ?? '' })
+    } else if (!selectedCloud) {
+      dispatch({ type: 'RESET_AGENT' })
     }
 
+    // Update proxy URL when service name exists
+    if (isServiceNameExist) {
+      const url = buildAgentProxyUrl(
+        baseUrl,
+        selectedAgent || '<cloud>',
+        selectedNamespace || '<namespace>',
+        serviceName,
+        additionalPath,
+      )
+      dispatch({ type: 'SET_PROXY_URL', payload: url })
+      dispatch({ type: 'SET_PROXY_URL_ERROR', payload: '' })
+    }
+  }, [
+    selectedCloud,
+    cloudAgentIdMap,
+    baseUrl,
+    isServiceNameExist,
+    selectedAgent,
+    selectedNamespace,
+    serviceName,
+    additionalPath,
+  ])
+
+  // Deferred event dispatch effect
+  useEffect(() => {
+    if (pendingServerSelection) {
+      eventBus.selectCreatedCustomServer({ url: pendingServerSelection })
+      setPendingServerSelection(null)
+      setOpen(false)
+    }
+  }, [pendingServerSelection, setOpen, eventBus])
+
+  // Form submission handler
+  const addCustomServer = useCallback((formData: CreateCustomServerForm) => {
+    if (!isServiceNameValid) return
+
     if (isAgentMode && isUrlAlreadyExist(availableUrls, agentProxyUrl)) {
-      setAgentProxyUrlError(ERROR_SERVER_URL_EXISTS)
+      dispatch({ type: 'SET_PROXY_URL_ERROR', payload: ERROR_SERVER_URL_EXISTS })
       return
     }
 
@@ -251,15 +314,12 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
 
     // Update server list
     setCustomServersPackageMap(packageId, [...customServersPackageMap?.[packageId] ?? [], newServer])
-
-    // Schedule event dispatch for next render cycle (after React state update completes)
     setPendingServerSelection(newServer.url)
 
     showSuccessNotification?.({
       title: SUCCESS_TITLE,
       message: SUCCESS_SERVER_ADDED,
     })
-    // Note: setOpen(false) is now called after event dispatch in useEffect
   }, [
     isServiceNameValid,
     isAgentMode,
@@ -272,23 +332,28 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     showSuccessNotification,
   ])
 
-  // Optimized deferred event dispatch - runs after React completes state update
-  useEffect(() => {
-    if (pendingServerSelection) {
-      // Dispatch event first using eventBus
-      eventBus.selectCreatedCustomServer({ url: pendingServerSelection })
+  // Cloud selection handler
+  const handleCloudChange = useCallback((value: string | null) => {
+    setValue(KEY_CLOUD, value ?? '')
+    dispatch({ type: 'SET_CLOUD', payload: value ?? '' })
+    dispatch({ type: 'RESET_NAMESPACE' })
+  }, [setValue])
 
-      // Clear pending state immediately to prevent re-renders
-      setPendingServerSelection(null)
+  // Namespace selection handler
+  const handleNamespaceChange = useCallback((value: string | null) => {
+    setValue(KEY_NAMESPACE, value ?? '')
+    dispatch({ type: 'SET_NAMESPACE', payload: value ?? '' })
+  }, [setValue])
 
-      setOpen(false)
-    }
-  }, [pendingServerSelection, setOpen, eventBus])
+  // Additional path change handler
+  const handleAdditionalPathChange = useCallback((value: string) => {
+    dispatch({ type: 'SET_ADDITIONAL_PATH', payload: value })
+  }, [])
 
-  // Rendering functions
-  const renderSelectUrl = useCallback((
+  // Render functions - simplified without unnecessary useCallback
+  const renderSelectUrl = (
     { field, fieldState }: ControllerRenderFunctionProps<typeof KEY_CUSTOM_SERVER_URL>,
-  ) => (
+  ): JSX.Element => (
     <ErrorTextField
       field={field}
       fieldState={fieldState}
@@ -297,20 +362,17 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       label={LABEL_SERVER_URL}
       data-testid="ServerUrlTextField"
     />
-  ), [clearErrors])
-
-  const renderDescriptionInput = useCallback(
-    ({ field }: ControllerRenderFunctionProps<typeof KEY_DESCRIPTION>) => (
-      <TextField
-        {...field}
-        label={LABEL_DESCRIPTION}
-        data-testid="DescriptionTextField"
-      />
-    ),
-    [],
   )
 
-  const renderSelectCloud = useCallback(({ field }: ControllerRenderFunctionProps<typeof KEY_CLOUD>) => (
+  const renderDescriptionInput = ({ field }: ControllerRenderFunctionProps<typeof KEY_DESCRIPTION>): JSX.Element => (
+    <TextField
+      {...field}
+      label={LABEL_DESCRIPTION}
+      data-testid="DescriptionTextField"
+    />
+  )
+
+  const renderSelectCloud = ({ field }: ControllerRenderFunctionProps<typeof KEY_CLOUD>): JSX.Element => (
     <Autocomplete
       key="cloudAutocomplete"
       options={clouds}
@@ -322,18 +384,12 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       )}
       isOptionEqualToValue={(option, value) => option === value}
       renderInput={(params) => <TextField {...field} {...params} required label={LABEL_CLOUD} />}
-      onChange={(_, value) => {
-        setValue(KEY_CLOUD, value ?? '')
-        setSelectedCloud(value ?? '')
-        setSelectedNamespace('')
-      }}
+      onChange={(_, value) => handleCloudChange(value)}
       data-testid="CloudAutocomplete"
     />
-  ), [clouds, selectedCloud, setValue, setSelectedCloud, setSelectedNamespace])
+  )
 
-  const renderSelectNamespace = useCallback((
-    { field }: ControllerRenderFunctionProps<typeof KEY_NAMESPACE>,
-  ) => (
+  const renderSelectNamespace = ({ field }: ControllerRenderFunctionProps<typeof KEY_NAMESPACE>): JSX.Element => (
     <Autocomplete
       key="namespaceAutocomplete"
       disabled={!selectedCloud}
@@ -366,17 +422,12 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
           helperText={!isServiceNameValid && ERROR_SERVICE_NOT_FOUND(serviceName!)}
         />
       )}
-      onChange={(_, value) => {
-        setValue(KEY_NAMESPACE, value ?? '')
-        setSelectedNamespace(value ?? '')
-      }}
+      onChange={(_, value) => handleNamespaceChange(value)}
       data-testid="NamespaceAutocomplete"
     />
-  ), [isServiceNameValid, namespaces, selectedCloud, selectedNamespace, serviceName, setValue])
+  )
 
-  const renderSelectService = useCallback((
-    { field }: ControllerRenderFunctionProps<typeof KEY_SERVICE>,
-  ) => (
+  const renderSelectService = ({ field }: ControllerRenderFunctionProps<typeof KEY_SERVICE>): JSX.Element => (
     <TextField
       {...field}
       disabled
@@ -384,11 +435,11 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       label={LABEL_SERVICE}
       data-testid="ServiceTextField"
     />
-  ), [])
+  )
 
-  const renderAdditionalPathInput = useCallback((
+  const renderAdditionalPathInput = (
     { field }: ControllerRenderFunctionProps<typeof KEY_ADDITIONAL_PATH>,
-  ) => (
+  ): JSX.Element => (
     <TextField
       {...field}
       label={LABEL_ADDITIONAL_PATH}
@@ -396,11 +447,11 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
       value={additionalPath}
       onChange={(event) => {
         field.onChange(event)
-        setAdditionalPath(event.target.value)
+        handleAdditionalPathChange(event.target.value)
       }}
       data-testid="AdditionalPathTextField"
     />
-  ), [additionalPath])
+  )
 
   return (
     <DialogForm
@@ -438,26 +489,10 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
         {isAgentMode && (
           <>
             <ServerUrlDisplay serverUrl={agentProxyUrl} errorMessage={agentProxyUrlError} />
-            <Controller
-              name={KEY_CLOUD}
-              control={control}
-              render={renderSelectCloud}
-            />
-            <Controller
-              name={KEY_NAMESPACE}
-              control={control}
-              render={renderSelectNamespace}
-            />
-            <Controller
-              name={KEY_SERVICE}
-              control={control}
-              render={renderSelectService}
-            />
-            <Controller
-              name={KEY_ADDITIONAL_PATH}
-              control={control}
-              render={renderAdditionalPathInput}
-            />
+            <Controller name={KEY_CLOUD} control={control} render={renderSelectCloud} />
+            <Controller name={KEY_NAMESPACE} control={control} render={renderSelectNamespace} />
+            <Controller name={KEY_SERVICE} control={control} render={renderSelectService} />
+            <Controller name={KEY_ADDITIONAL_PATH} control={control} render={renderAdditionalPathInput} />
           </>
         )}
 
@@ -481,11 +516,7 @@ const CreateCustomServerPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
           />
         )}
 
-        <Controller
-          name={KEY_DESCRIPTION}
-          control={control}
-          render={renderDescriptionInput}
-        />
+        <Controller name={KEY_DESCRIPTION} control={control} render={renderDescriptionInput} />
 
         {!!firstSpecPath && <SpecPathWarningAlert path={firstSpecPath} />}
       </DialogContent>
