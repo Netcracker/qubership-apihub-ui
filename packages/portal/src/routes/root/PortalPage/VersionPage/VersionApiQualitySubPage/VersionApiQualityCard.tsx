@@ -100,7 +100,6 @@ export const VersionApiQualityCard: FC = memo(() => {
   const validatedDocuments = useMemo(() => validationSummary?.documents ?? [], [validationSummary])
   const loadingValidatedDocuments = useMemo(() => validationSummary === undefined, [validationSummary])
 
-  // TODO 01.07.25 // Check if this is not re-fetched each time we change format
   const [selectedDocumentContent, loadingSelectedDocumentContent] = usePublishedDocumentRaw({
     packageKey: packageId,
     versionKey: versionId,
