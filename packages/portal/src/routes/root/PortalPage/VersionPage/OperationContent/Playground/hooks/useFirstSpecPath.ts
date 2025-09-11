@@ -1,11 +1,9 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useMemo } from 'react'
 import { isEmpty } from 'lodash'
 import { isAbsoluteHttpUrl } from '@netcracker/qubership-apihub-ui-shared/utils/urls'
 
 export const useFirstSpecPath = (specUrls: string[] | undefined): string => {
-  const [specPath, setSpecPath] = useState<string>('')
-
-  const getFirstSpecPath = useCallback((): string => {
+  return useMemo((): string => {
     if (isEmpty(specUrls)) return ''
 
     for (const url of specUrls!) {
@@ -31,10 +29,4 @@ export const useFirstSpecPath = (specUrls: string[] | undefined): string => {
 
     return ''
   }, [specUrls])
-
-  useEffect(() => {
-    setSpecPath(getFirstSpecPath())
-  }, [specUrls, getFirstSpecPath])
-
-  return specPath
 }

@@ -1,4 +1,4 @@
-import { isEmpty, isObject } from 'lodash'
+import { isObject } from 'lodash'
 import { useMemo } from 'react'
 import {
   useProcessedCustomServers,
@@ -15,22 +15,15 @@ export const useSpecUrls = (document: object | undefined): string[] => {
   const httpOperation = useTransformDocumentToNode(documentString)
   const servers = useProcessedSpecServers(httpOperation?.servers, true)
 
-  return useMemo(() => {
-    if (isEmpty(servers)) {
-      return []
-    }
-
-    return servers.map(server => server.url)
-  }, [servers])
+  return useMemo(() => extractUrlsFromServers(servers), [servers])
 }
 
 export const useCustomUrls = (customServers: PlaygroundCustomServer[] | undefined): string[] => {
   const servers = useProcessedCustomServers(customServers)
 
-  return useMemo(() => {
-    if (isEmpty(customServers)) {
-      return []
-    }
-    return servers.map(server => server.url)
-  }, [customServers, servers])
+  return useMemo(() => extractUrlsFromServers(servers), [servers])
+}
+
+function extractUrlsFromServers(servers: { url: string }[]): string[] {
+  return servers.map(server => server.url)
 }
