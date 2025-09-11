@@ -38,8 +38,8 @@ export function useValidationSummaryByPackageVersion(
         case ValidationStatuses.IN_PROGRESS:
           setClientValidationStatus(ClientValidationStatuses.IN_PROGRESS)
           break
-        case ValidationStatuses.FAILED:
-          setClientValidationStatus(ClientValidationStatuses.FAILED)
+        case ValidationStatuses.ERROR:
+          setClientValidationStatus(ClientValidationStatuses.ERROR)
           break
         case ValidationStatuses.SUCCESS:
           setClientValidationStatus(ClientValidationStatuses.SUCCESS)

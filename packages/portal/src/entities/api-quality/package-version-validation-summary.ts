@@ -12,8 +12,7 @@ export type DocumentValidationSummaryDto = {
   apiType: RulesetApiType
   rulesetId?: RulesetMetadataDto['id']
   issuesSummary?: IssuesSummary
-  // TODO 05.09.25 // Change it
-  status: 'failed' | 'passed' | 'in-progress'
+  status: ValidationStatus
   // TODO 05.09.25 // Change it
   details?: Record<PropertyKey, unknown>
 }

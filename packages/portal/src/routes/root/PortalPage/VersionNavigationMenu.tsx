@@ -66,8 +66,8 @@ import {
   getPackageSettingsPath,
   getVersionPath,
 } from '../../NavigationProvider'
-import type { ApiQualityTabTooltip, IsApiQualityTabDisabled } from './VersionPage/ApiQualityValidationSummaryProvider'
-import { useApiQualityTabVisibilityParams } from './VersionPage/ApiQualityValidationSummaryProvider'
+import type { ApiQualityTabTooltip } from './VersionPage/ApiQualityValidationSummaryProvider'
+import { useApiQualityTabTooltip } from './VersionPage/ApiQualityValidationSummaryProvider'
 import { useOperationsView } from './VersionPage/useOperationsView'
 
 export type VersionNavigationMenuProps = {
@@ -94,7 +94,7 @@ export const VersionNavigationMenu: FC<VersionNavigationMenuProps> = memo<Versio
   const { expandMainMenu, toggleExpandMainMenu, operationsViewMode } = usePortalPageSettingsContext()
   const [operationsView] = useOperationsView(operationsViewMode)
 
-  const [apiQualityTabTooltip, isApiQualityTabDisabled] = useApiQualityTabVisibilityParams()
+  const apiQualityTabTooltip = useApiQualityTabTooltip()
 
   const [currentMenuItem] = useActiveTabs()
   const sidebarMenuItems = useMemo(
@@ -105,10 +105,10 @@ export const VersionNavigationMenu: FC<VersionNavigationMenuProps> = memo<Versio
       {
         linterEnabled: linterEnabled,
         tooltip: apiQualityTabTooltip,
-        tabDisabled: isApiQualityTabDisabled,
+        tabDisabled: !!apiQualityTabTooltip,
       },
     ).filter(({ id }) => menuItems.includes(id)),
-    [defaultApiType, menuItems, previousVersion, productionMode, linterEnabled, apiQualityTabTooltip, isApiQualityTabDisabled],
+    [defaultApiType, menuItems, previousVersion, productionMode, linterEnabled, apiQualityTabTooltip],
   )
   const sidebarServiceMenuItems = useMemo(
     () => getAvailableSidebarServiceMenuItems(showSettings).filter(({ id }) => menuItems.includes(id)),
@@ -199,7 +199,7 @@ const getPagePathsMap = (
 type ApiQualityTabOptions = {
   linterEnabled: boolean
   tooltip: ApiQualityTabTooltip
-  tabDisabled: IsApiQualityTabDisabled
+  tabDisabled: boolean
 }
 
 const getAvailableSidebarMenuItems = (

@@ -9,7 +9,7 @@ export const ClientValidationStatuses = {
   CHECKING: 'checking',
   IN_PROGRESS: 'in-progress',
   SUCCESS: 'success',
-  FAILED: 'failed',
+  ERROR: 'error',
   NOT_VALIDATED: 'not-validated',
 } as const
 export type ClientValidationStatus = (typeof ClientValidationStatuses)[keyof typeof ClientValidationStatuses]
@@ -60,23 +60,19 @@ export function useApiQualityLinterEnabled(apiType: ApiType): boolean {
 
 // High-order hooks
 
-export type IsApiQualityTabDisabled = boolean
 export type ApiQualityTabTooltip = string | undefined
-export type ApiQualityTabVisibilityParams = [ApiQualityTabTooltip, IsApiQualityTabDisabled]
 
-export function useApiQualityTabVisibilityParams(): ApiQualityTabVisibilityParams {
+export function useApiQualityTabTooltip(): ApiQualityTabTooltip {
   const [status] = useApiQualityClientValidationStatus()
   switch (status) {
+    case ClientValidationStatuses.CHECKING:
+      return 'Checking of API quality validation status is in progress'
     case ClientValidationStatuses.IN_PROGRESS:
-      return ['API quality check is in progress', true]
+      return 'API quality check is in progress'
     case ClientValidationStatuses.NOT_VALIDATED:
-      return ['API quality is not validated', true]
-    case ClientValidationStatuses.FAILED:
-    case ClientValidationStatuses.SUCCESS:
-      return [undefined, false]
+      return 'API quality is not validated'
   }
-  // just type guard
-  return [undefined, true]
+  return undefined
 }
 
 type CallbackRunLinter = () => void
@@ -100,7 +96,6 @@ export function getApiQualitySummaryPlaceholder(
         </Link>
       </>
   }
-  // just type guard
   return undefined
 }
 

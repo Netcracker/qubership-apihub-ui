@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import { useAggregatedValidationSummaryByPackageVersion } from '@apihub/api-hooks/ApiQuality/useAggregatedValidationSummaryByPackageVersion'
 import { useManualRunApiQualityValidation } from '@apihub/api-hooks/ApiQuality/useManualRunApiQualityValidation'
 import { ValidationRulesettLink } from '@apihub/components/ApiQuality/ValidatationRulesetLink'
 import { ValidationIssuesTooltip } from '@apihub/components/ApiQuality/ValidationIssuesTooltip'
 import { ISSUE_SEVERITIES_LIST, ISSUE_SEVERITY_COLOR_MAP } from '@apihub/entities/api-quality/issue-severities'
 import type { IssuesSummary } from '@apihub/entities/api-quality/package-version-validation-summary'
 import { RulesetStatuses } from '@apihub/entities/api-quality/rulesets'
+import { ValidationStatuses } from '@apihub/entities/api-quality/validation-statuses'
 import { Box, Link, Tooltip, Typography } from '@mui/material'
 import { API_AUDIENCE_EXTERNAL, API_AUDIENCE_INTERNAL, API_AUDIENCE_UNKNOWN, type ApiAudienceTransition } from '@netcracker/qubership-apihub-api-processor'
 import { Changes } from '@netcracker/qubership-apihub-ui-shared/components/Changes'
@@ -44,7 +46,6 @@ import {
   useApiQualityValidationSummary,
 } from '../../ApiQualityValidationSummaryProvider'
 import { usePollingForValidationSummaryReadiness } from './usePollingForValidationSummaryReadiness'
-import { useAggregatedValidationSummaryByPackageVersion } from '@apihub/api-hooks/ApiQuality/useAggregatedValidationSummaryByPackageVersion'
 
 export type OperationTypeSummaryProps = Readonly<{
   apiType: ApiType
@@ -57,17 +58,6 @@ export type OperationTypeSummaryProps = Readonly<{
   unknownAudienceOperationsCount: number
   apiAudienceTransitions: ApiAudienceTransition[]
 }>
-
-const API_QUALITY_PLACEHOLDER_STATUSES = [
-  ClientValidationStatuses.CHECKING,
-  ClientValidationStatuses.IN_PROGRESS,
-  ClientValidationStatuses.NOT_VALIDATED,
-]
-
-const API_QUALITY_RESULTS_STATUSES = [
-  ClientValidationStatuses.FAILED,
-  ClientValidationStatuses.SUCCESS,
-]
 
 export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<OperationTypeSummaryProps>(({
   apiType,
@@ -90,18 +80,17 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
   }, [manualRunLinter, packageId, versionId])
   const linterEnabled = useApiQualityLinterEnabled(apiType)
   const [clientValidationStatus = ClientValidationStatuses.CHECKING] = useApiQualityClientValidationStatus()
-  const validationFailed = clientValidationStatus === ClientValidationStatuses.FAILED
+  const validationFailed = clientValidationStatus === ClientValidationStatuses.ERROR
   const apiQualitySummaryPlaceholder = getApiQualitySummaryPlaceholder(onManualRunLinter, clientValidationStatus)
-  const showApiQualityPlaceholder = API_QUALITY_PLACEHOLDER_STATUSES.some(status => status === clientValidationStatus)
-  const showApiQualitySummary = API_QUALITY_RESULTS_STATUSES.some(status => status === clientValidationStatus)
+  const showApiQualityPlaceholder = !!apiQualitySummaryPlaceholder
+  const showApiQualitySummary = !apiQualitySummaryPlaceholder
   const [validationSummary, refetchValidationSummary] = useApiQualityValidationSummary()
   const validationRulesets = validationSummary?.rulesets ?? []
   const hasInactiveRulesets = validationRulesets.some(ruleset => ruleset.status === RulesetStatuses.INACTIVE)
   const aggregatedValidationSummary: IssuesSummary = useAggregatedValidationSummaryByPackageVersion(validationSummary)
   const documentsWithFailedValidation = useMemo(
-    // TODO 05.09.25 // Adapt for actual status values
     () => (validationSummary?.documents ?? []).reduce((result, document) => {
-      if (document.status === 'failed') {
+      if (document.status === ValidationStatuses.ERROR) {
         result.push(document.documentName)
       }
       return result
