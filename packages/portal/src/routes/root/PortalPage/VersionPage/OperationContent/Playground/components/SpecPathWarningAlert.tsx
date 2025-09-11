@@ -20,6 +20,6 @@ export const SpecPathWarningAlert: FC<SpecPathWarningAlertProps> = memo(({ path 
     }}
     icon={<InfoContextIcon color="action" />}
   >
-    {`Servers specified directly in the OpenAPI specification contain a path to a specific resource. Make sure the URL you enter is correct and does not contain an additional path (e.g. ${path}).`}
+    {`Servers specified directly in the OpenAPI specification contain a path to a specific resource. Make sure the URL you enter is correct, and you may need to add an additional path (e.g. ${path}).`}
   </Alert>
 ))
