@@ -69,71 +69,158 @@ http {
         }
 
         # ----- Temporarty section for backward compatiblity to handle the following endpoint move to agents-backend:
-        # - Moved from BE
-        # /api/v2/agents
-        # /api/v2/agents
-        # /api/v2/agents/{agentId}/namespaces
-        # /api/v2/agents/{agentId}/namespaces/{name}/serviceNames
-        # /api/v2/agents/{id}
-        # - Moved from NC service
-        # /apihub-nc/api/v1/agents/{agentId}/namespaces
-        # /apihub-nc/api/v2/agents/{agentId}/namespaces/{name}/workspaces/{workspaceId}/discover
-        # /apihub-nc/api/v2/agents/{agentId}/namespaces/{name}/workspaces/{workspaceId}/services
-        # /apihub-nc/api/v2/agents/{agentId}/namespaces/{name}/workspaces/{workspaceId}/snapshots
-        # /apihub-nc/api/v2/agents/{agentId}/namespaces/{name}/workspaces/{workspaceId}/snapshots
-        # /apihub-nc/api/v2/agents/{agentId}/namespaces/{name}/workspaces/{workspaceId}/snapshots/{version}
-        # /apihub-nc/api/v2/agents/{agentId}/namespaces/{name}/workspaces/{workspaceId}/services/{serviceId}/specs/{fileId}
-        # /apihub-nc/api/v2/security/authCheck
-        # /apihub-nc/api/v3/security/authCheck
-        # /apihub-nc/api/v2/security/authCheck/{processId}/status
-        # /apihub-nc/api/v2/security/authCheck/{processId}/report
-        # /apihub-nc/agents/{agentId}/namespaces/{namespace}/services/{serviceId}/proxy/
+        #- API that was migrated from qubership-apihub-backend to qubership-apihub-agents-backend
+        #GET  /api/v2/agents
+        #POST /api/v2/agents
+        #GET  /api/v2/agents/{agentId}/namespaces
+        #GET  /api/v2/agents/{agentId}/namespaces/{namespace}/serviceNames
+        #GET  /api/v2/agents/{id}
+        #     /agents/{agentId}/namespaces/{namespace}/services/{serviceId}/proxy/
+        #
+        #- API that was migrated from custom service(/apihub-nc prefix) to qubership-apihub-agents-backend
+        #GET  /api/v1/agents/{agentId}/namespaces
+        #POST /api/v2/agents/{agentId}/namespaces/{name}/workspaces/{workspaceId}/discover
+        #GET  /api/v2/agents/{agentId}/namespaces/{name}/workspaces/{workspaceId}/services
+        #POST /api/v2/agents/{agentId}/namespaces/{name}/workspaces/{workspaceId}/snapshots
+        #GET  /api/v2/agents/{agentId}/namespaces/{name}/workspaces/{workspaceId}/snapshots
+        #GET  /api/v2/agents/{agentId}/namespaces/{name}/workspaces/{workspaceId}/snapshots/{version}
+        #GET  /api/v2/agents/{agentId}/namespaces/{name}/workspaces/{workspaceId}/services/{serviceId}/specs/{fileId}
+        #POST /api/v2/security/authCheck
+        #GET  /api/v3/security/authCheck
+        #GET  /api/v2/security/authCheck/{processId}/status
+        #GET  /api/v2/security/authCheck/{processId}/report
+        #     /agents/{agentId}/namespaces/{namespace}/services/{serviceId}/proxy/ - agent proxy functionality
+        #
+        #- Remains in nc-service
+        #GET  /api/v1/agents/{agentId}/namespaces/{name}/services (DEPRECATED) (actual GET  /api/v2/agents/{agentId}/namespaces/{namespace}/workspaces/{workspaceId}/services has been moved to the agents-backend)
+        #POST /api/v1/agents/{agentId}/namespaces/{name}/discover (DEPRECATED) (actual POST /api/v2/agents/{agentId}/namespaces/{name}/workspaces/{workspaceId}/discover has been moved to the agents-backend)
+        #POST /api/v1/agents/{agentId}/namespaces/{name}/cip/services
+        #GET  /api/v1/agents/{agentId}/namespaces/{name}/cip/services
+        #POST /api/v1/agents/{agentId}/namespaces/{name}/cip/publish
+        #POST /api/v1/deployment/validations/release/{release}/exclusion
+        #GET  /api/v1/deployment/validations/release/{release}/exclusion
+        #DEL  /api/v1/deployment/validations/release/{release}/exclusion/{exclusion}
+        #POST /api/v1/deployment/validations (DEPRECATED)
+        #POST /api/v2/deployment/validations (DEPRECATED)
+        #GET  /api/v1/deployment/validations/{validationId} (DEPRECATED)
+        #POST /api/v3/qualityGate/validations
+        #GET  /api/v3/qualityGate/validations/{validationId}
+        #POST /email/send
+        #POST /api/v1/agents/{agentId}/namespaces/{name}/settings (DEPRECATED)
+        #GET  /api/v1/agents/{agentId}/namespaces/{name}/settings (DEPRECATED)
+        #POST /api/v2/agents/{agentId}/namespaces/{name}/workspaces/{workspaceId}/settings
+        #GET  /api/v2/agents/{agentId}/namespaces/{name}/workspaces/{workspaceId}/settings
+        #GET  /api/v1/agents/{agentId}/namespaces/{name}/snapshots (DEPRECATED) (actual GET  /api/v2/agents/{agentId}/namespaces/{namespace}/workspaces/{workspaceId}/snapshots has been moved to the agents-backend)
+        #POST /api/v1/agents/{agentId}/namespaces/{name}/snapshots (DEPRECATED) (actual POST /api/v2/agents/{agentId}/namespaces/{namespace}/workspaces/{workspaceId}/snapshots has been moved to the agents-backend)
+        #GET  /api/v1/agents/{agentId}/namespaces/{name}/snapshots/{version} (DEPRECATED) (actual GET  /api/v2/agents/{agentId}/namespaces/{namespace}/workspaces/{workspaceId}/snapshots/{version} has been moved to agents-backend)
+        #GET  /api/v1/agents/{agentId}/namespaces/{name}/services/{serviceId}/specs/{fileId} (DEPRECATED) (actual GET  /api/v2/agents/{agentId}/namespaces/{namespace}/workspaces/{workspaceId}/services/{serviceId}/specs/{fileId} has been moved to agents-backend)
+        #POST /api/v1/agents/{agentId}/namespaces/{name}/security/authCheck (DEPRECATED) (actual POST /api/v2/security/authCheck has been moved to the agents-backend)
+        #GET  /api/v1/agents/{agentId}/namespaces/{name}/security/authCheck (DEPRECATED) (actual GET  /api/v3/security/authCheck has been moved to the agents-backend)
+        #GET  /api/v1/agents/{agentId}/namespaces/{name}/security/authCheck/{processId}/report (DEPRECATED) (actual GET  /api/v2/security/authCheck/{processId}/report has been moved to the agents-backend)
+        #GET  /api/v1/agents/{agentId}/namespaces/{name}/security/authCheck/{processId}/status (DEPRECATED) (actual GET  /api/v2/security/authCheck/{processId}/status has been moved to the agents-backend)
+        #GET  /api/v2/security/authCheck (DEPRECATED) (actual GET  /api/v3/security/authCheck has been moved to the agents-backend)
+        #GET  /api/v1/reports/{reportType}/latest
+        #GET  /api/v1/reports/{reportType}/{reportId}/chain
+        #POST /api/v1/reports/bwc
+        #GET  /api/v1/reports/bwc
+        #GET  /api/v1/reports/bwc/{reportId}
+        #GET  /api/v1/reports/bwc/{reportId}/status
+        #GET  /api/v1/agents/{agentId}/namespaces/{name}/idp
+        #POST /api/v1/agents/{agentId}/namespaces/{name}/idp/token
+        #POST /api/v1/agents/{agentId}/namespaces/{name}/security/exposure (DEPRECATED)
+        #GET  /api/v1/agents/{agentId}/namespaces/{name}/security/exposure (DEPRECATED)
+        #GET  /api/v1/agents/{agentId}/namespaces/{name}/security/exposure/{processId}/report (DEPRECATED)
+        #GET  /api/v1/agents/{agentId}/namespaces/{name}/security/exposure/{processId}/status (DEPRECATED)
+        #GET  /api/v1/agents/{agentId}/namespaces/{name}/security/exposure/{processId}/source (DEPRECATED)
+        #POST /api/v2/agents/{agentId}/namespaces/{name}/security/gatewayRouting (DEPRECATED)
+        #GET  /api/v2/agents/{agentId}/namespaces/{name}/security/gatewayRouting (DEPRECATED)
+        #GET  /api/v2/agents/{agentId}/namespaces/{name}/security/gatewayRouting/{processId}/report (DEPRECATED)
+        #GET  /api/v2/agents/{agentId}/namespaces/{name}/security/gatewayRouting/{processId}/status (DEPRECATED)
+        #GET  /api/v2/agents/{agentId}/namespaces/{name}/security/gatewayRouting/{processId}/source (DEPRECATED)
+        #POST /api/v3/security/gatewayRouting
+        #GET  /api/v3/security/gatewayRouting (DEPRECATED)
+        #GET  /api/v4/security/gatewayRouting
+        #GET  /api/v3/security/gatewayRouting/{processId}/report
+        #GET  /api/v3/security/gatewayRouting/{processId}/status
+        #GET  /api/v3/security/gatewayRouting/{processId}/source
+        #POST /api/v1/reports/apiUploads
+        #GET  /api/v1/reports/apiUploads
+        #GET  /api/v1/reports/apiUploads/{reportId}
+        #GET  /api/v1/reports/apiUploads/{reportId}/status
+        #POST /api/v1/reports/consolidated
+        #GET  /api/v1/reports/consolidated
+        #GET  /api/v1/reports/consolidated/{reportId}
+        #GET  /api/v1/reports/consolidated/{reportId}/status
+        #POST /api/v1/nc/domains
+        #GET  /api/v1/nc/domains
+        #DEL  /api/v1/nc/domains
+        #GET  /api/v1/nc/domains/{domainName}
+        #PUT  /api/v1/nc/domains/{domainName}
+        #POST /api/v1/sd/imports
+        #GET  /api/v1/sd/imports
+        #GET  /api/v2/sd/imports
+        #GET  /api/v1/sd/imports/{importId}/status
+        #GET  /api/v2/sd/imports/{importId}/status
+        #GET  /api/v1/sd/imports/{importId}/report
+        #POST /api/v1/publishValidation
+        #GET  /api/v1/reports/publishValidation
+        #GET  /api/v1/system/info
+        #GET  /v3/api-docs
         # ----- Can be removed after UI adaptation
 
-        location ^~ /api/v2/agents {
-            set $agents_backend_upstream http://${APIHUB_AGENTS_BACKEND_ADDRESS};
+        # /api/v2/agents ... -> agents-backend
+        location ~ ^/api/v2/agents(?:/.*)?$ {
             add_header Cache-Control "no-store" always;
+            set $agents_backend_upstream http://${APIHUB_AGENTS_BACKEND_ADDRESS};
             proxy_pass $agents_backend_upstream;
+
             proxy_connect_timeout 1s;
             proxy_next_upstream off;
             proxy_intercept_errors off;
         }
 
-        location ^~ /apihub-nc/api/v1/agents {
-            set $agents_backend_upstream http://${APIHUB_AGENTS_BACKEND_ADDRESS};
+        # /agents/{agentId}/namespaces/{namespace}/services/{serviceId}/proxy/ -> agents-backend
+        location ~ ^/agents/[^/]+/namespaces/[^/]+/services/[^/]+/proxy/(?:.*)?$ {
             add_header Cache-Control "no-store" always;
-            rewrite ^/apihub-nc/(.*)$ /$1 break;
+            set $agents_backend_upstream http://${APIHUB_AGENTS_BACKEND_ADDRESS};
             proxy_pass $agents_backend_upstream;
+
             proxy_connect_timeout 1s;
             proxy_next_upstream off;
             proxy_intercept_errors off;
         }
 
-        location ^~ /apihub-nc/api/v2/agents {
-            set $agents_backend_upstream http://${APIHUB_AGENTS_BACKEND_ADDRESS};
+        # /apihub-nc/api/v1/agents/{agentId}/namespaces
+        location ~ ^/apihub-nc/api/v1/agents/[^/]+/namespaces/?$ {
             add_header Cache-Control "no-store" always;
+            set $agents_backend_upstream http://${APIHUB_AGENTS_BACKEND_ADDRESS};
             rewrite ^/apihub-nc/(.*)$ /$1 break;
             proxy_pass $agents_backend_upstream;
+
             proxy_connect_timeout 1s;
             proxy_next_upstream off;
             proxy_intercept_errors off;
         }
 
-        location ^~ /apihub-nc/api/v2/security/authCheck {
-            set $agents_backend_upstream http://${APIHUB_AGENTS_BACKEND_ADDRESS};
+        # /apihub-nc/api/v2/agents/{agentId}/namespaces/{name}/workspaces/{workspaceId}/(discover|services|snapshots)
+        location ~ ^/apihub-nc/api/v2/agents/[^/]+/namespaces/[^/]+/workspaces/[^/]+/(?:discover|services(?:/.*)?|snapshots(?:/.*)?)$ {
             add_header Cache-Control "no-store" always;
+            set $agents_backend_upstream http://${APIHUB_AGENTS_BACKEND_ADDRESS};
             rewrite ^/apihub-nc/(.*)$ /$1 break;
             proxy_pass $agents_backend_upstream;
+
             proxy_connect_timeout 1s;
             proxy_next_upstream off;
             proxy_intercept_errors off;
         }
 
-        location ^~ /apihub-nc/agents/ {
-            set $agents_backend_upstream http://${APIHUB_AGENTS_BACKEND_ADDRESS};
+        # /apihub-nc/api/v2|v3/security/authCheck (including /status and /report)
+        location ~ ^/apihub-nc/api/v(2|3)/security/authCheck(?:/.*)?$ {
             add_header Cache-Control "no-store" always;
+            set $agents_backend_upstream http://${APIHUB_AGENTS_BACKEND_ADDRESS};
             rewrite ^/apihub-nc/(.*)$ /$1 break;
             proxy_pass $agents_backend_upstream;
+
             proxy_connect_timeout 1s;
             proxy_next_upstream off;
             proxy_intercept_errors off;
@@ -141,13 +228,13 @@ http {
         # ----- END of temporary section -----
 
 
-        # API endpoints proxifying to backend
+        # API endpoints proxifying to backend. Static upstream resolution
         location ~ ^/(?:api|ws|saml|login/gitlab|login/sso|debug|playground)(?:/.*)?$ {
             add_header Cache-Control "no-store" always;
             proxy_pass http://${APIHUB_BACKEND_ADDRESS};
         }
 
-        # Special section for apihub-nc (rewrite required)
+        # Special section for apihub-nc (rewrite required). Dynamic upstream resolution
         location ^~ /apihub-nc {
             set $apihub_nc_upstream http://${APIHUB_NC_SERVICE_ADDRESS};
 
@@ -161,7 +248,7 @@ http {
             proxy_intercept_errors off;
         }
 
-        # Special section for api-linter (rewrite required)
+        # Special section for api-linter (rewrite required). Dynamic upstream resolution
         location ^~ /api-linter {
             set $api_linter_upstream http://${API_LINTER_SERVICE_ADDRESS};
 
@@ -175,7 +262,7 @@ http {
             proxy_intercept_errors off;
         }
 
-        # Special section for agents-backend (rewrite required)
+        # Special section for agents-backend (rewrite required). Dynamic upstream resolution
         location ^~ /agents-backend {
             set $agents_backend_upstream http://${APIHUB_AGENTS_BACKEND_ADDRESS};
 
