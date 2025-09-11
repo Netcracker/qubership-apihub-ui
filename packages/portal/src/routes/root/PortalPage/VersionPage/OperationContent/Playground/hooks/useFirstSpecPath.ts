@@ -19,6 +19,11 @@ export const useFirstSpecPath = (specUrls: string[] | undefined): string => {
         }
       }
 
+      // Skip root path for relative URLs
+      if (url === '/') {
+        continue
+      }
+
       // Exclude Query-only and Fragment-only paths from relative URLs
       if (url.startsWith('?') || url.startsWith('#')) {
         continue
