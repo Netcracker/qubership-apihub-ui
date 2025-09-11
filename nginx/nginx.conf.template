@@ -235,7 +235,7 @@ http {
         }
 
         # Special section for apihub-nc (rewrite required). Dynamic upstream resolution
-        location ^~ /apihub-nc {
+        location /apihub-nc {
             set $apihub_nc_upstream http://${APIHUB_NC_SERVICE_ADDRESS};
 
             add_header Cache-Control "no-store" always;
