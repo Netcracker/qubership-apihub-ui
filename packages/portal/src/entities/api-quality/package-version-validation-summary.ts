@@ -2,6 +2,8 @@ import type { IssueSeverity } from './issue-severities'
 import type { RulesetApiType, RulesetMetadataDto } from './rulesets'
 import type { ValidationStatus } from './validation-statuses'
 
+export type IssuesSummary = Record<IssueSeverity, number>
+
 // DTO
 
 export type DocumentValidationSummaryDto = {
@@ -9,7 +11,7 @@ export type DocumentValidationSummaryDto = {
   documentName: string
   apiType: RulesetApiType
   rulesetId?: RulesetMetadataDto['id']
-  issuesSummary?: Record<IssueSeverity, number>
+  issuesSummary?: IssuesSummary
   // TODO 05.09.25 // Change it
   status: 'failed' | 'passed' | 'in-progress'
   // TODO 05.09.25 // Change it

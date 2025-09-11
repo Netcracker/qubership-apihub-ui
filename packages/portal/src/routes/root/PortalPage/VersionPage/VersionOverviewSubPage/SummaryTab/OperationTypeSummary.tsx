@@ -17,8 +17,8 @@
 import { useManualRunApiQualityValidation } from '@apihub/api-hooks/ApiQuality/useManualRunApiQualityValidation'
 import { ValidationRulesettLink } from '@apihub/components/ApiQuality/ValidatationRulesetLink'
 import { ValidationIssuesTooltip } from '@apihub/components/ApiQuality/ValidationIssuesTooltip'
-import type { IssueSeverity } from '@apihub/entities/api-quality/issue-severities'
-import { ISSUE_SEVERITIES_LIST, ISSUE_SEVERITY_COLOR_MAP, IssueSeverities } from '@apihub/entities/api-quality/issue-severities'
+import { ISSUE_SEVERITIES_LIST, ISSUE_SEVERITY_COLOR_MAP } from '@apihub/entities/api-quality/issue-severities'
+import type { IssuesSummary } from '@apihub/entities/api-quality/package-version-validation-summary'
 import { RulesetStatuses } from '@apihub/entities/api-quality/rulesets'
 import { Box, Link, Tooltip, Typography } from '@mui/material'
 import { API_AUDIENCE_EXTERNAL, API_AUDIENCE_INTERNAL, API_AUDIENCE_UNKNOWN, type ApiAudienceTransition } from '@netcracker/qubership-apihub-api-processor'
@@ -44,6 +44,7 @@ import {
   useApiQualityValidationSummary,
 } from '../../ApiQualityValidationSummaryProvider'
 import { usePollingForValidationSummaryReadiness } from './usePollingForValidationSummaryReadiness'
+import { useAggregatedValidationSummaryByPackageVersion } from '@apihub/api-hooks/ApiQuality/useAggregatedValidationSummaryByPackageVersion'
 
 export type OperationTypeSummaryProps = Readonly<{
   apiType: ApiType
@@ -79,6 +80,7 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
   unknownAudienceOperationsCount,
   apiAudienceTransitions,
 }) => {
+  // Feature "API Quality Validation"
   const [manualRunLinter] = useManualRunApiQualityValidation()
   const { packageId, versionId } = useParams()
   const onManualRunLinter = useCallback(() => {
@@ -95,28 +97,7 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
   const [validationSummary, refetchValidationSummary] = useApiQualityValidationSummary()
   const validationRulesets = validationSummary?.rulesets ?? []
   const hasInactiveRulesets = validationRulesets.some(ruleset => ruleset.status === RulesetStatuses.INACTIVE)
-  const aggregatedValidationSummary: Record<IssueSeverity, number> = useMemo(() => {
-    const emptyValidationSummary: Record<IssueSeverity, number> = {
-      [IssueSeverities.ERROR]: 0,
-      [IssueSeverities.WARNING]: 0,
-      [IssueSeverities.INFO]: 0,
-      [IssueSeverities.HINT]: 0,
-    }
-    if (!validationSummary || !validationSummary.documents) {
-      return emptyValidationSummary
-    }
-    return validationSummary.documents.reduce((aggregated, currentSummaryRecord) => {
-      const summary = currentSummaryRecord.issuesSummary
-      if (!summary) {
-        return aggregated
-      }
-      aggregated[IssueSeverities.ERROR] += summary.error ?? 0
-      aggregated[IssueSeverities.WARNING] += summary.warning ?? 0
-      aggregated[IssueSeverities.INFO] += summary.info ?? 0
-      aggregated[IssueSeverities.HINT] += summary.hint ?? 0
-      return aggregated
-    }, emptyValidationSummary)
-  }, [validationSummary])
+  const aggregatedValidationSummary: IssuesSummary = useAggregatedValidationSummaryByPackageVersion(validationSummary)
   const documentsWithFailedValidation = useMemo(
     // TODO 05.09.25 // Adapt for actual status values
     () => (validationSummary?.documents ?? []).reduce((result, document) => {
@@ -128,6 +109,7 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
     [validationSummary],
   )
   usePollingForValidationSummaryReadiness(refetchValidationSummary)
+  // Feature "API Quality Validation"
 
   const changeCounter = useMemo(() => changesSummary ?? DEFAULT_CHANGE_SEVERITY_MAP, [changesSummary])
   const affectedOperationCounter = useMemo(() => numberOfImpactedOperations ?? DEFAULT_CHANGE_SEVERITY_MAP, [numberOfImpactedOperations])
