@@ -7,10 +7,14 @@ const POLLING_INTERVAL: number = 10 // Seconds
 export function usePollingForValidationSummaryReadiness(
   refetch: RefetchValidationSummary | undefined,
 ): void {
-  const [status] = useApiQualityClientValidationStatus()
+  const [status, setStatus] = useApiQualityClientValidationStatus()
   const [count, setCount] = useState(5)
   useEffect(() => {
-    if (!refetch || count === 0) {
+    if (!refetch) {
+      return
+    }
+    if (count === 0) {
+      setStatus?.(ClientValidationStatuses.NOT_VALIDATED)
       return
     }
     if (status === ClientValidationStatuses.IN_PROGRESS) {
@@ -19,5 +23,5 @@ export function usePollingForValidationSummaryReadiness(
         setCount(prev => prev - 1)
       }, POLLING_INTERVAL * 1000)
     }
-  }, [status, refetch, count])
+  }, [status, refetch, count, setStatus])
 }

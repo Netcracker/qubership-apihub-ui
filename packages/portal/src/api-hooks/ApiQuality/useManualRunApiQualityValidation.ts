@@ -30,7 +30,7 @@ function manualRunApiQualityValidation(packageId: Key, versionId: Key): Promise<
   const packageKey = encodeURIComponent(packageId)
   const versionKey = encodeURIComponent(versionId)
 
-  const pattern = '/packages/:packageId/versions/:versionId/validation/run'
+  const pattern = '/packages/:packageId/versions/:versionId/validation'
   const endpoint = generatePath(pattern, { packageId: packageKey, versionId: versionKey })
 
   return requestVoid(
