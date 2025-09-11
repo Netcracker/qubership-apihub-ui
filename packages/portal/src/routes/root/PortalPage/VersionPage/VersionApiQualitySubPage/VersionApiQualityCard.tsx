@@ -87,7 +87,7 @@ export const VersionApiQualityCard: FC = memo(() => {
     selectedDocument?.slug ?? '',
   )
 
-  const [validationSummary] = useApiQualityValidationSummary()
+  const validationSummary = useApiQualityValidationSummary()
   const validatedDocuments = useMemo(() => validationSummary?.documents ?? [], [validationSummary])
   const loadingValidatedDocuments = useMemo(() => validationSummary === undefined, [validationSummary])
 

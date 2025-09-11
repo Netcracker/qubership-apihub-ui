@@ -45,7 +45,6 @@ import {
   useApiQualityLinterEnabled,
   useApiQualityValidationSummary,
 } from '../../ApiQualityValidationSummaryProvider'
-import { usePollingForValidationSummaryReadiness } from './usePollingForValidationSummaryReadiness'
 
 export type OperationTypeSummaryProps = Readonly<{
   apiType: ApiType
@@ -84,7 +83,7 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
   const apiQualitySummaryPlaceholder = getApiQualitySummaryPlaceholder(onManualRunLinter, clientValidationStatus)
   const showApiQualityPlaceholder = !!apiQualitySummaryPlaceholder
   const showApiQualitySummary = !apiQualitySummaryPlaceholder
-  const [validationSummary, refetchValidationSummary] = useApiQualityValidationSummary()
+  const validationSummary = useApiQualityValidationSummary()
   const validationRulesets = validationSummary?.rulesets ?? []
   const hasInactiveRulesets = validationRulesets.some(ruleset => ruleset.status === RulesetStatuses.INACTIVE)
   const aggregatedValidationSummary: IssuesSummary = useAggregatedValidationSummaryByPackageVersion(validationSummary)
@@ -97,7 +96,6 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
     }, [] as string[]),
     [validationSummary],
   )
-  usePollingForValidationSummaryReadiness(refetchValidationSummary)
   // Feature "API Quality Validation"
 
   const changeCounter = useMemo(() => changesSummary ?? DEFAULT_CHANGE_SEVERITY_MAP, [changesSummary])

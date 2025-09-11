@@ -40,6 +40,7 @@ import { VersionNavigationMenu } from '../VersionNavigationMenu'
 import type { ClientValidationStatus } from './ApiQualityValidationSummaryProvider'
 import { ApiQualityDataProvider, ClientValidationStatuses } from './ApiQualityValidationSummaryProvider'
 import { OutdatedRevisionNotification } from './OutdatedRevisionNotification/OutdatedRevisionNotification'
+import { usePollingForValidationSummaryReadiness } from './usePollingForValidationSummaryReadiness'
 import { VersionApiChangesSubPage } from './VersionApiChangesSubPage/VersionApiChangesSubPage'
 import { RulesetInfoDialog } from './VersionApiQualitySubPage/components/RulesetInfoDialog/RulesetInfoDialog'
 import { VersionApiQualitySubPage } from './VersionApiQualitySubPage/VersionApiQualitySubPage'
@@ -61,6 +62,7 @@ export const VersionPage: FC = memo(() => {
     data: validationSummary,
     refetch: refetchValidationSummary,
   } = useValidationSummaryByPackageVersion(linterEnabled, packageId!, versionId!, setValidationStatus)
+  usePollingForValidationSummaryReadiness(validationStatus, setValidationStatus, refetchValidationSummary)
 
   return (
     <CurrentPackageProvider value={packageObject}>
@@ -71,7 +73,6 @@ export const VersionPage: FC = memo(() => {
             validationSummary={validationSummary}
             clientValidationStatus={validationStatus}
             setClientValidationStatus={setValidationStatus}
-            refetchValidationSummary={refetchValidationSummary}
           >
             <NoPackagePlaceholder packageObject={packageObject} isLoading={isLoading}>
               <NoPackageVersionPlaceholder packageObject={packageObject}>

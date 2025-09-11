@@ -14,8 +14,6 @@ export const ClientValidationStatuses = {
 } as const
 export type ClientValidationStatus = (typeof ClientValidationStatuses)[keyof typeof ClientValidationStatuses]
 
-type RefetchValidationSummary = () => void
-
 export type SetClientValidationStatus = (status: ClientValidationStatus) => void
 
 // Raw contexts
@@ -24,21 +22,16 @@ export const ApiQualityLinterEnabledContext = createContext<boolean>(false)
 export const ApiQualityValidationSummaryContext = createContext<ValidationSummary | undefined>(undefined)
 export const ClientValidationStatusContext = createContext<ClientValidationStatus>(ClientValidationStatuses.CHECKING)
 export const SetClientValidationStatusContext = createContext<SetClientValidationStatus | undefined>(undefined)
-export const RefetchApiQualityValidationSummaryContext = createContext<RefetchValidationSummary | undefined>(undefined)
 
 type ApiQualityDataProviderProps = PropsWithChildren & {
   linterEnabled: boolean
   validationSummary: ValidationSummary | undefined
-  refetchValidationSummary: RefetchValidationSummary | undefined
   clientValidationStatus: ClientValidationStatus
   setClientValidationStatus: SetClientValidationStatus
 }
 
-export function useApiQualityValidationSummary(): [ValidationSummary | undefined, RefetchValidationSummary | undefined] {
-  return [
-    useContext(ApiQualityValidationSummaryContext),
-    useContext(RefetchApiQualityValidationSummaryContext),
-  ]
+export function useApiQualityValidationSummary(): ValidationSummary | undefined {
+  return useContext(ApiQualityValidationSummaryContext)
 }
 
 export function useApiQualityClientValidationStatus(): [ClientValidationStatus | undefined, SetClientValidationStatus | undefined] {
@@ -108,16 +101,13 @@ export const ApiQualityDataProvider: FC<ApiQualityDataProviderProps> = memo((pro
     validationSummary,
     clientValidationStatus,
     setClientValidationStatus,
-    refetchValidationSummary,
   } = props
   return (
     <ApiQualityLinterEnabledContext.Provider value={linterEnabled}>
       <ClientValidationStatusContext.Provider value={clientValidationStatus}>
         <SetClientValidationStatusContext.Provider value={setClientValidationStatus}>
           <ApiQualityValidationSummaryContext.Provider value={validationSummary}>
-            <RefetchApiQualityValidationSummaryContext.Provider value={refetchValidationSummary}>
-              {children}
-            </RefetchApiQualityValidationSummaryContext.Provider>
+            {children}
           </ApiQualityValidationSummaryContext.Provider>
         </SetClientValidationStatusContext.Provider>
       </ClientValidationStatusContext.Provider>

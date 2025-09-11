@@ -1,13 +1,16 @@
 import type { RefetchValidationSummary } from '@apihub/api-hooks/ApiQuality/useValidationSummaryByPackageVersion'
+import type { Dispatch, SetStateAction } from 'react'
 import { useEffect, useState } from 'react'
-import { ClientValidationStatuses, useApiQualityClientValidationStatus } from '../../ApiQualityValidationSummaryProvider'
+import type { ClientValidationStatus } from './ApiQualityValidationSummaryProvider'
+import { ClientValidationStatuses } from './ApiQualityValidationSummaryProvider'
 
 const POLLING_INTERVAL: number = 10 // Seconds
 
 export function usePollingForValidationSummaryReadiness(
+  status: ClientValidationStatus,
+  setStatus: Dispatch<SetStateAction<ClientValidationStatus>>,
   refetch: RefetchValidationSummary | undefined,
 ): void {
-  const [status, setStatus] = useApiQualityClientValidationStatus()
   const [count, setCount] = useState(5)
   useEffect(() => {
     if (!refetch) {
