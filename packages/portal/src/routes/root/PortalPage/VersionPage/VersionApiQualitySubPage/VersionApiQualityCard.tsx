@@ -3,11 +3,12 @@ import { ValidationRulesettLink } from '@apihub/components/ApiQuality/Validatati
 import { transformIssuesToMarkers } from '@apihub/entities/api-quality/issues'
 import type { DocumentValidationSummary } from '@apihub/entities/api-quality/package-version-validation-summary'
 import { JSON_FILE_FORMAT, YAML_FILE_FORMAT } from '@apihub/entities/file-formats'
-import { Box } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import { ModuleFetchingErrorBoundary } from '@netcracker/qubership-apihub-ui-shared/components/ModuleFetchingErrorBoundary/ModuleFetchingErrorBoundary'
 import { MonacoEditor } from '@netcracker/qubership-apihub-ui-shared/components/MonacoEditor'
+import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder/Placeholder'
 import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'
 import type { SpecItemUri } from '@netcracker/qubership-apihub-ui-shared/utils/specifications'
 import type { FC, ReactNode } from 'react'
@@ -123,57 +124,69 @@ export const VersionApiQualityCard: FC = memo(() => {
   return (
     <BodyCard
       body={
-        <TwoSidedCard
-          leftHeader={
-            <Box
-              display='flex'
-              justifyContent='flex-start'
-              gap={1}
-              width="100%"
-            >
-              <ValidatedDocumentSelector
-                value={selectedDocument}
-                onSelect={onSelectDocument}
-                options={validatedDocuments}
-                loading={loadingValidatedDocuments}
+        <Placeholder
+          invisible={false}
+          area={CONTENT_PLACEHOLDER_AREA}
+          message={
+            <Typography component="div" variant="h6" color="#8F9EB4">
+              API Quality results are not available
+              <br />
+              Please check the Summary tab for validation status
+            </Typography>
+          }
+        >
+          <TwoSidedCard
+            leftHeader={
+              <Box
+                display='flex'
+                justifyContent='flex-start'
+                gap={1}
+                width="100%"
+              >
+                <ValidatedDocumentSelector
+                  value={selectedDocument}
+                  onSelect={onSelectDocument}
+                  options={validatedDocuments}
+                  loading={loadingValidatedDocuments}
+                />
+                <ValidationRulesettLink
+                  data={validationDetails?.ruleset}
+                  loading={loadingValidationDetails}
+                />
+              </Box>
+            }
+            rightHeader={
+              <Toggler<OriginalDocumentFileFormat>
+                mode={format}
+                modes={MONACO_EDITOR_FORMATS}
+                modeToText={MONACO_EDITOR_PRETTY_FORMATS}
+                onChange={onFormatChange}
               />
-              <ValidationRulesettLink
-                data={validationDetails?.ruleset}
+            }
+            leftBody={
+              <ValidationResultsTable
+                data={validationDetails}
                 loading={loadingValidationDetails}
+                onSelectIssue={setSelectedIssuePath}
               />
-            </Box>
-          }
-          rightHeader={
-            <Toggler<OriginalDocumentFileFormat>
-              mode={format}
-              modes={MONACO_EDITOR_FORMATS}
-              modeToText={MONACO_EDITOR_PRETTY_FORMATS}
-              onChange={onFormatChange}
-            />
-          }
-          leftBody={
-            <ValidationResultsTable
-              data={validationDetails}
-              loading={loadingValidationDetails}
-              onSelectIssue={setSelectedIssuePath}
-            />
-          }
-          rightBody={
-            loadingSelectedDocumentContent ? <LoadingIndicator /> : (
-              <ModuleFetchingErrorBoundary>
-                <Box height="100%">
-                  <MonacoEditor
-                    value={transformedSelectedDocumentContent}
-                    type={selectedDocument!.apiType}
-                    language={format}
-                    selectedUri={selectedIssuePath}
-                    markers={selectedDocumentMarkers}
-                  />
-                </Box>
-              </ModuleFetchingErrorBoundary>
-            )
-          }
-        />
+            }
+            rightBody={
+              loadingSelectedDocumentContent ? <LoadingIndicator /> : (
+                <ModuleFetchingErrorBoundary>
+                  <Box height="100%">
+                    <MonacoEditor
+                      value={transformedSelectedDocumentContent}
+                      type={selectedDocument!.apiType}
+                      language={format}
+                      selectedUri={selectedIssuePath}
+                      markers={selectedDocumentMarkers}
+                    />
+                  </Box>
+                </ModuleFetchingErrorBoundary>
+              )
+            }
+          />
+        </Placeholder>
       }
     />
   )
