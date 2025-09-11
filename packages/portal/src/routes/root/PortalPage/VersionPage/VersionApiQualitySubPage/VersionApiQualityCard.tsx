@@ -14,7 +14,7 @@ import type { SpecItemUri } from '@netcracker/qubership-apihub-ui-shared/utils/s
 import type { FC, ReactNode } from 'react'
 import { memo, useCallback, useMemo, useState } from 'react'
 import { useParams } from 'react-router'
-import { useApiQualityValidationSummary } from '../ApiQualityValidationSummaryProvider'
+import { ClientValidationStatuses, useApiQualityValidationSummary } from '../ApiQualityValidationSummaryProvider'
 import { usePublishedDocumentRaw } from '../usePublishedDocumentRaw'
 import type { OriginalDocumentFileFormat } from './types'
 import { useTransformedRawDocumentByFormat } from './utilities/hooks'
@@ -73,6 +73,11 @@ const MONACO_EDITOR_PRETTY_FORMATS = {
   [YAML_FILE_FORMAT]: YAML_FILE_FORMAT.toUpperCase(),
 }
 
+const STATUSES_WITH_AVAILABLE_VALIDATION_SUMMARY = [
+  ClientValidationStatuses.SUCCESS,
+  ClientValidationStatuses.ERROR,
+]
+
 export const VersionApiQualityCard: FC = memo(() => {
   const { packageId, versionId } = useParams()
 
@@ -88,6 +93,10 @@ export const VersionApiQualityCard: FC = memo(() => {
   )
 
   const validationSummary = useApiQualityValidationSummary()
+  const validationSummaryAvailable = useMemo(() => (
+    !!validationSummary &&
+    STATUSES_WITH_AVAILABLE_VALIDATION_SUMMARY.some(status => status === validationSummary.status)
+  ), [validationSummary])
   const validatedDocuments = useMemo(() => validationSummary?.documents ?? [], [validationSummary])
   const loadingValidatedDocuments = useMemo(() => validationSummary === undefined, [validationSummary])
 
@@ -125,7 +134,7 @@ export const VersionApiQualityCard: FC = memo(() => {
     <BodyCard
       body={
         <Placeholder
-          invisible={false}
+          invisible={validationSummaryAvailable}
           area={CONTENT_PLACEHOLDER_AREA}
           message={
             <Typography component="div" variant="h6" color="#8F9EB4">
