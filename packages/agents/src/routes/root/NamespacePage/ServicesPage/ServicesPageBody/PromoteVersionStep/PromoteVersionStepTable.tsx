@@ -48,7 +48,10 @@ import {
 } from '@tanstack/react-table'
 import { ServiceOrDocumentationTableCell } from '../ServiceOrDocumentationTableCell'
 import { BaselinePackageTableCell } from '../BaselinePackageTableCell'
-import { PUBLISH_STATUS_TO_STATUS_MARKER_VARIANT_MAP } from '../../../constants'
+import {
+  PUBLISH_STATUS_TO_STATUS_DESCRIPTION_MAP,
+  PUBLISH_STATUS_TO_STATUS_MARKER_VARIANT_MAP,
+} from '../../../constants'
 import { useSnapshotPublicationInfo } from '../../../useSnapshotPublicationInfo'
 import { useServicePromoteDetails } from './useServicePromoteDetails'
 import ArrowOutwardRoundedIcon from '@mui/icons-material/ArrowOutwardRounded'
@@ -382,7 +385,7 @@ const PromoteVersionDetailsTableCell: FC<PromoteVersionDetailsTableCellProps> = 
   return (
     <Box display="flex" gap={1}>
       <StatusMarker value={PUBLISH_STATUS_TO_STATUS_MARKER_VARIANT_MAP[promoteDetails.status]}/>
-      <Typography noWrap variant="inherit">{promoteDetails.message}</Typography>
+      <Typography noWrap variant="inherit">{PUBLISH_STATUS_TO_STATUS_DESCRIPTION_MAP[promoteDetails.status]}</Typography>
     </Box>
   )
 })
