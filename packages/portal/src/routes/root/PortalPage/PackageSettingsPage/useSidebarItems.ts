@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { PackageSettingsNavItemProps } from './package-settings'
+import type { PackageSettingsNavItemProps, PermissionsTabs } from './package-settings'
 import { PACKAGE_KINDS_NAMES_MAP } from './package-settings'
 import {
   ACCESS_TOKENS_PAGE,
@@ -28,6 +28,7 @@ import { getPackageSettingsPath } from '../../../NavigationProvider'
 import type { Package, PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { DASHBOARD_KIND, GROUP_KIND, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { PackagePermission } from '@netcracker/qubership-apihub-ui-shared/entities/package-permissions'
 import {
   ACCESS_TOKEN_MANAGEMENT_PERMISSION,
   type PackagePermissions, USER_ACCESS_MANAGEMENT_PERMISSION,
@@ -46,11 +47,19 @@ export function useSidebarItems(packageObject: Package): PackageSettingsNavItemP
   if (PACKAGE_KINDS_WITHOUT_API_SPECIFIC_CONFIGURATION.includes(kind)) {
     filters.push(({ value }) => value !== API_SPECIFIC_CONFIGURATION_PAGE)
   }
-  const hasPermissions = (source: PackagePermissions, probe: PackagePermissions | undefined): boolean => {
-    return !probe?.length || probe.some(v => source.includes(v))
+
+  const satisfiesRuleFast = (userPerms: PackagePermissions, rule: PermissionsTabs | undefined): boolean => {
+    const setUserPerms = new Set(userPerms)
+    const has = (p: PackagePermission): boolean => {return setUserPerms.has(p)}
+    const andGroup = (group: PackagePermissions): boolean => {return group.every(has)}
+    const topOr: PermissionsTabs =
+      Array.isArray(rule) && rule.length > 0 && rule.every(x => typeof x === 'string')
+        ? [rule as PackagePermissions]
+        : (rule as PermissionsTabs)
+    return !rule?.length || topOr?.some(item => (typeof item === 'string' ? has(item) : andGroup(item as PackagePermissions)))
   }
 
-  filters.push(({ permissions }) => hasPermissions(packageObject?.permissions ?? [], permissions))
+  filters.push(({ permissions }) => satisfiesRuleFast(packageObject?.permissions ?? [], permissions))
 
   return SETTINGS_SIDEBAR_ITEM(key, kind).filter(item => filters.every(filter => filter(item)))
 }
@@ -87,7 +96,7 @@ const SETTINGS_SIDEBAR_ITEM = (
     label: 'Access Tokens',
     description: `Add a ${packageKind} access token`,
     value: ACCESS_TOKENS_PAGE,
-    permissions: [ACCESS_TOKEN_MANAGEMENT_PERMISSION],
+    permissions: [[ACCESS_TOKEN_MANAGEMENT_PERMISSION, USER_ACCESS_MANAGEMENT_PERMISSION]],
     url: getPackageSettingsPath({ packageKey: packageKey, tab: ACCESS_TOKENS_PAGE }),
   },
   {
