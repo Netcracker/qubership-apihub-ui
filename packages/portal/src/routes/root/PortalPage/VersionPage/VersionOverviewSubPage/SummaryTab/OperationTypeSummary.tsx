@@ -398,7 +398,7 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
                       }
                       placement="right"
                     >
-                      <InfoContextIcon sx={{ fontSize: 16 }} />
+                      <InfoContextIcon fontSize='extra-small' />
                     </Tooltip>
                   </Box>
                 </>}
