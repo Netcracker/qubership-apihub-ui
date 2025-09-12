@@ -42,6 +42,7 @@ export type ExportChangesMenuProps = {
   previousVersion?: string
   previousVersionPackageId?: string
   onDownloadAllChanges?: () => void
+  apiType?: ApiType
 }
 
 export const ExportChangesMenu: FC<ExportChangesMenuProps> = memo(({
@@ -56,13 +57,16 @@ export const ExportChangesMenu: FC<ExportChangesMenuProps> = memo(({
   group,
   previousVersion,
   previousVersionPackageId,
+  apiType: apiTypeProps,
   onDownloadAllChanges: onDownloadAllChangesProps,
 }) => {
-  const { packageId, versionId, apiType = DEFAULT_API_TYPE } = useParams<{
+  const { packageId, versionId, apiType: operationApiTypeInUrl } = useParams<{
     packageId: string
     versionId: string
     apiType: ApiType
   }>()
+
+  const apiType = apiTypeProps ?? operationApiTypeInUrl
 
   const { resolvedGroupName, resolvedEmptyGroup } = useResolvedOperationGroupParameters(group)
 
