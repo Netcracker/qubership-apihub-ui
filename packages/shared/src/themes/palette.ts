@@ -36,6 +36,14 @@ export function createPalette(): PaletteOptions {
       main: '#FFB02E',
     },
     ...CHIP_COLOR_OVERRIDES,
+    ...{
+      hint: {
+        main: '#B4BFCF',
+      },
+      information: { // because 'info' is already taken by MUI
+        main: '#61AAF2',
+      },
+    },
   }
 }
 

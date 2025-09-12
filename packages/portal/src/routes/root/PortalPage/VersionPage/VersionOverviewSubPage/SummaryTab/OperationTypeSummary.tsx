@@ -366,7 +366,7 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
                         <Box key={severity} display="flex" alignItems="center" gap={1}>
                           <Box
                             component="span"
-                            sx={{ background: ISSUE_SEVERITY_COLOR_MAP[severity], width: 8, height: 8, borderRadius: '50%' }}
+                            sx={{ backgroundColor: ISSUE_SEVERITY_COLOR_MAP[severity], width: 8, height: 8, borderRadius: '50%' }}
                           />
                           <Typography variant="body2" component="span" sx={{ fontSize: 13 }}>
                             {aggregatedValidationSummary[severity]}

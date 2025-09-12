@@ -14,8 +14,8 @@ export const ISSUE_SEVERITIES_LIST = [
 
 // TODO 12.09.25 // [Tech Debt] Extract all colors to constants and/or CSS variables, then map MUI custom variants to colors
 export const ISSUE_SEVERITY_COLOR_MAP: Record<IssueSeverity, string> = {
-  [IssueSeverities.INFO]: '#61AAF2',
-  [IssueSeverities.WARNING]: '#FFB02E',
-  [IssueSeverities.ERROR]: '#ED4A54',
-  [IssueSeverities.HINT]: '#B4BFCF',
+  [IssueSeverities.INFO]: 'information.main', // because 'info' is already taken by MUI
+  [IssueSeverities.WARNING]: 'warning.main',
+  [IssueSeverities.ERROR]: 'error.main',
+  [IssueSeverities.HINT]: 'hint.main',
 }
