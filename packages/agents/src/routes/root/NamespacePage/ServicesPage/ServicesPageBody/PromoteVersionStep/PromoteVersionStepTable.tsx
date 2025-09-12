@@ -75,7 +75,10 @@ import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import type { ChangesSummary } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
 import type { Spec } from '@netcracker/qubership-apihub-ui-shared/entities/specs'
 import type { ServiceConfig } from '@apihub/entities/publish-config'
-import { LOADING_STATUS_MARKER_VARIANT, StatusMarker } from '@netcracker/qubership-apihub-ui-shared/components/StatusMarker'
+import {
+  LOADING_STATUS_MARKER_VARIANT,
+  StatusMarker,
+} from '@netcracker/qubership-apihub-ui-shared/components/StatusMarker'
 import { createComponents } from '@netcracker/qubership-apihub-ui-shared/utils/components'
 import { DEFAULT_NUMBER_SKELETON_ROWS } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
 import { useResizeObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useResizeObserver'
@@ -384,8 +387,10 @@ const PromoteVersionDetailsTableCell: FC<PromoteVersionDetailsTableCellProps> = 
 
   return (
     <Box display="flex" gap={1}>
-      <StatusMarker value={PUBLISH_STATUS_TO_STATUS_MARKER_VARIANT_MAP[promoteDetails.status]}/>
-      <Typography noWrap variant="inherit">{PUBLISH_STATUS_TO_STATUS_DESCRIPTION_MAP[promoteDetails.status]}</Typography>
+      <StatusMarker value={PUBLISH_STATUS_TO_STATUS_MARKER_VARIANT_MAP[promoteDetails.status]}
+                    title={promoteDetails.message}/>
+      <Typography noWrap
+                  variant="inherit">{PUBLISH_STATUS_TO_STATUS_DESCRIPTION_MAP[promoteDetails.status]}</Typography>
     </Box>
   )
 })
