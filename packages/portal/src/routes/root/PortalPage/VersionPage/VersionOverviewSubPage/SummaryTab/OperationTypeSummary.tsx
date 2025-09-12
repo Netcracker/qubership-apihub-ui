@@ -325,7 +325,7 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
               )}
 
               {showApiQualitySummary && <>
-                {validationRulesets && <>
+                {validationRulesets.length > 0 && <>
                   <Typography
                     sx={{
                       gridArea: 'validationRulesetTitle',
