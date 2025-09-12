@@ -12,7 +12,7 @@ type CallbackDownloadRuleset = (options: CallbackOptionsDownloadRuleset) => void
 
 function getEndpoint(rulesetId: Key): string {
   const rulesetKey = encodeURIComponent(rulesetId)
-  const pattern = '/rulesets/:rulesetId/download'
+  const pattern = '/rulesets/:rulesetId/data'
   return generatePath(pattern, { rulesetId: rulesetKey })
 }
 
@@ -22,7 +22,7 @@ export function getPublicLink(
   rulesetId: Key,
 ): string {
   const endpoint = getEndpoint(rulesetId)
-  return `${protocol}://${host}${API_LINTER_API_V1}${endpoint}`
+  return `${protocol}//${host}${API_LINTER_API_V1}${endpoint}`
 }
 
 export function useDownloadRuleset(): CallbackDownloadRuleset {
@@ -53,5 +53,5 @@ async function downloadRuleset(rulesetId: Key): Promise<void> {
     .split('filename=')[1]
     .split(';')
 
-  fileDownload(data, filename)
+  fileDownload(data, filename.replace(/"/g, ''))
 }

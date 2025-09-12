@@ -1,4 +1,4 @@
-import { getPublicLink, useDownloadRuleset } from '../../api-hooks/ApiQuality/useDownloadRuleset'
+import { getPublicLink, useDownloadRuleset } from '@apihub/api-hooks/ApiQuality/useDownloadRuleset'
 import type { Key } from '@apihub/entities/keys'
 import { useShowSuccessNotification } from '@apihub/routes/root/BasePage/Notification'
 import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
