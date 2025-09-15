@@ -34,8 +34,10 @@ export const useCreateRuleset = (): [
 
 async function createRuleset(name: string, file: File): Promise<RulesetDto> {
   const formData = new FormData()
-  formData.append('name', name)
-  formData.append('file', file)
+  formData.append('rulesetName', name)
+  formData.append('apiType', 'openapi-3-0')
+  formData.append('linter', 'spectral')
+  formData.append('rulesetFile', file)
 
   return await portalRequestJson<RulesetDto>(
     '/rulesets',

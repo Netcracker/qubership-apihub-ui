@@ -30,7 +30,7 @@ export const useActivateRuleset = (): [
 
 async function activateRuleset(rulesetId: string): Promise<void> {
   const id = encodeURIComponent(rulesetId)
-  const pattern = '/rulesets/:id/activate'
+  const pattern = '/rulesets/:id/activation'
   const endpoint = generatePath(pattern, { id })
   await portalRequestVoid(
     endpoint,

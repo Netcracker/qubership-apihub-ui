@@ -7,6 +7,7 @@ import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/In
 import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import { toDateFormat } from '@netcracker/qubership-apihub-ui-shared/utils/date'
 import { type FC, memo, useMemo } from 'react'
+import { useRulesetActivationHistory } from '@apihub/api-hooks/ApiQuality/useRulesetActivationHistory'
 
 const PLACEHOLDER_DATE = '...'
 
@@ -61,7 +62,8 @@ const ActivationHistoryTooltip: FC<ActivationHistoryTooltipProps> = memo(({ acti
 ActivationHistoryTooltip.displayName = 'ActivationHistoryTooltip'
 
 export const ActivationHistoryContent: FC<ActivationHistoryContentProps> = memo(({ ruleset }) => {
-  const { activationHistory } = ruleset
+  const [data] = useRulesetActivationHistory(ruleset.id)
+  const activationHistory = data?.activationHistory
   const [lastActivation] = activationHistory
   const lastActiveFrom = lastActivation?.activeFrom
   const lastActiveTo = lastActivation?.activeTo

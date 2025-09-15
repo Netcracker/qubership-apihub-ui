@@ -30,13 +30,13 @@ import {
 } from '../../../routes'
 import { getSettingsPath } from '../../NavigationProvider'
 import type { TestableProps } from '@netcracker/qubership-apihub-ui-shared/components/Testable'
-import { useSystemInfo } from '@netcracker/qubership-apihub-ui-shared/features/system-info'
+import { useLinterEnabled } from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
 
 export const SettingsNavigation: FC = memo(() => {
   const activeTab = useActiveTabContentContext()
   const setActiveTab = useSetActiveTabContentContext()
   const navigate = useNavigate()
-  const { linterEnabled } = useSystemInfo()
+  const linterEnabled = useLinterEnabled()
 
   const navigateAndSelect = useCallback((pathToNavigate: To): void => {
     navigate(pathToNavigate)
