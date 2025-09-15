@@ -1,65 +1,19 @@
-import { Box, List, ListItem, ListSubheader, Tooltip, Typography } from '@mui/material'
-import type {
-  Ruleset,
-  RulesetActivation,
-} from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
+import { Box, Tooltip, Typography } from '@mui/material'
+import type { Ruleset } from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
 import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoContextIcon'
-import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import { toDateFormat } from '@netcracker/qubership-apihub-ui-shared/utils/date'
 import { type FC, memo, useMemo } from 'react'
 import { useRulesetActivationHistory } from '@apihub/api-hooks/ApiQuality/useRulesetActivationHistory'
+import { isEmpty } from 'lodash'
+import {
+  ActivationHistoryTooltip,
+} from './ActivationHistoryTooltip'
 
 const PLACEHOLDER_DATE = '...'
-
-const STYLE_TOOLTIP_LIST = {
-  maxHeight: 400,
-  overflowY: 'auto',
-} as const
-
-const STYLE_TOOLTIP_LIST_SUBHEADER_TEXT = {
-  pb: 1,
-} as const
 
 type ActivationHistoryContentProps = {
   readonly ruleset: Ruleset
 }
-
-type ActivationHistoryTooltipProps = {
-  readonly activationHistory: RulesetActivation[]
-}
-
-const ActivationHistoryTooltip: FC<ActivationHistoryTooltipProps> = memo(({ activationHistory }) => {
-  const historicalActivations = useMemo(
-    () => activationHistory.slice(1),
-    [activationHistory],
-  )
-
-  if (isEmpty(historicalActivations)) {
-    return null
-  }
-
-  return (
-    <List sx={STYLE_TOOLTIP_LIST}>
-      <ListSubheader>
-        <Typography variant="subtitle1" sx={STYLE_TOOLTIP_LIST_SUBHEADER_TEXT}>
-          Activation History
-        </Typography>
-      </ListSubheader>
-      {historicalActivations.map(({ activeFrom, activeTo }) => {
-        const key = `${activeFrom}-${activeTo}`
-        return (
-          <ListItem key={key}>
-            <Typography variant="body2">
-              {toDateFormat(activeFrom)} - {toDateFormat(activeTo)}
-            </Typography>
-          </ListItem>
-        )
-      })}
-    </List>
-  )
-})
-
-ActivationHistoryTooltip.displayName = 'ActivationHistoryTooltip'
 
 export const ActivationHistoryContent: FC<ActivationHistoryContentProps> = memo(({ ruleset }) => {
   const [data] = useRulesetActivationHistory(ruleset.id)

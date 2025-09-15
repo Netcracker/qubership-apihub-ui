@@ -1,5 +1,5 @@
 import { Box, capitalize, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
-import { type Ruleset, type RulesetApiType, RulesetStatuses } from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
+import { type Ruleset, RulesetStatuses } from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
 import { CustomTableHeadCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomTableHeadCell'
 import { FormattedDate } from '@netcracker/qubership-apihub-ui-shared/components/FormattedDate'
 import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
@@ -11,7 +11,6 @@ import {
   DEFAULT_CONTAINER_WIDTH,
   useColumnsSizing,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
-import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import { createComponents } from '@netcracker/qubership-apihub-ui-shared/utils/components'
 import { DEFAULT_NUMBER_SKELETON_ROWS } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
 import {
@@ -27,6 +26,7 @@ import type { ColumnDef } from '@tanstack/table-core'
 import { type FC, Fragment, memo, useEffect, useMemo, useRef, useState } from 'react'
 import { ActivationHistoryContent } from './ActivationHistoryContent'
 import { RulesetActions } from './RulesetActions'
+import { isEmpty } from 'lodash'
 
 const RULESET_NAME_COLUMN_ID = 'ruleset-name'
 const ACTIVATION_HISTORY_COLUMN_ID = 'activation-history'
@@ -50,21 +50,15 @@ const STYLE_TABLE_CONTAINER = {
 type RulesetTableProps = {
   rulesets: Ruleset[]
   isLoading: boolean
-  apiType: RulesetApiType
 }
 
 export const RulesetTable: FC<RulesetTableProps> = memo<RulesetTableProps>(({
   rulesets,
   isLoading,
-  apiType,
 }) => {
   const [containerWidth, setContainerWidth] = useState(DEFAULT_CONTAINER_WIDTH)
   const [columnSizingInfo, setColumnSizingInfo] = useState<ColumnSizingInfoState>()
   const [, setHandlingColumnSizing] = useState<ColumnSizingState>()
-
-  const filteredRulesets = useMemo(() => {
-    return rulesets.filter(ruleset => ruleset.apiType === apiType)
-  }, [rulesets, apiType])
 
   const tableContainerRef = useRef<HTMLDivElement>(null)
   useResizeObserver(tableContainerRef, setContainerWidth)
@@ -122,7 +116,7 @@ export const RulesetTable: FC<RulesetTableProps> = memo<RulesetTableProps>(({
   }, [])
 
   const { getHeaderGroups, getRowModel, setColumnSizing } = useReactTable({
-    data: filteredRulesets,
+    data: rulesets,
     columns: columns,
     getCoreRowModel: getCoreRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
@@ -136,7 +130,7 @@ export const RulesetTable: FC<RulesetTableProps> = memo<RulesetTableProps>(({
     [setColumnSizing, actualColumnSizing],
   )
 
-  if (isEmpty(filteredRulesets) && !isLoading) {
+  if (isEmpty(rulesets) && !isLoading) {
     return (
       <Placeholder
         sx={{ width: 'inherit' }}

@@ -8,7 +8,7 @@ import { YAML_FILE_EXTENSION, YML_FILE_EXTENSION } from '@netcracker/qubership-a
 import { checkFileType } from '@netcracker/qubership-apihub-ui-shared/utils/validations'
 import React, { type FC, memo, useCallback, useEffect, useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { useCreateRuleset } from './api/useCreateRuleset'
+import { useCreateRuleset } from '../api/useCreateRuleset'
 
 const DEFAULT_FORM_VALUES: CreateRulesetFormData = {
   name: '',

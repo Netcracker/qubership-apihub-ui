@@ -1,20 +1,32 @@
-import { Box, Button, MenuItem, Select } from '@mui/material'
+import { Box, Button, type SelectChangeEvent } from '@mui/material'
 import { useEventBus } from '@netcracker/qubership-apihub-ui-portal/src/routes/EventBusProvider'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import { PlusIcon } from '@netcracker/qubership-apihub-ui-shared/icons/PlusIcon'
-import { type FC, memo, useState} from 'react'
+import { type FC, memo, useMemo, useState } from 'react'
 import { useRulesets } from './api/useRulesets'
-import { CreateRulesetDialog } from './CreateRulesetDialog'
-import { RulesetTable } from './RulesetTable'
-import { RULESET_API_TYPE_TITLE_MAP, RulesetApiTypes, type RulesetApiType } from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
+import { CreateRulesetDialog } from './components/CreateRulesetDialog'
+import { RulesetTable } from './components/RulesetTable'
+import { RulesetApiTypeSelector } from './components/RulesetApiTypeSelector'
+import {
+  type RulesetApiType,
+  RulesetApiTypes,
+} from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
 
 export const RulesetManagementTab: FC = memo(() => {
   const [rulesets, isLoading] = useRulesets()
   const { showCreateRulesetDialog } = useEventBus()
-  const [apiType, setApiType] = useState<RulesetApiType>(Object.values(RulesetApiTypes)[0])
+  const [selectedApiType, setSelectedApiType] = useState<RulesetApiType>(Object.values(RulesetApiTypes)[0])
+
+  const selectedRulesets = useMemo(() => {
+    return rulesets.filter(ruleset => ruleset.apiType === selectedApiType)
+  }, [rulesets, selectedApiType])
 
   const handleOpenCreateDialog = (): void => {
     showCreateRulesetDialog()
+  }
+
+  const handleChangeApiType = (event: SelectChangeEvent): void => {
+    setSelectedApiType(event.target.value as RulesetApiType)
   }
 
   return (
@@ -23,29 +35,7 @@ export const RulesetManagementTab: FC = memo(() => {
         <>
           <Box display="flex" gap={2} alignItems="center">
             OpenAPI Ruleset Management
-            <Select
-              variant="filled"
-              value={apiType}
-              onChange={(e) => setApiType(e.target.value as RulesetApiType)}
-              data-testid="RulesetTypeSelect"
-              sx={{
-                '& .MuiSelect-select': {
-                  pt: 0.75,
-                  pb: 0.75,
-                },
-                minWidth: '110px',
-              }}
-            >
-              {Object.values(RulesetApiTypes).map(apiType => (
-                <MenuItem
-                  key={apiType}
-                  value={apiType}
-                  data-testid={`MenuItem-${apiType}`}
-                >
-                  {RULESET_API_TYPE_TITLE_MAP[apiType]}
-                </MenuItem>
-              ))}
-            </Select>
+            <RulesetApiTypeSelector apiType={selectedApiType} onChange={handleChangeApiType} />
           </Box>
         </>
       }
@@ -55,15 +45,15 @@ export const RulesetManagementTab: FC = memo(() => {
           disabled={isLoading}
           startIcon={<PlusIcon />}
           onClick={handleOpenCreateDialog}
-          data-testid="AddRulesetButton"
           aria-label="Add new ruleset"
+          data-testid="AddRulesetButton"
         >
           Add Ruleset
         </Button>
       }
       body={
         <>
-          <RulesetTable rulesets={rulesets} isLoading={isLoading} apiType={apiType}/>
+          <RulesetTable rulesets={selectedRulesets} isLoading={isLoading} />
           <CreateRulesetDialog />
         </>
       }

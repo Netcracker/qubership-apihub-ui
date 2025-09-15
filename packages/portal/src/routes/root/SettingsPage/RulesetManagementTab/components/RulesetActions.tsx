@@ -13,8 +13,8 @@ import {
 import { DeleteIconMui } from '@netcracker/qubership-apihub-ui-shared/icons/DeleteIconMui'
 import { PlayIcon } from '@netcracker/qubership-apihub-ui-shared/icons/PlayIcon'
 import { type FC, memo, useState } from 'react'
-import { useActivateRuleset } from './api/useActivateRuleset'
-import { useDeleteRuleset } from './api/useDeleteRuleset'
+import { useActivateRuleset } from '../api/useActivateRuleset'
+import { useDeleteRuleset } from '../api/useDeleteRuleset'
 
 type RulesetActionsProps = {
   ruleset: RulesetDto
@@ -78,7 +78,7 @@ export const RulesetActions: FC<RulesetActionsProps> = memo(({ ruleset }) => {
 
       <ConfirmationDialog
         open={isDeleteDialogOpen}
-        title={`Delete '${ruleset.name}' ruleset?`}
+        title={`Delete "${ruleset.name}" ruleset?`}
         loading={isDeleting}
         onConfirm={handleDelete}
         onCancel={() => setIsDeleteDialogOpen(false)}
