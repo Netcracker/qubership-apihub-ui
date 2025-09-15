@@ -21,7 +21,6 @@ import { useDownloadChangesAsExcel } from './useDownloadChangesAsExcel'
 import { useOrderedComparisonFiltersSummary } from './useOrderedComparisonFiltersSummary'
 import type { ChangeSeverity } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
 import type { ApiAudience, ApiKind } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import {
   useResolvedOperationGroupParameters,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/operation-groups/useResolvedOperationGroupParameters'
@@ -42,7 +41,7 @@ export type ExportChangesMenuProps = {
   previousVersion?: string
   previousVersionPackageId?: string
   onDownloadAllChanges?: () => void
-  apiType?: ApiType
+  apiType: ApiType
 }
 
 export const ExportChangesMenu: FC<ExportChangesMenuProps> = memo(({
