@@ -17,7 +17,8 @@
 import type { OpenApiData } from '@apihub/entities/operation-structure'
 import {
   useApiDiffResult,
-  useIsApiDiffResultLoading, useSetApiDiffResult,
+  useIsApiDiffResultLoading,
+  useSetApiDiffResult,
 } from '@apihub/routes/root/ApiDiffResultProvider'
 import { OperationView } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationView/OperationView'
 import {

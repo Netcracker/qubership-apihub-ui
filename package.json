@@ -34,7 +34,7 @@
     "@netcracker/qubership-apihub-api-processor": "dev",
     "@netcracker/qubership-apihub-api-unifier": "dev",
     "@netcracker/qubership-apihub-api-visitor": "dev",
-    "@netcracker/qubership-apihub-apispec-view": "dev",
+    "@netcracker/qubership-apihub-apispec-view": "bugfix-crash-infinite-additional-props",
     "@netcracker/qubership-apihub-class-view": "1.0.3",
     "@netcracker/qubership-apihub-rest-playground": "dev",
     "@otjs/plaintext": "0.2.2",
