@@ -107,6 +107,7 @@ export const VersionApiChangesSubPage: FC = memo(() => {
         setSearchValue={setSearchValue}
         exportButton={
           <ExportChangesMenu
+            apiType={apiType}
             textFilter={searchValue}
             severityChanges={CHANGE_SEVERITIES}
             kind={apiKindFilter}
