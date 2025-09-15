@@ -54,7 +54,7 @@ export const RulesetManagementTab: FC = memo(() => {
       body={
         <>
           <RulesetTable rulesets={selectedRulesets} isLoading={isLoading} />
-          <CreateRulesetDialog />
+          <CreateRulesetDialog apiType={selectedApiType} rulesets={selectedRulesets} />
         </>
       }
     />
