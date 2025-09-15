@@ -1,5 +1,5 @@
 import { Box, capitalize, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
-import { type Ruleset, RulesetStatuses } from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
+import { type Ruleset, type RulesetApiType, RulesetStatuses } from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
 import { CustomTableHeadCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomTableHeadCell'
 import { FormattedDate } from '@netcracker/qubership-apihub-ui-shared/components/FormattedDate'
 import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
@@ -50,15 +50,21 @@ const STYLE_TABLE_CONTAINER = {
 type RulesetTableProps = {
   rulesets: Ruleset[]
   isLoading: boolean
+  apiType: RulesetApiType
 }
 
 export const RulesetTable: FC<RulesetTableProps> = memo<RulesetTableProps>(({
   rulesets,
   isLoading,
+  apiType,
 }) => {
   const [containerWidth, setContainerWidth] = useState(DEFAULT_CONTAINER_WIDTH)
   const [columnSizingInfo, setColumnSizingInfo] = useState<ColumnSizingInfoState>()
   const [, setHandlingColumnSizing] = useState<ColumnSizingState>()
+
+  const filteredRulesets = useMemo(() => {
+    return rulesets.filter(ruleset => ruleset.apiType === apiType)
+  }, [rulesets, apiType])
 
   const tableContainerRef = useRef<HTMLDivElement>(null)
   useResizeObserver(tableContainerRef, setContainerWidth)
@@ -116,7 +122,7 @@ export const RulesetTable: FC<RulesetTableProps> = memo<RulesetTableProps>(({
   }, [])
 
   const { getHeaderGroups, getRowModel, setColumnSizing } = useReactTable({
-    data: rulesets,
+    data: filteredRulesets,
     columns: columns,
     getCoreRowModel: getCoreRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
@@ -130,7 +136,7 @@ export const RulesetTable: FC<RulesetTableProps> = memo<RulesetTableProps>(({
     [setColumnSizing, actualColumnSizing],
   )
 
-  if (isEmpty(rulesets) && !isLoading) {
+  if (isEmpty(filteredRulesets) && !isLoading) {
     return (
       <Placeholder
         sx={{ width: 'inherit' }}
