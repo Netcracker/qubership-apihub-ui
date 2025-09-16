@@ -48,13 +48,13 @@ export function useSidebarItems(packageObject: Package): PackageSettingsNavItemP
     filters.push(({ value }) => value !== API_SPECIFIC_CONFIGURATION_PAGE)
   }
 
-  const satisfiesRuleFast = (userPerms: PackagePermissions, rule: PackagePermissions | undefined): boolean => {
+  const hasPermissions = (userPerms: PackagePermissions, rule: PackagePermissions | undefined): boolean => {
     if (!rule?.length) {return true}
     const setUserPerms = new Set(userPerms)
     return rule.every(element => setUserPerms.has(element))
   }
 
-  filters.push(({ permissions }) => satisfiesRuleFast(packageObject?.permissions ?? [], permissions))
+  filters.push(({ permissions }) => hasPermissions(packageObject?.permissions ?? [], permissions))
 
   return SETTINGS_SIDEBAR_ITEM(key, kind).filter(item => filters.every(filter => filter(item)))
 }
