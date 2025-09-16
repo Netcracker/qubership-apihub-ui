@@ -24,10 +24,7 @@ import {
   WORKSPACE_KIND,
 } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import type { UserDto } from '@netcracker/qubership-apihub-ui-shared/types/user'
-import type {
-  PackagePermission,
-  PackagePermissions,
-} from '@netcracker/qubership-apihub-ui-shared/entities/package-permissions'
+import type { PackagePermissions } from '@netcracker/qubership-apihub-ui-shared/entities/package-permissions'
 
 export const ADD_CHANGE_ROLE_ACTION = 'add'
 export const REMOVE_CHANGE_ROLE_ACTION = 'remove'
@@ -43,14 +40,12 @@ export const PACKAGE_KINDS_NAMES_MAP: Record<PackageKind, string> = {
   [PACKAGE_KIND]: 'Package',
 }
 
-export type PermissionsTabs = ReadonlyArray<PackagePermission | PackagePermissions>
-
 export type PackageSettingsNavItemProps = Readonly<{
   label: string
   description: string
   value: PackageSettingsPageRoute
   url: To
-  permissions?: PermissionsTabs
+  permissions?: PackagePermissions
 }>
 
 export type PackageSettingsTabProps = Readonly<{
