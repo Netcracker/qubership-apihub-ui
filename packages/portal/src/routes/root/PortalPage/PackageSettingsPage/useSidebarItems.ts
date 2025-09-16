@@ -31,7 +31,8 @@ import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { PackagePermission } from '@netcracker/qubership-apihub-ui-shared/entities/package-permissions'
 import {
   ACCESS_TOKEN_MANAGEMENT_PERMISSION,
-  type PackagePermissions, USER_ACCESS_MANAGEMENT_PERMISSION,
+  type PackagePermissions,
+  USER_ACCESS_MANAGEMENT_PERMISSION,
 } from '@netcracker/qubership-apihub-ui-shared/entities/package-permissions'
 
 const PACKAGE_KINDS_WITHOUT_VERSIONS = [GROUP_KIND, WORKSPACE_KIND]
@@ -49,14 +50,11 @@ export function useSidebarItems(packageObject: Package): PackageSettingsNavItemP
   }
 
   const satisfiesRuleFast = (userPerms: PackagePermissions, rule: PermissionsTabs | undefined): boolean => {
+    if (!rule?.length) {return true}
     const setUserPerms = new Set(userPerms)
-    const has = (p: PackagePermission): boolean => {return setUserPerms.has(p)}
-    const andGroup = (group: PackagePermissions): boolean => {return group.every(has)}
-    const topOr: PermissionsTabs =
-      Array.isArray(rule) && rule.length > 0 && rule.every(x => typeof x === 'string')
-        ? [rule as PackagePermissions]
-        : (rule as PermissionsTabs)
-    return !rule?.length || topOr?.some(item => (typeof item === 'string' ? has(item) : andGroup(item as PackagePermissions)))
+    const checkOrPermission = (p: PackagePermission): boolean => {return setUserPerms.has(p)}
+    const checkAndGroupPermission = (group: PackagePermissions): boolean => {return group.every(checkOrPermission)}
+    return rule?.some(item => (typeof item === 'string' ? checkOrPermission(item) : checkAndGroupPermission(item)))
   }
 
   filters.push(({ permissions }) => satisfiesRuleFast(packageObject?.permissions ?? [], permissions))
