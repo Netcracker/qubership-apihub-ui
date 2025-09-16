@@ -26,6 +26,14 @@ export function createPalette(): PaletteOptions {
       disabled: 'rgba(98, 109, 130, 0.5)', // Corresponds to SECONDARY_TEXT_COLOR with 50% opacity
     },
     ...CHIP_COLOR_OVERRIDES,
+    ...{
+      hint: {
+        main: '#B4BFCF',
+      },
+      information: { // because 'info' is already taken by MUI
+        main: '#61AAF2',
+      },
+    },
   }
 }
 

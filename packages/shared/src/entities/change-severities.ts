@@ -51,6 +51,7 @@ export type ChangesSummary<T extends DiffType | DiffTypeDto = DiffType> = Change
 
 export type ChangeSeverity<T = DiffType> = T
 
+// TODO 12.09.25 // [Tech Debt] Extract all colors to constants and/or CSS variables, then map MUI custom variants to colors
 export const CHANGE_SEVERITY_COLOR_MAP: Record<ChangeSeverity, string> = {
   [breaking]: '#ED4A54',
   [risky]: '#E98554',

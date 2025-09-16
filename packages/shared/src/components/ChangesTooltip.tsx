@@ -61,6 +61,6 @@ const TOOLTIP_TITLE_BY_CATEGORY = {
   [CATEGORY_PACKAGE]: 'Packages',
 }
 
-export type ChangesTooltipCategory = 
-  | typeof CATEGORY_OPERATION 
+export type ChangesTooltipCategory =
+  | typeof CATEGORY_OPERATION
   | typeof CATEGORY_PACKAGE

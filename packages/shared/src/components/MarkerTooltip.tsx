@@ -95,7 +95,7 @@ const MarkerTooltipContent = <
         <Box
           component="span"
           sx={{
-            background: variantToColor[variant],
+            backgroundColor: variantToColor[variant],
             width: 8,
             height: 8,
             borderRadius: '50%',

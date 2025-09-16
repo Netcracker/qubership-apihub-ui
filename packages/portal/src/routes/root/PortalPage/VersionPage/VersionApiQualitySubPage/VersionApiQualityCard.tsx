@@ -36,7 +36,7 @@ const TwoSidedCard: FC<TwoSidedCardProps> = memo<TwoSidedCardProps>((props) => {
 
   return (
     <Box display='flex' flexDirection='column' height="calc(100% - 50px)">
-      <Box display='flex' justifyContent='space-between' alignItems='center' width="100%">
+      <Box display='flex' justifyContent='space-between' alignItems='center' width="100%" mb={1}>
         {leftHeader}
         {rightHeader}
       </Box>
@@ -148,6 +148,7 @@ export const VersionApiQualityCard: FC = memo(() => {
               <Box
                 display='flex'
                 justifyContent='flex-start'
+                alignItems='center'
                 gap={1}
                 width="100%"
               >
