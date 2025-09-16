@@ -46,6 +46,7 @@ export const ActivationHistoryContent: FC<ActivationHistoryContentProps> = memo(
       display="flex"
       gap={1}
       alignItems="center"
+      justifyContent="space-between"
     >
       <Typography variant="body2" component="span">
         {formattedDateRange}
