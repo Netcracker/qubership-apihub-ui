@@ -1,5 +1,9 @@
 import { API_LINTER_API_V1 } from '@netcracker/qubership-apihub-ui-portal/src/api-hooks/ApiQuality/constants'
-import type { RulesetDto } from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
+import type {
+  RulesetApiType,
+  RulesetDto,
+  RulesetLinter,
+} from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
 import {
   useShowSuccessNotification,
 } from '@netcracker/qubership-apihub-ui-portal/src/routes/root/BasePage/Notification'
@@ -9,8 +13,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { QUERY_KEY_RULESETS } from './useRulesets'
 
 type CreateRulesetRequest = {
-  name: string
-  file: File
+  rulesetName: string
+  apiType: RulesetApiType
+  linter: RulesetLinter
+  rulesetFile: File
 }
 
 export const useCreateRuleset = (): [
@@ -22,7 +28,7 @@ export const useCreateRuleset = (): [
   const showNotification = useShowSuccessNotification()
 
   const { mutate, isLoading, isSuccess } = useMutation<RulesetDto, Error, CreateRulesetRequest>({
-    mutationFn: ({ name, file }) => createRuleset(name, file),
+    mutationFn: (rulesetParams) => createRuleset(rulesetParams),
     onSuccess: async (data) => {
       showNotification({ message: `${data.name} ruleset has been created` })
       await queryClient.invalidateQueries({ queryKey: [QUERY_KEY_RULESETS] })
@@ -32,12 +38,13 @@ export const useCreateRuleset = (): [
   return [mutate, isLoading, isSuccess]
 }
 
-async function createRuleset(name: string, file: File): Promise<RulesetDto> {
+async function createRuleset(rulesetParams: CreateRulesetRequest): Promise<RulesetDto> {
+  const { rulesetName, apiType, linter, rulesetFile } = rulesetParams
   const formData = new FormData()
-  formData.append('rulesetName', name)
-  formData.append('apiType', 'openapi-3-0')
-  formData.append('linter', 'spectral')
-  formData.append('rulesetFile', file)
+  formData.append('rulesetName', rulesetName)
+  formData.append('apiType', apiType)
+  formData.append('linter', linter)
+  formData.append('rulesetFile', rulesetFile)
 
   return await portalRequestJson<RulesetDto>(
     '/rulesets',

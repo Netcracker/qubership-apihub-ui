@@ -9,9 +9,13 @@ import { checkFileType } from '@netcracker/qubership-apihub-ui-shared/utils/vali
 import { type FC, memo, useCallback, useEffect, useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useCreateRuleset } from '../api/useCreateRuleset'
-import type { Ruleset, RulesetApiType } from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
-import { RULESET_API_TYPE_TITLE_MAP } from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
-import { ErrorTextField } from '@apihub/components/ErrorTextField'
+import {
+  type Ruleset,
+  type RulesetApiType,
+  RulesetLinters,
+  RULESET_API_TYPE_TITLE_MAP,
+} from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
+import { ErrorTextField } from '@netcracker/qubership-apihub-ui-portal/src/components/ErrorTextField'
 
 const DEFAULT_FORM_VALUES: CreateRulesetFormData = {
   name: '',
@@ -64,6 +68,29 @@ const CreateRulesetPopup: FC<CreateRulesetPopupProps> = memo<CreateRulesetPopupP
       },
     }), [apiType, rulesets])
 
+    const handleClose = useCallback((): void => {
+      setOpen(false)
+    }, [setOpen])
+
+    const handleCreateRuleset = useCallback((data: CreateRulesetFormData): void => {
+      const { name, file } = data
+
+      if (!name || !file) {
+        return
+      }
+
+      createRuleset({
+        rulesetName: name,
+        apiType: apiType,
+        linter: RulesetLinters.SPECTRAL,
+        rulesetFile: file,
+      })
+    }, [apiType, createRuleset])
+
+    const isSubmitDisabled = useMemo(() => {
+      return !watchedValues.name || !watchedValues.file || isCreating
+    }, [watchedValues.name, watchedValues.file, isCreating])
+
     useEffect(() => {
       if (isCreated) {
         setOpen(false)
@@ -76,26 +103,11 @@ const CreateRulesetPopup: FC<CreateRulesetPopupProps> = memo<CreateRulesetPopupP
       }
     }, [open, reset])
 
-    const handleClose = useCallback((): void => {
-      setOpen(false)
-    }, [setOpen])
-
-    const onSubmit = useCallback((data: CreateRulesetFormData): void => {
-      if (!data.name || !data.file) {
-        return
-      }
-      createRuleset({ name: data.name, file: data.file })
-    }, [createRuleset])
-
-    const isSubmitDisabled = useMemo(() => {
-      return !watchedValues.name || !watchedValues.file || isCreating
-    }, [watchedValues.name, watchedValues.file, isCreating])
-
     return (
       <DialogForm
         open={open}
         onClose={handleClose}
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(handleCreateRuleset)}
       >
         <DialogTitle>{`Create Ruleset for ${RULESET_API_TYPE_TITLE_MAP[apiType]}`}</DialogTitle>
         <DialogContent>
