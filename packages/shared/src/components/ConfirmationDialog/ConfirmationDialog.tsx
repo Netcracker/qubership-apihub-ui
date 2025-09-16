@@ -1,10 +1,10 @@
-import { type FC, memo, useEffect } from 'react'
-import { Box, Button, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton } from '@mui/material'
 import { LoadingButton } from '@mui/lab'
+import { Box, Button, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton } from '@mui/material'
 import type { ButtonPropsColorOverrides } from '@mui/material/Button/Button'
 import type { OverridableStringUnion } from '@mui/types'
-import { DialogForm } from '../DialogForm'
+import { type FC, memo, useEffect } from 'react'
 import { CloseIcon } from '../../icons/CloseIcon'
+import { DialogForm } from '../DialogForm'
 
 const STYLE_DIALOG_TITLE = {
   px: 2.5,
@@ -107,9 +107,7 @@ function useCloseOnSuccess(
   onClose?: () => void,
 ): void {
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    loading === false && onClose?.()
-  }, [loading])
+  useEffect(() => { loading === false && onClose?.() }, [loading])
 }
 
 type ButtonColor = OverridableStringUnion<

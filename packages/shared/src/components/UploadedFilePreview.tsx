@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo } from 'react'
 import { Box, IconButton } from '@mui/material'
 import Typography from '@mui/material/Typography'
+import { type FC, memo } from 'react'
 import { DeleteIcon } from '../icons/DeleteIcon'
 import { FileIcon } from '../icons/FileIcon'
+import { DEFAULT_TEXT_COLOR } from '../themes/colors'
 
 export type UploadedFilePreviewProps = {
   file: File
@@ -45,7 +45,7 @@ export const UploadedFilePreview: FC<UploadedFilePreviewProps> = memo<UploadedFi
         <Typography variant="subtitle2" fontSize={13} color={color}>{file.name}</Typography>
       </Box>
       <IconButton onClick={onDelete} sx={{ ml: 'auto' }} data-testid="DeleteButton">
-        <DeleteIcon color="#353C4E" />
+        <DeleteIcon color={DEFAULT_TEXT_COLOR} />
       </IconButton>
     </Box>
   )
