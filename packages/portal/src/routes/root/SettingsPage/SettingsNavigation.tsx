@@ -125,8 +125,8 @@ const SETTINGS_SIDEBAR_ITEMS: SettingsNavItemProps[] = [
     'data-testid': 'SystemTokensTabButton',
   },
   {
-    label: 'OpenAPI Ruleset Management',
-    description: 'Manage OpenAPI quality rulesets',
+    label: 'API Quality Ruleset Management',
+    description: 'Manage quality rulesets',
     value: RULESET_MANAGEMENT_PAGE,
     url: getSettingsPath({ tab: RULESET_MANAGEMENT_PAGE }),
     'data-testid': 'RulesetManagementTabButton',

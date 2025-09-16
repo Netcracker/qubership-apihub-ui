@@ -34,7 +34,7 @@ export const RulesetManagementTab: FC = memo(() => {
       header={
         <>
           <Box display="flex" gap={2} alignItems="center">
-            OpenAPI Ruleset Management
+            API Quality Ruleset Management
             <RulesetApiTypeSelector apiType={selectedApiType} onChange={handleChangeApiType} />
           </Box>
         </>
