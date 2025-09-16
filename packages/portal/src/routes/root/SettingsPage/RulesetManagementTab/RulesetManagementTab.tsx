@@ -15,7 +15,7 @@ import {
 export const RulesetManagementTab: FC = memo(() => {
   const [rulesets, isLoading] = useRulesets()
   const { showCreateRulesetDialog } = useEventBus()
-  const [selectedApiType, setSelectedApiType] = useState<RulesetApiType>(Object.values(RulesetApiTypes)[0])
+  const [selectedApiType, setSelectedApiType] = useState<RulesetApiType>(RulesetApiTypes.OAS_3_0)
 
   const selectedRulesets = useMemo(() => {
     return rulesets.filter(ruleset => ruleset.apiType === selectedApiType)
