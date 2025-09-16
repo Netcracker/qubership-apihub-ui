@@ -40,7 +40,7 @@ export const RulesetActions: FC<RulesetActionsProps> = memo(({ ruleset }) => {
       <Box display="flex" gap={2} visibility="hidden" className="hoverable" alignItems="center">
         <ButtonWithHint
           size="small"
-          area-label="Activate Ruleset"
+          aria-label="Activate Ruleset"
           hint={ruleset.status === RulesetStatuses.ACTIVE ? 'The ruleset is already active' : 'Activate'}
           disabled={ruleset.status === RulesetStatuses.ACTIVE}
           startIcon={<PlayIcon fontSize="small" />}
@@ -52,7 +52,7 @@ export const RulesetActions: FC<RulesetActionsProps> = memo(({ ruleset }) => {
 
         <ButtonWithHint
           size="small"
-          area-label="Delete Ruleset"
+          aria-label="Delete Ruleset"
           hint={ruleset.status === RulesetStatuses.ACTIVE
             ? 'Cannot delete active ruleset'
             : ruleset.canBeDeleted

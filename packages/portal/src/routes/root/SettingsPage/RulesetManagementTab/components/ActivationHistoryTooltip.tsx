@@ -1,9 +1,8 @@
-import type { FC} from 'react'
-import { memo, useMemo } from 'react'
-import { isEmpty } from 'lodash'
 import { List, ListItem, ListSubheader, Typography } from '@mui/material'
-import { toDateFormat } from '@netcracker/qubership-apihub-ui-shared/utils/date'
 import type { RulesetActivation } from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
+import { toDateFormat } from '@netcracker/qubership-apihub-ui-shared/utils/date'
+import { isEmpty } from 'lodash'
+import { type FC, memo, useMemo } from 'react'
 
 type ActivationHistoryTooltipProps = {
   readonly activationHistory: RulesetActivation[]

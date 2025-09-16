@@ -1,5 +1,12 @@
 import { LoadingButton } from '@mui/lab'
 import { Button, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
+import { ErrorTextField } from '@netcracker/qubership-apihub-ui-portal/src/components/ErrorTextField'
+import {
+  type Ruleset,
+  RULESET_API_TYPE_TITLE_MAP,
+  type RulesetApiType,
+  RulesetLinters,
+} from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
 import { SHOW_CREATE_RULESET_DIALOG } from '@netcracker/qubership-apihub-ui-portal/src/routes/EventBusProvider'
 import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 import { FileUploadField } from '@netcracker/qubership-apihub-ui-shared/components/FileUploadField'
@@ -9,13 +16,6 @@ import { checkFileType } from '@netcracker/qubership-apihub-ui-shared/utils/vali
 import { type FC, memo, useCallback, useEffect, useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useCreateRuleset } from '../api/useCreateRuleset'
-import {
-  type Ruleset,
-  type RulesetApiType,
-  RulesetLinters,
-  RULESET_API_TYPE_TITLE_MAP,
-} from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
-import { ErrorTextField } from '@netcracker/qubership-apihub-ui-portal/src/components/ErrorTextField'
 
 const DEFAULT_FORM_VALUES: CreateRulesetFormData = {
   name: '',

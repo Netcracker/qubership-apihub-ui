@@ -23,10 +23,10 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/table-core'
+import { isEmpty } from 'lodash'
 import { type FC, Fragment, memo, useEffect, useMemo, useRef, useState } from 'react'
 import { ActivationHistoryContent } from './ActivationHistoryContent'
 import { RulesetActions } from './RulesetActions'
-import { isEmpty } from 'lodash'
 
 const RULESET_NAME_COLUMN_ID = 'ruleset-name'
 const ACTIVATION_HISTORY_COLUMN_ID = 'activation-history'

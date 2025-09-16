@@ -1,8 +1,6 @@
 import { API_LINTER_API_V1 } from '@netcracker/qubership-apihub-ui-portal/src/api-hooks/ApiQuality/constants'
 import type { Ruleset } from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
-import {
-  useShowSuccessNotification,
-} from '@netcracker/qubership-apihub-ui-portal/src/routes/root/BasePage/Notification'
+import { useShowSuccessNotification } from '@netcracker/qubership-apihub-ui-portal/src/routes/root/BasePage/Notification'
 import { portalRequestVoid } from '@netcracker/qubership-apihub-ui-portal/src/utils/requests'
 import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { useMutation, useQueryClient } from '@tanstack/react-query'

@@ -1,7 +1,11 @@
+import { MenuItem, Select, type SelectChangeEvent } from '@mui/material'
+import {
+  RULESET_API_TYPE_TITLE_MAP,
+  type RulesetApiType,
+  RulesetApiTypes,
+} from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
 import type { FC } from 'react'
 import { memo } from 'react'
-import { MenuItem, Select, type SelectChangeEvent } from '@mui/material'
-import { RULESET_API_TYPE_TITLE_MAP, type RulesetApiType, RulesetApiTypes } from '@apihub/entities/api-quality/rulesets'
 
 type RulesetApiTypeSelectorProps = {
   apiType: RulesetApiType
@@ -17,7 +21,7 @@ export const RulesetApiTypeSelector: FC<RulesetApiTypeSelectorProps> = memo<Rule
       variant="filled"
       value={apiType}
       onChange={onChange}
-      data-testid="RulesetTypeSelect"
+      inputProps={{ 'aria-label': 'API Type' }}
       sx={{
         '& .MuiSelect-select': {
           pt: 0.75,
@@ -32,6 +36,7 @@ export const RulesetApiTypeSelector: FC<RulesetApiTypeSelectorProps> = memo<Rule
           },
         },
       }}
+      data-testid="RulesetTypeSelect"
     >
       {Object.values(RulesetApiTypes).map(apiType => (
         <MenuItem

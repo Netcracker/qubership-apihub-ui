@@ -4,9 +4,7 @@ import type {
   RulesetDto,
   RulesetLinter,
 } from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
-import {
-  useShowSuccessNotification,
-} from '@netcracker/qubership-apihub-ui-portal/src/routes/root/BasePage/Notification'
+import { useShowSuccessNotification } from '@netcracker/qubership-apihub-ui-portal/src/routes/root/BasePage/Notification'
 import { portalRequestJson } from '@netcracker/qubership-apihub-ui-portal/src/utils/requests'
 import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { useMutation, useQueryClient } from '@tanstack/react-query'

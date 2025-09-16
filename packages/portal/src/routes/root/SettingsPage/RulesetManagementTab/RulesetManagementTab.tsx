@@ -1,16 +1,16 @@
 import { Box, Button, type SelectChangeEvent } from '@mui/material'
+import {
+  type RulesetApiType,
+  RulesetApiTypes,
+} from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
 import { useEventBus } from '@netcracker/qubership-apihub-ui-portal/src/routes/EventBusProvider'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import { PlusIcon } from '@netcracker/qubership-apihub-ui-shared/icons/PlusIcon'
 import { type FC, memo, useMemo, useState } from 'react'
 import { useRulesets } from './api/useRulesets'
 import { CreateRulesetDialog } from './components/CreateRulesetDialog'
-import { RulesetTable } from './components/RulesetTable'
 import { RulesetApiTypeSelector } from './components/RulesetApiTypeSelector'
-import {
-  type RulesetApiType,
-  RulesetApiTypes,
-} from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
+import { RulesetTable } from './components/RulesetTable'
 
 export const RulesetManagementTab: FC = memo(() => {
   const [rulesets, isLoading] = useRulesets()

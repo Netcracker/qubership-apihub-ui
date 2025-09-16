@@ -1,13 +1,11 @@
 import { Box, Tooltip, Typography } from '@mui/material'
+import { useRulesetActivationHistory } from '@netcracker/qubership-apihub-ui-portal/src/api-hooks/ApiQuality/useRulesetActivationHistory'
 import type { Ruleset } from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
 import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoContextIcon'
 import { toDateFormat } from '@netcracker/qubership-apihub-ui-shared/utils/date'
-import { type FC, memo, useMemo } from 'react'
-import { useRulesetActivationHistory } from '@apihub/api-hooks/ApiQuality/useRulesetActivationHistory'
 import { isEmpty } from 'lodash'
-import {
-  ActivationHistoryTooltip,
-} from './ActivationHistoryTooltip'
+import { type FC, memo, useMemo } from 'react'
+import { ActivationHistoryTooltip } from './ActivationHistoryTooltip'
 
 const PLACEHOLDER_DATE = '...'
 
@@ -54,8 +52,9 @@ export const ActivationHistoryContent: FC<ActivationHistoryContentProps> = memo(
       {hasMultipleActivations && (
         <Tooltip
           title={tooltipContent}
+          describeChild
         >
-          <InfoContextIcon color="action" fontSize="extra-small" />
+          <InfoContextIcon color="action" fontSize="extra-small" titleAccess="Activation history details" />
         </Tooltip>
       )}
     </Box>
