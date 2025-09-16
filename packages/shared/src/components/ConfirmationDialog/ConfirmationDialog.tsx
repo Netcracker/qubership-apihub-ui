@@ -1,27 +1,28 @@
-import type { FC } from 'react'
-import { memo, useEffect } from 'react'
-import { Button, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material'
+import { type FC, memo, useEffect } from 'react'
+import { Box, Button, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton } from '@mui/material'
 import { LoadingButton } from '@mui/lab'
 import type { ButtonPropsColorOverrides } from '@mui/material/Button/Button'
 import type { OverridableStringUnion } from '@mui/types'
 import { DialogForm } from '../DialogForm'
+import { CloseIcon } from '../../icons/CloseIcon'
 
 const STYLE_DIALOG_TITLE = {
-  fontSize: '13px',
-  px: 1.5,
-  py: 1.3,
+  px: 2.5,
+  pt: 2.5,
+  pb: 0.5,
 }
 
 const STYLE_DIALOG_CONTENT = {
-  minWidth: 240,
-  width: '100%',
-  px: 1.5,
-  pb: 1,
+  minWidth: 420,
+  pl: 2.5,
+  pr: 6.5,
+  pb: 0.5,
 }
 
 const STYLE_DIALOG_ACTIONS = {
-  px: 1.5,
-  py: 1.3,
+  px: 2.5,
+  pt: 1.5,
+  pb: 2.5,
 }
 
 export type ConfirmationDialogProps = {
@@ -51,12 +52,20 @@ export const ConfirmationDialog: FC<ConfirmationDialogProps> = memo<Confirmation
     <DialogForm
       open={open}
       onClose={onCancel}
-      maxWidth="xxs"
+      width="420px"
     >
       <DialogTitle
         sx={STYLE_DIALOG_TITLE}
       >
-        {title}
+        <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+          {title}
+          <IconButton
+            onClick={onCancel}
+            sx={{ p: 0 }}
+          >
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </Box>
       </DialogTitle>
 
       {message && (
@@ -73,7 +82,6 @@ export const ConfirmationDialog: FC<ConfirmationDialogProps> = memo<Confirmation
       <DialogActions sx={STYLE_DIALOG_ACTIONS}>
         <LoadingButton
           variant="contained"
-          size="extra-small"
           color={confirmButtonColor}
           loading={loading}
           onClick={onConfirm}
@@ -83,7 +91,6 @@ export const ConfirmationDialog: FC<ConfirmationDialogProps> = memo<Confirmation
         </LoadingButton>
         <Button
           variant="outlined"
-          size="extra-small"
           disabled={loading}
           onClick={onCancel}
           data-testid="CancelButton"
@@ -100,7 +107,9 @@ function useCloseOnSuccess(
   onClose?: () => void,
 ): void {
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {loading === false && onClose?.()}, [loading])
+  useEffect(() => {
+    loading === false && onClose?.()
+  }, [loading])
 }
 
 type ButtonColor = OverridableStringUnion<

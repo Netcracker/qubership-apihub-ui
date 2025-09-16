@@ -17,6 +17,7 @@ import { CheckboxDisabledIcon } from '../icons/CheckboxDisabledIcon'
 import { CheckboxIcon } from '../icons/CheckboxIcon'
 import { CheckIcon } from '../icons/CheckIcon'
 import { ClockBackwardIcon } from '../icons/ClockBackwardIcon'
+import { CloseIcon } from '../icons/CloseIcon'
 import { CloudIcon } from '../icons/CloudIcon'
 import { CloudSettingsIcon } from '../icons/CloudSettingsIcon'
 import { CloudUploadIcon } from '../icons/CloudUploadIcon'
@@ -167,6 +168,7 @@ const CUSTOM_ICONS_REGISTRY: readonly IconItem<CustomIconComponent>[] = [
 const MUI_ICONS_REGISTRY: readonly IconItem<MuiIconComponent>[] = [
   { name: 'InfoContextIcon', component: InfoContextIcon },
   { name: 'ClockBackwardIcon', component: ClockBackwardIcon },
+  { name: 'CloseIcon', component: CloseIcon },
   { name: 'CloudUploadIcon', component: CloudUploadIcon },
   { name: 'DeleteIconMui', component: DeleteIconMui },
   { name: 'DownloadIconMui', component: DownloadIconMui },

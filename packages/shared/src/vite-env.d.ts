@@ -69,16 +69,6 @@ declare module '@mui/material/Button' {
   interface ButtonPropsVariantOverrides {
     added: true
   }
-
-  interface ButtonPropsSizeOverrides {
-    'extra-small': true
-  }
-}
-
-declare module '@mui/material/IconButton' {
-  interface IconButtonPropsSizeOverrides {
-    'extra-small': true
-  }
 }
 
 declare module '@mui/material/Chip' {
@@ -169,18 +159,6 @@ declare class TaskPriorityChangeEvent extends Event {
       previousPriority: Priority,
     },
   )
-}
-
-declare module '@mui/material/styles' {
-  interface BreakpointOverrides {
-    xxs: true;
-  }
-}
-
-declare module '@mui/material/Dialog' {
-  interface DialogPropsMaxWidthOverrides {
-    'xxs': true
-  }
 }
 
 declare module '@mui/material/SvgIcon' {

@@ -161,12 +161,6 @@ export function createComponents(): Components {
             },
           },
         },
-        {
-          props: { size: 'extra-small' },
-          style: {
-            height: 24,
-          },
-        },
       ],
     },
     MuiButtonBase: {
@@ -317,15 +311,6 @@ export function createComponents(): Components {
     },
     MuiCssBaseline: {
       styleOverrides: `${ScrollbarBaseline}`,
-    },
-    MuiDialog: {
-      styleOverrides: {
-        paper: ({ ownerState }) => ({
-          ...((ownerState.maxWidth as string) === 'xxs' && {
-            maxWidth: 352,
-          }),
-        }),
-      },
     },
     MuiDialogActions: {
       styleOverrides: {
