@@ -11,6 +11,7 @@ import { ArrowDown } from '../icons/ArrowDown'
 import { ArrowUp } from '../icons/ArrowUp'
 import { AutomationIcon } from '../icons/AutomationIcon'
 import { CalendarIcon } from '../icons/CalendarIcon'
+import { CertifiedFileIcon } from '../icons/CertifiedFileIcon'
 import { CheckboxCheckedIcon } from '../icons/CheckboxCheckedIcon'
 import { CheckboxDisabledCheckedIcon } from '../icons/CheckboxDisabledCheckedIcon'
 import { CheckboxDisabledIcon } from '../icons/CheckboxDisabledIcon'
@@ -34,6 +35,7 @@ import { DownloadIconMui } from '../icons/DownloadIconMui'
 import { DragIcon } from '../icons/DragIcon'
 import { EditIcon } from '../icons/EditIcon'
 import { EmptyUserIcon } from '../icons/EmptyUserIcon'
+import { ErrorIcon } from '../icons/ErrorIcon'
 import { ExitIcon } from '../icons/ExitIcon'
 import { FileIcon } from '../icons/FileIcon'
 import { FilterIcon } from '../icons/FilterIcon'
@@ -102,6 +104,7 @@ const CUSTOM_ICONS_REGISTRY: readonly IconItem<CustomIconComponent>[] = [
   { name: 'ArrowUp', component: ArrowUp },
   { name: 'AutomationIcon', component: AutomationIcon },
   { name: 'CalendarIcon', component: CalendarIcon },
+  { name: 'CertifiedFileIcon', component: CertifiedFileIcon },
   { name: 'CheckIcon', component: CheckIcon },
   { name: 'CheckboxCheckedIcon', component: CheckboxCheckedIcon },
   { name: 'CheckboxDisabledCheckedIcon', component: CheckboxDisabledCheckedIcon },
@@ -172,6 +175,7 @@ const MUI_ICONS_REGISTRY: readonly IconItem<MuiIconComponent>[] = [
   { name: 'CloudUploadIcon', component: CloudUploadIcon },
   { name: 'DeleteIconMui', component: DeleteIconMui },
   { name: 'DownloadIconMui', component: DownloadIconMui },
+  { name: 'ErrorIcon', component: ErrorIcon },
   { name: 'LinkIcon', component: LinkIcon },
   { name: 'PlayIcon', component: PlayIcon },
   { name: 'PlusIcon', component: PlusIcon },
@@ -191,8 +195,10 @@ const MUI_ICON_COLORS = [
   'secondary',
   'action',
   'disabled',
+  'hint',
   'error',
   'info',
+  'information',
   'success',
   'warning',
   undefined,
