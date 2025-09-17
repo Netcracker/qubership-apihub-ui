@@ -52,9 +52,8 @@ export const ActivationHistoryContent: FC<ActivationHistoryContentProps> = memo(
       {hasMultipleActivations && (
         <Tooltip
           title={tooltipContent}
-          describeChild
         >
-          <InfoContextIcon color="action" fontSize="extra-small" titleAccess="Activation history details" />
+          <InfoContextIcon color="action" fontSize="extra-small" aria-label="Activation history details" />
         </Tooltip>
       )}
     </Box>
