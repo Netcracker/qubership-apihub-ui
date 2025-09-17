@@ -52,6 +52,8 @@ import type { Path } from '@remix-run/router'
 import type { FC, PropsWithChildren } from 'react'
 import { createContext, memo, useContext, useState } from 'react'
 import { createEventBus, slot } from 'ts-event-bus'
+import { SHOW_RULESET_INFO_DIALOG } from './root/PortalPage/VersionPage/VersionApiQualitySubPage/components/RulesetInfoDialog/RulesetInfoDialog'
+import type { RulesetMetadata } from '@apihub/entities/api-quality/rulesets'
 
 // base
 export const SHOW_SUCCESS_NOTIFICATION = 'show-success-notification'
@@ -78,7 +80,6 @@ export const SHOW_ADD_PACKAGE_DIALOG = 'show-add-package-dialog'
 export const SHOW_PUBLISH_PACKAGE_VERSION_DIALOG = 'show-publish-package-version-dialog'
 export const SHOW_PUBLISH_OPERATION_GROUP_PACKAGE_VERSION_DIALOG = 'show-publish-operation-group-package-version-dialog'
 export const SHOW_COPY_PACKAGE_VERSION_DIALOG = 'show-copy-package-version-dialog'
-export const SHOW_CREATE_CUSTOM_SERVER_DIALOG = 'show-create-custom-server-dialog'
 export const SHOW_EXAMPLES_DIALOG = 'show-examples-dialog'
 // Feature 'Edit Manual Operation Group'
 export const SHOW_CREATE_OPERATION_GROUP_DIALOG = 'show-create-operation-group-dialog'
@@ -89,6 +90,10 @@ export const API_KIND_SELECTED = 'api-kind-selected'
 export const API_AUDIENCE_SELECTED = 'api-audience-selected'
 export const TAG_SELECTED = 'tag-selected'
 export const OPERATION_MOVED = 'operation-moved'
+// Playground
+export const SHOW_CREATE_CUSTOM_SERVER_DIALOG = 'show-create-custom-server-dialog'
+export const SHOW_DELETE_CUSTOM_SERVER_DIALOG = 'show-delete-custom-server-dialog'
+export const SELECT_CREATED_CUSTOM_SERVER = 'select-created-custom-server'
 
 export type NotificationDetail = {
   title?: string
@@ -182,6 +187,16 @@ export type ExportSettingsPopupDetail = {
   groupName?: string
 }
 
+export type ShowDeleteCustomServerDetail = {
+  url: string
+}
+
+export type SelectCreatedCustomServerDetail = {
+  url: string
+}
+
+export type RulesetInfoPopupDetails = RulesetMetadata
+
 type EventBus = {
   // base
   showSuccessNotification: (detail: NotificationDetail) => void
@@ -212,7 +227,6 @@ type EventBus = {
   showPublishPackageVersionDialog: () => void
   showPublishOperationGroupPackageVersionDialog: (detail: PublishOperationGroupPackageVersionDetail) => void
   showCopyPackageVersionDialog: () => void
-  showCreateCustomServerDialog: () => void
   showExamplesDialog: () => void
   showEmptyPackageDialog: (detail: ShowEmptyPackageDetail) => void
   showDeleteRoleDialog: (detail: ShowDeleteRoleDetail) => void
@@ -233,6 +247,12 @@ type EventBus = {
   onOperationMoved: (value: OperationsMovementDetails) => void
   // Feature "Export Settings Dialog"
   showExportSettingsDialog: (value: ExportSettingsPopupDetail) => void
+  // Playground
+  showCreateCustomServerDialog: () => void
+  showDeleteCustomServerDialog: (detail: ShowDeleteCustomServerDetail) => void
+  selectCreatedCustomServer: (detail: SelectCreatedCustomServerDetail) => void
+  // Feature "Ruleset Info Dialog"
+  showRulesetInfoDialog: (value: RulesetInfoPopupDetails) => void
 }
 
 function eventBusProvider(): EventBus {
@@ -276,7 +296,6 @@ function eventBusProvider(): EventBus {
       showEditFileLabelsDialog: slot<ShowEditFileLabelsDetail>(),
       showUserRolesDialog: slot(),
       // Feature "Edit Manual Operation Groups"
-      showCreateCustomServerDialog: slot(),
       showCreateOperationGroupDialog: slot<CreateOperationGroupDetail>(),
       showEditOperationGroupDialog: slot<EditOperationGroupDetail>(),
       showEditOperationGroupContentDialog: slot<EditOperationGroupContentDetails>(),
@@ -288,6 +307,12 @@ function eventBusProvider(): EventBus {
       onOperationMoved: slot<OperationsMovementDetails>(),
       // Feature "Export Settings Dialog"
       showExportSettingsDialog: slot<ExportSettingsPopupDetail>(),
+      // Playground
+      showCreateCustomServerDialog: slot(),
+      showDeleteCustomServerDialog: slot<ShowDeleteCustomServerDetail>(),
+      selectCreatedCustomServer: slot<SelectCreatedCustomServerDetail>(),
+      // Feature "Ruleset Info Dialog"
+      showRulesetInfoDialog: slot<RulesetInfoPopupDetails>(),
     },
   })
 
@@ -363,9 +388,6 @@ function eventBusProvider(): EventBus {
   eventBus.showCopyPackageVersionDialog.on(() => {
     dispatchEvent(new CustomEvent(SHOW_COPY_PACKAGE_VERSION_DIALOG))
   })
-  eventBus.showCreateCustomServerDialog.on(() => {
-    dispatchEvent(new CustomEvent(SHOW_CREATE_CUSTOM_SERVER_DIALOG))
-  })
   eventBus.showExamplesDialog.on(() => {
     dispatchEvent(new CustomEvent(SHOW_EXAMPLES_DIALOG))
   })
@@ -412,6 +434,9 @@ function eventBusProvider(): EventBus {
   eventBus.showExportSettingsDialog.on((detail: ExportSettingsPopupDetail) => {
     dispatchEvent(new CustomEvent(SHOW_EXPORT_SETTINGS_DIALOG, { detail }))
   })
+  eventBus.showRulesetInfoDialog.on((detail: RulesetInfoPopupDetails) => {
+    dispatchEvent(new CustomEvent(SHOW_RULESET_INFO_DIALOG, { detail }))
+  })
   eventBus.showSpecificationDialog.on((detail: SpecificationDialogDetail) => {
     dispatchEvent(new CustomEvent(SHOW_SPECIFICATION_DIALOG, { detail }))
   })
@@ -420,6 +445,16 @@ function eventBusProvider(): EventBus {
   })
   eventBus.showEditFileLabelsDialog.on((detail: ShowEditFileLabelsDetail) => {
     dispatchEvent(new CustomEvent(SHOW_EDIT_FILE_LABELS_DIALOG, { detail }))
+  })
+  // Playground
+  eventBus.showCreateCustomServerDialog.on(() => {
+    dispatchEvent(new CustomEvent(SHOW_CREATE_CUSTOM_SERVER_DIALOG))
+  })
+  eventBus.showDeleteCustomServerDialog.on((detail: ShowDeleteCustomServerDetail) => {
+    dispatchEvent(new CustomEvent(SHOW_DELETE_CUSTOM_SERVER_DIALOG, { detail }))
+  })
+  eventBus.selectCreatedCustomServer.on((detail: SelectCreatedCustomServerDetail) => {
+    dispatchEvent(new CustomEvent(SELECT_CREATED_CUSTOM_SERVER, { detail }))
   })
 
   return eventBus as unknown as EventBus
