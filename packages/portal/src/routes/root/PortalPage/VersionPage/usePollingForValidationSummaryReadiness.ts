@@ -8,7 +8,7 @@ const POLLING_INTERVAL: number = 10 // Seconds
 
 const POLLING_FAILURE_COUNT: number = 5
 
-let interval
+let interval: NodeJS.Timeout | undefined
 
 export function usePollingForValidationSummaryReadiness(
   status: ClientValidationStatus,
