@@ -4,8 +4,25 @@ import {
   type RulesetApiType,
   RulesetApiTypes,
 } from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
-import type { FC } from 'react'
-import { memo } from 'react'
+import { type FC, memo } from 'react'
+
+const STYLE = {
+  '& .MuiSelect-select': {
+    pt: 0.75,
+    pb: 0.75,
+  },
+  minWidth: '110px',
+}
+
+const MENU_PROPS = {
+  PaperProps: {
+    sx: {
+      borderRadius: 1.5,
+    },
+  },
+}
+
+const INPUT_PROPS = { 'aria-label': 'API Type' }
 
 type RulesetApiTypeSelectorProps = {
   apiType: RulesetApiType
@@ -21,21 +38,9 @@ export const RulesetApiTypeSelector: FC<RulesetApiTypeSelectorProps> = memo<Rule
       variant="filled"
       value={apiType}
       onChange={onChange}
-      inputProps={{ 'aria-label': 'API Type' }}
-      sx={{
-        '& .MuiSelect-select': {
-          pt: 0.75,
-          pb: 0.75,
-        },
-        minWidth: '110px',
-      }}
-      MenuProps={{
-        PaperProps: {
-          sx: {
-            borderRadius: 1.5,
-          },
-        },
-      }}
+      sx={STYLE}
+      inputProps={INPUT_PROPS}
+      MenuProps={MENU_PROPS}
       data-testid="RulesetTypeSelect"
     >
       {Object.values(RulesetApiTypes).map(apiType => (

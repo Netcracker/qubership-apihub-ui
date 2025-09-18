@@ -12,7 +12,7 @@ import {
 } from '@netcracker/qubership-apihub-ui-shared/components/ConfirmationDialog/ConfirmationDialog'
 import { DeleteIconMui } from '@netcracker/qubership-apihub-ui-shared/icons/DeleteIconMui'
 import { PlayIcon } from '@netcracker/qubership-apihub-ui-shared/icons/PlayIcon'
-import { type FC, memo, useState } from 'react'
+import { type FC, memo, useCallback, useState } from 'react'
 import { useActivateRuleset } from '../api/useActivateRuleset'
 import { useDeleteRuleset } from '../api/useDeleteRuleset'
 
@@ -27,13 +27,29 @@ export const RulesetActions: FC<RulesetActionsProps> = memo(({ ruleset }) => {
   const [isActivateDialogOpen, setIsActivateDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
-  const handleActivate = (): void => {
+  const handleActivate = useCallback((): void => {
     activateRuleset(ruleset)
-  }
+  }, [activateRuleset, ruleset])
 
-  const handleDelete = (): void => {
+  const handleDelete = useCallback((): void => {
     deleteRuleset(ruleset)
-  }
+  }, [deleteRuleset, ruleset])
+
+  const handleOpenActivateDialog = useCallback((): void => {
+    setIsActivateDialogOpen(true)
+  }, [])
+
+  const handleCloseActivateDialog = useCallback((): void => {
+    setIsActivateDialogOpen(false)
+  }, [])
+
+  const handleOpenDeleteDialog = useCallback((): void => {
+    setIsDeleteDialogOpen(true)
+  }, [])
+
+  const handleCloseDeleteDialog = useCallback((): void => {
+    setIsDeleteDialogOpen(false)
+  }, [])
 
   return (
     <>
@@ -44,7 +60,7 @@ export const RulesetActions: FC<RulesetActionsProps> = memo(({ ruleset }) => {
           hint={ruleset.status === RulesetStatuses.ACTIVE ? 'The ruleset is already active' : 'Activate'}
           disabled={ruleset.status === RulesetStatuses.ACTIVE}
           startIcon={<PlayIcon fontSize="small" />}
-          onClick={() => setIsActivateDialogOpen(true)}
+          onClick={handleOpenActivateDialog}
           data-testid="ActivateButton"
         />
 
@@ -60,7 +76,7 @@ export const RulesetActions: FC<RulesetActionsProps> = memo(({ ruleset }) => {
             : 'The ruleset cannot be deleted due to existing versions that have been validated against this ruleset'}
           disabled={ruleset.status === RulesetStatuses.ACTIVE || !ruleset.canBeDeleted}
           startIcon={<DeleteIconMui fontSize="small" />}
-          onClick={() => setIsDeleteDialogOpen(true)}
+          onClick={handleOpenDeleteDialog}
           data-testid="DeleteButton"
         />
       </Box>
@@ -71,7 +87,7 @@ export const RulesetActions: FC<RulesetActionsProps> = memo(({ ruleset }) => {
         message="Activating this ruleset will automatically deactivate the currently active one. Do you want to proceed?"
         loading={isActivating}
         onConfirm={handleActivate}
-        onCancel={() => setIsActivateDialogOpen(false)}
+        onCancel={handleCloseActivateDialog}
         confirmButtonName="Proceed"
         confirmButtonColor="primary"
       />
@@ -81,7 +97,7 @@ export const RulesetActions: FC<RulesetActionsProps> = memo(({ ruleset }) => {
         title={`Delete "${ruleset.name}" ruleset?`}
         loading={isDeleting}
         onConfirm={handleDelete}
-        onCancel={() => setIsDeleteDialogOpen(false)}
+        onCancel={handleCloseDeleteDialog}
       />
     </>
   )

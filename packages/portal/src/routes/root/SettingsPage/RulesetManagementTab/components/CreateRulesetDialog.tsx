@@ -11,16 +11,22 @@ import { SHOW_CREATE_RULESET_DIALOG } from '@netcracker/qubership-apihub-ui-port
 import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 import { FileUploadField } from '@netcracker/qubership-apihub-ui-shared/components/FileUploadField'
 import { PopupDelegate, type PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import { YAML_FILE_EXTENSION, YML_FILE_EXTENSION } from '@netcracker/qubership-apihub-ui-shared/utils/files'
+import {
+  YAML_FILE_EXTENSION,
+  YML_FILE_EXTENSION,
+  type FileExtension,
+} from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import { checkFileType } from '@netcracker/qubership-apihub-ui-shared/utils/validations'
 import { type FC, memo, useCallback, useEffect, useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useCreateRuleset } from '../api/useCreateRuleset'
 
+const ACCEPTABLE_RULESET_EXTENSIONS: FileExtension[] = [YAML_FILE_EXTENSION, YML_FILE_EXTENSION]
+
 const DEFAULT_FORM_VALUES: CreateRulesetFormData = {
   name: '',
-  file: null,
-} as const
+  file: undefined,
+}
 
 type CreateRulesetDialogProps = {
   apiType: RulesetApiType
@@ -31,7 +37,7 @@ type CreateRulesetPopupProps = CreateRulesetDialogProps & PopupProps
 
 type CreateRulesetFormData = {
   name: string
-  file: File | null
+  file: File | undefined
 }
 
 export const CreateRulesetDialog: FC<CreateRulesetDialogProps> = memo(({ apiType, rulesets }) => {
@@ -55,9 +61,9 @@ const CreateRulesetPopup: FC<CreateRulesetPopupProps> = memo<CreateRulesetPopupP
     const watchedValues = watch()
 
     const fileValidationRules = useMemo(() => ({
-      validate: (file: File | null) => {
+      validate: (file: File | undefined) => {
         if (!file) return true
-        return checkFileType(file, [YAML_FILE_EXTENSION, YML_FILE_EXTENSION])
+        return checkFileType(file, ACCEPTABLE_RULESET_EXTENSIONS)
       },
     }), [])
 
@@ -140,10 +146,10 @@ const CreateRulesetPopup: FC<CreateRulesetPopupProps> = memo<CreateRulesetPopupP
             rules={fileValidationRules}
             render={({ field: { value, onChange } }) => (
               <FileUploadField
-                uploadedFile={value || undefined}
-                setUploadedFile={(selectedFile) => onChange(selectedFile || null)}
+                uploadedFile={value}
+                setUploadedFile={onChange}
                 downloadAvailable={false}
-                acceptableExtensions={[YAML_FILE_EXTENSION, YML_FILE_EXTENSION]}
+                acceptableExtensions={ACCEPTABLE_RULESET_EXTENSIONS}
                 errorMessage={errors.file?.message}
               />
             )}

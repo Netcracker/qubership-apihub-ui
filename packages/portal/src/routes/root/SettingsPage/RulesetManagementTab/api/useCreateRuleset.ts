@@ -7,8 +7,8 @@ import type {
 import { useShowSuccessNotification } from '@netcracker/qubership-apihub-ui-portal/src/routes/root/BasePage/Notification'
 import { portalRequestJson } from '@netcracker/qubership-apihub-ui-portal/src/utils/requests'
 import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { QUERY_KEY_RULESETS } from './useRulesets'
+import { useMutation } from '@tanstack/react-query'
+import { useInvalidateRulesets } from './useRulesets'
 
 type CreateRulesetRequest = {
   rulesetName: string
@@ -22,14 +22,14 @@ export const useCreateRuleset = (): [
   IsLoading,
   IsSuccess,
 ] => {
-  const queryClient = useQueryClient()
+  const invalidateRulesets = useInvalidateRulesets()
   const showNotification = useShowSuccessNotification()
 
   const { mutate, isLoading, isSuccess } = useMutation<RulesetDto, Error, CreateRulesetRequest>({
     mutationFn: (rulesetParams) => createRuleset(rulesetParams),
     onSuccess: async (data) => {
       showNotification({ message: `${data.name} ruleset has been created` })
-      await queryClient.invalidateQueries({ queryKey: [QUERY_KEY_RULESETS] })
+      await invalidateRulesets()
     },
   })
 

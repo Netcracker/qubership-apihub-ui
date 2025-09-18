@@ -24,7 +24,7 @@ import {
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/table-core'
 import { isEmpty } from 'lodash'
-import { type FC, Fragment, memo, useEffect, useMemo, useRef, useState } from 'react'
+import { type FC, Fragment, memo, useEffect, useRef, useState } from 'react'
 import { ActivationHistoryContent } from './ActivationHistoryContent'
 import { RulesetActions } from './RulesetActions'
 
@@ -52,6 +52,47 @@ type RulesetTableProps = {
   isLoading: boolean
 }
 
+const COLUMNS: ColumnDef<Ruleset>[] = [
+  {
+    id: RULESET_NAME_COLUMN_ID,
+    header: () => <CustomTableHeadCell title="Ruleset Name" />,
+    cell: ({ row: { original: { name } } }) => (
+      <Box display="flex" alignItems="center">
+        <TextWithOverflowTooltip tooltipText={name}>
+          {name}
+        </TextWithOverflowTooltip>
+      </Box>
+    ),
+  },
+  {
+    id: ACTIVATION_HISTORY_COLUMN_ID,
+    header: () => <CustomTableHeadCell title="Activation History" />,
+    cell: ({ row: { original: ruleset } }) => <ActivationHistoryContent ruleset={ruleset} />,
+  },
+  {
+    id: STATUS_COLUMN_ID,
+    header: () => <CustomTableHeadCell title="Status" />,
+    cell: ({ row: { original: { status } } }) => (
+      <Chip
+        label={capitalize(status)}
+        size="small"
+        color={status === RulesetStatuses.ACTIVE ? 'release' : 'default'}
+        sx={{ fontWeight: 500 }}
+      />
+    ),
+  },
+  {
+    id: CREATED_AT_COLUMN_ID,
+    header: () => <CustomTableHeadCell title="Created At" />,
+    cell: ({ row: { original: { createdAt } } }) => <FormattedDate value={createdAt} />,
+  },
+  {
+    id: CONTROLS_COLUMN_ID,
+    header: () => '',
+    cell: ({ row: { original: ruleset } }) => <RulesetActions ruleset={ruleset} />,
+  },
+]
+
 export const RulesetTable: FC<RulesetTableProps> = memo<RulesetTableProps>(({
   rulesets,
   isLoading,
@@ -70,54 +111,9 @@ export const RulesetTable: FC<RulesetTableProps> = memo<RulesetTableProps>(({
     defaultMinColumnSize: 60,
   })
 
-  const columns: ColumnDef<Ruleset>[] = useMemo(() => {
-    const result: ColumnDef<Ruleset>[] = [
-      {
-        id: RULESET_NAME_COLUMN_ID,
-        header: () => <CustomTableHeadCell title="Ruleset Name" />,
-        cell: ({ row: { original: { name } } }) => (
-          <Box display="flex" alignItems="center">
-            <TextWithOverflowTooltip tooltipText={name}>
-              {name}
-            </TextWithOverflowTooltip>
-          </Box>
-        ),
-      },
-      {
-        id: ACTIVATION_HISTORY_COLUMN_ID,
-        header: () => <CustomTableHeadCell title="Activation History" />,
-        cell: ({ row: { original: ruleset } }) => <ActivationHistoryContent ruleset={ruleset} />,
-      },
-      {
-        id: STATUS_COLUMN_ID,
-        header: () => <CustomTableHeadCell title="Status" />,
-        cell: ({ row: { original: { status } } }) => (
-          <Chip
-            label={capitalize(status)}
-            size="small"
-            color={status === RulesetStatuses.ACTIVE ? 'release' : 'default'}
-            sx={{ fontWeight: 500 }}
-          />
-        ),
-      },
-      {
-        id: CREATED_AT_COLUMN_ID,
-        header: () => <CustomTableHeadCell title="Created At" />,
-        cell: ({ row: { original: { createdAt } } }) => <FormattedDate value={createdAt} />,
-      },
-      {
-        id: CONTROLS_COLUMN_ID,
-        header: () => '',
-        cell: ({ row: { original: ruleset } }) => <RulesetActions ruleset={ruleset} />,
-      },
-    ]
-
-    return result
-  }, [])
-
   const { getHeaderGroups, getRowModel, setColumnSizing } = useReactTable({
     data: rulesets,
-    columns: columns,
+    columns: COLUMNS,
     getCoreRowModel: getCoreRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
     columnResizeMode: 'onChange',

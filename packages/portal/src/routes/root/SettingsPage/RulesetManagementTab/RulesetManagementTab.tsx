@@ -6,7 +6,7 @@ import {
 import { useEventBus } from '@netcracker/qubership-apihub-ui-portal/src/routes/EventBusProvider'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import { PlusIcon } from '@netcracker/qubership-apihub-ui-shared/icons/PlusIcon'
-import { type FC, memo, useMemo, useState } from 'react'
+import { type FC, memo, useCallback, useMemo, useState } from 'react'
 import { useRulesets } from './api/useRulesets'
 import { CreateRulesetDialog } from './components/CreateRulesetDialog'
 import { RulesetApiTypeSelector } from './components/RulesetApiTypeSelector'
@@ -21,23 +21,21 @@ export const RulesetManagementTab: FC = memo(() => {
     return rulesets.filter(ruleset => ruleset.apiType === selectedApiType)
   }, [rulesets, selectedApiType])
 
-  const handleOpenCreateDialog = (): void => {
+  const handleOpenCreateDialog = useCallback((): void => {
     showCreateRulesetDialog()
-  }
+  }, [showCreateRulesetDialog])
 
-  const handleChangeApiType = (event: SelectChangeEvent): void => {
+  const handleChangeApiType = useCallback((event: SelectChangeEvent): void => {
     setSelectedApiType(event.target.value as RulesetApiType)
-  }
+  }, [])
 
   return (
     <BodyCard
       header={
-        <>
-          <Box display="flex" gap={2} alignItems="center">
-            API Quality Ruleset Management
-            <RulesetApiTypeSelector apiType={selectedApiType} onChange={handleChangeApiType} />
-          </Box>
-        </>
+        <Box display="flex" gap={2} alignItems="center">
+          API Quality Ruleset Management
+          <RulesetApiTypeSelector apiType={selectedApiType} onChange={handleChangeApiType} />
+        </Box>
       }
       action={
         <Button
