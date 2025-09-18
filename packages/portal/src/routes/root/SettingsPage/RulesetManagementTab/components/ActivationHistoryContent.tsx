@@ -15,7 +15,9 @@ type ActivationHistoryContentProps = {
 
 export const ActivationHistoryContent: FC<ActivationHistoryContentProps> = memo(({ ruleset }) => {
   const [data] = useRulesetActivationHistory(ruleset.id)
-  const activationHistory = data?.activationHistory
+
+  const activationHistory = useMemo(() => data?.activationHistory ?? [], [data?.activationHistory])
+
   const [lastActivation] = activationHistory
   const lastActiveFrom = lastActivation?.activeFrom
   const lastActiveTo = lastActivation?.activeTo
