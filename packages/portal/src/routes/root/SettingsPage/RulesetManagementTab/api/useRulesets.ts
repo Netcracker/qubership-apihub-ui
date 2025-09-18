@@ -2,7 +2,7 @@ import { API_LINTER_API_V1 } from '@netcracker/qubership-apihub-ui-portal/src/ap
 import type { Ruleset, RulesetDto } from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
 import { portalRequestJson } from '@netcracker/qubership-apihub-ui-portal/src/utils/requests'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 
 export const QUERY_KEY_RULESETS = 'rulesets'
@@ -20,6 +20,13 @@ export const useRulesets = (): [Ruleset[], IsLoading] => {
     useMemo(() => data ?? [], [data]),
     isLoading,
   ]
+}
+
+export const useInvalidateRulesets = (): () => Promise<void> => {
+  const queryClient = useQueryClient()
+  return async () => {
+    await queryClient.invalidateQueries({ queryKey: [QUERY_KEY_RULESETS] })
+  }
 }
 
 async function getRulesets(): Promise<RulesetDto[]> {

@@ -3,23 +3,23 @@ import type { Ruleset } from '@netcracker/qubership-apihub-ui-portal/src/entitie
 import { useShowSuccessNotification } from '@netcracker/qubership-apihub-ui-portal/src/routes/root/BasePage/Notification'
 import { portalRequestVoid } from '@netcracker/qubership-apihub-ui-portal/src/utils/requests'
 import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import { generatePath } from 'react-router-dom'
-import { QUERY_KEY_RULESETS } from './useRulesets'
+import { useInvalidateRulesets } from './useRulesets'
 
 export const useDeleteRuleset = (): [
   (ruleset: Ruleset) => void,
   IsLoading,
   IsSuccess,
 ] => {
-  const queryClient = useQueryClient()
+  const invalidateRulesets = useInvalidateRulesets()
   const showNotification = useShowSuccessNotification()
 
   const { mutate, isLoading, isSuccess } = useMutation<void, Error, Ruleset>({
     mutationFn: (ruleset) => deleteRuleset(ruleset.id),
     onSuccess: async (_, variables) => {
       showNotification({ message: `${variables.name} ruleset has been deleted` })
-      await queryClient.invalidateQueries({ queryKey: [QUERY_KEY_RULESETS] })
+      await invalidateRulesets()
     },
   })
 
