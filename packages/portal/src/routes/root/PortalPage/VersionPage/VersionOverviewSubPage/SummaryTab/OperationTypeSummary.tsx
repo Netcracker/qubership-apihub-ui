@@ -240,7 +240,7 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
                   showApiQualitySummary
                     ? '\'validationRulesetTitle validationRuleset\''
                     : undefined,
-                  showApiQualitySummary
+                  showApiQualitySummary && validationSuccess
                     ? '\'qualityIssuesNumberTitle qualityIssuesNumber\''
                     : undefined,
                   showApiQualitySummary && validationFailed
