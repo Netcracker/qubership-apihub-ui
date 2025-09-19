@@ -62,6 +62,8 @@ export function useApiQualityTabTooltip(): ApiQualityTabTooltip {
       return 'Checking of API quality validation status is in progress'
     case ClientValidationStatuses.IN_PROGRESS:
       return 'API quality check is in progress'
+    case ClientValidationStatuses.ERROR:
+      return 'API quality check is failed'
     case ClientValidationStatuses.NOT_VALIDATED:
       return 'API quality is not validated'
   }

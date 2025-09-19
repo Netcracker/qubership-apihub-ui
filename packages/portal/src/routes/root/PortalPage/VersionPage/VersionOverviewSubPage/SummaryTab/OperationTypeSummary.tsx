@@ -81,6 +81,7 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
   }, [manualRunLinter, packageId, versionId, setClientValidationStatus])
   const linterEnabled = useApiQualityLinterEnabled(apiType)
   const validationFailed = clientValidationStatus === ClientValidationStatuses.ERROR
+  const validationSuccess = clientValidationStatus === ClientValidationStatuses.SUCCESS
   const apiQualitySummaryPlaceholder = getApiQualitySummaryPlaceholder(onManualRunLinter, clientValidationStatus)
   const showApiQualityPlaceholder = !!apiQualitySummaryPlaceholder
   const showApiQualitySummary = !apiQualitySummaryPlaceholder
@@ -360,7 +361,7 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
                   </Box>
                 </>}
 
-                {validationSummary && <>
+                {validationSuccess && <>
                   <Typography sx={{ gridArea: 'qualityIssuesNumberTitle' }} variant="subtitle2">
                     Number of quality issues
                   </Typography>
