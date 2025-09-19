@@ -74,9 +74,9 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
   const { packageId, versionId } = useParams()
   const [clientValidationStatus = ClientValidationStatuses.CHECKING, setClientValidationStatus] = useApiQualityClientValidationStatus()
   const onManualRunLinter = useCallback(() => {
-    if (packageId && versionId) {
+    if (packageId && versionId && setClientValidationStatus) {
       manualRunLinter({ packageId, versionId })
-      setClientValidationStatus?.(ClientValidationStatuses.CHECKING)
+      setClientValidationStatus(ClientValidationStatuses.CHECKING)
     }
   }, [manualRunLinter, packageId, versionId, setClientValidationStatus])
   const linterEnabled = useApiQualityLinterEnabled(apiType)
