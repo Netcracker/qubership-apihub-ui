@@ -108,8 +108,11 @@ export const VersionApiQualityCard: FC = memo(() => {
       return []
     }
     // TODO 19.09.25 // Remove default because real response doesn't match API
+    if (!validationDetails.issues) {
+      return []
+    }
     const { issues } = validationDetails
-    return transformIssuesToMarkers(transformedSelectedDocumentContent, format, issues ?? [])
+    return transformIssuesToMarkers(transformedSelectedDocumentContent, format, issues)
   }, [validationDetails, transformedSelectedDocumentContent, format])
 
   const onSelectDocument = useCallback((value: DocumentValidationSummary | undefined) => {
