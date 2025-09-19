@@ -9,7 +9,7 @@ export function transformIssuesToMarkers(
   format: OriginalDocumentFileFormat,
   issues: readonly Issue[],
 ): Editor.IMarkerData[] {
-  const notFilteredMarkers: (Editor.IMarkerData | null)[] = issues
+  return issues
     .map(issue => {
       const { path } = issue
       // TODO 19.09.25 // Remove default because real response doesn't match API
@@ -50,5 +50,4 @@ export function transformIssuesToMarkers(
         source: `spectral (${issue.code})`,
       }
     })
-  return notFilteredMarkers.filter((marker): marker is Editor.IMarkerData => marker !== null)
 }
