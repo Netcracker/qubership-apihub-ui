@@ -1,10 +1,17 @@
 import type { QueryObserverResult, RefetchOptions, RefetchQueryFilters, UseMutateFunction } from '@tanstack/react-query'
 import type { IdentityProviderDto, SystemConfigurationDto } from '../types/system-configuration'
 import { isInternalIdentityProvider } from '../types/system-configuration'
-import { SEARCH_PARAM_NO_AUTO_LOGIN, SESSION_STORAGE_KEY_LAST_IDENTITY_PROVIDER_ID, SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION } from './constants'
+import {
+  SEARCH_PARAM_NO_AUTO_LOGIN,
+  SESSION_STORAGE_KEY_LAST_IDENTITY_PROVIDER_ID,
+  SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION,
+} from './constants'
 import { getRedirectUri, redirectTo, redirectToLogin } from './redirects'
 import { optionalSearchParams } from './search-params'
 import { stopThread } from './threads'
+import type {
+  ServiceWorkerWindow,
+} from '@netcracker/qubership-apihub-ui-portal/src/routes/root/PortalPage/package-version-builder-worker'
 
 // TODO 16.05.25 // Temporarily copy-pasted from ./requests.ts
 // Get rid of copy-pasting these constants
@@ -40,18 +47,18 @@ export async function handleAuthentication(responseStatus: number): Promise<Toke
   let tokenRefreshResult: TokenRefreshResult | undefined
 
   if (responseStatus === 401 && allowedAutoLogin) {
+    let lastProviderId: string | null | undefined
+    let systemConfigurationDto: SystemConfigurationDto | undefined
     // when we are in worker, we can't use algorithm below in direct way
     // so we have to throw a specific error, catch it in main thread and handle with the same algorithm
     if (typeof window === 'undefined') {
-      throw new WorkerUnauthorizedError()
+      systemConfigurationDto = (self as ServiceWorkerWindow).systemConfigurationDto as SystemConfigurationDto
+      lastProviderId = (self as ServiceWorkerWindow).lastIdentityProviderId
     }
-
-    const systemConfigurationFromStorage = sessionStorage.getItem(SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION)
     // must be always present,
     // because protected API is not fetched until system configuration is loaded
-    const systemConfiguration: SystemConfigurationDto = JSON.parse(systemConfigurationFromStorage!) as SystemConfigurationDto
-
-    const { authConfig } = systemConfiguration
+    systemConfigurationDto = systemConfigurationDto || JSON.parse(sessionStorage.getItem(SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION)!) as SystemConfigurationDto
+    const { authConfig } = systemConfigurationDto
 
     // trying to refresh token by auto-login provider
     const { autoLogin } = authConfig
@@ -63,7 +70,7 @@ export async function handleAuthentication(responseStatus: number): Promise<Toke
       }
     } else {
       // trying to refresh token by last used provider
-      const lastProviderId = localStorage.getItem(SESSION_STORAGE_KEY_LAST_IDENTITY_PROVIDER_ID)
+      lastProviderId = lastProviderId || localStorage.getItem(SESSION_STORAGE_KEY_LAST_IDENTITY_PROVIDER_ID)
       const lastProvider = lastProviderId
         ? authConfig.identityProviders.find(idp => idp.id === lastProviderId)
         : undefined
@@ -93,7 +100,10 @@ async function handleUnauthorizedByProvider(identityProvider: IdentityProviderDt
     // Parameter "redirectUri" is used to redirect when the user is not authenticated and token can't be refreshed
     // In that case we should redirect to the login page with its own "redirectUri"
     // which will be used after logging in via internal identity provider to redirect to the original page.
-    const searchParamsLoginPage = optionalSearchParams({ noAutoLogin: { value: true }, redirectUri: { value: getRedirectUri() } })
+    const searchParamsLoginPage = optionalSearchParams({
+      noAutoLogin: { value: true },
+      redirectUri: { value: getRedirectUri() },
+    })
     const searchParamsAuthLocalRefresh = optionalSearchParams({ redirectUri: { value: `${location.origin}/login?${searchParamsLoginPage}` } })
     requestEndpoint = `${API_V3}/auth/local/refresh?${searchParamsAuthLocalRefresh}`
   } else if (identityProvider.loginStartEndpoint) {
@@ -157,6 +167,7 @@ export function onMutationUnauthorized<TData = unknown, TError extends Error = E
 ): MutationUnauthorizedHandler<TError, TVariables, TContext> {
 
   return async (error, variables): Promise<TokenRefreshResult | undefined> => {
+    console.log('onMutationUnauthorized-->')
     if (isWorkerUnauthorizedError(error)) {
       const tokenRefreshResult = await handleAuthentication(error.responseStatus)
       if (tokenRefreshResult === TokenRefreshResults.TOKEN_REFRESHED) {
@@ -174,6 +185,8 @@ export function onQueryUnauthorized<TData = unknown, TError extends Error = Erro
 ): QueryUnauthorizedHandler<TError> {
 
   return async (error): Promise<TokenRefreshResult | undefined> => {
+    console.log('onQueryUnauthorized-->')
+
     if (isWorkerUnauthorizedError(error)) {
       const tokenRefreshResult = await handleAuthentication(error.responseStatus)
       if (tokenRefreshResult === TokenRefreshResults.TOKEN_REFRESHED) {

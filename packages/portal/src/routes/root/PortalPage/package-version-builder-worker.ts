@@ -37,6 +37,8 @@ import { expose, transferHandlers } from 'comlink'
 import { v4 as uuidv4 } from 'uuid'
 import type { BuilderOptions } from './package-version-builder'
 import type { PublishOptions } from './usePublishPackageVersion'
+import { systemConfiguration } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useSystemConfiguration'
+import type { SystemConfigurationDto } from '@netcracker/qubership-apihub-ui-shared/types/system-configuration'
 
 /*
 For using worker in proxy mode you need to change common apihub-shared import
@@ -53,13 +55,23 @@ function toFileSourceMap(files: File[]): FileSourceMap {
   return fileSources
 }
 
+export interface ServiceWorkerWindow extends Window {
+  lastIdentityProviderId?: string | undefined | null
+  systemConfigurationDto?: SystemConfigurationDto | undefined
+}
+
 export type PackageVersionBuilderWorker = {
   buildChangelogPackage: (options: BuilderOptions) => Promise<[VersionsComparison[], Blob]>
   buildGroupChangelogPackage: (options: BuilderOptions) => Promise<[VersionsComparison[], Blob]>
   publishPackage: (options: PublishOptions) => Promise<PublishDetails>
+  init: (lastIdentityProviderId: string | null) => Promise<void>
 }
 
 const worker: PackageVersionBuilderWorker = {
+  init: async (lastIdentityProviderId) => {
+    (self as ServiceWorkerWindow).systemConfigurationDto = await systemConfiguration();
+    (self as ServiceWorkerWindow).lastIdentityProviderId = lastIdentityProviderId
+  },
   buildChangelogPackage: async ({ packageKey, versionKey, previousPackageKey, previousVersionKey }) => {
     const builderResolvers = {
       fileResolver: async () => null,
@@ -172,7 +184,6 @@ const worker: PackageVersionBuilderWorker = {
 
       publicationStatus = ERROR_PUBLISH_STATUS
       message = error instanceof Error ? error.message : `${error}`
-      //
       await setPublicationDetails({
         packageKey: packageId,
         publishKey: publishId,
