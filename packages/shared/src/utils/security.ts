@@ -107,7 +107,7 @@ async function handleUnauthorizedByProvider(identityProvider: IdentityProviderDt
     const searchParamsAuthLocalRefresh = optionalSearchParams({ redirectUri: { value: `${location.origin}/login?${searchParamsLoginPage}` } })
     requestEndpoint = `${API_V3}/auth/local/refresh?${searchParamsAuthLocalRefresh}`
   } else if (identityProvider.loginStartEndpoint) {
-    // In case of external identity provider, we don't have control over the redirections and we provide
+    // In case of external identity provider, we don't have control over the redirections, and we provide
     // just "redirectUri" with value of the current page OR main page (if current page is login page), 
     // because internal redirections will be managed by the backend and the provider.
     const searchParamsAuthWithStartEndpoint = optionalSearchParams({ redirectUri: { value: getRedirectUri() } })
