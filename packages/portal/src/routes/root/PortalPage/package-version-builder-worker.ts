@@ -125,7 +125,6 @@ const worker: PackageVersionBuilderWorker = {
     return [builder.buildResult.comparisons, await builder.createVersionPackage({ type: 'blob' })]
   },
   publishPackage: async (options): Promise<PublishDetails> => {
-    //
     const { packageId, sources } = options
     const builderId = uuidv4()
     const sourcesZip = sources && await packToZip(sources)

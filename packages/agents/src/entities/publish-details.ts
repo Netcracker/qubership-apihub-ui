@@ -65,7 +65,6 @@ export async function getPublishDetails(
 // TODO 23.08.23 // Check it later, why there is optional builderId here
 type SetPublicationDetailsOptionsForAgent = Omit<SetPublicationDetailsOptions, 'builderId'> & { builderId?: string }
 
-//should update token
 export async function setPublicationDetails(options: SetPublicationDetailsOptionsForAgent): Promise<void> {
   const {
     packageKey,

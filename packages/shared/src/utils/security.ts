@@ -167,7 +167,6 @@ export function onMutationUnauthorized<TData = unknown, TError extends Error = E
 ): MutationUnauthorizedHandler<TError, TVariables, TContext> {
 
   return async (error, variables): Promise<TokenRefreshResult | undefined> => {
-    console.log('onMutationUnauthorized-->')
     if (isWorkerUnauthorizedError(error)) {
       const tokenRefreshResult = await handleAuthentication(error.responseStatus)
       if (tokenRefreshResult === TokenRefreshResults.TOKEN_REFRESHED) {
@@ -185,8 +184,6 @@ export function onQueryUnauthorized<TData = unknown, TError extends Error = Erro
 ): QueryUnauthorizedHandler<TError> {
 
   return async (error): Promise<TokenRefreshResult | undefined> => {
-    console.log('onQueryUnauthorized-->')
-
     if (isWorkerUnauthorizedError(error)) {
       const tokenRefreshResult = await handleAuthentication(error.responseStatus)
       if (tokenRefreshResult === TokenRefreshResults.TOKEN_REFRESHED) {
