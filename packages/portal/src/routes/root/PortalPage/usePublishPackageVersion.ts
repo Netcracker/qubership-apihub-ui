@@ -34,6 +34,7 @@ import { useShowErrorNotification } from '../BasePage/Notification'
 import { useAsyncInvalidateVersionContent } from '../usePackageVersionContent'
 import { useAsyncInvalidateVersionSources } from '../useVersionSources'
 import { PackageVersionBuilder } from './package-version-builder'
+import { SESSION_STORAGE_KEY_LAST_IDENTITY_PROVIDER_ID } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
 
 export function usePublishPackageVersion(): [PublishPackageVersion, IsLoading, IsSuccess] {
   const { packageId } = useParams()
@@ -96,6 +97,7 @@ export type PublishOptions = {
   files?: BuildConfigFile[]
   sources?: File[]
   buildType: BuildType
+  lastIdentityProviderId: string | null
 }
 
 function toPublishOptions(
@@ -116,6 +118,7 @@ function toPublishOptions(
     files: files,
     sources: sources,
     buildType: BUILD_TYPE.BUILD,
+    lastIdentityProviderId: localStorage.getItem(SESSION_STORAGE_KEY_LAST_IDENTITY_PROVIDER_ID),
   }
 }
 

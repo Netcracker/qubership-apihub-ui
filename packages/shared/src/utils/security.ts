@@ -30,6 +30,11 @@ export class WorkerUnauthorizedError extends Error {
   }
 }
 
+export interface ServiceWorkerWindow extends Window {
+  lastIdentityProviderId?: string | undefined | null
+  systemConfigurationDto?: SystemConfigurationDto | undefined
+}
+
 export async function handleAuthentication(responseStatus: number): Promise<TokenRefreshResult | undefined> {
   const searchParams = new URLSearchParams(location.search)
   // noAutoLogin = true in 2 cases:
@@ -40,18 +45,20 @@ export async function handleAuthentication(responseStatus: number): Promise<Toke
   let tokenRefreshResult: TokenRefreshResult | undefined
 
   if (responseStatus === 401 && allowedAutoLogin) {
+    let lastProviderId: string | null | undefined
+    let systemConfigurationDto: SystemConfigurationDto | undefined
     // when we are in worker, we can't use algorithm below in direct way
     // so we have to throw a specific error, catch it in main thread and handle with the same algorithm
     if (typeof window === 'undefined') {
-      throw new WorkerUnauthorizedError()
+      systemConfigurationDto = (self as ServiceWorkerWindow).systemConfigurationDto as SystemConfigurationDto
+      lastProviderId = (self as ServiceWorkerWindow).lastIdentityProviderId
     }
 
-    const systemConfigurationFromStorage = sessionStorage.getItem(SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION)
     // must be always present,
     // because protected API is not fetched until system configuration is loaded
-    const systemConfiguration: SystemConfigurationDto = JSON.parse(systemConfigurationFromStorage!) as SystemConfigurationDto
+    systemConfigurationDto = systemConfigurationDto || JSON.parse(sessionStorage.getItem(SESSION_STORAGE_KEY_SYSTEM_CONFIGURATION)!) as SystemConfigurationDto
 
-    const { authConfig } = systemConfiguration
+    const { authConfig } = systemConfigurationDto
 
     // trying to refresh token by auto-login provider
     const { autoLogin } = authConfig
@@ -63,7 +70,7 @@ export async function handleAuthentication(responseStatus: number): Promise<Toke
       }
     } else {
       // trying to refresh token by last used provider
-      const lastProviderId = localStorage.getItem(SESSION_STORAGE_KEY_LAST_IDENTITY_PROVIDER_ID)
+      lastProviderId = lastProviderId || localStorage.getItem(SESSION_STORAGE_KEY_LAST_IDENTITY_PROVIDER_ID)
       const lastProvider = lastProviderId
         ? authConfig.identityProviders.find(idp => idp.id === lastProviderId)
         : undefined
