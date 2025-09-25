@@ -52,8 +52,10 @@ export async function handleAuthentication(responseStatus: number): Promise<Toke
     let lastProviderId: string | null | undefined
     let systemConfigurationDto: SystemConfigurationDto | undefined
     if (isInWebWorker(self)) {
-      ({ systemConfigurationDto } = self)
-      lastProviderId = self.lastIdentityProviderId
+      ({
+        systemConfigurationDto,
+        lastIdentityProviderId: lastProviderId,
+      } = self)
     }
 
     // must be always present,
