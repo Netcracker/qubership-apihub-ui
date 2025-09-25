@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+/// <reference no-default-lib="true"/>
+/// <reference lib="webworker" />
 import type { FileId, FileSourceMap, VersionsComparison } from '@netcracker/qubership-apihub-api-processor'
 import { BUILD_TYPE, PackageVersionBuilder, VERSION_STATUS } from '@netcracker/qubership-apihub-api-processor'
 import {
@@ -32,7 +33,6 @@ import {
   setPublicationDetails,
   startPackageVersionPublication,
 } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
-import type { ServiceWorkerWindow} from '@netcracker/qubership-apihub-ui-shared/utils/security'
 import { WorkerUnauthorizedError } from '@netcracker/qubership-apihub-ui-shared/utils/security'
 import { expose, transferHandlers } from 'comlink'
 import { v4 as uuidv4 } from 'uuid'
@@ -64,8 +64,8 @@ export type PackageVersionBuilderWorker = {
 
 const worker: PackageVersionBuilderWorker = {
   init: async (lastIdentityProviderId) => {
-    (self as ServiceWorkerWindow).systemConfigurationDto = await systemConfiguration();
-    (self as ServiceWorkerWindow).lastIdentityProviderId = lastIdentityProviderId
+    self.systemConfigurationDto = await systemConfiguration()
+    self.lastIdentityProviderId = lastIdentityProviderId
   },
   buildChangelogPackage: async ({ packageKey, versionKey, previousPackageKey, previousVersionKey }) => {
     const builderResolvers = {
@@ -220,7 +220,10 @@ transferHandlers.set('throw', {
     }
     return [serialized, []]
   },
-  deserialize: (serialized: { isError: boolean; value: { message: string; name: string; stack: string; responseStatus: number } }) => {
+  deserialize: (serialized: {
+    isError: boolean;
+    value: { message: string; name: string; stack: string; responseStatus: number }
+  }) => {
     if (serialized.isError) {
       throw new WorkerUnauthorizedError()
     }

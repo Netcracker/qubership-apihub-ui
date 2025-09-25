@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import type { BuildConfigFile, BuildConfigRef, BuildType, VersionStatus } from '@netcracker/qubership-apihub-api-processor'
+import type {
+  BuildConfigFile,
+  BuildConfigRef,
+  BuildType,
+  VersionStatus,
+} from '@netcracker/qubership-apihub-api-processor'
 import { BUILD_TYPE } from '@netcracker/qubership-apihub-api-processor'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { PackageReference } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
@@ -24,7 +29,10 @@ import {
 } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
 import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import type { PublishDetails } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
-import { COMPLETE_PUBLISH_STATUS, ERROR_PUBLISH_STATUS } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
+import {
+  COMPLETE_PUBLISH_STATUS,
+  ERROR_PUBLISH_STATUS,
+} from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
 import { isTokenRefreshed, onMutationUnauthorized } from '@netcracker/qubership-apihub-ui-shared/utils/security'
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import { useMutation } from '@tanstack/react-query'
@@ -34,7 +42,6 @@ import { useShowErrorNotification } from '../BasePage/Notification'
 import { useAsyncInvalidateVersionContent } from '../usePackageVersionContent'
 import { useAsyncInvalidateVersionSources } from '../useVersionSources'
 import { PackageVersionBuilder } from './package-version-builder'
-import { SESSION_STORAGE_KEY_LAST_IDENTITY_PROVIDER_ID } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
 
 export function usePublishPackageVersion(): [PublishPackageVersion, IsLoading, IsSuccess] {
   const { packageId } = useParams()
@@ -97,7 +104,6 @@ export type PublishOptions = {
   files?: BuildConfigFile[]
   sources?: File[]
   buildType: BuildType
-  lastIdentityProviderId: string | null
 }
 
 function toPublishOptions(
@@ -118,7 +124,6 @@ function toPublishOptions(
     files: files,
     sources: sources,
     buildType: BUILD_TYPE.BUILD,
-    lastIdentityProviderId: localStorage.getItem(SESSION_STORAGE_KEY_LAST_IDENTITY_PROVIDER_ID),
   }
 }
 
