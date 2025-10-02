@@ -14,35 +14,35 @@
  * limitations under the License.
  */
 
-import { Box, IconButton } from '@mui/material'
-import type { FC } from 'react'
-import { memo, useCallback, useEffect } from 'react'
-import { generatePath, Outlet } from 'react-router-dom'
-import { MainPageProvider } from '../MainPage/MainPageProvider'
-import { GlobalSearchPanel } from './GlobalSearchPanel/GlobalSearchPanel'
+import {Box, IconButton} from '@mui/material'
+import {FC, useMemo} from 'react'
+import {memo, useCallback, useEffect} from 'react'
+import {generatePath, Outlet} from 'react-router-dom'
+import {MainPageProvider} from '../MainPage/MainPageProvider'
+import {GlobalSearchPanel} from './GlobalSearchPanel/GlobalSearchPanel'
 
-import { useEventBus } from '@apihub/routes/EventBusProvider'
+import {useEventBus} from '@apihub/routes/EventBusProvider'
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
-import type { Theme } from '@mui/material/styles'
-import type { SystemStyleObject } from '@mui/system/styleFunctionSx/styleFunctionSx'
-import { AppHeader } from '@netcracker/qubership-apihub-ui-shared/components/AppHeader'
-import { ExceptionSituationHandler } from '@netcracker/qubership-apihub-ui-shared/components/ExceptionSituationHandler'
+import type {Theme} from '@mui/material/styles'
+import type {SystemStyleObject} from '@mui/system/styleFunctionSx/styleFunctionSx'
+import {AppHeader} from '@netcracker/qubership-apihub-ui-shared/components/AppHeader'
+import {ExceptionSituationHandler} from '@netcracker/qubership-apihub-ui-shared/components/ExceptionSituationHandler'
 import {
   MaintenanceNotification,
   NOTIFICATION_HEIGHT,
 } from '@netcracker/qubership-apihub-ui-shared/components/MaintenanceNotification'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { SystemInfoPopup, useSystemInfo } from '@netcracker/qubership-apihub-ui-shared/features/system-info'
-import { useSuperAdminCheck } from '@netcracker/qubership-apihub-ui-shared/hooks/user-roles/useSuperAdminCheck'
-import { LogoIcon } from '@netcracker/qubership-apihub-ui-shared/icons/LogoIcon'
-import { cutViewPortStyleCalculator } from '@netcracker/qubership-apihub-ui-shared/utils/themes'
-import { matchPathname } from '@netcracker/qubership-apihub-ui-shared/utils/urls'
+import type {Key} from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import {SystemInfoPopup, useSystemInfo} from '@netcracker/qubership-apihub-ui-shared/features/system-info'
+import {useSuperAdminCheck} from '@netcracker/qubership-apihub-ui-shared/hooks/user-roles/useSuperAdminCheck'
+import {LogoIcon} from '@netcracker/qubership-apihub-ui-shared/icons/LogoIcon'
+import {cutViewPortStyleCalculator} from '@netcracker/qubership-apihub-ui-shared/utils/themes'
+import {matchPathname} from '@netcracker/qubership-apihub-ui-shared/utils/urls'
 import * as packageJson from '../../../../package.json'
-import { PORTAL_PATH_PATTERNS } from '../../../routes'
-import { Notification, useShowErrorNotification } from '../BasePage/Notification'
-import { PortalSettingsButton } from './PortalSettingsButton'
-import { UserPanel } from './UserPanel'
-import { useVersionInfo } from '@netcracker/qubership-apihub-ui-shared/hooks/frontend-version/useVersionInfo'
+import {PORTAL_PATH_PATTERNS} from '../../../routes'
+import {Notification, useShowErrorNotification} from '../BasePage/Notification'
+import {PortalSettingsButton} from './PortalSettingsButton'
+import {UserPanel} from './UserPanel'
+import {useVersionInfo} from '@netcracker/qubership-apihub-ui-shared/hooks/frontend-version/useVersionInfo'
 import {
   ModuleFetchingErrorBoundary,
 } from '@netcracker/qubership-apihub-ui-shared/components/ModuleFetchingErrorBoundary/ModuleFetchingErrorBoundary'
@@ -52,17 +52,16 @@ import {
 import {
   AppHeaderDivider,
 } from '@netcracker/qubership-apihub-ui-shared/components/Dividers/AppHeaderDivider/AppHeaderDivider'
-import { PackageVersionBuilder } from '@apihub/routes/root/PortalPage/package-version-builder'
-import { SESSION_STORAGE_KEY_LAST_IDENTITY_PROVIDER_ID } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
-import { useAgentEnabled } from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
+import {PackageVersionBuilder} from '@apihub/routes/root/PortalPage/package-version-builder'
+import {SESSION_STORAGE_KEY_LAST_IDENTITY_PROVIDER_ID} from '@netcracker/qubership-apihub-ui-shared/utils/constants'
+import {useAgentEnabled} from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
 
 export const BasePage: FC = memo(() => {
-  const { notification: systemNotification } = useSystemInfo()
+  const {notification: systemNotification} = useSystemInfo()
   const showErrorNotification = useShowErrorNotification()
   const isSuperAdmin = useSuperAdminCheck()
-  const { frontendVersion, apiProcessorVersion } = useVersionInfo()
+  const {frontendVersion, apiProcessorVersion} = useVersionInfo()
   const agentEnabled = useAgentEnabled()
-  let links = [{ name: 'Portal', pathname: '/portal', active: true, testId: 'PortalHeaderButton' }]
   const viewPortStyleCalculator = useCallback(
     (theme: Theme): SystemStyleObject<Theme> => {
       return cutViewPortStyleCalculator(theme, systemNotification ? NOTIFICATION_HEIGHT : 0)
@@ -74,13 +73,18 @@ export const BasePage: FC = memo(() => {
     PackageVersionBuilder.init(localStorage.getItem(SESSION_STORAGE_KEY_LAST_IDENTITY_PROVIDER_ID)).then()
   }, [])
 
-  useEffect(() => {
-    if (agentEnabled) {
-      links = [
-        { name: 'Portal', pathname: '/portal', active: true, testId: 'PortalHeaderButton' },
-        { name: 'Agent', pathname: '/agents', testId: 'AgentHeaderButton', active: false }]
-    }
-  }, [agentEnabled])
+  const links = useMemo(
+    () => (agentEnabled
+      ? [
+        {name: 'Portal', pathname: '/portal', active: true, testId: 'PortalHeaderButton'},
+        {name: 'Agent', pathname: '/agents', active: false, testId: 'AgentHeaderButton'},
+      ]
+      : [
+        {name: 'Portal', pathname: '/portal', active: true, testId: 'PortalHeaderButton'},
+      ]),
+    [agentEnabled],
+  )
+
 
   return (
     <MainPageProvider>
@@ -127,7 +131,7 @@ export const BasePage: FC = memo(() => {
 })
 
 const SearchButton: FC = memo(() => {
-  const { showGlobalSearchPanel } = useEventBus()
+  const {showGlobalSearchPanel} = useEventBus()
   return (
     <IconButton
       data-testid="GlobalSearchButton"

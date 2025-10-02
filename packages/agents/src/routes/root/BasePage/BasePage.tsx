@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import type { FC} from 'react'
+import type {FC} from 'react'
+import { useMemo} from 'react'
 import { useEffect } from 'react'
 import { memo, useCallback } from 'react'
 import { Outlet } from 'react-router-dom'
@@ -52,15 +53,18 @@ export const BasePage: FC = memo(() => {
     },
     [],
   )
-  let links = [{ name: 'Portal', pathname: '/portal', active: true, testId: 'PortalHeaderButton' }]
 
-  useEffect(() => {
-    if (agentEnabled) {
-      links = [
+  const links = useMemo(
+    () => (agentEnabled
+      ? [
         { name: 'Portal', pathname: '/portal', active: true, testId: 'PortalHeaderButton' },
-        { name: 'Agent', pathname: '/agents', testId: 'AgentHeaderButton', active: false }]
-    }
-  }, [agentEnabled])
+        { name: 'Agent', pathname: '/agents', active: false, testId: 'AgentHeaderButton' },
+      ]
+      : [
+        { name: 'Portal', pathname: '/portal', active: true, testId: 'PortalHeaderButton' },
+      ]),
+    [agentEnabled],
+  )
 
   return (
     <ModuleFetchingErrorBoundary showReloadPopup={packageJson.version !== frontendVersion}>
