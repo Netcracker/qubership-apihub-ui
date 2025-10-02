@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
+import type { FC} from 'react'
+import { useEffect } from 'react'
 import { memo, useCallback } from 'react'
 import { Outlet } from 'react-router-dom'
 import { Box } from '@mui/material'
@@ -39,17 +40,27 @@ import {
 import {
   AppHeaderDivider,
 } from '@netcracker/qubership-apihub-ui-shared/components/Dividers/AppHeaderDivider/AppHeaderDivider'
+import { useAgentEnabled } from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
 
 export const BasePage: FC = memo(() => {
   const { notification: systemNotification } = useSystemInfo()
   const { frontendVersion, apiProcessorVersion } = useVersionInfo(agent)
-
+  const agentEnabled = useAgentEnabled()
   const viewPortStyleCalculator = useCallback(
     (theme: Theme): SystemStyleObject<Theme> => {
       return cutViewPortStyleCalculator(theme, 0)
     },
     [],
   )
+  let links = [{ name: 'Portal', pathname: '/portal', active: true, testId: 'PortalHeaderButton' }]
+
+  useEffect(() => {
+    if (agentEnabled) {
+      links = [
+        { name: 'Portal', pathname: '/portal', active: true, testId: 'PortalHeaderButton' },
+        { name: 'Agent', pathname: '/agents', testId: 'AgentHeaderButton', active: false }]
+    }
+  }, [agentEnabled])
 
   return (
     <ModuleFetchingErrorBoundary showReloadPopup={packageJson.version !== frontendVersion}>
@@ -59,30 +70,27 @@ export const BasePage: FC = memo(() => {
         height="100vh"
       >
         <AppHeader
-          logo={<LogoIcon />}
+          logo={<LogoIcon/>}
           title="APIHUB"
-          links={[
-            { name: 'Portal', pathname: '/portal', testId: 'PortalHeaderButton' },
-            { name: 'Agent', pathname: '/agents', active: true, testId: 'AgentHeaderButton' },
-          ]}
+          links={links}
           action={
             <>
-              <VsCodeExtensionButton />
-              <AppHeaderDivider />
+              <VsCodeExtensionButton/>
+              <AppHeaderDivider/>
               <SystemInfoPopup
                 frontendVersionKey={frontendVersion}
                 apiProcessorVersion={apiProcessorVersion}
               />
-              <UserPanel />
+              <UserPanel/>
             </>
           }
         />
         <Box sx={viewPortStyleCalculator}>
-          <Outlet />
-          <ErrorNotificationHandler />
-          <SuccessNotificationHandler />
+          <Outlet/>
+          <ErrorNotificationHandler/>
+          <SuccessNotificationHandler/>
         </Box>
-        {systemNotification && <MaintenanceNotification value={systemNotification} />}
+        {systemNotification && <MaintenanceNotification value={systemNotification}/>}
       </Box>
     </ModuleFetchingErrorBoundary>
   )

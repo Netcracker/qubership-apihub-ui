@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
+import type { FC} from 'react'
+import { useEffect } from 'react'
 import { memo, useCallback, useMemo } from 'react'
 import { AuthenticationReports } from './AuthenticationReports'
 import { RoutingReports } from './RoutingReports'
@@ -27,6 +28,9 @@ import { TabsPanel } from '@netcracker/qubership-apihub-ui-shared/components/Pan
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
+import {
+  useNcServiceEnabled,
+} from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
 
 // High Order Component //
 export const SecurityReportsPage: FC = memo(() => {
@@ -51,6 +55,14 @@ export const SecurityReportsPage: FC = memo(() => {
       search: { [WORKSPACE_SEARCH_PARAM]: { value: workspace } },
     })
   }, [agentId, namespaceKey, navigateToNamespace, workspace])
+  let tabs = SECURITY_REPORTS_TABS
+  const useNcService = useNcServiceEnabled()
+  useEffect(() => {
+    tabs = [...tabs, {
+      key: ROUTING_REPORTS_PAGE,
+      name: 'Gateway Routing Report',
+    }]
+  }, [useNcService])
 
   return (
     <BodyCard
@@ -58,7 +70,7 @@ export const SecurityReportsPage: FC = memo(() => {
       body={
         <TabsPanel
           activeTab={securitySubTab as SecurityReportsTabs}
-          tabs={SECURITY_REPORTS_TABS}
+          tabs={tabs}
           panels={tabPanels}
           separator
           onChangeTab={onChangeTab}
@@ -73,7 +85,4 @@ export type SecurityReportsTabs = typeof AUTHENTICATION_REPORTS_PAGE | typeof RO
 const SECURITY_REPORTS_TABS: TabItem<SecurityReportsTabs>[] = [{
   key: AUTHENTICATION_REPORTS_PAGE,
   name: 'Authentication Check Report',
-}, {
-  key: ROUTING_REPORTS_PAGE,
-  name: 'Gateway Routing Report',
 }]

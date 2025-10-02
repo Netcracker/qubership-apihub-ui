@@ -30,6 +30,9 @@ import {
 } from './ServicesPage/ServicesPageProvider/ServicesPublicationOptionsProvider'
 import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
+import {
+  useGetAgentPrefix,
+} from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
 
 const SNAPSHOT_PUBLICATION_INFO_QUERY_KEY = 'snapshot-publish-info-query-key'
 
@@ -49,7 +52,7 @@ export function useSnapshotPublicationInfo(options?: {
   const { createSnapshotPublicationOptions: { name } } = useCreateSnapshotPublicationOptions()
   const snapshotKey = options?.snapshotKey ?? name
   const promotion = options?.promote ?? false
-
+  const prefix = useGetAgentPrefix()
   const {
     data,
     isLoading,
@@ -57,7 +60,7 @@ export function useSnapshotPublicationInfo(options?: {
     isSuccess,
   } = useQuery<SnapshotPublicationInfoDto, Error, SnapshotPublicationInfo>({
     queryKey: [SNAPSHOT_PUBLICATION_INFO_QUERY_KEY, namespaceKey, snapshotKey, promotion],
-    queryFn: () => getSnapshotPublicationInfo(agentId!, namespaceKey!, workspaceKey!, snapshotKey!, promotion),
+    queryFn: () => getSnapshotPublicationInfo(agentId!, namespaceKey!, workspaceKey!, snapshotKey!, promotion, prefix),
     enabled: !!namespaceKey && !!snapshotKey,
     select: toSnapshotPublicationInfo,
   })

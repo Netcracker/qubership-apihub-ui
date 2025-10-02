@@ -36,8 +36,8 @@ export const EMPTY_AGENT: Agent = {
   status: '',
 }
 
-export async function getAgents(): Promise<Agents> {
-  return await requestJson<Agents>('/api/v2/agents', {
+export async function getAgents(prefix: string): Promise<Agents> {
+  return await requestJson<Agents>(`${prefix}/api/v2/agents`, {
     method: 'get',
   })
 }

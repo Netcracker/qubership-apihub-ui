@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import type { AgentKey, NamespaceKey, SnapshotKey, WorkspaceKey } from './keys'
-import type { ServicePublishInfo, ServicePublishInfoDto } from './service-publish-info'
-import { toServicePublishInfo } from './service-publish-info'
-import { ncCustomAgentsRequestJson } from '@apihub/utils/requests'
-import { API_V2 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
-import { APIHUB_NC_BASE_PATH } from '@netcracker/qubership-apihub-ui-shared/utils/urls'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type {AgentKey, NamespaceKey, SnapshotKey, WorkspaceKey} from './keys'
+import type {ServicePublishInfo, ServicePublishInfoDto} from './service-publish-info'
+import {toServicePublishInfo} from './service-publish-info'
+import {ncCustomAgentsRequestJson} from '@apihub/utils/requests'
+import {API_V2} from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import type {ApiType} from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 
 export type SnapshotPublicationInfo = Readonly<{
   services: ReadonlyArray<ServicePublishInfo>
@@ -49,12 +48,13 @@ export async function getSnapshotPublicationInfo(
   workspaceKey: WorkspaceKey,
   snapshotKey: SnapshotKey,
   promote = false,
+  prefix: string,
 ): Promise<SnapshotPublicationInfoDto> {
   return await ncCustomAgentsRequestJson<SnapshotPublicationInfoDto>(`/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/snapshots/${snapshotKey}?promote=${promote}`, {
       method: 'get',
     },
     {
-      basePath: `${APIHUB_NC_BASE_PATH}${API_V2}`,
+      basePath: `${prefix}/${API_V2}`,
       ignoreNotFound: true,
     },
   )
