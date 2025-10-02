@@ -29,13 +29,14 @@ import { toPublishConfig } from '@apihub/entities/publish-config'
 import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import { v4 as uuidv4 } from 'uuid'
+import {useGetAgentPrefix} from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
 
 export function useCreateSnapshot(): [CreateSnapshot, IsLoading, IsSuccess, IsError, Error | null] {
   const { agentId, namespaceKey } = useParams()
   const workspaceKey = useSearchParam(WORKSPACE_SEARCH_PARAM)
   const { setCreateSnapshotPublicationOptions } = useCreateSnapshotPublicationOptions()
   const invalidateSnapshots = useInvalidateSnapshots()
-
+  const prefix = useGetAgentPrefix()
   const {
     mutate,
     isLoading,
@@ -55,6 +56,7 @@ export function useCreateSnapshot(): [CreateSnapshot, IsLoading, IsSuccess, IsEr
         name,
         baseline,
         serviceKeys,
+        prefix,
         builderId,
       )
 
