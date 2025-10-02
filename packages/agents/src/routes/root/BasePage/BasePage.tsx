@@ -15,23 +15,22 @@
  */
 
 import type {FC} from 'react'
-import { useMemo} from 'react'
-import { useEffect } from 'react'
-import { memo, useCallback } from 'react'
-import { Outlet } from 'react-router-dom'
-import { Box } from '@mui/material'
-import { UserPanel } from './UserPanel'
-import type { Theme } from '@mui/material/styles'
-import type { SystemStyleObject } from '@mui/system/styleFunctionSx/styleFunctionSx'
-import { ErrorNotificationHandler, SuccessNotificationHandler } from './NotificationHandler'
-import { cutViewPortStyleCalculator } from '@netcracker/qubership-apihub-ui-shared/utils/themes'
-import { LogoIcon } from '@netcracker/qubership-apihub-ui-shared/icons/LogoIcon'
-import { AppHeader } from '@netcracker/qubership-apihub-ui-shared/components/AppHeader'
-import { MaintenanceNotification } from '@netcracker/qubership-apihub-ui-shared/components/MaintenanceNotification'
-import { SystemInfoPopup, useSystemInfo } from '@netcracker/qubership-apihub-ui-shared/features/system-info'
+import {useMemo} from 'react'
+import {memo, useCallback} from 'react'
+import {Outlet} from 'react-router-dom'
+import {Box} from '@mui/material'
+import {UserPanel} from './UserPanel'
+import type {Theme} from '@mui/material/styles'
+import type {SystemStyleObject} from '@mui/system/styleFunctionSx/styleFunctionSx'
+import {ErrorNotificationHandler, SuccessNotificationHandler} from './NotificationHandler'
+import {cutViewPortStyleCalculator} from '@netcracker/qubership-apihub-ui-shared/utils/themes'
+import {LogoIcon} from '@netcracker/qubership-apihub-ui-shared/icons/LogoIcon'
+import {AppHeader} from '@netcracker/qubership-apihub-ui-shared/components/AppHeader'
+import {MaintenanceNotification} from '@netcracker/qubership-apihub-ui-shared/components/MaintenanceNotification'
+import {SystemInfoPopup, useSystemInfo} from '@netcracker/qubership-apihub-ui-shared/features/system-info'
 import * as packageJson from '../../../../package.json'
-import { useVersionInfo } from '@netcracker/qubership-apihub-ui-shared/hooks/frontend-version/useVersionInfo'
-import { agent } from '@netcracker/qubership-apihub-ui-shared/utils/version-info'
+import {useVersionInfo} from '@netcracker/qubership-apihub-ui-shared/hooks/frontend-version/useVersionInfo'
+import {agent} from '@netcracker/qubership-apihub-ui-shared/utils/version-info'
 import {
   ModuleFetchingErrorBoundary,
 } from '@netcracker/qubership-apihub-ui-shared/components/ModuleFetchingErrorBoundary/ModuleFetchingErrorBoundary'
@@ -41,11 +40,11 @@ import {
 import {
   AppHeaderDivider,
 } from '@netcracker/qubership-apihub-ui-shared/components/Dividers/AppHeaderDivider/AppHeaderDivider'
-import { useAgentEnabled } from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
+import {useAgentEnabled} from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
 
 export const BasePage: FC = memo(() => {
-  const { notification: systemNotification } = useSystemInfo()
-  const { frontendVersion, apiProcessorVersion } = useVersionInfo(agent)
+  const {notification: systemNotification} = useSystemInfo()
+  const {frontendVersion, apiProcessorVersion} = useVersionInfo(agent)
   const agentEnabled = useAgentEnabled()
   const viewPortStyleCalculator = useCallback(
     (theme: Theme): SystemStyleObject<Theme> => {
@@ -57,11 +56,11 @@ export const BasePage: FC = memo(() => {
   const links = useMemo(
     () => (agentEnabled
       ? [
-        { name: 'Portal', pathname: '/portal', active: true, testId: 'PortalHeaderButton' },
-        { name: 'Agent', pathname: '/agents', active: false, testId: 'AgentHeaderButton' },
+        {name: 'Portal', pathname: '/portal', testId: 'PortalHeaderButton'},
+        {name: 'Agent', pathname: '/agents', active: true, testId: 'AgentHeaderButton'},
       ]
       : [
-        { name: 'Portal', pathname: '/portal', active: true, testId: 'PortalHeaderButton' },
+        {name: 'Portal', pathname: '/portal', active: true, testId: 'PortalHeaderButton'},
       ]),
     [agentEnabled],
   )

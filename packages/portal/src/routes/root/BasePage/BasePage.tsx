@@ -15,7 +15,8 @@
  */
 
 import {Box, IconButton} from '@mui/material'
-import {FC, useMemo} from 'react'
+import type {FC} from 'react'
+import { useMemo} from 'react'
 import {memo, useCallback, useEffect} from 'react'
 import {generatePath, Outlet} from 'react-router-dom'
 import {MainPageProvider} from '../MainPage/MainPageProvider'
@@ -77,7 +78,7 @@ export const BasePage: FC = memo(() => {
     () => (agentEnabled
       ? [
         {name: 'Portal', pathname: '/portal', active: true, testId: 'PortalHeaderButton'},
-        {name: 'Agent', pathname: '/agents', active: false, testId: 'AgentHeaderButton'},
+        {name: 'Agent', pathname: '/agents', testId: 'AgentHeaderButton'},
       ]
       : [
         {name: 'Portal', pathname: '/portal', active: true, testId: 'PortalHeaderButton'},
