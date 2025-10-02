@@ -46,5 +46,5 @@ export async function getNamespaces(agentKey: Key, prefix: string): Promise<Name
   return await portalRequestJson<NamespacesDto>(`/agents/${agentId}/namespaces`, {
       method: 'get',
     },
-    {basePath: `${prefix}/${API_V2}`})
+    {basePath: `${prefix}${API_V2}`})
 }

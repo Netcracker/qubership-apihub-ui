@@ -54,7 +54,7 @@ export async function getSnapshotPublicationInfo(
       method: 'get',
     },
     {
-      basePath: `${prefix}/${API_V2}`,
+      basePath: `${prefix}${API_V2}`,
       ignoreNotFound: true,
     },
   )

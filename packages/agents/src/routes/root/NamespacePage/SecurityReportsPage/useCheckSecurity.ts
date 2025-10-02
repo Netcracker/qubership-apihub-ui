@@ -52,7 +52,7 @@ async function startSecurityCheck(
       method: 'POST',
       body: JSON.stringify({agentId, name, workspaceId}),
     },
-    {basePath: `${prefix}/${API_V2}`},
+    {basePath: `${prefix}${API_V2}`},
   )
 }
 

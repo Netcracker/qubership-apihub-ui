@@ -72,7 +72,7 @@ export async function getSnapshots(
   return await requestJson<SnapshotsDto>(`/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/snapshots`, {
       method: 'get',
     },
-    {basePath: `${prefix}/${API_V2}`},
+    {basePath: `${prefix}${API_V2}`},
   )
 }
 
@@ -112,7 +112,7 @@ export async function publishSnapshot(
       }),
     },
     {
-      basePath: `${prefix}/${API_V2}`,
+      basePath: `${prefix}${API_V2}`,
     },
   )
 }

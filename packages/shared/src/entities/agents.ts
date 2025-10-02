@@ -39,5 +39,5 @@ export const EMPTY_AGENT: Agent = {
 export async function getAgents(prefix: string): Promise<Agents> {
   return await requestJson<Agents>('/agents', {
     method: 'get',
-  }, {basePath: `${prefix}/${API_V2}`})
+  }, {basePath: `${prefix}${API_V2}`})
 }

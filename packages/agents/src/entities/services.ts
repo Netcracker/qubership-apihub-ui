@@ -110,7 +110,7 @@ export async function getServices(
     {
       method: 'get',
     },
-    {basePath: `${prefix}/${API_V2}`},
+    {basePath: `${prefix}${API_V2}`},
   )
   if (onlyWithSpecs) {
     return {
@@ -130,6 +130,6 @@ export async function runServiceDiscovery(
   return await requestVoid(`/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/discover`, {
       method: 'post',
     },
-    {basePath: `${prefix}/${API_V2}`},
+    {basePath: `${prefix}${API_V2}`},
   )
 }

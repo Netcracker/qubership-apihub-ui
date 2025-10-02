@@ -254,7 +254,7 @@ function getAgentProxyServerUrl(prefix: string, serviceKey?: string, agentId?: s
     return ''
   }
 
-  return `${prefix}/${API_V2}/agents/${agentId}/namespaces/${namespace}/services/${serviceKey}/proxy${endpoint}`
+  return `${prefix}${API_V2}/agents/${agentId}/namespaces/${namespace}/services/${serviceKey}/proxy${endpoint}`
 }
 
 const DEFAULT_GRAPHQL_ENDPOINT = '/api/graphql-server/graphql'
