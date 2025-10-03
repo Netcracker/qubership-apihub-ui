@@ -62,7 +62,7 @@ export const NamespaceNavigationMenu: FC = memo(() => {
   const ncServiceEnabled = useNcServiceEnabled()
 
   const sidebarMenuItems = useMemo(
-    () => (ncServiceEnabled
+    () => (!ncServiceEnabled
         ? MENU_ITEMS
         : [...MENU_ITEMS, {
           id: AUTOMATION_PAGE,

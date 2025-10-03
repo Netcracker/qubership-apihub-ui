@@ -57,7 +57,7 @@ export const SecurityReportsPage: FC = memo(() => {
   const ncServiceEnabled = useNcServiceEnabled()
 
   const tabs: TabItem<SecurityReportsTabs>[] = useMemo(
-    () => (ncServiceEnabled
+    () => (!ncServiceEnabled
         ? SECURITY_REPORTS_TABS
         : [...SECURITY_REPORTS_TABS, {
           key: ROUTING_REPORTS_PAGE,
