@@ -56,8 +56,8 @@ export function useCreateSnapshot(): [CreateSnapshot, IsLoading, IsSuccess, IsEr
         name,
         baseline,
         serviceKeys,
-        prefix,
         builderId,
+        prefix,
       )
 
       return toPublishConfig(publishConfigDto, builderId)
