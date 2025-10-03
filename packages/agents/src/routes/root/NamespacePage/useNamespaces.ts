@@ -25,14 +25,16 @@ import {
   toNamespaces,
 } from '@netcracker/qubership-apihub-ui-shared/entities/namespaces'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import {useGetAgentPrefix} from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
 
 const NAMESPACES_QUERY_KEY = 'namespaces-query-key'
 
 export function useNamespaces(): [Namespaces, IsLoading] {
   const { agentId: agentKey } = useParams()
+  const prefix = useGetAgentPrefix()
   const { data, isLoading } = useQuery<NamespacesDto, Error, Namespaces>({
     queryKey: [NAMESPACES_QUERY_KEY, agentKey],
-    queryFn: () => getNamespaces(agentKey!),
+    queryFn: () => getNamespaces(agentKey!, prefix),
     select: toNamespaces,
     enabled: !!agentKey,
   })

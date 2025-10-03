@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-import { useMutation } from '@tanstack/react-query'
+import {useMutation} from '@tanstack/react-query'
 import fileDownload from 'js-file-download'
-import type { Key } from '@apihub/entities/keys'
-import type { SecurityReportType } from './useSecurityReports'
-import { SECURITY_REPORT_TYPE_AUTH_CHECK, SECURITY_REPORT_TYPE_GATEWAY_ROUTING } from './useSecurityReports'
-import { ncCustomAgentsRequestBlob } from '@apihub/utils/requests'
-import { generatePath } from 'react-router-dom'
-import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { APIHUB_NC_BASE_PATH } from '@netcracker/qubership-apihub-ui-shared/utils/urls'
-import { API_V2, API_V3 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import type {Key} from '@apihub/entities/keys'
+import type {SecurityReportType} from './useSecurityReports'
+import {SECURITY_REPORT_TYPE_AUTH_CHECK, SECURITY_REPORT_TYPE_GATEWAY_ROUTING} from './useSecurityReports'
+import {generatePath} from 'react-router-dom'
+import type {IsLoading} from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import {API_V2, API_V3, requestBlob} from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import {useGetAgentPrefix} from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
+import {APIHUB_NC_BASE_PATH} from "@netcracker/qubership-apihub-ui-shared/utils/urls";
 
 export function useDownloadSecurityReport(): [DownloadSecurityReportFunction, IsLoading] {
-  const { mutate, isLoading } = useMutation<void, Error, Options>({
+  const prefix = useGetAgentPrefix()
+  const {mutate, isLoading} = useMutation<void, Error, Options>({
     mutationFn: ({
-      processKey,
-      type,
-    }) => downloadSecurityReport(processKey!, type),
+                   processKey,
+                   type,
+                 }) => downloadSecurityReport(processKey!, type, prefix),
   })
   return [mutate, isLoading]
 }
@@ -38,17 +39,18 @@ export function useDownloadSecurityReport(): [DownloadSecurityReportFunction, Is
 export const downloadSecurityReport = async (
   processKey: Key,
   type: SecurityReportType,
+  prefix: string,
 ): Promise<void> => {
   const processId = encodeURIComponent(processKey)
 
   const [reportPath, apiPath] = reportTypeToPath[type]
   const pathPattern = '/security/:reportPath/:processId/report'
-  const response = await ncCustomAgentsRequestBlob(
-    generatePath(pathPattern, { reportPath, processId }),
+  const response = await requestBlob(
+    generatePath(pathPattern, {reportPath, processId}),
     {
       method: 'GET',
     }, {
-      basePath: `${APIHUB_NC_BASE_PATH}${apiPath}`,
+      basePath: type === SECURITY_REPORT_TYPE_AUTH_CHECK ? `${prefix}/${apiPath}` : `${APIHUB_NC_BASE_PATH}${apiPath}`,
     },
   )
 
