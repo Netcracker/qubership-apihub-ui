@@ -36,6 +36,7 @@ export function useNamespaceIdentityProviderUrl(options: {
   const {data, isLoading} = useQuery<IdpUrlDto, Error, string>({
     queryKey: [IDENTITY_PROVIDER_URL_QUERY_KEY, agentKey, namespaceKey],
     queryFn: () => fetchIdpUrl(agentKey!, namespaceKey, ncServicePrefix),
+    enabled: !!ncServicePrefix,
     select: idpToString,
   })
 
