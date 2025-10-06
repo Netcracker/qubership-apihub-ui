@@ -132,7 +132,7 @@ export async function getSpecBlob(
     `/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/services/${serviceKey}/specs/${encodeURIComponent(specKey)}`,
     {method: 'get'},
     {
-      basePath: `${prefix}${API_V2}`,
+      basePath: `/${prefix}${API_V2}`,
       customErrorHandler: ignoreErrors ? () => {/*do nothing*/
       } : undefined,
     },

@@ -68,17 +68,6 @@ http {
             return 400;
         }
 
-        # /api/v2/agents ... -> agents-backend
-        location ~ ^/api/v2/agents(?:/.*)?$ {
-            add_header Cache-Control "no-store" always;
-            set $agents_backend_upstream http://${APIHUB_AGENTS_BACKEND_ADDRESS};
-            proxy_pass $agents_backend_upstream;
-
-            proxy_connect_timeout 1s;
-            proxy_next_upstream off;
-            proxy_intercept_errors off;
-        }
-
         # API endpoints proxifying to backend. Static upstream resolution
         location ~ ^/(?:api|ws|saml|login/gitlab|login/sso|debug|playground)(?:/.*)?$ {
             add_header Cache-Control "no-store" always;

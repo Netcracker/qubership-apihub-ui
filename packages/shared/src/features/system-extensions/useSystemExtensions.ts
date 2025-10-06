@@ -26,7 +26,7 @@ export function useGetAgentPrefix(): string {
   const extensions = useSystemExtensions()
   const agentEnabled = useAgentEnabled()
 
-  return useMemo(() => (agentEnabled ? `/${findExtensions(extensions, 'agents-backend')?.pathPrefix}` || '' : ''), [extensions, agentEnabled])
+  return useMemo(() => (agentEnabled ? `/${findExtensions(extensions, 'agents-backend')?.pathPrefix}` : ''), [extensions, agentEnabled])
 }
 
 export function findExtensions(extensions: SystemExtension[], name: string): SystemExtension | undefined {

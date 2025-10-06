@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-import type { FetchNextPageOptions, InfiniteQueryObserverResult } from '@tanstack/react-query'
-import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
-import { useMemo } from 'react'
-import { generatePath } from 'react-router-dom'
-import { ncCustomAgentsRequestJson } from '@apihub/utils/requests'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { SecurityReports } from '@netcracker/qubership-apihub-ui-shared/components/SecurityReportsTable'
+import type {FetchNextPageOptions, InfiniteQueryObserverResult} from '@tanstack/react-query'
+import {useInfiniteQuery, useQueryClient} from '@tanstack/react-query'
+import {useMemo} from 'react'
+import {generatePath} from 'react-router-dom'
+import {ncCustomAgentsRequestJson} from '@apihub/utils/requests'
+import type {Key} from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type {SecurityReports} from '@netcracker/qubership-apihub-ui-shared/components/SecurityReportsTable'
 import type {
   HasNextPage,
   InvalidateQuery,
   IsFetchingNextPage,
   IsLoading,
 } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { APIHUB_NC_BASE_PATH } from '@netcracker/qubership-apihub-ui-shared/utils/urls'
-import { API_V3, API_V4 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import {optionalSearchParams} from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import {APIHUB_NC_BASE_PATH} from '@netcracker/qubership-apihub-ui-shared/utils/urls'
+import {API_V3, API_V4} from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import {useGetAgentPrefix} from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
 
 export const SECURITY_REPORT_TYPE_AUTH_CHECK = 'authentication-check'
 export const SECURITY_REPORT_TYPE_GATEWAY_ROUTING = 'gateway-routing'
@@ -52,7 +53,7 @@ export function useSecurityReports(options: {
     limit,
     page,
   } = options
-
+  const prefix = useGetAgentPrefix()
   const {
     data,
     fetchNextPage,
@@ -61,7 +62,7 @@ export function useSecurityReports(options: {
     isLoading,
   } = useInfiniteQuery<SecurityReports, Error, SecurityReports>({
     queryKey: [SECURITY_REPORTS_QUERY_KEY, agentKey, workspaceKey, type, namespaceKey],
-    queryFn: ({ pageParam = page }) => getSecurityReports(agentKey!, namespaceKey, workspaceKey, type, pageParam - 1, limit),
+    queryFn: ({pageParam = page}) => getSecurityReports(agentKey!, namespaceKey, workspaceKey, type, pageParam - 1, prefix, limit),
     getNextPageParam: (lastPage, allPages) => {
       if (!limit) {
         return undefined
@@ -91,25 +92,26 @@ async function getSecurityReports(
   workspaceKey: string,
   type: SecurityReportType,
   page: number = 0,
+  prefix: string,
   limit?: number,
 ): Promise<SecurityReports> {
   const queryParams = optionalSearchParams({
-    agentId: { value: agentKey },
-    name: { value: namespaceKey },
-    workspaceId: { value: workspaceKey },
-    limit: { value: limit },
-    page: { value: page, toStringValue: page => `${page}` },
+    agentId: {value: agentKey},
+    name: {value: namespaceKey},
+    workspaceId: {value: workspaceKey},
+    limit: {value: limit},
+    page: {value: page, toStringValue: page => `${page}`},
   })
 
   const [reportPath, basePath] = reportTypeToPath[type]
-
+  const basePathWithCalcPrefix: string = type === SECURITY_REPORT_TYPE_AUTH_CHECK ? `${prefix}${basePath}` : `${APIHUB_NC_BASE_PATH}${basePath}`
   const pathPattern = '/security/:reportPath'
   const result = await ncCustomAgentsRequestJson<ResultReports>(
-    `${generatePath(pathPattern, { reportPath })}?${queryParams}`,
+    `${generatePath(pathPattern, {reportPath})}?${queryParams}`,
     {
       method: 'GET',
     }, {
-      basePath: `${APIHUB_NC_BASE_PATH}${basePath}`,
+      basePath: basePathWithCalcPrefix,
       customErrorHandler: () => Promise.reject(),
     },
   )
