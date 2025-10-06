@@ -29,6 +29,13 @@ export function useGetAgentPrefix(): string {
   return useMemo(() => (agentEnabled ? `/${findExtensions(extensions, 'agents-backend')?.pathPrefix}` : ''), [extensions, agentEnabled])
 }
 
+export function useGetNcServicePrefix(): string {
+  const extensions = useSystemExtensions()
+  const ncServiceEnabled = useNcServiceEnabled()
+
+  return useMemo(() => (ncServiceEnabled ? `/${findExtensions(extensions, 'nc-service')?.pathPrefix}` : ''), [extensions, ncServiceEnabled])
+}
+
 export function findExtensions(extensions: SystemExtension[], name: string): SystemExtension | undefined {
   return extensions.find(extension => extension.name === name)
 }

@@ -22,16 +22,19 @@ import {SECURITY_REPORT_TYPE_AUTH_CHECK, SECURITY_REPORT_TYPE_GATEWAY_ROUTING} f
 import {generatePath} from 'react-router-dom'
 import type {IsLoading} from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import {API_V2, API_V3, requestBlob} from '@netcracker/qubership-apihub-ui-shared/utils/requests'
-import {useGetAgentPrefix} from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
-import {APIHUB_NC_BASE_PATH} from "@netcracker/qubership-apihub-ui-shared/utils/urls";
+import {
+  useGetAgentPrefix,
+  useGetNcServicePrefix,
+} from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
 
 export function useDownloadSecurityReport(): [DownloadSecurityReportFunction, IsLoading] {
-  const prefix = useGetAgentPrefix()
+  const agentPrefix = useGetAgentPrefix()
+  const ncServicePrefix = useGetNcServicePrefix()
   const {mutate, isLoading} = useMutation<void, Error, Options>({
     mutationFn: ({
                    processKey,
                    type,
-                 }) => downloadSecurityReport(processKey!, type, prefix),
+                 }) => downloadSecurityReport(processKey!, type, type === SECURITY_REPORT_TYPE_AUTH_CHECK ? agentPrefix : ncServicePrefix),
   })
   return [mutate, isLoading]
 }
@@ -50,7 +53,7 @@ export const downloadSecurityReport = async (
     {
       method: 'GET',
     }, {
-      basePath: type === SECURITY_REPORT_TYPE_AUTH_CHECK ? `${prefix}/${apiPath}` : `${APIHUB_NC_BASE_PATH}${apiPath}`,
+      basePath: `${prefix}/${apiPath}`,
     },
   )
 

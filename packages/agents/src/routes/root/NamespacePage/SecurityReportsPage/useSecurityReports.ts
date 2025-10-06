@@ -28,9 +28,11 @@ import type {
   IsLoading,
 } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import {optionalSearchParams} from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import {APIHUB_NC_BASE_PATH} from '@netcracker/qubership-apihub-ui-shared/utils/urls'
 import {API_V3, API_V4} from '@netcracker/qubership-apihub-ui-shared/utils/requests'
-import {useGetAgentPrefix} from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
+import {
+  useGetAgentPrefix,
+  useGetNcServicePrefix,
+} from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
 
 export const SECURITY_REPORT_TYPE_AUTH_CHECK = 'authentication-check'
 export const SECURITY_REPORT_TYPE_GATEWAY_ROUTING = 'gateway-routing'
@@ -53,7 +55,8 @@ export function useSecurityReports(options: {
     limit,
     page,
   } = options
-  const prefix = useGetAgentPrefix()
+  const agentPrefix = useGetAgentPrefix()
+  const ncServicePrefix = useGetNcServicePrefix()
   const {
     data,
     fetchNextPage,
@@ -62,7 +65,7 @@ export function useSecurityReports(options: {
     isLoading,
   } = useInfiniteQuery<SecurityReports, Error, SecurityReports>({
     queryKey: [SECURITY_REPORTS_QUERY_KEY, agentKey, workspaceKey, type, namespaceKey],
-    queryFn: ({pageParam = page}) => getSecurityReports(agentKey!, namespaceKey, workspaceKey, type, pageParam - 1, prefix, limit),
+    queryFn: ({pageParam = page}) => getSecurityReports(agentKey!, namespaceKey, workspaceKey, type, pageParam - 1, type === SECURITY_REPORT_TYPE_AUTH_CHECK ? agentPrefix : ncServicePrefix, limit),
     getNextPageParam: (lastPage, allPages) => {
       if (!limit) {
         return undefined
@@ -104,14 +107,13 @@ async function getSecurityReports(
   })
 
   const [reportPath, basePath] = reportTypeToPath[type]
-  const basePathWithCalcPrefix: string = type === SECURITY_REPORT_TYPE_AUTH_CHECK ? `${prefix}${basePath}` : `${APIHUB_NC_BASE_PATH}${basePath}`
   const pathPattern = '/security/:reportPath'
   const result = await ncCustomAgentsRequestJson<ResultReports>(
     `${generatePath(pathPattern, {reportPath})}?${queryParams}`,
     {
       method: 'GET',
     }, {
-      basePath: basePathWithCalcPrefix,
+      basePath: `${prefix}${basePath}`,
       customErrorHandler: () => Promise.reject(),
     },
   )
