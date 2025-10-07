@@ -1176,6 +1176,49 @@ You cannot add the same package more than one time, i.e. as soon as you add any 
 
 If such situation occurs during configuration of dashboard version, the system highlights all conflicted packages. If you do not resolve conflicts manually and publish such dashboard version, the system will automatically resolve conflicts and will skip some link(s) to the conflicted package. After publication of dashboard version, you can see in Packages menu if some link(s) to package version(s) were automatically skipped.
 
+## Configure Dashboard and Operation Groups by Importing CSV File
+This functionality allows you to configure both dashboards and operation groups directly by uploading a CSV file. You can use this method to automatically create dashboard version and operation groups based on the data provided in the CSV file.
+
+1. Navigate to the Dashboard Version page (either an empty dashboard or an existing dashboard version).
+2. Click the **Create Version** dropdown and select **Import via CSV**.
+3. In the Publish Dashboard Version popup, upload your CSV file in the **Dashboard version config** section. Only .csv files are supported.
+4. In the **Package Search Scope for Dashboard Version** section, select the workspace in which package versions for services from the CSV configuration will be searched. By default, the field will be pre-filled with the default workspace. If no default workspace is configured or it doesn’t exist, the field will be empty.
+5. Fill out the required fields in the Publish Info section as per the standard publishing process.
+6. Once everything is set, click **Publish**. The publication process follows the same steps as for publishing a package version.
+7. After the dashboard version is successfully published, the system will open the newly published version and display a popup with a notification and a button to download the report result.
+
+
+### CSV file must have the following structure:
+- **serviceName** - required column; name of the service (e.g., account-mgmt-core), will be used to identify the relevant package in APIHUB.
+- **serviceVersion** - required column; version of the specified service; package of this version will be included into dashboard. Only one service version must be specified for a specific service, i.e. CSV file must not contain the same service name with different version. If there will be different versions of one service, then only one package version will be included into dashboard.
+- **method** - HTTP method of the REST API operation (e.g., GET, POST, PATCH, DELETE).
+- **path** - endpoint of the API operation (e.g., /accountManagement/v2/billingAccount). Represent dynamic parts of the path using {parameterName} (e.g., /accountManagement/v2/billingAccount/{id}) or * for dynamic segments (e.g., /catalog/bulk/v1/loader/job/*).
+
+The file must use a semicolon ; as the delimiter.
+
+### Operation Groups:
+If both **method** and **path** columns are specified in the CSV file, the system will search for operations based on the method and path in the found package versions. It will then create a manual operation group and include all matching operations into this group. The operation group will be created with the following attributes:
+- **Group Name**: The name of the dashboard.
+- **API Type**: Set to rest.
+- **Group Type**: Set to manual.
+
+### Report Generation:
+The generated Excel report will contain:
+- The original data from the uploaded CSV file.
+- An additional column that provides a status or error message for each row, explaining any issues that were encountered.  
+
+Below is a list of potential error messages or status updates that may appear in the report, along with explanations of when each error or status occurs:  
+- **empty service name**: This error occurs when a row is missing the serviceName field in the CSV file. The service name is mandatory for identifying the relevant package.  
+- **empty service version**: This error appears if the serviceVersion field is missing for a service that has a serviceName. Both fields are required for identifying the correct version of the service.  
+- **empty method**: This error occurs when the method field is missing (e.g, GET, POST, PATCH, DELETE), but a valid path is provided for the API operation.  
+- **empty path**: This error occurs when the path field is missing, but the method is provided.
+- **endpoint not found**: This error occurs when the specified path** and method combination do not exist in the found package version.  
+- **service version doesn't exist**: This error occurs when the specified serviceVersion does not match any available version of the found package.
+- **service version not in 'release' status**: This error indicates that the specified serviceVersion exists in the found package but is not in a release status. Only package version with release status can be included in the dashboard version.  
+- **service already matched with '\<version name>' version**: This error occurs when the package version was found, but another version of this package already included into dashboard.
+- **ok**: No errors were encountered with that row, and it has been processed successfully.
+
+
 ## Publish Dashboard Version
 
 After you configured your dashboard version, you can publish it by clicking **Publish**. The publication process for dashboard version is the same as for package version, see more details in _publish package version_ section.
