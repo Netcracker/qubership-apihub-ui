@@ -101,7 +101,7 @@ export async function publishSnapshot(
   prefix: string,
   status?: VersionStatus,
 ): Promise<PublishConfigDto> {
-  console.log('publishSnapshot----------------->', `${prefix}${API_V2}`)
+
   return await requestJson<PublishConfigDto>(`/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/snapshots?clientBuild=${clientBuild}&promote=${promote}`, {
       method: 'post',
       body: JSON.stringify(<PublishSnapshotRequestDto>{

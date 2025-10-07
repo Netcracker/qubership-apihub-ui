@@ -17,9 +17,8 @@
 import {useInvalidateSecurityReports} from './useSecurityReports'
 import {useMutation} from '@tanstack/react-query'
 import type {Key} from '@apihub/entities/keys'
-import {ncCustomAgentsRequestVoid} from '@apihub/utils/requests'
 import type {HttpError} from '@netcracker/qubership-apihub-ui-shared/utils/responses'
-import {API_V3} from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import {API_V3, requestVoid} from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import type {IsLoading} from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import {
   useGetNcServicePrefix,
@@ -63,7 +62,7 @@ async function startRoutingCheck(
   const name = encodeURIComponent(nameKey)
   const workspaceId = encodeURIComponent(workspaceKey)
 
-  await ncCustomAgentsRequestVoid(
+  await requestVoid(
     '/security/gatewayRouting',
     {
       method: 'POST',

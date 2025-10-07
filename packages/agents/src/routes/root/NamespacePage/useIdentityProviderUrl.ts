@@ -17,8 +17,7 @@
 import {generatePath} from 'react-router-dom'
 import {useQuery} from '@tanstack/react-query'
 import type {IsLoading} from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import {ncCustomAgentsRequestJson} from '@apihub/utils/requests'
-import {API_V1} from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import {API_V1, requestJson} from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import {
   useGetNcServicePrefix,
 } from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
@@ -57,7 +56,7 @@ async function fetchIdpUrl(
   const namespaceId = encodeURIComponent(namespaceKey)
 
   const pathPattern = '/agents/:agentId/namespaces/:namespaceId/idp'
-  return await ncCustomAgentsRequestJson<IdpUrlDto>(
+  return await requestJson<IdpUrlDto>(
     generatePath(pathPattern, {agentId, namespaceId}),
     {
       method: 'GET',

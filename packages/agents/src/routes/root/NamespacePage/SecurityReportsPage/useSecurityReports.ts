@@ -18,7 +18,6 @@ import type {FetchNextPageOptions, InfiniteQueryObserverResult} from '@tanstack/
 import {useInfiniteQuery, useQueryClient} from '@tanstack/react-query'
 import {useMemo} from 'react'
 import {generatePath} from 'react-router-dom'
-import {ncCustomAgentsRequestJson} from '@apihub/utils/requests'
 import type {Key} from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type {SecurityReports} from '@netcracker/qubership-apihub-ui-shared/components/SecurityReportsTable'
 import type {
@@ -28,7 +27,7 @@ import type {
   IsLoading,
 } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import {optionalSearchParams} from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import {API_V3, API_V4} from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import {API_V3, API_V4, requestJson} from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import {
   useGetAgentPrefix,
   useGetNcServicePrefix,
@@ -108,7 +107,7 @@ async function getSecurityReports(
 
   const [reportPath, basePath] = reportTypeToPath[type]
   const pathPattern = '/security/:reportPath'
-  const result = await ncCustomAgentsRequestJson<ResultReports>(
+  const result = await requestJson<ResultReports>(
     `${generatePath(pathPattern, {reportPath})}?${queryParams}`,
     {
       method: 'GET',

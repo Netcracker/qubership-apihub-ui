@@ -17,8 +17,7 @@
 import type {AgentKey, NamespaceKey, SnapshotKey, WorkspaceKey} from './keys'
 import type {ServicePublishInfo, ServicePublishInfoDto} from './service-publish-info'
 import {toServicePublishInfo} from './service-publish-info'
-import {ncCustomAgentsRequestJson} from '@apihub/utils/requests'
-import {API_V2} from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import {API_V2, requestJson} from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import type {ApiType} from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 
 export type SnapshotPublicationInfo = Readonly<{
@@ -50,7 +49,7 @@ export async function getSnapshotPublicationInfo(
   promote = false,
   prefix: string,
 ): Promise<SnapshotPublicationInfoDto> {
-  return await ncCustomAgentsRequestJson<SnapshotPublicationInfoDto>(`/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/snapshots/${snapshotKey}?promote=${promote}`, {
+  return await requestJson<SnapshotPublicationInfoDto>(`/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/snapshots/${snapshotKey}?promote=${promote}`, {
       method: 'get',
     },
     {
