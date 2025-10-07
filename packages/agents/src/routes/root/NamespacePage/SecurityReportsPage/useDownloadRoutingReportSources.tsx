@@ -27,10 +27,7 @@ import {
 export function useDownloadRoutingReportSources(): [DownloadRoutingReportSourcesFunction, IsLoading] {
   const prefix = useGetNcServicePrefix()
   const {mutate, isLoading} = useMutation<void, Error, Options>({
-    mutationFn: ({
-                   processKey,
-                 }) => downloadRoutingReportSources(processKey!, prefix),
-  })
+    mutationFn: ({processKey}) => downloadRoutingReportSources(processKey!, prefix)})
   return [mutate, isLoading]
 }
 

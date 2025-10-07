@@ -31,10 +31,7 @@ export function useDownloadSecurityReport(): [DownloadSecurityReportFunction, Is
   const agentPrefix = useGetAgentPrefix()
   const ncServicePrefix = useGetNcServicePrefix()
   const {mutate, isLoading} = useMutation<void, Error, Options>({
-    mutationFn: ({
-                   processKey,
-                   type,
-                 }) => downloadSecurityReport(processKey!, type, type === SECURITY_REPORT_TYPE_AUTH_CHECK ? agentPrefix : ncServicePrefix),
+    mutationFn: ({processKey, type}) => downloadSecurityReport(processKey!, type, type === SECURITY_REPORT_TYPE_AUTH_CHECK ? agentPrefix : ncServicePrefix),
   })
   return [mutate, isLoading]
 }
