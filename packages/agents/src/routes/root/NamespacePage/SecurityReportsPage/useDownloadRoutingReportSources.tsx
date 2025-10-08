@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-import type {IsLoading} from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import {useMutation} from '@tanstack/react-query'
-import type {Key} from '@apihub/entities/keys'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { useMutation } from '@tanstack/react-query'
+import type { Key } from '@apihub/entities/keys'
 import fileDownload from 'js-file-download'
-import {API_V3, requestBlob} from '@netcracker/qubership-apihub-ui-shared/utils/requests'
-import {generatePath} from 'react-router-dom'
+import { API_V3, requestBlob } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import { generatePath } from 'react-router-dom'
 import {
   useGetNcServicePrefix,
 } from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
 
 export function useDownloadRoutingReportSources(): [DownloadRoutingReportSourcesFunction, IsLoading] {
   const prefix = useGetNcServicePrefix()
-  const {mutate, isLoading} = useMutation<void, Error, Options>({
-    mutationFn: ({processKey}) => downloadRoutingReportSources(processKey!, prefix)})
+  const { mutate, isLoading } = useMutation<void, Error, Options>({
+    mutationFn: ({ processKey }) => downloadRoutingReportSources(processKey!, prefix),
+  })
   return [mutate, isLoading]
 }
 
@@ -38,7 +39,7 @@ export const downloadRoutingReportSources = async (
 
   const pathPattern = '/security/gatewayRouting/:processId/source'
   const response = await requestBlob(
-    generatePath(pathPattern, {processId}),
+    generatePath(pathPattern, { processId }),
     {
       method: 'GET',
     }, {

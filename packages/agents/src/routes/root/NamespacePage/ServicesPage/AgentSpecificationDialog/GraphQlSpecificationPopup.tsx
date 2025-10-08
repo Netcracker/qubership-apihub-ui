@@ -44,8 +44,10 @@ import { IdpAuthTokenForm } from '@netcracker/qubership-apihub-ui-shared/compone
 import { useIdpAuthToken } from './useIdpAuthToken'
 import { useLocalIdpAuthToken } from '../../useLocalIdpAuthToken'
 import { useEffectOnce } from 'react-use'
-import {useGetAgentPrefix} from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
-import {API_V2} from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import {
+  useGetAgentPrefix,
+} from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
+import { API_V2 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 
 export type GraphQlSpecificationPopupProps = {
   clickedSpec: Spec

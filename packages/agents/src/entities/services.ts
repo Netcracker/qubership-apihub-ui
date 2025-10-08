@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import type {DiscoveryStatus} from './statuses'
-import {NONE_DISCOVERY_STATUS} from './statuses'
-import type {AgentKey, NamespaceKey, PackageKey, ServiceKey, VersionKey, WorkspaceKey} from './keys'
-import type {VersionStatuses} from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import type {Spec, SpecDto} from '@netcracker/qubership-apihub-ui-shared/entities/specs'
-import {toSpec} from '@netcracker/qubership-apihub-ui-shared/entities/specs'
-import {isNotEmpty} from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import {API_V2, requestJson, requestVoid} from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import type { DiscoveryStatus } from './statuses'
+import { NONE_DISCOVERY_STATUS } from './statuses'
+import type { AgentKey, NamespaceKey, PackageKey, ServiceKey, VersionKey, WorkspaceKey } from './keys'
+import type { VersionStatuses } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import type { Spec, SpecDto } from '@netcracker/qubership-apihub-ui-shared/entities/specs'
+import { toSpec } from '@netcracker/qubership-apihub-ui-shared/entities/specs'
+import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { API_V2, requestJson, requestVoid } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 
 export type Services = {
   status: DiscoveryStatus
@@ -110,12 +110,12 @@ export async function getServices(
     {
       method: 'get',
     },
-    {basePath: `${prefix}${API_V2}`},
+    { basePath: `${prefix}${API_V2}` },
   )
   if (onlyWithSpecs) {
     return {
       ...servicesDto,
-      services: servicesDto.services.filter(({specs}) => isNotEmpty(specs)),
+      services: servicesDto.services.filter(({ specs }) => isNotEmpty(specs)),
     }
   }
   return servicesDto
@@ -130,6 +130,6 @@ export async function runServiceDiscovery(
   return await requestVoid(`/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/discover`, {
       method: 'post',
     },
-    {basePath: `${prefix}${API_V2}`},
+    { basePath: `${prefix}${API_V2}` },
   )
 }

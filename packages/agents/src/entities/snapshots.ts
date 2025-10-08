@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type {AgentKey, NamespaceKey, PackageKey, ServiceKey, VersionKey, WorkspaceKey} from './keys'
-import type {PublishConfigDto} from './publish-config'
-import type {VersionStatus} from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import {API_V2, requestJson} from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import type { AgentKey, NamespaceKey, PackageKey, ServiceKey, VersionKey, WorkspaceKey } from './keys'
+import type { PublishConfigDto } from './publish-config'
+import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import { API_V2, requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 
 export type Snapshots = {
   packageKey: PackageKey
@@ -72,7 +72,7 @@ export async function getSnapshots(
   return await requestJson<SnapshotsDto>(`/agents/${agentId}/namespaces/${namespaceKey}/workspaces/${workspaceKey}/snapshots`, {
       method: 'get',
     },
-    {basePath: `${prefix}${API_V2}`},
+    { basePath: `${prefix}${API_V2}` },
   )
 }
 
@@ -112,6 +112,6 @@ export async function publishSnapshot(
         builderId: builderId,
       }),
     },
-    {basePath: `${prefix}${API_V2}`},
+    { basePath: `${prefix}${API_V2}` },
   )
 }

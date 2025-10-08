@@ -18,12 +18,18 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import type {
   SnapshotPublicationInfo,
-  SnapshotPublicationInfoDto} from '@apihub/entities/snapshot-publication-info'
+  SnapshotPublicationInfoDto,
+} from '@apihub/entities/snapshot-publication-info'
 import {
   EMPTY_SNAPSHOT_PUBLICATION_INFO,
   getSnapshotPublicationInfo, toSnapshotPublicationInfo,
 } from '@apihub/entities/snapshot-publication-info'
-import type { InvalidateQuery, IsInitialLoading, IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import type {
+  InvalidateQuery,
+  IsInitialLoading,
+  IsLoading,
+  IsSuccess,
+} from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import type { SnapshotKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import {
   useCreateSnapshotPublicationOptions,

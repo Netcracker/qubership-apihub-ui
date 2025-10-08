@@ -1,6 +1,6 @@
-import {useMemo} from 'react'
-import {useSystemConfiguration} from '../../hooks/authorization/useSystemConfiguration'
-import type {SystemExtension} from '../../types/system-configuration'
+import { useMemo } from 'react'
+import { useSystemConfiguration } from '../../hooks/authorization/useSystemConfiguration'
+import type { SystemExtension } from '../../types/system-configuration'
 
 function useSystemExtensions(): SystemExtension[] {
   const [configuration] = useSystemConfiguration()

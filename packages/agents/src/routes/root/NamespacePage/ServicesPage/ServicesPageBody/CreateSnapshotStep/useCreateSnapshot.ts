@@ -19,17 +19,20 @@ import { useParams } from 'react-router-dom'
 import { useInvalidateSnapshots } from '../../../useSnapshots'
 import type { IsError, IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import type {
-  CreateSnapshotPublicationOptions} from '../../ServicesPageProvider/ServicesPublicationOptionsProvider'
+  CreateSnapshotPublicationOptions,
+} from '../../ServicesPageProvider/ServicesPublicationOptionsProvider'
 import {
   useCreateSnapshotPublicationOptions,
 } from '../../ServicesPageProvider/ServicesPublicationOptionsProvider'
 import { publishSnapshot } from '@apihub/entities/snapshots'
-import type { PublishConfig} from '@apihub/entities/publish-config'
+import type { PublishConfig } from '@apihub/entities/publish-config'
 import { toPublishConfig } from '@apihub/entities/publish-config'
 import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import { v4 as uuidv4 } from 'uuid'
-import {useGetAgentPrefix} from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
+import {
+  useGetAgentPrefix,
+} from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
 
 export function useCreateSnapshot(): [CreateSnapshot, IsLoading, IsSuccess, IsError, Error | null] {
   const { agentId, namespaceKey } = useParams()

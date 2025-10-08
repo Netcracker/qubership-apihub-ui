@@ -23,11 +23,15 @@ import { useSpecViewer } from '@netcracker/qubership-apihub-ui-shared/components
 import type {
   SpecificationDialogDetail,
 } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/SpecificationDialog'
-import { SpecificationPopup } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/SpecificationDialog'
+import {
+  SpecificationPopup,
+} from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/SpecificationDialog'
 import type { Spec } from '@netcracker/qubership-apihub-ui-shared/entities/specs'
 import type { ProxyServer } from '@netcracker/qubership-apihub-ui-shared/entities/services'
 import { isGraphQlSpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import { useGetNcServicePrefix } from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
+import {
+  useGetNcServicePrefix,
+} from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
 
 export type CommonSpecificationPopupProps = {
   spec: Spec

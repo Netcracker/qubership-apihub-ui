@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import {useMutation} from '@tanstack/react-query'
-import type {Key} from '@apihub/entities/keys'
-import type {HttpError} from '@netcracker/qubership-apihub-ui-shared/utils/responses'
-import type {IsLoading} from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import {generatePath} from 'react-router-dom'
-import {useShowErrorNotification, useShowSuccessNotification} from '../../../BasePage/NotificationHandler'
+import { useMutation } from '@tanstack/react-query'
+import type { Key } from '@apihub/entities/keys'
+import type { HttpError } from '@netcracker/qubership-apihub-ui-shared/utils/responses'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { generatePath } from 'react-router-dom'
+import { useShowErrorNotification, useShowSuccessNotification } from '../../../BasePage/NotificationHandler'
 import {
   useGetNcServicePrefix,
 } from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
-import {API_V1, requestBlob} from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import { API_V1, requestBlob } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 
 export type IdpAuthTokenDetails = {
   agentId: string
@@ -38,8 +38,8 @@ export function useIdpAuthToken(): [string | undefined, GetIdpAuthTokenFunction,
   const errorNotification = useShowErrorNotification()
   const successNotification = useShowSuccessNotification()
   const ncServicePrefix = useGetNcServicePrefix()
-  const {data, mutate, isLoading} = useMutation<string, HttpError, IdpAuthTokenDetails>({
-    mutationFn: ({agentId, namespaceId, idpUrl, username, password, tenant}) =>
+  const { data, mutate, isLoading } = useMutation<string, HttpError, IdpAuthTokenDetails>({
+    mutationFn: ({ agentId, namespaceId, idpUrl, username, password, tenant }) =>
       getIdpAuthToken(agentId, namespaceId, idpUrl, username, password, tenant, ncServicePrefix),
     onSuccess: () => {
       successNotification({
@@ -70,7 +70,7 @@ async function getIdpAuthToken(
   const name = encodeURIComponent(nameKey)
 
   const pathPattern = '/agents/:agentId/namespaces/:name/idp/token'
-  const res = await requestBlob(generatePath(pathPattern, {agentId, name}), {
+  const res = await requestBlob(generatePath(pathPattern, { agentId, name }), {
       method: 'post',
       body: JSON.stringify({
         agentId,
@@ -81,7 +81,7 @@ async function getIdpAuthToken(
         tenant,
       }),
     },
-    {basePath: `${prefix}${API_V1}`},
+    { basePath: `${prefix}${API_V1}` },
   )
 
   return res.headers.get('X-Authorization-Header-Value') ?? ''

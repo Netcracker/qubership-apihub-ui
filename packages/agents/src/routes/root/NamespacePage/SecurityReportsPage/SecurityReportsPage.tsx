@@ -14,29 +14,29 @@
  * limitations under the License.
  */
 
-import type {FC} from 'react'
-import {memo, useCallback, useMemo} from 'react'
-import {AuthenticationReports} from './AuthenticationReports'
-import {RoutingReports} from './RoutingReports'
-import {AUTHENTICATION_REPORTS_PAGE, ROUTING_REPORTS_PAGE, SECURITY_REPORTS_PAGE} from '../../../routes'
-import {useNavigation} from '../../../NavigationProvider'
-import {useParams} from 'react-router-dom'
-import {useActiveTabs} from '@netcracker/qubership-apihub-ui-shared/hooks/pathparams/useActiveTabs'
-import type {PanelItem, TabItem} from '@netcracker/qubership-apihub-ui-shared/components/Panels/TabsPanel'
-import {TabsPanel} from '@netcracker/qubership-apihub-ui-shared/components/Panels/TabsPanel'
-import {BodyCard} from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
-import {WORKSPACE_SEARCH_PARAM} from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import {useSearchParam} from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
+import type { FC } from 'react'
+import { memo, useCallback, useMemo } from 'react'
+import { AuthenticationReports } from './AuthenticationReports'
+import { RoutingReports } from './RoutingReports'
+import { AUTHENTICATION_REPORTS_PAGE, ROUTING_REPORTS_PAGE, SECURITY_REPORTS_PAGE } from '../../../routes'
+import { useNavigation } from '../../../NavigationProvider'
+import { useParams } from 'react-router-dom'
+import { useActiveTabs } from '@netcracker/qubership-apihub-ui-shared/hooks/pathparams/useActiveTabs'
+import type { PanelItem, TabItem } from '@netcracker/qubership-apihub-ui-shared/components/Panels/TabsPanel'
+import { TabsPanel } from '@netcracker/qubership-apihub-ui-shared/components/Panels/TabsPanel'
+import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
+import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import {
   useNcServiceEnabled,
 } from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
 
 // High Order Component //
 export const SecurityReportsPage: FC = memo(() => {
-  const {agentId, namespaceKey} = useParams()
+  const { agentId, namespaceKey } = useParams()
   const workspace = useSearchParam(WORKSPACE_SEARCH_PARAM)
   const [, securitySubTab] = useActiveTabs()
-  const {navigateToNamespace} = useNavigation()
+  const { navigateToNamespace } = useNavigation()
 
   const tabPanels: PanelItem<SecurityReportsTabs>[] = useMemo(() => [{
     key: AUTHENTICATION_REPORTS_PAGE,
@@ -51,7 +51,7 @@ export const SecurityReportsPage: FC = memo(() => {
       agentId: agentId!,
       namespaceKey: namespaceKey!,
       mode: `${SECURITY_REPORTS_PAGE}/${tab}`,
-      search: {[WORKSPACE_SEARCH_PARAM]: {value: workspace}},
+      search: { [WORKSPACE_SEARCH_PARAM]: { value: workspace } },
     })
   }, [agentId, namespaceKey, navigateToNamespace, workspace])
   const ncServiceEnabled = useNcServiceEnabled()

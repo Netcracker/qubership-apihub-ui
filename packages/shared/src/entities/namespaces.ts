@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type {Key} from './keys'
-import {requestJson} from '../utils/requests'
+import type { Key } from './keys'
+import { requestJson } from '../utils/requests'
 
 export type Namespaces = ReadonlyArray<Namespace>
 

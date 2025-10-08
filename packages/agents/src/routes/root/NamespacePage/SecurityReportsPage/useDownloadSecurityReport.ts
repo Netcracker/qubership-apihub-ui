@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import {useMutation} from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import fileDownload from 'js-file-download'
-import type {Key} from '@apihub/entities/keys'
-import type {SecurityReportType} from './useSecurityReports'
-import {SECURITY_REPORT_TYPE_AUTH_CHECK, SECURITY_REPORT_TYPE_GATEWAY_ROUTING} from './useSecurityReports'
-import {generatePath} from 'react-router-dom'
-import type {IsLoading} from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import {API_V2, API_V3, requestBlob} from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import type { Key } from '@apihub/entities/keys'
+import type { SecurityReportType } from './useSecurityReports'
+import { SECURITY_REPORT_TYPE_AUTH_CHECK, SECURITY_REPORT_TYPE_GATEWAY_ROUTING } from './useSecurityReports'
+import { generatePath } from 'react-router-dom'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { API_V2, API_V3, requestBlob } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import {
   useGetAgentPrefix,
   useGetNcServicePrefix,
@@ -30,8 +30,11 @@ import {
 export function useDownloadSecurityReport(): [DownloadSecurityReportFunction, IsLoading] {
   const agentPrefix = useGetAgentPrefix()
   const ncServicePrefix = useGetNcServicePrefix()
-  const {mutate, isLoading} = useMutation<void, Error, Options>({
-    mutationFn: ({processKey, type}) => downloadSecurityReport(processKey!, type, type === SECURITY_REPORT_TYPE_AUTH_CHECK ? agentPrefix : ncServicePrefix),
+  const { mutate, isLoading } = useMutation<void, Error, Options>({
+    mutationFn: ({
+      processKey,
+      type,
+    }) => downloadSecurityReport(processKey!, type, type === SECURITY_REPORT_TYPE_AUTH_CHECK ? agentPrefix : ncServicePrefix),
   })
   return [mutate, isLoading]
 }
@@ -46,7 +49,7 @@ export const downloadSecurityReport = async (
   const [reportPath, apiPath] = reportTypeToPath[type]
   const pathPattern = '/security/:reportPath/:processId/report'
   const response = await requestBlob(
-    generatePath(pathPattern, {reportPath, processId}),
+    generatePath(pathPattern, { reportPath, processId }),
     {
       method: 'GET',
     }, {

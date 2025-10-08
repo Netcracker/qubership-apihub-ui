@@ -21,7 +21,9 @@ import { EMPTY_SETTINGS, getSettings, toSettings } from '@apihub/entities/settin
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { WORKSPACE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
-import { useGetNcServicePrefix } from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
+import {
+  useGetNcServicePrefix,
+} from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
 
 const SETTINGS_QUERY_KEY = 'settings-query-key'
 

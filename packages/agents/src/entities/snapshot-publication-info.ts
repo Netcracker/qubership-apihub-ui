@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type {AgentKey, NamespaceKey, SnapshotKey, WorkspaceKey} from './keys'
-import type {ServicePublishInfo, ServicePublishInfoDto} from './service-publish-info'
-import {toServicePublishInfo} from './service-publish-info'
-import {API_V2, requestJson} from '@netcracker/qubership-apihub-ui-shared/utils/requests'
-import type {ApiType} from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { AgentKey, NamespaceKey, SnapshotKey, WorkspaceKey } from './keys'
+import type { ServicePublishInfo, ServicePublishInfoDto } from './service-publish-info'
+import { toServicePublishInfo } from './service-publish-info'
+import { API_V2, requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 
 export type SnapshotPublicationInfo = Readonly<{
   services: ReadonlyArray<ServicePublishInfo>

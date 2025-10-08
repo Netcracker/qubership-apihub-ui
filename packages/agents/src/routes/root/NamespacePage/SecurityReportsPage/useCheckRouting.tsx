@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import {useInvalidateSecurityReports} from './useSecurityReports'
-import {useMutation} from '@tanstack/react-query'
-import type {Key} from '@apihub/entities/keys'
-import type {HttpError} from '@netcracker/qubership-apihub-ui-shared/utils/responses'
-import {API_V3, requestVoid} from '@netcracker/qubership-apihub-ui-shared/utils/requests'
-import type {IsLoading} from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { useInvalidateSecurityReports } from './useSecurityReports'
+import { useMutation } from '@tanstack/react-query'
+import type { Key } from '@apihub/entities/keys'
+import type { HttpError } from '@netcracker/qubership-apihub-ui-shared/utils/responses'
+import { API_V3, requestVoid } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import {
   useGetNcServicePrefix,
 } from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
@@ -36,8 +36,8 @@ export type CheckRoutingDetails = {
 export function useCheckRouting(onSuccess: () => void, onError: (error: HttpError) => void): [StartRoutingCheckFunction, IsLoading] {
   const invalidateSecurityReports = useInvalidateSecurityReports()
   const prefix = useGetNcServicePrefix()
-  const {mutate, isLoading} = useMutation<void, HttpError, CheckRoutingDetails>({
-    mutationFn: ({agentId, namespaceId, workspaceId, idpUrl, username, password}) =>
+  const { mutate, isLoading } = useMutation<void, HttpError, CheckRoutingDetails>({
+    mutationFn: ({ agentId, namespaceId, workspaceId, idpUrl, username, password }) =>
       startRoutingCheck(agentId, namespaceId, workspaceId, idpUrl, username, password, prefix),
     onSuccess: () => {
       invalidateSecurityReports()

@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import type {FetchNextPageOptions, InfiniteQueryObserverResult} from '@tanstack/react-query'
-import {useInfiniteQuery, useQueryClient} from '@tanstack/react-query'
-import {useMemo} from 'react'
-import {generatePath} from 'react-router-dom'
-import type {Key} from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type {SecurityReports} from '@netcracker/qubership-apihub-ui-shared/components/SecurityReportsTable'
+import type { FetchNextPageOptions, InfiniteQueryObserverResult } from '@tanstack/react-query'
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
+import { useMemo } from 'react'
+import { generatePath } from 'react-router-dom'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { SecurityReports } from '@netcracker/qubership-apihub-ui-shared/components/SecurityReportsTable'
 import type {
   HasNextPage,
   InvalidateQuery,
   IsFetchingNextPage,
   IsLoading,
 } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import {optionalSearchParams} from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import {API_V3, API_V4, requestJson} from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import { API_V3, API_V4, requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import {
   useGetAgentPrefix,
   useGetNcServicePrefix,
@@ -64,7 +64,7 @@ export function useSecurityReports(options: {
     isLoading,
   } = useInfiniteQuery<SecurityReports, Error, SecurityReports>({
     queryKey: [SECURITY_REPORTS_QUERY_KEY, agentKey, workspaceKey, type, namespaceKey],
-    queryFn: ({pageParam = page}) => getSecurityReports(agentKey!, namespaceKey, workspaceKey, type, pageParam - 1, type === SECURITY_REPORT_TYPE_AUTH_CHECK ? agentPrefix : ncServicePrefix, limit),
+    queryFn: ({ pageParam = page }) => getSecurityReports(agentKey!, namespaceKey, workspaceKey, type, pageParam - 1, type === SECURITY_REPORT_TYPE_AUTH_CHECK ? agentPrefix : ncServicePrefix, limit),
     getNextPageParam: (lastPage, allPages) => {
       if (!limit) {
         return undefined
@@ -98,17 +98,17 @@ async function getSecurityReports(
   limit?: number,
 ): Promise<SecurityReports> {
   const queryParams = optionalSearchParams({
-    agentId: {value: agentKey},
-    name: {value: namespaceKey},
-    workspaceId: {value: workspaceKey},
-    limit: {value: limit},
-    page: {value: page, toStringValue: page => `${page}`},
+    agentId: { value: agentKey },
+    name: { value: namespaceKey },
+    workspaceId: { value: workspaceKey },
+    limit: { value: limit },
+    page: { value: page, toStringValue: page => `${page}` },
   })
 
   const [reportPath, basePath] = reportTypeToPath[type]
   const pathPattern = '/security/:reportPath'
   const result = await requestJson<ResultReports>(
-    `${generatePath(pathPattern, {reportPath})}?${queryParams}`,
+    `${generatePath(pathPattern, { reportPath })}?${queryParams}`,
     {
       method: 'GET',
     }, {
