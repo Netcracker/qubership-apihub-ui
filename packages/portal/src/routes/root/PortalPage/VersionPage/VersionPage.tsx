@@ -14,22 +14,36 @@
  * limitations under the License.
  */
 
-import { useAutoSetClientValidationStatusBySummary, useValidationSummaryByPackageVersion } from '@apihub/api-hooks/ApiQuality/useValidationSummaryByPackageVersion'
+import {
+  useAutoSetClientValidationStatusBySummary,
+  useValidationSummaryByPackageVersion,
+} from '@apihub/api-hooks/ApiQuality/useValidationSummaryByPackageVersion'
 import { CurrentPackageProvider } from '@apihub/components/CurrentPackageProvider'
 import { ExportSettingsDialog } from '@apihub/components/ExportSettingsDialog/ui/ExportSettingsDialog'
-import { PublishDashboardVersionFromCSVDialog } from '@apihub/routes/root/PortalPage/DashboardPage/PublishDashboardVersionFromCSVDialog'
+import {
+  PublishDashboardVersionFromCSVDialog,
+} from '@apihub/routes/root/PortalPage/DashboardPage/PublishDashboardVersionFromCSVDialog'
 import { TOGGLE_SIDEBAR_BUTTON } from '@netcracker/qubership-apihub-ui-shared/components/NavigationMenu'
 import { LayoutWithTabs } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/LayoutWithTabs'
 import { LayoutWithToolbar } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/LayoutWithToolbar'
-import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import type { PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { DASHBOARD_KIND, PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { useLinterEnabled } from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
 import { useActiveTabs } from '@netcracker/qubership-apihub-ui-shared/hooks/pathparams/useActiveTabs'
 import { PreviousReleaseOptionsProvider } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget'
 import type { FC, ReactNode } from 'react'
+import { useMemo } from 'react'
 import { memo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import type { VersionPageRoute } from '../../../../routes'
-import { API_CHANGES_PAGE, API_QUALITY_PAGE, DEPRECATED_PAGE, DOCUMENTS_PAGE, OPERATIONS_PAGE, OVERVIEW_PAGE } from '../../../../routes'
+import {
+  API_CHANGES_PAGE,
+  API_QUALITY_PAGE,
+  DEPRECATED_PAGE,
+  DOCUMENTS_PAGE,
+  OPERATIONS_PAGE,
+  OVERVIEW_PAGE,
+} from '../../../../routes'
 import { ActivityHistoryFiltersProvider } from '../../MainPage/ActivityHistoryFiltersProvider'
 import { NoPackagePlaceholder } from '../../NoPackagePlaceholder'
 import { NoPackageVersionPlaceholder } from '../../NoPackageVersionPlaceholder'
@@ -44,7 +58,9 @@ import { usePollingForValidationSummaryReadiness } from './usePollingForValidati
 import { VersionApiChangesSubPage } from './VersionApiChangesSubPage/VersionApiChangesSubPage'
 import { RulesetInfoDialog } from './VersionApiQualitySubPage/components/RulesetInfoDialog/RulesetInfoDialog'
 import { VersionApiQualitySubPage } from './VersionApiQualitySubPage/VersionApiQualitySubPage'
-import { VersionDeprecatedOperationsSubPage } from './VersionDeprecatedOperationsSubPage/VersionDeprecatedOperationsSubPage'
+import {
+  VersionDeprecatedOperationsSubPage,
+} from './VersionDeprecatedOperationsSubPage/VersionDeprecatedOperationsSubPage'
 import { VersionDocumentsSubPage } from './VersionDocumentsSubPage/VersionDocumentsSubPage'
 import { VersionOperationsSubPage } from './VersionOperationsSubPage/VersionOperationsSubPage'
 import { VersionOverviewSubPage } from './VersionOverviewSubPage/VersionOverviewSubPage'
@@ -78,15 +94,15 @@ export const VersionPage: FC = memo(() => {
             <NoPackagePlaceholder packageObject={packageObject} isLoading={isLoading}>
               <NoPackageVersionPlaceholder packageObject={packageObject}>
                 <LayoutWithToolbar
-                  toolbar={<VersionPageToolbar />}
-                  body={<VersionPageBody menuItem={menuItem as VersionPageRoute} />}
+                  toolbar={<VersionPageToolbar/>}
+                  body={<VersionPageBody menuItem={menuItem as VersionPageRoute} kind={packageObject?.kind}/>}
                 />
-                <OutdatedRevisionNotification />
+                <OutdatedRevisionNotification/>
               </NoPackageVersionPlaceholder>
             </NoPackagePlaceholder>
-            {packageObject?.kind === DASHBOARD_KIND && <PublishDashboardVersionFromCSVDialog />}
-            <ExportSettingsDialog />
-            <RulesetInfoDialog />
+            {packageObject?.kind === DASHBOARD_KIND && <PublishDashboardVersionFromCSVDialog/>}
+            <ExportSettingsDialog/>
+            <RulesetInfoDialog/>
           </ApiQualityDataProvider>
         </ActivityHistoryFiltersProvider>
       </FullMainVersionProvider>
@@ -95,24 +111,24 @@ export const VersionPage: FC = memo(() => {
 })
 
 const PATH_PARAM_TO_SUB_PAGE_MAP: Record<VersionPageRoute, ReactNode> = {
-  [OVERVIEW_PAGE]: <VersionOverviewSubPage />,
+  [OVERVIEW_PAGE]: <VersionOverviewSubPage/>,
   [OPERATIONS_PAGE]: (
     <SelectedPreviewOperationProvider>
-      <VersionOperationsSubPage />
+      <VersionOperationsSubPage/>
     </SelectedPreviewOperationProvider>
   ),
   [API_CHANGES_PAGE]: (
     <PreviousReleaseOptionsProvider>
-      <VersionApiChangesSubPage />
+      <VersionApiChangesSubPage/>
     </PreviousReleaseOptionsProvider>
   ),
   [DEPRECATED_PAGE]: (
     <SelectedPreviewOperationProvider>
-      <VersionDeprecatedOperationsSubPage />
+      <VersionDeprecatedOperationsSubPage/>
     </SelectedPreviewOperationProvider>
   ),
-  [API_QUALITY_PAGE]: <VersionApiQualitySubPage />,
-  [DOCUMENTS_PAGE]: <VersionDocumentsSubPage />,
+  [API_QUALITY_PAGE]: <VersionApiQualitySubPage/>,
+  [DOCUMENTS_PAGE]: <VersionDocumentsSubPage/>,
 }
 
 const VERSION_PAGE_MENU_ITEMS = [
@@ -120,18 +136,24 @@ const VERSION_PAGE_MENU_ITEMS = [
   OPERATIONS_PAGE,
   API_CHANGES_PAGE,
   DEPRECATED_PAGE,
-  API_QUALITY_PAGE,
   DOCUMENTS_PAGE,
   TOGGLE_SIDEBAR_BUTTON,
 ]
 
 type VersionPageBodyProps = {
   menuItem: VersionPageRoute
+  kind: PackageKind | undefined
 }
-const VersionPageBody: FC<VersionPageBodyProps> = memo<VersionPageBodyProps>(({ menuItem }) => {
+const VersionPageBody: FC<VersionPageBodyProps> = memo<VersionPageBodyProps>(({ menuItem, kind }) => {
+  const filterMenuItem = useMemo(
+    () => (kind === PACKAGE_KIND
+      ? [...VERSION_PAGE_MENU_ITEMS, API_QUALITY_PAGE]
+      : VERSION_PAGE_MENU_ITEMS),
+    [kind])
+
   return (
     <LayoutWithTabs
-      tabs={<VersionNavigationMenu menuItems={VERSION_PAGE_MENU_ITEMS} />}
+      tabs={<VersionNavigationMenu menuItems={filterMenuItem}/>}
       body={PATH_PARAM_TO_SUB_PAGE_MAP[menuItem]}
     />
   )

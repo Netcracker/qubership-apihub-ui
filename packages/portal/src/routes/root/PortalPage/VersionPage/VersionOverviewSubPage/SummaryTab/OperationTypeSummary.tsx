@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { useAggregatedValidationSummaryByPackageVersion } from '@apihub/api-hooks/ApiQuality/useAggregatedValidationSummaryByPackageVersion'
+import {
+  useAggregatedValidationSummaryByPackageVersion,
+} from '@apihub/api-hooks/ApiQuality/useAggregatedValidationSummaryByPackageVersion'
 import { useManualRunApiQualityValidation } from '@apihub/api-hooks/ApiQuality/useManualRunApiQualityValidation'
 import { ValidationRulesettLink } from '@apihub/components/ApiQuality/ValidatationRulesetLink'
 import { ValidationIssuesTooltip } from '@apihub/components/ApiQuality/ValidationIssuesTooltip'
@@ -23,7 +25,12 @@ import type { IssuesSummary } from '@apihub/entities/api-quality/package-version
 import { RulesetStatuses } from '@apihub/entities/api-quality/rulesets'
 import { ValidationStatuses } from '@apihub/entities/api-quality/validation-statuses'
 import { Box, Link, Tooltip, Typography } from '@mui/material'
-import { API_AUDIENCE_EXTERNAL, API_AUDIENCE_INTERNAL, API_AUDIENCE_UNKNOWN, type ApiAudienceTransition } from '@netcracker/qubership-apihub-api-processor'
+import {
+  API_AUDIENCE_EXTERNAL,
+  API_AUDIENCE_INTERNAL,
+  API_AUDIENCE_UNKNOWN,
+  type ApiAudienceTransition,
+} from '@netcracker/qubership-apihub-api-processor'
 import { Changes } from '@netcracker/qubership-apihub-ui-shared/components/Changes'
 import { CATEGORY_OPERATION } from '@netcracker/qubership-apihub-ui-shared/components/ChangesTooltip'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
@@ -45,6 +52,8 @@ import {
   useApiQualityLinterEnabled,
   useApiQualityValidationSummary,
 } from '../../ApiQualityValidationSummaryProvider'
+import { usePackage } from '@apihub/routes/root/usePackage'
+import { PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 
 export type OperationTypeSummaryProps = Readonly<{
   apiType: ApiType
@@ -72,6 +81,7 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
   // Feature "API Quality Validation"
   const [manualRunLinter] = useManualRunApiQualityValidation()
   const { packageId, versionId } = useParams()
+  const [packageObject] = usePackage({ showParents: true })
   const [clientValidationStatus = ClientValidationStatuses.CHECKING, setClientValidationStatus] = useApiQualityClientValidationStatus()
   const onManualRunLinter = useCallback(() => {
     if (packageId && versionId && setClientValidationStatus) {
@@ -300,7 +310,7 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
           </Box>
 
           {/* Sub-section "Quality Validation" */}
-          {linterEnabled && (
+          {linterEnabled && packageObject?.kind === PACKAGE_KIND && (
             <>
               <Box display="flex" alignItems="center" gap={1} gridArea="linterValidationTitle">
                 <Typography sx={{ fontWeight: 500 }} variant="body2">
