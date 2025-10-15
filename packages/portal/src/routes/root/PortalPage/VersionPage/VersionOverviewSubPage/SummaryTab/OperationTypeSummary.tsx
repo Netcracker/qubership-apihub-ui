@@ -52,8 +52,6 @@ import {
   useApiQualityLinterEnabled,
   useApiQualityValidationSummary,
 } from '../../ApiQualityValidationSummaryProvider'
-import { usePackage } from '@apihub/routes/root/usePackage'
-import { PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 
 export type OperationTypeSummaryProps = Readonly<{
   apiType: ApiType
@@ -81,7 +79,6 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
   // Feature "API Quality Validation"
   const [manualRunLinter] = useManualRunApiQualityValidation()
   const { packageId, versionId } = useParams()
-  const [packageObject] = usePackage({ showParents: true })
   const [clientValidationStatus = ClientValidationStatuses.CHECKING, setClientValidationStatus] = useApiQualityClientValidationStatus()
   const onManualRunLinter = useCallback(() => {
     if (packageId && versionId && setClientValidationStatus) {
@@ -310,7 +307,7 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
           </Box>
 
           {/* Sub-section "Quality Validation" */}
-          {linterEnabled && packageObject?.kind === PACKAGE_KIND && (
+          {linterEnabled && (
             <>
               <Box display="flex" alignItems="center" gap={1} gridArea="linterValidationTitle">
                 <Typography sx={{ fontWeight: 500 }} variant="body2">
