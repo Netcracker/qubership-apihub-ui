@@ -26,13 +26,11 @@ import {
 import { TOGGLE_SIDEBAR_BUTTON } from '@netcracker/qubership-apihub-ui-shared/components/NavigationMenu'
 import { LayoutWithTabs } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/LayoutWithTabs'
 import { LayoutWithToolbar } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/LayoutWithToolbar'
-import type { PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { DASHBOARD_KIND, PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { useLinterEnabled } from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
 import { useActiveTabs } from '@netcracker/qubership-apihub-ui-shared/hooks/pathparams/useActiveTabs'
 import { PreviousReleaseOptionsProvider } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget'
 import type { FC, ReactNode } from 'react'
-import { useMemo } from 'react'
 import { memo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import type { VersionPageRoute } from '../../../../routes'
@@ -95,7 +93,7 @@ export const VersionPage: FC = memo(() => {
               <NoPackageVersionPlaceholder packageObject={packageObject}>
                 <LayoutWithToolbar
                   toolbar={<VersionPageToolbar/>}
-                  body={<VersionPageBody menuItem={menuItem as VersionPageRoute} kind={packageObject?.kind}/>}
+                  body={<VersionPageBody menuItem={menuItem as VersionPageRoute} />}
                 />
                 <OutdatedRevisionNotification/>
               </NoPackageVersionPlaceholder>
@@ -136,24 +134,18 @@ const VERSION_PAGE_MENU_ITEMS = [
   OPERATIONS_PAGE,
   API_CHANGES_PAGE,
   DEPRECATED_PAGE,
+  API_QUALITY_PAGE,
   DOCUMENTS_PAGE,
   TOGGLE_SIDEBAR_BUTTON,
 ]
 
 type VersionPageBodyProps = {
   menuItem: VersionPageRoute
-  kind: PackageKind | undefined
 }
-const VersionPageBody: FC<VersionPageBodyProps> = memo<VersionPageBodyProps>(({ menuItem, kind }) => {
-  const filterMenuItem = useMemo(
-    () => (kind === PACKAGE_KIND
-      ? [...VERSION_PAGE_MENU_ITEMS, API_QUALITY_PAGE]
-      : VERSION_PAGE_MENU_ITEMS),
-    [kind])
-
+const VersionPageBody: FC<VersionPageBodyProps> = memo<VersionPageBodyProps>(({ menuItem }) => {
   return (
     <LayoutWithTabs
-      tabs={<VersionNavigationMenu menuItems={filterMenuItem}/>}
+      tabs={<VersionNavigationMenu menuItems={VERSION_PAGE_MENU_ITEMS}/>}
       body={PATH_PARAM_TO_SUB_PAGE_MAP[menuItem]}
     />
   )
