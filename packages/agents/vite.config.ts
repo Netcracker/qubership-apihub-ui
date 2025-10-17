@@ -25,14 +25,13 @@ import { VitePluginFonts } from 'vite-plugin-fonts'
 import { visualizer as bundleVisualizer } from 'rollup-plugin-visualizer'
 import createVersionJsonFilePlugin from '../../vite-create-version-json'
 
-const proxyServer = 'http://host.docker.internal:8081'
+const proxyServer = 'https://qubership-apihub.localtest.me'
 const devServer = 'http://localhost:3003'
 
 export default defineConfig(({ mode }) => {
   const isProxyMode = mode === 'proxy'
 
   return {
-    base: !isProxyMode ? '/agents' : '',
     plugins: [
       react({ fastRefresh: false }),
       bundleVisualizer(),
@@ -103,8 +102,21 @@ export default defineConfig(({ mode }) => {
     server: {
       open: '/login',
       proxy: {
-        '/api': { // /apihub-nc/api also proxied as it meets a substring inclusion condition
-          target: isProxyMode ? `${proxyServer}` : devServer,
+        '/agents-backend/api': {
+          target: proxyServer,
+          rewrite: path => path.replace(/^\/agents-backend^\/api/, ''),
+          changeOrigin: true,
+          secure: false,
+        },
+        '/nc-service/api': {
+          target: proxyServer,
+          rewrite: path => path.replace(/^\/nc-service^\/api/, ''),
+          changeOrigin: true,
+          secure: false,
+        },
+        '/api': {
+          target: isProxyMode ? `${proxyServer}/api` : devServer,
+          rewrite: isProxyMode ? path => path.replace(/^\/api/, '') : undefined,
           changeOrigin: true,
           secure: false,
         },
