@@ -69,8 +69,8 @@ export const AiAgentCard: FC = memo(() => {
   return (
     <BodyCard
       header={
-        <Box display='flex'>
-          Gen AI Recommendations
+        <Box display='flex' alignItems='center' gap={2}>
+          AI Recommendations
           <AiHandledDocumentSelector
             value={selectedDocument}
             onSelect={onSelectDocument}
