@@ -34,6 +34,8 @@ export const OPERATIONS_PAGE = 'operations'
 export const DEPRECATED_PAGE = 'deprecated'
 export const API_QUALITY_PAGE = 'api-quality'
 export const DOCUMENTS_PAGE = 'documents'
+export const AI_AGENT_PAGE = 'ai-agent'
+
 export const VERSION_PAGE_PATH_PATTERN = '/portal/packages/:packageId/:versionId/'
 export const OVERVIEW_PATH_PATTERN = `/portal/packages/:packageId/:versionId/${OVERVIEW_PAGE}/`
 export const API_CHANGES_PAGE_PATH_PATTERN = `/portal/packages/:packageId/:versionId/${API_CHANGES_PAGE}/:apiType/`
@@ -42,6 +44,7 @@ export const OPERATION_PAGE_PATH_PATTERN = `/portal/packages/:packageId/:version
 export const DEPRECATED_PAGE_PATH_PATTERN = `/portal/packages/:packageId/:versionId/${DEPRECATED_PAGE}/:apiType`
 export const API_QUALITY_PAGE_PATH_PATTERN = `/portal/packages/:packageId/:versionId/${API_QUALITY_PAGE}/:apiType`
 export const DOCUMENTS_PAGE_PATH_PATTERN = `/portal/packages/:packageId/:versionId/${DOCUMENTS_PAGE}/:documentId`
+export const AI_AGENT_PAGE_PATH_PATTERN = `/portal/packages/:packageId/:versionId/${AI_AGENT_PAGE}/:documentId`
 
 export const CONFIGURATION_PAGE = 'edit'
 
@@ -115,6 +118,7 @@ export type VersionPageRoute =
   | typeof DEPRECATED_PAGE
   | typeof API_QUALITY_PAGE
   | typeof DOCUMENTS_PAGE
+  | typeof AI_AGENT_PAGE
 
 export type PackageVersionPageRoute =
   | typeof CONFIGURATION_PAGE

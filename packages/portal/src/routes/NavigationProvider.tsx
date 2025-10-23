@@ -45,6 +45,7 @@ import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/uti
 import type { Path } from '@remix-run/router'
 import type { OverviewPageRoute, PackageSettingsPageRoute, ProfilePageRoute, SettingsPageRoute } from '../routes'
 import {
+  AI_AGENT_PAGE_PATH_PATTERN,
   API_CHANGES_PAGE_PATH_PATTERN,
   API_QUALITY_PAGE_PATH_PATTERN,
   CONFIGURATION_PAGE,
@@ -636,6 +637,21 @@ export function getDocumentPath({
   const documentId = documentKey ? encodeURIComponent(documentKey) : ''
   return {
     pathname: generatePath(DOCUMENTS_PAGE_PATH_PATTERN, { packageId, versionId, documentId }),
+    ...(search ? { search: `${optionalSearchParams(search)}` } : {}),
+  }
+}
+
+export function getAiAgentPath({
+  packageKey,
+  versionKey,
+  documentKey,
+  search,
+}: DocumentsDetail): Partial<Path> {
+  const packageId = encodeURIComponent(packageKey)
+  const versionId = encodeURIComponent(versionKey)
+  const documentId = documentKey ? encodeURIComponent(documentKey) : ''
+  return {
+    pathname: generatePath(AI_AGENT_PAGE_PATH_PATTERN, { packageId, versionId, documentId }),
     ...(search ? { search: `${optionalSearchParams(search)}` } : {}),
   }
 }

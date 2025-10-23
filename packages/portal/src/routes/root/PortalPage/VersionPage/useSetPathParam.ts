@@ -18,6 +18,7 @@ import type { Params } from 'react-router-dom'
 import { generatePath, matchPath, useNavigate, useParams } from 'react-router-dom'
 import { useLocation } from 'react-use'
 import {
+  AI_AGENT_PAGE,
   API_CHANGES_PAGE,
   COMPARE_PAGE,
   DEPRECATED_PAGE,
@@ -46,6 +47,8 @@ const routes = [
   `${versionPageRoute}/${DEPRECATED_PAGE}/:apiType`,
   // documents
   `${versionPageRoute}/${DOCUMENTS_PAGE}`,
+  // AI agent
+  `${versionPageRoute}/${AI_AGENT_PAGE}`,
   // compare
   `${versionPageRoute}/${COMPARE_PAGE}/:apiType/:operationId`,
 ]

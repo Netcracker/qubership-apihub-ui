@@ -22,6 +22,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { usePackageVersionContent } from '../usePackageVersionContent'
 
 import {
+  AI_AGENT_PAGE,
   API_CHANGES_PAGE,
   API_QUALITY_PAGE,
   CONFIGURATION_PAGE,
@@ -49,6 +50,7 @@ import { CertifiedFileIcon } from '@netcracker/qubership-apihub-ui-shared/icons/
 import { ComparisonIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ComparisonIcon'
 import { ConfigureIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ConfigureIcon'
 import { FileIcon } from '@netcracker/qubership-apihub-ui-shared/icons/FileIcon'
+import { RobotIcon } from '@netcracker/qubership-apihub-ui-shared/icons/RobotIcon'
 import { ServicesIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ServicesIcon'
 import { SettingIcon } from '@netcracker/qubership-apihub-ui-shared/icons/SettingIcon'
 import { DefaultWarningIcon } from '@netcracker/qubership-apihub-ui-shared/icons/WarningIcon'
@@ -58,6 +60,7 @@ import {
   OPERATIONS_VIEW_MODE_PARAM,
 } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import {
+  getAiAgentPath,
   getApiChangesPath,
   getApiQualityPath,
   getDeprecatedPath,
@@ -67,8 +70,7 @@ import {
   getPackageSettingsPath,
   getVersionPath,
 } from '../../NavigationProvider'
-import type {
-  ApiQualityTabTooltip} from './VersionPage/ApiQualityValidationSummaryProvider'
+import type { ApiQualityTabTooltip } from './VersionPage/ApiQualityValidationSummaryProvider'
 import {
   useApiQualityLinterEnabled,
   useApiQualityTabTooltip,
@@ -197,6 +199,7 @@ const getPagePathsMap = (
       search: commonSearchParams,
     }),
     [DOCUMENTS_PAGE]: getDocumentPath({ packageKey: packageKey, versionKey: versionKey, search: commonSearchParams }),
+    [AI_AGENT_PAGE]: getAiAgentPath({ packageKey: packageKey, versionKey: versionKey, search: commonSearchParams }),
     [PACKAGE_SETTINGS_PAGE]: getPackageSettingsPath({ packageKey }),
   }
 }
@@ -259,6 +262,13 @@ const getAvailableSidebarMenuItems = (
       tooltip: 'Documents',
       icon: <FileIcon />,
       testId: 'DocumentsButton',
+    },
+    {
+      id: AI_AGENT_PAGE,
+      title: 'AI Agent',
+      tooltip: 'AI Agent',
+      icon: <RobotIcon />,
+      testId: 'AIAgentButton',
     },
   ]
 

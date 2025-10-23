@@ -29,7 +29,7 @@ import type { FC, ReactNode } from 'react'
 import { memo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import type { VersionPageRoute } from '../../../../routes'
-import { API_CHANGES_PAGE, API_QUALITY_PAGE, DEPRECATED_PAGE, DOCUMENTS_PAGE, OPERATIONS_PAGE, OVERVIEW_PAGE } from '../../../../routes'
+import { AI_AGENT_PAGE, API_CHANGES_PAGE, API_QUALITY_PAGE, DEPRECATED_PAGE, DOCUMENTS_PAGE, OPERATIONS_PAGE, OVERVIEW_PAGE } from '../../../../routes'
 import { ActivityHistoryFiltersProvider } from '../../MainPage/ActivityHistoryFiltersProvider'
 import { NoPackagePlaceholder } from '../../NoPackagePlaceholder'
 import { NoPackageVersionPlaceholder } from '../../NoPackageVersionPlaceholder'
@@ -41,6 +41,7 @@ import type { ClientValidationStatus } from './ApiQualityValidationSummaryProvid
 import { ApiQualityDataProvider } from './ApiQualityValidationSummaryProvider'
 import { OutdatedRevisionNotification } from './OutdatedRevisionNotification/OutdatedRevisionNotification'
 import { usePollingForValidationSummaryReadiness } from './usePollingForValidationSummaryReadiness'
+import { VersionAiAgentSubPage } from './VersionAiAgentSubPage/VersionAiAgentSubPage'
 import { VersionApiChangesSubPage } from './VersionApiChangesSubPage/VersionApiChangesSubPage'
 import { RulesetInfoDialog } from './VersionApiQualitySubPage/components/RulesetInfoDialog/RulesetInfoDialog'
 import { VersionApiQualitySubPage } from './VersionApiQualitySubPage/VersionApiQualitySubPage'
@@ -113,6 +114,7 @@ const PATH_PARAM_TO_SUB_PAGE_MAP: Record<VersionPageRoute, ReactNode> = {
   ),
   [API_QUALITY_PAGE]: <VersionApiQualitySubPage />,
   [DOCUMENTS_PAGE]: <VersionDocumentsSubPage />,
+  [AI_AGENT_PAGE]: <VersionAiAgentSubPage />,
 }
 
 const VERSION_PAGE_MENU_ITEMS = [
@@ -122,6 +124,7 @@ const VERSION_PAGE_MENU_ITEMS = [
   DEPRECATED_PAGE,
   API_QUALITY_PAGE,
   DOCUMENTS_PAGE,
+  AI_AGENT_PAGE,
   TOGGLE_SIDEBAR_BUTTON,
 ]
 
