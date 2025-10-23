@@ -1,24 +1,16 @@
 import { Box, Typography } from '@mui/material'
 import type { FC, ReactElement } from 'react'
-import { memo, useMemo } from 'react'
-
-const OPERATION_TYPE_SUMMARY_STYLE = {
-  display: 'grid',
-  mt: 1,
-  mr: 15,
-  rowGap: 1,
-  columnGap: 5,
-  gridTemplateColumns: 'repeat(2, max-content)',
-}
+import { Fragment, memo, useMemo } from 'react'
 
 type TitleCell = string
-type ContentCell = ReactElement | null
+type ContentCell = string | number | ReactElement | null
 type GridTemplateRow = [TitleCell, ContentCell]
 type GridTemplateAreas = Readonly<Array<GridTemplateRow>>
 
 type TitleCellToTitleMap = Readonly<Record<TitleCell, string>>
 
 type UxSummaryTableProps = Readonly<{
+  gridTemplateHeaderRow?: GridTemplateRow
   gridTemplateRows: GridTemplateAreas
   titleCellToTitleMap: TitleCellToTitleMap
 }>
@@ -26,30 +18,36 @@ type UxSummaryTableProps = Readonly<{
 const TITLE_CELL_SUFFIX = 'Title'
 const CONTENT_CELL_SUFFIX = 'Content'
 
-function emptyContentCellName(rowIndex: number): string {
-  return `empty-content-${rowIndex}`
+function emptyContentCellName(rowIndex: number | null = null): string {
+  return rowIndex !== null ? `empty-content-${rowIndex}` : 'empty-content'
 }
 
 function titleCellName(columnTitle: TitleCell): string {
   return `${columnTitle}${TITLE_CELL_SUFFIX}`
 }
 
-function contentCellName(columnTitle: TitleCell, contentCell: ContentCell, rowIndex: number): string {
+function contentCellName(columnTitle: TitleCell, contentCell: ContentCell, rowIndex: number | null = null): string {
   return contentCell ? `${columnTitle}${CONTENT_CELL_SUFFIX}` : emptyContentCellName(rowIndex)
 }
 
 export const UxSummaryTable: FC<UxSummaryTableProps> = memo<UxSummaryTableProps>(props => {
-  const { gridTemplateRows, titleCellToTitleMap } = props
+  const { gridTemplateHeaderRow, gridTemplateRows, titleCellToTitleMap } = props
+
+  const gridTemplateJointRows = useMemo(() => (
+    gridTemplateHeaderRow
+      ? [gridTemplateHeaderRow, ...gridTemplateRows]
+      : gridTemplateRows
+  ), [gridTemplateHeaderRow, gridTemplateRows])
 
   const gridTemplateAreas = useMemo(() => {
     let gridTemplateAreas = ''
-    for (let index = 0; index < gridTemplateRows.length; index++) {
-      const row = gridTemplateRows[index]
+    for (let index = 0; index < gridTemplateJointRows.length; index++) {
+      const row = gridTemplateJointRows[index]
       const [columnTitle, contentCell] = row
       gridTemplateAreas += `'${titleCellName(columnTitle)} ${contentCellName(columnTitle, contentCell, index)}'\n`
     }
     return gridTemplateAreas
-  }, [gridTemplateRows])
+  }, [gridTemplateJointRows])
 
   if (gridTemplateRows.length === 0) {
     return null
@@ -57,27 +55,37 @@ export const UxSummaryTable: FC<UxSummaryTableProps> = memo<UxSummaryTableProps>
 
   return (
     <Box
-      sx={{
-        ...OPERATION_TYPE_SUMMARY_STYLE,
-        gridTemplateAreas: gridTemplateAreas,
-      }}
+      display='grid'
+      rowGap={1}
+      columnGap={5}
+      gridTemplateAreas={gridTemplateAreas}
+      gridTemplateColumns='repeat(2, max-content)'
     >
-      {gridTemplateRows.map((row, index) => {
+      {gridTemplateJointRows.map((row, index) => {
         const [columnTitle, columnComponent] = row
-        const gridArea = `${titleCellName(columnTitle)} ${contentCellName(columnTitle, columnComponent, index)}`
+        const titleGridArea = titleCellName(columnTitle)
+        const contentGridArea = contentCellName(columnTitle, columnComponent, index)
+        const isHeader = index === 0 && gridTemplateHeaderRow && row === gridTemplateHeaderRow
         return (
-          <Box key={index} gridArea={gridArea}          >
-            <Typography variant="subtitle2">
+          <Fragment key={index}>
+            <Typography
+              gridArea={titleGridArea}
+              variant={isHeader ? 'subtitle1' : 'subtitle2'}
+            >
               {titleCellToTitleMap[columnTitle]}
             </Typography>
-            {columnComponent
-              ? <Typography variant="body2">
-                {columnComponent}
-              </Typography>
-              : <Box gridArea={emptyContentCellName(index)} />}
-          </Box>
+            <Box gridArea={columnComponent ? contentGridArea : emptyContentCellName(index)}>
+              {isReactElement(columnComponent)
+                ? columnComponent
+                : <Typography variant="body2">{columnComponent}</Typography>}
+            </Box>
+          </Fragment>
         )
       })}
     </Box>
   )
 })
+
+function isReactElement(component: ContentCell): component is ReactElement {
+  return typeof component === 'object' && component !== null && 'type' in component
+}
