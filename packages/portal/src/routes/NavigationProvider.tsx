@@ -84,6 +84,7 @@ export const NAVIGATE_TO_COMPARISON = 'navigate-to-comparison'
 export const NAVIGATE_TO_GROUP_COMPARE_CONTENT = 'navigate-to-group-compare-content'
 export const NAVIGATE_TO_WORKSPACE = 'navigate-to-workspace'
 export const NAVIGATE_TO_DOCUMENTS = 'navigate-to-documents'
+export const NAVIGATE_TO_AI_AGENT = 'navigate-to-ai-agent'
 export const NAVIGATE_TO_DOCUMENT_PREVIEW = 'navigate-to-document-preview'
 export const NAVIGATE_TO_PACKAGE = 'navigate-to-package'
 export const NAVIGATE_TO_VERSION = 'navigate-to-version'
@@ -165,6 +166,12 @@ export type DocumentsDetail = {
     [REF_SEARCH_PARAM]?: SearchParam
     [EXPAND_NAVIGATION_MENU_SEARCH_PARAM]?: SearchParam
   }
+}
+
+export type AiAgentDetail = {
+  packageKey: Key
+  versionKey: Key
+  documentKey: Key
 }
 
 export type DocumentPreviewDetail = {
@@ -308,6 +315,7 @@ type NavigationEventBus = {
   navigateToComparison: (detail?: ComparisonDetail) => void
   navigateToWorkspace: (detail?: WorkspaceDetail) => void
   navigateToDocuments: (detail?: DocumentsDetail) => void
+  navigateToAiAgent: (detail?: AiAgentDetail) => void
   navigateToDocumentPreview: (detail?: DocumentPreviewDetail) => void
   navigateToPackage: (detail?: PackageDetail) => void
   navigateToVersion: (detail?: VersionDetail) => void
@@ -331,6 +339,7 @@ function navigationProvider(): NavigationEventBus {
       navigateToGroup: slot<GroupDetail>(),
       navigateToWorkspace: slot<WorkspaceDetail>(),
       navigateToDocuments: slot<DocumentsDetail>(),
+      navigateToAiAgent: slot<AiAgentDetail>(),
       navigateToDocumentPreview: slot<DocumentPreviewDetail>(),
       navigateToPackage: slot<PackageDetail>(),
       navigateToVersion: slot<VersionDetail>(),
@@ -377,6 +386,9 @@ function navigationProvider(): NavigationEventBus {
   })
   eventBus.navigateToDocuments.on((detail: DocumentsDetail) => {
     dispatchEvent(new CustomEvent(NAVIGATE_TO_DOCUMENTS, { detail }))
+  })
+  eventBus.navigateToAiAgent.on((detail: AiAgentDetail) => {
+    dispatchEvent(new CustomEvent(NAVIGATE_TO_AI_AGENT, { detail }))
   })
   eventBus.navigateToDocumentPreview.on((detail: DocumentPreviewDetail) => {
     dispatchEvent(new CustomEvent(NAVIGATE_TO_DOCUMENT_PREVIEW, { detail }))
@@ -460,6 +472,10 @@ export const NavigationProvider: FC<PropsWithChildren> = memo<PropsWithChildren>
     ({ detail }: CustomEvent<DocumentsDetail>) => navigate(getDocumentPath(detail)),
     [],
   )
+  const handleNavigateToAiAgent = useCallback(
+    ({ detail }: CustomEvent<AiAgentDetail>) => navigate(getAiAgentPath(detail)),
+    [],
+  )
   const handleNavigateToDocumentPreview = useCallback(
     ({ detail }: CustomEvent<DocumentPreviewDetail>) => navigate(getDocumentPreviewPath(detail)),
     [],
@@ -492,6 +508,7 @@ export const NavigationProvider: FC<PropsWithChildren> = memo<PropsWithChildren>
   useEvent(NAVIGATE_TO_GROUP_COMPARE_CONTENT, handleNavigateToGroupCompareContent)
   useEvent(NAVIGATE_TO_WORKSPACE, handleNavigateToWorkspace)
   useEvent(NAVIGATE_TO_DOCUMENTS, handleNavigateToDocuments)
+  useEvent(NAVIGATE_TO_AI_AGENT, handleNavigateToAiAgent)
   useEvent(NAVIGATE_TO_DOCUMENT_PREVIEW, handleNavigateToDocumentPreview)
   useEvent(NAVIGATE_TO_PACKAGE, handleNavigateToPackage)
   useEvent(NAVIGATE_TO_VERSION, handleNavigateToVersion)
@@ -768,8 +785,8 @@ export function getPackageSettingsPath({
 export function getSettingsPath({
   tab,
 }: SettingsDetail = {
-  tab: USER_ROLES_PAGE,
-}): Partial<Path> {
+    tab: USER_ROLES_PAGE,
+  }): Partial<Path> {
   return {
     pathname: `${SETTINGS_PAGE_PATH_PATTERN}${tab}`,
   }
@@ -778,8 +795,8 @@ export function getSettingsPath({
 export function getProfilePath({
   tab,
 }: ProfileDetail = {
-  tab: PERSONAL_ACCESS_TOKENS_PAGE,
-}): Partial<Path> {
+    tab: PERSONAL_ACCESS_TOKENS_PAGE,
+  }): Partial<Path> {
   return {
     pathname: `${PROFILE_PAGE_PATH_PATTERN}${tab}`,
   }
