@@ -32,30 +32,32 @@ function contentCellName(columnTitle: TitleCell, contentCell: ContentCell, rowIn
 }
 
 type UxSummaryTableSkeletonProps = Readonly<{
+  headerTitle?: string
   numberOfRows?: number
-  withHeaderRow?: boolean
 }>
 
 const UxSummaryTableSkeleton: FC<UxSummaryTableSkeletonProps> = memo(props => {
-  const { numberOfRows = 3, withHeaderRow = true } = props
+  const { headerTitle, numberOfRows = 3 } = props
   return (
     <Box
       display='grid'
       rowGap={1}
       columnGap={5}
       gridTemplateAreas={`
-        ${withHeaderRow ? '\'title0 content0\'' : ''}
+        ${headerTitle ? '\'title0 content0\'' : ''}
         'title1 content1'
         'title2 content2'
         'title3 content3'
       `}
       gridTemplateColumns='repeat(2, max-content)'
     >
-      {withHeaderRow && (
-        <Fragment>
-          <Skeleton sx={{ gridArea: 'title0' }} width={150} height={30} />
-          <Box gridArea='content0' />
-        </Fragment>
+      {headerTitle && (
+        <>
+          <Typography gridArea='title0' sx={{ fontSize: 15, fontWeight: 'bold' }}>
+            {headerTitle}
+          </Typography>
+          <Box gridArea={emptyContentCellName(0)} />
+        </>
       )}
       {Array(numberOfRows).fill(null).map((_, index) => (
         <Fragment key={index}>
@@ -87,7 +89,8 @@ export const UxSummaryTable: FC<UxSummaryTableProps> = memo<UxSummaryTableProps>
   }, [gridTemplateJointRows])
 
   if (loading) {
-    return <UxSummaryTableSkeleton />
+    const headerTitle = gridTemplateHeaderRow?.[0] ? titleCellToTitleMap[gridTemplateHeaderRow[0]] : undefined
+    return <UxSummaryTableSkeleton headerTitle={headerTitle} />
   }
 
   if (gridTemplateRows.length === 0) {
