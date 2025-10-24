@@ -4,6 +4,7 @@ import { LoadingButton } from '@mui/lab'
 import { Box, Button, Typography } from '@mui/material'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
+import { RawSpecDiffView } from '@netcracker/qubership-apihub-ui-shared/components/RawSpecDiffView'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import type { FC } from 'react'
 import { memo, useCallback, useEffect, useState } from 'react'
@@ -58,6 +59,50 @@ const MOCK_VALIDATION_DETAILS: AiValidationDetails = {
     },
   ],
 }
+
+const beforeValue = `
+openapi: 3.0.0
+info:
+  title: Test API
+  version: 1.0.0
+paths:
+  /test:
+    get:
+      summary: Test endpoint
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+`
+
+const afterValue = `
+openapi: 3.0.0
+info:
+  title: Test API
+  version: 1.0.0
+paths:
+  /test:
+    get:
+      summary: CHANGED Test endpoint
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  code:
+                    type: integer
+                    format: int32
+`
 
 const FixingAllStatuses = {
   NOT_STARTED: 'not-started',
@@ -173,7 +218,7 @@ export const AiAgentCard: FC = memo(() => {
                   ['tagsWithoutOperation', '0/31'],
                 ]}
                 titleCellToTitleMap={{
-                  scoring: 'Original document scoring',
+                  scoring: 'Original Scoring',
                   overallScore: 'Overall score',
                   missingSummary: 'Missing summary',
                   missingOperationId: 'Missing "operationId"',
@@ -243,7 +288,7 @@ export const AiAgentCard: FC = memo(() => {
                     ['tagsWithoutOperation', '0/31'],
                   ]}
                   titleCellToTitleMap={{
-                    scoringEnhanced: 'AI enhanced document scoring',
+                    scoringEnhanced: 'AI Enhanced Scoring',
                     overallScore: 'Overall score',
                     missingSummary: 'Missing summary',
                     missingOperationId: 'Missing "operationId"',
@@ -259,11 +304,29 @@ export const AiAgentCard: FC = memo(() => {
           {/* Validation results section */}
           {fixingAllStatus !== FixingAllStatuses.COMPLETED && (
             <Box display='flex' flexDirection='column' gap={1} flexGrow={1} minHeight={0}>
-              <Typography variant='subtitle1' fontWeight='bold'>Problems</Typography>
+              <Typography variant='subtitle1' fontWeight='bold' fontSize={15}>
+                Problems
+              </Typography>
               <Box overflow='auto' flexGrow={1} minHeight={0}>
                 <AiValidationResultsTable
                   data={validationDetails}
                   loading={loadingValidationDetails}
+                />
+              </Box>
+            </Box>
+          )}
+          {/* Diff view section */}
+          {fixingAllStatus === FixingAllStatuses.COMPLETED && (
+            <Box display='flex' flexDirection='column' gap={1} flexGrow={1} minHeight={0}>
+              <Typography variant='subtitle1' fontWeight='bold' fontSize={15}>
+                Original Specification
+              </Typography>
+              <Box overflow='auto' flexGrow={1} minHeight={0}>
+                <RawSpecDiffView
+                  beforeValue={beforeValue}
+                  afterValue={afterValue}
+                  extension='.yaml'
+                  type='openapi-3-0'
                 />
               </Box>
             </Box>

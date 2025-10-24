@@ -70,7 +70,8 @@ export const UxSummaryTable: FC<UxSummaryTableProps> = memo<UxSummaryTableProps>
           <Fragment key={index}>
             <Typography
               gridArea={titleGridArea}
-              variant={isHeader ? 'subtitle1' : 'subtitle2'}
+              variant={isHeader ? undefined : 'subtitle2'}
+              sx={isHeader ? { fontSize: 15, fontWeight: 'bold' } : undefined}
             >
               {titleCellToTitleMap[columnTitle]}
             </Typography>
