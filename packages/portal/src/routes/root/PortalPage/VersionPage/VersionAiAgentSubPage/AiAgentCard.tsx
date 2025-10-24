@@ -15,50 +15,12 @@ import { useDocuments } from '../useDocuments'
 import { AiHandledDocumentSelector } from './AiValidatedDocumentSelector'
 import { AiValidationResultsTable } from './AiValidationResultsTable'
 import { UxSummaryTable } from './UxSummaryTable'
-import type { AiValidationDetails } from './types/document-validation-details'
-import { AiIssueSeverities } from './types/issue-severities'
-
-const MOCK_VALIDATION_DETAILS: AiValidationDetails = {
-  document: {
-    key: 'document-key',
-    slug: 'document-slug',
-    title: 'document-title',
-    type: 'openapi',
-    format: 'json',
-    description: 'document-description',
-    operations: [],
-  },
-  issues: [
-    {
-      severity: AiIssueSeverities.ERROR,
-      message: 'Non-standard media type \'plain/text\' used (should be \'text/plain\') in responses (e.g., GET /api/v2/packages/{packageId}/versions/{version}/files/{slug}/raw and GET /api/v2/sharedFiles/{sharedFileId}).',
-    },
-    {
-      severity: AiIssueSeverities.WARNING,
-      message: 'Duplicate operationId values: \'getPackagesIdVersionsIdApiTypeOperationsExport\' used for both GET /api/v2/.../export/operations and GET /api/v2/.../export/operations/deprecated.',
-    },
-    {
-      severity: AiIssueSeverities.WARNING,
-      message: 'Duplicate operationId values: \'getAgentsIdNamespacesIdServicesProxy\' used for GET /agents/{agentId}/namespaces/{name}/services/{serviceId}/proxy/{path} and GET /playground/proxy.',
-    },
-    {
-      severity: AiIssueSeverities.WARNING,
-      message: 'Inadequate/mistaken description text: /api/v2/packages/{packageId}/versions/{version}/{apiType}/changes has description \'qwerty\' which is not meaningful.',
-    },
-    {
-      severity: AiIssueSeverities.WARNING,
-      message: 'Example/type mismatches: components.parameters.builderId has format \'UUID\' but example is \'QS.CloudQSS.CPQ.Q-TMF\' (not a UUID).',
-    },
-    {
-      severity: AiIssueSeverities.INFO,
-      message: 'Many responses include empty \'examples\': {} or no concrete examples where they would be helpful (e.g., many 401/403/500 responses).',
-    },
-    {
-      severity: AiIssueSeverities.INFO,
-      message: 'Cookie parameter examples include the full \'name=value\' instead of just the cookie value (e.g., \'apihub-refresh-token\' cookie examples).',
-    },
-  ],
-}
+import { useAiDocumentEnhancements } from './api/useAiDocumentEnhancements'
+import { useAiDocumentScoring } from './api/useAiDocumentScoring'
+import { useAiEnhancedDocumentScoring } from './api/useAiEnhancedDocumentScoring'
+import { useAiValidationDetails } from './api/useAiValidationDetails'
+import { usePublishedDocumentRaw } from '../usePublishedDocumentRaw'
+import { useAiEnhancedDocumentRawContent } from './api/useAiEnhancedDocumentRawContent'
 
 const beforeValue = `
 openapi: 3.0.0
@@ -154,7 +116,50 @@ export const AiAgentCard: FC = memo(() => {
     }
   }, [documentId, documents, documents.length, onSelectDocument])
 
-  const [validationDetails, loadingValidationDetails] = useAiValidationDetails()
+  const [originalDocumentScoring, loadingOriginalDocumentScoring] =
+    useAiDocumentScoring(
+      docPackageKey,
+      docPackageVersion,
+      selectedDocument?.slug,
+      fixingAllStatus !== FixingAllStatuses.COMPLETED,
+    )
+  const [enhancements, loadingEnhancements] =
+    useAiDocumentEnhancements(
+      docPackageKey,
+      docPackageVersion,
+      selectedDocument?.slug,
+      fixingAllStatus !== FixingAllStatuses.COMPLETED,
+    )
+  const [validationDetails, loadingValidationDetails] =
+    useAiValidationDetails(
+      docPackageKey,
+      docPackageVersion,
+      selectedDocument?.slug,
+      fixingAllStatus !== FixingAllStatuses.COMPLETED,
+    )
+  const [enhancedDocumentScoring, loadingEnhancedDocumentScoring] =
+    useAiEnhancedDocumentScoring(
+      docPackageKey,
+      docPackageVersion,
+      selectedDocument?.slug,
+      fixingAllStatus === FixingAllStatuses.COMPLETED,
+    )
+
+  const [originalDocumentRawContent, loadingOriginalDocumentRawContent] =
+    usePublishedDocumentRaw({
+      packageKey: docPackageKey,
+      versionKey: docPackageVersion,
+      slug: selectedDocument?.slug ?? '',
+      enabled: fixingAllStatus === FixingAllStatuses.COMPLETED,
+    })
+
+  const [enhancedDocumentRawContent, loadingEnhancedDocumentRawContent] =
+    useAiEnhancedDocumentRawContent(
+      docPackageKey,
+      docPackageVersion,
+      selectedDocument?.slug,
+      fixingAllStatus === FixingAllStatuses.COMPLETED,
+    )
 
   if (isDashboard) {
     return (
@@ -336,16 +341,3 @@ export const AiAgentCard: FC = memo(() => {
     />
   )
 })
-
-function useAiValidationDetails(): [AiValidationDetails | undefined, boolean] {
-  const [result, setResult] = useState<AiValidationDetails | undefined>(undefined)
-  const [loading, setLoading] = useState(true)
-  new Promise<void>((resolve) => {
-    setTimeout(() => {
-      setResult(MOCK_VALIDATION_DETAILS)
-      setLoading(false)
-      resolve(undefined)
-    }, 3000)
-  })
-  return [result, loading]
-}

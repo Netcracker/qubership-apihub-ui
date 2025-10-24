@@ -6,14 +6,20 @@ import { useQuery } from '@tanstack/react-query'
 const QUERY_KEY_AI_ENHANCED_DOCUMENT_RAW_CONTENT = 'ai-enhanced-document-raw-content'
 
 export function useAiEnhancedDocumentRawContent(
-  docPackageKey: string,
-  docVersionKey: string,
-  documentSlug: string,
+  docPackageKey: string | undefined,
+  docVersionKey: string | undefined,
+  documentSlug: string | undefined,
+  enabled: boolean = false,
   transform?: (value: string) => string,
 ): [FileContent | undefined, IsLoading, Error | null] {
   const { data, isLoading, error } = useQuery<FileContent, Error, FileContent>({
     queryKey: [QUERY_KEY_AI_ENHANCED_DOCUMENT_RAW_CONTENT, docPackageKey, docVersionKey, documentSlug],
-    queryFn: () => getAiEnhancedDocumentRawContent(docPackageKey, docVersionKey, documentSlug),
+    queryFn: () => (
+      docPackageKey && docVersionKey && documentSlug
+        ? getAiEnhancedDocumentRawContent(docPackageKey, docVersionKey, documentSlug)
+        : Promise.resolve('')
+    ),
+    enabled: enabled && !!docPackageKey && !!docVersionKey && !!documentSlug,
     select: transform ?? toFormattedJsonString,
   })
 

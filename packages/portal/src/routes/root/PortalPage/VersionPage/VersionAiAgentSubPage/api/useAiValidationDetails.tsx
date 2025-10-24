@@ -6,13 +6,19 @@ import { AiIssueSeverities } from '../types/issue-severities'
 const QUERY_KEY_AI_VALIDATION_DETAILS = 'ai-validation-details'
 
 export function useAiValidationDetails(
-  docPackageKey: string,
-  docVersionKey: string,
-  documentSlug: string,
+  docPackageKey: string | undefined,
+  docVersionKey: string | undefined,
+  documentSlug: string | undefined,
+  enabled: boolean = false,
 ): [AiValidationDetails | undefined, IsLoading, Error | null] {
-  const { data, isLoading, error } = useQuery<AiValidationDetailsDto, Error, AiValidationDetails>({
+  const { data, isLoading, error } = useQuery<AiValidationDetailsDto | undefined, Error, AiValidationDetails | undefined>({
     queryKey: [QUERY_KEY_AI_VALIDATION_DETAILS, docPackageKey, docVersionKey, documentSlug],
-    queryFn: () => getAiValidationDetails(docPackageKey, docVersionKey, documentSlug),
+    queryFn: () => (
+      docPackageKey && docVersionKey && documentSlug
+        ? getAiValidationDetails(docPackageKey, docVersionKey, documentSlug)
+        : Promise.resolve(undefined)
+    ),
+    enabled: enabled && !!docPackageKey && !!docVersionKey && !!documentSlug,
   })
 
   return [data, isLoading, error]

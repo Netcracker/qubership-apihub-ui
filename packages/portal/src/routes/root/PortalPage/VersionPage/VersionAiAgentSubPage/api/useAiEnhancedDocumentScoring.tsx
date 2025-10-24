@@ -16,13 +16,19 @@ type DocumentScoring = DocumentScoringDto
 const QUERY_KEY_ENHANCED_DOCUMENT_SCORING = 'enhanced-document-scoring'
 
 export function useAiEnhancedDocumentScoring(
-  docPackageKey: string,
-  docVersionKey: string,
-  documentSlug: string,
+  docPackageKey: string | undefined,
+  docVersionKey: string | undefined,
+  documentSlug: string | undefined,
+  enabled: boolean = false,
 ): [DocumentScoring | undefined, IsLoading, Error | null] {
-  const { data, isLoading, error } = useQuery<DocumentScoringDto, Error, DocumentScoring>({
+  const { data, isLoading, error } = useQuery<DocumentScoringDto | undefined, Error, DocumentScoring | undefined>({
     queryKey: [QUERY_KEY_ENHANCED_DOCUMENT_SCORING, docPackageKey, docVersionKey, documentSlug],
-    queryFn: () => getAiEnhancedDocumentScoring(docPackageKey, docVersionKey, documentSlug),
+    queryFn: () => (
+      docPackageKey && docVersionKey && documentSlug
+        ? getAiEnhancedDocumentScoring(docPackageKey, docVersionKey, documentSlug)
+        : Promise.resolve(undefined)
+    ),
+    enabled: enabled && !!docPackageKey && !!docVersionKey && !!documentSlug,
   })
 
   return [data, isLoading, error]
