@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material'
+import { Box, Skeleton, Typography } from '@mui/material'
 import type { FC, ReactElement } from 'react'
 import { Fragment, memo, useMemo } from 'react'
 
@@ -13,6 +13,7 @@ type UxSummaryTableProps = Readonly<{
   gridTemplateHeaderRow?: GridTemplateRow
   gridTemplateRows: GridTemplateAreas
   titleCellToTitleMap: TitleCellToTitleMap
+  loading?: boolean
 }>
 
 const TITLE_CELL_SUFFIX = 'Title'
@@ -30,8 +31,44 @@ function contentCellName(columnTitle: TitleCell, contentCell: ContentCell, rowIn
   return contentCell ? `${columnTitle}${CONTENT_CELL_SUFFIX}` : emptyContentCellName(rowIndex)
 }
 
+type UxSummaryTableSkeletonProps = Readonly<{
+  numberOfRows?: number
+  withHeaderRow?: boolean
+}>
+
+const UxSummaryTableSkeleton: FC<UxSummaryTableSkeletonProps> = memo(props => {
+  const { numberOfRows = 3, withHeaderRow = true } = props
+  return (
+    <Box
+      display='grid'
+      rowGap={1}
+      columnGap={5}
+      gridTemplateAreas={`
+        ${withHeaderRow ? '\'title0 content0\'' : ''}
+        'title1 content1'
+        'title2 content2'
+        'title3 content3'
+      `}
+      gridTemplateColumns='repeat(2, max-content)'
+    >
+      {withHeaderRow && (
+        <Fragment>
+          <Skeleton sx={{ gridArea: 'title0' }} width={150} height={30} />
+          <Box gridArea='content0' />
+        </Fragment>
+      )}
+      {Array(numberOfRows).fill(null).map((_, index) => (
+        <Fragment key={index}>
+          <Skeleton sx={{ gridArea: `title${index + 1}` }} width={100} height={20} />
+          <Skeleton sx={{ gridArea: `content${index + 1}` }} width={200} height={20} />
+        </Fragment>
+      ))}
+    </Box>
+  )
+})
+
 export const UxSummaryTable: FC<UxSummaryTableProps> = memo<UxSummaryTableProps>(props => {
-  const { gridTemplateHeaderRow, gridTemplateRows, titleCellToTitleMap } = props
+  const { gridTemplateHeaderRow, gridTemplateRows, titleCellToTitleMap, loading } = props
 
   const gridTemplateJointRows = useMemo(() => (
     gridTemplateHeaderRow
@@ -48,6 +85,10 @@ export const UxSummaryTable: FC<UxSummaryTableProps> = memo<UxSummaryTableProps>
     }
     return gridTemplateAreas
   }, [gridTemplateJointRows])
+
+  if (loading) {
+    return <UxSummaryTableSkeleton />
+  }
 
   if (gridTemplateRows.length === 0) {
     return null

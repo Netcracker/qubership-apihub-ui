@@ -169,6 +169,7 @@ export const AiAgentCard: FC = memo(() => {
             {/* Scoring of the original document  */}
             <Box flexGrow={1}>
               <UxSummaryTable
+                loading={loadingOriginalDocumentScoring}
                 gridTemplateHeaderRow={
                   ['scoring', null]
                 }
@@ -185,10 +186,11 @@ export const AiAgentCard: FC = memo(() => {
                 }}
               />
             </Box>
-            {/*  AI suggestions section */}
+            {/* AI suggestions section */}
             {fixingAllStatus !== FixingAllStatuses.COMPLETED && (
               <Box flexGrow={1} display='flex' flexDirection='column' alignItems='flex-start' gap={2}>
                 <UxSummaryTable
+                  loading={loadingEnhancements}
                   gridTemplateHeaderRow={
                     ['enhancements', null]
                   }
@@ -200,33 +202,36 @@ export const AiAgentCard: FC = memo(() => {
                     missingExamples: 'Missing examples',
                   }}
                 />
-                <LoadingButton
-                  loading={fixingAllStatus === FixingAllStatuses.IN_PROGRESS}
-                  onClick={onFixAllButtonClick}
-                  variant='outlined'
-                  color='primary'
-                  size='small'
-                  sx={{
-                    background:
-                      'linear-gradient(white, white) padding-box,\n' +
-                      'linear-gradient(90deg, #00C4FF, #8B5CF6, #FF0080, #E2179D, #FF0080) border-box',
-                    border: '2px solid transparent',
-                    '&:hover': {
-                      border: '2px solid transparent',
+                {enhancements && !loadingEnhancements && (
+                  <LoadingButton
+                    loading={fixingAllStatus === FixingAllStatuses.IN_PROGRESS}
+                    onClick={onFixAllButtonClick}
+                    variant='outlined'
+                    color='primary'
+                    size='small'
+                    sx={{
                       background:
-                        'linear-gradient(90deg, hsl(194, 100%, 90%), hsl(258, 90%, 90%), hsl(330, 100%, 90%), hsl(320, 82%, 90%), hsl(330, 100%, 90%)) padding-box,\n' +
-                        'linear-gradient(90deg, hsl(194, 100%, 50%), hsl(258, 90%, 66%), hsl(330, 100%, 50%), hsl(320, 82%, 50%), hsl(330, 100%, 50%)) border-box',
-                    },
-                  }}
-                >
-                  Fix all with AI
-                </LoadingButton>
+                        'linear-gradient(white, white) padding-box,\n' +
+                        'linear-gradient(90deg, #00C4FF, #8B5CF6, #FF0080, #E2179D, #FF0080) border-box',
+                      border: '2px solid transparent',
+                      '&:hover': {
+                        border: '2px solid transparent',
+                        background:
+                          'linear-gradient(90deg, hsl(194, 100%, 90%), hsl(258, 90%, 90%), hsl(330, 100%, 90%), hsl(320, 82%, 90%), hsl(330, 100%, 90%)) padding-box,\n' +
+                          'linear-gradient(90deg, hsl(194, 100%, 50%), hsl(258, 90%, 66%), hsl(330, 100%, 50%), hsl(320, 82%, 50%), hsl(330, 100%, 50%)) border-box',
+                      },
+                    }}
+                  >
+                    Fix All
+                  </LoadingButton>
+                )}
               </Box>
             )}
-            {/*  Scoring of the enhanced document */}
+            {/* Scoring of the enhanced document */}
             {fixingAllStatus === FixingAllStatuses.COMPLETED && (
               <Box flexGrow={1}>
                 <UxSummaryTable
+                  loading={loadingEnhancedDocumentScoring}
                   gridTemplateHeaderRow={
                     ['scoringEnhanced', null]
                   }
