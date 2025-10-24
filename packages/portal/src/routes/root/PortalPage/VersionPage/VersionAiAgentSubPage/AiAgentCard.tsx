@@ -59,6 +59,14 @@ const MOCK_VALIDATION_DETAILS: AiValidationDetails = {
   ],
 }
 
+const FixingAllStatuses = {
+  NOT_STARTED: 'not-started',
+  IN_PROGRESS: 'in-progress',
+  COMPLETED: 'completed',
+  FAILED: 'failed',
+} as const
+type FixingAllStatus = (typeof FixingAllStatuses)[keyof typeof FixingAllStatuses]
+
 export const AiAgentCard: FC = memo(() => {
   const { documentId } = useParams()
   const [packageKind] = usePackageKind()
@@ -74,11 +82,11 @@ export const AiAgentCard: FC = memo(() => {
 
   const [selectedDocument, setSelectedDocument] = useState<Document | undefined>(undefined)
 
-  const [fixingAllLoading, setFixingAllLoading] = useState(false)
+  const [fixingAllStatus, setFixingAllStatus] = useState<FixingAllStatus>(FixingAllStatuses.NOT_STARTED)
   const onFixAllButtonClick = useCallback(() => {
-    setFixingAllLoading(prev => !prev)
+    setFixingAllStatus(FixingAllStatuses.IN_PROGRESS)
     setTimeout(() => {
-      setFixingAllLoading(prev => !prev)
+      setFixingAllStatus(FixingAllStatuses.COMPLETED)
     }, 3000)
   }, [])
 
@@ -140,6 +148,7 @@ export const AiAgentCard: FC = memo(() => {
         <Box display='flex' flexDirection='column' gap={2} height='100%'>
           {/* Scoring section */}
           <Box display='flex' gap={2}>
+            {/* Scoring of the original document  */}
             <Box flexGrow={1}>
               <UxSummaryTable
                 gridTemplateHeaderRow={
@@ -155,7 +164,7 @@ export const AiAgentCard: FC = memo(() => {
                   ['tagsWithoutOperation', '0/31'],
                 ]}
                 titleCellToTitleMap={{
-                  scoring: 'Scoring',
+                  scoring: 'Original document scoring',
                   overallScore: 'Overall score',
                   missingSummary: 'Missing summary',
                   missingOperationId: 'Missing "operationId"',
@@ -166,56 +175,90 @@ export const AiAgentCard: FC = memo(() => {
                 }}
               />
             </Box>
-            <Box flexGrow={1} display='flex' flexDirection='column' alignItems='flex-start' gap={2}>
-              <UxSummaryTable
-                gridTemplateHeaderRow={
-                  ['enhancements', null]
-                }
-                gridTemplateRows={[
-                  ['structuredImprovements', <Typography variant='body2' sx={{ fontWeight: 'bold' }}>2 issue(s)</Typography>],
-                  ['missingDescription', <Typography variant='body2' sx={{ fontWeight: 'bold' }}>3 issue(s)</Typography>],
-                  ['missingExamples', <Typography variant='body2' sx={{ fontWeight: 'bold' }}>5 issue(s)</Typography>],
-                ]}
-                titleCellToTitleMap={{
-                  enhancements: 'Enhancements',
-                  structuredImprovements: 'Structured improvements',
-                  missingDescription: 'Missing description',
-                  missingExamples: 'Missing examples',
-                }}
-              />
-              <LoadingButton
-                loading={fixingAllLoading}
-                onClick={onFixAllButtonClick}
-                variant='outlined'
-                color='primary'
-                size='small'
-                sx={{
-                  background:
-                    'linear-gradient(white, white) padding-box,\n' +
-                    'linear-gradient(90deg, #00C4FF, #8B5CF6, #FF0080, #E2179D, #FF0080) border-box',
-                  border: '2px solid transparent',
-                  '&:hover': {
-                    border: '2px solid transparent',
+            {/*  AI suggestions section */}
+            {fixingAllStatus !== FixingAllStatuses.COMPLETED && (
+              <Box flexGrow={1} display='flex' flexDirection='column' alignItems='flex-start' gap={2}>
+                <UxSummaryTable
+                  gridTemplateHeaderRow={
+                    ['enhancements', null]
+                  }
+                  gridTemplateRows={[
+                    ['structuredImprovements', <Typography variant='body2' sx={{ fontWeight: 'bold' }}>2 issue(s)</Typography>],
+                    ['missingDescription', <Typography variant='body2' sx={{ fontWeight: 'bold' }}>3 issue(s)</Typography>],
+                    ['missingExamples', <Typography variant='body2' sx={{ fontWeight: 'bold' }}>5 issue(s)</Typography>],
+                  ]}
+                  titleCellToTitleMap={{
+                    enhancements: 'Enhancements',
+                    structuredImprovements: 'Structured improvements',
+                    missingDescription: 'Missing description',
+                    missingExamples: 'Missing examples',
+                  }}
+                />
+                <LoadingButton
+                  loading={fixingAllStatus === FixingAllStatuses.IN_PROGRESS}
+                  onClick={onFixAllButtonClick}
+                  variant='outlined'
+                  color='primary'
+                  size='small'
+                  sx={{
                     background:
-                      'linear-gradient(90deg, hsl(194, 100%, 90%), hsl(258, 90%, 90%), hsl(330, 100%, 90%), hsl(320, 82%, 90%), hsl(330, 100%, 90%)) padding-box,\n' +
-                      'linear-gradient(90deg, hsl(194, 100%, 50%), hsl(258, 90%, 66%), hsl(330, 100%, 50%), hsl(320, 82%, 50%), hsl(330, 100%, 50%)) border-box',
-                  },
-                }}
-              >
-                Fix all with AI
-              </LoadingButton>
-            </Box>
+                      'linear-gradient(white, white) padding-box,\n' +
+                      'linear-gradient(90deg, #00C4FF, #8B5CF6, #FF0080, #E2179D, #FF0080) border-box',
+                    border: '2px solid transparent',
+                    '&:hover': {
+                      border: '2px solid transparent',
+                      background:
+                        'linear-gradient(90deg, hsl(194, 100%, 90%), hsl(258, 90%, 90%), hsl(330, 100%, 90%), hsl(320, 82%, 90%), hsl(330, 100%, 90%)) padding-box,\n' +
+                        'linear-gradient(90deg, hsl(194, 100%, 50%), hsl(258, 90%, 66%), hsl(330, 100%, 50%), hsl(320, 82%, 50%), hsl(330, 100%, 50%)) border-box',
+                    },
+                  }}
+                >
+                  Fix all with AI
+                </LoadingButton>
+              </Box>
+            )}
+            {/*  Scoring of the enhanced document */}
+            {fixingAllStatus === FixingAllStatuses.COMPLETED && (
+              <Box flexGrow={1}>
+                <UxSummaryTable
+                  gridTemplateHeaderRow={
+                    ['scoringEnhanced', null]
+                  }
+                  gridTemplateRows={[
+                    ['overallScore', <Typography variant='body2' sx={{ color: '#00BB5B' }}>100/100 - Great</Typography>],
+                    ['missingSummary', '3/15'],
+                    ['missingOperationId', '5/23'],
+                    ['completenessOfDescription', '13/31'],
+                    ['operationWithoutTag', '2/11'],
+                    ['numberOfUnusedComponents', 1],
+                    ['tagsWithoutOperation', '0/31'],
+                  ]}
+                  titleCellToTitleMap={{
+                    scoringEnhanced: 'AI enhanced document scoring',
+                    overallScore: 'Overall score',
+                    missingSummary: 'Missing summary',
+                    missingOperationId: 'Missing "operationId"',
+                    completenessOfDescription: 'Completeness of description',
+                    operationWithoutTag: 'Operation without tag',
+                    numberOfUnusedComponents: 'Number of unused components',
+                    tagsWithoutOperation: 'Tags without operation',
+                  }}
+                />
+              </Box>
+            )}
           </Box>
           {/* Validation results section */}
-          <Box display='flex' flexDirection='column' gap={1} flexGrow={1} minHeight={0}>
-            <Typography variant='subtitle1' fontWeight='bold'>Problems</Typography>
-            <Box overflow='auto' flexGrow={1} minHeight={0}>
-              <AiValidationResultsTable
-                data={validationDetails}
-                loading={loadingValidationDetails}
-              />
+          {fixingAllStatus !== FixingAllStatuses.COMPLETED && (
+            <Box display='flex' flexDirection='column' gap={1} flexGrow={1} minHeight={0}>
+              <Typography variant='subtitle1' fontWeight='bold'>Problems</Typography>
+              <Box overflow='auto' flexGrow={1} minHeight={0}>
+                <AiValidationResultsTable
+                  data={validationDetails}
+                  loading={loadingValidationDetails}
+                />
+              </Box>
             </Box>
-          </Box>
+          )}
         </Box>
       }
     />
