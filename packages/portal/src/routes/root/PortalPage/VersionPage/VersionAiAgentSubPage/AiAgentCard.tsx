@@ -1,7 +1,7 @@
 import type { Document } from '@apihub/entities/documents'
 import { useNavigation } from '@apihub/routes/NavigationProvider'
 import { LoadingButton } from '@mui/lab'
-import { Box, Typography } from '@mui/material'
+import { Box, Button, Typography } from '@mui/material'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
@@ -134,14 +134,23 @@ export const AiAgentCard: FC = memo(() => {
   return (
     <BodyCard
       header={
-        <Box display='flex' alignItems='center' gap={2}>
-          AI Recommendations
-          <AiHandledDocumentSelector
-            value={selectedDocument}
-            onSelect={onSelectDocument}
-            options={documents}
-            loading={documentsLoading}
-          />
+        <Box display='flex' justifyContent='space-between' alignItems='center'>
+          {/* Left part */}
+          <Box display='flex' alignItems='center' gap={2}>
+            AI Recommendations
+            <AiHandledDocumentSelector
+              value={selectedDocument}
+              onSelect={onSelectDocument}
+              options={documents}
+              loading={documentsLoading}
+            />
+          </Box>
+          {/* Right part */}
+          {fixingAllStatus === FixingAllStatuses.COMPLETED && (
+            <Button variant='contained' color='primary' size='small'>
+              Publish enhanced version
+            </Button>
+          )}
         </Box>
       }
       body={
