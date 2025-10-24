@@ -17,6 +17,7 @@ import { AiHandledDocumentSelector } from './AiValidatedDocumentSelector'
 import { AiValidationResultsTable } from './AiValidationResultsTable'
 import type { GridTemplateRow } from './UxSummaryTable'
 import { UxSummaryTable } from './UxSummaryTable'
+import type { DocumentEnhancements } from './api/useAiDocumentEnhancements'
 import { useAiDocumentEnhancements } from './api/useAiDocumentEnhancements'
 import { useAiDocumentScoring } from './api/useAiDocumentScoring'
 import { useAiEnhancedDocumentRawContent } from './api/useAiEnhancedDocumentRawContent'
@@ -191,15 +192,11 @@ export const AiAgentCard: FC = memo(() => {
                   gridTemplateHeaderRow={
                     ['enhancements', null]
                   }
-                  gridTemplateRows={[
-                    ['structuredImprovements', <Typography variant='body2' sx={{ fontWeight: 'bold' }}>2 issue(s)</Typography>],
-                    ['missingDescription', <Typography variant='body2' sx={{ fontWeight: 'bold' }}>3 issue(s)</Typography>],
-                    ['missingExamples', <Typography variant='body2' sx={{ fontWeight: 'bold' }}>5 issue(s)</Typography>],
-                  ]}
+                  gridTemplateRows={transformEnhancementsToGridTemplateRows(enhancements)}
                   titleCellToTitleMap={{
                     enhancements: 'Enhancements',
-                    structuredImprovements: 'Structured improvements',
-                    missingDescription: 'Missing description',
+                    structureImprovements: 'Structure improvements',
+                    missingDescriptions: 'Missing descriptions',
                     missingExamples: 'Missing examples',
                   }}
                 />
@@ -313,6 +310,28 @@ function transformScoringToGridTemplateRows(scoring: DocumentScoring | undefined
       )
     }
     rows.push([scoringParameter, rowContent])
+  }
+
+  return rows
+}
+
+function transformEnhancementsToGridTemplateRows(enhancements: DocumentEnhancements | undefined): GridTemplateRow[] {
+  if (!enhancements) {
+    return []
+  }
+
+  const { enhancements: enhancementsMap } = enhancements
+
+  const rows: GridTemplateRow[] = []
+
+  const enhancementsParameters = Object.keys(enhancementsMap)
+  for (const enhancementParameter of enhancementsParameters) {
+    rows.push([
+      enhancementParameter,
+      <Typography variant='body2' sx={{ fontWeight: 'bold' }}>
+        {enhancementsMap[enhancementParameter]} issue(s)
+      </Typography>,
+    ])
   }
 
   return rows

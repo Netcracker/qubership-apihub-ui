@@ -6,10 +6,10 @@ const QUERY_KEY_DOCUMENT_ENHANCEMENTS = 'document-enhancements'
 type EnhancemetCategory = string
 type EnhancementCount = number
 
-type DocumentEnhancementsDto = {
+export type DocumentEnhancementsDto = {
   enhancements: Record<EnhancemetCategory, EnhancementCount>
 }
-type DocumentEnhancements = DocumentEnhancementsDto
+export type DocumentEnhancements = DocumentEnhancementsDto
 
 export function useAiDocumentEnhancements(
   docPackageKey: string | undefined,
