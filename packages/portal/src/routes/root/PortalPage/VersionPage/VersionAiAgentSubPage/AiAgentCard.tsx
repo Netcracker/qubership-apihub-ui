@@ -137,7 +137,7 @@ export const AiAgentCard: FC = memo(() => {
         </Box>
       }
       body={
-        <Box display='flex' flexDirection='column' gap={2}>
+        <Box display='flex' flexDirection='column' gap={2} height='100%'>
           {/* Scoring section */}
           <Box display='flex' gap={2}>
             <Box flexGrow={1}>
@@ -207,12 +207,14 @@ export const AiAgentCard: FC = memo(() => {
             </Box>
           </Box>
           {/* Validation results section */}
-          <Box display='flex' flexDirection='column' gap={1} flexGrow={1}>
+          <Box display='flex' flexDirection='column' gap={1} flexGrow={1} minHeight={0}>
             <Typography variant='subtitle1' fontWeight='bold'>Problems</Typography>
-            <AiValidationResultsTable
-              data={validationDetails}
-              loading={loadingValidationDetails}
-            />
+            <Box overflow='auto' flexGrow={1} minHeight={0}>
+              <AiValidationResultsTable
+                data={validationDetails}
+                loading={loadingValidationDetails}
+              />
+            </Box>
           </Box>
         </Box>
       }
