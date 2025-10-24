@@ -2,10 +2,10 @@ import { Box, Typography } from '@mui/material'
 import type { FC, ReactElement } from 'react'
 import { Fragment, memo, useMemo } from 'react'
 
-type TitleCell = string
-type ContentCell = string | number | ReactElement | null
-type GridTemplateRow = [TitleCell, ContentCell]
-type GridTemplateAreas = Readonly<Array<GridTemplateRow>>
+export type TitleCell = string
+export type ContentCell = string | number | ReactElement | null
+export type GridTemplateRow = [TitleCell, ContentCell]
+export type GridTemplateAreas = Readonly<Array<GridTemplateRow>>
 
 type TitleCellToTitleMap = Readonly<Record<TitleCell, string>>
 

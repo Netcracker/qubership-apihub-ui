@@ -6,65 +6,23 @@ import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/Body
 import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import { RawSpecDiffView } from '@netcracker/qubership-apihub-ui-shared/components/RawSpecDiffView'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import type { FC } from 'react'
+import type { FC, ReactElement } from 'react'
 import { memo, useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { usePackageKind } from '../../usePackageKind'
 import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
 import { useDocuments } from '../useDocuments'
+import { usePublishedDocumentRaw } from '../usePublishedDocumentRaw'
 import { AiHandledDocumentSelector } from './AiValidatedDocumentSelector'
 import { AiValidationResultsTable } from './AiValidationResultsTable'
+import type { GridTemplateRow } from './UxSummaryTable'
 import { UxSummaryTable } from './UxSummaryTable'
 import { useAiDocumentEnhancements } from './api/useAiDocumentEnhancements'
 import { useAiDocumentScoring } from './api/useAiDocumentScoring'
+import { useAiEnhancedDocumentRawContent } from './api/useAiEnhancedDocumentRawContent'
 import { useAiEnhancedDocumentScoring } from './api/useAiEnhancedDocumentScoring'
 import { useAiValidationDetails } from './api/useAiValidationDetails'
-import { usePublishedDocumentRaw } from '../usePublishedDocumentRaw'
-import { useAiEnhancedDocumentRawContent } from './api/useAiEnhancedDocumentRawContent'
-
-const beforeValue = `
-openapi: 3.0.0
-info:
-  title: Test API
-  version: 1.0.0
-paths:
-  /test:
-    get:
-      summary: Test endpoint
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-`
-
-const afterValue = `
-openapi: 3.0.0
-info:
-  title: Test API
-  version: 1.0.0
-paths:
-  /test:
-    get:
-      summary: CHANGED Test endpoint
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  code:
-                    type: integer
-                    format: int32
-`
+import type { DocumentScoring } from './types/document-scoring'
 
 const FixingAllStatuses = {
   NOT_STARTED: 'not-started',
@@ -112,7 +70,7 @@ export const AiAgentCard: FC = memo(() => {
     if (!documentId) {
       documents.length > 0 && onSelectDocument(documents[0])
     } else {
-      setSelectedDocument(documents.find((document) => document.key === documentId))
+      setSelectedDocument(documents.find((document) => document.slug === documentId))
     }
   }, [documentId, documents, documents.length, onSelectDocument])
 
@@ -213,15 +171,7 @@ export const AiAgentCard: FC = memo(() => {
                 gridTemplateHeaderRow={
                   ['scoring', null]
                 }
-                gridTemplateRows={[
-                  ['overallScore', <Typography variant='body2' sx={{ color: 'error.main' }}>45/100 - Bad</Typography>],
-                  ['missingSummary', '3/15'],
-                  ['missingOperationId', '5/23'],
-                  ['completenessOfDescription', '13/31'],
-                  ['operationWithoutTag', '2/11'],
-                  ['numberOfUnusedComponents', 1],
-                  ['tagsWithoutOperation', '0/31'],
-                ]}
+                gridTemplateRows={transformScoringToGridTemplateRows(originalDocumentScoring)}
                 titleCellToTitleMap={{
                   scoring: 'Original Scoring',
                   overallScore: 'Overall score',
@@ -283,15 +233,7 @@ export const AiAgentCard: FC = memo(() => {
                   gridTemplateHeaderRow={
                     ['scoringEnhanced', null]
                   }
-                  gridTemplateRows={[
-                    ['overallScore', <Typography variant='body2' sx={{ color: '#00BB5B' }}>100/100 - Great</Typography>],
-                    ['missingSummary', '3/15'],
-                    ['missingOperationId', '5/23'],
-                    ['completenessOfDescription', '13/31'],
-                    ['operationWithoutTag', '2/11'],
-                    ['numberOfUnusedComponents', 1],
-                    ['tagsWithoutOperation', '0/31'],
-                  ]}
+                  gridTemplateRows={transformScoringToGridTemplateRows(enhancedDocumentScoring)}
                   titleCellToTitleMap={{
                     scoringEnhanced: 'AI Enhanced Scoring',
                     overallScore: 'Overall score',
@@ -321,23 +263,57 @@ export const AiAgentCard: FC = memo(() => {
             </Box>
           )}
           {/* Diff view section */}
-          {fixingAllStatus === FixingAllStatuses.COMPLETED && (
-            <Box display='flex' flexDirection='column' gap={1} flexGrow={1} minHeight={0}>
-              <Typography variant='subtitle1' fontWeight='bold' fontSize={15}>
-                Original Specification
-              </Typography>
-              <Box overflow='auto' flexGrow={1} minHeight={0}>
-                <RawSpecDiffView
-                  beforeValue={beforeValue}
-                  afterValue={afterValue}
-                  extension='.yaml'
-                  type='openapi-3-0'
-                />
+          {fixingAllStatus === FixingAllStatuses.COMPLETED &&
+            originalDocumentRawContent &&
+            enhancedDocumentRawContent && (
+              <Box display='flex' flexDirection='column' gap={1} flexGrow={1} minHeight={0}>
+                <Typography variant='subtitle1' fontWeight='bold' fontSize={15}>
+                  Original Specification
+                </Typography>
+                <Box overflow='auto' flexGrow={1} minHeight={0}>
+                  <RawSpecDiffView
+                    beforeValue={originalDocumentRawContent}
+                    afterValue={enhancedDocumentRawContent}
+                    extension='.yaml'
+                    type='openapi-3-0'
+                  />
+                </Box>
               </Box>
-            </Box>
-          )}
+            )}
         </Box>
       }
     />
   )
 })
+
+function transformScoringToGridTemplateRows(scoring: DocumentScoring | undefined): GridTemplateRow[] {
+  if (!scoring) {
+    return []
+  }
+
+  const rows: GridTemplateRow[] = []
+
+  const scoringParameters = Object.keys(scoring) as (keyof DocumentScoring)[]
+  for (const scoringParameter of scoringParameters) {
+    let rowContent: string | number | ReactElement | null = scoring[scoringParameter]
+    if (scoringParameter === 'overallScore') {
+      rowContent = (
+        <Typography
+          variant='body2'
+          sx={{
+            color: typeof rowContent === 'string' || typeof rowContent === 'number'
+              ? rowContent.toString().includes('Great')
+                ? 'success.main'
+                : 'error.main'
+              : '',
+          }}
+        >
+          {rowContent}
+        </Typography>
+      )
+    }
+    rows.push([scoringParameter, rowContent])
+  }
+
+  return rows
+}

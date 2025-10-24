@@ -1,17 +1,6 @@
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { useQuery } from '@tanstack/react-query'
-
-type DocumentScoringDto = {
-  overallScore: string
-  missingSummary: string
-  missingOperationId: string
-  completenessOfDescription: string
-  operationWithoutTag: string
-  numberOfUnusedComponents: number
-  tagsWithoutOperation: string
-}
-
-type DocumentScoring = DocumentScoringDto
+import type { DocumentScoring, DocumentScoringDto } from '../types/document-scoring'
 
 const QUERY_KEY_ENHANCED_DOCUMENT_SCORING = 'enhanced-document-scoring'
 

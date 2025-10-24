@@ -11,7 +11,7 @@ export function useAiValidationDetails(
   documentSlug: string | undefined,
   enabled: boolean = false,
 ): [AiValidationDetails | undefined, IsLoading, Error | null] {
-  const { data, isLoading, error } = useQuery<AiValidationDetailsDto | undefined, Error, AiValidationDetails | undefined>({
+  const { data, isFetching, error } = useQuery<AiValidationDetailsDto | undefined, Error, AiValidationDetails | undefined>({
     queryKey: [QUERY_KEY_AI_VALIDATION_DETAILS, docPackageKey, docVersionKey, documentSlug],
     queryFn: () => (
       docPackageKey && docVersionKey && documentSlug
@@ -21,7 +21,7 @@ export function useAiValidationDetails(
     enabled: enabled && !!docPackageKey && !!docVersionKey && !!documentSlug,
   })
 
-  return [data, isLoading, error]
+  return [data, isFetching, error]
 }
 
 // eslint-disable-next-line
