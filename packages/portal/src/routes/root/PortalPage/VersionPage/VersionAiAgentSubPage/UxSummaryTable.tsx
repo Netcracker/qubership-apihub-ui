@@ -1,4 +1,5 @@
 import { Box, Skeleton, Typography } from '@mui/material'
+import { slugify } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import type { FC, ReactElement } from 'react'
 import { Fragment, memo, useMemo } from 'react'
 
@@ -7,28 +8,27 @@ export type ContentCell = string | number | ReactElement | null
 export type GridTemplateRow = [TitleCell, ContentCell]
 export type GridTemplateAreas = Readonly<Array<GridTemplateRow>>
 
-type TitleCellToTitleMap = Readonly<Record<TitleCell, string>>
-
 type UxSummaryTableProps = Readonly<{
   gridTemplateHeaderRow?: GridTemplateRow
   gridTemplateRows: GridTemplateAreas
-  titleCellToTitleMap: TitleCellToTitleMap
   loading?: boolean
 }>
 
-const TITLE_CELL_SUFFIX = 'Title'
-const CONTENT_CELL_SUFFIX = 'Content'
+const TITLE_CELL_SUFFIX = 'title'
+const CONTENT_CELL_SUFFIX = 'content'
 
 function emptyContentCellName(rowIndex: number | null = null): string {
   return rowIndex !== null ? `empty-content-${rowIndex}` : 'empty-content'
 }
 
-function titleCellName(columnTitle: TitleCell): string {
-  return `${columnTitle}${TITLE_CELL_SUFFIX}`
+export function titleCellName(columnTitle: TitleCell): string {
+  return `${slugify(columnTitle)}__${TITLE_CELL_SUFFIX}`
 }
 
-function contentCellName(columnTitle: TitleCell, contentCell: ContentCell, rowIndex: number | null = null): string {
-  return contentCell ? `${columnTitle}${CONTENT_CELL_SUFFIX}` : emptyContentCellName(rowIndex)
+export function contentCellName(columnTitle: TitleCell, contentCell: ContentCell, rowIndex: number | null = null): string {
+  return contentCell
+    ? `${slugify(columnTitle)}__${CONTENT_CELL_SUFFIX}`
+    : emptyContentCellName(rowIndex)
 }
 
 type UxSummaryTableSkeletonProps = Readonly<{
@@ -70,7 +70,7 @@ const UxSummaryTableSkeleton: FC<UxSummaryTableSkeletonProps> = memo(props => {
 })
 
 export const UxSummaryTable: FC<UxSummaryTableProps> = memo<UxSummaryTableProps>(props => {
-  const { gridTemplateHeaderRow, gridTemplateRows, titleCellToTitleMap, loading } = props
+  const { gridTemplateHeaderRow, gridTemplateRows, loading } = props
 
   const gridTemplateJointRows = useMemo(() => (
     gridTemplateHeaderRow
@@ -89,7 +89,7 @@ export const UxSummaryTable: FC<UxSummaryTableProps> = memo<UxSummaryTableProps>
   }, [gridTemplateJointRows])
 
   if (loading) {
-    const headerTitle = gridTemplateHeaderRow?.[0] ? titleCellToTitleMap[gridTemplateHeaderRow?.[0] ?? ''] : undefined
+    const headerTitle = gridTemplateHeaderRow?.[0]
     return <UxSummaryTableSkeleton headerTitle={headerTitle} />
   }
 
@@ -117,11 +117,11 @@ export const UxSummaryTable: FC<UxSummaryTableProps> = memo<UxSummaryTableProps>
               variant={isHeader ? undefined : 'subtitle2'}
               sx={{
                 fontSize: isHeader ? 15 : undefined,
-                // TODO 25.10.25 // Fix hardcode for "overallScore"
-                fontWeight: isHeader || columnTitle === 'overallScore' ? 'bold' : undefined,
+                // TODO 25.10.25 // Fix hardcode for "Overall Score"
+                fontWeight: isHeader || columnTitle === 'Overall Score' ? 'bold' : undefined,
               }}
             >
-              {titleCellToTitleMap[columnTitle]}
+              {columnTitle}
             </Typography>
             <Box gridArea={columnComponent ? contentGridArea : emptyContentCellName(index)}>
               {isReactElement(columnComponent)

@@ -31,27 +31,27 @@ function getAiEnhancedDocumentScoring(docPackageKey: string, docVersionKey: stri
         overallScore: '100/100 - Great',
         details: [
           {
-            name: 'missingSummary',
+            name: 'Missing Summary',
             value: '3/15',
           },
           {
-            name: 'missingOperationId',
+            name: 'Missing "operationId"',
             value: '5/23',
           },
           {
-            name: 'completenessOfDescription',
+            name: 'Completeness of Description',
             value: '13/31',
           },
           {
-            name: 'operationWithoutTag',
+            name: 'Operation without Tag',
             value: '2/11',
           },
           {
-            name: 'numberOfUnusedComponents',
+            name: 'Number of Unused Components',
             value: '1',
           },
           {
-            name: 'tagsWithoutOperation',
+            name: 'Tags without Operation',
             value: '0/31',
           },
         ],

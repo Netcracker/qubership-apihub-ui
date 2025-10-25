@@ -203,19 +203,9 @@ export const AiAgentCard: FC = memo(() => {
               <UxSummaryTable
                 loading={loadingOriginalDocumentScoring}
                 gridTemplateHeaderRow={
-                  ['scoring', null]
+                  ['Original Scoring', null]
                 }
                 gridTemplateRows={transformScoringToGridTemplateRows(originalDocumentScoring)}
-                titleCellToTitleMap={{
-                  scoring: 'Original Scoring',
-                  overallScore: 'Overall score',
-                  missingSummary: 'Missing summary',
-                  missingOperationId: 'Missing "operationId"',
-                  completenessOfDescription: 'Completeness of description',
-                  operationWithoutTag: 'Operation without tag',
-                  numberOfUnusedComponents: 'Number of unused components',
-                  tagsWithoutOperation: 'Tags without operation',
-                }}
               />
             </Box>
             {/* AI suggestions section */}
@@ -224,15 +214,9 @@ export const AiAgentCard: FC = memo(() => {
                 <UxSummaryTable
                   loading={loadingEnhancements}
                   gridTemplateHeaderRow={
-                    ['enhancements', null]
+                    ['Enhancements', null]
                   }
                   gridTemplateRows={enhancements}
-                  titleCellToTitleMap={{
-                    enhancements: 'Enhancements',
-                    structureImprovements: 'Structure improvements',
-                    missingDescriptions: 'Missing descriptions',
-                    missingExamples: 'Missing examples',
-                  }}
                 />
                 {enhancements && !loadingEnhancements && (
                   <LoadingButton
@@ -265,19 +249,9 @@ export const AiAgentCard: FC = memo(() => {
                 <UxSummaryTable
                   loading={loadingEnhancedDocumentScoring}
                   gridTemplateHeaderRow={
-                    ['scoringEnhanced', null]
+                    ['AI Enhanced Scoring', null]
                   }
                   gridTemplateRows={transformScoringToGridTemplateRows(enhancedDocumentScoring)}
-                  titleCellToTitleMap={{
-                    scoringEnhanced: 'AI Enhanced Scoring',
-                    overallScore: 'Overall score',
-                    missingSummary: 'Missing summary',
-                    missingOperationId: 'Missing "operationId"',
-                    completenessOfDescription: 'Completeness of description',
-                    operationWithoutTag: 'Operation without tag',
-                    numberOfUnusedComponents: 'Number of unused components',
-                    tagsWithoutOperation: 'Tags without operation',
-                  }}
                 />
               </Box>
             )}

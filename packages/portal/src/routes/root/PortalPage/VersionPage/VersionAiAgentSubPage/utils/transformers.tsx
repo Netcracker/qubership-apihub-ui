@@ -1,7 +1,7 @@
 import { Typography } from '@mui/material'
-import type { GridTemplateRow } from '../UxSummaryTable'
 import type { DocumentScoring } from '../types/document-scoring'
 import type { AiIssue } from '../types/issues'
+import type { GridTemplateRow } from '../UxSummaryTable'
 
 // Section "OriginalScoring" or "Enhanced Scoring"
 
@@ -14,7 +14,7 @@ export function transformScoringToGridTemplateRows(scoring: DocumentScoring | un
 
   const { overallScore, details } = scoring
   rows.push([
-    'overallScore',
+    'Overall Score',
     <Typography
       variant='body2'
       sx={{
