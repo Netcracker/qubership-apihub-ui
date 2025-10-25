@@ -7,7 +7,7 @@ import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-api
 import { RawSpecDiffView } from '@netcracker/qubership-apihub-ui-shared/components/RawSpecDiffView'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import type { FC } from 'react'
-import { memo, useCallback, useEffect, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { usePackageKind } from '../../usePackageKind'
 import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
@@ -15,15 +15,12 @@ import { useDocuments } from '../useDocuments'
 import { usePublishedDocumentRaw } from '../usePublishedDocumentRaw'
 import { AiHandledDocumentSelector } from './AiValidatedDocumentSelector'
 import { AiValidationResultsTable } from './AiValidationResultsTable'
-import type { GridTemplateRow } from './UxSummaryTable'
 import { UxSummaryTable } from './UxSummaryTable'
-import type { DocumentEnhancements } from './api/useAiDocumentEnhancements'
-import { useAiDocumentEnhancements } from './api/useAiDocumentEnhancements'
+import { useAiDocumentIssues } from './api/useAiDocumentIssues'
 import { useAiDocumentScoring } from './api/useAiDocumentScoring'
 import { useAiEnhancedDocumentRawContent } from './api/useAiEnhancedDocumentRawContent'
 import { useAiEnhancedDocumentScoring } from './api/useAiEnhancedDocumentScoring'
-import { useAiDocumentIssues } from './api/useAiDocumentIssues'
-import type { DocumentScoring } from './types/document-scoring'
+import { transformAiDocumentIssuesToGridTemplateRows, transformScoringToGridTemplateRows } from './utils/transformers'
 
 const FixingAllStatuses = {
   NOT_STARTED: 'not-started',
@@ -82,20 +79,19 @@ export const AiAgentCard: FC = memo(() => {
       selectedDocument?.slug,
       fixingAllStatus !== FixingAllStatuses.COMPLETED,
     )
-  const [enhancements, loadingEnhancements] =
-    useAiDocumentEnhancements(
-      docPackageKey,
-      docPackageVersion,
-      selectedDocument?.slug,
-      fixingAllStatus !== FixingAllStatuses.COMPLETED,
-    )
-  const [validationDetails, loadingValidationDetails] =
+  const [originalDocumentIssues, loadingOriginalDocumentIssues] =
     useAiDocumentIssues(
       docPackageKey,
       docPackageVersion,
       selectedDocument?.slug,
       fixingAllStatus !== FixingAllStatuses.COMPLETED,
     )
+  const [enhancements, loadingEnhancements] = useMemo(() => {
+    return [
+      transformAiDocumentIssuesToGridTemplateRows(originalDocumentIssues),
+      loadingOriginalDocumentIssues,
+    ]
+  }, [originalDocumentIssues, loadingOriginalDocumentIssues])
   const [enhancedDocumentScoring, loadingEnhancedDocumentScoring] =
     useAiEnhancedDocumentScoring(
       docPackageKey,
@@ -194,7 +190,7 @@ export const AiAgentCard: FC = memo(() => {
                   gridTemplateHeaderRow={
                     ['enhancements', null]
                   }
-                  gridTemplateRows={transformEnhancementsToGridTemplateRows(enhancements)}
+                  gridTemplateRows={enhancements}
                   titleCellToTitleMap={{
                     enhancements: 'Enhancements',
                     structureImprovements: 'Structure improvements',
@@ -258,8 +254,8 @@ export const AiAgentCard: FC = memo(() => {
               </Typography>
               <Box overflow='auto' flexGrow={1} minHeight={0}>
                 <AiValidationResultsTable
-                  data={validationDetails}
-                  loading={loadingValidationDetails}
+                  data={originalDocumentIssues}
+                  loading={loadingOriginalDocumentIssues}
                 />
               </Box>
             </Box>
@@ -287,53 +283,3 @@ export const AiAgentCard: FC = memo(() => {
     />
   )
 })
-
-function transformScoringToGridTemplateRows(scoring: DocumentScoring | undefined): GridTemplateRow[] {
-  if (!scoring) {
-    return []
-  }
-
-  const rows: GridTemplateRow[] = []
-
-  const { overallScore, details } = scoring
-  rows.push([
-    'overallScore',
-    <Typography
-      variant='body2'
-      sx={{
-        fontWeight: 'bold',
-        color: overallScore.includes('Great')
-          ? 'success.main'
-          : 'error.main',
-      }}
-    >{overallScore}</Typography>,
-  ])
-
-  for (const scoringParameterDetails of details) {
-    rows.push([scoringParameterDetails.name, scoringParameterDetails.value])
-  }
-
-  return rows
-}
-
-function transformEnhancementsToGridTemplateRows(enhancements: DocumentEnhancements | undefined): GridTemplateRow[] {
-  if (!enhancements) {
-    return []
-  }
-
-  const { enhancements: enhancementsMap } = enhancements
-
-  const rows: GridTemplateRow[] = []
-
-  const enhancementsParameters = Object.keys(enhancementsMap)
-  for (const enhancementParameter of enhancementsParameters) {
-    rows.push([
-      enhancementParameter,
-      <Typography variant='body2' sx={{ fontWeight: 'bold' }}>
-        {enhancementsMap[enhancementParameter]} issue(s)
-      </Typography>,
-    ])
-  }
-
-  return rows
-}
