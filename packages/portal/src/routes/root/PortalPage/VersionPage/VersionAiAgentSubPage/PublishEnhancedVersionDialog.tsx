@@ -14,23 +14,14 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { usePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
+import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
+import { SHOW_PUBLISH_AI_ENHANCED_VERSION_DIALOG } from '@apihub/routes/EventBusProvider'
+import { useFullMainVersion } from '@apihub/routes/root/PortalPage/FullMainVersionProvider'
+import { usePackageVersionConfig } from '@apihub/routes/root/PortalPage/usePackageVersionConfig'
+import { usePublicationStatuses } from '@apihub/routes/root/PortalPage/usePublicationStatus'
+import { usePackages } from '@apihub/routes/root/usePackages'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import { SHOW_PUBLISH_AI_ENHANCED_VERSION_DIALOG } from '@apihub/routes/EventBusProvider'
-import type { Package } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { DASHBOARD_KIND, PACKAGE_KIND, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { getSplittedVersionKey, getVersionLabelsMap } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import {
-  DRAFT_VERSION_STATUS,
-  NO_PREVIOUS_RELEASE_VERSION_OPTION,
-  RELEASE_VERSION_STATUS,
-} from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 import type { VersionFormData } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
 import {
   getPackageOptions,
@@ -39,12 +30,21 @@ import {
   usePreviousVersionOptions,
   VersionDialogForm,
 } from '@netcracker/qubership-apihub-ui-shared/components/VersionDialogForm'
-import { usePackages } from '@apihub/routes/root/usePackages'
-import { useCopyPackageVersion } from '@apihub/routes/root/PortalPage/useCopyPackageVersion'
-import { usePublicationStatuses } from '@apihub/routes/root/PortalPage/usePublicationStatus'
-import { useFullMainVersion } from '@apihub/routes/root/PortalPage/FullMainVersionProvider'
-import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
-import { usePackageVersionConfig } from '@apihub/routes/root/PortalPage/usePackageVersionConfig'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { Package } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { DASHBOARD_KIND, PACKAGE_KIND, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import {
+  DRAFT_VERSION_STATUS,
+  NO_PREVIOUS_RELEASE_VERSION_OPTION,
+  RELEASE_VERSION_STATUS,
+} from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
+import { usePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
+import { getSplittedVersionKey, getVersionLabelsMap } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
+import type { FC } from 'react'
+import { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { usePublishAiEnhancedPackageVersion } from './api/usePublishEnhancedVersion'
 
 export const PublishAiEnhancedVersionDialog: FC = memo(() => {
   return (
@@ -97,8 +97,13 @@ const PublishAiEnhancedVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, 
   })
 
   const targetPreviousVersionOptions = usePreviousVersionOptions(targetPreviousVersions)
-  const [copyPackage, publishId, isCopyStarting, isCopyingStartedSuccessfully] = useCopyPackageVersion()
-  const [isPublishing, isPublished] = usePublicationStatuses(targetPackage?.key ?? '', publishId, targetVersion)
+  const {
+    mutationFn: publishAiEnhancedPackageVersion,
+    publicationId,
+    isLoading: isPublicationStarting,
+    isSuccess: isPublicationStartedSuccessfully,
+  } = usePublishAiEnhancedPackageVersion()
+  const [isPublishing, isPublished] = usePublicationStatuses(targetPackage?.key ?? '', publicationId, targetVersion)
 
   const targetPackagePermissions = useMemo(() => targetPackage?.permissions ?? [], [targetPackage?.permissions])
   const targetReleaseVersionPattern = useMemo(() => targetPackage?.releaseVersionPattern, [targetPackage?.releaseVersionPattern])
@@ -131,7 +136,10 @@ const PublishAiEnhancedVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, 
     const workspace = currentPackage?.parents?.find(pack => pack.kind === WORKSPACE_KIND)
     setTargetWorkspace(workspace ?? null)
   }, [currentPackage?.parents])
-  useEffect(() => { isCopyingStartedSuccessfully && isPublished && setOpen(false) }, [setOpen, isCopyingStartedSuccessfully, isPublished])
+  useEffect(
+    () => { isPublicationStartedSuccessfully && isPublished && setOpen(false) },
+    [setOpen, isPublicationStartedSuccessfully, isPublished],
+  )
   useEffect(() => { reset(defaultValues) }, [defaultValues, reset])
   useEffect(() => {
     if (!targetWorkspace) {
@@ -146,35 +154,34 @@ const PublishAiEnhancedVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, 
     }
   }, [currentVersionConfig, setValue])
 
-  const onCopy = useCallback(async (data: CopyInfo): Promise<void> => {
+  const onPublishEnhancedVersion = useCallback(async (data: CopyInfo): Promise<void> => {
     const { package: targetPackage, version, status, labels, previousVersion } = data
     if (!targetPackage) {
-      throw Error('Incorrect parameters for copy: targetPackage is empty')
+      throw Error('Incorrect parameters for publishing enhanced version: targetPackage is empty')
     }
     const targetPreviousVersion = replaceEmptyPreviousVersion(previousVersion)
     setTargetVersion(version)
 
     // TODO 25.10.25 // Publish enhanced version via new BE API
-    alert('Published!')
-    // copyPackage({
-    //   packageKey: currentPackage?.key ?? '',
-    //   versionKey: currentVersionId!,
-    //   value: {
-    //     packageKey: targetPackage.key,
-    //     version: version,
-    //     status: status,
-    //     previousVersion: targetPreviousVersion,
-    //     labels: labels,
-    //   },
-    // })
-  }, [])
+    publishAiEnhancedPackageVersion({
+      packageKey: currentPackage?.key ?? '',
+      versionKey: currentVersionId!,
+      targetPackageParameters: {
+        packageKey: targetPackage.key,
+        version: version,
+        status: status,
+        previousVersion: targetPreviousVersion,
+        labels: labels,
+      },
+    })
+  }, [currentPackage?.key, currentVersionId, publishAiEnhancedPackageVersion])
 
   return (
     <VersionDialogForm
       title={`Publish Enhanced ${kindTitle} Version`}
       open={open}
       setOpen={setOpen}
-      onSubmit={handleSubmit(onCopy)}
+      onSubmit={handleSubmit(onPublishEnhancedVersion)}
       control={control}
       setValue={setValue}
       formState={formState}
@@ -196,7 +203,7 @@ const PublishAiEnhancedVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, 
       getVersionLabels={getVersionLabels}
       packagePermissions={targetPackagePermissions}
       releaseVersionPattern={targetReleaseVersionPattern}
-      isPublishing={isCopyStarting || isPublishing}
+      isPublishing={isPublicationStarting || isPublishing}
       submitButtonTittle="Publish"
       hideDescriptorField
       hideDescriptorVersionField
