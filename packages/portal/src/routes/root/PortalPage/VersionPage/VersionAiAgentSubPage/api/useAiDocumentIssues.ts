@@ -33,37 +33,37 @@ function getAiDocumentIssues(docPackageKey: string, docVersionKey: string, docum
         {
           severity: AiIssueSeverities.ERROR,
           text: 'Non-standard media type \'plain/text\' used (should be \'text/plain\') in responses (e.g., GET /api/v2/packages/{packageId}/versions/{version}/files/{slug}/raw and GET /api/v2/sharedFiles/{sharedFileId}).',
-          category: '',
+          category: 'structureImprovements',
         },
         {
           severity: AiIssueSeverities.WARNING,
           text: 'Duplicate operationId values: \'getPackagesIdVersionsIdApiTypeOperationsExport\' used for both GET /api/v2/.../export/operations and GET /api/v2/.../export/operations/deprecated.',
-          category: '',
+          category: 'structureImprovements',
         },
         {
           severity: AiIssueSeverities.WARNING,
           text: 'Duplicate operationId values: \'getAgentsIdNamespacesIdServicesProxy\' used for GET /agents/{agentId}/namespaces/{name}/services/{serviceId}/proxy/{path} and GET /playground/proxy.',
-          category: '',
+          category: 'structureImprovements',
         },
         {
           severity: AiIssueSeverities.WARNING,
           text: 'Inadequate/mistaken description text: /api/v2/packages/{packageId}/versions/{version}/{apiType}/changes has description \'qwerty\' which is not meaningful.',
-          category: '',
+          category: 'missingDescriptions',
         },
         {
           severity: AiIssueSeverities.WARNING,
           text: 'Example/type mismatches: components.parameters.builderId has format \'UUID\' but example is \'QS.CloudQSS.CPQ.Q-TMF\' (not a UUID).',
-          category: '',
+          category: 'structureImprovements',
         },
         {
           severity: AiIssueSeverities.INFO,
           text: 'Many responses include empty \'examples\': {} or no concrete examples where they would be helpful (e.g., many 401/403/500 responses).',
-          category: '',
+          category: 'missingExamples',
         },
         {
           severity: AiIssueSeverities.INFO,
           text: 'Cookie parameter examples include the full \'name=value\' instead of just the cookie value (e.g., \'apihub-refresh-token\' cookie examples).',
-          category: '',
+          category: 'missingExamples',
         },
       ])
     }, 1000)
