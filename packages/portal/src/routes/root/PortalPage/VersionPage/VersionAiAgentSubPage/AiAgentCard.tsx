@@ -21,14 +21,9 @@ import { useAiDocumentScoring } from './api/useAiDocumentScoring'
 import { useAiEnhancedDocumentRawContent } from './api/useAiEnhancedDocumentRawContent'
 import { useAiEnhancedDocumentScoring } from './api/useAiEnhancedDocumentScoring'
 import { transformAiDocumentIssuesToGridTemplateRows, transformScoringToGridTemplateRows } from './utils/transformers'
-
-const FixingAllStatuses = {
-  NOT_STARTED: 'not-started',
-  IN_PROGRESS: 'in-progress',
-  COMPLETED: 'completed',
-  FAILED: 'failed',
-} as const
-type FixingAllStatus = (typeof FixingAllStatuses)[keyof typeof FixingAllStatuses]
+import { useAiEnhanceDocument } from './api/useAiEnhanceDocument'
+import { AiEnhancementStatuses } from './types/enhancing-status'
+import { useAiEnhancementStatus } from './api/useAiEnhancementStatus'
 
 export const AiAgentCard: FC = memo(() => {
   const { documentId } = useParams()
@@ -45,13 +40,21 @@ export const AiAgentCard: FC = memo(() => {
 
   const [selectedDocument, setSelectedDocument] = useState<Document | undefined>(undefined)
 
-  const [fixingAllStatus, setFixingAllStatus] = useState<FixingAllStatus>(FixingAllStatuses.NOT_STARTED)
+  const [enhanceDocument] = useAiEnhanceDocument()
+  const [enhancementStatus, loadingEnhancementStatus] =
+    useAiEnhancementStatus(
+      docPackageKey,
+      docPackageVersion,
+      selectedDocument?.slug,
+    )
+
   const onFixAllButtonClick = useCallback(() => {
-    setFixingAllStatus(FixingAllStatuses.IN_PROGRESS)
-    setTimeout(() => {
-      setFixingAllStatus(FixingAllStatuses.COMPLETED)
-    }, 3000)
-  }, [])
+    enhanceDocument({
+      packageId: docPackageKey ?? '',
+      version: docPackageVersion ?? '',
+      slug: selectedDocument?.slug ?? '',
+    })
+  }, [docPackageKey, docPackageVersion, selectedDocument?.slug, enhanceDocument])
 
   const onSelectDocument = useCallback((document: Document | undefined) => {
     if (!document || !docPackageKey || !docPackageVersion) {
@@ -77,14 +80,14 @@ export const AiAgentCard: FC = memo(() => {
       docPackageKey,
       docPackageVersion,
       selectedDocument?.slug,
-      fixingAllStatus !== FixingAllStatuses.COMPLETED,
+      enhancementStatus !== AiEnhancementStatuses.SUCCESS,
     )
   const [originalDocumentIssues, loadingOriginalDocumentIssues] =
     useAiDocumentIssues(
       docPackageKey,
       docPackageVersion,
       selectedDocument?.slug,
-      fixingAllStatus !== FixingAllStatuses.COMPLETED,
+      enhancementStatus !== AiEnhancementStatuses.SUCCESS,
     )
   const [enhancements, loadingEnhancements] = useMemo(() => {
     return [
@@ -97,7 +100,7 @@ export const AiAgentCard: FC = memo(() => {
       docPackageKey,
       docPackageVersion,
       selectedDocument?.slug,
-      fixingAllStatus === FixingAllStatuses.COMPLETED,
+      enhancementStatus === AiEnhancementStatuses.SUCCESS,
     )
 
   const [originalDocumentRawContent, loadingOriginalDocumentRawContent] =
@@ -105,7 +108,7 @@ export const AiAgentCard: FC = memo(() => {
       packageKey: docPackageKey,
       versionKey: docPackageVersion,
       slug: selectedDocument?.slug ?? '',
-      enabled: fixingAllStatus === FixingAllStatuses.COMPLETED,
+      enabled: enhancementStatus === AiEnhancementStatuses.SUCCESS,
     })
 
   const [enhancedDocumentRawContent, loadingEnhancedDocumentRawContent] =
@@ -113,7 +116,7 @@ export const AiAgentCard: FC = memo(() => {
       docPackageKey,
       docPackageVersion,
       selectedDocument?.slug,
-      fixingAllStatus === FixingAllStatuses.COMPLETED,
+      enhancementStatus === AiEnhancementStatuses.SUCCESS,
     )
 
   if (isDashboard) {
@@ -151,7 +154,7 @@ export const AiAgentCard: FC = memo(() => {
             />
           </Box>
           {/* Right part */}
-          {fixingAllStatus === FixingAllStatuses.COMPLETED && (
+          {enhancementStatus === AiEnhancementStatuses.SUCCESS && (
             <Button variant='contained' color='primary' size='small'>
               Publish enhanced version
             </Button>
@@ -183,7 +186,7 @@ export const AiAgentCard: FC = memo(() => {
               />
             </Box>
             {/* AI suggestions section */}
-            {fixingAllStatus !== FixingAllStatuses.COMPLETED && (
+            {enhancementStatus !== AiEnhancementStatuses.SUCCESS && (
               <Box flexGrow={1} display='flex' flexDirection='column' alignItems='flex-start' gap={2}>
                 <UxSummaryTable
                   loading={loadingEnhancements}
@@ -200,7 +203,7 @@ export const AiAgentCard: FC = memo(() => {
                 />
                 {enhancements && !loadingEnhancements && (
                   <LoadingButton
-                    loading={fixingAllStatus === FixingAllStatuses.IN_PROGRESS}
+                    loading={enhancementStatus === AiEnhancementStatuses.PROCESSING}
                     onClick={onFixAllButtonClick}
                     variant='outlined'
                     color='primary'
@@ -224,7 +227,7 @@ export const AiAgentCard: FC = memo(() => {
               </Box>
             )}
             {/* Scoring of the enhanced document */}
-            {fixingAllStatus === FixingAllStatuses.COMPLETED && (
+            {enhancementStatus === AiEnhancementStatuses.SUCCESS && (
               <Box flexGrow={1}>
                 <UxSummaryTable
                   loading={loadingEnhancedDocumentScoring}
@@ -247,7 +250,7 @@ export const AiAgentCard: FC = memo(() => {
             )}
           </Box>
           {/* Validation results section */}
-          {fixingAllStatus !== FixingAllStatuses.COMPLETED && (
+          {enhancementStatus !== AiEnhancementStatuses.SUCCESS && (
             <Box display='flex' flexDirection='column' gap={1} flexGrow={1} minHeight={0}>
               <Typography variant='subtitle1' fontWeight='bold' fontSize={15}>
                 Problems
@@ -261,7 +264,7 @@ export const AiAgentCard: FC = memo(() => {
             </Box>
           )}
           {/* Diff view section */}
-          {fixingAllStatus === FixingAllStatuses.COMPLETED &&
+          {enhancementStatus === AiEnhancementStatuses.SUCCESS &&
             originalDocumentRawContent &&
             enhancedDocumentRawContent && (
               <Box display='flex' flexDirection='column' gap={1} flexGrow={1} minHeight={0}>
