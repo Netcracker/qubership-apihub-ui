@@ -1,16 +1,20 @@
 import type { Document } from '@apihub/entities/documents'
+import type { FileFormat } from '@apihub/entities/file-formats'
+import { JSON_FILE_FORMAT, YAML_FILE_FORMAT } from '@apihub/entities/file-formats'
 import { useNavigation } from '@apihub/routes/NavigationProvider'
 import { LoadingButton } from '@mui/lab'
 import { Box, Button, Typography } from '@mui/material'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import { RawSpecDiffView } from '@netcracker/qubership-apihub-ui-shared/components/RawSpecDiffView'
+import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import type { FC } from 'react'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { usePackageKind } from '../../usePackageKind'
 import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
+import type { OriginalDocumentFileFormat } from '../VersionApiQualitySubPage/types'
 import { useDocuments } from '../useDocuments'
 import { usePublishedDocumentRaw } from '../usePublishedDocumentRaw'
 import { AiHandledDocumentSelector } from './AiValidatedDocumentSelector'
@@ -18,12 +22,19 @@ import { AiValidationResultsTable } from './AiValidationResultsTable'
 import { UxSummaryTable } from './UxSummaryTable'
 import { useAiDocumentIssues } from './api/useAiDocumentIssues'
 import { useAiDocumentScoring } from './api/useAiDocumentScoring'
+import { useAiEnhanceDocument } from './api/useAiEnhanceDocument'
 import { useAiEnhancedDocumentRawContent } from './api/useAiEnhancedDocumentRawContent'
 import { useAiEnhancedDocumentScoring } from './api/useAiEnhancedDocumentScoring'
-import { transformAiDocumentIssuesToGridTemplateRows, transformScoringToGridTemplateRows } from './utils/transformers'
-import { useAiEnhanceDocument } from './api/useAiEnhanceDocument'
-import { AiEnhancementStatuses } from './types/enhancing-status'
 import { useAiEnhancementStatus } from './api/useAiEnhancementStatus'
+import { AiEnhancementStatuses } from './types/enhancing-status'
+import { transformAiDocumentIssuesToGridTemplateRows, transformScoringToGridTemplateRows } from './utils/transformers'
+
+const MONACO_EDITOR_FORMATS: readonly OriginalDocumentFileFormat[] = [JSON_FILE_FORMAT, YAML_FILE_FORMAT]
+
+const MONACO_EDITOR_PRETTY_FORMATS = {
+  [JSON_FILE_FORMAT]: JSON_FILE_FORMAT.toUpperCase(),
+  [YAML_FILE_FORMAT]: YAML_FILE_FORMAT.toUpperCase(),
+}
 
 export const AiAgentCard: FC = memo(() => {
   const { documentId } = useParams()
@@ -268,9 +279,24 @@ export const AiAgentCard: FC = memo(() => {
             originalDocumentRawContent &&
             enhancedDocumentRawContent && (
               <Box display='flex' flexDirection='column' gap={1} flexGrow={1} minHeight={0}>
-                <Typography variant='subtitle1' fontWeight='bold' fontSize={15}>
-                  Original Specification
-                </Typography>
+                <Box width='100%' display='grid' gridTemplateColumns='1fr 1fr'>
+                  <Typography variant='subtitle1' fontWeight='bold' fontSize={15}>
+                    Original Specification
+                  </Typography>
+                  <Box display='flex' alignItems='center' justifyContent='space-between'>
+                    <Typography variant='subtitle1' fontWeight='bold' fontSize={15}>
+                      AI Enhanced Specification
+                    </Typography>
+                    <Toggler<FileFormat>
+                      mode={selectedDocument?.format ?? YAML_FILE_FORMAT}
+                      modes={MONACO_EDITOR_FORMATS}
+                      modeToText={MONACO_EDITOR_PRETTY_FORMATS}
+                      onChange={(format) => {
+                        console.log('format', format)
+                      }}
+                    />
+                  </Box>
+                </Box>
                 <Box overflow='auto' flexGrow={1} minHeight={0}>
                   <RawSpecDiffView
                     beforeValue={originalDocumentRawContent}
