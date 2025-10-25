@@ -1,11 +1,11 @@
+type ScoringParameter = string
+type ScoringParameterValue = string
 
 export type DocumentScoringDto = {
   overallScore: string
-  missingSummary: string
-  missingOperationId: string
-  completenessOfDescription: string
-  operationWithoutTag: string
-  numberOfUnusedComponents: number
-  tagsWithoutOperation: string
+  details: Array<{
+    name: ScoringParameter
+    value: ScoringParameterValue
+  }>
 }
 export type DocumentScoring = DocumentScoringDto

@@ -89,7 +89,7 @@ export const UxSummaryTable: FC<UxSummaryTableProps> = memo<UxSummaryTableProps>
   }, [gridTemplateJointRows])
 
   if (loading) {
-    const headerTitle = gridTemplateHeaderRow?.[0] ? titleCellToTitleMap[gridTemplateHeaderRow[0]] : undefined
+    const headerTitle = gridTemplateHeaderRow?.[0] ? titleCellToTitleMap[gridTemplateHeaderRow?.[0] ?? ''] : undefined
     return <UxSummaryTableSkeleton headerTitle={headerTitle} />
   }
 
@@ -115,7 +115,11 @@ export const UxSummaryTable: FC<UxSummaryTableProps> = memo<UxSummaryTableProps>
             <Typography
               gridArea={titleGridArea}
               variant={isHeader ? undefined : 'subtitle2'}
-              sx={isHeader ? { fontSize: 15, fontWeight: 'bold' } : undefined}
+              sx={{
+                fontSize: isHeader ? 15 : undefined,
+                // TODO 25.10.25 // Fix hardcode for "overallScore"
+                fontWeight: isHeader || columnTitle === 'overallScore' ? 'bold' : undefined,
+              }}
             >
               {titleCellToTitleMap[columnTitle]}
             </Typography>

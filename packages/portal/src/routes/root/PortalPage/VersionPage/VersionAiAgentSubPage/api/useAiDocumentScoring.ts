@@ -29,12 +29,32 @@ function getAiDocumentScoring(docPackageKey: string, docVersionKey: string, docu
     setTimeout(() => {
       resolve({
         overallScore: '45/100 - Bad',
-        missingSummary: '3/15',
-        missingOperationId: '5/23',
-        completenessOfDescription: '13/31',
-        operationWithoutTag: '2/11',
-        numberOfUnusedComponents: 1,
-        tagsWithoutOperation: '0/31',
+        details: [
+          {
+            name: 'missingSummary',
+            value: '3/15',
+          },
+          {
+            name: 'missingOperationId',
+            value: '5/23',
+          },
+          {
+            name: 'completenessOfDescription',
+            value: '13/31',
+          },
+          {
+            name: 'operationWithoutTag',
+            value: '2/11',
+          },
+          {
+            name: 'numberOfUnusedComponents',
+            value: '1',
+          },
+          {
+            name: 'tagsWithoutOperation',
+            value: '0/31',
+          },
+        ],
       })
     }, 1000)
   })

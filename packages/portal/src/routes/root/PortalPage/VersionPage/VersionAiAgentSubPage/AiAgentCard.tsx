@@ -6,7 +6,7 @@ import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/Body
 import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import { RawSpecDiffView } from '@netcracker/qubership-apihub-ui-shared/components/RawSpecDiffView'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import type { FC, ReactElement } from 'react'
+import type { FC } from 'react'
 import { memo, useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { usePackageKind } from '../../usePackageKind'
@@ -295,26 +295,22 @@ function transformScoringToGridTemplateRows(scoring: DocumentScoring | undefined
 
   const rows: GridTemplateRow[] = []
 
-  const scoringParameters = Object.keys(scoring) as (keyof DocumentScoring)[]
-  for (const scoringParameter of scoringParameters) {
-    let rowContent: string | number | ReactElement | null = scoring[scoringParameter]
-    if (scoringParameter === 'overallScore') {
-      rowContent = (
-        <Typography
-          variant='body2'
-          sx={{
-            color: typeof rowContent === 'string' || typeof rowContent === 'number'
-              ? rowContent.toString().includes('Great')
-                ? 'success.main'
-                : 'error.main'
-              : '',
-          }}
-        >
-          {rowContent}
-        </Typography>
-      )
-    }
-    rows.push([scoringParameter, rowContent])
+  const { overallScore, details } = scoring
+  rows.push([
+    'overallScore',
+    <Typography
+      variant='body2'
+      sx={{
+        fontWeight: 'bold',
+        color: overallScore.includes('Great')
+          ? 'success.main'
+          : 'error.main',
+      }}
+    >{overallScore}</Typography>,
+  ])
+
+  for (const scoringParameterDetails of details) {
+    rows.push([scoringParameterDetails.name, scoringParameterDetails.value])
   }
 
   return rows
