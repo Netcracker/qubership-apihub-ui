@@ -176,7 +176,7 @@ export const AiAgentCard: FC = memo(() => {
           {/* Right part */}
           {enhancementStatus === AiEnhancementStatuses.SUCCESS && (
             <Button variant='contained' color='primary' size='small'>
-              Publish enhanced version
+              Publish
             </Button>
           )}
         </Box>

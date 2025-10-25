@@ -265,8 +265,8 @@ const getAvailableSidebarMenuItems = (
     },
     {
       id: AI_AGENT_PAGE,
-      title: 'AI Agent',
-      tooltip: 'AI Agent',
+      title: 'AI Recommendations',
+      tooltip: 'AI Recommendations',
       icon: <RobotIcon />,
       testId: 'AIAgentButton',
     },
