@@ -1,5 +1,4 @@
 import type { Document } from '@apihub/entities/documents'
-import type { FileFormat } from '@apihub/entities/file-formats'
 import { JSON_FILE_FORMAT, YAML_FILE_FORMAT } from '@apihub/entities/file-formats'
 import { useNavigation } from '@apihub/routes/NavigationProvider'
 import { LoadingButton } from '@mui/lab'
@@ -9,12 +8,14 @@ import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-api
 import { RawSpecDiffView } from '@netcracker/qubership-apihub-ui-shared/components/RawSpecDiffView'
 import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { JSON_FILE_EXTENSION, YAML_FILE_EXTENSION } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import type { FC } from 'react'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { usePackageKind } from '../../usePackageKind'
 import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
 import type { OriginalDocumentFileFormat } from '../VersionApiQualitySubPage/types'
+import { transformRawDocumentByFormat } from '../VersionApiQualitySubPage/utilities/transformers'
 import { useDocuments } from '../useDocuments'
 import { usePublishedDocumentRaw } from '../usePublishedDocumentRaw'
 import { AiHandledDocumentSelector } from './AiValidatedDocumentSelector'
@@ -50,6 +51,7 @@ export const AiAgentCard: FC = memo(() => {
   } = useDocuments({ packageKey: docPackageKey, versionKey: docPackageVersion })
 
   const [selectedDocument, setSelectedDocument] = useState<Document | undefined>(undefined)
+  const [selectedFormat, setSelectedFormat] = useState<OriginalDocumentFileFormat>(YAML_FILE_FORMAT)
 
   const [enhanceDocument] = useAiEnhanceDocument()
   const [enhancementStatus, loadingEnhancementStatus] =
@@ -119,7 +121,6 @@ export const AiAgentCard: FC = memo(() => {
       packageKey: docPackageKey,
       versionKey: docPackageVersion,
       slug: selectedDocument?.slug ?? '',
-      enabled: enhancementStatus === AiEnhancementStatuses.SUCCESS,
     })
 
   const [enhancedDocumentRawContent, loadingEnhancedDocumentRawContent] =
@@ -129,6 +130,14 @@ export const AiAgentCard: FC = memo(() => {
       selectedDocument?.slug,
       enhancementStatus === AiEnhancementStatuses.SUCCESS,
     )
+  const transformedOriginalDocumentContent = useMemo(
+    () => transformRawDocumentByFormat(originalDocumentRawContent ?? '', selectedFormat),
+    [originalDocumentRawContent, selectedFormat],
+  )
+  const transformedEnhancedDocumentContent = useMemo(
+    () => transformRawDocumentByFormat(enhancedDocumentRawContent ?? '', selectedFormat),
+    [enhancedDocumentRawContent, selectedFormat],
+  )
 
   if (isDashboard) {
     return (
@@ -287,21 +296,23 @@ export const AiAgentCard: FC = memo(() => {
                     <Typography variant='subtitle1' fontWeight='bold' fontSize={15}>
                       AI Enhanced Specification
                     </Typography>
-                    <Toggler<FileFormat>
-                      mode={selectedDocument?.format ?? YAML_FILE_FORMAT}
+                    <Toggler<OriginalDocumentFileFormat>
+                      mode={selectedFormat}
                       modes={MONACO_EDITOR_FORMATS}
                       modeToText={MONACO_EDITOR_PRETTY_FORMATS}
-                      onChange={(format) => {
-                        console.log('format', format)
-                      }}
+                      onChange={setSelectedFormat}
                     />
                   </Box>
                 </Box>
                 <Box overflow='auto' flexGrow={1} minHeight={0}>
                   <RawSpecDiffView
-                    beforeValue={originalDocumentRawContent}
-                    afterValue={enhancedDocumentRawContent}
-                    extension='.yaml'
+                    beforeValue={transformedOriginalDocumentContent}
+                    afterValue={transformedEnhancedDocumentContent}
+                    extension={
+                      selectedDocument?.format === JSON_FILE_FORMAT
+                        ? JSON_FILE_EXTENSION
+                        : YAML_FILE_EXTENSION
+                    }
                     type='openapi-3-0'
                   />
                 </Box>
