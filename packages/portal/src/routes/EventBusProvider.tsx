@@ -81,6 +81,7 @@ export const SHOW_PUBLISH_PACKAGE_VERSION_DIALOG = 'show-publish-package-version
 export const SHOW_PUBLISH_OPERATION_GROUP_PACKAGE_VERSION_DIALOG = 'show-publish-operation-group-package-version-dialog'
 export const SHOW_COPY_PACKAGE_VERSION_DIALOG = 'show-copy-package-version-dialog'
 export const SHOW_EXAMPLES_DIALOG = 'show-examples-dialog'
+export const SHOW_PUBLISH_AI_ENHANCED_VERSION_DIALOG = 'show-publish-ai-enhanced-version-dialog'
 // Feature 'Edit Manual Operation Group'
 export const SHOW_CREATE_OPERATION_GROUP_DIALOG = 'show-create-operation-group-dialog'
 export const SHOW_EDIT_OPERATION_GROUP_DIALOG = 'show-edit-operation-group-dialog'
@@ -249,6 +250,8 @@ type EventBus = {
   onOperationMoved: (value: OperationsMovementDetails) => void
   // Feature "Export Settings Dialog"
   showExportSettingsDialog: (value: ExportSettingsPopupDetail) => void
+  // Feature "Publish Ai Enhanced Version Dialog"
+  showPublishAiEnhancedVersionDialog: () => void
   // Playground
   showCreateCustomServerDialog: () => void
   showDeleteCustomServerDialog: (detail: ShowDeleteCustomServerDetail) => void
@@ -310,6 +313,8 @@ function eventBusProvider(): EventBus {
       onOperationMoved: slot<OperationsMovementDetails>(),
       // Feature "Export Settings Dialog"
       showExportSettingsDialog: slot<ExportSettingsPopupDetail>(),
+      // Feature "Publish Ai Enhanced Version Dialog"
+      showPublishAiEnhancedVersionDialog: slot(),
       // Playground
       showCreateCustomServerDialog: slot(),
       showDeleteCustomServerDialog: slot<ShowDeleteCustomServerDetail>(),
@@ -439,6 +444,9 @@ function eventBusProvider(): EventBus {
   })
   eventBus.showExportSettingsDialog.on((detail: ExportSettingsPopupDetail) => {
     dispatchEvent(new CustomEvent(SHOW_EXPORT_SETTINGS_DIALOG, { detail }))
+  })
+  eventBus.showPublishAiEnhancedVersionDialog.on(() => {
+    dispatchEvent(new CustomEvent(SHOW_PUBLISH_AI_ENHANCED_VERSION_DIALOG))
   })
   eventBus.showRulesetInfoDialog.on((detail: RulesetInfoPopupDetails) => {
     dispatchEvent(new CustomEvent(SHOW_RULESET_INFO_DIALOG, { detail }))

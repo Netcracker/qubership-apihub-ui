@@ -1,9 +1,11 @@
 import type { Document } from '@apihub/entities/documents'
 import { JSON_FILE_FORMAT, YAML_FILE_FORMAT } from '@apihub/entities/file-formats'
+import { useEventBus } from '@apihub/routes/EventBusProvider'
 import { useNavigation } from '@apihub/routes/NavigationProvider'
 import { LoadingButton } from '@mui/lab'
-import { Box, Button, Typography } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
+import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
 import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import { RawSpecDiffView } from '@netcracker/qubership-apihub-ui-shared/components/RawSpecDiffView'
 import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'
@@ -139,6 +141,8 @@ export const AiAgentCard: FC = memo(() => {
     [enhancedDocumentRawContent, selectedFormat],
   )
 
+  const { showPublishAiEnhancedVersionDialog } = useEventBus()
+
   if (isDashboard) {
     return (
       <Placeholder
@@ -175,9 +179,18 @@ export const AiAgentCard: FC = memo(() => {
           </Box>
           {/* Right part */}
           {enhancementStatus === AiEnhancementStatuses.SUCCESS && (
-            <Button variant='contained' color='primary' size='small'>
+            <ButtonWithHint
+              variant='contained'
+              color='primary'
+              size='small'
+              onClick={showPublishAiEnhancedVersionDialog}
+              title='Publish'
+              hint='Publish enhanced version'
+              tooltipMaxWidth='unset'
+              data-testid='PublishButton'
+            >
               Publish
-            </Button>
+            </ButtonWithHint>
           )}
         </Box>
       }

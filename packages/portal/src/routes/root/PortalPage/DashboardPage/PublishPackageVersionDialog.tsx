@@ -51,7 +51,7 @@ export const PublishPackageVersionDialog: FC = memo(() => {
   return (
     <PopupDelegate
       type={SHOW_PUBLISH_PACKAGE_VERSION_DIALOG}
-      render={props => <PublishPackageVersionPopup {...props}/>}
+      render={props => <PublishPackageVersionPopup {...props} />}
     />
   )
 })
@@ -59,9 +59,9 @@ export const PublishPackageVersionDialog: FC = memo(() => {
 const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }) => {
   const { versionId: currentVersionId } = useParams()
   const [currentPackage, isPackageLoading] = usePackage()
-  
+
   const [currentVersionConfig, isCurrentVersionLoading] = usePackageVersionConfig(currentPackage?.key, currentVersionId)
-  
+
   const isEditingVersion = !!currentVersionId && currentVersionId !== SPECIAL_VERSION_KEY
   const packageKind = currentPackage?.kind
   const isDashboard = packageKind === DASHBOARD_KIND
@@ -105,8 +105,8 @@ const PublishPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, set
   const getVersionLabels = useCallback((version: Key) => versionLabelsMap[version] ?? [], [versionLabelsMap])
   const onSetTargetVersion = useCallback((version: string) => setTargetVersion(version), [])
 
-  useEffect(() => {isPublishSuccess && setOpen(false)}, [setOpen, isPublishSuccess])
-  useEffect(() => {reset(defaultValues)}, [defaultValues, reset])
+  useEffect(() => { isPublishSuccess && setOpen(false) }, [setOpen, isPublishSuccess])
+  useEffect(() => { reset(defaultValues) }, [defaultValues, reset])
   useEffect(() => {
     if (currentVersionConfig) {
       setValue('status', currentVersionConfig.status as VersionStatus || DRAFT_VERSION_STATUS)
