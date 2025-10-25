@@ -22,7 +22,7 @@ import { useAiDocumentEnhancements } from './api/useAiDocumentEnhancements'
 import { useAiDocumentScoring } from './api/useAiDocumentScoring'
 import { useAiEnhancedDocumentRawContent } from './api/useAiEnhancedDocumentRawContent'
 import { useAiEnhancedDocumentScoring } from './api/useAiEnhancedDocumentScoring'
-import { useAiValidationDetails } from './api/useAiValidationDetails'
+import { useAiDocumentIssues } from './api/useAiDocumentIssues'
 import type { DocumentScoring } from './types/document-scoring'
 
 const FixingAllStatuses = {
@@ -90,7 +90,7 @@ export const AiAgentCard: FC = memo(() => {
       fixingAllStatus !== FixingAllStatuses.COMPLETED,
     )
   const [validationDetails, loadingValidationDetails] =
-    useAiValidationDetails(
+    useAiDocumentIssues(
       docPackageKey,
       docPackageVersion,
       selectedDocument?.slug,

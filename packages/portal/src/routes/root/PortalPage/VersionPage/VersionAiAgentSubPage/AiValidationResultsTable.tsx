@@ -6,7 +6,6 @@ import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-tabl
 import type { FC } from 'react'
 import { memo, useMemo, useRef } from 'react'
 import { AiIssueSeverityMarker } from './AiIssueSeverityMarker'
-import type { AiValidationDetails } from './types/document-validation-details'
 import type { AiIssueSeverity } from './types/issue-severities'
 import type { AiIssue } from './types/issues'
 
@@ -24,7 +23,7 @@ type TableData = {
 }
 
 type AiValidationResultsTableProps = {
-  data: AiValidationDetails | undefined
+  data: AiIssue[]
   loading: IsLoading
 }
 
@@ -98,10 +97,10 @@ export const AiValidationResultsTable: FC<AiValidationResultsTableProps> = memo<
 
   const tableContainerRef = useRef<HTMLDivElement>(null)
 
-  const transformedData: TableData[] = useMemo(() => (data?.issues ?? []).map((issue: AiIssue) => ({
-    type: issue.severity,
-    message: issue.message,
-  })), [data?.issues])
+  const transformedData: TableData[] = useMemo(
+    () => data.map((issue: AiIssue) => ({ type: issue.severity, message: issue.text })),
+    [data],
+  )
 
   const { getHeaderGroups, getRowModel } = useReactTable({
     data: transformedData,
