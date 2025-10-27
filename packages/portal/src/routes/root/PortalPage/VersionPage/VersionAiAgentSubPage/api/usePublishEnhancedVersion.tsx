@@ -54,7 +54,7 @@ async function publishAiEnhancedPackageVersion(
 ): Promise<PublishAiEnhancedPackageVersionResponse> {
   const packageId = encodeURIComponent(packageKey)
   const versionId = encodeURIComponent(versionKey)
-  const pathPattern = '/packages/:packageId/versions/:versionId/publishEnhanced'
+  const pathPattern = '/packages/:packageId/versions/:versionId/enhanced/publish'
   const { 
     packageKey: targetPackageKey, version: targetVersion, status: targetStatus, previousVersion: targetPreviousVersion, labels: targetVersionLabels } = targetPackageParameters
   return await requestJson<PublishAiEnhancedPackageVersionResponse>(
@@ -62,11 +62,11 @@ async function publishAiEnhancedPackageVersion(
     {
       method: 'POST',
       body: JSON.stringify({
-        targetPackageId: targetPackageKey,
-        targetVersion: targetVersion,
-        targetPreviousVersion: targetPreviousVersion,
-        targetStatus: targetStatus,
-        targetVersionLabels: targetVersionLabels,
+        packageId: targetPackageKey,
+        version: targetVersion,
+        previousVersion: targetPreviousVersion,
+        status: targetStatus,
+        labels: targetVersionLabels,
       }),
     },
     {
