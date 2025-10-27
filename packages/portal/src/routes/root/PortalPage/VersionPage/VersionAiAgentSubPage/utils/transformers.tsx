@@ -1,11 +1,11 @@
 import { Typography } from '@mui/material'
-import type { DocumentScoring } from '../types/document-scoring'
+import type { AiDocumentScoring } from '../types/document-scoring'
 import type { AiIssue } from '../types/issues'
 import type { GridTemplateRow } from '../UxSummaryTable'
 
 // Section "OriginalScoring" or "Enhanced Scoring"
 
-export function transformScoringToGridTemplateRows(scoring: DocumentScoring | undefined): GridTemplateRow[] {
+export function transformScoringToGridTemplateRows(scoring: AiDocumentScoring | undefined): GridTemplateRow[] {
   if (!scoring) {
     return []
   }

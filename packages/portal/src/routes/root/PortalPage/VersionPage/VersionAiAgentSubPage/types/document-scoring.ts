@@ -1,11 +1,11 @@
 type ScoringParameter = string
 type ScoringParameterValue = string
 
-export type DocumentScoringDto = {
+export type AiDocumentScoringDto = {
   overallScore: string
   details: Array<{
     name: ScoringParameter
     value: ScoringParameterValue
   }>
 }
-export type DocumentScoring = DocumentScoringDto
+export type AiDocumentScoring = AiDocumentScoringDto

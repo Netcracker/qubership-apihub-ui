@@ -1,10 +1,9 @@
+import { API_LINTER_API_V1 } from '@apihub/api-hooks/ApiQuality/constants'
 import type { PackageKey, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { requestVoid } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { useMutation } from '@tanstack/react-query'
-import { useLocalStorage } from 'react-use'
-import { LS_KEY_AI_ENHANCE_STATUS } from '../constants/local-storage-keys'
-import type { AiEnhancementStatus } from '../types/enhancing-status'
-import { AiEnhancementStatuses } from '../types/enhancing-status'
+import { generatePath } from 'react-router-dom'
 import { useInvalidateAiEnhancementStatus } from './useAiEnhancementStatus'
 
 type EnhanceDocumentCallbackOptions = {
@@ -16,25 +15,29 @@ type EnhanceDocumentCallbackOptions = {
 type EnhanceDocumentCallback = (options: EnhanceDocumentCallbackOptions) => void
 
 export function useAiEnhanceDocument(): [EnhanceDocumentCallback, IsLoading, Error | null] {
-  const [, setAiEnhancementStatus] = useLocalStorage<AiEnhancementStatus>(LS_KEY_AI_ENHANCE_STATUS, AiEnhancementStatuses.NOT_STARTED)
   const invalidateAiEnhancementStatus = useInvalidateAiEnhancementStatus()
 
   const { mutate, isLoading, error } = useMutation<void, Error, EnhanceDocumentCallbackOptions>({
-    // eslint-disable-next-line
-    mutationFn: ({ packageId, version, slug }) => {
-      setAiEnhancementStatus(AiEnhancementStatuses.PROCESSING)
-      invalidateAiEnhancementStatus()
-      return new Promise<void>((resolve) => {
-        setTimeout(() => {
-          setAiEnhancementStatus(AiEnhancementStatuses.SUCCESS)
-          resolve()
-        }, 10_000)
-      })
-    },
+    mutationFn: options => enhanceDocument(options),
     onSuccess: async () => {
+      await invalidateAiEnhancementStatus()
+    },
+    onError: async (error) => {
+      console.error(error)
       await invalidateAiEnhancementStatus()
     },
   })
 
   return [mutate, isLoading, error]
+}
+
+function enhanceDocument(options: EnhanceDocumentCallbackOptions): Promise<void> {
+  const { packageId, version, slug } = options
+  const endpointPattern = '/packages/:packageId/versions/:version/enhancedFiles/:slug'
+  const endpoint = generatePath(endpointPattern, { packageId, version, slug })
+  return requestVoid(
+    endpoint,
+    { method: 'POST' },
+    { basePath: API_LINTER_API_V1 },
+  )
 }

@@ -1,7 +1,10 @@
+import { API_LINTER_API_V1 } from '@apihub/api-hooks/ApiQuality/constants'
 import type { FileContent } from '@apihub/entities/project-files'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { requestText } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { toFormattedJsonString } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
 import { useQuery } from '@tanstack/react-query'
+import { generatePath } from 'react-router-dom'
 
 const QUERY_KEY_AI_ENHANCED_DOCUMENT_RAW_CONTENT = 'ai-enhanced-document-raw-content'
 
@@ -26,28 +29,16 @@ export function useAiEnhancedDocumentRawContent(
   return [data, isLoading, error]
 }
 
-// eslint-disable-next-line
-function getAiEnhancedDocumentRawContent(docPackageKey: string, docVersionKey: string, documentSlug: string): Promise<FileContent> {
-  return new Promise<FileContent>((resolve) => {
-    setTimeout(() => {
-      resolve(`openapi: 3.0.0
-info:
-  title: Test API
-  version: 1.0.0
-paths:
-  /test:
-    get:
-      summary: Test endpoint
-      responses:
-        '200':
-          content:
-            'application/json':
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-`)
-    }, 1000)
+function getAiEnhancedDocumentRawContent(docPackageKey: string, docVersionKey: string, docSlug: string): Promise<FileContent> {
+  const endpointPattern = '/packages/:packageId/versions/:version/enhancedFiles/:slug/raw'
+  const endpoint = generatePath(endpointPattern, {
+    packageId: docPackageKey,
+    version: docVersionKey,
+    slug: docSlug,
   })
+  return requestText(
+    endpoint,
+    { method: 'GET' },
+    { basePath: API_LINTER_API_V1 },
+  )
 }

@@ -29,52 +29,6 @@ type PublicationAiEnhancedVersionMutationState = {
   isSuccess: IsSuccess
 }
 
-export function usePublishAiEnhancedPackageVersion(): PublicationAiEnhancedVersionMutationState {
-  const {
-    mutate,
-    data,
-    isLoading,
-    isSuccess,
-  } = useMutation<PublishAiEnhancedPackageVersionResponse, Error, PublishAiEnhancedPackageVersionRequest>({
-    mutationFn: ({ packageKey, versionKey, targetPackageParameters: value }) => publishAiEnhancedPackageVersion(packageKey, versionKey, value),
-  })
-
-  return {
-    mutationFn: mutate,
-    publicationId: data?.publishId,
-    isLoading: isLoading,
-    isSuccess: isSuccess,
-  }
-}
-
-async function publishAiEnhancedPackageVersion(
-  packageKey: Key,
-  versionKey: Key,
-  targetPackageParameters: TargetPackageParameters,
-): Promise<PublishAiEnhancedPackageVersionResponse> {
-  const packageId = encodeURIComponent(packageKey)
-  const versionId = encodeURIComponent(versionKey)
-  const pathPattern = '/packages/:packageId/versions/:versionId/enhanced/publish'
-  const { 
-    packageKey: targetPackageKey, version: targetVersion, status: targetStatus, previousVersion: targetPreviousVersion, labels: targetVersionLabels } = targetPackageParameters
-  return await requestJson<PublishAiEnhancedPackageVersionResponse>(
-    generatePath(pathPattern, { packageId, versionId }),
-    {
-      method: 'POST',
-      body: JSON.stringify({
-        packageId: targetPackageKey,
-        version: targetVersion,
-        previousVersion: targetPreviousVersion,
-        status: targetStatus,
-        labels: targetVersionLabels,
-      }),
-    },
-    {
-      basePath: API_LINTER_API_V1,
-      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
-    },
-  )
-}
 
 type PublishAiEnhancedPackageVersionRequest = {
   packageKey: Key
@@ -94,4 +48,64 @@ type PublishAiEnhancedPackageVersionMutationFn = (values: PublishAiEnhancedPacka
 
 type PublishAiEnhancedPackageVersionResponse = {
   publishId: Key
+}
+
+export function usePublishAiEnhancedPackageVersion(): PublicationAiEnhancedVersionMutationState {
+  const {
+    mutate,
+    data,
+    isLoading,
+    isSuccess,
+  } = useMutation<
+    PublishAiEnhancedPackageVersionResponse,
+    Error,
+    PublishAiEnhancedPackageVersionRequest
+  >({
+    mutationFn: request => publishAiEnhancedPackageVersion(request),
+  })
+
+  return {
+    mutationFn: mutate,
+    publicationId: data?.publishId,
+    isLoading: isLoading,
+    isSuccess: isSuccess,
+  }
+}
+
+async function publishAiEnhancedPackageVersion(
+  request: PublishAiEnhancedPackageVersionRequest,
+): Promise<PublishAiEnhancedPackageVersionResponse> {
+  const {
+    packageKey,
+    versionKey,
+    targetPackageParameters,
+  } = request
+
+  const packageId = encodeURIComponent(packageKey)
+  const versionId = encodeURIComponent(versionKey)
+  const pathPattern = '/packages/:packageId/versions/:versionId/enhanced/publish'
+  const {
+    packageKey: targetPackageKey,
+    version: targetVersion,
+    status: targetStatus,
+    previousVersion: targetPreviousVersion,
+    labels: targetVersionLabels,
+  } = targetPackageParameters
+  return await requestJson<PublishAiEnhancedPackageVersionResponse>(
+    generatePath(pathPattern, { packageId, versionId }),
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        packageId: targetPackageKey,
+        version: targetVersion,
+        previousVersion: targetPreviousVersion,
+        status: targetStatus,
+        labels: targetVersionLabels,
+      }),
+    },
+    {
+      basePath: API_LINTER_API_V1,
+      customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
+    },
+  )
 }

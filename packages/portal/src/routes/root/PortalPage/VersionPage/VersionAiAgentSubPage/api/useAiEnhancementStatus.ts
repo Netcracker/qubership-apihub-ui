@@ -1,7 +1,9 @@
+import { API_LINTER_API_V1 } from '@apihub/api-hooks/ApiQuality/constants'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { LS_KEY_AI_ENHANCE_STATUS } from '../constants/local-storage-keys'
-import type { AiEnhancementStatus, GetAiEnhancementStatusResponse } from '../types/enhancing-status'
+import { generatePath } from 'react-router-dom'
+import type { AiEnhancementStatus, AiEnhancementStatusDto } from '../types/enhancing-status'
 import { AiEnhancementStatuses } from '../types/enhancing-status'
 
 const QUERY_KEY_AI_ENHANCEMENT_STATUS = 'ai-enhancement-status'
@@ -15,31 +17,32 @@ export function useAiEnhancementStatus(
   const docVersionKey = docVersion ? encodeURIComponent(docVersion) : undefined
   const documentSlugKey = documentSlug ? encodeURIComponent(documentSlug) : undefined
 
-  const { data, isFetching, error } = useQuery<GetAiEnhancementStatusResponse, Error, AiEnhancementStatus>({
+  const { data, isFetching, error } = useQuery<AiEnhancementStatusDto, Error, AiEnhancementStatus>({
     queryKey: [QUERY_KEY_AI_ENHANCEMENT_STATUS, docPackageKey, docVersionKey, documentSlugKey],
-    queryFn: () => new Promise<GetAiEnhancementStatusResponse>(
-      (resolve) => {
-        const status =
-          localStorage.getItem(LS_KEY_AI_ENHANCE_STATUS)?.replace(/"/g, '') ??
-          AiEnhancementStatuses.NOT_STARTED
-        resolve({ status: status as AiEnhancementStatus })
-      },
+    queryFn: () => (
+      docPackageKey && docVersionKey && documentSlugKey
+        ? getAiEnhancementStatus(docPackageKey, docVersionKey, documentSlugKey)
+        : Promise.resolve<AiEnhancementStatusDto>({ status: AiEnhancementStatuses.NOT_STARTED })
     ),
-    select: (data: GetAiEnhancementStatusResponse): AiEnhancementStatus => data.status,
+    select: (data: AiEnhancementStatusDto): AiEnhancementStatus => data.status,
     enabled: !!docPackageKey && !!docVersionKey && !!documentSlugKey,
   })
 
   return [data ?? AiEnhancementStatuses.NOT_STARTED, isFetching, error]
 }
 
-// eslint-disable-next-line
-function getAiEnhancementStatus(docPackageKey: string, docVersionKey: string, documentSlug: string): Promise<GetAiEnhancementStatusResponse> {
-  return new Promise<GetAiEnhancementStatusResponse>((resolve) => {
-    const status: AiEnhancementStatus =
-      localStorage.getItem(LS_KEY_AI_ENHANCE_STATUS) as AiEnhancementStatus ??
-      AiEnhancementStatuses.NOT_STARTED
-    resolve({ status })
+function getAiEnhancementStatus(docPackageKey: string, docVersionKey: string, docSlug: string): Promise<AiEnhancementStatusDto> {
+  const endpointPattern = '/packages/:packageId/versions/:version/enhancedFiles/:slug/status'
+  const endpoint = generatePath(endpointPattern, {
+    packageId: docPackageKey,
+    version: docVersionKey,
+    slug: docSlug,
   })
+  return requestJson<AiEnhancementStatusDto>(
+    endpoint,
+    { method: 'GET' },
+    { basePath: API_LINTER_API_V1 },
+  )
 }
 
 export function useInvalidateAiEnhancementStatus(): () => Promise<void> {

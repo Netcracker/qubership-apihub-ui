@@ -3,7 +3,7 @@ import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/ali
 import { requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { useQuery } from '@tanstack/react-query'
 import { generatePath } from 'react-router-dom'
-import type { DocumentScoring, DocumentScoringDto } from '../types/document-scoring'
+import type { AiDocumentScoring, AiDocumentScoringDto } from '../types/document-scoring'
 
 const QUERY_KEY_DOCUMENT_SCORING = 'document-scoring'
 
@@ -12,8 +12,8 @@ export function useAiDocumentScoring(
   docVersionKey: string | undefined,
   documentSlug: string | undefined,
   enabled: boolean = false,
-): [DocumentScoring | undefined, IsLoading, Error | null] {
-  const { data, isLoading, error } = useQuery<DocumentScoringDto | undefined, Error, DocumentScoring | undefined>({
+): [AiDocumentScoring | undefined, IsLoading, Error | null] {
+  const { data, isLoading, error } = useQuery<AiDocumentScoringDto | undefined, Error, AiDocumentScoring | undefined>({
     queryKey: [QUERY_KEY_DOCUMENT_SCORING, docPackageKey, docVersionKey, documentSlug],
     queryFn: () => (
       docPackageKey && docVersionKey && documentSlug
@@ -26,48 +26,14 @@ export function useAiDocumentScoring(
   return [data, isLoading, error]
 }
 
-// eslint-disable-next-line
-function getAiDocumentScoring(docPackageKey: string, docVersionKey: string, documentSlug: string): Promise<DocumentScoringDto> {
-  // return new Promise<DocumentScoringDto>((resolve) => {
-  //   setTimeout(() => {
-  //     resolve({
-  //       overallScore: '45/100 - Bad',
-  //       details: [
-  //         {
-  //           name: 'missingSummary',
-  //           value: '3/15',
-  //         },
-  //         {
-  //           name: 'missingOperationId',
-  //           value: '5/23',
-  //         },
-  //         {
-  //           name: 'completenessOfDescription',
-  //           value: '13/31',
-  //         },
-  //         {
-  //           name: 'operationWithoutTag',
-  //           value: '2/11',
-  //         },
-  //         {
-  //           name: 'numberOfUnusedComponents',
-  //           value: '1',
-  //         },
-  //         {
-  //           name: 'tagsWithoutOperation',
-  //           value: '0/31',
-  //         },
-  //       ],
-  //     })
-  //   }, 1000)
-  // })
+function getAiDocumentScoring(docPackageKey: string, docVersionKey: string, docSlug: string): Promise<AiDocumentScoringDto> {
   const endpointPattern = '/packages/:packageId/versions/:version/files/:slug/scoring'
   const endpoint = generatePath(endpointPattern, {
     packageId: docPackageKey,
     version: docVersionKey,
-    slug: documentSlug,
+    slug: docSlug,
   })
-  return requestJson<DocumentScoringDto>(
+  return requestJson<AiDocumentScoringDto>(
     endpoint,
     { method: 'GET' },
     { basePath: API_LINTER_API_V1 },

@@ -6,6 +6,6 @@ export const AiEnhancementStatuses = {
 } as const
 export type AiEnhancementStatus = (typeof AiEnhancementStatuses)[keyof typeof AiEnhancementStatuses]
 
-export type GetAiEnhancementStatusResponse = {
+export type AiEnhancementStatusDto = {
   status: AiEnhancementStatus
 }
