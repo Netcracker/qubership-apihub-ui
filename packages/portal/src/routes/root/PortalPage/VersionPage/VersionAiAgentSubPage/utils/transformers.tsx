@@ -45,11 +45,16 @@ export function transformAiDocumentIssuesToGridTemplateRows(aiDocumentIssues: Ai
     countByCategory.set(category, countByCategory.get(category)! + 1)
   }
 
-  return transformEnhancementsToGridTemplateRows(countByCategory)
+  const sortedCountByCategory: Array<[string, number]> =
+    Array.from(countByCategory.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+
+  return transformEnhancementsToGridTemplateRows(sortedCountByCategory)
 }
 
-function transformEnhancementsToGridTemplateRows(enhancements: Map<string, number>): GridTemplateRow[] {
-  if (!enhancements.size) {
+function transformEnhancementsToGridTemplateRows(enhancements: Array<[string, number]>): GridTemplateRow[] {
+  if (!enhancements.length) {
     return []
   }
 
