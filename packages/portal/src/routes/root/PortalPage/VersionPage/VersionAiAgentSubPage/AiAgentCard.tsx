@@ -31,6 +31,7 @@ import { useAiEnhancedDocumentScoring } from './api/useAiEnhancedDocumentScoring
 import { useAiEnhancementStatus } from './api/useAiEnhancementStatus'
 import { AiEnhancementStatuses } from './types/enhancing-status'
 import { transformAiDocumentIssuesToGridTemplateRows, transformScoringToGridTemplateRows } from './utils/transformers'
+import { usePollingForAiEnhancementReadiness } from './utils/usePollingForAiEnhancementReadiness'
 
 const MONACO_EDITOR_FORMATS: readonly OriginalDocumentFileFormat[] = [JSON_FILE_FORMAT, YAML_FILE_FORMAT]
 
@@ -56,12 +57,24 @@ export const AiAgentCard: FC = memo(() => {
   const [selectedFormat, setSelectedFormat] = useState<OriginalDocumentFileFormat>(YAML_FILE_FORMAT)
 
   const [enhanceDocument] = useAiEnhanceDocument()
-  const [enhancementStatus, loadingEnhancementStatus] =
-    useAiEnhancementStatus(
-      docPackageKey,
-      docPackageVersion,
-      selectedDocument?.slug,
-    )
+  const {
+    data: enhancementStatus,
+    isLoading: loadingEnhancementStatus,
+    refetch: refetchAiEnhancementStatus,
+  } = useAiEnhancementStatus(
+    docPackageKey,
+    docPackageVersion,
+    selectedDocument?.slug,
+  )
+  usePollingForAiEnhancementReadiness(
+    enhancementStatus,
+    refetchAiEnhancementStatus,
+    {
+      packageId: docPackageKey,
+      version: docPackageVersion,
+      slug: selectedDocument?.slug,
+    },
+  )
 
   const onFixAllButtonClick = useCallback(() => {
     enhanceDocument({
