@@ -14,6 +14,7 @@ import createVersionJsonFilePlugin from '../../vite-create-version-json'
 
 const proxyServer = 'http://host.docker.internal:8081'
 const apiLinterProxyServer = 'http://host.docker.internal:8091'
+const aiDemoProxyServer = 'http://localhost:3000'
 const devServer = 'http://localhost:3003'
 
 export default defineConfig(({ mode }) => {
@@ -123,6 +124,12 @@ export default defineConfig(({ mode }) => {
         '/api-linter': {
           target: apiLinterProxyServer,
           rewrite: path => path.replace(/^\/api-linter/, ''),
+          changeOrigin: true,
+          secure: false,
+        },
+        '/stub': {
+          target: isProxyMode ? `${aiDemoProxyServer}/stub` : devServer,
+          rewrite: isProxyMode ? path => path.replace(/^\/stub/, '') : undefined,
           changeOrigin: true,
           secure: false,
         },

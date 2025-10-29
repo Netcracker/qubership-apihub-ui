@@ -1,10 +1,11 @@
-import { API_LINTER_API_V1 } from '@apihub/api-hooks/ApiQuality/constants'
+// import { API_LINTER_API_V1 } from '@apihub/api-hooks/ApiQuality/constants'
 import type { FileContent } from '@apihub/entities/project-files'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { requestText } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { toFormattedJsonString } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
 import { useQuery } from '@tanstack/react-query'
 import { generatePath } from 'react-router-dom'
+import { STUB_API_PATH } from './REMOVE_IT'
 
 const QUERY_KEY_AI_ENHANCED_DOCUMENT_RAW_CONTENT = 'ai-enhanced-document-raw-content'
 
@@ -39,6 +40,6 @@ function getAiEnhancedDocumentRawContent(docPackageKey: string, docVersionKey: s
   return requestText(
     endpoint,
     { method: 'GET' },
-    { basePath: API_LINTER_API_V1 },
+    { basePath: STUB_API_PATH },
   )
 }

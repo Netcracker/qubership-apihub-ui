@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import { API_LINTER_API_V1 } from '@apihub/api-hooks/ApiQuality/constants'
+// import { API_LINTER_API_V1 } from '@apihub/api-hooks/ApiQuality/constants'
 import type { Key } from '@apihub/entities/keys'
 import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
 import { requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { useMutation } from '@tanstack/react-query'
 import { generatePath } from 'react-router-dom'
+import { STUB_API_PATH } from './REMOVE_IT'
 
 type PublicationAiEnhancedVersionMutationState = {
   mutationFn: PublishAiEnhancedPackageVersionMutationFn
@@ -104,7 +105,7 @@ async function publishAiEnhancedPackageVersion(
       }),
     },
     {
-      basePath: API_LINTER_API_V1,
+      basePath: STUB_API_PATH,
       customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
     },
   )
