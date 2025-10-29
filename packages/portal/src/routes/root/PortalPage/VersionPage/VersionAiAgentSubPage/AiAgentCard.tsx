@@ -28,10 +28,9 @@ import { useAiDocumentScoring } from './api/useAiDocumentScoring'
 import { useAiEnhanceDocument } from './api/useAiEnhanceDocument'
 import { useAiEnhancedDocumentRawContent } from './api/useAiEnhancedDocumentRawContent'
 import { useAiEnhancedDocumentScoring } from './api/useAiEnhancedDocumentScoring'
-import { useAiEnhancementStatus } from './api/useAiEnhancementStatus'
+import type { AiEnhancementStatus } from './types/enhancing-status'
 import { AiEnhancementStatuses } from './types/enhancing-status'
 import { transformAiDocumentIssuesToGridTemplateRows, transformScoringToGridTemplateRows } from './utils/transformers'
-import { usePollingForAiEnhancementReadiness } from './utils/usePollingForAiEnhancementReadiness'
 
 const MONACO_EDITOR_FORMATS: readonly OriginalDocumentFileFormat[] = [JSON_FILE_FORMAT, YAML_FILE_FORMAT]
 
@@ -40,7 +39,12 @@ const MONACO_EDITOR_PRETTY_FORMATS = {
   [YAML_FILE_FORMAT]: YAML_FILE_FORMAT.toUpperCase(),
 }
 
-export const AiAgentCard: FC = memo(() => {
+type AiAgentCardProps = {
+  enhancementStatus: AiEnhancementStatus
+  onGlobalSelectedDocumentChange: (document: Document | undefined) => void
+}
+
+export const AiAgentCard: FC<AiAgentCardProps> = memo(({ enhancementStatus, onGlobalSelectedDocumentChange }) => {
   const { documentId } = useParams()
   const [packageKind] = usePackageKind()
   const isDashboard = packageKind === DASHBOARD_KIND
@@ -57,24 +61,6 @@ export const AiAgentCard: FC = memo(() => {
   const [selectedFormat, setSelectedFormat] = useState<OriginalDocumentFileFormat>(YAML_FILE_FORMAT)
 
   const [enhanceDocument] = useAiEnhanceDocument()
-  const {
-    data: enhancementStatus,
-    isLoading: loadingEnhancementStatus,
-    refetch: refetchAiEnhancementStatus,
-  } = useAiEnhancementStatus(
-    docPackageKey,
-    docPackageVersion,
-    selectedDocument?.slug,
-  )
-  usePollingForAiEnhancementReadiness(
-    enhancementStatus,
-    refetchAiEnhancementStatus,
-    {
-      packageId: docPackageKey,
-      version: docPackageVersion,
-      slug: selectedDocument?.slug,
-    },
-  )
 
   const onFixAllButtonClick = useCallback(() => {
     enhanceDocument({
@@ -98,10 +84,14 @@ export const AiAgentCard: FC = memo(() => {
   useEffect(() => {
     if (!documentId) {
       documents.length > 0 && onSelectDocument(documents[0])
-    } else {
-      setSelectedDocument(documents.find((document) => document.slug === documentId))
+    } else if (!selectedDocument) {
+      const document = documents.find((document) => document.slug === documentId)
+      if (document) {
+        onGlobalSelectedDocumentChange(document)
+        setSelectedDocument(document)
+      }
     }
-  }, [documentId, documents, documents.length, onSelectDocument])
+  }, [documentId, documents, documents.length, onSelectDocument, onGlobalSelectedDocumentChange, selectedDocument])
 
   const [originalDocumentScoring, loadingOriginalDocumentScoring] =
     useAiDocumentScoring(

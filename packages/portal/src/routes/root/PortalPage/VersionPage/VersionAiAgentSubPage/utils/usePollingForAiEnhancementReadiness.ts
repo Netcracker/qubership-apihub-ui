@@ -6,7 +6,7 @@ import { AiEnhancementStatuses } from '../types/enhancing-status'
 
 const POLLING_INTERVAL: number = 10 // Seconds
 
-const POLLING_FAILURE_COUNT: number = 5
+const POLLING_FAILURE_COUNT: number = 600
 
 let interval: NodeJS.Timeout | undefined
 
@@ -32,7 +32,7 @@ export function usePollingForAiEnhancementReadiness(
       clearInterval(interval!)
       return
     }
-    interval = setInterval(() => {
+    interval = setTimeout(() => {
       if (count.current === 0) {
         count.current = POLLING_FAILURE_COUNT
         clearInterval(interval!)

@@ -11,7 +11,7 @@ import { STUB_API_PATH } from './REMOVE_IT'
 export type RefetchAiEnhancementStatus = (packageId: PackageKey, version: VersionKey, slug: Key) => Promise<void>
 
 type AiEnhancementStatusQueryState = {
-  data: AiEnhancementStatus | undefined
+  data: AiEnhancementStatus
   isLoading: IsLoading
   error: Error | null
   refetch: RefetchAiEnhancementStatus
