@@ -48,6 +48,7 @@ export function usePublicationStatuses(
   packageId: Key,
   publishId: Key | undefined,
   versionId?: Key,
+  message: string = 'The package version was published',
 ): [IsLoading, IsSuccess] {
   const showNotification = useShowInfoNotification()
   const showErrorNotification = useShowErrorNotification()
@@ -65,7 +66,7 @@ export function usePublicationStatuses(
         })
 
         showNotification({
-          message: 'The package version was copied',
+          message: message,
           link: {
             name: 'Check it out',
             href: linkToVersion.pathname ?? '',

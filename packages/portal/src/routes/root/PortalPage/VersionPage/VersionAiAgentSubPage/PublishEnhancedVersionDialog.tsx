@@ -103,7 +103,7 @@ const PublishAiEnhancedVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, 
     isLoading: isPublicationStarting,
     isSuccess: isPublicationStartedSuccessfully,
   } = usePublishAiEnhancedPackageVersion()
-  const [isPublishing, isPublished] = usePublicationStatuses(targetPackage?.key ?? '', publicationId, targetVersion)
+  const [isPublishing, isPublished] = usePublicationStatuses(targetPackage?.key ?? '', publicationId, targetVersion, 'The AI-enhanced package version was published')
 
   const targetPackagePermissions = useMemo(() => targetPackage?.permissions ?? [], [targetPackage?.permissions])
   const targetReleaseVersionPattern = useMemo(() => targetPackage?.releaseVersionPattern, [targetPackage?.releaseVersionPattern])
