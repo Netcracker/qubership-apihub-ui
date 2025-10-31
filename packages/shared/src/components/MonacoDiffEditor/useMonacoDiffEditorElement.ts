@@ -23,6 +23,7 @@ import type { LanguageType } from '../../types/languages'
 import { LANGUAGE_TYPE_TEXT } from '../../types/languages'
 import type { SpecItemUri } from '../../utils/specifications'
 import { findPathLocation } from '../../utils/specifications'
+import { useAddLineControls } from './useAddLineControls'
 
 export function useMonacoDiffEditorElement(options: {
   before: string
@@ -73,6 +74,8 @@ export function useMonacoDiffEditorElement(options: {
       editor.current?.getModel()?.modified?.dispose()
     }
   }, [editor, before, after, language, type])
+
+  useAddLineControls(editor)
 
   useEffect(() => {
     const content = editor.current?.getModel()?.modified.getValue()
