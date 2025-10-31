@@ -2,6 +2,13 @@ import { editor as Editor, Range } from 'monaco-editor'
 import type { MutableRefObject } from 'react'
 import { useEffect, useRef } from 'react'
 
+const RawDiffTypes = {
+  add: 'add',
+  remove: 'remove',
+  change: 'change',
+}
+type RawDiffType = typeof RawDiffTypes[keyof typeof RawDiffTypes]
+
 export function useAddLineControls(
   editor: MutableRefObject<Editor.IStandaloneDiffEditor | undefined>,
 ): void {
@@ -53,8 +60,6 @@ export function useAddLineControls(
 
       const lineChanges = diffEditor.getLineChanges()
 
-      console.log('Number of changes:', lineChanges?.length)
-
       if (!lineChanges) {
         return
       }
@@ -64,13 +69,15 @@ export function useAddLineControls(
       // Create a glyph margin widget only for lines in changed fragments
       lineChanges.forEach((change) => {
         // Get the range of modified lines for this change
-        const modifiedStartLine = change.modifiedStartLineNumber
-        const modifiedEndLine = change.modifiedEndLineNumber
+        const {
+          modifiedStartLineNumber,
+          modifiedEndLineNumber,
+        } = change
 
-        console.log(`Adding controls for lines ${modifiedStartLine} to ${modifiedEndLine}`)
+        const diffType: RawDiffType = detectDiffType(change)
 
         // Create a button for each line in the changed fragment
-        for (let lineNumber = modifiedStartLine; lineNumber <= modifiedEndLine; lineNumber++) {
+        for (let lineNumber = modifiedStartLineNumber; lineNumber <= modifiedEndLineNumber; lineNumber++) {
           // Create simple HTML button
           const button = document.createElement('button')
           button.textContent = '→'
@@ -79,7 +86,21 @@ export function useAddLineControls(
           button.onclick = (e) => {
             e.preventDefault()
             e.stopPropagation()
-            console.log(`Line control clicked for line ${lineNumber}`)
+            console.log('Reverting change:', change)
+            const originalValue = diffEditor.getModel()?.original.getValue()
+            const modifiedValue = diffEditor.getModel()?.modified.getValue()
+            if (originalValue && modifiedValue) {
+              const revertedValue = revertChange(originalValue, modifiedValue, change)
+              console.log('Spec after reverting change:', revertedValue)
+            }
+          }
+
+          let range: Range
+          if (diffType === RawDiffTypes.add) {
+            range = new Range(lineNumber, 1, modifiedEndLineNumber, 1)
+            lineNumber += modifiedEndLineNumber - lineNumber + 1
+          } else {
+            range = new Range(lineNumber, 1, lineNumber, 1)
           }
 
           const widget: Editor.IGlyphMarginWidget = {
@@ -88,7 +109,7 @@ export function useAddLineControls(
             getPosition: () => ({
               lane: Editor.GlyphMarginLane.Right,
               zIndex: 10,
-              range: new Range(lineNumber, 1, lineNumber, 1),
+              range: range,
             }),
           }
 
@@ -97,8 +118,6 @@ export function useAddLineControls(
         }
       })
 
-      console.log(`Total widgets added: ${widgets.length}`)
-
       widgetsRef.current = widgets
     }
 
@@ -106,15 +125,69 @@ export function useAddLineControls(
     addLineControls()
 
     // Subscribe to diff updates to add controls when diff is computed
-    disposableRef.current = diffEditor.onDidUpdateDiff(() => {
-      console.log('onDidUpdateDiff triggered')
-      addLineControls()
-    })
+    disposableRef.current = diffEditor.onDidUpdateDiff(() => { addLineControls() })
 
-    return () => {
-      if (disposableRef.current) {
-        disposableRef.current.dispose()
-      }
-    }
+    return () => { disposableRef.current?.dispose() }
   }, [editor])
+}
+
+/**
+ * Receives original and modified values and a change and returns modified value with reverted change
+ * @param originalValue Original value
+ * @param modifiedValue Modified value
+ * @param change MonacoEditor line change
+ * @returns Modified value with reverted change
+ */
+function revertChange(
+  originalValue: string,
+  modifiedValue: string,
+  change: Editor.ILineChange,
+): string {
+  const originalLines = originalValue.split('\n')
+  const modifiedLines = modifiedValue.split('\n')
+
+  const diffType: RawDiffType = detectDiffType(change)
+
+  if (diffType === RawDiffTypes.change || diffType === RawDiffTypes.remove) {
+    const pickedOriginalLines = originalLines.slice(change.originalStartLineNumber - 1, change.originalEndLineNumber)
+    const updatedModifiedLines = [...modifiedLines]
+    updatedModifiedLines.splice(change.modifiedStartLineNumber - 1, 0, ...pickedOriginalLines)
+    return updatedModifiedLines.join('\n')
+  }
+
+  if (diffType === RawDiffTypes.add) {
+    const updatedModifiedLines = modifiedLines.filter(
+      (_, index) => index < change.modifiedStartLineNumber - 1 || index > change.modifiedEndLineNumber - 1,
+    )
+    return updatedModifiedLines.join('\n')
+  }
+
+  return ''
+}
+
+/**
+ * Detects diff type from MonacoEditor line change
+ * Variants:
+ * - change: The line has been changed
+ * - add: The line(s) has(ve) been added
+ * - remove: The line(s) has(ve) been removed
+ * @param change MonacoEditor line change
+ * @returns Diff type
+ */
+function detectDiffType(change: Editor.ILineChange): RawDiffType {
+  const {
+    originalStartLineNumber,
+    originalEndLineNumber,
+    modifiedStartLineNumber,
+    modifiedEndLineNumber,
+  } = change
+
+  const modifiedRange = modifiedEndLineNumber - modifiedStartLineNumber
+  const originalRange = originalEndLineNumber - originalStartLineNumber
+  if (modifiedRange === originalRange) {
+    return RawDiffTypes.change
+  }
+  return modifiedRange > originalRange
+    ? RawDiffTypes.add
+    : RawDiffTypes.remove
 }
