@@ -69,7 +69,7 @@ http {
         }
 
         # API endpoints proxifying to backend. Static upstream resolution
-        location ~ ^/(?:api|ws|saml|login/gitlab|login/sso|debug|playground)(?:/.*)?$ {
+        location ~ ^/(?:api|ws|saml|login/gitlab|login/sso|debug|playground|mcp)(?:/.*)?$ {
             add_header Cache-Control "no-store" always;
             proxy_pass http://${APIHUB_BACKEND_ADDRESS};
         }
