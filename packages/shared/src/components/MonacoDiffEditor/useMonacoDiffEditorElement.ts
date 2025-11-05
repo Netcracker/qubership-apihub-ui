@@ -58,20 +58,49 @@ export function useMonacoDiffEditorElement(options: {
     })
 
     return () => {
+      try {
+        editor.current?.setModel(null)
+      } catch (_) {
+        // editor might already be disposed; ignore
+      }
       editor.current?.dispose()
+      // prevent future calls on a disposed instance
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      editor.current = undefined
     }
   })
 
   useEffect(() => {
     //todo resolve problem with load schema model by filename (like in useSetEditorModel)
+    const originalModel = Editor.createModel(before, language)
+    const modifiedModel = Editor.createModel(after, language)
+
     editor.current?.setModel({
-      original: Editor.createModel(before, language),
-      modified: Editor.createModel(after, language),
+      original: originalModel,
+      modified: modifiedModel,
     })
 
     return () => {
-      editor.current?.getModel()?.original?.dispose()
-      editor.current?.getModel()?.modified?.dispose()
+      const { current } = editor
+      const currentModel = current?.getModel()
+
+      // Detach only if the editor still uses the models created by this render
+      if (
+        current &&
+        currentModel &&
+        currentModel.original === originalModel &&
+        currentModel.modified === modifiedModel
+      ) {
+        try {
+          current.setModel(null)
+        } catch (_) {
+          // editor may have been disposed concurrently; ignore
+        }
+      }
+
+      originalModel.dispose()
+      modifiedModel.dispose()
     }
   }, [editor, before, after, language, type])
 

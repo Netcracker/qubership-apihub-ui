@@ -1,6 +1,8 @@
 import { editor as Editor, Range } from 'monaco-editor'
 import type { MutableRefObject } from 'react'
 import { useEffect, useRef } from 'react'
+import { useParams } from 'react-router'
+import { useRevert } from './useRevert'
 
 const RawDiffTypes = {
   add: 'add',
@@ -12,6 +14,9 @@ type RawDiffType = typeof RawDiffTypes[keyof typeof RawDiffTypes]
 export function useAddLineControls(
   editor: MutableRefObject<Editor.IStandaloneDiffEditor | undefined>,
 ): void {
+  const { packageId, versionId, documentId } = useParams()
+  const { mutate: revert, isReverting } = useRevert()
+
   const widgetsRef = useRef<Editor.IGlyphMarginWidget[]>([])
   const modelIdRef = useRef<string | null>(null)
   const disposableRef = useRef<{ dispose: () => void } | null>(null)
@@ -86,12 +91,16 @@ export function useAddLineControls(
           button.onclick = (e) => {
             e.preventDefault()
             e.stopPropagation()
-            console.log('Reverting change:', change)
             const originalValue = diffEditor.getModel()?.original.getValue()
             const modifiedValue = diffEditor.getModel()?.modified.getValue()
             if (originalValue && modifiedValue) {
               const revertedValue = revertChange(originalValue, modifiedValue, change)
-              console.log('Spec after reverting change:', revertedValue)
+              revert({
+                packageId: packageId ?? '',
+                version: versionId ?? '',
+                slug: documentId ?? '',
+                content: revertedValue,
+              })
             }
           }
 
@@ -148,10 +157,17 @@ function revertChange(
 
   const diffType: RawDiffType = detectDiffType(change)
 
-  if (diffType === RawDiffTypes.change || diffType === RawDiffTypes.remove) {
+  if (diffType === RawDiffTypes.remove) {
     const pickedOriginalLines = originalLines.slice(change.originalStartLineNumber - 1, change.originalEndLineNumber)
     const updatedModifiedLines = [...modifiedLines]
     updatedModifiedLines.splice(change.modifiedStartLineNumber - 1, 0, ...pickedOriginalLines)
+    return updatedModifiedLines.join('\n')
+  }
+
+  if (diffType === RawDiffTypes.change) {
+    const pickedOriginalLines = originalLines.slice(change.originalStartLineNumber - 1, change.originalEndLineNumber)
+    const updatedModifiedLines = [...modifiedLines]
+    updatedModifiedLines.splice(change.modifiedStartLineNumber - 1, pickedOriginalLines.length, ...pickedOriginalLines)
     return updatedModifiedLines.join('\n')
   }
 
