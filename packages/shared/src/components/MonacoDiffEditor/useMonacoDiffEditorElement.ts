@@ -25,6 +25,11 @@ import type { SpecItemUri } from '../../utils/specifications'
 import { findPathLocation } from '../../utils/specifications'
 import { useAddLineControls } from './useAddLineControls'
 
+type EditorViewportSnapshot = {
+  scrollTop: number
+  firstVisibleLine?: number
+}
+
 export function useMonacoDiffEditorElement(options: {
   before: string
   after: string
@@ -38,6 +43,7 @@ export function useMonacoDiffEditorElement(options: {
   const editor = useRef<Editor.IStandaloneDiffEditor>()
 
   const [revertedChange, setRevertedChange] = useState<Editor.ILineChange | undefined>(undefined)
+  const [viewSnapshot, setViewSnapshot] = useState<EditorViewportSnapshot | undefined>(undefined)
 
   useEffectOnce(() => {
     Editor.defineTheme('custom', {
@@ -84,8 +90,13 @@ export function useMonacoDiffEditorElement(options: {
     })
 
     if (revertedChange) {
-      const startLine = revertedChange.modifiedStartLineNumber
-      startLine !== undefined && navigateTo(editor.current!, startLine)
+      // If we have a pre-revert viewport snapshot, restore it; otherwise, navigate to the change
+      if (viewSnapshot) {
+        restoreView(editor.current!, viewSnapshot)
+      } else {
+        const startLine = revertedChange.modifiedStartLineNumber
+        startLine !== undefined && navigateTo(editor.current!, startLine)
+      }
     }
 
     return () => {
@@ -109,9 +120,9 @@ export function useMonacoDiffEditorElement(options: {
       originalModel.dispose()
       modifiedModel.dispose()
     }
-  }, [editor, before, after, language, type, revertedChange])
+  }, [editor, before, after, language, type, revertedChange, viewSnapshot])
 
-  useAddLineControls(editor, setRevertedChange)
+  useAddLineControls(editor, setRevertedChange, setViewSnapshot)
 
   useEffect(() => {
     const content = editor.current?.getModel()?.modified.getValue()
@@ -210,4 +221,62 @@ function navigateTo(
     }, 60)
   }
   requestAnimationFrame(tryEnsureVisible)
+}
+
+function restoreView(
+  editor: Editor.IStandaloneDiffEditor,
+  snapshot: { scrollTop: number; firstVisibleLine?: number },
+): void {
+  const modifiedEditor = editor.getModifiedEditor()
+
+  const stabilizeMs = 300
+  const endTime = Date.now() + stabilizeMs
+  let lastApply = 0
+  const applyIntervalMs = 30
+
+  const applyRestore = (): void => {
+    const now = Date.now()
+    if (now - lastApply < applyIntervalMs) return
+    lastApply = now
+    // Directly restore the exact scroll position
+    modifiedEditor.setScrollTop(snapshot.scrollTop, Editor.ScrollType.Immediate)
+  }
+
+  const disposables: { dispose: () => void }[] = []
+  const disposeAll = (): void => {
+    disposables.forEach(d => {
+      try {
+        d.dispose()
+      } catch (_) {
+        // ignore
+      }
+    })
+  }
+
+  requestAnimationFrame(applyRestore)
+
+  disposables.push(
+    editor.onDidUpdateDiff(() => {
+      applyRestore()
+      if (Date.now() > endTime) disposeAll()
+    }),
+  )
+  disposables.push(
+    modifiedEditor.onDidLayoutChange(() => {
+      applyRestore()
+      if (Date.now() > endTime) disposeAll()
+    }),
+  )
+  disposables.push(
+    modifiedEditor.onDidScrollChange(() => {
+      // Keep the previous viewport during stabilization
+      applyRestore()
+      if (Date.now() > endTime) disposeAll()
+    }),
+  )
+
+  setTimeout(() => {
+    applyRestore()
+    if (Date.now() > endTime) disposeAll()
+  }, 50)
 }

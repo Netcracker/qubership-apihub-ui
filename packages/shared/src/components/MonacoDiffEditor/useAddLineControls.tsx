@@ -14,9 +14,10 @@ type RawDiffType = typeof RawDiffTypes[keyof typeof RawDiffTypes]
 export function useAddLineControls(
   editor: MutableRefObject<Editor.IStandaloneDiffEditor | undefined>,
   setRevertedChange: Dispatch<SetStateAction<Editor.ILineChange | undefined>>,
+  setViewSnapshot?: Dispatch<SetStateAction<{ scrollTop: number; firstVisibleLine?: number } | undefined>>,
 ): void {
   const { packageId, versionId, documentId } = useParams()
-  const { mutate: revert, isReverting } = useRevert()
+  const { mutate: revert } = useRevert()
 
   const widgetsRef = useRef<Editor.IGlyphMarginWidget[]>([])
   const modelIdRef = useRef<string | null>(null)
@@ -92,6 +93,15 @@ export function useAddLineControls(
           button.onclick = (e) => {
             e.preventDefault()
             e.stopPropagation()
+            // Capture current viewport state before triggering revert
+            try {
+              const currentRanges = modifiedEditor.getVisibleRanges()
+              const firstVisibleLine = currentRanges?.[0]?.startLineNumber
+              const scrollTop = modifiedEditor.getScrollTop()
+              setViewSnapshot?.({ scrollTop, firstVisibleLine })
+            } catch (_) {
+              // ignore snapshot errors
+            }
             const originalValue = diffEditor.getModel()?.original.getValue()
             const modifiedValue = diffEditor.getModel()?.modified.getValue()
             if (originalValue && modifiedValue) {
@@ -139,7 +149,7 @@ export function useAddLineControls(
     disposableRef.current = diffEditor.onDidUpdateDiff(() => { addLineControls() })
 
     return () => { disposableRef.current?.dispose() }
-  }, [documentId, editor, packageId, revert, versionId])
+  }, [documentId, editor, packageId, revert, setRevertedChange, setViewSnapshot, versionId])
 }
 
 /**
