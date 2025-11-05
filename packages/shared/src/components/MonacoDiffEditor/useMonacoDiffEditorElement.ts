@@ -81,6 +81,11 @@ export function useMonacoDiffEditorElement(options: {
 
   useEffect(() => {
     //todo resolve problem with load schema model by filename (like in useSetEditorModel)
+
+    // Capture current scroll position before model swap to prevent jump to top
+    const modifiedEditor = editor.current?.getModifiedEditor()
+    const previousScrollTop = modifiedEditor?.getScrollTop() ?? 0
+
     const originalModel = Editor.createModel(before, language)
     const modifiedModel = Editor.createModel(after, language)
 
@@ -88,6 +93,11 @@ export function useMonacoDiffEditorElement(options: {
       original: originalModel,
       modified: modifiedModel,
     })
+
+    // Immediately restore scroll position after model swap to prevent visible jump
+    if (modifiedEditor && previousScrollTop > 0) {
+      modifiedEditor.setScrollTop(previousScrollTop, Editor.ScrollType.Immediate)
+    }
 
     if (revertedChange) {
       // If we have a pre-revert viewport snapshot, restore it; otherwise, navigate to the change
