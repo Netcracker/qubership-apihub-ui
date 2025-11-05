@@ -15,8 +15,8 @@
  */
 
 import type { RefObject } from 'react'
-import { useEffect, useRef } from 'react'
-import { editor as Editor } from 'monaco-editor'
+import { useEffect, useRef, useState } from 'react'
+import { editor as Editor, Range } from 'monaco-editor'
 import { useEffectOnce } from 'react-use'
 import type { SpecType } from '../../utils/specs'
 import type { LanguageType } from '../../types/languages'
@@ -36,6 +36,8 @@ export function useMonacoDiffEditorElement(options: {
 
   const ref = useRef<HTMLDivElement>(null)
   const editor = useRef<Editor.IStandaloneDiffEditor>()
+
+  const [revertedChange, setRevertedChange] = useState<Editor.ILineChange | undefined>(undefined)
 
   useEffectOnce(() => {
     Editor.defineTheme('custom', {
@@ -81,6 +83,11 @@ export function useMonacoDiffEditorElement(options: {
       modified: modifiedModel,
     })
 
+    if (revertedChange) {
+      const startLine = revertedChange.modifiedStartLineNumber
+      startLine !== undefined && navigateTo(editor.current!, startLine)
+    }
+
     return () => {
       const { current } = editor
       const currentModel = current?.getModel()
@@ -102,18 +109,16 @@ export function useMonacoDiffEditorElement(options: {
       originalModel.dispose()
       modifiedModel.dispose()
     }
-  }, [editor, before, after, language, type])
+  }, [editor, before, after, language, type, revertedChange])
 
-  useAddLineControls(editor)
+  useAddLineControls(editor, setRevertedChange)
 
   useEffect(() => {
     const content = editor.current?.getModel()?.modified.getValue()
-    if (selectedUri && content) {
+    if (content && selectedUri) {
       const location = findPathLocation(content, selectedUri)
-      if (location) {
-        const startLine = location?.range.start.line
-        navigateTo(editor.current!, startLine + 1)
-      }
+      const startLine = location?.range.start.line
+      startLine !== undefined && navigateTo(editor.current!, startLine + 1)
     }
   }, [selectedUri])
 
@@ -124,7 +129,85 @@ function navigateTo(
   editor: Editor.IStandaloneDiffEditor,
   lineNumber: number,
 ): void {
-  editor.revealLineNearTop(lineNumber, Editor.ScrollType.Smooth)
-  editor.setPosition({ lineNumber: lineNumber, column: 0 })
-  editor.focus()
+  const modifiedEditor = editor.getModifiedEditor()
+
+  // Keep navigation resilient during a short stabilization window
+  const stabilizeMs = 300
+  const endTime = Date.now() + stabilizeMs
+  let lastApply = 0
+  const applyIntervalMs = 30
+  const applyNavigate = (): void => {
+    const now = Date.now()
+    if (now - lastApply < applyIntervalMs) return
+    lastApply = now
+    const targetRange = new Range(lineNumber, 1, lineNumber, 1)
+    modifiedEditor.revealRangeNearTop(targetRange, Editor.ScrollType.Smooth)
+    modifiedEditor.setSelection(targetRange)
+    modifiedEditor.focus()
+  }
+
+  // Try immediately if models are ready
+  const model = modifiedEditor.getModel()
+  if (model) {
+    // Schedule to the next frame to wait for layout after model swap
+    requestAnimationFrame(() => {
+      applyNavigate()
+    })
+  }
+
+  // Also listen for diff update/layout as a robust fallback (fires after model attach/layout)
+  const disposables: { dispose: () => void }[] = []
+  const disposeAll = (): void => {
+    disposables.forEach(d => {
+      try {
+        d.dispose()
+      } catch (_) {
+        // ignore
+      }
+    })
+  }
+
+  disposables.push(
+    editor.onDidUpdateDiff(() => {
+      applyNavigate()
+      if (Date.now() > endTime) disposeAll()
+    }),
+  )
+
+  disposables.push(
+    modifiedEditor.onDidLayoutChange(() => {
+      applyNavigate()
+      if (Date.now() > endTime) disposeAll()
+    }),
+  )
+
+  // Also react to unexpected scroll resets during stabilization
+  disposables.push(
+    modifiedEditor.onDidScrollChange(() => {
+      applyNavigate()
+      if (Date.now() > endTime) disposeAll()
+    }),
+  )
+
+  // Final timer-based fallback in case neither event fires (e.g., no diff)
+  setTimeout(() => {
+    applyNavigate()
+    if (Date.now() > endTime) disposeAll()
+  }, 50)
+
+  // Robustness: retry a few times until the line is actually visible
+  let attemptsRemaining = 3
+  const tryEnsureVisible = (): void => {
+    const ranges = modifiedEditor.getVisibleRanges()
+    const isVisible = ranges.some(r => r.startLineNumber <= lineNumber && r.endLineNumber >= lineNumber)
+    const scrolled = modifiedEditor.getScrollTop() > 0 || lineNumber === 1
+    if (isVisible || scrolled || attemptsRemaining <= 0) return
+    attemptsRemaining -= 1
+    setTimeout(() => {
+      const targetRange = new Range(lineNumber, 1, lineNumber, 1)
+      modifiedEditor.revealRangeNearTop(targetRange, Editor.ScrollType.Smooth)
+      requestAnimationFrame(tryEnsureVisible)
+    }, 60)
+  }
+  requestAnimationFrame(tryEnsureVisible)
 }

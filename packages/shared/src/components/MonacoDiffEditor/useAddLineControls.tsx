@@ -1,5 +1,5 @@
 import { editor as Editor, Range } from 'monaco-editor'
-import type { MutableRefObject } from 'react'
+import type { Dispatch, MutableRefObject, SetStateAction } from 'react'
 import { useEffect, useRef } from 'react'
 import { useParams } from 'react-router'
 import { useRevert } from './useRevert'
@@ -13,6 +13,7 @@ type RawDiffType = typeof RawDiffTypes[keyof typeof RawDiffTypes]
 
 export function useAddLineControls(
   editor: MutableRefObject<Editor.IStandaloneDiffEditor | undefined>,
+  setRevertedChange: Dispatch<SetStateAction<Editor.ILineChange | undefined>>,
 ): void {
   const { packageId, versionId, documentId } = useParams()
   const { mutate: revert, isReverting } = useRevert()
@@ -101,6 +102,7 @@ export function useAddLineControls(
                 slug: documentId ?? '',
                 content: revertedValue,
               })
+              setRevertedChange(change)
             }
           }
 
@@ -137,7 +139,7 @@ export function useAddLineControls(
     disposableRef.current = diffEditor.onDidUpdateDiff(() => { addLineControls() })
 
     return () => { disposableRef.current?.dispose() }
-  }, [editor])
+  }, [documentId, editor, packageId, revert, versionId])
 }
 
 /**
