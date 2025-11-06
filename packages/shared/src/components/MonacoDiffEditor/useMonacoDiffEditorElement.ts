@@ -69,6 +69,7 @@ export function useMonacoDiffEditorElement(
       wordWrap: 'on',
       glyphMargin: true,
       theme: 'custom',
+      stickyScroll: { enabled: false },
     })
 
     return () => {
