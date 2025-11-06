@@ -45,7 +45,7 @@ function getAiEnhancedDocumentRawContent(docPackageKey: string, docVersionKey: s
 
 export function useInvalidateAiEnhancedDocumentRawContent(): () => Promise<void> {
   const queryClient = useQueryClient()
-  return () => queryClient.invalidateQueries({
+  return async () => queryClient.refetchQueries({
     queryKey: [QUERY_KEY_AI_ENHANCED_DOCUMENT_RAW_CONTENT],
   })
 }
