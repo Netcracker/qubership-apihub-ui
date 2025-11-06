@@ -1,7 +1,8 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import { generatePath } from 'react-router'
 import type { Key } from '../../entities/keys'
 import { requestJson, STUB_API_V1 } from '../../utils/requests'
+import { useInvalidateAiEnhancedDocumentRawContent } from './useInvalidateAiEnhancedDocumentRawContent'
 
 type RevertAiEnhancedPackageVersionRequest = {
   packageId: Key
@@ -21,8 +22,8 @@ type RevertMutationState = {
   isReverting: boolean
 }
 
-export function useRevert(): RevertMutationState {
-  const queryClient = useQueryClient()
+export function useRevertChangeInEnhancedDocument(): RevertMutationState {
+  const invalidateAiEnhancedDocumentRawContent = useInvalidateAiEnhancedDocumentRawContent()
 
   const { mutate, isLoading: isReverting } = useMutation<
     RevertAiEnhancedPackageVersionResponse,
@@ -31,7 +32,7 @@ export function useRevert(): RevertMutationState {
   >({
     mutationFn: request => revert(request),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['ai-enhanced-document-raw-content'] })
+      await invalidateAiEnhancedDocumentRawContent()
     },
   })
 

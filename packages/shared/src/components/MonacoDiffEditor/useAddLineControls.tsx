@@ -2,7 +2,7 @@ import { editor as Editor, Range } from 'monaco-editor'
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react'
 import { useEffect, useRef } from 'react'
 import { useParams } from 'react-router'
-import { useRevert } from '../../hooks/ai-agent/useRevertChangeInEnhancedDocument'
+import { useRevertChangeInEnhancedDocument } from '../../hooks/ai-agent/useRevertChangeInEnhancedDocument'
 
 const RawDiffTypes = {
   add: 'add',
@@ -17,7 +17,7 @@ export function useAddLineControls(
   setViewSnapshot?: Dispatch<SetStateAction<{ scrollTop: number; firstVisibleLine?: number } | undefined>>,
 ): void {
   const { packageId, versionId, documentId } = useParams()
-  const { mutate: revert } = useRevert()
+  const { mutate: revert } = useRevertChangeInEnhancedDocument()
 
   const widgetsRef = useRef<Editor.IGlyphMarginWidget[]>([])
   const modelIdRef = useRef<string | null>(null)
