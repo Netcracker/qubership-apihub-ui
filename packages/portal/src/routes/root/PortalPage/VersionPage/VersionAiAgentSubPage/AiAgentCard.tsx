@@ -11,6 +11,7 @@ import { RawSpecDiffView } from '@netcracker/qubership-apihub-ui-shared/componen
 import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { JSON_FILE_EXTENSION, YAML_FILE_EXTENSION } from '@netcracker/qubership-apihub-ui-shared/utils/files'
+import fileDownload from 'js-file-download'
 import type { FC } from 'react'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
@@ -161,6 +162,17 @@ export const AiAgentCard: FC = memo(() => {
 
   const { showPublishAiEnhancedVersionDialog } = useEventBus()
 
+  const onDownloadButtonClick = useCallback(() => {
+    if (!transformedEnhancedDocumentContent || !selectedDocument) {
+      return
+    }
+
+    const fileExtension = selectedFormat === JSON_FILE_FORMAT ? JSON_FILE_EXTENSION : YAML_FILE_EXTENSION
+    const fileName = `${selectedDocument.slug}-enhanced${fileExtension}`
+
+    fileDownload(transformedEnhancedDocumentContent, fileName)
+  }, [transformedEnhancedDocumentContent, selectedDocument, selectedFormat])
+
   if (isDashboard) {
     return (
       <Placeholder
@@ -197,18 +209,32 @@ export const AiAgentCard: FC = memo(() => {
           </Box>
           {/* Right part */}
           {enhancementStatus === AiEnhancementStatuses.SUCCESS && (
-            <ButtonWithHint
-              variant='contained'
-              color='primary'
-              size='small'
-              onClick={showPublishAiEnhancedVersionDialog}
-              title='Publish'
-              hint='Publish enhanced version'
-              tooltipMaxWidth='unset'
-              data-testid='PublishButton'
-            >
-              Publish
-            </ButtonWithHint>
+            <Box display='flex' gap={2}>
+              <ButtonWithHint
+                variant='outlined'
+                color='secondary'
+                size='small'
+                onClick={onDownloadButtonClick}
+                title='Download'
+                hint='Download the enhanced specification as a file'
+                tooltipMaxWidth='unset'
+                data-testid='DownloadButton'
+              >
+                Download
+              </ButtonWithHint>
+              <ButtonWithHint
+                variant='contained'
+                color='primary'
+                size='small'
+                onClick={showPublishAiEnhancedVersionDialog}
+                title='Publish'
+                hint='Publish the enhanced specification as a new package version'
+                tooltipMaxWidth='unset'
+                data-testid='PublishButton'
+              >
+                Publish
+              </ButtonWithHint>
+            </Box>
           )}
         </Box>
       }
