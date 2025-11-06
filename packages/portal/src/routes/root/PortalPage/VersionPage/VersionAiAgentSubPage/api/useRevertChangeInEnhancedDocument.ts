@@ -1,36 +1,18 @@
+import type { RevertChangeInAiEnhancedPackageVersionMutationState, RevertChangeInAiEnhancedPackageVersionRequest, RevertChangeInAiEnhancedPackageVersionResponse } from '@netcracker/qubership-apihub-ui-shared/entities/ai-agent'
+import { requestJson, STUB_API_V1 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { useMutation } from '@tanstack/react-query'
 import { generatePath } from 'react-router'
-import type { Key } from '../../entities/keys'
-import { requestJson, STUB_API_V1 } from '../../utils/requests'
-import { useInvalidateAiEnhancedDocumentRawContent } from './useInvalidateAiEnhancedDocumentRawContent'
+import { useInvalidateAiEnhancedDocumentRawContent } from './useAiEnhancedDocumentRawContent'
 
-type RevertAiEnhancedPackageVersionRequest = {
-  packageId: Key
-  version: Key
-  slug: Key
-  content: string
-}
-
-type RevertAiEnhancedPackageVersionResponse = {
-  message: string
-}
-
-type RevertMutationFn = (request: RevertAiEnhancedPackageVersionRequest) => void
-
-type RevertMutationState = {
-  mutate: RevertMutationFn
-  isReverting: boolean
-}
-
-export function useRevertChangeInEnhancedDocument(): RevertMutationState {
+export function useRevertChangeInEnhancedDocument(): RevertChangeInAiEnhancedPackageVersionMutationState {
   const invalidateAiEnhancedDocumentRawContent = useInvalidateAiEnhancedDocumentRawContent()
 
   const { mutate, isLoading: isReverting } = useMutation<
-    RevertAiEnhancedPackageVersionResponse,
+    RevertChangeInAiEnhancedPackageVersionResponse,
     Error,
-    RevertAiEnhancedPackageVersionRequest
+    RevertChangeInAiEnhancedPackageVersionRequest
   >({
-    mutationFn: request => revert(request),
+    mutationFn: request => saveChangeReverting(request),
     onSuccess: async () => {
       await invalidateAiEnhancedDocumentRawContent()
     },
@@ -38,7 +20,10 @@ export function useRevertChangeInEnhancedDocument(): RevertMutationState {
 
   return { mutate, isReverting }
 }
-function revert(request: RevertAiEnhancedPackageVersionRequest): Promise<RevertAiEnhancedPackageVersionResponse> {
+
+function saveChangeReverting(
+  request: RevertChangeInAiEnhancedPackageVersionRequest,
+): Promise<RevertChangeInAiEnhancedPackageVersionResponse> {
   const { packageId, version, slug, content } = request
   const packageKey = encodeURIComponent(packageId)
   const versionKey = encodeURIComponent(version)
@@ -50,7 +35,7 @@ function revert(request: RevertAiEnhancedPackageVersionRequest): Promise<RevertA
     versionId: versionKey,
     documentId: documentKey,
   })
-  return requestJson<RevertAiEnhancedPackageVersionResponse>(
+  return requestJson<RevertChangeInAiEnhancedPackageVersionResponse>(
     endpoint,
     {
       method: 'PUT',
@@ -59,3 +44,4 @@ function revert(request: RevertAiEnhancedPackageVersionRequest): Promise<RevertA
     { basePath: STUB_API_V1 },
   )
 }
+

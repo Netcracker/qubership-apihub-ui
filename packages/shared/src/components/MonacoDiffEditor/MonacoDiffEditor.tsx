@@ -16,11 +16,12 @@
 
 import type { FC } from 'react'
 import { lazy, memo, Suspense } from 'react'
-import type { MonacoDiffEditorElementProps } from './MonacoDiffEditorElement'
-import type { SpecType } from '../../utils/specs'
+import type { RevertChangeInAiEnhancedPackageVersionMutationFn } from '../../entities/ai-agent'
 import type { LanguageType } from '../../types/languages'
 import type { SpecItemUri } from '../../utils/specifications'
+import type { SpecType } from '../../utils/specs'
 import { LoadingIndicator } from '../LoadingIndicator'
+import type { MonacoDiffEditorElementProps } from './MonacoDiffEditorElement'
 
 export type MonacoDiffEditorProps = {
   before: string
@@ -28,25 +29,31 @@ export type MonacoDiffEditorProps = {
   type: SpecType
   language?: LanguageType
   selectedUri?: SpecItemUri
+  // Only for tab "AI Agent"
+  requestRevertChange?: RevertChangeInAiEnhancedPackageVersionMutationFn
 }
 
 const MonacoDiffEditorElement: FC<MonacoDiffEditorElementProps> = lazy(() => import('./MonacoDiffEditorElement'))
 
-export const MonacoDiffEditor: FC<MonacoDiffEditorProps> = memo<MonacoDiffEditorProps>(({
-  before,
-  after,
-  type,
-  language,
-  selectedUri,
-}) => {
+export const MonacoDiffEditor: FC<MonacoDiffEditorProps> = memo<MonacoDiffEditorProps>(props => {
+  const {
+    before,
+    after,
+    type,
+    language,
+    selectedUri,
+    requestRevertChange,
+  } = props
+
   return (
-    <Suspense fallback={<LoadingIndicator/>}>
+    <Suspense fallback={<LoadingIndicator />}>
       <MonacoDiffEditorElement
         before={before}
         after={after}
         type={type}
         language={language}
         selectedUri={selectedUri}
+        requestRevertChange={requestRevertChange}
       />
     </Suspense>
   )

@@ -2,7 +2,7 @@ import { editor as Editor, Range } from 'monaco-editor'
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react'
 import { useEffect, useRef } from 'react'
 import { useParams } from 'react-router'
-import { useRevertChangeInEnhancedDocument } from '../../hooks/ai-agent/useRevertChangeInEnhancedDocument'
+import type { RevertChangeInAiEnhancedPackageVersionMutationFn } from '../../entities/ai-agent'
 
 const RawDiffTypes = {
   add: 'add',
@@ -15,9 +15,9 @@ export function useAddLineControls(
   editor: MutableRefObject<Editor.IStandaloneDiffEditor | undefined>,
   setRevertedChange: Dispatch<SetStateAction<Editor.ILineChange | undefined>>,
   setViewSnapshot?: Dispatch<SetStateAction<{ scrollTop: number; firstVisibleLine?: number } | undefined>>,
+  saveRevertChange?: RevertChangeInAiEnhancedPackageVersionMutationFn,
 ): void {
   const { packageId, versionId, documentId } = useParams()
-  const { mutate: revert } = useRevertChangeInEnhancedDocument()
 
   const widgetsRef = useRef<Editor.IGlyphMarginWidget[]>([])
   const modelIdRef = useRef<string | null>(null)
@@ -105,12 +105,12 @@ export function useAddLineControls(
             const originalValue = diffEditor.getModel()?.original.getValue()
             const modifiedValue = diffEditor.getModel()?.modified.getValue()
             if (originalValue && modifiedValue) {
-              const revertedValue = revertChange(originalValue, modifiedValue, change)
-              revert({
+              const valueWithRevertedChange = revertChangeLocally(originalValue, modifiedValue, change)
+              saveRevertChange?.({
                 packageId: packageId ?? '',
                 version: versionId ?? '',
                 slug: documentId ?? '',
-                content: revertedValue,
+                content: valueWithRevertedChange,
               })
               setRevertedChange(change)
             }
@@ -149,7 +149,7 @@ export function useAddLineControls(
     disposableRef.current = diffEditor.onDidUpdateDiff(() => { addLineControls() })
 
     return () => { disposableRef.current?.dispose() }
-  }, [documentId, editor, packageId, revert, setRevertedChange, setViewSnapshot, versionId])
+  }, [documentId, editor, packageId, saveRevertChange, setRevertedChange, setViewSnapshot, versionId])
 }
 
 /**
@@ -159,7 +159,7 @@ export function useAddLineControls(
  * @param change MonacoEditor line change
  * @returns Modified value with reverted change
  */
-function revertChange(
+function revertChangeLocally(
   originalValue: string,
   modifiedValue: string,
   change: Editor.ILineChange,

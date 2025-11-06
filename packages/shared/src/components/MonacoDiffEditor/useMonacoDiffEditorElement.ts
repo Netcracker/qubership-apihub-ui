@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
+import { editor as Editor, Range } from 'monaco-editor'
 import type { RefObject } from 'react'
 import { useEffect, useRef, useState } from 'react'
-import { editor as Editor, Range } from 'monaco-editor'
 import { useEffectOnce } from 'react-use'
-import type { SpecType } from '../../utils/specs'
+import type { RevertChangeInAiEnhancedPackageVersionMutationFn } from '../../entities/ai-agent'
 import type { LanguageType } from '../../types/languages'
 import { LANGUAGE_TYPE_TEXT } from '../../types/languages'
 import type { SpecItemUri } from '../../utils/specifications'
 import { findPathLocation } from '../../utils/specifications'
+import type { SpecType } from '../../utils/specs'
 import { useAddLineControls } from './useAddLineControls'
 
 type EditorViewportSnapshot = {
@@ -30,14 +31,19 @@ type EditorViewportSnapshot = {
   firstVisibleLine?: number
 }
 
-export function useMonacoDiffEditorElement(options: {
+type UseMonacoDiffEditorElementOptions = {
   before: string
   after: string
   type: SpecType
   language?: LanguageType
   selectedUri?: SpecItemUri
-}): RefObject<HTMLDivElement> {
-  const { before, after, type, language = LANGUAGE_TYPE_TEXT, selectedUri } = options
+  requestRevertChange?: RevertChangeInAiEnhancedPackageVersionMutationFn
+}
+
+export function useMonacoDiffEditorElement(
+  options: UseMonacoDiffEditorElementOptions,
+): RefObject<HTMLDivElement> {
+  const { before, after, type, language = LANGUAGE_TYPE_TEXT, selectedUri, requestRevertChange } = options
 
   const ref = useRef<HTMLDivElement>(null)
   const editor = useRef<Editor.IStandaloneDiffEditor>()
@@ -99,6 +105,7 @@ export function useMonacoDiffEditorElement(options: {
       modifiedEditor.setScrollTop(previousScrollTop, Editor.ScrollType.Immediate)
     }
 
+    // TODO 06.11.25 // Is branch "else" necessary?
     if (revertedChange) {
       // If we have a pre-revert viewport snapshot, restore it; otherwise, navigate to the change
       if (viewSnapshot) {
@@ -132,7 +139,7 @@ export function useMonacoDiffEditorElement(options: {
     }
   }, [editor, before, after, language, type, revertedChange, viewSnapshot])
 
-  useAddLineControls(editor, setRevertedChange, setViewSnapshot)
+  useAddLineControls(editor, setRevertedChange, setViewSnapshot, requestRevertChange)
 
   useEffect(() => {
     const content = editor.current?.getModel()?.modified.getValue()

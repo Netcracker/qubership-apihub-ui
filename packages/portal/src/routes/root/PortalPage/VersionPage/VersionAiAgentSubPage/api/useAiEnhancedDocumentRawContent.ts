@@ -1,11 +1,12 @@
 // import { API_LINTER_API_V1 } from '@apihub/api-hooks/ApiQuality/constants'
 import type { FileContent } from '@apihub/entities/project-files'
-import { QUERY_KEY_AI_ENHANCED_DOCUMENT_RAW_CONTENT } from '@netcracker/qubership-apihub-ui-shared/hooks/ai-agent/useInvalidateAiEnhancedDocumentRawContent'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { requestText, STUB_API_V1 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { toFormattedJsonString } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { generatePath } from 'react-router-dom'
+
+const QUERY_KEY_AI_ENHANCED_DOCUMENT_RAW_CONTENT = 'ai-enhanced-document-raw-content'
 
 export function useAiEnhancedDocumentRawContent(
   docPackageKey: string | undefined,
@@ -40,4 +41,11 @@ function getAiEnhancedDocumentRawContent(docPackageKey: string, docVersionKey: s
     { method: 'GET' },
     { basePath: STUB_API_V1 },
   )
+}
+
+export function useInvalidateAiEnhancedDocumentRawContent(): () => Promise<void> {
+  const queryClient = useQueryClient()
+  return () => queryClient.invalidateQueries({
+    queryKey: [QUERY_KEY_AI_ENHANCED_DOCUMENT_RAW_CONTENT],
+  })
 }

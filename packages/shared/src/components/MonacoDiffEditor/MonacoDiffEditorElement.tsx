@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
+import 'monaco-editor/esm/vs/basic-languages/markdown/markdown.contribution'
+import 'monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution'
 import 'monaco-editor/esm/vs/editor/editor.all.js'
 import 'monaco-editor/esm/vs/language/json/monaco.contribution'
-import 'monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution'
-import 'monaco-editor/esm/vs/basic-languages/markdown/markdown.contribution'
 
 import type { FC } from 'react'
 import { memo } from 'react'
-import { useMonacoDiffEditorElement } from './useMonacoDiffEditorElement'
-import type { SpecType } from '../../utils/specs'
+import type { RevertChangeInAiEnhancedPackageVersionMutationFn } from '../../entities/ai-agent'
 import type { LanguageType } from '../../types/languages'
 import type { SpecItemUri } from '../../utils/specifications'
+import type { SpecType } from '../../utils/specs'
+import { useMonacoDiffEditorElement } from './useMonacoDiffEditorElement'
 
 export type MonacoDiffEditorElementProps = {
   before: string
@@ -32,16 +33,28 @@ export type MonacoDiffEditorElementProps = {
   type: SpecType
   language?: LanguageType
   selectedUri?: SpecItemUri
+  // Only for tab "AI Agent"
+  requestRevertChange?: RevertChangeInAiEnhancedPackageVersionMutationFn
 }
 
-const MonacoDiffEditorElement: FC<MonacoDiffEditorElementProps> = memo<MonacoDiffEditorElementProps>(({
-  before,
-  after,
-  type,
-  language,
-  selectedUri,
-}) => {
-  const element = useMonacoDiffEditorElement({ before, after, type, language, selectedUri })
+const MonacoDiffEditorElement: FC<MonacoDiffEditorElementProps> = memo<MonacoDiffEditorElementProps>(props => {
+  const {
+    before,
+    after,
+    type,
+    language,
+    selectedUri,
+    requestRevertChange,
+  } = props
+
+  const element = useMonacoDiffEditorElement({ 
+    before, 
+    after, 
+    type, 
+    language, 
+    selectedUri,
+    requestRevertChange,
+  })
 
   return (
     <div
