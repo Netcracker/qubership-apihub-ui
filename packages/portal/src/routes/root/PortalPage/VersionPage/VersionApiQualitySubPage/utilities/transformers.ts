@@ -28,6 +28,7 @@ export function transformRawDocumentByFormat(
     } catch (error) {
       console.error('Error parsing JSON')
       console.error(error)
+      return value
     }
   } else {
     try {
@@ -36,6 +37,7 @@ export function transformRawDocumentByFormat(
     } catch (error) {
       console.error('Error parsing YAML')
       console.error(error)
+      return value
     }
   }
 
