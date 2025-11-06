@@ -101,19 +101,24 @@ export function useMonacoDiffEditorElement(
       modified: modifiedModel,
     })
 
-    // Immediately restore scroll position after model swap to prevent visible jump
-    if (modifiedEditor && previousScrollTop > 0) {
-      modifiedEditor.setScrollTop(previousScrollTop, Editor.ScrollType.Immediate)
-    }
-
     // TODO 06.11.25 // Is branch "else" necessary?
     if (revertedChange) {
       // If we have a pre-revert viewport snapshot, restore it; otherwise, navigate to the change
       if (viewSnapshot) {
         restoreView(editor.current!, viewSnapshot)
+        // Clear the restoration state after first restoration to prevent repeated attempts
+        setViewSnapshot(undefined)
+        setRevertedChange(undefined)
       } else {
         const startLine = revertedChange.modifiedStartLineNumber
         startLine !== undefined && navigateTo(editor.current!, startLine)
+        // Clear after navigation
+        setRevertedChange(undefined)
+      }
+    } else {
+      // Immediately restore scroll position after model swap to prevent visible jump
+      if (modifiedEditor && previousScrollTop > 0) {
+        modifiedEditor.setScrollTop(previousScrollTop, Editor.ScrollType.Immediate)
       }
     }
 
@@ -256,8 +261,16 @@ function restoreView(
     const now = Date.now()
     if (now - lastApply < applyIntervalMs) return
     lastApply = now
-    // Directly restore the exact scroll position
-    modifiedEditor.setScrollTop(snapshot.scrollTop, Editor.ScrollType.Immediate)
+
+    // Prefer firstVisibleLine-based restoration for better stability after content changes
+    if (snapshot.firstVisibleLine !== undefined) {
+      const targetRange = new Range(snapshot.firstVisibleLine, 1, snapshot.firstVisibleLine, 1)
+      // Use revealRangeAtTop for precise positioning without padding
+      modifiedEditor.revealRangeAtTop(targetRange, Editor.ScrollType.Immediate)
+    } else {
+      // Fallback to scrollTop if firstVisibleLine is not available
+      modifiedEditor.setScrollTop(snapshot.scrollTop, Editor.ScrollType.Immediate)
+    }
   }
 
   const disposables: { dispose: () => void }[] = []
