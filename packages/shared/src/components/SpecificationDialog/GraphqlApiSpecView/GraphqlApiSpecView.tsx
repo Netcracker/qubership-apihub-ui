@@ -48,7 +48,6 @@ export const GraphqlApiSpecView: FC<GraphqlApiSpecViewProps> = /* @__PURE__ */ m
   const fetcher = createGraphiQLFetcher({
     url: fetchDataUrl ?? EMPTY_FETCH_DATA_URL,
     headers: {
-      // TODO 05.05.2025 // Fix it when it is available on UI
       'X-Apihub-Authorization': header || 'TOKEN_IS_EMPTY', // for INSECURE_PROXY = false
     },
   })
