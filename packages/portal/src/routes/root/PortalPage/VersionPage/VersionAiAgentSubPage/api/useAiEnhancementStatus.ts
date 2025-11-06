@@ -1,12 +1,11 @@
 // import { API_LINTER_API_V1 } from '@apihub/api-hooks/ApiQuality/constants'
 import type { Key, PackageKey, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import { requestJson, STUB_API_V1 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { generatePath } from 'react-router-dom'
 import type { AiEnhancementStatus, AiEnhancementStatusDto } from '../types/enhancing-status'
 import { AiEnhancementStatuses } from '../types/enhancing-status'
-import { STUB_API_PATH } from './REMOVE_IT'
 
 export type RefetchAiEnhancementStatus = (packageId: PackageKey, version: VersionKey, slug: Key) => Promise<void>
 
@@ -59,7 +58,7 @@ function getAiEnhancementStatus(docPackageKey: string, docVersionKey: string, do
   return requestJson<AiEnhancementStatusDto>(
     endpoint,
     { method: 'GET' },
-    { basePath: STUB_API_PATH },
+    { basePath: STUB_API_V1 },
   )
 }
 

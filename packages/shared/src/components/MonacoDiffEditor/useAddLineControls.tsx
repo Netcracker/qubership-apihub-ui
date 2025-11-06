@@ -2,7 +2,7 @@ import { editor as Editor, Range } from 'monaco-editor'
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react'
 import { useEffect, useRef } from 'react'
 import { useParams } from 'react-router'
-import { useRevert } from './useRevert'
+import { useRevert } from '../../hooks/ai-agent/useRevertChangeInEnhancedDocument'
 
 const RawDiffTypes = {
   add: 'add',

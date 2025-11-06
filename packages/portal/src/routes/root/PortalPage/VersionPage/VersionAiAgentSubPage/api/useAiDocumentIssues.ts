@@ -1,10 +1,9 @@
 // import { API_LINTER_API_V1 } from '@apihub/api-hooks/ApiQuality/constants'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import { requestJson, STUB_API_V1 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { useQuery } from '@tanstack/react-query'
 import { generatePath } from 'react-router-dom'
 import type { AiIssue, AiIssueDto } from '../types/issues'
-import { STUB_API_PATH } from './REMOVE_IT'
 
 const QUERY_KEY_AI_DOCUMENT_ISSUES = 'ai-document-issues'
 
@@ -38,6 +37,6 @@ function getAiDocumentIssues(docPackageKey: string, docVersionKey: string, docSl
   return requestJson<AiIssueDto[]>(
     endpoint,
     { method: 'GET' },
-    { basePath: STUB_API_PATH },
+    { basePath: STUB_API_V1 },
   )
 }

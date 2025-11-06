@@ -18,10 +18,9 @@
 import type { Key } from '@apihub/entities/keys'
 import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
-import { requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import { requestJson, STUB_API_V1 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { useMutation } from '@tanstack/react-query'
 import { generatePath } from 'react-router-dom'
-import { STUB_API_PATH } from './REMOVE_IT'
 
 type PublicationAiEnhancedVersionMutationState = {
   mutationFn: PublishAiEnhancedPackageVersionMutationFn
@@ -105,7 +104,7 @@ async function publishAiEnhancedPackageVersion(
       }),
     },
     {
-      basePath: STUB_API_PATH,
+      basePath: STUB_API_V1,
       customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
     },
   )

@@ -1,11 +1,10 @@
 // import { API_LINTER_API_V1 } from '@apihub/api-hooks/ApiQuality/constants'
 import type { PackageKey, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { requestVoid } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import { requestVoid, STUB_API_V1 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { useMutation } from '@tanstack/react-query'
 import { generatePath } from 'react-router-dom'
 import { useInvalidateAiEnhancementStatus } from './useAiEnhancementStatus'
-import { STUB_API_PATH } from './REMOVE_IT'
 
 type EnhanceDocumentCallbackOptions = {
   packageId: PackageKey
@@ -39,6 +38,6 @@ function enhanceDocument(options: EnhanceDocumentCallbackOptions): Promise<void>
   return requestVoid(
     endpoint,
     { method: 'POST' },
-    { basePath: STUB_API_PATH },
+    { basePath: STUB_API_V1 },
   )
 }

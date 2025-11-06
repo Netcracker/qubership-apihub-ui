@@ -1,9 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { generatePath } from 'react-router-dom'
+import { generatePath } from 'react-router'
 import type { Key } from '../../entities/keys'
-import { requestJson } from '../../utils/requests'
-  
-const STUB_API_PATH = '/stub/api/v1'
+import { requestJson, STUB_API_V1 } from '../../utils/requests'
 
 type RevertAiEnhancedPackageVersionRequest = {
   packageId: Key
@@ -39,7 +37,6 @@ export function useRevert(): RevertMutationState {
 
   return { mutate, isReverting }
 }
-
 function revert(request: RevertAiEnhancedPackageVersionRequest): Promise<RevertAiEnhancedPackageVersionResponse> {
   const { packageId, version, slug, content } = request
   const packageKey = encodeURIComponent(packageId)
@@ -58,8 +55,6 @@ function revert(request: RevertAiEnhancedPackageVersionRequest): Promise<RevertA
       method: 'PUT',
       body: content,
     },
-    {
-      basePath: STUB_API_PATH,
-    },
+    { basePath: STUB_API_V1 },
   )
 }
