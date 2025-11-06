@@ -28,8 +28,8 @@ export const API_V4 = '/api/v4'
 export const API_BASE_PATH_PATTERN = '/api/:apiVersion'
 
 // TODO 06.11.25 // REMOVE IT!
-// export const STUB_API_V1 = '/stub/api/v1'
-export const STUB_API_V1 = '/api-linter/api/v1'
+export const STUB_API_V1 = '/stub/api/v1'
+// export const STUB_API_V1 = '/api-linter/api/v1'
 // ---
 
 export const STATUS_REFETCH_INTERVAL = 3 * 1000 // three seconds

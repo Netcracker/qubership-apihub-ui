@@ -18,10 +18,11 @@ import { Box } from '@mui/material'
 import type { SxProps } from '@mui/system'
 import type { FC } from 'react'
 import { memo } from 'react'
+import type { RevertChangeInAiEnhancedPackageVersionMutationFn } from '../entities/ai-agent'
 import { EXTENSION_TO_TYPE_LANGUAGE_MAP } from '../types/languages'
 import type { FileExtension } from '../utils/files'
-import type { SpecType } from '../utils/specs'
 import type { SpecItemUri } from '../utils/specifications'
+import type { SpecType } from '../utils/specs'
 import { ModuleFetchingErrorBoundary } from './ModuleFetchingErrorBoundary/ModuleFetchingErrorBoundary'
 import { MonacoDiffEditor } from './MonacoDiffEditor'
 
@@ -32,19 +33,24 @@ export type RawDiffViewProps = {
   type: SpecType
   selectedUri?: SpecItemUri
   sx?: SxProps
+  // Only for tab "AI Agent"
+  requestRevertChange?: RevertChangeInAiEnhancedPackageVersionMutationFn
 }
 
 type BeforeSpecContent = string
 type AfterSpecContent = string
 
-export const RawSpecDiffView: FC<RawDiffViewProps> = memo<RawDiffViewProps>(({
-  beforeValue,
-  afterValue,
-  type,
-  extension,
-  selectedUri,
-  sx,
-}) => {
+export const RawSpecDiffView: FC<RawDiffViewProps> = memo<RawDiffViewProps>(props => {
+  const {
+    beforeValue,
+    afterValue,
+    type,
+    extension,
+    selectedUri,
+    sx,
+    requestRevertChange,
+  } = props
+
   return (
     <ModuleFetchingErrorBoundary>
       <Box height="100%" minWidth={0} sx={sx} data-testid="RawDiffView">
@@ -54,6 +60,7 @@ export const RawSpecDiffView: FC<RawDiffViewProps> = memo<RawDiffViewProps>(({
           type={type}
           language={EXTENSION_TO_TYPE_LANGUAGE_MAP[extension]}
           selectedUri={selectedUri}
+          requestRevertChange={requestRevertChange}
         />
       </Box>
     </ModuleFetchingErrorBoundary>

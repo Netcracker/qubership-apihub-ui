@@ -29,6 +29,7 @@ import { useAiEnhanceDocument } from './api/useAiEnhanceDocument'
 import { useAiEnhancedDocumentRawContent } from './api/useAiEnhancedDocumentRawContent'
 import { useAiEnhancedDocumentScoring } from './api/useAiEnhancedDocumentScoring'
 import { useAiEnhancementStatus } from './api/useAiEnhancementStatus'
+import { useRevertChangeInEnhancedDocument } from './api/useRevertChangeInEnhancedDocument'
 import { AiEnhancementStatuses } from './types/enhancing-status'
 import { transformAiDocumentIssuesToGridTemplateRows, transformScoringToGridTemplateRows } from './utils/transformers'
 import { usePollingForAiEnhancementReadiness } from './utils/usePollingForAiEnhancementReadiness'
@@ -55,6 +56,8 @@ export const AiAgentCard: FC = memo(() => {
 
   const [selectedDocument, setSelectedDocument] = useState<Document | undefined>(undefined)
   const [selectedFormat, setSelectedFormat] = useState<OriginalDocumentFileFormat>(YAML_FILE_FORMAT)
+
+  const { mutate: requestRevertChange } = useRevertChangeInEnhancedDocument()
 
   const [enhanceDocument] = useAiEnhanceDocument()
 
@@ -316,6 +319,7 @@ export const AiAgentCard: FC = memo(() => {
                         : YAML_FILE_EXTENSION
                     }
                     type='openapi-3-0'
+                    requestRevertChange={requestRevertChange}
                   />
                 </Box>
               </Box>

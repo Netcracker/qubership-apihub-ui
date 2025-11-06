@@ -54,7 +54,7 @@ const MonacoDiffEditorElement: FC<MonacoDiffEditorElementProps> = memo<MonacoDif
     language, 
     selectedUri,
     requestRevertChange,
-  })
+  }) 
 
   return (
     <div
