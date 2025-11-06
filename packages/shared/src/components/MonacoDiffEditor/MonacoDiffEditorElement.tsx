@@ -47,14 +47,14 @@ const MonacoDiffEditorElement: FC<MonacoDiffEditorElementProps> = memo<MonacoDif
     requestRevertChange,
   } = props
 
-  const element = useMonacoDiffEditorElement({ 
-    before, 
-    after, 
-    type, 
-    language, 
+  const element = useMonacoDiffEditorElement({
+    before,
+    after,
+    type,
+    language,
     selectedUri,
     requestRevertChange,
-  }) 
+  })
 
   return (
     <div
