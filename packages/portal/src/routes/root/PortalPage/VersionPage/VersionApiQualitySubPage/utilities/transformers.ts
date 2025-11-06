@@ -25,12 +25,18 @@ export function transformRawDocumentByFormat(
     try {
       parsed = safeParse(value)
       currentFormat = JSON_FILE_FORMAT
-    } catch { /* do nothing */ }
+    } catch (error) {
+      console.error('Error parsing JSON')
+      console.error(error)
+    }
   } else {
     try {
       parsed = YAML.load(value)
       currentFormat = YAML_FILE_FORMAT
-    } catch { /* do nothing */ }
+    } catch (error) {
+      console.error('Error parsing YAML')
+      console.error(error)
+    }
   }
 
   if (currentFormat === format) {
