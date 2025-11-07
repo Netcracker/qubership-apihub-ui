@@ -72,6 +72,8 @@ export const SHOW_COMPARE_OPERATIONS_WITH_UPLOADED_FILE_DIALOG = 'show-compare-o
 export const SHOW_GLOBAL_SEARCH_PANEL = 'show-global-search-panel'
 export const HIDE_GLOBAL_SEARCH_PANEL = 'hide-global-search-panel'
 export const APPLY_GLOBAL_SEARCH_FILTERS = 'apply-global-search-filters'
+export const SHOW_AI_ASSISTANT_CHAT = 'show-ai-assistant-chat'
+export const HIDE_AI_ASSISTANT_CHAT = 'hide-ai-assistant-chat'
 export const SHOW_EDIT_WORKSPACES_LIST_DIALOG = 'show-edit-workspaces-list-dialog'
 export const SHOW_EDIT_PACKAGE_VERSION_DIALOG = 'show-edit-package-version-dialog'
 export const SHOW_EDIT_PACKAGE_PREFIX_DIALOG = 'show-edit-package-prefix-dialog'
@@ -209,6 +211,8 @@ type EventBus = {
   showGlobalSearchPanel: () => void
   hideGlobalSearchPanel: () => void
   applyGlobalSearchFilters: (details: GlobalSearchPanelDetails) => void
+  showAiAssistantChat: () => void
+  hideAiAssistantChat: () => void
 
   // portal
   showCompareVersionsDialog: () => void
@@ -272,6 +276,8 @@ function eventBusProvider(): EventBus {
       showGlobalSearchPanel: slot(),
       hideGlobalSearchPanel: slot(),
       applyGlobalSearchFilters: slot<GlobalSearchPanelDetails>(),
+      showAiAssistantChat: slot(),
+      hideAiAssistantChat: slot(),
 
       // portal
       showCompareVersionsDialog: slot(),
@@ -348,6 +354,12 @@ function eventBusProvider(): EventBus {
   })
   eventBus.applyGlobalSearchFilters.on((detail: GlobalSearchPanelDetails) => {
     dispatchEvent(new CustomEvent(APPLY_GLOBAL_SEARCH_FILTERS, { detail }))
+  })
+  eventBus.showAiAssistantChat.on(() => {
+    dispatchEvent(new CustomEvent(SHOW_AI_ASSISTANT_CHAT))
+  })
+  eventBus.hideAiAssistantChat.on(() => {
+    dispatchEvent(new CustomEvent(HIDE_AI_ASSISTANT_CHAT))
   })
 
   // portal

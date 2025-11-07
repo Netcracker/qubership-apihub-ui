@@ -21,9 +21,11 @@ import { memo, useCallback, useEffect } from 'react'
 import { generatePath, Outlet } from 'react-router-dom'
 import { MainPageProvider } from '../MainPage/MainPageProvider'
 import { GlobalSearchPanel } from './GlobalSearchPanel/GlobalSearchPanel'
+import { AIAssistantChat } from './AIAssistantChat/AIAssistantChat'
 
 import { useEventBus } from '@apihub/routes/EventBusProvider'
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
+import SmartToyOutlinedIcon from '@mui/icons-material/SmartToyOutlined'
 import type { Theme } from '@mui/material/styles'
 import type { SystemStyleObject } from '@mui/system/styleFunctionSx/styleFunctionSx'
 import { AppHeader } from '@netcracker/qubership-apihub-ui-shared/components/AppHeader'
@@ -103,6 +105,7 @@ export const BasePage: FC = memo(() => {
                 <VsCodeExtensionButton/>
                 <AppHeaderDivider/>
                 <SearchButton/>
+                <AIAssistantButton/>
                 {isSuperAdmin && <PortalSettingsButton/>}
                 <SystemInfoPopup
                   frontendVersionKey={frontendVersion}
@@ -123,6 +126,7 @@ export const BasePage: FC = memo(() => {
           </Box>
           <Notification/>
           <GlobalSearchPanel/>
+          <AIAssistantChat/>
           {systemNotification && <MaintenanceNotification value={systemNotification}/>}
         </Box>
       </ModuleFetchingErrorBoundary>
@@ -140,6 +144,20 @@ const SearchButton: FC = memo(() => {
       onClick={showGlobalSearchPanel}
     >
       <SearchOutlinedIcon/>
+    </IconButton>
+  )
+})
+
+const AIAssistantButton: FC = memo(() => {
+  const { showAiAssistantChat } = useEventBus()
+  return (
+    <IconButton
+      data-testid="AIAssistantButton"
+      size="large"
+      color="inherit"
+      onClick={showAiAssistantChat}
+    >
+      <SmartToyOutlinedIcon/>
     </IconButton>
   )
 })
