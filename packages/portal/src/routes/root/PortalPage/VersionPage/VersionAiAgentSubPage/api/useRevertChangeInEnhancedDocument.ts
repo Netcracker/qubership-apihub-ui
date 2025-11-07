@@ -14,7 +14,9 @@ export function useRevertChangeInEnhancedDocument(): RevertChangeInAiEnhancedPac
   >({
     mutationFn: request => saveChangeReverting(request),
     onSuccess: async () => {
+      console.log('BEFORE !!!')
       await invalidateAiEnhancedDocumentRawContent()
+      console.log('AFTER !!!')
     },
   })
 
