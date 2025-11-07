@@ -77,6 +77,8 @@ export default defineConfig(({ mode }) => {
       // like "process is not defined" and "Buffer is not defined".
       include: [
         '@netcracker/qubership-apihub-api-processor',
+        'rehype-highlight',
+        'highlight.js',
       ],
       esbuildOptions: {
         plugins: [
