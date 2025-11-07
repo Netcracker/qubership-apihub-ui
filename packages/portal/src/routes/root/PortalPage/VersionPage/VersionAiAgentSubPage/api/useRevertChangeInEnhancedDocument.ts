@@ -1,5 +1,5 @@
-import type { RevertChangeInAiEnhancedPackageVersionMutationState, RevertChangeInAiEnhancedPackageVersionRequest, RevertChangeInAiEnhancedPackageVersionResponse } from '@netcracker/qubership-apihub-ui-shared/entities/ai-agent'
-import { requestJson, STUB_API_V1 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import type { RevertChangeInAiEnhancedPackageVersionMutationState, RevertChangeInAiEnhancedPackageVersionRequest } from '@netcracker/qubership-apihub-ui-shared/entities/ai-agent'
+import { requestVoid, STUB_API_V1 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { useMutation } from '@tanstack/react-query'
 import { generatePath } from 'react-router'
 import { useInvalidateAiEnhancedDocumentRawContent } from './useAiEnhancedDocumentRawContent'
@@ -7,25 +7,22 @@ import { useInvalidateAiEnhancedDocumentRawContent } from './useAiEnhancedDocume
 export function useRevertChangeInEnhancedDocument(): RevertChangeInAiEnhancedPackageVersionMutationState {
   const invalidateAiEnhancedDocumentRawContent = useInvalidateAiEnhancedDocumentRawContent()
 
-  const { mutate, isLoading: isReverting } = useMutation<
-    RevertChangeInAiEnhancedPackageVersionResponse,
-    Error,
-    RevertChangeInAiEnhancedPackageVersionRequest
-  >({
-    mutationFn: request => saveChangeReverting(request),
-    onSuccess: async () => {
-      console.log('BEFORE !!!')
-      await invalidateAiEnhancedDocumentRawContent()
-      console.log('AFTER !!!')
-    },
-  })
+  const { mutate, isLoading: isReverting } =
+    useMutation<void, Error, RevertChangeInAiEnhancedPackageVersionRequest>({
+      mutationFn: request => saveChangeReverting(request),
+      onSuccess: async () => {
+        console.log('BEFORE !!!')
+        await invalidateAiEnhancedDocumentRawContent()
+        console.log('AFTER !!!')
+      },
+    })
 
   return { mutate, isReverting }
 }
 
 function saveChangeReverting(
   request: RevertChangeInAiEnhancedPackageVersionRequest,
-): Promise<RevertChangeInAiEnhancedPackageVersionResponse> {
+): Promise<void> {
   const { packageId, version, slug, content } = request
   const packageKey = encodeURIComponent(packageId)
   const versionKey = encodeURIComponent(version)
@@ -37,7 +34,7 @@ function saveChangeReverting(
     versionId: versionKey,
     documentId: documentKey,
   })
-  return requestJson<RevertChangeInAiEnhancedPackageVersionResponse>(
+  return requestVoid(
     endpoint,
     {
       method: 'PUT',

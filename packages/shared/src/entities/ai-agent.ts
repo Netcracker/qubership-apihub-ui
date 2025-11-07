@@ -7,10 +7,6 @@ export type RevertChangeInAiEnhancedPackageVersionRequest = {
   content: string
 }
 
-export type RevertChangeInAiEnhancedPackageVersionResponse = {
-  message: string
-}
-
 export type RevertChangeInAiEnhancedPackageVersionMutationFn =
   (request: RevertChangeInAiEnhancedPackageVersionRequest) => void
 
