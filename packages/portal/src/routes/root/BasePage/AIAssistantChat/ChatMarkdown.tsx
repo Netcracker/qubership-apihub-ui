@@ -178,7 +178,7 @@ export const ChatMarkdown: FC<ChatMarkdownProps> = memo<ChatMarkdownProps>(({ co
     >
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeRaw, rehypeHighlight]}
+        rehypePlugins={[rehypeRaw, rehypeHighlight] as any}
         components={{
           code: ({ node, inline, className, children, ...props }: any) => {
             const match = /language-(\w+)/.exec(className || '')
