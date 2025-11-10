@@ -64,7 +64,15 @@ export const VersionPage: FC = memo(() => {
     refetch: refetchValidationSummary,
   } = useValidationSummaryByPackageVersion(linterEnabled, packageId!, versionId!, setValidationStatus)
   useAutoSetClientValidationStatusBySummary(validationSummary, setValidationStatus)
-  usePollingForValidationSummaryReadiness(validationStatus, setValidationStatus, refetchValidationSummary)
+  usePollingForValidationSummaryReadiness(
+    validationStatus,
+    setValidationStatus,
+    refetchValidationSummary,
+    {
+      packageId: packageId,
+      version: versionId,
+    },
+  )
 
   return (
     <CurrentPackageProvider value={packageObject}>

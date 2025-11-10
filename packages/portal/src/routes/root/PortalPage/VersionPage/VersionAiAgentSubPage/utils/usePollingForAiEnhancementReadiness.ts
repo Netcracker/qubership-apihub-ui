@@ -8,8 +8,6 @@ const POLLING_INTERVAL: number = 10 // Seconds
 
 const POLLING_FAILURE_COUNT: number = 600
 
-let interval: NodeJS.Timeout | undefined
-
 export function usePollingForAiEnhancementReadiness(
   status: AiEnhancementStatus | undefined,
   refetch: RefetchAiEnhancementStatus | undefined,
@@ -20,22 +18,28 @@ export function usePollingForAiEnhancementReadiness(
   },
 ): void {
   const count = useRef(POLLING_FAILURE_COUNT)
+  const timer = useRef<NodeJS.Timeout | undefined>(undefined)
   const { packageId, version, slug } = options
   useEffect(() => {
     if (!refetch) {
       return
     }
-    if (!packageId || !version || !slug) {
+    if (!status || !packageId || !version || !slug) {
       return
     }
     if (status === AiEnhancementStatuses.SUCCESS || status === AiEnhancementStatuses.ERROR) {
-      clearInterval(interval!)
+      clearInterval(timer.current!)
+      delete timer.current
       return
     }
-    interval = setTimeout(() => {
+    if (timer.current) {
+      clearInterval(timer.current)
+      delete timer.current
+    }
+    timer.current = setInterval(() => {
       if (count.current === 0) {
         count.current = POLLING_FAILURE_COUNT
-        clearInterval(interval!)
+        clearInterval(timer.current!)
         return
       }
       if (status === AiEnhancementStatuses.PROCESSING) {
