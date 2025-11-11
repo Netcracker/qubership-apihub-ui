@@ -71,12 +71,12 @@ export function useInvalidateAiEnhancementStatus(): () => Promise<void> {
 
 export function useRefetchAiEnhancementStatus(): RefetchAiEnhancementStatus {
   const queryClient = useQueryClient()
-  return (packageId: PackageKey, version: VersionKey, slug: Key): Promise<void> => {
+  return async (packageId: PackageKey, version: VersionKey, slug: Key): Promise<void> => {
     const packageKey = encodeURIComponent(packageId ?? '')
     const versionKey = encodeURIComponent(version ?? '')
     const slugKey = encodeURIComponent(slug ?? '')
-    queryClient.refetchQueries({
-      queryKey: [QUERY_KEY_AI_ENHANCEMENT_STATUS, packageId, version, slug],
+    await queryClient.refetchQueries({
+      queryKey: [QUERY_KEY_AI_ENHANCEMENT_STATUS, packageKey, versionKey, slugKey],
     })
   }
 }
