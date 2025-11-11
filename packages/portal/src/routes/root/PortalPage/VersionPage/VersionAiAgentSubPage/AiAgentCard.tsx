@@ -34,7 +34,7 @@ import { useAiEnhancementStatus } from './api/useAiEnhancementStatus'
 import { useRevertChangeInEnhancedDocument } from './api/useRevertChangeInEnhancedDocument'
 import { AiScoringCalculationStatuses } from './types/document-scoring-calculation-status'
 import { AiEnhancementStatuses } from './types/enhancing-status'
-import { transformAiDocumentIssuesToGridTemplateRows, transformScoringToGridTemplateRows } from './utils/transformers'
+import { transformAiDocumentIssuesToCsvContent, transformAiDocumentIssuesToGridTemplateRows, transformScoringToGridTemplateRows } from './utils/transformers'
 import { usePollingForAiEnhancementReadiness } from './utils/usePollingForAiEnhancementReadiness'
 import { usePollingForAiScoringReadiness } from './utils/usePollingForAiScoringReadiness'
 import { useCalculateAiDocumentScoring } from './api/useCalculateAiDocumentScoring'
@@ -190,7 +190,7 @@ export const AiAgentCard: FC = memo(() => {
 
   const { showPublishAiEnhancedVersionDialog } = useEventBus()
 
-  const onDownloadButtonClick = useCallback(() => {
+  const onDownloadEnhancedDocumentButtonClick = useCallback(() => {
     if (!transformedEnhancedDocumentContent || !selectedDocument) {
       return
     }
@@ -200,6 +200,16 @@ export const AiAgentCard: FC = memo(() => {
 
     fileDownload(transformedEnhancedDocumentContent, fileName)
   }, [transformedEnhancedDocumentContent, selectedDocument, selectedFormat])
+
+  const onDownloadAiIssuesButtonClick = useCallback(() => {
+    if (!originalDocumentIssues.length || !selectedDocument) {
+      return
+    }
+
+    const csvContent = transformAiDocumentIssuesToCsvContent(originalDocumentIssues)
+
+    fileDownload(csvContent, `${selectedDocument.slug}-problems.csv`)
+  }, [originalDocumentIssues, selectedDocument])
 
   if (isDashboard) {
     return (
@@ -242,7 +252,7 @@ export const AiAgentCard: FC = memo(() => {
                 variant='outlined'
                 color='secondary'
                 size='small'
-                onClick={onDownloadButtonClick}
+                onClick={onDownloadEnhancedDocumentButtonClick}
                 title='Download'
                 hint='Download the enhanced specification as a file'
                 tooltipMaxWidth='unset'
@@ -365,9 +375,21 @@ export const AiAgentCard: FC = memo(() => {
           {/* Validation results section */}
           {enhancementStatus !== AiEnhancementStatuses.SUCCESS && (
             <Box display='flex' flexDirection='column' gap={1} flexGrow={1} minHeight={0}>
-              <Typography variant='subtitle1' fontWeight='bold' fontSize={15}>
-                Problems
-              </Typography>
+              <Box display='flex' justifyContent='space-between' alignItems='center'>
+                <Typography variant='subtitle1' fontWeight='bold' fontSize={15}>
+                  Problems
+                </Typography>
+                <ButtonWithHint
+                  variant='outlined'
+                  color='secondary'
+                  size='small'
+                  onClick={onDownloadAiIssuesButtonClick}
+                  title='Export to CSV'
+                  hint='Export found problems table to a CSV file'
+                  tooltipMaxWidth='unset'
+                  data-testid='ExportToCsvButton'
+                />
+              </Box>
               <Box overflow='auto' flexGrow={1} minHeight={0}>
                 <AiValidationResultsTable
                   data={originalDocumentIssues}

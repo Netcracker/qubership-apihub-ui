@@ -71,3 +71,16 @@ function transformEnhancementsToGridTemplateRows(enhancements: Array<[string, nu
 
   return rows
 }
+
+// Raw issues to CSV content
+
+export function transformAiDocumentIssuesToCsvContent(aiDocumentIssues: AiIssue[]): string {
+  const csvContent = [
+    '"Severity";"Category";"Description"',
+  ]
+  for (const issue of aiDocumentIssues) {
+    const line = [`"${issue.severity}"`, `"${issue.category}"`, `"${issue.text}"`].join(';')
+    csvContent.push(line)
+  }
+  return csvContent.join('\n')
+}
