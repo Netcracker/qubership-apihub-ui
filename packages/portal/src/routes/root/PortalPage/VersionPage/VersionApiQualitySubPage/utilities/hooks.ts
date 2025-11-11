@@ -28,7 +28,7 @@ export function useTransformedRawDocumentByFormat(
     cache.clear()
   }
   if (!cache.has(format)) {
-    cache.set(format, transformRawDocumentByFormat(valueRef.current, format))
+    cache.set(format, transformRawDocumentByFormat(valueRef.current, format)[0])
   }
   return cache.get(format)!
 }
