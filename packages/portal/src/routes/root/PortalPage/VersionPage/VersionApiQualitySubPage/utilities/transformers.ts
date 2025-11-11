@@ -12,11 +12,11 @@ export function issuePathToSpecItemUri(issuePath: IssuePath): SpecItemUri {
 
 export function transformRawDocumentByFormat(
   value: string,
-  format: OriginalDocumentFileFormat,
-): string {
+  targetFormat: OriginalDocumentFileFormat,
+): [string, OriginalDocumentFileFormat | undefined] {
   value = value.trim()
 
-  let currentFormat: OriginalDocumentFileFormat | undefined
+  let originalFormat: OriginalDocumentFileFormat | undefined
   let parsed: unknown
   if (
     value.startsWith('{') && value.endsWith('}') ||
@@ -24,33 +24,33 @@ export function transformRawDocumentByFormat(
   ) {
     try {
       parsed = safeParse(value)
-      currentFormat = JSON_FILE_FORMAT
+      originalFormat = JSON_FILE_FORMAT
     } catch (error) {
       console.error('Error parsing JSON')
       console.error(error)
-      return value
+      return [value, originalFormat]
     }
   } else {
     try {
       parsed = YAML.load(value)
-      currentFormat = YAML_FILE_FORMAT
+      originalFormat = YAML_FILE_FORMAT
     } catch (error) {
       console.error('Error parsing YAML')
       console.error(error)
-      return value
+      return [value, originalFormat]
     }
   }
 
-  if (currentFormat === format) {
-    return value
+  if (originalFormat === targetFormat) {
+    return [value, originalFormat]
   }
 
-  switch (format) {
+  switch (targetFormat) {
     case JSON_FILE_FORMAT:
-      return JSON.stringify(parsed, null, 2)
+      return [JSON.stringify(parsed, null, 2), originalFormat]
     case YAML_FILE_FORMAT:
-      return YAML.dump(parsed)
+      return [YAML.dump(parsed), originalFormat]
     default:
-      return value
+      return [value, originalFormat]
   }
 }

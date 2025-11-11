@@ -62,13 +62,10 @@ export const AiAgentCard: FC = memo(() => {
   const [selectedDocument, setSelectedDocument] = useState<Document | undefined>(undefined)
   const [selectedFormat, setSelectedFormat] = useState<OriginalDocumentFileFormat>(YAML_FILE_FORMAT)
 
-  const { mutate: requestRevertChange } = useRevertChangeInEnhancedDocument()
-
   const [enhanceDocument] = useAiEnhanceDocument()
 
   const {
     data: enhancementStatus,
-    isLoading: loadingEnhancementStatus,
     refetch: refetchAiEnhancementStatus,
   } = useAiEnhancementStatus(
     docPackageKey,
@@ -165,28 +162,30 @@ export const AiAgentCard: FC = memo(() => {
       enhancementStatus === AiEnhancementStatuses.SUCCESS,
     )
 
-  const [originalDocumentRawContent, loadingOriginalDocumentRawContent] =
+  const [originalDocumentRawContent] =
     usePublishedDocumentRaw({
       packageKey: docPackageKey,
       versionKey: docPackageVersion,
       slug: selectedDocument?.slug ?? '',
     })
 
-  const [enhancedDocumentRawContent, loadingEnhancedDocumentRawContent] =
+  const [enhancedDocumentRawContent] =
     useAiEnhancedDocumentRawContent(
       docPackageKey,
       docPackageVersion,
       selectedDocument?.slug,
       enhancementStatus === AiEnhancementStatuses.SUCCESS,
     )
-  const transformedOriginalDocumentContent = useMemo(
+  const [transformedOriginalDocumentContent] = useMemo(
     () => transformRawDocumentByFormat(originalDocumentRawContent ?? '', selectedFormat),
     [originalDocumentRawContent, selectedFormat],
   )
-  const transformedEnhancedDocumentContent = useMemo(
+  const [transformedEnhancedDocumentContent, enhancedDocumentOriginalFormat] = useMemo(
     () => transformRawDocumentByFormat(enhancedDocumentRawContent ?? '', selectedFormat),
     [enhancedDocumentRawContent, selectedFormat],
   )
+
+  const { mutate: requestRevertChange } = useRevertChangeInEnhancedDocument(enhancedDocumentOriginalFormat)
 
   const { showPublishAiEnhancedVersionDialog } = useEventBus()
 
