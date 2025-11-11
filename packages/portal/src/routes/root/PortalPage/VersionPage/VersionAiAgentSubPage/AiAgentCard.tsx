@@ -26,14 +26,18 @@ import { AiValidationResultsTable } from './AiValidationResultsTable'
 import { UxSummaryTable } from './UxSummaryTable'
 import { useAiDocumentIssues } from './api/useAiDocumentIssues'
 import { useAiDocumentScoring } from './api/useAiDocumentScoring'
+import { useAiDocumentScoringStatus } from './api/useAiDocumentScoringStatus'
 import { useAiEnhanceDocument } from './api/useAiEnhanceDocument'
 import { useAiEnhancedDocumentRawContent } from './api/useAiEnhancedDocumentRawContent'
 import { useAiEnhancedDocumentScoring } from './api/useAiEnhancedDocumentScoring'
 import { useAiEnhancementStatus } from './api/useAiEnhancementStatus'
 import { useRevertChangeInEnhancedDocument } from './api/useRevertChangeInEnhancedDocument'
+import { AiScoringCalculationStatuses } from './types/document-scoring-calculation-status'
 import { AiEnhancementStatuses } from './types/enhancing-status'
 import { transformAiDocumentIssuesToGridTemplateRows, transformScoringToGridTemplateRows } from './utils/transformers'
 import { usePollingForAiEnhancementReadiness } from './utils/usePollingForAiEnhancementReadiness'
+import { usePollingForAiScoringReadiness } from './utils/usePollingForAiScoringReadiness'
+import { useCalculateAiDocumentScoring } from './api/useCalculateAiDocumentScoring'
 
 const MONACO_EDITOR_FORMATS: readonly OriginalDocumentFileFormat[] = [JSON_FILE_FORMAT, YAML_FILE_FORMAT]
 
@@ -78,6 +82,30 @@ export const AiAgentCard: FC = memo(() => {
       packageId: docPackageKey,
       version: docPackageVersion,
       slug: selectedDocument?.slug,
+    },
+  )
+
+  const {
+    calculateDocumentScoring,
+    isLoading: startingDocumentScoringCalculation,
+  } = useCalculateAiDocumentScoring()
+  const onCalculateDocumentScoringClick = useCallback(() => {
+    calculateDocumentScoring({
+      packageId: docPackageKey ?? '',
+      version: docPackageVersion ?? '',
+    })
+  }, [docPackageKey, docPackageVersion, calculateDocumentScoring])
+  const {
+    data: documentScoringStatus,
+    isLoading: loadingDocumentScoringStatus,
+    refetch: refetchDocumentScoringStatus,
+  } = useAiDocumentScoringStatus(docPackageKey, docPackageVersion)
+  usePollingForAiScoringReadiness(
+    documentScoringStatus?.status ?? AiScoringCalculationStatuses.NOT_STARTED,
+    refetchDocumentScoringStatus,
+    {
+      packageId: docPackageKey,
+      version: docPackageVersion,
     },
   )
 
@@ -208,8 +236,8 @@ export const AiAgentCard: FC = memo(() => {
             />
           </Box>
           {/* Right part */}
-          {enhancementStatus === AiEnhancementStatuses.SUCCESS && (
-            <Box display='flex' gap={2}>
+          <Box display='flex' gap={2}>
+            {enhancementStatus === AiEnhancementStatuses.SUCCESS && <>
               <ButtonWithHint
                 variant='outlined'
                 color='secondary'
@@ -219,9 +247,7 @@ export const AiAgentCard: FC = memo(() => {
                 hint='Download the enhanced specification as a file'
                 tooltipMaxWidth='unset'
                 data-testid='DownloadButton'
-              >
-                Download
-              </ButtonWithHint>
+              />
               <ButtonWithHint
                 variant='contained'
                 color='primary'
@@ -231,11 +257,9 @@ export const AiAgentCard: FC = memo(() => {
                 hint='Publish the enhanced specification as a new package version'
                 tooltipMaxWidth='unset'
                 data-testid='PublishButton'
-              >
-                Publish
-              </ButtonWithHint>
-            </Box>
-          )}
+              />
+            </>}
+          </Box>
         </Box>
       }
       body={
@@ -244,13 +268,51 @@ export const AiAgentCard: FC = memo(() => {
           <Box display='flex' gap={2}>
             {/* Scoring of the original document  */}
             <Box flexGrow={1}>
-              <UxSummaryTable
-                loading={loadingOriginalDocumentScoring}
-                gridTemplateHeaderRow={
-                  ['Original Scoring', null]
-                }
-                gridTemplateRows={transformScoringToGridTemplateRows(originalDocumentScoring)}
-              />
+              {(
+                documentScoringStatus?.status === AiScoringCalculationStatuses.NOT_STARTED ||
+                documentScoringStatus?.status === AiScoringCalculationStatuses.PROCESSING ||
+                documentScoringStatus?.status === AiScoringCalculationStatuses.ERROR
+              ) && <>
+                  <Typography variant='subtitle1' fontWeight='bold' fontSize={15}>
+                    Original Scoring
+                  </Typography>
+                  {documentScoringStatus?.status === AiScoringCalculationStatuses.NOT_STARTED && (
+                    <Box display='flex' flexDirection='column' alignItems='flex-start' gap={1}>
+                      <Typography variant='body1' fontSize={14}>
+                        No scoring calculated yet
+                      </Typography>
+                      <LoadingButton
+                        loading={startingDocumentScoringCalculation}
+                        variant='outlined'
+                        color='secondary'
+                        size='small'
+                        onClick={onCalculateDocumentScoringClick}
+                        data-testid='CalculateScoringButton'
+                      >
+                        Calculate Scoring
+                      </LoadingButton>
+                    </Box>
+                  )}
+                  {documentScoringStatus?.status === AiScoringCalculationStatuses.PROCESSING && (
+                    <Typography variant='body1' fontSize={14}>
+                      Scoring is being calculated...
+                    </Typography>
+                  )}
+                  {documentScoringStatus?.status === AiScoringCalculationStatuses.ERROR && (
+                    <Typography variant='body1' color='error' fontSize={14}>
+                      Error has been occurred while calculating the scoring
+                    </Typography>
+                  )}
+                </>}
+              {documentScoringStatus?.status === AiScoringCalculationStatuses.SUCCESS && <>
+                <UxSummaryTable
+                  loading={loadingOriginalDocumentScoring}
+                  gridTemplateHeaderRow={
+                    ['Original Scoring', null]
+                  }
+                  gridTemplateRows={transformScoringToGridTemplateRows(originalDocumentScoring)}
+                />
+              </>}
             </Box>
             {/* AI suggestions section */}
             {enhancementStatus !== AiEnhancementStatuses.SUCCESS && (

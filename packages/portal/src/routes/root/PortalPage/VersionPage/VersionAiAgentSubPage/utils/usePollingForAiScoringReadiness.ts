@@ -1,4 +1,4 @@
-import type { Key, PackageKey, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { PackageKey, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { useEffect, useRef } from 'react'
 import type { RefetchAiScoringStatus } from '../api/useAiDocumentScoringStatus'
 import type { AiScoringCalculationStatus } from '../types/document-scoring-calculation-status'
@@ -14,17 +14,19 @@ export function usePollingForAiScoringReadiness(
   options: {
     packageId: PackageKey | undefined
     version: VersionKey | undefined
-    slug: Key | undefined
   },
 ): void {
   const count = useRef(POLLING_FAILURE_COUNT)
   const timer = useRef<NodeJS.Timeout | undefined>(undefined)
-  const { packageId, version, slug } = options
+  const { packageId, version } = options
   useEffect(() => {
     if (!refetch) {
       return
     }
-    if (!status || !packageId || !version || !slug) {
+    if (!status || !packageId || !version) {
+      return
+    }
+    if (status === AiScoringCalculationStatuses.NOT_STARTED) {
       return
     }
     if (status === AiScoringCalculationStatuses.SUCCESS || status === AiScoringCalculationStatuses.ERROR) {
@@ -47,5 +49,5 @@ export function usePollingForAiScoringReadiness(
         count.current--
       }
     }, POLLING_INTERVAL * 1000)
-  }, [packageId, refetch, slug, status, version])
+  }, [packageId, refetch, status, version])
 }

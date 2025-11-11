@@ -1,8 +1,8 @@
-import { requestJson, STUB_API_V1 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
-import { useQuery } from '@tanstack/react-query'
-import { generatePath } from 'react-router'
-import type { AiScoringCalculationStatusDetails } from '../types/document-scoring-calculation-status'
 import type { PackageKey, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { requestJson, STUB_API_V1 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { generatePath } from 'react-router'
+import { type AiScoringCalculationStatusDetails } from '../types/document-scoring-calculation-status'
 
 export type RefetchAiScoringStatus = () => void
 
@@ -16,13 +16,13 @@ type QueryState = {
 const QUERY_KEY = 'ai-document-scoring-status'
 
 export function useAiDocumentScoringStatus(
-  packageId: PackageKey,
-  version: VersionKey,
+  packageId: PackageKey | undefined,
+  version: VersionKey | undefined,
 ): QueryState {
-  const packageKey = encodeURIComponent(packageId)
-  const versionKey = encodeURIComponent(version)
+  const packageKey = encodeURIComponent(packageId ?? '')
+  const versionKey = encodeURIComponent(version ?? '')
 
-  const { data, isLoading, error, refetch } =
+  const { data, isFetching, error, refetch } =
     useQuery<
       AiScoringCalculationStatusDetails,
       Error,
@@ -32,7 +32,12 @@ export function useAiDocumentScoringStatus(
       queryFn: () => getAiDocumentScoringStatus(packageKey, versionKey),
     })
 
-  return { data, isLoading, error, refetch }
+  return {
+    data: data,
+    isLoading: isFetching,
+    error: error,
+    refetch: refetch,
+  }
 }
 
 function getAiDocumentScoringStatus(
@@ -50,4 +55,13 @@ function getAiDocumentScoringStatus(
     { method: 'GET' },
     { basePath: STUB_API_V1 },
   )
+}
+
+export function useRefreshAiDocumentScoringStatus(): (packageId: PackageKey, version: VersionKey) => Promise<void> {
+  const client = useQueryClient()
+  return (packageId: PackageKey, version: VersionKey) => {
+    const packageKey = encodeURIComponent(packageId ?? '')
+    const versionKey = encodeURIComponent(version ?? '')
+    return client.invalidateQueries({ queryKey: [QUERY_KEY, packageKey, versionKey] })
+  }
 }
