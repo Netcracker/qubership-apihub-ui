@@ -12,6 +12,7 @@ type UxSummaryTableProps = Readonly<{
   gridTemplateHeaderRow?: GridTemplateRow
   gridTemplateRows: GridTemplateAreas
   loading?: boolean
+  recalculateButton?: ReactElement
 }>
 
 const TITLE_CELL_SUFFIX = 'title'
@@ -70,7 +71,7 @@ const UxSummaryTableSkeleton: FC<UxSummaryTableSkeletonProps> = memo(props => {
 })
 
 export const UxSummaryTable: FC<UxSummaryTableProps> = memo<UxSummaryTableProps>(props => {
-  const { gridTemplateHeaderRow, gridTemplateRows, loading } = props
+  const { gridTemplateHeaderRow, gridTemplateRows, loading, recalculateButton } = props
 
   const gridTemplateJointRows = useMemo(() => (
     gridTemplateHeaderRow
@@ -85,8 +86,11 @@ export const UxSummaryTable: FC<UxSummaryTableProps> = memo<UxSummaryTableProps>
       const [columnTitle, contentCell] = row
       gridTemplateAreas += `'${titleCellName(columnTitle)} ${contentCellName(columnTitle, contentCell, index)}'\n`
     }
+    if (recalculateButton) {
+      gridTemplateAreas += '\'recalculate-button gap-after-recalculate-button\'\n'
+    }
     return gridTemplateAreas
-  }, [gridTemplateJointRows])
+  }, [gridTemplateJointRows, recalculateButton])
 
   if (loading) {
     const headerTitle = gridTemplateHeaderRow?.[0]
@@ -131,6 +135,12 @@ export const UxSummaryTable: FC<UxSummaryTableProps> = memo<UxSummaryTableProps>
           </Fragment>
         )
       })}
+      {recalculateButton && <>
+        <Box gridArea='recalculate-button'>
+          {recalculateButton}
+        </Box>
+        <Box gridArea='gap-after-recalculate-button' />
+      </>}
     </Box>
   )
 })

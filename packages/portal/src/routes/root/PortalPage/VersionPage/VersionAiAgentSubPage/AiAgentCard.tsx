@@ -3,7 +3,7 @@ import { JSON_FILE_FORMAT, YAML_FILE_FORMAT } from '@apihub/entities/file-format
 import { useEventBus } from '@apihub/routes/EventBusProvider'
 import { useNavigation } from '@apihub/routes/NavigationProvider'
 import { LoadingButton } from '@mui/lab'
-import { Box, Typography } from '@mui/material'
+import { Box, Button, Link, Typography } from '@mui/material'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
 import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
@@ -220,6 +220,59 @@ export const AiAgentCard: FC = memo(() => {
     )
   }
 
+  if (
+    (
+      documentScoringStatus?.status === AiScoringCalculationStatuses.NOT_STARTED ||
+      documentScoringStatus?.status === AiScoringCalculationStatuses.PROCESSING ||
+      documentScoringStatus?.status === AiScoringCalculationStatuses.ERROR
+    ) &&
+    !originalDocumentScoring
+  ) {
+    return (
+      <Placeholder
+        invisible={false}
+        area={CONTENT_PLACEHOLDER_AREA}
+        message={
+          <Box display='flex' flexDirection='column' alignItems='center' gap={1}>
+            {documentScoringStatus?.status === AiScoringCalculationStatuses.NOT_STARTED && (
+              <Typography variant='body1' fontSize={14}>
+                AI Scoring hasn't been calculated yet.
+                <p>
+                  Run the scoring process by clicking Recalculate Scoring
+                  to evaluate your API and view detailed insights.
+                </p>
+              </Typography>
+            )}
+            {documentScoringStatus?.status === AiScoringCalculationStatuses.PROCESSING && (
+              <Typography variant='body1' fontSize={14}>
+                Scoring is being calculated...
+              </Typography>
+            )}
+            {documentScoringStatus?.status === AiScoringCalculationStatuses.ERROR && (
+              <Typography variant='body1' color='error' fontSize={14}>
+                Error has been occurred during scoring calculation
+              </Typography>
+            )}
+            <LoadingButton
+              loading={
+                startingDocumentScoringCalculation ||
+                documentScoringStatus?.status === AiScoringCalculationStatuses.PROCESSING
+              }
+              variant='outlined'
+              color='secondary'
+              size='small'
+              onClick={onCalculateDocumentScoringClick}
+            >
+              {documentScoringStatus?.status === AiScoringCalculationStatuses.ERROR
+                ? 'Try Again'
+                : 'Calculate Scoring'}
+            </LoadingButton>
+          </Box>
+        }
+      />
+    )
+  }
+
   if (!documentId) {
     return (
       <Placeholder
@@ -277,51 +330,23 @@ export const AiAgentCard: FC = memo(() => {
           <Box display='flex' gap={2}>
             {/* Scoring of the original document  */}
             <Box flexGrow={1}>
-              {(
-                documentScoringStatus?.status === AiScoringCalculationStatuses.NOT_STARTED ||
-                documentScoringStatus?.status === AiScoringCalculationStatuses.PROCESSING ||
-                documentScoringStatus?.status === AiScoringCalculationStatuses.ERROR
-              ) && <>
-                  <Typography variant='subtitle1' fontWeight='bold' fontSize={15}>
-                    Original Scoring
+              <UxSummaryTable
+                loading={
+                  loadingOriginalDocumentScoring ||
+                  documentScoringStatus?.status === AiScoringCalculationStatuses.PROCESSING
+                }
+                gridTemplateHeaderRow={
+                  ['Original Scoring', null]
+                }
+                gridTemplateRows={transformScoringToGridTemplateRows(originalDocumentScoring)}
+                recalculateButton={
+                  <Typography variant="body2">
+                    <Link onClick={onCalculateDocumentScoringClick}>
+                      Recalculate Scoring
+                    </Link>
                   </Typography>
-                  {documentScoringStatus?.status === AiScoringCalculationStatuses.NOT_STARTED && (
-                    <Box display='flex' flexDirection='column' alignItems='flex-start' gap={1}>
-                      <Typography variant='body1' fontSize={14}>
-                        No scoring calculated yet
-                      </Typography>
-                      <LoadingButton
-                        loading={startingDocumentScoringCalculation}
-                        variant='outlined'
-                        color='secondary'
-                        size='small'
-                        onClick={onCalculateDocumentScoringClick}
-                        data-testid='CalculateScoringButton'
-                      >
-                        Calculate Scoring
-                      </LoadingButton>
-                    </Box>
-                  )}
-                  {documentScoringStatus?.status === AiScoringCalculationStatuses.PROCESSING && (
-                    <Typography variant='body1' fontSize={14}>
-                      Scoring is being calculated...
-                    </Typography>
-                  )}
-                  {documentScoringStatus?.status === AiScoringCalculationStatuses.ERROR && (
-                    <Typography variant='body1' color='error' fontSize={14}>
-                      Error has been occurred while calculating the scoring
-                    </Typography>
-                  )}
-                </>}
-              {documentScoringStatus?.status === AiScoringCalculationStatuses.SUCCESS && <>
-                <UxSummaryTable
-                  loading={loadingOriginalDocumentScoring}
-                  gridTemplateHeaderRow={
-                    ['Original Scoring', null]
-                  }
-                  gridTemplateRows={transformScoringToGridTemplateRows(originalDocumentScoring)}
-                />
-              </>}
+                }
+              />
             </Box>
             {/* AI suggestions section */}
             {enhancementStatus !== AiEnhancementStatuses.SUCCESS && (
