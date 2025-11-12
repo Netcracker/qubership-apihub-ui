@@ -41,7 +41,7 @@ function getAiDocumentIssues(docPackageKey: string, docVersionKey: string, docKe
     version: docVersionKey,
     slug: docKey,
   })
-  
+
   return requestJson<AiIssueDto[]>(
     endpoint,
     { method: 'GET' },

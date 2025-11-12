@@ -34,9 +34,9 @@ export function usePollingForAiScoringReadiness(
     if (status === AiScoringCalculationStatuses.SUCCESS || status === AiScoringCalculationStatuses.ERROR) {
       clearInterval(timer.current!)
       delete timer.current
-      
-      status === AiScoringCalculationStatuses.SUCCESS && onSuccess?.() 
-      status === AiScoringCalculationStatuses.ERROR && onError?.() 
+
+      status === AiScoringCalculationStatuses.SUCCESS && onSuccess?.()
+      status === AiScoringCalculationStatuses.ERROR && onError?.()
       return
     }
     if (timer.current) {

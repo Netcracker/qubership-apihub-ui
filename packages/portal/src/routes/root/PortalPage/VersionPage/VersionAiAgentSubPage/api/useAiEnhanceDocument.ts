@@ -40,10 +40,10 @@ function enhanceDocument(options: EnhanceDocumentCallbackOptions): Promise<void>
 
   const endpointPattern = '/packages/:packageId/versions/:version/enhancedFiles/:slug'
   const endpoint = generatePath(
-    endpointPattern, 
-    { 
-      packageId: packageKey, 
-      version: versionKey, 
+    endpointPattern,
+    {
+      packageId: packageKey,
+      version: versionKey,
       slug: documentKey,
     },
   )
