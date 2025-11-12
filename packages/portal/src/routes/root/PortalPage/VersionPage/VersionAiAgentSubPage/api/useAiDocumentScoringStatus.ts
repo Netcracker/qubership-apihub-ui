@@ -1,6 +1,7 @@
 import type { PackageKey, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { requestJson, STUB_API_V1 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useCallback } from 'react'
 import { generatePath } from 'react-router'
 import { type AiScoringCalculationStatusDetails } from '../types/document-scoring-calculation-status'
 
@@ -59,9 +60,9 @@ function getAiDocumentScoringStatus(
 
 export function useRefreshAiDocumentScoringStatus(): (packageId: PackageKey, version: VersionKey) => Promise<void> {
   const client = useQueryClient()
-  return (packageId: PackageKey, version: VersionKey) => {
+  return useCallback(async (packageId: PackageKey, version: VersionKey) => {
     const packageKey = encodeURIComponent(packageId ?? '')
     const versionKey = encodeURIComponent(version ?? '')
-    return client.invalidateQueries({ queryKey: [QUERY_KEY, packageKey, versionKey] })
-  }
+    await client.invalidateQueries({ queryKey: [QUERY_KEY, packageKey, versionKey] })
+  }, [client])
 }

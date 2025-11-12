@@ -15,6 +15,8 @@ export function usePollingForAiScoringReadiness(
     packageId: PackageKey | undefined
     version: VersionKey | undefined
   },
+  onSuccess?: () => void,
+  onError?: () => void,
 ): void {
   const count = useRef(POLLING_FAILURE_COUNT)
   const timer = useRef<NodeJS.Timeout | undefined>(undefined)
@@ -32,6 +34,9 @@ export function usePollingForAiScoringReadiness(
     if (status === AiScoringCalculationStatuses.SUCCESS || status === AiScoringCalculationStatuses.ERROR) {
       clearInterval(timer.current!)
       delete timer.current
+      
+      status === AiScoringCalculationStatuses.SUCCESS && onSuccess?.() 
+      status === AiScoringCalculationStatuses.ERROR && onError?.() 
       return
     }
     if (timer.current) {
@@ -49,5 +54,5 @@ export function usePollingForAiScoringReadiness(
         count.current--
       }
     }, POLLING_INTERVAL * 1000)
-  }, [packageId, refetch, status, version])
+  }, [packageId, refetch, status, version, onSuccess, onError])
 }

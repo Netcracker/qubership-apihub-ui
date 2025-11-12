@@ -4,6 +4,7 @@ import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/ali
 import { requestText, STUB_API_V1 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { toFormattedJsonString } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useCallback } from 'react'
 import { generatePath } from 'react-router-dom'
 
 const QUERY_KEY_AI_ENHANCED_DOCUMENT_RAW_CONTENT = 'ai-enhanced-document-raw-content'
@@ -45,7 +46,7 @@ function getAiEnhancedDocumentRawContent(docPackageKey: string, docVersionKey: s
 
 export function useInvalidateAiEnhancedDocumentRawContent(): () => Promise<void> {
   const queryClient = useQueryClient()
-  return async () => queryClient.refetchQueries({
+  return useCallback(async () => queryClient.refetchQueries({
     queryKey: [QUERY_KEY_AI_ENHANCED_DOCUMENT_RAW_CONTENT],
-  })
+  }), [queryClient])
 }

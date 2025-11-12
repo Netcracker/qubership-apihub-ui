@@ -3,6 +3,7 @@ import type { Key, PackageKey, VersionKey } from '@netcracker/qubership-apihub-u
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { requestJson, STUB_API_V1 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useCallback } from 'react'
 import { generatePath } from 'react-router-dom'
 import type { AiEnhancementStatus, AiEnhancementStatusDto } from '../types/enhancing-status'
 import { AiEnhancementStatuses } from '../types/enhancing-status'
@@ -23,7 +24,7 @@ export function useAiEnhancementStatus(
   docVersion: string | undefined,
   documentSlug: string | undefined,
 ): AiEnhancementStatusQueryState {
-  const refetch = useRefetchAiEnhancementStatus()
+  const refetch = useRefreshAiEnhancementStatus()
 
   const docPackageKey = docPackageId ? encodeURIComponent(docPackageId) : undefined
   const docVersionKey = docVersion ? encodeURIComponent(docVersion) : undefined
@@ -62,21 +63,14 @@ function getAiEnhancementStatus(docPackageKey: string, docVersionKey: string, do
   )
 }
 
-export function useInvalidateAiEnhancementStatus(): () => Promise<void> {
+export function useRefreshAiEnhancementStatus(): RefetchAiEnhancementStatus {
   const queryClient = useQueryClient()
-  return (): Promise<void> => (
-    queryClient.invalidateQueries({ queryKey: [QUERY_KEY_AI_ENHANCEMENT_STATUS] })
-  )
-}
-
-export function useRefetchAiEnhancementStatus(): RefetchAiEnhancementStatus {
-  const queryClient = useQueryClient()
-  return async (packageId: PackageKey, version: VersionKey, slug: Key): Promise<void> => {
+  return useCallback(async (packageId: PackageKey, version: VersionKey, slug: Key): Promise<void> => {
     const packageKey = encodeURIComponent(packageId ?? '')
     const versionKey = encodeURIComponent(version ?? '')
     const slugKey = encodeURIComponent(slug ?? '')
     await queryClient.refetchQueries({
       queryKey: [QUERY_KEY_AI_ENHANCEMENT_STATUS, packageKey, versionKey, slugKey],
     })
-  }
+  }, [queryClient])
 }

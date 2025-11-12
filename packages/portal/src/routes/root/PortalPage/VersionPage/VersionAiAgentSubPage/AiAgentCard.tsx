@@ -3,7 +3,7 @@ import { JSON_FILE_FORMAT, YAML_FILE_FORMAT } from '@apihub/entities/file-format
 import { useEventBus } from '@apihub/routes/EventBusProvider'
 import { useNavigation } from '@apihub/routes/NavigationProvider'
 import { LoadingButton } from '@mui/lab'
-import { Box, Button, Link, Typography } from '@mui/material'
+import { Box, Link, Typography } from '@mui/material'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
 import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
@@ -24,20 +24,20 @@ import { usePublishedDocumentRaw } from '../usePublishedDocumentRaw'
 import { AiHandledDocumentSelector } from './AiValidatedDocumentSelector'
 import { AiValidationResultsTable } from './AiValidationResultsTable'
 import { UxSummaryTable } from './UxSummaryTable'
-import { useAiDocumentIssues } from './api/useAiDocumentIssues'
-import { useAiDocumentScoring } from './api/useAiDocumentScoring'
+import { useAiDocumentIssues, useRefreshAiDocumentIssues } from './api/useAiDocumentIssues'
+import { useAiDocumentScoring, useRefreshAiDocumentScoring } from './api/useAiDocumentScoring'
 import { useAiDocumentScoringStatus } from './api/useAiDocumentScoringStatus'
 import { useAiEnhanceDocument } from './api/useAiEnhanceDocument'
 import { useAiEnhancedDocumentRawContent } from './api/useAiEnhancedDocumentRawContent'
 import { useAiEnhancedDocumentScoring } from './api/useAiEnhancedDocumentScoring'
 import { useAiEnhancementStatus } from './api/useAiEnhancementStatus'
+import { useCalculateAiDocumentScoring } from './api/useCalculateAiDocumentScoring'
 import { useRevertChangeInEnhancedDocument } from './api/useRevertChangeInEnhancedDocument'
 import { AiScoringCalculationStatuses } from './types/document-scoring-calculation-status'
 import { AiEnhancementStatuses } from './types/enhancing-status'
 import { transformAiDocumentIssuesToCsvContent, transformAiDocumentIssuesToGridTemplateRows, transformScoringToGridTemplateRows } from './utils/transformers'
 import { usePollingForAiEnhancementReadiness } from './utils/usePollingForAiEnhancementReadiness'
 import { usePollingForAiScoringReadiness } from './utils/usePollingForAiScoringReadiness'
-import { useCalculateAiDocumentScoring } from './api/useCalculateAiDocumentScoring'
 
 const MONACO_EDITOR_FORMATS: readonly OriginalDocumentFileFormat[] = [JSON_FILE_FORMAT, YAML_FILE_FORMAT]
 
@@ -97,6 +97,15 @@ export const AiAgentCard: FC = memo(() => {
     isLoading: loadingDocumentScoringStatus,
     refetch: refetchDocumentScoringStatus,
   } = useAiDocumentScoringStatus(docPackageKey, docPackageVersion)
+  const refreshAiDocumentScoring = useRefreshAiDocumentScoring()
+  const refreshAiDocumentIssues = useRefreshAiDocumentIssues()
+  const refreshDataOnScoringSucceed = useCallback(() => {
+    if (!docPackageKey || !docPackageVersion || !selectedDocument) {
+      return
+    }
+    refreshAiDocumentScoring(docPackageKey, docPackageVersion, selectedDocument.slug)
+    refreshAiDocumentIssues(docPackageKey, docPackageVersion, selectedDocument.slug)
+  }, [docPackageKey, docPackageVersion, refreshAiDocumentIssues, refreshAiDocumentScoring, selectedDocument])
   usePollingForAiScoringReadiness(
     documentScoringStatus?.status ?? AiScoringCalculationStatuses.NOT_STARTED,
     refetchDocumentScoringStatus,
@@ -104,6 +113,7 @@ export const AiAgentCard: FC = memo(() => {
       packageId: docPackageKey,
       version: docPackageVersion,
     },
+    refreshDataOnScoringSucceed,
   )
 
   const onFixAllButtonClick = useCallback(() => {

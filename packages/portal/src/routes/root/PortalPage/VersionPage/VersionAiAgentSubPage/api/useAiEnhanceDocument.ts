@@ -4,7 +4,7 @@ import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/ali
 import { requestVoid, STUB_API_V1 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { useMutation } from '@tanstack/react-query'
 import { generatePath } from 'react-router-dom'
-import { useInvalidateAiEnhancementStatus } from './useAiEnhancementStatus'
+import { useRefreshAiEnhancementStatus } from './useAiEnhancementStatus'
 
 type EnhanceDocumentCallbackOptions = {
   packageId: PackageKey
@@ -15,16 +15,16 @@ type EnhanceDocumentCallbackOptions = {
 type EnhanceDocumentCallback = (options: EnhanceDocumentCallbackOptions) => void
 
 export function useAiEnhanceDocument(): [EnhanceDocumentCallback, IsLoading, Error | null] {
-  const invalidateAiEnhancementStatus = useInvalidateAiEnhancementStatus()
+  const refreshAiEnhancementStatus = useRefreshAiEnhancementStatus()
 
   const { mutate, isLoading, error } = useMutation<void, Error, EnhanceDocumentCallbackOptions>({
     mutationFn: options => enhanceDocument(options),
-    onSuccess: async () => {
-      await invalidateAiEnhancementStatus()
+    onSuccess: async (_, options) => {
+      await refreshAiEnhancementStatus(options.packageId, options.version, options.slug)
     },
-    onError: async (error) => {
+    onError: async (error, options) => {
       console.error(error)
-      await invalidateAiEnhancementStatus()
+      await refreshAiEnhancementStatus(options.packageId, options.version, options.slug)
     },
   })
 
@@ -33,8 +33,20 @@ export function useAiEnhanceDocument(): [EnhanceDocumentCallback, IsLoading, Err
 
 function enhanceDocument(options: EnhanceDocumentCallbackOptions): Promise<void> {
   const { packageId, version, slug } = options
+
+  const packageKey = encodeURIComponent(packageId ?? '')
+  const versionKey = encodeURIComponent(version ?? '')
+  const documentKey = encodeURIComponent(slug ?? '')
+
   const endpointPattern = '/packages/:packageId/versions/:version/enhancedFiles/:slug'
-  const endpoint = generatePath(endpointPattern, { packageId, version, slug })
+  const endpoint = generatePath(
+    endpointPattern, 
+    { 
+      packageId: packageKey, 
+      version: versionKey, 
+      slug: documentKey,
+    },
+  )
   return requestVoid(
     endpoint,
     { method: 'POST' },
