@@ -32,10 +32,11 @@ import { useAiEnhancedDocumentRawContent } from './api/useAiEnhancedDocumentRawC
 import { useAiEnhancedDocumentScoring } from './api/useAiEnhancedDocumentScoring'
 import { useAiEnhancementStatus } from './api/useAiEnhancementStatus'
 import { useCalculateAiDocumentScoring } from './api/useCalculateAiDocumentScoring'
+import { useExportAllProblems } from './api/useExportAllProblems'
 import { useRevertChangeInEnhancedDocument } from './api/useRevertChangeInEnhancedDocument'
 import { AiScoringCalculationStatuses } from './types/document-scoring-calculation-status'
 import { AiEnhancementStatuses } from './types/enhancing-status'
-import { transformAiDocumentIssuesToCsvContent, transformAiDocumentIssuesToGridTemplateRows, transformScoringToGridTemplateRows } from './utils/transformers'
+import { transformAiDocumentIssuesToGridTemplateRows, transformScoringToGridTemplateRows } from './utils/transformers'
 import { usePollingForAiEnhancementReadiness } from './utils/usePollingForAiEnhancementReadiness'
 import { usePollingForAiScoringReadiness } from './utils/usePollingForAiScoringReadiness'
 
@@ -210,15 +211,16 @@ export const AiAgentCard: FC = memo(() => {
     fileDownload(transformedEnhancedDocumentContent, fileName)
   }, [transformedEnhancedDocumentContent, selectedDocument, selectedFormat])
 
+  const { exportAllProblems, isExportingAllProblems } = useExportAllProblems()
   const onDownloadAiIssuesButtonClick = useCallback(() => {
-    if (!originalDocumentIssues.length || !selectedDocument) {
+    if (!selectedDocument) {
       return
     }
-
-    const csvContent = transformAiDocumentIssuesToCsvContent(originalDocumentIssues)
-
-    fileDownload(csvContent, `${selectedDocument.slug}-problems.csv`)
-  }, [originalDocumentIssues, selectedDocument])
+    exportAllProblems({
+      packageId: docPackageKey,
+      versionId: docPackageVersion,
+    })
+  }, [selectedDocument, docPackageKey, docPackageVersion, exportAllProblems])
 
   if (isDashboard) {
     return (
@@ -368,7 +370,7 @@ export const AiAgentCard: FC = memo(() => {
                   }
                   gridTemplateRows={enhancements}
                 />
-                {enhancements && !loadingEnhancements && (
+                {enhancements?.length > 0 && !loadingEnhancements && (
                   <LoadingButton
                     loading={enhancementStatus === AiEnhancementStatuses.PROCESSING}
                     onClick={onFixAllButtonClick}
@@ -413,16 +415,16 @@ export const AiAgentCard: FC = memo(() => {
                 <Typography variant='subtitle1' fontWeight='bold' fontSize={15}>
                   Problems
                 </Typography>
-                <ButtonWithHint
+                <LoadingButton
                   variant='outlined'
                   color='secondary'
                   size='small'
                   onClick={onDownloadAiIssuesButtonClick}
-                  title='Export to CSV'
-                  hint='Export found problems table to a CSV file'
-                  tooltipMaxWidth='unset'
-                  data-testid='ExportToCsvButton'
-                />
+                  loading={isExportingAllProblems}
+                  data-testid='ExportAllProblemsButton'
+                >
+                  Export all problems
+                </LoadingButton>
               </Box>
               <Box overflow='auto' flexGrow={1} minHeight={0}>
                 <AiValidationResultsTable
