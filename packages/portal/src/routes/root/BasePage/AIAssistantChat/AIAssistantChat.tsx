@@ -83,11 +83,11 @@ export const AIAssistantChat: FC = memo(() => {
     setIsLoading(true)
 
     // Add user message
-    setSessions(prev => prev.map(session =>
+    setSessions(prev => prev.map(session => (
       session.id === currentSessionId
         ? { ...session, messages: [...session.messages, userMessage] }
         : session
-    ))
+    )))
 
     try {
       // Create temporary assistant message for streaming
@@ -99,11 +99,11 @@ export const AIAssistantChat: FC = memo(() => {
       }
 
       // Add empty assistant message for streaming
-      setSessions(prev => prev.map(session =>
+      setSessions(prev => prev.map(session => (
         session.id === currentSessionId
           ? { ...session, messages: [...session.messages, tempAssistantMessage] }
           : session
-      ))
+      )))
 
       const response = await fetch('/api/v1/ai-chat', {
         method: 'POST',
@@ -124,7 +124,7 @@ export const AIAssistantChat: FC = memo(() => {
       }
 
       const contentType = response.headers.get('content-type') || ''
-      
+
       // Check if response is streaming (text/event-stream or application/json with chunks)
       if (contentType.includes('text/event-stream') || contentType.includes('application/x-ndjson')) {
         // Handle streaming
@@ -142,26 +142,26 @@ export const AIAssistantChat: FC = memo(() => {
 
             for (const line of lines) {
               if (line.trim() === '') continue
-              
+
               try {
                 // Expect ChatStreamChunk format: { delta, done, usage? }
                 const data = JSON.parse(line.replace(/^data: /, ''))
-                
+
                 if (data.delta) {
                   accumulatedContent += data.delta
                   // Update message as chunks arrive
-                  setSessions(prev => prev.map(session =>
+                  setSessions(prev => prev.map(session => (
                     session.id === currentSessionId
                       ? {
-                          ...session,
-                          messages: session.messages.map(msg =>
-                            msg.id === assistantMessageId
-                              ? { ...msg, content: accumulatedContent }
-                              : msg
-                          ),
-                        }
+                        ...session,
+                        messages: session.messages.map(msg => (
+                          msg.id === assistantMessageId
+                            ? { ...msg, content: accumulatedContent }
+                            : msg
+                        )),
+                      }
                       : session
-                  ))
+                  )))
                 }
 
                 if (data.done) {
@@ -176,49 +176,49 @@ export const AIAssistantChat: FC = memo(() => {
         }
 
         // Final message update
-        setSessions(prev => prev.map(session =>
+        setSessions(prev => prev.map(session => (
           session.id === currentSessionId
             ? {
-                ...session,
-                messages: session.messages.map(msg =>
-                  msg.id === assistantMessageId
-                    ? { ...msg, content: accumulatedContent || 'Failed to get response' }
-                    : msg
-                ),
-              }
+              ...session,
+              messages: session.messages.map(msg => (
+                msg.id === assistantMessageId
+                  ? { ...msg, content: accumulatedContent || 'Failed to get response' }
+                  : msg
+              )),
+            }
             : session
-        ))
+        )))
       } else {
         // Regular JSON response (ChatResponse)
         const data = await response.json()
         const finalContent = data.message?.content || 'Failed to get response'
 
-        setSessions(prev => prev.map(session =>
+        setSessions(prev => prev.map(session => (
           session.id === currentSessionId
             ? {
-                ...session,
-                messages: session.messages.map(msg =>
-                  msg.id === assistantMessageId
-                    ? { ...msg, content: finalContent }
-                    : msg
-                ),
-              }
+              ...session,
+              messages: session.messages.map(msg => (
+                msg.id === assistantMessageId
+                  ? { ...msg, content: finalContent }
+                  : msg
+              )),
+            }
             : session
-        ))
+        )))
       }
 
       // Update session title if this is the first message
       setSessions(prev => {
         const session = prev.find(s => s.id === currentSessionId)
         const finalMessage = session?.messages.find(m => m.id === assistantMessageId)
-        
+
         if (currentSession.messages.length === 0 && finalMessage?.content) {
           const title = finalMessage.content.slice(0, 30) + (finalMessage.content.length > 30 ? '...' : '')
-          return prev.map(s =>
+          return prev.map(s => (
             s.id === currentSessionId
               ? { ...s, title }
               : s
-          )
+          ))
         }
         return prev
       })
@@ -229,11 +229,11 @@ export const AIAssistantChat: FC = memo(() => {
         role: 'assistant',
         content: 'An error occurred while sending the message. Please try again.',
       }
-      setSessions(prev => prev.map(session =>
+      setSessions(prev => prev.map(session => (
         session.id === currentSessionId
           ? { ...session, messages: [...session.messages, errorMessage] }
           : session
-      ))
+      )))
     } finally {
       setIsLoading(false)
     }
@@ -343,195 +343,195 @@ export const AIAssistantChat: FC = memo(() => {
           }}
           data-testid="AIAssistantChat"
         >
-        {/* Header */}
-        <Box
-          sx={{
-            p: 2,
-            borderBottom: 1,
-            borderColor: 'divider',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <SmartToyIcon color="primary" />
-            <Typography variant="h6">APIHUB AI Assistant</Typography>
-          </Box>
-          <Box sx={{ display: 'flex', gap: 0.5 }}>
-            <IconButton
-              size="small"
-              onClick={handleNewSession}
-              title="New Chat"
-              data-testid="AIAssistantChatNewButton"
-            >
-              <AddIcon />
-            </IconButton>
-            <IconButton
-              size="small"
-              onClick={() => setOpen(false)}
-              data-testid="AIAssistantChatCloseButton"
-            >
-              <CloseIcon />
-            </IconButton>
-          </Box>
-        </Box>
-
-        {/* Sessions List */}
-        {sessions.length > 1 && (
-          <>
-            <Box
-              sx={{
-                p: 1,
-                borderBottom: 1,
-                borderColor: 'divider',
-                overflowX: 'auto',
-                display: 'flex',
-                gap: 0.5,
-              }}
-            >
-              {sessions.map(session => (
-                <Button
-                  key={session.id}
-                  size="small"
-                  variant={session.id === currentSessionId ? 'contained' : 'outlined'}
-                  onClick={() => handleSelectSession(session.id)}
-                  sx={{
-                    minWidth: 'auto',
-                    px: 1.5,
-                    textTransform: 'none',
-                    fontSize: '0.75rem',
-                  }}
-                >
-                  {session.title}
-                </Button>
-              ))}
+          {/* Header */}
+          <Box
+            sx={{
+              p: 2,
+              borderBottom: 1,
+              borderColor: 'divider',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <SmartToyIcon color="primary" />
+              <Typography variant="h6">APIHUB AI Assistant</Typography>
             </Box>
-          </>
-        )}
-
-        {/* Messages */}
-        <Box
-          sx={{
-            flex: 1,
-            overflowY: 'auto',
-            p: 2,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 2,
-          }}
-        >
-          {currentSession.messages.length === 0 && (
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: '100%',
-                textAlign: 'center',
-                color: 'text.secondary',
-                gap: 1,
-              }}
-            >
-              <SmartToyIcon sx={{ fontSize: 48, opacity: 0.5 }} />
-              <Typography variant="body2">
-                Ask a question and I'll help you with API Hub
-              </Typography>
-              <Typography variant="caption" sx={{ mt: 1 }}>
-                Press Ctrl+Enter to send
-              </Typography>
+            <Box sx={{ display: 'flex', gap: 0.5 }}>
+              <IconButton
+                size="small"
+                onClick={handleNewSession}
+                title="New Chat"
+                data-testid="AIAssistantChatNewButton"
+              >
+                <AddIcon />
+              </IconButton>
+              <IconButton
+                size="small"
+                onClick={() => setOpen(false)}
+                data-testid="AIAssistantChatCloseButton"
+              >
+                <CloseIcon />
+              </IconButton>
             </Box>
+          </Box>
+
+          {/* Sessions List */}
+          {sessions.length > 1 && (
+            <>
+              <Box
+                sx={{
+                  p: 1,
+                  borderBottom: 1,
+                  borderColor: 'divider',
+                  overflowX: 'auto',
+                  display: 'flex',
+                  gap: 0.5,
+                }}
+              >
+                {sessions.map(session => (
+                  <Button
+                    key={session.id}
+                    size="small"
+                    variant={session.id === currentSessionId ? 'contained' : 'outlined'}
+                    onClick={() => handleSelectSession(session.id)}
+                    sx={{
+                      minWidth: 'auto',
+                      px: 1.5,
+                      textTransform: 'none',
+                      fontSize: '0.75rem',
+                    }}
+                  >
+                    {session.title}
+                  </Button>
+                ))}
+              </Box>
+            </>
           )}
-          {currentSession.messages.map((message) => (
-            <Box
-              key={message.id}
-              sx={{
-                display: 'flex',
-                gap: 1,
-                flexDirection: message.role === 'user' ? 'row-reverse' : 'row',
-              }}
-            >
+
+          {/* Messages */}
+          <Box
+            sx={{
+              flex: 1,
+              overflowY: 'auto',
+              p: 2,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2,
+            }}
+          >
+            {currentSession.messages.length === 0 && (
               <Box
                 sx={{
                   display: 'flex',
-                  alignItems: 'flex-start',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  height: '100%',
+                  textAlign: 'center',
+                  color: 'text.secondary',
                   gap: 1,
-                  maxWidth: '80%',
                 }}
               >
-                {message.role === 'assistant' ? (
-                  <SmartToyIcon sx={{ color: 'primary.main', mt: 0.5 }} />
-                ) : (
-                  <PersonIcon sx={{ color: 'text.secondary', mt: 0.5 }} />
-                )}
-                <Paper
-                  elevation={1}
+                <SmartToyIcon sx={{ fontSize: 48, opacity: 0.5 }} />
+                <Typography variant="body2">
+                  Ask a question and I'll help you with API Hub
+                </Typography>
+                <Typography variant="caption" sx={{ mt: 1 }}>
+                  Press Ctrl+Enter to send
+                </Typography>
+              </Box>
+            )}
+            {currentSession.messages.map((message) => (
+              <Box
+                key={message.id}
+                sx={{
+                  display: 'flex',
+                  gap: 1,
+                  flexDirection: message.role === 'user' ? 'row-reverse' : 'row',
+                }}
+              >
+                <Box
                   sx={{
-                    p: message.role === 'assistant' ? 0 : 1.5,
-                    bgcolor: message.role === 'user' ? 'primary.light' : 'transparent',
-                    color: message.role === 'user' ? 'primary.contrastText' : 'text.primary',
-                    boxShadow: message.role === 'assistant' ? 'none' : 1,
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: 1,
+                    maxWidth: '80%',
                   }}
                 >
                   {message.role === 'assistant' ? (
-                    <Box sx={{ p: 1.5 }}>
-                      <ChatMarkdown content={message.content} />
-                    </Box>
+                    <SmartToyIcon sx={{ color: 'primary.main', mt: 0.5 }} />
                   ) : (
-                    <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
-                      {message.content}
-                    </Typography>
+                    <PersonIcon sx={{ color: 'text.secondary', mt: 0.5 }} />
                   )}
+                  <Paper
+                    elevation={1}
+                    sx={{
+                      p: message.role === 'assistant' ? 0 : 1.5,
+                      bgcolor: message.role === 'user' ? 'primary.light' : 'transparent',
+                      color: message.role === 'user' ? 'primary.contrastText' : 'text.primary',
+                      boxShadow: message.role === 'assistant' ? 'none' : 1,
+                    }}
+                  >
+                    {message.role === 'assistant' ? (
+                      <Box sx={{ p: 1.5 }}>
+                        <ChatMarkdown content={message.content} />
+                      </Box>
+                    ) : (
+                      <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
+                        {message.content}
+                      </Typography>
+                    )}
+                  </Paper>
+                </Box>
+              </Box>
+            ))}
+            {isLoading && (
+              <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-start' }}>
+                <SmartToyIcon sx={{ color: 'primary.main', mt: 0.5 }} />
+                <Paper elevation={1} sx={{ p: 1.5, bgcolor: 'grey.100' }}>
+                  <CircularProgress size={16} />
                 </Paper>
               </Box>
-            </Box>
-          ))}
-          {isLoading && (
-            <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-start' }}>
-              <SmartToyIcon sx={{ color: 'primary.main', mt: 0.5 }} />
-              <Paper elevation={1} sx={{ p: 1.5, bgcolor: 'grey.100' }}>
-                <CircularProgress size={16} />
-              </Paper>
-            </Box>
-          )}
-          <div ref={messagesEndRef} />
-        </Box>
+            )}
+            <div ref={messagesEndRef} />
+          </Box>
 
-        {/* Input */}
-        <Box
-          component="form"
-          onSubmit={handleSubmit}
-          sx={{
-            p: 2,
-            borderTop: 1,
-            borderColor: 'divider',
-            display: 'flex',
-            gap: 1,
-          }}
-        >
-          <TextField
-            fullWidth
-            size="small"
-            placeholder="Enter a message... (Ctrl+Enter to send)"
-            value={input}
-            onChange={handleInputChange}
-            onKeyDown={handleKeyDown}
-            disabled={isLoading}
-            multiline
-            maxRows={4}
-            sx={{ flex: 1 }}
-          />
-          <IconButton
-            type="submit"
-            disabled={isLoading || !input.trim()}
-            color="primary"
-            sx={{ alignSelf: 'flex-end' }}
+          {/* Input */}
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            sx={{
+              p: 2,
+              borderTop: 1,
+              borderColor: 'divider',
+              display: 'flex',
+              gap: 1,
+            }}
           >
-            <SendIcon />
-          </IconButton>
+            <TextField
+              fullWidth
+              size="small"
+              placeholder="Enter a message... (Ctrl+Enter to send)"
+              value={input}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+              disabled={isLoading}
+              multiline
+              maxRows={4}
+              sx={{ flex: 1 }}
+            />
+            <IconButton
+              type="submit"
+              disabled={isLoading || !input.trim()}
+              color="primary"
+              sx={{ alignSelf: 'flex-end' }}
+            >
+              <SendIcon />
+            </IconButton>
+          </Box>
         </Box>
-      </Box>
       </Resizable>
     </Drawer>
   )

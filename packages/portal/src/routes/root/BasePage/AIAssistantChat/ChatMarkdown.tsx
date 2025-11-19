@@ -61,7 +61,7 @@ export const ChatMarkdown: FC<ChatMarkdownProps> = memo<ChatMarkdownProps>(({ co
         const filename = metaParts.slice(1).join(':')
         if (filename.includes('.')) {
           return {
-            filename,
+            filename: filename,
             extension: filename.split('.').pop() || 'txt',
           }
         }
@@ -72,7 +72,7 @@ export const ChatMarkdown: FC<ChatMarkdownProps> = memo<ChatMarkdownProps>(({ co
         }
       }
     }
-    
+
     // Check patterns in code itself (comments with file paths)
     const fileCommentPattern = /^\/\/\s*File:\s*(.+)$/m
     const fileCommentMatch = code.match(fileCommentPattern)
@@ -83,7 +83,7 @@ export const ChatMarkdown: FC<ChatMarkdownProps> = memo<ChatMarkdownProps>(({ co
         extension: filename.split('.').pop() || 'txt',
       }
     }
-    
+
     // If language is specified, use it as extension for file generation
     if (language && code.length > 50) {
       // Only for sufficiently large code blocks
@@ -92,7 +92,7 @@ export const ChatMarkdown: FC<ChatMarkdownProps> = memo<ChatMarkdownProps>(({ co
         extension: language,
       }
     }
-    
+
     return null
   }, [])
 
