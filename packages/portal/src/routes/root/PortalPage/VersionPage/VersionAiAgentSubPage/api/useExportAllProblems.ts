@@ -53,11 +53,10 @@ async function exportAllProblems(options: Options): Promise<void> {
   )
 
   const blob = await response.blob()
-  const filename = response.headers
+  const [filename] = response.headers
     .get('content-disposition')!
     .split('filename=')[1]
-    .split(';')[0]
-    .slice(1, -1)
+    .split(';')
 
   fileDownload(blob, filename)
 }
