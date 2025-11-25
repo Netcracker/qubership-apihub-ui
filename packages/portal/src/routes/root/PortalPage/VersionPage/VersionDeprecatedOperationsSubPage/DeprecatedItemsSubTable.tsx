@@ -108,6 +108,7 @@ export const DeprecatedItemsSubTable: FC<SubTableProps> = memo<SubTableProps>((
       {getRowModel().rows.map(row => {
         const { deprecatedInfo } = row.original
         const hasDeprecatedInfo = !!deprecatedInfo
+        const isDashboard = packageRef?.refId !== packageKey
 
         const cellsToRender = row.getVisibleCells().map((cell) => (
           <TableCell
@@ -115,8 +116,8 @@ export const DeprecatedItemsSubTable: FC<SubTableProps> = memo<SubTableProps>((
             colSpan={
               cell.column.id === DESCRIPTION_COLUMN_ID
                 ? hasDeprecatedInfo
-                  ? 4
-                  : 5
+                  ? isDashboard ? 5 : 4
+                  : 6
                 : undefined
             }
             data-testid={`Cell-${cell.column.id}`}
