@@ -64,11 +64,10 @@ import { BreadcrumbsDataContext } from '../ComparedPackagesBreadcrumbsProvider'
 import type { InternalDocumentOptions } from '../ComparisonToolbar'
 import { ComparisonToolbar } from '../ComparisonToolbar'
 import { SelectedOperationTagsProvider } from '../SelectedOperationTagsProvider'
-import { ShouldAutoExpandTagsProvider, useSetShouldAutoExpandTagsContext } from '../ShouldAutoExpandTagsProvider'
+import { ShouldAutoExpandTagsProvider } from '../ShouldAutoExpandTagsProvider'
 import { VersionsComparisonGlobalParamsContext } from '../VersionsComparisonGlobalParams'
 import { VERSION_SWAPPER_HEIGHT } from '../shared-styles'
 import { useDocumentSearchParam } from '../useDocumentSearchParam'
-import { useNavigateToOperation } from '../useNavigateToOperation'
 import { useOperation } from '../useOperation'
 import { useOperationSearchParam } from '../useOperationSearchParam'
 import { OperationsSidebarOnComparison } from './OperationsSidebarOnComparison'
@@ -246,11 +245,6 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
     isLoading: isOriginOperationInitialLoading || isChangedOperationInitialLoading,
   }
 
-  const setShouldAutoExpand = useSetShouldAutoExpandTagsContext()
-  const handleOperationClick = useNavigateToOperation(
-    changedPackageKey!, changedVersionKey!, apiType as ApiType, setShouldAutoExpand,
-  )
-
   // TODO 31.08.23 // Optimize it!
   // TODO 01.09.23 // Extract to hook? Can we optimize it and reuse some parameters?
   const versionsComparisonParams = useComparisonParams()
@@ -285,7 +279,6 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
                     apiType={apiType as ApiType}
                     operationsGroupedByTag={filteredOperationsGroupedByTags}
                     areChangesLoading={arePackageChangesLoading}
-                    onOperationClick={handleOperationClick}
                   />
                 }
                 body={
