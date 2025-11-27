@@ -127,14 +127,15 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
 
   const [searchValue, setSearchValue] = useState('')
 
-  const [compareGroups, isComparisonLoading] = useCompareGroups({
+  const compareGroupsOptions = useMemo(() => ({
     changedPackageKey: changedPackageKey,
     changedVersionKey: changedVersionKey,
     originPackageKey: originPackageKey,
     originVersionKey: originVersionKey,
     currentGroup: group,
     previousGroup: previousGroup,
-  })
+  }), [changedPackageKey, changedVersionKey, group, originPackageKey, originVersionKey, previousGroup])
+  const [compareGroups, isComparisonLoading] = useCompareGroups(compareGroupsOptions)
 
   const operationAction = useMemo((): ActionType | undefined => {
     const compareGroupsData = compareGroups?.data
@@ -170,14 +171,15 @@ export const DifferentOperationGroupsComparisonPage: FC = memo(() => {
     return targetChange?.action ?? DiffAction.rename
   }, [compareGroups?.data, operationKey, operationSearchParam])
 
-  const [changesSummary] = useChangesSummaryContext({
+  const compareVersionsOptions = useMemo(() => ({
     changedPackageKey: changedPackageKey,
     changedVersionKey: changedVersionKey,
     originPackageKey: originPackageKey,
     originVersionKey: originVersionKey,
     currentGroup: group,
     previousGroup: previousGroup,
-  })
+  }), [changedPackageKey, changedVersionKey, group, originPackageKey, originVersionKey, previousGroup])
+  const [changesSummary] = useChangesSummaryContext(compareVersionsOptions)
 
   const refComparisonSummary: RefComparisonSummary | undefined = useMemo(() => {
     if (!isPackageFromDashboard) {

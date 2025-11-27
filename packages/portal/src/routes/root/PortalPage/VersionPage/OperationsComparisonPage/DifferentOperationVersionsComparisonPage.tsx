@@ -110,12 +110,7 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
   }), [changedPackageKey, changedVersionKey, originPackageKey, originVersionKey])
   useCompareVersions(compareVersionsOptions)
 
-  const [changesSummary, isContextValid] = useChangesSummaryContext({
-    changedPackageKey: changedPackageKey,
-    changedVersionKey: changedVersionKey,
-    originPackageKey: originPackageKey,
-    originVersionKey: originVersionKey,
-  })
+  const [changesSummary, isContextValid] = useChangesSummaryContext(compareVersionsOptions)
   const [packageChangelog, arePackageChangesLoading, fetchNextPage, isNextPageFetching, hasNextPage] = usePagedVersionChangelog({
     packageKey: changedPackageKey!,
     versionKey: changedVersionKey!,

@@ -114,12 +114,13 @@ export const VersionCompareContent: FC = memo(() => {
     ? showCompareRevisionsDialog
     : showCompareVersionsDialog
 
-  const [changesSummary, isContextValid] = useChangesSummaryContext({
+  const compareVersionsOptions = useMemo(() => ({
     changedPackageKey: changedPackageKey,
     changedVersionKey: changedVersionKey,
     originPackageKey: originPackageKey,
     originVersionKey: originVersionKey,
-  })
+  }), [changedPackageKey, changedVersionKey, originPackageKey, originVersionKey])
+  const [changesSummary, isContextValid] = useChangesSummaryContext(compareVersionsOptions)
   const breadcrumbsData = useBreadcrumbsData()
 
   const [packageChangelog, isLoading, fetchNextPage, isNextPageFetching, hasNextPage] = usePagedDetailedVersionChangelog({
