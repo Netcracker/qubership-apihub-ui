@@ -102,12 +102,13 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
   const { isPackageFromDashboard, refPackageKey } = useIsPackageFromDashboard()
   const [searchValue = '', setSearchValue] = useTextSearchParam()
 
-  useCompareVersions({
+  const compareVersionsOptions = useMemo(() => ({
     originPackageKey: originPackageKey,
     originVersionKey: originVersionKey,
     changedPackageKey: changedPackageKey,
     changedVersionKey: changedVersionKey,
-  })
+  }), [changedPackageKey, changedVersionKey, originPackageKey, originVersionKey])
+  useCompareVersions(compareVersionsOptions)
 
   const [changesSummary, isContextValid] = useChangesSummaryContext({
     changedPackageKey: changedPackageKey,
