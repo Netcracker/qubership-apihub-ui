@@ -239,11 +239,11 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
     }
   }, [apiType, areChangesAndOperationsLoading, changedPackageKey, changedVersionKey, filters, firstOperationPair, packageChangesHaveCurrentOperation, isPackageFromDashboard, navigate, originPackageKey, originVersionKey, selectedDocumentSlug, hasNextPage])
 
-  const comparedOperationsPair: OptionalOperationPair<OperationData> = {
+  const comparedOperationsPair: OptionalOperationPair<OperationData> = useMemo(() => ({
     previousOperation: originOperation,
     currentOperation: changedOperation,
     isLoading: isOriginOperationInitialLoading || isChangedOperationInitialLoading,
-  }
+  }), [originOperation, changedOperation, isOriginOperationInitialLoading, isChangedOperationInitialLoading])
 
   // TODO 31.08.23 // Optimize it!
   // TODO 01.09.23 // Extract to hook? Can we optimize it and reuse some parameters?

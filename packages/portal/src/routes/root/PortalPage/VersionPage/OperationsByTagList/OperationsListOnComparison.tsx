@@ -96,12 +96,19 @@ export const OperationsListOnComparison: FC<OperationsListOnComparisonProps> = m
   const handleListItemClick = useCallback(
     (operationPair: OperationPair) => {
       setShouldAutoExpand(false)
-      if (operationPair.currentOperation?.operationKey && operationPair.previousOperation?.operationKey) {
-        searchParams[OPERATION_SEARCH_PARAM] = { value: operationPair.previousOperation.operationKey }
-      }
       const operationKey =
         operationPair.currentOperation?.operationKey ??
         operationPair.previousOperation!.operationKey
+
+      // Create a new object instead of mutating searchParams
+      const updatedSearchParams = {
+        ...searchParams,
+        ...(operationPair.currentOperation?.operationKey && operationPair.previousOperation?.operationKey
+          ? { [OPERATION_SEARCH_PARAM]: { value: operationPair.previousOperation.operationKey } }
+          : {}
+        ),
+      }
+
       group
         ? navigateToGroupsOperationsComparison({
           packageKey: changedPackageKey!,
@@ -109,14 +116,14 @@ export const OperationsListOnComparison: FC<OperationsListOnComparisonProps> = m
           groupKey: group!,
           apiType: apiType as ApiType,
           operationKey: operationKey,
-          search: searchParams,
+          search: updatedSearchParams,
         })
         : navigateToOperationsComparison({
           packageKey: changedPackageKey!,
           versionKey: changedVersionKey!,
           apiType: apiType as ApiType,
           operationKey: operationKey,
-          search: searchParams,
+          search: updatedSearchParams,
         })
     },
     [apiType, changedPackageKey, changedVersionKey, group, navigateToGroupsOperationsComparison, navigateToOperationsComparison, searchParams, setShouldAutoExpand],

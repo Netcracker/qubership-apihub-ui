@@ -39,6 +39,7 @@ import { useOperation } from '@apihub/routes/root/PortalPage/VersionPage/useOper
 import type { OperationsApiType } from '@netcracker/qubership-apihub-api-processor'
 import { useParams } from 'react-router-dom'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { useMemo } from 'react'
 
 export function getVersionWithRevisionOptions(obj?: ComparisonObject | null, enabled?: boolean): [Key | undefined, Key | undefined, boolean | undefined] {
   return [
@@ -108,35 +109,48 @@ export function useCompareBreadcrumbs(
   const { data: originOperation } = useOperation(getOperationOptions(obj1, apiType, areOperationsDifferent))
   const { data: changedOperation } = useOperation(getOperationOptions(obj2, apiType, areOperationsDifferent))
 
-  if (!obj1 || !obj2 || !originPackageOrDashboard || !changedPackageOrDashboard) {
-    return null
-  }
+  return useMemo(() => {
+    if (!obj1 || !obj2 || !originPackageOrDashboard || !changedPackageOrDashboard) {
+      return null
+    }
 
-  const originBreadcrumbs = originPackageOrDashboard?.parents?.map(getPackageBreadcrumb) ?? []
-  const changedBreadcrumbs = changedPackageOrDashboard?.parents?.map(getPackageBreadcrumb) ?? []
+    const originBreadcrumbs = originPackageOrDashboard?.parents?.map(getPackageBreadcrumb) ?? []
+    const changedBreadcrumbs = changedPackageOrDashboard?.parents?.map(getPackageBreadcrumb) ?? []
 
-  originBreadcrumbs.push(getPackageBreadcrumb(originPackageOrDashboard))
-  changedBreadcrumbs.push(getPackageBreadcrumb(changedPackageOrDashboard))
+    originBreadcrumbs.push(getPackageBreadcrumb(originPackageOrDashboard))
+    changedBreadcrumbs.push(getPackageBreadcrumb(changedPackageOrDashboard))
 
-  originBreadcrumbs.push(getVersionBreadcrumb(originPackageOrDashboard, obj1.version))
-  changedBreadcrumbs.push(getVersionBreadcrumb(changedPackageOrDashboard, obj2.version))
+    originBreadcrumbs.push(getVersionBreadcrumb(originPackageOrDashboard, obj1.version))
+    changedBreadcrumbs.push(getVersionBreadcrumb(changedPackageOrDashboard, obj2.version))
 
-  if (isRevisionCompare) {
-    originBreadcrumbs.push(getRevisionBreadcrumb(obj1.revision, originIsLatestRevision))
-    changedBreadcrumbs.push(getRevisionBreadcrumb(obj2.revision, changedIsLatestRevision))
-  }
+    if (isRevisionCompare) {
+      originBreadcrumbs.push(getRevisionBreadcrumb(obj1.revision, originIsLatestRevision))
+      changedBreadcrumbs.push(getRevisionBreadcrumb(obj2.revision, changedIsLatestRevision))
+    }
 
-  if (originOperation && changedOperation) {
-    originBreadcrumbs.push(getOperationBreadcrumb(originOperation))
-    changedBreadcrumbs.push(getOperationBreadcrumb(changedOperation))
-  }
+    if (originOperation && changedOperation) {
+      originBreadcrumbs.push(getOperationBreadcrumb(originOperation))
+      changedBreadcrumbs.push(getOperationBreadcrumb(changedOperation))
+    }
 
-  if (isOperationsGroupCompare) {
-    originBreadcrumbs.push(getGroupBreadcrumb(obj1.group, originPackageOrDashboard))
-    changedBreadcrumbs.push(getGroupBreadcrumb(obj2.group, changedPackageOrDashboard))
-  }
+    if (isOperationsGroupCompare) {
+      originBreadcrumbs.push(getGroupBreadcrumb(obj1.group, originPackageOrDashboard))
+      changedBreadcrumbs.push(getGroupBreadcrumb(obj2.group, changedPackageOrDashboard))
+    }
 
-  return splitBreadcrumbs(originBreadcrumbs, changedBreadcrumbs)
+    return splitBreadcrumbs(originBreadcrumbs, changedBreadcrumbs)
+  }, [
+    obj1,
+    obj2,
+    originPackageOrDashboard,
+    changedPackageOrDashboard,
+    isRevisionCompare,
+    originIsLatestRevision,
+    changedIsLatestRevision,
+    originOperation,
+    changedOperation,
+    isOperationsGroupCompare,
+  ])
 }
 
 function splitBreadcrumbs(
