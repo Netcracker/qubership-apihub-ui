@@ -16,21 +16,13 @@
 
 import type { FetchNextPageOptions, InfiniteQueryObserverResult } from '@tanstack/react-query'
 import { useInfiniteQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
+import type { DifferentVersionChanges, VersionChanges, VersionChangesDto } from '../../../entities/version-changelog'
+import { toDiffVersionChanges, toVersionChanges } from '../../../entities/version-changelog'
+import { useResolvedOperationGroupParameters } from '../../../hooks/operation-groups/useResolvedOperationGroupParameters'
+import type { HasNextPage, IsFetchingNextPage, IsLoading } from '../../../utils/aliases'
 import type { VersionChangelogOptions } from './getVersionChangelog'
 import { getVersionChangelog } from './getVersionChangelog'
-import { useMemo } from 'react'
-import type {
-  DifferentVersionChanges,
-  PagedDiffVersionChanges,
-  PagedVersionChanges,
-  VersionChanges,
-  VersionChangesDto,
-} from '../../../entities/version-changelog'
-import { toDiffVersionChanges, toVersionChanges } from '../../../entities/version-changelog'
-import type { HasNextPage, IsFetchingNextPage, IsLoading } from '../../../utils/aliases'
-import {
-  useResolvedOperationGroupParameters,
-} from '../../../hooks/operation-groups/useResolvedOperationGroupParameters'
 
 const VERSION_CHANGELOG = 'version-changelog-query-key'
 

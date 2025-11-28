@@ -45,6 +45,7 @@ import { useIsPackageFromDashboard } from '../../useIsPackageFromDashboard'
 import { useSetShouldAutoExpandTagsContext, useShouldAutoExpandTagsContext } from '../ShouldAutoExpandTagsProvider'
 import { useDocumentSearchParam } from '../useDocumentSearchParam'
 import { OperationListItem } from './OperationListItem'
+import { useSetIsApiDiffResultLoading } from '@apihub/routes/root/ApiDiffResultProvider'
 
 export type OperationsListOnComparisonProps = {
   changedOperationPairs: OperationPair[]
@@ -66,10 +67,11 @@ export const OperationsListOnComparison: FC<OperationsListOnComparisonProps> = m
   const [filters] = useSeverityFiltersSearchParam()
 
   const [selectedElement, setSelectedElement] = useState<string>('')
-  const shouldAutoExpand = useShouldAutoExpandTagsContext()
-  const selectedElementRef = useRefWithAutoScroll(shouldAutoExpand, selectedElement)
-  const setShouldAutoExpand = useSetShouldAutoExpandTagsContext()
   useNavigateToSelectedOperation(setSelectedElement, operationId)
+  const shouldAutoExpand = useShouldAutoExpandTagsContext()
+  const setShouldAutoExpand = useSetShouldAutoExpandTagsContext()
+  const setIsApiDiffResultLoading = useSetIsApiDiffResultLoading()
+  const selectedElementRef = useRefWithAutoScroll(shouldAutoExpand, selectedElement)
 
   const searchParams: OperationsComparisonSearchParams | GroupsOperationsComparisonSearchParams = useMemo(
     () => (
@@ -95,6 +97,9 @@ export const OperationsListOnComparison: FC<OperationsListOnComparisonProps> = m
 
   const handleListItemClick = useCallback(
     (operationPair: OperationPair) => {
+      // Because we need to reset status to default value. For more details, look at comment next to IsApiDiffResultLoadingContext.
+      setIsApiDiffResultLoading(true)
+
       setShouldAutoExpand(false)
       const operationKey =
         operationPair.currentOperation?.operationKey ??
