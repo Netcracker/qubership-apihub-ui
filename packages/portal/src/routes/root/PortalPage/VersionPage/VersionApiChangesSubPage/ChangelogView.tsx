@@ -58,7 +58,14 @@ export const ChangelogView: FC<ChangelogViewProps> = memo<ChangelogViewProps>(pr
   const changes = useOrderedComparisonFiltersSummary({ apiType })
   const [refKey] = useRefSearchParam()
 
-  const [versionChangelog, isLoading, fetchNextPage, isNextPageFetching, hasNextPage] = usePagedVersionChangelog({
+  const {
+    data: versionChangelog,
+    isLoading,
+    fetchNextPage,
+    isFetchingNextPage: isNextPageFetching,
+    hasNextPage,
+    isChangelogReady,
+  } = usePagedVersionChangelog({
     packageKey: packageKey,
     versionKey: versionKey,
     tag: tag,
@@ -72,7 +79,7 @@ export const ChangelogView: FC<ChangelogViewProps> = memo<ChangelogViewProps>(pr
     limit: 100,
     packageIdFilter: refKey,
   })
-  const flatVersionChangelog = useFlatVersionChangelog(versionChangelog)
+  const flatVersionChangelog = useFlatVersionChangelog(versionChangelog, isChangelogReady)
   const { operations: operationsChanges } = flatVersionChangelog
 
   const currentPackage = useCurrentPackage()

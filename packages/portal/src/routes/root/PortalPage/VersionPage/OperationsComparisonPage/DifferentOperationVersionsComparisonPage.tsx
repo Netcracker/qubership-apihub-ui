@@ -111,7 +111,15 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
   useCompareVersions(compareVersionsOptions)
 
   const [changesSummary, isContextValid] = useChangesSummaryContext(compareVersionsOptions)
-  const [packageChangelog, arePackageChangesLoading, fetchNextPage, isNextPageFetching, hasNextPage] = usePagedVersionChangelog({
+  const {
+    data: packageChangelog,
+    isLoading: arePackageChangesLoading,
+    fetchNextPage,
+    isFetchingNextPage:
+    isNextPageFetching,
+    hasNextPage,
+    isChangelogReady,
+  } = usePagedVersionChangelog({
     packageKey: changedPackageKey!,
     versionKey: changedVersionKey!,
     previousVersionPackageKey: originPackageKey,
@@ -124,7 +132,7 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
     page: 1,
     limit: 100,
   })
-  const flatPackageChangelog = useFlatVersionChangelog(packageChangelog)
+  const flatPackageChangelog = useFlatVersionChangelog(packageChangelog, isChangelogReady)
   const packageChanges: ReadonlyArray<OperationChangeBase> = flatPackageChangelog.operations
 
   const internalDocumentOptions: InternalDocumentOptions = useMemo(
@@ -137,8 +145,8 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
   )
 
   const operationsFromPackageChanges = useMemo(
-    () => getOperationPairsFromPackageChanges(packageChanges),
-    [packageChanges],
+    () => (isChangelogReady ? getOperationPairsFromPackageChanges(packageChanges) : []),
+    [packageChanges, isChangelogReady],
   )
 
   useEffect(() => {
@@ -177,8 +185,6 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
     apiType: apiType as ApiType,
   })
 
-  const areChangesAndOperationsLoading = (arePackageChangesLoading || isOriginOperationInitialLoading || isChangedOperationInitialLoading) && !hasNextPage
-
   const filteredPackageChanges = useMemo(
     () => packageChanges.filter(item => filterChangesBySeverity(filters, item.changeSummary)),
     [packageChanges, filters])
@@ -209,31 +215,54 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
     [operationKey, operationsFromPackageChanges, searchValue],
   )
 
-  useEffect(() => {
-    if (firstOperationPair && !packageChangesHaveCurrentOperation && !areChangesAndOperationsLoading) {
-      const firstOperation = firstOperationPair.currentOperation ?? firstOperationPair.previousOperation!
-      const firstOperationId = firstOperation.operationKey
+  useEffect(
+    () => {
+      if (
+        isChangelogReady &&
+        !isOriginOperationInitialLoading && !isChangedOperationInitialLoading &&
+        firstOperationPair && !packageChangesHaveCurrentOperation
+      ) {
+        const firstOperation = firstOperationPair.currentOperation ?? firstOperationPair.previousOperation!
+        const firstOperationId = firstOperation.operationKey
 
-      const newPathName = `/portal/packages/${changedPackageKey}/${changedVersionKey}/compare/${apiType}/${firstOperationId}`
-      const searchParams = optionalSearchParams({
-        [PACKAGE_SEARCH_PARAM]: { value: originPackageKey },
-        [VERSION_SEARCH_PARAM]: { value: originVersionKey },
-        [DOCUMENT_SEARCH_PARAM]: { value: selectedDocumentSlug },
-        [REF_SEARCH_PARAM]: { value: isPackageFromDashboard && firstOperation.packageRef?.key }, // Assumption that we can't compare operations from different packages
-        [FILTERS_SEARCH_PARAM]: { value: filters.join() },
-        [OPERATION_SEARCH_PARAM]: {
-          value:
-            firstOperationPair.currentOperation
-              ? firstOperationPair.previousOperation?.operationKey
-              : undefined,
-        },
-      })
-      navigate({
-        pathname: newPathName,
-        search: `${searchParams}`,
-      })
-    }
-  }, [apiType, areChangesAndOperationsLoading, changedPackageKey, changedVersionKey, filters, firstOperationPair, packageChangesHaveCurrentOperation, isPackageFromDashboard, navigate, originPackageKey, originVersionKey, selectedDocumentSlug, hasNextPage])
+        const newPathName = `/portal/packages/${changedPackageKey}/${changedVersionKey}/compare/${apiType}/${firstOperationId}`
+        const searchParams = optionalSearchParams({
+          [PACKAGE_SEARCH_PARAM]: { value: originPackageKey },
+          [VERSION_SEARCH_PARAM]: { value: originVersionKey },
+          [DOCUMENT_SEARCH_PARAM]: { value: selectedDocumentSlug },
+          [REF_SEARCH_PARAM]: { value: isPackageFromDashboard && firstOperation.packageRef?.key }, // Assumption that we can't compare operations from different packages
+          [FILTERS_SEARCH_PARAM]: { value: filters.join() },
+          [OPERATION_SEARCH_PARAM]: {
+            value:
+              firstOperationPair.currentOperation
+                ? firstOperationPair.previousOperation?.operationKey
+                : undefined,
+          },
+        })
+        navigate({
+          pathname: newPathName,
+          search: `${searchParams}`,
+        })
+      }
+    },
+    [
+      apiType,
+      changedPackageKey,
+      changedVersionKey,
+      filters,
+      firstOperationPair,
+      packageChangesHaveCurrentOperation,
+      isPackageFromDashboard,
+      navigate,
+      originPackageKey,
+      originVersionKey,
+      selectedDocumentSlug,
+      hasNextPage,
+      isChangelogReady,
+      isOriginOperationInitialLoading,
+      isChangedOperationInitialLoading,
+    ],
+  )
 
   const comparedOperationsPair: OptionalOperationPair<OperationData> = useMemo(() => ({
     previousOperation: originOperation,
@@ -274,7 +303,7 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
                     tags={tags}
                     apiType={apiType as ApiType}
                     operationsGroupedByTag={filteredOperationsGroupedByTags}
-                    areChangesLoading={arePackageChangesLoading}
+                    areChangesLoading={!isChangelogReady}
                   />
                 }
                 body={
@@ -283,7 +312,7 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
                     originOperation={originOperation}
                     isOperationExist={packageChangesHaveCurrentOperation}
                     displayMode={COMPARE_SAME_OPERATIONS_MODE}
-                    isLoading={areChangesAndOperationsLoading}
+                    isLoading={isOriginOperationInitialLoading || isChangedOperationInitialLoading || !isChangelogReady}
                     paddingBottom={VERSION_SWAPPER_HEIGHT}
                   />
                 }
