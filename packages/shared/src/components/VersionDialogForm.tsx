@@ -688,7 +688,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
           disabled={isFileReading || publishButtonDisabled || publishFieldsDisabled || warningApiProcessorState}
           data-testid={submitButtonTittle ? `${submitButtonTittle}Button` : 'PublishButton'}
         >
-          {submitButtonTittle ?? 'Publish'}
+          {submitButtonTittle ?? 'Pblish'}
         </LoadingButton>
         <Button
           variant="outlined"

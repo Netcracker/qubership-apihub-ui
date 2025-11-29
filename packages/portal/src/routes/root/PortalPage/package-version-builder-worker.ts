@@ -37,6 +37,7 @@ import { v4 as uuidv4 } from 'uuid'
 import type { BuilderOptions } from './package-version-builder'
 import type { PublishOptions } from './usePublishPackageVersion'
 import { systemConfiguration } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useSystemConfiguration'
+import JSZip from 'jszip'
 
 /*
 For using worker in proxy mode you need to change common apihub-shared import
@@ -121,8 +122,21 @@ const worker: PackageVersionBuilderWorker = {
   },
   publishPackage: async (options): Promise<PublishDetails> => {
     const { packageId, sources } = options
+    console.log('----------->', sources)
+    sources[0].text().then((value => {
+      console.log(value)
+      debugger
+    }))
+    debugger
     const builderId = uuidv4()
     const sourcesZip = sources && await packToZip(sources)
+    const ttt = await JSZip.loadAsync(sourcesZip)
+    ttt.files['bug_ticket_example_incorrect.yaml'].async("string").then(text => {
+      debugger
+      console.log(text)
+
+    })
+    debugger
     const {
       publishId,
       config: buildConfig,
