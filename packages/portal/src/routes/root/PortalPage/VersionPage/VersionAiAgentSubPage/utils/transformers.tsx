@@ -1,7 +1,7 @@
-import { Typography } from '@mui/material'
-import type { AiDocumentScoring } from '../types/document-scoring'
-import type { AiIssue } from '../types/issues'
-import type { GridTemplateRow } from '../UxSummaryTable'
+import {Typography} from '@mui/material'
+import type {AiDocumentScoring} from '../types/document-scoring'
+import type {AiIssue} from '../types/issues'
+import type {GridTemplateRow} from '../UxSummaryTable'
 
 // Section "OriginalScoring" or "Enhanced Scoring"
 
@@ -38,7 +38,7 @@ export function transformScoringToGridTemplateRows(scoring: AiDocumentScoring | 
 export function transformAiDocumentIssuesToGridTemplateRows(aiDocumentIssues: AiIssue[]): GridTemplateRow[] {
   const countByCategory: Map<string, number> = new Map()
   for (const issue of aiDocumentIssues) {
-    const { category } = issue
+    const category = issue.category.toLowerCase()
     if (!countByCategory.has(category)) {
       countByCategory.set(category, 0)
     }
@@ -48,7 +48,7 @@ export function transformAiDocumentIssuesToGridTemplateRows(aiDocumentIssues: Ai
   const sortedCountByCategory: Array<[string, number]> =
     Array.from(countByCategory.entries())
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
+  // .slice(0, 5)
 
   return transformEnhancementsToGridTemplateRows(sortedCountByCategory)
 }
