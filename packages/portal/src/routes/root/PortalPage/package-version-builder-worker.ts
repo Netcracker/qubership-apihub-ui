@@ -37,7 +37,6 @@ import { v4 as uuidv4 } from 'uuid'
 import type { BuilderOptions } from './package-version-builder'
 import type { PublishOptions } from './usePublishPackageVersion'
 import { systemConfiguration } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useSystemConfiguration'
-import JSZip from 'jszip'
 
 /*
 For using worker in proxy mode you need to change common apihub-shared import
