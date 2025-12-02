@@ -222,7 +222,7 @@ export async function startPackageVersionPublication(
   formData.append('clientBuild', 'true')
   formData.append('builderId', builderId)
   sources && formData.append('sources', sources, 'package.zip')
-  console.log('sources', sources)
+
   const publishConfig = {
     ...config,
     sources: undefined,

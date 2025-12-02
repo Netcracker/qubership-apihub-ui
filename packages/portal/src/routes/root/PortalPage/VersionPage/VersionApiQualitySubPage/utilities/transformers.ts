@@ -28,7 +28,7 @@ export function transformRawDocumentByFormat(
     } catch { /* do nothing */ }
   } else {
     try {
-      parsed = YAML.load(value)
+      parsed = YAML.load(value, {schema: YAML.JSON_SCHEMA})
       currentFormat = YAML_FILE_FORMAT
     } catch { /* do nothing */ }
   }

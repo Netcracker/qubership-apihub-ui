@@ -57,7 +57,6 @@ const EditPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
   const { handleSubmit, control, setValue, formState } = useForm<VersionFormData>({ defaultValues })
 
   const onPublish = useCallback(({ version, status, labels }: VersionFormData) => {
-    console.log('trtewwtwtwtwe')
     editPackageVersion({
       packageKey: packageKey,
       version: version!,
