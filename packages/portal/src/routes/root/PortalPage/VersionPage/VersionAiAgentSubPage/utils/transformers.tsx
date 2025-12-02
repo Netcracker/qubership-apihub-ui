@@ -12,7 +12,7 @@ export function transformScoringToGridTemplateRows(scoring: AiDocumentScoring | 
 
   const rows: GridTemplateRow[] = []
 
-  const { overallScore, details } = scoring
+  const {overallScore, details} = scoring
   rows.push([
     'Overall Score',
     <Typography
@@ -48,7 +48,7 @@ export function transformAiDocumentIssuesToGridTemplateRows(aiDocumentIssues: Ai
   const sortedCountByCategory: Array<[string, number]> =
     Array.from(countByCategory.entries())
       .sort((a, b) => b[1] - a[1])
-  // .slice(0, 5)
+      .slice(0, 5)
 
   return transformEnhancementsToGridTemplateRows(sortedCountByCategory)
 }
@@ -63,7 +63,7 @@ function transformEnhancementsToGridTemplateRows(enhancements: Array<[string, nu
   for (const [issueCategory, issuesCount] of enhancements) {
     rows.push([
       issueCategory,
-      <Typography variant='body2' sx={{ fontWeight: 'bold' }}>
+      <Typography variant='body2' sx={{fontWeight: 'bold'}}>
         {issuesCount} issue(s)
       </Typography>,
     ])
