@@ -17,8 +17,9 @@
 import type { JSONSchema } from '@stoplight/spectral-core'
 import type { ILocation } from '@stoplight/types'
 import { getLocationForJsonPath, parseWithPointers } from '@stoplight/yaml'
-import { dump, type DumpOptions, load, JSON_SCHEMA } from 'js-yaml'
+import { dump, type DumpOptions } from 'js-yaml'
 import type { Key } from './types'
+import { loadYaml } from '@netcracker/qubership-apihub-api-unifier'
 
 export type SpecItemUri = `/${Key}` // Example: /foo/bar/baz/qux/1
 export type SpecItemPath = Key[]
@@ -151,7 +152,7 @@ export interface SchemaObject {
 export function toJsonSchema(value: string): JSONSchema | null {
   let schema: JSONSchema | null
   try {
-    schema = load(value, { schema: JSON_SCHEMA }) as JSONSchema
+    schema = loadYaml(value) as JSONSchema
   } catch (e) {
     schema = null
   }
