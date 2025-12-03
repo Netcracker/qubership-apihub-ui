@@ -26,7 +26,6 @@ import {
 } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/Playground/CustomServersProvider'
 import { getFileDetails } from '@apihub/utils/file-details'
 import { Box } from '@mui/material'
-import { cropRawGraphQlDocumentToRawSingleOperationGraphQlDocument } from '@netcracker/qubership-apihub-api-processor'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import {
   CONTENT_PLACEHOLDER_AREA,
@@ -56,7 +55,7 @@ import {
   useIsRawOperationViewMode,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/operations/useOperationMode'
 import {
-  useOperationsPairAsStrings,
+  useOperationsPairStringified,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/operations/useOperationsPairAsStrings'
 import type { FC, ReactNode } from 'react'
 import { memo, useCallback, useEffect, useMemo } from 'react'
@@ -67,6 +66,7 @@ import { useSetChangesLoadingStatus } from '../ChangesLoadingStatusProvider'
 import { useBreadcrumbsData } from '../ComparedPackagesBreadcrumbsProvider'
 import { useFileViewMode } from '../useFileViewMode'
 import { useOperationViewMode } from '../useOperationViewMode'
+import { useRawGraphQlCroppedToSingleOperationRawGraphQl } from '../useRawGraphQlCroppedToSingleOperationRawGraphQl'
 import { useSidebarPlaygroundViewMode } from '../useSidebarPlaygroundViewMode'
 import { OperationModelsGraph } from './OperationModelsGraph'
 import { OperationsSwapper } from './OperationsSwapper'
@@ -89,33 +89,6 @@ export type OperationContentProps = {
   paddingBottom?: string | number
   isLoading: boolean
   operationModels?: OpenApiData
-}
-
-function useRawGraphQlCroppedToSingleOperationRawGraphQl(
-  originalGraphql: string,
-  operationType?: string,
-  operationName?: string,
-): string {
-  return useMemo(() => {
-    if (originalGraphql && operationType && operationName) {
-      let operationTypeSection: 'queries' | 'mutations' | 'subscriptions' | undefined
-      switch (operationType) {
-        case 'query':
-          operationTypeSection = 'queries'
-          break
-        case 'mutation':
-          operationTypeSection = 'mutations'
-          break
-        case 'subscription':
-          operationTypeSection = 'subscriptions'
-          break
-      }
-      return operationTypeSection
-        ? cropRawGraphQlDocumentToRawSingleOperationGraphQlDocument(originalGraphql, operationTypeSection, operationName)
-        : originalGraphql
-    }
-    return ''
-  }, [originalGraphql, operationType, operationName])
 }
 
 export const OperationContent: FC<OperationContentProps> = wrapOperationContentElement<OperationContentProps>(
@@ -206,10 +179,21 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
     const comparisonMode = isComparisonMode(displayMode)
     const [fileViewMode = YAML_FILE_VIEW_MODE, setFileViewMode] = useFileViewMode()
 
-    const [changedOperationContent, originOperationContent] = useOperationsPairAsStrings(
-      isGraphQLOperation ? documentWithChangedGraphQlOperation : changedOperation,
-      isGraphQLOperation ? documentWithOriginOriginOperation : originOperation,
-      isPlaygroundMode || isExamplesMode, // only for REST operations!
+    const {
+      originOperation: originOperationContent,
+      changedOperation: changedOperationContent,
+    } = useOperationsPairStringified(
+      isGraphQLOperation
+        ? { originOperation: documentWithOriginOriginOperation, changedOperation: documentWithChangedGraphQlOperation }
+        : undefined,
+      {
+        originOperation: originOperation,
+        changedOperation: changedOperation,
+        enabled: (
+          isRawViewMode || // TODO 03.12.2025 // Check how it was before refactoring
+          isPlaygroundMode || isExamplesMode // OpenAPI
+        ),
+      },
     )
 
     const originGraphQlOperationContent = useRawGraphQlCroppedToSingleOperationRawGraphQl(originOperationContent, operationType, operationName)
@@ -274,7 +258,9 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
     if (
       !normalizedChangedOperation &&
       !normalizedOriginOperation &&
-      !apiDiffResult?.merged
+      !apiDiffResult?.merged &&
+      !originValueForRawSpecView &&
+      !changedValueForRawSpecView
     ) {
       return (
         <Placeholder
