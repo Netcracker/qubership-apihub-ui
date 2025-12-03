@@ -50,12 +50,14 @@ export function useOperation(options?: OperationOptions): OperationQueryState {
   const enabled = options?.enabled ?? true
 
   const packageRef = `${packageKey}@${versionKey}`
-  const packagesRefs: PackagesRefs = {
+
+  // Memoize packagesRefs to prevent creating new objects on every render
+  const packagesRefs: PackagesRefs = useMemo(() => ({
     [packageRef]: {
       refId: packageKey ?? '',
       version: versionKey ?? '',
     },
-  }
+  }), [packageRef, packageKey, versionKey])
 
   const { fullVersion } = useVersionWithRevision(versionKey, packageKey)
   const { data, isLoading, isInitialLoading } = useQuery<OperationDto, Error, OperationData | undefined>({
@@ -87,9 +89,8 @@ async function getOperation(
   const pathPattern = '/packages/:packageId/versions/:versionId/:apiType/operations/:operationId'
   return await portalRequestJson<OperationDto>(
     generatePath(pathPattern, { packageId, versionId, apiType, operationId }),
+    { method: 'get' },
     {
-      method: 'get',
-    }, {
       customRedirectHandler: (response) => getPackageRedirectDetails(response, pathPattern),
     },
   )
