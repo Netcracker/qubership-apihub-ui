@@ -31,7 +31,7 @@
     "@mui/private-theming": "5.11.9",
     "@netcracker/qubership-apihub-api-diff": "feature-move-prefix-from-server-to-path",
     "@netcracker/qubership-apihub-api-doc-viewer": "feature-performance-optimization",
-    "@netcracker/qubership-apihub-api-processor": "feature-performance-optimization",
+    "@netcracker/qubership-apihub-api-processor": "feature-performance-optimization-441",
     "@netcracker/qubership-apihub-api-unifier": "feature-performance-optimization",
     "@netcracker/qubership-apihub-api-visitor": "feature-performance-optimization",
     "@netcracker/qubership-apihub-apispec-view": "feature-performance-optimization",
