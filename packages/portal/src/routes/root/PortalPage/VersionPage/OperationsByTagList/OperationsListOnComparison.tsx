@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { buildOperationPairKey, useHandledOperationPairsContext } from '@apihub/components/HandledOperationPairsProvider'
+import { useSetIsApiDiffResultLoading } from '@apihub/routes/root/ApiDiffResultProvider'
 import { CustomListItemButton } from '@netcracker/qubership-apihub-ui-shared/components/CustomListItemButton'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
@@ -22,6 +24,7 @@ import {
   useSeverityFiltersSearchParam,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/change-severities/useSeverityFiltersSearchParam'
 import { useRefWithAutoScroll } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useRefWithAutoScroll'
+import { usePackageSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/routes/package/usePackageSearchParam'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import {
   DOCUMENT_SEARCH_PARAM,
@@ -38,14 +41,12 @@ import React, { memo, useCallback, useLayoutEffect, useMemo, useState } from 're
 import { useParams } from 'react-router-dom'
 import type { GroupsOperationsComparisonSearchParams, OperationsComparisonSearchParams } from '../../../../NavigationProvider'
 import { useNavigation } from '../../../../NavigationProvider'
-import { usePackageSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/routes/package/usePackageSearchParam'
 import { useTextSearchParam } from '../../../useTextSearchParam'
 import { useVersionSearchParam } from '../../../useVersionSearchParam'
 import { useIsPackageFromDashboard } from '../../useIsPackageFromDashboard'
 import { useSetShouldAutoExpandTagsContext, useShouldAutoExpandTagsContext } from '../ShouldAutoExpandTagsProvider'
 import { useDocumentSearchParam } from '../useDocumentSearchParam'
 import { OperationListItem } from './OperationListItem'
-import { useSetIsApiDiffResultLoading } from '@apihub/routes/root/ApiDiffResultProvider'
 
 export type OperationsListOnComparisonProps = {
   changedOperationPairs: OperationPair[]
@@ -95,10 +96,22 @@ export const OperationsListOnComparison: FC<OperationsListOnComparisonProps> = m
     ),
     [changedPackageKey, changedVersionKey, documentSlug, filters, isPackageFromDashboard, originPackageKey, originVersionKey, previousGroup, refPackageKey, searchValue])
 
+  // Load cache with already opened operations IDs. Create callback to reset loading status only if requested operation pair is opening first time
+  const alreadyHandledOperationPairs = useHandledOperationPairsContext()
+  const resetIsApiDiffResultLoadingIfNeeded = useCallback(
+    (operationPair: OperationPair) => {
+      const operationPairKey = buildOperationPairKey(operationPair)
+      if (!alreadyHandledOperationPairs?.has(operationPairKey)) {
+        // We need to reset status to default value. For more details, look at the comment next to IsApiDiffResultLoadingContext.
+        setIsApiDiffResultLoading(true)
+      }
+    },
+    [alreadyHandledOperationPairs, setIsApiDiffResultLoading],
+  )
+
   const handleListItemClick = useCallback(
     (operationPair: OperationPair) => {
-      // Because we need to reset status to default value. For more details, look at comment next to IsApiDiffResultLoadingContext.
-      setIsApiDiffResultLoading(true)
+      resetIsApiDiffResultLoadingIfNeeded(operationPair)
 
       setShouldAutoExpand(false)
       const operationKey =
@@ -131,7 +144,7 @@ export const OperationsListOnComparison: FC<OperationsListOnComparisonProps> = m
           search: updatedSearchParams,
         })
     },
-    [apiType, changedPackageKey, changedVersionKey, group, navigateToGroupsOperationsComparison, navigateToOperationsComparison, searchParams, setShouldAutoExpand],
+    [apiType, changedPackageKey, changedVersionKey, group, navigateToGroupsOperationsComparison, navigateToOperationsComparison, resetIsApiDiffResultLoadingIfNeeded, searchParams, setShouldAutoExpand],
   )
 
   return (

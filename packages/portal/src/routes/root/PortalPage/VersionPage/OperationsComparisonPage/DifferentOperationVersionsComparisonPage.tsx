@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { buildOperationPairKey, HandledOperationPairsProvider } from '@apihub/components/HandledOperationPairsProvider'
 import { OperationContent } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationContent'
 import {
   COMPARE_SAME_OPERATIONS_MODE,
@@ -50,7 +51,7 @@ import {
   usePagedVersionChangelog,
 } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget/api/useCommonPagedVersionChangelog'
 import type { FC } from 'react'
-import { memo, useEffect, useMemo } from 'react'
+import { memo, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTextSearchParam } from '../../../useTextSearchParam'
 import { useVersionSearchParam } from '../../../useVersionSearchParam'
@@ -281,6 +282,18 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
   })
   const mergedBreadcrumbsData = useCompareBreadcrumbs(originComparisonObject, changedComparisonObject)
 
+  // Store operation pairs that are already opened into cache
+  const [handledOperationPairs] = useState<Set<string>>(new Set())
+  useEffect(() => {
+    if (originOperation || changedOperation) {
+      handledOperationPairs.add(buildOperationPairKey({
+        currentOperation: changedOperation,
+        previousOperation: originOperation,
+      }))
+    }
+  }, [changedOperation, handledOperationPairs, originOperation])
+  // ---
+
   return (
     <ShouldAutoExpandTagsProvider>
       <SelectedOperationTagsProvider>
@@ -295,16 +308,18 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
                   />
                 }
                 navigation={
-                  <OperationsSidebarOnComparison
-                    operationPackageKey={operationPackageKey!}
-                    operationPackageVersion={operationPackageVersion!}
-                    searchValue={searchValue}
-                    setSearchValue={setSearchValue}
-                    tags={tags}
-                    apiType={apiType as ApiType}
-                    operationsGroupedByTag={filteredOperationsGroupedByTags}
-                    areChangesLoading={!isChangelogReady}
-                  />
+                  <HandledOperationPairsProvider value={handledOperationPairs}>
+                    <OperationsSidebarOnComparison
+                      operationPackageKey={operationPackageKey!}
+                      operationPackageVersion={operationPackageVersion!}
+                      searchValue={searchValue}
+                      setSearchValue={setSearchValue}
+                      tags={tags}
+                      apiType={apiType as ApiType}
+                      operationsGroupedByTag={filteredOperationsGroupedByTags}
+                      areChangesLoading={!isChangelogReady}
+                    />
+                  </HandledOperationPairsProvider>
                 }
                 body={
                   <OperationContent
