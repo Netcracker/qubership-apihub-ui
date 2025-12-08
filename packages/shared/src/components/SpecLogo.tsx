@@ -17,7 +17,8 @@
 import type { FC, ReactElement } from 'react'
 import { memo } from 'react'
 
-import type { SpecType } from '../utils/specs'
+import type {SpecType} from '../utils/specs'
+import {isAsyncApiSpecType} from '../utils/specs'
 import {
   isGraphQlSpecType,
   isOpenApiSpecType,
@@ -36,6 +37,7 @@ import { GraphqlIcon } from '../icons/GraphqlIcon'
 import type { ApiType } from '../entities/api-types'
 import { API_TYPE_ASYNCAPI, API_TYPE_GRAPHQL, API_TYPE_REST } from '../entities/api-types'
 import { ProtobufIcon } from '../icons/ProtobufIcon'
+import {AsyncApiIcon} from '../icons/AsyncApiIcon'
 
 export type SpecLogoProps = {
   // TODO 23.06.25 // Fix this type, because it has no sense
@@ -83,6 +85,12 @@ export const SpecLogo: FC<SpecLogoProps> = memo<SpecLogoProps>(({ value }) => {
   if (isGraphQlSpecType(value as SpecType)) {
     return (
       <GraphqlIcon/>
+    )
+  }
+
+  if (isAsyncApiSpecType(value as SpecType)) {
+    return (
+      <AsyncApiIcon/>
     )
   }
 
