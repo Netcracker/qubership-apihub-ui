@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-import { useVersionWithRevision } from '../../useVersionWithRevision'
 import { REVISION_DELIMITER } from '@apihub/entities/versions'
+import type { OperationOptions } from '@apihub/routes/root/PortalPage/VersionPage/useOperation'
+import { useOperation } from '@apihub/routes/root/PortalPage/VersionPage/useOperation'
 import { usePackage } from '@apihub/routes/root/usePackage'
+import type { OperationsApiType } from '@netcracker/qubership-apihub-api-processor'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { RAW_OPERATION_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
+import { useMemo } from 'react'
+import { useParams } from 'react-router-dom'
+import { useVersionWithRevision } from '../../useVersionWithRevision'
 import type {
   ComparedBreadcrumbPathItem,
   ComparedPackagesBreadcrumbsData,
@@ -34,12 +41,7 @@ import {
   getRevisionBreadcrumb,
   getVersionBreadcrumb,
 } from './breadcrumbs'
-import type { OperationOptions } from '@apihub/routes/root/PortalPage/VersionPage/useOperation'
-import { useOperation } from '@apihub/routes/root/PortalPage/VersionPage/useOperation'
-import type { OperationsApiType } from '@netcracker/qubership-apihub-api-processor'
-import { useParams } from 'react-router-dom'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { useMemo } from 'react'
+import { useOperationViewMode } from './useOperationViewMode'
 
 export function getVersionWithRevisionOptions(obj?: ComparisonObject | null, enabled?: boolean): [Key | undefined, Key | undefined, boolean | undefined] {
   return [
@@ -49,7 +51,12 @@ export function getVersionWithRevisionOptions(obj?: ComparisonObject | null, ena
   ]
 }
 
-export function getOperationOptions(obj?: ComparisonObject | null, apiType?: OperationsApiType, enabled?: boolean): OperationOptions {
+export function getOperationOptions(
+  obj?: ComparisonObject | null,
+  apiType?: OperationsApiType,
+  enabled?: boolean,
+  includeData?: boolean,
+): OperationOptions {
   if (obj?.type === COMPARISON_OBJECT_TYPE_OPERATION_IN_PACKAGE_REVISION) {
     return {
       packageKey: obj.id,
@@ -57,6 +64,7 @@ export function getOperationOptions(obj?: ComparisonObject | null, apiType?: Ope
       operationKey: obj.operationId,
       apiType: apiType,
       enabled: enabled,
+      includeData: includeData,
     }
   }
   if (obj?.type === COMPARISON_OBJECT_TYPE_OPERATION_IN_DASHBOARD_REVISION) {
@@ -66,6 +74,7 @@ export function getOperationOptions(obj?: ComparisonObject | null, apiType?: Ope
       operationKey: obj?.operationId,
       apiType: apiType,
       enabled: enabled,
+      includeData: includeData,
     }
   }
   return {
@@ -106,8 +115,11 @@ export function useCompareBreadcrumbs(
   const { latestRevision: originIsLatestRevision } = useVersionWithRevision(...getVersionWithRevisionOptions(obj1, isRevisionCompare))
   const { latestRevision: changedIsLatestRevision } = useVersionWithRevision(...getVersionWithRevisionOptions(obj2, isRevisionCompare))
 
-  const { data: originOperation } = useOperation(getOperationOptions(obj1, apiType, areOperationsDifferent))
-  const { data: changedOperation } = useOperation(getOperationOptions(obj2, apiType, areOperationsDifferent))
+  const { mode: operationViewMode } = useOperationViewMode()
+  const includeData = operationViewMode === RAW_OPERATION_VIEW_MODE
+
+  const { data: originOperation } = useOperation(getOperationOptions(obj1, apiType, areOperationsDifferent, includeData))
+  const { data: changedOperation } = useOperation(getOperationOptions(obj2, apiType, areOperationsDifferent, includeData))
 
   return useMemo(() => {
     if (!obj1 || !obj2 || !originPackageOrDashboard || !changedPackageOrDashboard) {

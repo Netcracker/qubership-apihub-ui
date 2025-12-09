@@ -25,6 +25,7 @@ import { useComparisonParams } from '@apihub/routes/root/PortalPage/VersionPage/
 import { groupOperationPairsByTags } from '@apihub/utils/operations'
 import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { RAW_OPERATION_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
 import type { OperationData, OperationPair, OperationPairsGroupedByTag, OptionalOperationPair } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { OperationChangeBase } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
 import type {
@@ -71,6 +72,7 @@ import { VERSION_SWAPPER_HEIGHT } from '../shared-styles'
 import { useDocumentSearchParam } from '../useDocumentSearchParam'
 import { useOperation } from '../useOperation'
 import { useOperationSearchParam } from '../useOperationSearchParam'
+import { useOperationViewMode } from '../useOperationViewMode'
 import { OperationsSidebarOnComparison } from './OperationsSidebarOnComparison'
 
 function getOperationPairsFromPackageChanges(
@@ -172,18 +174,23 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
     previousOperationKey: operationSearchParam ?? operationKey,
   }, undefined)
 
+  const { mode: operationViewMode } = useOperationViewMode()
+  const includeData = operationViewMode === RAW_OPERATION_VIEW_MODE
+
   // TODO: Add placeholder handling the case if there were no operations matching the original operationKey
   const { data: originOperation, isInitialLoading: isOriginOperationInitialLoading } = useOperation({
     packageKey: !isPackageFromDashboard ? originPackageKey : refPackageKey,
     versionKey: !isPackageFromDashboard ? originVersionKey : refComparisonSummary?.previousVersion,
     operationKey: previousOperationKey,
     apiType: apiType as ApiType,
+    includeData: includeData,
   })
   const { data: changedOperation, isInitialLoading: isChangedOperationInitialLoading } = useOperation({
     packageKey: !isPackageFromDashboard ? changedPackageKey : refPackageKey,
     versionKey: !isPackageFromDashboard ? changedVersionKey : refComparisonSummary?.version,
     operationKey: currentOperationKey,
     apiType: apiType as ApiType,
+    includeData: includeData,
   })
 
   const filteredPackageChanges = useMemo(

@@ -1,10 +1,12 @@
 import type { VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import { isRestOperation, type OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 
 import { INTERNAL_DOCUMENT_STRING_SYMBOL_MAPPING } from '@apihub/utils/internal-documents/constants'
-import { isGraphQLOperation, isRestOperation } from '@apihub/utils/internal-documents/type-guards'
+import { isGraphApiSpecification, isOpenApiSpecification } from '@apihub/utils/internal-documents/type-guards'
 import { DIFF_META_KEY } from '@netcracker/qubership-apihub-api-diff'
+import { GRAPHQL_API_TYPE, REST_API_TYPE } from '@netcracker/qubership-apihub-api-processor'
 import { deserialize } from '@netcracker/qubership-apihub-api-unifier'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { PackageKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { VersionChanges } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
 import { isObject } from '@netcracker/qubership-apihub-ui-shared/utils/objects'
@@ -20,6 +22,32 @@ type Options = {
   versionChanges: VersionChanges | undefined
   currentPackageId: PackageKey | undefined
   currentVersionId: VersionKey | undefined
+}
+
+function createMatcherArbitraryCurrentOperationPathWithCurrentOperationPath(
+  apiType: ApiType,
+  expectedOperationPathPattern: string,
+): (arbitraryOperationPath: string) => boolean {
+  const expectedOperationPathPatternSections = expectedOperationPathPattern.split('/')
+  return (arbitraryOperationPath: string) => {
+    const arbitraryOperationPathSections = arbitraryOperationPath.split('/')
+    switch (apiType) {
+      case REST_API_TYPE:
+        if (arbitraryOperationPathSections.length !== expectedOperationPathPatternSections.length) {
+          return false
+        }
+        for (let i = 0; i < arbitraryOperationPathSections.length; i++) {
+          const actualPathSection = arbitraryOperationPathSections[i]
+          const expectPathPatternSection = expectedOperationPathPatternSections[i]
+          if (expectPathPatternSection !== '*' && actualPathSection !== expectPathPatternSection) {
+            return false
+          }
+        }
+        return true
+      case GRAPHQL_API_TYPE:
+        return arbitraryOperationPath === expectedOperationPathPattern
+    }
+  }
 }
 
 export function useComparedOperations(options: Options): QueryResult<unknown, Error> {
@@ -84,27 +112,24 @@ export function useComparedOperations(options: Options): QueryResult<unknown, Er
     return deserialize(rawComparisonInternalDocument, INTERNAL_DOCUMENT_STRING_SYMBOL_MAPPING)
   }, [rawComparisonInternalDocument])
 
-  const documentForOnlyPreviousOperation = previousOperation?.data as OpenAPIV3.Document | undefined
-  const documentForOnlyCurrentOperation = currentOperation?.data as OpenAPIV3.Document | undefined
-
   const [comparedOperationPath] = useMemo(
     () => {
-      const previousOperationPaths = Object.keys(documentForOnlyPreviousOperation?.paths ?? {})
-      const currentOperationPaths = Object.keys(documentForOnlyCurrentOperation?.paths ?? {})
-      const paths = new Set([...previousOperationPaths, ...currentOperationPaths])
+      const previousOperationPath = previousOperation && isRestOperation(previousOperation) ? previousOperation.path : undefined
+      const currentOperationPath = currentOperation && isRestOperation(currentOperation) ? currentOperation.path : undefined
+      const paths = new Set([previousOperationPath, currentOperationPath])
       if (paths.size > 1) {
         console.warn('There are 2 paths. What should we do?')
       }
       return paths
     },
-    [documentForOnlyCurrentOperation, documentForOnlyPreviousOperation],
+    [currentOperation, previousOperation],
   )
 
   const comparisonInternalDocumentWithOnlyOperation = useMemo(() => {
     if (!deserializedComparisonInternalDocument) {
       return undefined
     }
-    if (isRestOperation(deserializedComparisonInternalDocument)) {
+    if (isOpenApiSpecification(deserializedComparisonInternalDocument)) {
       const oasInternalDocument = deserializedComparisonInternalDocument
       const clonedOasComparisonInternalDocument: OpenAPIV3.Document = {
         ...oasInternalDocument,
@@ -123,8 +148,15 @@ export function useComparedOperations(options: Options): QueryResult<unknown, Er
       // Leave the only operation with necessary path because ASV displays only 1 operation at the time
       const pathObjects = clonedOasComparisonInternalDocument.paths
       const paths = Object.keys(pathObjects)
+      const { servers = [] } = clonedOasComparisonInternalDocument
+      const firstServer = servers[0]?.url
+      const firstServerBasePath = firstServer ? new URL(firstServer).pathname : ''
+      const match = comparedOperationPath
+        ? createMatcherArbitraryCurrentOperationPathWithCurrentOperationPath(REST_API_TYPE, comparedOperationPath)
+        : undefined
       for (const path of paths) {
-        if (path !== comparedOperationPath) {
+        const pathWithServer = firstServer ? `${firstServerBasePath}${path}` : path
+        if (!match?.(pathWithServer)) {
           delete pathObjects[path]
         }
       }
@@ -132,17 +164,18 @@ export function useComparedOperations(options: Options): QueryResult<unknown, Er
       if (DIFF_META_KEY in pathObjects) {
         const whollyChangedPaths: Record<string, unknown> =
           isObject(pathObjects[DIFF_META_KEY])
-            ? pathObjects[DIFF_META_KEY]
+            ? { ...pathObjects[DIFF_META_KEY] }
             : {}
         for (const whollyChangedPath of Object.keys(whollyChangedPaths)) {
-          if (whollyChangedPath !== comparedOperationPath) {
+          const whollyChangedPathWithServer = firstServer ? `${firstServerBasePath}${whollyChangedPath}` : whollyChangedPath
+          if (!match?.(whollyChangedPathWithServer)) {
             delete whollyChangedPaths[whollyChangedPath]
           }
         }
       }
       return clonedOasComparisonInternalDocument
     }
-    if (isGraphQLOperation(deserializedComparisonInternalDocument)) {
+    if (isGraphApiSpecification(deserializedComparisonInternalDocument)) {
       return deserializedComparisonInternalDocument
     }
     return undefined

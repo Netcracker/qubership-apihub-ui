@@ -9,7 +9,7 @@ import { useMemo } from 'react'
 import { useInternalDocumentContent } from './useInternalDocumentContent'
 import type { QueryResult } from './useInternalDocumentsByPackageVersion'
 import { useInternalDocumentsByPackageVersion } from './useInternalDocumentsByPackageVersion'
-import { isRestOperation, isGraphQLOperation } from '@apihub/utils/internal-documents/type-guards'
+import { isOpenApiSpecification, isGraphApiSpecification } from '@apihub/utils/internal-documents/type-guards'
 
 type Options = {
   operation: OperationData | undefined
@@ -49,7 +49,7 @@ export function useNormalizedOperation(options: Options): QueryResult<unknown, E
 
   const filteredInternalDocumentForOperation = useMemo(
     () => {
-      if (isRestOperation(deserializedInternalDocument)) {
+      if (isOpenApiSpecification(deserializedInternalDocument)) {
         // Truncate REST specification and leave the only necessary path
         const [operationPath] = Object.keys((operation?.data as OpenAPIV3.Document)?.paths ?? {})
         if (!operationPath) {
@@ -66,7 +66,7 @@ export function useNormalizedOperation(options: Options): QueryResult<unknown, E
         })
       }
       // GraphQL operations should be returned as is, because truncating is on ADV layer
-      if (isGraphQLOperation(deserializedInternalDocument)) {
+      if (isGraphApiSpecification(deserializedInternalDocument)) {
         return deserializedInternalDocument
       }
       // Handle unrecognized operations
