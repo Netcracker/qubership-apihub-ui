@@ -250,7 +250,7 @@ export const SpecOptionItem: FC<SpecOptionItemProps> = memo<SpecOptionItemProps>
   )
 })
 
-function getAgentProxyServerUrl(prefix: string, serviceKey?: string, agentId?: string, namespace?: string, endpoint = DEFAULT_GRAPHQL_ENDPOINT): string {
+export function getAgentProxyServerUrl(prefix: string, serviceKey?: string, agentId?: string, namespace?: string, endpoint = DEFAULT_GRAPHQL_ENDPOINT): string {
   if (!agentId || !namespace) {
     return ''
   }
