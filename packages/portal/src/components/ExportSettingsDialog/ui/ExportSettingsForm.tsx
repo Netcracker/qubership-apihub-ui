@@ -16,6 +16,7 @@ import { EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE } from '../entities/export-setting
 import type { ExportSettingsFormField } from '../entities/export-settings-form-field'
 import { ExportSettingsFormFieldKind, ExportSettingsFormFieldOptionOasExtensions } from '../entities/export-settings-form-field'
 import { useLocalExportSettings } from '../storage/useLocalExportSettings'
+import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 
 interface ExportSettingsFormFieldsProps {
   disabled: boolean
@@ -90,6 +91,7 @@ interface ExportSettingsFormProps {
   isStartingExport: boolean
   // Action props
   setRequestDataExport: (requestData: IRequestDataExport) => void
+  specType?: SpecType
 }
 
 export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
@@ -106,6 +108,7 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
     isLoadingExportConfig,
     isStartingExport,
     setRequestDataExport,
+    specType,
   } = props
 
   // Calculate fields and default values
@@ -171,7 +174,7 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
       onSubmit={handleSubmit(onSubmit)}
     >
       <DialogTitle>
-        Export Settings
+        Export Settings1
       </DialogTitle>
       <DialogContent>
         <ExportSettingsFormFields
