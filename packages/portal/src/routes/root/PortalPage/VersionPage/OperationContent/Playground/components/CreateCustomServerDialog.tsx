@@ -45,11 +45,9 @@ import { useOperation } from '@netcracker/qubership-apihub-ui-portal/src/routes/
 import { useCustomUrls, useSpecUrls } from '../hooks/useUrls'
 import { isAbsoluteHttpUrl } from '@netcracker/qubership-apihub-ui-shared/utils/urls'
 import {
-  getAgentProxyServerUrl,
-} from '@netcracker/qubership-apihub-ui-agents/src/routes/root/NamespacePage/ServicesPage/AgentSpecificationDialog/GraphQlSpecificationPopup'
-import {
   useGetAgentPrefix,
 } from '@netcracker/qubership-apihub-ui-shared/features/system-extensions/useSystemExtensions'
+import { getAgentProxyServerUrl } from '@netcracker/qubership-apihub-ui-shared/utils/agent-proxy'
 
 const MODE_MANUAL = 'manual' as const
 const MODE_AGENT = 'agent' as const
