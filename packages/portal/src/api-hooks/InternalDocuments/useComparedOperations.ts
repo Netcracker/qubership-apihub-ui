@@ -164,7 +164,7 @@ export function useComparedOperations(options: Options): QueryResult<unknown, Er
       if (DIFF_META_KEY in pathObjects) {
         const whollyChangedPaths: Record<string, unknown> =
           isObject(pathObjects[DIFF_META_KEY])
-            ? { ...pathObjects[DIFF_META_KEY] }
+            ? pathObjects[DIFF_META_KEY]
             : {}
         for (const whollyChangedPath of Object.keys(whollyChangedPaths)) {
           const whollyChangedPathWithServer = firstServer ? `${firstServerBasePath}${whollyChangedPath}` : whollyChangedPath
