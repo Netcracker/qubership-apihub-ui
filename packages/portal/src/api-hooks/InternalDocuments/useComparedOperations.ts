@@ -121,9 +121,11 @@ export function useComparedOperations(options: Options): QueryResult<unknown, Er
       const firstServer = servers[0]?.url
       const firstServerBasePath = firstServer ? new URL(firstServer).pathname : ''
       const match = createMatcherArbitraryOperationPathWithCurrentOperationPath(REST_API_TYPE, comparedOperationPath)
+      let foundPath
       for (const path of Object.keys(paths)) {
         const pathWithServer = firstServer ? `${firstServerBasePath}${path}` : path
         if (match(pathWithServer)) {
+          foundPath = path
           clonedOasComparisonInternalDocument.paths![path] = {
             [comparedOperationMethod]: paths![path]![comparedOperationMethod],
           }
@@ -144,6 +146,27 @@ export function useComparedOperations(options: Options): QueryResult<unknown, Er
             if (match(whollyChangedPathWithServer)) {
               clonedWhollyChangedPaths[whollyChangedPath] = whollyChangedPaths[whollyChangedPath]
               break
+            }
+          }
+        }
+      }
+      const operationsByPath = foundPath ? paths[foundPath] : undefined
+      if (isObject(operationsByPath) && DIFF_META_KEY in operationsByPath) {
+        const whollyChangedMethods: Record<string, unknown> | undefined =
+          isObject(operationsByPath[DIFF_META_KEY])
+            ? operationsByPath[DIFF_META_KEY]
+            : undefined
+        if (whollyChangedMethods) {
+          let foundDiff
+          for (const whollyChangedMethod of Object.keys(whollyChangedMethods)) {
+            if (whollyChangedMethod === comparedOperationMethod) {
+              foundDiff = whollyChangedMethods[whollyChangedMethod]
+              break
+            }
+          }
+          if (foundDiff) {
+            (clonedOasComparisonInternalDocument.paths as Record<PropertyKey, unknown>)[DIFF_META_KEY] = {
+              [foundPath!]: foundDiff,
             }
           }
         }
