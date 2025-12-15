@@ -35,7 +35,7 @@ import {
 } from '@netcracker/qubership-apihub-ui-shared/components/WarningApiProcessorVersion'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { API_TYPE_GRAPHQL, API_TYPE_REST, API_TYPE_TITLE_MAP } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { GRAPH_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
+import { DOC_OPERATION_VIEW_MODE, GRAPH_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
 import type { OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
@@ -92,6 +92,7 @@ export const OperationPage: FC = memo(() => {
     operationKey: operationKey,
     apiType: apiType as ApiType,
     enabled: !areOperationsLoading,
+    includeData: viewMode !== DOC_OPERATION_VIEW_MODE,
   })
 
   const {
@@ -104,8 +105,8 @@ export const OperationPage: FC = memo(() => {
   })
 
   const visitorData: object | undefined =
-    apiType && isObject(normalizedChangedOperation)
-      ? API_TYPE_MODELS_MAP[apiType as ApiType](normalizedChangedOperation)
+    apiType && isObject(changedOperation?.data)
+      ? API_TYPE_MODELS_MAP[apiType as ApiType](changedOperation.data)
       : undefined
 
   const models = useOpenApiVisitor(visitorData)
