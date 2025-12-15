@@ -1,15 +1,16 @@
 import type { VersionKey } from '@apihub/entities/keys'
 import { INTERNAL_DOCUMENT_STRING_SYMBOL_MAPPING } from '@apihub/utils/internal-documents/constants'
+import { isGraphApiSpecification, isOpenApiSpecification } from '@apihub/utils/internal-documents/type-guards'
 import { removeComponents } from '@netcracker/qubership-apihub-api-processor'
 import { deserialize } from '@netcracker/qubership-apihub-api-unifier'
-import type { OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import { API_TYPE_REST } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { isRestOperation, type OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { PackageKey } from '@netcracker/qubership-apihub-ui-shared/utils/types'
-import type { OpenAPIV3 } from 'openapi-types'
 import { useMemo } from 'react'
+import { createMatcherArbitraryOperationPathWithCurrentOperationPath } from './matcher-arbitrary-operation-path-with-current-operation-path'
 import { useInternalDocumentContent } from './useInternalDocumentContent'
 import type { QueryResult } from './useInternalDocumentsByPackageVersion'
 import { useInternalDocumentsByPackageVersion } from './useInternalDocumentsByPackageVersion'
-import { isOpenApiSpecification, isGraphApiSpecification } from '@apihub/utils/internal-documents/type-guards'
 
 type Options = {
   operation: OperationData | undefined
@@ -51,17 +52,33 @@ export function useNormalizedOperation(options: Options): QueryResult<unknown, E
     () => {
       if (isOpenApiSpecification(deserializedInternalDocument)) {
         // Truncate REST specification and leave the only necessary path
-        const [operationPath] = Object.keys((operation?.data as OpenAPIV3.Document)?.paths ?? {})
-        if (!operationPath) {
+        const operationPath = operation && isRestOperation(operation) ? operation.path : undefined
+        const operationMethod = operation && isRestOperation(operation) ? operation.method : undefined
+        if (!operationPath || !operationMethod) {
           return undefined
         }
+        const match = createMatcherArbitraryOperationPathWithCurrentOperationPath(API_TYPE_REST, operationPath)
         const internalDocument = deserializedInternalDocument
-        const internalDocumentPaths = internalDocument?.paths
-        const internalDocumentPathObject = internalDocumentPaths?.[operationPath]
+        const { paths = {}, servers = [] } = internalDocument ?? {}
+        const firstServer = servers[0]?.url
+        const firstServerBasePath = firstServer ? new URL(firstServer).pathname : ''
+        let foundPath
+        for (const path of Object.keys(paths)) {
+          const pathWithServer = firstServer ? `${firstServerBasePath}${path}` : path
+          if (match?.(pathWithServer)) {
+            foundPath = path
+            break
+          }
+        }
+        if (!foundPath) {
+          return undefined
+        }
         return removeComponents({
           ...internalDocument,
           paths: {
-            [operationPath]: internalDocumentPathObject,
+            [foundPath]: {
+              [operationMethod]: paths![foundPath]![operationMethod],
+            },
           },
         })
       }
@@ -72,7 +89,7 @@ export function useNormalizedOperation(options: Options): QueryResult<unknown, E
       // Handle unrecognized operations
       return undefined
     },
-    [deserializedInternalDocument, operation?.data],
+    [deserializedInternalDocument, operation],
   )
 
   return useMemo(
