@@ -121,7 +121,7 @@ export function useComparedOperations(options: Options): QueryResult<unknown, Er
       const firstServer = servers[0]?.url
       const firstServerBasePath = firstServer ? new URL(firstServer).pathname : ''
       const match = createMatcherArbitraryOperationPathWithCurrentOperationPath(REST_API_TYPE, comparedOperationPath)
-      let foundPath
+      let foundPath: string | undefined
       for (const path of Object.keys(paths)) {
         const pathWithServer = firstServer ? `${firstServerBasePath}${path}` : path
         if (match(pathWithServer)) {
@@ -157,7 +157,7 @@ export function useComparedOperations(options: Options): QueryResult<unknown, Er
             ? operationsByPath[DIFF_META_KEY]
             : undefined
         if (whollyChangedMethods) {
-          let foundDiff
+          let foundDiff: unknown
           for (const whollyChangedMethod of Object.keys(whollyChangedMethods)) {
             if (whollyChangedMethod === comparedOperationMethod) {
               foundDiff = whollyChangedMethods[whollyChangedMethod]

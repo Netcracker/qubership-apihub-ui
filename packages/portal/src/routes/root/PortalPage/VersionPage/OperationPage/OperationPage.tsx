@@ -106,7 +106,7 @@ export const OperationPage: FC = memo(() => {
 
   const visitorData: object | undefined =
     apiType && isObject(changedOperation?.data)
-      ? API_TYPE_MODELS_MAP[apiType as ApiType](changedOperation.data)
+      ? API_TYPE_MODELS_MAP[apiType as ApiType](changedOperation!.data)
       : undefined
 
   const models = useOpenApiVisitor(visitorData)
