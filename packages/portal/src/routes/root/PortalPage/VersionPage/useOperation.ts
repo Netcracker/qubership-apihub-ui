@@ -40,7 +40,6 @@ export type OperationOptions = Partial<{
   operationKey: string
   apiType: ApiType
   enabled: boolean
-  includeData: boolean
 }>
 
 export function useOperation(options?: OperationOptions): OperationQueryState {
@@ -49,7 +48,6 @@ export function useOperation(options?: OperationOptions): OperationQueryState {
   const operationKey = options?.operationKey
   const apiType = options?.apiType ?? DEFAULT_API_TYPE
   const enabled = options?.enabled ?? true
-  const includeData = options?.includeData
 
   const packageRef = `${packageKey}@${versionKey}`
 
@@ -63,10 +61,10 @@ export function useOperation(options?: OperationOptions): OperationQueryState {
 
   const { fullVersion } = useVersionWithRevision(versionKey, packageKey)
   const { data, isLoading, isInitialLoading } = useQuery<OperationDto, Error, OperationData | undefined>({
-    queryKey: [OPERATION_QUERY_KEY, operationKey, packageKey, fullVersion, apiType, includeData],
-    queryFn: () => getOperation(packageKey!, fullVersion!, operationKey!, apiType, includeData),
+    queryKey: [OPERATION_QUERY_KEY, operationKey, packageKey, fullVersion, apiType],
+    queryFn: () => getOperation(packageKey!, fullVersion!, operationKey!, apiType),
     enabled: !!operationKey && !!fullVersion && !!packageKey && enabled,
-    select: (operationDto) => toOperation(operationDto, packagesRefs, includeData), // TODO 09.12.25 // Remove this WA when BE is ready
+    select: (operationDto) => toOperation(operationDto, packagesRefs),
   })
 
   return useMemo(() => ({
@@ -81,20 +79,15 @@ async function getOperation(
   versionKey: Key,
   operationKey: Key,
   apiType: ApiType,
-  includeData: boolean | undefined,
 ): Promise<OperationDto> {
   const packageId = encodeURIComponent(packageKey)
   const versionId = encodeURIComponent(versionKey)
   const operationId = encodeURIComponent(operationKey)
 
-  const queryParams = new URLSearchParams({
-    ...includeData !== undefined ? { includeData: `${includeData}` } : {},
-  })
-
   const endpointPattern = '/packages/:packageId/versions/:versionId/:apiType/operations/:operationId'
   const endpoint = generatePath(endpointPattern, { packageId, versionId, apiType, operationId })
   return await portalRequestJson<OperationDto>(
-    `${endpoint}?${queryParams}`,
+    endpoint,
     { method: 'get' },
     { customRedirectHandler: (response) => getPackageRedirectDetails(response, endpointPattern) },
   )

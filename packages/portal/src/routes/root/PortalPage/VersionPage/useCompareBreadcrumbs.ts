@@ -20,7 +20,6 @@ import { useOperation } from '@apihub/routes/root/PortalPage/VersionPage/useOper
 import { usePackage } from '@apihub/routes/root/usePackage'
 import type { OperationsApiType } from '@netcracker/qubership-apihub-api-processor'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { RAW_OPERATION_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
 import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import { useVersionWithRevision } from '../../useVersionWithRevision'
@@ -41,7 +40,6 @@ import {
   getRevisionBreadcrumb,
   getVersionBreadcrumb,
 } from './breadcrumbs'
-import { useOperationViewMode } from './useOperationViewMode'
 
 export function getVersionWithRevisionOptions(obj?: ComparisonObject | null, enabled?: boolean): [Key | undefined, Key | undefined, boolean | undefined] {
   return [
@@ -55,7 +53,6 @@ export function getOperationOptions(
   obj?: ComparisonObject | null,
   apiType?: OperationsApiType,
   enabled?: boolean,
-  includeData?: boolean,
 ): OperationOptions {
   if (obj?.type === COMPARISON_OBJECT_TYPE_OPERATION_IN_PACKAGE_REVISION) {
     return {
@@ -64,7 +61,6 @@ export function getOperationOptions(
       operationKey: obj.operationId,
       apiType: apiType,
       enabled: enabled,
-      includeData: includeData,
     }
   }
   if (obj?.type === COMPARISON_OBJECT_TYPE_OPERATION_IN_DASHBOARD_REVISION) {
@@ -74,7 +70,6 @@ export function getOperationOptions(
       operationKey: obj?.operationId,
       apiType: apiType,
       enabled: enabled,
-      includeData: includeData,
     }
   }
   return {
@@ -115,11 +110,8 @@ export function useCompareBreadcrumbs(
   const { latestRevision: originIsLatestRevision } = useVersionWithRevision(...getVersionWithRevisionOptions(obj1, isRevisionCompare))
   const { latestRevision: changedIsLatestRevision } = useVersionWithRevision(...getVersionWithRevisionOptions(obj2, isRevisionCompare))
 
-  const { mode: operationViewMode } = useOperationViewMode()
-  const includeData = operationViewMode === RAW_OPERATION_VIEW_MODE
-
-  const { data: originOperation } = useOperation(getOperationOptions(obj1, apiType, areOperationsDifferent, includeData))
-  const { data: changedOperation } = useOperation(getOperationOptions(obj2, apiType, areOperationsDifferent, includeData))
+  const { data: originOperation } = useOperation(getOperationOptions(obj1, apiType, areOperationsDifferent))
+  const { data: changedOperation } = useOperation(getOperationOptions(obj2, apiType, areOperationsDifferent))
 
   return useMemo(() => {
     if (!obj1 || !obj2 || !originPackageOrDashboard || !changedPackageOrDashboard) {

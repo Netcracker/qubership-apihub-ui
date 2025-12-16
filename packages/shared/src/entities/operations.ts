@@ -174,19 +174,9 @@ export type PackageRef = {
   parentPackages?: ReadonlyArray<string>
 }
 
-export function toOperation(operationDto: OperationDto, packagesRefs: PackagesRefs, includeData: boolean = true): OperationData {
-  if (includeData) {
-    return {
-      ...operationDto,
-      operationKey: operationDto.operationId,
-      deprecated: operationDto.deprecated ?? false,
-      packageRef: toPackageRef(operationDto.packageRef, packagesRefs),
-    }
-  }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { data, ...restOperationDto } = operationDto
+export function toOperation(operationDto: OperationDto, packagesRefs: PackagesRefs): OperationData {
   return {
-    ...restOperationDto,
+    ...operationDto,
     operationKey: operationDto.operationId,
     deprecated: operationDto.deprecated ?? false,
     packageRef: toPackageRef(operationDto.packageRef, packagesRefs),
