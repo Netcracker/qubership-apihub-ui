@@ -54,6 +54,7 @@
     "@types/jest-environment-puppeteer": "5.0.3",
     "@types/jest-image-snapshot": "6.1.0",
     "@types/lodash-es": "4.17.0",
+    "@types/lodash.intersectionby": "^4.7.9",
     "api-ref-bundler": "0.1.2",
     "comlink": "4.4.1",
     "compare-versions": "^6.1.1",

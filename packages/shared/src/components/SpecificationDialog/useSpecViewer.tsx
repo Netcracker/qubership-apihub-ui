@@ -32,6 +32,7 @@ import { DOC_SPEC_VIEW_MODE } from '../SpecViewToggler'
 import type { Spec } from '../../entities/specs'
 import type { ProxyServer } from '../../entities/services'
 import type { SpecType } from '../../utils/specs'
+import { ASYNCAPI_3_SPEC_TYPE } from '../../utils/specs'
 import {
   GRAPHAPI_SPEC_TYPE,
   GRAPHQL_INTROSPECTION_SPEC_TYPE,
@@ -100,6 +101,8 @@ export const specTypeViewers: Partial<Record<SpecType, [SpecViewers, SpecViewMod
   [OPENAPI_3_0_SPEC_TYPE]: openApiView,
   [OPENAPI_2_0_SPEC_TYPE]: openApiView,
   [OPENAPI_SPEC_TYPE]: openApiView,
+  ///не точно перепроверить
+  [ASYNCAPI_3_SPEC_TYPE]: openApiView,
 
   [GRAPHQL_SPEC_TYPE]: graphQlView,
   [GRAPHQL_SCHEMA_SPEC_TYPE]: graphQlView,
