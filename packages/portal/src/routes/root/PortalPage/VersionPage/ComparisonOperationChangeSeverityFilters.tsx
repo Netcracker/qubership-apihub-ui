@@ -91,7 +91,7 @@ export const ComparisonOperationChangeSeverityFilters: FC<ComparisonOperationCha
       })
     }
 
-    return { merged: comparisonInternalDocument, diffs: [] }
+    return { merged: comparisonInternalDocument, diffs: [] as Diff[] }
   }, [changedOperation?.data, comparisonAlreadyDone, comparisonInternalDocument, originOperation?.data])
 
   useEffect(() => {
