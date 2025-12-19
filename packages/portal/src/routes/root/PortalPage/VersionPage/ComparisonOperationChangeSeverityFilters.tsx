@@ -67,6 +67,8 @@ export const ComparisonOperationChangeSeverityFilters: FC<ComparisonOperationCha
   const { data: operationChangesSummary, isLoading: loadingOperationChangesSummary } = useOperationChangesSummary({
     packageId: internalDocumentOptions?.currentPackageId ?? '',
     versionId: internalDocumentOptions?.currentVersionId ?? '',
+    previousPackageId: internalDocumentOptions?.previousPackageId ?? '',
+    previousVersionId: internalDocumentOptions?.previousVersionId ?? '',
     apiType: apiType,
     operationId: changedOperation?.operationKey ?? originOperation?.operationKey ?? '',
     enabled: comparisonAlreadyDone,

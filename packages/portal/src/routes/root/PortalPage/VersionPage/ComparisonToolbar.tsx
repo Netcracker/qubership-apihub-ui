@@ -68,6 +68,8 @@ export type InternalDocumentOptions = {
   versionChanges: VersionChanges | undefined
   currentPackageId: Key | undefined
   currentVersionId: Key | undefined
+  previousPackageId: Key | undefined
+  previousVersionId: Key | undefined
 }
 
 export type ComparisonPageToolbarProps = {

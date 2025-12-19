@@ -141,8 +141,10 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
       versionChanges: flatPackageChangelog,
       currentPackageId: changedPackageKey,
       currentVersionId: changedVersionKey,
+      previousPackageId: originPackageKey,
+      previousVersionId: originVersionKey,
     }),
-    [flatPackageChangelog, changedPackageKey, changedVersionKey],
+    [flatPackageChangelog, changedPackageKey, changedVersionKey, originPackageKey, originVersionKey],
   )
 
   const operationsFromPackageChanges = useMemo(
