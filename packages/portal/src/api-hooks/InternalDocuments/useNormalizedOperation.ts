@@ -64,7 +64,7 @@ export function useNormalizedOperation(options: Options): QueryResult<unknown, E
         const firstServerBasePath = firstServer ? new URL(firstServer).pathname : ''
         let foundPath
         for (const path of Object.keys(paths)) {
-          const pathWithServer = firstServer ? `${firstServerBasePath}${path}` : path
+          const pathWithServer = firstServer && firstServerBasePath !== '/' ? `${firstServerBasePath}${path}` : path
           if (match?.(pathWithServer)) {
             foundPath = path
             break
