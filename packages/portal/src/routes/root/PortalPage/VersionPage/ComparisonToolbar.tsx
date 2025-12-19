@@ -182,6 +182,7 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
               {mode !== RAW_OPERATION_VIEW_MODE && (
                 <ComparisonOperationChangeSeverityFilters
                   internalDocumentOptions={internalDocumentOptions}
+                  apiType={apiType}
                 />
               )}
               <OperationViewModeSelector modes={OPERATION_COMPARE_VIEW_MODES} />
