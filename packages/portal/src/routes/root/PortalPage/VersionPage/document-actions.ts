@@ -21,7 +21,7 @@ export type DocumentActionParams = {
   copyToClipboard: (text: string) => void
   showNotification: (detail: NotificationDetail) => void
   createTemplate: (key?: Key) => string
-  specType: SpecType
+  specType?: SpecType
 }
 
 export type MenuItemConfig = {

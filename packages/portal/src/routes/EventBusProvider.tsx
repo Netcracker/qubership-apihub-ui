@@ -187,7 +187,7 @@ export type ExportSettingsPopupDetail = {
   version: VersionKey
   documentId?: Key
   groupName?: string
-  specType: SpecType
+  specType?: SpecType
 }
 
 export type ShowDeleteCustomServerDetail = {
