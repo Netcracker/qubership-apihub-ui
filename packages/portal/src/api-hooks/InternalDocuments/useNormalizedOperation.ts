@@ -50,7 +50,7 @@ export function useNormalizedOperation(options: Options): QueryResult<unknown, E
     () => {
       if (isOpenApiSpecification(deserializedInternalDocument)) {
         // Truncate REST specification and leave the only necessary path
-        const operationPath = operation && isRestOperation(operation) ? operation.originalPath : undefined
+        const operationPath = operation && isRestOperation(operation) ? operation.path : undefined
         const operationMethod = operation && isRestOperation(operation) ? operation.method : undefined
         if (!operationPath || !operationMethod) {
           return undefined
@@ -60,7 +60,7 @@ export function useNormalizedOperation(options: Options): QueryResult<unknown, E
         const firstServer = servers[0]?.url
         const firstServerBasePath = firstServer ? new URL(firstServer).pathname : ''
         let foundPath
-        const currentOperationNormalizedId = calculateNormalizedRestOperationId(firstServerBasePath, operationPath, operationMethod)
+        const currentOperationNormalizedId = calculateNormalizedRestOperationId(firstServerBasePath === '/' ? firstServerBasePath : '', operationPath, operationMethod)
         for (const path of Object.keys(paths)) {
           const operationNormalizedId = calculateNormalizedRestOperationId(firstServerBasePath, path, operationMethod)
           const matched = currentOperationNormalizedId === operationNormalizedId

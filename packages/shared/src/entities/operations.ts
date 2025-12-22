@@ -125,7 +125,6 @@ export interface Operation {
 export interface RestOperation extends Operation {
   readonly method: MethodType
   readonly path: string
-  readonly originalPath: string
 }
 
 export interface GraphQlOperation extends Operation {

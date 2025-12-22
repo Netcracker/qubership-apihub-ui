@@ -90,8 +90,8 @@ export function useComparedOperations(options: Options): QueryResult<unknown, Er
       return undefined
     }
     if (isOpenApiSpecification(deserializedComparisonInternalDocument)) {
-      const previousOperationPath = previousOperation && isRestOperation(previousOperation) ? previousOperation.originalPath : undefined
-      const currentOperationPath = currentOperation && isRestOperation(currentOperation) ? currentOperation.originalPath : undefined
+      const previousOperationPath = previousOperation && isRestOperation(previousOperation) ? previousOperation.path : undefined
+      const currentOperationPath = currentOperation && isRestOperation(currentOperation) ? currentOperation.path : undefined
       const pathsSet = new Set([previousOperationPath, currentOperationPath])
       if (pathsSet.size > 1) {
         console.warn('There are 2 paths. What should we do?')
@@ -121,10 +121,10 @@ export function useComparedOperations(options: Options): QueryResult<unknown, Er
       const firstServerBasePath = firstServer ? new URL(firstServer).pathname : ''
       let foundPath: string | undefined
       const previousOperationNormalizedId = previousOperationPath && previousOperationMethod
-        ? calculateNormalizedRestOperationId(firstServerBasePath, previousOperationPath, previousOperationMethod)
+        ? calculateNormalizedRestOperationId(firstServerBasePath === '/' ? firstServerBasePath : '', previousOperationPath, previousOperationMethod)
         : ''
       const currentOperationNormalizedId = currentOperationPath && currentOperationMethod
-        ? calculateNormalizedRestOperationId(firstServerBasePath, currentOperationPath, currentOperationMethod)
+        ? calculateNormalizedRestOperationId(firstServerBasePath === '/' ? firstServerBasePath : '', currentOperationPath, currentOperationMethod)
         : ''
       for (const path of Object.keys(paths)) {
         const operationNormalizedId = calculateNormalizedRestOperationId(firstServerBasePath, path, comparedOperationMethod)
@@ -147,7 +147,7 @@ export function useComparedOperations(options: Options): QueryResult<unknown, Er
           const clonedWhollyChangedPaths: Record<string, unknown> = {};
           (clonedOasComparisonInternalDocument.paths as Record<PropertyKey, unknown>)[DIFF_META_KEY] = clonedWhollyChangedPaths
           for (const whollyChangedPath of Object.keys(whollyChangedPaths)) {
-            const whollyChangedOperationNormalizedId = calculateNormalizedRestOperationId(firstServerBasePath, whollyChangedPath, comparedOperationMethod)
+            const whollyChangedOperationNormalizedId = calculateNormalizedRestOperationId(firstServerBasePath === '/' ? firstServerBasePath : '', whollyChangedPath, comparedOperationMethod)
             const matched = currentOperationNormalizedId === whollyChangedOperationNormalizedId || previousOperationNormalizedId === whollyChangedOperationNormalizedId
             if (matched) {
               clonedWhollyChangedPaths[whollyChangedPath] = whollyChangedPaths[whollyChangedPath]
