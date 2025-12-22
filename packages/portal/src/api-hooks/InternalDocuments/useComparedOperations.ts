@@ -90,8 +90,8 @@ export function useComparedOperations(options: Options): QueryResult<unknown, Er
       return undefined
     }
     if (isOpenApiSpecification(deserializedComparisonInternalDocument)) {
-      const previousOperationPath = previousOperation && isRestOperation(previousOperation) ? previousOperation.path : undefined
-      const currentOperationPath = currentOperation && isRestOperation(currentOperation) ? currentOperation.path : undefined
+      const previousOperationPath = previousOperation && isRestOperation(previousOperation) ? previousOperation.originalPath : undefined
+      const currentOperationPath = currentOperation && isRestOperation(currentOperation) ? currentOperation.originalPath : undefined
       const pathsSet = new Set([previousOperationPath, currentOperationPath])
       if (pathsSet.size > 1) {
         console.warn('There are 2 paths. What should we do?')
@@ -120,12 +120,12 @@ export function useComparedOperations(options: Options): QueryResult<unknown, Er
       const firstServer = servers[0]?.url
       const firstServerBasePath = firstServer ? new URL(firstServer).pathname : ''
       let foundPath: string | undefined
-      const currentOperationNormalizedId = currentOperation && isRestOperation(currentOperation)
-          ? calculateNormalizedRestOperationId(firstServerBasePath, currentOperation.path, currentOperation.method)
-          : ''
-        const previousOperationNormalizedId = previousOperation && isRestOperation(previousOperation)
-          ? calculateNormalizedRestOperationId(firstServerBasePath, previousOperation.path, previousOperation.method)
-          : ''
+      const previousOperationNormalizedId = previousOperationPath && previousOperationMethod
+        ? calculateNormalizedRestOperationId(firstServerBasePath, previousOperationPath, previousOperationMethod)
+        : ''
+      const currentOperationNormalizedId = currentOperationPath && currentOperationMethod
+        ? calculateNormalizedRestOperationId(firstServerBasePath, currentOperationPath, currentOperationMethod)
+        : ''
       for (const path of Object.keys(paths)) {
         const operationNormalizedId = calculateNormalizedRestOperationId(firstServerBasePath, path, comparedOperationMethod)
         const matched = currentOperationNormalizedId === operationNormalizedId || previousOperationNormalizedId === operationNormalizedId

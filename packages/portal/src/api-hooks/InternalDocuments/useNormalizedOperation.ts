@@ -50,7 +50,7 @@ export function useNormalizedOperation(options: Options): QueryResult<unknown, E
     () => {
       if (isOpenApiSpecification(deserializedInternalDocument)) {
         // Truncate REST specification and leave the only necessary path
-        const operationPath = operation && isRestOperation(operation) ? operation.path : undefined
+        const operationPath = operation && isRestOperation(operation) ? operation.originalPath : undefined
         const operationMethod = operation && isRestOperation(operation) ? operation.method : undefined
         if (!operationPath || !operationMethod) {
           return undefined
