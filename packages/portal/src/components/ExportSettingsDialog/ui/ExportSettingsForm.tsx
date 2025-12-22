@@ -213,7 +213,7 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
       onSubmit={handleSubmit(onSubmit)}
     >
       <DialogTitle>
-        Export Settings1
+        Export Settings
       </DialogTitle>
       <DialogContent>
         <ExportSettingsFormFields
