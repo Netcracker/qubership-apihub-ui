@@ -147,7 +147,7 @@ export function useComparedOperations(options: Options): QueryResult<unknown, Er
           const clonedWhollyChangedPaths: Record<string, unknown> = {};
           (clonedOasComparisonInternalDocument.paths as Record<PropertyKey, unknown>)[DIFF_META_KEY] = clonedWhollyChangedPaths
           for (const whollyChangedPath of Object.keys(whollyChangedPaths)) {
-            const whollyChangedOperationNormalizedId = calculateNormalizedRestOperationId(firstServerBasePath === '/' ? firstServerBasePath : '', whollyChangedPath, comparedOperationMethod)
+            const whollyChangedOperationNormalizedId = calculateNormalizedRestOperationId(firstServerBasePath, whollyChangedPath, comparedOperationMethod)
             const matched = currentOperationNormalizedId === whollyChangedOperationNormalizedId || previousOperationNormalizedId === whollyChangedOperationNormalizedId
             if (matched) {
               clonedWhollyChangedPaths[whollyChangedPath] = whollyChangedPaths[whollyChangedPath]
