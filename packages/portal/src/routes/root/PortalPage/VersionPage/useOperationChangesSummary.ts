@@ -1,3 +1,5 @@
+import type { DiffType } from '@netcracker/qubership-apihub-api-diff'
+import { replacePropertyInChangesSummary, type DiffTypeDto } from '@netcracker/qubership-apihub-api-processor'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { ChangesSummary } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
 import { API_V2, requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
@@ -32,16 +34,19 @@ const EMPTY_CHANGES_SUMMARY: ChangesSummary = {
   annotation: 0,
 }
 
+type ChangesSummaryDto = ChangesSummary<DiffTypeDto>
+
 export function useOperationChangesSummary(options: Options): Result {
   const { packageId, versionId, previousPackageId, previousVersionId, apiType, operationId, enabled } = options
   const {
     data: operationChangesSummary,
     isLoading: loadingOperationChangesSummary,
     error: errorOperationChangesSummary,
-  } = useQuery<ChangesSummary, Error>({
+  } = useQuery<ChangesSummaryDto, Error, ChangesSummary>({
     queryKey: [QUERY_KEY_OPERATION_CHANGES_SUMMARY, packageId, versionId, previousPackageId, previousVersionId, apiType, operationId],
     queryFn: () => getOperationChangesSummary(options),
     enabled: enabled && !!packageId && !!versionId && !!apiType && !!operationId,
+    select: toOperationChangesSummary,
   })
   return {
     data: operationChangesSummary ?? EMPTY_CHANGES_SUMMARY,
@@ -50,7 +55,7 @@ export function useOperationChangesSummary(options: Options): Result {
   }
 }
 
-function getOperationChangesSummary(options: Options): Promise<ChangesSummary> {
+function getOperationChangesSummary(options: Options): Promise<ChangesSummaryDto> {
   const { packageId, versionId, previousPackageId, previousVersionId, apiType, operationId } = options
 
   const packageKey = packageId ?? ''
@@ -72,9 +77,13 @@ function getOperationChangesSummary(options: Options): Promise<ChangesSummary> {
       operationId: operationId,
     },
   )
-  return requestJson<ChangesSummary>(
+  return requestJson<ChangesSummaryDto>(
     `${endpoint}?${queryParams}`,
     { method: 'GET' },
     { basePath: API_V2 },
   )
+}
+
+function toOperationChangesSummary(dto: ChangesSummaryDto): ChangesSummary {
+  return replacePropertyInChangesSummary<DiffTypeDto, DiffType>(dto)
 }
