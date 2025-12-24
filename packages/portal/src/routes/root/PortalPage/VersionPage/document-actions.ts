@@ -67,7 +67,7 @@ export const DOCUMENT_MENU_CONFIG: MenuItemConfig[] = [
   {
     id: 'download',
     label: 'Download',
-    condition: (isOpenApiSpec) => !isOpenApiSpec,
+    condition: (isOpenApiSpec, _, isAsyncApiSpec) => !isOpenApiSpec && !isAsyncApiSpec,
     action: ({ downloadPublishedDocument }) => {
       downloadPublishedDocument()
     },
@@ -90,7 +90,7 @@ export const DOCUMENT_MENU_CONFIG: MenuItemConfig[] = [
   {
     id: 'copy-page-template',
     label: 'Copy page template',
-    condition: (isOpenApiSpec, isSharingAvailable) => isOpenApiSpec && isSharingAvailable,
+    condition: (isOpenApiSpec, isSharingAvailable, isAsyncApiSpec) => isOpenApiSpec && isSharingAvailable || isAsyncApiSpec,
     action: ({ getSharedKey, createTemplate, copyToClipboard, showNotification }) => {
       getSharedKey().then(({ data }) => {
         if (data) {
