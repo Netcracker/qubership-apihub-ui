@@ -90,7 +90,7 @@ export const DOCUMENT_MENU_CONFIG: MenuItemConfig[] = [
   {
     id: 'copy-page-template',
     label: 'Copy page template',
-    condition: (isOpenApiSpec, isSharingAvailable, isAsyncApiSpec) => isOpenApiSpec && isSharingAvailable || isAsyncApiSpec,
+    condition: (isOpenApiSpec, isSharingAvailable) => isOpenApiSpec && isSharingAvailable,
     action: ({ getSharedKey, createTemplate, copyToClipboard, showNotification }) => {
       getSharedKey().then(({ data }) => {
         if (data) {
