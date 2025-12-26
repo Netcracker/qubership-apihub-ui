@@ -29,11 +29,14 @@ import {
 } from '../api/useExport'
 import type { ExportSettingsFormData } from '../entities/export-settings-form'
 import { EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE } from '../entities/export-settings-form'
-import type { ExportSettingsFormField, ExportSettingsFormFieldOption } from '../entities/export-settings-form-field'
+import type {
+  ExportSettingsFormField,
+  ExportSettingsFormFieldOption} from '../entities/export-settings-form-field'
+import { SPEC_TYPE_ACCESS_VIEW_EXPORT_FIELD,
+} from '../entities/export-settings-form-field'
 import {
   ExportSettingsFormFieldKind,
   ExportSettingsFormFieldOptionOasExtensions,
-  specTypeAccessViewExportField,
 } from '../entities/export-settings-form-field'
 import { useLocalExportSettings } from '../storage/useLocalExportSettings'
 import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
@@ -53,8 +56,8 @@ const ExportSettingsFormFields: FC<ExportSettingsFormFieldsProps> = memo(props =
   return (
     <Box component="form" display="flex" flexDirection="column" gap={2}>
       {fields.map(field => <>
-        {field.options.length
-          ? <>
+        {field.options?.length > 0 &&
+          <>
             <Typography key={`${field.kind}-label`} variant="h3">{field.label}</Typography>
             <Controller
               key={field.kind}
@@ -92,7 +95,6 @@ const ExportSettingsFormFields: FC<ExportSettingsFormFieldsProps> = memo(props =
               )}
             />
           </>
-          : <></>
         }
       </>)}
     </Box>
@@ -138,12 +140,15 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
 
   // Calculate fields and default values
   const fields = useMemo(() => {
-    if (specType && specTypeAccessViewExportField[specType]) {
+    if (specType && SPEC_TYPE_ACCESS_VIEW_EXPORT_FIELD[specType]) {
       return EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE[exportedEntity]
         .map(field => {
           return {
             ...field,
-            options: intersectionBy(field.options, specTypeAccessViewExportField[specType] as ReadonlyArray<ExportSettingsFormFieldOption>, 'value'),
+            options: intersectionBy(
+              field.options,
+              SPEC_TYPE_ACCESS_VIEW_EXPORT_FIELD[specType] as ReadonlyArray<ExportSettingsFormFieldOption>,
+              'value'),
           }
         })
     } else {

@@ -3,8 +3,6 @@ import type { ExportConfig } from '../../../routes/root/PortalPage/useExportConf
 import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import { ASYNCAPI_3_SPEC_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 
-
-
 export type ExportSettingsFormFieldOption<L extends string = string, V extends string = string> = Readonly<{
   label: L
   value: V
@@ -83,6 +81,6 @@ export const FIELD_OPTION_LIST_OAS_EXTENSIONS: ReadonlyArray<ExportSettingsFormF
 ]
 type SpecTypeAccessViewExportFieldType = Partial<Record<SpecType, ReadonlyArray<ExportSettingsFormFieldOption>>>
 
-export const specTypeAccessViewExportField: SpecTypeAccessViewExportFieldType = {
+export const SPEC_TYPE_ACCESS_VIEW_EXPORT_FIELD: SpecTypeAccessViewExportFieldType = {
   [ASYNCAPI_3_SPEC_TYPE]: [FIELD_OPTION_FILE_FORMAT_OAS_YAML, FIELD_OPTION_FILE_FORMAT_OAS_JSON],
 }
