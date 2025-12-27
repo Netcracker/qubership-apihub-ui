@@ -193,6 +193,10 @@ export type SearchGQLParams = Partial<{
   operationTypes: GraphQlOperationTypes[]
 }>
 
+export type SearchAsyncApiParams = Partial<{
+  apiType: ApiType
+}>
+
 export const REST_SCOPES: RestScope[] = [RESPONSE_SCOPE, REQUEST_SCOPE]
 export const GRAPHQL_SCOPES: GraphqlScope[] = [ARGUMENT_SCOPE, PROPERTY_SCOPE, ANNOTATION_SCOPE]
 
