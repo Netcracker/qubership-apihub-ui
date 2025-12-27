@@ -31,8 +31,9 @@ import type { ExportSettingsFormData } from '../entities/export-settings-form'
 import { EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE } from '../entities/export-settings-form'
 import type {
   ExportSettingsFormField,
-  ExportSettingsFormFieldOption} from '../entities/export-settings-form-field'
-import { SPEC_TYPE_ACCESS_VIEW_EXPORT_FIELD,
+} from '../entities/export-settings-form-field'
+import {
+  SPEC_TYPE_ACCESS_VIEW_EXPORT_FIELD,
 } from '../entities/export-settings-form-field'
 import {
   ExportSettingsFormFieldKind,
@@ -40,7 +41,7 @@ import {
 } from '../entities/export-settings-form-field'
 import { useLocalExportSettings } from '../storage/useLocalExportSettings'
 import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import { intersectionBy } from 'lodash'
+import { intersectionBy } from 'lodash-es'
 
 interface ExportSettingsFormFieldsProps {
   disabled: boolean
@@ -143,12 +144,13 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
     if (specType && SPEC_TYPE_ACCESS_VIEW_EXPORT_FIELD[specType]) {
       return EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE[exportedEntity]
         .map(field => {
+          const allowedOptions = SPEC_TYPE_ACCESS_VIEW_EXPORT_FIELD[specType]!
           return {
             ...field,
-            options: intersectionBy(
+            options: [...intersectionBy(
               field.options,
-              SPEC_TYPE_ACCESS_VIEW_EXPORT_FIELD[specType] as ReadonlyArray<ExportSettingsFormFieldOption>,
-              'value'),
+              allowedOptions,
+              'value')],
           }
         })
     } else {
