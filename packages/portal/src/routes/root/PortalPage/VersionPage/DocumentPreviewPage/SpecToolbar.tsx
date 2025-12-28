@@ -88,7 +88,7 @@ export const SpecToolbar: FC = memo(() => {
 
   const isSharingAvailable = type !== UNKNOWN_SPEC_TYPE || format === MD_FILE_FORMAT
   const isOpenApiSpecification = isOpenApiSpecType(type)
-  const isAsyncApiSpec = isAsyncApiSpecType(type)
+  const isAsyncApiSpecification = isAsyncApiSpecType(type)
 
   const { showExportSettingsDialog } = useEventBus()
 
@@ -161,7 +161,7 @@ export const SpecToolbar: FC = memo(() => {
             data-testid="ExportDocumentMenuButton"
           >
             {DOCUMENT_MENU_CONFIG_ON_PREVIEW_PAGE.map((menuItem) => (
-              menuItem.condition(isOpenApiSpecification, isSharingAvailable, isAsyncApiSpec) &&
+              menuItem.condition(isOpenApiSpecification, isSharingAvailable, isAsyncApiSpecification) &&
               <MenuItem
                 key={menuItem.id}
                 onClick={() => menuItem.action(actionParams)}
