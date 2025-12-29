@@ -29,7 +29,8 @@ import {NAVIGATION_PLACEHOLDER_AREA, Placeholder} from '@netcracker/qubership-ap
 import {useSearchParam} from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import {optionalSearchParams, REF_SEARCH_PARAM} from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import {SpecLogo} from '@netcracker/qubership-apihub-ui-shared/components/SpecLogo'
-import {isAsyncApiSpecType, SpecType} from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import type { SpecType} from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import {isAsyncApiSpecType} from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import {
   isGraphQlSpecType,
   isOpenApiSpecType,
@@ -89,7 +90,7 @@ function getGroupNameBySpecType(type: SpecType): GroupName {
     return GROUP_NAME_JSON_SCHEMA
   }
   if (isAsyncApiSpecType(type)) {
-   return GROUP_NAME_ASYNCAPI
+    return GROUP_NAME_ASYNCAPI
   }
 
   return GROUP_NAME_OTHER

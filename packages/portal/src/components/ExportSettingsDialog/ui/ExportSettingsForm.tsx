@@ -174,7 +174,7 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
       : fieldsDefaultValues,
   })
 
-  // Handle form submission 
+  // Handle form submission
   const onSubmit = (data: ExportSettingsFormData): void => {
     let requestData: IRequestDataExport | undefined
     const removeOasExtensions = data[ExportSettingsFormFieldKind.OAS_EXTENSIONS] === ExportSettingsFormFieldOptionOasExtensions.REMOVE
