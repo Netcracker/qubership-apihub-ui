@@ -117,7 +117,7 @@ export const VersionNavigationMenu: FC<VersionNavigationMenuProps> = memo<Versio
         {
           linterEnabled: linterEnabled,
           tooltip: apiQualityTabTooltip,
-          tabDisabled: !NotLintedApiTypes(defaultApiType) && !!apiQualityTabTooltip,
+          tabDisabled: !NotLintedApiTypes(defaultApiType),
         },
       ).filter(({ id }) => menuItems.includes(id)),
     [defaultApiType, menuItems, previousVersion, productionMode, linterEnabled, apiQualityTabTooltip],
