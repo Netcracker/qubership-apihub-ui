@@ -15,7 +15,11 @@
  */
 
 import type { DeprecateItem, ReferencedPackageKind } from '@netcracker/qubership-apihub-api-processor'
-import { API_AUDIENCE_EXTERNAL, API_AUDIENCE_INTERNAL, API_AUDIENCE_UNKNOWN } from '@netcracker/qubership-apihub-api-processor'
+import {
+  API_AUDIENCE_EXTERNAL,
+  API_AUDIENCE_INTERNAL,
+  API_AUDIENCE_UNKNOWN,
+} from '@netcracker/qubership-apihub-api-processor'
 import type { FetchNextPageOptions, InfiniteQueryObserverResult } from '@tanstack/react-query'
 import type { IsLoading } from '../utils/aliases'
 import { isObject } from '../utils/objects'
@@ -27,6 +31,7 @@ import type { MethodType } from './method-types'
 import type { PackageKind } from './packages'
 import type { OperationChangeBase } from './version-changelog'
 import type { VersionStatus } from './version-status'
+import { AsyncApiOperationType } from './asyncapi-operation-types'
 
 export const DEFAULT_API_TYPE: ApiType = API_TYPE_REST
 
@@ -34,7 +39,7 @@ export type OperationsDto = Readonly<{
   operations: ReadonlyArray<OperationDto>
   packages: PackagesRefs
 }>
-export type OperationDto = RestOperationDto | GraphQlOperationDto
+export type OperationDto = RestOperationDto | GraphQlOperationDto | AsyncApiOperationDto
 
 export type OperationMetadataDto = Readonly<{
   operationId: Key
@@ -59,6 +64,12 @@ export type RestOperationDto = OperationMetadataDto & Readonly<{
 export type GraphQlOperationDto = OperationMetadataDto & Readonly<{
   method: string
   type: GraphQlOperationType
+}>
+
+export type AsyncApiOperationDto = OperationMetadataDto & Readonly<{
+  action: string //TODO: add typing
+  channel: string
+  protocol: string
 }>
 
 export type DeprecatedItem = DeprecateItem
@@ -122,6 +133,7 @@ export interface Operation {
   readonly customTags?: CustomTags
   readonly versionInternalDocumentId?: Key
 }
+
 export interface RestOperation extends Operation {
   readonly method: MethodType
   readonly path: string
@@ -130,6 +142,12 @@ export interface RestOperation extends Operation {
 export interface GraphQlOperation extends Operation {
   readonly method: string
   readonly type: GraphQlOperationType
+}
+
+export interface AsyncApiOperation extends Operation {
+  readonly action: AsyncApiOperationType //TODO: add typing
+  readonly channel: string
+  readonly protocol: string
 }
 
 export interface OperationData extends Operation {
@@ -276,6 +294,21 @@ export function isRestOperationDto(operation: OperationDto): operation is RestOp
 export function isGraphQlOperation(operation: Operation): operation is GraphQlOperation {
   const asGraphQlOperation = (operation as GraphQlOperation)
   return asGraphQlOperation.type !== undefined
+}
+
+export function isGraphQlOperationDto(operation: OperationDto): operation is GraphQlOperationDto {
+  const asGraphQlOperation = (operation as GraphQlOperationDto)
+  return asGraphQlOperation.type !== undefined
+}
+
+export function isAsyncApiOperation(operation: Operation): operation is AsyncApiOperation {
+  const asAsyncApiOperation = (operation as AsyncApiOperation)
+  return asAsyncApiOperation.action !== undefined && asAsyncApiOperation.channel !== undefined
+}
+
+export function isAsyncApiOperationDto(operation: OperationDto): operation is AsyncApiOperationDto {
+  const asAsyncApiOperation = (operation as AsyncApiOperationDto)
+  return asAsyncApiOperation.action !== undefined && asAsyncApiOperation.channel !== undefined
 }
 
 export function checkIfGraphQLOperation(maybeOperation: unknown): maybeOperation is GraphQlOperation {

@@ -24,17 +24,15 @@ import {
 } from '@netcracker/qubership-apihub-ui-shared/components/Operations/OperationWithMetaClickableList'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { RAW_OPERATION_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
-import {
-  checkIfGraphQLOperation,
-  type FetchNextOperationList,
-  type OperationData,
-  type OperationsData,
-  type PackageRef,
+import type {
+  FetchNextOperationList,
+  OperationData,
+  OperationsData,
+  PackageRef,
 } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import { checkIfGraphQLOperation } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { useSystemInfo } from '@netcracker/qubership-apihub-ui-shared/features/system-info'
-import { usePublishedDocumentRaw } from '@netcracker/qubership-apihub-ui-shared/hooks/documents/usePublishedDocumentRaw'
 import {
   useOperationsPairStringified,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/operations/useOperationsPairAsStrings'
@@ -50,7 +48,15 @@ import { getOperationLink } from './useNavigateToOperation'
 import { useOperation } from './useOperation'
 import { useOperationSearchParams } from './useOperationSearchParams'
 import { useOperationViewMode } from './useOperationViewMode'
-import { useRawGraphQlCroppedToSingleOperationRawGraphQl } from './useRawGraphQlCroppedToSingleOperationRawGraphQl'
+import { ASYNCAPI_API_TYPE } from '@netcracker/qubership-apihub-api-processor'
+import {
+  DOC_OPERATION_VIEW_MODE,
+  RAW_OPERATION_VIEW_MODE,
+} from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
+import { usePublishedDocumentRaw } from '@netcracker/qubership-apihub-ui-shared/hooks/documents/usePublishedDocumentRaw'
+import {
+  useRawGraphQlCroppedToSingleOperationRawGraphQl,
+} from '@apihub/routes/root/PortalPage/VersionPage/useRawGraphQlCroppedToSingleOperationRawGraphQl'
 
 export type OperationListWithPreviewProps = {
   operations: OperationsData
@@ -81,8 +87,15 @@ export const OperationListWithPreview: FC<OperationListWithPreviewProps> = memo<
 
   const operationSearchParams = useOperationSearchParams()
   const [kind] = usePackageKind()
-  const { mode, schemaViewMode } = useOperationViewMode()
   const { productionMode } = useSystemInfo()
+
+  const defaultViewMode = useMemo(() => {
+    if (apiType === ASYNCAPI_API_TYPE) {
+      return RAW_OPERATION_VIEW_MODE
+    }
+    return DOC_OPERATION_VIEW_MODE
+  }, [apiType])
+  const { mode, schemaViewMode } = useOperationViewMode(defaultViewMode)
 
   const selectedPreviewOperation = useSelectedPreviewOperation()
   const setSelectedPreviewOperation = useSetSelectedPreviewOperation()

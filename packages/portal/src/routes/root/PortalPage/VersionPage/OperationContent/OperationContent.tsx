@@ -25,6 +25,7 @@ import {
   useCustomServersContext,
 } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/Playground/CustomServersProvider'
 import { getFileDetails } from '@apihub/utils/file-details'
+import { isAsyncApiSpecification } from '@apihub/utils/internal-documents/type-guards'
 import { Box } from '@mui/material'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import {
@@ -39,7 +40,11 @@ import {
   WarningApiProcessorVersion,
 } from '@netcracker/qubership-apihub-ui-shared/components/WarningApiProcessorVersion'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { API_TYPE_GRAPHQL, API_TYPE_REST } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import {
+  API_TYPE_ASYNCAPI,
+  API_TYPE_GRAPHQL,
+  API_TYPE_REST,
+} from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { FileViewMode } from '@netcracker/qubership-apihub-ui-shared/entities/file-format-view'
 import { FILE_FORMAT_VIEW, YAML_FILE_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/entities/file-format-view'
 import type { OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
@@ -179,28 +184,29 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
     const comparisonMode = isComparisonMode(displayMode)
     const [fileViewMode = YAML_FILE_VIEW_MODE, setFileViewMode] = useFileViewMode()
 
-    const {
-      originOperation: originOperationContent,
-      changedOperation: changedOperationContent,
-    } = useOperationsPairStringified(
-      isGraphQLOperation
-        ? { originOperation: documentWithOriginOriginOperation, changedOperation: documentWithChangedGraphQlOperation }
-        : undefined,
-      {
-        originOperation: originOperation,
-        changedOperation: changedOperation,
-        enabled: (
-          isRawViewMode || // TODO 03.12.2025 // Check how it was before refactoring
-          isPlaygroundMode || isExamplesMode // OpenAPI
-        ),
-      },
-    )
+  const {
+    originOperation: originOperationContent,
+    changedOperation: changedOperationContent,
+  } = useOperationsPairStringified(
+    isGraphQLOperation
+      ? { originOperation: documentWithOriginOriginOperation, changedOperation: documentWithChangedGraphQlOperation }
+      : undefined,
+    {
+      originOperation: originOperation,
+      changedOperation: changedOperation,
+      enabled: (
+        isRawViewMode || // TODO 03.12.2025 // Check how it was before refactoring
+        isAsyncApiSpecification(originOperation?.data) || isAsyncApiSpecification(changedOperation?.data) || // AsyncAPI
+        isPlaygroundMode || isExamplesMode // OpenAPI
+      ),
+    },
+  )
 
-    const originGraphQlOperationContent = useRawGraphQlCroppedToSingleOperationRawGraphQl(originOperationContent, operationType, operationName)
-    const changedGraphQlOperationContent = useRawGraphQlCroppedToSingleOperationRawGraphQl(changedOperationContent, operationType, operationName)
+  const originGraphQlOperationContent = useRawGraphQlCroppedToSingleOperationRawGraphQl(originOperationContent, operationType, operationName)
+  const changedGraphQlOperationContent = useRawGraphQlCroppedToSingleOperationRawGraphQl(changedOperationContent, operationType, operationName)
 
-    const [, setPlaygroundViewMode] = useSidebarPlaygroundViewMode()
-    const [navigationDetails] = useOperationNavigationDetails()
+  const [, setPlaygroundViewMode] = useSidebarPlaygroundViewMode()
+  const [navigationDetails] = useOperationNavigationDetails()
 
     const breadcrumbsData = useBreadcrumbsData()
 
@@ -302,7 +308,7 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
               />
             }
           />
-          {isDocViewMode && !!mergedDocument && (
+          {isDocViewMode && !!mergedDocument && apiType !== API_TYPE_ASYNCAPI && (
             <OperationView
               apiType={apiType as ApiType}
               displayMode={displayMode}
@@ -316,7 +322,7 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
               operationName={operationName}
             />
           )}
-          {isRawViewMode && (
+          {(isRawViewMode || isDocViewMode && apiType === API_TYPE_ASYNCAPI) && (
             <RawSpecDiffView
               beforeValue={originValueForRawSpecView}
               afterValue={changedValueForRawSpecView}
@@ -338,7 +344,7 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
             pt={isRawViewMode || isGraphViewMode ? 0 : 1}
             height="100%"
           >
-            {isDocViewMode && (
+            {isDocViewMode && apiType !== API_TYPE_ASYNCAPI && ( // TODO: remove after doc view is ready
               <OperationView
                 apiType={apiType as ApiType}
                 schemaViewMode={schemaViewMode}
@@ -354,7 +360,7 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
                 operationName={operationName}
               />
             )}
-            {isRawViewMode && (
+            {(isRawViewMode || isDocViewMode && apiType === API_TYPE_ASYNCAPI) && (
               <Box
                 display={isRawViewMode ? 'grid' : 'inherit'}
                 height={isRawViewMode ? 'inherit' : '100%'}
@@ -409,4 +415,5 @@ const API_TYPE_RAW_VIEW_ACTIONS_MAP: Record<ApiType, (fileViewMode: FileViewMode
     />
   ),
   [API_TYPE_GRAPHQL]: () => null,
+  [API_TYPE_ASYNCAPI]: () => null,
 }
