@@ -184,29 +184,29 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
     const comparisonMode = isComparisonMode(displayMode)
     const [fileViewMode = YAML_FILE_VIEW_MODE, setFileViewMode] = useFileViewMode()
 
-  const {
-    originOperation: originOperationContent,
-    changedOperation: changedOperationContent,
-  } = useOperationsPairStringified(
-    isGraphQLOperation
-      ? { originOperation: documentWithOriginOriginOperation, changedOperation: documentWithChangedGraphQlOperation }
-      : undefined,
-    {
-      originOperation: originOperation,
-      changedOperation: changedOperation,
-      enabled: (
-        isRawViewMode || // TODO 03.12.2025 // Check how it was before refactoring
-        isAsyncApiSpecification(originOperation?.data) || isAsyncApiSpecification(changedOperation?.data) || // AsyncAPI
-        isPlaygroundMode || isExamplesMode // OpenAPI
-      ),
-    },
-  )
+    const {
+      originOperation: originOperationContent,
+      changedOperation: changedOperationContent,
+    } = useOperationsPairStringified(
+      isGraphQLOperation
+        ? { originOperation: documentWithOriginOriginOperation, changedOperation: documentWithChangedGraphQlOperation }
+        : undefined,
+      {
+        originOperation: originOperation,
+        changedOperation: changedOperation,
+        enabled: (
+          isRawViewMode || // TODO 03.12.2025 // Check how it was before refactoring
+          isAsyncApiSpecification(originOperation?.data) || isAsyncApiSpecification(changedOperation?.data) || // AsyncAPI
+          isPlaygroundMode || isExamplesMode // OpenAPI
+        ),
+      },
+    )
 
-  const originGraphQlOperationContent = useRawGraphQlCroppedToSingleOperationRawGraphQl(originOperationContent, operationType, operationName)
-  const changedGraphQlOperationContent = useRawGraphQlCroppedToSingleOperationRawGraphQl(changedOperationContent, operationType, operationName)
+    const originGraphQlOperationContent = useRawGraphQlCroppedToSingleOperationRawGraphQl(originOperationContent, operationType, operationName)
+    const changedGraphQlOperationContent = useRawGraphQlCroppedToSingleOperationRawGraphQl(changedOperationContent, operationType, operationName)
 
-  const [, setPlaygroundViewMode] = useSidebarPlaygroundViewMode()
-  const [navigationDetails] = useOperationNavigationDetails()
+    const [, setPlaygroundViewMode] = useSidebarPlaygroundViewMode()
+    const [navigationDetails] = useOperationNavigationDetails()
 
     const breadcrumbsData = useBreadcrumbsData()
 
@@ -308,7 +308,7 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
               />
             }
           />
-          {isDocViewMode && !!mergedDocument && apiType !== API_TYPE_ASYNCAPI && (
+          {isDocViewMode && !!mergedDocument && (
             <OperationView
               apiType={apiType as ApiType}
               displayMode={displayMode}
@@ -322,7 +322,7 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
               operationName={operationName}
             />
           )}
-          {(isRawViewMode || isDocViewMode && apiType === API_TYPE_ASYNCAPI) && (
+          {isRawViewMode && (
             <RawSpecDiffView
               beforeValue={originValueForRawSpecView}
               afterValue={changedValueForRawSpecView}
@@ -344,7 +344,7 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
             pt={isRawViewMode || isGraphViewMode ? 0 : 1}
             height="100%"
           >
-            {isDocViewMode && apiType !== API_TYPE_ASYNCAPI && ( // TODO: remove after doc view is ready
+            {isDocViewMode && (
               <OperationView
                 apiType={apiType as ApiType}
                 schemaViewMode={schemaViewMode}
@@ -360,7 +360,7 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
                 operationName={operationName}
               />
             )}
-            {(isRawViewMode || isDocViewMode && apiType === API_TYPE_ASYNCAPI) && (
+            {isRawViewMode && (
               <Box
                 display={isRawViewMode ? 'grid' : 'inherit'}
                 height={isRawViewMode ? 'inherit' : '100%'}

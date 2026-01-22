@@ -50,10 +50,6 @@ export function NotLintedApiTypes(apiType?: ApiType): boolean {
   return !apiType || !NOT_LINTED_API_TYPES.some(notLintedApiType => notLintedApiType === apiType)
 }
 
-export function NotLintedApiTypes(apiType?: ApiType): boolean {
-  return !apiType || !NOT_LINTED_API_TYPES.some(notLintedApiType => notLintedApiType === apiType)
-}
-
 export function useApiQualityLinterEnabled(apiType?: ApiType): boolean {
   const [kind] = usePackageKind()
   const linterEnabled = (
