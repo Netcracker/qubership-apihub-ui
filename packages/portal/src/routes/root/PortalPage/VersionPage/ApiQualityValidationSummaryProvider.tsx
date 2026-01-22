@@ -50,6 +50,10 @@ export function NotLintedApiTypes(apiType?: ApiType): boolean {
   return !apiType || !NOT_LINTED_API_TYPES.some(notLintedApiType => notLintedApiType === apiType)
 }
 
+export function NotLintedApiTypes(apiType?: ApiType): boolean {
+  return !apiType || !NOT_LINTED_API_TYPES.some(notLintedApiType => notLintedApiType === apiType)
+}
+
 export function useApiQualityLinterEnabled(apiType?: ApiType): boolean {
   const [kind] = usePackageKind()
   const linterEnabled = (
@@ -95,7 +99,7 @@ export function getApiQualitySummaryPlaceholder(
       return <>
         No validation results.
         <br />
-        <Link onClick={onManualRunLinter}>
+        <Link onClick={onManualRunLinter} data-testid="RunValidationLink">
           Run Validation
         </Link>
       </>
