@@ -35,12 +35,13 @@ import {
 } from '@netcracker/qubership-apihub-ui-shared/components/WarningApiProcessorVersion'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { API_TYPE_ASYNCAPI, API_TYPE_GRAPHQL, API_TYPE_REST, API_TYPE_TITLE_MAP } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { DOC_OPERATION_VIEW_MODE, SIMPLE_OPERATION_VIEW_MODE, GRAPH_VIEW_MODE, RAW_OPERATION_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
+import { DOC_OPERATION_VIEW_MODE, GRAPH_VIEW_MODE, RAW_OPERATION_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
 import type { OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { isObject } from '@netcracker/qubership-apihub-ui-shared/utils/objects'
 import type { FC, ReactElement } from 'react'
-import { memo, useCallback, useEffect, useMemo } from 'react'
+import { memo, useCallback, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useNavigation } from '../../../../NavigationProvider'
 import { useOperationNavigationDetails } from '../../../OperationNavigationDataProvider'
@@ -66,7 +67,6 @@ import { OperationToolbarHeader } from './OperationToolbarHeader'
 import { useOpenApiVisitor } from './useOpenApiVisitor'
 import { useOperationsWithSameModel } from './useOperationsWithSameModel'
 import { useUpdateRecentOperations } from './useUpdateRecentOperations'
-import { isObject } from '@netcracker/qubership-apihub-ui-shared/utils/objects'
 
 // High Order Component //
 export const OperationPage: FC = memo(() => {
@@ -76,16 +76,8 @@ export const OperationPage: FC = memo(() => {
   const [documentId] = useDocumentSearchParam()
   const [searchValue = ''] = useTextSearchParam()
   const defaultViewMode = API_TYPE_DEFAULT_VIEW_MODE_MAP[apiType as ApiType]
-  const { mode: viewMode, setMode } = useOperationViewMode(defaultViewMode)
+  const { mode: viewMode } = useOperationViewMode(defaultViewMode)
   const { showModelUsagesDialog } = useEventBus()
-
-  // Redirect to raw view if AsyncAPI is in an unsupported view mode
-  //TODO: remove after doc view for AsyncAPI is implemented
-  useEffect(() => {
-    if (apiType === API_TYPE_ASYNCAPI && (viewMode === DOC_OPERATION_VIEW_MODE || viewMode === SIMPLE_OPERATION_VIEW_MODE)) {
-      setMode(RAW_OPERATION_VIEW_MODE)
-    }
-  }, [apiType, viewMode, setMode])
 
   const [operationsGroupedByTags, areOperationsLoading] = useOperationsGroupedByTags({
     operationPackageKey: operationPackageKey,
