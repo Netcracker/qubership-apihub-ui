@@ -26,7 +26,7 @@ import type {
 } from '@netcracker/qubership-apihub-api-processor'
 import { generatePath } from 'react-router-dom'
 import type { ApiType } from '../entities/api-types'
-import type { OperationDto, OperationsDto } from '../entities/operations'
+import type { OperationDto, OperationsDto, Tags } from '../entities/operations'
 import { isAsyncApiOperationDto, isGraphQlOperationDto, isRestOperationDto } from '../entities/operations'
 import type { ResolvedVersionDto } from '../types/packages'
 import { getPackageRedirectDetails } from './redirects'
@@ -34,6 +34,7 @@ import { API_V1, API_V2, API_V3, requestBlob, requestJson, requestVoid } from '.
 import { optionalSearchParams } from './search-params'
 import type { Key } from './types'
 import type { DocumentsDto } from '../entities/documents'
+import type { AsyncApiOperationType } from '../entities/asyncapi-operation-types'
 
 export async function getPackageVersionContent(
   packageKey: Key,
@@ -264,8 +265,29 @@ export type PublishDetailsDto = {
   message?: string
 }
 
-export function toVersionOperation(value: OperationDto): ResolvedOperation {
-  let metadata: any //TODO: fix type
+type RestMetadata = {
+  tags?: Readonly<Tags>
+  method: string
+  path: string
+}
+
+type GraphQlMetadata = {
+  tags?: Readonly<Tags>
+  method: string
+  type: string
+}
+
+type AsyncApiMetadata = {
+  tags?: Readonly<Tags>
+  action: AsyncApiOperationType
+  channel: string
+  protocol: string
+}
+
+export type OperationMetadata = RestMetadata | GraphQlMetadata | AsyncApiMetadata
+
+export function toVersionOperation(value: OperationDto): ResolvedOperation<OperationMetadata> {
+  let metadata!: OperationMetadata
   if (isRestOperationDto(value)) {
     metadata = {
       tags: value.tags,
