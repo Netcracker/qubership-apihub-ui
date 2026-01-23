@@ -16,13 +16,13 @@
 
 import type {
   ApiAudience,
-  ApiKind,
   BuildConfig,
   ResolvedDeprecatedOperations,
   ResolvedGroupDocuments,
   ResolvedOperation,
   ResolvedReferences,
   ResolvedVersionDocuments,
+  ApihubApiCompatibilityKind,
 } from '@netcracker/qubership-apihub-api-processor'
 import { generatePath } from 'react-router-dom'
 import type { ApiType } from '../entities/api-types'
@@ -312,7 +312,7 @@ export function toVersionOperation(value: OperationDto): ResolvedOperation<Opera
     operationId: value.operationId,
     documentId: value.documentId,
     data: value.data!,
-    apiKind: value.apiKind as ApiKind,
+    apiKind: value.apiKind as ApihubApiCompatibilityKind,
     apiAudience: value.apiAudience as ApiAudience,
     deprecated: value.deprecated ?? false,
     title: value.title,
