@@ -89,3 +89,23 @@ export const DEFAULT_OPERATION_PREVIEW_VIEW_MODE_BY_API_TYPE = new Map<ApiType, 
   [API_TYPE_REST, DOC_OPERATION_VIEW_MODE],
   [API_TYPE_ASYNCAPI, DOC_OPERATION_VIEW_MODE],
 ])
+
+type DefaultViewModeInComparisonMode = (condition?: boolean) => typeof DOC_OPERATION_VIEW_MODE | typeof RAW_OPERATION_VIEW_MODE
+
+function getRestApiDefaultViewMode(): typeof DOC_OPERATION_VIEW_MODE | typeof RAW_OPERATION_VIEW_MODE {
+  return DOC_OPERATION_VIEW_MODE
+}
+
+function getGraphQlDefaultViewMode(): typeof DOC_OPERATION_VIEW_MODE | typeof RAW_OPERATION_VIEW_MODE {
+  return DOC_OPERATION_VIEW_MODE
+}
+
+const getAsyncApiDefaultViewMode = (comparisonMode: boolean = false): typeof DOC_OPERATION_VIEW_MODE | typeof RAW_OPERATION_VIEW_MODE => {
+  return comparisonMode ? RAW_OPERATION_VIEW_MODE : DOC_OPERATION_VIEW_MODE
+}
+
+export const DEFAULT_VIEW_MODE_MAP_BY_API_TYPE: Record<ApiType, DefaultViewModeInComparisonMode> = {
+  [API_TYPE_REST]: getRestApiDefaultViewMode,
+  [API_TYPE_GRAPHQL]: getGraphQlDefaultViewMode,
+  [API_TYPE_ASYNCAPI]: getAsyncApiDefaultViewMode,
+}

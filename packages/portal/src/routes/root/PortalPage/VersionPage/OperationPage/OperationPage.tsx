@@ -35,7 +35,7 @@ import {
 } from '@netcracker/qubership-apihub-ui-shared/components/WarningApiProcessorVersion'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { API_TYPE_ASYNCAPI, API_TYPE_GRAPHQL, API_TYPE_REST, API_TYPE_TITLE_MAP } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { DOC_OPERATION_VIEW_MODE, GRAPH_VIEW_MODE, RAW_OPERATION_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
+import { DEFAULT_VIEW_MODE_MAP_BY_API_TYPE, GRAPH_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
 import type { OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
@@ -75,7 +75,7 @@ export const OperationPage: FC = memo(() => {
   const [operationPackageKey, operationPackageVersion] = usePackageParamsWithRef()
   const [documentId] = useDocumentSearchParam()
   const [searchValue = ''] = useTextSearchParam()
-  const defaultViewMode = API_TYPE_DEFAULT_VIEW_MODE_MAP[apiType as ApiType]
+  const defaultViewMode = DEFAULT_VIEW_MODE_MAP_BY_API_TYPE[apiType as ApiType](false)
   const { mode: viewMode } = useOperationViewMode(defaultViewMode)
   const { showModelUsagesDialog } = useEventBus()
 
@@ -286,10 +286,4 @@ const API_TYPE_MODELS_MAP: Record<ApiType, (operationData: object | undefined) =
   [API_TYPE_REST]: (operationData) => operationData,
   [API_TYPE_GRAPHQL]: () => undefined,
   [API_TYPE_ASYNCAPI]: () => undefined,
-}
-
-const API_TYPE_DEFAULT_VIEW_MODE_MAP: Record<ApiType, typeof DOC_OPERATION_VIEW_MODE | typeof RAW_OPERATION_VIEW_MODE> = {
-  [API_TYPE_REST]: DOC_OPERATION_VIEW_MODE,
-  [API_TYPE_GRAPHQL]: DOC_OPERATION_VIEW_MODE,
-  [API_TYPE_ASYNCAPI]: RAW_OPERATION_VIEW_MODE,
 }

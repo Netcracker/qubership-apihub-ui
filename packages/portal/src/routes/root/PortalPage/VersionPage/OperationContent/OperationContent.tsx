@@ -81,6 +81,7 @@ import { DEFAULT_DISPLAY_MODE, isComparisonMode } from './OperationView/Operatio
 import { OperationWithPlayground } from './OperationWithPlayground'
 import { useIsExamplesMode, useIsPlaygroundMode, useIsPlaygroundSidebarOpen } from './usePlaygroundSidebarMode'
 import { useSelectOperationTags } from './useSelectOperationTags'
+import { DEFAULT_VIEW_MODE_MAP_BY_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
 
 export type OperationContentProps = {
   changedOperation?: OperationData
@@ -111,6 +112,8 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
       operationModels,
     } = props
 
+    const comparisonMode = isComparisonMode(displayMode)
+
     const {
       packageId = '',
       apiType = DEFAULT_API_TYPE,
@@ -127,7 +130,9 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
       [changedOperation, originOperation],
     )
 
-    const { mode, schemaViewMode } = useOperationViewMode()
+    const defaultViewMode = DEFAULT_VIEW_MODE_MAP_BY_API_TYPE[apiType as ApiType](comparisonMode)
+    const { mode, schemaViewMode } = useOperationViewMode(defaultViewMode)
+
     const isDocViewMode = useIsDocOperationViewMode(mode)
     const isRawViewMode = useIsRawOperationViewMode(mode)
     const isGraphViewMode = useIsGraphOperationViewMode(mode)
@@ -181,7 +186,6 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
     useSelectOperationTags(originOperation, changedOperation)
 
     const [filters] = useSeverityFiltersSearchParam()
-    const comparisonMode = isComparisonMode(displayMode)
     const [fileViewMode = YAML_FILE_VIEW_MODE, setFileViewMode] = useFileViewMode()
 
     const {
