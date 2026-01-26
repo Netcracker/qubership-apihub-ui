@@ -29,7 +29,7 @@ import type {
 } from '@tanstack/react-table'
 import { flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from '@tanstack/react-table'
 import { EndpointTableCell } from './EndpointTableCell'
-import { CUSTOM_METADATA_COLUMN_ID } from './openapi-table'
+import { CUSTOM_METADATA_COLUMN_ID } from './operation-table'
 import { CustomMetadataCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomMetadataCell'
 import type {
   FetchNextOperationList,
@@ -70,12 +70,12 @@ import {
 import { isAsyncApiOperation } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { AsyncApiTableCell } from './AsyncApiTableCell'
 
-export type OpenApiTableData = {
+export type OperationTableData = {
   operation: OperationData
 }
 
 export type SubTableProps = {
-  value: Row<OpenApiTableData>
+  value: Row<OperationTableData>
 }
 
 const DASHBOARD_COLUMNS_MODELS: ColumnModel[] = [
@@ -103,13 +103,13 @@ const minPackageTableWidth = PACKAGE_COLUMNS_MODELS.reduce(
   (sum, { width, fixedWidth }) => sum + (width || fixedWidth || 0), 0,
 )
 
-export type OpenApiTableProps = {
+export type OperationTableProps = {
   value: ReadonlyArray<OperationData>
   fetchNextPage?: FetchNextOperationList
   isNextPageFetching?: boolean
   hasNextPage?: boolean
-  additionalColumns?: ColumnDef<OpenApiTableData>[]
-  isExpandableRow?: (row: Row<OpenApiTableData>) => boolean
+  additionalColumns?: ColumnDef<OperationTableData>[]
+  isExpandableRow?: (row: Row<OperationTableData>) => boolean
   SubTableComponent?: FC<SubTableProps>
   columnSizes?: ColumnModel[]
   tableMinWidth?: number
@@ -118,7 +118,7 @@ export type OpenApiTableProps = {
   apiType?: ApiType
 }
 
-export const OpenApiTable: FC<OpenApiTableProps> = memo<OpenApiTableProps>((
+export const OperationTable: FC<OperationTableProps> = memo<OperationTableProps>((
   {
     value,
     fetchNextPage,
@@ -139,8 +139,8 @@ export const OpenApiTable: FC<OpenApiTableProps> = memo<OpenApiTableProps>((
   const isDashboard = currentPackage?.kind === DASHBOARD_KIND
   const defaultMinWidth = isDashboard ? minDashboardTableWidth : minPackageTableWidth
 
-  const columns: ColumnDef<OpenApiTableData>[] = useMemo(() => {
-    const result: ColumnDef<OpenApiTableData>[] = [
+  const columns: ColumnDef<OperationTableData>[] = useMemo(() => {
+    const result: ColumnDef<OperationTableData>[] = [
       {
         id: ENDPOINT_COLUMN_ID,
         header: () => <CustomTableHeadCell title="Endpoints" />,
@@ -189,7 +189,7 @@ export const OpenApiTable: FC<OpenApiTableProps> = memo<OpenApiTableProps>((
       ...additionalColumns,
     ]
 
-    API_TYPE_COLUMNS_MAP[apiType ?? DEFAULT_API_TYPE]?.(result, textFilter)
+    API_TYPE_COLUMNS_CUSTOMIZERS_MAP[apiType ?? DEFAULT_API_TYPE]?.(result, textFilter)
 
     if (isDashboard) {
       insertIntoArrayByIndex(result, {
@@ -211,7 +211,7 @@ export const OpenApiTable: FC<OpenApiTableProps> = memo<OpenApiTableProps>((
     return result
   }, [additionalColumns, apiType, isDashboard, textFilter])
 
-  const data: OpenApiTableData[] = useMemo(() => value.map(operation => {
+  const data: OperationTableData[] = useMemo(() => value.map(operation => {
     return ({
       operation: operation,
     })
@@ -358,9 +358,9 @@ const RowSkeleton: FC<RowSkeletonProps> = memo<RowSkeletonProps>(({ refObject, c
   )
 })
 
-type ColumnModelCallback = (tableColumns: ColumnDef<OpenApiTableData, unknown>[], textFilter: string | undefined) => void
+type ColumnModelCallback = (tableColumns: ColumnDef<OperationTableData, unknown>[], textFilter: string | undefined) => void
 const createTableColumnsAsyncApi = (
-  tableColumns: ColumnDef<OpenApiTableData, unknown>[],
+  tableColumns: ColumnDef<OperationTableData, unknown>[],
   textFilter: string | undefined): void => {
 
   // Replace endpoint column with AsyncAPI-specific cell
@@ -405,7 +405,7 @@ const createTableColumnsAsyncApi = (
   })
 }
 
-const API_TYPE_COLUMNS_MAP: Record<ApiType, ColumnModelCallback> = {
+const API_TYPE_COLUMNS_CUSTOMIZERS_MAP: Record<ApiType, ColumnModelCallback> = {
   [API_TYPE_REST]: (tableColumns, textFilter) => tableColumns.push({
     id: CUSTOM_METADATA_COLUMN_ID,
     header: () => <CustomTableHeadCell title="Custom Metadata"/>,
