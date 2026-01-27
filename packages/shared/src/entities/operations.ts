@@ -145,7 +145,7 @@ export interface GraphQlOperation extends Operation {
 }
 
 export interface AsyncApiOperation extends Operation {
-  readonly action: AsyncApiOperationType //TODO: add typing
+  readonly action: AsyncApiOperationType
   readonly channel: string
   readonly protocol: string
 }

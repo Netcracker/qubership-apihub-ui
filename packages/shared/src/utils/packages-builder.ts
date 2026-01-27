@@ -16,17 +16,23 @@
 
 import type {
   ApiAudience,
+  ApihubApiCompatibilityKind,
   BuildConfig,
   ResolvedDeprecatedOperations,
   ResolvedGroupDocuments,
   ResolvedOperation,
   ResolvedReferences,
   ResolvedVersionDocuments,
-  ApihubApiCompatibilityKind,
 } from '@netcracker/qubership-apihub-api-processor'
 import { generatePath } from 'react-router-dom'
 import type { ApiType } from '../entities/api-types'
-import type { OperationDto, OperationsDto, Tags } from '../entities/operations'
+import type {
+  AsyncApiOperationDto,
+  GraphQlOperationDto,
+  OperationDto,
+  OperationsDto,
+  RestOperationDto,
+} from '../entities/operations'
 import { isAsyncApiOperationDto, isGraphQlOperationDto, isRestOperationDto } from '../entities/operations'
 import type { ResolvedVersionDto } from '../types/packages'
 import { getPackageRedirectDetails } from './redirects'
@@ -34,7 +40,6 @@ import { API_V1, API_V2, API_V3, requestBlob, requestJson, requestVoid } from '.
 import { optionalSearchParams } from './search-params'
 import type { Key } from './types'
 import type { DocumentsDto } from '../entities/documents'
-import type { AsyncApiOperationType } from '../entities/asyncapi-operation-types'
 
 export async function getPackageVersionContent(
   packageKey: Key,
@@ -265,26 +270,10 @@ export type PublishDetailsDto = {
   message?: string
 }
 
-type RestMetadata = {
-  tags?: Readonly<Tags>
-  method: string
-  path: string
-}
-
-type GraphQlMetadata = {
-  tags?: Readonly<Tags>
-  method: string
-  type: string
-}
-
-type AsyncApiMetadata = {
-  tags?: Readonly<Tags>
-  action: AsyncApiOperationType
-  channel: string
-  protocol: string
-}
-
-export type OperationMetadata = RestMetadata | GraphQlMetadata | AsyncApiMetadata
+type OperationMetadata =
+  Pick<RestOperationDto, 'tags' | 'method' | 'path'> |
+  Pick<GraphQlOperationDto, 'tags' | 'method' | 'type'> |
+  Pick<AsyncApiOperationDto,'tags' | 'action' | 'protocol' | 'channel'>
 
 export function toVersionOperation(value: OperationDto): ResolvedOperation<OperationMetadata> {
   let metadata!: OperationMetadata

@@ -135,7 +135,7 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
     specType,
   } = props
 
-  const getFilteredField = useCallback((specType: SpecType): ExportSettingsFormField[] => {
+  const getFilteredFields = useCallback((specType: SpecType): ExportSettingsFormField[] => {
     return EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE[exportedEntity]
       .map(field => {
         const allowedOptions = SPEC_TYPE_ACCESS_VIEW_EXPORT_FIELD[specType]!
@@ -152,12 +152,12 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
   // Calculate fields and default values
   const fields = useMemo(() => {
     if (specType && SPEC_TYPE_ACCESS_VIEW_EXPORT_FIELD[specType]) {
-      return getFilteredField(specType)
+      return getFilteredFields(specType)
     } else {
       return EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE[exportedEntity]
     }
 
-  }, [exportedEntity, getFilteredField, specType])
+  }, [exportedEntity, getFilteredFields, specType])
 
   const fieldsDefaultValues = useMemo(
     () => fields.reduce((acc, field) => ({ ...acc, [field.kind]: field.defaultValue }), {}),
