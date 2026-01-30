@@ -12,7 +12,6 @@ import { useVersionSearchParam } from '@apihub/routes/root/useVersionSearchParam
 import {
   usePackageSearchParam,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/routes/package/usePackageSearchParam'
-import { isRevisionCompare } from '@apihub/routes/root/PortalPage/VersionPage/VersionComparePage/VersionCompareContent'
 
 type Options = {
   packageId: string | undefined
@@ -51,12 +50,11 @@ export function useOperationChangesSummary(options: Options): Result {
   const [packageKind] = usePackageKind()
   const isDashboard = packageKind === DASHBOARD_KIND
   if (isDashboard) {
-    const isRevision = isRevisionCompare(currentDashboardVersion!, previousDashboardVersion!)
     options = {
       ...options,
       packageId: currentDashboardId,
       versionId: currentDashboardVersion,
-      previousPackageId: isRevision ? currentDashboardId : previousDashboardId,
+      previousPackageId: previousDashboardId || currentDashboardId,
       previousVersionId: previousDashboardVersion,
       refPackageId: options.packageId,
     }

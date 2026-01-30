@@ -10,7 +10,6 @@ import {
 import { usePackageKind } from '@apihub/routes/root/PortalPage/usePackageKind'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { isRevisionCompare } from '@apihub/routes/root/PortalPage/VersionPage/VersionComparePage/VersionCompareContent'
 
 const QUERY_KEY = 'query-key-comparison-internal-documents-by-package-version'
 
@@ -32,12 +31,11 @@ export function useComparisonInternalDocumentsByPackageVersion(
   const isDashboard = packageKind === DASHBOARD_KIND
 
   if (isDashboard) {
-    const isRevision = isRevisionCompare(currentDashboardVersion!, previousDashboardVersion!)
     options = {
       ...options,
       currentPackageId: currentDashboardId,
       currentVersionId: currentDashboardVersion,
-      previousPackageId: isRevision ? currentDashboardId : previousDashboardId,
+      previousPackageId: previousDashboardId || currentDashboardId,
       previousVersionId: previousDashboardVersion,
       refPackageId: options.currentPackageId,
     }
