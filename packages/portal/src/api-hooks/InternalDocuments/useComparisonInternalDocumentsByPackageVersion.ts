@@ -14,11 +14,11 @@ import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/uti
 const QUERY_KEY = 'query-key-comparison-internal-documents-by-package-version'
 
 type Options = {
-  currentPackageId: PackageKey | null
-  currentVersionId: VersionKey | null
-  previousPackageId: PackageKey | null
-  previousVersionId: VersionKey | null
-  refPackageId?: PackageKey | null
+  currentPackageId: PackageKey | undefined
+  currentVersionId: VersionKey | undefined
+  previousPackageId: PackageKey | undefined
+  previousVersionId: VersionKey | undefined
+  refPackageId?: PackageKey | undefined
 }
 
 export function useComparisonInternalDocumentsByPackageVersion(
@@ -33,10 +33,10 @@ export function useComparisonInternalDocumentsByPackageVersion(
   if (isDashboard) {
     options = {
       ...options,
-      currentPackageId: currentDashboardId ?? '',
-      currentVersionId: currentDashboardVersion ?? '',
-      previousPackageId: previousDashboardId ?? '',
-      previousVersionId: previousDashboardVersion ?? '',
+      currentPackageId: currentDashboardId,
+      currentVersionId: currentDashboardVersion,
+      previousPackageId: previousDashboardId,
+      previousVersionId: previousDashboardVersion,
       refPackageId: options.currentPackageId,
     }
   }
@@ -80,8 +80,8 @@ function getComparisonInternalDocumentsByPackageVersion({
   const endpoint = generatePath(
     endpointPattern,
     {
-      packageId: currentPackageId,
-      versionId: currentVersionId,
+      packageId: currentPackageId ?? '',
+      versionId: currentVersionId ?? '',
     },
   )
   return requestJson<InternalDocuments>(
