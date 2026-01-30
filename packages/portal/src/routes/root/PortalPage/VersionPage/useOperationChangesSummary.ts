@@ -107,8 +107,6 @@ function getOperationChangesSummary(options: Options): Promise<ChangesSummaryDto
   )
 }
 
-//http://localhost:5173/api/v2/packages/QSP10-0000.DD11R.DD12R.DD13R.DDD333R/versions/3333.1/rest/operations/api-v1-pet-findByStatus-get/changes/summary?previousVersionPackageId=QSP10-0000.DD11R.DD12R.DD13R.DDD222R&previousVersion=2222.1&refPackageId=QSP1-0000.PK12
-
 function toOperationChangesSummary(dto: ChangesSummaryDto): ChangesSummary {
   return replacePropertyInChangesSummary<DiffTypeDto, DiffType>(dto)
 }
