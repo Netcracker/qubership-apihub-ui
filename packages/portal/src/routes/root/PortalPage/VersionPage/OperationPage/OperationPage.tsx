@@ -97,7 +97,7 @@ export const OperationPage: FC = memo(() => {
   const {
     data: normalizedChangedOperation,
     isLoading: loadingNormalizedChangedOperation,
-    noInternalDocument: noVersionInternalDocument,
+    hasInternalDocument: hasVersionInternalDocument,
   } = useNormalizedOperation({
     operation: changedOperation,
     packageId: operationPackageKey,
@@ -240,7 +240,7 @@ export const OperationPage: FC = memo(() => {
               changedOperation={changedOperation}
               // Feature "Internal documents"
               normalizedChangedOperation={normalizedChangedOperation}
-              noVersionInternalDocument={noVersionInternalDocument}
+              hasVersionInternalDocument={hasVersionInternalDocument}
               // ---
               isLoading={isOperationLoading || loadingNormalizedChangedOperation}
               operationModels={models}

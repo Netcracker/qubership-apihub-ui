@@ -69,7 +69,7 @@ export function useComparedOperations(options: Options): QueryResultWithNoIntern
     )
   }, [currentOperation?.operationKey, previousOperation?.operationKey, versionChanges?.operations])
 
-  const noComparisonInternalDocument = !changeRelatedToComparedOperations?.comparisonInternalDocumentId
+  const hasComparisonInternalDocument = !!changeRelatedToComparedOperations?.comparisonInternalDocumentId
 
   const comparisonInternalDocumentMetadata = useMemo(
     () => listComparisonInternalDocumentsMetadata?.find(
@@ -195,7 +195,7 @@ export function useComparedOperations(options: Options): QueryResultWithNoIntern
       data: comparisonInternalDocumentWithOnlyOperation,
       isLoading: loadingRawComparisonInternalDocument || loadingListComparisonInternalDocumentsMetadata,
       error: errorComparisonInternalDocument || errorComparisonInternalDocumentsMetadata,
-      noInternalDocument: noComparisonInternalDocument,
+      hasInternalDocument: hasComparisonInternalDocument,
     }),
     [
       errorComparisonInternalDocument,
@@ -203,7 +203,7 @@ export function useComparedOperations(options: Options): QueryResultWithNoIntern
       comparisonInternalDocumentWithOnlyOperation,
       loadingRawComparisonInternalDocument,
       loadingListComparisonInternalDocumentsMetadata,
-      noComparisonInternalDocument,
+      hasComparisonInternalDocument,
     ],
   )
 }

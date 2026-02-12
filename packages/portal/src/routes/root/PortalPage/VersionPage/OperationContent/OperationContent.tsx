@@ -17,8 +17,8 @@
 import type { OpenApiData } from '@apihub/entities/operation-structure'
 import {
   useApiDiffResult,
+  useHasComparisonInternalDocument,
   useIsApiDiffResultLoading,
-  useNoComparisonInternalDocument,
   useSetApiDiffResult,
 } from '@apihub/routes/root/ApiDiffResultProvider'
 import { OperationView } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationView/OperationView'
@@ -85,7 +85,7 @@ export type OperationContentProps = {
   // Feature "Internal documents"
   normalizedChangedOperation?: unknown
   normalizedOriginOperation?: unknown
-  noVersionInternalDocument?: boolean
+  hasVersionInternalDocument?: boolean
   // ---
   isOperationExist?: boolean
   displayMode?: OperationDisplayMode
@@ -102,7 +102,7 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
       // Feature "Internal documents"
       normalizedChangedOperation,
       normalizedOriginOperation,
-      noVersionInternalDocument,
+      hasVersionInternalDocument,
       // ---
       isOperationExist = true,
       displayMode = DEFAULT_DISPLAY_MODE,
@@ -236,7 +236,7 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
     const apiDiffResult = useApiDiffResult()
     const isApiDiffResultLoading = useIsApiDiffResultLoading()
     const setApiDiffResult = useSetApiDiffResult()
-    const noComparisonInternalDocument = useNoComparisonInternalDocument()
+    const hasComparisonInternalDocument = useHasComparisonInternalDocument()
 
     const mergedDocument = useMemo(
       () => {
@@ -274,7 +274,7 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
     }
 
     if (noDataForDocView || noDataForDiffView || noDataForRawView) {
-      const message = noVersionInternalDocument || noComparisonInternalDocument
+      const message = !hasVersionInternalDocument || !hasComparisonInternalDocument
         ? PLACEHOLDER_MESSAGE_NO_INTERNAL_DOCUMENT
         : 'Please select an operation'
       return (

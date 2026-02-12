@@ -51,15 +51,15 @@ export function useSetIsApiDiffResultLoading(): Dispatch<SetStateAction<boolean>
   return useContext(SetIsApiDiffResultLoadingContext)
 }
 
-const NoComparisonInternalDocumentContext = createContext<boolean>(false)
-const SetNoComparisonInternalDocumentContext = createContext<Dispatch<SetStateAction<boolean>>>()
+const HasComparisonInternalDocumentContext = createContext<boolean>(true)
+const SetHasComparisonInternalDocumentContext = createContext<Dispatch<SetStateAction<boolean>>>()
 
-export function useNoComparisonInternalDocument(): boolean {
-  return useContext(NoComparisonInternalDocumentContext)
+export function useHasComparisonInternalDocument(): boolean {
+  return useContext(HasComparisonInternalDocumentContext)
 }
 
-export function useSetNoComparisonInternalDocument(): Dispatch<SetStateAction<boolean>> {
-  return useContext(SetNoComparisonInternalDocumentContext)
+export function useSetHasComparisonInternalDocument(): Dispatch<SetStateAction<boolean>> {
+  return useContext(SetHasComparisonInternalDocumentContext)
 }
 
 export const ApiDiffResultProvider: FC<PropsWithChildren> = ({ children }) => {
@@ -71,11 +71,11 @@ export const ApiDiffResultProvider: FC<PropsWithChildren> = ({ children }) => {
       <SetApiDiffResultContext.Provider value={setApiDiffResult}>
         <IsApiDiffResultLoadingContext.Provider value={isApiDiffResultLoading}>
           <SetIsApiDiffResultLoadingContext.Provider value={setIsApiDiffResultLoading}>
-            <NoComparisonInternalDocumentContext.Provider value={noComparisonInternalDocument}>
-              <SetNoComparisonInternalDocumentContext.Provider value={setNoComparisonInternalDocument}>
+            <HasComparisonInternalDocumentContext.Provider value={noComparisonInternalDocument}>
+              <SetHasComparisonInternalDocumentContext.Provider value={setNoComparisonInternalDocument}>
                 {children}
-              </SetNoComparisonInternalDocumentContext.Provider>
-            </NoComparisonInternalDocumentContext.Provider>
+              </SetHasComparisonInternalDocumentContext.Provider>
+            </HasComparisonInternalDocumentContext.Provider>
           </SetIsApiDiffResultLoadingContext.Provider>
         </IsApiDiffResultLoadingContext.Provider>
       </SetApiDiffResultContext.Provider>

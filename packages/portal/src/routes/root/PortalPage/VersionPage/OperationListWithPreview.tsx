@@ -129,7 +129,7 @@ export const OperationListWithPreview: FC<OperationListWithPreviewProps> = memo<
   const {
     data: normalizedChangedOperation,
     isLoading: isNormalizedChangedOperationLoading,
-    noInternalDocument: noVersionInternalDocument,
+    hasInternalDocument: hasVersionInternalDocument,
   } = useNormalizedOperation({
     operation: changedOperation,
     packageId: operationsPackageKey,
@@ -181,7 +181,7 @@ export const OperationListWithPreview: FC<OperationListWithPreviewProps> = memo<
           changedOperationContent={changedGraphQlOperationContent || changedOperationContent}
           // Feature "Internal documents"
           normalizedChangedOperation={normalizedChangedOperation}
-          noVersionInternalDocument={noVersionInternalDocument}
+          hasVersionInternalDocument={hasVersionInternalDocument}
           // ---
           isLoading={isInitialLoading || isNormalizedChangedOperationLoading}
           mode={mode}

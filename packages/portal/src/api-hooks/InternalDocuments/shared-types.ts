@@ -15,5 +15,5 @@ export type QueryResult<T, E = Error> = {
 }
 
 export type QueryResultWithNoInternalDocument<T, E = Error> = QueryResult<T, E> & {
-  noInternalDocument: boolean
+  hasInternalDocument: boolean
 }

@@ -20,7 +20,7 @@ type Options = {
 export function useNormalizedOperation(options: Options): QueryResultWithNoInternalDocument<unknown, Error> {
   const { operation, packageId, versionId } = options
 
-  const noVersionInternalDocument = !operation?.versionInternalDocumentId
+  const hasVersionInternalDocument = !!operation?.versionInternalDocumentId
 
   const operationPackageKey = encodeURIComponent(packageId ?? '')
   const operationPackageVersion = encodeURIComponent(versionId ?? '')
@@ -98,7 +98,7 @@ export function useNormalizedOperation(options: Options): QueryResultWithNoInter
       data: filteredInternalDocumentForOperation,
       isLoading: isInternalDocumentsLoading || isInternalDocumentContentLoading,
       error: internalDocumentsError || internalDocumentContentError,
-      noInternalDocument: noVersionInternalDocument,
+      hasInternalDocument: hasVersionInternalDocument,
     }),
     [
       filteredInternalDocumentForOperation,
@@ -106,7 +106,7 @@ export function useNormalizedOperation(options: Options): QueryResultWithNoInter
       internalDocumentsError,
       isInternalDocumentContentLoading,
       isInternalDocumentsLoading,
-      noVersionInternalDocument,
+      hasVersionInternalDocument,
     ],
   )
 }

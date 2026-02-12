@@ -18,8 +18,8 @@ import { useComparedOperations } from '@apihub/api-hooks/InternalDocuments/useCo
 import {
   useIsApiDiffResultLoading,
   useSetApiDiffResult,
+  useSetHasComparisonInternalDocument,
   useSetIsApiDiffResultLoading,
-  useSetNoComparisonInternalDocument,
 } from '@apihub/routes/root/ApiDiffResultProvider'
 import type { Diff } from '@netcracker/qubership-apihub-api-diff'
 import { DIFF_META_KEY } from '@netcracker/qubership-apihub-api-diff'
@@ -53,7 +53,7 @@ export const ComparisonOperationChangeSeverityFilters: FC<ComparisonOperationCha
   const setApiDiffResultContext = useSetApiDiffResult()
   const isApiDiffResultLoading = useIsApiDiffResultLoading()
   const setIsApiDiffResultLoadingContext = useSetIsApiDiffResultLoading()
-  const setNoComparisonInternalDocumentContext = useSetNoComparisonInternalDocument()
+  const setHasComparisonInternalDocumentContext = useSetHasComparisonInternalDocument()
 
   const [apiDiffExecuting, setApiDiffExecuting] = useState(false)
   const [changes, setChanges] = useState<ChangesSummary | undefined>(undefined)
@@ -61,7 +61,7 @@ export const ComparisonOperationChangeSeverityFilters: FC<ComparisonOperationCha
   const {
     data: comparisonInternalDocument,
     isLoading: apiDiffLoading,
-    noInternalDocument: noComparisonInternalDocument,
+    hasInternalDocument: hasComparisonInternalDocument,
   } = useComparedOperations({
     previousOperation: originOperation,
     currentOperation: changedOperation,
@@ -112,7 +112,7 @@ export const ComparisonOperationChangeSeverityFilters: FC<ComparisonOperationCha
         return
       }
       setApiDiffResultContext(apiDiffResult)
-      setNoComparisonInternalDocumentContext(noComparisonInternalDocument)
+      setHasComparisonInternalDocumentContext(hasComparisonInternalDocument)
       if (!comparisonAlreadyDone) {
         setChanges(apiDiffResult?.diffs.reduce(changesSummaryReducer, { ...DEFAULT_CHANGE_SEVERITY_MAP }))
       }
@@ -126,8 +126,8 @@ export const ComparisonOperationChangeSeverityFilters: FC<ComparisonOperationCha
       setChanges,
       internalDocumentOptions,
       comparisonAlreadyDone,
-      setNoComparisonInternalDocumentContext,
-      noComparisonInternalDocument,
+      setHasComparisonInternalDocumentContext,
+      hasComparisonInternalDocument,
     ],
   )
 
