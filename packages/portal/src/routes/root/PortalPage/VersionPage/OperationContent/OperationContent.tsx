@@ -18,6 +18,7 @@ import type { OpenApiData } from '@apihub/entities/operation-structure'
 import {
   useApiDiffResult,
   useIsApiDiffResultLoading,
+  useNoComparisonInternalDocument,
   useSetApiDiffResult,
 } from '@apihub/routes/root/ApiDiffResultProvider'
 import { OperationView } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationView/OperationView'
@@ -29,6 +30,7 @@ import { Box } from '@mui/material'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import {
   CONTENT_PLACEHOLDER_AREA,
+  PLACEHOLDER_MESSAGE_NO_INTERNAL_DOCUMENT,
   Placeholder,
   SEARCH_PLACEHOLDER_VARIANT,
 } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
@@ -83,6 +85,7 @@ export type OperationContentProps = {
   // Feature "Internal documents"
   normalizedChangedOperation?: unknown
   normalizedOriginOperation?: unknown
+  noVersionInternalDocument?: boolean
   // ---
   isOperationExist?: boolean
   displayMode?: OperationDisplayMode
@@ -99,6 +102,7 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
       // Feature "Internal documents"
       normalizedChangedOperation,
       normalizedOriginOperation,
+      noVersionInternalDocument,
       // ---
       isOperationExist = true,
       displayMode = DEFAULT_DISPLAY_MODE,
@@ -232,6 +236,7 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
     const apiDiffResult = useApiDiffResult()
     const isApiDiffResultLoading = useIsApiDiffResultLoading()
     const setApiDiffResult = useSetApiDiffResult()
+    const noComparisonInternalDocument = useNoComparisonInternalDocument()
 
     const mergedDocument = useMemo(
       () => {
@@ -256,12 +261,31 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
     }
 
     if (
-      !normalizedChangedOperation &&
-      !normalizedOriginOperation &&
-      !apiDiffResult?.merged &&
-      !originValueForRawSpecView &&
-      !changedValueForRawSpecView
+      (
+        isDocViewMode &&
+        !comparisonMode &&
+        !normalizedChangedOperation &&
+        !normalizedOriginOperation
+      ) || (
+        isDocViewMode &&
+        comparisonMode &&
+        !apiDiffResult?.merged
+      ) || (
+        isRawViewMode &&
+        !originValueForRawSpecView &&
+        !changedValueForRawSpecView
+      )
     ) {
+      if (noVersionInternalDocument || noComparisonInternalDocument) {
+        return (
+          <Placeholder
+            invisible={false}
+            area={CONTENT_PLACEHOLDER_AREA}
+            message={PLACEHOLDER_MESSAGE_NO_INTERNAL_DOCUMENT}
+            testId="NoVersionInternalDocumentPlaceholder"
+          />
+        )
+      }
       return (
         <Placeholder
           invisible={false}

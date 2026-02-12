@@ -11,9 +11,9 @@ import type { VersionChanges } from '@netcracker/qubership-apihub-ui-shared/enti
 import { isObject } from '@netcracker/qubership-apihub-ui-shared/utils/objects'
 import type { OpenAPIV3 } from 'openapi-types'
 import { useMemo } from 'react'
+import type { QueryResultWithNoInternalDocument } from './shared-types'
 import { useComparisonInternalDocumentContent } from './useComparisonInternalDocumentContent'
 import { useComparisonInternalDocumentsByPackageVersion } from './useComparisonInternalDocumentsByPackageVersion'
-import type { QueryResult } from './useInternalDocumentsByPackageVersion'
 
 type Options = {
   previousOperation: OperationData | undefined
@@ -25,7 +25,7 @@ type Options = {
   previousVersionId: VersionKey | undefined
 }
 
-export function useComparedOperations(options: Options): QueryResult<unknown, Error> {
+export function useComparedOperations(options: Options): QueryResultWithNoInternalDocument<unknown, Error> {
   const {
     previousOperation,
     currentOperation,
@@ -68,6 +68,8 @@ export function useComparedOperations(options: Options): QueryResult<unknown, Er
       },
     )
   }, [currentOperation?.operationKey, previousOperation?.operationKey, versionChanges?.operations])
+
+  const noComparisonInternalDocument = !changeRelatedToComparedOperations?.comparisonInternalDocumentId
 
   const comparisonInternalDocumentMetadata = useMemo(
     () => listComparisonInternalDocumentsMetadata?.find(
@@ -193,6 +195,7 @@ export function useComparedOperations(options: Options): QueryResult<unknown, Er
       data: comparisonInternalDocumentWithOnlyOperation,
       isLoading: loadingRawComparisonInternalDocument || loadingListComparisonInternalDocumentsMetadata,
       error: errorComparisonInternalDocument || errorComparisonInternalDocumentsMetadata,
+      noInternalDocument: noComparisonInternalDocument,
     }),
     [
       errorComparisonInternalDocument,
@@ -200,6 +203,7 @@ export function useComparedOperations(options: Options): QueryResult<unknown, Er
       comparisonInternalDocumentWithOnlyOperation,
       loadingRawComparisonInternalDocument,
       loadingListComparisonInternalDocumentsMetadata,
+      noComparisonInternalDocument,
     ],
   )
 }
