@@ -46,7 +46,6 @@ export function useComparisonInternalDocumentsByPackageVersion(
   const currentPackageVersion = encodeURIComponent(currentVersionId ?? '')
   const enabled = !!currentPackageKey && !!currentPackageVersion && !!previousPackageId
 
-
   const { data, isFetching, error } = useQuery<InternalDocuments, Error, InternalDocuments>({
     queryKey: [QUERY_KEY, currentPackageKey, currentPackageVersion, previousPackageId, previousVersionId],
     queryFn: () => (

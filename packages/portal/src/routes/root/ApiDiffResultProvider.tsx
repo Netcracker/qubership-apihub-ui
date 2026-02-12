@@ -65,14 +65,14 @@ export function useSetHasComparisonInternalDocument(): Dispatch<SetStateAction<b
 export const ApiDiffResultProvider: FC<PropsWithChildren> = ({ children }) => {
   const [apiDiffResult, setApiDiffResult] = useState<ApiDiffResult>()
   const [isApiDiffResultLoading, setIsApiDiffResultLoading] = useState<boolean>(false)
-  const [noComparisonInternalDocument, setNoComparisonInternalDocument] = useState<boolean>(false)
+  const [hasComparisonInternalDocument, setHasComparisonInternalDocument] = useState<boolean>(true)
   return (
     <ApiDiffResultContext.Provider value={apiDiffResult}>
       <SetApiDiffResultContext.Provider value={setApiDiffResult}>
         <IsApiDiffResultLoadingContext.Provider value={isApiDiffResultLoading}>
           <SetIsApiDiffResultLoadingContext.Provider value={setIsApiDiffResultLoading}>
-            <HasComparisonInternalDocumentContext.Provider value={noComparisonInternalDocument}>
-              <SetHasComparisonInternalDocumentContext.Provider value={setNoComparisonInternalDocument}>
+            <HasComparisonInternalDocumentContext.Provider value={hasComparisonInternalDocument}>
+              <SetHasComparisonInternalDocumentContext.Provider value={setHasComparisonInternalDocument}>
                 {children}
               </SetHasComparisonInternalDocumentContext.Provider>
             </HasComparisonInternalDocumentContext.Provider>
