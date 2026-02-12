@@ -126,7 +126,7 @@ export const OperationListWithPreview: FC<OperationListWithPreviewProps> = memo<
   )
   const changedGraphQlOperationContent = useRawGraphQlCroppedToSingleOperationRawGraphQl(changedOperationContent, graphQlOperationType, graphQlOperationName)
 
-  const { 
+  const {
     data: normalizedChangedOperation,
     isLoading: isNormalizedChangedOperationLoading,
     noInternalDocument: noVersionInternalDocument,
