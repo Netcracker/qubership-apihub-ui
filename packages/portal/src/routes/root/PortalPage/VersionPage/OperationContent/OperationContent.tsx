@@ -30,8 +30,8 @@ import { Box } from '@mui/material'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import {
   CONTENT_PLACEHOLDER_AREA,
-  PLACEHOLDER_MESSAGE_NO_INTERNAL_DOCUMENT,
   Placeholder,
+  PLACEHOLDER_MESSAGE_NO_INTERNAL_DOCUMENT,
   SEARCH_PLACEHOLDER_VARIANT,
 } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import { RawSpecDiffView } from '@netcracker/qubership-apihub-ui-shared/components/RawSpecDiffView'
@@ -256,41 +256,32 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
       }
     }, [setApiDiffResult])
 
+    const noDataForDocView = useMemo(
+      () => isDocViewMode && !comparisonMode && !normalizedChangedOperation && !normalizedOriginOperation,
+      [isDocViewMode, comparisonMode, normalizedChangedOperation, normalizedOriginOperation],
+    )
+    const noDataForDiffView = useMemo(
+      () => isDocViewMode && comparisonMode && !apiDiffResult?.merged,
+      [isDocViewMode, comparisonMode, apiDiffResult?.merged],
+    )
+    const noDataForRawView = useMemo(
+      () => isRawViewMode && !originValueForRawSpecView && !changedValueForRawSpecView,
+      [isRawViewMode, originValueForRawSpecView, changedValueForRawSpecView],
+    )
+
     if (isLoading || isApiDiffResultLoading) {
       return <LoadingIndicator />
     }
 
-    if (
-      (
-        isDocViewMode &&
-        !comparisonMode &&
-        !normalizedChangedOperation &&
-        !normalizedOriginOperation
-      ) || (
-        isDocViewMode &&
-        comparisonMode &&
-        !apiDiffResult?.merged
-      ) || (
-        isRawViewMode &&
-        !originValueForRawSpecView &&
-        !changedValueForRawSpecView
-      )
-    ) {
-      if (noVersionInternalDocument || noComparisonInternalDocument) {
-        return (
-          <Placeholder
-            invisible={false}
-            area={CONTENT_PLACEHOLDER_AREA}
-            message={PLACEHOLDER_MESSAGE_NO_INTERNAL_DOCUMENT}
-            testId="NoVersionInternalDocumentPlaceholder"
-          />
-        )
-      }
+    if (noDataForDocView || noDataForDiffView || noDataForRawView) {
+      const message = noVersionInternalDocument || noComparisonInternalDocument
+        ? PLACEHOLDER_MESSAGE_NO_INTERNAL_DOCUMENT
+        : 'Please select an operation'
       return (
         <Placeholder
           invisible={false}
           area={CONTENT_PLACEHOLDER_AREA}
-          message="Please select an operation"
+          message={message}
         />
       )
     }
