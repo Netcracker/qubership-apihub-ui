@@ -1,0 +1,167 @@
+import { DIFF_META_KEY, type Diff, isDiffRemove, isDiffReplace, isDiffAdd, extractOperationBasePath, isDiffRename } from '@netcracker/qubership-apihub-api-diff'
+import { calculateNormalizedRestOperationId } from '@netcracker/qubership-apihub-api-processor'
+import { isObject } from '@netcracker/qubership-apihub-ui-shared/utils/objects'
+import { OpenAPIV3 } from 'openapi-types'
+
+export function detectServerBasePathMigratedToPath(document: OpenAPIV3.Document): unknown {
+  const { paths = {}, servers = [] } = document
+
+  const documentWithDiffs = document as unknown as Record<PropertyKey, unknown>
+  const serversWithDiffs = servers as unknown as Record<PropertyKey, unknown>
+  const pathsWithDiffs = paths as unknown as Record<PropertyKey, unknown>
+
+  function getServers(): [OpenAPIV3.ServerObject[], OpenAPIV3.ServerObject[]] {
+    // Check if 'servers' section is wholly changed
+    if (isObject(documentWithDiffs[DIFF_META_KEY])) {
+      const diffWholeServers = documentWithDiffs[DIFF_META_KEY].servers as Diff | undefined
+      if (diffWholeServers) {
+        if (isDiffRemove(diffWholeServers) || isDiffReplace(diffWholeServers)) {
+          return [diffWholeServers.beforeValue as OpenAPIV3.ServerObject[], []]
+        }
+        if (isDiffAdd(diffWholeServers)) {
+          return [[], diffWholeServers.afterValue as OpenAPIV3.ServerObject[]] // if wholly added 'servers' then there wasn't such section before
+        }
+      }
+    }
+    // Check if 'servers' section is partially changed
+    const beforeServers: OpenAPIV3.ServerObject[] = [...servers]
+    const afterServers: OpenAPIV3.ServerObject[] = [...servers]
+    if (isObject(serversWithDiffs[DIFF_META_KEY])) {
+      const diffSpecificServers = serversWithDiffs[DIFF_META_KEY]
+      for (const index of Object.keys(diffSpecificServers)) {
+        const diffSpecificServer = diffSpecificServers[index]! as Diff
+        if (isDiffRemove(diffSpecificServer) || isDiffReplace(diffSpecificServer)) {
+          beforeServers.splice(Number(index), 1, diffSpecificServer.beforeValue as OpenAPIV3.ServerObject)
+          afterServers.splice(Number(index), 1)
+        }
+        if (isDiffAdd(diffSpecificServer)) {
+          beforeServers.splice(Number(index), 1)
+          afterServers.splice(Number(index), 1, diffSpecificServer.afterValue as OpenAPIV3.ServerObject)
+        }
+      }
+    }
+    for (const [index, server] of servers.entries()) {
+      let serverObject: Record<PropertyKey, unknown> = server as unknown as Record<PropertyKey, unknown>
+      if (!isObject(serverObject[DIFF_META_KEY])) {
+        continue
+      }
+      const diffUrl = serverObject[DIFF_META_KEY].url as Diff | undefined
+      if (diffUrl && (isDiffReplace(diffUrl))) {
+        serverObject = { ...serverObject, url: diffUrl.beforeValue as string }
+        beforeServers.splice(index, 1, serverObject as unknown as OpenAPIV3.ServerObject)
+      }
+    }
+    return [beforeServers, afterServers]
+  }
+
+  function getPaths(): [OpenAPIV3.PathsObject, OpenAPIV3.PathsObject] {
+    let beforePaths: OpenAPIV3.PathsObject = { ...paths }
+    let afterPaths: OpenAPIV3.PathsObject = { ...paths }
+    const diffSpecificPaths = pathsWithDiffs[DIFF_META_KEY]
+    if (isObject(diffSpecificPaths)) {
+      for (const changedSpecificPath of Object.keys(diffSpecificPaths)) {
+        const diffSpecificPath = diffSpecificPaths[changedSpecificPath]! as Diff
+        if (isDiffRemove(diffSpecificPath)) {
+          beforePaths[changedSpecificPath] = diffSpecificPath.beforeValue as OpenAPIV3.PathItemObject
+          afterPaths = removeProperty<OpenAPIV3.PathsObject>(afterPaths, changedSpecificPath)
+        }
+        if (isDiffReplace(diffSpecificPath)) {
+          beforePaths[changedSpecificPath] = diffSpecificPath.beforeValue as OpenAPIV3.PathItemObject
+        }
+        if (isDiffAdd(diffSpecificPath)) {
+          beforePaths = removeProperty<OpenAPIV3.PathsObject>(beforePaths, changedSpecificPath)
+        }
+        if (isDiffRename(diffSpecificPath)) {
+          beforePaths[diffSpecificPath.beforeKey as string] = beforePaths[diffSpecificPath.afterKey as string] as OpenAPIV3.PathItemObject
+          beforePaths = removeProperty<OpenAPIV3.PathsObject>(beforePaths, diffSpecificPath.afterKey as string)
+        }
+      }
+    }
+    for (const [path, pathObject] of Object.entries(paths)) {
+      if (!pathObject) {
+        continue
+      }
+      const pathObjectWithDiffs = pathObject as unknown as Record<PropertyKey, unknown>
+      const diffSpecificPathMethods = pathObjectWithDiffs[DIFF_META_KEY]
+      if (!isObject(diffSpecificPathMethods)) {
+        continue
+      }
+      let beforePathObject = beforePaths[path] as unknown as Record<PropertyKey, unknown>
+      let afterPathObject = afterPaths[path] as unknown as Record<PropertyKey, unknown>
+      for (const changedSpecificPathMethod of Object.keys(diffSpecificPathMethods)) {
+        const diffSpecificPathMethod = diffSpecificPathMethods[changedSpecificPathMethod]! as Diff
+        if (isDiffRemove(diffSpecificPathMethod)) {
+          beforePathObject[changedSpecificPathMethod] = diffSpecificPathMethod.beforeValue as OpenAPIV3.OperationObject
+          afterPathObject = removeProperty(afterPathObject, changedSpecificPathMethod)
+        }
+        if (isDiffReplace(diffSpecificPathMethod)) {
+          beforePathObject[changedSpecificPathMethod] = diffSpecificPathMethod.beforeValue as OpenAPIV3.OperationObject
+        }
+        if (isDiffAdd(diffSpecificPathMethod)) {
+          beforePathObject = removeProperty(beforePathObject, changedSpecificPathMethod)
+        }
+      }
+    }
+    return [beforePaths, afterPaths]
+  }
+
+  const [beforeServers, afterServers] = getServers()
+  const beforeFirstServerBasePath = extractOperationBasePath(beforeServers)
+  const afterFirstServerBasePath = extractOperationBasePath(afterServers)
+
+  console.debug('Before servers', beforeServers)
+  console.debug('After servers', afterServers)
+
+  const [beforePaths, afterPaths] = getPaths()
+
+  console.debug('Before paths', beforePaths)
+  console.debug('After paths', afterPaths)
+
+  const aggregateBeforeOperationNormalizedIds = createAggregateOperationNormalizedIds()
+  const beforeOperationNormalizedIds = aggregateBeforeOperationNormalizedIds(beforePaths, beforeFirstServerBasePath)
+  const afterOperationNormalizedIds = aggregateBeforeOperationNormalizedIds(afterPaths, afterFirstServerBasePath)
+  console.debug('Before operation normalized ids', Array.from(beforeOperationNormalizedIds))
+  console.debug('After operation normalized ids', Array.from(afterOperationNormalizedIds))
+
+  const intersectionOperationNormalizedIds = beforeOperationNormalizedIds.intersection(afterOperationNormalizedIds)
+
+  console.debug('Intersection operation normalized ids', Array.from(intersectionOperationNormalizedIds))
+  console.debug('Before first server base path', beforeFirstServerBasePath)
+  console.debug('After first server base path', afterFirstServerBasePath)
+
+  console.log('\n\n\n')
+
+  // eslint-disable-next-line no-constant-condition
+  if (true) {
+    throw new Error('Test error')
+  }
+
+  return beforeFirstServerBasePath !== afterFirstServerBasePath && intersectionOperationNormalizedIds.size > 0
+}
+
+function removeProperty<T extends object>(source: object, property: PropertyKey): T {
+  if (!isObject(source)) {
+    throw new Error('Source is not an object')
+  }
+  const { [property]: _, ...sourceWithoutProperty } = source
+  return sourceWithoutProperty as T
+}
+
+type AggregateOperationNormalizedIds = (paths: OpenAPIV3.PathsObject, firstServerBasePath: string) => Set<string>
+
+function createAggregateOperationNormalizedIds(): AggregateOperationNormalizedIds {
+  const methods = Object.values(OpenAPIV3.HttpMethods)
+  return (paths: OpenAPIV3.PathsObject, firstServerBasePath: string) => {
+    const operationNormalizedIds = new Set<string>()
+    for (const [path, pathObject] of Object.entries(paths)) {
+      for (const method of methods) {
+        if (!pathObject || !(method in pathObject)) {
+          continue
+        }
+        const normalizedOperationId = calculateNormalizedRestOperationId(firstServerBasePath, path, method)
+        operationNormalizedIds.add(normalizedOperationId)
+      }
+    }
+    return operationNormalizedIds
+  }
+}
