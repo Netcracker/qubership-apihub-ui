@@ -44,9 +44,38 @@ const Dropdown: FC<ValidationRulesetsDropdownProps> = (props) => {
 
   return <>
     <ButtonGroup
-      variant="contained"
+      variant="text"
       ref={anchorRef}
+      sx={{
+        alignItems: 'center',
+        '& .MuiButtonGroup-grouped': {
+          border: 'none',
+          display: 'flex',
+          alignItems: 'center',
+        },
+        '& .MuiButtonGroup-grouped:not(:last-of-type)': {
+          borderRight: 'none',
+        },
+      }}
     >
+      {selectedValues.size === 0 && (
+        <Button
+          size="small"
+          variant='text'
+          sx={{
+            p: 0,              // remove default padding
+            border: 'none',    // no border in normal state
+            borderRadius: 0,   // optional: fully remove rounded border shape
+            '&:hover': {
+              border: 'none',  // keep border disabled on hover too
+              backgroundColor: 'transparent', // optional, if you also want no hover bg
+            },
+            color: 'black',
+          }}
+        >
+          No linters selected
+        </Button>
+      )}
       {selectedValues.size === 1 && (
         <ValidationRulesetLink
           data={Array.from(selectedValues.values())[0]}
@@ -63,8 +92,20 @@ const Dropdown: FC<ValidationRulesetsDropdownProps> = (props) => {
         size="small"
         variant='text'
         onClick={handleToggle}
+        sx={{
+          width: 24,
+          height: 24,
+          minWidth: 24,      // MUI Button has default min width
+          p: 0,              // remove default padding
+          border: 'none',    // no border in normal state
+          borderRadius: 0,   // optional: fully remove rounded border shape
+          '&:hover': {
+            border: 'none',  // keep border disabled on hover too
+            backgroundColor: 'transparent', // optional, if you also want no hover bg
+          },
+        }}
       >
-        {open ? <KeyboardArrowUpOutlinedIcon /> : <KeyboardArrowDownOutlinedIcon />}
+        {open ? <KeyboardArrowUpOutlinedIcon sx={{ color: '#353C4E' }} /> : <KeyboardArrowDownOutlinedIcon sx={{ color: '#353C4E' }} />}
       </Button>
     </ButtonGroup>
     <Popper open={open} anchorEl={anchorRef.current} sx={{ width: '200px' }}>
