@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react'
-import type { FC} from 'react'
+import type { FC } from 'react'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { OperationGroupTable } from './OperationGroupTable'
@@ -76,6 +76,7 @@ export const OperationGroupsCard: FC = memo(() => {
     removeExport()
     setExporting(false)
     setNeedToGetExportStatus(false)
+    setRequestDataExport(undefined)
   }, [removeExport, setExporting, setNeedToGetExportStatus])
 
   useExportStatus(exportTask?.exportId, needToGetExportStatus, completeExport, completeExport)
