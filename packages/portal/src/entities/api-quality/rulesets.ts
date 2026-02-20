@@ -51,4 +51,6 @@ export type Ruleset = RulesetDto
 // The only main data of ruleset
 
 export type RulesetMetadataDto = Pick<RulesetDto, 'id' | 'name' | 'fileName' | 'status' | 'apiType'>
-export type RulesetMetadata = RulesetMetadataDto
+export type RulesetMetadata = RulesetMetadataDto & {
+  linter: string
+}

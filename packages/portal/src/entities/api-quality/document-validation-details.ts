@@ -9,7 +9,6 @@ type ValidationResultDto = {
 }
 
 type ValidationResult = {
-  linter: string
   ruleset: RulesetMetadata
   issues: readonly Issue[]
 }

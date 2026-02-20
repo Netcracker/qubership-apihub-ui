@@ -36,6 +36,15 @@ export const ValidationRulesetLink: FC<ValidationRulesetLinkProps> = memo<Valida
 
   elements.push(
     <Typography
+      key='validation-ruleset-link-linter'
+      variant='body2'
+    >
+      {data.linter}
+    </Typography>,
+  )
+
+  elements.push(
+    <Typography
       key='validation-ruleset-link-name'
       variant='body2'
       onClick={onClickRulesetName}

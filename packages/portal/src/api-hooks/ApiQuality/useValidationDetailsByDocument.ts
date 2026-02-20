@@ -48,8 +48,10 @@ function getValidationDetailsByDocument(
 function toValidationDetails(dto: ValidationDetailsDto): ValidationDetails {
   return {
     results: dto.results.map(result => ({
-      linter: result.linter,
-      ruleset: result.ruleset,
+      ruleset: {
+        ...result.ruleset,
+        linter: result.linter,
+      },
       issues: result.issues.map(issue => ({
         ...issue,
         linter: result.linter,
