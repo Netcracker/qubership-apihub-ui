@@ -10,18 +10,21 @@ import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-tabl
 import type { FC } from 'react'
 import { memo, useMemo, useRef } from 'react'
 import { IssueSeverityMarker } from './IssueSeverityMarker'
-import { issuePathToSpecItemUri } from './utilities/transformers'
+import { flatMapValidationIssues, issuePathToSpecItemUri, sortIssuesBySeveralFields } from './utilities/transformers'
 
 const TABLE_COLUMN_ID_TYPE = 'type'
+const TABLE_COLUMN_ID_LINTER = 'linter'
 const TABLE_COLUMN_ID_MESSAGE = 'message'
 
 const TABLE_COLUMN_ID_LABELS = {
   [TABLE_COLUMN_ID_TYPE]: 'Type',
+  [TABLE_COLUMN_ID_LINTER]: 'Linter',
   [TABLE_COLUMN_ID_MESSAGE]: 'Message',
 }
 
 type TableData = {
   type: IssueSeverity
+  linter: string
   message: string
   path: SpecItemUri // Example: /foo/bar/baz/qux/1
 }
@@ -67,6 +70,11 @@ const TABLE_COLUMNS_LAYOUT_CONFIG: Record<string, TableColumnLayoutConfig> = {
     whiteSpace: 'nowrap',
     textAlign: 'center',
   },
+  [TABLE_COLUMN_ID_LINTER]: {
+    width: '150px',
+    whiteSpace: 'normal',
+    textAlign: 'left',
+  },
   [TABLE_COLUMN_ID_MESSAGE]: {
     width: 'auto',
     whiteSpace: 'normal',
@@ -87,6 +95,13 @@ const COLUMNS: ColumnDef<TableData>[] = [
     },
   },
   {
+    id: TABLE_COLUMN_ID_LINTER,
+    header: () => <CustomTableHeadCell title={TABLE_COLUMN_ID_LABELS[TABLE_COLUMN_ID_LINTER]} />,
+    cell: ({ row: { original: { linter } } }) => {
+      return <Typography variant="body2">{linter}</Typography>
+    },
+  },
+  {
     id: TABLE_COLUMN_ID_MESSAGE,
     header: () => <CustomTableHeadCell title={TABLE_COLUMN_ID_LABELS[TABLE_COLUMN_ID_MESSAGE]} />,
     cell: ({ row: { original: { message } } }) => (
@@ -102,12 +117,16 @@ export const ValidationResultsTable: FC<ValidationResultsTableProps> = memo<Vali
 
   const tableContainerRef = useRef<HTMLDivElement>(null)
 
-  const transformedData: TableData[] = useMemo(() => (data?.issues ?? []).map((issue: Issue) => ({
+  const issuesList = useMemo(() => flatMapValidationIssues(data), [data])
+  const sortedIssuesList = useMemo(() => sortIssuesBySeveralFields(issuesList), [issuesList])
+
+  const transformedData: TableData[] = useMemo(() => sortedIssuesList.map((issue: Issue) => ({
     type: issue.severity,
+    linter: issue.linter,
     message: issue.message,
     // TODO 19.09.25 // Remove default because real response doesn't match API
     path: issuePathToSpecItemUri(issue.path ?? []),
-  })), [data?.issues])
+  })), [sortedIssuesList])
 
   const { getHeaderGroups, getRowModel } = useReactTable({
     data: transformedData,

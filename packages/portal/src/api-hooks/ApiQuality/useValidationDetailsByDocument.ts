@@ -50,7 +50,10 @@ function toValidationDetails(dto: ValidationDetailsDto): ValidationDetails {
     results: dto.results.map(result => ({
       linter: result.linter,
       ruleset: result.ruleset,
-      issues: result.issues,
+      issues: result.issues.map(issue => ({
+        ...issue,
+        linter: result.linter,
+      })),
     })),
     document: dto.document,
   }

@@ -8,4 +8,6 @@ export type IssueDto = {
   code: string
 }
 
-export type Issue = IssueDto
+export type Issue = IssueDto & {
+  linter: string
+}

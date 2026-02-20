@@ -18,6 +18,7 @@ import { useParams } from 'react-router'
 import type { OriginalDocumentFileFormat } from './types'
 import { useTransformedRawDocumentByFormat } from './utilities/hooks'
 import { ValidationResultsTable } from './ValidationResultsTable'
+import { flatMapValidationIssues } from './utilities/transformers'
 
 type TwoSidedCardProps = Partial<{
   leftHeader: ReactNode
@@ -91,10 +92,7 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
     selectedDocument?.slug ?? '',
   )
 
-  const validationIssues = useMemo(
-    () => (validationDetails?.results ?? []).flatMap(result => result.issues),
-    [validationDetails],
-  )
+  const validationIssues = useMemo(() => flatMapValidationIssues(validationDetails), [validationDetails])
 
   const [selectedDocumentContent, loadingSelectedDocumentContent] = usePublishedDocumentRaw({
     packageKey: packageId,
