@@ -91,6 +91,11 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
     selectedDocument?.slug ?? '',
   )
 
+  const validationIssues = useMemo(
+    () => (validationDetails?.results ?? []).flatMap(result => result.issues),
+    [validationDetails],
+  )
+
   const [selectedDocumentContent, loadingSelectedDocumentContent] = usePublishedDocumentRaw({
     packageKey: packageId,
     versionKey: versionId,
@@ -107,17 +112,16 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
       return []
     }
     // TODO 19.09.25 // Remove default because real response doesn't match API
-    if (!validationDetails.issues) {
+    if (!validationIssues.length) {
       return []
     }
-    const { issues } = validationDetails
-    return transformIssuesToMarkers(transformedSelectedDocumentContent, format, issues)
-  }, [validationDetails, transformedSelectedDocumentContent, format])
+    return transformIssuesToMarkers(transformedSelectedDocumentContent, format, validationIssues)
+  }, [validationDetails, transformedSelectedDocumentContent, format, validationIssues])
 
   const onFormatChange = useCallback((value: OriginalDocumentFileFormat) => {
     setFormat(value)
     setSelectedIssuePath(undefined)
-  }, [])
+  }, [setSelectedIssuePath])
 
   return (
     <BodyCard
@@ -144,7 +148,8 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
                 width="100%"
               >
                 <ValidationRulesetLink
-                  data={validationDetails?.ruleset}
+                  // TODO 20.02.26 // Update after component is refactored
+                  data={validationDetails?.results[0]?.ruleset}
                   loading={loadingValidationDetails}
                 />
               </Box>
