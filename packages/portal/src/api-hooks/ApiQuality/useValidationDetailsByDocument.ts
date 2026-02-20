@@ -4,7 +4,7 @@ import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/ali
 import { requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { useQuery } from '@tanstack/react-query'
 import { generatePath } from 'react-router'
-import { API_LINTER_API_V1 } from './constants'
+import { API_LINTER_API_V2 } from './constants'
 
 const QUERY_KEY_VALIDATION_DETAILS_BY_DOCUMENT = 'validation-details-by-document'
 
@@ -41,14 +41,17 @@ function getValidationDetailsByDocument(
   return requestJson<ValidationDetailsDto>(
     endpoint,
     { method: 'GET' },
-    { basePath: API_LINTER_API_V1 },
+    { basePath: API_LINTER_API_V2 },
   )
 }
 
 function toValidationDetails(dto: ValidationDetailsDto): ValidationDetails {
   return {
-    ruleset: dto.ruleset,
-    issues: dto.issues,
+    results: dto.results.map(result => ({
+      linter: result.linter,
+      ruleset: result.ruleset,
+      issues: result.issues,
+    })),
     document: dto.document,
   }
 }
