@@ -159,7 +159,7 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
         )
         break
     }
-    setRequestDataExport(requestData)
+    setRequestDataExport(requestData!)
   }
 
   const initializing = isLoadingExportConfig || isStartingExport
