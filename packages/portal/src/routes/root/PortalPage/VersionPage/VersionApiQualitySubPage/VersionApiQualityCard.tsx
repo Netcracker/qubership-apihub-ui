@@ -1,7 +1,6 @@
 import { useValidationDetailsByDocument } from '@apihub/api-hooks/ApiQuality/useValidationDetailsByDocument'
 import { ValidationRulesetLink } from '@apihub/components/ApiQuality/ValidatationRulesetLink'
 import type { DocumentValidationSummary } from '@apihub/entities/api-quality/package-version-validation-summary'
-import { JSON_FILE_FORMAT, YAML_FILE_FORMAT } from '@netcracker/qubership-apihub-ui-shared/entities/file-formats'
 import { transformIssuesToMarkers } from '@apihub/utils/api-quality/issues'
 import { Box, Typography } from '@mui/material'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
@@ -10,15 +9,14 @@ import { ModuleFetchingErrorBoundary } from '@netcracker/qubership-apihub-ui-sha
 import { MonacoEditor } from '@netcracker/qubership-apihub-ui-shared/components/MonacoEditor'
 import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder/Placeholder'
 import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'
+import { JSON_FILE_FORMAT, YAML_FILE_FORMAT } from '@netcracker/qubership-apihub-ui-shared/entities/file-formats'
+import { usePublishedDocumentRaw } from '@netcracker/qubership-apihub-ui-shared/hooks/documents/usePublishedDocumentRaw'
 import type { SpecItemUri } from '@netcracker/qubership-apihub-ui-shared/utils/specifications'
 import type { FC, ReactNode } from 'react'
 import { memo, useCallback, useMemo, useState } from 'react'
 import { useParams } from 'react-router'
-import { ClientValidationStatuses, useApiQualityValidationSummary } from '../ApiQualityValidationSummaryProvider'
-import { usePublishedDocumentRaw } from '@netcracker/qubership-apihub-ui-shared/hooks/documents/usePublishedDocumentRaw'
 import type { OriginalDocumentFileFormat } from './types'
 import { useTransformedRawDocumentByFormat } from './utilities/hooks'
-import { ValidatedDocumentSelector } from './ValidatedDocumentSelector'
 import { ValidationResultsTable } from './ValidationResultsTable'
 
 type TwoSidedCardProps = Partial<{
@@ -73,24 +71,25 @@ const MONACO_EDITOR_PRETTY_FORMATS = {
   [YAML_FILE_FORMAT]: YAML_FILE_FORMAT.toUpperCase(),
 }
 
-export const VersionApiQualityCard: FC = memo(() => {
+type VersionApiQualityCardProps = {
+  selectedDocument: DocumentValidationSummary
+  selectedIssuePath: SpecItemUri | undefined
+  setSelectedIssuePath: (value: SpecItemUri | undefined) => void
+  validationSummaryAvailable: boolean
+}
+
+export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props) => {
+  const { selectedDocument, selectedIssuePath, setSelectedIssuePath, validationSummaryAvailable } = props
+
   const { packageId, versionId } = useParams()
 
-  const [selectedDocument, setSelectedDocument] = useState<DocumentValidationSummary | undefined>()
   const [format, setFormat] = useState<OriginalDocumentFileFormat>(YAML_FILE_FORMAT)
-
-  const [selectedIssuePath, setSelectedIssuePath] = useState<SpecItemUri | undefined>()
 
   const [validationDetails, loadingValidationDetails] = useValidationDetailsByDocument(
     packageId ?? '',
     versionId ?? '',
     selectedDocument?.slug ?? '',
   )
-
-  const validationSummary = useApiQualityValidationSummary()
-  const validationSummaryAvailable = validationSummary?.status === ClientValidationStatuses.SUCCESS
-  const validatedDocuments = useMemo(() => validationSummary?.documents ?? [], [validationSummary])
-  const loadingValidatedDocuments = useMemo(() => validationSummary === undefined, [validationSummary])
 
   const [selectedDocumentContent, loadingSelectedDocumentContent] = usePublishedDocumentRaw({
     packageKey: packageId,
@@ -114,11 +113,6 @@ export const VersionApiQualityCard: FC = memo(() => {
     const { issues } = validationDetails
     return transformIssuesToMarkers(transformedSelectedDocumentContent, format, issues)
   }, [validationDetails, transformedSelectedDocumentContent, format])
-
-  const onSelectDocument = useCallback((value: DocumentValidationSummary | undefined) => {
-    setSelectedDocument(value)
-    setSelectedIssuePath(undefined)
-  }, [])
 
   const onFormatChange = useCallback((value: OriginalDocumentFileFormat) => {
     setFormat(value)
@@ -149,12 +143,6 @@ export const VersionApiQualityCard: FC = memo(() => {
                 gap={1}
                 width="100%"
               >
-                <ValidatedDocumentSelector
-                  value={selectedDocument}
-                  onSelect={onSelectDocument}
-                  options={validatedDocuments}
-                  loading={loadingValidatedDocuments}
-                />
                 <ValidationRulesetLink
                   data={validationDetails?.ruleset}
                   loading={loadingValidationDetails}
