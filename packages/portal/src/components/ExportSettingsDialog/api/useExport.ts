@@ -7,7 +7,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 export enum ExportedEntityKind {
   VERSION = 'version',
   REST_DOCUMENT = 'restDocument',
-  REST_OPERATIONS_GROUP = 'restOperationsGroup'
+  REST_OPERATIONS_GROUP = 'restOperationsGroup',
+  GRAPHQL_OPERATIONS_GROUP = 'graphqlOperationsGroup'
 }
 
 export enum ExportedFileFormat {
@@ -18,14 +19,15 @@ export enum ExportedFileFormat {
 
 export enum ExportedEntityTransformation {
   REDUCED_SOURCE_SPECIFICATIONS = 'reducedSourceSpecifications',
-  MERGED_SPECIFICATION = 'mergedSpecification'
+  MERGED_SPECIFICATION = 'mergedSpecification',
+
 }
 
 export interface IRequestDataExport {
   exportedEntity: ExportedEntityKind
   packageId: PackageKey
   version: VersionKey
-  format: ExportedFileFormat
+  format?: ExportedFileFormat
   removeOasExtensions?: boolean
 }
 
@@ -72,6 +74,16 @@ export class RequestDataExportRestOperationsGroup extends CommonRequestDataExpor
     removeOasExtensions?: boolean,
   ) {
     super(ExportedEntityKind.REST_OPERATIONS_GROUP, packageId, version, format, removeOasExtensions)
+  }
+}
+
+export class RequestDataExportGraphOperationsGroup implements IRequestDataExport {
+  constructor(
+    public readonly groupName: string,
+    public readonly exportedEntity: ExportedEntityKind,
+    public readonly packageId: PackageKey,
+    public readonly version: VersionKey,
+  ) {
   }
 }
 
