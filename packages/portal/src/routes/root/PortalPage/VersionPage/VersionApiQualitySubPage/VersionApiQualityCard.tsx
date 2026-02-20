@@ -1,5 +1,5 @@
 import { useValidationDetailsByDocument } from '@apihub/api-hooks/ApiQuality/useValidationDetailsByDocument'
-import { ValidationRulesetLink } from '@apihub/components/ApiQuality/ValidatationRulesetLink'
+import { ValidationRulesetsDropdown } from '@apihub/components/ApiQuality/ValidationRulesetsDropdown'
 import type { DocumentValidationSummary } from '@apihub/entities/api-quality/package-version-validation-summary'
 import { transformIssuesToMarkers } from '@apihub/utils/api-quality/issues'
 import { Box, Typography } from '@mui/material'
@@ -17,8 +17,8 @@ import { memo, useCallback, useMemo, useState } from 'react'
 import { useParams } from 'react-router'
 import type { OriginalDocumentFileFormat } from './types'
 import { useTransformedRawDocumentByFormat } from './utilities/hooks'
+import { flatMapValidationIssues, flatMapValidationRulesets } from './utilities/transformers'
 import { ValidationResultsTable } from './ValidationResultsTable'
-import { flatMapValidationIssues } from './utilities/transformers'
 
 type TwoSidedCardProps = Partial<{
   leftHeader: ReactNode
@@ -91,9 +91,9 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
     versionId ?? '',
     selectedDocument?.slug ?? '',
   )
-
   const validationIssues = useMemo(() => flatMapValidationIssues(validationDetails), [validationDetails])
-
+  const validationRulesets = useMemo(() => flatMapValidationRulesets(validationDetails), [validationDetails])
+  
   const [selectedDocumentContent, loadingSelectedDocumentContent] = usePublishedDocumentRaw({
     packageKey: packageId,
     versionKey: versionId,
@@ -145,9 +145,11 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
                 gap={1}
                 width="100%"
               >
-                <ValidationRulesetLink
-                  // TODO 20.02.26 // Update after component is refactored
-                  data={validationDetails?.results[0]?.ruleset}
+                <ValidationRulesetsDropdown
+                  options={validationRulesets}
+                  onChange={(selectedRulesets) => {
+                    console.log(selectedRulesets)
+                  }}
                   loading={loadingValidationDetails}
                 />
               </Box>

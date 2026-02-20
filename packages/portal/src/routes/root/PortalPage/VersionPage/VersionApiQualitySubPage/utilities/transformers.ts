@@ -8,6 +8,7 @@ import { encodeKey } from '@netcracker/qubership-apihub-ui-shared/utils/specific
 import { safeParse } from '@stoplight/json'
 import { dump } from 'js-yaml'
 import type { OriginalDocumentFileFormat } from '../types'
+import type { RulesetMetadata } from '@apihub/entities/api-quality/rulesets'
 
 export function issuePathToSpecItemUri(issuePath: IssuePath): SpecItemUri {
   return `/${issuePath.map(pathItem => encodeKey(`${pathItem}`)).join('/')}`
@@ -75,4 +76,8 @@ export function sortIssuesBySeveralFields(issues: Issue[]): Issue[] {
 
     return issueA.message.localeCompare(issueB.message)
   })
+}
+
+export function flatMapValidationRulesets(validationDetails: ValidationDetails | undefined): RulesetMetadata[] {
+  return (validationDetails?.results ?? []).flatMap(result => result.ruleset)
 }
