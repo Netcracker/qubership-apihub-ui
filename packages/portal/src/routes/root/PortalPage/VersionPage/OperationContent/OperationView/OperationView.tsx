@@ -228,7 +228,7 @@ const API_TYPE_VIEWER_MAP: Record<ApiType, ApiTypeViewerCallback> = {
         source={mergedDocument}
         displayMode={schemaViewMode as SchemaViewMode}
         operationType={operationType}
-        operationName={operationName}
+        operationKey={operationName}
       />
     </Box>
   ),
