@@ -4,9 +4,9 @@ import { ValidationRulesetsDropdown } from '@apihub/components/ApiQuality/Valida
 import type { IssueSeverity } from '@apihub/entities/api-quality/issue-severities'
 import type { Issue } from '@apihub/entities/api-quality/issues'
 import type { DocumentValidationSummary } from '@apihub/entities/api-quality/package-version-validation-summary'
-import type { RulesetMetadata } from '@apihub/entities/api-quality/rulesets'
+import type { RulesetLinter, RulesetMetadata } from '@apihub/entities/api-quality/rulesets'
 import { transformIssuesToMarkers } from '@apihub/utils/api-quality/issues'
-import { Box, Button, IconButton, Typography } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import { ModuleFetchingErrorBoundary } from '@netcracker/qubership-apihub-ui-shared/components/ModuleFetchingErrorBoundary/ModuleFetchingErrorBoundary'
@@ -22,11 +22,8 @@ import { useParams } from 'react-router'
 import type { OriginalDocumentFileFormat } from './types'
 import { useTransformedRawDocumentByFormat } from './utilities/hooks'
 import { flatMapValidationIssues, flatMapValidationRulesets } from './utilities/transformers'
-import { ValidationResultsTable } from './ValidationResultsTable'
-import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined'
-import { Download } from '@mui/icons-material'
-import { DownloadIcon } from '@netcracker/qubership-apihub-ui-shared/icons/DownloadIcon'
 import { ValidationResultsExportToolbar } from './ValidationResultsExportToolbar'
+import { ValidationResultsTable } from './ValidationResultsTable'
 
 type TwoSidedCardProps = Partial<{
   leftHeader: ReactNode
@@ -124,7 +121,7 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
         fileName: 'ruleset-2.yaml',
         status: 'inactive',
         apiType: 'openapi-3-0',
-        linter: 'ai linter',
+        linter: 'ai_oas',
       })
     }
     return r
@@ -142,8 +139,8 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
   const [issueSeverityFilters, setIssueSeverityFilters] = useState<IssueSeverity[]>([])
   const filterBySelectedRulesets = useCallback((source: Issue[]) => {
     const selectedRulesetsList = Array.from(selectedRulesets)
-    const selectedLinters = selectedRulesetsList.map(ruleset => ruleset.linter)
-    return source.filter(issue => selectedLinters.includes(issue.linter))
+    const selectedLinters = new Set<RulesetLinter>(selectedRulesetsList.map(ruleset => ruleset.linter))
+    return source.filter(issue => selectedLinters.has(issue.linter))
   }, [selectedRulesets])
   const filterByIssueSeverityFilters = useCallback((source: Issue[]) => {
     return issueSeverityFilters.length

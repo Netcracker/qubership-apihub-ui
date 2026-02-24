@@ -1,9 +1,9 @@
-import type { RulesetMetadataDto, RulesetMetadata } from './rulesets'
-import type { IssueDto, Issue } from './issues'
-import type { ValidatedDocumentDto, ValidatedDocument } from './validated-documents'
+import type { Issue, IssueDto } from './issues'
+import type { RulesetLinter, RulesetMetadata, RulesetMetadataDto } from './rulesets'
+import type { ValidatedDocument, ValidatedDocumentDto } from './validated-documents'
 
 type ValidationResultDto = {
-  linter: string
+  linter: RulesetLinter
   ruleset: RulesetMetadataDto
   issues: readonly IssueDto[]
 }
