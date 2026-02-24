@@ -1,5 +1,7 @@
 import { useValidationDetailsByDocument } from '@apihub/api-hooks/ApiQuality/useValidationDetailsByDocument'
+import { IssueSeverityFilters } from '@apihub/components/ApiQuality/IssueSeverityFilters'
 import { ValidationRulesetsDropdown } from '@apihub/components/ApiQuality/ValidationRulesetsDropdown'
+import type { IssueSeverity } from '@apihub/entities/api-quality/issue-severities'
 import type { Issue } from '@apihub/entities/api-quality/issues'
 import type { DocumentValidationSummary } from '@apihub/entities/api-quality/package-version-validation-summary'
 import type { RulesetMetadata } from '@apihub/entities/api-quality/rulesets'
@@ -37,9 +39,13 @@ const TwoSidedCard: FC<TwoSidedCardProps> = memo<TwoSidedCardProps>((props) => {
 
   return (
     <Box display='flex' flexDirection='column' height="calc(100% - 50px)">
-      <Box display='flex' justifyContent='space-between' alignItems='center' width="100%" mb={1}>
-        {leftHeader}
-        {rightHeader}
+      <Box display='flex' alignItems='center' width="100%">
+        <Box width="50%" display='flex' justifyContent='flex-start' borderRight={borderStyle} pb={1} pr={1}>
+          {leftHeader}
+        </Box>
+        <Box width='50%' display='flex' justifyContent='flex-end' pb={1} pl={1}>
+          {rightHeader}
+        </Box>
       </Box>
       <Box
         display="grid"
@@ -58,7 +64,7 @@ const TwoSidedCard: FC<TwoSidedCardProps> = memo<TwoSidedCardProps>((props) => {
         </Box>
         <Box
           gridArea="right-body"
-          sx={{ borderTop: borderStyle, borderLeft: borderStyle, pt: internalIndent, pl: internalIndent }}
+          sx={{ borderTop: borderStyle, pt: internalIndent, pl: internalIndent }}
         >
           {rightBody}
         </Box>
@@ -129,17 +135,22 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
   const transformedSelectedDocumentContent = useTransformedRawDocumentByFormat(selectedDocumentContent, format)
 
   const [selectedRulesets, setSelectedRulesets] = useState<Set<RulesetMetadata>>(new Set())
+  const [issueSeverityFilters, setIssueSeverityFilters] = useState<IssueSeverity[]>([])
   const filterBySelectedRulesets = useCallback((source: Issue[]) => {
     const selectedRulesetsList = Array.from(selectedRulesets)
     const selectedLinters = selectedRulesetsList.map(ruleset => ruleset.linter)
     return source.filter(issue => selectedLinters.includes(issue.linter))
   }, [selectedRulesets])
+  const filterByIssueSeverityFilters = useCallback((source: Issue[]) => {
+    return issueSeverityFilters.length
+      ? source.filter(issue => issueSeverityFilters.includes(issue.severity))
+      : source
+  }, [issueSeverityFilters])
   const validationIssues = useMemo(() => {
     let result = flatMapValidationIssues(validationDetails)
-    result = filterValidationIssuesList(result, [filterBySelectedRulesets])
+    result = filterValidationIssuesList(result, [filterBySelectedRulesets, filterByIssueSeverityFilters])
     return result
-  }, [validationDetails, filterBySelectedRulesets])
-
+  }, [validationDetails, filterBySelectedRulesets, filterByIssueSeverityFilters])
 
   const selectedDocumentMarkers = useMemo(() => {
     if (!transformedSelectedDocumentContent) {
@@ -179,7 +190,7 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
             leftHeader={
               <Box
                 display='flex'
-                justifyContent='flex-start'
+                justifyContent='space-between'
                 alignItems='center'
                 gap={1}
                 width="100%"
@@ -188,6 +199,11 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
                   options={validationRulesets}
                   onChange={setSelectedRulesets}
                   loading={loadingValidationDetails}
+                />
+                <IssueSeverityFilters
+                  data={validationIssues}
+                  filters={issueSeverityFilters}
+                  handleFilters={setIssueSeverityFilters}
                 />
               </Box>
             }
