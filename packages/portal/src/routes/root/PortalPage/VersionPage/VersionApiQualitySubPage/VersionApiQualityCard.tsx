@@ -1,5 +1,6 @@
 import { useValidationDetailsByDocument } from '@apihub/api-hooks/ApiQuality/useValidationDetailsByDocument'
 import { ValidationRulesetsDropdown } from '@apihub/components/ApiQuality/ValidationRulesetsDropdown'
+import type { Issue } from '@apihub/entities/api-quality/issues'
 import type { DocumentValidationSummary } from '@apihub/entities/api-quality/package-version-validation-summary'
 import type { RulesetMetadata } from '@apihub/entities/api-quality/rulesets'
 import { transformIssuesToMarkers } from '@apihub/utils/api-quality/issues'
@@ -92,7 +93,6 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
     versionId ?? '',
     selectedDocument?.slug ?? '',
   )
-  const validationIssues = useMemo(() => flatMapValidationIssues(validationDetails), [validationDetails])
   const validationRulesets = useMemo(() => {
     const r: RulesetMetadata[] = [...flatMapValidationRulesets(validationDetails)]
     // TODO 24.02.26 // Remove this after BE is ready
@@ -128,6 +128,19 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
 
   const transformedSelectedDocumentContent = useTransformedRawDocumentByFormat(selectedDocumentContent, format)
 
+  const [selectedRulesets, setSelectedRulesets] = useState<Set<RulesetMetadata>>(new Set())
+  const filterBySelectedRulesets = useCallback((source: Issue[]) => {
+    const selectedRulesetsList = Array.from(selectedRulesets)
+    const selectedLinters = selectedRulesetsList.map(ruleset => ruleset.linter)
+    return source.filter(issue => selectedLinters.includes(issue.linter))
+  }, [selectedRulesets])
+  const validationIssues = useMemo(() => {
+    let result = flatMapValidationIssues(validationDetails)
+    result = filterValidationIssuesList(result, [filterBySelectedRulesets])
+    return result
+  }, [validationDetails, filterBySelectedRulesets])
+
+
   const selectedDocumentMarkers = useMemo(() => {
     if (!transformedSelectedDocumentContent) {
       return []
@@ -146,8 +159,6 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
     setFormat(value)
     setSelectedIssuePath(undefined)
   }, [setSelectedIssuePath])
-
-  const [selectedRulesets, setSelectedRulesets] = useState<Set<RulesetMetadata>>(new Set())
 
   return (
     <BodyCard
@@ -205,7 +216,7 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
                 }
               >
                 <ValidationResultsTable
-                  data={validationDetails}
+                  data={validationIssues}
                   loading={loadingValidationDetails}
                   onSelectIssue={setSelectedIssuePath}
                 />
@@ -232,3 +243,16 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
     />
   )
 })
+
+type ValidationIssuesListFilter = (source: Issue[]) => Issue[]
+
+function filterValidationIssuesList(
+  source: Issue[],
+  filters: ValidationIssuesListFilter[] = [],
+): Issue[] {
+  let result = source
+  for (const filter of filters) {
+    result = filter(result)
+  }
+  return result
+}

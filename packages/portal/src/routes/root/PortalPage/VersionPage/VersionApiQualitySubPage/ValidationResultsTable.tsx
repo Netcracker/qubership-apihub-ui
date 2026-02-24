@@ -1,4 +1,3 @@
-import type { ValidationDetails } from '@apihub/entities/api-quality/document-validation-details'
 import type { IssueSeverity } from '@apihub/entities/api-quality/issue-severities'
 import type { Issue } from '@apihub/entities/api-quality/issues'
 import { Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
@@ -10,7 +9,7 @@ import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-tabl
 import type { FC } from 'react'
 import { memo, useMemo, useRef } from 'react'
 import { IssueSeverityMarker } from './IssueSeverityMarker'
-import { flatMapValidationIssues, issuePathToSpecItemUri, sortIssuesBySeveralFields } from './utilities/transformers'
+import { issuePathToSpecItemUri, sortIssuesBySeveralFields } from './utilities/transformers'
 
 const TABLE_COLUMN_ID_TYPE = 'type'
 const TABLE_COLUMN_ID_LINTER = 'linter'
@@ -30,7 +29,7 @@ type TableData = {
 }
 
 type ValidationResultsTableProps = {
-  data: ValidationDetails | undefined
+  data: Issue[]
   loading: IsLoading
   onSelectIssue: (pathToIssue: SpecItemUri) => void
 }
@@ -117,8 +116,7 @@ export const ValidationResultsTable: FC<ValidationResultsTableProps> = memo<Vali
 
   const tableContainerRef = useRef<HTMLDivElement>(null)
 
-  const issuesList = useMemo(() => flatMapValidationIssues(data), [data])
-  const sortedIssuesList = useMemo(() => sortIssuesBySeveralFields(issuesList), [issuesList])
+  const sortedIssuesList = useMemo(() => sortIssuesBySeveralFields(data), [data])
 
   const transformedData: TableData[] = useMemo(() => sortedIssuesList.map((issue: Issue) => ({
     type: issue.severity,
