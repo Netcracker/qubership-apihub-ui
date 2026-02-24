@@ -97,7 +97,7 @@ const Dropdown: FC<ValidationRulesetsDropdownProps> = (props) => {
                   height: '36px',
                 }}
               >
-                {isSelected && <Check htmlColor='#353C4E' fontSize='small' />}
+                <Check htmlColor={isSelected ? '#353C4E' : 'transparent'} fontSize='small' />
                 <ValidationRulesetLink
                   data={option}
                   loading={loading}
