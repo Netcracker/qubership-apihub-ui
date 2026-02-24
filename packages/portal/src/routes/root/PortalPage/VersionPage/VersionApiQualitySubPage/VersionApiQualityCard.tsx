@@ -1,6 +1,7 @@
 import { useValidationDetailsByDocument } from '@apihub/api-hooks/ApiQuality/useValidationDetailsByDocument'
 import { ValidationRulesetsDropdown } from '@apihub/components/ApiQuality/ValidationRulesetsDropdown'
 import type { DocumentValidationSummary } from '@apihub/entities/api-quality/package-version-validation-summary'
+import type { RulesetMetadata } from '@apihub/entities/api-quality/rulesets'
 import { transformIssuesToMarkers } from '@apihub/utils/api-quality/issues'
 import { Box, Typography } from '@mui/material'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
@@ -92,7 +93,32 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
     selectedDocument?.slug ?? '',
   )
   const validationIssues = useMemo(() => flatMapValidationIssues(validationDetails), [validationDetails])
-  const validationRulesets = useMemo(() => flatMapValidationRulesets(validationDetails), [validationDetails])
+  const validationRulesets = useMemo(() => {
+    const r: RulesetMetadata[] = [...flatMapValidationRulesets(validationDetails)]
+    // TODO 24.02.26 // Remove this after BE is ready
+    const [one, two] = [true, true]
+    if (one || two) {
+      r.push({
+        id: 'ruleset-1',
+        name: 'Ruleset 1',
+        fileName: 'ruleset-1.yaml',
+        status: 'active',
+        apiType: 'openapi-3-0',
+        linter: 'spectral',
+      })
+    }
+    if (one && two) {
+      r.push({
+        id: 'ruleset-2',
+        name: 'Ruleset 2',
+        fileName: 'ruleset-2.yaml',
+        status: 'inactive',
+        apiType: 'openapi-3-0',
+        linter: 'ai linter',
+      })
+    }
+    return r
+  }, [validationDetails])
   
   const [selectedDocumentContent, loadingSelectedDocumentContent] = usePublishedDocumentRaw({
     packageKey: packageId,
