@@ -6,7 +6,7 @@ import type { Issue } from '@apihub/entities/api-quality/issues'
 import type { DocumentValidationSummary } from '@apihub/entities/api-quality/package-version-validation-summary'
 import type { RulesetMetadata } from '@apihub/entities/api-quality/rulesets'
 import { transformIssuesToMarkers } from '@apihub/utils/api-quality/issues'
-import { Box, Typography } from '@mui/material'
+import { Box, Button, IconButton, Typography } from '@mui/material'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import { ModuleFetchingErrorBoundary } from '@netcracker/qubership-apihub-ui-shared/components/ModuleFetchingErrorBoundary/ModuleFetchingErrorBoundary'
@@ -23,6 +23,10 @@ import type { OriginalDocumentFileFormat } from './types'
 import { useTransformedRawDocumentByFormat } from './utilities/hooks'
 import { flatMapValidationIssues, flatMapValidationRulesets } from './utilities/transformers'
 import { ValidationResultsTable } from './ValidationResultsTable'
+import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined'
+import { Download } from '@mui/icons-material'
+import { DownloadIcon } from '@netcracker/qubership-apihub-ui-shared/icons/DownloadIcon'
+import { ValidationResultsExportToolbar } from './ValidationResultsExportToolbar'
 
 type TwoSidedCardProps = Partial<{
   leftHeader: ReactNode
@@ -200,11 +204,16 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
                   onChange={setSelectedRulesets}
                   loading={loadingValidationDetails}
                 />
-                <IssueSeverityFilters
-                  data={validationIssues}
-                  filters={issueSeverityFilters}
-                  handleFilters={setIssueSeverityFilters}
-                />
+                <Box display='flex' alignItems='center' gap={1}>
+                  <IssueSeverityFilters
+                    data={validationIssues}
+                    filters={issueSeverityFilters}
+                    handleFilters={setIssueSeverityFilters}
+                  />
+                  <ValidationResultsExportToolbar
+                    data={validationIssues}
+                  />
+                </Box>
               </Box>
             }
             rightHeader={
