@@ -26,8 +26,10 @@ const Dropdown: FC<ValidationRulesetsDropdownProps> = (props) => {
 
   const [selectedValues, setSelectedValues] = useState<Set<RulesetMetadata>>(new Set())
   useEffect(() => {
-    setSelectedValues(new Set(options))
-  }, [options])
+    const initialValues = new Set(options.filter(option => option.id === 'default'))
+    setSelectedValues(initialValues)
+    onChange(initialValues)
+  }, [onChange, options])
 
   const handleSelect = useCallback((option: RulesetMetadata) => {
     setSelectedValues(prev => {
@@ -37,10 +39,10 @@ const Dropdown: FC<ValidationRulesetsDropdownProps> = (props) => {
       } else {
         newSet.add(option)
       }
+      onChange(newSet)
       return newSet
     })
-    onChange(selectedValues)
-  }, [onChange, selectedValues])
+  }, [onChange])
 
 
   return <>
@@ -59,22 +61,20 @@ const Dropdown: FC<ValidationRulesetsDropdownProps> = (props) => {
       onClick={({ currentTarget }) => setAnchor(currentTarget)}
       data-testid="ValidatedByLinterSelectorButton"
     >
-      {selectedValues.size === 0 ? (
-        <Typography variant="body2" fontWeight={500}>No linters selected</Typography>
-      ) : (
-        <Box display="flex" alignItems="center" gap={1}>
-          {selectedValues.size === 1 && (
-            <ValidationRulesetLink data={Array.from(selectedValues.values())[0]} loading={loading} />
-          )}
-          {selectedValues.size > 1 && (
-            <Typography variant="body2" fontWeight={500}>{selectedValues.size} linters</Typography>
-          )}
-          {anchor
-            ? <KeyboardArrowUpOutlinedIcon htmlColor='#353C4E' />
-            : <KeyboardArrowDownOutlinedIcon htmlColor='#353C4E' />}
-        </Box>
-      )}
-
+      <Box display="flex" alignItems="center" gap={1}>
+        {selectedValues.size === 0 && (
+          <Typography variant="body2" fontWeight={500}>No linters selected</Typography>
+        )}
+        {selectedValues.size === 1 && (
+          <ValidationRulesetLink data={Array.from(selectedValues.values())[0]} loading={loading} />
+        )}
+        {selectedValues.size > 1 && (
+          <Typography variant="body2" fontWeight={500}>{selectedValues.size} linters</Typography>
+        )}
+        {anchor
+          ? <KeyboardArrowUpOutlinedIcon htmlColor='#353C4E' />
+          : <KeyboardArrowDownOutlinedIcon htmlColor='#353C4E' />}
+      </Box>
       <MenuButtonItems
         anchorEl={anchor}
         open={!!anchor}
