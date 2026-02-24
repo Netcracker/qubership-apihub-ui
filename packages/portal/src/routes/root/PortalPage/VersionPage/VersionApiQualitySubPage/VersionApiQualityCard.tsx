@@ -119,7 +119,7 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
     }
     return r
   }, [validationDetails])
-  
+
   const [selectedDocumentContent, loadingSelectedDocumentContent] = usePublishedDocumentRaw({
     packageKey: packageId,
     versionKey: versionId,
@@ -147,6 +147,8 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
     setSelectedIssuePath(undefined)
   }, [setSelectedIssuePath])
 
+  const [selectedRulesets, setSelectedRulesets] = useState<Set<RulesetMetadata>>(new Set())
+
   return (
     <BodyCard
       body={
@@ -173,9 +175,7 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
               >
                 <ValidationRulesetsDropdown
                   options={validationRulesets}
-                  onChange={(selectedRulesets) => {
-                    console.log(selectedRulesets)
-                  }}
+                  onChange={setSelectedRulesets}
                   loading={loadingValidationDetails}
                 />
               </Box>
@@ -189,11 +189,27 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
               />
             }
             leftBody={
-              <ValidationResultsTable
-                data={validationDetails}
-                loading={loadingValidationDetails}
-                onSelectIssue={setSelectedIssuePath}
-              />
+              <Placeholder
+                invisible={selectedRulesets.size > 0}
+                area={CONTENT_PLACEHOLDER_AREA}
+                message={
+                  <Box display='flex' flexDirection='column' gap={1}>
+                    <Typography component='div' variant='h5'>
+                      No linters
+                    </Typography>
+                    <Typography component="div" variant="h6" color="#8F9EB4">
+                      Choose one or more linters from the «Validated by» dropdown above
+                      to view API quality validation results.
+                    </Typography>
+                  </Box>
+                }
+              >
+                <ValidationResultsTable
+                  data={validationDetails}
+                  loading={loadingValidationDetails}
+                  onSelectIssue={setSelectedIssuePath}
+                />
+              </Placeholder>
             }
             rightBody={
               loadingSelectedDocumentContent ? <LoadingIndicator /> : (
