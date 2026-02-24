@@ -50,11 +50,12 @@ import {
 } from '@apihub/components/ExportSettingsDialog/api/useExport'
 import { REST_API_TYPE } from '@netcracker/qubership-apihub-api-processor'
 import { useExportStatus } from '@apihub/components/ExportSettingsDialog/api/useExportStatus'
+import { useShowInfoNotification } from '@apihub/routes/root/BasePage/Notification'
 
 export const OperationGroupsCard: FC = memo(() => {
   const { packageId: packageKey } = useParams()
   const currentPackage = useCurrentPackage()
-
+  const showNotification = useShowInfoNotification()
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false)
   const [groupToDelete, setGroupToDelete] = useState<OperationGroup>()
 
@@ -158,9 +159,10 @@ export const OperationGroupsCard: FC = memo(() => {
         packageKey!,
         fullVersion!,
       ))
+      showNotification({message: 'Export initiated. Your download will begin shortly.' })
     }
 
-  }, [showExportSettingsDialog, packageKey, fullVersion])
+  }, [showExportSettingsDialog, packageKey, fullVersion, showNotification])
 
   const isPackage = useMemo(() => currentPackage?.kind === PACKAGE_KIND, [currentPackage?.kind])
   const operationGroups = useMemo(() => (
