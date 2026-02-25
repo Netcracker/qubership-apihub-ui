@@ -125,11 +125,10 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
       ? source.filter(issue => issueSeverityFilters.includes(issue.severity))
       : source
   }, [issueSeverityFilters])
+  const originalValidationIssues = useMemo(() => flatMapValidationIssues(validationDetails), [validationDetails])
   const validationIssues = useMemo(() => {
-    let result = flatMapValidationIssues(validationDetails)
-    result = filterValidationIssuesList(result, [filterBySelectedRulesets, filterByIssueSeverityFilters])
-    return result
-  }, [validationDetails, filterBySelectedRulesets, filterByIssueSeverityFilters])
+    return filterValidationIssuesList(originalValidationIssues, [filterBySelectedRulesets, filterByIssueSeverityFilters])
+  }, [originalValidationIssues, filterBySelectedRulesets, filterByIssueSeverityFilters])
 
   const selectedDocumentMarkers = useMemo(() => {
     if (!transformedSelectedDocumentContent) {
@@ -176,6 +175,7 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
         </Box>
       )
     }
+    return null
   }, [selectedRulesets.size, validationIssues.length])
 
   const isExportToolbarDisabled = useMemo(
@@ -214,7 +214,7 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
                 />
                 <Box display='flex' alignItems='center' gap={1}>
                   <IssueSeverityFilters
-                    data={validationIssues}
+                    data={originalValidationIssues}
                     filters={issueSeverityFilters}
                     handleFilters={setIssueSeverityFilters}
                   />
@@ -235,7 +235,7 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
             }
             leftBody={
               <Placeholder
-                invisible={selectedRulesets.size > 0}
+                invisible={!placeholderMessage}
                 area={CONTENT_PLACEHOLDER_AREA}
                 message={placeholderMessage}
               >
