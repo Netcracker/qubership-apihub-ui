@@ -36,6 +36,11 @@ export const RulesetLinters = {
   SPECTRAL_ASYNCAPI: 'spectral_asyncapi',
 } as const
 export type RulesetLinter = (typeof RulesetLinters)[keyof typeof RulesetLinters]
+export const RULESET_LINTER_TITLE_MAP = {
+  [RulesetLinters.SPECTRAL]: 'Spectral',
+  [RulesetLinters.AI_OAS]: 'AI OAS',
+  [RulesetLinters.SPECTRAL_ASYNCAPI]: 'Spectral AsyncAPI',
+}
 
 // Full ruleset
 

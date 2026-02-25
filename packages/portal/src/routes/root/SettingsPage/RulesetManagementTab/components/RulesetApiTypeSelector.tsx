@@ -25,10 +25,8 @@ type RulesetApiTypeSelectorProps = {
   onChange?: (event: SelectChangeEvent) => void
 }
 
-export const RulesetApiTypeSelector: FC<RulesetApiTypeSelectorProps> = memo<RulesetApiTypeSelectorProps>(({
-  apiType,
-  onChange,
-}) => {
+export const RulesetApiTypeSelector: FC<RulesetApiTypeSelectorProps> = memo<RulesetApiTypeSelectorProps>((props) => {
+  const { apiType, onChange } = props
   return (
     <FormControl sx={STYLE} variant="filled">
       <InputLabel id="demo-select-small-label">API Type</InputLabel>
