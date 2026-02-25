@@ -19,7 +19,11 @@ export const ValidationRulesetLink: FC<ValidationRulesetLinkProps> = memo<Valida
   const { showRulesetInfoDialog } = useEventBus()
 
   const onClickRulesetName = useCallback(
-    () => data && showRulesetInfoDialog(data),
+    (event: React.MouseEvent<HTMLAnchorElement>) => {
+      event.stopPropagation()
+      event.preventDefault()
+      data && showRulesetInfoDialog(data)
+    },
     [data, showRulesetInfoDialog],
   )
 

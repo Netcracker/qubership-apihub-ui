@@ -100,32 +100,10 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
     versionId ?? '',
     selectedDocument?.slug ?? '',
   )
-  const validationRulesets = useMemo(() => {
-    const r: RulesetMetadata[] = [...flatMapValidationRulesets(validationDetails)]
-    // TODO 24.02.26 // Remove this after BE is ready
-    const [one, two] = [true, true]
-    if (one || two) {
-      r.push({
-        id: 'ruleset-1',
-        name: 'Ruleset 1',
-        fileName: 'ruleset-1.yaml',
-        status: 'active',
-        apiType: 'openapi-3-0',
-        linter: 'spectral',
-      })
-    }
-    if (one && two) {
-      r.push({
-        id: 'ruleset-2',
-        name: 'Ruleset 2',
-        fileName: 'ruleset-2.yaml',
-        status: 'inactive',
-        apiType: 'openapi-3-0',
-        linter: 'ai_oas',
-      })
-    }
-    return r
-  }, [validationDetails])
+  const validationRulesets = useMemo(
+    () => [...flatMapValidationRulesets(validationDetails)],
+    [validationDetails],
+  )
 
   const [selectedDocumentContent, loadingSelectedDocumentContent] = usePublishedDocumentRaw({
     packageKey: packageId,
