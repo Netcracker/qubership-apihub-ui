@@ -172,6 +172,34 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
     setSelectedIssuePath(undefined)
   }, [setSelectedIssuePath])
 
+  const placeholderMessage = useMemo(() => {
+    if (selectedRulesets.size > 0 && validationIssues.length === 0) {
+      return (
+        <Box display='flex' flexDirection='column' gap={1}>
+          <Typography component='div' variant='h5'>
+            No issues
+          </Typography>
+          <Typography component="div" variant="h6" color="#8F9EB4">
+            No errors were found with the selected linter(s).
+          </Typography>
+        </Box>
+      )
+    }
+    if (selectedRulesets.size === 0) {
+      return (
+        <Box display='flex' flexDirection='column' gap={1}>
+          <Typography component='div' variant='h5'>
+            No linters
+          </Typography>
+          <Typography component="div" variant="h6" color="#8F9EB4">
+            Choose one or more linters from the «Validated by» dropdown above
+            to view API quality validation results.
+          </Typography>
+        </Box>
+      )
+    }
+  }, [selectedRulesets.size, validationIssues.length])
+
   return (
     <BodyCard
       body={
@@ -225,17 +253,7 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
               <Placeholder
                 invisible={selectedRulesets.size > 0}
                 area={CONTENT_PLACEHOLDER_AREA}
-                message={
-                  <Box display='flex' flexDirection='column' gap={1}>
-                    <Typography component='div' variant='h5'>
-                      No linters
-                    </Typography>
-                    <Typography component="div" variant="h6" color="#8F9EB4">
-                      Choose one or more linters from the «Validated by» dropdown above
-                      to view API quality validation results.
-                    </Typography>
-                  </Box>
-                }
+                message={placeholderMessage}
               >
                 <ValidationResultsTable
                   data={validationIssues}
