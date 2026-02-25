@@ -32,7 +32,7 @@ export const RulesetManagementTab: FC = memo(() => {
   return (
     <BodyCard
       header={
-        <Box display="flex" gap={2} alignItems="center">
+        <Box display="flex" gap={2} alignItems="center" height='54px'>
           API Quality Ruleset Management
           <RulesetApiTypeSelector apiType={selectedApiType} onChange={handleChangeApiType} />
         </Box>
