@@ -178,6 +178,11 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
     }
   }, [selectedRulesets.size, validationIssues.length])
 
+  const isExportToolbarDisabled = useMemo(
+    () => selectedRulesets.size === 0 || validationIssues.length === 0,
+    [selectedRulesets.size, validationIssues.length],
+  )
+
   return (
     <BodyCard
       body={
@@ -214,6 +219,7 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
                     handleFilters={setIssueSeverityFilters}
                   />
                   <ValidationResultsExportToolbar
+                    disabled={isExportToolbarDisabled}
                     data={validationIssues}
                   />
                 </Box>

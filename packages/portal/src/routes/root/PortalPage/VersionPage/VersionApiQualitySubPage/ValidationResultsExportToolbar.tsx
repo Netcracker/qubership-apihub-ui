@@ -8,11 +8,12 @@ import { memo, useCallback, useMemo, type FC } from 'react'
 import { useCopyToClipboard } from 'react-use'
 
 type ValidationResultsExportToolbarProps = {
+  disabled?: boolean
   data: Issue[]
 }
 
 export const ValidationResultsExportToolbar: FC<ValidationResultsExportToolbarProps> = memo<ValidationResultsExportToolbarProps>((props) => {
-  const { data } = props
+  const { data, disabled = false } = props
 
   const preparedData = useMemo(() => prepareDataForExport(data), [data])
 
@@ -31,6 +32,7 @@ export const ValidationResultsExportToolbar: FC<ValidationResultsExportToolbarPr
   return (
     <>
       <Button
+        disabled={disabled}
         size="small"
         className="hoverable"
         variant="outlined"
@@ -43,6 +45,7 @@ export const ValidationResultsExportToolbar: FC<ValidationResultsExportToolbarPr
         <DownloadIcon color='#353C4E' />
       </Button>
       <Button
+        disabled={disabled}
         size="small"
         className="hoverable"
         variant="outlined"
