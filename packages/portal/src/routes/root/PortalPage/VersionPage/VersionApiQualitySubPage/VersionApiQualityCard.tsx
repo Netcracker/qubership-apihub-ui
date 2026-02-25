@@ -214,7 +214,7 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
                 />
                 <Box display='flex' alignItems='center' gap={1}>
                   <IssueSeverityFilters
-                    data={originalValidationIssues}
+                    data={validationIssues}
                     filters={issueSeverityFilters}
                     handleFilters={setIssueSeverityFilters}
                   />

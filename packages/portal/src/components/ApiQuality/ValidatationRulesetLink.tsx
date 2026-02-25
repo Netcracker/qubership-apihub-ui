@@ -1,4 +1,4 @@
-import { RULESET_API_TYPE_TITLE_MAP, RulesetStatuses, type RulesetMetadata } from '@apihub/entities/api-quality/rulesets'
+import { RULESET_API_TYPE_TITLE_MAP, RULESET_LINTER_TITLE_MAP, RulesetStatuses, type RulesetMetadata } from '@apihub/entities/api-quality/rulesets'
 import { useEventBus } from '@apihub/routes/EventBusProvider'
 import { Box, Link, Skeleton, Typography } from '@mui/material'
 import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
@@ -42,7 +42,8 @@ export const ValidationRulesetLink: FC<ValidationRulesetLinkProps> = memo<Valida
           key='validation-ruleset-link-linter'
           variant='body2'
         >
-          {data.linter}
+          {/* @ts-expect-error TODO 25.02.26 // Remove as when API will be updated */}
+          {RULESET_LINTER_TITLE_MAP[data.linter as RulesetLinter]}
         </Typography>
         <Typography
           key='validation-ruleset-link-name'

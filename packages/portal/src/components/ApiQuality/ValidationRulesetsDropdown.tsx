@@ -2,7 +2,7 @@ import type { RulesetMetadata } from '@apihub/entities/api-quality/rulesets'
 import { Check } from '@mui/icons-material'
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
 import KeyboardArrowUpOutlinedIcon from '@mui/icons-material/KeyboardArrowUpOutlined'
-import { Box, Button, List, ListItemButton, Typography } from '@mui/material'
+import { Box, Button, List, ListItemButton, Skeleton, Typography } from '@mui/material'
 import { MenuButtonItems } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import type { FC } from 'react'
@@ -44,6 +44,9 @@ const Dropdown: FC<ValidationRulesetsDropdownProps> = (props) => {
     })
   }, [onChange])
 
+  if (loading) {
+    return <Skeleton variant="text" width={100} height={20} />
+  }
 
   return <>
     <Button

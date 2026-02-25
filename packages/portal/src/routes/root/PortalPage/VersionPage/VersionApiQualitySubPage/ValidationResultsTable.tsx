@@ -10,6 +10,7 @@ import type { FC } from 'react'
 import { memo, useMemo, useRef } from 'react'
 import { IssueSeverityMarker } from './IssueSeverityMarker'
 import { issuePathToSpecItemUri, sortIssuesBySeveralFields } from './utilities/transformers'
+import { RULESET_LINTER_TITLE_MAP } from '@apihub/entities/api-quality/rulesets'
 
 const TABLE_COLUMN_ID_TYPE = 'type'
 const TABLE_COLUMN_ID_LINTER = 'linter'
@@ -70,7 +71,7 @@ const TABLE_COLUMNS_LAYOUT_CONFIG: Record<string, TableColumnLayoutConfig> = {
     textAlign: 'center',
   },
   [TABLE_COLUMN_ID_LINTER]: {
-    width: '150px',
+    width: '100px',
     whiteSpace: 'normal',
     textAlign: 'left',
   },
@@ -97,7 +98,8 @@ const COLUMNS: ColumnDef<TableData>[] = [
     id: TABLE_COLUMN_ID_LINTER,
     header: () => <CustomTableHeadCell title={TABLE_COLUMN_ID_LABELS[TABLE_COLUMN_ID_LINTER]} />,
     cell: ({ row: { original: { linter } } }) => {
-      return <Typography variant="body2">{linter}</Typography>
+      // @ts-expect-error TODO 25.02.26 // Remove as when API will be updated
+      return <Typography variant="body2">{RULESET_LINTER_TITLE_MAP[linter as RulesetLinter]}</Typography>
     },
   },
   {
