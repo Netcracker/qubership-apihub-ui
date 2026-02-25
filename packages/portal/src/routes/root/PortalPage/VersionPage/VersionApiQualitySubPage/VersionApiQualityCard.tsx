@@ -11,7 +11,7 @@ import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/Body
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import { ModuleFetchingErrorBoundary } from '@netcracker/qubership-apihub-ui-shared/components/ModuleFetchingErrorBoundary/ModuleFetchingErrorBoundary'
 import { MonacoEditor } from '@netcracker/qubership-apihub-ui-shared/components/MonacoEditor'
-import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder/Placeholder'
+import { CONTENT_PLACEHOLDER_AREA, DATA_RAINY_DAY_PLACEHOLDER_VARIANT, DATA_SUNNY_DAY_PLACEHOLDER_VARIANT, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder/Placeholder'
 import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'
 import { JSON_FILE_FORMAT, YAML_FILE_FORMAT } from '@netcracker/qubership-apihub-ui-shared/entities/file-formats'
 import { usePublishedDocumentRaw } from '@netcracker/qubership-apihub-ui-shared/hooks/documents/usePublishedDocumentRaw'
@@ -115,20 +115,13 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
 
   const [selectedRulesets, setSelectedRulesets] = useState<Set<RulesetMetadata>>(new Set())
   const [issueSeverityFilters, setIssueSeverityFilters] = useState<IssueSeverity[]>([])
-  const filterBySelectedRulesets = useCallback((source: Issue[]) => {
-    const selectedRulesetsList = Array.from(selectedRulesets)
-    const selectedLinters = new Set<RulesetLinter>(selectedRulesetsList.map(ruleset => ruleset.linter))
-    return source.filter(issue => selectedLinters.has(issue.linter))
-  }, [selectedRulesets])
-  const filterByIssueSeverityFilters = useCallback((source: Issue[]) => {
-    return issueSeverityFilters.length
-      ? source.filter(issue => issueSeverityFilters.includes(issue.severity))
-      : source
-  }, [issueSeverityFilters])
   const originalValidationIssues = useMemo(() => flatMapValidationIssues(validationDetails), [validationDetails])
-  const validationIssues = useMemo(() => {
-    return filterValidationIssuesList(originalValidationIssues, [filterBySelectedRulesets, filterByIssueSeverityFilters])
-  }, [originalValidationIssues, filterBySelectedRulesets, filterByIssueSeverityFilters])
+  const validationIssuesFilteredByRulesets = useMemo(() => {
+    return filterBySelectedRulesets(originalValidationIssues, selectedRulesets)
+  }, [originalValidationIssues, selectedRulesets])
+  const validationIssuesFilteredByRulesetsAndSeverities = useMemo(() => {
+    return filterByIssueSeverityFilters(validationIssuesFilteredByRulesets, issueSeverityFilters)
+  }, [validationIssuesFilteredByRulesets, issueSeverityFilters])
 
   const selectedDocumentMarkers = useMemo(() => {
     if (!transformedSelectedDocumentContent) {
@@ -137,21 +130,23 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
     if (!validationDetails) {
       return []
     }
-    // TODO 19.09.25 // Remove default because real response doesn't match API
-    if (!validationIssues.length) {
+    if (!validationIssuesFilteredByRulesets.length) {
       return []
     }
-    return transformIssuesToMarkers(transformedSelectedDocumentContent, format, validationIssues)
-  }, [validationDetails, transformedSelectedDocumentContent, format, validationIssues])
+    return transformIssuesToMarkers(transformedSelectedDocumentContent, format, validationIssuesFilteredByRulesets)
+  }, [validationDetails, transformedSelectedDocumentContent, format, validationIssuesFilteredByRulesets])
 
   const onFormatChange = useCallback((value: OriginalDocumentFileFormat) => {
     setFormat(value)
     setSelectedIssuePath(undefined)
   }, [setSelectedIssuePath])
 
-  const placeholderMessage = useMemo(() => {
-    if (selectedRulesets.size > 0 && validationIssues.length === 0) {
-      return (
+  const [placeholderMessage, isSunnyDayPlaceholder] = useMemo(() => {
+    // check originalValidationIssues 
+    //  because it's impossible to have no issues by selected linter(s) (ruleset(s))
+    //  due to list will contain only linter(s) (ruleset(s)) from issues
+    if (selectedRulesets.size > 0 && originalValidationIssues.length === 0) {
+      return [
         <Box display='flex' flexDirection='column' gap={1}>
           <Typography component='div' variant='h5'>
             No issues
@@ -159,11 +154,12 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
           <Typography component="div" variant="h6" color="#8F9EB4">
             No errors were found with the selected linter(s).
           </Typography>
-        </Box>
-      )
+        </Box>,
+        true,
+      ]
     }
     if (selectedRulesets.size === 0) {
-      return (
+      return [
         <Box display='flex' flexDirection='column' gap={1}>
           <Typography component='div' variant='h5'>
             No linters
@@ -172,15 +168,16 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
             Choose one or more linters from the «Validated by» dropdown above
             to view API quality validation results.
           </Typography>
-        </Box>
-      )
+        </Box>,
+        false,
+      ]
     }
-    return null
-  }, [selectedRulesets.size, validationIssues.length])
+    return []
+  }, [originalValidationIssues.length, selectedRulesets.size])
 
   const isExportToolbarDisabled = useMemo(
-    () => selectedRulesets.size === 0 || validationIssues.length === 0,
-    [selectedRulesets.size, validationIssues.length],
+    () => selectedRulesets.size === 0 || validationIssuesFilteredByRulesetsAndSeverities.length === 0,
+    [selectedRulesets.size, validationIssuesFilteredByRulesetsAndSeverities.length],
   )
 
   return (
@@ -214,13 +211,13 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
                 />
                 <Box display='flex' alignItems='center' gap={1}>
                   <IssueSeverityFilters
-                    data={validationIssues}
+                    data={validationIssuesFilteredByRulesets}
                     filters={issueSeverityFilters}
                     handleFilters={setIssueSeverityFilters}
                   />
                   <ValidationResultsExportToolbar
                     disabled={isExportToolbarDisabled}
-                    data={validationIssues}
+                    data={validationIssuesFilteredByRulesetsAndSeverities}
                   />
                 </Box>
               </Box>
@@ -237,10 +234,11 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
               <Placeholder
                 invisible={!placeholderMessage}
                 area={CONTENT_PLACEHOLDER_AREA}
+                variant={isSunnyDayPlaceholder ? DATA_SUNNY_DAY_PLACEHOLDER_VARIANT : DATA_RAINY_DAY_PLACEHOLDER_VARIANT}
                 message={placeholderMessage}
               >
                 <ValidationResultsTable
-                  data={validationIssues}
+                  data={validationIssuesFilteredByRulesetsAndSeverities}
                   loading={loadingValidationDetails}
                   onSelectIssue={setSelectedIssuePath}
                 />
@@ -268,15 +266,14 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
   )
 })
 
-type ValidationIssuesListFilter = (source: Issue[]) => Issue[]
+function filterBySelectedRulesets(source: Issue[], selectedRulesets: Set<RulesetMetadata>): Issue[] {
+  const selectedRulesetsList = Array.from(selectedRulesets)
+  const selectedLinters = new Set<RulesetLinter>(selectedRulesetsList.map(ruleset => ruleset.linter))
+  return source.filter(issue => selectedLinters.has(issue.linter))
+}
 
-function filterValidationIssuesList(
-  source: Issue[],
-  filters: ValidationIssuesListFilter[] = [],
-): Issue[] {
-  let result = source
-  for (const filter of filters) {
-    result = filter(result)
-  }
-  return result
+function filterByIssueSeverityFilters(source: Issue[], issueSeverityFilters: IssueSeverity[]): Issue[] {
+  return issueSeverityFilters.length
+    ? source.filter(issue => issueSeverityFilters.includes(issue.severity))
+    : source
 }
