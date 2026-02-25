@@ -26,7 +26,7 @@ const Dropdown: FC<ValidationRulesetsDropdownProps> = (props) => {
 
   const [selectedValues, setSelectedValues] = useState<Set<RulesetMetadata>>(new Set())
   useEffect(() => {
-    const initialValues = new Set(options.filter(option => option.id === 'default'))
+    const initialValues = new Set(options)
     setSelectedValues(initialValues)
     onChange(initialValues)
   }, [onChange, options])
