@@ -39,19 +39,12 @@ export const ValidationRulesetLink: FC<ValidationRulesetLinkProps> = memo<Valida
     <Box display='flex' justifyContent='space-between' alignItems='center' gap={1} width='100%'>
       <Box display='flex' gap={1}>
         <Typography
-          key='validation-ruleset-link-linter'
-          variant='body2'
-        >
-          {/* @ts-expect-error TODO 25.02.26 // Remove as when API will be updated */}
-          {RULESET_LINTER_TITLE_MAP[data.linter as RulesetLinter]}
-        </Typography>
-        <Typography
           key='validation-ruleset-link-name'
           variant='body2'
           onClick={onClickRulesetName}
         >
           <Link data-testid="ValidationRulesetLinkName">
-            {data.name}
+            {`${RULESET_LINTER_TITLE_MAP[data.linter]} ${data.name}`}
           </Link>
         </Typography>
       </Box>

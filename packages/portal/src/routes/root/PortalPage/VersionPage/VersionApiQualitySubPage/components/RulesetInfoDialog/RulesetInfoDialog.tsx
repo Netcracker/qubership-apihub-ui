@@ -1,4 +1,4 @@
-import { RULESET_API_TYPE_TITLE_MAP, RulesetStatuses, type Ruleset } from '@apihub/entities/api-quality/rulesets'
+import { RULESET_API_TYPE_TITLE_MAP, RULESET_LINTER_TITLE_MAP, RulesetStatuses, type Ruleset } from '@apihub/entities/api-quality/rulesets'
 import { Box, Dialog, DialogContent, DialogTitle, IconButton, Skeleton } from '@mui/material'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
@@ -28,7 +28,7 @@ const RulesetInfoPopup: FC<PopupProps> = (props) => {
     <Dialog open={open} onClose={() => setOpen(false)}>
       <DialogTitle>
         <Box display='flex' justifyContent='space-between' alignItems='center'>
-          {detail.name}
+          {`${RULESET_LINTER_TITLE_MAP[detail.linter]} ${detail.name}`}
           <IconButton
             sx={{ color: '#353C4E', p: 0 }}
             onClick={onClose}
