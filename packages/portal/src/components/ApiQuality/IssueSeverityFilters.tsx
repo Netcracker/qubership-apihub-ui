@@ -14,7 +14,7 @@ type IssueSeverityFiltersProps = {
 
 export const IssueSeverityFilters: FC<IssueSeverityFiltersProps> = memo((props) => {
   const { data, filters, handleFilters } = props
-  
+
   const summary: Record<IssueSeverity, number> = useMemo(() => (
     data.reduce((acc, issue) => {
       acc[issue.severity] = (acc[issue.severity] || 0) + 1
