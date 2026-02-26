@@ -16,7 +16,7 @@ type ValidationRulesetsDropdownProps = {
 }
 
 const DropdownLabel: FC = () => {
-  return <Typography variant="body2">Validated by:</Typography>
+  return <Typography variant="body2" sx={{ whiteSpace: 'nowrap', flexShrink: 0 }}>Validated by:</Typography>
 }
 
 const Dropdown: FC<ValidationRulesetsDropdownProps> = (props) => {
@@ -48,75 +48,81 @@ const Dropdown: FC<ValidationRulesetsDropdownProps> = (props) => {
     return <Skeleton variant="text" width={100} height={20} />
   }
 
-  return <>
-    <Button
-      sx={{
-        justifyContent: 'flex-start',
-        minWidth: 4,
-        height: 20,
-        p: 0,
-        m: 0,
-        color: 'black',
-        boxShadow: 'none',
-        '&:hover': { boxShadow: 'none' },
-      }}
-      variant="text"
-      onClick={({ currentTarget }) => setAnchor(currentTarget)}
-      data-testid="ValidatedByLinterSelectorButton"
-    >
-      <Box display="flex" alignItems="center" gap={1}>
-        {selectedValues.size === 0 && (
-          <Typography variant="body2" fontWeight={500}>No linters selected</Typography>
-        )}
-        {selectedValues.size === 1 && (
-          <ValidationRulesetLink data={Array.from(selectedValues.values())[0]} loading={loading} />
-        )}
-        {selectedValues.size > 1 && (
-          <Typography variant="body2" fontWeight={500}>{selectedValues.size} linters</Typography>
-        )}
-        {anchor
-          ? <KeyboardArrowUpOutlinedIcon htmlColor='#353C4E' />
-          : <KeyboardArrowDownOutlinedIcon htmlColor='#353C4E' />}
-      </Box>
-      <MenuButtonItems
-        anchorEl={anchor}
-        open={!!anchor}
-        onClick={event => event.stopPropagation()}
-        onClose={() => setAnchor(undefined)}
+  return (
+    <Box flex='1 1 auto' maxWidth='400px' minWidth={0}>
+      <Button
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          minWidth: 4,
+          width: '100%',
+          height: 20,
+          minHeight: 20,
+          p: 0,
+          m: 0,
+        }}
+        variant="text"
+        onClick={({ currentTarget }) => setAnchor(currentTarget)}
+        data-testid="ValidatedByLinterSelectorButton"
       >
-        <List>
-          {options.map(option => {
-            const isSelected = selectedValues.has(option)
-            return (
-              <ListItemButton
-                key={option.id}
-                onClick={() => handleSelect(option)}
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  gap: 1,
-                  height: '36px',
-                }}
-              >
-                <Check htmlColor={isSelected ? '#353C4E' : 'transparent'} fontSize='small' />
-                <ValidationRulesetLink
-                  data={option}
-                  loading={loading}
-                />
-              </ListItemButton>
-            )
-          })}
-        </List>
-      </MenuButtonItems>
-    </Button>
-  </>
+        <Box display="flex" alignItems="center" gap={1} width="100%" minWidth={0}>
+          <Box display="flex" alignItems="center" minWidth={0} flexGrow={1}>
+            {selectedValues.size === 0 && (
+              <Typography variant="body2" fontWeight={500}>No linters selected</Typography>
+            )}
+            {selectedValues.size === 1 && (
+              <ValidationRulesetLink data={Array.from(selectedValues.values())[0]} loading={loading} />
+            )}
+            {selectedValues.size > 1 && (
+              <Typography variant="body2" fontWeight={500}>{selectedValues.size} linters</Typography>
+            )}
+          </Box>
+          {anchor
+            ? <KeyboardArrowUpOutlinedIcon htmlColor='#353C4E' fontSize='small' />
+            : <KeyboardArrowDownOutlinedIcon htmlColor='#353C4E' fontSize='small' />}
+        </Box>
+        <MenuButtonItems
+          anchorEl={anchor}
+          open={!!anchor}
+          onClick={event => event.stopPropagation()}
+          onClose={() => setAnchor(undefined)}
+        >
+          <List sx={{ maxWidth: '400px' }}>
+            {options.map(option => {
+              const isSelected = selectedValues.has(option)
+              return (
+                <ListItemButton
+                  key={option.id}
+                  onClick={() => handleSelect(option)}
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: 1,
+                    height: '36px',
+                    minWidth: 0,
+                  }}
+                >
+                  <Check htmlColor={isSelected ? '#353C4E' : 'transparent'} fontSize='small' />
+                  <ValidationRulesetLink
+                    data={option}
+                    loading={loading}
+                  />
+                </ListItemButton>
+              )
+            })}
+          </List>
+        </MenuButtonItems>
+      </Button>
+    </Box>
+  )
 }
 
 export const ValidationRulesetsDropdown: FC<ValidationRulesetsDropdownProps> = memo<ValidationRulesetsDropdownProps>((props) => {
   return (
-    <Box display="flex" alignItems="center" gap={1}>
+    <Box display="flex" alignItems="center" gap={1} minWidth={0}>
       <DropdownLabel />
       <Dropdown {...props} />
     </Box>

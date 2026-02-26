@@ -1,7 +1,8 @@
 import { RULESET_API_TYPE_TITLE_MAP, RULESET_LINTER_TITLE_MAP, RulesetStatuses, type RulesetMetadata } from '@apihub/entities/api-quality/rulesets'
 import { useEventBus } from '@apihub/routes/EventBusProvider'
-import { Box, Link, Skeleton, Typography } from '@mui/material'
+import { Box, Link, Skeleton } from '@mui/material'
 import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
+import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import capitalize from 'lodash-es/capitalize'
 import type { FC } from 'react'
@@ -35,20 +36,29 @@ export const ValidationRulesetLink: FC<ValidationRulesetLinkProps> = memo<Valida
     return null
   }
 
+  const rulesetTitle = `${RULESET_LINTER_TITLE_MAP[data.linter]} ${data.name}`
+
   return (
-    <Box display='flex' justifyContent='space-between' alignItems='center' gap={1} width='100%'>
-      <Box display='flex' gap={1}>
-        <Typography
-          key='validation-ruleset-link-name'
-          variant='body2'
-          onClick={onClickRulesetName}
+    <Box display='flex' justifyContent='space-between' alignItems='center' gap={1} width='100%' minWidth={0}>
+      <Box display='flex' gap={1} minWidth={0} flexGrow={1}>
+        <TextWithOverflowTooltip
+          data-id='overflowtext'
+          tooltipText={rulesetTitle}
+          sx={{
+            display: 'block',
+            minWidth: 0,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            flexGrow: 1,
+          }}
         >
-          <Link data-testid="ValidationRulesetLinkName">
-            {`${RULESET_LINTER_TITLE_MAP[data.linter]} ${data.name}`}
+          <Link data-testid="ValidationRulesetLinkName" onClick={onClickRulesetName}>
+            {rulesetTitle}
           </Link>
-        </Typography>
+        </TextWithOverflowTooltip>
       </Box>
-      <Box display='flex' gap={1}>
+      <Box display='flex' gap={1} flexShrink={0}>
         <CustomChip
           key={`validation-ruleset-link-api-type-${data.apiType}`}
           value='rulesetSpecType'
