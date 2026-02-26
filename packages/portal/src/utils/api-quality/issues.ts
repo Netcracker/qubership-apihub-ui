@@ -1,5 +1,6 @@
 import { IssueSeverities } from '@apihub/entities/api-quality/issue-severities'
 import type { Issue } from '@apihub/entities/api-quality/issues'
+import { RULESET_LINTER_TITLE_MAP } from '@apihub/entities/api-quality/rulesets'
 import type { OriginalDocumentFileFormat } from '@apihub/routes/root/PortalPage/VersionPage/VersionApiQualitySubPage/types'
 import { findLocationByPath } from '@netcracker/qubership-apihub-ui-shared/utils/specifications.v2'
 import { type editor as Editor, MarkerSeverity } from 'monaco-editor'
@@ -14,6 +15,8 @@ export function transformIssuesToMarkers(
       const { path } = issue
       // TODO 19.09.25 // Remove default because real response doesn't match API
       const location = findLocationByPath(content, path ?? [], format)
+      const linterName = RULESET_LINTER_TITLE_MAP[issue.linter]
+      const source = `${linterName} (${issue.code})`
       let severity: MarkerSeverity
       switch (issue.severity) {
         case IssueSeverities.ERROR:
@@ -37,7 +40,7 @@ export function transformIssuesToMarkers(
           endColumn: 1,
           message: issue.message,
           severity: severity,
-          source: `spectral (${issue.code})`,
+          source: source,
         }
       }
       return {
@@ -47,7 +50,7 @@ export function transformIssuesToMarkers(
         endColumn: location.range.end.character,
         message: issue.message,
         severity: severity,
-        source: `spectral (${issue.code})`,
+        source: source,
       }
     })
 }
