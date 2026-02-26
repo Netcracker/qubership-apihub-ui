@@ -36,14 +36,15 @@ export const ValidationRulesetLink: FC<ValidationRulesetLinkProps> = memo<Valida
     return null
   }
 
-  const rulesetTitle = `${RULESET_LINTER_TITLE_MAP[data.linter]} ${data.name}`
+  const linterTitle = RULESET_LINTER_TITLE_MAP[data.linter]
+  const fullRulesetTitle = `${linterTitle} ${data.name}`
 
   return (
     <Box display='flex' justifyContent='space-between' alignItems='center' gap={1} width='100%' minWidth={0}>
       <Box display='flex' gap={1} minWidth={0} flexGrow={1}>
         <TextWithOverflowTooltip
           data-id='overflowtext'
-          tooltipText={rulesetTitle}
+          tooltipText={fullRulesetTitle}
           sx={{
             display: 'block',
             minWidth: 0,
@@ -53,8 +54,13 @@ export const ValidationRulesetLink: FC<ValidationRulesetLinkProps> = memo<Valida
             flexGrow: 1,
           }}
         >
-          <Link data-testid="ValidationRulesetLinkName" onClick={onClickRulesetName}>
-            {rulesetTitle}
+          {`${linterTitle} `}
+          <Link
+            data-testid="ValidationRulesetLinkName"
+            onClick={onClickRulesetName}
+            sx={{ display: 'inline' }}
+          >
+            {data.name}
           </Link>
         </TextWithOverflowTooltip>
       </Box>
