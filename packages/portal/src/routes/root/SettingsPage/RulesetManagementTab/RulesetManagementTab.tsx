@@ -23,10 +23,6 @@ export const RulesetManagementTab: FC = memo(() => {
       .filter(ruleset => ruleset.linter === selectedLinter)
   }, [rulesets, selectedApiType, selectedLinter])
 
-  const handleOpenCreateDialog = useCallback((): void => {
-    showCreateRulesetDialog()
-  }, [showCreateRulesetDialog])
-
   const handleChangeApiType = useCallback((event: SelectChangeEvent): void => {
     setSelectedApiType(event.target.value as RulesetApiType)
   }, [])
@@ -49,7 +45,7 @@ export const RulesetManagementTab: FC = memo(() => {
           variant="contained"
           disabled={isLoading}
           startIcon={<PlusIcon />}
-          onClick={handleOpenCreateDialog}
+          onClick={showCreateRulesetDialog}
           aria-label="Add new ruleset"
           data-testid="AddRulesetButton"
         >
@@ -58,8 +54,15 @@ export const RulesetManagementTab: FC = memo(() => {
       }
       body={
         <>
-          <RulesetTable rulesets={selectedRulesets} isLoading={isLoading} />
-          <CreateRulesetDialog apiType={selectedApiType} rulesets={selectedRulesets} />
+          <RulesetTable
+            rulesets={selectedRulesets}
+            isLoading={isLoading}
+          />
+          <CreateRulesetDialog
+            apiType={selectedApiType}
+            linter={selectedLinter}
+            rulesets={selectedRulesets}
+          />
         </>
       }
     />

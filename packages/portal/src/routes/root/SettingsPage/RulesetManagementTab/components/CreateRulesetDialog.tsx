@@ -1,20 +1,21 @@
 import { LoadingButton } from '@mui/lab'
 import { Button, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
 import { ErrorTextField } from '@netcracker/qubership-apihub-ui-portal/src/components/ErrorTextField'
+import type { RulesetLinter } from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
 import {
   type Ruleset,
   RULESET_API_TYPE_TITLE_MAP,
+  RULESET_LINTER_TITLE_MAP,
   type RulesetApiType,
-  RulesetLinters,
 } from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
 import { SHOW_CREATE_RULESET_DIALOG } from '@netcracker/qubership-apihub-ui-portal/src/routes/EventBusProvider'
 import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 import { FileUploadField } from '@netcracker/qubership-apihub-ui-shared/components/FileUploadField'
 import { PopupDelegate, type PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import {
+  type FileExtension,
   YAML_FILE_EXTENSION,
   YML_FILE_EXTENSION,
-  type FileExtension,
 } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import { checkFileType } from '@netcracker/qubership-apihub-ui-shared/utils/validations'
 import { type FC, memo, useCallback, useEffect, useMemo } from 'react'
@@ -30,6 +31,7 @@ const DEFAULT_FORM_VALUES: CreateRulesetFormData = {
 
 type CreateRulesetDialogProps = {
   apiType: RulesetApiType
+  linter: RulesetLinter
   rulesets: Ruleset[]
 }
 
@@ -40,17 +42,24 @@ type CreateRulesetFormData = {
   file: File | undefined
 }
 
-export const CreateRulesetDialog: FC<CreateRulesetDialogProps> = memo(({ apiType, rulesets }) => {
+export const CreateRulesetDialog: FC<CreateRulesetDialogProps> = memo(({ apiType, linter, rulesets }) => {
   return (
     <PopupDelegate
       type={SHOW_CREATE_RULESET_DIALOG}
-      render={props => <CreateRulesetPopup {...props} apiType={apiType} rulesets={rulesets} />}
+      render={props => (
+        <CreateRulesetPopup
+          {...props}
+          apiType={apiType}
+          linter={linter}
+          rulesets={rulesets}
+        />
+      )}
     />
   )
 })
 
 const CreateRulesetPopup: FC<CreateRulesetPopupProps> = memo<CreateRulesetPopupProps>(
-  ({ open, setOpen, apiType, rulesets }) => {
+  ({ open, setOpen, apiType, linter, rulesets }) => {
     const [createRuleset, isCreating, isCreated] = useCreateRuleset()
 
     const { control, handleSubmit, formState, reset, watch, clearErrors } = useForm<CreateRulesetFormData>({
@@ -62,8 +71,7 @@ const CreateRulesetPopup: FC<CreateRulesetPopupProps> = memo<CreateRulesetPopupP
 
     const fileValidationRules = useMemo(() => ({
       validate: (file: File | undefined) => {
-        if (!file) return true
-        return checkFileType(file, ACCEPTABLE_RULESET_EXTENSIONS)
+        return !file || checkFileType(file, ACCEPTABLE_RULESET_EXTENSIONS)
       },
     }), [])
 
@@ -88,10 +96,10 @@ const CreateRulesetPopup: FC<CreateRulesetPopupProps> = memo<CreateRulesetPopupP
       createRuleset({
         rulesetName: name,
         apiType: apiType,
-        linter: RulesetLinters.SPECTRAL,
+        linter: linter,
         rulesetFile: file,
       })
-    }, [apiType, createRuleset])
+    }, [apiType, linter, createRuleset])
 
     const isSubmitDisabled = useMemo(() => {
       return !watchedValues.name || !watchedValues.file || isCreating
@@ -115,7 +123,9 @@ const CreateRulesetPopup: FC<CreateRulesetPopupProps> = memo<CreateRulesetPopupP
         onClose={handleClose}
         onSubmit={handleSubmit(handleCreateRuleset)}
       >
-        <DialogTitle>{`Create Ruleset for ${RULESET_API_TYPE_TITLE_MAP[apiType]}`}</DialogTitle>
+        <DialogTitle>
+          {`Create ${RULESET_LINTER_TITLE_MAP[linter]} Ruleset for ${RULESET_API_TYPE_TITLE_MAP[apiType]}`}
+        </DialogTitle>
         <DialogContent>
           <Typography variant="button">
             Main info
