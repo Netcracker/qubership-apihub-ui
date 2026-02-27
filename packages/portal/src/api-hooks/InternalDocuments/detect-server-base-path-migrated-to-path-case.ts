@@ -118,27 +118,13 @@ export function detectServerBasePathMigratedToPath(document: OpenAPIV3.Document)
   const beforeFirstServerBasePath = extractOperationBasePath(beforeServers)
   const afterFirstServerBasePath = extractOperationBasePath(afterServers)
 
-  console.debug('Before servers', beforeServers)
-  console.debug('After servers', afterServers)
-
   const [beforePaths, afterPaths] = getPaths()
-
-  console.debug('Before paths', beforePaths)
-  console.debug('After paths', afterPaths)
 
   const aggregateBeforeOperationNormalizedIds = createAggregateOperationNormalizedIds()
   const beforeOperationNormalizedIds = aggregateBeforeOperationNormalizedIds(beforePaths, beforeFirstServerBasePath)
   const afterOperationNormalizedIds = aggregateBeforeOperationNormalizedIds(afterPaths, afterFirstServerBasePath)
-  console.debug('Before operation normalized ids', Array.from(beforeOperationNormalizedIds))
-  console.debug('After operation normalized ids', Array.from(afterOperationNormalizedIds))
 
   const intersectionOperationNormalizedIds = beforeOperationNormalizedIds.intersection(afterOperationNormalizedIds)
-
-  console.debug('Intersection operation normalized ids', Array.from(intersectionOperationNormalizedIds))
-  console.debug('Before first server base path', beforeFirstServerBasePath)
-  console.debug('After first server base path', afterFirstServerBasePath)
-
-  console.log('\n\n\n')
 
   const isCase = beforeFirstServerBasePath !== afterFirstServerBasePath && intersectionOperationNormalizedIds.size > 0
 
