@@ -135,54 +135,51 @@ export function useComparedOperations(options: Options): QueryResultWithNoIntern
           afterPaths,
         } = trickyCaseDetection
 
-        let inferredDiffAction: ActionType | undefined
+        const tryApplyOperationFromPaths = (
+          operationNormalizedIdToFind: string,
+          firstServerBasePath: string,
+          pathsToSearch: OpenAPIV3.PathsObject,
+          action: ActionType,
+        ): OpenAPIV3.Document | undefined => {
+          for (const path of Object.keys(pathsToSearch)) {
+            const operationNormalizedId = calculateNormalizedRestOperationId(firstServerBasePath, path, comparedOperationMethod)
+            if (operationNormalizedIdToFind === operationNormalizedId) {
+              clonedOasComparisonInternalDocument.paths![path] = {
+                [comparedOperationMethod]: pathsToSearch[path]![comparedOperationMethod],
+              }
+              const asObject = clonedOasComparisonInternalDocument as unknown as Record<PropertyKey, unknown>
+              asObject[DIFF_META_KEY] = {
+                paths: {
+                  [path]: {
+                    action: action,
+                    type: ClassifierType.breaking,
+                    ...action === DiffAction.remove ? { beforeDeclarationPaths: ['paths', path] } : {},
+                    ...action === DiffAction.add ? { afterDeclarationPaths: ['paths', path] } : {},
+                  },
+                },
+              }
+              return clonedOasComparisonInternalDocument
+            }
+          }
+          return undefined
+        }
 
         const previousOperationNormalizedId = previousOperationPath && previousOperationMethod
           ? calculateNormalizedRestOperationId(beforeFirstServerBasePath === '/' ? beforeFirstServerBasePath : '', previousOperationPath, previousOperationMethod)
           : ''
-
-        for (const beforePath of Object.keys(beforePaths)) {
-          const operationNormalizedId = calculateNormalizedRestOperationId(beforeFirstServerBasePath, beforePath, comparedOperationMethod)
-          if (previousOperationNormalizedId === operationNormalizedId) {
-            inferredDiffAction = DiffAction.remove
-            clonedOasComparisonInternalDocument.paths![beforePath] = {
-              [comparedOperationMethod]: beforePaths![beforePath]![comparedOperationMethod],
-            }
-            const asObject = clonedOasComparisonInternalDocument as unknown as Record<PropertyKey, unknown>
-            asObject[DIFF_META_KEY] = {
-              paths: {
-                [beforePath]: {
-                  action: inferredDiffAction,
-                  type: ClassifierType.breaking,
-                  beforeDeclarationPaths: ['paths', beforePath],
-                },
-              },
-            }
-            return clonedOasComparisonInternalDocument
-          }
+        const beforeMigratedPathDocument =
+          tryApplyOperationFromPaths(previousOperationNormalizedId, beforeFirstServerBasePath, beforePaths, DiffAction.remove)
+        if (beforeMigratedPathDocument) {
+          return beforeMigratedPathDocument
         }
 
         const currentOperationNormalizedId = currentOperationPath && currentOperationMethod
           ? calculateNormalizedRestOperationId(afterFirstServerBasePath === '/' ? afterFirstServerBasePath : '', currentOperationPath, currentOperationMethod)
           : ''
-        for (const afterPath of Object.keys(afterPaths)) {
-          const operationNormalizedId = calculateNormalizedRestOperationId(afterFirstServerBasePath, afterPath, comparedOperationMethod)
-          if (currentOperationNormalizedId === operationNormalizedId) {
-            inferredDiffAction = DiffAction.add
-            clonedOasComparisonInternalDocument.paths![afterPath] = {
-              [comparedOperationMethod]: afterPaths![afterPath]![comparedOperationMethod],
-            }
-            const asObject = clonedOasComparisonInternalDocument as unknown as Record<PropertyKey, unknown>
-            asObject[DIFF_META_KEY] = {
-              paths: {
-                [afterPath]: {
-                  action: inferredDiffAction,
-                  type: ClassifierType.breaking,
-                },
-              },
-            }
-            return clonedOasComparisonInternalDocument
-          }
+        const afterMigratedPathDocument =
+          tryApplyOperationFromPaths(currentOperationNormalizedId, afterFirstServerBasePath, afterPaths, DiffAction.add)
+        if (afterMigratedPathDocument) {
+          return afterMigratedPathDocument
         }
       }
 
