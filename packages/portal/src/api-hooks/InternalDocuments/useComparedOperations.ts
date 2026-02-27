@@ -3,8 +3,8 @@ import { isRestOperation, type OperationData } from '@netcracker/qubership-apihu
 
 import { INTERNAL_DOCUMENT_STRING_SYMBOL_MAPPING } from '@apihub/utils/internal-documents/constants'
 import { isGraphApiSpecification, isOpenApiSpecification } from '@apihub/utils/internal-documents/type-guards'
-import type { Diff } from '@netcracker/qubership-apihub-api-diff'
-import { DIFF_META_KEY, extractOperationBasePath, isDiffAdd, isDiffRemove, isDiffReplace } from '@netcracker/qubership-apihub-api-diff'
+import type { ActionType } from '@netcracker/qubership-apihub-api-diff'
+import { ClassifierType, DIFF_META_KEY, DiffAction, extractOperationBasePath } from '@netcracker/qubership-apihub-api-diff'
 import { calculateNormalizedRestOperationId } from '@netcracker/qubership-apihub-api-processor'
 import { deserialize } from '@netcracker/qubership-apihub-api-unifier'
 import type { PackageKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
@@ -12,6 +12,7 @@ import type { VersionChanges } from '@netcracker/qubership-apihub-ui-shared/enti
 import { isObject } from '@netcracker/qubership-apihub-ui-shared/utils/objects'
 import type { OpenAPIV3 } from 'openapi-types'
 import { useMemo } from 'react'
+import { detectServerBasePathMigratedToPath } from './detect-server-base-path-migrated-to-path-case'
 import type { QueryResultWithNoInternalDocument } from './shared-types'
 import { useComparisonInternalDocumentContent } from './useComparisonInternalDocumentContent'
 import { useComparisonInternalDocumentsByPackageVersion } from './useComparisonInternalDocumentsByPackageVersion'
@@ -96,6 +97,7 @@ export function useComparedOperations(options: Options): QueryResultWithNoIntern
     if (!deserializedComparisonInternalDocument) {
       return undefined
     }
+    // Leave the only operation with necessary path because ASV displays only 1 operation at the time
     if (isOpenApiSpecification(deserializedComparisonInternalDocument)) {
       const previousOperationPath = previousOperation && isRestOperation(previousOperation) ? previousOperation.path : undefined
       const currentOperationPath = currentOperation && isRestOperation(currentOperation) ? currentOperation.path : undefined
@@ -122,59 +124,105 @@ export function useComparedOperations(options: Options): QueryResultWithNoIntern
         ...oasInternalDocument,
         paths: {},
       }
-      // Leave the only operation with necessary path because ASV displays only 1 operation at the time
-      const { paths = {}, servers: serversAfter = [] } = oasInternalDocument
-      const serversBefore = restoreBeforeServers(serversAfter)
 
-      if (DIFF_META_KEY in serversAfter) {
-        const diffMeta = serversAfter[DIFF_META_KEY]
-        console.debug('Changed specific servers wholly:', diffMeta)
-      }
-      if (DIFF_META_KEY in oasInternalDocument && isObject(oasInternalDocument[DIFF_META_KEY])) {
-        const diffMeta = oasInternalDocument[DIFF_META_KEY]
-        const { servers } = diffMeta
-        console.debug('Changed servers wholly:', servers)
-      }
+      // Handle special tricky cases with server base path migrated to path
+      const trickyCaseDetection = detectServerBasePathMigratedToPath(oasInternalDocument)
+      if (trickyCaseDetection) {
+        const {
+          beforeFirstServerBasePath,
+          afterFirstServerBasePath,
+          beforePaths,
+          afterPaths,
+        } = trickyCaseDetection
 
-      const firstServerBasePaths = [extractOperationBasePath(serversAfter), extractOperationBasePath(serversBefore)]
-      let foundPath: string | undefined
-      for (const firstServerBasePath of firstServerBasePaths) {
-        if (foundPath) {
-          break
-        }
+        let inferredDiffAction: ActionType | undefined
+
         const previousOperationNormalizedId = previousOperationPath && previousOperationMethod
-          ? calculateNormalizedRestOperationId(firstServerBasePath === '/' ? firstServerBasePath : '', previousOperationPath, previousOperationMethod)
+          ? calculateNormalizedRestOperationId(beforeFirstServerBasePath === '/' ? beforeFirstServerBasePath : '', previousOperationPath, previousOperationMethod)
           : ''
-        const currentOperationNormalizedId = currentOperationPath && currentOperationMethod
-          ? calculateNormalizedRestOperationId(firstServerBasePath === '/' ? firstServerBasePath : '', currentOperationPath, currentOperationMethod)
-          : ''
-        for (const path of Object.keys(paths)) {
-          const operationNormalizedId = calculateNormalizedRestOperationId(firstServerBasePath, path, comparedOperationMethod)
-          const matched = currentOperationNormalizedId === operationNormalizedId || previousOperationNormalizedId === operationNormalizedId
-          if (matched) {
-            foundPath = path
-            clonedOasComparisonInternalDocument.paths![path] = {
-              [comparedOperationMethod]: paths![path]![comparedOperationMethod],
+
+        for (const beforePath of Object.keys(beforePaths)) {
+          const operationNormalizedId = calculateNormalizedRestOperationId(beforeFirstServerBasePath, beforePath, comparedOperationMethod)
+          if (previousOperationNormalizedId === operationNormalizedId) {
+            inferredDiffAction = DiffAction.remove
+            clonedOasComparisonInternalDocument.paths![beforePath] = {
+              [comparedOperationMethod]: beforePaths![beforePath]![comparedOperationMethod],
             }
-            break
+            const asObject = clonedOasComparisonInternalDocument as unknown as Record<PropertyKey, unknown>
+            asObject[DIFF_META_KEY] = {
+              paths: {
+                [beforePath]: {
+                  action: inferredDiffAction,
+                  type: ClassifierType.breaking,
+                  beforeDeclarationPaths: ['paths', beforePath],
+                },
+              },
+            }
+            return clonedOasComparisonInternalDocument
           }
         }
-        // Leave the only change for operation with necessary path because ASV takes the first item and doesn't know which operation is there
-        if (DIFF_META_KEY in paths && isObject(paths[DIFF_META_KEY])) {
-          const whollyChangedPaths: Record<string, unknown> | undefined =
-            isObject(paths[DIFF_META_KEY])
-              ? paths[DIFF_META_KEY]
-              : undefined
-          if (whollyChangedPaths) {
-            const clonedWhollyChangedPaths: Record<string, unknown> = {};
-            (clonedOasComparisonInternalDocument.paths as Record<PropertyKey, unknown>)[DIFF_META_KEY] = clonedWhollyChangedPaths
-            for (const whollyChangedPath of Object.keys(whollyChangedPaths)) {
-              const whollyChangedOperationNormalizedId = calculateNormalizedRestOperationId(firstServerBasePath, whollyChangedPath, comparedOperationMethod)
-              const matched = currentOperationNormalizedId === whollyChangedOperationNormalizedId || previousOperationNormalizedId === whollyChangedOperationNormalizedId
-              if (matched) {
-                clonedWhollyChangedPaths[whollyChangedPath] = whollyChangedPaths[whollyChangedPath]
-                break
-              }
+
+        const currentOperationNormalizedId = currentOperationPath && currentOperationMethod
+          ? calculateNormalizedRestOperationId(afterFirstServerBasePath === '/' ? afterFirstServerBasePath : '', currentOperationPath, currentOperationMethod)
+          : ''
+        for (const afterPath of Object.keys(afterPaths)) {
+          const operationNormalizedId = calculateNormalizedRestOperationId(afterFirstServerBasePath, afterPath, comparedOperationMethod)
+          if (currentOperationNormalizedId === operationNormalizedId) {
+            inferredDiffAction = DiffAction.add
+            clonedOasComparisonInternalDocument.paths![afterPath] = {
+              [comparedOperationMethod]: afterPaths![afterPath]![comparedOperationMethod],
+            }
+            const asObject = clonedOasComparisonInternalDocument as unknown as Record<PropertyKey, unknown>
+            asObject[DIFF_META_KEY] = {
+              paths: {
+                [afterPath]: {
+                  action: inferredDiffAction,
+                  type: ClassifierType.breaking,
+                },
+              },
+            }
+            return clonedOasComparisonInternalDocument
+          }
+        }
+      }
+
+      // In other normal cases without special splitting document to "before" and "after"
+      const { paths = {}, servers = [] } = oasInternalDocument
+
+      const firstServerBasePath = extractOperationBasePath(servers)
+      let foundPath: string | undefined
+      const previousOperationNormalizedId = previousOperationPath && previousOperationMethod
+        ? calculateNormalizedRestOperationId(firstServerBasePath === '/' ? firstServerBasePath : '', previousOperationPath, previousOperationMethod)
+        : ''
+      const currentOperationNormalizedId = currentOperationPath && currentOperationMethod
+        ? calculateNormalizedRestOperationId(firstServerBasePath === '/' ? firstServerBasePath : '', currentOperationPath, currentOperationMethod)
+        : ''
+      for (const path of Object.keys(paths)) {
+        const operationNormalizedId = calculateNormalizedRestOperationId(firstServerBasePath, path, comparedOperationMethod)
+        const matched = currentOperationNormalizedId === operationNormalizedId || previousOperationNormalizedId === operationNormalizedId
+        if (matched) {
+          foundPath = path
+          clonedOasComparisonInternalDocument.paths![path] = {
+            [comparedOperationMethod]: paths![path]![comparedOperationMethod],
+          }
+          break
+        }
+      }
+      // Leave the only change for operation with necessary path because ASV takes the first item and doesn't know which operation is there
+      if (DIFF_META_KEY in paths && isObject(paths[DIFF_META_KEY])) {
+        const whollyChangedPaths: Record<string, unknown> | undefined =
+          isObject(paths[DIFF_META_KEY])
+            ? paths[DIFF_META_KEY]
+            : undefined
+        if (whollyChangedPaths) {
+          const clonedWhollyChangedPaths: Record<string, unknown> = {};
+          (clonedOasComparisonInternalDocument.paths as Record<PropertyKey, unknown>)[DIFF_META_KEY] = clonedWhollyChangedPaths
+          for (const whollyChangedPath of Object.keys(whollyChangedPaths)) {
+            const whollyChangedOperationNormalizedId = calculateNormalizedRestOperationId(firstServerBasePath, whollyChangedPath, comparedOperationMethod)
+            const matched = currentOperationNormalizedId === whollyChangedOperationNormalizedId || previousOperationNormalizedId === whollyChangedOperationNormalizedId
+            if (matched) {
+              clonedWhollyChangedPaths[whollyChangedPath] = whollyChangedPaths[whollyChangedPath]
+              break
             }
           }
         }
@@ -225,45 +273,4 @@ export function useComparedOperations(options: Options): QueryResultWithNoIntern
       hasComparisonInternalDocument,
     ],
   )
-}
-
-function restoreBeforeServers(servers: OpenAPIV3.ServerObject[]): OpenAPIV3.ServerObject[] {
-  return servers.map(restoreBeforeServer)
-}
-
-function restoreBeforeServer(server: OpenAPIV3.ServerObject): OpenAPIV3.ServerObject {
-  if (!(DIFF_META_KEY in server)) {
-    return server
-  }
-  const serverObject: Record<PropertyKey, unknown> = { ...server }
-
-  const diffMeta = serverObject[DIFF_META_KEY]
-  if (!isObject(diffMeta)) {
-    return server
-  }
-
-  const newServer: OpenAPIV3.ServerObject = { ...server }
-
-  const diffUrl = diffMeta.url as Diff | undefined
-  const diffDescription = diffMeta.description as Diff | undefined
-  if (diffUrl) {
-    if (isDiffReplace(diffUrl) || isDiffRemove(diffUrl)) {
-      newServer.url = `${diffUrl.beforeValue}`
-    }
-    if (isDiffAdd(diffUrl)) {
-      newServer.url = ''
-    }
-  }
-  if (diffDescription) {
-    if (isDiffReplace(diffDescription) || isDiffRemove(diffDescription)) {
-      newServer.description = `${diffDescription.beforeValue}`
-    }
-    if (isDiffAdd(diffDescription)) {
-      newServer.description = ''
-    }
-  }
-
-  // TODO: Support variables
-
-  return newServer
 }

@@ -1,9 +1,18 @@
-import { DIFF_META_KEY, type Diff, isDiffRemove, isDiffReplace, isDiffAdd, extractOperationBasePath, isDiffRename } from '@netcracker/qubership-apihub-api-diff'
+import { DIFF_META_KEY, type Diff, extractOperationBasePath, isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from '@netcracker/qubership-apihub-api-diff'
 import { calculateNormalizedRestOperationId } from '@netcracker/qubership-apihub-api-processor'
 import { isObject } from '@netcracker/qubership-apihub-ui-shared/utils/objects'
 import { OpenAPIV3 } from 'openapi-types'
 
-export function detectServerBasePathMigratedToPath(document: OpenAPIV3.Document): unknown {
+type Result = {
+  beforeFirstServerBasePath: string
+  afterFirstServerBasePath: string
+  beforePaths: OpenAPIV3.PathsObject
+  afterPaths: OpenAPIV3.PathsObject
+  beforeServers: OpenAPIV3.ServerObject[]
+  afterServers: OpenAPIV3.ServerObject[]
+}
+
+export function detectServerBasePathMigratedToPath(document: OpenAPIV3.Document): Result | null {
   const { paths = {}, servers = [] } = document
 
   const documentWithDiffs = document as unknown as Record<PropertyKey, unknown>
@@ -131,18 +140,27 @@ export function detectServerBasePathMigratedToPath(document: OpenAPIV3.Document)
 
   console.log('\n\n\n')
 
-  // eslint-disable-next-line no-constant-condition
-  if (true) {
-    throw new Error('Test error')
+  const isCase = beforeFirstServerBasePath !== afterFirstServerBasePath && intersectionOperationNormalizedIds.size > 0
+
+  if (!isCase) {
+    return null
   }
 
-  return beforeFirstServerBasePath !== afterFirstServerBasePath && intersectionOperationNormalizedIds.size > 0
+  return {
+    beforeFirstServerBasePath: beforeFirstServerBasePath,
+    afterFirstServerBasePath: afterFirstServerBasePath,
+    beforePaths: beforePaths,
+    afterPaths: afterPaths,
+    beforeServers: beforeServers,
+    afterServers: afterServers,
+  }
 }
 
 function removeProperty<T extends object>(source: object, property: PropertyKey): T {
   if (!isObject(source)) {
     throw new Error('Source is not an object')
   }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { [property]: _, ...sourceWithoutProperty } = source
   return sourceWithoutProperty as T
 }
