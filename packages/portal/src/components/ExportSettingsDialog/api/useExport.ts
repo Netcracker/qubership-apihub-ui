@@ -7,7 +7,10 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 export enum ExportedEntityKind {
   VERSION = 'version',
   REST_DOCUMENT = 'restDocument',
-  REST_OPERATIONS_GROUP = 'restOperationsGroup',
+  REST_OPERATIONS_GROUP = 'restOperationsGroup'
+}
+
+export enum ExportedEntityKindWithoutForm {
   GRAPHQL_OPERATIONS_GROUP = 'graphqlOperationsGroup'
 }
 
@@ -20,14 +23,13 @@ export enum ExportedFileFormat {
 export enum ExportedEntityTransformation {
   REDUCED_SOURCE_SPECIFICATIONS = 'reducedSourceSpecifications',
   MERGED_SPECIFICATION = 'mergedSpecification',
-
 }
 
 export interface IRequestDataExport {
   exportedEntity: ExportedEntityKind
   packageId: PackageKey
   version: VersionKey
-  format?: ExportedFileFormat
+  format: ExportedFileFormat
   removeOasExtensions?: boolean
 }
 
@@ -77,10 +79,17 @@ export class RequestDataExportRestOperationsGroup extends CommonRequestDataExpor
   }
 }
 
-export class RequestDataExportGraphOperationsGroup implements IRequestDataExport {
+export interface IRequestDataExportWithoutFormat {
+  exportedEntity: ExportedEntityKindWithoutForm
+  packageId: PackageKey
+  version: VersionKey
+  removeOasExtensions?: boolean
+}
+
+export class RequestDataExportGraphQlOperationsGroup implements IRequestDataExportWithoutFormat {
   constructor(
     public readonly groupName: string,
-    public readonly exportedEntity: ExportedEntityKind,
+    public readonly exportedEntity: ExportedEntityKindWithoutForm,
     public readonly packageId: PackageKey,
     public readonly version: VersionKey,
   ) {
@@ -95,7 +104,7 @@ type Export = ExportDto
 
 const QUERY_KEY_EXPORT = 'export'
 
-export function useExport(requestData?: IRequestDataExport): [Export | undefined, IsLoading, Error | null] {
+export function useExport(requestData?: IRequestDataExport | IRequestDataExportWithoutFormat): [Export | undefined, IsLoading, Error | null] {
   const { data, isFetching, error } = useQuery<Export, Error | null, ExportDto>({
     queryKey: [QUERY_KEY_EXPORT, requestData?.exportedEntity, requestData?.packageId, requestData?.version],
     queryFn: () => startExport(requestData!),
@@ -105,7 +114,7 @@ export function useExport(requestData?: IRequestDataExport): [Export | undefined
   return [data, isFetching, error]
 }
 
-function startExport(requestData: IRequestDataExport): Promise<ExportDto> {
+function startExport(requestData: IRequestDataExport | IRequestDataExportWithoutFormat): Promise<ExportDto> {
   return requestJson<ExportDto>(
     '/export',
     {
@@ -119,7 +128,7 @@ function startExport(requestData: IRequestDataExport): Promise<ExportDto> {
 type RemoveExportCallback = () => void
 
 export function useRemoveExport(
-  exportedEntity: ExportedEntityKind | undefined,
+  exportedEntity: ExportedEntityKind | ExportedEntityKindWithoutForm | undefined,
   packageId: PackageKey | undefined,
   version: VersionKey | undefined,
 ): RemoveExportCallback {

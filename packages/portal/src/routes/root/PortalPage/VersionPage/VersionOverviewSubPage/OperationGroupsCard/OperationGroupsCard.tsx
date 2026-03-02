@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
 import type { FC } from 'react'
+import * as React from 'react'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { OperationGroupTable } from './OperationGroupTable'
@@ -41,10 +41,14 @@ import {
 import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { PublishOperationGroupPackageVersionDialog } from './PublishOperationGroupPackageVersionDialog'
+import type {
+  IRequestDataExportWithoutFormat} from '@apihub/components/ExportSettingsDialog/api/useExport'
+import {
+  ExportedEntityKindWithoutForm,
+} from '@apihub/components/ExportSettingsDialog/api/useExport'
 import {
   ExportedEntityKind,
-  type IRequestDataExport,
-  RequestDataExportGraphOperationsGroup,
+  RequestDataExportGraphQlOperationsGroup,
   useExport,
   useRemoveExport,
 } from '@apihub/components/ExportSettingsDialog/api/useExport'
@@ -59,12 +63,12 @@ export const OperationGroupsCard: FC = memo(() => {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false)
   const [groupToDelete, setGroupToDelete] = useState<OperationGroup>()
 
-  const [requestDataExport, setRequestDataExport] = useState<IRequestDataExport | undefined>(undefined)
+  const [requestDataExport, setRequestDataExport] = useState<IRequestDataExportWithoutFormat | undefined>(undefined)
   const [exportTask] = useExport(requestDataExport)
   const [, setExporting] = useState(false)
   const [needToGetExportStatus, setNeedToGetExportStatus] = useState(false)
 
-  const removeExport = useRemoveExport(requestDataExport?.exportedEntity, requestDataExport?.packageId, requestDataExport?.version)
+  const removeExportResult = useRemoveExport(requestDataExport?.exportedEntity, requestDataExport?.packageId, requestDataExport?.version)
 
   useEffect(() => {
     if (exportTask) {
@@ -74,11 +78,11 @@ export const OperationGroupsCard: FC = memo(() => {
   }, [exportTask])
 
   const completeExport = useCallback(() => {
-    removeExport()
+    removeExportResult()
     setExporting(false)
     setNeedToGetExportStatus(false)
     setRequestDataExport(undefined)
-  }, [removeExport, setExporting, setNeedToGetExportStatus])
+  }, [removeExportResult, setExporting, setNeedToGetExportStatus])
 
   useExportStatus(exportTask?.exportId, needToGetExportStatus, completeExport, completeExport)
 
@@ -153,9 +157,9 @@ export const OperationGroupsCard: FC = memo(() => {
         groupName: group.groupName,
       })
     } else {
-      setRequestDataExport(new RequestDataExportGraphOperationsGroup(
+      setRequestDataExport(new RequestDataExportGraphQlOperationsGroup(
         group.groupName!,
-        ExportedEntityKind.GRAPHQL_OPERATIONS_GROUP,
+        ExportedEntityKindWithoutForm.GRAPHQL_OPERATIONS_GROUP,
         packageKey!,
         fullVersion!,
       ))

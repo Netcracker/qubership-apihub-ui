@@ -153,7 +153,7 @@ const PublishOperationGroupPackageVersionPopup: FC<PopupProps> = memo<PopupProps
       packageKey: currentPackage?.key ?? '',
       versionKey: currentVersionId!,
       groupName: group.groupName,
-      apiType: group.apiType!,
+      apiType: group.apiType,
       value: {
         targetPackageKey: data.package!.key,
         targetVersionKey: data.version,
