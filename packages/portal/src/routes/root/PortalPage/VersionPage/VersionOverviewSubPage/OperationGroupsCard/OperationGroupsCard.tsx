@@ -44,13 +44,11 @@ import { PublishOperationGroupPackageVersionDialog } from './PublishOperationGro
 import type {
   IRequestDataExportWithoutFormat} from '@apihub/components/ExportSettingsDialog/api/useExport'
 import {
-  ExportedEntityKindWithoutForm,
-} from '@apihub/components/ExportSettingsDialog/api/useExport'
-import {
   ExportedEntityKind,
+  ExportedEntityKindWithoutForm,
   RequestDataExportGraphQlOperationsGroup,
   useExport,
-  useRemoveExport,
+  useRemoveExportResult,
 } from '@apihub/components/ExportSettingsDialog/api/useExport'
 import { REST_API_TYPE } from '@netcracker/qubership-apihub-api-processor'
 import { useExportStatus } from '@apihub/components/ExportSettingsDialog/api/useExportStatus'
@@ -68,7 +66,7 @@ export const OperationGroupsCard: FC = memo(() => {
   const [, setExporting] = useState(false)
   const [needToGetExportStatus, setNeedToGetExportStatus] = useState(false)
 
-  const removeExportResult = useRemoveExport(requestDataExport?.exportedEntity, requestDataExport?.packageId, requestDataExport?.version)
+  const removeExportResult = useRemoveExportResult(requestDataExport?.exportedEntity, requestDataExport?.packageId, requestDataExport?.version)
 
   useEffect(() => {
     if (exportTask) {

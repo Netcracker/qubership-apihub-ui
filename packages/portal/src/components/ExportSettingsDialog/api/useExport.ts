@@ -127,7 +127,7 @@ function startExport(requestData: IRequestDataExport | IRequestDataExportWithout
 
 type RemoveExportCallback = () => void
 
-export function useRemoveExport(
+export function useRemoveExportResult(
   exportedEntity: ExportedEntityKind | ExportedEntityKindWithoutForm | undefined,
   packageId: PackageKey | undefined,
   version: VersionKey | undefined,
