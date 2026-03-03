@@ -1,13 +1,9 @@
+import { LINTER_API_TYPE_TITLE_MAP, type LinterApiType } from '@apihub/entities/api-quality/linter-api-types'
+import type { Linter } from '@apihub/entities/api-quality/linters'
 import { LoadingButton } from '@mui/lab'
 import { Button, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
 import { ErrorTextField } from '@netcracker/qubership-apihub-ui-portal/src/components/ErrorTextField'
-import type { RulesetLinter } from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
-import {
-  type Ruleset,
-  RULESET_API_TYPE_TITLE_MAP,
-  RULESET_LINTER_TITLE_MAP,
-  type RulesetApiType,
-} from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
+import { type Ruleset } from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
 import { SHOW_CREATE_RULESET_DIALOG } from '@netcracker/qubership-apihub-ui-portal/src/routes/EventBusProvider'
 import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 import { FileUploadField } from '@netcracker/qubership-apihub-ui-shared/components/FileUploadField'
@@ -30,8 +26,8 @@ const DEFAULT_FORM_VALUES: CreateRulesetFormData = {
 }
 
 type CreateRulesetDialogProps = {
-  apiType: RulesetApiType
-  linter: RulesetLinter
+  apiType: LinterApiType
+  linter: Linter
   rulesets: Ruleset[]
 }
 
@@ -96,7 +92,7 @@ const CreateRulesetPopup: FC<CreateRulesetPopupProps> = memo<CreateRulesetPopupP
       createRuleset({
         rulesetName: name,
         apiType: apiType,
-        linter: linter,
+        linter: linter.linter,
         rulesetFile: file,
       })
     }, [apiType, linter, createRuleset])
@@ -124,7 +120,7 @@ const CreateRulesetPopup: FC<CreateRulesetPopupProps> = memo<CreateRulesetPopupP
         onSubmit={handleSubmit(handleCreateRuleset)}
       >
         <DialogTitle>
-          {`Create ${RULESET_LINTER_TITLE_MAP[linter]} Ruleset for ${RULESET_API_TYPE_TITLE_MAP[apiType]}`}
+          {`Create ${linter.displayName} Ruleset for ${LINTER_API_TYPE_TITLE_MAP[apiType]}`}
         </DialogTitle>
         <DialogContent>
           <Typography variant="button">

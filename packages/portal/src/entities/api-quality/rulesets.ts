@@ -1,4 +1,6 @@
 import type { Key } from '../keys'
+import type { LinterApiType } from './linter-api-types'
+import type { Linter } from './linters'
 
 export const RulesetStatuses = {
   INACTIVE: 'inactive',
@@ -16,32 +18,6 @@ export type RulesetActivationHistory = {
   activationHistory: RulesetActivation[]
 }
 
-export const RulesetApiTypes = {
-  OAS_2_0: 'openapi-2-0',
-  OAS_3_0: 'openapi-3-0',
-  OAS_3_1: 'openapi-3-1',
-  ASYNCAPI_3_0: 'asyncapi-3-0',
-} as const
-export type RulesetApiType = (typeof RulesetApiTypes)[keyof typeof RulesetApiTypes]
-export const RULESET_API_TYPE_TITLE_MAP = {
-  [RulesetApiTypes.OAS_2_0]: 'OAS 2.0',
-  [RulesetApiTypes.OAS_3_0]: 'OAS 3.0',
-  [RulesetApiTypes.OAS_3_1]: 'OAS 3.1',
-  [RulesetApiTypes.ASYNCAPI_3_0]: 'AsyncAPI 3.0',
-}
-
-export const RulesetLinters = {
-  SPECTRAL: 'spectral',
-  AI_OAS: 'ai_oas',
-  SPECTRAL_ASYNCAPI: 'spectral_asyncapi',
-} as const
-export type RulesetLinter = (typeof RulesetLinters)[keyof typeof RulesetLinters]
-export const RULESET_LINTER_TITLE_MAP = {
-  [RulesetLinters.SPECTRAL]: 'Spectral',
-  [RulesetLinters.AI_OAS]: 'AI OAS',
-  [RulesetLinters.SPECTRAL_ASYNCAPI]: 'Spectral AsyncAPI',
-}
-
 // Full ruleset
 
 export type RulesetDto = Readonly<{
@@ -49,8 +25,8 @@ export type RulesetDto = Readonly<{
   name: string
   fileName: string
   status: RulesetStatus
-  apiType: RulesetApiType
-  linter: RulesetLinter
+  apiType: LinterApiType
+  linter: Linter['linter']
   createdAt: string // Format: date-time
   canBeDeleted: boolean
 }>

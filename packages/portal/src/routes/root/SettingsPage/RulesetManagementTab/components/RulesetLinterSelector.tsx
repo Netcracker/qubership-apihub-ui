@@ -1,7 +1,6 @@
+import type { Linter } from '@apihub/entities/api-quality/linters'
 import { FormControl, InputLabel, MenuItem, Select, type SelectChangeEvent } from '@mui/material'
-import type { RulesetLinter } from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
-import { RULESET_LINTER_TITLE_MAP, RulesetLinters } from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
-import { type FC, memo } from 'react'
+import { memo, type FC } from 'react'
 
 const STYLE = {
   minWidth: 170,
@@ -18,19 +17,22 @@ const MENU_PROPS = {
 const INPUT_PROPS = { 'aria-label': 'API Type' }
 
 type RulesetLinterSelectorProps = {
-  linter: RulesetLinter
+  loading: boolean
+  linterList: readonly Linter[]
+  selectedLinter: Linter
   onChange?: (event: SelectChangeEvent) => void
 }
 
 export const RulesetLinterSelector: FC<RulesetLinterSelectorProps> = memo<RulesetLinterSelectorProps>((props) => {
-  const { linter, onChange } = props
+  const { linterList, selectedLinter, onChange } = props
+
   return (
     <FormControl sx={STYLE} variant="filled">
       <InputLabel id="demo-select-small-label">Linter</InputLabel>
       <Select
         labelId='demo-select-small-label'
         variant="filled"
-        value={linter}
+        value={selectedLinter.linter}
         onChange={onChange}
         sx={STYLE}
         inputProps={INPUT_PROPS}
@@ -38,13 +40,13 @@ export const RulesetLinterSelector: FC<RulesetLinterSelectorProps> = memo<Rulese
         data-testid="RulesetLinterSelect"
         label='Linter'
       >
-        {Object.values(RulesetLinters).map(linter => (
+        {linterList.map(linter => (
           <MenuItem
-            key={`linter-option-${linter}`}
-            value={linter}
-            data-testid={`MenuItem-${linter}`}
+            key={`linter-option-${linter.linter}`}
+            value={linter.linter}
+            data-testid={`MenuItem-${linter.linter}`}
           >
-            {RULESET_LINTER_TITLE_MAP[linter]}
+            {linter.displayName}
           </MenuItem>
         ))}
       </Select>

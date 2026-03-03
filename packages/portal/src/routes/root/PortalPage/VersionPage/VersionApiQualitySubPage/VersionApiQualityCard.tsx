@@ -3,8 +3,9 @@ import { IssueSeverityFilters } from '@apihub/components/ApiQuality/IssueSeverit
 import { ValidationRulesetsDropdown } from '@apihub/components/ApiQuality/ValidationRulesetsDropdown'
 import type { IssueSeverity } from '@apihub/entities/api-quality/issue-severities'
 import type { Issue } from '@apihub/entities/api-quality/issues'
+import type { Linter } from '@apihub/entities/api-quality/linters'
 import type { DocumentValidationSummary } from '@apihub/entities/api-quality/package-version-validation-summary'
-import type { RulesetLinter, RulesetMetadata } from '@apihub/entities/api-quality/rulesets'
+import type { RulesetMetadata } from '@apihub/entities/api-quality/rulesets'
 import { transformIssuesToMarkers } from '@apihub/utils/api-quality/issues'
 import { Box, Typography } from '@mui/material'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
@@ -24,6 +25,7 @@ import { useTransformedRawDocumentByFormat } from './utilities/hooks'
 import { flatMapValidationIssues, flatMapValidationRulesets } from './utilities/transformers'
 import { ValidationResultsExportToolbar } from './ValidationResultsExportToolbar'
 import { ValidationResultsTable } from './ValidationResultsTable'
+import { useLinters } from '@apihub/api-hooks/ApiQuality/useLinters'
 
 type TwoSidedCardProps = Partial<{
   leftHeader: ReactNode
@@ -113,6 +115,8 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
 
   const transformedSelectedDocumentContent = useTransformedRawDocumentByFormat(selectedDocumentContent, format)
 
+  const { data: lintersList = [] } = useLinters(selectedDocument?.apiType)
+
   const [selectedRulesets, setSelectedRulesets] = useState<Set<RulesetMetadata>>(new Set())
   const [issueSeverityFilters, setIssueSeverityFilters] = useState<IssueSeverity[]>([])
   const originalValidationIssues = useMemo(() => flatMapValidationIssues(validationDetails), [validationDetails])
@@ -133,8 +137,13 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
     if (!validationIssuesFilteredByRulesets.length) {
       return []
     }
-    return transformIssuesToMarkers(transformedSelectedDocumentContent, format, validationIssuesFilteredByRulesets)
-  }, [validationDetails, transformedSelectedDocumentContent, format, validationIssuesFilteredByRulesets])
+    return transformIssuesToMarkers(
+      transformedSelectedDocumentContent,
+      format,
+      validationIssuesFilteredByRulesets,
+      lintersList,
+    )
+  }, [transformedSelectedDocumentContent, validationDetails, validationIssuesFilteredByRulesets, format, lintersList])
 
   const onFormatChange = useCallback((value: OriginalDocumentFileFormat) => {
     setFormat(value)
@@ -268,7 +277,7 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
 
 function filterBySelectedRulesets(source: Issue[], selectedRulesets: Set<RulesetMetadata>): Issue[] {
   const selectedRulesetsList = Array.from(selectedRulesets)
-  const selectedLinters = new Set<RulesetLinter>(selectedRulesetsList.map(ruleset => ruleset.linter))
+  const selectedLinters = new Set<Linter['linter']>(selectedRulesetsList.map(ruleset => ruleset.linter))
   return source.filter(issue => selectedLinters.has(issue.linter))
 }
 

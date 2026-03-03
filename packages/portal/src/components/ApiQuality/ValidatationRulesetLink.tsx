@@ -1,4 +1,5 @@
-import { RULESET_API_TYPE_TITLE_MAP, RULESET_LINTER_TITLE_MAP, RulesetStatuses, type RulesetMetadata } from '@apihub/entities/api-quality/rulesets'
+import { RulesetStatuses, type RulesetMetadata } from '@apihub/entities/api-quality/rulesets'
+import { LINTER_API_TYPE_TITLE_MAP } from '@apihub/entities/api-quality/linter-api-types'
 import { useEventBus } from '@apihub/routes/EventBusProvider'
 import { Box, Link, Skeleton } from '@mui/material'
 import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
@@ -7,6 +8,8 @@ import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/ali
 import capitalize from 'lodash-es/capitalize'
 import type { FC } from 'react'
 import { memo, useCallback } from 'react'
+import { useLinters } from '@apihub/api-hooks/ApiQuality/useLinters'
+import { getLinterName } from '@apihub/utils/api-quality/linters'
 
 type ValidationRulesetLinkProps = {
   data: RulesetMetadata | undefined
@@ -28,6 +31,8 @@ export const ValidationRulesetLink: FC<ValidationRulesetLinkProps> = memo<Valida
     [data, showRulesetInfoDialog],
   )
 
+  const { data: lintersList = [] } = useLinters()
+
   if (loading) {
     return <Skeleton variant="rectangular" width={100} height={20} />
   }
@@ -36,7 +41,8 @@ export const ValidationRulesetLink: FC<ValidationRulesetLinkProps> = memo<Valida
     return null
   }
 
-  const linterTitle = RULESET_LINTER_TITLE_MAP[data.linter]
+  const linterId = data.linter
+  const linterTitle = getLinterName(linterId, lintersList)
   const fullRulesetTitle = `${linterTitle} ${data.name}`
 
   return (
@@ -69,7 +75,7 @@ export const ValidationRulesetLink: FC<ValidationRulesetLinkProps> = memo<Valida
           key={`validation-ruleset-link-api-type-${data.apiType}`}
           value='rulesetSpecType'
           sx={{ m: 0 }}
-          label={RULESET_API_TYPE_TITLE_MAP[data.apiType]}
+          label={LINTER_API_TYPE_TITLE_MAP[data.apiType]}
           data-testid="ValidationRulesetApiTypeChip"
         />
         <CustomChip

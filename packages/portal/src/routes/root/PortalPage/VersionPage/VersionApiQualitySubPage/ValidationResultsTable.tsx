@@ -1,7 +1,7 @@
+import { useLinters } from '@apihub/api-hooks/ApiQuality/useLinters'
 import type { IssueSeverity } from '@apihub/entities/api-quality/issue-severities'
 import type { Issue } from '@apihub/entities/api-quality/issues'
-import type { RulesetLinter } from '@apihub/entities/api-quality/rulesets'
-import { RULESET_LINTER_TITLE_MAP } from '@apihub/entities/api-quality/rulesets'
+import type { Linter } from '@apihub/entities/api-quality/linters'
 import { Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
 import { CustomTableHeadCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomTableHeadCell'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
@@ -12,6 +12,7 @@ import type { FC } from 'react'
 import { memo, useMemo, useRef } from 'react'
 import { IssueSeverityMarker } from './IssueSeverityMarker'
 import { issuePathToSpecItemUri, sortIssuesBySeveralFields } from './utilities/transformers'
+import { getLinterName } from '@apihub/utils/api-quality/linters'
 
 const TABLE_COLUMN_ID_TYPE = 'type'
 const TABLE_COLUMN_ID_LINTER = 'linter'
@@ -25,7 +26,8 @@ const TABLE_COLUMN_ID_LABELS = {
 
 type TableData = {
   type: IssueSeverity
-  linter: RulesetLinter
+  linterId: Linter['linter']
+  linterName: Linter['displayName']
   message: string
   path: SpecItemUri // Example: /foo/bar/baz/qux/1
 }
@@ -98,10 +100,10 @@ const COLUMNS: ColumnDef<TableData>[] = [
   {
     id: TABLE_COLUMN_ID_LINTER,
     header: () => <CustomTableHeadCell title={TABLE_COLUMN_ID_LABELS[TABLE_COLUMN_ID_LINTER]} />,
-    cell: ({ row: { original: { linter } } }) => {
+    cell: ({ row: { original: { linterName } } }) => {
       return (
         <Typography variant="body2">
-          {RULESET_LINTER_TITLE_MAP[linter]}
+          {linterName}
         </Typography>
       )
     },
@@ -124,13 +126,16 @@ export const ValidationResultsTable: FC<ValidationResultsTableProps> = memo<Vali
 
   const sortedIssuesList = useMemo(() => sortIssuesBySeveralFields(data), [data])
 
+  const { data: lintersList = [] } = useLinters()
+
   const transformedData: TableData[] = useMemo(() => sortedIssuesList.map((issue: Issue) => ({
     type: issue.severity,
-    linter: issue.linter,
+    linterId: issue.linter,
+    linterName: getLinterName(issue.linter, lintersList),
     message: issue.message,
     // TODO 19.09.25 // Remove default because real response doesn't match API
     path: issuePathToSpecItemUri(issue.path ?? []),
-  })), [sortedIssuesList])
+  })), [sortedIssuesList, lintersList])
 
   const { getHeaderGroups, getRowModel } = useReactTable({
     data: transformedData,

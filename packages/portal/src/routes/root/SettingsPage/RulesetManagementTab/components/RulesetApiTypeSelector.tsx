@@ -1,9 +1,9 @@
 import { FormControl, InputLabel, MenuItem, Select, type SelectChangeEvent } from '@mui/material'
 import {
-  RULESET_API_TYPE_TITLE_MAP,
-  type RulesetApiType,
-  RulesetApiTypes,
-} from '@netcracker/qubership-apihub-ui-portal/src/entities/api-quality/rulesets'
+  LINTER_API_TYPE_TITLE_MAP,
+  type LinterApiType,
+  LinterApiTypes
+} from '@apihub/entities/api-quality/linter-api-types'
 import { type FC, memo } from 'react'
 
 const STYLE = {
@@ -21,7 +21,7 @@ const MENU_PROPS = {
 const INPUT_PROPS = { 'aria-label': 'API Type' }
 
 type RulesetApiTypeSelectorProps = {
-  apiType: RulesetApiType
+  apiType: LinterApiType
   onChange?: (event: SelectChangeEvent) => void
 }
 
@@ -41,13 +41,13 @@ export const RulesetApiTypeSelector: FC<RulesetApiTypeSelectorProps> = memo<Rule
         data-testid="RulesetTypeSelect"
         label='API Type'
       >
-        {Object.values(RulesetApiTypes).map(apiType => (
+        {Object.values(LinterApiTypes).map(apiType => (
           <MenuItem
             key={apiType}
             value={apiType}
             data-testid={`MenuItem-${apiType}`}
           >
-            {RULESET_API_TYPE_TITLE_MAP[apiType]}
+            {LINTER_API_TYPE_TITLE_MAP[apiType]}
           </MenuItem>
         ))}
       </Select>

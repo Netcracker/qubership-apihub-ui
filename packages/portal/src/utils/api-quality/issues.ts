@@ -1,21 +1,24 @@
 import { IssueSeverities } from '@apihub/entities/api-quality/issue-severities'
 import type { Issue } from '@apihub/entities/api-quality/issues'
-import { RULESET_LINTER_TITLE_MAP } from '@apihub/entities/api-quality/rulesets'
+import type { Linter } from '@apihub/entities/api-quality/linters'
 import type { OriginalDocumentFileFormat } from '@apihub/routes/root/PortalPage/VersionPage/VersionApiQualitySubPage/types'
-import { findLocationByPath } from '@netcracker/qubership-apihub-ui-shared/utils/specifications.v2'
+import { findLocationByPath, parseWithPointers } from '@netcracker/qubership-apihub-ui-shared/utils/specifications.v2'
 import { type editor as Editor, MarkerSeverity } from 'monaco-editor'
+import { getLinterName } from './linters'
 
 export function transformIssuesToMarkers(
   content: string,
   format: OriginalDocumentFileFormat,
   issues: readonly Issue[],
+  linters: readonly Linter[],
 ): Editor.IMarkerData[] {
+  const parsedContent = parseWithPointers(content, format)
   return issues
     .map(issue => {
       const { path } = issue
       // TODO 19.09.25 // Remove default because real response doesn't match API
-      const location = findLocationByPath(content, path ?? [], format)
-      const linterName = RULESET_LINTER_TITLE_MAP[issue.linter]
+      const location = findLocationByPath(parsedContent, path ?? [], format)
+      const linterName = getLinterName(issue.linter, linters)
       const source = `${linterName} (${issue.code})`
       let severity: MarkerSeverity
       switch (issue.severity) {
