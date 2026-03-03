@@ -68,6 +68,8 @@ import { CSV_FILE_EXTENSION } from '../utils/files'
 import { FileUploadField } from './FileUploadField'
 import type { AutocompleteInputChangeReason } from '@mui/base/AutocompleteUnstyled/useAutocomplete'
 import { WARNING_API_PROCESSOR_TEXT, WarningApiProcessorVersion } from './WarningApiProcessorVersion'
+import type { ApiType } from '../entities/api-types'
+import { API_TYPE_REST, API_TYPE_TITLE_MAP, API_TYPES } from '../entities/api-types'
 
 export type VersionFormData = {
   message?: string
@@ -79,6 +81,7 @@ export type VersionFormData = {
   status: VersionStatus
   labels: string[]
   previousVersion: Key
+  apiType: ApiType
   file?: File
 }
 
@@ -609,6 +612,38 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
                 />
               )}
               data-testid="StatusAutocomplete"
+            />
+          )}
+        />
+
+        <Controller
+          name="apiType"
+          control={control}
+          rules={{ required: true }}
+          render={({ field: { value, onChange } }) => (
+            <Autocomplete
+              value={value ?? API_TYPE_REST}
+              options={API_TYPES}
+              isOptionEqualToValue={(option, value) => option === value}
+              renderOption={(props, option) => <ListItem
+                {...props}
+                key={option}
+                data-testid={`Option-${option}`}
+              >
+                {API_TYPE_TITLE_MAP[option]}
+              </ListItem>}
+              getOptionLabel={(option) => API_TYPE_TITLE_MAP[option]!}
+              onChange={(_, type) => {
+                onChange(type)
+              }}
+              renderInput={(params) => (
+                <TextField
+                  required
+                  {...params}
+                  label="API type"
+                />
+              )}
+              data-testid="ApiTypeAutocomplete"
             />
           )}
         />
