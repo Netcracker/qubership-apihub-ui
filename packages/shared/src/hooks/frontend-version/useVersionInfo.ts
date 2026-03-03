@@ -27,5 +27,5 @@ export function useVersionInfo(appType: AppTypeApiHub = portal): VersionInfo {
     getVersionInfoOptions(appType),
   )
 
-  return data ?? emptyVersion
+  return emptyVersion
 }
