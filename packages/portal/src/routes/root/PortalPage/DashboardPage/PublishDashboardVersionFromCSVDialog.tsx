@@ -148,7 +148,7 @@ const PublishDashboardVersionFromCSVPopup: FC<PopupProps> = memo<PopupProps>(({ 
         version: version,
         status: status,
         previousVersion: replaceEmptyPreviousVersion(previousVersion),
-        apiType: apiType,
+        apiType: apiType ?? REST_API_TYPE,
       },
     })
   }, [packageObj, publish])
@@ -193,5 +193,5 @@ type PublishInfo = Readonly<{
   file?: File
   previousVersion: Key
   workspace?: Package | null
-  apiType: ApiType
+  apiType?: ApiType | undefined
 }>

@@ -81,7 +81,7 @@ export type VersionFormData = {
   status: VersionStatus
   labels: string[]
   previousVersion: Key
-  apiType: ApiType
+  apiType?: ApiType
   file?: File
 }
 
