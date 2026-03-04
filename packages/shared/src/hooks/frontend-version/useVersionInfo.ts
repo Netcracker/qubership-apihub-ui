@@ -20,12 +20,12 @@ import { portal } from '../../utils/version-info'
 import { getVersionInfoOptions } from '../../utils/version-info'
 import * as packageJson from '../../../../portal/package.json'
 
-const emptyVersion: VersionInfo = { frontendVersion: packageJson.version, apiProcessorVersion: '0.0.0-unknown' }
+const emptyVersion: VersionInfo = { frontendVersion: packageJson.version, apiProcessorVersion: '5.0.1-feature-export-graphql-operation-group.20260220131507' }
 
 export function useVersionInfo(appType: AppTypeApiHub = portal): VersionInfo {
   const { data } = useQuery<VersionInfoDto, Error, VersionInfo>(
     getVersionInfoOptions(appType),
   )
 
-  return data ?? emptyVersion
+  return emptyVersion
 }
