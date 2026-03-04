@@ -778,7 +778,7 @@ function checkFileUpload(descriptorContent: string | null): boolean {
 }
 
 const DASHBOARD_VERSION_CONFIG_DEFAULT_TITLE = 'CSV file must have the following information: "serviceName" and "serviceVersion". Published dashboard version will include package release versions (from selected workspace) for specified services. Additionally, "method" and "path" of REST API operations for services can be defined in the file. In this case, the system will create operations group with the operations for specified method and path.'
-const DASHBOARD_VERSION_CONFIG_GRAPH_QL_TITLE = 'CSV file must have the following format. First row is a header with mandatory columns: service, version, type, method. The following rows are data. The CSV file transforms into published dashboard version will include package release versions (from selected workspace) for specified services. Also the system will create operations group with the specified operations.'
+const DASHBOARD_VERSION_CONFIG_GRAPH_QL_TITLE = 'CSV file must have the following information: "serviceName" and "serviceVersion". Published dashboard version will include package release versions (from selected workspace) for specified services. Additionally, "type" and "method" of GraphQL operations for services can be defined in the file. In this case, the system will create operations group with the operations for specified type and method.'
 const PACKAGE_SEARCH_SCOPE_TITLE = 'The workspace in which package versions for services from the CSV configuration will be searched. The package versions found in this workspace will be included into the dashboard version.'
 
 function createOnInputChange(onChange: (_: SyntheticEvent, value: string) => void) {
