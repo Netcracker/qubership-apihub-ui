@@ -1,6 +1,6 @@
-import { isRestOperation, type OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { ClassifierType, DIFF_META_KEY, DiffAction, extractOperationBasePath } from '@netcracker/qubership-apihub-api-diff'
 import { calculateNormalizedRestOperationId } from '@netcracker/qubership-apihub-api-processor'
+import { isRestOperation, type OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { isObject } from '@netcracker/qubership-apihub-ui-shared/utils/objects'
 import type { OpenAPIV3 } from 'openapi-types'
 import { detectServerBasePathMigratedToPath } from './detect-server-base-path-migrated-to-path-case'
@@ -310,39 +310,29 @@ function cherryPickOperation(options: CherryPickOperationOptions): OpenAPIV3.Doc
 
   // Leave only change for operation with necessary path because ASV takes first item and does not know which operation is there
   if (DIFF_META_KEY in paths && isObject(paths[DIFF_META_KEY])) {
-    const whollyChangedPaths: Record<string, unknown> | undefined =
-      isObject(paths[DIFF_META_KEY])
-        ? paths[DIFF_META_KEY]
-        : undefined
-    if (whollyChangedPaths) {
-      const clonedWhollyChangedPaths: Record<string, unknown> = {}
-      const clonedPathsWithDiffs = clonedOasComparisonInternalDocument.paths as Record<PropertyKey, unknown>
-      clonedPathsWithDiffs[DIFF_META_KEY] = clonedWhollyChangedPaths
-      const matchedWhollyChangedPath = findMatchedPathByNormalizedId(
-        Object.keys(whollyChangedPaths),
-        firstServerBasePath,
-        comparedOperationMethod,
-        comparedOperationNormalizedIds,
-      )
-      if (matchedWhollyChangedPath) {
-        clonedWhollyChangedPaths[matchedWhollyChangedPath] = whollyChangedPaths[matchedWhollyChangedPath]
-      }
+    const whollyChangedPaths: Record<string, unknown> = paths[DIFF_META_KEY]
+    const clonedWhollyChangedPaths: Record<string, unknown> = {}
+    const clonedPathsWithDiffs = clonedOasComparisonInternalDocument.paths as Record<PropertyKey, unknown>
+    clonedPathsWithDiffs[DIFF_META_KEY] = clonedWhollyChangedPaths
+    const matchedWhollyChangedPath = findMatchedPathByNormalizedId(
+      Object.keys(whollyChangedPaths),
+      firstServerBasePath,
+      comparedOperationMethod,
+      comparedOperationNormalizedIds,
+    )
+    if (matchedWhollyChangedPath) {
+      clonedWhollyChangedPaths[matchedWhollyChangedPath] = whollyChangedPaths[matchedWhollyChangedPath]
     }
   }
 
   const operationsByPath = paths[foundPath]
-  if (isObject(operationsByPath) && DIFF_META_KEY in operationsByPath) {
-    const whollyChangedMethods: Record<string, unknown> | undefined =
-      isObject(operationsByPath[DIFF_META_KEY])
-        ? operationsByPath[DIFF_META_KEY]
-        : undefined
-    if (whollyChangedMethods) {
-      const foundDiff = findWhollyChangedMethodDiff(whollyChangedMethods, comparedOperationMethod)
-      if (foundDiff) {
-        const clonedPathsWithDiffs = clonedOasComparisonInternalDocument.paths as Record<PropertyKey, unknown>
-        clonedPathsWithDiffs[DIFF_META_KEY] = {
-          [foundPath]: foundDiff,
-        }
+  if (isObject(operationsByPath) && DIFF_META_KEY in operationsByPath && isObject(operationsByPath[DIFF_META_KEY])) {
+    const whollyChangedMethods: Record<string, unknown> = operationsByPath[DIFF_META_KEY]
+    const foundDiff = findWhollyChangedMethodDiff(whollyChangedMethods, comparedOperationMethod)
+    if (foundDiff) {
+      const clonedPathsWithDiffs = clonedOasComparisonInternalDocument.paths as Record<PropertyKey, unknown>
+      clonedPathsWithDiffs[DIFF_META_KEY] = {
+        [foundPath]: foundDiff,
       }
     }
   }
