@@ -24,10 +24,21 @@ export const IssueSeverityFilters: FC<IssueSeverityFiltersProps> = memo((props) 
 
   const layout = ISSUE_SEVERITIES_LIST.map(severity => {
     return (
-      <ToggleButton key={severity} value={severity} data-testid={`IssueSeverityFilterButton-${severity}`}>
+      <ToggleButton
+        key={severity}
+        value={severity}
+        data-testid={`IssueSeverityFilterButton-${severity}`}
+      >
         <Box display="flex" alignItems="center" gap={1}>
-          <IssueSeverityMarker severity={severity} />
-          <Typography variant="body2" fontWeight={500}>{summary[severity] ?? 0}</Typography>
+          <IssueSeverityMarker
+            severity={severity}
+          />
+          <Typography
+            variant="body2"
+            fontWeight={500}
+          >
+            {summary[severity] ?? 0}
+          </Typography>
         </Box>
       </ToggleButton>
     )
