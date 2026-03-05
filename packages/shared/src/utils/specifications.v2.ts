@@ -56,6 +56,6 @@ export function findLocationByPath(
   if (isParsedYamlContent(format, content)) {
     return yamlGetLocationForJsonPath(content, path.map(decodeKey))
   }
-  
+
   return undefined
 }

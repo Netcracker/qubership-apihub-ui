@@ -151,7 +151,7 @@ export const VersionApiQualityCard: FC<VersionApiQualityCardProps> = memo((props
   }, [setSelectedIssuePath])
 
   const [placeholderMessage, isSunnyDayPlaceholder] = useMemo(() => {
-    // check originalValidationIssues 
+    // check originalValidationIssues
     //  because it's impossible to have no issues by selected linter(s) (ruleset(s))
     //  due to list will contain only linter(s) (ruleset(s)) from issues
     if (selectedRulesets.size > 0 && originalValidationIssues.length === 0) {
