@@ -126,9 +126,10 @@ export function detectServerBasePathMigratedToPath(document: OpenAPIV3.Document)
 
   const intersectionOperationNormalizedIds = beforeOperationNormalizedIds.intersection(afterOperationNormalizedIds)
 
-  const isCase = beforeFirstServerBasePath !== afterFirstServerBasePath && intersectionOperationNormalizedIds.size > 0
-
-  if (!isCase) {
+  const isServerBasePathMigrated =
+    beforeFirstServerBasePath !== afterFirstServerBasePath &&
+    intersectionOperationNormalizedIds.size > 0
+  if (!isServerBasePathMigrated) {
     return null
   }
 
