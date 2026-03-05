@@ -31,6 +31,45 @@ type ComparedOperationNormalizedIds = {
   currentOperationNormalizedId: string
 }
 
+const normalizeBasePathForComparedOperations = (basePath: string): string => (
+  basePath === '/' ? basePath : ''
+)
+
+const isMatchedComparedOperationNormalizedId = (
+  operationNormalizedId: string,
+  comparedOperationNormalizedIds: ComparedOperationNormalizedIds,
+): boolean => (
+  comparedOperationNormalizedIds.currentOperationNormalizedId === operationNormalizedId ||
+  comparedOperationNormalizedIds.previousOperationNormalizedId === operationNormalizedId
+)
+
+const findMatchedPathByNormalizedId = (
+  pathKeys: string[],
+  serverBasePath: string,
+  operationMethod: string,
+  comparedOperationNormalizedIds: ComparedOperationNormalizedIds,
+): string | undefined => {
+  for (const pathKey of pathKeys) {
+    const operationNormalizedId = calculateNormalizedRestOperationId(serverBasePath, pathKey, operationMethod)
+    if (isMatchedComparedOperationNormalizedId(operationNormalizedId, comparedOperationNormalizedIds)) {
+      return pathKey
+    }
+  }
+  return undefined
+}
+
+const findWhollyChangedMethodDiff = (
+  whollyChangedMethods: Record<string, unknown>,
+  operationMethod: string,
+): unknown => {
+  for (const whollyChangedMethod of Object.keys(whollyChangedMethods)) {
+    if (whollyChangedMethod === operationMethod) {
+      return whollyChangedMethods[whollyChangedMethod]
+    }
+  }
+  return undefined
+}
+
 export function useComparedOperations(options: Options): QueryResultWithNoInternalDocument<unknown, Error> {
   const {
     previousOperation,
@@ -124,9 +163,6 @@ export function useComparedOperations(options: Options): QueryResultWithNoIntern
       }
 
       const oasInternalDocument = deserializedComparisonInternalDocument
-      const normalizeBasePathForComparedOperations = (basePath: string): string => (
-        basePath === '/' ? basePath : ''
-      )
       const getComparedOperationNormalizedIds = (
         previousBasePath: string,
         currentBasePath: string,
@@ -146,38 +182,6 @@ export function useComparedOperations(options: Options): QueryResultWithNoIntern
           )
           : '',
       })
-      const isMatchedComparedOperationNormalizedId = (
-        operationNormalizedId: string,
-        comparedOperationNormalizedIds: ComparedOperationNormalizedIds,
-      ): boolean => (
-        comparedOperationNormalizedIds.currentOperationNormalizedId === operationNormalizedId ||
-        comparedOperationNormalizedIds.previousOperationNormalizedId === operationNormalizedId
-      )
-      const findMatchedPathByNormalizedId = (
-        pathKeys: string[],
-        serverBasePath: string,
-        operationMethod: string,
-        comparedOperationNormalizedIds: ComparedOperationNormalizedIds,
-      ): string | undefined => {
-        for (const pathKey of pathKeys) {
-          const operationNormalizedId = calculateNormalizedRestOperationId(serverBasePath, pathKey, operationMethod)
-          if (isMatchedComparedOperationNormalizedId(operationNormalizedId, comparedOperationNormalizedIds)) {
-            return pathKey
-          }
-        }
-        return undefined
-      }
-      const findWhollyChangedMethodDiff = (
-        whollyChangedMethods: Record<string, unknown>,
-        operationMethod: string,
-      ): unknown => {
-        for (const whollyChangedMethod of Object.keys(whollyChangedMethods)) {
-          if (whollyChangedMethod === operationMethod) {
-            return whollyChangedMethods[whollyChangedMethod]
-          }
-        }
-        return undefined
-      }
 
       const cherryPickOperation = (
         paths: OpenAPIV3.PathsObject,
