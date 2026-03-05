@@ -33,6 +33,15 @@ type CherryPickOperationOptions = {
   comparedOperationNormalizedIds: ComparedOperationNormalizedIds
 }
 
+type HandleMigratedServerBasePathCaseOptions = {
+  oasInternalDocument: OpenAPIV3.Document
+  previousOperationPath: string | undefined
+  previousOperationMethod: string | undefined
+  currentOperationPath: string | undefined
+  currentOperationMethod: string | undefined
+  comparedOperationMethod: string
+}
+
 export function handleOpenApiComparisonInternalDocument(
   options: HandleOpenApiComparisonInternalDocumentOptions,
 ): OpenAPIV3.Document | undefined {
@@ -58,89 +67,16 @@ export function handleOpenApiComparisonInternalDocument(
     return undefined
   }
 
-  const trickyCaseDetection = detectServerBasePathMigratedToPath(oasInternalDocument)
-  if (trickyCaseDetection) {
-    const {
-      beforeFirstServerBasePath,
-      afterFirstServerBasePath,
-      beforePaths,
-      afterPaths,
-      beforeServers,
-      afterServers,
-    } = trickyCaseDetection
-
-    const clonedOasComparisonInternalDocument: OpenAPIV3.Document = {
-      ...oasInternalDocument,
-      paths: {},
-    }
-
-    const comparedOperationNormalizedIds = getComparedOperationNormalizedIds({
-      previousOperationPath: previousOperationPath,
-      previousOperationMethod: previousOperationMethod,
-      currentOperationPath: currentOperationPath,
-      currentOperationMethod: currentOperationMethod,
-      previousBasePath: beforeFirstServerBasePath,
-      currentBasePath: afterFirstServerBasePath,
-    })
-
-    // Handle operation affected by migration of server base path to path
-    for (const afterPathKey of Object.keys(afterPaths)) {
-      const currentOperationNormalizedIdCandidate = calculateNormalizedRestOperationId(
-        afterFirstServerBasePath,
-        afterPathKey,
-        comparedOperationMethod,
-      )
-      if (currentOperationNormalizedIdCandidate !== comparedOperationNormalizedIds.currentOperationNormalizedId) {
-        continue
-      }
-      for (const beforePathKey of Object.keys(beforePaths)) {
-        const previousOperationNormalizedIdCandidate = calculateNormalizedRestOperationId(
-          beforeFirstServerBasePath,
-          beforePathKey,
-          comparedOperationMethod,
-        )
-        if (previousOperationNormalizedIdCandidate !== comparedOperationNormalizedIds.previousOperationNormalizedId) {
-          continue
-        }
-        clonedOasComparisonInternalDocument.paths![afterPathKey] = {
-          [comparedOperationMethod]: afterPaths[afterPathKey]![comparedOperationMethod],
-        }
-        const pathsObject = clonedOasComparisonInternalDocument.paths as unknown as Record<PropertyKey, unknown>
-        pathsObject[DIFF_META_KEY] = {
-          [afterPathKey]: {
-            action: DiffAction.rename,
-            type: ClassifierType.breaking,
-            beforeDeclarationPaths: [['paths', beforePathKey]],
-            afterDeclarationPaths: [['paths', afterPathKey]],
-            beforeKey: beforePathKey,
-            afterKey: afterPathKey,
-          },
-        }
-        return clonedOasComparisonInternalDocument
-      }
-    }
-
-    // Handle operations not affected by migration of server base path to path
-    const fromAfterPaths = cherryPickOperation({
-      paths: afterPaths,
-      servers: afterServers,
-      comparedOperationMethod: comparedOperationMethod,
-      oasInternalDocument: oasInternalDocument,
-      comparedOperationNormalizedIds: comparedOperationNormalizedIds,
-    })
-    if (fromAfterPaths) {
-      return fromAfterPaths
-    }
-    const fromBeforePaths = cherryPickOperation({
-      paths: beforePaths,
-      servers: beforeServers,
-      comparedOperationMethod: comparedOperationMethod,
-      oasInternalDocument: oasInternalDocument,
-      comparedOperationNormalizedIds: comparedOperationNormalizedIds,
-    })
-    if (fromBeforePaths) {
-      return fromBeforePaths
-    }
+  const fromMigratedServerBasePathCase = handleMigratedServerBasePathCase({
+    oasInternalDocument: oasInternalDocument,
+    previousOperationPath: previousOperationPath,
+    previousOperationMethod: previousOperationMethod,
+    currentOperationPath: currentOperationPath,
+    currentOperationMethod: currentOperationMethod,
+    comparedOperationMethod: comparedOperationMethod,
+  })
+  if (fromMigratedServerBasePathCase) {
+    return fromMigratedServerBasePathCase
   }
 
   const { paths = {}, servers = [] } = oasInternalDocument
@@ -161,6 +97,108 @@ export function handleOpenApiComparisonInternalDocument(
   })
   if (fromPaths) {
     return fromPaths
+  }
+
+  return undefined
+}
+
+function handleMigratedServerBasePathCase(
+  options: HandleMigratedServerBasePathCaseOptions,
+): OpenAPIV3.Document | undefined {
+  const {
+    oasInternalDocument,
+    previousOperationPath,
+    previousOperationMethod,
+    currentOperationPath,
+    currentOperationMethod,
+    comparedOperationMethod,
+  } = options
+  const trickyCaseDetection = detectServerBasePathMigratedToPath(oasInternalDocument)
+  if (!trickyCaseDetection) {
+    return undefined
+  }
+
+  const {
+    beforeFirstServerBasePath,
+    afterFirstServerBasePath,
+    beforePaths,
+    afterPaths,
+    beforeServers,
+    afterServers,
+  } = trickyCaseDetection
+
+  const clonedOasComparisonInternalDocument: OpenAPIV3.Document = {
+    ...oasInternalDocument,
+    paths: {},
+  }
+
+  const comparedOperationNormalizedIds = getComparedOperationNormalizedIds({
+    previousOperationPath: previousOperationPath,
+    previousOperationMethod: previousOperationMethod,
+    currentOperationPath: currentOperationPath,
+    currentOperationMethod: currentOperationMethod,
+    previousBasePath: beforeFirstServerBasePath,
+    currentBasePath: afterFirstServerBasePath,
+  })
+
+  // Handle operation affected by migration of server base path to path
+  for (const afterPathKey of Object.keys(afterPaths)) {
+    const currentOperationNormalizedIdCandidate = calculateNormalizedRestOperationId(
+      afterFirstServerBasePath,
+      afterPathKey,
+      comparedOperationMethod,
+    )
+    if (currentOperationNormalizedIdCandidate !== comparedOperationNormalizedIds.currentOperationNormalizedId) {
+      continue
+    }
+    for (const beforePathKey of Object.keys(beforePaths)) {
+      const previousOperationNormalizedIdCandidate = calculateNormalizedRestOperationId(
+        beforeFirstServerBasePath,
+        beforePathKey,
+        comparedOperationMethod,
+      )
+      if (previousOperationNormalizedIdCandidate !== comparedOperationNormalizedIds.previousOperationNormalizedId) {
+        continue
+      }
+      const afterPathObject = afterPaths[afterPathKey] as Record<string, unknown> | undefined
+      clonedOasComparisonInternalDocument.paths![afterPathKey] = {
+        [comparedOperationMethod]: afterPathObject?.[comparedOperationMethod],
+      }
+      const pathsObject = clonedOasComparisonInternalDocument.paths as unknown as Record<PropertyKey, unknown>
+      pathsObject[DIFF_META_KEY] = {
+        [afterPathKey]: {
+          action: DiffAction.rename,
+          type: ClassifierType.breaking,
+          beforeDeclarationPaths: [['paths', beforePathKey]],
+          afterDeclarationPaths: [['paths', afterPathKey]],
+          beforeKey: beforePathKey,
+          afterKey: afterPathKey,
+        },
+      }
+      return clonedOasComparisonInternalDocument
+    }
+  }
+
+  // Handle operations not affected by migration of server base path to path
+  const fromAfterPaths = cherryPickOperation({
+    paths: afterPaths,
+    servers: afterServers,
+    comparedOperationMethod: comparedOperationMethod,
+    oasInternalDocument: oasInternalDocument,
+    comparedOperationNormalizedIds: comparedOperationNormalizedIds,
+  })
+  if (fromAfterPaths) {
+    return fromAfterPaths
+  }
+  const fromBeforePaths = cherryPickOperation({
+    paths: beforePaths,
+    servers: beforeServers,
+    comparedOperationMethod: comparedOperationMethod,
+    oasInternalDocument: oasInternalDocument,
+    comparedOperationNormalizedIds: comparedOperationNormalizedIds,
+  })
+  if (fromBeforePaths) {
+    return fromBeforePaths
   }
 
   return undefined
