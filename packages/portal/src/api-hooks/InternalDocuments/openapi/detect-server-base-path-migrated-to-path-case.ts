@@ -72,17 +72,17 @@ export function detectServerBasePathMigratedToPath(document: OpenAPIV3.Document)
         const diffSpecificPath = diffSpecificPaths[changedSpecificPath]! as Diff
         if (isDiffRemove(diffSpecificPath)) {
           beforePaths[changedSpecificPath] = diffSpecificPath.beforeValue as OpenAPIV3.PathItemObject
-          afterPaths = removeProperty<OpenAPIV3.PathsObject>(afterPaths, changedSpecificPath)
+          afterPaths = copyWithoutProperty<OpenAPIV3.PathsObject>(afterPaths, changedSpecificPath)
         }
         if (isDiffReplace(diffSpecificPath)) {
           beforePaths[changedSpecificPath] = diffSpecificPath.beforeValue as OpenAPIV3.PathItemObject
         }
         if (isDiffAdd(diffSpecificPath)) {
-          beforePaths = removeProperty<OpenAPIV3.PathsObject>(beforePaths, changedSpecificPath)
+          beforePaths = copyWithoutProperty<OpenAPIV3.PathsObject>(beforePaths, changedSpecificPath)
         }
         if (isDiffRename(diffSpecificPath)) {
           beforePaths[diffSpecificPath.beforeKey as string] = beforePaths[diffSpecificPath.afterKey as string] as OpenAPIV3.PathItemObject
-          beforePaths = removeProperty<OpenAPIV3.PathsObject>(beforePaths, diffSpecificPath.afterKey as string)
+          beforePaths = copyWithoutProperty<OpenAPIV3.PathsObject>(beforePaths, diffSpecificPath.afterKey as string)
         }
       }
     }
@@ -101,13 +101,13 @@ export function detectServerBasePathMigratedToPath(document: OpenAPIV3.Document)
         const diffSpecificPathMethod = diffSpecificPathMethods[changedSpecificPathMethod]! as Diff
         if (isDiffRemove(diffSpecificPathMethod)) {
           beforePathObject[changedSpecificPathMethod] = diffSpecificPathMethod.beforeValue as OpenAPIV3.OperationObject
-          afterPathObject = removeProperty(afterPathObject, changedSpecificPathMethod)
+          afterPathObject = copyWithoutProperty(afterPathObject, changedSpecificPathMethod)
         }
         if (isDiffReplace(diffSpecificPathMethod)) {
           beforePathObject[changedSpecificPathMethod] = diffSpecificPathMethod.beforeValue as OpenAPIV3.OperationObject
         }
         if (isDiffAdd(diffSpecificPathMethod)) {
-          beforePathObject = removeProperty(beforePathObject, changedSpecificPathMethod)
+          beforePathObject = copyWithoutProperty(beforePathObject, changedSpecificPathMethod)
         }
       }
     }
@@ -142,7 +142,7 @@ export function detectServerBasePathMigratedToPath(document: OpenAPIV3.Document)
   }
 }
 
-function removeProperty<T extends object>(source: object, property: PropertyKey): T {
+function copyWithoutProperty<T extends object>(source: object, property: PropertyKey): T {
   if (!isObject(source)) {
     throw new Error('Source is not an object')
   }
