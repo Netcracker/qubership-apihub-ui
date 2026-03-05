@@ -26,6 +26,11 @@ type Options = {
   previousVersionId: VersionKey | undefined
 }
 
+type ComparedOperationNormalizedIds = {
+  previousOperationNormalizedId: string
+  currentOperationNormalizedId: string
+}
+
 export function useComparedOperations(options: Options): QueryResultWithNoInternalDocument<unknown, Error> {
   const {
     previousOperation,
@@ -119,6 +124,60 @@ export function useComparedOperations(options: Options): QueryResultWithNoIntern
       }
 
       const oasInternalDocument = deserializedComparisonInternalDocument
+      const normalizeBasePathForComparedOperations = (basePath: string): string => (
+        basePath === '/' ? basePath : ''
+      )
+      const getComparedOperationNormalizedIds = (
+        previousBasePath: string,
+        currentBasePath: string,
+      ): ComparedOperationNormalizedIds => ({
+        previousOperationNormalizedId: previousOperationPath && previousOperationMethod
+          ? calculateNormalizedRestOperationId(
+            normalizeBasePathForComparedOperations(previousBasePath),
+            previousOperationPath,
+            previousOperationMethod,
+          )
+          : '',
+        currentOperationNormalizedId: currentOperationPath && currentOperationMethod
+          ? calculateNormalizedRestOperationId(
+            normalizeBasePathForComparedOperations(currentBasePath),
+            currentOperationPath,
+            currentOperationMethod,
+          )
+          : '',
+      })
+      const isMatchedComparedOperationNormalizedId = (
+        operationNormalizedId: string,
+        comparedOperationNormalizedIds: ComparedOperationNormalizedIds,
+      ): boolean => (
+        comparedOperationNormalizedIds.currentOperationNormalizedId === operationNormalizedId ||
+        comparedOperationNormalizedIds.previousOperationNormalizedId === operationNormalizedId
+      )
+      const findMatchedPathByNormalizedId = (
+        pathKeys: string[],
+        serverBasePath: string,
+        operationMethod: string,
+        comparedOperationNormalizedIds: ComparedOperationNormalizedIds,
+      ): string | undefined => {
+        for (const pathKey of pathKeys) {
+          const operationNormalizedId = calculateNormalizedRestOperationId(serverBasePath, pathKey, operationMethod)
+          if (isMatchedComparedOperationNormalizedId(operationNormalizedId, comparedOperationNormalizedIds)) {
+            return pathKey
+          }
+        }
+        return undefined
+      }
+      const findWhollyChangedMethodDiff = (
+        whollyChangedMethods: Record<string, unknown>,
+        operationMethod: string,
+      ): unknown => {
+        for (const whollyChangedMethod of Object.keys(whollyChangedMethods)) {
+          if (whollyChangedMethod === operationMethod) {
+            return whollyChangedMethods[whollyChangedMethod]
+          }
+        }
+        return undefined
+      }
 
       const cherryPickOperation = (
         paths: OpenAPIV3.PathsObject,
@@ -131,22 +190,19 @@ export function useComparedOperations(options: Options): QueryResultWithNoIntern
         }
 
         const firstServerBasePath = extractOperationBasePath(servers)
-        let foundPath: string | undefined
-        const previousOperationNormalizedId = previousOperationPath && previousOperationMethod
-          ? calculateNormalizedRestOperationId(firstServerBasePath === '/' ? firstServerBasePath : '', previousOperationPath, previousOperationMethod)
-          : ''
-        const currentOperationNormalizedId = currentOperationPath && currentOperationMethod
-          ? calculateNormalizedRestOperationId(firstServerBasePath === '/' ? firstServerBasePath : '', currentOperationPath, currentOperationMethod)
-          : ''
-        for (const path of Object.keys(paths)) {
-          const operationNormalizedId = calculateNormalizedRestOperationId(firstServerBasePath, path, comparedOperationMethod)
-          const matched = currentOperationNormalizedId === operationNormalizedId || previousOperationNormalizedId === operationNormalizedId
-          if (matched) {
-            foundPath = path
-            clonedOasComparisonInternalDocument.paths![path] = {
-              [comparedOperationMethod]: paths![path]![comparedOperationMethod],
-            }
-            break
+        const comparedOperationNormalizedIds = getComparedOperationNormalizedIds(
+          firstServerBasePath,
+          firstServerBasePath,
+        )
+        const foundPath = findMatchedPathByNormalizedId(
+          Object.keys(paths),
+          firstServerBasePath,
+          comparedOperationMethod,
+          comparedOperationNormalizedIds,
+        )
+        if (foundPath) {
+          clonedOasComparisonInternalDocument.paths![foundPath] = {
+            [comparedOperationMethod]: paths![foundPath]![comparedOperationMethod],
           }
         }
 
@@ -163,13 +219,14 @@ export function useComparedOperations(options: Options): QueryResultWithNoIntern
           if (whollyChangedPaths) {
             const clonedWhollyChangedPaths: Record<string, unknown> = {};
             (clonedOasComparisonInternalDocument.paths as Record<PropertyKey, unknown>)[DIFF_META_KEY] = clonedWhollyChangedPaths
-            for (const whollyChangedPath of Object.keys(whollyChangedPaths)) {
-              const whollyChangedOperationNormalizedId = calculateNormalizedRestOperationId(firstServerBasePath, whollyChangedPath, comparedOperationMethod)
-              const matched = currentOperationNormalizedId === whollyChangedOperationNormalizedId || previousOperationNormalizedId === whollyChangedOperationNormalizedId
-              if (matched) {
-                clonedWhollyChangedPaths[whollyChangedPath] = whollyChangedPaths[whollyChangedPath]
-                break
-              }
+            const matchedWhollyChangedPath = findMatchedPathByNormalizedId(
+              Object.keys(whollyChangedPaths),
+              firstServerBasePath,
+              comparedOperationMethod,
+              comparedOperationNormalizedIds,
+            )
+            if (matchedWhollyChangedPath) {
+              clonedWhollyChangedPaths[matchedWhollyChangedPath] = whollyChangedPaths[matchedWhollyChangedPath]
             }
           }
         }
@@ -181,13 +238,7 @@ export function useComparedOperations(options: Options): QueryResultWithNoIntern
               ? operationsByPath[DIFF_META_KEY]
               : undefined
           if (whollyChangedMethods) {
-            let foundDiff: unknown
-            for (const whollyChangedMethod of Object.keys(whollyChangedMethods)) {
-              if (whollyChangedMethod === comparedOperationMethod) {
-                foundDiff = whollyChangedMethods[whollyChangedMethod]
-                break
-              }
-            }
+            const foundDiff = findWhollyChangedMethodDiff(whollyChangedMethods, comparedOperationMethod)
             if (foundDiff) {
               (clonedOasComparisonInternalDocument.paths as Record<PropertyKey, unknown>)[DIFF_META_KEY] = {
                 [foundPath!]: foundDiff,
@@ -215,22 +266,20 @@ export function useComparedOperations(options: Options): QueryResultWithNoIntern
           paths: {},
         }
 
-        const previousOperationNormalizedId = previousOperationPath && previousOperationMethod
-          ? calculateNormalizedRestOperationId(beforeFirstServerBasePath === '/' ? beforeFirstServerBasePath : '', previousOperationPath, previousOperationMethod)
-          : ''
-        const currentOperationNormalizedId = currentOperationPath && currentOperationMethod
-          ? calculateNormalizedRestOperationId(afterFirstServerBasePath === '/' ? afterFirstServerBasePath : '', currentOperationPath, currentOperationMethod)
-          : ''
+        const comparedOperationNormalizedIds = getComparedOperationNormalizedIds(
+          beforeFirstServerBasePath,
+          afterFirstServerBasePath,
+        )
 
         // Handle operation affected by migration of server base path to path
         for (const afterPathKey of Object.keys(afterPaths)) {
           const currentOperationNormalizedIdCandidate = calculateNormalizedRestOperationId(afterFirstServerBasePath, afterPathKey, comparedOperationMethod)
-          if (currentOperationNormalizedIdCandidate !== currentOperationNormalizedId) {
+          if (currentOperationNormalizedIdCandidate !== comparedOperationNormalizedIds.currentOperationNormalizedId) {
             continue
           }
           for (const beforePathKey of Object.keys(beforePaths)) {
             const previousOperationNormalizedIdCandidate = calculateNormalizedRestOperationId(beforeFirstServerBasePath, beforePathKey, comparedOperationMethod)
-            if (previousOperationNormalizedIdCandidate !== previousOperationNormalizedId) {
+            if (previousOperationNormalizedIdCandidate !== comparedOperationNormalizedIds.previousOperationNormalizedId) {
               continue
             }
             clonedOasComparisonInternalDocument.paths![afterPathKey] = {
