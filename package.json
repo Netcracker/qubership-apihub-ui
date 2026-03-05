@@ -32,7 +32,7 @@
     "@mui/private-theming": "5.11.9",
     "@netcracker/qubership-apihub-api-diff": "feature-asyncapi-basic-e2e",
     "@netcracker/qubership-apihub-api-doc-viewer": "feature-async-api-doc-view-2",
-    "@netcracker/qubership-apihub-api-processor": "feature-asyncapi-basic-e2e",
+    "@netcracker/qubership-apihub-api-processor": "feature-asyncapi-basic-e2e-432",
     "@netcracker/qubership-apihub-api-unifier": "feature-asyncapi-basic-e2e",
     "@netcracker/qubership-apihub-api-visitor": "feature-asyncapi-basic-e2e",
     "@netcracker/qubership-apihub-apispec-view": "feature-async-api-doc-view-2",
