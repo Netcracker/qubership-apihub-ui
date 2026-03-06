@@ -1,4 +1,4 @@
-import { ClassifierType, DIFF_META_KEY, DiffAction, extractOperationBasePath } from '@netcracker/qubership-apihub-api-diff'
+import { ClassifierType, DiffAction, DIFF_META_KEY, extractOperationBasePath } from '@netcracker/qubership-apihub-api-diff'
 import { calculateNormalizedRestOperationId } from '@netcracker/qubership-apihub-api-processor'
 import { isRestOperation, type OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { isObject } from '@netcracker/qubership-apihub-ui-shared/utils/objects'
@@ -88,18 +88,14 @@ export function handleOpenApiComparisonInternalDocument(
     previousBasePath: extractOperationBasePath(servers),
     currentBasePath: extractOperationBasePath(servers),
   })
-  const fromPaths = cherryPickOperation({
+
+  return cherryPickOperation({
     paths: paths,
     servers: servers,
     comparedOperationMethod: comparedOperationMethod,
     oasInternalDocument: oasInternalDocument,
     comparedOperationNormalizedIds: comparedOperationNormalizedIds,
   })
-  if (fromPaths) {
-    return fromPaths
-  }
-
-  return undefined
 }
 
 function handleMigratedServerBasePathCase(
