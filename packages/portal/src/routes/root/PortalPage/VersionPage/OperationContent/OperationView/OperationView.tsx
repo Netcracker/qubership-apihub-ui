@@ -22,7 +22,7 @@ import { OPEN_API_SECTION_PARAMETERS, OPEN_API_SECTION_REQUESTS, OPEN_API_SECTIO
 import { Box } from '@mui/material'
 import { DIFF_META_KEY, DIFFS_AGGREGATED_META_KEY } from '@netcracker/qubership-apihub-api-diff'
 import { AsyncApiOperationViewer, GraphQLOperationDiffViewer, SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from '@netcracker/qubership-apihub-api-doc-viewer'
-import { GRAPHQL_API_TYPE } from '@netcracker/qubership-apihub-api-processor'
+import { FIRST_REFERENCE_KEY_PROPERTY, GRAPHQL_API_TYPE } from '@netcracker/qubership-apihub-api-processor'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import type {
   VisitorNavigationDetails,
@@ -236,6 +236,7 @@ const API_TYPE_VIEWER_MAP: Record<ApiType, ApiTypeViewerCallback> = {
         displayMode={schemaViewMode as SchemaViewMode}
         operationKey={operationName}
         messageKey={messageId}
+        referenceNamePropertyKey={FIRST_REFERENCE_KEY_PROPERTY}
       />
     </Box>
   ),
