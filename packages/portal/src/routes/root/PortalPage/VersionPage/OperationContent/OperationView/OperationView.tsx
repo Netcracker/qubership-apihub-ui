@@ -67,7 +67,10 @@ export type OperationViewProps = PropsWithChildren<{
   filters?: ChangeSeverity[]
   // GraphQL specific
   operationType?: string
+  // GraphQL, AsyncAPI specific
   operationName?: string
+  // AsyncAPI specific
+  messageId?: string
 }>
 
 export const OperationView: FC<OperationViewProps> = memo<OperationViewProps>(props => {
@@ -85,6 +88,8 @@ export const OperationView: FC<OperationViewProps> = memo<OperationViewProps>(pr
     // GraphQL specific
     operationType,
     operationName,
+    // AsyncAPI specific
+    messageId,
   } = props
 
   const filters = useMemo(() => props.filters ?? [], [props.filters])
@@ -170,6 +175,7 @@ export const OperationView: FC<OperationViewProps> = memo<OperationViewProps>(pr
           filters,
           operationType,
           operationName,
+          messageId,
         )}
       </Box>
       {contextPanelOpen && (
@@ -195,8 +201,9 @@ type ApiTypeViewerCallback = (
   mergedDocument?: unknown,
   schemaViewMode?: SchemaViewMode,
   filters?: ChangeSeverity[],
-  operationType?: string, // for GraphQL, variants: query, mutation, subscription
-  operationName?: string // for GraphQL, operation name
+  operationType?: string, // for GraphQL (query, mutation, subscription)/AsyncAPI (send, receive)
+  operationName?: string, // for GraphQL (operation name)/AsyncAPI (asyncOperationId)
+  messageId?: string // for AsyncAPI, message ID
 ) => ReactNode
 
 const API_TYPE_VIEWER_MAP: Record<ApiType, ApiTypeViewerCallback> = {
@@ -222,13 +229,13 @@ const API_TYPE_VIEWER_MAP: Record<ApiType, ApiTypeViewerCallback> = {
         operationName={operationName}
       />
   ),
-  [API_TYPE_ASYNCAPI]: (_, comparisonMode, mergedDocument, schemaViewMode, filters, operationType, operationName) => (
+  [API_TYPE_ASYNCAPI]: (_, comparisonMode, mergedDocument, schemaViewMode, filters, operationType, operationName, messageId) => (
     <Box lineHeight={1.5} height='100%' px={4}>
       <AsyncApiOperationViewer
         source={mergedDocument}
         displayMode={schemaViewMode as SchemaViewMode}
-        operationType={operationType}
         operationKey={operationName}
+        messageKey={messageId}
       />
     </Box>
   ),

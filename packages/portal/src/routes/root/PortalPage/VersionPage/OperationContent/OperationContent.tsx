@@ -18,11 +18,11 @@ import type { OpenApiData } from '@apihub/entities/operation-structure'
 import {
   useApiDiffResult,
   useIsApiDiffResultLoading,
-  useSetApiDiffResult,
+  useSetApiDiffResult
 } from '@apihub/routes/root/ApiDiffResultProvider'
 import { OperationView } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationView/OperationView'
 import {
-  useCustomServersContext,
+  useCustomServersContext
 } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/Playground/CustomServersProvider'
 import { getFileDetails } from '@apihub/utils/file-details'
 import { isAsyncApiSpecification } from '@apihub/utils/internal-documents/type-guards'
@@ -31,36 +31,37 @@ import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/compone
 import {
   CONTENT_PLACEHOLDER_AREA,
   Placeholder,
-  SEARCH_PLACEHOLDER_VARIANT,
+  SEARCH_PLACEHOLDER_VARIANT
 } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import { RawSpecDiffView } from '@netcracker/qubership-apihub-ui-shared/components/RawSpecDiffView'
 import { RawSpecView } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/RawSpecView'
 import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'
 import {
-  WarningApiProcessorVersion,
+  WarningApiProcessorVersion
 } from '@netcracker/qubership-apihub-ui-shared/components/WarningApiProcessorVersion'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import {
   API_TYPE_ASYNCAPI,
   API_TYPE_GRAPHQL,
-  API_TYPE_REST,
+  API_TYPE_REST
 } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { FileViewMode } from '@netcracker/qubership-apihub-ui-shared/entities/file-format-view'
 import { FILE_FORMAT_VIEW, YAML_FILE_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/entities/file-format-view'
+import { DEFAULT_VIEW_MODE_MAP_BY_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
 import type { OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import { checkIfGraphQLOperation, DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import { DEFAULT_API_TYPE, isAsyncApiOperation, isGraphQlOperation } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { useSystemInfo } from '@netcracker/qubership-apihub-ui-shared/features/system-info'
 import {
-  useSeverityFiltersSearchParam,
+  useSeverityFiltersSearchParam
 } from '@netcracker/qubership-apihub-ui-shared/hooks/change-severities/useSeverityFiltersSearchParam'
 import { usePublishedDocumentRaw } from '@netcracker/qubership-apihub-ui-shared/hooks/documents/usePublishedDocumentRaw'
 import {
   useIsDocOperationViewMode,
   useIsGraphOperationViewMode,
-  useIsRawOperationViewMode,
+  useIsRawOperationViewMode
 } from '@netcracker/qubership-apihub-ui-shared/hooks/operations/useOperationMode'
 import {
-  useOperationsPairStringified,
+  useOperationsPairStringified
 } from '@netcracker/qubership-apihub-ui-shared/hooks/operations/useOperationsPairAsStrings'
 import type { FC, ReactNode } from 'react'
 import { memo, useCallback, useEffect, useMemo } from 'react'
@@ -81,7 +82,6 @@ import { DEFAULT_DISPLAY_MODE, isComparisonMode } from './OperationView/Operatio
 import { OperationWithPlayground } from './OperationWithPlayground'
 import { useIsExamplesMode, useIsPlaygroundMode, useIsPlaygroundSidebarOpen } from './usePlaygroundSidebarMode'
 import { useSelectOperationTags } from './useSelectOperationTags'
-import { DEFAULT_VIEW_MODE_MAP_BY_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
 
 export type OperationContentProps = {
   changedOperation?: OperationData
@@ -126,7 +126,7 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
     } = useVersionsComparisonGlobalParams()
 
     const isGraphQLOperation = useMemo(
-      () => checkIfGraphQLOperation(changedOperation) || checkIfGraphQLOperation(originOperation),
+      () => isGraphQlOperation(changedOperation) || isGraphQlOperation(originOperation),
       [changedOperation, originOperation],
     )
 
@@ -142,26 +142,47 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
     const isPlaygroundSidebarOpen = useIsPlaygroundSidebarOpen()
 
     const operationType = useMemo(
-      () => (
-        checkIfGraphQLOperation(changedOperation)
-          ? changedOperation.type
-          : checkIfGraphQLOperation(originOperation)
-            ? originOperation.type
-            : undefined
-      ),
+      () => {
+        if (isGraphQlOperation(changedOperation)) {
+          return changedOperation.type
+        }
+        if (isGraphQlOperation(originOperation)) {
+          return originOperation.type
+        }
+        return undefined
+      },
       [changedOperation, originOperation],
     )
     const operationName = useMemo(
-      () => (
-        checkIfGraphQLOperation(changedOperation)
-          ? changedOperation.method
-          : checkIfGraphQLOperation(originOperation)
-            ? originOperation.method
-            : undefined
-      ),
+      () => {
+        if (isGraphQlOperation(changedOperation)) {
+          return changedOperation.method
+        }
+        if (isGraphQlOperation(originOperation)) {
+          return originOperation.method
+        }
+        if (isAsyncApiOperation(changedOperation)) {
+          return changedOperation.asyncOperationId
+        }
+        if (isAsyncApiOperation(originOperation)) {
+          return originOperation.asyncOperationId
+        }
+        return undefined
+      },
       [changedOperation, originOperation],
     )
-
+    const messageId = useMemo(
+      () => {
+        if (isAsyncApiOperation(changedOperation)) {
+          return changedOperation.messageId
+        }
+        if (isAsyncApiOperation(originOperation)) {
+          return originOperation.messageId
+        }
+        return undefined
+      },
+      [changedOperation],
+    )
     const [documentWithOriginOriginOperation] = usePublishedDocumentRaw({
       packageKey: originPackageKey,
       versionKey: originVersionKey,
@@ -323,7 +344,10 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
               filters={filters}
               // GraphQL specific
               operationType={operationType}
+              // GraphQL, AsyncAPI specific
               operationName={operationName}
+              // AsyncAPI specific
+              messageId={messageId}
             />
           )}
           {isRawViewMode && (
@@ -361,7 +385,10 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
                 mergedDocument={mergedDocument}
                 // GraphQL specific
                 operationType={operationType}
+                // GraphQL, AsyncAPI specific
                 operationName={operationName}
+                // AsyncAPI specific
+                messageId={messageId}
               />
             )}
             {isRawViewMode && (
