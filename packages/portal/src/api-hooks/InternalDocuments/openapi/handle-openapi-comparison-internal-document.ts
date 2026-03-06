@@ -183,21 +183,13 @@ function handleMigratedServerBasePathCase(
     oasInternalDocument: oasInternalDocument,
     comparedOperationNormalizedIds: comparedOperationNormalizedIds,
   })
-  if (fromAfterPaths) {
-    return fromAfterPaths
-  }
-  const fromBeforePaths = cherryPickOperation({
+  return fromAfterPaths ?? cherryPickOperation({
     paths: beforePaths,
     servers: beforeServers,
     comparedOperationMethod: comparedOperationMethod,
     oasInternalDocument: oasInternalDocument,
     comparedOperationNormalizedIds: comparedOperationNormalizedIds,
   })
-  if (fromBeforePaths) {
-    return fromBeforePaths
-  }
-
-  return undefined
 }
 
 function normalizeBasePathForComparedOperations(basePath: string): string {
