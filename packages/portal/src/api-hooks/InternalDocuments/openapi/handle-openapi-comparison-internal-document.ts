@@ -285,15 +285,14 @@ function cherryPickOperation(options: CherryPickOperationOptions): OpenAPIV3.Doc
     comparedOperationMethod,
     comparedOperationNormalizedIds,
   )
-  if (foundPath) {
-    const foundPathObject = paths[foundPath] as Record<string, unknown> | undefined
-    clonedOasComparisonInternalDocument.paths![foundPath] = {
-      [comparedOperationMethod]: foundPathObject?.[comparedOperationMethod],
-    }
-  }
 
   if (!foundPath) {
     return undefined
+  }
+  
+  const foundPathObject = paths[foundPath] as Record<string, unknown> | undefined
+  clonedOasComparisonInternalDocument.paths![foundPath] = {
+    [comparedOperationMethod]: foundPathObject?.[comparedOperationMethod],
   }
 
   // Leave only change for operation with necessary path because ASV takes first item and does not know which operation is there
