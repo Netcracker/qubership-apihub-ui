@@ -77,16 +77,19 @@ export const OperationPreview: FC<OperationPreviewProps> = memo<OperationPreview
   } = props
 
   const [operationType, operationName] = useMemo(() => {
-    if (!isGraphQlOperation(changedOperation)) {
-      return [undefined, undefined]
+    if (isGraphQlOperation(changedOperation)) {
+      return [changedOperation.type, changedOperation.method]
     }
-    return [changedOperation.type, changedOperation.method]
+    if (isAsyncApiOperation(changedOperation)) {
+      return [changedOperation.action, changedOperation.asyncOperationId]
+    }
+    return [undefined, undefined]
   }, [changedOperation])
   const [messageId] = useMemo(() => {
-    if (!isAsyncApiOperation(changedOperation)) {
-      return [undefined]
+    if (isAsyncApiOperation(changedOperation)) {
+      return [changedOperation.messageId]
     }
-    return [changedOperation.messageId]
+    return [undefined]
   }, [changedOperation])
 
   const isDocViewMode = useIsDocOperationViewMode(mode)
