@@ -20,13 +20,11 @@ import type { DiffMetaKeys } from '@apihub/entities/diff-meta-keys'
 import type { OpenApiData } from '@apihub/entities/operation-structure'
 import { OPEN_API_SECTION_PARAMETERS, OPEN_API_SECTION_REQUESTS, OPEN_API_SECTION_RESPONSES } from '@apihub/entities/operation-structure'
 import { Box } from '@mui/material'
-import { DIFF_META_KEY, DIFFS_AGGREGATED_META_KEY } from '@netcracker/qubership-apihub-api-diff'
+import { DIFFS_AGGREGATED_META_KEY, DIFF_META_KEY } from '@netcracker/qubership-apihub-api-diff'
 import { AsyncApiOperationViewer, GraphQLOperationDiffViewer, SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from '@netcracker/qubership-apihub-api-doc-viewer'
 import { FIRST_REFERENCE_KEY_PROPERTY, GRAPHQL_API_TYPE } from '@netcracker/qubership-apihub-api-processor'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
-import type {
-  VisitorNavigationDetails,
-} from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView/oasToClassDiagramService'
+import type { VisitorNavigationDetails } from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView/oasToClassDiagramService'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { API_TYPE_ASYNCAPI, API_TYPE_GRAPHQL, API_TYPE_REST } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { ChangeSeverity } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
@@ -234,8 +232,11 @@ const API_TYPE_VIEWER_MAP: Record<ApiType, ApiTypeViewerCallback> = {
       <AsyncApiOperationViewer
         source={mergedDocument}
         displayMode={schemaViewMode as SchemaViewMode}
-        operationKey={operationName}
-        messageKey={messageId}
+        operationKeys={
+          operationName && messageId
+            ? { operationKey: operationName, messageKey: messageId }
+            : undefined
+        }
         referenceNamePropertyKey={FIRST_REFERENCE_KEY_PROPERTY}
       />
     </Box>
