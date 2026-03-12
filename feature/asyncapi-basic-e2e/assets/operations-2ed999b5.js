@@ -1,2 +1,0 @@
-import{a,b as o,c as s}from"./apihub-builder.es-17fb48af.js";const A="all",i="bwc",e="no-bwc",r="experimental",p={[A]:"All",[i]:"BWC",[e]:"No BWC",[r]:"Experimental"},I="all",N={[a]:"Internal",[o]:"External",[s]:"Unknown",[I]:"All"};function _(n){return n.path!==void 0}function E(n){return n.type!==void 0}function l(n){const t=n;return t.action!==void 0&&t.channel!==void 0}export{p as A,E as a,l as b,N as c,_ as i};
-//# sourceMappingURL=operations-2ed999b5.js.map
