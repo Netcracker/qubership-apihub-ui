@@ -35,7 +35,7 @@ export function useComparedOperations(options: Options): QueryResult<unknown, Er
     previousPackageId,
     previousVersionId,
   } = options
-
+//
   const {
     data: listComparisonInternalDocumentsMetadata,
     isLoading: loadingListComparisonInternalDocumentsMetadata,

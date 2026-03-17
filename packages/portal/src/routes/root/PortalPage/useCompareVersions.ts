@@ -74,6 +74,7 @@ export function useCompareVersions(options: UseCompareVersionsOptions): [Version
   )
 
   useEffect(() => {
+    //
     if (isChangesSummaryOnBackendValid && !changesSummaryFromContext && isContextValid) {
       saveChangesSummaryToContext(changesSummaryFromBackend)
     }

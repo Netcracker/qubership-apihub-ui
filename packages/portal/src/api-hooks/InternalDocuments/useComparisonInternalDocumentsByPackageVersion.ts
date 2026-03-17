@@ -46,8 +46,9 @@ export function useComparisonInternalDocumentsByPackageVersion(
   const currentPackageVersion = encodeURIComponent(currentVersionId ?? '')
   const enabled = !!currentPackageKey && !!currentPackageVersion && !!previousPackageId
 
-
-  const { data, isFetching, error } = useQuery<InternalDocuments, Error, InternalDocuments>({
+  console.log('useComparisonInternalDocumentsByPackageVersion enabled', enabled)
+//
+  const { data, isFetching, error, refetch } = useQuery<InternalDocuments, Error, InternalDocuments>({
     queryKey: [QUERY_KEY, currentPackageKey, currentPackageVersion, previousPackageId, previousVersionId],
     queryFn: () => (
       enabled
@@ -65,11 +66,11 @@ export function useComparisonInternalDocumentsByPackageVersion(
 }
 
 function getComparisonInternalDocumentsByPackageVersion({
-    currentPackageId,
-    currentVersionId,
-    previousPackageId,
-    previousVersionId,
-    refPackageId,
+  currentPackageId,
+  currentVersionId,
+  previousPackageId,
+  previousVersionId,
+  refPackageId,
 }: Options): Promise<InternalDocuments> {
   const endpointPattern = '/packages/:packageId/versions/:versionId/comparison-internal-documents'
   const queryParams = optionalSearchParams({
@@ -87,6 +88,6 @@ function getComparisonInternalDocumentsByPackageVersion({
   return requestJson<InternalDocuments>(
     `${endpoint}?${queryParams}`,
     { method: 'GET' },
-    { basePath: API_V1 },
+    { basePath: API_V1, ignoreNotFound: true },
   )
 }
