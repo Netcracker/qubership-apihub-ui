@@ -59,7 +59,8 @@ export function usePackageVersionContent(options: {
   const includeOperations = options?.includeOperations ?? false
   const includeGroups = options?.includeGroups ?? false
   const enabled = options?.enabled ?? true
-
+  console.log('usePackageVersionContent-------->', packageKey, versionKey)
+  console.log('enabled', !!packageKey && !!versionKey && !versionKey.includes('undefined') && !packageKey.includes('undefined'))
   const {
     data,
     isLoading,
