@@ -1,0 +1,75 @@
+import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
+import KeyboardArrowUpOutlinedIcon from '@mui/icons-material/KeyboardArrowUpOutlined'
+import { MenuItem } from '@mui/material'
+import { type FC, memo, type MouseEvent, useCallback, useState } from 'react'
+
+import {
+  SHAREABILITY_STATUS_NON_SHAREABLE,
+  SHAREABILITY_STATUS_SHAREABLE,
+  SHAREABILITY_STATUS_UNKNOWN,
+  type ShareabilityStatuses,
+} from '@netcracker/qubership-apihub-api-processor'
+import { MenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
+import { ShareabilityMarker } from './ShareabilityMarker'
+
+const DROPDOWN_OPTIONS: ShareabilityStatuses[] = [
+  SHAREABILITY_STATUS_NON_SHAREABLE,
+  SHAREABILITY_STATUS_SHAREABLE,
+  SHAREABILITY_STATUS_UNKNOWN,
+]
+
+const DROPDOWN_OPTION_LABELS: Record<ShareabilityStatuses, string> = {
+  [SHAREABILITY_STATUS_NON_SHAREABLE]: 'Non-Shareable',
+  [SHAREABILITY_STATUS_SHAREABLE]: 'Shareable',
+  [SHAREABILITY_STATUS_UNKNOWN]: 'Unknown',
+}
+
+const MENU_BUTTON_SX = {
+  '&.MuiButton-root': {
+    width: 48,
+    '& .MuiButton-startIcon': {
+      mx: 0,
+      '& .MuiSvgIcon-root': {
+        fontSize: 20,
+      },
+    },
+  },
+}
+
+type ShareabilityDropdownProps = {
+  value: ShareabilityStatuses
+  onChange: (value: ShareabilityStatuses) => void
+}
+
+export const ShareabilityDropdown: FC<ShareabilityDropdownProps> = memo(({ value, onChange }) => {
+  const [menuOpen, setMenuOpen] = useState(false)
+
+  const handleClick = useCallback((event: MouseEvent) => {
+    event.stopPropagation()
+    setMenuOpen(prev => !prev)
+  }, [])
+  return (
+    <MenuButton
+      startIcon={<ShareabilityMarker value={value} />}
+      icon={menuOpen
+        ? <KeyboardArrowUpOutlinedIcon fontSize="small" />
+        : <KeyboardArrowDownOutlinedIcon fontSize="small" />}
+      variant="outlined"
+      sx={MENU_BUTTON_SX}
+      onClick={handleClick}
+      onItemClick={handleClick}
+      data-testid="ShareabilityDropdownButton"
+    >
+      {DROPDOWN_OPTIONS.map((status) => (
+        <MenuItem
+          key={status}
+          selected={status === value}
+          onClick={() => onChange(status)}
+          data-testid={`ShareabilityOption-${status}`}
+        >
+          {DROPDOWN_OPTION_LABELS[status]}
+        </MenuItem>
+      ))}
+    </MenuButton>
+  )
+})

@@ -62,7 +62,7 @@ export const SpecToolbar: FC = memo(() => {
   const { packageId, versionId, documentId } = useParams()
   const [docPackageKey, docPackageVersionKey] = usePackageParamsWithRef()
   const [packageObject] = usePackage({ packageKey: packageId, showParents: true })
-  const [{ title, slug, type, format }] = useDocument(docPackageKey, docPackageVersionKey, documentId)
+  const [{ title, slug, type, format, shareabilityStatus }] = useDocument(docPackageKey, docPackageVersionKey, documentId)
   const [downloadPublishedDocument] = useDownloadPublishedDocument({
     slug: documentId!,
     packageKey: docPackageKey,
@@ -111,6 +111,7 @@ export const SpecToolbar: FC = memo(() => {
     navigateToDocumentPreview: null, // We already on the preview page
     downloadPublishedDocument: downloadPublishedDocument,
     showExportSettingsDialog: showExportSettingsDialog,
+    shareabilityStatus: shareabilityStatus,
     getSharedKey: getSharedKey,
     copyToClipboard: copyToClipboard,
     showNotification: showNotification,

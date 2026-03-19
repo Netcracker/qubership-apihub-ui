@@ -2,10 +2,12 @@ import { ExportedEntityKind } from '../api/useExport'
 import type { ExportSettingsFormField, ExportSettingsFormFieldOption } from './export-settings-form-field'
 import {
   ExportSettingsFormFieldKind,
+  FIELD_LABEL_EXPORT_SCOPE,
   FIELD_LABEL_FILE_FORMAT,
   FIELD_LABEL_FILE_FORMAT_OAS,
   FIELD_LABEL_OAS_EXTENSIONS,
   FIELD_LABEL_SPECIFICATION_TYPE,
+  FIELD_OPTION_LIST_EXPORT_SCOPE,
   FIELD_OPTION_LIST_FILE_FORMAT_OAS,
   FIELD_OPTION_LIST_OAS_EXTENSIONS,
   FIELD_OPTION_LIST_SPECIFICATION_TYPE,
@@ -17,6 +19,12 @@ export interface ExportSettingsForm {
 
 export const EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE: Record<ExportedEntityKind, ExportSettingsFormField[]> = {
   [ExportedEntityKind.VERSION]: [
+    {
+      kind: ExportSettingsFormFieldKind.EXPORT_SCOPE,
+      label: FIELD_LABEL_EXPORT_SCOPE,
+      options: FIELD_OPTION_LIST_EXPORT_SCOPE,
+      defaultValue: FIELD_OPTION_LIST_EXPORT_SCOPE[0].value,
+    },
     {
       kind: ExportSettingsFormFieldKind.FILE_FORMAT,
       // Different label because there may be not only OpenAPI specifications in the package version

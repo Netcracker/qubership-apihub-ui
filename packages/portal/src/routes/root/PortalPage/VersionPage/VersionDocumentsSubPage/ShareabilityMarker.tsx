@@ -1,0 +1,47 @@
+import type { SvgIconProps } from '@mui/material'
+import { Tooltip } from '@mui/material'
+import { type FC, memo } from 'react'
+
+import {
+  SHAREABILITY_STATUS_NON_SHAREABLE,
+  SHAREABILITY_STATUS_SHAREABLE,
+  SHAREABILITY_STATUS_UNKNOWN,
+  type ShareabilityStatuses,
+} from '@netcracker/qubership-apihub-api-processor'
+import {
+  ShareabilityNonShareableIcon,
+  ShareabilityShareableIcon,
+  ShareabilityUnknownIcon,
+} from '@netcracker/qubership-apihub-ui-shared/icons/ShareabilityIcons'
+
+const ICON_BY_STATUS: Record<ShareabilityStatuses, FC<SvgIconProps>> = {
+  [SHAREABILITY_STATUS_SHAREABLE]: ShareabilityShareableIcon,
+  [SHAREABILITY_STATUS_NON_SHAREABLE]: ShareabilityNonShareableIcon,
+  [SHAREABILITY_STATUS_UNKNOWN]: ShareabilityUnknownIcon,
+}
+
+const COLOR_BY_STATUS: Record<ShareabilityStatuses, SvgIconProps['color']> = {
+  [SHAREABILITY_STATUS_SHAREABLE]: 'secondary',
+  [SHAREABILITY_STATUS_NON_SHAREABLE]: 'error',
+  [SHAREABILITY_STATUS_UNKNOWN]: 'action',
+}
+
+const TOOLTIP_TEXT_BY_STATUS: Record<ShareabilityStatuses, string> = {
+  [SHAREABILITY_STATUS_NON_SHAREABLE]: 'Non-Shareable',
+  [SHAREABILITY_STATUS_SHAREABLE]: 'Shareable',
+  [SHAREABILITY_STATUS_UNKNOWN]: 'Unknown shareability',
+}
+
+type ShareabilityMarkerProps = {
+  value: ShareabilityStatuses
+  sx?: SvgIconProps['sx']
+}
+
+export const ShareabilityMarker: FC<ShareabilityMarkerProps> = memo(({ value, sx }) => {
+  const Icon = ICON_BY_STATUS[value]
+  return (
+    <Tooltip title={TOOLTIP_TEXT_BY_STATUS[value]}>
+      <Icon fontSize="small" color={COLOR_BY_STATUS[value]} sx={sx} />
+    </Tooltip>
+  )
+})

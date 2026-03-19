@@ -16,7 +16,6 @@
 
 import type {Document} from '@apihub/entities/documents'
 import type {FC} from 'react'
-import * as React from 'react'
 import {memo, useCallback, useMemo} from 'react'
 import {Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, ListSubheader} from '@mui/material'
 import type {To} from 'react-router-dom'
@@ -28,8 +27,9 @@ import {isEmpty, isNotEmpty} from '@netcracker/qubership-apihub-ui-shared/utils/
 import {NAVIGATION_PLACEHOLDER_AREA, Placeholder} from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import {useSearchParam} from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import {optionalSearchParams, REF_SEARCH_PARAM} from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+import {ShareabilityMarker} from './ShareabilityMarker'
 import {SpecLogo} from '@netcracker/qubership-apihub-ui-shared/components/SpecLogo'
-import type { SpecType} from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import type {SpecType} from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import {isAsyncApiSpecType} from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import {
   isGraphQlSpecType,
@@ -151,7 +151,7 @@ export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({doc
         >
           {groupName}
         </ListSubheader>
-        {documents.map(({key, type, title, slug, version, format}) => {
+        {documents.map(({ key, type, title, slug, version, format, shareabilityStatus }) => {
           const displayTitle = version ? `${title} ${version}` : title
           return (
             <ListItem
@@ -184,12 +184,15 @@ export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({doc
                   <SpecLogo value={type}/>
                 </ListItemIcon>
                 <ListItemText primary={displayTitle} primaryTypographyProps={{sx: {mt: 0.25}}}/>
+                {shareabilityStatus && (
+                  <ShareabilityMarker value={shareabilityStatus} sx={{ ml: 1 }} />
+                )}
                 <DocumentActionsButton
                   slug={slug}
                   docType={type}
                   format={format}
+                  shareabilityStatus={shareabilityStatus}
                   sx={{
-                    ml: 1,
                     visibility: 'visible',
                     backgroundColor: 'transparent',
                     '&:hover': {

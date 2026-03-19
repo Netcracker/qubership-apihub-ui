@@ -15,6 +15,7 @@
  */
 
 import type { Key } from '@apihub/entities/keys'
+import type { Document } from '@apihub/entities/documents'
 import type { DocumentsTabSubPageKey } from '@apihub/routes/root/PortalPage/VersionPage/OpenApiViewer/OpenApiViewer'
 import { OPERATIONS_SUB_PAGE, OVERVIEW_SUB_PAGE } from '@apihub/routes/root/PortalPage/VersionPage/OpenApiViewer/OpenApiViewer'
 import type { ReactJSXElement } from '@emotion/react/types/jsx-namespace'
@@ -23,14 +24,22 @@ import { Box, Grid, Skeleton, Typography } from '@mui/material'
 import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
 import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
 import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'
+import { DOCUMENT_SHAREABILITY_MANAGEMENT_PERMISSION } from '@netcracker/qubership-apihub-ui-shared/entities/package-permissions'
 import type { FileFormat } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import { isAsyncApiSpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import { isGraphQlSpecType, isOpenApiSpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import type { Dispatch, FC, ReactNode, SetStateAction } from 'react'
-import { memo, useCallback } from 'react'
+import { memo, useCallback, useMemo } from 'react'
+import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
+import { useVersionWithRevision } from '../../../useVersionWithRevision'
+import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
 import { DocumentActionsButton } from './DocumentActionsButton'
 import { useSelectedSubPage, useSetSelectedSubPage } from './SelectedSubPageProvider'
+import { ShareabilityDropdown } from './ShareabilityDropdown'
+import { ShareabilityMarker } from './ShareabilityMarker'
+import { useUpdateDocumentShareability } from './useUpdateDocumentShareability'
+import type { ShareabilityStatuses } from '@netcracker/qubership-apihub-api-processor'
 
 export type DocumentsTabHeaderProps = {
   title: string
@@ -41,6 +50,7 @@ export type DocumentsTabHeaderProps = {
   searchValue: string
   setSearchValue: Dispatch<SetStateAction<string>>
   isLoading?: boolean
+  document: Document
 }
 
 const DocumentsSubPageSelector = memo(() => {
@@ -78,9 +88,32 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
     searchValue,
     setSearchValue,
     isLoading = true,
+    document,
   } = props
 
   const selectedSubPage = useSelectedSubPage()
+
+  const [docPackageKey, docPackageVersion] = usePackageParamsWithRef()
+  const { fullVersion } = useVersionWithRevision(docPackageVersion, docPackageKey)
+
+  const currentPackage = useCurrentPackage()
+  const hasShareabilityPermission = useMemo(
+    () => !!currentPackage?.permissions?.includes(DOCUMENT_SHAREABILITY_MANAGEMENT_PERMISSION),
+    [currentPackage?.permissions],
+  )
+
+  const updateShareability = useUpdateDocumentShareability(
+    docPackageKey ?? '',
+    fullVersion ?? '',
+    slug,
+  )
+
+  const handleShareabilityChange = useCallback(
+    (value: ShareabilityStatuses) => updateShareability(value),
+    [updateShareability],
+  )
+
+  const shareabilityStatus = document.shareabilityStatus
 
   const HeaderLayout = useCallback(({ left, right }: {
     left: ReactNode
@@ -121,6 +154,14 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
             <Typography variant="body2" sx={{ color: DOC_VERSION_COLOR }}>
               {version}
             </Typography>
+            {shareabilityStatus && (
+              hasShareabilityPermission
+                ? <ShareabilityDropdown
+                    value={shareabilityStatus}
+                    onChange={handleShareabilityChange}
+                  />
+                : <ShareabilityMarker value={shareabilityStatus} />
+            )}
           </Box>
         </TextWithOverflowTooltip>
       )}
@@ -143,6 +184,7 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
             slug={slug}
             docType={type}
             format={format}
+            shareabilityStatus={shareabilityStatus}
             customProps={{
               title: 'More',
               variant: 'outlined',

@@ -40,11 +40,13 @@ import type { DocumentActionParams } from '../document-actions'
 import { DOCUMENT_MENU_CONFIG, useCreateTemplate } from '../document-actions'
 import { useDownloadPublishedDocument } from '../useDownloadPublishedDocument'
 import { useGetSharedKey } from './useGetSharedKey'
+import type { ShareabilityStatuses } from '@netcracker/qubership-apihub-api-processor'
 
 export type DocumentActionsButtonProps = {
   slug: Key
   docType: SpecType
   format: FileFormat
+  shareabilityStatus?: ShareabilityStatuses
   startIcon?: ReactNode
   icon?: ReactNode
   openedIcon?: ReactNode
@@ -61,7 +63,7 @@ const DEFAULT_ACTION_BUTTON_STYLE = {
 
 // TODO 16.04.25 // Change props for icons. They are not clear to understand
 export const DocumentActionsButton: FC<DocumentActionsButtonProps> = memo<DocumentActionsButtonProps>((props) => {
-  const { slug, docType, format, sx, customProps, startIcon, openedIcon, icon } = props
+  const { slug, docType, format, shareabilityStatus, sx, customProps, startIcon, openedIcon, icon } = props
 
   const { packageId } = useParams()
   const fullVersion = useFullMainVersion()
@@ -106,6 +108,7 @@ export const DocumentActionsButton: FC<DocumentActionsButtonProps> = memo<Docume
     showNotification: showNotification,
     createTemplate: createTemplate,
     specType: docType,
+    shareabilityStatus: shareabilityStatus,
   }
 
   const handleClick = useCallback((event: MouseEvent) => {

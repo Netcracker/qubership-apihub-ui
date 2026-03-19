@@ -10,6 +10,7 @@ export type ExportSettingsFormFieldOption<L extends string = string, V extends s
 }>
 
 export enum ExportSettingsFormFieldKind {
+  EXPORT_SCOPE = 'export-scope',
   SPECIFICATION_TYPE = 'specification-type',
   FILE_FORMAT = 'file-format',
   OAS_EXTENSIONS = 'oas-extensions',
@@ -22,6 +23,7 @@ export type ExportSettingsFormField = Readonly<{
   defaultValue: string
 }>
 
+export const FIELD_LABEL_EXPORT_SCOPE = 'Export Scope'
 export const FIELD_LABEL_SPECIFICATION_TYPE = 'Specification type'
 export const FIELD_LABEL_FILE_FORMAT_OAS = 'File format for OpenAPI specifications'
 export const FIELD_LABEL_FILE_FORMAT = 'File format'
@@ -78,6 +80,23 @@ export const FIELD_OPTION_LIST_FILE_FORMAT_OAS: ReadonlyArray<ExportSettingsForm
 export const FIELD_OPTION_LIST_OAS_EXTENSIONS: ReadonlyArray<ExportSettingsFormFieldOption> = [
   FIELD_OPTION_OAS_EXTENSIONS_PRESERVE,
   FIELD_OPTION_OAS_EXTENSIONS_REMOVE,
+]
+
+export enum ExportSettingsFormFieldOptionExportScope {
+  ONLY_SHAREABLE = 'onlyShareable',
+  ALL_DOCUMENTS = 'allDocuments',
+}
+const FIELD_OPTION_EXPORT_SCOPE_ONLY_SHAREABLE: ExportSettingsFormFieldOption = {
+  label: 'Only Shareable',
+  value: ExportSettingsFormFieldOptionExportScope.ONLY_SHAREABLE,
+}
+const FIELD_OPTION_EXPORT_SCOPE_ALL_DOCUMENTS: ExportSettingsFormFieldOption = {
+  label: 'All Documents',
+  value: ExportSettingsFormFieldOptionExportScope.ALL_DOCUMENTS,
+}
+export const FIELD_OPTION_LIST_EXPORT_SCOPE: ReadonlyArray<ExportSettingsFormFieldOption> = [
+  FIELD_OPTION_EXPORT_SCOPE_ONLY_SHAREABLE,
+  FIELD_OPTION_EXPORT_SCOPE_ALL_DOCUMENTS,
 ]
 type SpecTypeAccessViewExportFieldType = Partial<Record<SpecType, ReadonlyArray<ExportSettingsFormFieldOption>>>
 

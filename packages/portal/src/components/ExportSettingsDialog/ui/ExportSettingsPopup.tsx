@@ -16,6 +16,7 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
     version,
     documentId,
     groupName,
+    shareabilityStatus,
     specType,
   } = detail as ExportSettingsPopupDetail
 
@@ -66,6 +67,7 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
       version={version}
       documentId={documentId}
       groupName={groupName}
+      shareabilityStatus={shareabilityStatus}
       exporting={exporting}
       isLoadingExportConfig={isLoadingExportConfig}
       isStartingExport={isStartingExport}

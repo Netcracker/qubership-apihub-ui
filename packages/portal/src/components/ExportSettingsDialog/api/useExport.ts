@@ -3,6 +3,7 @@ import type { PackageKey, VersionKey } from '@netcracker/qubership-apihub-ui-sha
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { API_V1, requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { type ShareabilityFilterValues } from '@netcracker/qubership-apihub-api-processor'
 
 export enum ExportedEntityKind {
   VERSION = 'version',
@@ -31,6 +32,7 @@ export interface IRequestDataExport {
   version: VersionKey
   format: ExportedFileFormat
   removeOasExtensions?: boolean
+  shareabilityFilter?: ShareabilityFilterValues
 }
 
 class CommonRequestDataExport implements IRequestDataExport {
@@ -40,17 +42,20 @@ class CommonRequestDataExport implements IRequestDataExport {
     public readonly version: VersionKey,
     public readonly format: ExportedFileFormat,
     public readonly removeOasExtensions: boolean = false,
+    public readonly shareabilityFilter?: ShareabilityFilterValues,
   ) { }
 }
 
 export class RequestDataExportVersion extends CommonRequestDataExport {
+
   constructor(
     packageId: PackageKey,
     version: VersionKey,
     format: ExportedFileFormat,
     removeOasExtensions?: boolean,
+    shareabilityFilter?: ShareabilityFilterValues,
   ) {
-    super(ExportedEntityKind.VERSION, packageId, version, format, removeOasExtensions)
+    super(ExportedEntityKind.VERSION, packageId, version, format, removeOasExtensions, shareabilityFilter)
   }
 }
 

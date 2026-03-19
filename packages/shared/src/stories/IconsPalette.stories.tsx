@@ -66,6 +66,7 @@ import { ProtobufIcon } from '../icons/ProtobufIcon'
 import { PublishIcon } from '../icons/PublishIcon'
 import { RestApiIcon } from '../icons/RestApiIcon'
 import { RobotIcon } from '../icons/RobotIcon'
+import { ShareabilityNonShareableIcon, ShareabilityShareableIcon, ShareabilityUnknownIcon } from '../icons/ShareabilityIcons'
 import { SegmentItemIcon } from '../icons/SegmentItemIcon'
 import { ServicesIcon } from '../icons/ServicesIcon'
 import { SettingIcon } from '../icons/SettingIcon'
@@ -180,6 +181,9 @@ const MUI_ICONS_REGISTRY: readonly IconItem<MuiIconComponent>[] = [
   { name: 'PlayIcon', component: PlayIcon },
   { name: 'PlusIcon', component: PlusIcon },
   { name: 'RobotIcon', component: RobotIcon },
+  { name: 'ShareableIcon', component: ShareabilityShareableIcon },
+  { name: 'NonShareableIcon', component: ShareabilityNonShareableIcon },
+  { name: 'UnknownShareabilityIcon', component: ShareabilityUnknownIcon },
 ] as const
 
 const BACKGROUND_COLORS: Record<BackgroundColor, string> = {
