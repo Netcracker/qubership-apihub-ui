@@ -34,14 +34,14 @@ const TOOLTIP_TEXT_BY_STATUS: Record<ShareabilityStatuses, string> = {
 
 type ShareabilityMarkerProps = {
   value: ShareabilityStatuses
-  sx?: SvgIconProps['sx']
+  className?: string
 }
 
-export const ShareabilityMarker: FC<ShareabilityMarkerProps> = memo(({ value, sx }) => {
+export const ShareabilityMarker: FC<ShareabilityMarkerProps> = memo(({ value, className }) => {
   const Icon = ICON_BY_STATUS[value]
   return (
     <Tooltip title={TOOLTIP_TEXT_BY_STATUS[value]}>
-      <Icon fontSize="small" color={COLOR_BY_STATUS[value]} sx={sx} />
+      <Icon fontSize="small" color={COLOR_BY_STATUS[value]} className={className} />
     </Tooltip>
   )
 })

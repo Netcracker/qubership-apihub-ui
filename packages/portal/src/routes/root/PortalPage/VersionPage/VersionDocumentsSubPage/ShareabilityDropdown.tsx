@@ -1,6 +1,6 @@
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
 import KeyboardArrowUpOutlinedIcon from '@mui/icons-material/KeyboardArrowUpOutlined'
-import { MenuItem } from '@mui/material'
+import { MenuItem, styled } from '@mui/material'
 import { type FC, memo, type MouseEvent, useCallback, useState } from 'react'
 
 import {
@@ -24,17 +24,20 @@ const DROPDOWN_OPTION_LABELS: Record<ShareabilityStatuses, string> = {
   [SHAREABILITY_STATUS_UNKNOWN]: 'Unknown',
 }
 
-const MENU_BUTTON_SX = {
-  '&.MuiButton-root': {
+const ShareabilityDropdownButton = styled(MenuButton)({
+  '&&.MuiButton-root': {
     width: 48,
-    '& .MuiButton-startIcon': {
-      mx: 0,
-      '& .MuiSvgIcon-root': {
-        fontSize: 20,
-      },
+    minWidth: 48,
+    padding: '10px',
+  },
+  '&& .MuiButton-startIcon': {
+    marginLeft: 0,
+    marginRight: 0,
+    '& .MuiSvgIcon-root': {
+      fontSize: 20,
     },
   },
-}
+})
 
 type ShareabilityDropdownProps = {
   value: ShareabilityStatuses
@@ -48,14 +51,14 @@ export const ShareabilityDropdown: FC<ShareabilityDropdownProps> = memo(({ value
     event.stopPropagation()
     setMenuOpen(prev => !prev)
   }, [])
+
   return (
-    <MenuButton
+    <ShareabilityDropdownButton
       startIcon={<ShareabilityMarker value={value} />}
       icon={menuOpen
         ? <KeyboardArrowUpOutlinedIcon fontSize="small" />
         : <KeyboardArrowDownOutlinedIcon fontSize="small" />}
       variant="outlined"
-      sx={MENU_BUTTON_SX}
       onClick={handleClick}
       onItemClick={handleClick}
       data-testid="ShareabilityDropdownButton"
@@ -70,6 +73,6 @@ export const ShareabilityDropdown: FC<ShareabilityDropdownProps> = memo(({ value
           {DROPDOWN_OPTION_LABELS[status]}
         </MenuItem>
       ))}
-    </MenuButton>
+    </ShareabilityDropdownButton>
   )
 })

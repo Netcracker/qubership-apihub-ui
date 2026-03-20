@@ -52,6 +52,7 @@ export type DocumentActionsButtonProps = {
   openedIcon?: ReactNode
   sx?: SxProps<Theme> | undefined
   customProps?: MenuButtonProps
+  className?: string
 }
 
 const DEFAULT_ACTION_BUTTON_STYLE = {
@@ -63,7 +64,7 @@ const DEFAULT_ACTION_BUTTON_STYLE = {
 
 // TODO 16.04.25 // Change props for icons. They are not clear to understand
 export const DocumentActionsButton: FC<DocumentActionsButtonProps> = memo<DocumentActionsButtonProps>((props) => {
-  const { slug, docType, format, shareabilityStatus, sx, customProps, startIcon, openedIcon, icon } = props
+  const { slug, docType, format, shareabilityStatus, sx, customProps, startIcon, openedIcon, icon, className } = props
 
   const { packageId } = useParams()
   const fullVersion = useFullMainVersion()
@@ -128,6 +129,7 @@ export const DocumentActionsButton: FC<DocumentActionsButtonProps> = memo<Docume
       onClick={handleClick}
       onItemClick={handleClick}
       {...customProps}
+      className={className}
       data-testid="DocumentActionsButton"
     >
       {DOCUMENT_MENU_CONFIG.map((menuItem) => (

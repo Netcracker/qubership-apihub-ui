@@ -17,7 +17,7 @@
 import type {Document} from '@apihub/entities/documents'
 import type {FC} from 'react'
 import {memo, useCallback, useMemo} from 'react'
-import {Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, ListSubheader} from '@mui/material'
+import {Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, ListSubheader, styled} from '@mui/material'
 import type {To} from 'react-router-dom'
 import {useNavigate, useParams} from 'react-router-dom'
 import {DocumentActionsButton} from './DocumentActionsButton'
@@ -29,11 +29,12 @@ import {useSearchParam} from '@netcracker/qubership-apihub-ui-shared/hooks/searc
 import {optionalSearchParams, REF_SEARCH_PARAM} from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import {ShareabilityMarker} from './ShareabilityMarker'
 import {SpecLogo} from '@netcracker/qubership-apihub-ui-shared/components/SpecLogo'
-import type {SpecType} from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import {isAsyncApiSpecType} from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import {
+  type SpecType,
+  isAsyncApiSpecType,
   isGraphQlSpecType,
   isOpenApiSpecType,
+  isExportableSpecType,
   JSON_SCHEMA_SPEC_TYPE,
   MARKDOWN_SPEC_TYPE,
   PROTOBUF_3_SPEC_TYPE,
@@ -95,6 +96,23 @@ function getGroupNameBySpecType(type: SpecType): GroupName {
 
   return GROUP_NAME_OTHER
 }
+
+const ListItemShareabilityMarker = styled(ShareabilityMarker)({ marginLeft: 8 })
+
+const ListItemActionsButton = styled(DocumentActionsButton)<{ $isExportableSpecType?: boolean }>(
+  ({ $isExportableSpecType }) => ({
+  visibility: 'visible',
+  backgroundColor: 'transparent',
+  '&:hover': {
+    backgroundColor: '#ECEDEF',
+  },
+  width: 24,
+  minWidth: 24,
+  height: 24,
+  paddingLeft: 10,
+  paddingRight: 10,
+  ...($isExportableSpecType ? { marginLeft: 0 } : { marginLeft: 8 }),
+}))
 
 export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({documents, isLoading}) => {
   const {packageId: packageKey, versionId: versionKey, documentId} = useParams()
@@ -184,25 +202,16 @@ export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({doc
                   <SpecLogo value={type}/>
                 </ListItemIcon>
                 <ListItemText primary={displayTitle} primaryTypographyProps={{sx: {mt: 0.25}}}/>
-                {shareabilityStatus && (
-                  <ShareabilityMarker value={shareabilityStatus} sx={{ ml: 1 }} />
+                {isExportableSpecType(type) && shareabilityStatus && (
+                  <ListItemShareabilityMarker value={shareabilityStatus} />
                 )}
-                <DocumentActionsButton
+                <ListItemActionsButton
                   slug={slug}
                   docType={type}
                   format={format}
                   shareabilityStatus={shareabilityStatus}
-                  sx={{
-                    visibility: 'visible',
-                    backgroundColor: 'transparent',
-                    '&:hover': {
-                      backgroundColor: '#ECEDEF',
-                    },
-                    width: 24,
-                    minWidth: 24,
-                    height: 24,
-                  }}
                   icon={<MoreVertIcon sx={{color: '#626D82'}} fontSize="small"/>}
+                  $isExportableSpecType={isExportableSpecType(type)}
                 />
               </ListItemButton>
             </ListItem>

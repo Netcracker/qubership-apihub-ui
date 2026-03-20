@@ -26,9 +26,7 @@ import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/
 import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'
 import { DOCUMENT_SHAREABILITY_MANAGEMENT_PERMISSION } from '@netcracker/qubership-apihub-ui-shared/entities/package-permissions'
 import type { FileFormat } from '@netcracker/qubership-apihub-ui-shared/utils/files'
-import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import { isAsyncApiSpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import { isGraphQlSpecType, isOpenApiSpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import { isAsyncApiSpecType, isExportableSpecType, isGraphQlSpecType, isOpenApiSpecType, type SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import type { Dispatch, FC, ReactNode, SetStateAction } from 'react'
 import { memo, useCallback, useMemo } from 'react'
 import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
@@ -154,7 +152,7 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
             <Typography variant="body2" sx={{ color: DOC_VERSION_COLOR }}>
               {version}
             </Typography>
-            {shareabilityStatus && (
+            {isExportableSpecType(type) && shareabilityStatus && (
               hasShareabilityPermission
                 ? <ShareabilityDropdown
                     value={shareabilityStatus}
