@@ -18,16 +18,16 @@ import type { Key } from '@apihub/entities/keys'
 import type { Document } from '@apihub/entities/documents'
 import type { DocumentsTabSubPageKey } from '@apihub/routes/root/PortalPage/VersionPage/OpenApiViewer/OpenApiViewer'
 import { OPERATIONS_SUB_PAGE, OVERVIEW_SUB_PAGE } from '@apihub/routes/root/PortalPage/VersionPage/OpenApiViewer/OpenApiViewer'
-import type { ReactJSXElement } from '@emotion/react/types/jsx-namespace'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
-import { Box, Grid, Skeleton, Typography } from '@mui/material'
+import { Box, Skeleton, Typography } from '@mui/material'
+import { styled } from '@mui/material/styles'
 import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
-import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
+import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
 import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'
 import { DOCUMENT_SHAREABILITY_MANAGEMENT_PERMISSION } from '@netcracker/qubership-apihub-ui-shared/entities/package-permissions'
 import type { FileFormat } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import { isAsyncApiSpecType, isExportableSpecType, isGraphQlSpecType, isOpenApiSpecType, type SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import type { Dispatch, FC, ReactNode, SetStateAction } from 'react'
+import type { Dispatch, FC, SetStateAction } from 'react'
 import { memo, useCallback, useMemo } from 'react'
 import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
 import { useVersionWithRevision } from '../../../useVersionWithRevision'
@@ -56,15 +56,7 @@ const DocumentsSubPageSelector = memo(() => {
   const setSelectedSubPage = useSetSelectedSubPage()
 
   return (
-    <Box
-      sx={{
-        backgroundColor: '#F2F3F5',
-        borderRadius: 2,
-        display: 'flex',
-        flexWrap: 'wrap',
-        width: 'max-content',
-      }}
-    >
+    <SubPageSelector>
       <Toggler<DocumentsTabSubPageKey>
         mode={selectedSubPage}
         modes={[OVERVIEW_SUB_PAGE, OPERATIONS_SUB_PAGE]}
@@ -72,7 +64,7 @@ const DocumentsSubPageSelector = memo(() => {
           setSelectedSubPage(newSelectedSubPage)
         }}
       />
-    </Box>
+    </SubPageSelector>
   )
 })
 
@@ -113,45 +105,31 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
 
   const shareabilityStatus = document.shareabilityStatus
 
-  const HeaderLayout = useCallback(({ left, right }: {
-    left: ReactNode
-    right: ReactNode
-  }): ReactJSXElement => {
-    return (
-      <Grid container data-testid="DocumentToolbar">
-        <Grid xs={4}>
-          {left}
-        </Grid>
-        <Grid xs={8} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-          {right}
-        </Grid>
-      </Grid>
-    )
-  }, [])
-
   if (isLoading) {
     return (
-      <HeaderLayout
-        left={(
-          <Box display="flex" flexDirection="column">
-            <Skeleton sx={{ width: 200 }} />
-            <Skeleton sx={{ width: 100 }} />
-          </Box>
-        )}
-        right={<Skeleton sx={{ width: 170 }} />}
-      />
+      <HeaderLayout>
+        <HeaderTextSection>
+          <TitleTextSkeleton />
+          <VersionTextSkeleton />
+        </HeaderTextSection>
+        <HeaderActionSkeleton />
+      </HeaderLayout>
     )
   }
 
   return (
-    <HeaderLayout
-      left={(
-        <TextWithOverflowTooltip tooltipText={title} variant="inherit">
-          <Box display="flex" alignItems="center" gap={1} data-testid="DocumentToolbarTitle">
-            {title}
-            <Typography variant="body2" sx={{ color: DOC_VERSION_COLOR }}>
+    <HeaderLayout>
+      <HeaderTextSection>
+        <HeaderTitleRow data-testid="DocumentToolbarTitle">
+          <DocumentTitleTooltip title={title}>
+            <TitleText variant="inherit">
+              {title}
+            </TitleText>
+          </DocumentTitleTooltip>
+          <HeaderSuffix>
+            <VersionText variant="body2">
               {version}
-            </Typography>
+            </VersionText>
             {isExportableSpecType(type) && shareabilityStatus && (
               hasShareabilityPermission
                 ? <ShareabilityDropdown
@@ -160,39 +138,125 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
                   />
                 : <ShareabilityMarker value={shareabilityStatus} />
             )}
-          </Box>
-        </TextWithOverflowTooltip>
-      )}
-      right={(
-        <Box display="flex" gap={1}>
-          {(isOpenApiSpecType(type) || isGraphQlSpecType(type) || isAsyncApiSpecType(type)) && (
-            <>
-              {selectedSubPage === OPERATIONS_SUB_PAGE && (
-                <SearchBar
-                  sx={{ width: '200px' }}
-                  value={searchValue}
-                  onValueChange={setSearchValue}
-                  data-testid="SearchOperations"
-                />
-              )}
-              <DocumentsSubPageSelector />
-            </>
-          )}
-          <DocumentActionsButton
-            slug={slug}
-            docType={type}
-            format={format}
-            shareabilityStatus={shareabilityStatus}
-            customProps={{
-              title: 'More',
-              variant: 'outlined',
-            }}
-            startIcon={<MoreVertIcon sx={{ color: '#626D82' }} fontSize="small"/>}
-          />
-        </Box>
-      )}
-    />
+          </HeaderSuffix>
+        </HeaderTitleRow>
+      </HeaderTextSection>
+      <HeaderActionSection>
+        {(isOpenApiSpecType(type) || isGraphQlSpecType(type) || isAsyncApiSpecType(type)) && (
+          <>
+            {selectedSubPage === OPERATIONS_SUB_PAGE && (
+              <SearchInput
+                value={searchValue}
+                onValueChange={setSearchValue}
+                data-testid="SearchOperations"
+              />
+            )}
+            <DocumentsSubPageSelector />
+          </>
+        )}
+        <DocumentActionsButton
+          slug={slug}
+          docType={type}
+          format={format}
+          shareabilityStatus={shareabilityStatus}
+          customProps={{
+            title: 'More',
+            variant: 'outlined',
+          }}
+          startIcon={<MoreButtonIcon fontSize="small"/>}
+        />
+      </HeaderActionSection>
+    </HeaderLayout>
   )
 }
 
-const DOC_VERSION_COLOR = 'rgba(0, 0, 0, 0.6)'
+const TITLE_MIN_WIDTH = 120
+const VERSION_GROUP_MIN_WIDTH = 120
+const TITLE_SECTION_MIN_WIDTH = TITLE_MIN_WIDTH + VERSION_GROUP_MIN_WIDTH
+
+const HeaderLayout = styled(Box)(({ theme }) => ({
+  display: 'grid',
+  gridTemplateColumns: `minmax(${TITLE_SECTION_MIN_WIDTH}px, 1fr) auto`,
+  alignItems: 'center',
+  overflowX: 'auto',
+  width: '100%',
+  gap: theme.spacing(1),
+  minWidth: 0,
+}))
+
+const HeaderTextSection = styled(Box)(({ theme }) => ({
+  minWidth: 0,
+  display: 'flex',
+  flexDirection: 'column',
+  gap: theme.spacing(0.5),
+}))
+
+const HeaderTitleRow = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: theme.spacing(1),
+  minWidth: 0,
+}))
+
+const DocumentTitleTooltip = styled(OverflowTooltip)({
+  display: 'block',
+  minWidth: 0,
+  flex: 1,
+})
+
+const TitleText = styled(Typography)({
+  minWidth: TITLE_MIN_WIDTH,
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+})
+
+const VersionText = styled(Typography)({
+  color: 'rgba(0, 0, 0, 0.6)',
+  whiteSpace: 'nowrap',
+  flexShrink: 0,
+})
+
+const HeaderSuffix = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: theme.spacing(1),
+  flexShrink: 0,
+}))
+
+const HeaderActionSection = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: theme.spacing(1),
+  flexShrink: 0,
+}))
+
+const SearchInput = styled(SearchBar)({
+  width: '200px',
+})
+
+const SubPageSelector = styled(Box)({
+  backgroundColor: '#F2F3F5',
+  borderRadius: 6,
+  display: 'inline-flex',
+  alignItems: 'center',
+  flexWrap: 'wrap',
+  overflow: 'hidden',
+  width: 'max-content',
+})
+
+const TitleTextSkeleton = styled(Skeleton)({
+  width: '200px',
+})
+
+const VersionTextSkeleton = styled(Skeleton)({
+  width: '100px',
+})
+
+const HeaderActionSkeleton = styled(Skeleton)({
+  width: '170px',
+})
+
+const MoreButtonIcon = styled(MoreVertIcon)({
+  color: '#626D82',
+})
