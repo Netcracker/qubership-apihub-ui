@@ -129,6 +129,7 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
   const activeTab = useGlobalSearchActiveTab()
 
   const workspaceKey = watch().workspace?.key
+  const packageKey = watch().pkg?.key
 
   const [workspacesFilter, setWorkspacesFilter] = useState('')
   const { packages: workspaces, isLoading: isWorkspacesLoading } = usePackages({
@@ -151,8 +152,6 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
   })
   const onGroupInputChange = useMemo(() => debounce((_: SyntheticEvent, value: string) =>
     setGroupsFilter(value), DEFAULT_DEBOUNCE), [])
-
-  const packageKey = watch().pkg?.key
 
   const [packagesFilter, setPackagesFilter] = useState('')
   const { packages, isLoading: isPackagesLoading } = usePackages({
@@ -270,7 +269,8 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
         }
         : {
           filters: {
-            packageIds: packageIdsData(),
+            workspace: workspaceKey,
+            packageIds: packageKey ? [packageKey] : [],
             versions: versionData,
             status: status as VersionStatus,
             creationDateInterval: {
