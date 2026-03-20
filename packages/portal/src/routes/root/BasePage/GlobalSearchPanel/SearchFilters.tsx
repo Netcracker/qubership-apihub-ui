@@ -14,23 +14,10 @@
  * limitations under the License.
  */
 
-import type { ChangeEvent, FC, ReactElement, SyntheticEvent } from 'react'
+import type { ChangeEvent, FC, SyntheticEvent } from 'react'
+import * as React from 'react'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import {
-  Autocomplete,
-  type AutocompleteChangeReason,
-  Box,
-  Button,
-  capitalize,
-  Checkbox,
-  debounce,
-  Divider,
-  FormControlLabel,
-  ListItem,
-  TextField,
-  Tooltip,
-  Typography,
-} from '@mui/material'
+import { Autocomplete, Box, Button, debounce, ListItem, TextField, Tooltip, Typography } from '@mui/material'
 import { Controller, useForm } from 'react-hook-form'
 import { usePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
 
@@ -43,25 +30,32 @@ import { OPERATIONS_TAB, useGlobalSearchActiveTab } from './GlobalSearchTextProv
 import type {
   GraphQlOperationTypes,
   OptionRestDetailedScope,
-  Scopes, SearchAsyncApiParams,
+  Scopes,
+  SearchAsyncApiParams,
   SearchGQLParams,
   SearchRestParams,
 } from '@apihub/entities/global-search'
 import {
-  API_TYPE_SCOPES_MAP,
-  DETAILED_SCOPES,
+  ANNOTATION_SCOPE,
+  ARGUMENT_SCOPE,
   detailedScopeMapping,
-  OPERATIONS_TYPES,
+  MUTATION_OPERATION_TYPES,
+  PROPERTY_SCOPE,
+  QUERY_OPERATION_TYPES,
+  REQUEST_SCOPE,
+  RESPONSE_SCOPE,
+  SUBSCRIPTION_OPERATION_TYPES,
 } from '@apihub/entities/global-search'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 import {
+  ARCHIVED_VERSION_STATUS,
+  DRAFT_VERSION_STATUS,
   PUBLISH_STATUSES,
   RELEASE_VERSION_STATUS,
   VERSION_STATUSES,
 } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 import type { MethodType } from '@netcracker/qubership-apihub-ui-shared/entities/method-types'
-import { METHOD_TYPES } from '@netcracker/qubership-apihub-ui-shared/entities/method-types'
 import type { Package } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { GROUP_KIND, PACKAGE_KIND, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { handleVersionsRevision } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
@@ -78,15 +72,15 @@ import {
   API_TYPE_TITLE_MAP,
   API_TYPES,
 } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { DEFAULT_DEBOUNCE } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
+import { useSystemInfo } from '@netcracker/qubership-apihub-ui-shared/features/system-info'
 
 type FiltersData = Partial<{
   workspace: Package | null
   group: Package | null
   pkg: Package | null
   version: Key
-  statuses: VersionStatus[]
+  status: VersionStatus
   publicationDatePeriod: string[]
   apiType: ApiType
   scope: Scopes[]
@@ -116,7 +110,7 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
       workspace: null,
       group: null,
       pkg: null,
-      statuses: [RELEASE_VERSION_STATUS],
+      status: RELEASE_VERSION_STATUS,
       publicationDatePeriod: defaultPublicationDatePeriod,
     },
   })
@@ -126,7 +120,7 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
     apiType,
     methods,
     version,
-    statuses,
+    status,
     publicationDatePeriod,
     detailedScope,
     scope,
@@ -182,8 +176,6 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
     setVersionsFilter(value), DEFAULT_DEBOUNCE), [])
 
   const ref = useRef<DatePickerRef>()
-
-  const [apiSearchMode, setApiSearchMode] = useState(false)
   const { applyGlobalSearchFilters } = useEventBus()
 
   const formatPublicationDate = useCallback((periodOfTime: DateObject[] | null): void => {
@@ -206,7 +198,6 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
 
   useEffect(() => {
     if (activeTab !== OPERATIONS_TAB) {
-      setApiSearchMode(false)
       setValue('apiType', undefined)
       setValue('scope', [])
       setValue('detailedScope', [])
@@ -214,17 +205,16 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
       setValue('operationTypes', [])
     }
   }, [activeTab, setValue])
+  const { useLegacySearch } = useSystemInfo()
 
   const onSubmit = useMemo(
     () => handleSubmit((value) => {
       const {
         version,
-        statuses,
+        status,
         publicationDatePeriod,
         apiType,
-        scope,
         detailedScope,
-        operationTypes,
         methods,
       } = value
 
@@ -247,38 +237,53 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
       const apiTypeOperationsParams: Record<ApiType, SearchRestParams | SearchGQLParams> = {
         [API_TYPE_REST]: {
           apiType: apiType,
-          scope: scope,
+          scope: [REQUEST_SCOPE, RESPONSE_SCOPE],
           detailedScope: restDetailedScope,
           methods: methods,
         } satisfies SearchRestParams,
         [API_TYPE_GRAPHQL]: {
           apiType: apiType,
-          scope: scope,
-          operationTypes: operationTypes,
+          scope: [ARGUMENT_SCOPE, PROPERTY_SCOPE, ANNOTATION_SCOPE],
+          operationTypes: [QUERY_OPERATION_TYPES, MUTATION_OPERATION_TYPES, SUBSCRIPTION_OPERATION_TYPES],
         } satisfies SearchGQLParams,
         [API_TYPE_ASYNCAPI]: {
           apiType: apiType,
         } as SearchAsyncApiParams,
       }
 
-      applyGlobalSearchFilters({
-        filters: {
-          packageIds: packageIdsData(),
-          versions: versionData,
-          statuses: statuses,
-          creationDateInterval: {
-            startDate: publicationDatePeriod?.[0] ?? '',
-            endDate: publicationDatePeriod?.[1] ?? '',
+      const globalSearchFilter = useLegacySearch
+        ? {
+          filters: {
+            packageIds: packageIdsData(),
+            versions: versionData,
+            statuses: [DRAFT_VERSION_STATUS, RELEASE_VERSION_STATUS, ARCHIVED_VERSION_STATUS] as VersionStatus[],
+            creationDateInterval: {
+              startDate: publicationDatePeriod?.[0] ?? '',
+              endDate: publicationDatePeriod?.[1] ?? '',
+            },
+            operationParams:
+              apiType
+                ? apiTypeOperationsParams[apiType]
+                : {},
           },
-          operationParams:
-            apiType
-              ? apiTypeOperationsParams[apiType]
-              : {},
-        },
-        apiSearchMode: apiSearchMode,
-      })
+          apiSearchMode: true,
+        }
+        : {
+          filters: {
+            packageIds: packageIdsData(),
+            versions: versionData,
+            status: status as VersionStatus,
+            creationDateInterval: {
+              startDate: publicationDatePeriod?.[0] ?? '',
+              endDate: publicationDatePeriod?.[1] ?? '',
+            },
+            apiType: apiType,
+          },
+        }
+
+      applyGlobalSearchFilters(globalSearchFilter)
     }),
-    [apiSearchMode, applyGlobalSearchFilters, packageKey, groupKey, handleSubmit, workspaceKey],
+    [handleSubmit, useLegacySearch, applyGlobalSearchFilters, packageKey, groupKey, workspaceKey],
   )
 
   useDebounce(
@@ -293,123 +298,51 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
       detailedScope,
       methods,
       scope,
-      statuses,
+      status,
       version,
       publicationDatePeriod,
     ],
   )
 
-  const apiTypeFormMap: Record<ApiType, ReactElement> = useMemo(() => ({
-    [API_TYPE_REST]: (
-      <>
+  return useMemo(() => (<>
+      <Typography sx={{ mb: 2, mt: 1 }} variant="h3">Filters</Typography>
+      <Box component="form" sx={{ overflow: 'scroll', height: 'calc(100% - 60px)', pr: 1 }}>
         <Controller
-          name="detailedScope"
+          name="apiType"
           control={control}
-          render={({ field }) => <Autocomplete<OptionRestDetailedScope, true>
-            disabled={!apiSearchMode}
-            sx={AUTOCOMPLETE_STYLE}
-            multiple
-            value={field.value ?? []}
-            options={DETAILED_SCOPES}
-            renderOption={(props, option) => <ListItem
-              {...props}
-              key={option}
-              data-testid={`${capitalize(option)}Option`}
-            >
-              {capitalize(option)}
-            </ListItem>}
-            onChange={(_, scopes) => setValue('detailedScope', scopes)}
-            renderInput={(params) =>
-              <TextField
-                {...field}
-                {...params}
-                label="Detailed search scope"
-                inputProps={{
-                  ...params.inputProps,
-                  readOnly: true,
-                }}
-              />
-            }
-            data-testid="DetailedSearchScopeAutocomplete"
-          />}
-        />
-
-        <Controller
-          name="methods"
-          control={control}
-          render={({ field }) => <Autocomplete<MethodType, true>
-            disabled={!apiSearchMode}
-            sx={AUTOCOMPLETE_STYLE}
-            multiple
-            value={field.value ?? []}
-            options={Array.from(METHOD_TYPES)}
+          render={({ field: { value, onChange } }) => <Autocomplete
+            value={value ?? null}
+            options={API_TYPES}
+            getOptionLabel={(option) => API_TYPE_TITLE_MAP[option]!}
             isOptionEqualToValue={(option, value) => option === value}
-            renderOption={(props, option) => <ListItem
-              {...props}
-              key={option}
-              data-testid={`${capitalize(option)}Option`}
-            >
-              {option.toUpperCase()}
-            </ListItem>}
-            onChange={(_, methods) => setValue('methods', methods)}
-            renderInput={(params) =>
-              <TextField
-                {...field}
-                {...params}
-                label="Methods"
-                inputProps={{
-                  ...params.inputProps,
-                  readOnly: true,
-                }}
-              />
-            }
-            data-testid="MethodsAutocomplete"
-          />}
-        />
-      </>
-    ),
-    [API_TYPE_GRAPHQL]: (
-      <>
-        <Controller
-          name="operationTypes"
-          control={control}
-          render={({ field: { value } }) => (
-            <Autocomplete<GraphQlOperationTypes, true>
-              disabled={!apiSearchMode}
-              sx={AUTOCOMPLETE_STYLE}
-              multiple
-              value={value ?? []}
-              options={OPERATIONS_TYPES}
-              renderOption={(props, option) => <ListItem
+            renderOption={(props, option) => (
+              <ListItem
                 {...props}
                 key={option}
-                data-testid={`${capitalize(option)}Option`}
+                data-testid={`Option-${option}`}
               >
-                {capitalize(option)}
-              </ListItem>}
-              onChange={(_, operationType) => setValue('operationTypes', operationType)}
-              renderInput={(params) =>
-                <TextField
-                  {...params}
-                  label="Operation type"
-                  inputProps={{
-                    ...params.inputProps,
-                    readOnly: true,
-                  }}
-                />
-              }
-              data-testid="OperationTypesAutocomplete"
-            />
-          )}
+                {API_TYPE_TITLE_MAP[option]!}
+              </ListItem>
+            )}
+            onChange={(_, type) => {
+              setValue('scope', [])
+              setValue('detailedScope', [])
+              setValue('methods', [])
+              setValue('operationTypes', [])
+              onChange(type)
+            }}
+            renderInput={(params) => (
+              <TextField
+                required
+                {...params}
+                label="API type"
+                sx={{ mt: 0 }}
+                error={!!errors.apiType}
+              />
+            )}
+            data-testid="ApiTypeAutocomplete"
+          />}
         />
-      </>
-    ),
-    [API_TYPE_ASYNCAPI]: <></>,
-  }), [apiSearchMode, control, setValue])
-
-  return useMemo(() => (<>
-      <Typography sx={{ mb: 2 }} variant="subtitle1">Filters</Typography>
-      <Box component="form" sx={{ overflow: 'scroll', height: 'calc(100% - 60px)', pr: 1 }}>
         <Controller
           name="workspace"
           control={control}
@@ -431,7 +364,10 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
               setWorkspacesFilter('')
             }}
             renderInput={(params) =>
-              <TextField {...params} label="Workspace"/>}
+              <TextField
+                {...params}
+                required
+                label="Workspace"/>}
             onInputChange={onWorkspaceInputChange}
             onBlur={() => {
               onWorkspaceInputChange.clear()
@@ -536,19 +472,22 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
         />
 
         <Controller
-          name="statuses"
+          name="status"
           control={control}
           render={({ field }) => <Autocomplete
-            multiple freeSolo
+            freeSolo
             forcePopupIcon={true}
-            value={field.value ?? []}
+            value={field.value}
             options={VERSION_STATUSES}
             renderOption={(props, option) => <ListItem
               {...props}
               key={option}
               data-testid={`${PUBLISH_STATUSES.get(option)}Option`}
             >
-              {PUBLISH_STATUSES.get(option)}
+              <CustomChip
+                value={option}
+                data-testid={`${PUBLISH_STATUSES.get(option)}Chip`}
+              />
             </ListItem>}
             renderTags={(value, getTagProps) => (
               value.map((option, index) => <CustomChip
@@ -558,15 +497,30 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
                 data-testid={`${PUBLISH_STATUSES.get(option)}Chip`}
               />)
             )}
-            onChange={(_, statuses) => setValue('statuses', statuses as VersionStatus[])}
+            onChange={(_, status) => setValue('status', status as VersionStatus)}
             renderInput={(params) =>
               <TextField
                 {...field}
                 {...params}
                 label="Version status"
-                inputProps={{
-                  ...params.inputProps,
-                  readOnly: true,
+                required
+                InputProps={{
+                  ...params.InputProps,
+                  // These styles hide the text in the input for correct view
+                  sx: {
+                    ['& .MuiInputBase-input']: {
+                      color: 'transparent',
+                      caretColor: 'transparent',
+                      '::selection': {
+                        background: 'transparent',
+                        color: 'transparent',
+                      },
+                    },
+                    ['& .Mui-disabled']: {
+                      WebkitTextFillColor: 'transparent',
+                    },
+                  },
+                  startAdornment: status ? <CustomChip sx={{ height: 16, mb: 1 }} value={status}/> : null,
                 }}
               />
             }
@@ -600,85 +554,6 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
             }
           />}
         />
-
-        <Divider orientation="horizontal" variant="fullWidth" sx={{ mt: 1, mb: 1 }}/>
-        <Typography sx={{ mb: 2 }} variant="subtitle1">API specific params</Typography>
-
-        <Box display="flex" gap={1}>
-          <FormControlLabel
-            label="Search only"
-            control={<Checkbox
-              onChange={(_, checked) => {
-                setApiSearchMode(checked)
-                setValue('apiType', checked ? DEFAULT_API_TYPE : undefined)
-                setValue('scope', undefined)
-                setValue('detailedScope', undefined)
-                setValue('methods', undefined)
-              }}
-              checked={apiSearchMode}
-              disabled={activeTab !== OPERATIONS_TAB}
-              data-testid="SearchOnlyCheckbox"
-            />}
-          />
-
-          <Box sx={{ m: 0, width: '150px', ml: 'auto' }}>
-            <Controller
-              name="apiType"
-              control={control}
-              rules={{ required: apiSearchMode }}
-              render={({ field: { value, onChange } }) => <Autocomplete
-                disabled={!apiSearchMode}
-                sx={AUTOCOMPLETE_STYLE}
-                value={value ?? null}
-                options={API_TYPES}
-                getOptionLabel={(option) => API_TYPE_TITLE_MAP[option]!}
-                isOptionEqualToValue={(option, value) => option === value}
-                renderOption={(props, option) => (
-                  <ListItem
-                    {...props}
-                    key={option}
-                    data-testid={`Option-${option}`}
-                  >
-                    {API_TYPE_TITLE_MAP[option]!}
-                  </ListItem>
-                )}
-                onChange={(_, type) => {
-                  setValue('scope', [])
-                  setValue('detailedScope', [])
-                  setValue('methods', [])
-                  setValue('operationTypes', [])
-                  onChange(type)
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    required={apiSearchMode}
-                    {...params}
-                    label="API type"
-                    error={!!errors.apiType}
-                  />
-                )}
-                data-testid="ApiTypeAutocomplete"
-              />}
-            />
-          </Box>
-        </Box>
-
-        {apiType &&
-          <>
-            <Controller
-              name="scope"
-              control={control}
-              render={({ field }) => <ScopesAutocomplete<Scopes>
-                value={field.value ?? []}
-                options={API_TYPE_SCOPES_MAP[apiType]}
-                onChange={(_, scopes) => setValue('scope', scopes)}
-                label="Search scope"
-                disabled={!apiSearchMode}
-              />}
-            />
-            {apiTypeFormMap[apiType]}
-          </>
-        }
       </Box>
 
       <Box sx={{ position: 'absolute', bottom: '16px', display: 'flex' }}>
@@ -686,7 +561,6 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
           variant="outlined"
           onClick={() => {
             reset()
-            setApiSearchMode(false)
           }}
           data-testid="ResetButton"
         >
@@ -694,59 +568,8 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
         </Button>
       </Box>
     </>
-  ), [activeTab, apiSearchMode, apiType, apiTypeFormMap, control, errors.apiType, formatPublicationDate, groups, handledVersions, isWorkspacesLoading, isGroupsLoading, isPackagesLoading, areVersionsInitiallyLoading, packages, reset, setValue, workspaceKey, workspaces, onGroupInputChange, onPackageInputChange, onWorkspaceInputChange, onVersionInputChange])
+  ), [activeTab, apiType, control, errors.apiType, formatPublicationDate, groups, handledVersions, isWorkspacesLoading, isGroupsLoading, isPackagesLoading, areVersionsInitiallyLoading, packages, reset, setValue, workspaceKey, workspaces, onGroupInputChange, onPackageInputChange, onWorkspaceInputChange, onVersionInputChange])
 })
-
-function ScopesAutocomplete<T extends Key>({
-  value,
-  options,
-  onChange,
-  label,
-  disabled,
-}: ScopesAutocompleteProps<T>): JSX.Element {
-  return (
-    <Autocomplete<T, true>
-      sx={AUTOCOMPLETE_STYLE}
-      disabled={disabled}
-      multiple
-      value={value ?? []}
-      options={options}
-      isOptionEqualToValue={(option, value) => option === value}
-      renderOption={(props, option) => <ListItem
-        {...props}
-        key={option}
-        data-testid={`${capitalize(option)}Option`}
-      >
-        {capitalize(option)}
-      </ListItem>}
-      onChange={onChange}
-      renderInput={(params) =>
-        <TextField
-          {...params}
-          label={label}
-          value={value?.map(item => capitalize(item))}
-          inputProps={{
-            ...params.inputProps,
-            readOnly: true,
-          }}
-        />
-      }
-      data-testid="SearchScopeAutocomplete"
-    />
-  )
-}
-
-type ScopesAutocompleteProps<T> = {
-  value: T[]
-  options: T[]
-  onChange: (
-    event: SyntheticEvent,
-    value: T[] | undefined,
-    reason: AutocompleteChangeReason,
-  ) => void
-  label: string
-  disabled: boolean
-}
 
 type DatePickerRef = {
   openCalendar: () => void

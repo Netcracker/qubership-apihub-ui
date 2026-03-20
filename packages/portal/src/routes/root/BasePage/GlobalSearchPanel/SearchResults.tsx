@@ -15,7 +15,7 @@
  */
 
 import type { FC } from 'react'
-import { memo, useEffect, useMemo, useState } from 'react'
+import { memo, useMemo, useState } from 'react'
 import { Box, Tab } from '@mui/material'
 import { useEvent } from 'react-use'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
@@ -57,16 +57,16 @@ export const SearchResults: FC = memo(() => {
   const activeTab = useGlobalSearchActiveTab()
   const setActiveTab = useSetGlobalSearchActiveTab()
 
-  const [apiSpecificSearchMode, setApiSpecificSearchMode] = useState(false)
+  // const [apiSpecificSearchMode, setApiSpecificSearchMode] = useState(false)
 
   const [filters, setFilters] = useState<Omit<SearchCriteria, 'searchString'>>()
   useEvent(APPLY_GLOBAL_SEARCH_FILTERS, ({
     detail: {
       filters,
-      apiSearchMode,
+   //   apiSearchMode,
     },
   }: CustomEvent<GlobalSearchPanelDetails>): void => {
-    setApiSpecificSearchMode(apiSearchMode)
+    // setApiSpecificSearchMode(apiSearchMode)
     filters && setFilters(getOptionalBody(filters))
   })
 
@@ -90,7 +90,7 @@ export const SearchResults: FC = memo(() => {
       : { criteria: { searchString: searchText }, enabled: currentLevel === PACKAGE_LEVEL },
   )
 
-  useEffect(() => {apiSpecificSearchMode && setActiveTab(OPERATIONS_TAB)}, [apiSpecificSearchMode, setActiveTab])
+//  useEffect(() => {apiSpecificSearchMode && setActiveTab(OPERATIONS_TAB)}, [apiSpecificSearchMode, setActiveTab])
 
   return (
     <Box
@@ -108,6 +108,11 @@ export const SearchResults: FC = memo(() => {
       <Box gridArea="searchBar">
         <SearchBar
           value={searchText}
+          inputProps={{
+            style: {
+              padding: '13px 11px 12px 11px',
+            },
+          }}
           onValueChange={setSearchText}
         />
       </Box>
