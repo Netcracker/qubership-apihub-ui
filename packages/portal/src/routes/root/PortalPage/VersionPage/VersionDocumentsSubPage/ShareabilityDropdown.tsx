@@ -1,7 +1,7 @@
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
 import KeyboardArrowUpOutlinedIcon from '@mui/icons-material/KeyboardArrowUpOutlined'
 import { MenuItem, styled } from '@mui/material'
-import { type FC, memo, type MouseEvent, useCallback, useState } from 'react'
+import { type FC, memo, useCallback, useState } from 'react'
 
 import {
   SHAREABILITY_STATUS_NON_SHAREABLE,
@@ -47,8 +47,7 @@ type ShareabilityDropdownProps = {
 export const ShareabilityDropdown: FC<ShareabilityDropdownProps> = memo(({ value, onChange }) => {
   const [menuOpen, setMenuOpen] = useState(false)
 
-  const handleClick = useCallback((event: MouseEvent) => {
-    event.stopPropagation()
+  const handleClick = useCallback(() => {
     setMenuOpen(prev => !prev)
   }, [])
 

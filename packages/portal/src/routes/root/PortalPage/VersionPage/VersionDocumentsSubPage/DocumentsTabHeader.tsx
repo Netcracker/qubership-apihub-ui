@@ -1,43 +1,39 @@
-/**
- * Copyright 2024-2025 NetCracker Technology Corporation
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-import type { Key } from '@apihub/entities/keys'
-import type { Document } from '@apihub/entities/documents'
-import type { DocumentsTabSubPageKey } from '@apihub/routes/root/PortalPage/VersionPage/OpenApiViewer/OpenApiViewer'
-import { OPERATIONS_SUB_PAGE, OVERVIEW_SUB_PAGE } from '@apihub/routes/root/PortalPage/VersionPage/OpenApiViewer/OpenApiViewer'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { Box, Skeleton, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
-import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
+import { useIsFetching } from '@tanstack/react-query'
+import { type Dispatch, type FC, memo, type SetStateAction, useCallback, useMemo } from 'react'
+
+import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
+import type { Document } from '@apihub/entities/documents'
+import type { Key } from '@apihub/entities/keys'
+import {
+  type DocumentsTabSubPageKey,
+  OPERATIONS_SUB_PAGE,
+  OVERVIEW_SUB_PAGE,
+} from '@apihub/routes/root/PortalPage/VersionPage/OpenApiViewer/OpenApiViewer'
+import type { ShareabilityStatuses } from '@netcracker/qubership-apihub-api-processor'
 import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
+import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
 import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'
 import { DOCUMENT_SHAREABILITY_MANAGEMENT_PERMISSION } from '@netcracker/qubership-apihub-ui-shared/entities/package-permissions'
 import type { FileFormat } from '@netcracker/qubership-apihub-ui-shared/utils/files'
-import { isAsyncApiSpecType, isExportableSpecType, isGraphQlSpecType, isOpenApiSpecType, type SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import type { Dispatch, FC, SetStateAction } from 'react'
-import { memo, useCallback, useMemo } from 'react'
-import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
+import {
+  isAsyncApiSpecType,
+  isExportableSpecType,
+  isGraphQlSpecType,
+  isOpenApiSpecType,
+  type SpecType,
+} from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import { useVersionWithRevision } from '../../../useVersionWithRevision'
 import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
+import { DOCUMENT_QUERY_KEY } from '../useDocument'
+import { DOCUMENTS_QUERY_KEY } from '../useDocuments'
 import { DocumentActionsButton } from './DocumentActionsButton'
 import { useSelectedSubPage, useSetSelectedSubPage } from './SelectedSubPageProvider'
 import { ShareabilityDropdown } from './ShareabilityDropdown'
 import { ShareabilityMarker } from './ShareabilityMarker'
 import { useUpdateDocumentShareability } from './useUpdateDocumentShareability'
-import type { ShareabilityStatuses } from '@netcracker/qubership-apihub-api-processor'
 
 export type DocumentsTabHeaderProps = {
   title: string
@@ -49,6 +45,126 @@ export type DocumentsTabHeaderProps = {
   setSearchValue: Dispatch<SetStateAction<string>>
   isLoading?: boolean
   document: Document
+}
+
+export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
+  const {
+    title,
+    version,
+    slug,
+    type,
+    format,
+    searchValue,
+    setSearchValue,
+    isLoading = true,
+    document,
+  } = props
+
+  const currentPackage = useCurrentPackage()
+
+  const selectedSubPage = useSelectedSubPage()
+
+  const { shareabilityStatus } = document
+
+  const hasShareabilityPermission = useMemo(
+    () => !!currentPackage?.permissions?.includes(DOCUMENT_SHAREABILITY_MANAGEMENT_PERMISSION),
+    [currentPackage?.permissions],
+  )
+
+  const [docPackageKey, docPackageVersion] = usePackageParamsWithRef()
+  const { fullVersion } = useVersionWithRevision(docPackageVersion, docPackageKey)
+
+  const { updateShareability, isPending: isShareabilityUpdating } = useUpdateDocumentShareability(
+    docPackageKey!,
+    fullVersion,
+    slug,
+  )
+
+  const handleShareabilityChange = useCallback(
+    (value: ShareabilityStatuses) => updateShareability(value),
+    [updateShareability],
+  )
+
+  const isDocumentsListRefetching = useIsFetching({
+    queryKey: [DOCUMENTS_QUERY_KEY, docPackageKey, fullVersion],
+    exact: false,
+  }) > 0
+
+  const isDocumentRefetching = useIsFetching({
+    queryKey: [DOCUMENT_QUERY_KEY, docPackageKey, fullVersion, slug],
+    exact: true,
+  }) > 0
+
+  const isShareabilityStatusLoading = isShareabilityUpdating
+    || isDocumentsListRefetching
+    || isDocumentRefetching
+
+  if (isLoading) {
+    return (
+      <HeaderLayout>
+        <HeaderTextSection>
+          <TitleTextSkeleton />
+          <VersionTextSkeleton />
+        </HeaderTextSection>
+        <HeaderActionSection>
+          <HeaderActionSkeleton />
+        </HeaderActionSection>
+      </HeaderLayout>
+    )
+  }
+
+  return (
+    <HeaderLayout>
+      <HeaderTextSection data-testid="DocumentToolbarTitle">
+        <TitleTooltip title={title}>
+          <TitleText variant="inherit">
+            {title}
+          </TitleText>
+        </TitleTooltip>
+        <TitleSuffix>
+          <VersionText variant="body2">
+            {version}
+          </VersionText>
+          {isExportableSpecType(type) && shareabilityStatus && (
+            hasShareabilityPermission && docPackageKey && fullVersion
+              ? (
+                <ShareabilityDropdown
+                  value={shareabilityStatus}
+                  onChange={handleShareabilityChange}
+                  isLoading={isShareabilityStatusLoading}
+                />
+              )
+              : <ShareabilityMarker value={shareabilityStatus} />
+          )}
+        </TitleSuffix>
+      </HeaderTextSection>
+      <HeaderActionSection>
+        {(isOpenApiSpecType(type) || isGraphQlSpecType(type) || isAsyncApiSpecType(type)) && (
+          <>
+            {selectedSubPage === OPERATIONS_SUB_PAGE && (
+              <SearchInput
+                value={searchValue}
+                onValueChange={setSearchValue}
+                data-testid="SearchOperations"
+              />
+            )}
+            <DocumentsSubPageSelector />
+          </>
+        )}
+        <ActionsButton
+          slug={slug}
+          docType={type}
+          format={format}
+          shareabilityStatus={shareabilityStatus}
+          customProps={{
+            title: 'More',
+            variant: 'outlined',
+          }}
+          startIcon={<MoreButtonIcon fontSize="small" />}
+        />
+      </HeaderActionSection>
+    </HeaderLayout>
+  )
 }
 
 const DocumentsSubPageSelector = memo(() => {
@@ -68,160 +184,48 @@ const DocumentsSubPageSelector = memo(() => {
   )
 })
 
-export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
-  const {
-    title,
-    version,
-    slug,
-    type,
-    format,
-    searchValue,
-    setSearchValue,
-    isLoading = true,
-    document,
-  } = props
-
-  const selectedSubPage = useSelectedSubPage()
-
-  const [docPackageKey, docPackageVersion] = usePackageParamsWithRef()
-  const { fullVersion } = useVersionWithRevision(docPackageVersion, docPackageKey)
-
-  const currentPackage = useCurrentPackage()
-  const hasShareabilityPermission = useMemo(
-    () => !!currentPackage?.permissions?.includes(DOCUMENT_SHAREABILITY_MANAGEMENT_PERMISSION),
-    [currentPackage?.permissions],
-  )
-
-  const updateShareability = useUpdateDocumentShareability(
-    docPackageKey ?? '',
-    fullVersion ?? '',
-    slug,
-  )
-
-  const handleShareabilityChange = useCallback(
-    (value: ShareabilityStatuses) => updateShareability(value),
-    [updateShareability],
-  )
-
-  const shareabilityStatus = document.shareabilityStatus
-
-  if (isLoading) {
-    return (
-      <HeaderLayout>
-        <HeaderTextSection>
-          <TitleTextSkeleton />
-          <VersionTextSkeleton />
-        </HeaderTextSection>
-        <HeaderActionSkeleton />
-      </HeaderLayout>
-    )
-  }
-
-  return (
-    <HeaderLayout>
-      <HeaderTextSection>
-        <HeaderTitleRow data-testid="DocumentToolbarTitle">
-          <DocumentTitleTooltip title={title}>
-            <TitleText variant="inherit">
-              {title}
-            </TitleText>
-          </DocumentTitleTooltip>
-          <HeaderSuffix>
-            <VersionText variant="body2">
-              {version}
-            </VersionText>
-            {isExportableSpecType(type) && shareabilityStatus && (
-              hasShareabilityPermission
-                ? <ShareabilityDropdown
-                    value={shareabilityStatus}
-                    onChange={handleShareabilityChange}
-                  />
-                : <ShareabilityMarker value={shareabilityStatus} />
-            )}
-          </HeaderSuffix>
-        </HeaderTitleRow>
-      </HeaderTextSection>
-      <HeaderActionSection>
-        {(isOpenApiSpecType(type) || isGraphQlSpecType(type) || isAsyncApiSpecType(type)) && (
-          <>
-            {selectedSubPage === OPERATIONS_SUB_PAGE && (
-              <SearchInput
-                value={searchValue}
-                onValueChange={setSearchValue}
-                data-testid="SearchOperations"
-              />
-            )}
-            <DocumentsSubPageSelector />
-          </>
-        )}
-        <DocumentActionsButton
-          slug={slug}
-          docType={type}
-          format={format}
-          shareabilityStatus={shareabilityStatus}
-          customProps={{
-            title: 'More',
-            variant: 'outlined',
-          }}
-          startIcon={<MoreButtonIcon fontSize="small"/>}
-        />
-      </HeaderActionSection>
-    </HeaderLayout>
-  )
-}
-
-const TITLE_MIN_WIDTH = 120
-const VERSION_GROUP_MIN_WIDTH = 120
-const TITLE_SECTION_MIN_WIDTH = TITLE_MIN_WIDTH + VERSION_GROUP_MIN_WIDTH
+const LEFT_SECTION_MIN_WIDTH = 240
 
 const HeaderLayout = styled(Box)(({ theme }) => ({
-  display: 'grid',
-  gridTemplateColumns: `minmax(${TITLE_SECTION_MIN_WIDTH}px, 1fr) auto`,
+  display: 'flex',
   alignItems: 'center',
-  overflowX: 'auto',
-  width: '100%',
   gap: theme.spacing(1),
-  minWidth: 0,
 }))
 
 const HeaderTextSection = styled(Box)(({ theme }) => ({
-  minWidth: 0,
-  display: 'flex',
-  flexDirection: 'column',
-  gap: theme.spacing(0.5),
-}))
-
-const HeaderTitleRow = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: theme.spacing(1),
-  minWidth: 0,
+  flex: '0 1 auto',
+  minWidth: LEFT_SECTION_MIN_WIDTH,
+  overflow: 'hidden',
 }))
 
-const DocumentTitleTooltip = styled(OverflowTooltip)({
+const TitleSuffix = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: theme.spacing(1),
+  flexShrink: 0,
+}))
+
+const TitleTooltip = styled(OverflowTooltip)({
   display: 'block',
   minWidth: 0,
-  flex: 1,
+  flex: '0 1 auto',
 })
 
 const TitleText = styled(Typography)({
-  minWidth: TITLE_MIN_WIDTH,
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
 })
 
-const VersionText = styled(Typography)({
-  color: 'rgba(0, 0, 0, 0.6)',
+const VersionText = styled(Typography)(({ theme }) => ({
+  color: theme.palette.text.secondary,
   whiteSpace: 'nowrap',
   flexShrink: 0,
-})
-
-const HeaderSuffix = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  gap: theme.spacing(1),
-  flexShrink: 0,
+  paddingLeft: theme.spacing(0.5),
+  paddingRight: theme.spacing(0.5),
 }))
 
 const HeaderActionSection = styled(Box)(({ theme }) => ({
@@ -229,6 +233,7 @@ const HeaderActionSection = styled(Box)(({ theme }) => ({
   alignItems: 'center',
   gap: theme.spacing(1),
   flexShrink: 0,
+  marginLeft: 'auto',
 }))
 
 const SearchInput = styled(SearchBar)({
@@ -236,27 +241,26 @@ const SearchInput = styled(SearchBar)({
 })
 
 const SubPageSelector = styled(Box)({
-  backgroundColor: '#F2F3F5',
   borderRadius: 6,
-  display: 'inline-flex',
-  alignItems: 'center',
-  flexWrap: 'wrap',
-  overflow: 'hidden',
-  width: 'max-content',
 })
 
 const TitleTextSkeleton = styled(Skeleton)({
-  width: '200px',
+  width: 200,
 })
 
 const VersionTextSkeleton = styled(Skeleton)({
-  width: '100px',
+  width: 36,
 })
 
 const HeaderActionSkeleton = styled(Skeleton)({
-  width: '170px',
+  width: 130,
+  height: 54,
 })
 
-const MoreButtonIcon = styled(MoreVertIcon)({
-  color: '#626D82',
+const ActionsButton = styled(DocumentActionsButton)({
+  margin: 0,
 })
+
+const MoreButtonIcon = styled(MoreVertIcon)(({ theme }) => ({
+  color: theme.palette.text.secondary,
+}))
