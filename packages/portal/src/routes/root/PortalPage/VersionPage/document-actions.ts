@@ -2,7 +2,7 @@ import { ExportedEntityKind } from '@apihub/components/ExportSettingsDialog/api/
 import type { ExportSettingsPopupDetail, NotificationDetail } from '@apihub/routes/EventBusProvider'
 import type { DocumentPreviewDetail } from '@apihub/routes/NavigationProvider'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { ShareabilityStatuses } from '@netcracker/qubership-apihub-api-processor'
+import type { ShareabilityStatus } from '@netcracker/qubership-apihub-api-processor'
 import { REF_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { useCallback } from 'react'
 import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
@@ -23,7 +23,7 @@ export type DocumentActionParams = {
   showNotification: (detail: NotificationDetail) => void
   createTemplate: (key?: Key) => string
   specType?: SpecType
-  shareabilityStatus?: ShareabilityStatuses
+  shareabilityStatus?: ShareabilityStatus
 }
 
 export type MenuItemConfig = {

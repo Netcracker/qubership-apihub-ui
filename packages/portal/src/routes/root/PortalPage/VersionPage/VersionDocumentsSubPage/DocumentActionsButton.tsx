@@ -40,13 +40,13 @@ import type { DocumentActionParams } from '../document-actions'
 import { DOCUMENT_MENU_CONFIG, useCreateTemplate } from '../document-actions'
 import { useDownloadPublishedDocument } from '../useDownloadPublishedDocument'
 import { useGetSharedKey } from './useGetSharedKey'
-import type { ShareabilityStatuses } from '@netcracker/qubership-apihub-api-processor'
+import type { ShareabilityStatus } from '@netcracker/qubership-apihub-api-processor'
 
 export type DocumentActionsButtonProps = {
   slug: Key
   docType: SpecType
   format: FileFormat
-  shareabilityStatus?: ShareabilityStatuses
+  shareabilityStatus?: ShareabilityStatus
   startIcon?: ReactNode
   icon?: ReactNode
   openedIcon?: ReactNode

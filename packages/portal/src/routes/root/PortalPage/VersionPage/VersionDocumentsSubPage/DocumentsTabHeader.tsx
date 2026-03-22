@@ -13,7 +13,7 @@ import {
   OPERATIONS_SUB_PAGE,
   OVERVIEW_SUB_PAGE,
 } from '@apihub/routes/root/PortalPage/VersionPage/OpenApiViewer/OpenApiViewer'
-import type { ShareabilityStatuses } from '@netcracker/qubership-apihub-api-processor'
+import type { ShareabilityStatus } from '@netcracker/qubership-apihub-api-processor'
 import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
 import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
 import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'
@@ -113,7 +113,7 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
   }, [isShareabilityStatusUpdating])
 
   const handleShareabilityChange = useCallback(
-    (value: ShareabilityStatuses) => updateShareability(value),
+    (value: ShareabilityStatus) => updateShareability(value),
     [updateShareability],
   )
 

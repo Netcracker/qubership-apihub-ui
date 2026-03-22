@@ -3,7 +3,8 @@ import {
   SHAREABILITY_STATUS_NON_SHAREABLE,
   SHAREABILITY_STATUS_SHAREABLE,
   SHAREABILITY_STATUS_UNKNOWN,
-  type ShareabilityStatuses,
+  SHAREABILITY_STATUSES,
+  type ShareabilityStatus,
 } from '@netcracker/qubership-apihub-api-processor'
 import { useDocuments } from '../../../routes/root/PortalPage/VersionPage/useDocuments'
 import type { ShareabilitySummary } from '../hooks/useShareabilitySummary'
@@ -42,7 +43,7 @@ import { EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE } from '../entities/export-setting
 import type { ExportSettingsFormField } from '../entities/export-settings-form-field'
 import {
   ExportSettingsFormFieldKind,
-  ExportSettingsFormFieldOptionExportScope,
+  ExportSettingsFormFieldOptionScope,
   ExportSettingsFormFieldOptionOasExtensions,
   SPEC_TYPE_ACCESS_VIEW_EXPORT_FIELD,
 } from '../entities/export-settings-form-field'
@@ -109,14 +110,14 @@ const ExportSettingsFormFields: FC<ExportSettingsFormFieldsProps> = memo(props =
   )
 })
 
-function getSingleDocumentAlert(status?: ShareabilityStatuses): { severity: 'success' | 'warning' | 'error'; message: string } | null {
+function getSingleDocumentAlert(status?: ShareabilityStatus): { severity: 'success' | 'warning' | 'error'; title: string; message: string } | null {
   switch (status) {
     case SHAREABILITY_STATUS_SHAREABLE:
-      return { severity: 'success', message: 'Shareable document - This document is marked as shareable by the package owner.' }
+      return { severity: 'success', title: 'Shareable document', message: 'This document is marked as shareable by the package owner.' }
     case SHAREABILITY_STATUS_UNKNOWN:
-      return { severity: 'warning', message: 'Unknown shareability - The shareability status of this document is unknown. Contact the package owner to clarify.' }
+      return { severity: 'warning', title: 'Unknown shareability', message: 'The shareability status of this document is unknown. Contact the package owner to clarify.' }
     case SHAREABILITY_STATUS_NON_SHAREABLE:
-      return { severity: 'error', message: 'Non-shareable document - This document is marked as non-shareable by the package owner.' }
+      return { severity: 'error', title: 'Non-shareable document', message: 'This document is marked as non-shareable by the package owner.' }
     default:
       return null
   }
@@ -124,6 +125,7 @@ function getSingleDocumentAlert(status?: ShareabilityStatuses): { severity: 'suc
 
 type VersionExportAlertResult = {
   severity: 'success' | 'warning' | 'error'
+  title: string
   message: string
   exportDisabled: boolean
 }
@@ -136,26 +138,29 @@ function getVersionExportAlert(
     return null
   }
 
-  const isOnlyShareable = !scopeValue || scopeValue === ExportSettingsFormFieldOptionExportScope.ONLY_SHAREABLE
+  const isOnlyShareable = !scopeValue || scopeValue === ExportSettingsFormFieldOptionScope.ONLY_SHAREABLE
 
   if (isOnlyShareable) {
     if (summary.shareable > 0) {
       return {
         severity: 'success',
-        message: `Shareable documents only - ${summary.shareable} shareable documents out of ${summary.total} will be exported.`,
+        title: 'Shareable documents only',
+        message: `${summary.shareable} shareable documents out of ${summary.total} will be exported.`,
         exportDisabled: false,
       }
     }
     if (summary.unknown > 0) {
       return {
         severity: 'warning',
-        message: 'No shareable documents found - No documents are confirmed as shareable in this version. Some documents have unknown shareability status. Contact the package owner to clarify.',
+        title: 'No shareable documents found',
+        message: 'No documents are confirmed as shareable in this version. Some documents have unknown shareability status. Contact the package owner to clarify.',
         exportDisabled: true,
       }
     }
     return {
       severity: 'warning',
-      message: 'No shareable documents found - All documents in this version are marked as non-shareable by the package owner.',
+      title: 'No shareable documents found',
+      message: 'All documents in this version are marked as non-shareable by the package owner.',
       exportDisabled: true,
     }
   }
@@ -164,7 +169,8 @@ function getVersionExportAlert(
   if (summary.nonShareable === 0 && summary.unknown === 0) {
     return {
       severity: 'success',
-      message: `All shareable - All ${summary.total} documents will be exported. All are marked as shareable by the package owner.`,
+      title: 'All shareable',
+      message: `All ${summary.total} documents will be exported. All are marked as shareable by the package owner.`,
       exportDisabled: false,
     }
   }
@@ -177,15 +183,17 @@ function getVersionExportAlert(
     }
     return {
       severity: 'error',
-      message: `Includes restricted documents - All ${summary.total} documents will be exported, including ${parts.join(' and ')}.`,
+      title: 'Includes restricted documents',
+      message: `All ${summary.total} documents will be exported, including ${parts.join(' and ')}.`,
       exportDisabled: false,
     }
   }
 
   return {
     severity: 'warning',
-    message: `Unknown shareability - ${summary.unknown} documents have unknown shareability status. Contact the package owner to clarify.`,
-    exportDisabled: true,
+    title: 'Unknown shareability',
+    message: `${summary.unknown} documents have unknown shareability status. Contact the package owner to clarify.`,
+    exportDisabled: false,
   }
 }
 
@@ -200,7 +208,7 @@ interface ExportSettingsFormProps {
   version: VersionKey
   documentId?: Key
   groupName?: Key
-  shareabilityStatus?: ShareabilityStatuses
+  shareabilityStatus?: ShareabilityStatus
   // State props
   exporting: boolean
   isLoadingExportConfig: boolean
@@ -262,8 +270,8 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
     }
 
   }, [exportedEntity, getFilteredFields, specType])
-  const scopeFields = useMemo(() => allFields.filter(f => f.kind === ExportSettingsFormFieldKind.EXPORT_SCOPE), [allFields])
-  const otherFields = useMemo(() => allFields.filter(f => f.kind !== ExportSettingsFormFieldKind.EXPORT_SCOPE), [allFields])
+  const scopeFields = useMemo(() => allFields.filter(f => f.kind === ExportSettingsFormFieldKind.SCOPE), [allFields])
+  const otherFields = useMemo(() => allFields.filter(f => f.kind !== ExportSettingsFormFieldKind.SCOPE), [allFields])
 
   const fieldsDefaultValues = useMemo(
     () => allFields.reduce((acc, field) => ({ ...acc, [field.kind]: field.defaultValue }), {}),
@@ -281,7 +289,7 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
   })
 
   // Single document alert
-  const currentScopeValue = watch(ExportSettingsFormFieldKind.EXPORT_SCOPE)
+  const currentScopeValue = watch(ExportSettingsFormFieldKind.SCOPE)
 
   // Version export alert
   const singleDocAlert = isSingleDocExport ? getSingleDocumentAlert(shareabilityStatus) : null
@@ -294,8 +302,9 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
     const fileFormat: ExportedFileFormat = data[ExportSettingsFormFieldKind.FILE_FORMAT] as ExportedFileFormat
     switch (exportedEntity) {
       case ExportedEntityKind.VERSION: {
-        const shareabilityFilter = (data[ExportSettingsFormFieldKind.EXPORT_SCOPE] === ExportSettingsFormFieldOptionExportScope.ONLY_SHAREABLE) ? 'shareable_only' : 'all'
-        requestData = new RequestDataExportVersion(packageId, version, fileFormat, removeOasExtensions, shareabilityFilter)
+        const allowedShareabilityStatuses: readonly ShareabilityStatus[] = data[ExportSettingsFormFieldKind.SCOPE] === ExportSettingsFormFieldOptionScope.ONLY_SHAREABLE
+          ? [SHAREABILITY_STATUS_SHAREABLE] : SHAREABILITY_STATUSES
+        requestData = new RequestDataExportVersion(packageId, version, fileFormat, removeOasExtensions, allowedShareabilityStatuses)
         break
       }
       case ExportedEntityKind.REST_DOCUMENT:
@@ -335,7 +344,7 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
       </DialogTitle>
       <DialogContent>
         {singleDocAlert && (
-          <ShareabilityAlert severity={singleDocAlert.severity} message={singleDocAlert.message} />
+          <ShareabilityAlert severity={singleDocAlert.severity} title={singleDocAlert.title} message={singleDocAlert.message} />
         )}
 
         {scopeFields.length > 0 && (
@@ -351,7 +360,7 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
 
         {versionAlert && (
           <Box mt={1} mb={2}>
-            <ShareabilityAlert severity={versionAlert.severity} message={versionAlert.message} />
+            <ShareabilityAlert severity={versionAlert.severity} title={versionAlert.title} message={versionAlert.message} />
           </Box>
         )}
 

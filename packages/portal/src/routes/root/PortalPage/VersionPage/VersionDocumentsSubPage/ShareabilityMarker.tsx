@@ -6,7 +6,7 @@ import {
   SHAREABILITY_STATUS_NON_SHAREABLE,
   SHAREABILITY_STATUS_SHAREABLE,
   SHAREABILITY_STATUS_UNKNOWN,
-  type ShareabilityStatuses,
+  type ShareabilityStatus,
 } from '@netcracker/qubership-apihub-api-processor'
 import {
   ShareabilityNonShareableIcon,
@@ -14,26 +14,26 @@ import {
   ShareabilityUnknownIcon,
 } from '@netcracker/qubership-apihub-ui-shared/icons/ShareabilityIcons'
 
-const ICON_BY_STATUS: Record<ShareabilityStatuses, FC<SvgIconProps>> = {
+const ICON_BY_STATUS: Record<ShareabilityStatus, FC<SvgIconProps>> = {
   [SHAREABILITY_STATUS_SHAREABLE]: ShareabilityShareableIcon,
   [SHAREABILITY_STATUS_NON_SHAREABLE]: ShareabilityNonShareableIcon,
   [SHAREABILITY_STATUS_UNKNOWN]: ShareabilityUnknownIcon,
 }
 
-const COLOR_BY_STATUS: Record<ShareabilityStatuses, SvgIconProps['color']> = {
+const COLOR_BY_STATUS: Record<ShareabilityStatus, SvgIconProps['color']> = {
   [SHAREABILITY_STATUS_SHAREABLE]: 'secondary',
   [SHAREABILITY_STATUS_NON_SHAREABLE]: 'error',
   [SHAREABILITY_STATUS_UNKNOWN]: 'action',
 }
 
-const TOOLTIP_TEXT_BY_STATUS: Record<ShareabilityStatuses, string> = {
+const TOOLTIP_TEXT_BY_STATUS: Record<ShareabilityStatus, string> = {
   [SHAREABILITY_STATUS_NON_SHAREABLE]: 'Non-Shareable',
   [SHAREABILITY_STATUS_SHAREABLE]: 'Shareable',
   [SHAREABILITY_STATUS_UNKNOWN]: 'Unknown shareability',
 }
 
 type ShareabilityMarkerProps = {
-  value: ShareabilityStatuses
+  value: ShareabilityStatus
   className?: string
   isLoading?: boolean
 }

@@ -7,18 +7,18 @@ import {
   SHAREABILITY_STATUS_NON_SHAREABLE,
   SHAREABILITY_STATUS_SHAREABLE,
   SHAREABILITY_STATUS_UNKNOWN,
-  type ShareabilityStatuses,
+  type ShareabilityStatus,
 } from '@netcracker/qubership-apihub-api-processor'
 import { MenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
 import { ShareabilityMarker } from './ShareabilityMarker'
 
-const DROPDOWN_OPTIONS: ShareabilityStatuses[] = [
+const DROPDOWN_OPTIONS: ShareabilityStatus[] = [
   SHAREABILITY_STATUS_NON_SHAREABLE,
   SHAREABILITY_STATUS_SHAREABLE,
   SHAREABILITY_STATUS_UNKNOWN,
 ]
 
-const DROPDOWN_OPTION_LABELS: Record<ShareabilityStatuses, string> = {
+const DROPDOWN_OPTION_LABELS: Record<ShareabilityStatus, string> = {
   [SHAREABILITY_STATUS_NON_SHAREABLE]: 'Non-Shareable',
   [SHAREABILITY_STATUS_SHAREABLE]: 'Shareable',
   [SHAREABILITY_STATUS_UNKNOWN]: 'Unknown',
@@ -40,8 +40,8 @@ const ShareabilityDropdownButton = styled(MenuButton)({
 })
 
 type ShareabilityDropdownProps = {
-  value: ShareabilityStatuses
-  onChange: (value: ShareabilityStatuses) => void
+  value: ShareabilityStatus
+  onChange: (value: ShareabilityStatus) => void
   isLoading?: boolean
 }
 
