@@ -2,7 +2,8 @@ import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { Box, Skeleton, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import { useIsFetching } from '@tanstack/react-query'
-import { type Dispatch, type FC, memo, type SetStateAction, useCallback, useMemo } from 'react'
+import { type Dispatch, type FC, memo, type SetStateAction, useCallback, useEffect, useMemo, useState } from 'react'
+import { useDebounce } from 'react-use'
 
 import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
 import type { Document } from '@apihub/entities/documents'
@@ -17,6 +18,7 @@ import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/componen
 import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
 import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'
 import { DOCUMENT_SHAREABILITY_MANAGEMENT_PERMISSION } from '@netcracker/qubership-apihub-ui-shared/entities/package-permissions'
+import { DEFAULT_DEBOUNCE } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
 import type { FileFormat } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import {
   isAsyncApiSpecType,
@@ -74,17 +76,6 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
   const [docPackageKey, docPackageVersion] = usePackageParamsWithRef()
   const { fullVersion } = useVersionWithRevision(docPackageVersion, docPackageKey)
 
-  const { updateShareability, isPending: isShareabilityUpdating } = useUpdateDocumentShareability(
-    docPackageKey!,
-    fullVersion,
-    slug,
-  )
-
-  const handleShareabilityChange = useCallback(
-    (value: ShareabilityStatuses) => updateShareability(value),
-    [updateShareability],
-  )
-
   const isDocumentsListRefetching = useIsFetching({
     queryKey: [DOCUMENTS_QUERY_KEY, docPackageKey, fullVersion],
     exact: false,
@@ -95,9 +86,36 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
     exact: true,
   }) > 0
 
-  const isShareabilityStatusLoading = isShareabilityUpdating
+  const { updateShareability, isPending: isShareabilityUpdating } = useUpdateDocumentShareability(
+    docPackageKey!,
+    fullVersion,
+    slug,
+  )
+
+  const isShareabilityStatusUpdating = isShareabilityUpdating
     || isDocumentsListRefetching
     || isDocumentRefetching
+
+  const [isShareabilityStatusLoading, setShareabilityStatusLoading] = useState(false)
+
+  useDebounce(
+    () => {
+      setShareabilityStatusLoading(isShareabilityStatusUpdating)
+    },
+    DEFAULT_DEBOUNCE,
+    [isShareabilityStatusUpdating],
+  )
+
+  useEffect(() => {
+    if (!isShareabilityStatusUpdating) {
+      setShareabilityStatusLoading(false)
+    }
+  }, [isShareabilityStatusUpdating])
+
+  const handleShareabilityChange = useCallback(
+    (value: ShareabilityStatuses) => updateShareability(value),
+    [updateShareability],
+  )
 
   if (isLoading) {
     return (
