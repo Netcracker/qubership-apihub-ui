@@ -1,5 +1,5 @@
 import type { SvgIconProps } from '@mui/material'
-import { Tooltip } from '@mui/material'
+import { CircularProgress, Tooltip } from '@mui/material'
 import { type FC, memo } from 'react'
 
 import {
@@ -35,13 +35,16 @@ const TOOLTIP_TEXT_BY_STATUS: Record<ShareabilityStatuses, string> = {
 type ShareabilityMarkerProps = {
   value: ShareabilityStatuses
   className?: string
+  isLoading?: boolean
 }
 
-export const ShareabilityMarker: FC<ShareabilityMarkerProps> = memo(({ value, className }) => {
+export const ShareabilityMarker: FC<ShareabilityMarkerProps> = memo(({ value, className, isLoading = false }) => {
   const Icon = ICON_BY_STATUS[value]
   return (
     <Tooltip title={TOOLTIP_TEXT_BY_STATUS[value]}>
-      <Icon fontSize="small" color={COLOR_BY_STATUS[value]} className={className} />
+      {isLoading
+        ? <CircularProgress sx={{ ml: 0.5 }} size={16} />
+        : <Icon fontSize="small" color={COLOR_BY_STATUS[value]} className={className} />}
     </Tooltip>
   )
 })

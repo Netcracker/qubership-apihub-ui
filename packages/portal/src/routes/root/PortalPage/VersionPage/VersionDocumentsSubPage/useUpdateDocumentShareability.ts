@@ -7,14 +7,19 @@ import { portalRequestVoid } from '@netcracker/qubership-apihub-ui-portal/src/ut
 import { DOCUMENT_QUERY_KEY } from '../useDocument'
 import { DOCUMENTS_QUERY_KEY } from '../useDocuments'
 
+type UseUpdateDocumentShareabilityResult = {
+  updateShareability: (status: ShareabilityStatuses) => void
+  isPending: boolean
+}
+
 export function useUpdateDocumentShareability(
   packageId: string,
   version: string,
   slug: string,
-): (status: ShareabilityStatuses) => void {
+): UseUpdateDocumentShareabilityResult {
   const queryClient = useQueryClient()
 
-  const { mutate } = useMutation<void, Error, ShareabilityStatuses>({
+  const { mutate, isPending } = useMutation<void, Error, ShareabilityStatuses>({
     mutationFn: (status) => patchShareability(packageId, version, slug, status),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: [DOCUMENTS_QUERY_KEY] })
@@ -22,10 +27,13 @@ export function useUpdateDocumentShareability(
     },
   })
 
-  return useCallback(
+  return {
+    updateShareability: useCallback(
     (status: ShareabilityStatuses) => mutate(status),
     [mutate],
-  )
+    ),
+    isPending,
+  }
 }
 
 async function patchShareability(

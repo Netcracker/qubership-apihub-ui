@@ -42,9 +42,14 @@ const ShareabilityDropdownButton = styled(MenuButton)({
 type ShareabilityDropdownProps = {
   value: ShareabilityStatuses
   onChange: (value: ShareabilityStatuses) => void
+  isLoading?: boolean
 }
 
-export const ShareabilityDropdown: FC<ShareabilityDropdownProps> = memo(({ value, onChange }) => {
+export const ShareabilityDropdown: FC<ShareabilityDropdownProps> = memo(({
+  value,
+  onChange,
+  isLoading = false,
+}) => {
   const [menuOpen, setMenuOpen] = useState(false)
 
   const handleClick = useCallback(() => {
@@ -53,11 +58,12 @@ export const ShareabilityDropdown: FC<ShareabilityDropdownProps> = memo(({ value
 
   return (
     <ShareabilityDropdownButton
-      startIcon={<ShareabilityMarker value={value} />}
+      startIcon={<ShareabilityMarker value={value} isLoading={isLoading} />}
       icon={menuOpen
         ? <KeyboardArrowUpOutlinedIcon fontSize="small" />
         : <KeyboardArrowDownOutlinedIcon fontSize="small" />}
       variant="outlined"
+      disabled={isLoading}
       onClick={handleClick}
       onItemClick={handleClick}
       data-testid="ShareabilityDropdownButton"
