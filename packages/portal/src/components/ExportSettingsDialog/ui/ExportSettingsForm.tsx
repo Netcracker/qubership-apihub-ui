@@ -69,7 +69,7 @@ const ExportSettingsFormFields: FC<ExportSettingsFormFieldsProps> = memo(props =
     shareabilityExportVersionAlert,
   } = props
   return (
-    <Box component="form" display="flex" flexDirection="column" gap={2}>
+    <Box display="flex" flexDirection="column" gap={2}>
       {fields.map(field => {
         if (!field.options?.length) {
           return null
