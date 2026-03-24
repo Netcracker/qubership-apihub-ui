@@ -34,6 +34,7 @@ import {
 import { MD_FILE_FORMAT } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import {
   isAsyncApiSpecType,
+  isGraphQlSpecType,
   isOpenApiSpecType,
   UNKNOWN_SPEC_TYPE,
 } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
@@ -89,6 +90,7 @@ export const SpecToolbar: FC = memo(() => {
   const isSharingAvailable = type !== UNKNOWN_SPEC_TYPE || format === MD_FILE_FORMAT
   const isOpenApiSpecification = isOpenApiSpecType(type)
   const isAsyncApiSpecification = isAsyncApiSpecType(type)
+  const isGraphQlSpecification = isGraphQlSpecType(type)
 
   const { showExportSettingsDialog } = useEventBus()
 
@@ -162,7 +164,7 @@ export const SpecToolbar: FC = memo(() => {
             data-testid="ExportDocumentMenuButton"
           >
             {DOCUMENT_MENU_CONFIG_ON_PREVIEW_PAGE.map((menuItem) => (
-              menuItem.condition(isOpenApiSpecification, isSharingAvailable, isAsyncApiSpecification) &&
+              menuItem.condition(isOpenApiSpecification, isSharingAvailable, isAsyncApiSpecification, isGraphQlSpecification) &&
               <MenuItem
                 key={menuItem.id}
                 onClick={() => menuItem.action(actionParams)}

@@ -23,7 +23,7 @@ import {
 import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 import type { Key, PackageKey, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoContextIcon'
-import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import { isGraphQlSpecType, type SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import type { ExportConfig } from '../../../routes/root/PortalPage/useExportConfig'
 import { useDocuments } from '../../../routes/root/PortalPage/VersionPage/useDocuments'
 import {
@@ -46,7 +46,7 @@ import {
 import { type ShareabilityAlerts, useShareabilityAlerts } from '../hooks/useShareabilityAlerts'
 import { useShareabilitySummary } from '../hooks/useShareabilitySummary'
 import { useLocalExportSettings } from '../storage/useLocalExportSettings'
-import { ShareabilityExportVersionAlert, ShareabilitySingleDocAlert } from './ShareabilityAlert'
+import { ShareabilityAlert, ShareabilityExportVersionAlert, ShareabilitySingleDocAlert } from './ShareabilityAlert'
 
 interface ExportSettingsFormFieldsProps {
   disabled: boolean
@@ -143,6 +143,7 @@ interface ExportSettingsFormProps {
   // Action props
   setRequestDataExport: (requestData: IRequestDataExport) => void
   specType?: SpecType
+  onDownloadPublishedDocument?: () => void
 }
 
 export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
@@ -161,6 +162,7 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
     isStartingExport,
     setRequestDataExport,
     specType,
+    onDownloadPublishedDocument,
   } = props
 
   const isVersionExport = exportedEntity === ExportedEntityKind.VERSION
@@ -175,9 +177,17 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
   const summary = useShareabilitySummary(documents)
 
   const getFilteredFields = useCallback((specType: SpecType): ExportSettingsFormField[] => {
+    if (isGraphQlSpecType(specType)) {
+      return []
+    }
+
+    const allowedOptions = SPEC_TYPE_ACCESS_VIEW_EXPORT_FIELD[specType] ?? []
+    if (allowedOptions.length === 0) {
+      return EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE[exportedEntity]
+    }
+
     return EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE[exportedEntity]
       .map(field => {
-        const allowedOptions = SPEC_TYPE_ACCESS_VIEW_EXPORT_FIELD[specType]!
         return {
           ...field,
           options: [...intersectionBy(
@@ -191,11 +201,11 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
 
   // Calculate fields and default values
   const fields = useMemo(() => {
-    if (specType && SPEC_TYPE_ACCESS_VIEW_EXPORT_FIELD[specType]) {
+    if (specType) {
       return getFilteredFields(specType)
-    } else {
-      return EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE[exportedEntity]
     }
+
+    return EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE[exportedEntity]
   }, [exportedEntity, getFilteredFields, specType])
 
   const fieldsDefaultValues = useMemo(
@@ -226,6 +236,15 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
 
   // Handle form submission
   const onSubmit = (data: ExportSettingsFormData): void => {
+    const isGraphQlExport = exportedEntity === ExportedEntityKind.REST_DOCUMENT
+      && specType
+      && isGraphQlSpecType(specType)
+
+    if (isGraphQlExport) {
+      onDownloadPublishedDocument?.()
+      return
+    }
+
     let requestData: IRequestDataExport | undefined
     const removeOasExtensions =
       data[ExportSettingsFormFieldKind.OAS_EXTENSIONS] === ExportSettingsFormFieldOptionOasExtensions.REMOVE
@@ -281,13 +300,21 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
         Export Settings
       </DialogTitle>
       <DialogContent>
-        {singleDocExportAlert && (
-          <ShareabilitySingleDocAlert
-            severity={singleDocExportAlert.severity}
-            title={singleDocExportAlert.title}
-            message={singleDocExportAlert.message}
-          />
-        )}
+        {singleDocExportAlert && (isGraphQlSpecType(specType)
+          ? (
+            <ShareabilityAlert
+              severity={singleDocExportAlert.severity}
+              title={singleDocExportAlert.title}
+              message={singleDocExportAlert.message}
+            />
+          )
+          : (
+            <ShareabilitySingleDocAlert
+              severity={singleDocExportAlert.severity}
+              title={singleDocExportAlert.title}
+              message={singleDocExportAlert.message}
+            />
+          ))}
         <ExportSettingsFormFields
           disabled={initializing || exporting}
           fields={fields}

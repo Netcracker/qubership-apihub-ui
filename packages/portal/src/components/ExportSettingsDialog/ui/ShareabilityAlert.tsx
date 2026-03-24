@@ -8,7 +8,7 @@ export type ShareabilityAlertProps = {
   className?: string
 }
 
-const ShareabilityAlert: FC<ShareabilityAlertProps> = memo(({ severity, title, message, className }) => (
+export const ShareabilityAlert: FC<ShareabilityAlertProps> = memo(({ severity, title, message, className }) => (
   <Alert severity={severity} data-testid="ShareabilityAlert" className={className}>
     {title && <AlertTitle>{title}</AlertTitle>}
     {message}

@@ -29,7 +29,12 @@ export type DocumentActionParams = {
 export type MenuItemConfig = {
   id: string
   label: string
-  condition: (isOpenApiSpec: boolean, isSharingAvailable: boolean, isAsyncApiSpec:boolean) => boolean
+  condition: (
+    isOpenApiSpec: boolean,
+    isSharingAvailable: boolean,
+    isAsyncApiSpec: boolean,
+    isGraphQlSpec: boolean,
+  ) => boolean
   action: (params: DocumentActionParams) => void
   'data-testid'?: string
 }
@@ -54,7 +59,7 @@ export const DOCUMENT_MENU_CONFIG: MenuItemConfig[] = [
   {
     id: 'export',
     label: 'Export',
-    condition: (isOpenApiSpec, _, isAsyncApiSpec) => isOpenApiSpec || isAsyncApiSpec,
+    condition: (isOpenApiSpec, _, isAsyncApiSpec, isGraphQlSpec) => isOpenApiSpec || isAsyncApiSpec || isGraphQlSpec,
     action: ({ showExportSettingsDialog, packageKey, fullVersion, refPackageKey, refFullVersion, slug, specType, shareabilityStatus }) => {
       showExportSettingsDialog({
         specType: specType,
@@ -70,7 +75,7 @@ export const DOCUMENT_MENU_CONFIG: MenuItemConfig[] = [
   {
     id: 'download',
     label: 'Download',
-    condition: (isOpenApiSpec, _, isAsyncApiSpec) => !isOpenApiSpec && !isAsyncApiSpec,
+    condition: (isOpenApiSpec, _, isAsyncApiSpec, isGraphQlSpec) => !isOpenApiSpec && !isAsyncApiSpec && !isGraphQlSpec,
     action: ({ downloadPublishedDocument }) => {
       downloadPublishedDocument()
     },
