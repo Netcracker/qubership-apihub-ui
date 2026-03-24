@@ -6,7 +6,6 @@ import {
   DialogContent,
   DialogTitle,
   FormControlLabel,
-  Radio,
   RadioGroup,
   Tooltip,
   Typography,
@@ -23,6 +22,7 @@ import {
 import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 import type { Key, PackageKey, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoContextIcon'
+import { RadioCustom } from '@netcracker/qubership-apihub-ui-shared/components/RadioCustom'
 import { isGraphQlSpecType, type SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import type { ExportConfig } from '../../../routes/root/PortalPage/useExportConfig'
 import { useDocuments } from '../../../routes/root/PortalPage/VersionPage/useDocuments'
@@ -94,7 +94,7 @@ const ExportSettingsFormFields: FC<ExportSettingsFormFieldsProps> = memo(props =
                         value={option.value}
                         label={option.label}
                         checked={!value && option.value === field.defaultValue || value === option.value}
-                        control={<Radio disabled={disabled} />}
+                        control={<RadioCustom disabled={disabled} />}
                       />
                       {option.tooltip && (
                         <Tooltip
