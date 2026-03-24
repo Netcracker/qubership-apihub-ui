@@ -26,7 +26,6 @@ import DatePicker from 'react-multi-date-picker'
 
 import { usePackages } from '@netcracker/qubership-apihub-ui-shared/hooks/packages/usePackages'
 import { useDebounce } from 'react-use'
-import { useGlobalSearchActiveTab } from './GlobalSearchTextProvider'
 import type {
   GraphQlOperationTypes,
   OptionRestDetailedScope,
@@ -126,8 +125,6 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
     scope,
   } = watch()
 
-  const activeTab = useGlobalSearchActiveTab()
-
   const workspaceKey = watch().workspace?.key
   const packageKey = watch().pkg?.key
 
@@ -197,6 +194,26 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
 
   const { useLegacySearch } = useSystemInfo()
 
+  const apiTypeOperationsParams: Record<ApiType, SearchRestParams | SearchGQLParams> = useMemo(() => {
+    const restDetailedScope = detailedScope?.map(scope => detailedScopeMapping[scope])
+    return {
+      [API_TYPE_REST]: {
+        apiType: apiType,
+        scope: [REQUEST_SCOPE, RESPONSE_SCOPE],
+        detailedScope: restDetailedScope,
+        methods: methods,
+      } satisfies SearchRestParams,
+      [API_TYPE_GRAPHQL]: {
+        apiType: apiType,
+        scope: [ARGUMENT_SCOPE, PROPERTY_SCOPE, ANNOTATION_SCOPE],
+        operationTypes: [QUERY_OPERATION_TYPES, MUTATION_OPERATION_TYPES, SUBSCRIPTION_OPERATION_TYPES],
+      } satisfies SearchGQLParams,
+      [API_TYPE_ASYNCAPI]: {
+        apiType: apiType,
+      } as SearchAsyncApiParams,
+    }
+  }, [apiType, detailedScope, methods])
+
   const onSubmit = useMemo(
     () => handleSubmit((value) => {
       const {
@@ -204,8 +221,6 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
         status,
         publicationDatePeriod,
         apiType,
-        detailedScope,
-        methods,
       } = value
 
       const versionData = version ? [version] : []
@@ -220,25 +235,6 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
           return [workspaceKey]
         }
         return []
-      }
-
-      const restDetailedScope = detailedScope?.map(scope => detailedScopeMapping[scope])
-
-      const apiTypeOperationsParams: Record<ApiType, SearchRestParams | SearchGQLParams> = {
-        [API_TYPE_REST]: {
-          apiType: apiType,
-          scope: [REQUEST_SCOPE, RESPONSE_SCOPE],
-          detailedScope: restDetailedScope,
-          methods: methods,
-        } satisfies SearchRestParams,
-        [API_TYPE_GRAPHQL]: {
-          apiType: apiType,
-          scope: [ARGUMENT_SCOPE, PROPERTY_SCOPE, ANNOTATION_SCOPE],
-          operationTypes: [QUERY_OPERATION_TYPES, MUTATION_OPERATION_TYPES, SUBSCRIPTION_OPERATION_TYPES],
-        } satisfies SearchGQLParams,
-        [API_TYPE_ASYNCAPI]: {
-          apiType: apiType,
-        } as SearchAsyncApiParams,
       }
 
       const globalSearchFilter = useLegacySearch
@@ -295,271 +291,270 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
     ],
   )
 
-  return useMemo(() => (<>
-      <Typography sx={{ mb: 2, mt: 1 }} variant="h3">Filters</Typography>
-      <Box component="form" sx={{ overflow: 'scroll', height: 'calc(100% - 60px)', pr: 1 }}>
-        <Controller
-          name="apiType"
-          control={control}
-          render={({ field: { value, onChange } }) => <Autocomplete
-            value={value ?? null}
-            options={API_TYPES}
-            getOptionLabel={(option) => API_TYPE_TITLE_MAP[option]!}
-            isOptionEqualToValue={(option, value) => option === value}
-            renderOption={(props, option) => (
-              <ListItem
-                {...props}
-                key={option}
-                data-testid={`Option-${option}`}
-              >
-                {API_TYPE_TITLE_MAP[option]!}
-              </ListItem>
-            )}
-            onChange={(_, type) => {
-              setValue('scope', [])
-              setValue('detailedScope', [])
-              setValue('methods', [])
-              setValue('operationTypes', [])
-              onChange(type)
-            }}
-            renderInput={(params) => (
-              <TextField
-                required
-                {...params}
-                label="API type"
-                sx={{ mt: 0 }}
-                error={!!errors.apiType}
-              />
-            )}
-            data-testid="ApiTypeAutocomplete"
-          />}
-        />
-        <Controller
-          name="workspace"
-          control={control}
-          render={({ field: { value } }) => <Autocomplete<Package>
-            sx={AUTOCOMPLETE_STYLE}
-            value={value}
-            isOptionEqualToValue={(option, value) => option.key === value.key}
-            options={workspaces}
-            filterOptions={disableAutocompleteSearch}
-            loading={isWorkspacesLoading}
-            getOptionLabel={({ name }: Package) => name}
-            renderOption={(props, { key, name }) =>
-              <OptionItem key={key} props={props} title={name} subtitle={key}/>}
-            onChange={(_, value) => {
-              setValue('workspace', value)
-              setValue('group', null)
-              setValue('pkg', null)
-              onWorkspaceInputChange.clear()
-              setWorkspacesFilter('')
-            }}
-            renderInput={(params) =>
-              <TextField
-                {...params}
-                required
-                label="Workspace"/>}
-            onInputChange={onWorkspaceInputChange}
-            onBlur={() => {
-              onWorkspaceInputChange.clear()
-              setWorkspacesFilter('')
-            }}
-            data-testid="WorkspaceAutocomplete"
-          />}
-        />
-
-        <Tooltip
-          disableHoverListener={!!workspaceKey}
-          disableFocusListener={!!workspaceKey}
-          title="Specify Workspace for Group selection"
-        >
-          <Box>
-            <Controller
-              name="group"
-              control={control}
-              render={({ field: { value } }) => <Autocomplete<Package>
-                sx={AUTOCOMPLETE_STYLE}
-                value={value}
-                disabled={!workspaceKey}
-                isOptionEqualToValue={(option, value) => option.key === value.key}
-                options={groups}
-                filterOptions={disableAutocompleteSearch}
-                loading={isGroupsLoading}
-                getOptionLabel={({ name }: Package) => name}
-                renderOption={(props, { key, name }) =>
-                  <OptionItem key={key} props={props} title={name} subtitle={key}/>}
-                onChange={(_, value) => {
-                  setValue('group', value)
-                  setValue('pkg', null)
-                  onGroupInputChange.clear()
-                  setGroupsFilter('')
-                }}
-                renderInput={(params) =>
-                  <TextField {...params} label="Group"/>}
-                onInputChange={onGroupInputChange}
-                onBlur={() => {
-                  onGroupInputChange.clear()
-                  setGroupsFilter('')
-                }}
-                data-testid="GroupAutocomplete"
-              />}
-            />
-          </Box>
-        </Tooltip>
-
-        <Tooltip
-          disableHoverListener={!!workspaceKey}
-          disableFocusListener={!!workspaceKey}
-          title="Specify Workspace for Package selection"
-        >
-          <Box>
-            <Controller
-              name="pkg"
-              control={control}
-              render={({ field: { value } }) => <Autocomplete<Package>
-                sx={AUTOCOMPLETE_STYLE}
-                value={value}
-                disabled={!workspaceKey}
-                isOptionEqualToValue={(option, value) => option.key === value.key}
-                options={packages}
-                filterOptions={disableAutocompleteSearch}
-                loading={isPackagesLoading}
-                getOptionLabel={({ name }: Package) => name}
-                renderOption={(props, { key, name }) =>
-                  <OptionItem key={key} props={props} title={name} subtitle={key}/>}
-                onChange={(_, value) => {
-                  setValue('pkg', value)
-                  onPackageInputChange.clear()
-                  setPackagesFilter('')
-                }}
-                renderInput={(params) =>
-                  <TextField {...params} label="Package"/>}
-                onInputChange={onPackageInputChange}
-                onBlur={() => {
-                  onPackageInputChange.clear()
-                  setPackagesFilter('')
-                }}
-                data-testid="PackageAutocomplete"
-              />}
-            />
-          </Box>
-        </Tooltip>
-
-        <Controller
-          name="version"
-          control={control}
-          render={({ field }) => <Autocomplete
-            forcePopupIcon={false}
-            value={field.value ?? null}
-            options={handledVersions?.map(version => version.key)}
-            isOptionEqualToValue={(option, value) => option === value}
-            filterOptions={disableAutocompleteSearch}
-            loading={areVersionsInitiallyLoading}
-            renderInput={(params) => <TextField {...field} {...params} label="Package version"/>}
-            onInputChange={onVersionInputChange}
-            onChange={(_, version) => setValue('version', version ?? '')}
-            data-testid="PackageVersionAutocomplete"
-          />}
-        />
-
-        <Controller
-          name="status"
-          control={control}
-          render={({ field }) => <Autocomplete
-            freeSolo
-            forcePopupIcon={true}
-            value={field.value}
-            options={VERSION_STATUSES}
-            renderOption={(props, option) => <ListItem
+  return <>
+    <Typography sx={{ mb: 2, mt: 1 }} variant="h3">Filters</Typography>
+    <Box component="form" sx={{ overflow: 'scroll', height: 'calc(100% - 60px)', pr: 1 }}>
+      <Controller
+        name="apiType"
+        control={control}
+        render={({ field: { value, onChange } }) => <Autocomplete
+          value={value ?? null}
+          options={API_TYPES}
+          getOptionLabel={(option) => API_TYPE_TITLE_MAP[option]!}
+          isOptionEqualToValue={(option, value) => option === value}
+          renderOption={(props, option) => (
+            <ListItem
               {...props}
               key={option}
-              data-testid={`${PUBLISH_STATUSES.get(option)}Option`}
+              data-testid={`Option-${option}`}
             >
-              <CustomChip
-                value={option}
-                data-testid={`${PUBLISH_STATUSES.get(option)}Chip`}
-              />
-            </ListItem>}
-            renderTags={(value, getTagProps) => (
-              value.map((option, index) => <CustomChip
-                {...getTagProps({ index })}
-                key={index}
-                value={option}
-                data-testid={`${PUBLISH_STATUSES.get(option)}Chip`}
-              />)
-            )}
-            onChange={(_, status) => setValue('status', status as VersionStatus)}
-            renderInput={(params) =>
-              <TextField
-                {...field}
-                {...params}
-                label="Version status"
-                required
-                InputProps={{
-                  ...params.InputProps,
-                  // These styles hide the text in the input for correct view
-                  sx: {
-                    ['& .MuiInputBase-input']: {
+              {API_TYPE_TITLE_MAP[option]!}
+            </ListItem>
+          )}
+          onChange={(_, type) => {
+            setValue('scope', [])
+            setValue('detailedScope', [])
+            setValue('methods', [])
+            setValue('operationTypes', [])
+            onChange(type)
+          }}
+          renderInput={(params) => (
+            <TextField
+              required
+              {...params}
+              label="API type"
+              sx={{ mt: 0 }}
+              error={!!errors.apiType}
+            />
+          )}
+          data-testid="ApiTypeAutocomplete"
+        />}
+      />
+      <Controller
+        name="workspace"
+        control={control}
+        render={({ field: { value } }) => <Autocomplete<Package>
+          sx={AUTOCOMPLETE_STYLE}
+          value={value}
+          isOptionEqualToValue={(option, value) => option.key === value.key}
+          options={workspaces}
+          filterOptions={disableAutocompleteSearch}
+          loading={isWorkspacesLoading}
+          getOptionLabel={({ name }: Package) => name}
+          renderOption={(props, { key, name }) =>
+            <OptionItem key={key} props={props} title={name} subtitle={key}/>}
+          onChange={(_, value) => {
+            setValue('workspace', value)
+            setValue('group', null)
+            setValue('pkg', null)
+            onWorkspaceInputChange.clear()
+            setWorkspacesFilter('')
+          }}
+          renderInput={(params) =>
+            <TextField
+              {...params}
+              required
+              label="Workspace"/>}
+          onInputChange={onWorkspaceInputChange}
+          onBlur={() => {
+            onWorkspaceInputChange.clear()
+            setWorkspacesFilter('')
+          }}
+          data-testid="WorkspaceAutocomplete"
+        />}
+      />
+
+      <Tooltip
+        disableHoverListener={!!workspaceKey}
+        disableFocusListener={!!workspaceKey}
+        title="Specify Workspace for Group selection"
+      >
+        <Box>
+          <Controller
+            name="group"
+            control={control}
+            render={({ field: { value } }) => <Autocomplete<Package>
+              sx={AUTOCOMPLETE_STYLE}
+              value={value}
+              disabled={!workspaceKey}
+              isOptionEqualToValue={(option, value) => option.key === value.key}
+              options={groups}
+              filterOptions={disableAutocompleteSearch}
+              loading={isGroupsLoading}
+              getOptionLabel={({ name }: Package) => name}
+              renderOption={(props, { key, name }) =>
+                <OptionItem key={key} props={props} title={name} subtitle={key}/>}
+              onChange={(_, value) => {
+                setValue('group', value)
+                setValue('pkg', null)
+                onGroupInputChange.clear()
+                setGroupsFilter('')
+              }}
+              renderInput={(params) =>
+                <TextField {...params} label="Group"/>}
+              onInputChange={onGroupInputChange}
+              onBlur={() => {
+                onGroupInputChange.clear()
+                setGroupsFilter('')
+              }}
+              data-testid="GroupAutocomplete"
+            />}
+          />
+        </Box>
+      </Tooltip>
+
+      <Tooltip
+        disableHoverListener={!!workspaceKey}
+        disableFocusListener={!!workspaceKey}
+        title="Specify Workspace for Package selection"
+      >
+        <Box>
+          <Controller
+            name="pkg"
+            control={control}
+            render={({ field: { value } }) => <Autocomplete<Package>
+              sx={AUTOCOMPLETE_STYLE}
+              value={value}
+              disabled={!workspaceKey}
+              isOptionEqualToValue={(option, value) => option.key === value.key}
+              options={packages}
+              filterOptions={disableAutocompleteSearch}
+              loading={isPackagesLoading}
+              getOptionLabel={({ name }: Package) => name}
+              renderOption={(props, { key, name }) =>
+                <OptionItem key={key} props={props} title={name} subtitle={key}/>}
+              onChange={(_, value) => {
+                setValue('pkg', value)
+                onPackageInputChange.clear()
+                setPackagesFilter('')
+              }}
+              renderInput={(params) =>
+                <TextField {...params} label="Package"/>}
+              onInputChange={onPackageInputChange}
+              onBlur={() => {
+                onPackageInputChange.clear()
+                setPackagesFilter('')
+              }}
+              data-testid="PackageAutocomplete"
+            />}
+          />
+        </Box>
+      </Tooltip>
+
+      <Controller
+        name="version"
+        control={control}
+        render={({ field }) => <Autocomplete
+          forcePopupIcon={false}
+          value={field.value ?? null}
+          options={handledVersions?.map(version => version.key)}
+          isOptionEqualToValue={(option, value) => option === value}
+          filterOptions={disableAutocompleteSearch}
+          loading={areVersionsInitiallyLoading}
+          renderInput={(params) => <TextField {...field} {...params} label="Package version"/>}
+          onInputChange={onVersionInputChange}
+          onChange={(_, version) => setValue('version', version ?? '')}
+          data-testid="PackageVersionAutocomplete"
+        />}
+      />
+
+      <Controller
+        name="status"
+        control={control}
+        render={({ field }) => <Autocomplete
+          freeSolo
+          forcePopupIcon={true}
+          value={field.value}
+          options={VERSION_STATUSES}
+          renderOption={(props, option) => <ListItem
+            {...props}
+            key={option}
+            data-testid={`${PUBLISH_STATUSES.get(option)}Option`}
+          >
+            <CustomChip
+              value={option}
+              data-testid={`${PUBLISH_STATUSES.get(option)}Chip`}
+            />
+          </ListItem>}
+          renderTags={(value, getTagProps) => (
+            value.map((option, index) => <CustomChip
+              {...getTagProps({ index })}
+              key={index}
+              value={option}
+              data-testid={`${PUBLISH_STATUSES.get(option)}Chip`}
+            />)
+          )}
+          onChange={(_, status) => setValue('status', status as VersionStatus)}
+          renderInput={(params) =>
+            <TextField
+              {...field}
+              {...params}
+              label="Version status"
+              required
+              InputProps={{
+                ...params.InputProps,
+                // These styles hide the text in the input for correct view
+                sx: {
+                  ['& .MuiInputBase-input']: {
+                    color: 'transparent',
+                    caretColor: 'transparent',
+                    '::selection': {
+                      background: 'transparent',
                       color: 'transparent',
-                      caretColor: 'transparent',
-                      '::selection': {
-                        background: 'transparent',
-                        color: 'transparent',
-                      },
-                    },
-                    ['& .Mui-disabled']: {
-                      WebkitTextFillColor: 'transparent',
                     },
                   },
-                  startAdornment: status ? <CustomChip sx={{ height: 16, mb: 1 }} value={status}/> : null,
-                }}
-              />
-            }
-            data-testid="VersionStatusAutocomplete"
-          />}
-        />
+                  ['& .Mui-disabled']: {
+                    WebkitTextFillColor: 'transparent',
+                  },
+                },
+                startAdornment: status ? <CustomChip sx={{ height: 16, mb: 1 }} value={status}/> : null,
+              }}
+            />
+          }
+          data-testid="VersionStatusAutocomplete"
+        />}
+      />
 
-        <Controller
-          control={control}
-          name="publicationDatePeriod"
-          render={({ field }) => <DatePicker
-            range
-            containerStyle={{ width: '100%' }}
-            ref={ref}
-            value={field.value ?? null}
-            calendarPosition="bottom"
-            onChange={formatPublicationDate}
-            render={(
-              value: string | null,
-              openCalendar: () => void,
-              handleValueChange: (e: ChangeEvent) => void,
-            ) =>
-              <TextField
-                {...field}
-                value={value ?? null}
-                label="Version publication date"
-                onClick={() => ref.current?.openCalendar()}
-                onChange={handleValueChange}
-                InputProps={{ endAdornment: <CalendarIcon/> }}
-                data-testid="DatePicker"/>
-            }
-          />}
-        />
-      </Box>
+      <Controller
+        control={control}
+        name="publicationDatePeriod"
+        render={({ field }) => <DatePicker
+          range
+          containerStyle={{ width: '100%' }}
+          ref={ref}
+          value={field.value ?? null}
+          calendarPosition="bottom"
+          onChange={formatPublicationDate}
+          render={(
+            value: string | null,
+            openCalendar: () => void,
+            handleValueChange: (e: ChangeEvent) => void,
+          ) =>
+            <TextField
+              {...field}
+              value={value ?? null}
+              label="Version publication date"
+              onClick={() => ref.current?.openCalendar()}
+              onChange={handleValueChange}
+              InputProps={{ endAdornment: <CalendarIcon/> }}
+              data-testid="DatePicker"/>
+          }
+        />}
+      />
+    </Box>
 
-      <Box sx={{ position: 'absolute', bottom: '16px', display: 'flex' }}>
-        <Button
-          variant="outlined"
-          onClick={() => {
-            reset()
-          }}
-          data-testid="ResetButton"
-        >
-          Reset
-        </Button>
-      </Box>
-    </>
-  ), [activeTab, apiType, control, errors.apiType, formatPublicationDate, groups, handledVersions, isWorkspacesLoading, isGroupsLoading, isPackagesLoading, areVersionsInitiallyLoading, packages, reset, setValue, workspaceKey, workspaces, onGroupInputChange, onPackageInputChange, onWorkspaceInputChange, onVersionInputChange])
+    <Box sx={{ position: 'absolute', bottom: '16px', display: 'flex' }}>
+      <Button
+        variant="outlined"
+        onClick={() => {
+          reset()
+        }}
+        data-testid="ResetButton"
+      >
+        Reset
+      </Button>
+    </Box>
+  </>
 })
 
 type DatePickerRef = {

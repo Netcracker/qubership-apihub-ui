@@ -52,7 +52,7 @@ export const GlobalSearchPanel: FC = memo(() => {
             <SearchFilters enabledFilters={open}/>
           </Box>
           <Divider sx={{ mt: -2, mb: -2 }} orientation="vertical"/>
-          <Box sx={{ pl: 1, width: '500px' }}>
+          <Box sx={{ pl: 3, width: '500px' }}>
             <Typography sx={{ mb: 2, mt: 1 }} variant="h3">Global Search</Typography>
             <SearchResults/>
           </Box>

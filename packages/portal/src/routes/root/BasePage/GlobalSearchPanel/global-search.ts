@@ -38,7 +38,7 @@ export async function getSearchResult(
   level: Level,
   limit: number,
   page: number,
-  useLegacySearch : boolean,
+  useLegacySearch: boolean,
 ): Promise<SearchResults> {
 
   const queryParams = optionalSearchParams({
