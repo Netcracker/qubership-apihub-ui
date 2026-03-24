@@ -10,15 +10,18 @@ export function createPalette(): PaletteOptions {
     },
     error: {
       main: '#FF5260',
+      light: '#FFEAE9',
     },
     primary: {
       main: '#0068FF',
     },
     secondary: {
       main: '#00BB5B',
+      light: '#D0FAD4',
     },
     warning: {
       main: '#FFB02E',
+      light: '#FFF4CC',
     },
     // Override colors of interactive UI elements for more precise mockup compliance
     action: {
