@@ -190,6 +190,7 @@ export type SearchCriteria = {
     endDate: string
   }
   operationParams?: SearchRestParams | SearchGQLParams
+  apiType?: ApiType
 }
 
 export type SearchRestParams = Partial<{

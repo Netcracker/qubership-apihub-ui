@@ -51,7 +51,7 @@ export const EMPTY_SYSTEM_INFO: SystemInfo = {
   productionMode: false,
   externalLinks: [],
   migrationInProgress: false,
-  useLegacySearch: true,
+  useLegacySearch: false,
 }
 
 export function toSystemInfo(value: SystemInfoDto): SystemInfo {

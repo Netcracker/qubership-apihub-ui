@@ -16,7 +16,7 @@
 
 import type { ChangeEvent, FC, SyntheticEvent } from 'react'
 import * as React from 'react'
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { memo, useCallback, useMemo, useRef, useState } from 'react'
 import { Autocomplete, Box, Button, debounce, ListItem, TextField, Tooltip, Typography } from '@mui/material'
 import { Controller, useForm } from 'react-hook-form'
 import { usePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
@@ -26,7 +26,7 @@ import DatePicker from 'react-multi-date-picker'
 
 import { usePackages } from '@netcracker/qubership-apihub-ui-shared/hooks/packages/usePackages'
 import { useDebounce } from 'react-use'
-import { OPERATIONS_TAB, useGlobalSearchActiveTab } from './GlobalSearchTextProvider'
+import { useGlobalSearchActiveTab } from './GlobalSearchTextProvider'
 import type {
   GraphQlOperationTypes,
   OptionRestDetailedScope,
@@ -195,15 +195,6 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
     setValue('publicationDatePeriod', formattedPublicationDate)
   }, [setValue])
 
-  useEffect(() => {
-    if (activeTab !== OPERATIONS_TAB) {
-      setValue('apiType', undefined)
-      setValue('scope', [])
-      setValue('detailedScope', [])
-      setValue('methods', [])
-      setValue('operationTypes', [])
-    }
-  }, [activeTab, setValue])
   const { useLegacySearch } = useSystemInfo()
 
   const onSubmit = useMemo(

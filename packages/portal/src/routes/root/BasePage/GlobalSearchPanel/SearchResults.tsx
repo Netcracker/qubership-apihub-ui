@@ -57,16 +57,12 @@ export const SearchResults: FC = memo(() => {
   const activeTab = useGlobalSearchActiveTab()
   const setActiveTab = useSetGlobalSearchActiveTab()
 
-  // const [apiSpecificSearchMode, setApiSpecificSearchMode] = useState(false)
-
   const [filters, setFilters] = useState<Omit<SearchCriteria, 'searchString'>>()
   useEvent(APPLY_GLOBAL_SEARCH_FILTERS, ({
     detail: {
       filters,
-   //   apiSearchMode,
     },
   }: CustomEvent<GlobalSearchPanelDetails>): void => {
-    // setApiSpecificSearchMode(apiSearchMode)
     filters && setFilters(getOptionalBody(filters))
   })
 
@@ -89,8 +85,6 @@ export const SearchResults: FC = memo(() => {
       ? { criteria: { ...filters, searchString: searchText }, enabled: currentLevel === PACKAGE_LEVEL }
       : { criteria: { searchString: searchText }, enabled: currentLevel === PACKAGE_LEVEL },
   )
-
-//  useEffect(() => {apiSpecificSearchMode && setActiveTab(OPERATIONS_TAB)}, [apiSpecificSearchMode, setActiveTab])
 
   return (
     <Box
