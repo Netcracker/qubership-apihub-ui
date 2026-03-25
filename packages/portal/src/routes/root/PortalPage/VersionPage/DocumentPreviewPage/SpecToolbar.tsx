@@ -118,6 +118,7 @@ export const SpecToolbar: FC = memo(() => {
     copyToClipboard: copyToClipboard,
     showNotification: showNotification,
     createTemplate: createTemplate,
+    specType: type,
   }
 
   return (
