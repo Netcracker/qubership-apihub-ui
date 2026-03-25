@@ -20,9 +20,9 @@ import {
   type ShareabilityStatus,
 } from '@netcracker/qubership-apihub-api-processor'
 import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
+import { RadioCustom } from '@netcracker/qubership-apihub-ui-shared/components/RadioCustom'
 import type { Key, PackageKey, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoContextIcon'
-import { RadioCustom } from '@netcracker/qubership-apihub-ui-shared/components/RadioCustom'
 import { isGraphQlSpecType, type SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import type { ExportConfig } from '../../../routes/root/PortalPage/useExportConfig'
 import { useDocuments } from '../../../routes/root/PortalPage/VersionPage/useDocuments'
@@ -224,14 +224,14 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
   })
 
   // Version export alert
-  const currentScopeValue = useWatch({ control, name: ExportSettingsFormFieldKind.SCOPE }) as
+  const currentScopeValue = useWatch({ control: control, name: ExportSettingsFormFieldKind.SCOPE }) as
     | ExportSettingsFormFieldOptionScope
     | undefined
   const { versionExportAlert, singleDocExportAlert, versionExportDisabled } = useShareabilityAlerts({
-    exportedEntity,
+    exportedEntity: exportedEntity,
     scopeValue: currentScopeValue,
-    shareabilityStatus,
-    summary,
+    shareabilityStatus: shareabilityStatus,
+    summary: summary,
   })
 
   // Handle form submission
