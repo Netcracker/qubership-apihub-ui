@@ -74,5 +74,5 @@ export function isAsyncApiSpecType(type?: SpecType): boolean {
 }
 
 export const isExportableSpecType = (type?: SpecType): boolean => {
-  return isOpenApiSpecType(type) || isGraphQlSpecType(type) || isAsyncApiSpecType(type)
+  return isOpenApiSpecType(type) || isAsyncApiSpecType(type)
 }

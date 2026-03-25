@@ -34,7 +34,6 @@ import {
   isAsyncApiSpecType,
   isGraphQlSpecType,
   isOpenApiSpecType,
-  isExportableSpecType,
   JSON_SCHEMA_SPEC_TYPE,
   MARKDOWN_SPEC_TYPE,
   PROTOBUF_3_SPEC_TYPE,
@@ -99,8 +98,7 @@ function getGroupNameBySpecType(type: SpecType): GroupName {
 
 const ListItemShareabilityMarker = styled(ShareabilityMarker)({ marginLeft: 8 })
 
-const ListItemActionsButton = styled(DocumentActionsButton)<{ $isExportableSpecType?: boolean }>(
-  ({ $isExportableSpecType }) => ({
+const ListItemActionsButton = styled(DocumentActionsButton)({
   visibility: 'visible',
   backgroundColor: 'transparent',
   '&:hover': {
@@ -111,8 +109,8 @@ const ListItemActionsButton = styled(DocumentActionsButton)<{ $isExportableSpecT
   height: 24,
   paddingLeft: 10,
   paddingRight: 10,
-  ...($isExportableSpecType ? { marginLeft: 0 } : { marginLeft: 8 }),
-}))
+  marginLeft: 0,
+})
 
 export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({documents, isLoading}) => {
   const {packageId: packageKey, versionId: versionKey, documentId} = useParams()
@@ -202,7 +200,7 @@ export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({doc
                   <SpecLogo value={type}/>
                 </ListItemIcon>
                 <ListItemText primary={displayTitle} primaryTypographyProps={{sx: {mt: 0.25}}}/>
-                {isExportableSpecType(type) && shareabilityStatus && (
+                {shareabilityStatus && (
                   <ListItemShareabilityMarker value={shareabilityStatus} />
                 )}
                 <ListItemActionsButton
@@ -211,7 +209,6 @@ export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({doc
                   format={format}
                   shareabilityStatus={shareabilityStatus}
                   icon={<MoreVertIcon sx={{color: '#626D82'}} fontSize="small"/>}
-                  $isExportableSpecType={isExportableSpecType(type)}
                 />
               </ListItemButton>
             </ListItem>

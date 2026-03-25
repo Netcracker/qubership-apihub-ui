@@ -1,12 +1,12 @@
 import type { ExportSettingsPopupDetail } from '@apihub/routes/EventBusProvider'
 import { useShowErrorNotification } from '@apihub/routes/root/BasePage/Notification'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
+import { isAsyncApiSpecType, isOpenApiSpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import type { FC } from 'react'
 import { useCallback, useEffect, useState } from 'react'
 import { useExportConfig } from '../../../routes/root/PortalPage/useExportConfig'
-import { isGraphQlSpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import { useDownloadPublishedDocument } from '../../../routes/root/PortalPage/VersionPage/useDownloadPublishedDocument'
-import type { IRequestDataExport} from '../api/useExport'
+import type { IRequestDataExport } from '../api/useExport'
 import { ExportedEntityKind, useExport, useRemoveExportResult } from '../api/useExport'
 import { useExportStatus } from '../api/useExportStatus'
 import { ExportSettingsForm } from './ExportSettingsForm'
@@ -29,13 +29,23 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
   // Initialize state used for request data export
   const [requestDataExport, setRequestDataExport] = useState<IRequestDataExport | undefined>(undefined)
   const [exportTask, isStartingExport, exportStartingError] = useExport(requestDataExport)
-  const removeExportResult = useRemoveExportResult(requestDataExport?.exportedEntity, requestDataExport?.packageId, requestDataExport?.version)
-  const isGraphQlExport = exportedEntity === ExportedEntityKind.REST_DOCUMENT && isGraphQlSpecType(specType)
-  const [downloadPublishedDocument, isDownloadingPublishedDocument] = useDownloadPublishedDocument({
+  const removeExportResult = useRemoveExportResult(
+    requestDataExport?.exportedEntity,
+    requestDataExport?.packageId,
+    requestDataExport?.version,
+  )
+
+  const isDownloadOnlyExport = exportedEntity === ExportedEntityKind.REST_DOCUMENT
+    && !!documentId
+    && !isOpenApiSpecType(specType)
+    && !isAsyncApiSpecType(specType)
+  const [downloadPublishedDocument, isDownloadingDocument] = useDownloadPublishedDocument({
     packageKey: packageId,
     versionKey: version,
     slug: documentId!,
   })
+
+  const isStartingAnyExport = isStartingExport || (isDownloadingDocument && isDownloadOnlyExport)
 
   const [exporting, setExporting] = useState(false)
   const [needToGetExportStatus, setNeedToGetExportStatus] = useState(false)
@@ -85,10 +95,10 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
       shareabilityStatus={shareabilityStatus}
       exporting={exporting}
       isLoadingExportConfig={isLoadingExportConfig}
-      isStartingExport={isStartingExport || (isGraphQlExport && isDownloadingPublishedDocument)}
-      onDownloadPublishedDocument={isGraphQlExport ? onDownloadPublishedDocument : undefined}
+      isStartingExport={isStartingAnyExport}
       setRequestDataExport={setRequestDataExport}
       specType={specType}
+      onDownloadPublishedDocument={isDownloadOnlyExport ? onDownloadPublishedDocument : undefined}
     />
   )
 }

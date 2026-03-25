@@ -59,7 +59,7 @@ export const DOCUMENT_MENU_CONFIG: MenuItemConfig[] = [
   {
     id: 'export',
     label: 'Export',
-    condition: (isOpenApiSpec, _, isAsyncApiSpec, isGraphQlSpec) => isOpenApiSpec || isAsyncApiSpec || isGraphQlSpec,
+    condition: () => true,
     action: ({ showExportSettingsDialog, packageKey, fullVersion, refPackageKey, refFullVersion, slug, specType, shareabilityStatus }) => {
       showExportSettingsDialog({
         specType: specType,
@@ -75,7 +75,7 @@ export const DOCUMENT_MENU_CONFIG: MenuItemConfig[] = [
   {
     id: 'download',
     label: 'Download',
-    condition: (isOpenApiSpec, _, isAsyncApiSpec, isGraphQlSpec) => !isOpenApiSpec && !isAsyncApiSpec && !isGraphQlSpec,
+    condition: () => false,
     action: ({ downloadPublishedDocument }) => {
       downloadPublishedDocument()
     },

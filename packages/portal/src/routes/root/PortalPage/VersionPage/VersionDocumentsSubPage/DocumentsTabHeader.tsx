@@ -22,7 +22,6 @@ import { DEFAULT_DEBOUNCE } from '@netcracker/qubership-apihub-ui-shared/utils/c
 import type { FileFormat } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import {
   isAsyncApiSpecType,
-  isExportableSpecType,
   isGraphQlSpecType,
   isOpenApiSpecType,
   type SpecType,
@@ -143,7 +142,7 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
           <VersionText variant="body2">
             {version}
           </VersionText>
-          {isExportableSpecType(type) && shareabilityStatus && (
+          {shareabilityStatus && (
             hasShareabilityPermission && docPackageKey && fullVersion
               ? (
                 <ShareabilityDropdown

@@ -23,7 +23,12 @@ import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/Di
 import { RadioCustom } from '@netcracker/qubership-apihub-ui-shared/components/RadioCustom'
 import type { Key, PackageKey, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoContextIcon'
-import { isGraphQlSpecType, type SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import {
+  isAsyncApiSpecType,
+  isExportableSpecType,
+  isOpenApiSpecType,
+  type SpecType,
+} from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import type { ExportConfig } from '../../../routes/root/PortalPage/useExportConfig'
 import { useDocuments } from '../../../routes/root/PortalPage/VersionPage/useDocuments'
 import {
@@ -176,12 +181,13 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
 
   const summary = useShareabilitySummary(documents)
 
-  const getFilteredFields = useCallback((specType: SpecType): ExportSettingsFormField[] => {
-    if (isGraphQlSpecType(specType)) {
+  const getFilteredFields = useCallback((specType?: SpecType): ExportSettingsFormField[] => {
+    const isOpenApiOrAsyncApi = isOpenApiSpecType(specType) || isAsyncApiSpecType(specType)
+    if (exportedEntity === ExportedEntityKind.REST_DOCUMENT && !isOpenApiOrAsyncApi) {
       return []
     }
 
-    const allowedOptions = SPEC_TYPE_ACCESS_VIEW_EXPORT_FIELD[specType] ?? []
+    const allowedOptions = SPEC_TYPE_ACCESS_VIEW_EXPORT_FIELD[specType!] ?? []
     if (allowedOptions.length === 0) {
       return EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE[exportedEntity]
     }
@@ -201,11 +207,7 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
 
   // Calculate fields and default values
   const fields = useMemo(() => {
-    if (specType) {
-      return getFilteredFields(specType)
-    }
-
-    return EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE[exportedEntity]
+    return getFilteredFields(specType)
   }, [exportedEntity, getFilteredFields, specType])
 
   const fieldsDefaultValues = useMemo(
@@ -236,11 +238,7 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
 
   // Handle form submission
   const onSubmit = (data: ExportSettingsFormData): void => {
-    const isGraphQlExport = exportedEntity === ExportedEntityKind.REST_DOCUMENT
-      && specType
-      && isGraphQlSpecType(specType)
-
-    if (isGraphQlExport) {
+    if (exportedEntity === ExportedEntityKind.REST_DOCUMENT && !isExportableSpecType(specType)) {
       onDownloadPublishedDocument?.()
       return
     }
@@ -300,16 +298,16 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
         Export Settings
       </DialogTitle>
       <DialogContent>
-        {singleDocExportAlert && (isGraphQlSpecType(specType)
+        {singleDocExportAlert && (isExportableSpecType(specType)
           ? (
-            <ShareabilityAlert
+            <ShareabilitySingleDocAlert
               severity={singleDocExportAlert.severity}
               title={singleDocExportAlert.title}
               message={singleDocExportAlert.message}
             />
           )
           : (
-            <ShareabilitySingleDocAlert
+            <ShareabilityAlert
               severity={singleDocExportAlert.severity}
               title={singleDocExportAlert.title}
               message={singleDocExportAlert.message}
