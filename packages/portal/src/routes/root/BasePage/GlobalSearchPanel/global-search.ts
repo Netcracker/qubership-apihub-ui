@@ -38,7 +38,7 @@ export async function getSearchResult(
   level: Level,
   limit: number,
   page: number,
-  useLegacySearch: boolean,
+  useV3Search: boolean,
 ): Promise<SearchResults> {
 
   const queryParams = optionalSearchParams({
@@ -50,7 +50,7 @@ export async function getSearchResult(
     method: 'POST',
     body: JSON.stringify(getOptionalBody(criteria)),
   }, {
-    basePath: useLegacySearch ? API_V3 : API_V4,
+    basePath: useV3Search ? API_V3 : API_V4,
   })
 
   return toSearchResults(searchResultsDto)

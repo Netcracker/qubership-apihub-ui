@@ -104,7 +104,7 @@ export const SearchResults: FC = memo(() => {
           value={searchText}
           inputProps={{
             style: {
-              padding: '13px 11px 12px 11px',
+              padding: '12px',
             },
           }}
           onValueChange={setSearchText}

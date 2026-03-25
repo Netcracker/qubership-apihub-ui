@@ -32,7 +32,7 @@ export function useOperationsGlobalSearch(options: {
   page?: number
 }): [SearchResults, IsLoading, FetchNextSearchResultList, IsFetchingNextPage, HasNextPage] {
   const { criteria, enabled, page = 1, limit = 100 } = options
-  const { useLegacySearch } = useSystemInfo()
+  const { useV3Search } = useSystemInfo()
 
   const {
     data,
@@ -42,7 +42,7 @@ export function useOperationsGlobalSearch(options: {
     hasNextPage,
   } = useInfiniteQuery<SearchResults, Error, SearchResults>({
     queryKey: [GLOBAL_OPERATIONS_SEARCH_RESULT_QUERY_KEY, criteria, OPERATION_LEVEL],
-    queryFn: ({ pageParam = page }) => getSearchResult(criteria, OPERATION_LEVEL, limit, pageParam - 1, useLegacySearch),
+    queryFn: ({ pageParam = page }) => getSearchResult(criteria, OPERATION_LEVEL, limit, pageParam - 1, useV3Search),
     enabled: enabled && !!criteria.searchString,
     getNextPageParam: (lastPage, allPages) => {
       if (limit && enabled) {

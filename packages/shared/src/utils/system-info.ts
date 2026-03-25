@@ -32,7 +32,7 @@ export type SystemInfo = {
   externalLinks: Link[]
   notification?: string
   migrationInProgress: boolean
-  useLegacySearch: boolean
+  useV3Search: boolean
 }
 
 export type SystemInfoDto = {
@@ -42,7 +42,7 @@ export type SystemInfoDto = {
   externalLinks: string[]
   notification?: string
   migrationInProgress: boolean
-  useLegacySearch: boolean
+  useV3Search: boolean
 }
 
 export const EMPTY_SYSTEM_INFO: SystemInfo = {
@@ -51,7 +51,7 @@ export const EMPTY_SYSTEM_INFO: SystemInfo = {
   productionMode: false,
   externalLinks: [],
   migrationInProgress: false,
-  useLegacySearch: false,
+  useV3Search: false,
 }
 
 export function toSystemInfo(value: SystemInfoDto): SystemInfo {
@@ -74,7 +74,7 @@ export function toSystemInfo(value: SystemInfoDto): SystemInfo {
     externalLinks: externalLinks,
     notification: value.notification,
     migrationInProgress: value.migrationInProgress,
-    useLegacySearch: value.useLegacySearch,
+    useV3Search: value.useV3Search,
   }
 }
 

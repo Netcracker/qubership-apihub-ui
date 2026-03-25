@@ -110,6 +110,7 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
       group: null,
       pkg: null,
       status: RELEASE_VERSION_STATUS,
+      apiType: API_TYPE_REST,
       publicationDatePeriod: defaultPublicationDatePeriod,
     },
   })
@@ -192,27 +193,7 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
     setValue('publicationDatePeriod', formattedPublicationDate)
   }, [setValue])
 
-  const { useLegacySearch } = useSystemInfo()
-
-  const apiTypeOperationsParams: Record<ApiType, SearchRestParams | SearchGQLParams> = useMemo(() => {
-    const restDetailedScope = detailedScope?.map(scope => detailedScopeMapping[scope])
-    return {
-      [API_TYPE_REST]: {
-        apiType: apiType,
-        scope: [REQUEST_SCOPE, RESPONSE_SCOPE],
-        detailedScope: restDetailedScope,
-        methods: methods,
-      } satisfies SearchRestParams,
-      [API_TYPE_GRAPHQL]: {
-        apiType: apiType,
-        scope: [ARGUMENT_SCOPE, PROPERTY_SCOPE, ANNOTATION_SCOPE],
-        operationTypes: [QUERY_OPERATION_TYPES, MUTATION_OPERATION_TYPES, SUBSCRIPTION_OPERATION_TYPES],
-      } satisfies SearchGQLParams,
-      [API_TYPE_ASYNCAPI]: {
-        apiType: apiType,
-      } as SearchAsyncApiParams,
-    }
-  }, [apiType, detailedScope, methods])
+  const { useV3Search } = useSystemInfo()
 
   const onSubmit = useMemo(
     () => handleSubmit((value) => {
@@ -236,8 +217,27 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
         }
         return []
       }
+      const restDetailedScope = detailedScope?.map(scope => detailedScopeMapping[scope])
 
-      const globalSearchFilter = useLegacySearch
+      const apiTypeOperationsParams: Record<ApiType, SearchRestParams | SearchGQLParams> =
+        {
+          [API_TYPE_REST]: {
+            apiType: apiType,
+            scope: [REQUEST_SCOPE, RESPONSE_SCOPE],
+            detailedScope: restDetailedScope,
+            methods: methods,
+          } satisfies SearchRestParams,
+          [API_TYPE_GRAPHQL]: {
+            apiType: apiType,
+            scope: [ARGUMENT_SCOPE, PROPERTY_SCOPE, ANNOTATION_SCOPE],
+            operationTypes: [QUERY_OPERATION_TYPES, MUTATION_OPERATION_TYPES, SUBSCRIPTION_OPERATION_TYPES],
+          } satisfies SearchGQLParams,
+          [API_TYPE_ASYNCAPI]: {
+            apiType: apiType,
+          } as SearchAsyncApiParams,
+        }
+
+      const globalSearchFilter = useV3Search
         ? {
           filters: {
             packageIds: packageIdsData(),
@@ -270,7 +270,7 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
 
       applyGlobalSearchFilters(globalSearchFilter)
     }),
-    [handleSubmit, useLegacySearch, applyGlobalSearchFilters, packageKey, groupKey, workspaceKey],
+    [handleSubmit, useV3Search, applyGlobalSearchFilters, packageKey, groupKey, workspaceKey],
   )
 
   useDebounce(
