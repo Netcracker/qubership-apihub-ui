@@ -45,6 +45,7 @@ import { GraphqlIcon } from '../icons/GraphqlIcon'
 import { GroupIcon } from '../icons/GroupIcon'
 import { HomeIcon } from '../icons/HomeIcon'
 import { InfoContextIcon } from '../icons/InfoContextIcon'
+import { InfoFilledIcon } from '../icons/InfoFilledIcon'
 import { JsonSchemaIcon } from '../icons/JsonSchemaIcon'
 import { KeyboardDoubleArrowLeftIcon } from '../icons/KeyboardDoubleArrowLeftIcon'
 import { KeyboardDoubleArrowRightIcon } from '../icons/KeyboardDoubleArrowRightIcon'
@@ -177,6 +178,7 @@ const CUSTOM_ICONS_REGISTRY: readonly IconItem<CustomIconComponent>[] = [
 
 const MUI_ICONS_REGISTRY: readonly IconItem<MuiIconComponent>[] = [
   { name: 'InfoContextIcon', component: InfoContextIcon },
+  { name: 'InfoFilledIcon', component: InfoFilledIcon },
   { name: 'CheckCircleIcon', component: CheckCircleIcon },
   { name: 'ClockBackwardIcon', component: ClockBackwardIcon },
   { name: 'CloseIcon', component: CloseIcon },

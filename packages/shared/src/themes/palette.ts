@@ -1,5 +1,5 @@
-import type { PaletteOptions, SimplePaletteColorOptions } from '@mui/material/styles/createPalette'
 import type { ChipPropsColorOverrides } from '@mui/material/Chip/Chip'
+import type { PaletteOptions, SimplePaletteColorOptions } from '@mui/material/styles/createPalette'
 import { SECONDARY_TEXT_COLOR } from './colors'
 
 export function createPalette(): PaletteOptions {
@@ -14,6 +14,7 @@ export function createPalette(): PaletteOptions {
     },
     primary: {
       main: '#0068FF',
+      light: '#E1F0FE',
     },
     secondary: {
       main: '#00BB5B',

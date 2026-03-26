@@ -19,6 +19,7 @@ import {
   SHAREABILITY_STATUSES,
   type ShareabilityStatus,
 } from '@netcracker/qubership-apihub-api-processor'
+import { AlertCustom } from '@netcracker/qubership-apihub-ui-shared/components/AlertCustom'
 import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 import { RadioCustom } from '@netcracker/qubership-apihub-ui-shared/components/RadioCustom'
 import type { Key, PackageKey, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
@@ -51,7 +52,7 @@ import {
 import { type ShareabilityAlerts, useShareabilityAlerts } from '../hooks/useShareabilityAlerts'
 import { useShareabilitySummary } from '../hooks/useShareabilitySummary'
 import { useLocalExportSettings } from '../storage/useLocalExportSettings'
-import { ShareabilityAlert, ShareabilityExportVersionAlert, ShareabilitySingleDocAlert } from './ShareabilityAlert'
+import { ShareabilityExportVersionAlert, ShareabilitySingleDocAlert } from './export-settings-alerts'
 
 interface ExportSettingsFormFieldsProps {
   disabled: boolean
@@ -307,7 +308,7 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
             />
           )
           : (
-            <ShareabilityAlert
+            <AlertCustom
               severity={singleDocExportAlert.severity}
               title={singleDocExportAlert.title}
               message={singleDocExportAlert.message}

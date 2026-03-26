@@ -1,9 +1,12 @@
+import { styled } from '@mui/material'
+
 import {
   SHAREABILITY_STATUS_NON_SHAREABLE,
   SHAREABILITY_STATUS_SHAREABLE,
   SHAREABILITY_STATUS_UNKNOWN,
   type ShareabilityStatus,
 } from '@netcracker/qubership-apihub-api-processor'
+import { AlertCustom, type AlertCustomProps } from '@netcracker/qubership-apihub-ui-shared/components/AlertCustom'
 import { ExportSettingsFormFieldOptionScope } from '../entities/export-settings-form-field'
 import type { ShareabilitySummary } from '../hooks/useShareabilitySummary'
 
@@ -12,6 +15,14 @@ export type ShareabilityFieldAlert = {
   title: string
   message: string
 }
+
+export const ShareabilityExportVersionAlert = styled(AlertCustom)<AlertCustomProps>(({ theme }) => ({
+  marginTop: theme.spacing(-2),
+}))
+
+export const ShareabilitySingleDocAlert = styled(AlertCustom)<AlertCustomProps>(({ theme }) => ({
+  marginBottom: theme.spacing(2),
+}))
 
 export const buildSingleDocumentShareabilityAlert = (
   status?: ShareabilityStatus,
