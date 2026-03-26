@@ -118,21 +118,21 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
 
   if (isLoading) {
     return (
-      <HeaderLayout>
-        <HeaderTextSection>
+      <TabHeader>
+        <TextSection>
           <TitleTextSkeleton />
           <VersionTextSkeleton />
-        </HeaderTextSection>
-        <HeaderActionSection>
-          <HeaderActionSkeleton />
-        </HeaderActionSection>
-      </HeaderLayout>
+        </TextSection>
+        <ActionsSection>
+          <ActionsSkeleton />
+        </ActionsSection>
+      </TabHeader>
     )
   }
 
   return (
-    <HeaderLayout>
-      <HeaderTextSection data-testid="DocumentToolbarTitle">
+    <TabHeader data-testid="DocumentToolbar">
+      <TextSection data-testid="DocumentToolbarTitle">
         <TitleTooltip title={title}>
           <TitleText variant="inherit">
             {title}
@@ -154,8 +154,8 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
               : <ShareabilityMarker value={shareabilityStatus} />
           )}
         </TitleSuffix>
-      </HeaderTextSection>
-      <HeaderActionSection>
+      </TextSection>
+      <ActionsSection>
         {(isOpenApiSpecType(type) || isGraphQlSpecType(type) || isAsyncApiSpecType(type)) && (
           <>
             {selectedSubPage === OPERATIONS_SUB_PAGE && (
@@ -179,8 +179,8 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
           }}
           startIcon={<MoreButtonIcon fontSize="small" />}
         />
-      </HeaderActionSection>
-    </HeaderLayout>
+      </ActionsSection>
+    </TabHeader>
   )
 }
 
@@ -203,13 +203,13 @@ const DocumentsSubPageSelector = memo(() => {
 
 const LEFT_SECTION_MIN_WIDTH = 240
 
-const HeaderLayout = styled(Box)(({ theme }) => ({
+const TabHeader = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: theme.spacing(1),
 }))
 
-const HeaderTextSection = styled(Box)(({ theme }) => ({
+const TextSection = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: theme.spacing(1),
@@ -245,7 +245,7 @@ const VersionText = styled(Typography)(({ theme }) => ({
   paddingRight: theme.spacing(0.5),
 }))
 
-const HeaderActionSection = styled(Box)(({ theme }) => ({
+const ActionsSection = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: theme.spacing(1),
@@ -269,7 +269,7 @@ const VersionTextSkeleton = styled(Skeleton)({
   width: 36,
 })
 
-const HeaderActionSkeleton = styled(Skeleton)({
+const ActionsSkeleton = styled(Skeleton)({
   width: 130,
   height: 54,
 })
