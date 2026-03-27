@@ -35,7 +35,7 @@ import { useDocuments } from '../../../routes/root/PortalPage/VersionPage/useDoc
 import {
   ExportedEntityKind,
   type ExportedEntityTransformation,
-  type ExportedFileFormat,
+  ExportedFileFormat,
   type IRequestDataExport,
   RequestDataExportRestDocument,
   RequestDataExportRestOperationsGroup,
@@ -142,6 +142,7 @@ interface ExportSettingsFormProps {
   documentId?: Key
   groupName?: Key
   shareabilityStatus?: ShareabilityStatus
+  hasRestApi?: boolean
   // State props
   exporting: boolean
   isLoadingExportConfig: boolean
@@ -163,6 +164,7 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
     documentId,
     groupName,
     shareabilityStatus,
+    hasRestApi,
     exporting,
     isLoadingExportConfig,
     isStartingExport,
@@ -182,10 +184,14 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
 
   const summary = useShareabilitySummary(documents)
 
-  const getFilteredFields = useCallback((specType?: SpecType): ExportSettingsFormField[] => {
+  const getFilteredFields = useCallback((specType?: SpecType, hasRestApi?: boolean): ExportSettingsFormField[] => {
     const isOpenApiOrAsyncApi = isOpenApiSpecType(specType) || isAsyncApiSpecType(specType)
     if (exportedEntity === ExportedEntityKind.REST_DOCUMENT && !isOpenApiOrAsyncApi) {
       return []
+    }
+    if (exportedEntity === ExportedEntityKind.VERSION && !hasRestApi) {
+      return EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE[ExportedEntityKind.VERSION]
+        .filter(field => field.kind === ExportSettingsFormFieldKind.SCOPE)
     }
 
     const allowedOptions = SPEC_TYPE_ACCESS_VIEW_EXPORT_FIELD[specType!] ?? []
@@ -208,8 +214,8 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
 
   // Calculate fields and default values
   const fields = useMemo(() => {
-    return getFilteredFields(specType)
-  }, [exportedEntity, getFilteredFields, specType])
+    return getFilteredFields(specType, hasRestApi)
+  }, [exportedEntity, getFilteredFields, specType, hasRestApi])
 
   const fieldsDefaultValues = useMemo(
     () => fields.reduce((acc, field) => ({ ...acc, [field.kind]: field.defaultValue }), {}),
@@ -245,9 +251,12 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
     }
 
     let requestData: IRequestDataExport | undefined
+    const isFileFormatFieldVisible = fields.some(field => field.kind === ExportSettingsFormFieldKind.FILE_FORMAT)
+    const fileFormat: ExportedFileFormat = (
+      isFileFormatFieldVisible ? data[ExportSettingsFormFieldKind.FILE_FORMAT] : undefined
+    ) as ExportedFileFormat ?? ExportedFileFormat.JSON
     const removeOasExtensions =
       data[ExportSettingsFormFieldKind.OAS_EXTENSIONS] === ExportSettingsFormFieldOptionOasExtensions.REMOVE
-    const fileFormat: ExportedFileFormat = data[ExportSettingsFormFieldKind.FILE_FORMAT] as ExportedFileFormat
     switch (exportedEntity) {
       case ExportedEntityKind.VERSION: {
         const allowedShareabilityStatuses: readonly ShareabilityStatus[] =
