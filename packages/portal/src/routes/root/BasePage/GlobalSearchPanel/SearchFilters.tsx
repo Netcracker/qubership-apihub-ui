@@ -54,16 +54,16 @@ import {
   RELEASE_VERSION_STATUS,
   VERSION_STATUSES,
 } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import type { MethodType } from '@netcracker/qubership-apihub-ui-shared/entities/method-types'
-import type { Package } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { GROUP_KIND, PACKAGE_KIND, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { handleVersionsRevision } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
-import { useEventBus } from '@apihub/routes/EventBusProvider'
-import { disableAutocompleteSearch } from '@netcracker/qubership-apihub-ui-shared/utils/mui'
-import { OptionItem } from '@netcracker/qubership-apihub-ui-shared/components/OptionItem'
-import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
-import { CalendarIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CalendarIcon'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type {MethodType} from '@netcracker/qubership-apihub-ui-shared/entities/method-types'
+import type {Package} from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import {GROUP_KIND, PACKAGE_KIND, WORKSPACE_KIND} from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import {handleVersionsRevision} from '@netcracker/qubership-apihub-ui-shared/utils/versions'
+import {useEventBus} from '@apihub/routes/EventBusProvider'
+import {disableAutocompleteSearch} from '@netcracker/qubership-apihub-ui-shared/utils/mui'
+import {OptionItem} from '@netcracker/qubership-apihub-ui-shared/components/OptionItem'
+import {CustomChip} from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
+import {CalendarIcon} from '@netcracker/qubership-apihub-ui-shared/icons/CalendarIcon'
+import type {ApiType} from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import {
   API_TYPE_ASYNCAPI,
   API_TYPE_GRAPHQL,
@@ -476,14 +476,6 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
               data-testid={`${PUBLISH_STATUSES.get(option)}Chip`}
             />
           </ListItem>}
-          renderTags={(value, getTagProps) => (
-            value.map((option, index) => <CustomChip
-              {...getTagProps({ index })}
-              key={index}
-              value={option}
-              data-testid={`${PUBLISH_STATUSES.get(option)}Chip`}
-            />)
-          )}
           onChange={(_, status) => setValue('status', status as VersionStatus)}
           renderInput={(params) =>
             <TextField
@@ -507,7 +499,12 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
                     WebkitTextFillColor: 'transparent',
                   },
                 },
-                startAdornment: status ? <CustomChip sx={{ height: 16, mb: 1 }} value={status}/> : null,
+                startAdornment: status
+                  ? <CustomChip
+                    sx={{height: 16, mb: 1}}
+                    value={status}
+                    data-testid={`${PUBLISH_STATUSES.get(status)}Chip`}/>
+                  : null,
               }}
             />
           }
