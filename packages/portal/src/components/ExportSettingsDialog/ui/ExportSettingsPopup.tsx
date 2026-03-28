@@ -1,14 +1,15 @@
+import { type FC, useCallback, useEffect, useMemo, useState } from 'react'
+
 import type { ExportSettingsPopupDetail } from '@apihub/routes/EventBusProvider'
 import { useShowErrorNotification } from '@apihub/routes/root/BasePage/Notification'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import { isAsyncApiSpecType, isOpenApiSpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import type { FC } from 'react'
-import { useCallback, useEffect, useState } from 'react'
+import { isExportableSpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import { useExportConfig } from '../../../routes/root/PortalPage/useExportConfig'
+import { useDocuments } from '../../../routes/root/PortalPage/VersionPage/useDocuments'
 import { useDownloadPublishedDocument } from '../../../routes/root/PortalPage/VersionPage/useDownloadPublishedDocument'
-import type { IRequestDataExport } from '../api/useExport'
-import { ExportedEntityKind, useExport, useRemoveExportResult } from '../api/useExport'
+import { ExportedEntityKind, type IRequestDataExport, useExport, useRemoveExportResult } from '../api/useExport'
 import { useExportStatus } from '../api/useExportStatus'
+import { useShareabilitySummary } from '../hooks/useShareabilitySummary'
 import { ExportSettingsForm } from './ExportSettingsForm'
 
 export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) => {
@@ -27,6 +28,40 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
 
   const [exportConfig, isLoadingExportConfig] = useExportConfig(packageId)
 
+  // Fetch documents for version export
+  const isVersionExport = exportedEntity === ExportedEntityKind.VERSION
+  const { documents, isLoading: isLoadingDocuments } = useDocuments({
+    packageKey: packageId,
+    versionKey: version,
+    enabled: isVersionExport,
+  })
+
+  const shareabilitySummary = useShareabilitySummary(isVersionExport ? documents : [])
+
+  // Version with exactly 1 document -> single-doc export behavior
+  const effective = useMemo(() => {
+    if (isVersionExport && !isLoadingDocuments && documents.length === 1) {
+      const [doc] = documents
+      return {
+        exportedEntity: ExportedEntityKind.REST_DOCUMENT as const,
+        documentId: doc.slug,
+        specType: doc.type,
+        shareabilityStatus: doc.shareabilityStatus,
+      }
+    }
+    return { exportedEntity, documentId, specType, shareabilityStatus }
+  }, [isVersionExport, isLoadingDocuments, documents, exportedEntity, documentId, specType, shareabilityStatus])
+
+  const isDownloadOnly = effective.exportedEntity === ExportedEntityKind.REST_DOCUMENT
+    && !!effective.documentId
+    && !isExportableSpecType(effective.specType)
+
+  const [downloadPublishedDocument, isDownloadingDocument] = useDownloadPublishedDocument({
+    packageKey: packageId,
+    versionKey: version,
+    slug: effective.documentId!,
+  })
+
   // Initialize state used for request data export
   const [requestDataExport, setRequestDataExport] = useState<IRequestDataExport | undefined>(undefined)
   const [exportTask, isStartingExport, exportStartingError] = useExport(requestDataExport)
@@ -36,17 +71,7 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
     requestDataExport?.version,
   )
 
-  const isDownloadOnlyExport = exportedEntity === ExportedEntityKind.REST_DOCUMENT
-    && !!documentId
-    && !isOpenApiSpecType(specType)
-    && !isAsyncApiSpecType(specType)
-  const [downloadPublishedDocument, isDownloadingDocument] = useDownloadPublishedDocument({
-    packageKey: packageId,
-    versionKey: version,
-    slug: documentId!,
-  })
-
-  const isStartingAnyExport = isStartingExport || (isDownloadingDocument && isDownloadOnlyExport)
+  const isStartingAnyExport = isStartingExport || (isDownloadingDocument && isDownloadOnly)
 
   const [exporting, setExporting] = useState(false)
   const [needToGetExportStatus, setNeedToGetExportStatus] = useState(false)
@@ -75,11 +100,11 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
   }, [removeExportResult, setOpen])
 
   const onDownloadPublishedDocument = useCallback(() => {
-    if (documentId) {
+    if (effective.documentId) {
       downloadPublishedDocument()
       setOpen(false)
     }
-  }, [documentId, downloadPublishedDocument, setOpen])
+  }, [effective.documentId, downloadPublishedDocument, setOpen])
 
   useExportStatus(exportTask?.exportId, needToGetExportStatus, completeExport, completeExport)
 
@@ -88,19 +113,20 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
       open={open}
       onClose={() => setOpen(false)}
       exportConfig={exportConfig}
-      exportedEntity={exportedEntity}
+      exportedEntity={effective.exportedEntity}
       packageId={packageId}
       version={version}
-      documentId={documentId}
+      documentId={effective.documentId}
       groupName={groupName}
-      shareabilityStatus={shareabilityStatus}
-      hasRestApi={hasRestApi}
       exporting={exporting}
-      isLoadingExportConfig={isLoadingExportConfig}
+      isLoadingExportConfig={isLoadingExportConfig || (isVersionExport && isLoadingDocuments)}
       isStartingExport={isStartingAnyExport}
       setRequestDataExport={setRequestDataExport}
-      specType={specType}
-      onDownloadPublishedDocument={isDownloadOnlyExport ? onDownloadPublishedDocument : undefined}
+      hasRestApi={hasRestApi}
+      specType={effective.specType}
+      shareabilityStatus={effective.shareabilityStatus}
+      shareabilitySummary={shareabilitySummary}
+      onDownloadPublishedDocument={isDownloadOnly ? onDownloadPublishedDocument : undefined}
     />
   )
 }

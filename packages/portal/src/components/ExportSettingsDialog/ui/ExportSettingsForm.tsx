@@ -11,7 +11,7 @@ import {
   Typography,
 } from '@mui/material'
 import { intersectionBy } from 'lodash-es'
-import { type FC, memo, useCallback, useMemo } from 'react'
+import { type FC, memo, useMemo } from 'react'
 import { type Control, Controller, useForm, type UseFormSetValue, useWatch } from 'react-hook-form'
 
 import {
@@ -24,14 +24,8 @@ import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/Di
 import { RadioCustom } from '@netcracker/qubership-apihub-ui-shared/components/RadioCustom'
 import type { Key, PackageKey, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoContextIcon'
-import {
-  isAsyncApiSpecType,
-  isExportableSpecType,
-  isOpenApiSpecType,
-  type SpecType,
-} from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import { isExportableSpecType, type SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import type { ExportConfig } from '../../../routes/root/PortalPage/useExportConfig'
-import { useDocuments } from '../../../routes/root/PortalPage/VersionPage/useDocuments'
 import {
   ExportedEntityKind,
   type ExportedEntityTransformation,
@@ -50,7 +44,7 @@ import {
   SPEC_TYPE_ACCESS_VIEW_EXPORT_FIELD,
 } from '../entities/export-settings-form-field'
 import { type ShareabilityAlerts, useShareabilityAlerts } from '../hooks/useShareabilityAlerts'
-import { useShareabilitySummary } from '../hooks/useShareabilitySummary'
+import type { ShareabilitySummary } from '../hooks/useShareabilitySummary'
 import { useLocalExportSettings } from '../storage/useLocalExportSettings'
 import { ShareabilityExportVersionAlert, ShareabilitySingleDocAlert } from './export-settings-alerts'
 
@@ -117,11 +111,7 @@ const ExportSettingsFormFields: FC<ExportSettingsFormFieldsProps> = memo(props =
               )}
             />
             {field.kind === ExportSettingsFormFieldKind.SCOPE && shareabilityExportVersionAlert && (
-              <ShareabilityExportVersionAlert
-                severity={shareabilityExportVersionAlert.severity}
-                title={shareabilityExportVersionAlert.title}
-                message={shareabilityExportVersionAlert.message}
-              />
+              <ShareabilityExportVersionAlert {...shareabilityExportVersionAlert} />
             )}
           </Box>
         )
@@ -142,14 +132,15 @@ interface ExportSettingsFormProps {
   documentId?: Key
   groupName?: Key
   shareabilityStatus?: ShareabilityStatus
+  specType?: SpecType
   hasRestApi?: boolean
+  shareabilitySummary: ShareabilitySummary
   // State props
   exporting: boolean
   isLoadingExportConfig: boolean
   isStartingExport: boolean
   // Action props
   setRequestDataExport: (requestData: IRequestDataExport) => void
-  specType?: SpecType
   onDownloadPublishedDocument?: () => void
 }
 
@@ -163,30 +154,19 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
     version,
     documentId,
     groupName,
-    shareabilityStatus,
-    hasRestApi,
     exporting,
     isLoadingExportConfig,
     isStartingExport,
     setRequestDataExport,
     specType,
+    hasRestApi,
+    shareabilityStatus,
+    shareabilitySummary,
     onDownloadPublishedDocument,
   } = props
 
-  const isVersionExport = exportedEntity === ExportedEntityKind.VERSION
-
-  // Fetch documents for version export shareability summary
-  const { documents } = useDocuments({
-    packageKey: packageId,
-    versionKey: version,
-    enabled: isVersionExport,
-  })
-
-  const summary = useShareabilitySummary(documents)
-
-  const getFilteredFields = useCallback((specType?: SpecType, hasRestApi?: boolean): ExportSettingsFormField[] => {
-    const isOpenApiOrAsyncApi = isOpenApiSpecType(specType) || isAsyncApiSpecType(specType)
-    if (exportedEntity === ExportedEntityKind.REST_DOCUMENT && !isOpenApiOrAsyncApi) {
+  const fields = useMemo(() => {
+    if (exportedEntity === ExportedEntityKind.REST_DOCUMENT && !isExportableSpecType(specType)) {
       return []
     }
     if (exportedEntity === ExportedEntityKind.VERSION && !hasRestApi) {
@@ -199,23 +179,11 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
       return EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE[exportedEntity]
     }
 
-    return EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE[exportedEntity]
-      .map(field => {
-        return {
-          ...field,
-          options: [...intersectionBy(
-            field.options,
-            allowedOptions,
-            'value',
-          )],
-        }
-      })
-  }, [exportedEntity])
-
-  // Calculate fields and default values
-  const fields = useMemo(() => {
-    return getFilteredFields(specType, hasRestApi)
-  }, [exportedEntity, getFilteredFields, specType, hasRestApi])
+    return EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE[exportedEntity].map(field => ({
+      ...field,
+      options: [...intersectionBy(field.options, allowedOptions, 'value')],
+    }))
+  }, [exportedEntity, specType, hasRestApi])
 
   const fieldsDefaultValues = useMemo(
     () => fields.reduce((acc, field) => ({ ...acc, [field.kind]: field.defaultValue }), {}),
@@ -240,7 +208,7 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
     exportedEntity: exportedEntity,
     scopeValue: currentScopeValue,
     shareabilityStatus: shareabilityStatus,
-    summary: summary,
+    shareabilitySummary: shareabilitySummary,
   })
 
   // Handle form submission
@@ -250,26 +218,23 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
       return
     }
 
-    let requestData: IRequestDataExport | undefined
-    const isFileFormatFieldVisible = fields.some(field => field.kind === ExportSettingsFormFieldKind.FILE_FORMAT)
-    const fileFormat: ExportedFileFormat = (
-      isFileFormatFieldVisible ? data[ExportSettingsFormFieldKind.FILE_FORMAT] : undefined
+    const fileFormat = (
+      fields.some(f => f.kind === ExportSettingsFormFieldKind.FILE_FORMAT)
+        ? data[ExportSettingsFormFieldKind.FILE_FORMAT]
+        : undefined
     ) as ExportedFileFormat ?? ExportedFileFormat.JSON
+
     const removeOasExtensions =
       data[ExportSettingsFormFieldKind.OAS_EXTENSIONS] === ExportSettingsFormFieldOptionOasExtensions.REMOVE
+
+    let requestData: IRequestDataExport | undefined
     switch (exportedEntity) {
       case ExportedEntityKind.VERSION: {
-        const allowedShareabilityStatuses: readonly ShareabilityStatus[] =
+        const allowedStatuses: readonly ShareabilityStatus[] =
           data[ExportSettingsFormFieldKind.SCOPE] === ExportSettingsFormFieldOptionScope.ONLY_SHAREABLE
             ? [SHAREABILITY_STATUS_SHAREABLE]
             : SHAREABILITY_STATUSES
-        requestData = new RequestDataExportVersion(
-          packageId,
-          version,
-          fileFormat,
-          removeOasExtensions,
-          allowedShareabilityStatuses,
-        )
+        requestData = new RequestDataExportVersion(packageId, version, fileFormat, removeOasExtensions, allowedStatuses)
         break
       }
       case ExportedEntityKind.REST_DOCUMENT:
@@ -308,21 +273,11 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
         Export Settings
       </DialogTitle>
       <DialogContent>
-        {singleDocExportAlert && (isExportableSpecType(specType)
-          ? (
-            <ShareabilitySingleDocAlert
-              severity={singleDocExportAlert.severity}
-              title={singleDocExportAlert.title}
-              message={singleDocExportAlert.message}
-            />
-          )
-          : (
-            <AlertCustom
-              severity={singleDocExportAlert.severity}
-              title={singleDocExportAlert.title}
-              message={singleDocExportAlert.message}
-            />
-          ))}
+        {singleDocExportAlert && (
+          isExportableSpecType(specType)
+            ? <ShareabilitySingleDocAlert {...singleDocExportAlert} />
+            : <AlertCustom {...singleDocExportAlert} />
+        )}
         <ExportSettingsFormFields
           disabled={initializing || exporting}
           fields={fields}

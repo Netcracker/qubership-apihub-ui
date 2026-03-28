@@ -20,14 +20,14 @@ type UseShareabilityAlertsParams = {
   exportedEntity: ExportedEntityKind
   scopeValue?: ExportSettingsFormFieldOptionScope
   shareabilityStatus?: ShareabilityStatus
-  summary: ShareabilitySummary
+  shareabilitySummary: ShareabilitySummary
 }
 
 export function useShareabilityAlerts({
   exportedEntity,
   scopeValue,
   shareabilityStatus,
-  summary,
+  shareabilitySummary,
 }: UseShareabilityAlertsParams): ShareabilityAlerts {
   const isVersionExport = exportedEntity === ExportedEntityKind.VERSION
   const isSingleDocExport = exportedEntity === ExportedEntityKind.REST_DOCUMENT
@@ -36,10 +36,11 @@ export function useShareabilityAlerts({
 
   return useMemo(
     () => ({
-      versionExportAlert: isVersionExport ? buildVersionExportShareabilityAlert(scopeValue, summary) : null,
+      versionExportAlert: isVersionExport ? buildVersionExportShareabilityAlert(scopeValue, shareabilitySummary) : null,
       singleDocExportAlert: isSingleDocExport ? buildSingleDocumentShareabilityAlert(shareabilityStatus) : null,
-      versionExportDisabled: isOnlyShareableScope && summary.shareable === 0 && summary.total > 0,
+      versionExportDisabled: isOnlyShareableScope && shareabilitySummary.shareable === 0
+        && shareabilitySummary.total > 0,
     }),
-    [isOnlyShareableScope, isSingleDocExport, scopeValue, shareabilityStatus, summary, isVersionExport],
+    [isOnlyShareableScope, isSingleDocExport, scopeValue, shareabilityStatus, shareabilitySummary, isVersionExport],
   )
 }
