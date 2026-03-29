@@ -149,12 +149,10 @@ export const VersionPageToolbar: FC = memo(() => {
               <Button
                 variant="outlined"
                 onClick={() => {
-                  const hasRestApi = !!versionContent?.operationTypes?.[API_TYPE_REST]
                   showExportSettingsDialog({
                     exportedEntity: ExportedEntityKind.VERSION,
                     packageId: packageId!,
                     version: fullVersion,
-                    hasRestApi,
                   })
                 }}
                 data-testid="ExportVersionButton"

@@ -188,7 +188,6 @@ export type ExportSettingsPopupDetail = {
   version: VersionKey
   documentId?: Key
   groupName?: string
-  hasRestApi?: boolean
   specType?: SpecType
   shareabilityStatus?: ShareabilityStatus
 }

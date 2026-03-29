@@ -23,7 +23,6 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
     documentId,
     groupName,
     shareabilityStatus,
-    hasRestApi,
     specType,
   } = detail as ExportSettingsPopupDetail
 
