@@ -1,11 +1,8 @@
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { Box, Skeleton, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
-import { useIsFetching } from '@tanstack/react-query'
-import { type Dispatch, type FC, memo, type SetStateAction, useCallback, useEffect, useMemo, useState } from 'react'
-import { useDebounce } from 'react-use'
+import { type Dispatch, type FC, memo, type SetStateAction } from 'react'
 
-import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
 import type { Document } from '@apihub/entities/documents'
 import type { Key } from '@apihub/entities/keys'
 import {
@@ -13,12 +10,9 @@ import {
   OPERATIONS_SUB_PAGE,
   OVERVIEW_SUB_PAGE,
 } from '@apihub/routes/root/PortalPage/VersionPage/OpenApiViewer/OpenApiViewer'
-import type { ShareabilityStatus } from '@netcracker/qubership-apihub-api-processor'
 import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
 import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
 import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'
-import { DOCUMENT_SHAREABILITY_MANAGEMENT_PERMISSION } from '@netcracker/qubership-apihub-ui-shared/entities/package-permissions'
-import { DEFAULT_DEBOUNCE } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
 import type { FileFormat } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import {
   isAsyncApiSpecType,
@@ -26,15 +20,11 @@ import {
   isOpenApiSpecType,
   type SpecType,
 } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import { useVersionWithRevision } from '../../../useVersionWithRevision'
-import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
-import { DOCUMENT_QUERY_KEY } from '../useDocument'
-import { DOCUMENTS_QUERY_KEY } from '../useDocuments'
 import { DocumentActionsButton } from './DocumentActionsButton'
 import { useSelectedSubPage, useSetSelectedSubPage } from './SelectedSubPageProvider'
 import { ShareabilityDropdown } from './ShareabilityDropdown'
 import { ShareabilityMarker } from './ShareabilityMarker'
-import { useUpdateDocumentShareability } from './useUpdateDocumentShareability'
+import { useDocumentShareabilityState } from './useDocumentShareabilityState'
 
 export type DocumentsTabHeaderProps = {
   title: string
@@ -61,60 +51,17 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
     document,
   } = props
 
-  const currentPackage = useCurrentPackage()
-
   const selectedSubPage = useSelectedSubPage()
 
   const { shareabilityStatus } = document
 
-  const hasShareabilityPermission = useMemo(
-    () => !!currentPackage?.permissions?.includes(DOCUMENT_SHAREABILITY_MANAGEMENT_PERMISSION),
-    [currentPackage?.permissions],
-  )
-
-  const [docPackageKey, docPackageVersion] = usePackageParamsWithRef()
-  const { fullVersion } = useVersionWithRevision(docPackageVersion, docPackageKey)
-
-  const isDocumentsListRefetching = useIsFetching({
-    queryKey: [DOCUMENTS_QUERY_KEY, docPackageKey, fullVersion],
-    exact: false,
-  }) > 0
-
-  const isDocumentRefetching = useIsFetching({
-    queryKey: [DOCUMENT_QUERY_KEY, docPackageKey, fullVersion, slug],
-    exact: true,
-  }) > 0
-
-  const { updateShareability, isPending: isShareabilityUpdating } = useUpdateDocumentShareability(
-    docPackageKey!,
+  const {
+    hasPermission: hasShareabilityPermission,
+    packageKey: docPackageKey,
     fullVersion,
-    slug,
-  )
-
-  const isShareabilityStatusUpdating = isShareabilityUpdating
-    || isDocumentsListRefetching
-    || isDocumentRefetching
-
-  const [isShareabilityStatusLoading, setShareabilityStatusLoading] = useState(false)
-
-  useDebounce(
-    () => {
-      setShareabilityStatusLoading(isShareabilityStatusUpdating)
-    },
-    DEFAULT_DEBOUNCE,
-    [isShareabilityStatusUpdating],
-  )
-
-  useEffect(() => {
-    if (!isShareabilityStatusUpdating) {
-      setShareabilityStatusLoading(false)
-    }
-  }, [isShareabilityStatusUpdating])
-
-  const handleShareabilityChange = useCallback(
-    (value: ShareabilityStatus) => updateShareability(value),
-    [updateShareability],
-  )
+    isLoading: isShareabilityStatusLoading,
+    handleChange: handleShareabilityChange,
+  } = useDocumentShareabilityState(slug)
 
   if (isLoading) {
     return (
