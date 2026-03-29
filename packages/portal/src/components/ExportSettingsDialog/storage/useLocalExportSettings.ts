@@ -1,14 +1,54 @@
+import {
+  ASYNCAPI_SPEC_TYPE,
+  GRAPHQL_SPEC_TYPE,
+  isAsyncApiSpecType,
+  isGraphQlSpecType,
+  isOpenApiSpecType,
+  OPENAPI_SPEC_TYPE,
+  type SpecType,
+} from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import { useCallback, useMemo } from 'react'
 import { useLocalStorage } from 'react-use'
 import type { ExportedEntityKind } from '../api/useExport'
 import type { ExportSettingsFormData } from '../entities/export-settings-form'
 import { ExportSettingsFormFieldKind } from '../entities/export-settings-form-field'
 
-function buildKey(exportedEntity: ExportedEntityKind, field: ExportSettingsFormFieldKind): string {
-  return `export-settings.${exportedEntity}.${field}`
+function getStorageSpecType(specType?: SpecType): SpecType | undefined {
+  if (isOpenApiSpecType(specType)) {
+    return OPENAPI_SPEC_TYPE
+  }
+
+  if (isAsyncApiSpecType(specType)) {
+    return ASYNCAPI_SPEC_TYPE
+  }
+
+  if (isGraphQlSpecType(specType)) {
+    return GRAPHQL_SPEC_TYPE
+  }
+
+  return specType
 }
 
-export function useLocalExportSettings(exportedEntity: ExportedEntityKind): {
+ 
+// Temporary specType normalization is required because we don't yet have separate
+// exportedEntity values for each API spec type. Without it, export settings can
+// conflict across different specification types in localStorage.
+// This can be removed once the API is updated with dedicated exportedEntity
+// variants for each spec type.
+function buildKey(
+  exportedEntity: ExportedEntityKind,
+  field: ExportSettingsFormFieldKind,
+  specType?: SpecType,
+): string {
+  const storageSpecType = getStorageSpecType(specType)
+  const contextSuffix = storageSpecType ? `.${storageSpecType}` : ''
+  return `export-settings.${exportedEntity}${contextSuffix}.${field}`
+}
+
+export function useLocalExportSettings(
+  exportedEntity: ExportedEntityKind,
+  specType?: SpecType,
+): {
   cachedFormData?: ExportSettingsFormData
   setCachedFormField: (field: ExportSettingsFormFieldKind, value: string) => void
 } {
@@ -21,8 +61,8 @@ export function useLocalExportSettings(exportedEntity: ExportedEntityKind): {
     [exportedEntity],
   )
   const fileFormatKey = useMemo(
-    () => buildKey(exportedEntity, ExportSettingsFormFieldKind.FILE_FORMAT),
-    [exportedEntity],
+    () => buildKey(exportedEntity, ExportSettingsFormFieldKind.FILE_FORMAT, specType),
+    [exportedEntity, specType],
   )
   const oasExtensionsKey = useMemo(
     () => buildKey(exportedEntity, ExportSettingsFormFieldKind.OAS_EXTENSIONS),

@@ -11,7 +11,7 @@ import {
   Typography,
 } from '@mui/material'
 import { intersectionBy } from 'lodash-es'
-import { type FC, memo, useMemo } from 'react'
+import { type FC, memo, useEffect, useMemo } from 'react'
 import { type Control, Controller, useForm, type UseFormSetValue, useWatch } from 'react-hook-form'
 
 import {
@@ -191,14 +191,20 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
   )
 
   // Extract cached form data from local storage
-  const { cachedFormData, setCachedFormField } = useLocalExportSettings(exportedEntity)
+  const { cachedFormData, setCachedFormField } = useLocalExportSettings(exportedEntity, specType)
 
   // Initialize form with cached data or default values
-  const { control, handleSubmit, setValue } = useForm<ExportSettingsFormData>({
-    defaultValues: cachedFormData
-      ? { ...fieldsDefaultValues, ...cachedFormData }
-      : fieldsDefaultValues,
+  const initialValues = useMemo(
+    () => cachedFormData ? { ...fieldsDefaultValues, ...cachedFormData } : fieldsDefaultValues,
+    [cachedFormData, fieldsDefaultValues],
+  )
+  const { control, handleSubmit, setValue, reset } = useForm<ExportSettingsFormData>({
+    defaultValues: initialValues,
   })
+
+  useEffect(() => {
+    reset(initialValues)
+  }, [open, initialValues, reset])
 
   // Version export alert
   const currentScopeValue = useWatch({ control: control, name: ExportSettingsFormFieldKind.SCOPE }) as
