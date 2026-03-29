@@ -12,6 +12,10 @@ export function useLocalExportSettings(exportedEntity: ExportedEntityKind): {
   cachedFormData?: ExportSettingsFormData
   setCachedFormField: (field: ExportSettingsFormFieldKind, value: string) => void
 } {
+  const scopeKey = useMemo(
+    () => buildKey(exportedEntity, ExportSettingsFormFieldKind.SCOPE),
+    [exportedEntity],
+  )
   const specificationTypeKey = useMemo(
     () => buildKey(exportedEntity, ExportSettingsFormFieldKind.SPECIFICATION_TYPE),
     [exportedEntity],
@@ -25,18 +29,23 @@ export function useLocalExportSettings(exportedEntity: ExportedEntityKind): {
     [exportedEntity],
   )
 
+  const [scope, setScope] = useLocalStorage<string | undefined>(scopeKey)
   const [specificationType, setSpecificationType] = useLocalStorage<string | undefined>(specificationTypeKey)
   const [fileFormat, setFileFormat] = useLocalStorage<string | undefined>(fileFormatKey)
   const [oasExtensions, setOasExtensions] = useLocalStorage<string | undefined>(oasExtensionsKey)
 
   const cachedFormData: ExportSettingsFormData = useMemo(() => ({
+    ...scope ? { [ExportSettingsFormFieldKind.SCOPE]: scope } : {},
     ...specificationType ? { [ExportSettingsFormFieldKind.SPECIFICATION_TYPE]: specificationType } : {},
     ...fileFormat ? { [ExportSettingsFormFieldKind.FILE_FORMAT]: fileFormat } : {},
     ...oasExtensions ? { [ExportSettingsFormFieldKind.OAS_EXTENSIONS]: oasExtensions } : {},
-  }), [specificationType, fileFormat, oasExtensions])
+  }), [scope, specificationType, fileFormat, oasExtensions])
 
   const setCachedFormField = useCallback((field: ExportSettingsFormFieldKind, value: string) => {
     switch (field) {
+      case ExportSettingsFormFieldKind.SCOPE:
+        setScope(value)
+        break
       case ExportSettingsFormFieldKind.SPECIFICATION_TYPE:
         setSpecificationType(value)
         break
@@ -47,7 +56,7 @@ export function useLocalExportSettings(exportedEntity: ExportedEntityKind): {
         setOasExtensions(value)
         break
     }
-  }, [setSpecificationType, setFileFormat, setOasExtensions])
+  }, [setScope, setSpecificationType, setFileFormat, setOasExtensions])
 
   return {
     cachedFormData: Object.keys(cachedFormData).length > 0 ? cachedFormData : undefined,

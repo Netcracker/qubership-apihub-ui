@@ -3,14 +3,17 @@ import { type FC, useCallback, useEffect, useMemo, useState } from 'react'
 import type { ExportSettingsPopupDetail } from '@apihub/routes/EventBusProvider'
 import { useShowErrorNotification } from '@apihub/routes/root/BasePage/Notification'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import { isExportableSpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import { isExportableSpecType, isOpenApiSpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import { useExportConfig } from '../../../routes/root/PortalPage/useExportConfig'
+import type { Documents } from '@apihub/entities/documents'
 import { useDocuments } from '../../../routes/root/PortalPage/VersionPage/useDocuments'
 import { useDownloadPublishedDocument } from '../../../routes/root/PortalPage/VersionPage/useDownloadPublishedDocument'
 import { ExportedEntityKind, type IRequestDataExport, useExport, useRemoveExportResult } from '../api/useExport'
 import { useExportStatus } from '../api/useExportStatus'
 import { useShareabilitySummary } from '../hooks/useShareabilitySummary'
 import { ExportSettingsForm } from './ExportSettingsForm'
+
+const EMPTY_DOCUMENTS: Documents = []
 
 export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) => {
   const {
@@ -36,10 +39,15 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
     enabled: isVersionExport,
   })
 
-  const shareabilitySummary = useShareabilitySummary(isVersionExport ? documents : [])
+  const shareabilitySummary = useShareabilitySummary(isVersionExport ? documents : EMPTY_DOCUMENTS)
+
+  const hasRestApi = useMemo(
+    () => isVersionExport && documents.some(doc => isOpenApiSpecType(doc.type)),
+    [isVersionExport, documents],
+  )
 
   // Version with exactly 1 document -> single-doc export behavior
-  const effective = useMemo(() => {
+  const resolvedExportParams = useMemo(() => {
     if (isVersionExport && !isLoadingDocuments && documents.length === 1) {
       const [doc] = documents
       return {
@@ -52,17 +60,16 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
     return { exportedEntity, documentId, specType, shareabilityStatus }
   }, [isVersionExport, isLoadingDocuments, documents, exportedEntity, documentId, specType, shareabilityStatus])
 
-  const isDownloadOnly = effective.exportedEntity === ExportedEntityKind.REST_DOCUMENT
-    && !!effective.documentId
-    && !isExportableSpecType(effective.specType)
+  const isDownloadOnly = resolvedExportParams.exportedEntity === ExportedEntityKind.REST_DOCUMENT
+    && !!resolvedExportParams.documentId
+    && !isExportableSpecType(resolvedExportParams.specType)
 
   const [downloadPublishedDocument, isDownloadingDocument] = useDownloadPublishedDocument({
     packageKey: packageId,
     versionKey: version,
-    slug: effective.documentId!,
+    slug: resolvedExportParams.documentId ?? '',
   })
 
-  // Initialize state used for request data export
   const [requestDataExport, setRequestDataExport] = useState<IRequestDataExport | undefined>(undefined)
   const [exportTask, isStartingExport, exportStartingError] = useExport(requestDataExport)
   const removeExportResult = useRemoveExportResult(
@@ -99,34 +106,36 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
     setNeedToGetExportStatus(false)
   }, [removeExportResult, setOpen])
 
-  const onDownloadPublishedDocument = useCallback(() => {
-    if (effective.documentId) {
+  const handleClose = useCallback(() => setOpen(false), [setOpen])
+
+  const handleDownloadPublishedDocument = useCallback(() => {
+    if (resolvedExportParams.documentId) {
       downloadPublishedDocument()
       setOpen(false)
     }
-  }, [effective.documentId, downloadPublishedDocument, setOpen])
+  }, [resolvedExportParams.documentId, downloadPublishedDocument, setOpen])
 
   useExportStatus(exportTask?.exportId, needToGetExportStatus, completeExport, completeExport)
 
   return (
     <ExportSettingsForm
       open={open}
-      onClose={() => setOpen(false)}
+      onClose={handleClose}
       exportConfig={exportConfig}
-      exportedEntity={effective.exportedEntity}
+      exportedEntity={resolvedExportParams.exportedEntity}
       packageId={packageId}
       version={version}
-      documentId={effective.documentId}
+      documentId={resolvedExportParams.documentId}
       groupName={groupName}
       exporting={exporting}
       isLoadingExportConfig={isLoadingExportConfig || (isVersionExport && isLoadingDocuments)}
       isStartingExport={isStartingAnyExport}
       setRequestDataExport={setRequestDataExport}
       hasRestApi={hasRestApi}
-      specType={effective.specType}
-      shareabilityStatus={effective.shareabilityStatus}
+      specType={resolvedExportParams.specType}
+      shareabilityStatus={resolvedExportParams.shareabilityStatus}
       shareabilitySummary={shareabilitySummary}
-      onDownloadPublishedDocument={isDownloadOnly ? onDownloadPublishedDocument : undefined}
+      onDownloadPublishedDocument={isDownloadOnly ? handleDownloadPublishedDocument : undefined}
     />
   )
 }

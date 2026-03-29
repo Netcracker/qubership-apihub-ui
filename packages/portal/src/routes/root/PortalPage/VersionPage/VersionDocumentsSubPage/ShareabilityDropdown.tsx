@@ -52,9 +52,8 @@ export const ShareabilityDropdown: FC<ShareabilityDropdownProps> = memo(({
 }) => {
   const [menuOpen, setMenuOpen] = useState(false)
 
-  const handleClick = useCallback(() => {
-    setMenuOpen(prev => !prev)
-  }, [])
+  const handleOpen = useCallback(() => setMenuOpen(true), [])
+  const handleClose = useCallback(() => setMenuOpen(false), [])
 
   return (
     <ShareabilityDropdownButton
@@ -64,8 +63,8 @@ export const ShareabilityDropdown: FC<ShareabilityDropdownProps> = memo(({
         : <KeyboardArrowDownOutlinedIcon fontSize="small" />}
       variant="outlined"
       disabled={isLoading}
-      onClick={handleClick}
-      onItemClick={handleClick}
+      onClick={handleOpen}
+      onClose={handleClose}
       data-testid="ShareabilityDropdownButton"
     >
       {DROPDOWN_OPTIONS.map((status) => (
