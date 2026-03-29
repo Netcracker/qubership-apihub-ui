@@ -29,8 +29,8 @@ export function useUpdateDocumentShareability(
 
   return {
     updateShareability: useCallback(
-  (status: ShareabilityStatus) => mutate(status),
-    [mutate],
+      (status: ShareabilityStatus) => mutate(status),
+      [mutate],
     ),
     isPending,
   }
