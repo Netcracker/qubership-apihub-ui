@@ -16,7 +16,7 @@ type UseDocumentShareabilityStateResult = {
   hasPermission: boolean
   packageKey: string | undefined
   fullVersion: string
-  isLoading: boolean
+  isShareabilityStatusLoading: boolean
   handleChange: (value: ShareabilityStatus) => void
 }
 
@@ -50,9 +50,9 @@ export function useDocumentShareabilityState(slug: string): UseDocumentShareabil
     slug,
   )
 
-  const isShareabilityStatusUpdating = isShareabilityUpdating
-    || isDocumentsListRefetching
-    || isDocumentRefetching
+  const isShareabilityStatusUpdating = isShareabilityUpdating ||
+    isDocumentsListRefetching ||
+    isDocumentRefetching
 
   const [isShareabilityStatusLoading, setShareabilityStatusLoading] = useState(false)
 
@@ -79,7 +79,7 @@ export function useDocumentShareabilityState(slug: string): UseDocumentShareabil
     hasPermission,
     packageKey,
     fullVersion,
-    isLoading: isShareabilityStatusLoading,
+    isShareabilityStatusLoading,
     handleChange,
   }
 }

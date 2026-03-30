@@ -31,15 +31,15 @@ export function useShareabilityAlerts({
 }: UseShareabilityAlertsParams): ShareabilityAlerts {
   const isVersionExport = exportedEntity === ExportedEntityKind.VERSION
   const isSingleDocExport = exportedEntity === ExportedEntityKind.REST_DOCUMENT
-  const isOnlyShareableScope = isVersionExport
-    && (!scopeValue || scopeValue === ExportSettingsFormFieldOptionScope.ONLY_SHAREABLE)
+  const isOnlyShareableScope = isVersionExport &&
+    (!scopeValue || scopeValue === ExportSettingsFormFieldOptionScope.ONLY_SHAREABLE)
 
   return useMemo(
     () => ({
       versionExportAlert: isVersionExport ? buildVersionExportShareabilityAlert(scopeValue, shareabilitySummary) : null,
       singleDocExportAlert: isSingleDocExport ? buildSingleDocumentShareabilityAlert(shareabilityStatus) : null,
-      versionExportDisabled: isOnlyShareableScope && shareabilitySummary.shareable === 0
-        && shareabilitySummary.total > 0,
+      versionExportDisabled: isOnlyShareableScope && shareabilitySummary.shareable === 0 &&
+        shareabilitySummary.total > 0,
     }),
     [isOnlyShareableScope, isSingleDocExport, scopeValue, shareabilityStatus, shareabilitySummary, isVersionExport],
   )

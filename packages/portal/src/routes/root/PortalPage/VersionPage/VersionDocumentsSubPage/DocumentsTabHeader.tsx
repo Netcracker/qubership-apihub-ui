@@ -59,7 +59,7 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
     hasPermission: hasShareabilityPermission,
     packageKey: docPackageKey,
     fullVersion,
-    isLoading: isShareabilityStatusLoading,
+    isShareabilityStatusLoading,
     handleChange: handleShareabilityChange,
   } = useDocumentShareabilityState(slug)
 

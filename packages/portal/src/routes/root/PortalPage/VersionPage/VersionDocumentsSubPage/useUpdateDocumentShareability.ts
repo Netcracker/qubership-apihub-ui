@@ -27,11 +27,10 @@ export function useUpdateDocumentShareability(
     },
   })
 
+  const updateShareability = useCallback((status: ShareabilityStatus) => mutate(status), [mutate])
+
   return {
-    updateShareability: useCallback(
-      (status: ShareabilityStatus) => mutate(status),
-      [mutate],
-    ),
+    updateShareability,
     isPending,
   }
 }

@@ -29,7 +29,6 @@ function getStorageSpecType(specType?: SpecType): SpecType | undefined {
   return specType
 }
 
- 
 // Temporary specType normalization is required because we don't yet have separate
 // exportedEntity values for each API spec type. Without it, export settings can
 // conflict across different specification types in localStorage.

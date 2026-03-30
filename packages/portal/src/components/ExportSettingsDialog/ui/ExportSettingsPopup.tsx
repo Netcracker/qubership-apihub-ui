@@ -59,9 +59,9 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
     return { exportedEntity, documentId, specType, shareabilityStatus }
   }, [isVersionExport, isLoadingDocuments, documents, exportedEntity, documentId, specType, shareabilityStatus])
 
-  const isDownloadOnly = resolvedExportParams.exportedEntity === ExportedEntityKind.REST_DOCUMENT
-    && !!resolvedExportParams.documentId
-    && !isExportableSpecType(resolvedExportParams.specType)
+  const isDownloadOnly = resolvedExportParams.exportedEntity === ExportedEntityKind.REST_DOCUMENT &&
+    !!resolvedExportParams.documentId &&
+    !isExportableSpecType(resolvedExportParams.specType)
 
   const [downloadPublishedDocument, isDownloadingDocument] = useDownloadPublishedDocument({
     packageKey: packageId,
