@@ -16,7 +16,7 @@ import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/Di
 import type { PackageKey, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoContextIcon'
 import type { FC } from 'react'
-import { memo, useMemo } from 'react'
+import { memo, useCallback, useMemo } from 'react'
 import type { Control, UseFormSetValue } from 'react-hook-form'
 import { Controller, useForm } from 'react-hook-form'
 import type { ExportConfig } from '../../../routes/root/PortalPage/useExportConfig'
@@ -33,8 +33,11 @@ import type { ExportSettingsFormField } from '../entities/export-settings-form-f
 import {
   ExportSettingsFormFieldKind,
   ExportSettingsFormFieldOptionOasExtensions,
+  SPEC_TYPE_ACCESS_VIEW_EXPORT_FIELD,
 } from '../entities/export-settings-form-field'
 import { useLocalExportSettings } from '../storage/useLocalExportSettings'
+import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
+import { intersectionBy } from 'lodash-es'
 
 interface ExportSettingsFormFieldsProps {
   disabled: boolean
@@ -47,46 +50,49 @@ interface ExportSettingsFormFieldsProps {
 
 const ExportSettingsFormFields: FC<ExportSettingsFormFieldsProps> = memo(props => {
   const { disabled, fields, exportConfig, control, setValue, setCachedFormField } = props
-
   return (
     <Box component="form" display="flex" flexDirection="column" gap={2}>
       {fields.map(field => <>
-        <Typography key={`${field.kind}-label`} variant="h3">{field.label}</Typography>
-        <Controller
-          key={field.kind}
-          name={field.kind}
-          control={control}
-          render={({ field: { value } }) => (
-            <RadioGroup
+        {field.options?.length > 0 &&
+          <>
+            <Typography key={`${field.kind}-label`} variant="h3">{field.label}</Typography>
+            <Controller
               key={field.kind}
-              value={value}
-              onChange={(_, value) => {
-                setCachedFormField(field.kind, value)
-                setValue(field.kind, value)
-              }}
-            >
-              {field.options.map(option => (
-                <Box key={option.value} display="flex" alignItems="center" gap={1}>
-                  <FormControlLabel
-                    value={option.value}
-                    label={option.label}
-                    checked={!value && option.value === field.defaultValue || value === option.value}
-                    control={<Radio disabled={disabled}/>}
-                  />
-                  {option.tooltip && (
-                    <Tooltip
-                      disableHoverListener={false}
-                      title={typeof option.tooltip === 'function' ? option.tooltip(exportConfig) : option.tooltip}
-                      placement="right"
-                    >
-                      <InfoContextIcon/>
-                    </Tooltip>
-                  )}
-                </Box>
-              ))}
-            </RadioGroup>
-          )}
-        />
+              name={field.kind}
+              control={control}
+              render={({ field: { value } }) => (
+                <RadioGroup
+                  key={field.kind}
+                  value={value}
+                  onChange={(_, value) => {
+                    setCachedFormField(field.kind, value)
+                    setValue(field.kind, value)
+                  }}
+                >
+                  {field.options.map(option => (
+                    <Box key={option.value} display="flex" alignItems="center" gap={1}>
+                      <FormControlLabel
+                        value={option.value}
+                        label={option.label}
+                        checked={!value && option.value === field.defaultValue || value === option.value}
+                        control={<Radio disabled={disabled}/>}
+                      />
+                      {option.tooltip && (
+                        <Tooltip
+                          disableHoverListener={false}
+                          title={typeof option.tooltip === 'function' ? option.tooltip(exportConfig) : option.tooltip}
+                          placement="right"
+                        >
+                          <InfoContextIcon/>
+                        </Tooltip>
+                      )}
+                    </Box>
+                  ))}
+                </RadioGroup>
+              )}
+            />
+          </>
+        }
       </>)}
     </Box>
   )
@@ -109,6 +115,7 @@ interface ExportSettingsFormProps {
   isStartingExport: boolean
   // Action props
   setRequestDataExport: (requestData: IRequestDataExport) => void
+  specType?: SpecType
 }
 
 export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
@@ -125,10 +132,33 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
     isLoadingExportConfig,
     isStartingExport,
     setRequestDataExport,
+    specType,
   } = props
 
+  const getFilteredFields = useCallback((specType: SpecType): ExportSettingsFormField[] => {
+    return EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE[exportedEntity]
+      .map(field => {
+        const allowedOptions = SPEC_TYPE_ACCESS_VIEW_EXPORT_FIELD[specType]!
+        return {
+          ...field,
+          options: [...intersectionBy(
+            field.options,
+            allowedOptions,
+            'value')],
+        }
+      })
+  }, [exportedEntity])
+
   // Calculate fields and default values
-  const fields = EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE[exportedEntity]
+  const fields = useMemo(() => {
+    if (specType && SPEC_TYPE_ACCESS_VIEW_EXPORT_FIELD[specType]) {
+      return getFilteredFields(specType)
+    } else {
+      return EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE[exportedEntity]
+    }
+
+  }, [exportedEntity, getFilteredFields, specType])
+
   const fieldsDefaultValues = useMemo(
     () => fields.reduce((acc, field) => ({ ...acc, [field.kind]: field.defaultValue }), {}),
     [fields],
