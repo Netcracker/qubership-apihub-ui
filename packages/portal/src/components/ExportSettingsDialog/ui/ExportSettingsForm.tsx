@@ -203,6 +203,7 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
   })
 
   useEffect(() => {
+    if (!open) return
     reset(initialValues)
   }, [open, initialValues, reset])
 

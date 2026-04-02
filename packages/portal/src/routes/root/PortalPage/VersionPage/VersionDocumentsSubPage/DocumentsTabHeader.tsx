@@ -1,7 +1,7 @@
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { Box, Skeleton, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
-import { type Dispatch, type FC, memo, type SetStateAction } from 'react'
+import { type Dispatch, type FC, memo, type SetStateAction, useCallback } from 'react'
 
 import type { Document } from '@apihub/entities/documents'
 import type { Key } from '@apihub/entities/keys'
@@ -37,6 +37,11 @@ export type DocumentsTabHeaderProps = {
   isLoading?: boolean
   document: Document
 }
+
+const MORE_ACTIONS_BUTTON_PROPS = {
+  title: 'More',
+  variant: 'outlined',
+} as const
 
 export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
   const {
@@ -120,10 +125,7 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
           docType={type}
           format={format}
           shareabilityStatus={shareabilityStatus}
-          customProps={{
-            title: 'More',
-            variant: 'outlined',
-          }}
+          customProps={MORE_ACTIONS_BUTTON_PROPS}
           startIcon={<MoreButtonIcon fontSize="small" />}
         />
       </ActionsSection>
@@ -135,14 +137,16 @@ const DocumentsSubPageSelector = memo(() => {
   const selectedSubPage = useSelectedSubPage()
   const setSelectedSubPage = useSetSelectedSubPage()
 
+  const handleSubPageChange = useCallback((newSelectedSubPage: DocumentsTabSubPageKey) => {
+    setSelectedSubPage(newSelectedSubPage)
+  }, [setSelectedSubPage])
+
   return (
     <SubPageSelector>
       <Toggler<DocumentsTabSubPageKey>
         mode={selectedSubPage}
         modes={[OVERVIEW_SUB_PAGE, OPERATIONS_SUB_PAGE]}
-        onChange={(newSelectedSubPage) => {
-          setSelectedSubPage(newSelectedSubPage)
-        }}
+        onChange={handleSubPageChange}
       />
     </SubPageSelector>
   )

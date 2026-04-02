@@ -35,18 +35,15 @@ export const UnsupportedView: FC<UnsupportedViewProps> = memo<UnsupportedViewPro
   const canExport = !!docPackageKey && !!docPackageVersionKey && !!documentId && !!fullVersion
 
   const handleExport = useCallback(() => {
-    if (!canExport) {
-      return
-    }
     showExportSettingsDialog({
       specType: document.type,
       shareabilityStatus: document.shareabilityStatus,
       exportedEntity: ExportedEntityKind.REST_DOCUMENT,
-      packageId: docPackageKey,
+      packageId: docPackageKey!,
       version: fullVersion,
       documentId: documentId,
     })
-  }, [canExport, document.type, document.shareabilityStatus, docPackageKey, fullVersion, documentId, showExportSettingsDialog])
+  }, [document.type, document.shareabilityStatus, docPackageKey, fullVersion, documentId, showExportSettingsDialog])
 
   return (
     <UnsupportedFilePlaceholder

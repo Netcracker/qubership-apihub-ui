@@ -14,6 +14,9 @@ import type { ExportSettingsFormData } from '../entities/export-settings-form'
 import { ExportSettingsFormFieldKind } from '../entities/export-settings-form-field'
 
 function getStorageSpecType(specType?: SpecType): SpecType | undefined {
+
+  if(!specType) return
+
   if (isOpenApiSpecType(specType)) {
     return OPENAPI_SPEC_TYPE
   }

@@ -1,11 +1,11 @@
 import { type FC, useCallback, useEffect, useMemo, useState } from 'react'
 
+import type { Documents } from '@apihub/entities/documents'
 import type { ExportSettingsPopupDetail } from '@apihub/routes/EventBusProvider'
 import { useShowErrorNotification } from '@apihub/routes/root/BasePage/Notification'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { isExportableSpecType, isOpenApiSpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import { useExportConfig } from '../../../routes/root/PortalPage/useExportConfig'
-import type { Documents } from '@apihub/entities/documents'
 import { useDocuments } from '../../../routes/root/PortalPage/VersionPage/useDocuments'
 import { useDownloadPublishedDocument } from '../../../routes/root/PortalPage/VersionPage/useDownloadPublishedDocument'
 import { ExportedEntityKind, type IRequestDataExport, useExport, useRemoveExportResult } from '../api/useExport'
@@ -28,7 +28,7 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
 
   const showErrorNotification = useShowErrorNotification()
 
-  const [exportConfig, isLoadingExportConfig] = useExportConfig(packageId)
+  const [exportConfig, isExportConfigLoading] = useExportConfig(packageId)
 
   // Fetch documents for version export
   const isVersionExport = exportedEntity === ExportedEntityKind.VERSION
@@ -76,6 +76,8 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
     requestDataExport?.packageId,
     requestDataExport?.version,
   )
+
+  const isLoadingExportConfig = isExportConfigLoading || (isVersionExport && isLoadingDocuments)
 
   const isStartingAnyExport = isStartingExport || (isDownloadingDocument && isDownloadOnly)
 
@@ -127,7 +129,7 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
       documentId={resolvedExportParams.documentId}
       groupName={groupName}
       exporting={exporting}
-      isLoadingExportConfig={isLoadingExportConfig || (isVersionExport && isLoadingDocuments)}
+      isLoadingExportConfig={isLoadingExportConfig}
       isStartingExport={isStartingAnyExport}
       setRequestDataExport={setRequestDataExport}
       hasRestApi={hasRestApi}

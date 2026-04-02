@@ -40,11 +40,14 @@ type ShareabilityMarkerProps = {
 
 export const ShareabilityMarker: FC<ShareabilityMarkerProps> = memo(({ value, className, isLoading = false }) => {
   const Icon = ICON_BY_STATUS[value]
+
+  if (isLoading) {
+    return <CircularProgress sx={{ ml: 0.5 }} size={16} />
+  }
+
   return (
     <Tooltip title={TOOLTIP_TEXT_BY_STATUS[value]}>
-      {isLoading
-        ? <CircularProgress sx={{ ml: 0.5 }} size={16} />
-        : <Icon fontSize="small" color={COLOR_BY_STATUS[value]} className={className} />}
+      <Icon fontSize="small" color={COLOR_BY_STATUS[value]} className={className} />
     </Tooltip>
   )
 })

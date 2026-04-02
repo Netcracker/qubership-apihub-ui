@@ -111,6 +111,21 @@ export const VersionPageToolbar: FC = memo(() => {
     [permissions, status],
   )
 
+  const handleExportClick = useCallback(
+    () => {
+      if (!packageId || !fullVersion) {
+        return
+      }
+
+      showExportSettingsDialog({
+        exportedEntity: ExportedEntityKind.VERSION,
+        packageId: packageId,
+        version: fullVersion,
+      })
+    },
+    [fullVersion, packageId, showExportSettingsDialog],
+  )
+
   return (
     <>
       <Toolbar
@@ -148,13 +163,7 @@ export const VersionPageToolbar: FC = memo(() => {
             {!isDashboard && fullVersion && (
               <Button
                 variant="outlined"
-                onClick={() => {
-                  showExportSettingsDialog({
-                    exportedEntity: ExportedEntityKind.VERSION,
-                    packageId: packageId!,
-                    version: fullVersion,
-                  })
-                }}
+                onClick={handleExportClick}
                 data-testid="ExportVersionButton"
               >
                 Export

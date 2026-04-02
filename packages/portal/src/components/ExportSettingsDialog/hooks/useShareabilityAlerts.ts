@@ -38,8 +38,7 @@ export function useShareabilityAlerts({
     () => ({
       versionExportAlert: isVersionExport ? buildVersionExportShareabilityAlert(scopeValue, shareabilitySummary) : null,
       singleDocExportAlert: isSingleDocExport ? buildSingleDocumentShareabilityAlert(shareabilityStatus) : null,
-      versionExportDisabled: isOnlyShareableScope && shareabilitySummary.shareable === 0 &&
-        shareabilitySummary.total > 0,
+      versionExportDisabled: isOnlyShareableScope && shareabilitySummary.shareable === 0,
     }),
     [isOnlyShareableScope, isSingleDocExport, scopeValue, shareabilityStatus, shareabilitySummary, isVersionExport],
   )
