@@ -225,11 +225,8 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
       return
     }
 
-    const fileFormat = (
-      fields.some(f => f.kind === ExportSettingsFormFieldKind.FILE_FORMAT)
-        ? data[ExportSettingsFormFieldKind.FILE_FORMAT]
-        : undefined
-    ) as ExportedFileFormat ?? ExportedFileFormat.JSON
+    const hasFileFormatField = fields.some(f => f.kind === ExportSettingsFormFieldKind.FILE_FORMAT)
+    const fileFormat = (hasFileFormatField ? data[ExportSettingsFormFieldKind.FILE_FORMAT] : undefined) ?? ExportedFileFormat.JSON
 
     const removeOasExtensions =
       data[ExportSettingsFormFieldKind.OAS_EXTENSIONS] === ExportSettingsFormFieldOptionOasExtensions.REMOVE
