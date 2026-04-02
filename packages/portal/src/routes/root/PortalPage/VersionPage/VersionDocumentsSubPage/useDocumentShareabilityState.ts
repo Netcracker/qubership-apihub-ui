@@ -1,16 +1,14 @@
-import { useIsFetching } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDebounce } from 'react-use'
 
 import type { ShareabilityStatus } from '@netcracker/qubership-apihub-api-processor'
+import { useDocumentShareabilityRefetching } from '@netcracker/qubership-apihub-ui-portal/src/api-hooks/Shareability/useDocumentShareabilityRefetching'
+import { useUpdateDocumentShareability } from '@netcracker/qubership-apihub-ui-portal/src/api-hooks/Shareability/useUpdateDocumentShareability'
 import { DOCUMENT_SHAREABILITY_MANAGEMENT_PERMISSION } from '@netcracker/qubership-apihub-ui-shared/entities/package-permissions'
 import { DEFAULT_DEBOUNCE } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
 import { usePackage } from '../../../usePackage'
 import { useVersionWithRevision } from '../../../useVersionWithRevision'
 import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
-import { DOCUMENT_QUERY_KEY } from '../useDocument'
-import { DOCUMENTS_QUERY_KEY } from '../useDocuments'
-import { useUpdateDocumentShareability } from './useUpdateDocumentShareability'
 
 type UseDocumentShareabilityStateResult = {
   hasPermission: boolean
@@ -34,15 +32,11 @@ export function useDocumentShareabilityState(slug: string): UseDocumentShareabil
   )
   const { fullVersion } = useVersionWithRevision(packageVersion, packageKey)
 
-  const isDocumentsListRefetching = useIsFetching({
-    queryKey: [DOCUMENTS_QUERY_KEY, packageKey, fullVersion],
-    exact: false,
-  }) > 0
-
-  const isDocumentRefetching = useIsFetching({
-    queryKey: [DOCUMENT_QUERY_KEY, packageKey, fullVersion, slug],
-    exact: true,
-  }) > 0
+  const { isDocumentsListRefetching, isDocumentRefetching } = useDocumentShareabilityRefetching(
+    packageKey,
+    fullVersion,
+    slug,
+  )
 
   const { updateShareability, isPending: isShareabilityUpdating } = useUpdateDocumentShareability(
     packageKey!,
