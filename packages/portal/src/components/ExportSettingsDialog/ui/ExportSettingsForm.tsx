@@ -221,6 +221,7 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
     }
 
     const hasFileFormatField = fields.some(f => f.kind === ExportSettingsFormFieldKind.FILE_FORMAT)
+    // Some UI variants don't include FILE_FORMAT, but export API requires it; JSON is a safe fallback.
     const fileFormat = (hasFileFormatField ? data[ExportSettingsFormFieldKind.FILE_FORMAT] : undefined) ?? ExportedFileFormat.JSON
 
     const removeOasExtensions =
