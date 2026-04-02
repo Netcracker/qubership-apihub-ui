@@ -7,11 +7,12 @@ import {
   type ShareabilityStatus,
 } from '@netcracker/qubership-apihub-api-processor'
 import { AlertCustom, type AlertCustomProps } from '@netcracker/qubership-apihub-ui-shared/components/AlertCustom'
+import { ALERT_SEVERITY, type AlertSeverity } from '@netcracker/qubership-apihub-ui-shared/themes/alert'
 import { ExportSettingsFormFieldOptionScope } from '../entities/export-settings-form-field'
 import type { ShareabilitySummary } from '../hooks/useShareabilitySummary'
 
 export type ShareabilityFieldAlert = {
-  severity: 'success' | 'warning' | 'error'
+  severity: AlertSeverity
   title: string
   message: string
 }
@@ -30,19 +31,19 @@ export const buildSingleDocumentShareabilityAlert = (
   switch (status) {
     case SHAREABILITY_STATUS_SHAREABLE:
       return {
-        severity: 'success',
+        severity: ALERT_SEVERITY.SUCCESS,
         title: 'Shareable document',
         message: 'This document is marked as shareable by the package owner.',
       }
     case SHAREABILITY_STATUS_UNKNOWN:
       return {
-        severity: 'warning',
+        severity: ALERT_SEVERITY.WARNING,
         title: 'Unknown shareability',
         message: 'The shareability status of this document is unknown. Contact the package owner to clarify.',
       }
     case SHAREABILITY_STATUS_NON_SHAREABLE:
       return {
-        severity: 'error',
+        severity: ALERT_SEVERITY.ERROR,
         title: 'Non-shareable document',
         message: 'This document is marked as non-shareable by the package owner.',
       }
@@ -65,21 +66,21 @@ export const buildVersionExportShareabilityAlert = (
     // "Only shareable documents" scope
     if (summary.shareable > 0) {
       return {
-        severity: 'success',
+        severity: ALERT_SEVERITY.SUCCESS,
         title: 'Shareable documents only',
         message: `${summary.shareable} shareable documents out of ${summary.total} will be exported.`,
       }
     }
     if (summary.unknown > 0) {
       return {
-        severity: 'warning',
+        severity: ALERT_SEVERITY.WARNING,
         title: 'No shareable documents found',
         message:
           'No documents are confirmed as shareable in this version. Some documents have unknown shareability status. Contact the package owner to clarify.',
       }
     }
     return {
-      severity: 'warning',
+      severity: ALERT_SEVERITY.WARNING,
       title: 'No shareable documents found',
       message: 'All documents in this version are marked as non-shareable by the package owner.',
     }
@@ -88,7 +89,7 @@ export const buildVersionExportShareabilityAlert = (
   // "All documents" scope
   if (summary.nonShareable === 0 && summary.unknown === 0) {
     return {
-      severity: 'success',
+      severity: ALERT_SEVERITY.SUCCESS,
       title: 'All shareable',
       message: `All ${summary.total} documents will be exported. All are marked as shareable by the package owner.`,
     }
@@ -102,14 +103,14 @@ export const buildVersionExportShareabilityAlert = (
     }
 
     return {
-      severity: 'error',
+      severity: ALERT_SEVERITY.ERROR,
       title: 'Includes restricted documents',
       message: `All ${summary.total} documents will be exported, including ${parts.join(' and ')}.`,
     }
   }
 
   return {
-    severity: 'warning',
+    severity: ALERT_SEVERITY.WARNING,
     title: 'Unknown shareability',
     message: `${summary.unknown} documents have unknown shareability status. Contact the package owner to clarify.`,
   }

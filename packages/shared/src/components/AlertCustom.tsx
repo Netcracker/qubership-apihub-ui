@@ -1,4 +1,4 @@
-import { Alert, type AlertColor, AlertTitle, type PaletteColor, styled, type Theme } from '@mui/material'
+import { Alert, AlertTitle, type PaletteColor, styled, type Theme } from '@mui/material'
 import type { SvgIconProps } from '@mui/material/SvgIcon'
 import { type FC, memo } from 'react'
 
@@ -6,9 +6,10 @@ import { CheckCircleIcon } from '../icons/CheckCircleIcon'
 import { ErrorIcon } from '../icons/ErrorIcon'
 import { InfoFilledIcon } from '../icons/InfoFilledIcon'
 import { WarningIconMui } from '../icons/WarningIconMui'
+import { ALERT_SEVERITY, type AlertSeverity } from '../themes/alert'
 
 export type AlertCustomProps = {
-  severity: AlertColor
+  severity: AlertSeverity
   title?: string
   message: string
   className?: string
@@ -19,26 +20,26 @@ type AlertCustomConfig = {
   color: (theme: Theme) => PaletteColor
 }
 
-const alertConfig: Record<AlertColor, AlertCustomConfig> = {
-  success: {
+const alertConfig: Record<AlertSeverity, AlertCustomConfig> = {
+  [ALERT_SEVERITY.SUCCESS]: {
     icon: CheckCircleIcon,
     color: (theme) => theme.palette.secondary,
   },
-  warning: {
+  [ALERT_SEVERITY.WARNING]: {
     icon: WarningIconMui,
     color: (theme) => theme.palette.warning,
   },
-  error: {
+  [ALERT_SEVERITY.ERROR]: {
     icon: ErrorIcon,
     color: (theme) => theme.palette.error,
   },
-  info: {
+  [ALERT_SEVERITY.INFO]: {
     icon: InfoFilledIcon,
     color: (theme) => theme.palette.primary,
   },
 }
 
-const AlertCustomBase = styled(Alert)<{ severity: AlertColor }>(({ theme, severity }) => {
+const AlertCustomBase = styled(Alert)<{ severity: AlertSeverity }>(({ theme, severity }) => {
   const color = alertConfig[severity].color(theme)
 
   return {
