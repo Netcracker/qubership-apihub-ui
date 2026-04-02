@@ -17,6 +17,10 @@ export type ShareabilityFieldAlert = {
   message: string
 }
 
+const formatDocumentWord = (count: number): 'document' | 'documents' => (count === 1 ? 'document' : 'documents')
+
+const getVerbHaveOrHas = (count: number): string => (count === 1 ? 'has' : 'have')
+
 export const ShareabilityExportVersionAlert = styled(AlertCustom)<AlertCustomProps>(({ theme }) => ({
   marginTop: theme.spacing(-2),
 }))
@@ -68,7 +72,9 @@ export const buildVersionExportShareabilityAlert = (
       return {
         severity: ALERT_SEVERITY.SUCCESS,
         title: 'Shareable documents only',
-        message: `${summary.shareable} shareable documents out of ${summary.total} will be exported.`,
+        message: `${summary.shareable} shareable ${
+          formatDocumentWord(summary.shareable)
+        } out of ${summary.total} will be exported.`,
       }
     }
     if (summary.unknown > 0) {
@@ -95,11 +101,16 @@ export const buildVersionExportShareabilityAlert = (
     }
   }
 
-  if (summary.nonShareable > 0) {
+  const hasRestrictedDocuments = summary.nonShareable > 0 || (summary.shareable > 0 && summary.unknown > 0)
+
+  if (hasRestrictedDocuments) {
     const parts: string[] = []
-    parts.push(`${summary.nonShareable} marked as non-shareable`)
+
+    if (summary.nonShareable > 0) {
+      parts.push(`${summary.nonShareable} ${formatDocumentWord(summary.nonShareable)} marked as non-shareable`)
+    }
     if (summary.unknown > 0) {
-      parts.push(`${summary.unknown} with unknown shareability status`)
+      parts.push(`${summary.unknown} ${formatDocumentWord(summary.unknown)} with unknown shareability status`)
     }
 
     return {
@@ -112,6 +123,8 @@ export const buildVersionExportShareabilityAlert = (
   return {
     severity: ALERT_SEVERITY.WARNING,
     title: 'Unknown shareability',
-    message: `${summary.unknown} documents have unknown shareability status. Contact the package owner to clarify.`,
+    message: `${summary.unknown} ${formatDocumentWord(summary.unknown)} ${
+      getVerbHaveOrHas(summary.unknown)
+    } unknown shareability status. Contact the package owner to clarify.`,
   }
 }
