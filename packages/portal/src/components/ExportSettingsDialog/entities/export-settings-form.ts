@@ -1,5 +1,8 @@
+import type { ExportedEntityTransformation, ExportedFileFormat } from '../api/useExport'
 import { ExportedEntityKind } from '../api/useExport'
-import type { ExportSettingsFormField, ExportSettingsFormFieldOption } from './export-settings-form-field'
+import type { ExportSettingsFormField ,
+  ExportSettingsFormFieldOptionOasExtensions,
+  ExportSettingsFormFieldOptionScope} from './export-settings-form-field'
 import {
   ExportSettingsFormFieldKind,
   FIELD_LABEL_SCOPE,
@@ -75,9 +78,9 @@ export const EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE: Record<ExportedEntityKind, Ex
   ],
 }
 
-export type ExportSettingsFormData = Partial<
-  Record<
-    ExportSettingsFormFieldKind,
-    ExportSettingsFormFieldOption['value']
-  >
->
+export type ExportSettingsFormData = {
+  [ExportSettingsFormFieldKind.SCOPE]?: ExportSettingsFormFieldOptionScope
+  [ExportSettingsFormFieldKind.SPECIFICATION_TYPE]?: ExportedEntityTransformation
+  [ExportSettingsFormFieldKind.FILE_FORMAT]?: ExportedFileFormat
+  [ExportSettingsFormFieldKind.OAS_EXTENSIONS]?: ExportSettingsFormFieldOptionOasExtensions
+}

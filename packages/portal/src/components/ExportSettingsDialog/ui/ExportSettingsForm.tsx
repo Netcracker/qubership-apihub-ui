@@ -12,7 +12,7 @@ import {
 } from '@mui/material'
 import { intersectionBy } from 'lodash-es'
 import { type FC, memo, useEffect, useMemo } from 'react'
-import { type Control, Controller, useForm, type UseFormSetValue, useWatch } from 'react-hook-form'
+import { type Control, Controller, useForm, useWatch } from 'react-hook-form'
 
 import {
   SHAREABILITY_STATUS_SHAREABLE,
@@ -28,7 +28,6 @@ import { isExportableSpecType, type SpecType } from '@netcracker/qubership-apihu
 import type { ExportConfig } from '../../../routes/root/PortalPage/useExportConfig'
 import {
   ExportedEntityKind,
-  type ExportedEntityTransformation,
   ExportedFileFormat,
   type IRequestDataExport,
   RequestDataExportRestDocument,
@@ -53,7 +52,6 @@ interface ExportSettingsFormFieldsProps {
   fields: ExportSettingsFormField[]
   exportConfig: ExportConfig
   control: Control<ExportSettingsFormData>
-  setValue: UseFormSetValue<ExportSettingsFormData>
   setCachedFormField: (field: ExportSettingsFormFieldKind, value: string) => void
   shareabilityExportVersionAlert: ShareabilityAlerts['versionExportAlert']
 }
@@ -64,7 +62,6 @@ const ExportSettingsFormFields: FC<ExportSettingsFormFieldsProps> = memo(props =
     fields,
     exportConfig,
     control,
-    setValue,
     setCachedFormField,
     shareabilityExportVersionAlert,
   } = props
@@ -80,12 +77,12 @@ const ExportSettingsFormFields: FC<ExportSettingsFormFieldsProps> = memo(props =
             <Controller
               name={field.kind}
               control={control}
-              render={({ field: { value } }) => (
+              render={({ field: { value, onChange } }) => (
                 <RadioGroup
                   value={value}
-                  onChange={(_, value) => {
-                    setCachedFormField(field.kind, value)
-                    setValue(field.kind, value)
+                  onChange={(_, newValue) => {
+                    setCachedFormField(field.kind, newValue)
+                    onChange(newValue)
                   }}
                 >
                   {field.options.map(option => (
@@ -198,7 +195,7 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
     () => (cachedFormData ? { ...fieldsDefaultValues, ...cachedFormData } : fieldsDefaultValues),
     [cachedFormData, fieldsDefaultValues],
   )
-  const { control, handleSubmit, setValue, reset } = useForm<ExportSettingsFormData>({
+  const { control, handleSubmit, reset } = useForm<ExportSettingsFormData>({
     defaultValues: initialValues,
   })
 
@@ -208,9 +205,7 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
   }, [open, initialValues, reset])
 
   // Version export alert
-  const currentScopeValue = useWatch({ control: control, name: ExportSettingsFormFieldKind.SCOPE }) as
-    | ExportSettingsFormFieldOptionScope
-    | undefined
+  const currentScopeValue = useWatch({ control: control, name: ExportSettingsFormFieldKind.SCOPE })
   const { versionExportAlert, singleDocExportAlert, versionExportDisabled } = useShareabilityAlerts({
     exportedEntity: exportedEntity,
     scopeValue: currentScopeValue,
@@ -253,7 +248,7 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
       case ExportedEntityKind.REST_OPERATIONS_GROUP:
         requestData = new RequestDataExportRestOperationsGroup(
           groupName!,
-          data[ExportSettingsFormFieldKind.SPECIFICATION_TYPE] as ExportedEntityTransformation,
+          data[ExportSettingsFormFieldKind.SPECIFICATION_TYPE]!,
           packageId,
           version,
           fileFormat,
@@ -287,7 +282,6 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
           fields={fields}
           exportConfig={exportConfig}
           control={control}
-          setValue={setValue}
           setCachedFormField={setCachedFormField}
           shareabilityExportVersionAlert={versionExportAlert}
         />

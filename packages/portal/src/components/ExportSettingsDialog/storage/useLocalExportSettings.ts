@@ -76,12 +76,12 @@ export function useLocalExportSettings(
   const [fileFormat, setFileFormat] = useLocalStorage<string | undefined>(fileFormatKey)
   const [oasExtensions, setOasExtensions] = useLocalStorage<string | undefined>(oasExtensionsKey)
 
-  const cachedFormData: ExportSettingsFormData = useMemo(() => ({
+  const cachedFormData = useMemo(() => ({
     ...scope ? { [ExportSettingsFormFieldKind.SCOPE]: scope } : {},
     ...specificationType ? { [ExportSettingsFormFieldKind.SPECIFICATION_TYPE]: specificationType } : {},
     ...fileFormat ? { [ExportSettingsFormFieldKind.FILE_FORMAT]: fileFormat } : {},
     ...oasExtensions ? { [ExportSettingsFormFieldKind.OAS_EXTENSIONS]: oasExtensions } : {},
-  }), [scope, specificationType, fileFormat, oasExtensions])
+  } as ExportSettingsFormData), [scope, specificationType, fileFormat, oasExtensions])
 
   const setCachedFormField = useCallback((field: ExportSettingsFormFieldKind, value: string) => {
     switch (field) {
