@@ -15,7 +15,7 @@
  */
 
 import type { FC } from 'react'
-import React, { memo, useRef } from 'react'
+import { memo, useRef } from 'react'
 import { Box, Typography } from '@mui/material'
 import { CONTENT_WIDTH } from './GlobalSearchPanel'
 import { Marker } from 'react-mark.js'
