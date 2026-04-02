@@ -14,8 +14,7 @@ import type { ExportSettingsFormData } from '../entities/export-settings-form'
 import { ExportSettingsFormFieldKind } from '../entities/export-settings-form-field'
 
 function getStorageSpecType(specType?: SpecType): SpecType | undefined {
-
-  if(!specType) return
+  if (!specType) return
 
   if (isOpenApiSpecType(specType)) {
     return OPENAPI_SPEC_TYPE
@@ -42,9 +41,9 @@ function buildKey(
   field: ExportSettingsFormFieldKind,
   specType?: SpecType,
 ): string {
-  const storageSpecType = getStorageSpecType(specType)
-  const contextSuffix = storageSpecType ? `.${storageSpecType}` : ''
-  return `export-settings.${exportedEntity}${contextSuffix}.${field}`
+  if (!specType) return `export-settings.${exportedEntity}.${field}`
+
+  return `export-settings.${exportedEntity}.${getStorageSpecType(specType)}.${field}`
 }
 
 export function useLocalExportSettings(
