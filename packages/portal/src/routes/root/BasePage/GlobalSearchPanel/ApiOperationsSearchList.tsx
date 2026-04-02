@@ -54,9 +54,7 @@ export const ApiOperationsSearchList: FC<ApiOperationsSearchListProps> = memo<Ap
         const breadcrumbs = parentPackages.join(' / ')
 
         return (
-          <Box mb={2}
-               key={`api-operations-search-list-box-${packageKey}-${operationKey}-${version}`}
-               data-testid="SearchResultRow">
+          <Box mb={2} key={`api-operations-search-list-box-${packageKey}-${operationKey}-${version}`} data-testid="SearchResultRow">
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
               <OverflowTooltip title={breadcrumbs}>
                 <Typography
