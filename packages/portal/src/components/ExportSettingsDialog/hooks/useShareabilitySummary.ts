@@ -5,6 +5,7 @@ import {
   SHAREABILITY_STATUS_NON_SHAREABLE,
   SHAREABILITY_STATUS_SHAREABLE,
   SHAREABILITY_STATUS_UNKNOWN,
+  type ShareabilityStatus,
 } from '@netcracker/qubership-apihub-api-processor'
 
 export type ShareabilitySummary = {
@@ -14,7 +15,7 @@ export type ShareabilitySummary = {
   total: number
 }
 
-const STATUS_KEY_MAP: Record<string, keyof Omit<ShareabilitySummary, 'total'>> = {
+const STATUS_KEY_MAP: Record<ShareabilityStatus, keyof Omit<ShareabilitySummary, 'total'>> = {
   [SHAREABILITY_STATUS_SHAREABLE]: 'shareable',
   [SHAREABILITY_STATUS_NON_SHAREABLE]: 'nonShareable',
   [SHAREABILITY_STATUS_UNKNOWN]: 'unknown',
@@ -25,7 +26,7 @@ export function useShareabilitySummary(documents: Documents): ShareabilitySummar
     () =>
       documents.reduce<ShareabilitySummary>(
         (acc, doc) => {
-          const key = STATUS_KEY_MAP[doc.shareabilityStatus!]
+          const key = STATUS_KEY_MAP[doc.shareabilityStatus]
           return { ...acc, [key]: acc[key] + 1, total: acc.total + 1 }
         },
         { shareable: 0, nonShareable: 0, unknown: 0, total: 0 },

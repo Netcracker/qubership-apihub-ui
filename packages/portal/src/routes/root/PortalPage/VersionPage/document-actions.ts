@@ -23,7 +23,7 @@ export type DocumentActionParams = {
   showNotification: (detail: NotificationDetail) => void
   createTemplate: (key?: Key) => string
   specType?: SpecType
-  shareabilityStatus?: ShareabilityStatus
+  shareabilityStatus: ShareabilityStatus
 }
 
 export type MenuItemConfig = {

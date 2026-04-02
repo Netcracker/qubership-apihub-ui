@@ -3,6 +3,7 @@ import { type FC, useCallback, useEffect, useMemo, useState } from 'react'
 import type { Documents } from '@apihub/entities/documents'
 import type { ExportSettingsPopupDetail } from '@apihub/routes/EventBusProvider'
 import { useShowErrorNotification } from '@apihub/routes/root/BasePage/Notification'
+import { SHAREABILITY_STATUS_UNKNOWN } from '@netcracker/qubership-apihub-api-processor'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { isExportableSpecType, isOpenApiSpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import { useExportConfig } from '../../../routes/root/PortalPage/useExportConfig'
@@ -56,7 +57,13 @@ export const ExportSettingsPopup: FC<PopupProps> = ({ open, setOpen, detail }) =
         shareabilityStatus: doc.shareabilityStatus,
       }
     }
-    return { exportedEntity, documentId, specType, shareabilityStatus }
+    return {
+      exportedEntity: exportedEntity,
+      documentId: documentId,
+      specType: specType,
+      // For version-export payloads, shareability is absent, so default to UNKNOWN.
+      shareabilityStatus: shareabilityStatus ?? SHAREABILITY_STATUS_UNKNOWN,
+    }
   }, [isVersionExport, isLoadingDocuments, documents, exportedEntity, documentId, specType, shareabilityStatus])
 
   const isDownloadOnly = resolvedExportParams.exportedEntity === ExportedEntityKind.REST_DOCUMENT &&

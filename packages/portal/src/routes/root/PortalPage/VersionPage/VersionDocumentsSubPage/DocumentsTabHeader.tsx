@@ -94,17 +94,16 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
           <VersionText variant="body2">
             {version}
           </VersionText>
-          {shareabilityStatus && (
-            hasShareabilityPermission && docPackageKey && fullVersion
-              ? (
-                <ShareabilityDropdown
-                  value={shareabilityStatus}
-                  onChange={handleShareabilityChange}
-                  isLoading={isShareabilityStatusLoading}
-                />
-              )
-              : <ShareabilityMarker value={shareabilityStatus} />
-          )}
+          {hasShareabilityPermission && docPackageKey && fullVersion
+            ? (
+              <ShareabilityDropdown
+                value={shareabilityStatus}
+                onChange={handleShareabilityChange}
+                isLoading={isShareabilityStatusLoading}
+              />
+            )
+            : <ShareabilityMarker value={shareabilityStatus} />
+          }
         </TitleSuffix>
       </TextSection>
       <ActionsSection>

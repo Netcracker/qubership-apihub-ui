@@ -131,7 +131,7 @@ interface ExportSettingsFormProps {
   version: VersionKey
   documentId?: Key
   groupName?: Key
-  shareabilityStatus?: ShareabilityStatus
+  shareabilityStatus: ShareabilityStatus
   specType?: SpecType
   hasRestApi?: boolean
   shareabilitySummary: ShareabilitySummary

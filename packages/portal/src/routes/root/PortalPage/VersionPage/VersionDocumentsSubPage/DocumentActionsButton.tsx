@@ -45,7 +45,7 @@ export type DocumentActionsButtonProps = {
   slug: Key
   docType: SpecType
   format: FileFormat
-  shareabilityStatus?: ShareabilityStatus
+  shareabilityStatus: ShareabilityStatus
   startIcon?: ReactNode
   icon?: ReactNode
   openedIcon?: ReactNode

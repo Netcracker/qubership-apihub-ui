@@ -200,9 +200,7 @@ export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({doc
                   <SpecLogo value={type}/>
                 </ListItemIcon>
                 <ListItemText primary={displayTitle} primaryTypographyProps={{sx: {mt: 0.25}}}/>
-                {shareabilityStatus && (
-                  <ListItemShareabilityMarker value={shareabilityStatus} />
-                )}
+                <ListItemShareabilityMarker value={shareabilityStatus} />
                 <ListItemActionsButton
                   slug={slug}
                   docType={type}

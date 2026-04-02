@@ -19,7 +19,7 @@ export type ShareabilityAlerts = {
 type UseShareabilityAlertsParams = {
   exportedEntity: ExportedEntityKind
   scopeValue?: ExportSettingsFormFieldOptionScope
-  shareabilityStatus?: ShareabilityStatus
+  shareabilityStatus: ShareabilityStatus
   shareabilitySummary: ShareabilitySummary
 }
 
