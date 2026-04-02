@@ -6,7 +6,7 @@ import type { ShareabilityStatus } from '@netcracker/qubership-apihub-api-proces
 
 export enum ExportedEntityKind {
   VERSION = 'version',
-  REST_DOCUMENT = 'restDocument',
+  SINGLE_DOCUMENT = 'restDocument',
   REST_OPERATIONS_GROUP = 'restOperationsGroup'
 }
 
@@ -66,7 +66,7 @@ export class RequestDataExportRestDocument extends CommonRequestDataExport {
     format: ExportedFileFormat,
     removeOasExtensions?: boolean,
   ) {
-    super(ExportedEntityKind.REST_DOCUMENT, packageId, version, format, removeOasExtensions)
+    super(ExportedEntityKind.SINGLE_DOCUMENT, packageId, version, format, removeOasExtensions)
   }
 }
 

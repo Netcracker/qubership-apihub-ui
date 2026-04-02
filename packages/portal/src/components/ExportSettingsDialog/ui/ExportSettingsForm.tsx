@@ -166,7 +166,7 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
   } = props
 
   const fields = useMemo(() => {
-    if (exportedEntity === ExportedEntityKind.REST_DOCUMENT && !isExportableSpecType(specType)) {
+    if (exportedEntity === ExportedEntityKind.SINGLE_DOCUMENT && !isExportableSpecType(specType)) {
       return []
     }
     if (exportedEntity === ExportedEntityKind.VERSION && !hasRestApi) {
@@ -220,7 +220,7 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
 
   // Handle form submission
   const onSubmit = (data: ExportSettingsFormData): void => {
-    if (exportedEntity === ExportedEntityKind.REST_DOCUMENT && !isExportableSpecType(specType)) {
+    if (exportedEntity === ExportedEntityKind.SINGLE_DOCUMENT && !isExportableSpecType(specType)) {
       onDownloadPublishedDocument?.()
       return
     }
@@ -241,7 +241,7 @@ export const ExportSettingsForm: FC<ExportSettingsFormProps> = memo(props => {
         requestData = new RequestDataExportVersion(packageId, version, fileFormat, removeOasExtensions, allowedStatuses)
         break
       }
-      case ExportedEntityKind.REST_DOCUMENT:
+      case ExportedEntityKind.SINGLE_DOCUMENT:
         requestData = new RequestDataExportRestDocument(
           documentId!,
           packageId,

@@ -39,7 +39,7 @@ export const EXPORT_SETTINGS_FORM_FIELDS_BY_PLACE: Record<ExportedEntityKind, Ex
       defaultValue: FIELD_OPTION_LIST_OAS_EXTENSIONS[0].value,
     },
   ],
-  [ExportedEntityKind.REST_DOCUMENT]: [
+  [ExportedEntityKind.SINGLE_DOCUMENT]: [
     {
       kind: ExportSettingsFormFieldKind.FILE_FORMAT,
       label: FIELD_LABEL_FILE_FORMAT,

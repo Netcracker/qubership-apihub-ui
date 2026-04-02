@@ -30,7 +30,7 @@ export function useShareabilityAlerts({
   shareabilitySummary,
 }: UseShareabilityAlertsParams): ShareabilityAlerts {
   const isVersionExport = exportedEntity === ExportedEntityKind.VERSION
-  const isSingleDocExport = exportedEntity === ExportedEntityKind.REST_DOCUMENT
+  const isSingleDocExport = exportedEntity === ExportedEntityKind.SINGLE_DOCUMENT
   const isOnlyShareableScope = isVersionExport &&
     (!scopeValue || scopeValue === ExportSettingsFormFieldOptionScope.ONLY_SHAREABLE)
 

@@ -63,7 +63,7 @@ export const DOCUMENT_MENU_CONFIG: MenuItemConfig[] = [
     action: ({ showExportSettingsDialog, packageKey, fullVersion, refPackageKey, refFullVersion, slug, specType, shareabilityStatus }) => {
       showExportSettingsDialog({
         specType: specType,
-        exportedEntity: ExportedEntityKind.REST_DOCUMENT,
+        exportedEntity: ExportedEntityKind.SINGLE_DOCUMENT,
         packageId: refPackageKey ?? packageKey!,
         version: refFullVersion ?? fullVersion!,
         documentId: slug,

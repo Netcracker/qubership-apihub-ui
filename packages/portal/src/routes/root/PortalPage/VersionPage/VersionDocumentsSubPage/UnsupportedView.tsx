@@ -38,7 +38,7 @@ export const UnsupportedView: FC<UnsupportedViewProps> = memo<UnsupportedViewPro
     showExportSettingsDialog({
       specType: document.type,
       shareabilityStatus: document.shareabilityStatus,
-      exportedEntity: ExportedEntityKind.REST_DOCUMENT,
+      exportedEntity: ExportedEntityKind.SINGLE_DOCUMENT,
       packageId: docPackageKey!,
       version: fullVersion,
       documentId: documentId,
