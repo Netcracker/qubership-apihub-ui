@@ -110,10 +110,6 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
 
   const [defaultWorkspace] = usePackage({ packageKey: defaultWorkspaceId, hideError: true })
 
-  useEffect(() => {
-    setValue('workspace', defaultWorkspace)
-  }, [defaultWorkspace])
-
   const {
     control,
     setValue,
@@ -131,6 +127,17 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
       publicationDatePeriod: defaultPublicationDatePeriod,
     },
   })
+
+  useEffect(() => {
+    reset({
+      workspace: defaultWorkspace,
+      group: null,
+      pkg: null,
+      status: RELEASE_VERSION_STATUS,
+      apiType: API_TYPE_REST,
+      publicationDatePeriod: defaultPublicationDatePeriod,
+    })
+  }, [defaultWorkspace])
 
   const {
     operationTypes,
