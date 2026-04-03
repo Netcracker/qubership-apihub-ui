@@ -28,6 +28,7 @@ import type {
   Role,
   UpdateOperationsGroupParametersEventDetails,
   UpdateRoleActivityDetails,
+  UpdateDocumentShareabilityEventDetails,
 } from '@apihub/entities/activities'
 import {
   GROUP_PARAMETER_DESCRIPTION,
@@ -40,6 +41,7 @@ import { SPECIAL_VERSION_KEY } from '@netcracker/qubership-apihub-ui-shared/enti
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import { GROUP_TYPE_MANUAL, GROUP_TYPE_REST_PATH_PREFIX } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
 import { API_TYPE_TITLE_MAP } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { SHAREABILITY_LABEL_BY_STATUS } from '../routes/root/PortalPage/VersionPage/VersionDocumentsSubPage/ShareabilityMarker'
 
 export const EMPTY_ACTIVITY_MESSAGE: ActivityMessage = {
   messageTemplate: '',
@@ -354,6 +356,31 @@ class UpdateOperationsGroupParametersActivityMessageService extends BasicActivit
   }
 }
 
+class UpdateDocumentShareabilityActivityMessageService extends BasicActivityMessageService {
+  mapActivityToMessage(): ActivityMessage {
+    const { activityType, packageId, packageName, kind } = this.activity
+    const {
+      version,
+      documentDisplayName,
+      shareabilityStatus,
+    } = this.activity.details as UpdateDocumentShareabilityEventDetails
+    const { versionKey } = getSplittedVersionKey(version)
+    const packageVersionLink = this.getPackageVersionLink(packageId, versionKey, versionKey)
+    const packageLink = this.getPackageVersionLink(packageId, packageName)
+    const shareabilityStatusLabel = SHAREABILITY_LABEL_BY_STATUS[shareabilityStatus] ?? shareabilityStatus
+
+    switch (activityType) {
+      case ActivityType.UPDATE_DOCUMENT_SHAREABILITY_EVENT:
+        return {
+          messageTemplate: `Changed shareability of "${documentDisplayName}" document to "${shareabilityStatusLabel}" in ${LINK_PLACEHOLDER} version of ${LINK_PLACEHOLDER} ${kind}`,
+          links: [packageVersionLink, packageLink],
+        }
+    }
+
+    return EMPTY_ACTIVITY_MESSAGE
+  }
+}
+
 export function getActivityMessageServiceInstance(activity: Activity): ActivityMessageService | never {
   switch (activity.activityType) {
     case ActivityType.GENERATE_API_KEY_EVENT:
@@ -382,6 +409,8 @@ export function getActivityMessageServiceInstance(activity: Activity): ActivityM
       return new CreateAndDeleteManualGroupActivityMessageService(activity)
     case ActivityType.UPDATE_OPERATIONS_GROUP_PARAMETERS_EVENT:
       return new UpdateOperationsGroupParametersActivityMessageService(activity)
+      case ActivityType.UPDATE_DOCUMENT_SHAREABILITY_EVENT:
+        return new UpdateDocumentShareabilityActivityMessageService(activity)
   }
   throw new Error(`Unknown activity type = ${activity.activityType}`)
 }
