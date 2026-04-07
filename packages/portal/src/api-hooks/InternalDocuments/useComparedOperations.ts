@@ -32,7 +32,7 @@ export function useComparedOperations(options: Options): QueryResultWithNoIntern
     previousPackageId,
     previousVersionId,
   } = options
-//
+
   const {
     data: listComparisonInternalDocumentsMetadata,
     isLoading: loadingListComparisonInternalDocumentsMetadata,
