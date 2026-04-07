@@ -145,8 +145,8 @@ export function useVersionsComparisons(options?: {
             errors: `${error}`,
           })
         } finally {
-         clearInterval(intervalId)
-         abortController.abort()
+          clearInterval(intervalId)
+          abortController.abort()
         }
 
         return builtVersionComparisons
