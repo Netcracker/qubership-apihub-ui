@@ -31,7 +31,7 @@ import {
 } from '@netcracker/qubership-apihub-ui-shared/hooks/change-severities/useSeverityFiltersSearchParam'
 import {
   ChangesViewTable,
-  useFlatVersionChangelog
+  useFlatVersionChangelog,
 } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget'
 import {useCurrentPackage} from '@apihub/components/CurrentPackageProvider'
 import {
@@ -92,7 +92,7 @@ export const ChangelogView: FC<ChangelogViewProps> = memo<ChangelogViewProps>(pr
       invisible={!changes || isNotEmpty(operationsChanges) || isLoading && hasChanges}
       area={CONTENT_PLACEHOLDER_AREA}
       message={searchValue ? NO_SEARCH_RESULTS : 'No changes'}
-      testId={searchValue ? 'NoSearchResultsPlaceholder' : 'NoChangesPlaceholder'}
+      data-testid={searchValue ? 'NoSearchResultsPlaceholder' : 'NoChangesPlaceholder'}
     >
       <ChangesViewTable
         value={operationsChanges}
