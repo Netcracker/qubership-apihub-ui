@@ -41,7 +41,6 @@ import { SPECIAL_VERSION_KEY } from '@netcracker/qubership-apihub-ui-shared/enti
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import { GROUP_TYPE_MANUAL, GROUP_TYPE_REST_PATH_PREFIX } from '@netcracker/qubership-apihub-ui-shared/entities/operation-groups'
 import { API_TYPE_TITLE_MAP } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { SHAREABILITY_LABEL_BY_STATUS } from '../routes/root/PortalPage/VersionPage/VersionDocumentsSubPage/ShareabilityMarker'
 
 export const EMPTY_ACTIVITY_MESSAGE: ActivityMessage = {
   messageTemplate: '',
@@ -358,22 +357,26 @@ class UpdateOperationsGroupParametersActivityMessageService extends BasicActivit
 
 class UpdateDocumentShareabilityActivityMessageService extends BasicActivityMessageService {
   mapActivityToMessage(): ActivityMessage {
-    const { activityType, packageId, packageName, kind } = this.activity
+    const { activityType, packageId, packageName } = this.activity
     const {
       version,
       documentDisplayName,
       shareabilityStatus,
+      notLatestRevision,
     } = this.activity.details as UpdateDocumentShareabilityEventDetails
-    const { versionKey } = getSplittedVersionKey(version)
-    const packageVersionLink = this.getPackageVersionLink(packageId, versionKey, versionKey)
+    const { versionKey, revisionKey } = getSplittedVersionKey(version)
+    const revisionLink = this.getPackageVersionLink(
+      packageId,
+      `@${revisionKey}`,
+      notLatestRevision ? version : versionKey,
+    )
     const packageLink = this.getPackageVersionLink(packageId, packageName)
-    const shareabilityStatusLabel = SHAREABILITY_LABEL_BY_STATUS[shareabilityStatus] ?? shareabilityStatus
 
     switch (activityType) {
       case ActivityType.UPDATE_DOCUMENT_SHAREABILITY_EVENT:
         return {
-          messageTemplate: `Changed shareability of "${documentDisplayName}" document to "${shareabilityStatusLabel}" in ${LINK_PLACEHOLDER} version of ${LINK_PLACEHOLDER} ${kind}`,
-          links: [packageVersionLink, packageLink],
+          messageTemplate: `Changed shareability status of "${documentDisplayName}" to ${shareabilityStatus} in ${LINK_PLACEHOLDER} revision of ${versionKey} version of ${LINK_PLACEHOLDER} package`,
+          links: [revisionLink, packageLink],
         }
     }
 
@@ -409,8 +412,8 @@ export function getActivityMessageServiceInstance(activity: Activity): ActivityM
       return new CreateAndDeleteManualGroupActivityMessageService(activity)
     case ActivityType.UPDATE_OPERATIONS_GROUP_PARAMETERS_EVENT:
       return new UpdateOperationsGroupParametersActivityMessageService(activity)
-      case ActivityType.UPDATE_DOCUMENT_SHAREABILITY_EVENT:
-        return new UpdateDocumentShareabilityActivityMessageService(activity)
+    case ActivityType.UPDATE_DOCUMENT_SHAREABILITY_EVENT:
+      return new UpdateDocumentShareabilityActivityMessageService(activity)
   }
   throw new Error(`Unknown activity type = ${activity.activityType}`)
 }

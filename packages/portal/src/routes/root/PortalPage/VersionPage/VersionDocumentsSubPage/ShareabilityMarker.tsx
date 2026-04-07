@@ -26,7 +26,7 @@ const COLOR_BY_STATUS: Record<ShareabilityStatus, SvgIconProps['color']> = {
   [SHAREABILITY_STATUS_UNKNOWN]: 'action',
 }
 
-export const SHAREABILITY_LABEL_BY_STATUS: Record<ShareabilityStatus, string> = {
+const TOOLTIP_TEXT_BY_STATUS: Record<ShareabilityStatus, string> = {
   [SHAREABILITY_STATUS_NON_SHAREABLE]: 'Non-Shareable',
   [SHAREABILITY_STATUS_SHAREABLE]: 'Shareable',
   [SHAREABILITY_STATUS_UNKNOWN]: 'Unknown shareability',
@@ -46,7 +46,7 @@ export const ShareabilityMarker: FC<ShareabilityMarkerProps> = memo(({ value, cl
   }
 
   return (
-      <Tooltip title={SHAREABILITY_LABEL_BY_STATUS[value]}>
+    <Tooltip title={TOOLTIP_TEXT_BY_STATUS[value]}>
       <Icon fontSize="small" color={COLOR_BY_STATUS[value]} className={className} />
     </Tooltip>
   )
