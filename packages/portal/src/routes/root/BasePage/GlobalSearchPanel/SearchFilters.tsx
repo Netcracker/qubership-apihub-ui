@@ -99,9 +99,14 @@ type SearchFilters = {
 }
 
 export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
-  const oneYearAgo = new Date()
-  oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1)
-  const defaultPublicationDatePeriod = [oneYearAgo.toISOString(), new Date().toISOString()]
+  const defaultPublicationDatePeriod = useMemo(() => {
+    const defaultStartOfDay = new Date()
+    defaultStartOfDay.setHours(0, 0, 0, 0)
+    defaultStartOfDay.setFullYear(defaultStartOfDay.getFullYear() - 1)
+    const defaultEndOfDay = new Date()
+    defaultEndOfDay.setHours(23, 59, 59, 999)
+    return [defaultStartOfDay.toISOString(), defaultEndOfDay.toISOString()]
+  }, [])
 
   const systemConfiguration = useSystemConfigurationContext()
   const defaultWorkspaceId = useMemo(() => {
