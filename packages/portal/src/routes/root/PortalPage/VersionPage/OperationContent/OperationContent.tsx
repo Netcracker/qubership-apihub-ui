@@ -300,6 +300,7 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
       [isRawViewMode, originValueForRawSpecView, changedValueForRawSpecView],
     )
 
+    // TODO: Validate this condition after adding Doc View for AsyncAPI.
     if (isLoading || (isApiDiffResultLoading && isDocViewMode && comparisonMode)) {
       return <LoadingIndicator />
     }
