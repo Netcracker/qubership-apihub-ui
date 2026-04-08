@@ -166,8 +166,8 @@ class CreateAndDeletePackageActivityMessageService extends BasicActivityMessageS
 
 class GrantAndDeleteRoleActivityMessageService extends BasicActivityMessageService {
   mapActivityToMessage(): ActivityMessage {
-    const { activityType, packageId, packageName, kind } = this.activity
-    const { memberName, roles = [] } = this.activity.details as GrantOrDeleteRoleActivityDetails
+    const { activityType, packageId, packageName, kind, details } = this.activity
+    const { memberName, roles = [] } = details as GrantOrDeleteRoleActivityDetails
 
     const rolesString = roles.map(this.mapRoleToString).join(', ')
 
@@ -190,8 +190,8 @@ class GrantAndDeleteRoleActivityMessageService extends BasicActivityMessageServi
 
 class UpdateRoleActivityMessageService extends BasicActivityMessageService {
   mapActivityToMessage(): ActivityMessage {
-    const { activityType, packageId, packageName, kind } = this.activity
-    const { memberName } = this.activity.details as UpdateRoleActivityDetails
+    const { activityType, packageId, packageName, kind, details } = this.activity
+    const { memberName } = details as UpdateRoleActivityDetails
 
     switch (activityType) {
       case ActivityType.UPDATE_ROLE_EVENT:
@@ -207,8 +207,8 @@ class UpdateRoleActivityMessageService extends BasicActivityMessageService {
 
 class PublishAndDeleteVersionActivityMessageService extends BasicActivityMessageService {
   mapActivityToMessage(): ActivityMessage {
-    const { activityType, packageId, packageName, kind } = this.activity
-    const { version, status } = this.activity.details as PublishOrDeleteVersionActivityDetails
+    const { activityType, packageId, packageName, kind, details } = this.activity
+    const { version, status } = details as PublishOrDeleteVersionActivityDetails
     const { versionKey } = getSplittedVersionKey(version)
 
     switch (activityType) {
@@ -230,8 +230,8 @@ class PublishAndDeleteVersionActivityMessageService extends BasicActivityMessage
 
 class PublishAndDeleteRevisionActivityMessageService extends BasicActivityMessageService {
   mapActivityToMessage(): ActivityMessage {
-    const { activityType, packageId, packageName, kind } = this.activity
-    const { version, status, notLatestRevision } = this.activity.details as PublishNewRevisionActivityDetails
+    const { activityType, packageId, packageName, kind, details } = this.activity
+    const { version, status, notLatestRevision } = details as PublishNewRevisionActivityDetails
     const { versionKey, revisionKey } = getSplittedVersionKey(version)
 
     switch (activityType) {
@@ -256,8 +256,8 @@ class PublishAndDeleteRevisionActivityMessageService extends BasicActivityMessag
 
 class PatchVersionMetaActivityMessageService extends BasicActivityMessageService {
   mapActivityToMessage(): ActivityMessage {
-    const { activityType, packageId, packageName, kind } = this.activity
-    const { version, versionMeta = [] } = this.activity.details as PatchVersionMetaActivityDetails
+    const { activityType, packageId, packageName, kind, details } = this.activity
+    const { version, versionMeta = [] } = details as PatchVersionMetaActivityDetails
     const { versionKey } = getSplittedVersionKey(version)
 
     switch (activityType) {
@@ -274,8 +274,8 @@ class PatchVersionMetaActivityMessageService extends BasicActivityMessageService
 
 class PatchPackageMetaActivityMessageService extends BasicActivityMessageService {
   mapActivityToMessage(): ActivityMessage {
-    const { activityType, packageId, packageName, kind } = this.activity
-    const { packageMeta = [] } = this.activity.details as PatchPackageMetaActivityDetails
+    const { activityType, packageId, packageName, kind, details } = this.activity
+    const { packageMeta = [] } = details as PatchPackageMetaActivityDetails
 
     switch (activityType) {
       case ActivityType.PATCH_PACKAGE_META_EVENT:
@@ -291,13 +291,13 @@ class PatchPackageMetaActivityMessageService extends BasicActivityMessageService
 
 class CreateAndDeleteManualGroupActivityMessageService extends BasicActivityMessageService {
   mapActivityToMessage(): ActivityMessage {
-    const { activityType, packageId, packageName, kind } = this.activity
+    const { activityType, packageId, packageName, kind, details } = this.activity
     const {
       groupName,
       version,
       notLatestRevision,
       apiType,
-    } = this.activity.details as CreateOrDeleteManualGroupEventDetails
+    } = details as CreateOrDeleteManualGroupEventDetails
     const { versionKey } = getSplittedVersionKey(version, !notLatestRevision)
     const packageVersionLink = this.getPackageVersionLink(packageId, versionKey, versionKey)
 
@@ -327,7 +327,7 @@ export const GROUP_PARAMETERS: Record<GroupParameter, string> = {
 
 class UpdateOperationsGroupParametersActivityMessageService extends BasicActivityMessageService {
   mapActivityToMessage(): ActivityMessage {
-    const { activityType, packageId, packageName, kind } = this.activity
+    const { activityType, packageId, packageName, kind, details } = this.activity
     const {
       version,
       groupName,
@@ -335,7 +335,7 @@ class UpdateOperationsGroupParametersActivityMessageService extends BasicActivit
       notLatestRevision,
       isPrefixGroup,
       apiType,
-    } = this.activity.details as UpdateOperationsGroupParametersEventDetails
+    } = details as UpdateOperationsGroupParametersEventDetails
     const { versionKey } = getSplittedVersionKey(version, !notLatestRevision)
     const packageVersionLink = this.getPackageVersionLink(packageId, versionKey, versionKey)
 
@@ -357,13 +357,13 @@ class UpdateOperationsGroupParametersActivityMessageService extends BasicActivit
 
 class UpdateDocumentShareabilityActivityMessageService extends BasicActivityMessageService {
   mapActivityToMessage(): ActivityMessage {
-    const { activityType, packageId, packageName } = this.activity
+    const { activityType, packageId, packageName, details } = this.activity
     const {
       version,
       documentDisplayName,
       shareabilityStatus,
       notLatestRevision,
-    } = this.activity.details as UpdateDocumentShareabilityEventDetails
+    } = details as UpdateDocumentShareabilityEventDetails
     const { versionKey, revisionKey } = getSplittedVersionKey(version)
     const revisionLink = this.getPackageVersionLink(
       packageId,
