@@ -300,7 +300,7 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
       [isRawViewMode, originValueForRawSpecView, changedValueForRawSpecView],
     )
 
-    if (isLoading || isApiDiffResultLoading) {
+    if (isLoading || (isApiDiffResultLoading && isDocViewMode && comparisonMode)) {
       return <LoadingIndicator />
     }
 
