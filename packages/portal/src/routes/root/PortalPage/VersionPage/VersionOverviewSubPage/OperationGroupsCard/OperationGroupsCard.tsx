@@ -41,8 +41,7 @@ import {
 import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { PublishOperationGroupPackageVersionDialog } from './PublishOperationGroupPackageVersionDialog'
-import type {
-  IRequestDataExportWithoutFormat} from '@apihub/components/ExportSettingsDialog/api/useExport'
+import type { IRequestDataExportWithoutFormat } from '@apihub/components/ExportSettingsDialog/api/useExport'
 import {
   ExportedEntityKind,
   ExportedEntityKindWithoutForm,
@@ -50,7 +49,7 @@ import {
   useExport,
   useRemoveExportResult,
 } from '@apihub/components/ExportSettingsDialog/api/useExport'
-import { REST_API_TYPE } from '@netcracker/qubership-apihub-api-processor'
+import { ASYNCAPI_API_TYPE, REST_API_TYPE } from '@netcracker/qubership-apihub-api-processor'
 import { useExportStatus } from '@apihub/components/ExportSettingsDialog/api/useExportStatus'
 import { useShowInfoNotification } from '@apihub/routes/root/BasePage/Notification'
 
@@ -154,6 +153,13 @@ export const OperationGroupsCard: FC = memo(() => {
         version: fullVersion!,
         groupName: group.groupName,
       })
+    } else if (group.apiType === ASYNCAPI_API_TYPE) {
+      showExportSettingsDialog({
+        exportedEntity: ExportedEntityKind.ASYNC_API_OPERATIONS_GROUP,
+        packageId: packageKey!,
+        version: fullVersion!,
+        groupName: group.groupName,
+      })
     } else {
       setRequestDataExport(new RequestDataExportGraphQlOperationsGroup(
         group.groupName!,
@@ -161,7 +167,7 @@ export const OperationGroupsCard: FC = memo(() => {
         packageKey!,
         fullVersion!,
       ))
-      showNotification({message: 'Export initiated. Your download will begin shortly.' })
+      showNotification({ message: 'Export initiated. Your download will begin shortly.' })
     }
 
   }, [showExportSettingsDialog, packageKey, fullVersion, showNotification])
