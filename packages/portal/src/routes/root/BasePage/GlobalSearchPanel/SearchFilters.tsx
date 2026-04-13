@@ -77,6 +77,7 @@ import {
   useSystemConfigurationContext,
 } from '@netcracker/qubership-apihub-ui-agents/src/routes/root/NamespacePage/SystemConfigurationProvider'
 import { usePackage } from '@apihub/routes/root/usePackage'
+import { toISODateRange } from '@netcracker/qubership-apihub-ui-shared/utils/date'
 
 const DEFAULT_WORKSPACE_ID = ''
 
@@ -100,12 +101,9 @@ type SearchFilters = {
 
 export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
   const defaultPublicationDatePeriod = useMemo(() => {
-    const defaultStartOfDay = new Date()
-    defaultStartOfDay.setHours(0, 0, 0, 0)
-    defaultStartOfDay.setFullYear(defaultStartOfDay.getFullYear() - 1)
-    const defaultEndOfDay = new Date()
-    defaultEndOfDay.setHours(23, 59, 59, 999)
-    return [defaultStartOfDay.toISOString(), defaultEndOfDay.toISOString()]
+    const oneYearAgo = new Date()
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1)
+    return toISODateRange(oneYearAgo, new Date())
   }, [])
 
   const systemConfiguration = useSystemConfigurationContext()
@@ -205,21 +203,12 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
   const { applyGlobalSearchFilters } = useEventBus()
 
   const formatPublicationDate = useCallback((periodOfTime: DateObject[] | null): void => {
-    const formattedPublicationDate = periodOfTime
-      ? (periodOfTime as DateObject[]).map((period, index) => {
-        const date = period.toDate()
-
-        if (index === 0) {
-          date.setHours(0, 0, 0, 0)
-        } else {
-          date.setHours(23, 59, 59, 999)
-        }
-
-        return date.toISOString()
-      })
-      : undefined
-
-    setValue('publicationDatePeriod', formattedPublicationDate)
+    if (!periodOfTime) {
+      setValue('publicationDatePeriod', undefined)
+      return
+    }
+    const [start, end] = periodOfTime.map(dateObj => dateObj.toDate())
+    setValue('publicationDatePeriod', toISODateRange(start, end))
   }, [setValue])
 
   const { useV3Search } = useSystemInfo()
