@@ -20,6 +20,9 @@ import { useMemo } from 'react'
 import { memo, useCallback, useEffect } from 'react'
 import { generatePath, Outlet } from 'react-router-dom'
 import { MainPageProvider } from '../MainPage/MainPageProvider'
+import { AiAssistantHeaderButton } from './AiAssistantPanel/AiAssistantHeaderButton'
+import { AiAssistantPanel } from './AiAssistantPanel/AiAssistantPanel'
+import { AiAssistantProvider } from './AiAssistantPanel/AiAssistantProvider'
 import { GlobalSearchPanel } from './GlobalSearchPanel/GlobalSearchPanel'
 
 import { useEventBus } from '@apihub/routes/EventBusProvider'
@@ -89,42 +92,46 @@ export const BasePage: FC = memo(() => {
   return (
     <MainPageProvider>
       <ModuleFetchingErrorBoundary showReloadPopup={packageJson.version !== frontendVersion}>
-        <Box
-          display="grid"
-          gridTemplateRows="max-content 1fr"
-          height="100vh"
-        >
-          <AppHeader
-            logo={<LogoIcon/>}
-            title="APIHUB"
-            links={links}
-            action={
-              <>
-                <VsCodeExtensionButton/>
-                <AppHeaderDivider/>
-                <SearchButton/>
-                {isSuperAdmin && <PortalSettingsButton/>}
-                <SystemInfoPopup
-                  frontendVersionKey={frontendVersion}
-                  apiProcessorVersion={apiProcessorVersion}
-                />
-                <UserPanel/>
-              </>
-            }
-          />
-          <Box sx={viewPortStyleCalculator}>
-            <ExceptionSituationHandler
-              homePath="/portal"
-              showErrorNotification={showErrorNotification}
-              redirectUrlFactory={replacePackageId}
-            >
-              <Outlet/>
-            </ExceptionSituationHandler>
+        <AiAssistantProvider>
+          <Box
+            display="grid"
+            gridTemplateRows="max-content 1fr"
+            height="100vh"
+          >
+            <AppHeader
+              logo={<LogoIcon/>}
+              title="APIHUB"
+              links={links}
+              action={
+                <>
+                  <VsCodeExtensionButton/>
+                  <AppHeaderDivider/>
+                  <SearchButton/>
+                  <AiAssistantHeaderButton/>
+                  {isSuperAdmin && <PortalSettingsButton/>}
+                  <SystemInfoPopup
+                    frontendVersionKey={frontendVersion}
+                    apiProcessorVersion={apiProcessorVersion}
+                  />
+                  <UserPanel/>
+                </>
+              }
+            />
+            <Box sx={viewPortStyleCalculator}>
+              <ExceptionSituationHandler
+                homePath="/portal"
+                showErrorNotification={showErrorNotification}
+                redirectUrlFactory={replacePackageId}
+              >
+                <Outlet/>
+              </ExceptionSituationHandler>
+            </Box>
+            <Notification/>
+            <GlobalSearchPanel/>
+            <AiAssistantPanel/>
+            {systemNotification && <MaintenanceNotification value={systemNotification}/>}
           </Box>
-          <Notification/>
-          <GlobalSearchPanel/>
-          {systemNotification && <MaintenanceNotification value={systemNotification}/>}
-        </Box>
+        </AiAssistantProvider>
       </ModuleFetchingErrorBoundary>
     </MainPageProvider>
   )
