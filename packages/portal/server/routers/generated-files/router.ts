@@ -1,8 +1,8 @@
 import type { Router } from 'express'
-import type { AiChatAttachment } from '../../mocks/ai-chat/types'
-import { sendError } from './errors'
+import { Router as createRouter } from 'express'
 
-const ONE_HOUR_MS = 60 * 60 * 1000
+import { MAGIC_EXPIRED_FILE_ID, MAGIC_MISSING_FILE_ID, MOCK_FILE_DOWNLOAD_TOKEN } from '../../mocks/ai-chat/constants'
+import { sendError } from '../ai-chat/errors'
 
 const DUMMY_CSV = `operation,method,path,package,version
 listCustomers,GET,/api/v1/customers,Customers,2024.4
@@ -19,33 +19,16 @@ const DUMMY_MARKDOWN = `# Operations Report
 | GET | /api/v1/orders | Orders@2024.3 |
 `
 
-// Fixed magic file ids so the UI can exercise
-// expired/missing branches without server-side scheduling.
-export const MAGIC_EXPIRED_FILE_ID = 'expired'
-export const MAGIC_MISSING_FILE_ID = 'missing'
-
-// Used by messages/stream to synthesize attachment metadata that the UI can
-// render and download. The URL is a relative API path so the Vite proxy also
-// routes it to the mock server.
-export function buildAttachment(
-  fileId: string,
-  fileName: string,
-  nowIso: string,
-): AiChatAttachment {
-  const expiresAt = new Date(Date.parse(nowIso) + ONE_HOUR_MS).toISOString()
-  const url = `/api/v1/ai-chat/files/${encodeURIComponent(fileId)}?token=mock-${fileId}`
-  return {
-    fileId: fileId,
-    fileName: fileName,
-    mimeType: fileName.endsWith('.csv') ? 'text/csv' : 'text/markdown',
-    sizeBytes: DUMMY_CSV.length,
-    url: url,
-    expiresAt: expiresAt,
-  }
+function isValidToken(token: string): boolean {
+  if (token === MOCK_FILE_DOWNLOAD_TOKEN) return true
+  if (token.startsWith('mock-')) return true
+  return false
 }
 
-export function getFile(router: Router): void {
-  router.get('/files/:fileId', (req, res) => {
+export function GeneratedFilesRouter(): Router {
+  const router = createRouter()
+
+  router.get('/:fileId', (req, res) => {
     const { fileId } = req.params
     const token = typeof req.query.token === 'string' ? req.query.token : ''
 
@@ -57,13 +40,11 @@ export function getFile(router: Router): void {
       sendError(res, 410, 'APIHUB-AI-4101', 'Signed download token expired.')
       return
     }
-    if (!token) {
+    if (!token || !isValidToken(token)) {
       sendError(res, 400, 'APIHUB-AI-4001', 'Signed download token is required.')
       return
     }
 
-    // Body shape is driven by the fileId suffix so the download UX can be
-    // inspected for both CSV and markdown.
     if (fileId.endsWith('.md') || fileId.includes('markdown')) {
       res
         .status(200)
@@ -78,4 +59,6 @@ export function getFile(router: Router): void {
       .setHeader('Content-Disposition', `attachment; filename="${fileId}.csv"`)
       .send(DUMMY_CSV)
   })
+
+  return router
 }

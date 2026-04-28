@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import type { AiChat, AiChatClientConfig, AiChatMessage, AiChatSendRequest } from './types'
+import { MAX_PINNED_PER_USER, type AiChat, type AiChatMessage, type AiChatSendRequest } from './types'
 
 export type ChatState = {
   chat: AiChat
@@ -12,14 +12,6 @@ export type ChatState = {
 
 export class AiChatStore {
   private readonly chats = new Map<string, ChatState>()
-  private readonly config: AiChatClientConfig = {
-    maxPinnedPerUser: 3,
-    maxUserMessageLength: 32000,
-  }
-
-  getConfig(): AiChatClientConfig {
-    return this.config
-  }
 
   reset(): void {
     this.chats.clear()
@@ -85,7 +77,7 @@ export class AiChatStore {
       const pinnedCount = [...this.chats.values()]
         .filter((s) => s.chat.pinned)
         .length
-      if (pinnedCount >= this.config.maxPinnedPerUser) return 'pin-limit'
+      if (pinnedCount >= MAX_PINNED_PER_USER) return 'pin-limit'
     }
     const next: AiChat = {
       ...current,

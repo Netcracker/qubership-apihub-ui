@@ -1,4 +1,5 @@
 import type { Router } from 'express'
+import { MAX_PINNED_PER_USER } from '../../mocks/ai-chat/types'
 import { aiChatStore } from '../../mocks/ai-chat/store'
 import { sendError } from './errors'
 
@@ -30,7 +31,7 @@ export function patchChat(router: Router): void {
         res,
         400,
         'APIHUB-AI-4003',
-        `Pin limit exceeded. Unpin one of your pinned chats first (limit: ${aiChatStore.getConfig().maxPinnedPerUser}).`,
+        `Pin limit exceeded. Unpin one of your pinned chats first (limit: ${MAX_PINNED_PER_USER}).`,
       )
       return
     }

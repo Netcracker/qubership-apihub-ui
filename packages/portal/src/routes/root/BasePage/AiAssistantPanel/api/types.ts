@@ -1,9 +1,9 @@
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 
+// Contract mirror: keep in sync with `server/mocks/ai-chat/types.ts` (string ids here use Key).
 export type ChatId = Key
 export type MessageId = Key
 export type ClientMessageId = Key
-export type FileId = Key
 
 export type AiChatRole = 'user' | 'assistant'
 
@@ -17,22 +17,12 @@ export type AiChat = {
   messagesCount: number
 }
 
-export type AiChatAttachment = {
-  fileId: FileId
-  fileName: string
-  mimeType?: string
-  sizeBytes?: number
-  url: string
-  expiresAt: string
-}
-
 export type AiChatMessage = {
   messageId: MessageId
   clientMessageId: ClientMessageId | null
   role: AiChatRole
   content: string
   createdAt: string
-  attachments?: AiChatAttachment[]
 }
 
 export type AiChatsListResponse = {
@@ -59,12 +49,6 @@ export type AiChatSendRequest = {
   clientMessageId?: ClientMessageId
 }
 
-export type AiChatUsage = {
-  promptTokens?: number
-  completionTokens?: number
-  totalTokens?: number
-}
-
 export type AiChatStreamEvent =
   | { type: 'context.compacted'; messagesCompactedCount: number }
   | { type: 'message.assistant.start'; messageId: MessageId }
@@ -77,7 +61,7 @@ export type AiChatStreamEvent =
     durationMs?: number
   }
   | { type: 'message.assistant.delta'; delta: string }
-  | { type: 'message.assistant.completed'; message: AiChatMessage; usage?: AiChatUsage }
+  | { type: 'message.assistant.completed'; message: AiChatMessage }
   | { type: 'error'; code: AiChatErrorCode; message: string }
   | { type: 'done' }
   | { type: string; [k: string]: unknown }

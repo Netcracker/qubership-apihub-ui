@@ -1,15 +1,8 @@
-// TypeScript mirror of the AI Chat API contract used by the mock server.
-//
-// These types are intentionally duplicated here (instead of imported from the
-// frontend feature module) so that the mock server stays buildable in isolation
-// and the frontend can evolve its own branded-type wrappers on top.
+// Mirror of `src/routes/root/BasePage/AiAssistantPanel/api/types.ts` (OpenAPI-aligned).
+// Kept under server/ so Jest and the mock compile without the portal TS path aliases.
+// When the contract changes, update both files together.
 
 export type AiChatRole = 'user' | 'assistant'
-
-export type AiChatClientConfig = {
-  maxPinnedPerUser: number
-  maxUserMessageLength: number
-}
 
 export type AiChat = {
   chatId: string
@@ -21,22 +14,12 @@ export type AiChat = {
   messagesCount: number
 }
 
-export type AiChatAttachment = {
-  fileId: string
-  fileName: string
-  mimeType?: string
-  sizeBytes?: number
-  url: string
-  expiresAt: string
-}
-
 export type AiChatMessage = {
   messageId: string
   clientMessageId: string | null
   role: AiChatRole
   content: string
   createdAt: string
-  attachments?: AiChatAttachment[]
 }
 
 export type AiChatsListResponse = {
@@ -63,16 +46,6 @@ export type AiChatSendRequest = {
   clientMessageId?: string
 }
 
-export type AiChatUsage = {
-  promptTokens?: number
-  completionTokens?: number
-  totalTokens?: number
-}
-
-// SSE events emitted by POST /chats/:id/messages/stream.
-// The UI cares about a subset of events, while the mock keeps the full event shape.
-// The mock preserves the full shape so that the UI parser's forward-compat path
-// is exercised end-to-end.
 export type AiChatStreamEvent =
   | { type: 'context.compacted'; messagesCompactedCount: number }
   | { type: 'message.assistant.start'; messageId: string }
@@ -85,21 +58,17 @@ export type AiChatStreamEvent =
     durationMs?: number
   }
   | { type: 'message.assistant.delta'; delta: string }
-  | {
-    type: 'message.assistant.completed'
-    message: AiChatMessage
-    usage?: AiChatUsage
-  }
+  | { type: 'message.assistant.completed'; message: AiChatMessage }
   | { type: 'error'; code: string; message: string }
   | { type: 'done' }
 
 export type AiChatErrorCode =
-  | 'APIHUB-AI-3001' // chat not found
-  | 'APIHUB-AI-3002' // file not found
-  | 'APIHUB-AI-4001' // message validation
-  | 'APIHUB-AI-4003' // pin limit exceeded
-  | 'APIHUB-AI-4004' // message too long
-  | 'APIHUB-AI-4101' // file token expired
+  | 'APIHUB-AI-3001'
+  | 'APIHUB-AI-3002'
+  | 'APIHUB-AI-4001'
+  | 'APIHUB-AI-4003'
+  | 'APIHUB-AI-4004'
+  | 'APIHUB-AI-4101'
   | 'APIHUB-AI-5000'
   | 'APIHUB-AI-5001'
   | 'APIHUB-AI-5002'
@@ -109,3 +78,6 @@ export type AiChatErrorResponse = {
   code: AiChatErrorCode
   message: string
 }
+
+export const MAX_PINNED_PER_USER = 3 as const
+export const MAX_USER_MESSAGE_LENGTH = 32_000 as const

@@ -8,6 +8,8 @@ export const FIXTURE_WITH_HISTORY_CHAT_ID = 'fc000001-0000-4000-8000-00000000000
 export const FIXTURE_RECENT_CHAT_ID = 'fc000001-0000-4000-8000-000000000003'
 export const FIXTURE_EMPTY_CHAT_ID = 'fc000001-0000-4000-8000-000000000004'
 export const FIXTURE_OLD_CHAT_ID = 'fc000001-0000-4000-8000-000000000005'
+/** 120 user + 120 assistant (newest-first: Response #120 / Request #120 ... #1). See server/README.md. */
+export const FIXTURE_PAGINATION_120_CHAT_ID = 'fc000001-0000-4000-8000-0000000000b0'
 
 const DAY_MS = 24 * 60 * 60 * 1000
 
@@ -28,7 +30,6 @@ function makeMessage(
     role: partial.role,
     content: partial.content,
     createdAt: partial.createdAt,
-    attachments: partial.attachments,
   }
 }
 
@@ -53,6 +54,32 @@ function buildPaginationHistory(chatId: string, count: number): AiChatMessage[] 
   return messages.reverse()
 }
 
+// 120 user + 120 assistant: chronological U1,R1,... U120,R120; #1 is oldest pair.
+function buildPagination120Messages(chatId: string): AiChatMessage[] {
+  const chronological: AiChatMessage[] = []
+  const base = -20 * DAY_MS
+  for (let n = 1; n <= 120; n++) {
+    const offsetPair = (n - 1) * 60_000
+    chronological.push(
+      makeMessage({
+        messageId: `${chatId}-u-${n}`,
+        role: 'user',
+        content: `Request #${n}`,
+        createdAt: iso(base + offsetPair),
+      }),
+    )
+    chronological.push(
+      makeMessage({
+        messageId: `${chatId}-a-${n}`,
+        role: 'assistant',
+        content: `Response #${n}`,
+        createdAt: iso(base + offsetPair + 30_000),
+      }),
+    )
+  }
+  return chronological.reverse()
+}
+
 function makeChatState(input: {
   chatId: string
   title: string
@@ -70,6 +97,17 @@ function makeChatState(input: {
 }
 
 export function buildFixtureChats(): ChatState[] {
+  const pagination120Messages = buildPagination120Messages(FIXTURE_PAGINATION_120_CHAT_ID)
+  const pagination120 = makeChatState({
+    chatId: FIXTURE_PAGINATION_120_CHAT_ID,
+    title: 'Pagination QA (Request/Response 1-120)',
+    pinned: false,
+    pinnedAt: null,
+    createdAt: iso(-20 * DAY_MS),
+    lastMessageAt: pagination120Messages[0].createdAt,
+    messages: pagination120Messages,
+  })
+
   const pinned = makeChatState({
     chatId: FIXTURE_PINNED_CHAT_ID,
     title: 'Pinned: customer operations exploration',
@@ -159,5 +197,5 @@ export function buildFixtureChats(): ChatState[] {
     ],
   })
 
-  return [pinned, withHistory, recent, empty, old]
+  return [pagination120, pinned, withHistory, recent, empty, old]
 }

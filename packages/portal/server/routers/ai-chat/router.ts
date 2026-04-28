@@ -3,8 +3,6 @@ import { buildFixtureChats } from '../../mocks/ai-chat/fixtures'
 import { aiChatStore } from '../../mocks/ai-chat/store'
 import { deleteChat, getChat, patchChat } from './chat'
 import { createChat, listChats } from './chats'
-import { getConfig } from './config'
-import { getFile } from './files'
 import { listMessages, sendMessageNonStreaming } from './messages'
 import { streamMessage } from './stream'
 
@@ -17,7 +15,6 @@ export function AiChatRouter(): AiChatRouter {
 
   const router = Router()
 
-  getConfig(router)
   listChats(router)
   createChat(router)
   getChat(router)
@@ -29,7 +26,6 @@ export function AiChatRouter(): AiChatRouter {
   streamMessage(router)
   listMessages(router)
   sendMessageNonStreaming(router)
-  getFile(router)
 
   return router
 }

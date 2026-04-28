@@ -2,9 +2,9 @@ import type { Router } from 'express'
 import { randomUUID } from 'node:crypto'
 import { assistantMessageFromScenario, pickScenario } from '../../mocks/ai-chat/scriptedStreams'
 import { aiChatStore } from '../../mocks/ai-chat/store'
-import type { AiChatAttachment, AiChatMessage, AiChatMessagesListResponse } from '../../mocks/ai-chat/types'
+import { buildGeneratedFileUrl } from '../../mocks/ai-chat/generatedFileUrl'
+import { MAX_USER_MESSAGE_LENGTH, type AiChatMessage, type AiChatMessagesListResponse } from '../../mocks/ai-chat/types'
 import { sendError } from './errors'
-import { buildAttachment } from './files'
 
 function parsePositiveInt(value: unknown, fallback: number): number {
   if (typeof value !== 'string') return fallback
@@ -20,7 +20,7 @@ export function listMessages(router: Router): void {
       sendError(res, 404, 'APIHUB-AI-3001', 'Chat not found.')
       return
     }
-    const limit = parsePositiveInt(req.query.limit, 50)
+    const limit = parsePositiveInt(req.query.limit, 100)
     const before = typeof req.query.before === 'string' ? req.query.before : undefined
     const page = aiChatStore.messagesPage(chatId, { limit, before })
     if (!page) {
@@ -56,7 +56,7 @@ export function sendMessageNonStreaming(router: Router): void {
       sendError(res, 400, 'APIHUB-AI-4001', 'Message content must not be empty.')
       return
     }
-    const maxLen = aiChatStore.getConfig().maxUserMessageLength
+    const maxLen = MAX_USER_MESSAGE_LENGTH
     if (content.length > maxLen) {
       sendError(res, 400, 'APIHUB-AI-4004', `Message exceeds maximum length of ${maxLen} characters.`)
       return
@@ -84,13 +84,11 @@ export function sendMessageNonStreaming(router: Router): void {
     const assistantCreatedAt = new Date(now.getTime() + 1).toISOString()
     const assistantMessageId = randomUUID()
     const scenario = pickScenario(content)
-    const attachmentUrlBuilder = (fileId: string, fileName: string): AiChatAttachment =>
-      buildAttachment(fileId, fileName, assistantCreatedAt)
     const assistantMessage = assistantMessageFromScenario(scenario, {
       messageId: assistantMessageId,
       nowIso: assistantCreatedAt,
       clientMessageId: clientMessageId,
-      attachmentUrlBuilder: attachmentUrlBuilder,
+      buildFileUrl: (fileId) => buildGeneratedFileUrl(fileId),
     })
     aiChatStore.appendMessage(chatId, assistantMessage)
     if (clientMessageId) {

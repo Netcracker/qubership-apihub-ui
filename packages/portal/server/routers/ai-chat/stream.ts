@@ -2,9 +2,9 @@ import type { Request, Response, Router } from 'express'
 import { randomUUID } from 'node:crypto'
 import { pickScenario } from '../../mocks/ai-chat/scriptedStreams'
 import { aiChatStore } from '../../mocks/ai-chat/store'
-import type { AiChatAttachment, AiChatMessage, AiChatStreamEvent } from '../../mocks/ai-chat/types'
+import { buildGeneratedFileUrl } from '../../mocks/ai-chat/generatedFileUrl'
+import { MAX_USER_MESSAGE_LENGTH, type AiChatMessage, type AiChatStreamEvent } from '../../mocks/ai-chat/types'
 import { sendError } from './errors'
-import { buildAttachment } from './files'
 
 function writeFrame(res: Response, event: AiChatStreamEvent): void {
   // All SSE events in this mock carry JSON data payloads. Unknown event types
@@ -60,14 +60,11 @@ async function streamScenario(
   const scenario = pickScenario(userContent)
   const messageId = randomUUID()
   const nowIso = new Date().toISOString()
-  const attachmentUrlBuilder = (fileId: string, fileName: string): AiChatAttachment =>
-    buildAttachment(fileId, fileName, nowIso)
-
   const frames = scenario.build({
-    messageId,
-    nowIso,
-    clientMessageId,
-    attachmentUrlBuilder,
+    messageId: messageId,
+    nowIso: nowIso,
+    clientMessageId: clientMessageId,
+    buildFileUrl: (fileId) => buildGeneratedFileUrl(fileId),
   })
 
   primeSseHeaders(req, res)
@@ -126,7 +123,7 @@ export function streamMessage(router: Router): void {
         sendError(res, 400, 'APIHUB-AI-4001', 'Message content must not be empty.')
         return
       }
-      const maxLen = aiChatStore.getConfig().maxUserMessageLength
+      const maxLen = MAX_USER_MESSAGE_LENGTH
       if (content.length > maxLen) {
         sendError(res, 400, 'APIHUB-AI-4004', `Message exceeds maximum length of ${maxLen} characters.`)
         return

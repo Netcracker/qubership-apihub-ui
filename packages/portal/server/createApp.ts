@@ -4,6 +4,7 @@ import type { Express, Router } from 'express'
 import express from 'express'
 import { ActivityRouter } from './routers/activity/router'
 import { AiChatRouter } from './routers/ai-chat/router'
+import { GeneratedFilesRouter } from './routers/generated-files/router'
 import { AuthRouter } from './routers/auth/router'
 import { GlobalSearchRouter } from './routers/global-search/router'
 import { PackagesRouter, PackageTokensRouter } from './routers/packages/router'
@@ -29,6 +30,7 @@ export function createApp(): Express {
     ['/api/v2/activity/', ActivityRouter()],
     ['/api/v2/admins/', SystemAdminsRouter()],
     ['/api/v1/ai-chat/', AiChatRouter()],
+    ['/api/v1/generated-files/', GeneratedFilesRouter()],
   ])
 
   app.use(cors())

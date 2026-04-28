@@ -12,7 +12,7 @@ function parsePositiveInt(value: unknown, fallback: number): number {
 export function listChats(router: Router): void {
   router.get('/chats', (req, res) => {
     const search = typeof req.query.search === 'string' ? req.query.search : undefined
-    const limit = parsePositiveInt(req.query.limit, 50)
+    const limit = parsePositiveInt(req.query.limit, 100)
     const before = typeof req.query.before === 'string' ? req.query.before : undefined
 
     const all = aiChatStore.list(search)

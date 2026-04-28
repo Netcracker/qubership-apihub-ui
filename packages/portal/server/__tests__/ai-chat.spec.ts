@@ -6,10 +6,13 @@ import {
   buildFixtureChats,
   FIXTURE_EMPTY_CHAT_ID,
   FIXTURE_OLD_CHAT_ID,
+  FIXTURE_PAGINATION_120_CHAT_ID,
   FIXTURE_PINNED_CHAT_ID,
   FIXTURE_RECENT_CHAT_ID,
   FIXTURE_WITH_HISTORY_CHAT_ID,
 } from '../mocks/ai-chat/fixtures'
+import { MOCK_FILE_DOWNLOAD_TOKEN } from '../mocks/ai-chat/constants'
+import { MOCK_ATTACHMENT_FILE_ID } from '../mocks/ai-chat/generatedFileUrl'
 import { aiChatStore } from '../mocks/ai-chat/store'
 import type {
   AiChat,
@@ -21,6 +24,7 @@ import type {
 } from '../mocks/ai-chat/types'
 
 const BASE = '/api/v1/ai-chat'
+const GEN = '/api/v1/generated-files'
 
 let app: Express
 
@@ -55,21 +59,11 @@ function parseSse(body: string): SseFrame[] {
   return frames
 }
 
-describe('AI Chat mock server - GET /config', () => {
-  it('returns the client config with expected defaults', async () => {
-    const res = await request(app).get(`${BASE}/config`).expect(200)
-    expect(res.body).toEqual({
-      maxPinnedPerUser: 3,
-      maxUserMessageLength: 32000,
-    })
-  })
-})
-
 describe('AI Chat mock server - GET /chats', () => {
   it('lists all seeded chats with pinned first', async () => {
     const res = await request(app).get(`${BASE}/chats`).expect(200)
     const body = res.body as AiChatsListResponse
-    expect(body.chats.length).toBe(5)
+    expect(body.chats.length).toBe(6)
     expect(body.hasMore).toBe(false)
     expect(body.chats[0].chatId).toBe(FIXTURE_PINNED_CHAT_ID)
     expect(body.chats[0].pinned).toBe(true)
@@ -223,6 +217,26 @@ describe('AI Chat mock server - GET /chats/:id/messages', () => {
       expect(m.createdAt < cursor).toBe(true)
     }
     expect(nextBody.messages.length + firstBody.messages.length).toBeLessThanOrEqual(40)
+  })
+
+  it('fixture pagination-120 requires a second messages page at default limit 100', async () => {
+    const first = await request(app)
+      .get(`${BASE}/chats/${FIXTURE_PAGINATION_120_CHAT_ID}/messages`)
+      .expect(200)
+    const firstBody = first.body as AiChatMessagesListResponse
+    expect(firstBody.messages.length).toBe(100)
+    expect(firstBody.hasMore).toBe(true)
+    expect(firstBody.messages[0].content).toMatch(/Response #120/)
+    const cursor = firstBody.messages[firstBody.messages.length - 1].createdAt
+    const second = await request(app)
+      .get(`${BASE}/chats/${FIXTURE_PAGINATION_120_CHAT_ID}/messages`)
+      .query({ limit: 200, before: cursor })
+      .expect(200)
+    const secondBody = second.body as AiChatMessagesListResponse
+    expect(secondBody.messages.length).toBe(140)
+    expect(secondBody.hasMore).toBe(false)
+    const oldest = secondBody.messages[secondBody.messages.length - 1]
+    expect(oldest.content).toBe('Request #1')
   })
 
   it('404s unknown chat', async () => {
@@ -395,12 +409,12 @@ describe('AI Chat mock server - POST /chats/:id/messages/stream (SSE)', () => {
     expect(body.messages.filter((m) => m.role === 'user').length).toBe(1)
   })
 
-  it('debug:offtopic scenario produces the refusal content', async () => {
+  it('debug:links scenario includes portal package and operation paths', async () => {
     const create = await request(app).post(`${BASE}/chats`).send({}).expect(201)
     const { chatId } = create.body as AiChat
     const res = await request(app)
       .post(`${BASE}/chats/${chatId}/messages/stream`)
-      .send({ content: 'try debug:offtopic', clientMessageId: 'ot-1' })
+      .send({ content: 'run debug:links', clientMessageId: 'lnk-1' })
       .buffer(true)
       .parse((response, cb) => {
         const chunks: Buffer[] = []
@@ -411,15 +425,16 @@ describe('AI Chat mock server - POST /chats/:id/messages/stream (SSE)', () => {
     const frames = parseSse(res.body as string)
     const completed = frames.find((f) => f.event === 'message.assistant.completed') as SseFrame
     const { message } = completed.data as { message: AiChatMessage }
-    expect(message.content).toMatch(/specialize in helping with REST API/i)
+    expect(message.content).toContain('/portal/packages/QS.QSS.PRG.APIHUB/2026.1')
+    expect(message.content).toContain('/portal/packages/QS.QSS.PRG.APIHUB/2026.1/operations/rest/get-packages-list')
   })
 
-  it('debug:attachment scenario attaches a file with a mock signed URL', async () => {
+  it('debug:longmd scenario produces markdown at least 4000 characters', async () => {
     const create = await request(app).post(`${BASE}/chats`).send({}).expect(201)
     const { chatId } = create.body as AiChat
     const res = await request(app)
       .post(`${BASE}/chats/${chatId}/messages/stream`)
-      .send({ content: 'try debug:attachment', clientMessageId: 'att-1' })
+      .send({ content: 'please debug:longmd', clientMessageId: 'lm-1' })
       .buffer(true)
       .parse((response, cb) => {
         const chunks: Buffer[] = []
@@ -430,27 +445,8 @@ describe('AI Chat mock server - POST /chats/:id/messages/stream (SSE)', () => {
     const frames = parseSse(res.body as string)
     const completed = frames.find((f) => f.event === 'message.assistant.completed') as SseFrame
     const { message } = completed.data as { message: AiChatMessage }
-    expect(message.attachments).toBeDefined()
-    expect(message.attachments!.length).toBe(1)
-    expect(message.attachments![0].url).toMatch(/^\/api\/v1\/ai-chat\/files\//)
-  })
-
-  it('debug:json scenario produces a JSON code block in its final markdown', async () => {
-    const create = await request(app).post(`${BASE}/chats`).send({}).expect(201)
-    const { chatId } = create.body as AiChat
-    const res = await request(app)
-      .post(`${BASE}/chats/${chatId}/messages/stream`)
-      .send({ content: 'run debug:json please', clientMessageId: 'js-1' })
-      .buffer(true)
-      .parse((response, cb) => {
-        const chunks: Buffer[] = []
-        response.on('data', (c: Buffer) => chunks.push(c))
-        response.on('end', () => cb(null, Buffer.concat(chunks).toString('utf-8')))
-      })
-      .expect(200)
-    const frames = parseSse(res.body as string)
-    const completed = frames.find((f) => f.event === 'message.assistant.completed') as SseFrame
-    const { message } = completed.data as { message: AiChatMessage }
+    expect(message.content.length).toBeGreaterThanOrEqual(4000)
+    expect(message.content).toMatch(/```yaml/)
     expect(message.content).toMatch(/```json/)
   })
 
@@ -472,11 +468,11 @@ describe('AI Chat mock server - POST /chats/:id/messages/stream (SSE)', () => {
   })
 })
 
-describe('AI Chat mock server - GET /files/:id', () => {
+describe('Mock server - GET /api/v1/generated-files/:fileId', () => {
   it('returns a CSV body with a content-disposition header for a valid download', async () => {
     const res = await request(app)
-      .get(`${BASE}/files/operations-report`)
-      .query({ token: 'mock-operations-report' })
+      .get(`${GEN}/${MOCK_ATTACHMENT_FILE_ID}`)
+      .query({ token: MOCK_FILE_DOWNLOAD_TOKEN })
       .expect(200)
     expect(res.headers['content-type']).toMatch(/text\/csv/)
     expect(res.headers['content-disposition']).toMatch(/attachment; filename/)
@@ -485,26 +481,26 @@ describe('AI Chat mock server - GET /files/:id', () => {
 
   it('magic id "missing" returns 404 APIHUB-AI-3002', async () => {
     const res = await request(app)
-      .get(`${BASE}/files/missing`)
-      .query({ token: 'mock-missing' })
+      .get(`${GEN}/missing`)
+      .query({ token: MOCK_FILE_DOWNLOAD_TOKEN })
       .expect(404)
     expect((res.body as AiChatErrorResponse).code).toBe('APIHUB-AI-3002')
   })
 
   it('magic id "expired" returns 410 APIHUB-AI-4101', async () => {
     const res = await request(app)
-      .get(`${BASE}/files/expired`)
-      .query({ token: 'mock-expired' })
+      .get(`${GEN}/expired`)
+      .query({ token: MOCK_FILE_DOWNLOAD_TOKEN })
       .expect(410)
     expect((res.body as AiChatErrorResponse).code).toBe('APIHUB-AI-4101')
   })
 
   it('rejects downloads without a token (APIHUB-AI-4001)', async () => {
-    const res = await request(app).get(`${BASE}/files/some-file`).expect(400)
+    const res = await request(app).get(`${GEN}/some-file`).expect(400)
     expect((res.body as AiChatErrorResponse).code).toBe('APIHUB-AI-4001')
   })
 
-  it('honours attachment urls generated by the stream scenario', async () => {
+  it('debug:attachment stream links to generated-files and download succeeds', async () => {
     const create = await request(app).post(`${BASE}/chats`).send({}).expect(201)
     const { chatId } = create.body as AiChat
     const stream = await request(app)
@@ -520,9 +516,11 @@ describe('AI Chat mock server - GET /files/:id', () => {
     const frames = parseSse(stream.body as string)
     const completed = frames.find((f) => f.event === 'message.assistant.completed') as SseFrame
     const { message } = completed.data as { message: AiChatMessage }
-    const [firstAttachment] = message.attachments!
-    const { url } = firstAttachment
-    const download = await request(app).get(url).expect(200)
+    expect(message.content).toMatch(/\/api\/v1\/generated-files\//)
+    expect(message.content).not.toMatch(/\/api\/v1\/ai-chat\/files\//)
+    const match = message.content.match(/\]\((\/api\/v1\/generated-files\/[^)]+)\)/)
+    expect(match).toBeTruthy()
+    const download = await request(app).get(match![1]).expect(200)
     expect((download.text as string).length).toBeGreaterThan(0)
   })
 })

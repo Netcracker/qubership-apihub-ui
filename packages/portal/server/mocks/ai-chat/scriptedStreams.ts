@@ -1,4 +1,5 @@
-import type { AiChatAttachment, AiChatMessage, AiChatStreamEvent } from './types'
+import type { AiChatMessage, AiChatStreamEvent } from './types'
+import { MOCK_ATTACHMENT_FILE_ID } from './generatedFileUrl'
 
 export type ScriptedFrame = {
   // Delay after the previous frame in milliseconds (0 for the first frame).
@@ -16,7 +17,8 @@ export type ScriptedBuildArgs = {
   messageId: string
   nowIso: string
   clientMessageId: string | null
-  attachmentUrlBuilder: (fileId: string, fileName: string) => AiChatAttachment
+  /** Relative `GET /api/v1/generated-files/...` URL for markdown download links */
+  buildFileUrl: (fileId: string) => string
 }
 
 const TOKEN_DELAY_MS = 35
@@ -77,6 +79,15 @@ const JSON_MARKDOWN = `Here is the same response encoded as JSON:
 
 Ask for more detail on any of them.`
 
+const LINKS_MARKDOWN = `## Internal navigation samples
+
+Use these paths to exercise **InternalLink** behaviour (same prefixes as \`routes.ts\`):
+
+- [Demo package](/portal/packages/QS.QSS.PRG.APIHUB/2026.1)
+- [Demo operation](/portal/packages/QS.QSS.PRG.APIHUB/2026.1/operations/rest/get-packages-list)
+
+Both resolve under \`/portal/packages/\`.`
+
 const ATTACHMENT_MARKDOWN_PREFIX = `I generated a CSV report with every operation I could find.
 The full file is available below as a download.`
 
@@ -84,6 +95,43 @@ const OFFTOPIC_MARKDOWN = `I'm sorry, but I specialize in helping with REST API 
 I can't help with questions outside of this topic. Is there anything about APIs I can help you with?`
 
 const ERROR_MARKDOWN = 'Searching the operations index'
+
+function buildLongMarkdownFixture(): string {
+  const parts: string[] = []
+  parts.push('# Long markdown stress fixture\n\n')
+  parts.push('## Overview\n\n')
+  parts.push('> Blockquote: this stream exists to stress markdown rendering, scrolling, and throttling.\n\n')
+  parts.push('### Bullet list\n\n')
+  for (let i = 0; i < 45; i++) {
+    parts.push(`- Row ${i + 1} with **emphasis** and a \`code\` span.\n`)
+  }
+  parts.push('\n## Operations table\n\n')
+  parts.push('| Id | Service | Status |\n| --- | --- | --- |\n')
+  for (let i = 0; i < 35; i++) {
+    parts.push(`| ${i + 1} | svc-${i % 7} | ${i % 3 === 0 ? 'ok' : 'warn'} |\n`)
+  }
+  parts.push('\n### YAML block\n\n```yaml\n')
+  parts.push('service: long-md-stress\nendpoints:\n')
+  for (let i = 0; i < 30; i++) {
+    parts.push(`  - path: /api/v1/items/${i}\n    method: GET\n`)
+  }
+  parts.push('```\n\n### JSON block\n\n```json\n')
+  parts.push(
+    JSON.stringify(
+      { items: Array.from({ length: 25 }, (_, i) => ({ id: i, name: `item-${i}` })) },
+      null,
+      2,
+    ),
+  )
+  parts.push('\n```\n\n## Closing\n\nEnd of long markdown fixture.\n')
+  let body = parts.join('')
+  if (body.length < 4000) {
+    body += `\n${'p'.repeat(4000 - body.length)}\n`
+  }
+  return body
+}
+
+const LONG_MD_CONTENT = buildLongMarkdownFixture()
 
 const defaultScenario: Scenario = {
   id: 'default',
@@ -106,7 +154,6 @@ const defaultScenario: Scenario = {
           content: DEFAULT_MARKDOWN,
           createdAt: nowIso,
         },
-        usage: { promptTokens: 120, completionTokens: 220, totalTokens: 340 },
       },
     })
     frames.push({ delay: 10, event: { type: 'done' } })
@@ -142,12 +189,68 @@ const jsonScenario: Scenario = {
   },
 }
 
+const linksScenario: Scenario = {
+  id: 'debug:links',
+  description: 'Markdown with internal package and operation links.',
+  build: ({ messageId, nowIso, clientMessageId }) => {
+    const frames: ScriptedFrame[] = []
+    frames.push({
+      delay: 40,
+      event: { type: 'message.assistant.start', messageId: messageId },
+    })
+    frames.push(...deltaFrames(LINKS_MARKDOWN))
+    frames.push({
+      delay: 25,
+      event: {
+        type: 'message.assistant.completed',
+        message: {
+          messageId: messageId,
+          clientMessageId: clientMessageId,
+          role: 'assistant',
+          content: LINKS_MARKDOWN,
+          createdAt: nowIso,
+        },
+      },
+    })
+    frames.push({ delay: 10, event: { type: 'done' } })
+    return frames
+  },
+}
+
+const longmdScenario: Scenario = {
+  id: 'debug:longmd',
+  description: 'Very long markdown (>= 4000 chars) with yaml+json fences and table.',
+  build: ({ messageId, nowIso, clientMessageId }) => {
+    const frames: ScriptedFrame[] = []
+    frames.push({
+      delay: 40,
+      event: { type: 'message.assistant.start', messageId: messageId },
+    })
+    frames.push(...deltaFrames(LONG_MD_CONTENT, 12))
+    frames.push({
+      delay: 25,
+      event: {
+        type: 'message.assistant.completed',
+        message: {
+          messageId: messageId,
+          clientMessageId: clientMessageId,
+          role: 'assistant',
+          content: LONG_MD_CONTENT,
+          createdAt: nowIso,
+        },
+      },
+    })
+    frames.push({ delay: 10, event: { type: 'done' } })
+    return frames
+  },
+}
+
 const attachmentScenario: Scenario = {
   id: 'debug:attachment',
-  description: 'Completes with a generated attachment chip.',
-  build: ({ messageId, nowIso, clientMessageId, attachmentUrlBuilder }) => {
-    const attachment = attachmentUrlBuilder('operations-report', 'operations-report.csv')
-    const markdownWithLink = `${ATTACHMENT_MARKDOWN_PREFIX}\n\n[${attachment.fileName}](${attachment.url})`
+  description: 'Assistant markdown links to generated-files download URL.',
+  build: ({ messageId, nowIso, clientMessageId, buildFileUrl }) => {
+    const url = buildFileUrl(MOCK_ATTACHMENT_FILE_ID)
+    const markdownWithLink = `${ATTACHMENT_MARKDOWN_PREFIX}\n\n[export-sample.csv](${url})`
     const frames: ScriptedFrame[] = []
     frames.push({
       delay: 40,
@@ -164,7 +267,6 @@ const attachmentScenario: Scenario = {
           role: 'assistant',
           content: markdownWithLink,
           createdAt: nowIso,
-          attachments: [attachment],
         },
       },
     })
@@ -228,6 +330,8 @@ const offtopicScenario: Scenario = {
 // fall through to the happy path.
 export const SCENARIOS: Scenario[] = [
   errorScenario,
+  linksScenario,
+  longmdScenario,
   jsonScenario,
   attachmentScenario,
   offtopicScenario,
