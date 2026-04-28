@@ -1,14 +1,14 @@
-import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
-import { Box, ClickAwayListener, Divider, Drawer, IconButton, Typography } from '@mui/material'
+import { Box, ClickAwayListener, Drawer } from '@mui/material'
 import { styled } from '@mui/material/styles'
-import { RobotIcon } from '@netcracker/qubership-apihub-ui-shared/icons/RobotIcon'
 import { APP_HEADER_HEIGHT } from '@netcracker/qubership-apihub-ui-shared/themes/components'
 import type { ResizeCallback } from 're-resizable'
 import { Resizable } from 're-resizable'
 import type { FC } from 'react'
 import { memo, useCallback, useEffect, useState } from 'react'
 import { AI_ASSISTANT_PANEL_MIN_WIDTH, getAiAssistantPanelMaxWidth } from './AiAssistantProvider'
+import { AiAssistantMockTriggerBar } from './dev/AiAssistantMockTriggerBar'
 import { useAiAssistantContext } from './state/AiAssistantContext'
+import { ChatScreen } from './ui/chat/ChatScreen'
 
 const RESIZE_ENABLE = {
   top: false,
@@ -29,6 +29,8 @@ const RESIZE_HANDLE_STYLES = {
     cursor: 'ew-resize',
   },
 }
+
+const showDevMockTriggers = import.meta.env.DEV && import.meta.env.VITE_AI_ASSISTANT_DEV_TRIGGERS !== '0'
 
 export const AiAssistantPanel: FC = memo(() => {
   const { open, closePanel, panelWidth, setPanelWidth } = useAiAssistantContext()
@@ -67,29 +69,9 @@ export const AiAssistantPanel: FC = memo(() => {
             onResizeStop={handleResizeStop}
           >
             <PanelContainer data-testid="AiAssistantPanel">
-              <PanelHeader>
-                <PanelHeaderToolbar>
-                  <PanelTitleContainer>
-                    <PanelAvatar>
-                      <RobotIcon fontSize="small" color="inherit" />
-                    </PanelAvatar>
-                    <Typography variant="h3">AI Assistant</Typography>
-                  </PanelTitleContainer>
-                  <IconButton
-                    size="large"
-                    aria-label="Close AI Assistant"
-                    data-testid="AiAssistantPanelCloseButton"
-                    onClick={closePanel}
-                  >
-                    <CloseOutlinedIcon />
-                  </IconButton>
-                </PanelHeaderToolbar>
-                <Divider orientation="horizontal" variant="fullWidth" flexItem />
-              </PanelHeader>
               <PanelContent>
-                <Typography variant="subtitle2" color="text.secondary">
-                  Placeholder
-                </Typography>
+                {showDevMockTriggers ? <AiAssistantMockTriggerBar /> : null}
+                <ChatScreen />
               </PanelContent>
             </PanelContainer>
           </Resizable>
@@ -120,46 +102,18 @@ const PanelClickAwayRoot = styled(Box)({
 })
 
 const PanelContainer = styled(Box)(({ theme }) => ({
-  display: 'grid',
-  gridTemplateRows: 'auto 1fr',
+  display: 'flex',
+  flexDirection: 'column',
   width: '100%',
   height: '100%',
   backgroundColor: theme.palette.background.paper,
 }))
 
-const PanelHeader = styled(Box)({
-  display: 'flex',
-  flexDirection: 'column',
-  minWidth: 0,
-})
-
-const PanelHeaderToolbar = styled(Box)({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  padding: '24px',
-})
-
-const PanelTitleContainer = styled(Box)({
-  display: 'flex',
-  alignItems: 'center',
-  gap: '8px',
-  minWidth: 0,
-})
-
-const PanelAvatar = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  padding: '8px',
-  borderRadius: '12px',
-  backgroundColor: theme.palette.primary.main,
-  color: theme.palette.primary.contrastText,
-}))
-
 const PanelContent = styled(Box)({
   display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  padding: '24px',
+  flexDirection: 'column',
+  alignItems: 'stretch',
+  justifyContent: 'flex-start',
+  minHeight: 0,
+  flex: 1,
 })
