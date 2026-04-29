@@ -100,7 +100,14 @@ export function detectServerBasePathMigratedToPath(document: OpenAPIV3.Document)
       let beforePathObject = beforePaths[path] as unknown as Record<PropertyKey, unknown> | undefined
       let afterPathObject = afterPaths[path] as unknown as Record<PropertyKey, unknown> | undefined
       if (!beforePathObject || !afterPathObject) {
-        // in that case we faced wholly changed operation path, not method
+        /**
+         * Edge case when APIHUB Portal allowed not valid OpenAPI document when we have 2 paths different only by path parameter name.
+         * For example:
+         * /endpoint/{param}
+         * /endpoint/{parameter}
+         * In case of comparison such documents it produces abnormal diffs which break an assumption
+         * that we CANNOT have diffs of methods if we have diffs of path items.
+         */
         continue
       }
       for (const changedSpecificPathMethod of Object.keys(diffSpecificPathMethods)) {
