@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
+import IconButton from '@mui/material/IconButton'
 import { styled } from '@mui/material/styles'
 import { JumpToLatestArrowIcon } from '@netcracker/qubership-apihub-ui-shared/icons/JumpToLatestArrowIcon'
 import { JumpToLatestStreamingIcon } from '@netcracker/qubership-apihub-ui-shared/icons/JumpToLatestStreamingIcon'
@@ -7,7 +8,6 @@ import type { FetchNextPageOptions } from '@tanstack/react-query'
 import type { FC } from 'react'
 import { memo, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { AiChatMessage, ChatId } from '../../api/types'
-import { AssistantCircularIconButton } from '../common/AssistantCircularIconButton'
 import { MessageBubble } from './MessageBubble'
 
 const NEAR_BOTTOM_THRESHOLD_PX = 40
@@ -114,13 +114,13 @@ export const MessageList: FC<MessageListProps> = memo(
         {showJumpButton
           ? (
             <JumpFabWrap>
-              <AssistantCircularIconButton
+              <JumpToLatestButton
                 aria-label="Jump to latest messages"
                 data-testid="AiAssistantJumpToLatestButton"
                 onClick={scrollToBottom}
               >
                 {jumpIcon}
-              </AssistantCircularIconButton>
+              </JumpToLatestButton>
             </JumpFabWrap>
           )
           : null}
@@ -161,7 +161,24 @@ const MessagesColumn = styled(Box)(({ theme }) => ({
 
 const JumpFabWrap = styled(Box)(({ theme }) => ({
   position: 'absolute',
-  right: theme.spacing(2),
+  left: '50%',
   bottom: theme.spacing(2),
+  transform: 'translateX(-50%)',
   zIndex: 1,
+}))
+
+/** Floating chip: light surface + shadow (Figma jump control). */
+const JumpToLatestButton = styled(IconButton)(({ theme }) => ({
+  flexShrink: 0,
+  minWidth: 0,
+  width: theme.spacing(4),
+  height: theme.spacing(4),
+  padding: 0,
+  borderRadius: '50%',
+  backgroundColor: theme.palette.background.paper,
+  color: theme.palette.text.primary,
+  border: `1px solid ${theme.palette.divider}`,
+  '& .MuiSvgIcon-root': {
+    fontSize: theme.typography.pxToRem(18),
+  },
 }))
