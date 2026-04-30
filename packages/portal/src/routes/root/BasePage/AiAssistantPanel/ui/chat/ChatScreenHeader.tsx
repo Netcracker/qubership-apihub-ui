@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
-import Typography from '@mui/material/Typography'
 import { styled } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import { CloseIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CloseIcon'
 import { NewChatIcon } from '@netcracker/qubership-apihub-ui-shared/icons/NewChatIcon'
 import { RobotIcon } from '@netcracker/qubership-apihub-ui-shared/icons/RobotIcon'
@@ -11,11 +11,7 @@ import { memo } from 'react'
 import { useCreateAiChat } from '../../api/useCreateAiChat'
 import { useAiAssistantContext } from '../../state/AiAssistantContext'
 
-export type ChatScreenHeaderProps = {
-  title: string
-}
-
-export const ChatScreenHeader: FC<ChatScreenHeaderProps> = memo(({ title }) => {
+export const ChatScreenHeader: FC = memo(() => {
   const { closePanel } = useAiAssistantContext()
   const createChat = useCreateAiChat()
 
@@ -26,8 +22,8 @@ export const ChatScreenHeader: FC<ChatScreenHeaderProps> = memo(({ title }) => {
           <HeaderAvatar>
             <RobotIcon color="inherit" />
           </HeaderAvatar>
-          <Typography variant="h5" noWrap title={title}>
-            {title}
+          <Typography variant="h5" noWrap component="span">
+            AI Assistant
           </Typography>
         </HeaderTitleRow>
         <HeaderActions>

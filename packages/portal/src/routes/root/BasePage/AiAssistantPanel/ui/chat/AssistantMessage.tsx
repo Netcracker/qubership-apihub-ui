@@ -3,33 +3,45 @@ import { styled } from '@mui/material/styles'
 import type { FC } from 'react'
 import { memo } from 'react'
 
+import { useShowErrorNotification } from '../../../Notification'
+import { AssistantMarkdownViewer } from '../common/AssistantMarkdownViewer'
+import { CopyIconButton } from '../common/CopyIconButton'
+import { useCopyWithFeedback } from '../common/useCopyWithFeedback'
+
 export type AssistantMessageProps = {
   content: string
 }
 
 export const AssistantMessage: FC<AssistantMessageProps> = memo(({ content }) => {
+  const showError = useShowErrorNotification()
+  const { copy, copied } = useCopyWithFeedback({
+    onError: (error) =>
+      showError({
+        title: 'Copy failed',
+        message: error instanceof Error ? error.message : 'Clipboard access was denied.',
+      }),
+  })
+
   return (
-    <AssistantBubble>
-      <AssistantPre>{content}</AssistantPre>
-    </AssistantBubble>
+    <AssistantColumn>
+      <AssistantMarkdownViewer markdown={content} />
+      <CopyAnswerRow>
+        <CopyIconButton ariaLabel="Copy answer" copied={copied} onCopy={() => copy(content)} />
+      </CopyAnswerRow>
+    </AssistantColumn>
   )
 })
 
-const AssistantBubble = styled(Box)(({ theme }) => ({
-  alignSelf: 'flex-start',
-  maxWidth: '100%',
-  padding: theme.spacing(1.25, 1.5),
-  borderRadius: theme.spacing(2),
-  backgroundColor: theme.palette.action.hover,
+/** Stretch to message column width so markdown blocks (links, code) use full chat width. */
+const AssistantColumn = styled(Box)(({ theme }) => ({
+  alignSelf: 'stretch',
+  width: '100%',
+  minWidth: 0,
   ...theme.typography.body2,
 }))
 
-const AssistantPre = styled('pre')(({ theme }) => ({
-  margin: 0,
-  fontFamily: 'inherit',
-  fontSize: 'inherit',
-  lineHeight: 'inherit',
-  whiteSpace: 'pre-wrap',
-  wordBreak: 'break-word',
-  color: theme.palette.text.primary,
+const CopyAnswerRow = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'flex-start',
+  marginTop: theme.spacing(1),
 }))

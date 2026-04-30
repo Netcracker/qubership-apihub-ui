@@ -8,7 +8,6 @@ import { BackArrowIcon } from '@netcracker/qubership-apihub-ui-shared/icons/Back
 import { CloseIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CloseIcon'
 import type { FC } from 'react'
 import { memo, useMemo } from 'react'
-import { useAiChat } from '../../api/useAiChat'
 import { useAiChatMessages } from '../../api/useAiChatMessages'
 import { AI_ASSISTANT_HISTORY_SCREEN, useAiAssistantContext } from '../../state/AiAssistantContext'
 import { ChatScreenHeader } from './ChatScreenHeader'
@@ -18,7 +17,6 @@ import { WelcomePlaceholder } from './WelcomePlaceholder'
 
 export const ChatScreen: FC = memo(() => {
   const { open, screen, activeChatId, openChatScreen, closePanel } = useAiAssistantContext()
-  const chatQuery = useAiChat(activeChatId)
   const messagesQuery = useAiChatMessages(activeChatId)
 
   const messagesOldestFirst = useMemo(() => {
@@ -28,17 +26,6 @@ export const ChatScreen: FC = memo(() => {
     const newestFirst = messagesQuery.data.pages.flatMap((page) => page.messages)
     return [...newestFirst].reverse()
   }, [messagesQuery.data?.pages])
-
-  const headerTitle = useMemo(() => {
-    if (activeChatId === null) {
-      return 'AI Assistant'
-    }
-    if (!chatQuery.isSuccess) {
-      return 'AI Assistant'
-    }
-    const title = chatQuery.data?.title?.trim()
-    return title ? title : 'Untitled chat'
-  }, [activeChatId, chatQuery.data?.title, chatQuery.isSuccess])
 
   const showWelcome = activeChatId === null ||
     (messagesQuery.isSuccess && messagesOldestFirst.length === 0)
@@ -82,7 +69,7 @@ export const ChatScreen: FC = memo(() => {
 
   return (
     <ChatLayout>
-      <ChatScreenHeader title={headerTitle} />
+      <ChatScreenHeader />
       <Body>
         {messagesQuery.isError
           ? (

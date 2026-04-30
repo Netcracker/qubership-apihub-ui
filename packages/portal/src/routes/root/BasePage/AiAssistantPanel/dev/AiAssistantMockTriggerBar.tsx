@@ -76,30 +76,34 @@ export const AiAssistantMockTriggerBar: FC = memo(() => {
   const handleStreamLinks = useCallback((): void => {
     void run('links', async () => {
       await drainStreamResponse(effectiveChatId, 'debug:links')
+      await queryClient.invalidateQueries({ queryKey: aiChatMessagesKey(effectiveChatId) })
       showInfo({ message: 'Stream debug:links finished' })
     })
-  }, [effectiveChatId, run, showInfo])
+  }, [effectiveChatId, queryClient, run, showInfo])
 
   const handleStreamAttachment = useCallback((): void => {
     void run('attachment', async () => {
       await drainStreamResponse(effectiveChatId, 'debug:attachment')
+      await queryClient.invalidateQueries({ queryKey: aiChatMessagesKey(effectiveChatId) })
       showInfo({ message: 'Stream debug:attachment finished' })
     })
-  }, [effectiveChatId, run, showInfo])
+  }, [effectiveChatId, queryClient, run, showInfo])
 
   const handleStreamLongMd = useCallback((): void => {
     void run('longmd', async () => {
       await drainStreamResponse(effectiveChatId, 'debug:longmd')
+      await queryClient.invalidateQueries({ queryKey: aiChatMessagesKey(effectiveChatId) })
       showInfo({ message: 'Stream debug:longmd finished' })
     })
-  }, [effectiveChatId, run, showInfo])
+  }, [effectiveChatId, queryClient, run, showInfo])
 
   const handleStreamDefault = useCallback((): void => {
     void run('default', async () => {
       await drainStreamResponse(effectiveChatId, 'hello default scenario')
+      await queryClient.invalidateQueries({ queryKey: aiChatMessagesKey(effectiveChatId) })
       showInfo({ message: 'Default stream finished' })
     })
-  }, [effectiveChatId, run, showInfo])
+  }, [effectiveChatId, queryClient, run, showInfo])
 
   return (
     <DevBarRoot spacing={1}>
