@@ -15,6 +15,7 @@ import rehypeHighlight from 'rehype-highlight'
 import remarkGfm from 'remark-gfm'
 import type { PluggableList } from 'unified'
 
+import { CHAT_CARD_LINK_CLASS } from './chatCard'
 import { isGeneratedFileLink, isInternalPortalLink } from '../../utils/internalLinkMatcher'
 import { FileDownloadLink } from '../chat/FileDownloadLink'
 import { CodeBlock } from './CodeBlock'
@@ -114,6 +115,7 @@ const AssistantMarkdownSurface = styled(Box)(({ theme }) => ({
   '& .markdown-body': {
     backgroundColor: 'transparent',
     color: theme.palette.text.primary,
+    ...theme.typography.body2,
   },
   '& .markdown-body .assistant-md-paragraph': {
     display: 'block',
@@ -123,5 +125,11 @@ const AssistantMarkdownSurface = styled(Box)(({ theme }) => ({
   },
   '& .markdown-body .assistant-md-paragraph:last-child': {
     marginBottom: 0,
+  },
+  [`& .markdown-body a.${CHAT_CARD_LINK_CLASS}`]: {
+    textDecoration: 'none',
+    '&:hover, &:focus, &:active, &:visited': {
+      textDecoration: 'none',
+    },
   },
 }))

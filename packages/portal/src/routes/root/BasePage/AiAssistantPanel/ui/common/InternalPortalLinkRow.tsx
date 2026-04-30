@@ -1,7 +1,6 @@
-import InsertLinkIcon from '@mui/icons-material/InsertLink'
+import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined'
 import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
 import type { FC, MouseEvent, ReactNode } from 'react'
 import { memo, useCallback } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
@@ -11,6 +10,7 @@ import { useAiAssistantContext } from '../../state/AiAssistantContext'
 import { resolveToUrl } from '../../utils/internalLinkMatcher'
 import { plainChildrenText } from '../../utils/plainChildrenText'
 import { CopyIconButton } from './CopyIconButton'
+import { CHAT_CARD_LINK_CLASS, ChatCardTitle, chatCardAnchorSurface, chatCardSurface } from './chatCard'
 import { useCopyWithFeedback } from './useCopyWithFeedback'
 
 export type InternalPortalLinkRowProps = {
@@ -18,7 +18,6 @@ export type InternalPortalLinkRowProps = {
   children?: ReactNode
 }
 
-/** Portal package/operation link: main area is `RouterLink`; copy is isolated (does not navigate). */
 export const InternalPortalLinkRow: FC<InternalPortalLinkRowProps> = memo(({ href, children }) => {
   const { closePanel, resetActiveChat } = useAiAssistantContext()
   const showError = useShowErrorNotification()
@@ -45,51 +44,50 @@ export const InternalPortalLinkRow: FC<InternalPortalLinkRowProps> = memo(({ hre
   )
 
   return (
-    <Row>
-      <LinkMain to={to} onClick={handleLinkClick}>
-        <InsertLinkIcon color="primary" fontSize="small" sx={{ flexShrink: 0 }} />
-        <Typography variant="body2" fontWeight={500} sx={{ wordBreak: 'break-word' }}>
-          {label}
-        </Typography>
-      </LinkMain>
-      <CopyRail>
+    <Card>
+      <LabelLink to={to} className={CHAT_CARD_LINK_CLASS} onClick={handleLinkClick}>
+        <ChatCardTitle>{label}</ChatCardTitle>
+      </LabelLink>
+      <TrailingActions>
         <CopyIconButton ariaLabel="Copy URL" copied={copied} onCopy={() => copy(absoluteUrl)} />
-      </CopyRail>
-    </Row>
+        <AffordanceLink to={to} className={CHAT_CARD_LINK_CLASS} onClick={handleLinkClick} tabIndex={-1}>
+          <OpenInNewOutlinedIcon sx={{ fontSize: 20, color: 'action.active' }} />
+        </AffordanceLink>
+      </TrailingActions>
+    </Card>
   )
 })
 
-const Row = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'stretch',
-  width: '100%',
-  margin: theme.spacing(0.75, 0),
-  border: `1px solid ${theme.palette.divider}`,
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: theme.palette.background.paper,
-  boxShadow: theme.shadows[1],
-  overflow: 'hidden',
-}))
-
-const LinkMain = styled(RouterLink)(({ theme }) => ({
-  flex: 1,
-  minWidth: 0,
+const Card = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: theme.spacing(1),
-  padding: theme.spacing(1, 1.25),
-  textDecoration: 'none',
-  color: theme.palette.text.primary,
-  '&:hover': {
-    backgroundColor: theme.palette.action.hover,
-  },
+  width: '100%',
+  ...chatCardSurface(theme),
 }))
 
-const CopyRail = styled(Box)(({ theme }) => ({
-  flexShrink: 0,
+const TrailingActions = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
-  padding: theme.spacing(0, 0.5),
-  borderLeft: `1px solid ${theme.palette.divider}`,
+  gap: theme.spacing(0.5),
+  flexShrink: 0,
+}))
+
+const LabelLink = styled(RouterLink)(({ theme }) => ({
+  ...chatCardAnchorSurface(theme),
+  display: 'flex',
+  alignItems: 'center',
+  flex: 1,
+  minWidth: 0,
+  minHeight: 24,
+  justifyContent: 'flex-start',
+  paddingRight: theme.spacing(0.5),
+}))
+
+const AffordanceLink = styled(RouterLink)(({ theme }) => ({
+  ...chatCardAnchorSurface(theme),
+  display: 'flex',
+  alignItems: 'center',
+  flexShrink: 0,
+  padding: 0,
 }))
