@@ -1,4 +1,4 @@
-FROM docker.io/node:20 as builder
+FROM docker.io/node:24 as builder
 
 ARG TAG=dev
 
