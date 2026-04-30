@@ -4,7 +4,7 @@ import { API_V1 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { useQueryClient } from '@tanstack/react-query'
 import type { FC } from 'react'
 import { memo, useCallback, useState } from 'react'
-import { useShowErrorNotification, useShowInfoNotification } from '../../Notification'
+import { useShowErrorNotification } from '../../Notification'
 import { aiChatMessagesKey } from '../api/queryKeys'
 import type { ChatId } from '../api/types'
 import { useAiAssistantContext } from '../state/AiAssistantContext'
@@ -39,7 +39,6 @@ async function drainStreamResponse(chatId: ChatId, content: string): Promise<voi
 
 export const AiAssistantMockTriggerBar: FC = memo(() => {
   const queryClient = useQueryClient()
-  const showInfo = useShowInfoNotification()
   const showError = useShowErrorNotification()
   const { activeChatId, openChatScreen } = useAiAssistantContext()
   const [busyKey, setBusyKey] = useState<string | null>(null)
@@ -67,43 +66,44 @@ export const AiAssistantMockTriggerBar: FC = memo(() => {
       await queryClient.invalidateQueries({
         queryKey: aiChatMessagesKey(AI_ASSISTANT_DEV_PAGINATION_FIXTURE_CHAT_ID),
       })
-      showInfo({
-        message: `Loaded fixture chat ${AI_ASSISTANT_DEV_PAGINATION_FIXTURE_CHAT_ID}`,
-      })
+      console.debug(
+        '[AiAssistant mock] Loaded fixture chat',
+        AI_ASSISTANT_DEV_PAGINATION_FIXTURE_CHAT_ID,
+      )
     })
-  }, [openChatScreen, queryClient, run, showInfo])
+  }, [openChatScreen, queryClient, run])
 
   const handleStreamLinks = useCallback((): void => {
     void run('links', async () => {
       await drainStreamResponse(effectiveChatId, 'debug:links')
       await queryClient.invalidateQueries({ queryKey: aiChatMessagesKey(effectiveChatId) })
-      showInfo({ message: 'Stream debug:links finished' })
+      console.debug('[AiAssistant mock] Stream debug:links finished')
     })
-  }, [effectiveChatId, queryClient, run, showInfo])
+  }, [effectiveChatId, queryClient, run])
 
   const handleStreamAttachment = useCallback((): void => {
     void run('attachment', async () => {
       await drainStreamResponse(effectiveChatId, 'debug:attachment')
       await queryClient.invalidateQueries({ queryKey: aiChatMessagesKey(effectiveChatId) })
-      showInfo({ message: 'Stream debug:attachment finished' })
+      console.debug('[AiAssistant mock] Stream debug:attachment finished')
     })
-  }, [effectiveChatId, queryClient, run, showInfo])
+  }, [effectiveChatId, queryClient, run])
 
   const handleStreamLongMd = useCallback((): void => {
     void run('longmd', async () => {
       await drainStreamResponse(effectiveChatId, 'debug:longmd')
       await queryClient.invalidateQueries({ queryKey: aiChatMessagesKey(effectiveChatId) })
-      showInfo({ message: 'Stream debug:longmd finished' })
+      console.debug('[AiAssistant mock] Stream debug:longmd finished')
     })
-  }, [effectiveChatId, queryClient, run, showInfo])
+  }, [effectiveChatId, queryClient, run])
 
   const handleStreamDefault = useCallback((): void => {
     void run('default', async () => {
       await drainStreamResponse(effectiveChatId, 'hello default scenario')
       await queryClient.invalidateQueries({ queryKey: aiChatMessagesKey(effectiveChatId) })
-      showInfo({ message: 'Default stream finished' })
+      console.debug('[AiAssistant mock] Default stream finished')
     })
-  }, [effectiveChatId, queryClient, run, showInfo])
+  }, [effectiveChatId, queryClient, run])
 
   return (
     <DevBarRoot spacing={1}>

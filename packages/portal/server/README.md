@@ -31,8 +31,8 @@ To verify AI traffic is hitting the mock rather than the real backend:
 curl http://<vite-port>/api/v1/ai-chat/chats?limit=1
 # => JSON with seeded chats (not an upstream HTML error page)
 
-curl "http://<vite-port>/api/v1/generated-files/11111111-1111-4111-8111-111111111111?token=mock-dev-token"
-# => CSV sample body
+curl "http://<vite-port>/api/v1/generated-files/11111111-1111-4111-8111-111111111111.md?token=mock-dev-token"
+# => Markdown sample body (debug:attachment fixture id)
 ```
 
 If AI responses look like an APIHUB backend error envelope or HTML from the wrong host, the proxy rules for `/api/v1/ai-chat` and `/api/v1/generated-files` are either missing or declared after the generic `/api` rule in `vite.config.ts` - Vite matches the first registered prefix.
@@ -66,7 +66,7 @@ OpenAPI path (not under `ai-chat`):
 | `debug:links`          | links      | Markdown with internal `/portal/packages/...` package and operation links.                                                           |
 | `debug:longmd`         | longmd     | Markdown **>= 4000** chars: headings, table, bullets, blockquote, **YAML** + **json** fences.                                        |
 | `debug:json`           | json       | Default happy-path Markdown but the code block is a JSON snippet instead of YAML.                                                    |
-| `debug:attachment`     | attachment | Completed Markdown links to **`/api/v1/generated-files/{uuid}?token=mock-dev-token`** only (no `attachments` on the message object). |
+| `debug:attachment`     | attachment | Completed Markdown links to **`/api/v1/generated-files/{uuid}.md?token=mock-dev-token`** (Markdown download mock). |
 | `debug:offtopic`       | offtopic   | Short polite refusal.                                                                                                                |
 | (none of the above)    | default    | Long Markdown with a YAML code block and a table.                                                                                    |
 

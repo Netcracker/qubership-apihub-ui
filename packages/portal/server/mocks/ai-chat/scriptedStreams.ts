@@ -1,5 +1,5 @@
-import type { AiChatMessage, AiChatStreamEvent } from './types'
 import { MOCK_ATTACHMENT_FILE_ID } from './generatedFileUrl'
+import type { AiChatMessage, AiChatStreamEvent } from './types'
 
 export type ScriptedFrame = {
   // Delay after the previous frame in milliseconds (0 for the first frame).
@@ -37,13 +37,58 @@ function deltaFrames(text: string, delay = TOKEN_DELAY_MS): ScriptedFrame[] {
   }))
 }
 
-const DEFAULT_MARKDOWN = `Here are the REST operations I found across the currently published packages:
+const DEFAULT_MARKDOWN = `## Overview
+
+This default stream is a **markdown gallery** for the assistant panel (headings, lists, quotes, rules, table, code).
+
+### Headings
+
+# H1 — title scale
+## H2 — section
+### H3 — subsection
+#### H4 — detail
+##### H5 — minor
+###### H6 — smallest
+
+---
+
+### Quote
+
+> Blockquote: use this to check spacing and left rule styling next to body text.
+
+---
+
+### Lists
+
+Bullet list:
+
+- First item with **bold** and \`inline code\`
+- Second item
+  - Nested bullet one
+  - Nested bullet two
+- Third item
+
+Numbered list:
+
+1. Step one
+2. Step two
+3. Step three
+
+External link example: [example.com](https://example.com)
+
+---
+
+### Operations table
 
 | Package | Version | Method | Path | Operation |
 | --- | --- | --- | --- | --- |
 | Customers | 2024.4 | GET | /api/v1/customers | List customers |
 | Customers | 2024.4 | POST | /api/v1/customers | Create customer |
 | Orders | 2024.3 | GET | /api/v1/orders | List orders |
+
+---
+
+### YAML fence
 
 Example minimal OpenAPI fragment for \`POST /api/v1/customers\`:
 
@@ -79,17 +124,24 @@ const JSON_MARKDOWN = `Here is the same response encoded as JSON:
 
 Ask for more detail on any of them.`
 
-const LINKS_MARKDOWN = `## Internal navigation samples
+const LINKS_MARKDOWN = `## Internal navigation (portal row)
 
-Use these paths to exercise **InternalLink** behaviour (same prefixes as \`routes.ts\`):
+Block list (full-width cards):
 
 - [Demo package](/portal/packages/QS.QSS.PRG.APIHUB/2026.1)
 - [Demo operation](/portal/packages/QS.QSS.PRG.APIHUB/2026.1/operations/rest/get-packages-list)
 
-Both resolve under \`/portal/packages/\`.`
+**Inline in a sentence** (same components, inside a paragraph): open the [demo package](/portal/packages/QS.QSS.PRG.APIHUB/2026.1) for the version, or jump straight to the [list operation](/portal/packages/QS.QSS.PRG.APIHUB/2026.1/operations/rest/get-packages-list) from here.
 
-const ATTACHMENT_MARKDOWN_PREFIX = `I generated a CSV report with every operation I could find.
-The full file is available below as a download.`
+---
+
+## External and non-portal links (plain \`<a>\`, github-markdown styles)
+
+- **HTTPS** (not a package/operation row): more background in the [OpenAPI specification](https://spec.openapis.org/oas/latest.html).
+- **Same app, not under \`/portal/\`** (not treated as internal portal row): e.g. [\`/api/v1\` route](/api/v1/profiles) — still a normal link.
+`
+
+const ATTACHMENT_MARKDOWN_PREFIX = 'I generated a Markdown report with every operation I could find.'
 
 const OFFTOPIC_MARKDOWN = `I'm sorry, but I specialize in helping with REST API documentation and specifications.
 I can't help with questions outside of this topic. Is there anything about APIs I can help you with?`
@@ -135,7 +187,7 @@ const LONG_MD_CONTENT = buildLongMarkdownFixture()
 
 const defaultScenario: Scenario = {
   id: 'default',
-  description: 'Long markdown answer with a YAML code block and a table.',
+  description: 'Default stream: full github-markdown gallery (headings, lists, quote, hr, table, yaml).',
   build: ({ messageId, nowIso, clientMessageId }) => {
     const frames: ScriptedFrame[] = []
     frames.push({
@@ -191,7 +243,7 @@ const jsonScenario: Scenario = {
 
 const linksScenario: Scenario = {
   id: 'debug:links',
-  description: 'Markdown with internal package and operation links.',
+  description: 'Portal link rows, inline in text, external and non-/portal/ links.',
   build: ({ messageId, nowIso, clientMessageId }) => {
     const frames: ScriptedFrame[] = []
     frames.push({
@@ -247,10 +299,15 @@ const longmdScenario: Scenario = {
 
 const attachmentScenario: Scenario = {
   id: 'debug:attachment',
-  description: 'Assistant markdown links to generated-files download URL.',
+  description: 'Generated file link mid-sentence and on its own line.',
   build: ({ messageId, nowIso, clientMessageId, buildFileUrl }) => {
     const url = buildFileUrl(MOCK_ATTACHMENT_FILE_ID)
-    const markdownWithLink = `${ATTACHMENT_MARKDOWN_PREFIX}\n\n[export-sample.csv](${url})`
+    const markdownWithLink =
+      `${ATTACHMENT_MARKDOWN_PREFIX} Grab [export-sample.md](${url}) from the middle of this sentence when you need the file.
+
+Same link on its own line (easier to tap):
+
+[export-sample.md](${url})`
     const frames: ScriptedFrame[] = []
     frames.push({
       delay: 40,

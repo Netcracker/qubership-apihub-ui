@@ -46,10 +46,11 @@ export function GeneratedFilesRouter(): Router {
     }
 
     if (fileId.endsWith('.md') || fileId.includes('markdown')) {
+      const downloadName = fileId.endsWith('.md') ? fileId : `${fileId}.md`
       res
         .status(200)
         .type('text/markdown')
-        .setHeader('Content-Disposition', `attachment; filename="${fileId}.md"`)
+        .setHeader('Content-Disposition', `attachment; filename="${downloadName}"`)
         .send(DUMMY_MARKDOWN)
       return
     }

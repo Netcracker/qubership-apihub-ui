@@ -469,9 +469,19 @@ describe('AI Chat mock server - POST /chats/:id/messages/stream (SSE)', () => {
 })
 
 describe('Mock server - GET /api/v1/generated-files/:fileId', () => {
-  it('returns a CSV body with a content-disposition header for a valid download', async () => {
+  it('returns a Markdown body with content-disposition for the attachment mock id', async () => {
     const res = await request(app)
-      .get(`${GEN}/${MOCK_ATTACHMENT_FILE_ID}`)
+      .get(`${GEN}/${encodeURIComponent(MOCK_ATTACHMENT_FILE_ID)}`)
+      .query({ token: MOCK_FILE_DOWNLOAD_TOKEN })
+      .expect(200)
+    expect(res.headers['content-type']).toMatch(/text\/markdown/)
+    expect(res.headers['content-disposition']).toMatch(/attachment; filename/)
+    expect((res.text as string).split('\n')[0]).toBe('# Operations Report')
+  })
+
+  it('returns a CSV body for a plain UUID file id', async () => {
+    const res = await request(app)
+      .get(`${GEN}/22222222-2222-4222-8222-222222222222`)
       .query({ token: MOCK_FILE_DOWNLOAD_TOKEN })
       .expect(200)
     expect(res.headers['content-type']).toMatch(/text\/csv/)
