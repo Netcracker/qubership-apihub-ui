@@ -71,7 +71,8 @@ import { ProtobufIcon } from '../icons/ProtobufIcon'
 import { PublishIcon } from '../icons/PublishIcon'
 import { RestApiIcon } from '../icons/RestApiIcon'
 import { RobotIcon } from '../icons/RobotIcon'
-import { SendPlaneIcon } from '../icons/SendPlaneIcon'
+import { RobotFilledIcon } from '../icons/RobotFilledIcon'
+import { SendIcon } from '../icons/SendIcon'
 import { SegmentItemIcon } from '../icons/SegmentItemIcon'
 import { ServicesIcon } from '../icons/ServicesIcon'
 import { SettingIcon } from '../icons/SettingIcon'
@@ -83,6 +84,7 @@ import {
 import { ShareIcon } from '../icons/ShareIcon'
 import { SliderIcon } from '../icons/SliderIcon'
 import { SnapshotsIcon } from '../icons/SnapshotsIcon'
+import { StopIcon } from '../icons/StopIcon'
 import { SwaggerIcon } from '../icons/SwaggerIcon'
 import { ToLeftIcon } from '../icons/ToLeftIcon'
 import { ToRightIcon } from '../icons/ToRightIcon'
@@ -197,8 +199,10 @@ const MUI_ICONS_REGISTRY: readonly IconItem<MuiIconComponent>[] = [
   { name: 'PlayIcon', component: PlayIcon },
   { name: 'PlusIcon', component: PlusIcon },
   { name: 'RobotIcon', component: RobotIcon },
-  { name: 'SendPlaneIcon', component: SendPlaneIcon },
+  { name: 'RobotFilledIcon', component: RobotFilledIcon },
+  { name: 'SendPlaneIcon', component: SendIcon },
   { name: 'ShareableIcon', component: ShareabilityShareableIcon },
+  { name: 'StopIcon', component: StopIcon },
   { name: 'NonShareableIcon', component: ShareabilityNonShareableIcon },
   { name: 'UnknownShareabilityIcon', component: ShareabilityUnknownIcon },
   { name: 'WarningIconMui', component: WarningIconMui },

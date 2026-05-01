@@ -1,10 +1,11 @@
-import StopIcon from '@mui/icons-material/Stop'
 import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
-import { SendPlaneIcon } from '@netcracker/qubership-apihub-ui-shared/icons/SendPlaneIcon'
 import type { FC, KeyboardEvent, MutableRefObject } from 'react'
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
+
+import { SendIcon } from '@netcracker/qubership-apihub-ui-shared/icons/SendIcon'
+import { StopIcon } from '@netcracker/qubership-apihub-ui-shared/icons/StopIcon'
 import { useAiAssistantContext } from '../../state/AiAssistantContext'
 import { AssistantCircularIconButton } from '../common/AssistantCircularIconButton'
 
@@ -105,7 +106,7 @@ export const Composer: FC<ComposerProps> = memo(({ panelOpen, chatKey, insertDra
               handleSubmit()
             }}
           >
-            <SendPlaneIcon color="inherit" />
+            <SendIcon color="inherit" />
           </AssistantCircularIconButton>
         )}
     </PillRow>

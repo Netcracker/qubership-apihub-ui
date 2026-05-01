@@ -3,11 +3,11 @@ import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import { type FC, memo } from 'react'
+
 import { CloseIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CloseIcon'
 import { NewChatIcon } from '@netcracker/qubership-apihub-ui-shared/icons/NewChatIcon'
-import { RobotIcon } from '@netcracker/qubership-apihub-ui-shared/icons/RobotIcon'
-import type { FC } from 'react'
-import { memo } from 'react'
+import { RobotFilledIcon } from '@netcracker/qubership-apihub-ui-shared/icons/RobotFilledIcon'
 import { useCreateAiChat } from '../../api/useCreateAiChat'
 import { useAiAssistantContext } from '../../state/AiAssistantContext'
 
@@ -20,7 +20,7 @@ export const ChatScreenHeader: FC = memo(() => {
       <HeaderToolbar>
         <HeaderTitleRow>
           <HeaderAvatar>
-            <RobotIcon color="inherit" />
+            <RobotFilledIcon color="inherit" />
           </HeaderAvatar>
           <Typography variant="h5" noWrap component="span">
             AI Assistant
