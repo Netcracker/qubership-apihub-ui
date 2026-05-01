@@ -18,6 +18,7 @@ import { CheckboxDisabledIcon } from '../icons/CheckboxDisabledIcon'
 import { CheckboxIcon } from '../icons/CheckboxIcon'
 import { CheckCircleIcon } from '../icons/CheckCircleIcon'
 import { CheckIcon } from '../icons/CheckIcon'
+import { CheckIconMui } from '../icons/CheckIconMui'
 import { ClockBackwardIcon } from '../icons/ClockBackwardIcon'
 import { CloseIcon } from '../icons/CloseIcon'
 import { CloudIcon } from '../icons/CloudIcon'
@@ -26,6 +27,7 @@ import { CloudUploadIcon } from '../icons/CloudUploadIcon'
 import { ComparisonIcon } from '../icons/ComparisonIcon'
 import { ComponentIcon } from '../icons/ComponentIcon'
 import { ConfigureIcon } from '../icons/ConfigureIcon'
+import { CopyIcon } from '../icons/CopyIcon'
 import { DashboardIcon } from '../icons/DashboardIcon'
 import { DefaultSideBarIcon } from '../icons/DefaultSideBarIcon'
 import { DeleteIcon } from '../icons/DeleteIcon'
@@ -38,6 +40,7 @@ import { EditIcon } from '../icons/EditIcon'
 import { EmptyUserIcon } from '../icons/EmptyUserIcon'
 import { ErrorIcon } from '../icons/ErrorIcon'
 import { ExitIcon } from '../icons/ExitIcon'
+import { ExtLinkIcon } from '../icons/ExtLinkIcon'
 import { FileIcon } from '../icons/FileIcon'
 import { FilterIcon } from '../icons/FilterIcon'
 import { FolderIcon } from '../icons/FolderIcon'
@@ -68,6 +71,7 @@ import { ProtobufIcon } from '../icons/ProtobufIcon'
 import { PublishIcon } from '../icons/PublishIcon'
 import { RestApiIcon } from '../icons/RestApiIcon'
 import { RobotIcon } from '../icons/RobotIcon'
+import { SendPlaneIcon } from '../icons/SendPlaneIcon'
 import { SegmentItemIcon } from '../icons/SegmentItemIcon'
 import { ServicesIcon } from '../icons/ServicesIcon'
 import { SettingIcon } from '../icons/SettingIcon'
@@ -180,16 +184,20 @@ const MUI_ICONS_REGISTRY: readonly IconItem<MuiIconComponent>[] = [
   { name: 'InfoContextIcon', component: InfoContextIcon },
   { name: 'InfoFilledIcon', component: InfoFilledIcon },
   { name: 'CheckCircleIcon', component: CheckCircleIcon },
+  { name: 'CheckIconMui', component: CheckIconMui },
   { name: 'ClockBackwardIcon', component: ClockBackwardIcon },
   { name: 'CloseIcon', component: CloseIcon },
   { name: 'CloudUploadIcon', component: CloudUploadIcon },
+  { name: 'CopyIcon', component: CopyIcon },
   { name: 'DeleteIconMui', component: DeleteIconMui },
   { name: 'DownloadIconMui', component: DownloadIconMui },
   { name: 'ErrorIcon', component: ErrorIcon },
+  { name: 'ExtLinkIcon', component: ExtLinkIcon },
   { name: 'LinkIcon', component: LinkIcon },
   { name: 'PlayIcon', component: PlayIcon },
   { name: 'PlusIcon', component: PlusIcon },
   { name: 'RobotIcon', component: RobotIcon },
+  { name: 'SendPlaneIcon', component: SendPlaneIcon },
   { name: 'ShareableIcon', component: ShareabilityShareableIcon },
   { name: 'NonShareableIcon', component: ShareabilityNonShareableIcon },
   { name: 'UnknownShareabilityIcon', component: ShareabilityUnknownIcon },
