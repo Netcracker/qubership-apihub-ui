@@ -2,24 +2,24 @@ import type { Router } from 'express'
 import { aiChatStore } from '../../mocks/ai-chat/store'
 import type { AiChatsListResponse } from '../../mocks/ai-chat/types'
 
-function parsePositiveInt(value: unknown, fallback: number): number {
+function parseLimit(value: unknown, fallback: number): number {
   if (typeof value !== 'string') return fallback
   const n = Number.parseInt(value, 10)
   if (!Number.isFinite(n) || n <= 0) return fallback
-  return n
+  return Math.min(n, 200)
 }
 
 export function listChats(router: Router): void {
   router.get('/chats', (req, res) => {
     const search = typeof req.query.search === 'string' ? req.query.search : undefined
-    const limit = parsePositiveInt(req.query.limit, 100)
+    const limit = parseLimit(req.query.limit, 100)
     const before = typeof req.query.before === 'string' ? req.query.before : undefined
 
     const all = aiChatStore.list(search)
     // Non-pinned chats are paginated with keyset by `lastMessageAt`.
     // Pinned chats are always served first regardless of the cursor.
-    const pinned = all.filter((c) => c.pinned)
-    const unpinned = all.filter((c) => !c.pinned)
+    const pinned = all.filter((c) => c.pinned === true)
+    const unpinned = all.filter((c) => c.pinned !== true)
     const unpinnedPage = before
       ? unpinned.filter((c) => c.lastMessageAt < before)
       : unpinned

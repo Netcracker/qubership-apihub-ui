@@ -2,6 +2,7 @@ import type { Express } from 'express'
 import request from 'supertest'
 
 import { createApp } from '../createApp'
+import { MAGIC_EXPIRED_FILE_ID, MAGIC_MISSING_FILE_ID, MOCK_FILE_DOWNLOAD_TOKEN } from '../mocks/ai-chat/constants'
 import {
   buildFixtureChats,
   FIXTURE_EMPTY_CHAT_ID,
@@ -11,7 +12,6 @@ import {
   FIXTURE_RECENT_CHAT_ID,
   FIXTURE_WITH_HISTORY_CHAT_ID,
 } from '../mocks/ai-chat/fixtures'
-import { MOCK_FILE_DOWNLOAD_TOKEN } from '../mocks/ai-chat/constants'
 import { MOCK_ATTACHMENT_FILE_ID } from '../mocks/ai-chat/generatedFileUrl'
 import { aiChatStore } from '../mocks/ai-chat/store'
 import type {
@@ -19,12 +19,20 @@ import type {
   AiChatErrorResponse,
   AiChatMessage,
   AiChatMessagesListResponse,
+  AiChatSendMessageResponse,
   AiChatsListResponse,
   AiChatStreamEvent,
 } from '../mocks/ai-chat/types'
 
 const BASE = '/api/v1/ai-chat'
 const GEN = '/api/v1/generated-files'
+const CLIENT_MESSAGE_ID_1 = '10000000-0000-4000-8000-000000000001'
+const CLIENT_MESSAGE_ID_2 = '10000000-0000-4000-8000-000000000002'
+const CLIENT_MESSAGE_ID_3 = '10000000-0000-4000-8000-000000000003'
+const CLIENT_MESSAGE_ID_4 = '10000000-0000-4000-8000-000000000004'
+const CLIENT_MESSAGE_ID_5 = '10000000-0000-4000-8000-000000000005'
+const CLIENT_MESSAGE_ID_6 = '10000000-0000-4000-8000-000000000006'
+const CLIENT_MESSAGE_ID_7 = '10000000-0000-4000-8000-000000000007'
 
 let app: Express
 
@@ -100,7 +108,7 @@ describe('AI Chat mock server - GET /chats', () => {
     const nextBody = next.body as AiChatsListResponse
     // Pagination cursor excludes pinned chats and the one at the cursor.
     for (const chat of nextBody.chats) {
-      expect(chat.pinned).toBe(false)
+      expect(chat.pinned).not.toBe(true)
       expect(chat.lastMessageAt < lastShown.lastMessageAt).toBe(true)
     }
   })
@@ -112,7 +120,7 @@ describe('AI Chat mock server - POST /chats', () => {
     const body = res.body as AiChat
     expect(body.chatId).toMatch(/^[0-9a-f-]{36}$/)
     expect(body.messagesCount).toBe(0)
-    expect(body.pinned).toBe(false)
+    expect(body.pinned).toBeUndefined()
     expect(body.title).toBe('')
     // New chat must appear in the list right after.
     const list = await request(app).get(`${BASE}/chats`).expect(200)
@@ -139,22 +147,20 @@ describe('AI Chat mock server - GET/PATCH/DELETE /chats/:id', () => {
     expect((res.body as AiChat).title).toBe('Renamed title')
   })
 
-  it('PATCH can pin and unpin, and sets pinnedAt', async () => {
+  it('PATCH can pin and unpin', async () => {
     const pin = await request(app)
       .patch(`${BASE}/chats/${FIXTURE_RECENT_CHAT_ID}`)
       .send({ pinned: true })
       .expect(200)
     const pinBody = pin.body as AiChat
     expect(pinBody.pinned).toBe(true)
-    expect(pinBody.pinnedAt).toBeTruthy()
 
     const unpin = await request(app)
       .patch(`${BASE}/chats/${FIXTURE_RECENT_CHAT_ID}`)
       .send({ pinned: false })
       .expect(200)
     const unpinBody = unpin.body as AiChat
-    expect(unpinBody.pinned).toBe(false)
-    expect(unpinBody.pinnedAt).toBeNull()
+    expect(unpinBody.pinned).toBeUndefined()
   })
 
   it('PATCH enforces pin limit with APIHUB-AI-4003', async () => {
@@ -253,8 +259,10 @@ describe('AI Chat mock server - POST /chats/:id/messages (non-streaming)', () =>
       .post(`${BASE}/chats/${chatId}/messages`)
       .send({ content: 'What is REST?' })
       .expect(200)
-    const assistant = res.body as AiChatMessage
+    const { userMessage, assistantMessage: assistant } = res.body as AiChatSendMessageResponse
+    expect(userMessage.role).toBe('user')
     expect(assistant.role).toBe('assistant')
+    expect(assistant.clientMessageId).toBeNull()
     expect(assistant.content.length).toBeGreaterThan(0)
 
     const listed = await request(app)
@@ -276,13 +284,14 @@ describe('AI Chat mock server - POST /chats/:id/messages (non-streaming)', () =>
 
     const first = await request(app)
       .post(`${BASE}/chats/${chatId}/messages`)
-      .send({ content: 'hello', clientMessageId: 'cm-xyz' })
+      .send({ content: 'hello', clientMessageId: CLIENT_MESSAGE_ID_1 })
       .expect(200)
     const second = await request(app)
       .post(`${BASE}/chats/${chatId}/messages`)
-      .send({ content: 'hello', clientMessageId: 'cm-xyz' })
+      .send({ content: 'hello', clientMessageId: CLIENT_MESSAGE_ID_1 })
       .expect(200)
-    expect((second.body as AiChatMessage).messageId).toBe((first.body as AiChatMessage).messageId)
+    expect((second.body as AiChatSendMessageResponse).assistantMessage.messageId)
+      .toBe((first.body as AiChatSendMessageResponse).assistantMessage.messageId)
 
     // No double-insertion: still 2 messages total.
     const listed = await request(app).get(`${BASE}/chats/${chatId}/messages`).expect(200)
@@ -324,7 +333,7 @@ describe('AI Chat mock server - POST /chats/:id/messages/stream (SSE)', () => {
     const { chatId } = create.body as AiChat
     const res = await request(app)
       .post(`${BASE}/chats/${chatId}/messages/stream`)
-      .send({ content: 'Explain the happy path.', clientMessageId: 'hp-1' })
+      .send({ content: 'Explain the happy path.', clientMessageId: CLIENT_MESSAGE_ID_2 })
       .buffer(true)
       .parse((response, cb) => {
         const chunks: Buffer[] = []
@@ -350,7 +359,7 @@ describe('AI Chat mock server - POST /chats/:id/messages/stream (SSE)', () => {
     const { chatId } = create.body as AiChat
     const firstRes = await request(app)
       .post(`${BASE}/chats/${chatId}/messages/stream`)
-      .send({ content: 'same-input', clientMessageId: 'idem-1' })
+      .send({ content: 'same-input', clientMessageId: CLIENT_MESSAGE_ID_3 })
       .buffer(true)
       .parse((response, cb) => {
         const chunks: Buffer[] = []
@@ -365,7 +374,7 @@ describe('AI Chat mock server - POST /chats/:id/messages/stream (SSE)', () => {
     const startedAt = Date.now()
     const replayRes = await request(app)
       .post(`${BASE}/chats/${chatId}/messages/stream`)
-      .send({ content: 'same-input', clientMessageId: 'idem-1' })
+      .send({ content: 'same-input', clientMessageId: CLIENT_MESSAGE_ID_3 })
       .buffer(true)
       .parse((response, cb) => {
         const chunks: Buffer[] = []
@@ -388,7 +397,7 @@ describe('AI Chat mock server - POST /chats/:id/messages/stream (SSE)', () => {
     const { chatId } = create.body as AiChat
     const res = await request(app)
       .post(`${BASE}/chats/${chatId}/messages/stream`)
-      .send({ content: 'please debug:error now', clientMessageId: 'err-1' })
+      .send({ content: 'please debug:error now', clientMessageId: CLIENT_MESSAGE_ID_4 })
       .buffer(true)
       .parse((response, cb) => {
         const chunks: Buffer[] = []
@@ -414,7 +423,7 @@ describe('AI Chat mock server - POST /chats/:id/messages/stream (SSE)', () => {
     const { chatId } = create.body as AiChat
     const res = await request(app)
       .post(`${BASE}/chats/${chatId}/messages/stream`)
-      .send({ content: 'run debug:links', clientMessageId: 'lnk-1' })
+      .send({ content: 'run debug:links', clientMessageId: CLIENT_MESSAGE_ID_5 })
       .buffer(true)
       .parse((response, cb) => {
         const chunks: Buffer[] = []
@@ -434,7 +443,7 @@ describe('AI Chat mock server - POST /chats/:id/messages/stream (SSE)', () => {
     const { chatId } = create.body as AiChat
     const res = await request(app)
       .post(`${BASE}/chats/${chatId}/messages/stream`)
-      .send({ content: 'please debug:longmd', clientMessageId: 'lm-1' })
+      .send({ content: 'please debug:longmd', clientMessageId: CLIENT_MESSAGE_ID_6 })
       .buffer(true)
       .parse((response, cb) => {
         const chunks: Buffer[] = []
@@ -489,25 +498,25 @@ describe('Mock server - GET /api/v1/generated-files/:fileId', () => {
     expect((res.text as string).split('\n')[0]).toBe('operation,method,path,package,version')
   })
 
-  it('magic id "missing" returns 404 APIHUB-AI-3002', async () => {
+  it('magic missing UUID returns 404 APIHUB-AI-3002', async () => {
     const res = await request(app)
-      .get(`${GEN}/missing`)
+      .get(`${GEN}/${MAGIC_MISSING_FILE_ID}`)
       .query({ token: MOCK_FILE_DOWNLOAD_TOKEN })
       .expect(404)
     expect((res.body as AiChatErrorResponse).code).toBe('APIHUB-AI-3002')
   })
 
-  it('magic id "expired" returns 410 APIHUB-AI-4101', async () => {
+  it('magic expired UUID returns 410 APIHUB-AI-4101', async () => {
     const res = await request(app)
-      .get(`${GEN}/expired`)
+      .get(`${GEN}/${MAGIC_EXPIRED_FILE_ID}`)
       .query({ token: MOCK_FILE_DOWNLOAD_TOKEN })
       .expect(410)
     expect((res.body as AiChatErrorResponse).code).toBe('APIHUB-AI-4101')
   })
 
-  it('rejects downloads without a token (APIHUB-AI-4001)', async () => {
-    const res = await request(app).get(`${GEN}/some-file`).expect(400)
-    expect((res.body as AiChatErrorResponse).code).toBe('APIHUB-AI-4001')
+  it('rejects downloads without a token (401)', async () => {
+    const res = await request(app).get(`${GEN}/22222222-2222-4222-8222-222222222222`).expect(401)
+    expect((res.body as AiChatErrorResponse).code).toBe('APIHUB-4101')
   })
 
   it('debug:attachment stream links to generated-files and download succeeds', async () => {
@@ -515,7 +524,7 @@ describe('Mock server - GET /api/v1/generated-files/:fileId', () => {
     const { chatId } = create.body as AiChat
     const stream = await request(app)
       .post(`${BASE}/chats/${chatId}/messages/stream`)
-      .send({ content: 'debug:attachment please', clientMessageId: 'att-download-1' })
+      .send({ content: 'debug:attachment please', clientMessageId: CLIENT_MESSAGE_ID_7 })
       .buffer(true)
       .parse((response, cb) => {
         const chunks: Buffer[] = []

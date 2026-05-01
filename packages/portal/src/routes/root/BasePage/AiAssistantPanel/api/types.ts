@@ -10,11 +10,16 @@ export type AiChatRole = 'user' | 'assistant'
 export type AiChat = {
   chatId: ChatId
   title: string
-  pinned: boolean
-  pinnedAt: string | null
+  pinned?: boolean
   createdAt: string
   lastMessageAt: string
   messagesCount: number
+}
+
+export type AiChatToolInvocation = {
+  name: string
+  status: 'ok' | 'error'
+  durationMs?: number
 }
 
 export type AiChatMessage = {
@@ -23,6 +28,7 @@ export type AiChatMessage = {
   role: AiChatRole
   content: string
   createdAt: string
+  toolInvocations?: AiChatToolInvocation[]
 }
 
 export type AiChatsListResponse = {
@@ -47,6 +53,11 @@ export type AiChatUpdateRequest = {
 export type AiChatSendRequest = {
   content: string
   clientMessageId?: ClientMessageId
+}
+
+export type AiChatSendMessageResponse = {
+  userMessage: AiChatMessage
+  assistantMessage: AiChatMessage
 }
 
 export type AiChatStreamEvent =

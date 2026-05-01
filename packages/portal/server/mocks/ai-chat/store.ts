@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { MAX_PINNED_PER_USER, type AiChat, type AiChatMessage, type AiChatSendRequest } from './types'
+import { type AiChat, type AiChatMessage, type AiChatSendRequest, MAX_PINNED_PER_USER } from './types'
 
 export type ChatState = {
   chat: AiChat
@@ -48,8 +48,6 @@ export class AiChatStore {
     const chat: AiChat = {
       chatId: randomUUID(),
       title: title ?? '',
-      pinned: false,
-      pinnedAt: null,
       createdAt: now,
       lastMessageAt: now,
       messagesCount: 0,
@@ -82,12 +80,11 @@ export class AiChatStore {
     const next: AiChat = {
       ...current,
       title: patch.title !== undefined ? patch.title : current.title,
-      pinned: patch.pinned !== undefined ? patch.pinned : current.pinned,
-      pinnedAt: patch.pinned === true
-        ? (current.pinned ? current.pinnedAt : new Date().toISOString())
-        : patch.pinned === false
-        ? null
-        : current.pinnedAt,
+    }
+    if (patch.pinned === true) {
+      next.pinned = true
+    } else if (patch.pinned === false) {
+      delete next.pinned
     }
     state.chat = next
     return next
@@ -159,13 +156,7 @@ export class AiChatStore {
 
 // Sort for GET /chats: pinned desc, lastMessageAt desc (newest first).
 function compareChats(a: AiChat, b: AiChat): number {
-  if (a.pinned !== b.pinned) return a.pinned ? -1 : 1
-  if (a.pinned && b.pinned) {
-    // Stable pinned order: pinnedAt desc (recently pinned first).
-    const aPinned = a.pinnedAt ?? ''
-    const bPinned = b.pinnedAt ?? ''
-    if (aPinned !== bPinned) return aPinned > bPinned ? -1 : 1
-  }
+  if (Boolean(a.pinned) !== Boolean(b.pinned)) return a.pinned ? -1 : 1
   if (a.lastMessageAt === b.lastMessageAt) return 0
   return a.lastMessageAt > b.lastMessageAt ? -1 : 1
 }

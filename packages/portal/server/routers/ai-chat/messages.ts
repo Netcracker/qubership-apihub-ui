@@ -1,16 +1,29 @@
 import type { Router } from 'express'
 import { randomUUID } from 'node:crypto'
+import { buildGeneratedFileUrl } from '../../mocks/ai-chat/generatedFileUrl'
 import { assistantMessageFromScenario, pickScenario } from '../../mocks/ai-chat/scriptedStreams'
 import { aiChatStore } from '../../mocks/ai-chat/store'
-import { buildGeneratedFileUrl } from '../../mocks/ai-chat/generatedFileUrl'
-import { MAX_USER_MESSAGE_LENGTH, type AiChatMessage, type AiChatMessagesListResponse } from '../../mocks/ai-chat/types'
+import {
+  type AiChatMessage,
+  type AiChatMessagesListResponse,
+  type AiChatSendMessageResponse,
+  MAX_USER_MESSAGE_LENGTH,
+} from '../../mocks/ai-chat/types'
 import { sendError } from './errors'
 
-function parsePositiveInt(value: unknown, fallback: number): number {
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+
+function parseLimit(value: unknown, fallback: number): number {
   if (typeof value !== 'string') return fallback
   const n = Number.parseInt(value, 10)
   if (!Number.isFinite(n) || n <= 0) return fallback
-  return n
+  return Math.min(n, 200)
+}
+
+function parseClientMessageId(value: unknown): string | null | 'invalid' {
+  if (value === undefined || value === null) return null
+  if (typeof value !== 'string' || !UUID_RE.test(value)) return 'invalid'
+  return value
 }
 
 export function listMessages(router: Router): void {
@@ -20,7 +33,7 @@ export function listMessages(router: Router): void {
       sendError(res, 404, 'APIHUB-AI-3001', 'Chat not found.')
       return
     }
-    const limit = parsePositiveInt(req.query.limit, 100)
+    const limit = parseLimit(req.query.limit, 100)
     const before = typeof req.query.before === 'string' ? req.query.before : undefined
     const page = aiChatStore.messagesPage(chatId, { limit, before })
     if (!page) {
@@ -51,7 +64,11 @@ export function sendMessageNonStreaming(router: Router): void {
     }
     const body = req.body ?? {}
     const content = typeof body.content === 'string' ? body.content : ''
-    const clientMessageId = typeof body.clientMessageId === 'string' ? body.clientMessageId : null
+    const clientMessageId = parseClientMessageId(body.clientMessageId)
+    if (clientMessageId === 'invalid') {
+      sendError(res, 400, 'APIHUB-AI-4001', 'clientMessageId must be a UUID.')
+      return
+    }
     if (!content.trim()) {
       sendError(res, 400, 'APIHUB-AI-4001', 'Message content must not be empty.')
       return
@@ -66,7 +83,18 @@ export function sendMessageNonStreaming(router: Router): void {
       ? aiChatStore.findReplay(chatId, { content, clientMessageId })
       : undefined
     if (replay) {
-      res.status(200).json(replay)
+      const userMessage = aiChatStore.getState(chatId)?.messages.find((message) =>
+        message.role === 'user' && message.clientMessageId === clientMessageId
+      )
+      if (!userMessage) {
+        sendError(res, 404, 'APIHUB-AI-3001', 'Chat not found.')
+        return
+      }
+      const response: AiChatSendMessageResponse = {
+        userMessage: userMessage,
+        assistantMessage: replay,
+      }
+      res.status(200).json(response)
       return
     }
 
@@ -87,13 +115,17 @@ export function sendMessageNonStreaming(router: Router): void {
     const assistantMessage = assistantMessageFromScenario(scenario, {
       messageId: assistantMessageId,
       nowIso: assistantCreatedAt,
-      clientMessageId: clientMessageId,
+      clientMessageId: null,
       buildFileUrl: (fileId) => buildGeneratedFileUrl(fileId),
     })
     aiChatStore.appendMessage(chatId, assistantMessage)
     if (clientMessageId) {
       aiChatStore.rememberAssistantByClientKey(chatId, clientMessageId, assistantMessage)
     }
-    res.status(200).json(assistantMessage)
+    const response: AiChatSendMessageResponse = {
+      userMessage: userMessage,
+      assistantMessage: assistantMessage,
+    }
+    res.status(200).json(response)
   })
 }

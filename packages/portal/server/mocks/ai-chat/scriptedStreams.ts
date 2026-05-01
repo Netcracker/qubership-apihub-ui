@@ -201,7 +201,7 @@ const defaultScenario: Scenario = {
         type: 'message.assistant.completed',
         message: {
           messageId: messageId,
-          clientMessageId: clientMessageId,
+          clientMessageId: null,
           role: 'assistant',
           content: DEFAULT_MARKDOWN,
           createdAt: nowIso,
@@ -229,7 +229,7 @@ const jsonScenario: Scenario = {
         type: 'message.assistant.completed',
         message: {
           messageId: messageId,
-          clientMessageId: clientMessageId,
+          clientMessageId: null,
           role: 'assistant',
           content: JSON_MARKDOWN,
           createdAt: nowIso,
@@ -257,7 +257,7 @@ const linksScenario: Scenario = {
         type: 'message.assistant.completed',
         message: {
           messageId: messageId,
-          clientMessageId: clientMessageId,
+          clientMessageId: null,
           role: 'assistant',
           content: LINKS_MARKDOWN,
           createdAt: nowIso,
@@ -285,7 +285,7 @@ const longmdScenario: Scenario = {
         type: 'message.assistant.completed',
         message: {
           messageId: messageId,
-          clientMessageId: clientMessageId,
+          clientMessageId: null,
           role: 'assistant',
           content: LONG_MD_CONTENT,
           createdAt: nowIso,
@@ -320,7 +320,7 @@ Same link on its own line (easier to tap):
         type: 'message.assistant.completed',
         message: {
           messageId: messageId,
-          clientMessageId: clientMessageId,
+          clientMessageId: null,
           role: 'assistant',
           content: markdownWithLink,
           createdAt: nowIso,
@@ -370,7 +370,7 @@ const offtopicScenario: Scenario = {
         type: 'message.assistant.completed',
         message: {
           messageId: messageId,
-          clientMessageId: clientMessageId,
+          clientMessageId: null,
           role: 'assistant',
           content: OFFTOPIC_MARKDOWN,
           createdAt: nowIso,
@@ -418,7 +418,7 @@ export function assistantMessageFromScenario(scenario: Scenario, args: ScriptedB
   if (completed) return completed.event.message
   const collected = frames
     .filter((f): f is ScriptedFrame & { event: Extract<AiChatStreamEvent, { type: 'message.assistant.delta' }> } =>
-      f.event.type === 'message.assistant.delta',
+      f.event.type === 'message.assistant.delta'
     )
     .map((f) => f.event.delta)
     .join('')

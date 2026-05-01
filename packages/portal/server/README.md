@@ -31,7 +31,7 @@ To verify AI traffic is hitting the mock rather than the real backend:
 curl http://<vite-port>/api/v1/ai-chat/chats?limit=1
 # => JSON with seeded chats (not an upstream HTML error page)
 
-curl "http://<vite-port>/api/v1/generated-files/11111111-1111-4111-8111-111111111111.md?token=mock-dev-token"
+curl "http://<vite-port>/api/v1/generated-files/11111111-1111-4111-8111-111111111111?token=mock-dev-token"
 # => Markdown sample body (debug:attachment fixture id)
 ```
 
@@ -54,34 +54,34 @@ Under **`/api/v1/ai-chat/`** (mirrors backend contract). Pin limit (**3**) and m
 
 OpenAPI path (not under `ai-chat`):
 
-- **`GET /api/v1/generated-files/:fileId?token=...`** - signed download mock. Returns a small CSV (or Markdown if the ID ends with `.md` or contains `Markdown`). Query token: use **`mock-dev-token`**, or any `mock-*` token for compatibility with older examples.
+- **`GET /api/v1/generated-files/:fileId?token=...`** - signed download mock. Returns a small CSV (or Markdown for the `debug:attachment` fixture UUID). Query token: use **`mock-dev-token`**, or any `mock-*` token for compatibility with older examples. Missing or invalid token returns `401`, matching the OpenAPI download contract.
 
 ### Scripted stream scenarios
 
 `POST /chats/:id/messages/stream` picks a scripted scenario by substring match against the user's message (lower-cased). First match wins; the `debug:*` scenarios are matched before the default so `debug:error` doesn't fall through.
 
-| Substring in `content` | Scenario   | Purpose                                                                                                                              |
-| ---------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `debug:error`          | error      | ~3 deltas then an `error` SSE frame with code `APIHUB-AI-5001`. No `done` frame.                                                     |
-| `debug:links`          | links      | Markdown with internal `/portal/packages/...` package and operation links.                                                           |
-| `debug:longmd`         | longmd     | Markdown **>= 4000** chars: headings, table, bullets, blockquote, **YAML** + **json** fences.                                        |
-| `debug:json`           | json       | Default happy-path Markdown but the code block is a JSON snippet instead of YAML.                                                    |
-| `debug:attachment`     | attachment | Completed Markdown links to **`/api/v1/generated-files/{uuid}.md?token=mock-dev-token`** (Markdown download mock). |
-| `debug:offtopic`       | offtopic   | Short polite refusal.                                                                                                                |
-| (none of the above)    | default    | Long Markdown with a YAML code block and a table.                                                                                    |
+| Substring in `content` | Scenario   | Purpose                                                                                                         |
+| ---------------------- | ---------- | --------------------------------------------------------------------------------------------------------------- |
+| `debug:error`          | error      | ~3 deltas then an `error` SSE frame with code `APIHUB-AI-5001`. No `done` frame.                                |
+| `debug:links`          | links      | Markdown with internal `/portal/packages/...` package and operation links.                                      |
+| `debug:longmd`         | longmd     | Markdown **>= 4000** chars: headings, table, bullets, blockquote, **YAML** + **json** fences.                   |
+| `debug:json`           | json       | Default happy-path Markdown but the code block is a JSON snippet instead of YAML.                               |
+| `debug:attachment`     | attachment | Completed Markdown links to **`/api/v1/generated-files/{uuid}?token=mock-dev-token`** (Markdown download mock). |
+| `debug:offtopic`       | offtopic   | Short polite refusal.                                                                                           |
+| (none of the above)    | default    | Long Markdown with a YAML code block and a table.                                                               |
 
 ### Idempotent send
 
-Pass `clientMessageId` on `POST /chats/:id/messages` or `POST /chats/:id/messages/stream`. A repeated request with the same ID replays the previously stored assistant response synchronously (no scripted delays). Used by the frontend to survive transient network failures without double-billing.
+Pass a UUID `clientMessageId` on `POST /chats/:id/messages` or `POST /chats/:id/messages/stream`. A repeated request with the same ID replays the previously stored assistant response synchronously (no scripted delays). Used by the frontend to survive transient network failures without double-billing.
 
 ### Magic file IDs
 
 `GET /api/v1/generated-files/:ID` recognizes two magic IDs for exercising error paths:
 
-- `missing` - 404 with `APIHUB-AI-3002` (stands in for "file was cleaned up").
-- `expired` - 410 with `APIHUB-AI-4101` (stands in for "signed URL timed out").
+- `00000000-0000-4000-8000-000000000404` - 404 with `APIHUB-AI-3002` (stands in for "file was cleaned up").
+- `00000000-0000-4000-8000-000000000410` - 410 with `APIHUB-AI-4101` (stands in for "signed URL timed out").
 
-Any other ID returns a small CSV (or Markdown, if the ID ends with `.md` or contains `markdown`) with `Content-Disposition: attachment`.
+Any other ID returns a small CSV, except `11111111-1111-4111-8111-111111111111`, which returns the Markdown report used by `debug:attachment`. All successful responses include `Content-Disposition: attachment`.
 
 ### Seed fixtures
 
@@ -98,7 +98,7 @@ On each router creation (i.e. on every `dev:backend` restart and every test setu
 
 ```bash
 curl -N -H 'Content-Type: application/json' \
-  -d '{"content":"hello","clientMessageId":"local-1"}' \
+  -d '{"content":"hello","clientMessageId":"10000000-0000-4000-8000-000000000001"}' \
   http://localhost:3003/api/v1/ai-chat/chats/fc000001-0000-4000-8000-000000000003/messages/stream
 ```
 

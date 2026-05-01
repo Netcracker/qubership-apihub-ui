@@ -7,11 +7,16 @@ export type AiChatRole = 'user' | 'assistant'
 export type AiChat = {
   chatId: string
   title: string
-  pinned: boolean
-  pinnedAt: string | null
+  pinned?: boolean
   createdAt: string
   lastMessageAt: string
   messagesCount: number
+}
+
+export type AiChatToolInvocation = {
+  name: string
+  status: 'ok' | 'error'
+  durationMs?: number
 }
 
 export type AiChatMessage = {
@@ -20,6 +25,7 @@ export type AiChatMessage = {
   role: AiChatRole
   content: string
   createdAt: string
+  toolInvocations?: AiChatToolInvocation[]
 }
 
 export type AiChatsListResponse = {
@@ -46,6 +52,11 @@ export type AiChatSendRequest = {
   clientMessageId?: string
 }
 
+export type AiChatSendMessageResponse = {
+  userMessage: AiChatMessage
+  assistantMessage: AiChatMessage
+}
+
 export type AiChatStreamEvent =
   | { type: 'context.compacted'; messagesCompactedCount: number }
   | { type: 'message.assistant.start'; messageId: string }
@@ -63,6 +74,7 @@ export type AiChatStreamEvent =
   | { type: 'done' }
 
 export type AiChatErrorCode =
+  | 'APIHUB-4101'
   | 'APIHUB-AI-3001'
   | 'APIHUB-AI-3002'
   | 'APIHUB-AI-4001'

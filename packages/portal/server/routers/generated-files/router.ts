@@ -2,6 +2,7 @@ import type { Router } from 'express'
 import { Router as createRouter } from 'express'
 
 import { MAGIC_EXPIRED_FILE_ID, MAGIC_MISSING_FILE_ID, MOCK_FILE_DOWNLOAD_TOKEN } from '../../mocks/ai-chat/constants'
+import { MOCK_ATTACHMENT_FILE_ID } from '../../mocks/ai-chat/generatedFileUrl'
 import { sendError } from '../ai-chat/errors'
 
 const DUMMY_CSV = `operation,method,path,package,version
@@ -41,16 +42,15 @@ export function GeneratedFilesRouter(): Router {
       return
     }
     if (!token || !isValidToken(token)) {
-      sendError(res, 400, 'APIHUB-AI-4001', 'Signed download token is required.')
+      sendError(res, 401, 'APIHUB-4101', 'Generated file token is missing or invalid.')
       return
     }
 
-    if (fileId.endsWith('.md') || fileId.includes('markdown')) {
-      const downloadName = fileId.endsWith('.md') ? fileId : `${fileId}.md`
+    if (fileId === MOCK_ATTACHMENT_FILE_ID) {
       res
         .status(200)
         .type('text/markdown')
-        .setHeader('Content-Disposition', `attachment; filename="${downloadName}"`)
+        .setHeader('Content-Disposition', 'attachment; filename="export-sample.md"')
         .send(DUMMY_MARKDOWN)
       return
     }

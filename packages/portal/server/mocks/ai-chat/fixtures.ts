@@ -83,15 +83,17 @@ function buildPagination120Messages(chatId: string): AiChatMessage[] {
 function makeChatState(input: {
   chatId: string
   title: string
-  pinned: boolean
-  pinnedAt: string | null
+  pinned?: boolean
   createdAt: string
   lastMessageAt: string
   messages: AiChatMessage[]
 }): ChatState {
-  const { chatId, title, pinned, pinnedAt, createdAt, lastMessageAt, messages } = input
+  const { chatId, title, pinned, createdAt, lastMessageAt, messages } = input
   const messagesCount = messages.length
-  const chat: AiChat = { chatId, title, pinned, pinnedAt, createdAt, lastMessageAt, messagesCount }
+  const chat: AiChat = { chatId, title, createdAt, lastMessageAt, messagesCount }
+  if (pinned === true) {
+    chat.pinned = true
+  }
   const idempotencyMap = new Map()
   return { chat, messages, idempotencyMap }
 }
@@ -101,8 +103,6 @@ export function buildFixtureChats(): ChatState[] {
   const pagination120 = makeChatState({
     chatId: FIXTURE_PAGINATION_120_CHAT_ID,
     title: 'Pagination QA (Request/Response 1-120)',
-    pinned: false,
-    pinnedAt: null,
     createdAt: iso(-20 * DAY_MS),
     lastMessageAt: pagination120Messages[0].createdAt,
     messages: pagination120Messages,
@@ -112,7 +112,6 @@ export function buildFixtureChats(): ChatState[] {
     chatId: FIXTURE_PINNED_CHAT_ID,
     title: 'Pinned: customer operations exploration',
     pinned: true,
-    pinnedAt: iso(-2 * DAY_MS),
     createdAt: iso(-3 * DAY_MS),
     lastMessageAt: iso(-1 * DAY_MS),
     messages: [
@@ -134,8 +133,6 @@ export function buildFixtureChats(): ChatState[] {
   const withHistory = makeChatState({
     chatId: FIXTURE_WITH_HISTORY_CHAT_ID,
     title: 'Pagination sample (40 messages)',
-    pinned: false,
-    pinnedAt: null,
     createdAt: iso(-10 * DAY_MS),
     lastMessageAt: iso(-10 * DAY_MS + 39 * 60_000),
     messages: buildPaginationHistory(FIXTURE_WITH_HISTORY_CHAT_ID, 40),
@@ -144,8 +141,6 @@ export function buildFixtureChats(): ChatState[] {
   const recent = makeChatState({
     chatId: FIXTURE_RECENT_CHAT_ID,
     title: 'Recent activity: orders endpoint review',
-    pinned: false,
-    pinnedAt: null,
     createdAt: iso(-2 * 60 * 60 * 1000),
     lastMessageAt: iso(-30 * 60 * 1000),
     messages: [
@@ -167,8 +162,6 @@ export function buildFixtureChats(): ChatState[] {
   const empty = makeChatState({
     chatId: FIXTURE_EMPTY_CHAT_ID,
     title: '',
-    pinned: false,
-    pinnedAt: null,
     createdAt: iso(-5 * 60 * 1000),
     lastMessageAt: iso(-5 * 60 * 1000),
     messages: [],
@@ -177,8 +170,6 @@ export function buildFixtureChats(): ChatState[] {
   const old = makeChatState({
     chatId: FIXTURE_OLD_CHAT_ID,
     title: 'Archived exploration (low activity)',
-    pinned: false,
-    pinnedAt: null,
     createdAt: iso(-30 * DAY_MS),
     lastMessageAt: iso(-20 * DAY_MS),
     messages: [
