@@ -17,7 +17,7 @@ export type CodeBlockProps = {
 
 export const CodeBlock: FC<CodeBlockProps> = memo(({ className, rawText, children }) => {
   const showError = useShowErrorNotification()
-  const { copy, copied } = useCopyWithFeedback({
+  const { createCopyHandler, copied } = useCopyWithFeedback({
     onError: (error) =>
       showError({
         title: 'Copy failed',
@@ -38,7 +38,7 @@ export const CodeBlock: FC<CodeBlockProps> = memo(({ className, rawText, childre
             {languageLabel}
           </LanguageTypography>
         </Stack>
-        <CopyIconButton ariaLabel="Copy code" copied={copied} onCopy={() => copy(rawText)} />
+        <CopyIconButton ariaLabel="Copy code" copied={copied} onCopy={createCopyHandler(rawText)} />
       </CodeBlockHeader>
       <CodeBlockPre>
         <CodeBlockCode className={className}>{children}</CodeBlockCode>

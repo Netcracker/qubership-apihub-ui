@@ -8,7 +8,7 @@ export type UseCopyWithFeedbackOptions = {
 }
 
 export function useCopyWithFeedback(options: UseCopyWithFeedbackOptions = {}): {
-  copy: (text: string) => Promise<void>
+  createCopyHandler: (text: string) => () => void
   copied: boolean
 } {
   const { feedbackMs = DEFAULT_FEEDBACK_MS, onError } = options
@@ -23,8 +23,8 @@ export function useCopyWithFeedback(options: UseCopyWithFeedbackOptions = {}): {
     }
   }, [])
 
-  const copy = useCallback(
-    async (text: string) => {
+  const copy = useCallback((text: string) => {
+    void (async () => {
       try {
         await navigator.clipboard.writeText(text)
         setCopied(true)
@@ -38,9 +38,12 @@ export function useCopyWithFeedback(options: UseCopyWithFeedbackOptions = {}): {
       } catch (error) {
         onError?.(error)
       }
-    },
-    [feedbackMs, onError],
-  )
+    })()
+  }, [feedbackMs, onError])
 
-  return { copy, copied }
+  const createCopyHandler = useCallback((text: string) => {
+    return () => copy(text)
+  }, [copy])
+
+  return { createCopyHandler, copied }
 }

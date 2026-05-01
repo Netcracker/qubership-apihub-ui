@@ -3,11 +3,11 @@ import 'highlight.js/styles/github.css'
 
 import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
-import { toText } from 'hast-util-to-text'
 import json from 'highlight.js/lib/languages/json.js'
 import yaml from 'highlight.js/lib/languages/yaml.js'
-import type { ComponentPropsWithoutRef, FC } from 'react'
+import type { ComponentPropsWithoutRef, FC, ReactNode } from 'react'
 import { memo, useMemo } from 'react'
+import { isValidElement } from 'react'
 import ReactMarkdown from 'react-markdown'
 import type { CodeProps } from 'react-markdown/lib/ast-to-react'
 import type { ReactMarkdownProps } from 'react-markdown/lib/complex-types'
@@ -77,7 +77,7 @@ const MarkdownCode: FC<CodeProps> = ({ inline, className, children, node, ...res
       </code>
     )
   }
-  const rawText = toText(node as never)
+  const rawText = (node as { value?: string }).value ?? extractCodeText(children)
   return (
     <CodeBlock className={className} rawText={rawText}>
       {children}
@@ -133,3 +133,19 @@ const AssistantMarkdownSurface = styled(Box)(({ theme }) => ({
     },
   },
 }))
+
+function extractCodeText(children: ReactNode): string {
+  if (children == null || typeof children === 'boolean') {
+    return ''
+  }
+  if (typeof children === 'string' || typeof children === 'number') {
+    return String(children)
+  }
+  if (Array.isArray(children)) {
+    return children.map(extractCodeText).join('')
+  }
+  if (isValidElement(children)) {
+    return extractCodeText(children.props.children)
+  }
+  return ''
+}

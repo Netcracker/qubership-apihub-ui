@@ -14,7 +14,7 @@ export type AssistantMessageProps = {
 
 export const AssistantMessage: FC<AssistantMessageProps> = memo(({ content }) => {
   const showError = useShowErrorNotification()
-  const { copy, copied } = useCopyWithFeedback({
+  const { createCopyHandler, copied } = useCopyWithFeedback({
     onError: (error) =>
       showError({
         title: 'Copy failed',
@@ -26,7 +26,7 @@ export const AssistantMessage: FC<AssistantMessageProps> = memo(({ content }) =>
     <AssistantColumn>
       <AssistantMarkdownViewer markdown={content} />
       <CopyAnswerRow>
-        <CopyIconButton ariaLabel="Copy answer" copied={copied} onCopy={() => copy(content)} />
+        <CopyIconButton ariaLabel="Copy answer" copied={copied} onCopy={createCopyHandler(content)} />
       </CopyAnswerRow>
     </AssistantColumn>
   )

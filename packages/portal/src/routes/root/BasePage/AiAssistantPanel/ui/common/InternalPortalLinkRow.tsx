@@ -1,10 +1,10 @@
-import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined'
 import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 import type { FC, MouseEvent, ReactNode } from 'react'
 import { memo, useCallback } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
 
+import { ExtLinkIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ExtLinkIcon'
 import { useShowErrorNotification } from '../../../Notification'
 import { useAiAssistantContext } from '../../state/AiAssistantContext'
 import { resolveToUrl } from '../../utils/internalLinkMatcher'
@@ -21,7 +21,7 @@ export type InternalPortalLinkRowProps = {
 export const InternalPortalLinkRow: FC<InternalPortalLinkRowProps> = memo(({ href, children }) => {
   const { closePanel, resetActiveChat } = useAiAssistantContext()
   const showError = useShowErrorNotification()
-  const { copy, copied } = useCopyWithFeedback({
+  const { createCopyHandler, copied } = useCopyWithFeedback({
     onError: (error) =>
       showError({
         title: 'Copy failed',
@@ -49,9 +49,9 @@ export const InternalPortalLinkRow: FC<InternalPortalLinkRowProps> = memo(({ hre
         <ChatCardTitle>{label}</ChatCardTitle>
       </LabelLink>
       <TrailingActions>
-        <CopyIconButton ariaLabel="Copy URL" copied={copied} onCopy={() => copy(absoluteUrl)} />
+        <CopyIconButton ariaLabel="Copy URL" copied={copied} onCopy={createCopyHandler(absoluteUrl)} />
         <AffordanceLink to={to} className={CHAT_CARD_LINK_CLASS} onClick={handleLinkClick} tabIndex={-1}>
-          <OpenInNewOutlinedIcon sx={{ fontSize: 20, color: 'action.active' }} />
+          <ExtLinkIcon fontSize="small" color="action" />
         </AffordanceLink>
       </TrailingActions>
     </Card>
