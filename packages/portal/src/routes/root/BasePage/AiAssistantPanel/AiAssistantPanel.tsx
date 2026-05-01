@@ -6,7 +6,6 @@ import { Resizable } from 're-resizable'
 import type { FC } from 'react'
 import { memo, useCallback, useEffect, useState } from 'react'
 import { AI_ASSISTANT_PANEL_MIN_WIDTH, getAiAssistantPanelMaxWidth } from './AiAssistantProvider'
-import { AiAssistantMockTriggerBar } from './dev/AiAssistantMockTriggerBar'
 import { useAiAssistantContext } from './state/AiAssistantContext'
 import { ChatScreen } from './ui/chat/ChatScreen'
 
@@ -29,8 +28,6 @@ const RESIZE_HANDLE_STYLES = {
     cursor: 'ew-resize',
   },
 }
-
-const showDevMockTriggers = import.meta.env.DEV && import.meta.env.VITE_AI_ASSISTANT_DEV_TRIGGERS !== '0'
 
 export const AiAssistantPanel: FC = memo(() => {
   const { open, closePanel, panelWidth, setPanelWidth } = useAiAssistantContext()
@@ -70,7 +67,6 @@ export const AiAssistantPanel: FC = memo(() => {
           >
             <PanelContainer data-testid="AiAssistantPanel">
               <PanelContent>
-                {showDevMockTriggers ? <AiAssistantMockTriggerBar /> : null}
                 <ChatScreen />
               </PanelContent>
             </PanelContainer>

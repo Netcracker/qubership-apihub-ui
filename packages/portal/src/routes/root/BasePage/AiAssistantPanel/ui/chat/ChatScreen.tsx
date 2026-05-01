@@ -7,17 +7,27 @@ import Typography from '@mui/material/Typography'
 import { BackArrowIcon } from '@netcracker/qubership-apihub-ui-shared/icons/BackArrowIcon'
 import { CloseIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CloseIcon'
 import type { FC } from 'react'
-import { memo, useMemo } from 'react'
+import { memo, useMemo, useRef } from 'react'
+import type { AiChatMessage, MessageId } from '../../api/types'
 import { useAiChatMessages } from '../../api/useAiChatMessages'
+import { showAiAssistantDevTriggers } from '../../dev/aiAssistantDevEnv'
+import { AiAssistantMockTriggerBar } from '../../dev/AiAssistantMockTriggerBar'
 import { AI_ASSISTANT_HISTORY_SCREEN, useAiAssistantContext } from '../../state/AiAssistantContext'
 import { ChatScreenHeader } from './ChatScreenHeader'
 import { Composer } from './Composer'
 import { MessageList } from './MessageList'
+import { ThinkingIndicator } from './ThinkingIndicator'
 import { WelcomePlaceholder } from './WelcomePlaceholder'
 
 export const ChatScreen: FC = memo(() => {
-  const { open, screen, activeChatId, openChatScreen, closePanel } = useAiAssistantContext()
-  const messagesQuery = useAiChatMessages(activeChatId)
+  const { open, screen, activeChatId, openChatScreen, closePanel, streaming } = useAiAssistantContext()
+  const insertDraftSnippetRef = useRef<((text: string) => void) | null>(null)
+  const streamFreeze = Boolean(
+    streaming.isBusy &&
+      streaming.activeTurnChatId !== null &&
+      streaming.activeTurnChatId === activeChatId,
+  )
+  const messagesQuery = useAiChatMessages(activeChatId, { streamFreeze })
 
   const messagesOldestFirst = useMemo(() => {
     if (!messagesQuery.data?.pages?.length) {
@@ -27,14 +37,55 @@ export const ChatScreen: FC = memo(() => {
     return [...newestFirst].reverse()
   }, [messagesQuery.data?.pages])
 
-  const showWelcome = activeChatId === null ||
-    (messagesQuery.isSuccess && messagesOldestFirst.length === 0)
+  const streamingAssistantLive = useMemo((): { messageId: MessageId; content: string } | null => {
+    if (streaming.state.status !== 'started') {
+      return null
+    }
+    const turnChatId = streaming.activeTurnChatId
+    if (turnChatId === null || turnChatId !== activeChatId) {
+      return null
+    }
+    return {
+      messageId: streaming.state.assistantMessageId,
+      content: streaming.state.buffer,
+    }
+  }, [activeChatId, streaming.activeTurnChatId, streaming.state])
 
-  const showThread = activeChatId !== null && messagesOldestFirst.length > 0
+  const displayMessages = useMemo((): AiChatMessage[] => {
+    const base = messagesOldestFirst
+    if (!streamingAssistantLive) {
+      return base
+    }
+    const hasFinalAssistant = base.some(
+      (m) => m.messageId === streamingAssistantLive.messageId && m.role === 'assistant',
+    )
+    if (hasFinalAssistant) {
+      return base
+    }
+    const synthetic: AiChatMessage = {
+      messageId: streamingAssistantLive.messageId,
+      clientMessageId: null,
+      role: 'assistant',
+      content: streamingAssistantLive.content,
+      createdAt: new Date().toISOString(),
+    }
+    return [...base, synthetic]
+  }, [messagesOldestFirst, streamingAssistantLive])
+
+  const showWelcome = activeChatId === null ||
+    (messagesQuery.isSuccess && displayMessages.length === 0)
+
+  const showThread = activeChatId !== null && displayMessages.length > 0
 
   const showThreadLoading = activeChatId !== null &&
     messagesQuery.isLoading &&
-    messagesOldestFirst.length === 0
+    displayMessages.length === 0
+
+  const thinkingVisible = streaming.state.status === 'pending' &&
+    streaming.activeTurnChatId !== null &&
+    streaming.activeTurnChatId === activeChatId
+
+  const jumpPhase = streaming.isBusy ? 'active' : 'idle'
 
   if (screen === AI_ASSISTANT_HISTORY_SCREEN) {
     return (
@@ -92,18 +143,34 @@ export const ChatScreen: FC = memo(() => {
             <>
               <MessageList
                 chatId={activeChatId}
-                messages={messagesOldestFirst}
+                messages={displayMessages}
                 hasNextPage={Boolean(messagesQuery.hasNextPage)}
                 isFetchingNextPage={messagesQuery.isFetchingNextPage}
                 fetchNextPage={messagesQuery.fetchNextPage}
-                jumpButtonStreamPhase="idle"
+                jumpButtonStreamPhase={jumpPhase}
+                streamingAssistantMessageId={streamingAssistantLive?.messageId ?? null}
               />
-              <ThinkingSlot />
+              <ThinkingSlot>
+                <ThinkingIndicator visible={thinkingVisible} />
+              </ThinkingSlot>
             </>
           )
           : null}
       </Body>
-      <Composer panelOpen={open} chatKey={activeChatId ?? 'none'} />
+      <Composer
+        panelOpen={open}
+        chatKey={activeChatId ?? 'none'}
+        insertDraftSnippetRef={insertDraftSnippetRef}
+      />
+      {showAiAssistantDevTriggers
+        ? (
+          <AiAssistantMockTriggerBar
+            onInsertSnippet={(text) => {
+              insertDraftSnippetRef.current?.(text)
+            }}
+          />
+        )
+        : null}
     </ChatLayout>
   )
 })

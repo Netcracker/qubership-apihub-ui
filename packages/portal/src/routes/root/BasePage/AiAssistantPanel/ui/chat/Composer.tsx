@@ -1,23 +1,43 @@
+import StopIcon from '@mui/icons-material/Stop'
 import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import { SendPlaneIcon } from '@netcracker/qubership-apihub-ui-shared/icons/SendPlaneIcon'
-import type { FC, KeyboardEvent } from 'react'
+import type { FC, KeyboardEvent, MutableRefObject } from 'react'
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
+import { useAiAssistantContext } from '../../state/AiAssistantContext'
 import { AssistantCircularIconButton } from '../common/AssistantCircularIconButton'
 
 export type ComposerProps = {
   panelOpen: boolean
   chatKey: string
+  /** Dev bar: insert scenario text into the draft without lifting state. */
+  insertDraftSnippetRef?: MutableRefObject<((text: string) => void) | null>
 }
 
-export const Composer: FC<ComposerProps> = memo(({ panelOpen, chatKey }) => {
+export const Composer: FC<ComposerProps> = memo(({ panelOpen, chatKey, insertDraftSnippetRef }) => {
+  const { activeChatId, streaming } = useAiAssistantContext()
   const inputRef = useRef<HTMLTextAreaElement | null>(null)
   const [draft, setDraft] = useState('')
 
   useEffect(() => {
     setDraft('')
   }, [chatKey])
+
+  useEffect(() => {
+    if (!insertDraftSnippetRef) {
+      return
+    }
+    insertDraftSnippetRef.current = (text: string): void => {
+      setDraft(text)
+      window.requestAnimationFrame(() => {
+        inputRef.current?.focus()
+      })
+    }
+    return () => {
+      insertDraftSnippetRef.current = null
+    }
+  }, [insertDraftSnippetRef])
 
   useEffect(() => {
     if (!panelOpen) {
@@ -29,13 +49,26 @@ export const Composer: FC<ComposerProps> = memo(({ panelOpen, chatKey }) => {
     return () => window.cancelAnimationFrame(id)
   }, [panelOpen, chatKey])
 
+  const busy = streaming.isBusy
+  const trimmedDraft = draft.trim()
+  const canSend = !busy && trimmedDraft.length > 0
+
+  const handleSubmit = useCallback((): void => {
+    if (!canSend) {
+      return
+    }
+    const text = draft.trim()
+    setDraft('')
+    void streaming.submit(activeChatId, text)
+  }, [activeChatId, canSend, draft, streaming])
+
   const handleComposerKeyDown = useCallback((event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key !== 'Enter' || !(event.ctrlKey || event.metaKey)) {
       return
     }
     event.preventDefault()
-    // Phase 5: submit when Send is enabled
-  }, [])
+    handleSubmit()
+  }, [handleSubmit])
 
   return (
     <PillRow onKeyDown={handleComposerKeyDown}>
@@ -49,10 +82,32 @@ export const Composer: FC<ComposerProps> = memo(({ panelOpen, chatKey }) => {
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
         InputProps={{ disableUnderline: true }}
+        disabled={busy}
       />
-      <AssistantCircularIconButton variant="contained" aria-label="Send message" disabled>
-        <SendPlaneIcon color="inherit" />
-      </AssistantCircularIconButton>
+      {busy
+        ? (
+          <AssistantCircularIconButton
+            variant="contained"
+            aria-label="Stop generation"
+            onClick={() => streaming.abort()}
+          >
+            <StopIcon fontSize="small" />
+          </AssistantCircularIconButton>
+        )
+        : (
+          <AssistantCircularIconButton
+            variant="contained"
+            aria-label="Send message"
+            onClick={() => {
+              if (trimmedDraft.length === 0) {
+                return
+              }
+              handleSubmit()
+            }}
+          >
+            <SendPlaneIcon color="inherit" />
+          </AssistantCircularIconButton>
+        )}
     </PillRow>
   )
 })

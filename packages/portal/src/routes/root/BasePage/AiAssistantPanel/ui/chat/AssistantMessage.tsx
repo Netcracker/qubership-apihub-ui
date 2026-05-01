@@ -1,18 +1,22 @@
 import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 import type { FC } from 'react'
-import { memo } from 'react'
+import { memo, useMemo } from 'react'
 
 import { useShowErrorNotification } from '../../../Notification'
+import { normalizeStreamingMarkdown } from '../../utils/normalizeStreamingMarkdown'
+import { useQueuedStreamingMarkdown } from '../../utils/useQueuedStreamingMarkdown'
 import { AssistantMarkdownViewer } from '../common/AssistantMarkdownViewer'
 import { CopyIconButton } from '../common/CopyIconButton'
 import { useCopyWithFeedback } from '../common/useCopyWithFeedback'
 
 export type AssistantMessageProps = {
   content: string
+  /** Live bubble: markdown is queued so parse/highlight runs once per paint wave. */
+  isStreaming?: boolean
 }
 
-export const AssistantMessage: FC<AssistantMessageProps> = memo(({ content }) => {
+export const AssistantMessage: FC<AssistantMessageProps> = memo(({ content, isStreaming = false }) => {
   const showError = useShowErrorNotification()
   const { createCopyHandler, copied } = useCopyWithFeedback({
     onError: (error) =>
@@ -22,17 +26,27 @@ export const AssistantMessage: FC<AssistantMessageProps> = memo(({ content }) =>
       }),
   })
 
+  const normalizedLive = useMemo(
+    () => (isStreaming ? normalizeStreamingMarkdown(content) : content),
+    [content, isStreaming],
+  )
+  const queuedMarkdown = useQueuedStreamingMarkdown(normalizedLive, isStreaming)
+  const markdownForViewer = isStreaming ? queuedMarkdown : content
+
   return (
     <AssistantColumn>
-      <AssistantMarkdownViewer markdown={content} />
-      <CopyAnswerRow>
-        <CopyIconButton ariaLabel="Copy answer" copied={copied} onCopy={createCopyHandler(content)} />
-      </CopyAnswerRow>
+      <AssistantMarkdownViewer markdown={markdownForViewer} />
+      {!isStreaming
+        ? (
+          <CopyAnswerRow>
+            <CopyIconButton ariaLabel="Copy answer" copied={copied} onCopy={createCopyHandler(content)} />
+          </CopyAnswerRow>
+        )
+        : null}
     </AssistantColumn>
   )
 })
 
-/** Stretch to message column width so markdown blocks (links, code) use full chat width. */
 const AssistantColumn = styled(Box)(({ theme }) => ({
   alignSelf: 'stretch',
   width: '100%',

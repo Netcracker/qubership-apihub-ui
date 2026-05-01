@@ -7,7 +7,7 @@ import { JumpToLatestStreamingIcon } from '@netcracker/qubership-apihub-ui-share
 import type { FetchNextPageOptions } from '@tanstack/react-query'
 import type { FC } from 'react'
 import { memo, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import type { AiChatMessage, ChatId } from '../../api/types'
+import type { AiChatMessage, ChatId, MessageId } from '../../api/types'
 import { MessageBubble } from './MessageBubble'
 
 const NEAR_BOTTOM_THRESHOLD_PX = 40
@@ -21,6 +21,8 @@ export type MessageListProps = {
   fetchNextPage: (options?: FetchNextPageOptions) => Promise<unknown>
   /** Phase 5: use `active` while assistant stream is pending or started. */
   jumpButtonStreamPhase: 'idle' | 'active'
+  /** When set, that assistant row uses streaming markdown pipeline. */
+  streamingAssistantMessageId: MessageId | null
 }
 
 export const MessageList: FC<MessageListProps> = memo(
@@ -31,6 +33,7 @@ export const MessageList: FC<MessageListProps> = memo(
     isFetchingNextPage,
     fetchNextPage,
     jumpButtonStreamPhase,
+    streamingAssistantMessageId,
   }) => {
     const scrollRef = useRef<HTMLDivElement>(null)
     const anchorRef = useRef<{ scrollHeight: number; scrollTop: number } | null>(null)
@@ -63,6 +66,14 @@ export const MessageList: FC<MessageListProps> = memo(
       const delta = el.scrollHeight - anchor.scrollHeight
       el.scrollTop = anchor.scrollTop + delta
     }, [isFetchingNextPage, messages.length])
+
+    useLayoutEffect(() => {
+      const el = scrollRef.current
+      if (!el || !nearBottom || messages.length === 0) {
+        return
+      }
+      el.scrollTop = el.scrollHeight
+    }, [messages, nearBottom])
 
     const handleScroll = useCallback(() => {
       const el = scrollRef.current
@@ -108,7 +119,16 @@ export const MessageList: FC<MessageListProps> = memo(
             )
             : null}
           <MessagesColumn>
-            {messages.map((message) => <MessageBubble key={message.messageId} message={message} />)}
+            {messages.map((message) => (
+              <MessageBubble
+                key={message.messageId}
+                message={message}
+                isStreamingAssistant={
+                  streamingAssistantMessageId !== null &&
+                  message.messageId === streamingAssistantMessageId
+                }
+              />
+            ))}
           </MessagesColumn>
         </ListScrollArea>
         {showJumpButton

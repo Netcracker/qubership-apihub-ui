@@ -22,6 +22,8 @@ function writeFrame(res: Response, event: AiChatStreamEvent): void {
   // data field: the full event (including `type`) becomes the JSON payload so
   // frontend parsers that inspect the data payload also see the discriminator.
   res.write(`data: ${JSON.stringify(event)}\n\n`)
+  // With compression middleware, flush pushes chunks to the client immediately.
+  ;(res as Response & { flush?: () => void }).flush?.()
 }
 
 function wait(ms: number, signal: AbortSignal): Promise<void> {

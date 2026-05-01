@@ -9,6 +9,7 @@ import {
   type AiAssistantContextValue,
   type AiAssistantScreen,
 } from './state/AiAssistantContext'
+import { useStreamingTurn } from './state/useStreamingTurn'
 import {
   AI_ASSISTANT_PANEL_MIN_WIDTH,
   getAiAssistantPanelMaxWidth,
@@ -64,6 +65,12 @@ export const AiAssistantProvider: FC<PropsWithChildren> = memo<PropsWithChildren
     setPanelWidthState(clampAiAssistantPanelWidth(width))
   }, [])
 
+  const streaming = useStreamingTurn({
+    openChatScreen,
+    resetActiveChat,
+    activeChatId,
+  })
+
   useEvent(SHOW_AI_ASSISTANT_PANEL, openPanel)
   useEvent(HIDE_AI_ASSISTANT_PANEL, closePanel)
 
@@ -90,6 +97,7 @@ export const AiAssistantProvider: FC<PropsWithChildren> = memo<PropsWithChildren
     startNewChat,
     resetActiveChat,
     setPanelWidth,
+    streaming,
   }), [
     open,
     screen,
@@ -102,6 +110,7 @@ export const AiAssistantProvider: FC<PropsWithChildren> = memo<PropsWithChildren
     startNewChat,
     resetActiveChat,
     setPanelWidth,
+    streaming,
   ])
 
   return (

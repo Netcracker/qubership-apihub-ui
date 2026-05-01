@@ -1,6 +1,5 @@
 import { Button, Stack, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
-import { API_V1 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { useQueryClient } from '@tanstack/react-query'
 import type { FC } from 'react'
 import { memo, useCallback, useState } from 'react'
@@ -12,38 +11,28 @@ import { useAiAssistantContext } from '../state/AiAssistantContext'
 /** Seed chat with 120 messages (mock fixtures). See `packages/portal/server/README.md`. */
 export const AI_ASSISTANT_DEV_PAGINATION_FIXTURE_CHAT_ID: ChatId = 'fc000001-0000-4000-8000-0000000000b0'
 
-async function drainStreamResponse(chatId: ChatId, content: string): Promise<void> {
-  const clientMessageId = crypto.randomUUID()
-  const res = await fetch(
-    `${API_V1}/ai-chat/chats/${encodeURIComponent(chatId)}/messages/stream`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ content, clientMessageId }),
-    },
-  )
-  if (!res.ok) {
-    const text = await res.text()
-    throw new Error(text || `HTTP ${res.status}`)
-  }
-  const reader = res.body?.getReader()
-  if (!reader) {
-    return
-  }
-  let chunk = await reader.read()
-  while (!chunk.done) {
-    chunk = await reader.read()
-  }
+/** Substrings matched by `pickScenario` in the mock (before default). */
+const MOCK_SCENARIO_SNIPPETS: readonly { label: string; text: string }[] = [
+  { label: 'default', text: 'default' },
+  { label: 'debug:json', text: 'debug:json' },
+  { label: 'debug:links', text: 'debug:links' },
+  { label: 'debug:longmd', text: 'debug:longmd' },
+  { label: 'debug:attachment', text: 'debug:attachment' },
+  { label: 'debug:error', text: 'debug:error' },
+  { label: 'debug:offtopic', text: 'debug:offtopic' },
+]
+
+export type AiAssistantMockTriggerBarProps = {
+  onInsertSnippet: (text: string) => void
 }
 
-export const AiAssistantMockTriggerBar: FC = memo(() => {
+export const AiAssistantMockTriggerBar: FC<AiAssistantMockTriggerBarProps> = memo(({
+  onInsertSnippet,
+}) => {
   const queryClient = useQueryClient()
   const showError = useShowErrorNotification()
-  const { activeChatId, openChatScreen } = useAiAssistantContext()
+  const { openChatScreen } = useAiAssistantContext()
   const [busyKey, setBusyKey] = useState<string | null>(null)
-
-  const effectiveChatId = activeChatId ?? AI_ASSISTANT_DEV_PAGINATION_FIXTURE_CHAT_ID
 
   const run = useCallback(
     async (key: string, fn: () => Promise<void>): Promise<void> => {
@@ -73,42 +62,10 @@ export const AiAssistantMockTriggerBar: FC = memo(() => {
     })
   }, [openChatScreen, queryClient, run])
 
-  const handleStreamLinks = useCallback((): void => {
-    void run('links', async () => {
-      await drainStreamResponse(effectiveChatId, 'debug:links')
-      await queryClient.invalidateQueries({ queryKey: aiChatMessagesKey(effectiveChatId) })
-      console.debug('[AiAssistant mock] Stream debug:links finished')
-    })
-  }, [effectiveChatId, queryClient, run])
-
-  const handleStreamAttachment = useCallback((): void => {
-    void run('attachment', async () => {
-      await drainStreamResponse(effectiveChatId, 'debug:attachment')
-      await queryClient.invalidateQueries({ queryKey: aiChatMessagesKey(effectiveChatId) })
-      console.debug('[AiAssistant mock] Stream debug:attachment finished')
-    })
-  }, [effectiveChatId, queryClient, run])
-
-  const handleStreamLongMd = useCallback((): void => {
-    void run('longmd', async () => {
-      await drainStreamResponse(effectiveChatId, 'debug:longmd')
-      await queryClient.invalidateQueries({ queryKey: aiChatMessagesKey(effectiveChatId) })
-      console.debug('[AiAssistant mock] Stream debug:longmd finished')
-    })
-  }, [effectiveChatId, queryClient, run])
-
-  const handleStreamDefault = useCallback((): void => {
-    void run('default', async () => {
-      await drainStreamResponse(effectiveChatId, 'hello default scenario')
-      await queryClient.invalidateQueries({ queryKey: aiChatMessagesKey(effectiveChatId) })
-      console.debug('[AiAssistant mock] Default stream finished')
-    })
-  }, [effectiveChatId, queryClient, run])
-
   return (
     <DevBarRoot spacing={1}>
       <Typography variant="caption" color="warning.main" component="div">
-        Dev-only mock triggers (remove with AiAssistantMockTriggerBar.tsx)
+        Dev-only: insert mock scenario text, then Send. Long thread loads the 120-msg fixture chat.
       </Typography>
       <Stack
         direction="row"
@@ -124,50 +81,27 @@ export const AiAssistantMockTriggerBar: FC = memo(() => {
           disabled={busyKey !== null}
           onClick={handleLongThread}
         >
-          Long thread (120)
+          Long thread
         </Button>
-        <Button
-          size="small"
-          variant="outlined"
-          color="warning"
-          disabled={busyKey !== null}
-          onClick={handleStreamLinks}
-        >
-          Stream: links
-        </Button>
-        <Button
-          size="small"
-          variant="outlined"
-          color="warning"
-          disabled={busyKey !== null}
-          onClick={handleStreamAttachment}
-        >
-          Stream: file
-        </Button>
-        <Button
-          size="small"
-          variant="outlined"
-          color="warning"
-          disabled={busyKey !== null}
-          onClick={handleStreamLongMd}
-        >
-          Stream: long MD
-        </Button>
-        <Button
-          size="small"
-          variant="outlined"
-          color="warning"
-          disabled={busyKey !== null}
-          onClick={handleStreamDefault}
-        >
-          Stream: default
-        </Button>
+        {MOCK_SCENARIO_SNIPPETS.map(({ label, text }) => (
+          <Button
+            key={label}
+            size="small"
+            variant="outlined"
+            color="warning"
+            disabled={busyKey !== null}
+            onClick={() => onInsertSnippet(text)}
+          >
+            {label}
+          </Button>
+        ))}
       </Stack>
     </DevBarRoot>
   )
 })
 
 const DevBarRoot = styled(Stack)(({ theme }) => ({
-  padding: theme.spacing(2),
-  borderBottom: `1px dashed ${theme.palette.warning.main}`,
+  flexShrink: 0,
+  padding: theme.spacing(1, 2, 2),
+  borderTop: `1px dashed ${theme.palette.warning.main}`,
 }))

@@ -84,7 +84,7 @@ export function sendMessageNonStreaming(router: Router): void {
       : undefined
     if (replay) {
       const userMessage = aiChatStore.getState(chatId)?.messages.find((message) =>
-        message.role === 'user' && message.clientMessageId === clientMessageId
+        message.role === 'user' && message.clientMessageId === clientMessageId,
       )
       if (!userMessage) {
         sendError(res, 404, 'APIHUB-AI-3001', 'Chat not found.')

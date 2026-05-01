@@ -135,7 +135,7 @@ const AssistantMarkdownSurface = styled(Box)(({ theme }) => ({
 }))
 
 function extractCodeText(children: ReactNode): string {
-  if (children == null || typeof children === 'boolean') {
+  if (children === null || children === undefined || typeof children === 'boolean') {
     return ''
   }
   if (typeof children === 'string' || typeof children === 'number') {
