@@ -50,15 +50,13 @@ export const AiAssistantProvider: FC<PropsWithChildren> = memo<PropsWithChildren
     setOpen(true)
   }, [])
 
-  const startNewChat = useCallback((): void => {
-    setActiveChatId(null)
-    setScreen('chat')
-    setOpen(true)
-  }, [])
-
   const resetActiveChat = useCallback((): void => {
     setActiveChatId(null)
     setScreen('chat')
+  }, [])
+
+  const clearActiveChat = useCallback((): void => {
+    setActiveChatId(null)
   }, [])
 
   const setPanelWidth = useCallback((width: number): void => {
@@ -94,8 +92,8 @@ export const AiAssistantProvider: FC<PropsWithChildren> = memo<PropsWithChildren
     closePanel,
     openHistory,
     openChatScreen,
-    startNewChat,
     resetActiveChat,
+    clearActiveChat,
     setPanelWidth,
     streaming,
   }), [
@@ -107,8 +105,8 @@ export const AiAssistantProvider: FC<PropsWithChildren> = memo<PropsWithChildren
     closePanel,
     openHistory,
     openChatScreen,
-    startNewChat,
     resetActiveChat,
+    clearActiveChat,
     setPanelWidth,
     streaming,
   ])

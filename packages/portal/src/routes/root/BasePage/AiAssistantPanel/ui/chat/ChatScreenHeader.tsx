@@ -1,72 +1,44 @@
 import Box from '@mui/material/Box'
-import Divider from '@mui/material/Divider'
-import IconButton from '@mui/material/IconButton'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { type FC, memo } from 'react'
 
-import { CloseIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CloseIcon'
-import { NewChatIcon } from '@netcracker/qubership-apihub-ui-shared/icons/NewChatIcon'
 import { RobotFilledIcon } from '@netcracker/qubership-apihub-ui-shared/icons/RobotFilledIcon'
-import { useCreateAiChat } from '../../api/useCreateAiChat'
-import { useAiAssistantContext } from '../../state/AiAssistantContext'
+import { AiAssistantHeaderActions } from '../common/AiAssistantHeaderActions'
+import { AiAssistantPanelHeader } from '../common/AiAssistantPanelHeader'
 
-export const ChatScreenHeader: FC = memo(() => {
-  const { closePanel } = useAiAssistantContext()
-  const createChat = useCreateAiChat()
+export type ChatScreenHeaderProps = {
+  newChatDisabled: boolean
+  onNewChat: () => void
+  onHistory: () => void
+  onClose: () => void
+}
 
+export const ChatScreenHeader: FC<ChatScreenHeaderProps> = memo(({
+  newChatDisabled,
+  onNewChat,
+  onHistory,
+  onClose,
+}) => {
   return (
-    <HeaderRoot>
-      <HeaderToolbar>
-        <HeaderTitleRow>
-          <HeaderAvatar>
-            <RobotFilledIcon color="inherit" />
-          </HeaderAvatar>
-          <Typography variant="h5" noWrap component="span">
-            AI Assistant
-          </Typography>
-        </HeaderTitleRow>
-        <HeaderActions>
-          <IconButton
-            aria-label="New chat"
-            data-testid="AiAssistantNewChatButton"
-            disabled={createChat.isPending}
-            onClick={() => createChat.mutate(undefined)}
-            size="small"
-            color="inherit"
-          >
-            <NewChatIcon />
-          </IconButton>
-          <IconButton
-            aria-label="Close AI Assistant"
-            data-testid="AiAssistantPanelCloseButton"
-            onClick={closePanel}
-            size="small"
-            color="inherit"
-          >
-            <CloseIcon />
-          </IconButton>
-        </HeaderActions>
-      </HeaderToolbar>
-      <Divider orientation="horizontal" variant="fullWidth" flexItem />
-    </HeaderRoot>
+    <AiAssistantPanelHeader>
+      <HeaderTitleRow>
+        <HeaderAvatar>
+          <RobotFilledIcon color="inherit" />
+        </HeaderAvatar>
+        <Typography variant="h5" noWrap component="span">
+          AI Assistant
+        </Typography>
+      </HeaderTitleRow>
+      <AiAssistantHeaderActions
+        newChatDisabled={newChatDisabled}
+        onNewChat={onNewChat}
+        onHistory={onHistory}
+        onClose={onClose}
+      />
+    </AiAssistantPanelHeader>
   )
 })
-
-const HeaderRoot = styled(Box)({
-  display: 'flex',
-  flexDirection: 'column',
-  minWidth: 0,
-})
-
-const HeaderToolbar = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  gap: theme.spacing(1),
-  padding: theme.spacing(3),
-  minWidth: 0,
-}))
 
 const HeaderTitleRow = styled(Box)({
   display: 'flex',
@@ -84,12 +56,5 @@ const HeaderAvatar = styled(Box)(({ theme }) => ({
   borderRadius: '12px',
   backgroundColor: theme.palette.primary.main,
   color: theme.palette.primary.contrastText,
-  flexShrink: 0,
-}))
-
-const HeaderActions = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  gap: theme.spacing(0.5),
   flexShrink: 0,
 }))
