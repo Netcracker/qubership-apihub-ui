@@ -37,8 +37,8 @@ type ApiQualityDataProviderProps = PropsWithChildren & {
 export function useApiQualityValidationSummary(apiType?: ApiType): ValidationSummary | undefined {
   const validationSummary = useContext(ApiQualityValidationSummaryContext)
 
-  if (!validationSummary) {
-    return undefined
+  if (!validationSummary || !apiType) {
+    return validationSummary
   }
 
   switch (apiType) {
