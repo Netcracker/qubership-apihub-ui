@@ -44,7 +44,7 @@ export function useApiQualityClientValidationStatus(): [ClientValidationStatus |
   ]
 }
 
-const NOT_LINTED_API_TYPES: ApiType[] = [API_TYPE_GRAPHQL, API_TYPE_ASYNCAPI]
+const NOT_LINTED_API_TYPES: ApiType[] = [API_TYPE_GRAPHQL]
 
 export function NotLintedApiTypes(apiType?: ApiType): boolean {
   return !apiType || !NOT_LINTED_API_TYPES.some(notLintedApiType => notLintedApiType === apiType)
