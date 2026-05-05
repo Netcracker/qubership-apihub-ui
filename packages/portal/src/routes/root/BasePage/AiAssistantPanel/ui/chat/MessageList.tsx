@@ -163,7 +163,7 @@ const ListScrollArea = styled(Box)(({ theme }) => ({
   overflowY: 'auto',
   display: 'flex',
   flexDirection: 'column',
-  padding: theme.spacing(0, 2),
+  padding: theme.spacing(3),
 }))
 
 const TopLoader = styled(Box)(({ theme }) => ({
