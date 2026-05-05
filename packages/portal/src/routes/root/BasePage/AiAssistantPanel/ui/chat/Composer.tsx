@@ -73,18 +73,20 @@ export const Composer: FC<ComposerProps> = memo(({ panelOpen, chatKey, insertDra
 
   return (
     <PillRow onKeyDown={handleComposerKeyDown}>
-      <StyledTextField
-        inputRef={inputRef}
-        multiline
-        maxRows={6}
-        minRows={1}
-        variant="standard"
-        placeholder="Type your message..."
-        value={draft}
-        onChange={(e) => setDraft(e.target.value)}
-        InputProps={{ disableUnderline: true }}
-        disabled={busy}
-      />
+      <ComposerInputWrap>
+        <StyledTextField
+          inputRef={inputRef}
+          multiline
+          maxRows={10}
+          minRows={1}
+          variant="standard"
+          placeholder="Type your message..."
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          InputProps={{ disableUnderline: true }}
+          disabled={busy}
+        />
+      </ComposerInputWrap>
       {busy
         ? (
           <AssistantCircularIconButton
@@ -116,25 +118,51 @@ export const Composer: FC<ComposerProps> = memo(({ panelOpen, chatKey, insertDra
 const PillRow = styled(Box)(({ theme }) => ({
   flexShrink: 0,
   display: 'flex',
-  alignItems: 'center',
+  alignItems: 'flex-end',
   gap: theme.spacing(1),
   margin: theme.spacing(2),
   marginTop: theme.spacing(1),
-  padding: theme.spacing(0.75, 1, 0.75, 1.5),
+  padding: theme.spacing(0.5, 1, 0.5, 1.25),
   borderRadius: 25,
+  boxSizing: 'border-box',
   border: `1px solid ${theme.palette.divider}`,
-  backgroundColor: theme.palette.mode === 'dark'
-    ? theme.palette.background.default
-    : theme.palette.grey[50],
-}))
-
-const StyledTextField = styled(TextField)(({ theme }) => ({
-  flex: '1 1 0',
-  minWidth: 0,
-  marginTop: 0,
-  marginBottom: 0,
-  '& .MuiInputBase-root': {
-    paddingTop: theme.spacing(0.5),
-    paddingBottom: theme.spacing(0.5),
+  '&:focus-within': {
+    border: `2px solid ${theme.palette.primary.main}`,
   },
 }))
+
+/** Keeps the textarea column full-width; scrollbar stays at the right edge of this column only. */
+const ComposerInputWrap = styled(Box)({
+  flex: '1 1 0',
+  minWidth: 0,
+})
+
+const StyledTextField = styled(TextField)(({ theme }) => {
+  return {
+    flex: '1 1 auto',
+    width: '100%',
+    minWidth: 0,
+    marginTop: 0,
+    marginBottom: 0,
+    '& .MuiInputBase-root': {
+      minHeight: theme.spacing(5),
+      paddingTop: theme.spacing(0.25),
+      paddingBottom: theme.spacing(0.25),
+      paddingLeft: theme.spacing(0.25),
+      paddingRight: 0,
+    },
+    '& .MuiInputBase-input': {
+      ...theme.typography.body2,
+      lineHeight: 1.35,
+      padding: 0,
+      resize: 'none',
+      overflowY: 'auto',
+    },
+    '& .MuiInputBase-input::-webkit-scrollbar': {
+      width: 4,
+    },
+    // '& .MuiInputBase-input::-webkit-scrollbar-thumb': {
+    //   background: theme.palette.grey[300],
+    // },
+  }
+})
