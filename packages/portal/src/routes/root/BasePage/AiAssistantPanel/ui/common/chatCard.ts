@@ -54,13 +54,6 @@ function chatCardRowLabelTypography(theme: Theme): CSSObject {
   }
 }
 
-/** Portal link row title — semibold. */
-export const ChatCardTitle = styled('span')(({ theme }) => ({
-  ...chatCardRowLabelTypography(theme),
-  fontWeight: 600,
-  wordBreak: 'break-word',
-}))
-
 /** Generated file row label — regular weight; ellipsis when the row is narrow. */
 export const ChatCardFileLabel = styled('span')(({ theme }) => ({
   ...chatCardRowLabelTypography(theme),

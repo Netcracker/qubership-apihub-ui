@@ -5,21 +5,29 @@ import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 import json from 'highlight.js/lib/languages/json.js'
 import yaml from 'highlight.js/lib/languages/yaml.js'
-import type { ComponentPropsWithoutRef, FC, ReactNode } from 'react'
-import { memo, useMemo } from 'react'
-import { isValidElement } from 'react'
+import {
+  type ComponentPropsWithoutRef,
+  type FC,
+  isValidElement,
+  memo,
+  type MouseEvent,
+  type ReactNode,
+  useCallback,
+  useMemo,
+} from 'react'
 import ReactMarkdown from 'react-markdown'
 import type { CodeProps } from 'react-markdown/lib/ast-to-react'
 import type { ReactMarkdownProps } from 'react-markdown/lib/complex-types'
+import { Link } from 'react-router-dom'
 import rehypeHighlight from 'rehype-highlight'
 import remarkGfm from 'remark-gfm'
 import type { PluggableList } from 'unified'
 
-import { CHAT_CARD_LINK_CLASS } from './chatCard'
-import { isGeneratedFileLink, isInternalPortalLink } from '../../utils/internalLinkMatcher'
+import { useAiAssistantContext } from '../../state/AiAssistantContext'
+import { isGeneratedFileLink, isInternalPortalLink, resolveToUrl } from '../../utils/internalLinkMatcher'
 import { FileDownloadLink } from '../chat/FileDownloadLink'
+import { CHAT_CARD_LINK_CLASS } from './chatCard'
 import { CodeBlock } from './CodeBlock'
-import { InternalPortalLinkRow } from './InternalPortalLinkRow'
 
 const highlightLanguages = { json, yaml }
 
@@ -86,12 +94,27 @@ const MarkdownCode: FC<CodeProps> = ({ inline, className, children, node, ...res
 }
 
 const MarkdownAnchor: FC<ComponentPropsWithoutRef<'a'> & ReactMarkdownProps> = memo(({ href = '', children }) => {
+  const { closePanel, resetActiveChat } = useAiAssistantContext()
+  const onInternalPortalLinkClick = useCallback(
+    (event: MouseEvent<HTMLAnchorElement>) => {
+      if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return
+      closePanel()
+      resetActiveChat()
+    },
+    [closePanel, resetActiveChat],
+  )
   const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost'
   if (isGeneratedFileLink(href, origin)) {
     return <FileDownloadLink href={href}>{children}</FileDownloadLink>
   }
   if (isInternalPortalLink(href, origin)) {
-    return <InternalPortalLinkRow href={href}>{children}</InternalPortalLinkRow>
+    const resolved = resolveToUrl(href, origin)
+    const to = `${resolved.pathname}${resolved.search}${resolved.hash}`
+    return (
+      <Link to={to} onClick={onInternalPortalLinkClick}>
+        {children}
+      </Link>
+    )
   }
   return (
     <a href={href} target="_blank" rel="noopener noreferrer">

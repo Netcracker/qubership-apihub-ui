@@ -1,4 +1,4 @@
-/** Same-origin portal routes rendered as link rows (see ai-assist-mock-ui-triggers.md §1.2). */
+/** Same-origin portal routes under this prefix use client-side navigation in markdown. */
 export const PORTAL_INTERNAL_PATH_PREFIX = '/portal/'
 
 const GENERATED_FILES_PATH_PREFIX = '/api/v1/generated-files/'
