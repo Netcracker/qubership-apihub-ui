@@ -23,7 +23,7 @@ export const DeleteChatConfirmation: FC<DeleteChatConfirmationProps> = memo(({
     <ConfirmationDialog
       open={open}
       title="Delete the chat?"
-      message={`Chat ${title} will be permanently deleted.`}
+      message={`Chat "${title}" will be permanently deleted.`}
       loading={loading}
       confirmButtonName="Delete"
       onConfirm={onConfirm}
