@@ -12,11 +12,11 @@ const OAS_LINTER_TYPES: ReadonlyArray<LinterApiType> = [
   LinterApiTypes.OAS_3_1,
 ]
 
-export function isOasLinterType(type?: LinterApiType): boolean {
+export function isOasLinterType(type: LinterApiType): boolean {
   return OAS_LINTER_TYPES.includes(type as LinterApiType)
 }
 
-export function isAsyncApiLinterType(type?: LinterApiType): boolean {
+export function isAsyncApiLinterType(type: LinterApiType): boolean {
   return type === LinterApiTypes.ASYNCAPI_3_0
 }
 
