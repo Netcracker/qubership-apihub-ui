@@ -80,9 +80,11 @@ export const ChatScreen: FC = memo(() => {
     messagesQuery.isLoading &&
     displayMessages.length === 0
 
-  const thinkingVisible = streaming.state.status === 'pending' &&
+  const thinkingVisible =
     streaming.activeTurnChatId !== null &&
-    streaming.activeTurnChatId === activeChatId
+    streaming.activeTurnChatId === activeChatId &&
+    (streaming.state.status === 'pending' ||
+      (streaming.state.status === 'started' && streaming.thinkingDuringAssistantPause))
 
   const jumpPhase = streaming.isBusy ? 'active' : 'idle'
 

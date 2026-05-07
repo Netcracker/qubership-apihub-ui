@@ -1,5 +1,5 @@
 import { type InfiniteData, useQueryClient } from '@tanstack/react-query'
-import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { FETCH_ERROR_EVENT, type FetchErrorDetails } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
@@ -31,6 +31,10 @@ import {
   type StreamingTurnState,
 } from './streamingTurnReducer'
 
+/** No assistant message tokens for this long while status is still `started` -> show Thinking (tools / provider gaps). */
+const ASSISTANT_MESSAGE_IDLE_FOR_THINKING_MS = 1000
+const STREAM_THINKING_POLL_MS = 250
+
 export type StreamingTurnDeps = {
   openChatScreen: (chatId: ChatId | null) => void
   resetActiveChat: () => void
@@ -41,9 +45,14 @@ export type UseStreamingTurnResult = {
   state: StreamingTurnState
   isBusy: boolean
   activeTurnChatId: ChatId | null
+  thinkingDuringAssistantPause: boolean
   submit: (activeChatId: ChatId | null, content: string) => Promise<void>
   abort: () => void
   reset: () => void
+}
+
+function isAssistantMessageProgressEvent(event: AiChatStreamEvent): boolean {
+  return event.type === 'message.assistant.start' || event.type === 'message.assistant.delta'
 }
 
 function isAbortError(e: unknown): boolean {
@@ -96,12 +105,41 @@ export function useStreamingTurn({
   const abortControllerRef = useRef<AbortController | null>(null)
   const turnLockRef = useRef(false)
   const turnBootstrapRef = useRef<StreamingTurnState | null>(null)
+  const lastAssistantMessageActivityAtRef = useRef<number | null>(null)
+  const [thinkingDuringAssistantPause, setThinkingDuringAssistantPause] = useState(false)
 
   useEffect(() => {
     return () => {
       abortControllerRef.current?.abort()
     }
   }, [])
+
+  useEffect(() => {
+    if (state.status === 'idle') {
+      lastAssistantMessageActivityAtRef.current = null
+      setThinkingDuringAssistantPause((prev) => (prev ? false : prev))
+    }
+  }, [state.status])
+
+  const streamPollKey = state.status === 'started' ? state.chatId : null
+
+  useEffect(() => {
+    if (state.status !== 'started') {
+      return
+    }
+    const evaluate = (): void => {
+      const lastAt = lastAssistantMessageActivityAtRef.current
+      if (lastAt === null) {
+        setThinkingDuringAssistantPause((prev) => (prev ? false : prev))
+        return
+      }
+      const next = Date.now() - lastAt >= ASSISTANT_MESSAGE_IDLE_FOR_THINKING_MS
+      setThinkingDuringAssistantPause((prev) => (prev === next ? prev : next))
+    }
+    evaluate()
+    const id = window.setInterval(evaluate, STREAM_THINKING_POLL_MS)
+    return () => window.clearInterval(id)
+  }, [state.status, streamPollKey])
 
   const flushPartialAssistantToCache = useCallback((chatId: ChatId): void => {
     const s = stateRef.current
@@ -139,6 +177,10 @@ export function useStreamingTurn({
         ? stateRef.current
         : (turnBootstrapRef.current ?? stateRef.current)
       for (const event of batch) {
+        if (isAssistantMessageProgressEvent(event)) {
+          lastAssistantMessageActivityAtRef.current = Date.now()
+          setThinkingDuringAssistantPause((prev) => (prev ? false : prev))
+        }
         if (event.type === 'message.assistant.completed') {
           const assistantMessage = (event as { message: AiChatMessage }).message
           queryClient.setQueryData(
@@ -344,9 +386,10 @@ export function useStreamingTurn({
       state: state,
       isBusy: busy,
       activeTurnChatId: turnChat,
+      thinkingDuringAssistantPause: thinkingDuringAssistantPause,
       submit: submit,
       abort: abort,
       reset: reset,
     }
-  }, [state, submit, abort, reset])
+  }, [state, submit, abort, reset, thinkingDuringAssistantPause])
 }

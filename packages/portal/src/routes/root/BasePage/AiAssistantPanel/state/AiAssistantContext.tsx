@@ -28,6 +28,8 @@ export type AiAssistantStreamingApi = {
   state: StreamingTurnState
   isBusy: boolean
   activeTurnChatId: ChatId | null
+  /** True while assistant is streaming text but no start/delta arrived for a few seconds (tools / network gaps). */
+  thinkingDuringAssistantPause: boolean
   submit: (activeChatId: ChatId | null, content: string) => Promise<void>
   abort: () => void
   reset: () => void

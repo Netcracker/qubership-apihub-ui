@@ -22,6 +22,8 @@ export type ScriptedBuildArgs = {
 }
 
 const TOKEN_DELAY_MS = 35
+/** Used by `debug:thinking` to mimic long provider/network gaps in the SSE stream. */
+const THINKING_PAUSE_MS = 4000
 
 function tokens(text: string): string[] {
   // Split on whitespace while preserving trailing whitespace on each token
@@ -354,6 +356,114 @@ const errorScenario: Scenario = {
   },
 }
 
+const THINKING_MARKDOWN_PREFIX =
+  'Done. Here is your IDS document for the customer creation operation (latest version):'
+const THINKING_MARKDOWN_SUFFIX =
+  ' The document describes the Create Customer process, interaction flow, request/response mappings (marked as draft), configuration, and error handling. I did not find the operation in APIHub, so I added follow-up questions to confirm the exact package/version and API contract.'
+
+const thinkingScenario: Scenario = {
+  id: 'debug:thinking',
+  description:
+    '~4s idle before tool frames, IDS-style tool sequence, ~4s gap mid answer, then completion (English + file link).',
+  build: ({ messageId, nowIso, buildFileUrl }) => {
+    const url = buildFileUrl(MOCK_ATTACHMENT_FILE_ID)
+    const fullText = `${THINKING_MARKDOWN_PREFIX} [IDS_BSS-CIM.md](${url})\n\n${THINKING_MARKDOWN_SUFFIX.trim()}`
+    const midMarker = 'I did not find'
+    const splitAt = fullText.indexOf(midMarker)
+    const part1 = splitAt === -1 ? fullText : fullText.slice(0, splitAt)
+    const part2 = splitAt === -1 ? '' : fullText.slice(splitAt)
+
+    const frames: ScriptedFrame[] = []
+    frames.push({
+      delay: 40,
+      event: { type: 'message.assistant.start', messageId: messageId },
+    })
+
+    frames.push({
+      delay: THINKING_PAUSE_MS,
+      event: {
+        type: 'tool.started',
+        toolCallId: 'tc-mock-ids-start',
+        name: 'start_ids_generation',
+      },
+    })
+    frames.push({
+      delay: 45,
+      event: {
+        type: 'tool.completed',
+        toolCallId: 'tc-mock-ids-start',
+        name: 'start_ids_generation',
+        status: 'ok',
+        durationMs: 210,
+      },
+    })
+
+    for (let i = 1; i <= 7; i++) {
+      const toolCallId = `tc-mock-search-${i}`
+      frames.push({
+        delay: 35,
+        event: {
+          type: 'tool.started',
+          toolCallId: toolCallId,
+          name: 'search_api_operations',
+        },
+      })
+      frames.push({
+        delay: 50,
+        event: {
+          type: 'tool.completed',
+          toolCallId: toolCallId,
+          name: 'search_api_operations',
+          status: 'ok',
+          durationMs: 70 + i * 12,
+        },
+      })
+    }
+
+    frames.push({
+      delay: 40,
+      event: {
+        type: 'tool.started',
+        toolCallId: 'tc-mock-save-file',
+        name: 'save_generated_file',
+      },
+    })
+    frames.push({
+      delay: 55,
+      event: {
+        type: 'tool.completed',
+        toolCallId: 'tc-mock-save-file',
+        name: 'save_generated_file',
+        status: 'ok',
+        durationMs: 190,
+      },
+    })
+
+    frames.push(...deltaFrames(part1))
+    const tailDeltas = deltaFrames(part2)
+    if (tailDeltas.length > 0) {
+      tailDeltas[0] = { ...tailDeltas[0], delay: THINKING_PAUSE_MS }
+      frames.push(...tailDeltas)
+    }
+
+    frames.push({
+      delay: 25,
+      event: {
+        type: 'message.assistant.completed',
+        message: {
+          messageId: messageId,
+          clientMessageId: null,
+          role: 'assistant',
+          content: fullText,
+          createdAt: nowIso,
+        },
+      },
+    })
+    frames.push({ delay: 10, event: { type: 'done' } })
+    return frames
+  },
+}
+
 const offtopicScenario: Scenario = {
   id: 'debug:offtopic',
   description: 'Short polite refusal for off-topic questions.',
@@ -391,6 +501,7 @@ export const SCENARIOS: Scenario[] = [
   longmdScenario,
   jsonScenario,
   attachmentScenario,
+  thinkingScenario,
   offtopicScenario,
   defaultScenario,
 ]
