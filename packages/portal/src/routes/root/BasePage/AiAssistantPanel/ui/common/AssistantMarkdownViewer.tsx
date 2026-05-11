@@ -46,7 +46,12 @@ export const AssistantMarkdownViewer: FC<AssistantMarkdownViewerProps> = memo(({
 
   const rehypePlugins = useMemo<PluggableList>(
     () => [
-      [rehypeHighlight, { detect: false, languages: highlightLanguages, aliases: { yml: 'yaml' } }],
+      [rehypeHighlight, {
+        detect: false,
+        ignoreMissing: true,
+        languages: highlightLanguages,
+        aliases: { yml: 'yaml' },
+      }],
     ],
     [],
   )
