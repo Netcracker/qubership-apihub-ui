@@ -110,6 +110,23 @@ paths:
                 name: { type: string }
 \`\`\`
 
+### HTTP block
+
+\`\`\`http
+POST /customer/v1/customers HTTP/1.1
+Host: api.company.com
+Authorization: Bearer <JWT>
+Content-Type: application/json
+
+{
+  "firstName": "Jane",
+  "lastName": "Doe",
+  "email": "jane.doe@example.com",
+  "phone": "+12025550123",
+  "dateOfBirth": "1990-04-12"
+}
+\`\`\`
+
 Let me know if you want to drill down into any of them.`
 
 const JSON_MARKDOWN = `Here is the same response encoded as JSON:
@@ -356,8 +373,7 @@ const errorScenario: Scenario = {
   },
 }
 
-const THINKING_MARKDOWN_PREFIX =
-  'Done. Here is your IDS document for the customer creation operation (latest version):'
+const THINKING_MARKDOWN_PREFIX = 'Done. Here is your IDS document for the customer creation operation (latest version):'
 const THINKING_MARKDOWN_SUFFIX =
   ' The document describes the Create Customer process, interaction flow, request/response mappings (marked as draft), configuration, and error handling. I did not find the operation in APIHub, so I added follow-up questions to confirm the exact package/version and API contract.'
 
@@ -529,7 +545,7 @@ export function assistantMessageFromScenario(scenario: Scenario, args: ScriptedB
   if (completed) return completed.event.message
   const collected = frames
     .filter((f): f is ScriptedFrame & { event: Extract<AiChatStreamEvent, { type: 'message.assistant.delta' }> } =>
-      f.event.type === 'message.assistant.delta',
+      f.event.type === 'message.assistant.delta'
     )
     .map((f) => f.event.delta)
     .join('')

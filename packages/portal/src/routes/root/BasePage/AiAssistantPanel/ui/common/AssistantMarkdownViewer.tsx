@@ -3,8 +3,9 @@ import 'highlight.js/styles/github.css'
 
 import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
-import json from 'highlight.js/lib/languages/json.js'
-import yaml from 'highlight.js/lib/languages/yaml.js'
+import http from 'highlight.js/lib/languages/http'
+import json from 'highlight.js/lib/languages/json'
+import yaml from 'highlight.js/lib/languages/yaml'
 import {
   type ComponentPropsWithoutRef,
   type FC,
@@ -29,7 +30,7 @@ import { FileDownloadLink } from '../chat/FileDownloadLink'
 import { CHAT_CARD_LINK_CLASS } from './chatCard'
 import { CodeBlock } from './CodeBlock'
 
-const highlightLanguages = { json, yaml }
+const highlightLanguages = { json, yaml, http }
 
 export type AssistantMarkdownViewerProps = {
   markdown: string
