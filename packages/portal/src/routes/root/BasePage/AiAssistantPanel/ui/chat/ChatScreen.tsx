@@ -1,14 +1,11 @@
 import CircularProgress from '@mui/material/CircularProgress'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { useQueryClient } from '@tanstack/react-query'
 import { type FC, memo, useCallback, useMemo, useRef } from 'react'
 
 import Box from '@mui/material/Box'
-import { invalidateAiChatListQueries } from '../../api/invalidateAiChatListQueries'
 import type { AiChatMessage, MessageId } from '../../api/types'
 import { useAiChatMessages } from '../../api/useAiChatMessages'
-import { useCreateAiChat } from '../../api/useCreateAiChat'
 import { showAiAssistantDevTriggers } from '../../dev/aiAssistantDevEnv'
 import { AiAssistantMockTriggerBar } from '../../dev/AiAssistantMockTriggerBar'
 import { AI_ASSISTANT_HISTORY_SCREEN, useAiAssistantContext } from '../../state/AiAssistantContext'
@@ -20,19 +17,16 @@ import { ThinkingIndicator } from './ThinkingIndicator'
 import { WelcomePlaceholder } from './WelcomePlaceholder'
 
 export const ChatScreen: FC = memo(() => {
-  const { closePanel, open, openHistory, openChatScreen, screen, activeChatId, streaming } = useAiAssistantContext()
-  const queryClient = useQueryClient()
-  const createChat = useCreateAiChat()
+  const { closePanel, open, openHistory, screen, activeChatId, resetActiveChat, streaming } =
+    useAiAssistantContext()
   const insertDraftSnippetRef = useRef<((text: string) => void) | null>(null)
   const messagesQuery = useAiChatMessages(activeChatId)
 
   const handleNewChat = useCallback((): void => {
-    void (async (): Promise<void> => {
-      const chat = await createChat.mutateAsync(undefined)
-      void invalidateAiChatListQueries(queryClient)
-      openChatScreen(chat.chatId)
-    })()
-  }, [createChat, openChatScreen, queryClient])
+    streaming.abort()
+    streaming.reset()
+    resetActiveChat()
+  }, [resetActiveChat, streaming])
 
   const messagesOldestFirst = useMemo(() => {
     if (!messagesQuery.data?.pages?.length) {
@@ -101,7 +95,7 @@ export const ChatScreen: FC = memo(() => {
   return (
     <ChatLayout>
       <ChatScreenHeader
-        newChatDisabled={createChat.isPending}
+        newChatDisabled={false}
         onNewChat={handleNewChat}
         onHistory={openHistory}
         onClose={closePanel}
