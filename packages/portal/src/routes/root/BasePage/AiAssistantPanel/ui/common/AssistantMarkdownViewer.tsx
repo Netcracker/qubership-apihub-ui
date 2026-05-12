@@ -142,7 +142,6 @@ const AssistantMarkdownSurface = styled(Box)(({ theme }) => ({
   boxSizing: 'border-box',
   wordBreak: 'break-word',
   '& .markdown-body': {
-    backgroundColor: 'transparent',
     color: theme.palette.text.primary,
     ...theme.typography.body2,
   },

@@ -31,10 +31,10 @@ export const CodeBlock: FC<CodeBlockProps> = memo(({ className, rawText, childre
     <CodeBlockRoot>
       <CodeBlockHeader>
         <Stack direction="row" alignItems="center" spacing={0.75}>
-          <BracketTypography variant="caption" color="text.secondary">
+          <BracketTypography variant="subtitle4">
             {'</>'}
           </BracketTypography>
-          <LanguageTypography variant="caption" color="text.secondary">
+          <LanguageTypography variant="subtitle4">
             {languageLabel}
           </LanguageTypography>
         </Stack>
@@ -58,6 +58,7 @@ function languageLabelFromClassName(className: string | undefined): string {
   const id = match[1].toLowerCase()
   if (id === 'json') return 'JSON'
   if (id === 'yaml' || id === 'yml') return 'YAML'
+  if (id === 'http') return 'HTTP'
   return id
 }
 
@@ -66,15 +67,14 @@ const CodeBlockRoot = styled(Box)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
   overflow: 'hidden',
   margin: theme.spacing(0.75, 0),
-  backgroundColor: theme.palette.background.paper,
+  backgroundColor: theme.palette.action.hover,
 }))
 
 const CodeBlockHeader = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-  padding: theme.spacing(0.5, 0.5, 0.5, 1.25),
-  backgroundColor: theme.palette.action.hover,
+  padding: theme.spacing(0.75, 2),
   borderBottom: `1px solid ${theme.palette.divider}`,
 }))
 
