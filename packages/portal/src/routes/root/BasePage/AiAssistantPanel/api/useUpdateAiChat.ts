@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { UseMutationResult } from '@tanstack/react-query'
 import { aiChatJson } from './client'
+import { invalidateAiChatListQueries } from './invalidateAiChatListQueries'
 import { AI_CHAT_ROOT, aiChatItemKey } from './queryKeys'
 import type { AiChat, AiChatUpdateRequest, ChatId } from './types'
 
@@ -63,7 +64,7 @@ export function useUpdateAiChat(): UseMutationResult<
       queryClient.setQueryData(aiChatItemKey(chat.chatId), chat)
     },
     onSettled: () => {
-      void queryClient.invalidateQueries({ queryKey: [AI_CHAT_ROOT, 'chats'] })
+      void invalidateAiChatListQueries(queryClient)
     },
   })
 }

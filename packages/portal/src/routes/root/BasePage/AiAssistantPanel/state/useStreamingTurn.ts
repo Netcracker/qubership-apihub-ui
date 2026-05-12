@@ -6,13 +6,13 @@ import { FETCH_ERROR_EVENT, type FetchErrorDetails } from '@netcracker/qubership
 import { HttpError } from '@netcracker/qubership-apihub-ui-shared/utils/responses'
 
 import { aiChatJson } from '../api/client'
-import { AI_CHAT_ROOT, aiChatItemKey, aiChatListKey, aiChatMessagesKey } from '../api/queryKeys'
+import { invalidateAiChatListQueries } from '../api/invalidateAiChatListQueries'
+import { aiChatItemKey, aiChatMessagesKey } from '../api/queryKeys'
 import { streamAiChatTurn } from '../api/sse'
 import type {
   AiChat,
   AiChatMessage,
   AiChatMessagesListResponse,
-  AiChatsListResponse,
   AiChatStreamEvent,
   ChatId,
   ClientMessageId,
@@ -214,7 +214,7 @@ export function useStreamingTurn({
           dispatchSseFetchError(code, message)
         }
         if (event.type === 'done') {
-          void queryClient.invalidateQueries({ queryKey: [AI_CHAT_ROOT, 'chats'] })
+          void invalidateAiChatListQueries(queryClient)
           void queryClient.invalidateQueries({ queryKey: aiChatMessagesKey(chatId) })
         }
         running = applyStreamingSseEvent(running, event)
@@ -289,34 +289,13 @@ export function useStreamingTurn({
         let chatId = activeChatId
         const fromWelcome = activeChatId === null
         if (!chatId) {
-          const created = await aiChatJson<AiChat>('/ai-chat/chats', {
+          const { chatId: newChatId } = await aiChatJson<AiChat>('/ai-chat/chats', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({}),
           })
-          const { chatId: newChatId } = created
           chatId = newChatId
-          queryClient.setQueryData(aiChatItemKey(chatId), created)
-          queryClient.setQueryData<InfiniteData<AiChatsListResponse> | undefined>(
-            aiChatListKey(),
-            (previous) => {
-              if (!previous || previous.pages.length === 0) {
-                return previous
-              }
-              if (previous.pages.some((page) => page.chats.some((chat) => chat.chatId === chatId))) {
-                return previous
-              }
-              const [firstPage, ...restPages] = previous.pages
-              const nextFirstPage = {
-                ...firstPage,
-                chats: [created, ...firstPage.chats],
-              }
-              return {
-                ...previous,
-                pages: [nextFirstPage, ...restPages],
-              }
-            },
-          )
+          void invalidateAiChatListQueries(queryClient)
           isNewChat = true
           if (fromWelcome) {
             openChatScreen(chatId)
@@ -339,9 +318,6 @@ export function useStreamingTurn({
           (previous: InfiniteData<AiChatMessagesListResponse> | undefined) =>
             prependMessageToInfiniteMessages(previous, optimistic),
         )
-        if (isNewChat) {
-          void queryClient.invalidateQueries({ queryKey: [AI_CHAT_ROOT, 'chats'] })
-        }
 
         const pendingSnapshot: StreamingTurnState = {
           status: 'pending',
@@ -364,7 +340,7 @@ export function useStreamingTurn({
       } finally {
         turnLockRef.current = false
         if (isNewChat) {
-          void queryClient.invalidateQueries({ queryKey: [AI_CHAT_ROOT, 'chats'] })
+          void invalidateAiChatListQueries(queryClient)
         }
       }
     },

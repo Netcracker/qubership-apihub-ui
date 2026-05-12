@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { InfiniteData, UseMutationResult } from '@tanstack/react-query'
 import { AI_ASSISTANT_HISTORY_SCREEN, type AiAssistantScreen, useAiAssistantContext } from '../state/AiAssistantContext'
 import { aiChatVoid } from './client'
+import { invalidateAiChatListQueries } from './invalidateAiChatListQueries'
 import { AI_CHAT_ROOT, aiChatItemKey, aiChatMessagesKey } from './queryKeys'
 import type { AiChat, AiChatMessagesListResponse, ChatId } from './types'
 
@@ -77,7 +78,7 @@ export function useDeleteAiChat(): UseMutationResult<
       queryClient.removeQueries({ queryKey: aiChatMessagesKey(chatId), exact: true })
     },
     onSettled: () => {
-      void queryClient.invalidateQueries({ queryKey: [AI_CHAT_ROOT, 'chats'] })
+      void invalidateAiChatListQueries(queryClient)
     },
   })
 }

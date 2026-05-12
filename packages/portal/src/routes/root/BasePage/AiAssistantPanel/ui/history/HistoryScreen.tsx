@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query'
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import { styled } from '@mui/material/styles'
@@ -5,6 +6,7 @@ import Typography from '@mui/material/Typography'
 import type { FC } from 'react'
 import { memo, useCallback, useMemo, useRef, useState } from 'react'
 import { type AiChat, type ChatId, MAX_PINNED_PER_USER } from '../../api/types'
+import { invalidateAiChatListQueries } from '../../api/invalidateAiChatListQueries'
 import { useAiChats } from '../../api/useAiChats'
 import { useCreateAiChat } from '../../api/useCreateAiChat'
 import { useDeleteAiChat } from '../../api/useDeleteAiChat'
@@ -19,6 +21,7 @@ const LOAD_NEXT_PAGE_THRESHOLD_PX = 120
 
 export const HistoryScreen: FC = memo(() => {
   const { activeChatId, closePanel, openChatScreen, openHistory, streaming } = useAiAssistantContext()
+  const queryClient = useQueryClient()
   const createChat = useCreateAiChat()
   const updateChat = useUpdateAiChat()
   const deleteChat = useDeleteAiChat()
@@ -85,12 +88,20 @@ export const HistoryScreen: FC = memo(() => {
     void fetchNextPage()
   }, [fetchNextPage, hasNextPage, isFetchingNextPage])
 
+  const handleNewChat = useCallback((): void => {
+    void (async (): Promise<void> => {
+      const chat = await createChat.mutateAsync(undefined)
+      await invalidateAiChatListQueries(queryClient)
+      openChatScreen(chat.chatId)
+    })()
+  }, [createChat, openChatScreen, queryClient])
+
   return (
     <HistoryLayout>
       <HistoryScreenHeader
         newChatDisabled={createChat.isPending}
         onBack={handleBack}
-        onNewChat={() => createChat.mutate(undefined)}
+        onNewChat={handleNewChat}
         onClose={closePanel}
         onHistory={openHistory}
       />
