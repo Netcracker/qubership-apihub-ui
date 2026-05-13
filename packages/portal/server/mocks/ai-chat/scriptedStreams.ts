@@ -545,7 +545,7 @@ export function assistantMessageFromScenario(scenario: Scenario, args: ScriptedB
   if (completed) return completed.event.message
   const collected = frames
     .filter((f): f is ScriptedFrame & { event: Extract<AiChatStreamEvent, { type: 'message.assistant.delta' }> } =>
-      f.event.type === 'message.assistant.delta'
+      f.event.type === 'message.assistant.delta',
     )
     .map((f) => f.event.delta)
     .join('')
