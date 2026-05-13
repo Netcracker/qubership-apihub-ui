@@ -1,7 +1,7 @@
 import { Box, ClickAwayListener, Drawer } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import { Resizable, type ResizeCallback } from 're-resizable'
-import { type FC, memo, useCallback, useEffect, useState } from 'react'
+import { type FC, useCallback } from 'react'
 
 import { APP_HEADER_HEIGHT } from '@netcracker/qubership-apihub-ui-shared/themes/components'
 import { AI_ASSISTANT_HISTORY_SCREEN, useAiAssistantContext } from './state/AiAssistantContext'
@@ -20,7 +20,11 @@ const RESIZE_ENABLE = {
   topLeft: false,
 }
 
-/** Widen invisible hit area past the left edge so resize is usable without pixel-hunting. */
+/**
+ * Keep the visible resize area slightly wider than the panel edge so users can grab it.
+ * `overflow: 'visible'` on the drawer paper is required so the handle that leaks
+ * 4px outside the panel is still clickable and draggable.
+ */
 const RESIZE_HANDLE_STYLES = {
   left: {
     left: '-4px',
@@ -29,21 +33,16 @@ const RESIZE_HANDLE_STYLES = {
   },
 }
 
-export const AiAssistantPanel: FC = memo(() => {
+const DRAWER_LAYOUT_STYLES = {
+  top: APP_HEADER_HEIGHT,
+  height: `calc(100% - ${APP_HEADER_HEIGHT})`,
+}
+
+export const AiAssistantPanel: FC = () => {
   const { open, closePanel, panelWidth, setPanelWidth, screen } = useAiAssistantContext()
-  const [currentPanelWidth, setCurrentPanelWidth] = useState<number>(panelWidth)
-
-  useEffect(() => {
-    setCurrentPanelWidth(panelWidth)
-  }, [panelWidth, open])
-
-  const handleResize: ResizeCallback = useCallback((_event, _direction, elementRef) => {
-    setCurrentPanelWidth(elementRef.offsetWidth)
-  }, [])
 
   const handleResizeStop: ResizeCallback = useCallback((_event, _direction, elementRef) => {
     const width = elementRef.offsetWidth
-    setCurrentPanelWidth(width)
     setPanelWidth(width)
   }, [setPanelWidth])
 
@@ -53,63 +52,53 @@ export const AiAssistantPanel: FC = memo(() => {
       open={open}
       onClose={closePanel}
     >
-      <ClickAwayListener onClickAway={closePanel}>
-        <PanelClickAwayRoot>
-          <Resizable
-            size={{ width: currentPanelWidth, height: '100%' }}
-            minWidth={AI_ASSISTANT_PANEL_MIN_WIDTH}
-            maxWidth={getAiAssistantPanelMaxWidth()}
-            enable={RESIZE_ENABLE}
-            handleStyles={RESIZE_HANDLE_STYLES}
-            boundsByDirection={true}
-            onResize={handleResize}
-            onResizeStop={handleResizeStop}
-          >
-            <PanelContainer data-testid="AiAssistantPanel">
-              <PanelContent>
-                {screen === AI_ASSISTANT_HISTORY_SCREEN ? <HistoryScreen /> : <ChatScreen />}
-              </PanelContent>
-            </PanelContainer>
-          </Resizable>
-        </PanelClickAwayRoot>
+      <ClickAwayListener onClickAway={closePanel} mouseEvent="onMouseDown">
+        <Resizable
+          size={{ width: panelWidth, height: '100%' }}
+          minWidth={AI_ASSISTANT_PANEL_MIN_WIDTH}
+          maxWidth={getAiAssistantPanelMaxWidth()}
+          enable={RESIZE_ENABLE}
+          handleStyles={RESIZE_HANDLE_STYLES}
+          boundsByDirection={true}
+          onResizeStop={handleResizeStop}
+        >
+          <PanelContainer data-testid="AiAssistantPanel">
+            {screen === AI_ASSISTANT_HISTORY_SCREEN ? <HistoryScreen /> : <ChatScreen />}
+          </PanelContainer>
+        </Resizable>
       </ClickAwayListener>
     </StyledDrawer>
   )
-})
+}
 
+/**
+ * Default Drawer modal covers the full viewport and blocks the app header.
+ * We offset the drawer/backdrop below the header and manage pointer events:
+ * - modal wrapper: no pointer events (header strip stays interactive),
+ * - backdrop: captures clicks in the shaded area and closes via Drawer onClose,
+ * - drawer paper: pointer events enabled (panel is clickable).
+ */
 const StyledDrawer = styled(Drawer)({
   pointerEvents: 'none',
   '& .MuiDrawer-paper': {
     pointerEvents: 'auto',
-    top: APP_HEADER_HEIGHT,
-    height: `calc(100% - ${APP_HEADER_HEIGHT})`,
     overflow: 'visible',
+    ...DRAWER_LAYOUT_STYLES,
   },
   '& .MuiBackdrop-root': {
-    top: APP_HEADER_HEIGHT,
-    height: `calc(100% - ${APP_HEADER_HEIGHT})`,
-    pointerEvents: 'none',
+    pointerEvents: 'auto',
+    ...DRAWER_LAYOUT_STYLES,
   },
-})
-
-const PanelClickAwayRoot = styled(Box)({
-  height: '100%',
-  width: '100%',
 })
 
 const PanelContainer = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  width: '100%',
-  height: '100%',
-  backgroundColor: theme.palette.background.paper,
-}))
-
-const PanelContent = styled(Box)({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'stretch',
   justifyContent: 'flex-start',
   minHeight: 0,
   flex: 1,
-})
+  width: '100%',
+  height: '100%',
+  backgroundColor: theme.palette.background.paper,
+}))

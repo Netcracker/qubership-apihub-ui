@@ -20,7 +20,7 @@ import { useMemo } from 'react'
 import { memo, useCallback, useEffect } from 'react'
 import { generatePath, Outlet } from 'react-router-dom'
 import { MainPageProvider } from '../MainPage/MainPageProvider'
-import { AiAssistantHeaderButton } from '@netcracker/qubership-apihub-ui-portal/src/components/AiAssistantPanel/AiAssistantHeaderButton'
+import { AiAssistantButton } from '@netcracker/qubership-apihub-ui-portal/src/components/AiAssistantPanel/AiAssistantButton'
 import { AiAssistantPanel } from '@netcracker/qubership-apihub-ui-portal/src/components/AiAssistantPanel/AiAssistantPanel'
 import { AiAssistantProvider } from '@netcracker/qubership-apihub-ui-portal/src/components/AiAssistantPanel/state/AiAssistantProvider'
 import { GlobalSearchPanel } from './GlobalSearchPanel/GlobalSearchPanel'
@@ -107,7 +107,7 @@ export const BasePage: FC = memo(() => {
                   <VsCodeExtensionButton/>
                   <AppHeaderDivider/>
                   <SearchButton/>
-                  <AiAssistantHeaderButton/>
+                  <AiAssistantButton/>
                   {isSuperAdmin && <PortalSettingsButton/>}
                   <SystemInfoPopup
                     frontendVersionKey={frontendVersion}
