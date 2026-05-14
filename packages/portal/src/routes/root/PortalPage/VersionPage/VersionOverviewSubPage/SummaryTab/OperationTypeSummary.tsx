@@ -94,10 +94,8 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
   const showApiQualitySummary = !apiQualitySummaryPlaceholder
   const validationSummary = useApiQualityValidationSummary(apiType)
   const validationRulesets = validationSummary?.rulesets ?? []
-  const validationRulesetsActive = validationSummary?.rulesets?.filter(({ status }) => {
-    return status === RulesetStatuses.ACTIVE
-  }) ?? []
-  const activeRulesetsId = validationRulesetsActive[0]?.id ?? ''
+  const activeRuleset = validationSummary?.rulesets?.find(({ status }) => status === RulesetStatuses.ACTIVE)
+  const activeRulesetsId = activeRuleset?.id ?? ''
 
   const hasInactiveRulesets = validationRulesets.some(ruleset => ruleset.status === RulesetStatuses.INACTIVE)
   const aggregatedValidationSummary: IssuesSummary = useAggregatedValidationSummaryByPackageVersion(
@@ -364,10 +362,14 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
                     alignItems='flex-start'
                     gap={1}
                   >
-                    {validationRulesets.map(ruleset => (
-                      <Box key={ruleset.id} display='flex' alignItems='center' data-testid="ValidationRulesetContainer">
-                        <ValidationRulesetLink data={ruleset} loading={false} />
-                      </Box>
+                    {activeRuleset
+                      ? <Box key={activeRuleset?.id} display='flex' alignItems='center' data-testid="ValidationRulesetContainer">
+                          <ValidationRulesetLink data={activeRuleset} loading={false} />
+                        </Box>
+                      : validationRulesets.map(ruleset => (
+                        <Box key={ruleset.id} display='flex' alignItems='center' data-testid="ValidationRulesetContainer">
+                           <ValidationRulesetLink data={ruleset} loading={false} />
+                        </Box>
                     ))}
                     {hasInactiveRulesets && (
                       <Typography variant="body2">
