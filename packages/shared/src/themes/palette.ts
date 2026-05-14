@@ -15,6 +15,7 @@ export function createPalette(): PaletteOptions {
     primary: {
       main: '#0068FF',
       light: '#E1F0FE',
+      dark: '#0052EE',
     },
     secondary: {
       main: '#00BB5B',

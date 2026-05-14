@@ -1,8 +1,8 @@
-import { IconButton } from '@mui/material'
 import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 import { type FC, memo, type MouseEvent, useCallback } from 'react'
 
+import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
 import { RobotIcon } from '@netcracker/qubership-apihub-ui-shared/icons/RobotIcon'
 
 import { useAiAssistantContext } from './state/AiAssistantContext'

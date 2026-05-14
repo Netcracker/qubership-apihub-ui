@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Box, IconButton } from '@mui/material'
+import { Box } from '@mui/material'
 import type { FC } from 'react'
 import { useMemo } from 'react'
 import { memo, useCallback, useEffect } from 'react'
@@ -30,6 +30,7 @@ import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
 import type { Theme } from '@mui/material/styles'
 import type { SystemStyleObject } from '@mui/system/styleFunctionSx/styleFunctionSx'
 import { AppHeader } from '@netcracker/qubership-apihub-ui-shared/components/AppHeader'
+import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
 import { ExceptionSituationHandler } from '@netcracker/qubership-apihub-ui-shared/components/ExceptionSituationHandler'
 import {
   MaintenanceNotification,
@@ -140,14 +141,15 @@ export const BasePage: FC = memo(() => {
 const SearchButton: FC = memo(() => {
   const { showGlobalSearchPanel } = useEventBus()
   return (
-    <IconButton
-      data-testid="GlobalSearchButton"
+    <ButtonWithHint
+      hint="Global Search"
+      startIcon={<SearchOutlinedIcon/>}
+      aria-label="Global Search"
       size="large"
       color="inherit"
+      data-testid="GlobalSearchButton"
       onClick={showGlobalSearchPanel}
-    >
-      <SearchOutlinedIcon/>
-    </IconButton>
+    />
   )
 })
 
