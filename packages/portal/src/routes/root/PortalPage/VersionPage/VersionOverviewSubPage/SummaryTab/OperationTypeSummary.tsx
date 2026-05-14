@@ -94,8 +94,19 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
   const showApiQualitySummary = !apiQualitySummaryPlaceholder
   const validationSummary = useApiQualityValidationSummary(apiType)
   const validationRulesets = validationSummary?.rulesets ?? []
+  const validationRulesetsActive = validationSummary?.rulesets?.filter(({ status }) => {
+    return status === RulesetStatuses.ACTIVE
+  }) ?? []
+  const activeRulesetsId = validationRulesetsActive[0]?.id ?? ''
+
   const hasInactiveRulesets = validationRulesets.some(ruleset => ruleset.status === RulesetStatuses.INACTIVE)
-  const aggregatedValidationSummary: IssuesSummary = useAggregatedValidationSummaryByPackageVersion(validationSummary)
+  const aggregatedValidationSummary: IssuesSummary = useAggregatedValidationSummaryByPackageVersion(
+    validationSummary && {
+      ...validationSummary,
+      documents: validationSummary.documents?.filter(document => document.rulesetId === activeRulesetsId),
+    },
+  )
+
   const documentsWithFailedValidation = useMemo(
     () => (validationSummary?.documents ?? []).reduce((result, document) => {
       if (document.status === ValidationStatuses.ERROR) {
