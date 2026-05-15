@@ -89,7 +89,7 @@ function isOperationsGroupComparisonObject(
   return object?.type === COMPARISON_OBJECT_TYPE_OPERATIONS_GROUP_IN_PACKAGE_REVISION
 }
 
-export function isOperationsGroupCompare(obj1: ComparisonObject | null, obj2: ComparisonObject | null): boolean {
+export function isOperationsGroupComparison(obj1: ComparisonObject | null, obj2: ComparisonObject | null): boolean {
   return isOperationsGroupComparisonObject(obj1) && isOperationsGroupComparisonObject(obj2)
 }
 
@@ -156,7 +156,7 @@ export function useCompareBreadcrumbs(
     changedIsLatestRevision,
     originOperation,
     changedOperation,
-    isOperationsGroupCompare,
+    isOperationsGroupComparison,
   ])
 }
 

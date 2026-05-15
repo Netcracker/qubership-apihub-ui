@@ -32,7 +32,7 @@ import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
 import { useComparisonObjects } from '@apihub/routes/root/PortalPage/VersionPage/useComparisonObjects'
 import {
-  isOperationsGroupCompare,
+  isOperationsGroupComparison,
   useCompareBreadcrumbs,
 } from '@apihub/routes/root/PortalPage/VersionPage/useCompareBreadcrumbs'
 import { BreadcrumbsDataContext } from '../ComparedPackagesBreadcrumbsProvider'
@@ -78,7 +78,10 @@ export const GroupComparePage: FC = memo(() => {
             toolbar={
               <ComparisonToolbar
                 compareToolbarMode={COMPARE_PACKAGES_MODE}
-                isOperationsGroupCompare = {isOperationsGroupCompare(originComparisonObject, changedComparisonObject)}
+                isOperationsGroupCompare={
+                  useMemo(() => isOperationsGroupComparison(originComparisonObject, changedComparisonObject),
+                    [originComparisonObject, changedComparisonObject],
+                  )}
               />
             }
             body={
