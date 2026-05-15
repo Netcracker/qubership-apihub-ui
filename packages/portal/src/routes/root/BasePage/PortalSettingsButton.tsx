@@ -16,17 +16,18 @@
 
 import type { FC } from 'react'
 import { memo } from 'react'
-import { IconButton } from '@mui/material'
 import { useLocation } from 'react-use'
-import { NavLink } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import { PortalSettingsIcon } from '@netcracker/qubership-apihub-ui-shared/icons/PortalSettingsIcon'
+import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
 import { getSettingsPath } from '../../NavigationProvider'
 import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
-import { PortalSettingsIcon } from '@netcracker/qubership-apihub-ui-shared/icons/PortalSettingsIcon'
 
 export const PortalSettingsButton: FC = memo(() => {
   const location = useLocation()
   const backwardLocation = useBackwardLocationContext()
   const setBackwardLocation = useSetBackwardLocationContext()
+  const navigate = useNavigate()
 
   const packageSettingsLinkHandle = (): void => {
     setBackwardLocation({
@@ -36,18 +37,18 @@ export const PortalSettingsButton: FC = memo(() => {
         search: location.search!,
       },
     })
+    navigate(getSettingsPath())
   }
 
   return (
-    <IconButton
-      data-testid="PortalSettingsButton"
+    <ButtonWithHint
+      hint="Portal Settings"
+      startIcon={<PortalSettingsIcon/>}
+      aria-label="Portal Settings"
       size="large"
       color="inherit"
-      component={NavLink}
-      to={getSettingsPath()}
+      data-testid="PortalSettingsButton"
       onClick={packageSettingsLinkHandle}
-    >
-      <PortalSettingsIcon/>
-    </IconButton>
+    />
   )
 })

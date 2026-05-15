@@ -18,9 +18,9 @@ import type { FC, ReactNode } from 'react'
 import { memo } from 'react'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
-import IconButton from '@mui/material/IconButton'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
+import { styled } from '@mui/material/styles'
 import type { TestableProps } from './Testable'
 import { APP_HEADER_HEIGHT } from '../themes/components'
 
@@ -41,11 +41,11 @@ export const AppHeader: FC<AppHeaderProps> = memo<AppHeaderProps>(({ logo, title
   return (
     <Box data-testid="AppHeader" flexGrow={1}>
       <AppBar position="static" sx={{ height: APP_HEADER_HEIGHT }}>
-        <Toolbar>
+        <AppHeaderToolbar>
           {logo && (
-            <IconButton disabled sx={{ mr: 2 }} size="large" edge="start" color="inherit">
+            <Logo>
               {logo}
-            </IconButton>
+            </Logo>
           )}
           {title && (
             <Typography sx={{ mr: 3 }} variant="h2" component="div">
@@ -77,7 +77,7 @@ export const AppHeader: FC<AppHeaderProps> = memo<AppHeaderProps>(({ logo, title
               {action}
             </Box>
           )}
-        </Toolbar>
+        </AppHeaderToolbar>
       </AppBar>
     </Box>
   )
@@ -96,3 +96,24 @@ const APP_HEADER_LINK_STYLES_SELECTED = {
   backgroundColor: '#0052EE',
   boxShadow: 'inset 0px -3px 0px #002B80',
 }
+
+// TODO: 14.05.16 temporary solution for the header. Not doing a global
+// button rebalancing yet, because we need to verify compatibility across
+// the whole project.
+const AppHeaderToolbar = styled(Toolbar)(({ theme }) => ({
+  '& .MuiIconButton-root, & .AppHeaderIconButton': {
+    width: APP_HEADER_HEIGHT,
+    height: APP_HEADER_HEIGHT,
+  },
+  '& .MuiButton-root, & .MuiIconButton-root, & .AppHeaderIconButton': {
+    borderRadius: 0,
+    '&:hover': {
+      backgroundColor: theme.palette.primary.dark,
+    },
+  },
+}))
+
+const Logo = styled(Box)(({ theme }) => ({
+  marginRight: theme.spacing(3.5),
+  flexShrink: 0,
+}))
