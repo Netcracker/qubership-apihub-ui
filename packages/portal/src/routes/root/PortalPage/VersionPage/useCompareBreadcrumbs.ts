@@ -140,7 +140,7 @@ export function useCompareBreadcrumbs(
       changedBreadcrumbs.push(getOperationBreadcrumb(changedOperation))
     }
 
-    if (isOperationsGroupCompare(obj1, obj2)) {
+    if (isOperationsGroupComparisonObject(obj1) && isOperationsGroupComparisonObject(obj2)) {
       originBreadcrumbs.push(getGroupBreadcrumb(obj1.group, originPackageOrDashboard))
       changedBreadcrumbs.push(getGroupBreadcrumb(obj2.group, changedPackageOrDashboard))
     }
