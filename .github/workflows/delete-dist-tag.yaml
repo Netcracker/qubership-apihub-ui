@@ -5,4 +5,4 @@ on:
 
 jobs:
   delete-dist-tag:
-    uses: netcracker/qubership-apihub-ci/.github/workflows/delete-dist-tag.yaml@feature/nodejs24
+    uses: netcracker/qubership-apihub-ci/.github/workflows/delete-dist-tag.yaml@main
