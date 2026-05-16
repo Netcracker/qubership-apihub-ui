@@ -2,29 +2,26 @@ import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { type FC, memo, useCallback, useMemo, useRef } from 'react'
+import { type FC, memo, useMemo, useRef } from 'react'
 
 import type { AiChatMessage, MessageId } from '../../api/types'
 import { useAiChatMessages } from '../../api/useAiChatMessages'
 import { AiAssistantMockTriggerBar } from '../../dev/AiAssistantMockTriggerBar'
 import { showAiAssistantDevTriggers } from '../../dev/devFlags'
+import { useAiAssistantHeaderHandlers } from '../../hooks/useAiAssistantHeaderHandlers'
 import { useAiAssistantContext } from '../../state/AiAssistantContext'
-import { ChatScreenHeader } from './ChatScreenHeader'
+import { AiAssistantHeader } from '../header/AiAssistantHeader'
+import { AI_ASSISTANT_HEADER_MODE } from '../header/aiAssistantHeaderMode'
+import { AiAssistantPlaceholder } from './AiAssistantPlaceholder'
 import { Composer } from './Composer'
 import { MessageList } from './MessageList'
 import { ThinkingIndicator } from './ThinkingIndicator'
-import { AiAssistantPlaceholder } from './AiAssistantPlaceholder'
 
 export const ChatScreen: FC = memo(() => {
-  const { closePanel, open, openHistory, activeChatId, resetActiveChat, streaming } = useAiAssistantContext()
+  const { open, activeChatId, streaming } = useAiAssistantContext()
+  const headerHandlers = useAiAssistantHeaderHandlers()
   const insertDraftSnippetRef = useRef<((text: string) => void) | null>(null)
   const messagesQuery = useAiChatMessages(activeChatId)
-
-  const handleNewChat = useCallback((): void => {
-    streaming.abort()
-    streaming.reset()
-    resetActiveChat()
-  }, [resetActiveChat, streaming])
 
   const messagesOldestFirst = useMemo(() => {
     if (!messagesQuery.data?.pages?.length) {
@@ -87,12 +84,7 @@ export const ChatScreen: FC = memo(() => {
 
   return (
     <ChatLayout>
-      <ChatScreenHeader
-        newChatDisabled={false}
-        onNewChat={handleNewChat}
-        onHistory={openHistory}
-        onClose={closePanel}
-      />
+      <AiAssistantHeader mode={AI_ASSISTANT_HEADER_MODE.chat} {...headerHandlers} />
       <Body>
         {messagesQuery.isError
           ? (
@@ -109,7 +101,7 @@ export const ChatScreen: FC = memo(() => {
             </Centered>
           )
           : showWelcome
-          ? <WelcomePlaceholder />
+          ? <AiAssistantPlaceholder />
           : showThread && activeChatId
           ? (
             <>

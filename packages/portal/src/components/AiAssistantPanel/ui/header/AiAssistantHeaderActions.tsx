@@ -1,7 +1,8 @@
+import { type FC, memo } from 'react'
+
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import { styled } from '@mui/material/styles'
-import { type FC, memo } from 'react'
 
 import { ClockBackwardIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ClockBackwardIcon'
 import { CloseIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CloseIcon'
@@ -12,29 +13,19 @@ export type AiAssistantHeaderActionsProps = {
   onNewChat: () => void
   onHistory: () => void
   onClose: () => void
-  newChatTestId?: string
-  historyTestId?: string
-  closeTestId?: string
 }
-
-const DEFAULT_HISTORY_BUTTON_TEST_ID = 'AiAssistantHistoryButton'
-const DEFAULT_NEW_CHAT_BUTTON_TEST_ID = 'AiAssistantNewChatButton'
-const DEFAULT_CLOSE_BUTTON_TEST_ID = 'AiAssistantPanelCloseButton'
 
 export const AiAssistantHeaderActions: FC<AiAssistantHeaderActionsProps> = memo(({
   newChatDisabled,
   onNewChat,
   onHistory,
   onClose,
-  newChatTestId = DEFAULT_NEW_CHAT_BUTTON_TEST_ID,
-  historyTestId = DEFAULT_HISTORY_BUTTON_TEST_ID,
-  closeTestId = DEFAULT_CLOSE_BUTTON_TEST_ID,
 }) => {
   return (
     <HeaderActions>
       <IconButton
         aria-label="New chat"
-        data-testid={newChatTestId}
+        data-testid="NewChatButton"
         disabled={newChatDisabled}
         onClick={onNewChat}
         color="inherit"
@@ -43,7 +34,7 @@ export const AiAssistantHeaderActions: FC<AiAssistantHeaderActionsProps> = memo(
       </IconButton>
       <IconButton
         aria-label="Chat history"
-        data-testid={historyTestId}
+        data-testid="HistoryButton"
         onClick={onHistory}
         color="inherit"
       >
@@ -51,7 +42,7 @@ export const AiAssistantHeaderActions: FC<AiAssistantHeaderActionsProps> = memo(
       </IconButton>
       <IconButton
         aria-label="Close AI Assistant"
-        data-testid={closeTestId}
+        data-testid="CloseButton"
         onClick={onClose}
         color="inherit"
       >
@@ -61,9 +52,13 @@ export const AiAssistantHeaderActions: FC<AiAssistantHeaderActionsProps> = memo(
   )
 })
 
+AiAssistantHeaderActions.displayName = 'AiAssistantHeaderActions'
+
 const HeaderActions = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: theme.spacing(0.5),
   flexShrink: 0,
 }))
+
+HeaderActions.displayName = 'HeaderActions'

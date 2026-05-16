@@ -8,16 +8,19 @@ import { type AiChat, type ChatId, MAX_PINNED_PER_USER } from '../../api/types'
 import { useAiChats } from '../../api/useAiChats'
 import { useDeleteAiChat } from '../../api/useDeleteAiChat'
 import { useUpdateAiChat } from '../../api/useUpdateAiChat'
+import { useAiAssistantHeaderHandlers } from '../../hooks/useAiAssistantHeaderHandlers'
 import { useAiAssistantContext } from '../../state/AiAssistantContext'
+import { AiAssistantHeader } from '../header/AiAssistantHeader'
+import { AI_ASSISTANT_HEADER_MODE } from '../header/aiAssistantHeaderMode'
 import { ChatListRow } from './ChatListRow'
 import { DeleteChatConfirmation } from './DeleteChatConfirmation'
-import { HistoryScreenHeader } from './HistoryScreenHeader'
 import { HistorySearchField } from './HistorySearchField'
 
 const LOAD_NEXT_PAGE_THRESHOLD_PX = 120
 
 export const HistoryScreen: FC = memo(() => {
-  const { activeChatId, closePanel, openChatScreen, openHistory, resetActiveChat, streaming } = useAiAssistantContext()
+  const { activeChatId, openChatScreen, streaming } = useAiAssistantContext()
+  const headerHandlers = useAiAssistantHeaderHandlers()
   const updateChat = useUpdateAiChat()
   const deleteChat = useDeleteAiChat()
 
@@ -83,20 +86,12 @@ export const HistoryScreen: FC = memo(() => {
     void fetchNextPage()
   }, [fetchNextPage, hasNextPage, isFetchingNextPage])
 
-  const handleNewChat = useCallback((): void => {
-    streaming.abort()
-    streaming.reset()
-    resetActiveChat()
-  }, [resetActiveChat, streaming])
-
   return (
     <HistoryLayout>
-      <HistoryScreenHeader
-        newChatDisabled={false}
+      <AiAssistantHeader
+        mode={AI_ASSISTANT_HEADER_MODE.history}
         onBack={handleBack}
-        onNewChat={handleNewChat}
-        onClose={closePanel}
-        onHistory={openHistory}
+        {...headerHandlers}
       />
       <HistorySearchField value={searchQuery} onChange={setSearchQuery} />
       <ListArea
