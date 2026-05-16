@@ -13,7 +13,7 @@ import { ChatScreenHeader } from './ChatScreenHeader'
 import { Composer } from './Composer'
 import { MessageList } from './MessageList'
 import { ThinkingIndicator } from './ThinkingIndicator'
-import { WelcomePlaceholder } from './WelcomePlaceholder'
+import { AiAssistantPlaceholder } from './AiAssistantPlaceholder'
 
 export const ChatScreen: FC = memo(() => {
   const { closePanel, open, openHistory, activeChatId, resetActiveChat, streaming } = useAiAssistantContext()

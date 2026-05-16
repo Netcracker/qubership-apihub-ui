@@ -1,12 +1,16 @@
 import type { ChipPropsColorOverrides } from '@mui/material/Chip/Chip'
 import type { PaletteOptions, SimplePaletteColorOptions } from '@mui/material/styles/createPalette'
-import { SECONDARY_TEXT_COLOR } from './colors'
+import { DEFAULT_TEXT_COLOR, SECONDARY_TEXT_COLOR } from './colors'
 
 export function createPalette(): PaletteOptions {
   return {
     // Default
     background: {
       default: '#F5F5FA',
+    },
+    text: {
+      primary: DEFAULT_TEXT_COLOR,
+      secondary: SECONDARY_TEXT_COLOR,
     },
     error: {
       main: '#FF5260',
