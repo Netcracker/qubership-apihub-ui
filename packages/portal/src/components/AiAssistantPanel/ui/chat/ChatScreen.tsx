@@ -114,9 +114,7 @@ export const ChatScreen: FC = memo(() => {
                 jumpButtonStreamPhase={jumpPhase}
                 streamingAssistantMessageId={streamingAssistantLive?.messageId ?? null}
               />
-              <ThinkingSlot>
-                <ThinkingIndicator visible={thinkingVisible} />
-              </ThinkingSlot>
+              <ThinkingIndicator visible={thinkingVisible} />
             </>
           )
           : null}
@@ -161,8 +159,3 @@ const Centered = styled(Box)(({ theme }) => ({
   minHeight: 0,
   padding: theme.spacing(2),
 }))
-
-const ThinkingSlot = styled(Box)({
-  flexShrink: 0,
-  minHeight: 0,
-})

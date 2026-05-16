@@ -11,14 +11,15 @@ export const ThinkingIndicator: FC<ThinkingIndicatorProps> = memo(({ visible }) 
     return null
   }
   return (
-    <Root variant="body2" color="text.secondary" data-testid="AiAssistantThinkingIndicator">
+    <ThinkingIndicatorTypography variant="body2" data-testid="ThinkingIndicator">
       Thinking
-    </Root>
+    </ThinkingIndicatorTypography>
   )
 })
 
-const Root = styled(Typography)(({ theme }) => ({
-  paddingLeft: theme.spacing(2),
-  paddingRight: theme.spacing(2),
-  paddingBottom: theme.spacing(0.5),
+const ThinkingIndicatorTypography = styled(Typography)(({ theme }) => ({
+  padding: theme.spacing(1, 3, 2, 3),
+  color: theme.palette.text.secondary,
 }))
+
+ThinkingIndicator.displayName = 'ThinkingIndicator'
