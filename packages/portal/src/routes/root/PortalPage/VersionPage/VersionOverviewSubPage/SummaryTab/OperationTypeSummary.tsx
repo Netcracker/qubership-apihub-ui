@@ -22,6 +22,7 @@ import { ValidationRulesetLink } from '@apihub/components/ApiQuality/Validatatio
 import { ValidationIssuesTooltip } from '@apihub/components/ApiQuality/ValidationIssuesTooltip'
 import { ISSUE_SEVERITIES_LIST, ISSUE_SEVERITY_COLOR_MAP } from '@apihub/entities/api-quality/issue-severities'
 import type { IssuesSummary } from '@apihub/entities/api-quality/package-version-validation-summary'
+import type { RulesetMetadataDto } from '@apihub/entities/api-quality/rulesets'
 import { RulesetStatuses } from '@apihub/entities/api-quality/rulesets'
 import { ValidationStatuses } from '@apihub/entities/api-quality/validation-statuses'
 import { Box, Link, Tooltip, Typography } from '@mui/material'
@@ -94,8 +95,16 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
   const showApiQualitySummary = !apiQualitySummaryPlaceholder
   const validationSummary = useApiQualityValidationSummary(apiType)
   const validationRulesets = validationSummary?.rulesets ?? []
+  const activeRuleset = validationSummary?.rulesets?.find(({ status }) => status === RulesetStatuses.ACTIVE)
+
   const hasInactiveRulesets = validationRulesets.some(ruleset => ruleset.status === RulesetStatuses.INACTIVE)
-  const aggregatedValidationSummary: IssuesSummary = useAggregatedValidationSummaryByPackageVersion(validationSummary)
+  const aggregatedValidationSummary: IssuesSummary = useAggregatedValidationSummaryByPackageVersion(
+    validationSummary && {
+      ...validationSummary,
+      documents: validationSummary.documents?.filter(document => document.rulesetId === activeRuleset?.id),
+    },
+  )
+
   const documentsWithFailedValidation = useMemo(
     () => (validationSummary?.documents ?? []).reduce((result, document) => {
       if (document.status === ValidationStatuses.ERROR) {
@@ -353,10 +362,10 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
                     alignItems='flex-start'
                     gap={1}
                   >
-                    {validationRulesets.map(ruleset => (
-                      <Box key={ruleset.id} display='flex' alignItems='center' data-testid="ValidationRulesetContainer">
-                        <ValidationRulesetLink data={ruleset} loading={false} />
-                      </Box>
+                    {activeRuleset && activeRuleset?.id
+                      ? <ValidationRulesetItem ruleset={activeRuleset}/>
+                      : validationRulesets.map(ruleset => (
+                        <ValidationRulesetItem key={ruleset.id} ruleset={ruleset}/>
                     ))}
                     {hasInactiveRulesets && (
                       <Typography variant="body2">
@@ -422,6 +431,16 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
     </Box>
   )
 })
+
+type ValidationRulesetItemProps = Readonly<{
+  ruleset: RulesetMetadataDto
+}>
+
+const ValidationRulesetItem: FC<ValidationRulesetItemProps> = ({ ruleset }) => (
+  <Box display="flex" alignItems="center" data-testid="ValidationRulesetContainer">
+    <ValidationRulesetLink data={ruleset} loading={false}/>
+  </Box>
+)
 
 const OPERATION_TYPE_SUMMARY_STYLE = {
   display: 'grid',
