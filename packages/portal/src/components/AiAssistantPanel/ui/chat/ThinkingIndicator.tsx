@@ -18,7 +18,7 @@ export const ThinkingIndicator: FC<ThinkingIndicatorProps> = memo(({ visible }) 
 })
 
 const ThinkingIndicatorTypography = styled(Typography)(({ theme }) => ({
-  padding: theme.spacing(1, 3, 2, 3),
+  padding: theme.spacing(1, 3, 0, 3),
   color: theme.palette.text.secondary,
 }))
 

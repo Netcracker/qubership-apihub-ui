@@ -11,7 +11,7 @@ import { useAiAssistantContext } from '../../state/AiAssistantContext'
 import { AiAssistantHeader } from '../header/AiAssistantHeader'
 import { AI_ASSISTANT_HEADER_MODE } from '../header/aiAssistantHeaderMode'
 import { AiAssistantPlaceholder } from './AiAssistantPlaceholder'
-import { Composer } from './Composer'
+import { AiAssistantComposer } from './AiAssistantComposer'
 import { MessageList } from './MessageList'
 import { ThinkingIndicator } from './ThinkingIndicator'
 
@@ -116,7 +116,7 @@ export const ChatScreen: FC = memo(() => {
           )
           : null}
       </Body>
-      <Composer panelOpen={open} chatKey={activeChatId ?? 'none'} />
+      <AiAssistantComposer panelOpen={open} chatKey={activeChatId ?? 'none'} />
     </ChatLayout>
   )
 })
