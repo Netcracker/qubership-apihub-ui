@@ -2,12 +2,10 @@ import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { type FC, memo, useMemo, useRef } from 'react'
+import { type FC, memo, useMemo } from 'react'
 
 import type { AiChatMessage, MessageId } from '../../api/types'
 import { useAiChatMessages } from '../../api/useAiChatMessages'
-import { AiAssistantMockTriggerBar } from '../../dev/AiAssistantMockTriggerBar'
-import { showAiAssistantDevTriggers } from '../../dev/devFlags'
 import { useAiAssistantHeaderHandlers } from '../../hooks/useAiAssistantHeaderHandlers'
 import { useAiAssistantContext } from '../../state/AiAssistantContext'
 import { AiAssistantHeader } from '../header/AiAssistantHeader'
@@ -20,7 +18,6 @@ import { ThinkingIndicator } from './ThinkingIndicator'
 export const ChatScreen: FC = memo(() => {
   const { open, activeChatId, streaming } = useAiAssistantContext()
   const headerHandlers = useAiAssistantHeaderHandlers()
-  const insertDraftSnippetRef = useRef<((text: string) => void) | null>(null)
   const messagesQuery = useAiChatMessages(activeChatId)
 
   const messagesOldestFirst = useMemo(() => {
@@ -119,20 +116,7 @@ export const ChatScreen: FC = memo(() => {
           )
           : null}
       </Body>
-      <Composer
-        panelOpen={open}
-        chatKey={activeChatId ?? 'none'}
-        insertDraftSnippetRef={insertDraftSnippetRef}
-      />
-      {showAiAssistantDevTriggers
-        ? (
-          <AiAssistantMockTriggerBar
-            onInsertSnippet={(text) => {
-              insertDraftSnippetRef.current?.(text)
-            }}
-          />
-        )
-        : null}
+      <Composer panelOpen={open} chatKey={activeChatId ?? 'none'} />
     </ChatLayout>
   )
 })

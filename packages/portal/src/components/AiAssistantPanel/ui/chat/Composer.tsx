@@ -1,30 +1,29 @@
-import Box from '@mui/material/Box'
-import { styled } from '@mui/material/styles'
-import TextField from '@mui/material/TextField'
 import {
   type FC,
   type KeyboardEvent,
   memo,
-  type MutableRefObject,
   useCallback,
   useEffect,
   useRef,
   useState,
 } from 'react'
 
+import Box from '@mui/material/Box'
+import { styled } from '@mui/material/styles'
+import TextField from '@mui/material/TextField'
+
 import { SendIcon } from '@netcracker/qubership-apihub-ui-shared/icons/SendIcon'
 import { StopIcon } from '@netcracker/qubership-apihub-ui-shared/icons/StopIcon'
+
 import { useAiAssistantContext } from '../../state/AiAssistantContext'
 import { AssistantCircularIconButton } from './AssistantCircularIconButton'
 
 export type ComposerProps = {
   panelOpen: boolean
   chatKey: string
-  /** Dev bar: insert scenario text into the draft without lifting state. */
-  insertDraftSnippetRef?: MutableRefObject<((text: string) => void) | null>
 }
 
-export const Composer: FC<ComposerProps> = memo(({ panelOpen, chatKey, insertDraftSnippetRef }) => {
+export const Composer: FC<ComposerProps> = memo(({ panelOpen, chatKey }) => {
   const { activeChatId, streaming } = useAiAssistantContext()
   const inputRef = useRef<HTMLTextAreaElement | null>(null)
   const [draft, setDraft] = useState('')
@@ -32,21 +31,6 @@ export const Composer: FC<ComposerProps> = memo(({ panelOpen, chatKey, insertDra
   useEffect(() => {
     setDraft('')
   }, [chatKey])
-
-  useEffect(() => {
-    if (!insertDraftSnippetRef) {
-      return
-    }
-    insertDraftSnippetRef.current = (text: string): void => {
-      setDraft(text)
-      window.requestAnimationFrame(() => {
-        inputRef.current?.focus()
-      })
-    }
-    return () => {
-      insertDraftSnippetRef.current = null
-    }
-  }, [insertDraftSnippetRef])
 
   useEffect(() => {
     if (!panelOpen) {
@@ -79,6 +63,10 @@ export const Composer: FC<ComposerProps> = memo(({ panelOpen, chatKey, insertDra
     handleSubmit()
   }, [handleSubmit])
 
+  const handleAbort = useCallback((): void => {
+    streaming.abort()
+  }, [streaming])
+
   return (
     <PillRow onKeyDown={handleComposerKeyDown}>
       <ComposerInputWrap>
@@ -92,7 +80,6 @@ export const Composer: FC<ComposerProps> = memo(({ panelOpen, chatKey, insertDra
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           InputProps={{ disableUnderline: true }}
-          disabled={busy}
         />
       </ComposerInputWrap>
       {busy
@@ -100,7 +87,7 @@ export const Composer: FC<ComposerProps> = memo(({ panelOpen, chatKey, insertDra
           <AssistantCircularIconButton
             variant="contained"
             aria-label="Stop generation"
-            onClick={() => streaming.abort()}
+            onClick={handleAbort}
           >
             <StopIcon fontSize="small" />
           </AssistantCircularIconButton>
@@ -109,12 +96,7 @@ export const Composer: FC<ComposerProps> = memo(({ panelOpen, chatKey, insertDra
           <AssistantCircularIconButton
             variant="contained"
             aria-label="Send message"
-            onClick={() => {
-              if (trimmedDraft.length === 0) {
-                return
-              }
-              handleSubmit()
-            }}
+            onClick={handleSubmit}
           >
             <SendIcon color="inherit" />
           </AssistantCircularIconButton>
@@ -122,6 +104,8 @@ export const Composer: FC<ComposerProps> = memo(({ panelOpen, chatKey, insertDra
     </PillRow>
   )
 })
+
+Composer.displayName = 'Composer'
 
 const PillRow = styled(Box)(({ theme }) => ({
   flexShrink: 0,
@@ -139,15 +123,18 @@ const PillRow = styled(Box)(({ theme }) => ({
   },
 }))
 
+PillRow.displayName = 'PillRow'
+
 /** Keeps the textarea column full-width; scrollbar stays at the right edge of this column only. */
 const ComposerInputWrap = styled(Box)({
   flex: '1 1 0',
   minWidth: 0,
 })
 
+ComposerInputWrap.displayName = 'ComposerInputWrap'
+
 const StyledTextField = styled(TextField)(({ theme }) => {
   return {
-    flex: '1 1 auto',
     width: '100%',
     minWidth: 0,
     marginTop: 0,
@@ -169,8 +156,7 @@ const StyledTextField = styled(TextField)(({ theme }) => {
     '& .MuiInputBase-input::-webkit-scrollbar': {
       width: 4,
     },
-    // '& .MuiInputBase-input::-webkit-scrollbar-thumb': {
-    //   background: theme.palette.grey[300],
-    // },
   }
 })
+
+StyledTextField.displayName = 'StyledTextField'
