@@ -40,6 +40,7 @@ import { v4 as uuidv4 } from 'uuid'
 import type { BuilderOptions } from './package-version-builder'
 import type { PublishOptions } from './usePublishPackageVersion'
 import { systemConfiguration } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useSystemConfiguration'
+import { getSystemInfo } from '@netcracker/qubership-apihub-ui-shared/utils/system-info'
 
 /*
 For using worker in proxy mode you need to change common apihub-shared import
@@ -61,6 +62,15 @@ export type PackageVersionBuilderWorker = {
   buildGroupChangelogPackage: (options: BuilderOptions) => Promise<[VersionsComparison[], Blob]>
   publishPackage: (options: PublishOptions) => Promise<PublishDetails>
   init: (lastIdentityProviderId: string | null) => Promise<void>
+}
+
+async function getValidationLevel(): Promise<'major' | 'strict'> {
+  try {
+    const info = await getSystemInfo()
+    return info.migrationInProgress ? 'major' : 'strict'
+  } catch {
+    return 'strict'
+  }
 }
 
 async function createCommonResolvers(): Promise<BuilderResolvers> {
@@ -96,7 +106,8 @@ const worker: PackageVersionBuilderWorker = {
       },
     )
 
-    await builder.run()
+    const level = await getValidationLevel()
+    await builder.run({ apiProcessorVersionValidationLevel: level })
 
     return [builder.buildResult.comparisons, await builder.createVersionPackage({ type: 'blob' })]
   },
@@ -157,7 +168,8 @@ const worker: PackageVersionBuilderWorker = {
     let message
 
     try {
-      await builder.run()
+      const level = await getValidationLevel()
+      await builder.run({ apiProcessorVersionValidationLevel: level })
       const data = await builder?.createVersionPackage({ type: 'blob' })
       stopSendingRunningStatus()
 
