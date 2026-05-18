@@ -159,6 +159,10 @@ const AssistantMarkdownSurface = styled(Box)(({ theme }) => ({
   '& .markdown-body': {
     ...theme.typography.body2,
   },
+  // github-markdown-css uses font-size: 85% on code/tt — align with body2 for inline and fenced
+  '& .markdown-body code, & .markdown-body tt': {
+    fontSize: theme.typography.body2.fontSize,
+  },
   '& .markdown-body .assistant-md-paragraph': {
     display: 'block',
     width: '100%',

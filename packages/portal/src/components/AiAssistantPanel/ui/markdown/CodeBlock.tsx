@@ -94,12 +94,8 @@ const CodeBlockBody = styled(Box)(({ theme }) => ({
   },
 }))
 
-const CodeBlockCode = styled('code')(({ theme }) => ({
+const CodeBlockCode = styled('code')({
   fontFamily: 'monospace',
   display: 'block',
   whiteSpace: 'pre',
-  // github-markdown-css `.markdown-body code { font-size: 85% }` — bump specificity so fenced body matches body2
-  '&&': {
-    fontSize: theme.typography.body2.fontSize,
-  },
-}))
+})
