@@ -1,8 +1,9 @@
+import { type FC, memo, type ReactNode, useCallback, useMemo, useRef, useState } from 'react'
+
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { type FC, memo, useCallback, useMemo, useRef, useState } from 'react'
 
 import { type AiChat, type ChatId, MAX_PINNED_PER_USER } from '../../api/types'
 import { useAiChats } from '../../api/useAiChats'
@@ -18,6 +19,8 @@ import { HistorySearchField } from './HistorySearchField'
 
 const LOAD_NEXT_PAGE_THRESHOLD_PX = 120
 
+const PIN_LIMIT_TOOLTIP = `The maximum of ${MAX_PINNED_PER_USER} pinned chats is reached. Unpin one to pin another.`
+
 export const HistoryScreen: FC = memo(() => {
   const { activeChatId, openChatScreen, streaming } = useAiAssistantContext()
   const headerHandlers = useAiAssistantHeaderHandlers()
@@ -26,21 +29,26 @@ export const HistoryScreen: FC = memo(() => {
 
   const [searchQuery, setSearchQuery] = useState('')
   const [renamingChatId, setRenamingChatId] = useState<ChatId | null>(null)
+  const [rowTitleOverrideByChatId, setRowTitleOverrideByChatId] = useState<Partial<Record<ChatId, string>>>({})
   const [chatPendingDelete, setChatPendingDelete] = useState<AiChat | null>(null)
   const listRef = useRef<HTMLDivElement>(null)
 
   const chatsQuery = useAiChats(searchQuery)
+  /** Same cache as `chatsQuery` when search is empty; otherwise full list for pin limit. */
+  const pinsBaselineQuery = useAiChats('')
 
   const chats = useMemo<AiChat[]>(() => {
     return chatsQuery.data?.pages.flatMap((page) => page.chats) ?? []
   }, [chatsQuery.data?.pages])
   const { fetchNextPage, hasNextPage, isFetchingNextPage } = chatsQuery
 
-  const isUnfiltered = searchQuery === ''
-  const loadedPinnedCount = useMemo(
-    () => (isUnfiltered ? chats.filter((chat) => chat.pinned === true).length : 0),
-    [chats, isUnfiltered],
-  )
+  const loadedPinnedCount = useMemo(() => {
+    const pages = pinsBaselineQuery.data?.pages
+    if (!pages) {
+      return 0
+    }
+    return pages.flatMap((page) => page.chats).filter((chat) => chat.pinned === true).length
+  }, [pinsBaselineQuery.data?.pages])
 
   const handleBack = useCallback(() => {
     openChatScreen(activeChatId)
@@ -51,10 +59,29 @@ export const HistoryScreen: FC = memo(() => {
     openChatScreen(chatId)
   }, [openChatScreen])
 
+  const clearRowTitleOverride = useCallback((chatId: ChatId) => {
+    setRowTitleOverrideByChatId((prev) => {
+      if (prev[chatId] === undefined) {
+        return prev
+      }
+      const next = { ...prev }
+      delete next[chatId]
+      return next
+    })
+  }, [])
+
   const handleRenameChat = useCallback((chatId: ChatId, title: string) => {
     setRenamingChatId(null)
-    updateChat.mutate({ chatId: chatId, patch: { title: title } })
-  }, [updateChat])
+    setRowTitleOverrideByChatId((prev) => ({ ...prev, [chatId]: title }))
+    updateChat.mutate(
+      { chatId: chatId, patch: { title: title } },
+      {
+        onError: () => {
+          clearRowTitleOverride(chatId)
+        },
+      },
+    )
+  }, [clearRowTitleOverride, updateChat])
 
   const handlePinToggle = useCallback((chatId: ChatId, nextPinned: boolean) => {
     updateChat.mutate({ chatId: chatId, patch: { pinned: nextPinned } })
@@ -86,6 +113,79 @@ export const HistoryScreen: FC = memo(() => {
     void fetchNextPage()
   }, [fetchNextPage, hasNextPage, isFetchingNextPage])
 
+  let listBody: ReactNode
+  if (chatsQuery.isLoading) {
+    listBody = (
+      <ListStatesColumn>
+        <CenteredState>
+          <CircularProgress size={28} />
+        </CenteredState>
+      </ListStatesColumn>
+    )
+  } else if (chatsQuery.isError) {
+    listBody = (
+      <ListStatesColumn>
+        <CenteredState>
+          <Typography color="error" variant="body2">
+            Could not load chat history.
+          </Typography>
+        </CenteredState>
+      </ListStatesColumn>
+    )
+  } else if (chats.length === 0) {
+    listBody = (
+      <ListStatesColumn>
+        <RecentlyLabel>Recent</RecentlyLabel>
+        <CenteredState>
+          <Typography color="text.secondary" variant="body2">
+            No chats found.
+          </Typography>
+        </CenteredState>
+      </ListStatesColumn>
+    )
+  } else {
+    listBody = (
+      <RowsColumn>
+        <RecentlyLabel>Recent</RecentlyLabel>
+        {chats.map((chat) => {
+          const isPinned = chat.pinned === true
+          const pinnedOthersCount = loadedPinnedCount - (isPinned ? 1 : 0)
+          const pinDisabled = !isPinned && pinnedOthersCount >= MAX_PINNED_PER_USER
+          const deleteDisabled = streaming.isBusy &&
+            streaming.activeTurnChatId !== null &&
+            streaming.activeTurnChatId === chat.chatId
+
+          return (
+            <ChatListRow
+              key={chat.chatId}
+              chat={chat}
+              rowTitleOverride={rowTitleOverrideByChatId[chat.chatId]}
+              isActive={activeChatId === chat.chatId}
+              isEditing={renamingChatId === chat.chatId}
+              isPinDisabled={pinDisabled}
+              pinDisabledTooltip={pinDisabled ? PIN_LIMIT_TOOLTIP : undefined}
+              isDeleteDisabled={deleteDisabled}
+              onOpen={() => handleOpenChat(chat.chatId)}
+              onStartRename={() => setRenamingChatId(chat.chatId)}
+              onRename={(title) => handleRenameChat(chat.chatId, title)}
+              onCancelRename={() => setRenamingChatId(null)}
+              onTogglePin={(nextPinned) => handlePinToggle(chat.chatId, nextPinned)}
+              onDelete={() => setChatPendingDelete(chat)}
+              onReleaseRowTitleOverride={clearRowTitleOverride}
+            />
+          )
+        })}
+        {chatsQuery.isFetchingNextPage
+          ? (
+            <NextPageLoader>
+              <CircularProgress size={20} />
+            </NextPageLoader>
+          )
+          : null}
+      </RowsColumn>
+    )
+  }
+
   return (
     <HistoryLayout>
       <AiAssistantHeader
@@ -99,65 +199,7 @@ export const HistoryScreen: FC = memo(() => {
         onScroll={handleListScroll}
         data-testid="AiAssistantHistoryList"
       >
-        {chatsQuery.isLoading
-          ? (
-            <CenteredState>
-              <CircularProgress size={28} />
-            </CenteredState>
-          )
-          : chatsQuery.isError
-          ? (
-            <CenteredState>
-              <Typography color="error" variant="body2">
-                Could not load chat history.
-              </Typography>
-            </CenteredState>
-          )
-          : chats.length === 0
-          ? (
-            <CenteredState>
-              <Typography color="text.secondary" variant="body2">
-                No chats found.
-              </Typography>
-            </CenteredState>
-          )
-          : (
-            <RowsColumn>
-              {isUnfiltered ? <RecentlyLabel>Recent</RecentlyLabel> : null}
-              {chats.map((chat) => {
-                const isPinned = chat.pinned === true
-                const pinnedOthersCount = loadedPinnedCount - (isPinned ? 1 : 0)
-                const pinDisabled = !isPinned && isUnfiltered && pinnedOthersCount >= MAX_PINNED_PER_USER
-                const deleteDisabled = streaming.isBusy &&
-                  streaming.activeTurnChatId !== null &&
-                  streaming.activeTurnChatId === chat.chatId
-
-                return (
-                  <ChatListRow
-                    key={chat.chatId}
-                    chat={chat}
-                    isActive={activeChatId === chat.chatId}
-                    isEditing={renamingChatId === chat.chatId}
-                    isPinDisabled={pinDisabled}
-                    isDeleteDisabled={deleteDisabled}
-                    onOpen={() => handleOpenChat(chat.chatId)}
-                    onStartRename={() => setRenamingChatId(chat.chatId)}
-                    onRename={(title) => handleRenameChat(chat.chatId, title)}
-                    onCancelRename={() => setRenamingChatId(null)}
-                    onTogglePin={(nextPinned) => handlePinToggle(chat.chatId, nextPinned)}
-                    onDelete={() => setChatPendingDelete(chat)}
-                  />
-                )
-              })}
-              {chatsQuery.isFetchingNextPage
-                ? (
-                  <NextPageLoader>
-                    <CircularProgress size={20} />
-                  </NextPageLoader>
-                )
-                : null}
-            </RowsColumn>
-          )}
+        {listBody}
       </ListArea>
       <DeleteChatConfirmation
         open={chatPendingDelete !== null}
@@ -170,6 +212,8 @@ export const HistoryScreen: FC = memo(() => {
   )
 })
 
+HistoryScreen.displayName = 'HistoryScreen'
+
 const HistoryLayout = styled(Box)({
   display: 'flex',
   flexDirection: 'column',
@@ -177,17 +221,25 @@ const HistoryLayout = styled(Box)({
   minHeight: 0,
 })
 
+const LIST_FLEX_COLUMN = { display: 'flex', flexDirection: 'column' } as const
+
 const ListArea = styled(Box)(({ theme }) => ({
   flex: 1,
   minHeight: 0,
+  ...LIST_FLEX_COLUMN,
   overflowY: 'auto',
-  // Match HistorySearchField horizontal inset (Figma px-24) so list aligns with search
+  // Match HistorySearchField horizontal inset so list aligns with search
   padding: theme.spacing(0, 3, 2),
 }))
 
+const ListStatesColumn = styled(Box)(() => ({
+  flex: 1,
+  minHeight: 0,
+  ...LIST_FLEX_COLUMN,
+}))
+
 const RowsColumn = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
+  ...LIST_FLEX_COLUMN,
   gap: theme.spacing(0.5),
 }))
 

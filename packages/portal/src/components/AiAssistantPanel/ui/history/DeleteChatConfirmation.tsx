@@ -31,3 +31,5 @@ export const DeleteChatConfirmation: FC<DeleteChatConfirmationProps> = memo(({
     />
   )
 })
+
+DeleteChatConfirmation.displayName = 'DeleteChatConfirmation'

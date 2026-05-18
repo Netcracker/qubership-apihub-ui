@@ -1,9 +1,15 @@
-import { useMutation, type UseMutationResult, useQueryClient } from '@tanstack/react-query'
+import {
+  type InfiniteData,
+  type QueryClient,
+  useMutation,
+  type UseMutationResult,
+  useQueryClient,
+} from '@tanstack/react-query'
 
 import { aiChatJson } from './client'
 import { invalidateAiChatListQueries } from './invalidateAiChatListQueries'
-import { AI_CHAT_ROOT, aiChatItemKey } from './queryKeys'
-import type { AiChat, AiChatUpdateRequest, ChatId } from './types'
+import { AI_CHAT_ROOT, aiChatItemKey, isAiChatsInfiniteListQueryKey } from './queryKeys'
+import type { AiChat, AiChatsListResponse, AiChatUpdateRequest, ChatId } from './types'
 
 export type UpdateAiChatVariables = {
   chatId: ChatId
@@ -60,13 +66,67 @@ export function useUpdateAiChat(): UseMutationResult<
         queryClient.removeQueries({ queryKey: aiChatItemKey(variables.chatId), exact: true })
       }
     },
-    onSuccess: (chat) => {
+    onSuccess: (chat, variables) => {
       queryClient.setQueryData(aiChatItemKey(chat.chatId), chat)
+      const titleOnly =
+        variables.patch.title !== undefined &&
+        variables.patch.pinned === undefined
+      if (titleOnly) {
+        patchAiChatInAllListCaches(queryClient, chat)
+      }
     },
-    onSettled: () => {
+    onSettled: (_data, error, variables) => {
+      if (error) {
+        void invalidateAiChatListQueries(queryClient)
+        return
+      }
+      const titleOnly =
+        variables.patch.title !== undefined &&
+        variables.patch.pinned === undefined
+      if (titleOnly) {
+        return
+      }
       void invalidateAiChatListQueries(queryClient)
     },
   })
+}
+
+function patchAiChatInAllListCaches(queryClient: QueryClient, chat: AiChat): void {
+  const entries = queryClient.getQueriesData<InfiniteData<AiChatsListResponse>>({
+    queryKey: [AI_CHAT_ROOT, 'chats'],
+  })
+  for (const [queryKey, data] of entries) {
+    if (!isAiChatsInfiniteListQueryKey(queryKey)) {
+      continue
+    }
+    const next = replaceChatInInfiniteListData(data, chat.chatId, chat)
+    if (next !== data) {
+      queryClient.setQueryData(queryKey, next)
+    }
+  }
+}
+
+function replaceChatInInfiniteListData(
+  data: InfiniteData<AiChatsListResponse> | undefined,
+  chatId: ChatId,
+  chat: AiChat,
+): InfiniteData<AiChatsListResponse> | undefined {
+  if (!data) {
+    return data
+  }
+  const hasChat = data.pages.some((page) => page.chats.some((c) => c.chatId === chatId))
+  if (!hasChat) {
+    return data
+  }
+  return {
+    ...data,
+    pages: data.pages.map((page) => ({
+      ...page,
+      chats: page.chats.map((c) => {
+        return c.chatId === chatId ? chat : c
+      }),
+    })),
+  }
 }
 
 function applyLocalPatch(chat: AiChat, patch: AiChatUpdateRequest): AiChat {

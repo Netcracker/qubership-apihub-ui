@@ -1,14 +1,18 @@
+import { type FC, memo, type MouseEvent, useCallback, useState } from 'react'
+
+import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import { styled } from '@mui/material/styles'
-import { type FC, memo, type MouseEvent, useCallback, useState } from 'react'
+import Tooltip from '@mui/material/Tooltip'
 
 import { ActionsIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ActionsIcon'
 
 export type ChatRowActionsMenuProps = {
   pinned: boolean
   pinDisabled: boolean
+  pinDisabledTooltip?: string
   deleteDisabled: boolean
   onRename: () => void
   onTogglePin: (nextPinned: boolean) => void
@@ -19,6 +23,7 @@ export type ChatRowActionsMenuProps = {
 export const ChatRowActionsMenu: FC<ChatRowActionsMenuProps> = memo(({
   pinned,
   pinDisabled,
+  pinDisabledTooltip,
   deleteDisabled,
   onRename,
   onTogglePin,
@@ -45,17 +50,22 @@ export const ChatRowActionsMenu: FC<ChatRowActionsMenuProps> = memo(({
     onRename()
   }, [closeMenu, onRename])
 
-  const handlePin = useCallback((event: MouseEvent<HTMLElement>) => {
+  const handlePinClick = useCallback((event: MouseEvent<HTMLElement>) => {
     event.stopPropagation()
+    if (pinDisabled) {
+      return
+    }
     closeMenu()
     onTogglePin(!pinned)
-  }, [closeMenu, onTogglePin, pinned])
+  }, [closeMenu, onTogglePin, pinned, pinDisabled])
 
   const handleDelete = useCallback((event: MouseEvent<HTMLElement>) => {
     event.stopPropagation()
     closeMenu()
     onDelete()
   }, [closeMenu, onDelete])
+
+  const pinLimitBlocked = pinDisabled && Boolean(pinDisabledTooltip)
 
   return (
     <>
@@ -82,12 +92,22 @@ export const ChatRowActionsMenu: FC<ChatRowActionsMenuProps> = memo(({
         <MenuItem onClick={handleRename}>
           Rename
         </MenuItem>
-        <MenuItem
-          disabled={pinDisabled}
-          onClick={handlePin}
+        <PinMenuItem
+          $pinLimitBlocked={pinLimitBlocked}
+          disabled={pinDisabled && !pinLimitBlocked}
+          onClick={handlePinClick}
+          aria-disabled={pinDisabled}
         >
-          {pinned ? 'Unpin' : 'Pin'}
-        </MenuItem>
+          <Tooltip
+            title={pinLimitBlocked ? pinDisabledTooltip : undefined}
+            placement="left"
+            disableHoverListener={!pinLimitBlocked}
+          >
+            <PinMenuItemLabel>
+              {pinned ? 'Unpin' : 'Pin'}
+            </PinMenuItemLabel>
+          </Tooltip>
+        </PinMenuItem>
         <MenuItem
           disabled={deleteDisabled}
           onClick={handleDelete}
@@ -98,6 +118,36 @@ export const ChatRowActionsMenu: FC<ChatRowActionsMenuProps> = memo(({
     </>
   )
 })
+
+ChatRowActionsMenu.displayName = 'ChatRowActionsMenu'
+
+const PinMenuItemLabel = styled(Box)({
+  display: 'block',
+  width: '100%',
+})
+
+const PinMenuItem = styled(MenuItem, {
+  shouldForwardProp: (prop) => prop !== '$pinLimitBlocked',
+})<{ $pinLimitBlocked?: boolean }>(({ theme, $pinLimitBlocked }) => ({
+  ...($pinLimitBlocked
+    ? {
+      opacity: theme.palette.action.disabledOpacity,
+      cursor: 'default',
+      '&:hover': {
+        backgroundColor: 'transparent',
+      },
+      '&.Mui-focusVisible': {
+        backgroundColor: 'transparent',
+      },
+      '&:active': {
+        backgroundColor: 'transparent',
+      },
+      '&.Mui-selected': {
+        backgroundColor: 'transparent',
+      },
+    }
+    : {}),
+}))
 
 const ActionsMenuIconButton = styled(IconButton)(({ theme }) => ({
   height: 20,

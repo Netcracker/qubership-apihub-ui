@@ -1,18 +1,23 @@
-import Box from '@mui/material/Box'
-import { styled } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
 import { type FC, type KeyboardEvent, memo, useCallback, useEffect, useState } from 'react'
 
+import Box from '@mui/material/Box'
+import { styled, type Theme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
+
 import { PinIcon } from '@netcracker/qubership-apihub-ui-shared/icons/PinIcon'
-import type { AiChat } from '../../api/types'
+
+import type { AiChat, ChatId } from '../../api/types'
 import { ChatRowActionsMenu } from './ChatRowActionsMenu'
 import { InlineRenameField } from './InlineRenameField'
 
 export type ChatListRowProps = {
   chat: AiChat
+  /** Shown until list cache matches (rename save). */
+  rowTitleOverride?: string
   isActive: boolean
   isEditing: boolean
   isPinDisabled: boolean
+  pinDisabledTooltip?: string
   isDeleteDisabled: boolean
   onOpen: () => void
   onStartRename: () => void
@@ -20,13 +25,16 @@ export type ChatListRowProps = {
   onCancelRename: () => void
   onTogglePin: (nextPinned: boolean) => void
   onDelete: () => void
+  onReleaseRowTitleOverride: (chatId: ChatId) => void
 }
 
 export const ChatListRow: FC<ChatListRowProps> = memo(({
   chat,
+  rowTitleOverride,
   isActive,
   isEditing,
   isPinDisabled,
+  pinDisabledTooltip,
   isDeleteDisabled,
   onOpen,
   onStartRename,
@@ -34,8 +42,10 @@ export const ChatListRow: FC<ChatListRowProps> = memo(({
   onCancelRename,
   onTogglePin,
   onDelete,
+  onReleaseRowTitleOverride,
 }) => {
-  const displayedTitle = chat.title.trim() || 'Untitled chat'
+  const listTitleSource = rowTitleOverride ?? chat.title
+  const displayedTitle = listTitleSource.trim() || 'Untitled chat'
   const [actionsMenuOpen, setActionsMenuOpen] = useState(false)
 
   useEffect(() => {
@@ -43,6 +53,15 @@ export const ChatListRow: FC<ChatListRowProps> = memo(({
       setActionsMenuOpen(false)
     }
   }, [isEditing])
+
+  useEffect(() => {
+    if (rowTitleOverride === undefined) {
+      return
+    }
+    if (chat.title.trim() === rowTitleOverride.trim()) {
+      onReleaseRowTitleOverride(chat.chatId)
+    }
+  }, [chat.chatId, chat.title, onReleaseRowTitleOverride, rowTitleOverride])
 
   const handleOpen = useCallback(() => {
     if (isEditing) {
@@ -78,7 +97,7 @@ export const ChatListRow: FC<ChatListRowProps> = memo(({
         {isEditing
           ? (
             <InlineRenameField
-              initialTitle={chat.title}
+              initialTitle={listTitleSource}
               onSave={onRename}
               onCancel={onCancelRename}
             />
@@ -92,6 +111,7 @@ export const ChatListRow: FC<ChatListRowProps> = memo(({
             <ChatRowActionsMenu
               pinned={Boolean(chat.pinned)}
               pinDisabled={isPinDisabled}
+              pinDisabledTooltip={pinDisabledTooltip}
               deleteDisabled={isDeleteDisabled}
               onRename={onStartRename}
               onTogglePin={onTogglePin}
@@ -105,6 +125,8 @@ export const ChatListRow: FC<ChatListRowProps> = memo(({
   )
 })
 
+ChatListRow.displayName = 'ChatListRow'
+
 const RowRoot = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'active' && prop !== 'editing' && prop !== 'actionsMenuOpen',
 })<{ active: boolean; editing: boolean; actionsMenuOpen: boolean }>(({
@@ -112,40 +134,34 @@ const RowRoot = styled(Box, {
   active,
   editing,
   actionsMenuOpen,
-}) => ({
-  display: 'flex',
-  alignItems: 'center',
-  gap: theme.spacing(1),
-  minWidth: 0,
-  padding: theme.spacing(1.5),
-  borderRadius: theme.spacing(1.5),
-  border: `1px solid ${editing ? theme.palette.primary.main : 'transparent'}`,
-  backgroundColor: editing
-    ? theme.palette.background.paper
-    : active
-    ? theme.palette.action.selected
-    : theme.palette.background.paper,
-  cursor: editing ? 'default' : 'pointer',
-  ...(actionsMenuOpen && !editing
-    ? {
-      backgroundColor: active ? theme.palette.action.selected : theme.palette.action.hover,
-    }
-    : {}),
-  '&:hover': editing
-    ? undefined
-    : {
-      backgroundColor: theme.palette.action.hover,
+}) => {
+  const backgroundColor = rowSurfaceBackground(theme, { active, editing, actionsMenuOpen })
+  return {
+    display: 'flex',
+    alignItems: 'center',
+    gap: theme.spacing(1),
+    minWidth: 0,
+    padding: theme.spacing(1.5),
+    borderRadius: theme.spacing(1.5),
+    border: `1px solid ${editing ? theme.palette.primary.main : 'transparent'}`,
+    backgroundColor: backgroundColor,
+    cursor: editing ? 'default' : 'pointer',
+    ...(!editing
+      ? {
+        '&:hover': {
+          backgroundColor: theme.palette.action.hover,
+        },
+        '&:active': {
+          backgroundColor: theme.palette.action.selected,
+        },
+      }
+      : {}),
+    '&:focus-visible': {
+      outline: `2px solid ${theme.palette.primary.main}`,
+      outlineOffset: 1,
     },
-  '&:active': editing
-    ? undefined
-    : {
-      backgroundColor: theme.palette.action.selected,
-    },
-  '&:focus-visible': {
-    outline: `2px solid ${theme.palette.primary.main}`,
-    outlineOffset: 1,
-  },
-}))
+  }
+})
 
 const TitleSlot = styled(Box)({
   flex: 1,
@@ -170,3 +186,20 @@ const ActionsSlot = styled(Box)({
   alignItems: 'center',
   flexShrink: 0,
 })
+
+function rowSurfaceBackground(
+  theme: Theme,
+  state: { active: boolean; editing: boolean; actionsMenuOpen: boolean },
+): string {
+  const { palette } = theme
+  if (state.editing) {
+    return palette.background.paper
+  }
+  if (state.actionsMenuOpen) {
+    return state.active ? palette.action.selected : palette.action.hover
+  }
+  if (state.active) {
+    return palette.action.selected
+  }
+  return palette.background.paper
+}

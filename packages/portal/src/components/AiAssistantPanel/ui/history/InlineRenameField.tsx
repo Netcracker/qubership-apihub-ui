@@ -1,7 +1,8 @@
+import { type FC, type KeyboardEvent, memo, useCallback, useEffect, useRef, useState } from 'react'
+
 import Box from '@mui/material/Box'
 import InputBase from '@mui/material/InputBase'
 import { styled } from '@mui/material/styles'
-import { type FC, type KeyboardEvent, memo, useCallback, useEffect, useRef, useState } from 'react'
 
 export type InlineRenameFieldProps = {
   initialTitle: string
@@ -69,6 +70,8 @@ export const InlineRenameField: FC<InlineRenameFieldProps> = memo(({ initialTitl
     </RenameRoot>
   )
 })
+
+InlineRenameField.displayName = 'InlineRenameField'
 
 const RenameRoot = styled(Box)({
   flex: 1,
