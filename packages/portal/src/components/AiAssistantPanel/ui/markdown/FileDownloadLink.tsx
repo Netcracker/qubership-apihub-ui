@@ -1,35 +1,45 @@
 import { styled } from '@mui/material/styles'
-import type { ReactNode } from 'react'
+import { type FC, memo, type ReactNode } from 'react'
 
+import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
 import { DownloadIconMui } from '@netcracker/qubership-apihub-ui-shared/icons/DownloadIconMui'
 import { plainChildrenText } from '../../utils/plainChildrenText'
-import { CHAT_CARD_LINK_CLASS, chatCardAnchorSurface, ChatCardFileLabel, chatCardSurface } from './chatCard'
+import { CHAT_CARD_LINK_CLASS, chatCardSurface } from './chatCard'
 
-export interface FileDownloadLinkProps {
+type FileDownloadLinkProps = {
   href: string
   children?: ReactNode
 }
 
-const FileLink = styled('a')(({ theme }) => ({
+export const FileDownloadLink: FC<FileDownloadLinkProps> = memo(({ href, children }) => {
+  const url = new URL(href)
+  const label = plainChildrenText(children).trim() || url.pathname.split('/').filter(Boolean).pop() || 'download'
+
+  return (
+    <FileLinkCard href={href} className={CHAT_CARD_LINK_CLASS} aria-label={`Download ${label}`}>
+      <FileDownloadLabel typographyComponent="span" tooltipText={label}>
+        {label}
+      </FileDownloadLabel>
+      <DownloadIconMui fontSize="small" color="inherit" />
+    </FileLinkCard>
+  )
+})
+
+FileDownloadLink.displayName = 'FileDownloadLink'
+
+const FileDownloadLabel = styled(TextWithOverflowTooltip)({
+  display: 'block',
+  width: '100%',
+})
+
+FileDownloadLabel.displayName = 'FileDownloadLabel'
+
+const FileLinkCard = styled('a')(({ theme }) => ({
   ...chatCardSurface(theme),
-  ...chatCardAnchorSurface(theme),
+  cursor: 'pointer',
   display: 'flex',
   alignItems: 'center',
   gap: theme.spacing(1.5),
   width: '100%',
   minHeight: 64,
-  boxSizing: 'border-box',
 }))
-
-export function FileDownloadLink({ href, children }: FileDownloadLinkProps): JSX.Element {
-  const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost'
-  const resolved = new URL(href, origin)
-  const label = plainChildrenText(children).trim() || resolved.pathname.split('/').filter(Boolean).pop() || 'download'
-
-  return (
-    <FileLink href={resolved.href} className={CHAT_CARD_LINK_CLASS} title={label} aria-label={`Download ${label}`}>
-      <ChatCardFileLabel title={label}>{label}</ChatCardFileLabel>
-      <DownloadIconMui fontSize="small" color="action" />
-    </FileLink>
-  )
-}

@@ -25,7 +25,12 @@ import remarkGfm from 'remark-gfm'
 import type { PluggableList } from 'unified'
 
 import { useAiAssistantContext } from '../../state/AiAssistantContext'
-import { isGeneratedFileLink, isInternalPortalLink, resolveToUrl } from '../../utils/internalLinkMatcher'
+import {
+  isGeneratedFileLink,
+  isInternalPortalLink,
+  markdownLinkBaseOrigin,
+  resolveToUrl,
+} from '../../utils/internalLinkMatcher'
 import { CHAT_CARD_LINK_CLASS } from './chatCard'
 import { CodeBlock } from './CodeBlock'
 import { FileDownloadLink } from './FileDownloadLink'
@@ -124,9 +129,9 @@ const MarkdownLink: FC<ComponentPropsWithoutRef<'a'> & ReactMarkdownProps> = mem
     },
     [closePanel, resetActiveChat],
   )
-  const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost'
+  const origin = markdownLinkBaseOrigin()
   if (isGeneratedFileLink(href, origin)) {
-    return <FileDownloadLink href={href}>{children}</FileDownloadLink>
+    return <FileDownloadLink href={resolveToUrl(href, origin).href}>{children}</FileDownloadLink>
   }
   if (isInternalPortalLink(href, origin)) {
     const resolved = resolveToUrl(href, origin)
@@ -165,8 +170,10 @@ const AssistantMarkdownSurface = styled(Box)(({ theme }) => ({
   },
   [`& .markdown-body a.${CHAT_CARD_LINK_CLASS}`]: {
     textDecoration: 'none',
+    color: 'inherit',
     '&:hover, &:focus, &:active, &:visited': {
       textDecoration: 'none',
+      color: 'inherit',
     },
   },
 }))

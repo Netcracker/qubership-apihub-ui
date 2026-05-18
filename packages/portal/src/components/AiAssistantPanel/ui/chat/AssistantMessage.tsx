@@ -6,8 +6,8 @@ import { useShowErrorNotification } from '@netcracker/qubership-apihub-ui-portal
 import { useCopyWithFeedback } from '../../hooks/useCopyWithFeedback'
 import { useQueuedStreamingMarkdown } from '../../hooks/useQueuedStreamingMarkdown'
 import { normalizeStreamingMarkdown } from '../../utils/normalizeStreamingMarkdown'
+import { CopyIconButton } from '../common/CopyIconButton'
 import { AssistantMarkdownViewer } from '../markdown/AssistantMarkdownViewer'
-import { CopyIconButton } from '../markdown/CopyIconButton'
 
 export type AssistantMessageProps = {
   content: string

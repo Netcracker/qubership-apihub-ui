@@ -1,11 +1,11 @@
-import { type FC, memo, type ReactNode } from 'react'
 import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import { type FC, memo, type ReactNode } from 'react'
 
 import { useShowErrorNotification } from '@netcracker/qubership-apihub-ui-portal/src/routes/root/BasePage/Notification'
 import { useCopyWithFeedback } from '../../hooks/useCopyWithFeedback'
-import { CopyIconButton } from './CopyIconButton'
+import { CopyIconButton } from '../common/CopyIconButton'
 
 type CodeBlockProps = {
   className?: string
