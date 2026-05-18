@@ -2,25 +2,20 @@ import type { QueryClient } from '@tanstack/react-query'
 
 import { isAiChatsInfiniteListQueryKey } from './queryKeys'
 
-export type InvalidateAiChatListQueriesOptions = {
-  /**
-   * `active` refetches only queries with mounted observers (avoids replaying every cached
-   * search string after a mutation). Use `all` only when inactive list caches must refresh.
-   */
-  refetchType?: 'active' | 'inactive' | 'all' | 'none'
+const listQueryPredicate = (query: { queryKey: readonly unknown[]; getObserversCount: () => number }): boolean => {
+  return isAiChatsInfiniteListQueryKey(query.queryKey)
 }
 
 /**
- * Marks chat **list** (infinite) queries stale and refetches them.
- * Does not touch per-chat item keys (`aiChatItemKey`), which are not list queries and may
- * exist in cache without a `queryFn` (avoids "Missing queryFn" on invalidate).
+ * Drops cached chat lists that nothing is subscribed to (old search strings), then invalidates
+ * remaining list queries so active screens refetch with correct order/titles from the server.
  */
-export function invalidateAiChatListQueries(
-  queryClient: QueryClient,
-  options?: InvalidateAiChatListQueriesOptions,
-): Promise<void> {
+export function invalidateAiChatListQueries(queryClient: QueryClient): Promise<void> {
+  queryClient.removeQueries({
+    predicate: (query) => listQueryPredicate(query) && query.getObserversCount() === 0,
+  })
   return queryClient.invalidateQueries({
-    predicate: (query) => isAiChatsInfiniteListQueryKey(query.queryKey),
-    refetchType: options?.refetchType ?? 'active',
+    predicate: (query) => listQueryPredicate(query),
+    refetchType: 'all',
   })
 }

@@ -284,19 +284,19 @@ export function useStreamingTurn({
         return
       }
       turnLockRef.current = true
-      let isNewChat = false
       try {
         let chatId = activeChatId
         const fromWelcome = activeChatId === null
         if (!chatId) {
-          const { chatId: newChatId } = await aiChatJson<AiChat>('/ai-chat/chats', {
+          const newChat = await aiChatJson<AiChat>('/ai-chat/chats', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({}),
           })
-          chatId = newChatId
+          const { chatId: createdChatId } = newChat
+          chatId = createdChatId
+          queryClient.setQueryData(aiChatItemKey(chatId), newChat)
           void invalidateAiChatListQueries(queryClient)
-          isNewChat = true
           if (fromWelcome) {
             openChatScreen(chatId)
           }
@@ -339,9 +339,6 @@ export function useStreamingTurn({
         await runTurn(chatId, trimmed, clientMessageId)
       } finally {
         turnLockRef.current = false
-        if (isNewChat) {
-          void invalidateAiChatListQueries(queryClient)
-        }
       }
     },
     [openChatScreen, queryClient, runTurn],
