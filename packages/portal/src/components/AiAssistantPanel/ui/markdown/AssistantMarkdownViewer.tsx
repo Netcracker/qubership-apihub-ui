@@ -32,36 +32,36 @@ import { FileDownloadLink } from './FileDownloadLink'
 
 const highlightLanguages = { json, yaml, http }
 
-export type AssistantMarkdownViewerProps = {
+const remarkPlugins: PluggableList = [[remarkGfm, { singleTilde: false }]]
+
+const rehypePlugins: PluggableList = [
+  [
+    rehypeHighlight,
+    {
+      detect: false,
+      ignoreMissing: true,
+      languages: highlightLanguages,
+      aliases: { yml: 'yaml' },
+    },
+  ],
+]
+
+type AssistantMarkdownViewerProps = {
   markdown: string
   normalizeMarkdown?: (markdown: string) => string
 }
 
-export const AssistantMarkdownViewer: FC<AssistantMarkdownViewerProps> = memo(({ markdown, normalizeMarkdown }) => {
+export const AssistantMarkdownViewer: FC<AssistantMarkdownViewerProps> = memo(({
+  markdown,
+  normalizeMarkdown,
+}) => {
   const source = normalizeMarkdown ? normalizeMarkdown(markdown) : markdown
-
-  const remarkPlugins = useMemo<PluggableList>(
-    () => [[remarkGfm, { singleTilde: false }]],
-    [],
-  )
-
-  const rehypePlugins = useMemo<PluggableList>(
-    () => [
-      [rehypeHighlight, {
-        detect: false,
-        ignoreMissing: true,
-        languages: highlightLanguages,
-        aliases: { yml: 'yaml' },
-      }],
-    ],
-    [],
-  )
 
   const components = useMemo(
     () => ({
       pre: MarkdownPre,
       code: MarkdownCode,
-      a: MarkdownAnchor,
+      a: MarkdownLink,
       p: MarkdownParagraph,
     }),
     [],
@@ -81,7 +81,10 @@ export const AssistantMarkdownViewer: FC<AssistantMarkdownViewerProps> = memo(({
   )
 })
 
+AssistantMarkdownViewer.displayName = 'AssistantMarkdownViewer'
+
 const MarkdownPre: FC<ComponentPropsWithoutRef<'pre'> & ReactMarkdownProps> = ({ children }) => <>{children}</>
+MarkdownPre.displayName = 'MarkdownPre'
 
 const MarkdownCode: FC<CodeProps> = ({ inline, className, children, node, ...rest }) => {
   if (inline) {
@@ -98,8 +101,20 @@ const MarkdownCode: FC<CodeProps> = ({ inline, className, children, node, ...res
     </CodeBlock>
   )
 }
+MarkdownCode.displayName = 'MarkdownCode'
 
-const MarkdownAnchor: FC<ComponentPropsWithoutRef<'a'> & ReactMarkdownProps> = memo(({ href = '', children }) => {
+/** `p` as block `div` so link/file rows (div) stay valid; spacing matches `.markdown-body p` (github-markdown-css). */
+const MarkdownParagraph: FC<ComponentPropsWithoutRef<'p'> & ReactMarkdownProps> = ({ children }) => (
+  <Box className="assistant-md-paragraph" component="div">
+    {children}
+  </Box>
+)
+MarkdownParagraph.displayName = 'MarkdownParagraph'
+
+const MarkdownLink: FC<ComponentPropsWithoutRef<'a'> & ReactMarkdownProps> = memo(({
+  href = '',
+  children,
+}) => {
   const { closePanel, resetActiveChat } = useAiAssistantContext()
   const onInternalPortalLinkClick = useCallback(
     (event: MouseEvent<HTMLAnchorElement>) => {
@@ -129,12 +144,7 @@ const MarkdownAnchor: FC<ComponentPropsWithoutRef<'a'> & ReactMarkdownProps> = m
   )
 })
 
-/** `p` as block `div` so link/file rows (div) stay valid; spacing matches `.markdown-body p` (github-markdown-css). */
-const MarkdownParagraph: FC<ComponentPropsWithoutRef<'p'> & ReactMarkdownProps> = ({ children }) => (
-  <Box className="assistant-md-paragraph" component="div">
-    {children}
-  </Box>
-)
+MarkdownLink.displayName = 'MarkdownLink'
 
 const AssistantMarkdownSurface = styled(Box)(({ theme }) => ({
   width: '100%',
@@ -142,7 +152,6 @@ const AssistantMarkdownSurface = styled(Box)(({ theme }) => ({
   boxSizing: 'border-box',
   wordBreak: 'break-word',
   '& .markdown-body': {
-    color: theme.palette.text.primary,
     ...theme.typography.body2,
   },
   '& .markdown-body .assistant-md-paragraph': {

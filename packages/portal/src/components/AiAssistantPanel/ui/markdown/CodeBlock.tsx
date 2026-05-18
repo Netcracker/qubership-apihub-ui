@@ -1,17 +1,23 @@
+import { type FC, memo, type ReactNode } from 'react'
 import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { type FC, memo, type ReactNode } from 'react'
 
 import { useShowErrorNotification } from '@netcracker/qubership-apihub-ui-portal/src/routes/root/BasePage/Notification'
 import { useCopyWithFeedback } from '../../hooks/useCopyWithFeedback'
 import { CopyIconButton } from './CopyIconButton'
 
-export type CodeBlockProps = {
+type CodeBlockProps = {
   className?: string
   rawText: string
   children?: ReactNode
+}
+
+const LANGUAGE_LABELS: Record<string, string> = {
+  json: 'JSON',
+  yaml: 'YAML',
+  yml: 'YAML',
+  http: 'HTTP',
 }
 
 export const CodeBlock: FC<CodeBlockProps> = memo(({ className, rawText, children }) => {
@@ -29,22 +35,19 @@ export const CodeBlock: FC<CodeBlockProps> = memo(({ className, rawText, childre
   return (
     <CodeBlockRoot>
       <CodeBlockHeader>
-        <Stack direction="row" alignItems="center" spacing={0.75}>
-          <BracketTypography variant="subtitle4">
-            {'</>'}
-          </BracketTypography>
-          <LanguageTypography variant="subtitle4">
-            {languageLabel}
-          </LanguageTypography>
-        </Stack>
+        <CodeBlockFenceLabel variant="subtitle4">
+          {`</> ${languageLabel}`}
+        </CodeBlockFenceLabel>
         <CopyIconButton ariaLabel="Copy code" copied={copied} onCopy={createCopyHandler(rawText)} />
       </CodeBlockHeader>
-      <CodeBlockPre>
+      <CodeBlockBody>
         <CodeBlockCode className={className}>{children}</CodeBlockCode>
-      </CodeBlockPre>
+      </CodeBlockBody>
     </CodeBlockRoot>
   )
 })
+
+CodeBlock.displayName = 'CodeBlock'
 
 function languageLabelFromClassName(className: string | undefined): string {
   if (!className) {
@@ -55,10 +58,7 @@ function languageLabelFromClassName(className: string | undefined): string {
     return 'code'
   }
   const id = match[1].toLowerCase()
-  if (id === 'json') return 'JSON'
-  if (id === 'yaml' || id === 'yml') return 'YAML'
-  if (id === 'http') return 'HTTP'
-  return id
+  return LANGUAGE_LABELS[id] ?? id
 }
 
 const CodeBlockRoot = styled(Box)(({ theme }) => ({
@@ -77,19 +77,13 @@ const CodeBlockHeader = styled(Box)(({ theme }) => ({
   borderBottom: `1px solid ${theme.palette.divider}`,
 }))
 
-const BracketTypography = styled(Typography)({
+const CodeBlockFenceLabel = styled(Typography)({
   fontFamily: 'monospace',
   userSelect: 'none',
   lineHeight: 1,
 })
 
-const LanguageTypography = styled(Typography)({
-  fontFamily: 'monospace',
-  userSelect: 'none',
-  lineHeight: 1,
-})
-
-const CodeBlockPre = styled(Box)(({ theme }) => ({
+const CodeBlockBody = styled(Box)(({ theme }) => ({
   margin: 0,
   padding: theme.spacing(1.5),
   overflow: 'auto',
@@ -102,9 +96,10 @@ const CodeBlockPre = styled(Box)(({ theme }) => ({
 
 const CodeBlockCode = styled('code')(({ theme }) => ({
   fontFamily: 'monospace',
-  fontSize: theme.typography.caption.fontSize,
   display: 'block',
-  background: 'none',
-  padding: 0,
   whiteSpace: 'pre',
+  // github-markdown-css `.markdown-body code { font-size: 85% }` — bump specificity so fenced body matches body2
+  '&&': {
+    fontSize: theme.typography.body2.fontSize,
+  },
 }))
