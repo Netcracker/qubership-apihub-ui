@@ -2,82 +2,39 @@ import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { type FC, memo, useMemo } from 'react'
+import { type FC, memo } from 'react'
 
-import type { AiChatMessage, MessageId } from '../../api/types'
 import { useAiChatMessages } from '../../api/useAiChatMessages'
 import { useAiAssistantHeaderHandlers } from '../../hooks/useAiAssistantHeaderHandlers'
 import { useAiAssistantContext } from '../../state/AiAssistantContext'
 import { AiAssistantHeader } from '../header/AiAssistantHeader'
 import { AI_ASSISTANT_HEADER_MODE } from '../header/aiAssistantHeaderMode'
-import { AiAssistantPlaceholder } from './AiAssistantPlaceholder'
 import { AiAssistantComposer } from './AiAssistantComposer'
-import { MessageList } from './MessageList'
+import { AiAssistantPlaceholder } from './AiAssistantPlaceholder'
+import { ChatMessageList } from './ChatMessageList'
+import { useChatScreenMessages } from './hooks/useChatScreenMessages'
 import { ThinkingIndicator } from './ThinkingIndicator'
 
-export const ChatScreen: FC = memo(() => {
+export const AiAssistantChatScreen: FC = memo(() => {
   const { open, activeChatId, streaming } = useAiAssistantContext()
   const headerHandlers = useAiAssistantHeaderHandlers()
   const messagesQuery = useAiChatMessages(activeChatId)
 
-  const messagesOldestFirst = useMemo(() => {
-    if (!messagesQuery.data?.pages?.length) {
-      return []
-    }
-    const newestFirst = messagesQuery.data.pages.flatMap((page) => page.messages)
-    return [...newestFirst].reverse()
-  }, [messagesQuery.data?.pages])
-
-  const streamingAssistantLive = useMemo((): { messageId: MessageId; content: string } | null => {
-    if (streaming.state.status !== 'started') {
-      return null
-    }
-    const turnChatId = streaming.activeTurnChatId
-    if (turnChatId === null || turnChatId !== activeChatId) {
-      return null
-    }
-    return {
-      messageId: streaming.state.assistantMessageId,
-      content: streaming.state.buffer,
-    }
-  }, [activeChatId, streaming.activeTurnChatId, streaming.state])
-
-  const displayMessages = useMemo((): AiChatMessage[] => {
-    const base = messagesOldestFirst
-    if (!streamingAssistantLive) {
-      return base
-    }
-    const hasFinalAssistant = base.some(
-      (m) => m.messageId === streamingAssistantLive.messageId && m.role === 'assistant',
-    )
-    if (hasFinalAssistant) {
-      return base
-    }
-    const synthetic: AiChatMessage = {
-      messageId: streamingAssistantLive.messageId,
-      clientMessageId: null,
-      role: 'assistant',
-      content: streamingAssistantLive.content,
-      createdAt: new Date().toISOString(),
-    }
-    return [...base, synthetic]
-  }, [messagesOldestFirst, streamingAssistantLive])
-
-  const showWelcome = activeChatId === null ||
-    (messagesQuery.isSuccess && displayMessages.length === 0)
-
-  const showThread = activeChatId !== null && displayMessages.length > 0
-
-  const showThreadLoading = activeChatId !== null &&
-    messagesQuery.isLoading &&
-    displayMessages.length === 0
-
-  const thinkingVisible = streaming.activeTurnChatId !== null &&
-    streaming.activeTurnChatId === activeChatId &&
-    (streaming.state.status === 'pending' ||
-      (streaming.state.status === 'started' && streaming.thinkingDuringAssistantPause))
-
-  const jumpPhase = streaming.isBusy ? 'active' : 'idle'
+  const {
+    displayMessages,
+    showWelcome,
+    showThread,
+    showThreadLoading,
+    thinkingVisible,
+    jumpPhase,
+    streamingAssistantMessageId,
+  } = useChatScreenMessages({
+    activeChatId: activeChatId,
+    messagePages: messagesQuery.data?.pages,
+    messagesLoaded: messagesQuery.isSuccess,
+    messagesLoading: messagesQuery.isLoading,
+    streaming: streaming,
+  })
 
   return (
     <ChatLayout>
@@ -102,14 +59,14 @@ export const ChatScreen: FC = memo(() => {
           : showThread && activeChatId
           ? (
             <>
-              <MessageList
+              <ChatMessageList
                 chatId={activeChatId}
                 messages={displayMessages}
                 hasNextPage={Boolean(messagesQuery.hasNextPage)}
                 isFetchingNextPage={messagesQuery.isFetchingNextPage}
                 fetchNextPage={messagesQuery.fetchNextPage}
                 jumpButtonStreamPhase={jumpPhase}
-                streamingAssistantMessageId={streamingAssistantLive?.messageId ?? null}
+                streamingAssistantMessageId={streamingAssistantMessageId}
               />
               <ThinkingIndicator visible={thinkingVisible} />
             </>
@@ -120,6 +77,8 @@ export const ChatScreen: FC = memo(() => {
     </ChatLayout>
   )
 })
+
+AiAssistantChatScreen.displayName = 'AiAssistantChatScreen'
 
 const ChatLayout = styled(Box)({
   display: 'flex',

@@ -2,13 +2,15 @@ import Box from '@mui/material/Box'
 import { alpha, styled } from '@mui/material/styles'
 import { type FC, memo } from 'react'
 
-export type UserMessageProps = {
+type ChatUserMessageProps = {
   content: string
 }
 
-export const UserMessage: FC<UserMessageProps> = memo(({ content }) => {
+export const ChatUserMessage: FC<ChatUserMessageProps> = memo(({ content }) => {
   return <UserBubble>{content}</UserBubble>
 })
+
+ChatUserMessage.displayName = 'ChatUserMessage'
 
 const UserBubble = styled(Box)(({ theme }) => ({
   alignSelf: 'flex-end',

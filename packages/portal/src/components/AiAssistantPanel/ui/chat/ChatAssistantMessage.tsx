@@ -4,18 +4,17 @@ import { type FC, memo, useMemo } from 'react'
 
 import { useShowErrorNotification } from '@netcracker/qubership-apihub-ui-portal/src/routes/root/BasePage/Notification'
 import { useCopyWithFeedback } from '../../hooks/useCopyWithFeedback'
-import { useQueuedStreamingMarkdown } from '../../hooks/useQueuedStreamingMarkdown'
 import { normalizeStreamingMarkdown } from '../../utils/normalizeStreamingMarkdown'
 import { CopyIconButton } from '../common/CopyIconButton'
 import { AiAssistantMarkdownViewer } from '../markdown/AiAssistantMarkdownViewer'
+import { useQueuedStreamingMarkdown } from './hooks/useQueuedStreamingMarkdown'
 
-export type AssistantMessageProps = {
+export type ChatAssistantMessageProps = {
   content: string
-  /** Live bubble: markdown is queued so parse/highlight runs once per paint wave. */
   isStreaming?: boolean
 }
 
-export const AssistantMessage: FC<AssistantMessageProps> = memo(({ content, isStreaming = false }) => {
+export const ChatAssistantMessage: FC<ChatAssistantMessageProps> = memo(({ content, isStreaming = false }) => {
   const showError = useShowErrorNotification()
   const { createCopyHandler, copied } = useCopyWithFeedback({
     onError: (error) =>
@@ -45,6 +44,8 @@ export const AssistantMessage: FC<AssistantMessageProps> = memo(({ content, isSt
     </AssistantColumn>
   )
 })
+
+ChatAssistantMessage.displayName = 'ChatAssistantMessage'
 
 const AssistantColumn = styled(Box)(({ theme }) => ({
   alignSelf: 'stretch',

@@ -1,13 +1,13 @@
 import { type FC, type KeyboardEvent, memo, useCallback, useEffect, useRef, useState } from 'react'
 
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import { styled } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 
 import { SendIcon } from '@netcracker/qubership-apihub-ui-shared/icons/SendIcon'
 import { StopIcon } from '@netcracker/qubership-apihub-ui-shared/icons/StopIcon'
 
-import { Button } from '@mui/material'
 import { useAiAssistantContext } from '../../state/AiAssistantContext'
 
 export type AiAssistantComposerProps = {
@@ -149,3 +149,5 @@ const SendStopButton = styled(Button)(({ theme }) => ({
   padding: 0,
   borderRadius: '50%',
 }))
+
+SendStopButton.displayName = 'SendStopButton'
