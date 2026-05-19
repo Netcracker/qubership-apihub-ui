@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { BuilderResolvers, FileId, FileSourceMap, VersionsComparison } from '@netcracker/qubership-apihub-api-processor'
+import type { BuilderResolvers, FileId, FileSourceMap, VersionValidationLevel, VersionsComparison } from '@netcracker/qubership-apihub-api-processor'
 import { BUILD_TYPE, PackageVersionBuilder, VERSION_STATUS } from '@netcracker/qubership-apihub-api-processor'
 import {
   packageVersionResolver,
@@ -64,7 +64,7 @@ export type PackageVersionBuilderWorker = {
   init: (lastIdentityProviderId: string | null) => Promise<void>
 }
 
-async function getValidationLevel(): Promise<'major' | 'strict'> {
+async function getValidationLevel(): Promise<VersionValidationLevel> {
   try {
     const info = await getSystemInfo()
     return info.migrationInProgress ? 'major' : 'strict'
@@ -126,7 +126,8 @@ const worker: PackageVersionBuilderWorker = {
       },
     )
 
-    await builder.run()
+    const groupLevel = await getValidationLevel()
+    await builder.run({ apiProcessorVersionValidationLevel: groupLevel })
 
     return [builder.buildResult.comparisons, await builder.createVersionPackage({ type: 'blob' })]
   },
