@@ -11,7 +11,6 @@ type UseChatScreenMessagesParams = {
   activeChatId: ChatId | null
   messagePages: MessagePage[] | undefined
   messagesLoaded: boolean
-  messagesLoading: boolean
   streaming: AiAssistantStreamingApi
 }
 
@@ -19,7 +18,6 @@ type ChatScreenMessagesView = {
   displayMessages: AiChatMessage[]
   showWelcome: boolean
   showThread: boolean
-  showThreadLoading: boolean
   thinkingVisible: boolean
   jumpPhase: 'idle' | 'active'
   streamingAssistantMessageId: MessageId | null
@@ -29,7 +27,6 @@ export function useChatScreenMessages({
   activeChatId,
   messagePages,
   messagesLoaded,
-  messagesLoading,
   streaming,
 }: UseChatScreenMessagesParams): ChatScreenMessagesView {
   const messagesOldestFirst = useMemo((): AiChatMessage[] => {
@@ -80,10 +77,6 @@ export function useChatScreenMessages({
 
   const showThread = activeChatId !== null && displayMessages.length > 0
 
-  const showThreadLoading = activeChatId !== null &&
-    messagesLoading &&
-    displayMessages.length === 0
-
   const thinkingVisible = streaming.activeTurnChatId !== null &&
     streaming.activeTurnChatId === activeChatId &&
     (streaming.state.status === 'pending' ||
@@ -96,7 +89,6 @@ export function useChatScreenMessages({
     displayMessages,
     showWelcome,
     showThread,
-    showThreadLoading,
     thinkingVisible,
     jumpPhase,
     streamingAssistantMessageId,

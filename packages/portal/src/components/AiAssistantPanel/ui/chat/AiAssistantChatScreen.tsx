@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box'
-import CircularProgress from '@mui/material/CircularProgress'
 import { styled } from '@mui/material/styles'
 import { type FC, memo } from 'react'
 
@@ -23,7 +22,6 @@ export const AiAssistantChatScreen: FC = memo(() => {
     displayMessages,
     showWelcome,
     showThread,
-    showThreadLoading,
     thinkingVisible,
     jumpPhase,
     streamingAssistantMessageId,
@@ -31,7 +29,6 @@ export const AiAssistantChatScreen: FC = memo(() => {
     activeChatId: activeChatId,
     messagePages: messagesQuery.data?.pages,
     messagesLoaded: messagesQuery.isSuccess,
-    messagesLoading: messagesQuery.isLoading,
     streaming: streaming,
   })
 
@@ -39,13 +36,7 @@ export const AiAssistantChatScreen: FC = memo(() => {
     <ChatLayout>
       <AiAssistantHeader mode={AI_ASSISTANT_HEADER_MODE.chat} {...headerHandlers} />
       <Body>
-        {showThreadLoading
-          ? (
-            <Centered>
-              <CircularProgress size={28} />
-            </Centered>
-          )
-          : showWelcome
+        {showWelcome
           ? <AiAssistantPlaceholder />
           : showThread && activeChatId
           ? (
@@ -84,12 +75,3 @@ const Body = styled(Box)({
   flex: 1,
   minHeight: 0,
 })
-
-const Centered = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  flex: 1,
-  minHeight: 0,
-  padding: theme.spacing(2),
-}))

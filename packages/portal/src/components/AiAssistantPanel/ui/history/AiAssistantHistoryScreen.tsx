@@ -1,7 +1,6 @@
 import { type FC, memo, type ReactNode, useCallback, useMemo, useRef, useState } from 'react'
 
 import Box from '@mui/material/Box'
-import CircularProgress from '@mui/material/CircularProgress'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 
@@ -114,23 +113,19 @@ export const AiAssistantHistoryScreen: FC = memo(() => {
   }, [fetchNextPage, hasNextPage, isFetchingNextPage])
 
   let listBody: ReactNode
-  if (chatsQuery.isLoading) {
-    listBody = (
-      <ListStatesColumn>
-        <CenteredState>
-          <CircularProgress size={28} />
-        </CenteredState>
-      </ListStatesColumn>
-    )
-  } else if (chats.length === 0) {
+  if (chats.length === 0) {
     listBody = (
       <ListStatesColumn>
         <RecentlyLabel>Recent</RecentlyLabel>
-        <CenteredState>
-          <Typography color="text.secondary" variant="body2">
-            No chats found.
-          </Typography>
-        </CenteredState>
+        {!chatsQuery.isLoading
+          ? (
+            <CenteredState>
+              <Typography color="text.secondary" variant="body2">
+                No chats found.
+              </Typography>
+            </CenteredState>
+          )
+          : null}
       </ListStatesColumn>
     )
   } else {
@@ -165,13 +160,6 @@ export const AiAssistantHistoryScreen: FC = memo(() => {
             />
           )
         })}
-        {chatsQuery.isFetchingNextPage
-          ? (
-            <NextPageLoader>
-              <CircularProgress size={20} />
-            </NextPageLoader>
-          )
-          : null}
       </RowsColumn>
     )
   }
@@ -250,10 +238,4 @@ const CenteredState = styled(Box)(({ theme }) => ({
   flex: 1,
   minHeight: theme.spacing(20),
   padding: theme.spacing(2),
-}))
-
-const NextPageLoader = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  justifyContent: 'center',
-  padding: theme.spacing(1, 0, 0),
 }))

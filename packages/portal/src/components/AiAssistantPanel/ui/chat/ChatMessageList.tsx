@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box'
-import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton'
 import { styled } from '@mui/material/styles'
 import type { FetchNextPageOptions } from '@tanstack/react-query'
@@ -48,13 +47,6 @@ export const ChatMessageList: FC<ChatMessageListProps> = memo(
     return (
       <ListRoot>
         <ListScrollArea ref={scrollRef} onScroll={handleScroll} data-testid="AiAssistantMessageList">
-          {isFetchingNextPage
-            ? (
-              <TopLoader>
-                <CircularProgress size={20} />
-              </TopLoader>
-            )
-            : null}
           <MessagesColumn>
             {messages.map((message) => (
               <ChatMessageRow
@@ -103,12 +95,6 @@ const ListScrollArea = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   padding: theme.spacing(3),
-}))
-
-const TopLoader = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  justifyContent: 'center',
-  padding: theme.spacing(1, 0),
 }))
 
 const MessagesColumn = styled(Box)(({ theme }) => ({
