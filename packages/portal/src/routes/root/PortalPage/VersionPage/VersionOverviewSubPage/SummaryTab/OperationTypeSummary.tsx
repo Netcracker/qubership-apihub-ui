@@ -95,13 +95,15 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
   const showApiQualitySummary = !apiQualitySummaryPlaceholder
   const validationSummary = useApiQualityValidationSummary(apiType)
   const validationRulesets = validationSummary?.rulesets ?? []
-  const activeRuleset = validationSummary?.rulesets?.find(({ status }) => status === RulesetStatuses.ACTIVE)
+  const activeRulesets = validationSummary?.rulesets?.filter(({ status }) => status === RulesetStatuses.ACTIVE)
 
   const hasInactiveRulesets = validationRulesets.some(ruleset => ruleset.status === RulesetStatuses.INACTIVE)
   const aggregatedValidationSummary: IssuesSummary = useAggregatedValidationSummaryByPackageVersion(
     validationSummary && {
       ...validationSummary,
-      documents: validationSummary.documents?.filter(document => document.rulesetId === activeRuleset?.id),
+      documents: validationSummary.documents?.filter(document =>
+        activeRulesets?.some(ruleset => ruleset.id === document.rulesetId) ?? false,
+      ),
     },
   )
 
@@ -362,8 +364,10 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
                     alignItems='flex-start'
                     gap={1}
                   >
-                    {activeRuleset && activeRuleset?.id
-                      ? <ValidationRulesetItem ruleset={activeRuleset}/>
+                    {activeRulesets?.length
+                      ? activeRulesets.map(ruleset => (
+                        <ValidationRulesetItem key={ruleset.id} ruleset={ruleset}/>
+                      ))
                       : validationRulesets.map(ruleset => (
                         <ValidationRulesetItem key={ruleset.id} ruleset={ruleset}/>
                     ))}
