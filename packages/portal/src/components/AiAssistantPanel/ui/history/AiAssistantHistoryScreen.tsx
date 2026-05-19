@@ -122,16 +122,6 @@ export const AiAssistantHistoryScreen: FC = memo(() => {
         </CenteredState>
       </ListStatesColumn>
     )
-  } else if (chatsQuery.isError) {
-    listBody = (
-      <ListStatesColumn>
-        <CenteredState>
-          <Typography color="error" variant="body2">
-            Could not load chat history.
-          </Typography>
-        </CenteredState>
-      </ListStatesColumn>
-    )
   } else if (chats.length === 0) {
     listBody = (
       <ListStatesColumn>

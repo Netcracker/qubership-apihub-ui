@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import { styled } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
 import { type FC, memo } from 'react'
 
 import { useAiChatMessages } from '../../api/useAiChatMessages'
@@ -40,15 +39,7 @@ export const AiAssistantChatScreen: FC = memo(() => {
     <ChatLayout>
       <AiAssistantHeader mode={AI_ASSISTANT_HEADER_MODE.chat} {...headerHandlers} />
       <Body>
-        {messagesQuery.isError
-          ? (
-            <Centered>
-              <Typography color="error" variant="body2">
-                Could not load messages.
-              </Typography>
-            </Centered>
-          )
-          : showThreadLoading
+        {showThreadLoading
           ? (
             <Centered>
               <CircularProgress size={28} />
