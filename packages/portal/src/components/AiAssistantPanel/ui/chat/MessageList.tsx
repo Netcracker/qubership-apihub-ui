@@ -106,8 +106,8 @@ export const MessageList: FC<MessageListProps> = memo(
     const showJumpButton = useMemo(() => !nearBottom && messages.length > 0, [nearBottom, messages.length])
 
     const jumpIcon = jumpButtonStreamPhase === 'active'
-      ? <JumpToLatestStreamingIcon />
-      : <JumpToLatestArrowIcon />
+      ? <JumpToLatestStreamingIcon fontSize="small" />
+      : <JumpToLatestArrowIcon fontSize="small" />
 
     return (
       <ListRoot>
@@ -137,6 +137,8 @@ export const MessageList: FC<MessageListProps> = memo(
                 aria-label="Jump to latest messages"
                 data-testid="AiAssistantJumpToLatestButton"
                 onClick={scrollToBottom}
+                color="inherit"
+                size="small"
               >
                 {jumpIcon}
               </JumpToLatestButton>
@@ -186,18 +188,25 @@ const JumpFabWrap = styled(Box)(({ theme }) => ({
   zIndex: 1,
 }))
 
-/** Floating chip: light surface + shadow (Figma jump control). */
-const JumpToLatestButton = styled(IconButton)(({ theme }) => ({
-  flexShrink: 0,
-  minWidth: 0,
-  width: theme.spacing(4),
-  height: theme.spacing(4),
-  padding: 0,
-  borderRadius: '50%',
-  backgroundColor: theme.palette.background.paper,
-  color: theme.palette.text.primary,
-  border: `1px solid ${theme.palette.divider}`,
-  '& .MuiSvgIcon-root': {
-    fontSize: theme.typography.pxToRem(18),
-  },
-}))
+const JumpToLatestButton = styled(IconButton)(({ theme }) => {
+  const border = `1px solid ${theme.palette.divider}`
+  const backgroundColor = theme.palette.background.paper
+  const diameter = theme.spacing(5)
+  const boxShadow = '0px 0px 30px 0px rgba(0, 0, 0, 0.05), inset 0px 4px 4px 0px rgba(255, 255, 255, 0.25)'
+
+  return {
+    boxSizing: 'border-box',
+    width: diameter,
+    height: diameter,
+    padding: 0,
+    borderRadius: '50%',
+    backgroundColor,
+    border,
+    boxShadow,
+    '&:hover': {
+      backgroundColor,
+      border,
+      boxShadow,
+    },
+  }
+})

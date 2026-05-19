@@ -7,8 +7,8 @@ import TextField from '@mui/material/TextField'
 import { SendIcon } from '@netcracker/qubership-apihub-ui-shared/icons/SendIcon'
 import { StopIcon } from '@netcracker/qubership-apihub-ui-shared/icons/StopIcon'
 
+import { Button } from '@mui/material'
 import { useAiAssistantContext } from '../../state/AiAssistantContext'
-import { AssistantCircularIconButton } from './AssistantCircularIconButton'
 
 export type AiAssistantComposerProps = {
   panelOpen: boolean
@@ -71,22 +71,22 @@ export const AiAssistantComposer: FC<AiAssistantComposerProps> = memo(({ panelOp
       />
       {busy
         ? (
-          <AssistantCircularIconButton
+          <SendStopButton
             variant="contained"
             aria-label="Stop generation"
             onClick={handleAbort}
           >
             <StopIcon />
-          </AssistantCircularIconButton>
+          </SendStopButton>
         )
         : (
-          <AssistantCircularIconButton
+          <SendStopButton
             variant="contained"
             aria-label="Send message"
             onClick={handleSubmit}
           >
             <SendIcon />
-          </AssistantCircularIconButton>
+          </SendStopButton>
         )}
     </AiAssistantComposerShell>
   )
@@ -141,3 +141,11 @@ const AiAssistantComposerDraftField = styled(TextField)(({ theme }) => {
 })
 
 AiAssistantComposerDraftField.displayName = 'AiAssistantComposerDraftField'
+
+const SendStopButton = styled(Button)(({ theme }) => ({
+  minWidth: 0,
+  width: theme.spacing(5),
+  height: theme.spacing(5),
+  padding: 0,
+  borderRadius: '50%',
+}))
