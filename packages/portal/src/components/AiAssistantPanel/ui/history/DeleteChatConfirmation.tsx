@@ -1,5 +1,7 @@
 import { type FC, memo } from 'react'
 
+import { styled } from '@mui/material/styles'
+
 import { ConfirmationDialog } from '@netcracker/qubership-apihub-ui-shared/components/ConfirmationDialog/ConfirmationDialog'
 
 export type DeleteChatConfirmationProps = {
@@ -23,7 +25,11 @@ export const DeleteChatConfirmation: FC<DeleteChatConfirmationProps> = memo(({
     <ConfirmationDialog
       open={open}
       title="Delete the chat?"
-      message={`Chat "${title}" will be permanently deleted.`}
+      message={
+        <>
+          Chat <MessageTitleEmphasis>{title}</MessageTitleEmphasis> will be permanently deleted.
+        </>
+      }
       loading={loading}
       confirmButtonName="Delete"
       onConfirm={onConfirm}
@@ -31,5 +37,10 @@ export const DeleteChatConfirmation: FC<DeleteChatConfirmationProps> = memo(({
     />
   )
 })
+
+const MessageTitleEmphasis = styled('span')(({ theme }) => ({
+  fontSize: theme.typography.body2.fontSize,
+  fontWeight: 700,
+}))
 
 DeleteChatConfirmation.displayName = 'DeleteChatConfirmation'
