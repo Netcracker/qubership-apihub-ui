@@ -7,7 +7,7 @@ import { useCopyWithFeedback } from '../../hooks/useCopyWithFeedback'
 import { useQueuedStreamingMarkdown } from '../../hooks/useQueuedStreamingMarkdown'
 import { normalizeStreamingMarkdown } from '../../utils/normalizeStreamingMarkdown'
 import { CopyIconButton } from '../common/CopyIconButton'
-import { AssistantMarkdownViewer } from '../markdown/AssistantMarkdownViewer'
+import { AiAssistantMarkdownViewer } from '../markdown/AiAssistantMarkdownViewer'
 
 export type AssistantMessageProps = {
   content: string
@@ -34,7 +34,7 @@ export const AssistantMessage: FC<AssistantMessageProps> = memo(({ content, isSt
 
   return (
     <AssistantColumn>
-      <AssistantMarkdownViewer markdown={markdownForViewer} />
+      <AiAssistantMarkdownViewer markdown={markdownForViewer} />
       {!isStreaming
         ? (
           <CopyAnswerRow>

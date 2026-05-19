@@ -51,12 +51,12 @@ const rehypePlugins: PluggableList = [
   ],
 ]
 
-type AssistantMarkdownViewerProps = {
+type AiAssistantMarkdownViewerProps = {
   markdown: string
   normalizeMarkdown?: (markdown: string) => string
 }
 
-export const AssistantMarkdownViewer: FC<AssistantMarkdownViewerProps> = memo(({
+export const AiAssistantMarkdownViewer: FC<AiAssistantMarkdownViewerProps> = memo(({
   markdown,
   normalizeMarkdown,
 }) => {
@@ -86,7 +86,7 @@ export const AssistantMarkdownViewer: FC<AssistantMarkdownViewerProps> = memo(({
   )
 })
 
-AssistantMarkdownViewer.displayName = 'AssistantMarkdownViewer'
+AiAssistantMarkdownViewer.displayName = 'AiAssistantMarkdownViewer'
 
 const MarkdownPre: FC<ComponentPropsWithoutRef<'pre'> & ReactMarkdownProps> = ({ children }) => <>{children}</>
 MarkdownPre.displayName = 'MarkdownPre'
