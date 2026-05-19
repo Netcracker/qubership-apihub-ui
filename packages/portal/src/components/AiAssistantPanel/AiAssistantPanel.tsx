@@ -7,7 +7,7 @@ import { APP_HEADER_HEIGHT } from '@netcracker/qubership-apihub-ui-shared/themes
 import { AI_ASSISTANT_HISTORY_SCREEN, useAiAssistantContext } from './state/AiAssistantContext'
 import { AI_ASSISTANT_PANEL_MIN_WIDTH, getAiAssistantPanelMaxWidth } from './state/panelWidth'
 import { ChatScreen } from './ui/chat/ChatScreen'
-import { HistoryScreen } from './ui/history/HistoryScreen'
+import { AiAssistantHistoryScreen } from './ui/history/AiAssistantHistoryScreen'
 
 const RESIZE_ENABLE = {
   top: false,
@@ -63,7 +63,7 @@ export const AiAssistantPanel: FC = () => {
           onResizeStop={handleResizeStop}
         >
           <PanelContainer data-testid="AiAssistantPanel">
-            {screen === AI_ASSISTANT_HISTORY_SCREEN ? <HistoryScreen /> : <ChatScreen />}
+            {screen === AI_ASSISTANT_HISTORY_SCREEN ? <AiAssistantHistoryScreen /> : <ChatScreen />}
           </PanelContainer>
         </Resizable>
       </ClickAwayListener>

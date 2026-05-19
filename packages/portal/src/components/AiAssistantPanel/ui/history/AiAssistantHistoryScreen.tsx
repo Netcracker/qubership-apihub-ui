@@ -21,7 +21,7 @@ const LOAD_NEXT_PAGE_THRESHOLD_PX = 120
 
 const PIN_LIMIT_TOOLTIP = `The maximum of ${MAX_PINNED_PER_USER} pinned chats is reached. Unpin one to pin another.`
 
-export const HistoryScreen: FC = memo(() => {
+export const AiAssistantHistoryScreen: FC = memo(() => {
   const { activeChatId, openChatScreen, streaming } = useAiAssistantContext()
   const headerHandlers = useAiAssistantHeaderHandlers()
   const updateChat = useUpdateAiChat()
@@ -212,7 +212,7 @@ export const HistoryScreen: FC = memo(() => {
   )
 })
 
-HistoryScreen.displayName = 'HistoryScreen'
+AiAssistantHistoryScreen.displayName = 'AiAssistantHistoryScreen'
 
 const HistoryLayout = styled(Box)({
   display: 'flex',
