@@ -1,11 +1,18 @@
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 
+import type { AI_CHAT_STREAM_EVENT } from './aiChatStream'
+
 // Contract mirror: keep in sync with `server/mocks/ai-chat/types.ts` (string ids here use Key).
 export type ChatId = Key
 export type MessageId = Key
 export type ClientMessageId = Key
 
-export type AiChatRole = 'user' | 'assistant'
+export const AI_CHAT_ROLE = {
+  user: 'user',
+  assistant: 'assistant',
+} as const
+
+export type AiChatRole = (typeof AI_CHAT_ROLE)[keyof typeof AI_CHAT_ROLE]
 
 export type AiChat = {
   chatId: ChatId
@@ -61,20 +68,20 @@ export type AiChatSendMessageResponse = {
 }
 
 export type AiChatStreamEvent =
-  | { type: 'context.compacted'; messagesCompactedCount: number }
-  | { type: 'message.assistant.start'; messageId: MessageId }
-  | { type: 'tool.started'; toolCallId: string; name: string }
+  | { type: typeof AI_CHAT_STREAM_EVENT.contextCompacted; messagesCompactedCount: number }
+  | { type: typeof AI_CHAT_STREAM_EVENT.assistantStart; messageId: MessageId }
+  | { type: typeof AI_CHAT_STREAM_EVENT.toolStarted; toolCallId: string; name: string }
   | {
-    type: 'tool.completed'
+    type: typeof AI_CHAT_STREAM_EVENT.toolCompleted
     toolCallId: string
     name: string
     status: 'ok' | 'error'
     durationMs?: number
   }
-  | { type: 'message.assistant.delta'; delta: string }
-  | { type: 'message.assistant.completed'; message: AiChatMessage }
-  | { type: 'error'; code: AiChatErrorCode; message: string }
-  | { type: 'done' }
+  | { type: typeof AI_CHAT_STREAM_EVENT.assistantDelta; delta: string }
+  | { type: typeof AI_CHAT_STREAM_EVENT.assistantCompleted; message: AiChatMessage }
+  | { type: typeof AI_CHAT_STREAM_EVENT.error; code: AiChatErrorCode; message: string }
+  | { type: typeof AI_CHAT_STREAM_EVENT.done }
   | { type: string; [k: string]: unknown }
 
 export type AiChatErrorCode =

@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { FETCH_ERROR_EVENT, type FetchErrorDetails } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { HttpError } from '@netcracker/qubership-apihub-ui-shared/utils/responses'
 
+import { AI_CHAT_STREAM_EVENT, isAssistantStreamProgressEvent } from '../api/aiChatStream'
 import { aiChatJson } from '../api/client'
 import { invalidateAiChatListQueries } from '../api/invalidateAiChatListQueries'
 import { aiChatItemKey, aiChatMessagesKey } from '../api/queryKeys'
@@ -24,16 +25,25 @@ import {
   prependMessageToInfiniteMessages,
 } from './aiChatMessagesCache'
 import {
+  ABORT_ERROR_NAME,
+  AI_ASSISTANT_NETWORK_STREAM_ERROR_MESSAGE,
+  AI_ASSISTANT_STREAM_ERROR_DEFAULT_MESSAGE,
+  AI_ASSISTANT_STREAM_ERROR_TITLE,
+  ASSISTANT_MESSAGE_IDLE_FOR_THINKING_MS,
+  OPTIMISTIC_MESSAGE_ID_PREFIX,
+  STREAM_THINKING_POLL_MS,
+  STREAMING_TURN_ACTION,
+  STREAMING_TURN_STATUS,
+} from './streamingTurnConstants'
+import {
   getActiveTurnChatId,
   isStreamingBusy,
+  isStreamingTurnStatus,
   peekPartialBeforeErrorInBatch,
+  STREAMING_TURN_IDLE_STATE,
   streamingTurnReducer,
   type StreamingTurnState,
 } from './streamingTurnReducer'
-
-/** No assistant message tokens for this long while status is still `started` -> show Thinking (tools / provider gaps). */
-const ASSISTANT_MESSAGE_IDLE_FOR_THINKING_MS = 1000
-const STREAM_THINKING_POLL_MS = 250
 
 export type StreamingTurnDeps = {
   openChatScreen: (chatId: ChatId | null) => void
@@ -51,22 +61,18 @@ export type UseStreamingTurnResult = {
   reset: () => void
 }
 
-function isAssistantMessageProgressEvent(event: AiChatStreamEvent): boolean {
-  return event.type === 'message.assistant.start' || event.type === 'message.assistant.delta'
-}
-
 function isAbortError(e: unknown): boolean {
-  if (e instanceof DOMException && e.name === 'AbortError') {
+  if (e instanceof DOMException && e.name === ABORT_ERROR_NAME) {
     return true
   }
-  if (e instanceof Error && e.name === 'AbortError') {
+  if (e instanceof Error && e.name === ABORT_ERROR_NAME) {
     return true
   }
   return false
 }
 
 function dispatchSseFetchError(code: string, message: string): void {
-  const title = 'AI Assistant'
+  const title = AI_ASSISTANT_STREAM_ERROR_TITLE
   const status = null
   dispatchEvent(
     new CustomEvent<FetchErrorDetails>(FETCH_ERROR_EVENT, {
@@ -79,7 +85,7 @@ function dispatchSseFetchError(code: string, message: string): void {
 }
 
 function dispatchNetworkFetchError(message: string): void {
-  const title = 'AI Assistant'
+  const title = AI_ASSISTANT_STREAM_ERROR_TITLE
   const code = ''
   const status = null
   dispatchEvent(
@@ -98,7 +104,7 @@ export function useStreamingTurn({
   activeChatId: routeActiveChatId,
 }: StreamingTurnDeps): UseStreamingTurnResult {
   const queryClient = useQueryClient()
-  const [state, dispatch] = useReducer(streamingTurnReducer, { status: 'idle' } satisfies StreamingTurnState)
+  const [state, dispatch] = useReducer(streamingTurnReducer, STREAMING_TURN_IDLE_STATE)
   const stateRef = useRef(state)
   stateRef.current = state
 
@@ -115,16 +121,27 @@ export function useStreamingTurn({
   }, [])
 
   useEffect(() => {
-    if (state.status === 'idle') {
+    if (isStreamingTurnStatus(state, STREAMING_TURN_STATUS.idle)) {
       lastAssistantMessageActivityAtRef.current = null
       setThinkingDuringAssistantPause((prev) => (prev ? false : prev))
     }
-  }, [state.status])
+  }, [state])
 
-  const streamPollKey = state.status === 'started' ? state.chatId : null
+  const streamPollKey = isStreamingTurnStatus(state, STREAMING_TURN_STATUS.started) ? state.chatId : null
 
+  /**
+   * Thinking while `started` but the chat buffer is idle (MCP tools, compaction, provider latency).
+   *
+   * Only `message.assistant.start` / `message.assistant.delta` refresh `lastAssistantMessageActivityAt`.
+   * Other SSE frames (`tool.started`, `tool.completed`, `context.compacted`, …) keep the turn in `started`
+   * without new tokens, so the thread looks frozen. A one-shot timeout after each delta does not help:
+   * gaps with no progress events never schedule a timer, and long tool-only phases never re-arm it.
+   *
+   * Poll while `started` and compare wall clock to the last message token so Thinking still appears
+   * until the next delta or the turn ends. Revisit if we wire tool/compaction events into this signal.
+   */
   useEffect(() => {
-    if (state.status !== 'started') {
+    if (!isStreamingTurnStatus(state, STREAMING_TURN_STATUS.started)) {
       return
     }
     const evaluate = (): void => {
@@ -139,11 +156,11 @@ export function useStreamingTurn({
     evaluate()
     const id = window.setInterval(evaluate, STREAM_THINKING_POLL_MS)
     return () => window.clearInterval(id)
-  }, [state.status, streamPollKey])
+  }, [state, streamPollKey])
 
   const flushPartialAssistantToCache = useCallback((chatId: ChatId): void => {
     const s = stateRef.current
-    if (s.status !== 'started' || s.chatId !== chatId) {
+    if (!isStreamingTurnStatus(s, STREAMING_TURN_STATUS.started) || s.chatId !== chatId) {
       return
     }
     if (!s.buffer) {
@@ -194,7 +211,7 @@ export function useStreamingTurn({
 
   const processBatch = useCallback(
     (chatId: ChatId, batch: readonly AiChatStreamEvent[]): void => {
-      const running = stateRef.current.status !== 'idle'
+      const running = !isStreamingTurnStatus(stateRef.current, STREAMING_TURN_STATUS.idle)
         ? stateRef.current
         : (turnBootstrapRef.current ?? stateRef.current)
 
@@ -208,11 +225,11 @@ export function useStreamingTurn({
       }
 
       for (const event of batch) {
-        if (isAssistantMessageProgressEvent(event)) {
+        if (isAssistantStreamProgressEvent(event)) {
           lastAssistantMessageActivityAtRef.current = Date.now()
           setThinkingDuringAssistantPause((prev) => (prev ? false : prev))
         }
-        if (event.type === 'message.assistant.completed') {
+        if (event.type === AI_CHAT_STREAM_EVENT.assistantCompleted) {
           const assistantMessage = (event as { message: AiChatMessage }).message
           queryClient.setQueryData(
             aiChatMessagesKey(chatId),
@@ -220,20 +237,20 @@ export function useStreamingTurn({
               prependMessageToInfiniteMessages(previous, assistantMessage),
           )
         }
-        if (event.type === 'error') {
+        if (event.type === AI_CHAT_STREAM_EVENT.error) {
           const code = 'code' in event && typeof event.code === 'string' ? event.code : ''
           const message = 'message' in event && typeof event.message === 'string'
             ? event.message
-            : 'Assistant stream reported an error.'
+            : AI_ASSISTANT_STREAM_ERROR_DEFAULT_MESSAGE
           dispatchSseFetchError(code, message)
         }
-        if (event.type === 'done') {
+        if (event.type === AI_CHAT_STREAM_EVENT.done) {
           void invalidateAiChatListQueries(queryClient)
           void queryClient.invalidateQueries({ queryKey: aiChatMessagesKey(chatId) })
         }
       }
 
-      dispatch({ type: 'sseBatch', events: batch })
+      dispatch({ type: STREAMING_TURN_ACTION.sseBatch, events: batch })
       turnBootstrapRef.current = null
     },
     [prependPartialAssistant, queryClient],
@@ -256,12 +273,12 @@ export function useStreamingTurn({
       } catch (e) {
         if (isAbortError(e)) {
           flushPartialAssistantToCache(chatId)
-          dispatch({ type: 'aborted' })
+          dispatch({ type: STREAMING_TURN_ACTION.aborted })
           return
         }
         if (e instanceof HttpError) {
           flushPartialAssistantToCache(chatId)
-          dispatch({ type: 'reset' })
+          dispatch({ type: STREAMING_TURN_ACTION.reset })
           if (e.status === 404) {
             removeChatCaches(chatId)
             if (routeActiveChatId === chatId) {
@@ -271,8 +288,10 @@ export function useStreamingTurn({
           return
         }
         flushPartialAssistantToCache(chatId)
-        dispatchNetworkFetchError(e instanceof Error ? e.message : 'Network error while streaming.')
-        dispatch({ type: 'reset' })
+        dispatchNetworkFetchError(
+          e instanceof Error ? e.message : AI_ASSISTANT_NETWORK_STREAM_ERROR_MESSAGE,
+        )
+        dispatch({ type: STREAMING_TURN_ACTION.reset })
       } finally {
         if (abortControllerRef.current === ac) {
           abortControllerRef.current = null
@@ -317,7 +336,7 @@ export function useStreamingTurn({
         }
 
         const clientMessageId = uuidv4() as ClientMessageId
-        const optimisticUserMessageId = `optimistic-${uuidv4()}` as MessageId
+        const optimisticUserMessageId = `${OPTIMISTIC_MESSAGE_ID_PREFIX}${uuidv4()}` as MessageId
         const nowIso = new Date().toISOString()
 
         const optimistic = buildOptimisticUserMessage({
@@ -334,7 +353,7 @@ export function useStreamingTurn({
         )
 
         const pendingSnapshot: StreamingTurnState = {
-          status: 'pending',
+          status: STREAMING_TURN_STATUS.pending,
           chatId: chatId,
           clientMessageId: clientMessageId,
           optimisticUserMessageId: optimisticUserMessageId,
@@ -343,7 +362,7 @@ export function useStreamingTurn({
         turnBootstrapRef.current = pendingSnapshot
 
         dispatch({
-          type: 'turn.requested',
+          type: STREAMING_TURN_ACTION.turnRequested,
           chatId: chatId,
           clientMessageId: clientMessageId,
           optimisticUserMessageId: optimisticUserMessageId,
@@ -363,7 +382,7 @@ export function useStreamingTurn({
   }, [])
 
   const reset = useCallback((): void => {
-    dispatch({ type: 'reset' })
+    dispatch({ type: STREAMING_TURN_ACTION.reset })
   }, [])
 
   return useMemo(() => {

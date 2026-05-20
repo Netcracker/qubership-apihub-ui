@@ -8,6 +8,7 @@ import { JumpToLatestArrowIcon } from '@netcracker/qubership-apihub-ui-shared/ic
 import { JumpToLatestStreamingIcon } from '@netcracker/qubership-apihub-ui-shared/icons/JumpToLatestStreamingIcon'
 
 import type { AiChatMessage, ChatId, MessageId } from '../../api/types'
+import { CHAT_MESSAGE_LIST_JUMP_PHASE, type ChatMessageListJumpPhase } from '../../state/streamingTurnConstants'
 import { ChatAssistantMessage } from './ChatAssistantMessage'
 import { ChatUserMessage } from './ChatUserMessage'
 import { useMessageListScroll } from './hooks/useMessageListScroll'
@@ -18,7 +19,7 @@ export type ChatMessageListProps = {
   hasNextPage: boolean
   isFetchingNextPage: boolean
   fetchNextPage: (options?: FetchNextPageOptions) => Promise<unknown>
-  jumpButtonStreamPhase: 'idle' | 'active'
+  jumpButtonStreamPhase: ChatMessageListJumpPhase
   streamingAssistantMessageId: MessageId | null
 }
 
@@ -40,7 +41,7 @@ export const ChatMessageList: FC<ChatMessageListProps> = memo(
       fetchNextPage,
     })
 
-    const jumpIcon = jumpButtonStreamPhase === 'active'
+    const jumpIcon = jumpButtonStreamPhase === CHAT_MESSAGE_LIST_JUMP_PHASE.active
       ? <JumpToLatestStreamingIcon fontSize="small" />
       : <JumpToLatestArrowIcon fontSize="small" />
 

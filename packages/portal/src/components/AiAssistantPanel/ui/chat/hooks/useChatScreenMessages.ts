@@ -1,7 +1,13 @@
 import { useMemo } from 'react'
 
-import type { AiChatMessage, ChatId, MessageId } from '../../../api/types'
+import { AI_CHAT_ROLE, type AiChatMessage, type ChatId, type MessageId } from '../../../api/types'
 import type { AiAssistantStreamingApi } from '../../../state/AiAssistantContext'
+import {
+  CHAT_MESSAGE_LIST_JUMP_PHASE,
+  type ChatMessageListJumpPhase,
+  STREAMING_TURN_STATUS,
+} from '../../../state/streamingTurnConstants'
+import { isStreamingTurnStatus } from '../../../state/streamingTurnReducer'
 
 type MessagePage = {
   messages: AiChatMessage[]
@@ -19,7 +25,7 @@ type ChatScreenMessagesView = {
   showWelcome: boolean
   showThread: boolean
   thinkingVisible: boolean
-  jumpPhase: 'idle' | 'active'
+  jumpPhase: ChatMessageListJumpPhase
   streamingAssistantMessageId: MessageId | null
 }
 
@@ -38,7 +44,7 @@ export function useChatScreenMessages({
   }, [messagePages])
 
   const streamingAssistantLive = useMemo((): { messageId: MessageId; content: string } | null => {
-    if (streaming.state.status !== 'started') {
+    if (!isStreamingTurnStatus(streaming.state, STREAMING_TURN_STATUS.started)) {
       return null
     }
     const turnChatId = streaming.activeTurnChatId
@@ -57,7 +63,7 @@ export function useChatScreenMessages({
       return base
     }
     const hasFinalAssistant = base.some(
-      (m) => m.messageId === streamingAssistantLive.messageId && m.role === 'assistant',
+      (m) => m.messageId === streamingAssistantLive.messageId && m.role === AI_CHAT_ROLE.assistant,
     )
     if (hasFinalAssistant) {
       return base
@@ -65,7 +71,7 @@ export function useChatScreenMessages({
     const synthetic: AiChatMessage = {
       messageId: streamingAssistantLive.messageId,
       clientMessageId: null,
-      role: 'assistant',
+      role: AI_CHAT_ROLE.assistant,
       content: streamingAssistantLive.content,
       createdAt: new Date().toISOString(),
     }
@@ -79,10 +85,13 @@ export function useChatScreenMessages({
 
   const thinkingVisible = streaming.activeTurnChatId !== null &&
     streaming.activeTurnChatId === activeChatId &&
-    (streaming.state.status === 'pending' ||
-      (streaming.state.status === 'started' && streaming.thinkingDuringAssistantPause))
+    (isStreamingTurnStatus(streaming.state, STREAMING_TURN_STATUS.pending) ||
+      (isStreamingTurnStatus(streaming.state, STREAMING_TURN_STATUS.started) &&
+        streaming.thinkingDuringAssistantPause))
 
-  const jumpPhase = streaming.isBusy ? 'active' : 'idle'
+  const jumpPhase = streaming.isBusy
+    ? CHAT_MESSAGE_LIST_JUMP_PHASE.active
+    : CHAT_MESSAGE_LIST_JUMP_PHASE.idle
   const streamingAssistantMessageId = streamingAssistantLive?.messageId ?? null
 
   return {

@@ -1,16 +1,18 @@
+import { AI_CHAT_STREAM_EVENT } from '../api/aiChatStream'
 import type { AiChatStreamEvent, ChatId, ClientMessageId, MessageId } from '../api/types'
+import { STREAMING_TURN_ACTION, STREAMING_TURN_STATUS, type StreamingTurnStatus } from './streamingTurnConstants'
 
 export type StreamingTurnState =
-  | { status: 'idle' }
+  | { status: typeof STREAMING_TURN_STATUS.idle }
   | {
-    status: 'pending'
+    status: typeof STREAMING_TURN_STATUS.pending
     chatId: ChatId
     optimisticUserMessageId: MessageId
     clientMessageId: ClientMessageId
     submittedContent: string
   }
   | {
-    status: 'started'
+    status: typeof STREAMING_TURN_STATUS.started
     chatId: ChatId
     assistantMessageId: MessageId
     buffer: string
@@ -19,36 +21,38 @@ export type StreamingTurnState =
 
 export type StreamingTurnAction =
   | {
-    type: 'turn.requested'
+    type: typeof STREAMING_TURN_ACTION.turnRequested
     chatId: ChatId
     clientMessageId: ClientMessageId
     optimisticUserMessageId: MessageId
     submittedContent: string
   }
-  | { type: 'sse'; event: AiChatStreamEvent }
-  | { type: 'sseBatch'; events: readonly AiChatStreamEvent[] }
-  | { type: 'aborted' }
-  | { type: 'reset' }
+  | { type: typeof STREAMING_TURN_ACTION.sse; event: AiChatStreamEvent }
+  | { type: typeof STREAMING_TURN_ACTION.sseBatch; events: readonly AiChatStreamEvent[] }
+  | { type: typeof STREAMING_TURN_ACTION.aborted }
+  | { type: typeof STREAMING_TURN_ACTION.reset }
+
+export const STREAMING_TURN_IDLE_STATE: StreamingTurnState = { status: STREAMING_TURN_STATUS.idle }
 
 export function streamingTurnReducer(
   state: StreamingTurnState,
   action: StreamingTurnAction,
 ): StreamingTurnState {
   switch (action.type) {
-    case 'reset':
-    case 'aborted':
-      return { status: 'idle' }
-    case 'turn.requested':
+    case STREAMING_TURN_ACTION.reset:
+    case STREAMING_TURN_ACTION.aborted:
+      return STREAMING_TURN_IDLE_STATE
+    case STREAMING_TURN_ACTION.turnRequested:
       return {
-        status: 'pending',
+        status: STREAMING_TURN_STATUS.pending,
         chatId: action.chatId,
         clientMessageId: action.clientMessageId,
         optimisticUserMessageId: action.optimisticUserMessageId,
         submittedContent: action.submittedContent,
       }
-    case 'sse':
+    case STREAMING_TURN_ACTION.sse:
       return applyStreamingSseEvent(state, action.event)
-    case 'sseBatch':
+    case STREAMING_TURN_ACTION.sseBatch:
       return action.events.reduce<StreamingTurnState>((s, ev) => applyStreamingSseEvent(s, ev), state)
     default:
       return state
@@ -60,35 +64,35 @@ export function applyStreamingSseEvent(
   event: AiChatStreamEvent,
 ): StreamingTurnState {
   switch (event.type) {
-    case 'message.assistant.start':
-      if (state.status !== 'pending') {
+    case AI_CHAT_STREAM_EVENT.assistantStart:
+      if (state.status !== STREAMING_TURN_STATUS.pending) {
         return state
       }
       if (!('messageId' in event) || typeof event.messageId !== 'string') {
         return state
       }
       return {
-        status: 'started',
+        status: STREAMING_TURN_STATUS.started,
         chatId: state.chatId,
         assistantMessageId: event.messageId as MessageId,
         buffer: '',
         clientMessageId: state.clientMessageId,
       }
-    case 'message.assistant.delta':
-      if (state.status !== 'started') {
+    case AI_CHAT_STREAM_EVENT.assistantDelta:
+      if (state.status !== STREAMING_TURN_STATUS.started) {
         return state
       }
       return {
         ...state,
         buffer: state.buffer + (typeof event.delta === 'string' ? event.delta : ''),
       }
-    case 'message.assistant.completed':
-    case 'done':
-    case 'error':
-      if (state.status === 'idle') {
+    case AI_CHAT_STREAM_EVENT.assistantCompleted:
+    case AI_CHAT_STREAM_EVENT.done:
+    case AI_CHAT_STREAM_EVENT.error:
+      if (state.status === STREAMING_TURN_STATUS.idle) {
         return state
       }
-      return { status: 'idle' }
+      return STREAMING_TURN_IDLE_STATE
     default:
       return state
   }
@@ -101,8 +105,8 @@ export function peekPartialBeforeErrorInBatch(
 ): { chatId: ChatId; assistantMessageId: MessageId; buffer: string } | null {
   let s = state
   for (const ev of events) {
-    if (ev.type === 'error') {
-      if (s.status === 'started' && s.buffer.length > 0) {
+    if (ev.type === AI_CHAT_STREAM_EVENT.error) {
+      if (s.status === STREAMING_TURN_STATUS.started && s.buffer.length > 0) {
         return { chatId: s.chatId, assistantMessageId: s.assistantMessageId, buffer: s.buffer }
       }
       return null
@@ -113,12 +117,19 @@ export function peekPartialBeforeErrorInBatch(
 }
 
 export function isStreamingBusy(state: StreamingTurnState): boolean {
-  return state.status === 'pending' || state.status === 'started'
+  return state.status === STREAMING_TURN_STATUS.pending || state.status === STREAMING_TURN_STATUS.started
 }
 
 export function getActiveTurnChatId(state: StreamingTurnState): ChatId | null {
-  if (state.status === 'idle') {
+  if (state.status === STREAMING_TURN_STATUS.idle) {
     return null
   }
   return state.chatId
+}
+
+export function isStreamingTurnStatus<S extends StreamingTurnStatus>(
+  state: StreamingTurnState,
+  status: S,
+): state is Extract<StreamingTurnState, { status: S }> {
+  return state.status === status
 }

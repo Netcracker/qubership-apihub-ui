@@ -6,6 +6,7 @@ import { useShowErrorNotification } from '@netcracker/qubership-apihub-ui-portal
 import { useCopyWithFeedback } from '../../hooks/useCopyWithFeedback'
 import { normalizeStreamingMarkdown } from '../../utils/normalizeStreamingMarkdown'
 import { CopyIconButton } from '../common/CopyIconButton'
+import { AI_ASSISTANT_MARKDOWN_MODE } from '../markdown/aiAssistantMarkdownMode'
 import { AiAssistantMarkdownViewer } from '../markdown/AiAssistantMarkdownViewer'
 
 export type ChatAssistantMessageProps = {
@@ -32,7 +33,7 @@ export const ChatAssistantMessage: FC<ChatAssistantMessageProps> = memo(({ conte
     <AssistantColumn>
       <AiAssistantMarkdownViewer
         markdown={markdownForViewer}
-        mode={isStreaming ? 'streaming' : 'full'}
+        mode={isStreaming ? AI_ASSISTANT_MARKDOWN_MODE.streaming : AI_ASSISTANT_MARKDOWN_MODE.full}
       />
       {!isStreaming
         ? (

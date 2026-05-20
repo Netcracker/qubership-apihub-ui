@@ -31,6 +31,7 @@ import {
   markdownLinkBaseOrigin,
   resolveToUrl,
 } from '../../utils/internalLinkMatcher'
+import { AI_ASSISTANT_MARKDOWN_MODE, type AiAssistantMarkdownRenderMode } from './aiAssistantMarkdownMode'
 import { CHAT_CARD_LINK_CLASS } from './chatCard'
 import { CodeBlock } from './CodeBlock'
 import { FileDownloadLink } from './FileDownloadLink'
@@ -51,7 +52,7 @@ const rehypePluginsFull: PluggableList = [
   ],
 ]
 
-export type AiAssistantMarkdownRenderMode = 'full' | 'streaming'
+export type { AiAssistantMarkdownRenderMode }
 
 type AiAssistantMarkdownViewerProps = {
   markdown: string
@@ -61,11 +62,11 @@ type AiAssistantMarkdownViewerProps = {
 
 export const AiAssistantMarkdownViewer: FC<AiAssistantMarkdownViewerProps> = memo(({
   markdown,
-  mode = 'full',
+  mode = AI_ASSISTANT_MARKDOWN_MODE.full,
   normalizeMarkdown,
 }) => {
   const source = normalizeMarkdown ? normalizeMarkdown(markdown) : markdown
-  const isStreaming = mode === 'streaming'
+  const isStreaming = mode === AI_ASSISTANT_MARKDOWN_MODE.streaming
 
   const components = useMemo(
     () => ({

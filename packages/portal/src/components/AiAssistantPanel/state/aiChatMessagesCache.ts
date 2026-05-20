@@ -1,6 +1,12 @@
 import type { InfiniteData } from '@tanstack/react-query'
 
-import type { AiChatMessage, AiChatMessagesListResponse, ClientMessageId, MessageId } from '../api/types'
+import {
+  AI_CHAT_ROLE,
+  type AiChatMessage,
+  type AiChatMessagesListResponse,
+  type ClientMessageId,
+  type MessageId,
+} from '../api/types'
 
 export function emptyMessagesInfiniteData(): InfiniteData<AiChatMessagesListResponse> {
   return {
@@ -43,7 +49,7 @@ export function buildOptimisticUserMessage(input: {
   return {
     messageId: input.optimisticMessageId,
     clientMessageId: input.clientMessageId,
-    role: 'user',
+    role: AI_CHAT_ROLE.user,
     content: input.content,
     createdAt: input.createdAt,
   }
@@ -57,7 +63,7 @@ export function buildPartialAssistantMessage(input: {
   return {
     messageId: input.messageId,
     clientMessageId: null,
-    role: 'assistant',
+    role: AI_CHAT_ROLE.assistant,
     content: input.content,
     createdAt: input.createdAt,
   }
