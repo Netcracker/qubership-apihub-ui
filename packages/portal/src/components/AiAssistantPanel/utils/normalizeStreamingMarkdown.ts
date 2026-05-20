@@ -1,6 +1,6 @@
 /**
  * Preprocess streaming assistant markdown so unfinished fenced blocks do not leak raw ``` lines (UI req 6.2).
- * Completed messages should pass through unchanged. Phase 5 wires this before throttled render.
+ * Completed messages should pass through unchanged.
  */
 export function normalizeStreamingMarkdown(markdown: string): string {
   if (!markdown) {

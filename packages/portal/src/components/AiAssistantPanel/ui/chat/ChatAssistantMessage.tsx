@@ -7,7 +7,6 @@ import { useCopyWithFeedback } from '../../hooks/useCopyWithFeedback'
 import { normalizeStreamingMarkdown } from '../../utils/normalizeStreamingMarkdown'
 import { CopyIconButton } from '../common/CopyIconButton'
 import { AiAssistantMarkdownViewer } from '../markdown/AiAssistantMarkdownViewer'
-import { useQueuedStreamingMarkdown } from './hooks/useQueuedStreamingMarkdown'
 
 export type ChatAssistantMessageProps = {
   content: string
@@ -24,16 +23,17 @@ export const ChatAssistantMessage: FC<ChatAssistantMessageProps> = memo(({ conte
       }),
   })
 
-  const normalizedLive = useMemo(
+  const markdownForViewer = useMemo(
     () => (isStreaming ? normalizeStreamingMarkdown(content) : content),
     [content, isStreaming],
   )
-  const queuedMarkdown = useQueuedStreamingMarkdown(normalizedLive, isStreaming)
-  const markdownForViewer = isStreaming ? queuedMarkdown : content
 
   return (
     <AssistantColumn>
-      <AiAssistantMarkdownViewer markdown={markdownForViewer} />
+      <AiAssistantMarkdownViewer
+        markdown={markdownForViewer}
+        mode={isStreaming ? 'streaming' : 'full'}
+      />
       {!isStreaming
         ? (
           <CopyAnswerRow>

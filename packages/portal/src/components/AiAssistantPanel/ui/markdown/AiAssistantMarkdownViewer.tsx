@@ -39,7 +39,7 @@ const highlightLanguages = { json, yaml, http }
 
 const remarkPlugins: PluggableList = [[remarkGfm, { singleTilde: false }]]
 
-const rehypePlugins: PluggableList = [
+const rehypePluginsFull: PluggableList = [
   [
     rehypeHighlight,
     {
@@ -51,26 +51,33 @@ const rehypePlugins: PluggableList = [
   ],
 ]
 
+export type AiAssistantMarkdownRenderMode = 'full' | 'streaming'
+
 type AiAssistantMarkdownViewerProps = {
   markdown: string
+  mode?: AiAssistantMarkdownRenderMode
   normalizeMarkdown?: (markdown: string) => string
 }
 
 export const AiAssistantMarkdownViewer: FC<AiAssistantMarkdownViewerProps> = memo(({
   markdown,
+  mode = 'full',
   normalizeMarkdown,
 }) => {
   const source = normalizeMarkdown ? normalizeMarkdown(markdown) : markdown
+  const isStreaming = mode === 'streaming'
 
   const components = useMemo(
     () => ({
       pre: MarkdownPre,
-      code: MarkdownCode,
+      code: isStreaming ? StreamingMarkdownCode : MarkdownCode,
       a: MarkdownLink,
       p: MarkdownParagraph,
     }),
-    [],
+    [isStreaming],
   )
+
+  const rehypePlugins = isStreaming ? undefined : rehypePluginsFull
 
   return (
     <AssistantMarkdownSurface>
@@ -107,6 +114,23 @@ const MarkdownCode: FC<CodeProps> = ({ inline, className, children, node, ...res
   )
 }
 MarkdownCode.displayName = 'MarkdownCode'
+
+const StreamingMarkdownCode: FC<CodeProps> = ({ inline, className, children, ...rest }) => {
+  if (inline) {
+    return (
+      <code className={className} {...rest}>
+        {children}
+      </code>
+    )
+  }
+  return (
+    <StreamingFencedPre>
+      <StreamingFencedCode className={className}>{children}</StreamingFencedCode>
+    </StreamingFencedPre>
+  )
+}
+
+StreamingMarkdownCode.displayName = 'StreamingMarkdownCode'
 
 /** `p` as block `div` so link/file rows (div) stay valid; spacing matches `.markdown-body p` (github-markdown-css). */
 const MarkdownParagraph: FC<ComponentPropsWithoutRef<'p'> & ReactMarkdownProps> = ({ children }) => (
@@ -181,6 +205,23 @@ const AssistantMarkdownSurface = styled(Box)(({ theme }) => ({
     },
   },
 }))
+
+const StreamingFencedPre = styled(Box)(({ theme }) => ({
+  margin: theme.spacing(0.75, 0),
+  padding: theme.spacing(1.5),
+  overflow: 'auto',
+  maxHeight: 320,
+  borderRadius: theme.shape.borderRadius,
+  border: `1px solid ${theme.palette.divider}`,
+  backgroundColor: theme.palette.action.hover,
+}))
+
+const StreamingFencedCode = styled('code')({
+  fontFamily: 'monospace',
+  display: 'block',
+  whiteSpace: 'pre',
+  lineHeight: 1.6,
+})
 
 function extractCodeText(children: ReactNode): string {
   if (children === null || children === undefined || typeof children === 'boolean') {

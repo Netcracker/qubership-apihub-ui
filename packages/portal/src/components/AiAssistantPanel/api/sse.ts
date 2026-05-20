@@ -6,6 +6,7 @@ import {
 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { HttpError } from '@netcracker/qubership-apihub-ui-shared/utils/responses'
 
+import type { SseFrame } from '../utils/sseFramer'
 import { splitSseFrames } from '../utils/sseFramer'
 import type { AiChatStreamEvent, ChatId, ClientMessageId } from './types'
 
@@ -32,6 +33,34 @@ async function toAiChatHttpError(response: Response): Promise<HttpError> {
     }),
   )
   return new HttpError(message, code, status)
+}
+
+function parseSseFrame(frame: SseFrame): AiChatStreamEvent | null {
+  try {
+    const payload = JSON.parse(frame.data) as Record<string, unknown>
+    const mergedType = String(payload.type ?? frame.event)
+    return { ...payload, type: mergedType } as AiChatStreamEvent
+  } catch {
+    return null
+  }
+}
+
+function drainSseBuffer(buffer: string): { events: AiChatStreamEvent[]; rest: string } {
+  const { frames, rest } = splitSseFrames(buffer)
+  const events: AiChatStreamEvent[] = []
+  for (const frame of frames) {
+    const event = parseSseFrame(frame)
+    if (event !== null) {
+      events.push(event)
+    }
+  }
+  return { events, rest }
+}
+
+function* yieldParsedEvents(events: readonly AiChatStreamEvent[]): Generator<readonly AiChatStreamEvent[], void> {
+  for (const event of events) {
+    yield [event]
+  }
 }
 
 export async function* streamAiChatTurn(
@@ -64,27 +93,15 @@ export async function* streamAiChatTurn(
   try {
     let readResult = await reader.read()
     while (!readResult.done) {
-      const { value } = readResult
-      buffer += value
-      const { frames, rest } = splitSseFrames(buffer)
-      buffer = rest
-      const parsedEvents: AiChatStreamEvent[] = []
-      for (const frame of frames) {
-        try {
-          const payload = JSON.parse(frame.data) as Record<string, unknown>
-          const mergedType = String(payload.type ?? frame.event)
-          const event = { ...payload, type: mergedType } as AiChatStreamEvent
-          parsedEvents.push(event)
-        } catch {
-          // ignore malformed frames
-        }
-      }
-      // One event per yield: one TCP read can contain many SSE frames; a single
-      // batched reducer update would fold them into one UI commit.
-      for (const event of parsedEvents) {
-        yield [event]
-      }
+      buffer += readResult.value
+      const drained = drainSseBuffer(buffer)
+      buffer = drained.rest
+      yield* yieldParsedEvents(drained.events)
       readResult = await reader.read()
+    }
+    if (buffer.length > 0) {
+      const drained = drainSseBuffer(`${buffer}\n\n`)
+      yield* yieldParsedEvents(drained.events)
     }
   } finally {
     reader.releaseLock()

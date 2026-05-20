@@ -24,9 +24,9 @@ import {
   prependMessageToInfiniteMessages,
 } from './aiChatMessagesCache'
 import {
-  applyStreamingSseEvent,
   getActiveTurnChatId,
   isStreamingBusy,
+  peekPartialBeforeErrorInBatch,
   streamingTurnReducer,
   type StreamingTurnState,
 } from './streamingTurnReducer'
@@ -171,11 +171,42 @@ export function useStreamingTurn({
     [queryClient],
   )
 
+  const prependPartialAssistant = useCallback(
+    (chatId: ChatId, messageId: MessageId, buffer: string): void => {
+      if (!buffer) {
+        return
+      }
+      queryClient.setQueryData(
+        aiChatMessagesKey(chatId),
+        (previous: InfiniteData<AiChatMessagesListResponse> | undefined) =>
+          prependMessageToInfiniteMessages(
+            previous,
+            buildPartialAssistantMessage({
+              messageId: messageId,
+              content: buffer,
+              createdAt: new Date().toISOString(),
+            }),
+          ),
+      )
+    },
+    [queryClient],
+  )
+
   const processBatch = useCallback(
     (chatId: ChatId, batch: readonly AiChatStreamEvent[]): void => {
-      let running = stateRef.current.status !== 'idle'
+      const running = stateRef.current.status !== 'idle'
         ? stateRef.current
         : (turnBootstrapRef.current ?? stateRef.current)
+
+      const partialBeforeError = peekPartialBeforeErrorInBatch(running, batch)
+      if (partialBeforeError !== null) {
+        prependPartialAssistant(
+          chatId,
+          partialBeforeError.assistantMessageId,
+          partialBeforeError.buffer,
+        )
+      }
+
       for (const event of batch) {
         if (isAssistantMessageProgressEvent(event)) {
           lastAssistantMessageActivityAtRef.current = Date.now()
@@ -190,23 +221,6 @@ export function useStreamingTurn({
           )
         }
         if (event.type === 'error') {
-          if (running.status === 'started') {
-            const rs = running
-            if (rs.buffer.length > 0) {
-              queryClient.setQueryData(
-                aiChatMessagesKey(chatId),
-                (previous: InfiniteData<AiChatMessagesListResponse> | undefined) =>
-                  prependMessageToInfiniteMessages(
-                    previous,
-                    buildPartialAssistantMessage({
-                      messageId: rs.assistantMessageId,
-                      content: rs.buffer,
-                      createdAt: new Date().toISOString(),
-                    }),
-                  ),
-              )
-            }
-          }
           const code = 'code' in event && typeof event.code === 'string' ? event.code : ''
           const message = 'message' in event && typeof event.message === 'string'
             ? event.message
@@ -217,12 +231,12 @@ export function useStreamingTurn({
           void invalidateAiChatListQueries(queryClient)
           void queryClient.invalidateQueries({ queryKey: aiChatMessagesKey(chatId) })
         }
-        running = applyStreamingSseEvent(running, event)
       }
+
       dispatch({ type: 'sseBatch', events: batch })
       turnBootstrapRef.current = null
     },
-    [queryClient],
+    [prependPartialAssistant, queryClient],
   )
 
   const runTurn = useCallback(
