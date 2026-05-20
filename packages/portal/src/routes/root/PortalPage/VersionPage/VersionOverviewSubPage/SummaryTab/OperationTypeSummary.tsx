@@ -364,13 +364,10 @@ export const OperationTypeSummary: FC<OperationTypeSummaryProps> = memo<Operatio
                     alignItems='flex-start'
                     gap={1}
                   >
-                    {activeRulesets?.length
-                      ? activeRulesets.map(ruleset => (
+                    {(activeRulesets?.length
+                      ? activeRulesets : validationRulesets).map(ruleset => (
                         <ValidationRulesetItem key={ruleset.id} ruleset={ruleset}/>
-                      ))
-                      : validationRulesets.map(ruleset => (
-                        <ValidationRulesetItem key={ruleset.id} ruleset={ruleset}/>
-                    ))}
+                      ))}
                     {hasInactiveRulesets && (
                       <Typography variant="body2">
                         <Link onClick={onManualRunLinter} data-testid="RunValidationLink">
