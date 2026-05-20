@@ -26,12 +26,15 @@ import type { PluggableList } from 'unified'
 
 import { useAiAssistantContext } from '../../state/AiAssistantContext'
 import {
+  AI_ASSISTANT_MARKDOWN_MODE,
+  type AiAssistantMarkdownRenderMode,
+} from '../../streaming/markdown/aiAssistantMarkdownMode'
+import {
   isGeneratedFileLink,
   isInternalPortalLink,
   markdownLinkBaseOrigin,
   resolveToUrl,
 } from '../../utils/internalLinkMatcher'
-import { AI_ASSISTANT_MARKDOWN_MODE, type AiAssistantMarkdownRenderMode } from './aiAssistantMarkdownMode'
 import { CHAT_CARD_LINK_CLASS } from './chatCard'
 import { CodeBlock } from './CodeBlock'
 import { FileDownloadLink } from './FileDownloadLink'

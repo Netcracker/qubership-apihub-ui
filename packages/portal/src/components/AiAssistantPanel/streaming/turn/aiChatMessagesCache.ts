@@ -6,7 +6,7 @@ import {
   type AiChatMessagesListResponse,
   type ClientMessageId,
   type MessageId,
-} from '../api/types'
+} from '../../api/types'
 
 export function emptyMessagesInfiniteData(): InfiniteData<AiChatMessagesListResponse> {
   return {

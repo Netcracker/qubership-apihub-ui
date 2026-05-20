@@ -1,5 +1,5 @@
-import { AI_CHAT_STREAM_EVENT } from '../api/aiChatStream'
-import type { AiChatStreamEvent, ChatId, ClientMessageId, MessageId } from '../api/types'
+import type { AiChatStreamEvent, ChatId, ClientMessageId, MessageId } from '../../api/types'
+import { AI_CHAT_STREAM_EVENT } from '../transport/aiChatStream'
 import { STREAMING_TURN_ACTION, STREAMING_TURN_STATUS, type StreamingTurnStatus } from './streamingTurnConstants'
 
 export type StreamingTurnState =

@@ -4,9 +4,9 @@ import { type FC, memo, useMemo } from 'react'
 
 import { useShowErrorNotification } from '@netcracker/qubership-apihub-ui-portal/src/routes/root/BasePage/Notification'
 import { useCopyWithFeedback } from '../../hooks/useCopyWithFeedback'
-import { normalizeStreamingMarkdown } from '../../utils/normalizeStreamingMarkdown'
+import { AI_ASSISTANT_MARKDOWN_MODE } from '../../streaming/markdown/aiAssistantMarkdownMode'
+import { normalizeStreamingMarkdown } from '../../streaming/markdown/normalizeStreamingMarkdown'
 import { CopyIconButton } from '../common/CopyIconButton'
-import { AI_ASSISTANT_MARKDOWN_MODE } from '../markdown/aiAssistantMarkdownMode'
 import { AiAssistantMarkdownViewer } from '../markdown/AiAssistantMarkdownViewer'
 
 export type ChatAssistantMessageProps = {

@@ -6,9 +6,9 @@ import {
 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { HttpError } from '@netcracker/qubership-apihub-ui-shared/utils/responses'
 
-import type { SseFrame } from '../utils/sseFramer'
-import { splitSseFrames } from '../utils/sseFramer'
-import type { AiChatStreamEvent, ChatId, ClientMessageId } from './types'
+import type { AiChatStreamEvent, ChatId, ClientMessageId } from '../../api/types'
+import type { SseFrame } from './sseFramer'
+import { splitSseFrames } from './sseFramer'
 
 export type AiChatStreamRequestBody = {
   content: string

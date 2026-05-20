@@ -6,6 +6,7 @@ import {
   SHOW_AI_ASSISTANT_PANEL,
 } from '@netcracker/qubership-apihub-ui-portal/src/routes/EventBusProvider'
 import type { ChatId } from '../api/types'
+import { useStreamingTurn } from '../streaming/turn/useStreamingTurn'
 import {
   AI_ASSISTANT_CHAT_SCREEN,
   AiAssistantContext,
@@ -13,7 +14,6 @@ import {
   type AiAssistantScreen,
 } from './AiAssistantContext'
 import { AI_ASSISTANT_PANEL_MIN_WIDTH, getAiAssistantPanelMaxWidth, subscribeViewportForAiPanel } from './panelWidth'
-import { useStreamingTurn } from './useStreamingTurn'
 
 export const AI_ASSISTANT_PANEL_DEFAULT_WIDTH = 480
 export const AI_ASSISTANT_PANEL_WIDTH_STORAGE_KEY = 'apihub.aiAssistant.panelWidth'

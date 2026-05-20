@@ -8,8 +8,8 @@ import { JumpToLatestArrowIcon } from '@netcracker/qubership-apihub-ui-shared/ic
 import { JumpToLatestStreamingIcon } from '@netcracker/qubership-apihub-ui-shared/icons/JumpToLatestStreamingIcon'
 
 import type { AiChatMessage, ChatId, MessageId } from '../../api/types'
-import { CHAT_MESSAGE_LIST_JUMP_PHASE, type ChatMessageListJumpPhase } from '../../state/streamingTurnConstants'
 import { ChatAssistantMessage } from './ChatAssistantMessage'
+import { CHAT_MESSAGE_LIST_JUMP_PHASE, type ChatMessageListJumpPhase } from './chatScreenConstants'
 import { ChatUserMessage } from './ChatUserMessage'
 import { useMessageListScroll } from './hooks/useMessageListScroll'
 

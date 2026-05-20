@@ -1,6 +1,6 @@
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 
-import type { AI_CHAT_STREAM_EVENT } from './aiChatStream'
+import type { AI_CHAT_STREAM_EVENT } from '../streaming/transport/aiChatStream'
 
 // Contract mirror: keep in sync with `server/mocks/ai-chat/types.ts` (string ids here use Key).
 export type ChatId = Key

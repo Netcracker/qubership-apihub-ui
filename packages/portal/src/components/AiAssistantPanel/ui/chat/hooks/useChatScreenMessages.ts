@@ -2,12 +2,9 @@ import { useMemo } from 'react'
 
 import { AI_CHAT_ROLE, type AiChatMessage, type ChatId, type MessageId } from '../../../api/types'
 import type { AiAssistantStreamingApi } from '../../../state/AiAssistantContext'
-import {
-  CHAT_MESSAGE_LIST_JUMP_PHASE,
-  type ChatMessageListJumpPhase,
-  STREAMING_TURN_STATUS,
-} from '../../../state/streamingTurnConstants'
-import { isStreamingTurnStatus } from '../../../state/streamingTurnReducer'
+import { STREAMING_TURN_STATUS } from '../../../streaming/turn/streamingTurnConstants'
+import { isStreamingTurnStatus } from '../../../streaming/turn/streamingTurnReducer'
+import { CHAT_MESSAGE_LIST_JUMP_PHASE, type ChatMessageListJumpPhase } from '../chatScreenConstants'
 
 type MessagePage = {
   messages: AiChatMessage[]

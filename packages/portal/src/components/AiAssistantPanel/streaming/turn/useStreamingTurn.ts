@@ -5,11 +5,9 @@ import { v4 as uuidv4 } from 'uuid'
 import { FETCH_ERROR_EVENT, type FetchErrorDetails } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { HttpError } from '@netcracker/qubership-apihub-ui-shared/utils/responses'
 
-import { AI_CHAT_STREAM_EVENT, isAssistantStreamProgressEvent } from '../api/aiChatStream'
-import { aiChatJson } from '../api/client'
-import { invalidateAiChatListQueries } from '../api/invalidateAiChatListQueries'
-import { aiChatItemKey, aiChatMessagesKey } from '../api/queryKeys'
-import { streamAiChatTurn } from '../api/sse'
+import { aiChatJson } from '../../api/client'
+import { invalidateAiChatListQueries } from '../../api/invalidateAiChatListQueries'
+import { aiChatItemKey, aiChatMessagesKey } from '../../api/queryKeys'
 import type {
   AiChat,
   AiChatMessage,
@@ -18,7 +16,9 @@ import type {
   ChatId,
   ClientMessageId,
   MessageId,
-} from '../api/types'
+} from '../../api/types'
+import { AI_CHAT_STREAM_EVENT, isAssistantStreamProgressEvent } from '../transport/aiChatStream'
+import { streamAiChatTurn } from '../transport/sse'
 import {
   buildOptimisticUserMessage,
   buildPartialAssistantMessage,

@@ -1,7 +1,7 @@
 import { createContext, useContext } from 'react'
 
 import type { ChatId } from '../api/types'
-import type { StreamingTurnState } from './streamingTurnReducer'
+import type { StreamingTurnState } from '../streaming/turn/streamingTurnReducer'
 
 export const AI_ASSISTANT_CHAT_SCREEN = 'chat'
 export const AI_ASSISTANT_HISTORY_SCREEN = 'history'

@@ -1,4 +1,4 @@
-import { AI_CHAT_STREAM_EVENT } from '../api/aiChatStream'
+import { AI_CHAT_STREAM_EVENT } from '../transport/aiChatStream'
 import { STREAMING_TURN_ACTION, STREAMING_TURN_STATUS } from './streamingTurnConstants'
 import {
   applyStreamingSseEvent,
