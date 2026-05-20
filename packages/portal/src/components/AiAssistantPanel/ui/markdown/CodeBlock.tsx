@@ -11,6 +11,8 @@ type CodeBlockProps = {
   className?: string
   rawText: string
   children?: ReactNode
+  /** When false, renders only the fenced body (no language bar or copy). Used during SSE streaming. */
+  showHeader?: boolean
 }
 
 const LANGUAGE_LABELS: Record<string, string> = {
@@ -20,7 +22,23 @@ const LANGUAGE_LABELS: Record<string, string> = {
   http: 'HTTP',
 }
 
-export const CodeBlock: FC<CodeBlockProps> = memo(({ className, rawText, children }) => {
+export const CodeBlock: FC<CodeBlockProps> = memo(({ className, rawText, children, showHeader = true }) => (
+  <CodeBlockRoot>
+    {showHeader ? <CodeBlockHeaderBar className={className} rawText={rawText} /> : null}
+    <CodeBlockBody>
+      <CodeBlockCode className={className}>{children}</CodeBlockCode>
+    </CodeBlockBody>
+  </CodeBlockRoot>
+))
+
+CodeBlock.displayName = 'CodeBlock'
+
+type CodeBlockHeaderBarProps = {
+  className?: string
+  rawText: string
+}
+
+const CodeBlockHeaderBar: FC<CodeBlockHeaderBarProps> = memo(({ className, rawText }) => {
   const showError = useShowErrorNotification()
   const { createCopyHandler, copied } = useCopyWithFeedback({
     onError: (error) =>
@@ -33,21 +51,16 @@ export const CodeBlock: FC<CodeBlockProps> = memo(({ className, rawText, childre
   const languageLabel = languageLabelFromClassName(className)
 
   return (
-    <CodeBlockRoot>
-      <CodeBlockHeader>
-        <CodeBlockFenceLabel variant="subtitle4">
-          {`</> ${languageLabel}`}
-        </CodeBlockFenceLabel>
-        <CopyIconButton ariaLabel="Copy code" copied={copied} onCopy={createCopyHandler(rawText)} />
-      </CodeBlockHeader>
-      <CodeBlockBody>
-        <CodeBlockCode className={className}>{children}</CodeBlockCode>
-      </CodeBlockBody>
-    </CodeBlockRoot>
+    <CodeBlockHeader>
+      <CodeBlockFenceLabel variant="subtitle4">
+        {`</> ${languageLabel}`}
+      </CodeBlockFenceLabel>
+      <CopyIconButton ariaLabel="Copy code" copied={copied} onCopy={createCopyHandler(rawText)} />
+    </CodeBlockHeader>
   )
 })
 
-CodeBlock.displayName = 'CodeBlock'
+CodeBlockHeaderBar.displayName = 'CodeBlockHeaderBar'
 
 function languageLabelFromClassName(className: string | undefined): string {
   if (!className) {
@@ -89,7 +102,8 @@ const CodeBlockBody = styled(Box)(({ theme }) => ({
   overflow: 'auto',
   maxHeight: 320,
   lineHeight: 1.6,
-  '& .hljs': {
+  // github-markdown-css / highlight.js set their own backgrounds on pre/code; keep the shell bg only.
+  '& pre, & .hljs, & code': {
     backgroundColor: 'transparent',
   },
 }))

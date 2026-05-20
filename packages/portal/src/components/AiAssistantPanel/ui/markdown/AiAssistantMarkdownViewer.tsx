@@ -70,7 +70,7 @@ export const AiAssistantMarkdownViewer: FC<AiAssistantMarkdownViewerProps> = mem
   const components = useMemo(
     () => ({
       pre: MarkdownPre,
-      code: isStreaming ? StreamingMarkdownCode : MarkdownCode,
+      code: markdownCodeRenderer(!isStreaming),
       a: MarkdownLink,
       p: MarkdownParagraph,
     }),
@@ -98,39 +98,25 @@ AiAssistantMarkdownViewer.displayName = 'AiAssistantMarkdownViewer'
 const MarkdownPre: FC<ComponentPropsWithoutRef<'pre'> & ReactMarkdownProps> = ({ children }) => <>{children}</>
 MarkdownPre.displayName = 'MarkdownPre'
 
-const MarkdownCode: FC<CodeProps> = ({ inline, className, children, node, ...rest }) => {
-  if (inline) {
+function markdownCodeRenderer(showHeader: boolean): FC<CodeProps> {
+  const MarkdownCode: FC<CodeProps> = ({ inline, className, children, node, ...rest }) => {
+    if (inline) {
+      return (
+        <code className={className} {...rest}>
+          {children}
+        </code>
+      )
+    }
+    const rawText = (node as { value?: string }).value ?? extractCodeText(children)
     return (
-      <code className={className} {...rest}>
+      <CodeBlock className={className} rawText={rawText} showHeader={showHeader}>
         {children}
-      </code>
+      </CodeBlock>
     )
   }
-  const rawText = (node as { value?: string }).value ?? extractCodeText(children)
-  return (
-    <CodeBlock className={className} rawText={rawText}>
-      {children}
-    </CodeBlock>
-  )
+  MarkdownCode.displayName = showHeader ? 'MarkdownCode' : 'StreamingMarkdownCode'
+  return MarkdownCode
 }
-MarkdownCode.displayName = 'MarkdownCode'
-
-const StreamingMarkdownCode: FC<CodeProps> = ({ inline, className, children, ...rest }) => {
-  if (inline) {
-    return (
-      <code className={className} {...rest}>
-        {children}
-      </code>
-    )
-  }
-  return (
-    <StreamingFencedPre>
-      <StreamingFencedCode className={className}>{children}</StreamingFencedCode>
-    </StreamingFencedPre>
-  )
-}
-
-StreamingMarkdownCode.displayName = 'StreamingMarkdownCode'
 
 /** `p` as block `div` so link/file rows (div) stay valid; spacing matches `.markdown-body p` (github-markdown-css). */
 const MarkdownParagraph: FC<ComponentPropsWithoutRef<'p'> & ReactMarkdownProps> = ({ children }) => (
@@ -205,23 +191,6 @@ const AssistantMarkdownSurface = styled(Box)(({ theme }) => ({
     },
   },
 }))
-
-const StreamingFencedPre = styled(Box)(({ theme }) => ({
-  margin: theme.spacing(0.75, 0),
-  padding: theme.spacing(1.5),
-  overflow: 'auto',
-  maxHeight: 320,
-  borderRadius: theme.shape.borderRadius,
-  border: `1px solid ${theme.palette.divider}`,
-  backgroundColor: theme.palette.action.hover,
-}))
-
-const StreamingFencedCode = styled('code')({
-  fontFamily: 'monospace',
-  display: 'block',
-  whiteSpace: 'pre',
-  lineHeight: 1.6,
-})
 
 function extractCodeText(children: ReactNode): string {
   if (children === null || children === undefined || typeof children === 'boolean') {
