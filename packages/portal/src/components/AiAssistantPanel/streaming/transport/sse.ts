@@ -15,6 +15,64 @@ export type AiChatStreamRequestBody = {
   clientMessageId: ClientMessageId
 }
 
+/**
+ * Async generator (`async function*` + `yield`) for POST `/messages/stream`.
+ *
+ * A natural fit for SSE: the HTTP body arrives over time and
+ * the consumer (`for await` in `useStreamingTurn`) pulls the next batch when ready instead
+ * of buffering the whole response. Inner `yield*` delegates batched events via `yieldEventBatchIfAny`.
+ *
+ * Each `reader.read()` append is parsed when a full SSE frame is available (`\n\n`).
+ * Yields once per TCP chunk with every event from that chunk (not one yield per event),
+ * so the turn layer can apply deltas in a single reducer pass.
+ *
+ * **Tail:** when the connection closes, the last bytes may not end with `\n\n`, so the
+ * final incomplete frame stays in `buffer`. We append `\n\n` once, parse any remainder,
+ * yield it, then finish — otherwise the last event(s) would be lost.
+ */
+export async function* streamAiChatTurn(
+  chatId: ChatId,
+  body: AiChatStreamRequestBody,
+  signal: AbortSignal,
+): AsyncGenerator<readonly AiChatStreamEvent[], void> {
+  const response = await fetch(
+    `${API_V1}/ai-chat/chats/${encodeURIComponent(chatId)}/messages/stream`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'text/event-stream',
+      },
+      credentials: 'include',
+      body: JSON.stringify(body),
+      signal: signal,
+    },
+  )
+  if (!response.ok) {
+    throw await toAiChatHttpError(response)
+  }
+  if (!response.body) {
+    throw new Error('Streaming response has no body')
+  }
+
+  const reader = response.body.pipeThrough(new TextDecoderStream()).getReader()
+  let buffer = ''
+  try {
+    let readResult = await reader.read()
+    while (!readResult.done) {
+      buffer += readResult.value
+      const parsed = takeParsedEvents(buffer)
+      buffer = parsed.rest
+      yield* yieldEventBatchIfAny(parsed.events)
+      readResult = await reader.read()
+    }
+    const tail = takeParsedEvents(buffer, true)
+    yield* yieldEventBatchIfAny(tail.events)
+  } finally {
+    reader.releaseLock()
+  }
+}
+
 async function toAiChatHttpError(response: Response): Promise<HttpError> {
   const [message, code, status] = await getResponseError(response)
   const title = `Error ${response.status}`
@@ -57,53 +115,22 @@ function drainSseBuffer(buffer: string): { events: AiChatStreamEvent[]; rest: st
   return { events, rest }
 }
 
-function* yieldParsedEvents(events: readonly AiChatStreamEvent[]): Generator<readonly AiChatStreamEvent[], void> {
-  for (const event of events) {
-    yield [event]
+function takeParsedEvents(
+  buffer: string,
+  appendTrailingDelimiter = false,
+): { events: AiChatStreamEvent[]; rest: string } {
+  const input = appendTrailingDelimiter && buffer.length > 0 ? `${buffer}\n\n` : buffer
+  const drained = drainSseBuffer(input)
+  return {
+    events: drained.events,
+    rest: appendTrailingDelimiter ? '' : drained.rest,
   }
 }
 
-export async function* streamAiChatTurn(
-  chatId: ChatId,
-  body: AiChatStreamRequestBody,
-  signal: AbortSignal,
-): AsyncGenerator<readonly AiChatStreamEvent[], void> {
-  const response = await fetch(
-    `${API_V1}/ai-chat/chats/${encodeURIComponent(chatId)}/messages/stream`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'text/event-stream',
-      },
-      credentials: 'include',
-      body: JSON.stringify(body),
-      signal: signal,
-    },
-  )
-  if (!response.ok) {
-    throw await toAiChatHttpError(response)
-  }
-  if (!response.body) {
-    throw new Error('Streaming response has no body')
-  }
-
-  const reader = response.body.pipeThrough(new TextDecoderStream()).getReader()
-  let buffer = ''
-  try {
-    let readResult = await reader.read()
-    while (!readResult.done) {
-      buffer += readResult.value
-      const drained = drainSseBuffer(buffer)
-      buffer = drained.rest
-      yield* yieldParsedEvents(drained.events)
-      readResult = await reader.read()
-    }
-    if (buffer.length > 0) {
-      const drained = drainSseBuffer(`${buffer}\n\n`)
-      yield* yieldParsedEvents(drained.events)
-    }
-  } finally {
-    reader.releaseLock()
+function* yieldEventBatchIfAny(
+  events: readonly AiChatStreamEvent[],
+): Generator<readonly AiChatStreamEvent[], void> {
+  if (events.length > 0) {
+    yield events
   }
 }
