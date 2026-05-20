@@ -73,11 +73,11 @@ import {
 } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { DEFAULT_DEBOUNCE } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
 import { useSystemInfo } from '@netcracker/qubership-apihub-ui-shared/features/system-info'
-import {
-  useSystemConfigurationContext,
-} from '@netcracker/qubership-apihub-ui-agents/src/routes/root/NamespacePage/SystemConfigurationProvider'
 import { usePackage } from '@apihub/routes/root/usePackage'
 import { toISODateRange } from '@netcracker/qubership-apihub-ui-shared/utils/date'
+import {
+  useSystemConfiguration,
+} from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useSystemConfiguration'
 
 const DEFAULT_WORKSPACE_ID = ''
 
@@ -105,8 +105,7 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
     oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1)
     return toISODateRange(oneYearAgo, new Date())
   }, [])
-
-  const systemConfiguration = useSystemConfigurationContext()
+  const [systemConfiguration] = useSystemConfiguration()
   const defaultWorkspaceId = useMemo(() => {
     return systemConfiguration?.defaultWorkspaceId ?? DEFAULT_WORKSPACE_ID
   }, [systemConfiguration])
@@ -373,7 +372,11 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
               {...params}
               required
               label="Workspace"/>}
-          onInputChange={onWorkspaceInputChange}
+          onInputChange={(event, value, reason) => {
+            if (reason === 'input') {
+              onWorkspaceInputChange(event, value)
+            }
+          }}
           onBlur={() => {
             onWorkspaceInputChange.clear()
             setWorkspacesFilter('')
