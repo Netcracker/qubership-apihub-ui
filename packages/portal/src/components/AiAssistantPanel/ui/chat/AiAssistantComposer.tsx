@@ -95,12 +95,11 @@ export const AiAssistantComposer: FC<AiAssistantComposerProps> = memo(({ panelOp
 AiAssistantComposer.displayName = 'AiAssistantComposer'
 
 const AiAssistantComposerShell = styled(Box)(({ theme }) => ({
-  flexShrink: 0,
   display: 'flex',
   alignItems: 'flex-end',
   gap: theme.spacing(1),
   margin: theme.spacing(3),
-  padding: theme.spacing(1.25),
+  padding: theme.spacing(1.25, 1.25, 1.25, 2),
   borderRadius: 30,
   boxSizing: 'border-box',
   border: `1px solid ${theme.palette.divider}`,
@@ -111,34 +110,16 @@ const AiAssistantComposerShell = styled(Box)(({ theme }) => ({
 
 AiAssistantComposerShell.displayName = 'AiAssistantComposerShell'
 
-const AiAssistantComposerDraftField = styled(TextField)(({ theme }) => {
-  return {
-    flex: '1 1 0',
-    width: '100%',
-    marginTop: 0,
-    marginBottom: 0,
-    '& .MuiInputBase-root': {
-      minHeight: theme.spacing(5),
-      paddingTop: theme.spacing(0.25),
-      paddingBottom: theme.spacing(0.25),
-      paddingLeft: theme.spacing(0.25),
-      paddingRight: 0,
-    },
-    '& .MuiInputBase-input': {
-      ...theme.typography.body2,
-      lineHeight: 1.35,
-      padding: 0,
-      resize: 'none',
-      overflowY: 'auto',
-    },
-    '& .MuiInputBase-input::-webkit-scrollbar': {
-      width: 4,
-    },
-    '& .MuiInputBase-input::-webkit-scrollbar-thumb': {
-      cursor: 'default',
-    },
-  }
-})
+const AiAssistantComposerDraftField = styled(TextField)(({ theme }) => ({
+  flex: '1 1 0',
+  margin: 0,
+  '& .MuiInputBase-input::-webkit-scrollbar': {
+    width: theme.spacing(0.5),
+  },
+  '& .MuiInputBase-input::-webkit-scrollbar-thumb': {
+    cursor: 'default',
+  },
+}))
 
 AiAssistantComposerDraftField.displayName = 'AiAssistantComposerDraftField'
 
