@@ -1,25 +1,13 @@
 import { useMutation, type UseMutationResult, useQueryClient } from '@tanstack/react-query'
 
-import {
-  type DeleteAiChatCacheSnapshot,
-  removeAiChatQueries,
-  restoreDeleteAiChatCaches,
-  snapshotDeleteAiChatCaches,
-} from './chatCache'
+import { removeAiChatQueries } from './chatCache'
 import { aiChatVoid } from './client'
 import { invalidateAiChatListQueries } from './invalidateAiChatListQueries'
 import { aiChatItemPath } from './paths'
 import { AI_CHAT_ROOT, aiChatItemKey, aiChatMessagesKey } from './queryKeys'
 import type { ChatId } from './types'
 
-type DeleteAiChatMutationContext = DeleteAiChatCacheSnapshot
-
-export function useDeleteAiChat(): UseMutationResult<
-  void,
-  Error,
-  ChatId,
-  DeleteAiChatMutationContext
-> {
+export function useDeleteAiChat(): UseMutationResult<void, Error, ChatId> {
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -30,12 +18,11 @@ export function useDeleteAiChat(): UseMutationResult<
       await queryClient.cancelQueries({ queryKey: [AI_CHAT_ROOT, 'chats'] })
       await queryClient.cancelQueries({ queryKey: aiChatItemKey(chatId), exact: true })
       await queryClient.cancelQueries({ queryKey: aiChatMessagesKey(chatId), exact: true })
-      return snapshotDeleteAiChatCaches(queryClient, chatId)
     },
-    onError: (_error, chatId, context) => {
-      if (context) {
-        restoreDeleteAiChatCaches(queryClient, chatId, context)
-      }
+    onError: (_error, chatId) => {
+      void queryClient.invalidateQueries({ queryKey: aiChatItemKey(chatId), exact: true })
+      void queryClient.invalidateQueries({ queryKey: aiChatMessagesKey(chatId), exact: true })
+      void invalidateAiChatListQueries(queryClient)
     },
     onSuccess: (_data, chatId) => {
       removeAiChatQueries(queryClient, chatId)
