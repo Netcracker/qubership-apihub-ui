@@ -15,7 +15,7 @@
  */
 
 import type { BuilderResolvers, FileId, FileSourceMap, VersionValidationLevel, VersionsComparison } from '@netcracker/qubership-apihub-api-processor'
-import { BUILD_TYPE, PackageVersionBuilder, VERSION_STATUS } from '@netcracker/qubership-apihub-api-processor'
+import { BUILD_TYPE, PackageVersionBuilder, VERSION_STATUS, VERSION_VALIDATION_LEVEL } from '@netcracker/qubership-apihub-api-processor'
 import {
   packageVersionResolver,
   rawDocumentResolver,
@@ -67,9 +67,9 @@ export type PackageVersionBuilderWorker = {
 async function getValidationLevel(): Promise<VersionValidationLevel> {
   try {
     const info = await getSystemInfo()
-    return info.migrationInProgress ? 'major' : 'strict'
+    return info.migrationInProgress ? VERSION_VALIDATION_LEVEL.MAJOR : VERSION_VALIDATION_LEVEL.STRICT
   } catch {
-    return 'strict'
+    return VERSION_VALIDATION_LEVEL.STRICT
   }
 }
 

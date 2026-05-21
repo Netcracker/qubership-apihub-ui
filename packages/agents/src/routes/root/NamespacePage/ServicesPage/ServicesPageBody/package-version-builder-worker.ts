@@ -21,7 +21,7 @@ import { setPublicationDetails } from '@apihub/entities/publish-details'
 import type { PublishStatus } from '@apihub/entities/statuses'
 import { COMPLETE_PUBLISH_STATUS, ERROR_PUBLISH_STATUS } from '@apihub/entities/statuses'
 import type { VersionValidationLevel } from '@netcracker/qubership-apihub-api-processor'
-import { BUILD_TYPE, PackageVersionBuilder } from '@netcracker/qubership-apihub-api-processor'
+import { BUILD_TYPE, PackageVersionBuilder, VERSION_VALIDATION_LEVEL } from '@netcracker/qubership-apihub-api-processor'
 import {
   packageVersionResolver,
   rawDocumentResolver,
@@ -54,9 +54,9 @@ export type PackageVersionBuilderWorker = {
 async function getValidationLevel(): Promise<VersionValidationLevel> {
   try {
     const info = await getSystemInfo()
-    return info.migrationInProgress ? 'major' : 'strict'
+    return info.migrationInProgress ? VERSION_VALIDATION_LEVEL.MAJOR : VERSION_VALIDATION_LEVEL.STRICT
   } catch {
-    return 'strict'
+    return VERSION_VALIDATION_LEVEL.STRICT
   }
 }
 
