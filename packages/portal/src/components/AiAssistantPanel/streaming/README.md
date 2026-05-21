@@ -71,13 +71,13 @@ Rough steps:
 
 Event types the turn layer cares about most:
 
-| Event                         | Effect on UI state                                 |
-| ----------------------------- | -------------------------------------------------- |
-| `message.assistant.start`     | Turn moves to "started", new assistant `messageId` |
-| `message.assistant.delta`     | Append `delta` string to in-memory `buffer`        |
-| `message.assistant.completed` | Final message written to React Query cache         |
-| `error`                       | Toast + partial answer kept if any                 |
-| `done`                        | Invalidate chat list / messages queries            |
+| Event                         | Effect on UI state                                                    |
+| ----------------------------- | --------------------------------------------------------------------- |
+| `message.assistant.start`     | Turn moves to "started", new assistant `messageId`                    |
+| `message.assistant.delta`     | Append `delta` string to in-memory `buffer`                           |
+| `message.assistant.completed` | Final message written to React Query cache                            |
+| `error`                       | `fetch-error` toast (same event as REST) + partial answer kept if any |
+| `done`                        | Invalidate chat list / messages queries                               |
 
 Other events (`tool.started`, `tool.completed`, `context.compacted`, ...) are part of the backend contract but are **not** rendered yet. They still affect UX indirectly (see Thinking below).
 
@@ -123,6 +123,27 @@ A **short poll** (see `STREAM_THINKING_POLL_MS` in `streamingTurnConstants.ts` a
 `streamingTurnConstants.ts` - turn statuses, reducer action names, error copy, thinking timings, optimistic ID prefix.
 
 Jump-to-latest FAB phase constants live in `../ui/chat/chatScreenConstants.ts` (UI-only, not turn logic).
+
+### Errors and the global handler
+
+Portal-wide fetch errors go through `fetch-error` → `ExceptionSituationHandler`. For `status` 404 or 500 in the event it renders a **full-page** `ErrorPage`; otherwise a snackbar.
+
+AI Chat uses the same event but sets `forceSnackbar: true` so 500/400 never replace the portal under the open panel (see `transport/dispatchFetchError.ts`).
+
+| Failure                                     | Who notifies                              | UI                               |
+| ------------------------------------------- | ----------------------------------------- | -------------------------------- |
+| REST `aiChatJson` / `aiChatVoid` HTTP error | `api/client.ts` → `toAiChatHttpError`     | Snackbar (except 404, see below) |
+| Stream POST HTTP error (before SSE)         | `sse.ts` → `toAiChatHttpError`            | Same                             |
+| SSE `error` frame (HTTP still 200)          | `useStreamingTurn` → `dispatchFetchError` | Snackbar                         |
+| Stream ends without `error` / `done`        | `useStreamingTurn` after read loop        | Snackbar + reset turn            |
+
+Mid-turn SSE errors are not HTTP failures — `requestJson` is not involved; the turn layer dispatches `fetch-error` manually after parsing the frame.
+
+### Stream HTTP 404 — local only
+
+`POST .../messages/stream` may return **404** + `APIHUB-AI-3001` before any SSE byte (chat deleted, stale `chatId` in the panel, or send raced with delete). Global `fetch-error` with `status: 404` would show a full-portal **ErrorPage** under the open drawer — we skip that.
+
+`toAiChatHttpError` does not dispatch on 404; `useStreamingTurn` catches `HttpError`, keeps any partial assistant text, clears caches for the `chatId`, and `resetActiveChat()` when it was active (welcome/history, no toast). Other HTTP statuses still use `dispatchFetchError` (`forceSnackbar: true`).
 
 ## Layer 3 - Live Markdown (`markdown/`)
 

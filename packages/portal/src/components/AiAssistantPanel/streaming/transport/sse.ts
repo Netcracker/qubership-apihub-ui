@@ -1,12 +1,7 @@
-import {
-  API_V1,
-  FETCH_ERROR_EVENT,
-  type FetchErrorDetails,
-  getResponseError,
-} from '@netcracker/qubership-apihub-ui-shared/utils/requests'
-import { HttpError } from '@netcracker/qubership-apihub-ui-shared/utils/responses'
+import { API_V1 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 
 import type { AiChatStreamEvent, ChatId, ClientMessageId } from '../../api/types'
+import { toAiChatHttpError } from './dispatchFetchError'
 import type { SseFrame } from './sseFramer'
 import { splitSseFrames } from './sseFramer'
 
@@ -51,6 +46,7 @@ export async function* streamAiChatTurn(
   if (!response.ok) {
     throw await toAiChatHttpError(response)
   }
+
   if (!response.body) {
     throw new Error('Streaming response has no body')
   }
@@ -71,26 +67,6 @@ export async function* streamAiChatTurn(
   } finally {
     reader.releaseLock()
   }
-}
-
-async function toAiChatHttpError(response: Response): Promise<HttpError> {
-  const [message, code, status] = await getResponseError(response)
-  const title = `Error ${response.status}`
-  const detail: FetchErrorDetails = {
-    title,
-    message,
-    code,
-    status,
-  }
-  dispatchEvent(
-    new CustomEvent<FetchErrorDetails>(FETCH_ERROR_EVENT, {
-      detail: detail,
-      bubbles: true,
-      composed: true,
-      cancelable: false,
-    }),
-  )
-  return new HttpError(message, code, status)
 }
 
 function parseSseFrame(frame: SseFrame): AiChatStreamEvent | null {

@@ -143,6 +143,17 @@ export function streamMessage(router: Router): void {
         return
       }
 
+      const normalized = content.toLowerCase()
+      if (normalized.includes('debug:http-500')) {
+        sendError(
+          res,
+          500,
+          'APIHUB-AI-5000',
+          'Generic internal server error while processing the chat.',
+        )
+        return
+      }
+
       // Idempotent replay: the contract says repeating the same clientMessageId
       // for the same chat must return the previously produced assistant
       // response without re-billing. For SSE we replay the recorded frames

@@ -18,8 +18,6 @@ export const STREAMING_TURN_ACTION = {
 
 export type StreamingTurnActionType = (typeof STREAMING_TURN_ACTION)[keyof typeof STREAMING_TURN_ACTION]
 
-export const AI_ASSISTANT_STREAM_ERROR_TITLE = 'AI Assistant'
-
 export const AI_ASSISTANT_STREAM_ERROR_DEFAULT_MESSAGE = 'Assistant stream reported an error.'
 
 export const AI_ASSISTANT_NETWORK_STREAM_ERROR_MESSAGE = 'Network error while streaming.'

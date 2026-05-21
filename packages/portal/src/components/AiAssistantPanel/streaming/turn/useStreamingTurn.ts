@@ -2,8 +2,9 @@ import { type InfiniteData, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
-import { FETCH_ERROR_EVENT, type FetchErrorDetails } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { HttpError } from '@netcracker/qubership-apihub-ui-shared/utils/responses'
+
+import { dispatchFetchError } from '../transport/dispatchFetchError'
 
 import { aiChatJson } from '../../api/client'
 import { invalidateAiChatListQueries } from '../../api/invalidateAiChatListQueries'
@@ -28,7 +29,6 @@ import {
   ABORT_ERROR_NAME,
   AI_ASSISTANT_NETWORK_STREAM_ERROR_MESSAGE,
   AI_ASSISTANT_STREAM_ERROR_DEFAULT_MESSAGE,
-  AI_ASSISTANT_STREAM_ERROR_TITLE,
   ASSISTANT_MESSAGE_IDLE_FOR_THINKING_MS,
   OPTIMISTIC_MESSAGE_ID_PREFIX,
   STREAM_THINKING_POLL_MS,
@@ -69,33 +69,6 @@ function isAbortError(e: unknown): boolean {
     return true
   }
   return false
-}
-
-function dispatchSseFetchError(code: string, message: string): void {
-  const title = AI_ASSISTANT_STREAM_ERROR_TITLE
-  const status = null
-  dispatchEvent(
-    new CustomEvent<FetchErrorDetails>(FETCH_ERROR_EVENT, {
-      detail: { title, message, code, status },
-      bubbles: true,
-      composed: true,
-      cancelable: false,
-    }),
-  )
-}
-
-function dispatchNetworkFetchError(message: string): void {
-  const title = AI_ASSISTANT_STREAM_ERROR_TITLE
-  const code = ''
-  const status = null
-  dispatchEvent(
-    new CustomEvent<FetchErrorDetails>(FETCH_ERROR_EVENT, {
-      detail: { title, message, code, status },
-      bubbles: true,
-      composed: true,
-      cancelable: false,
-    }),
-  )
 }
 
 export function useStreamingTurn({
@@ -242,7 +215,7 @@ export function useStreamingTurn({
           const message = 'message' in event && typeof event.message === 'string'
             ? event.message
             : AI_ASSISTANT_STREAM_ERROR_DEFAULT_MESSAGE
-          dispatchSseFetchError(code, message)
+          dispatchFetchError({ title: 'Error', message: message, code: code, status: null })
         }
         if (event.type === AI_CHAT_STREAM_EVENT.done) {
           void invalidateAiChatListQueries(queryClient)
@@ -270,6 +243,16 @@ export function useStreamingTurn({
         ) {
           processBatch(chatId, batch)
         }
+        if (isStreamingBusy(stateRef.current)) {
+          flushPartialAssistantToCache(chatId)
+          dispatchFetchError({
+            title: 'Error',
+            message: AI_ASSISTANT_NETWORK_STREAM_ERROR_MESSAGE,
+            code: '',
+            status: null,
+          })
+          dispatch({ type: STREAMING_TURN_ACTION.reset })
+        }
       } catch (e) {
         if (isAbortError(e)) {
           flushPartialAssistantToCache(chatId)
@@ -288,9 +271,12 @@ export function useStreamingTurn({
           return
         }
         flushPartialAssistantToCache(chatId)
-        dispatchNetworkFetchError(
-          e instanceof Error ? e.message : AI_ASSISTANT_NETWORK_STREAM_ERROR_MESSAGE,
-        )
+        dispatchFetchError({
+          title: 'Error',
+          message: e instanceof Error ? e.message : AI_ASSISTANT_NETWORK_STREAM_ERROR_MESSAGE,
+          code: '',
+          status: null,
+        })
         dispatch({ type: STREAMING_TURN_ACTION.reset })
       } finally {
         if (abortControllerRef.current === ac) {

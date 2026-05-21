@@ -33,6 +33,7 @@ const CLIENT_MESSAGE_ID_4 = '10000000-0000-4000-8000-000000000004'
 const CLIENT_MESSAGE_ID_5 = '10000000-0000-4000-8000-000000000005'
 const CLIENT_MESSAGE_ID_6 = '10000000-0000-4000-8000-000000000006'
 const CLIENT_MESSAGE_ID_7 = '10000000-0000-4000-8000-000000000007'
+const CLIENT_MESSAGE_ID_8 = '10000000-0000-4000-8000-000000000008'
 
 let app: Express
 
@@ -390,6 +391,19 @@ describe('AI Chat mock server - POST /chats/:id/messages/stream (SSE)', () => {
     const replayMessage = (replayCompleted.data as { message: AiChatMessage }).message
     expect(replayMessage.messageId).toBe(firstMessage.messageId)
     expect(replayMessage.content).toBe(firstMessage.content)
+  })
+
+  it('debug:http-500 returns APIHUB-AI-5000 before any SSE frame', async () => {
+    const create = await request(app).post(`${BASE}/chats`).send({}).expect(201)
+    const { chatId } = create.body as AiChat
+    const res = await request(app)
+      .post(`${BASE}/chats/${chatId}/messages/stream`)
+      .send({ content: 'trigger debug:http-500 please', clientMessageId: CLIENT_MESSAGE_ID_8 })
+      .expect(500)
+    expect((res.body as AiChatErrorResponse).code).toBe('APIHUB-AI-5000')
+    const listed = await request(app).get(`${BASE}/chats/${chatId}/messages`).expect(200)
+    const body = listed.body as AiChatMessagesListResponse
+    expect(body.messages.filter((m) => m.role === 'assistant').length).toBe(0)
   })
 
   it('debug:error scenario emits an error SSE frame with APIHUB-AI-5001', async () => {

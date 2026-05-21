@@ -62,11 +62,13 @@ OpenAPI path (not under `ai-chat`):
 
 | Substring in `content` | Scenario   | Purpose                                                                                                         |
 | ---------------------- | ---------- | --------------------------------------------------------------------------------------------------------------- |
-| `debug:error`          | error      | ~3 deltas then an `error` SSE frame with code `APIHUB-AI-5001`. No `done` frame.                                |
+| `debug:http-500`       | (HTTP)     | `500` + `APIHUB-AI-5000` **before** the SSE stream starts (standard `ErrorResponse`, no frames).                |
+| `debug:error`          | error      | ~3 deltas then an `error` SSE frame with code `APIHUB-AI-5001`. No `done` frame (per OpenAPI terminal rules).   |
 | `debug:links`          | links      | Markdown with internal `/portal/packages/...` package and operation links.                                      |
 | `debug:longmd`         | longmd     | Markdown **>= 4000** chars: headings, table, bullets, blockquote, **YAML** + **json** fences.                   |
 | `debug:json`           | json       | Default happy-path Markdown but the code block is a JSON snippet instead of YAML.                               |
 | `debug:attachment`     | attachment | Completed Markdown links to **`/api/v1/generated-files/{uuid}?token=mock-dev-token`** (Markdown download mock). |
+| `debug:thinking`       | thinking   | Long idle gaps + tool frames + mid-answer pause (exercises the Thinking indicator during `started`).            |
 | `debug:offtopic`       | offtopic   | Short polite refusal.                                                                                           |
 | (none of the above)    | default    | Long Markdown with a YAML code block and a table.                                                               |
 
