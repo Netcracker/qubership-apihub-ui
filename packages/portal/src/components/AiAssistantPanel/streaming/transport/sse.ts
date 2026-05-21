@@ -1,14 +1,9 @@
-import { API_V1 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
-
-import type { AiChatStreamEvent, ChatId, ClientMessageId } from '../../api/types'
-import { toAiChatHttpError } from './dispatchFetchError'
+import { type AiChatStreamRequestBody, postAiChatMessageStream } from '../../api/requests'
+import type { AiChatStreamEvent, ChatId } from '../../api/types'
 import type { SseFrame } from './sseFramer'
 import { splitSseFrames } from './sseFramer'
 
-export type AiChatStreamRequestBody = {
-  content: string
-  clientMessageId: ClientMessageId
-}
+export type { AiChatStreamRequestBody }
 
 /**
  * Async generator (`async function*` + `yield`) for POST `/messages/stream`.
@@ -30,28 +25,8 @@ export async function* streamAiChatTurn(
   body: AiChatStreamRequestBody,
   signal: AbortSignal,
 ): AsyncGenerator<readonly AiChatStreamEvent[], void> {
-  const response = await fetch(
-    `${API_V1}/ai-chat/chats/${encodeURIComponent(chatId)}/messages/stream`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'text/event-stream',
-      },
-      credentials: 'include',
-      body: JSON.stringify(body),
-      signal: signal,
-    },
-  )
-  if (!response.ok) {
-    throw await toAiChatHttpError(response)
-  }
-
-  if (!response.body) {
-    throw new Error('Streaming response has no body')
-  }
-
-  const reader = response.body.pipeThrough(new TextDecoderStream()).getReader()
+  const response = await postAiChatMessageStream(chatId, body, signal)
+  const reader = response.body!.pipeThrough(new TextDecoderStream()).getReader()
   let buffer = ''
   try {
     let readResult = await reader.read()

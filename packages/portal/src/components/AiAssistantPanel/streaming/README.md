@@ -16,11 +16,11 @@ You cannot use the browser `EventSource` API for this flow (it only supports GET
 
 | Path         | Role                                                               |
 | ------------ | ------------------------------------------------------------------ |
-| `transport/` | HTTP + SSE parsing: bytes -> `AiChatStreamEvent[]`                 |
+| `transport/` | SSE parsing on an open stream body: bytes -> `AiChatStreamEvent[]` |
 | `turn/`      | Turn state machine, React Query cache updates, submit/abort        |
 | `markdown/`  | Live assistant Markdown (light render while streaming, full after) |
 
-Shared API types (`AiChatStreamEvent`, messages, roles) stay in `../api/types.ts`. Event name constants are in `transport/aiChatStream.ts`.
+Shared API types (`AiChatStreamEvent`, messages, roles) stay in `../api/types.ts`. Stream POST and REST live in `../api/` (`requests.ts`, `client.ts`, `errors.ts`). Event name constants are in `../api/streamEvents.ts`.
 
 UI wiring (message list, Thinking label, composer, jump button) stays in `../ui/chat/` and reads streaming state from `AiAssistantProvider` via context.
 
@@ -56,18 +56,19 @@ sequenceDiagram
   useStreamingTurn->>useStreamingTurn: state idle
 ```
 
-## Layer 1 - Transport (`transport/`)
+## Layer 1 - API + transport
 
-**Entry point:** `streamAiChatTurn` in `sse.ts` (an **async generator** - `async function*` with `yield`). That pattern is rare in this repository but fits SSE well: the consumer pulls the next batch when ready instead of loading the whole body into memory.
+**HTTP:** `postAiChatMessageStream` in `../api/requests.ts` opens `POST /api/v1/ai-chat/chats/{chatId}/messages/stream` with `{ content, clientMessageId }` and returns the `Response` (or throws via `toAiChatHttpError`).
 
-Rough steps:
+**SSE parsing:** `streamAiChatTurn` in `transport/sse.ts` (an **async generator** - `async function*` with `yield`). That pattern is rare in this repository but fits SSE well: the consumer pulls the next batch when ready instead of loading the whole body into memory.
 
-1. `POST /api/v1/ai-chat/chats/{chatId}/messages/stream` with `{ content, clientMessageId }`.
-2. Read the response body in chunks (`reader.read()`).
-3. `sseFramer.ts` splits the text buffer into complete SSE frames (frames end with `\n\n`).
-4. Each frame's `data:` line is JSON -> `AiChatStreamEvent`.
-5. **Yield once per TCP read** with all events parsed from that chunk (not one yield per event), so the turn layer can run one reducer update per chunk.
-6. **Tail flush:** when the connection closes, the last bytes may not end with `\n\n`. The code appends `\n\n` once, parses any leftover frame, yields it, then stops - otherwise the last events could be lost.
+Rough steps after the POST succeeds:
+
+1. Read the response body in chunks (`reader.read()`).
+2. `sseFramer.ts` splits the text buffer into complete SSE frames (frames end with `\n\n`).
+3. Each frame's `data:` line is JSON -> `AiChatStreamEvent`.
+4. **Yield once per TCP read** with all events parsed from that chunk (not one yield per event), so the turn layer can run one reducer update per chunk.
+5. **Tail flush:** when the connection closes, the last bytes may not end with `\n\n`. The code appends `\n\n` once, parses any leftover frame, yields it, then stops - otherwise the last events could be lost.
 
 Event types the turn layer cares about most:
 
@@ -128,14 +129,14 @@ Jump-to-latest FAB phase constants live in `../ui/chat/chatScreenConstants.ts` (
 
 Portal-wide fetch errors go through `fetch-error` → `ExceptionSituationHandler`. For `status` 404 or 500 in the event it renders a **full-page** `ErrorPage`; otherwise a snackbar.
 
-AI Chat uses the same event but sets `forceSnackbar: true` so 500/400 never replace the portal under the open panel (see `transport/dispatchFetchError.ts`).
+AI Chat uses the same event but sets `forceSnackbar: true` so 500/400 never replace the portal under the open panel (see `api/errors.ts`).
 
-| Failure                                     | Who notifies                              | UI                               |
-| ------------------------------------------- | ----------------------------------------- | -------------------------------- |
-| REST `aiChatJson` / `aiChatVoid` HTTP error | `api/client.ts` → `toAiChatHttpError`     | Snackbar (except 404, see below) |
-| Stream POST HTTP error (before SSE)         | `sse.ts` → `toAiChatHttpError`            | Same                             |
-| SSE `error` frame (HTTP still 200)          | `useStreamingTurn` → `dispatchFetchError` | Snackbar                         |
-| Stream ends without `error` / `done`        | `useStreamingTurn` after read loop        | Snackbar + reset turn            |
+| Failure                                     | Who notifies                                    | UI                               |
+| ------------------------------------------- | ----------------------------------------------- | -------------------------------- |
+| REST `aiChatJson` / `aiChatVoid` HTTP error | `api/client.ts` → `toAiChatHttpError`           | Snackbar (except 404, see below) |
+| Stream POST HTTP error (before SSE)         | `api/requests.ts` → `toAiChatHttpError`         | Same                             |
+| SSE `error` frame (HTTP still 200)          | `useStreamingTurn` → `dispatchAiChatFetchError` | Snackbar                         |
+| Stream ends without `error` / `done`        | `useStreamingTurn` after read loop              | Snackbar + reset turn            |
 
 Mid-turn SSE errors are not HTTP failures — `requestJson` is not involved; the turn layer dispatches `fetch-error` manually after parsing the frame.
 
@@ -143,7 +144,7 @@ Mid-turn SSE errors are not HTTP failures — `requestJson` is not involved; the
 
 `POST .../messages/stream` may return **404** + `APIHUB-AI-3001` before any SSE byte (chat deleted, stale `chatId` in the panel, or send raced with delete). Global `fetch-error` with `status: 404` would show a full-portal **ErrorPage** under the open drawer — we skip that.
 
-`toAiChatHttpError` does not dispatch on 404; `useStreamingTurn` catches `HttpError`, keeps any partial assistant text, clears caches for the `chatId`, and `resetActiveChat()` when it was active (welcome/history, no toast). Other HTTP statuses still use `dispatchFetchError` (`forceSnackbar: true`).
+`toAiChatHttpError` does not dispatch on 404; `useStreamingTurn` catches `HttpError`, keeps any partial assistant text, clears caches for the `chatId`, and `resetActiveChat()` when it was active (welcome/history, no toast). Other HTTP statuses still use `dispatchAiChatFetchError` (`forceSnackbar: true`).
 
 ## Layer 3 - Live Markdown (`markdown/`)
 
@@ -160,7 +161,8 @@ When the turn ends, the same message renders in **full** mode (highlighting, cop
 | `state/AiAssistantProvider.tsx`             | Creates `useStreamingTurn`, puts it on context      |
 | `ui/chat/*`                                 | Message list, Thinking, composer, scroll / jump FAB |
 | `ui/markdown/AiAssistantMarkdownViewer.tsx` | Shared Markdown viewer (history + stream)           |
-| `api/types.ts`                              | Shared TypeScript contract types                    |
+| `api/*`                                     | REST client, paths, errors, stream POST, hooks      |
+| `hooks/useAiAssistantDeleteChat.ts`         | Delete mutation + panel navigation on failure       |
 
 ## Mental model (one paragraph)
 

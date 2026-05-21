@@ -1,6 +1,7 @@
 import { useInfiniteQuery, type UseInfiniteQueryResult } from '@tanstack/react-query'
 
 import { aiChatJson } from './client'
+import { AI_CHAT_CHATS_PATH } from './paths'
 import { aiChatListKey } from './queryKeys'
 import type { AiChatsListResponse } from './types'
 
@@ -21,7 +22,7 @@ export function useAiChats(search: string): UseInfiniteQueryResult<AiChatsListRe
       }
 
       return aiChatJson<AiChatsListResponse>(
-        `/ai-chat/chats?${params.toString()}`,
+        `${AI_CHAT_CHATS_PATH}?${params.toString()}`,
         undefined,
         signal,
       )

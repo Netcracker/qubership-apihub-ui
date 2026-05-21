@@ -6,8 +6,8 @@ import Typography from '@mui/material/Typography'
 
 import { type AiChat, type ChatId, MAX_PINNED_PER_USER } from '../../api/types'
 import { useAiChats } from '../../api/useAiChats'
-import { useDeleteAiChat } from '../../api/useDeleteAiChat'
 import { useUpdateAiChat } from '../../api/useUpdateAiChat'
+import { useAiAssistantDeleteChat } from '../../hooks/useAiAssistantDeleteChat'
 import { useAiAssistantHeaderHandlers } from '../../hooks/useAiAssistantHeaderHandlers'
 import { useAiAssistantContext } from '../../state/AiAssistantContext'
 import { AiAssistantHeader } from '../header/AiAssistantHeader'
@@ -24,7 +24,7 @@ export const AiAssistantHistoryScreen: FC = memo(() => {
   const { activeChatId, openChatScreen, streaming } = useAiAssistantContext()
   const headerHandlers = useAiAssistantHeaderHandlers()
   const updateChat = useUpdateAiChat()
-  const deleteChat = useDeleteAiChat()
+  const deleteChat = useAiAssistantDeleteChat()
 
   const [searchQuery, setSearchQuery] = useState('')
   const [renamingChatId, setRenamingChatId] = useState<ChatId | null>(null)

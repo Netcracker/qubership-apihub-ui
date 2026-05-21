@@ -15,3 +15,6 @@ export function isAiChatsInfiniteListQueryKey(queryKey: readonly unknown[]): boo
 }
 
 export const aiChatMessagesKey = (chatId: ChatId) => [AI_CHAT_ROOT, 'messages', chatId] as const
+
+export const aiChatDisabledItemKey = ['ai-chat', 'chat', 'disabled'] as const
+export const aiChatDisabledMessagesKey = ['ai-chat', 'messages', 'disabled'] as const

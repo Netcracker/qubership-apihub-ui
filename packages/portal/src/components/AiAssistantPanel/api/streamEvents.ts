@@ -10,8 +10,6 @@ export const AI_CHAT_STREAM_EVENT = {
   done: 'done',
 } as const
 
-export type AiChatStreamEventType = (typeof AI_CHAT_STREAM_EVENT)[keyof typeof AI_CHAT_STREAM_EVENT]
-
 export function isAssistantStreamProgressEvent(event: { type: string }): boolean {
   return (
     event.type === AI_CHAT_STREAM_EVENT.assistantStart ||

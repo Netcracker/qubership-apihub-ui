@@ -1,14 +1,15 @@
 import { useInfiniteQuery, type UseInfiniteQueryResult } from '@tanstack/react-query'
 
 import { aiChatJson } from './client'
-import { aiChatMessagesKey } from './queryKeys'
+import { aiChatMessagesPath } from './paths'
+import { aiChatDisabledMessagesKey, aiChatMessagesKey } from './queryKeys'
 import type { AiChatMessagesListResponse, ChatId } from './types'
 
 const MESSAGES_PAGE_LIMIT = 100
 
 export function useAiChatMessages(chatId: ChatId | null): UseInfiniteQueryResult<AiChatMessagesListResponse, Error> {
   return useInfiniteQuery<AiChatMessagesListResponse, Error>({
-    queryKey: chatId ? aiChatMessagesKey(chatId) : ['ai-chat', 'messages', 'disabled'],
+    queryKey: chatId ? aiChatMessagesKey(chatId) : aiChatDisabledMessagesKey,
     enabled: chatId !== null,
     staleTime: Number.POSITIVE_INFINITY,
     queryFn: async ({ pageParam, signal }) => {
@@ -17,7 +18,7 @@ export function useAiChatMessages(chatId: ChatId | null): UseInfiniteQueryResult
         params.set('before', pageParam)
       }
       return aiChatJson<AiChatMessagesListResponse>(
-        `/ai-chat/chats/${encodeURIComponent(chatId!)}/messages?${params.toString()}`,
+        `${aiChatMessagesPath(chatId!)}?${params.toString()}`,
         undefined,
         signal,
       )

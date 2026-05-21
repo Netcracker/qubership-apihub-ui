@@ -4,13 +4,13 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { HttpError } from '@netcracker/qubership-apihub-ui-shared/utils/responses'
 
-import { dispatchFetchError } from '../transport/dispatchFetchError'
-
-import { aiChatJson } from '../../api/client'
+import { removeAiChatQueries } from '../../api/chatCache'
+import { AI_CHAT_FETCH_ERROR_TITLE, dispatchAiChatFetchError } from '../../api/errors'
 import { invalidateAiChatListQueries } from '../../api/invalidateAiChatListQueries'
 import { aiChatItemKey, aiChatMessagesKey } from '../../api/queryKeys'
+import { createAiChat } from '../../api/requests'
+import { AI_CHAT_STREAM_EVENT, isAssistantStreamProgressEvent } from '../../api/streamEvents'
 import type {
-  AiChat,
   AiChatMessage,
   AiChatMessagesListResponse,
   AiChatStreamEvent,
@@ -18,7 +18,6 @@ import type {
   ClientMessageId,
   MessageId,
 } from '../../api/types'
-import { AI_CHAT_STREAM_EVENT, isAssistantStreamProgressEvent } from '../transport/aiChatStream'
 import { streamAiChatTurn } from '../transport/sse'
 import {
   buildOptimisticUserMessage,
@@ -69,6 +68,10 @@ function isAbortError(e: unknown): boolean {
     return true
   }
   return false
+}
+
+function streamErrorDetail(message: string, code = ''): Parameters<typeof dispatchAiChatFetchError>[0] {
+  return { title: AI_CHAT_FETCH_ERROR_TITLE, message: message, code: code, status: null }
 }
 
 export function useStreamingTurn({
@@ -131,36 +134,6 @@ export function useStreamingTurn({
     return () => window.clearInterval(id)
   }, [state, streamPollKey])
 
-  const flushPartialAssistantToCache = useCallback((chatId: ChatId): void => {
-    const s = stateRef.current
-    if (!isStreamingTurnStatus(s, STREAMING_TURN_STATUS.started) || s.chatId !== chatId) {
-      return
-    }
-    if (!s.buffer) {
-      return
-    }
-    queryClient.setQueryData(
-      aiChatMessagesKey(chatId),
-      (previous: InfiniteData<AiChatMessagesListResponse> | undefined) =>
-        prependMessageToInfiniteMessages(
-          previous,
-          buildPartialAssistantMessage({
-            messageId: s.assistantMessageId,
-            content: s.buffer,
-            createdAt: new Date().toISOString(),
-          }),
-        ),
-    )
-  }, [queryClient])
-
-  const removeChatCaches = useCallback(
-    (chatId: ChatId): void => {
-      queryClient.removeQueries({ queryKey: aiChatItemKey(chatId), exact: true })
-      queryClient.removeQueries({ queryKey: aiChatMessagesKey(chatId), exact: true })
-    },
-    [queryClient],
-  )
-
   const prependPartialAssistant = useCallback(
     (chatId: ChatId, messageId: MessageId, buffer: string): void => {
       if (!buffer) {
@@ -181,6 +154,14 @@ export function useStreamingTurn({
     },
     [queryClient],
   )
+
+  const flushPartialAssistantToCache = useCallback((chatId: ChatId): void => {
+    const s = stateRef.current
+    if (!isStreamingTurnStatus(s, STREAMING_TURN_STATUS.started) || s.chatId !== chatId) {
+      return
+    }
+    prependPartialAssistant(chatId, s.assistantMessageId, s.buffer)
+  }, [prependPartialAssistant])
 
   const processBatch = useCallback(
     (chatId: ChatId, batch: readonly AiChatStreamEvent[]): void => {
@@ -215,7 +196,7 @@ export function useStreamingTurn({
           const message = 'message' in event && typeof event.message === 'string'
             ? event.message
             : AI_ASSISTANT_STREAM_ERROR_DEFAULT_MESSAGE
-          dispatchFetchError({ title: 'Error', message: message, code: code, status: null })
+          dispatchAiChatFetchError(streamErrorDetail(message, code))
         }
         if (event.type === AI_CHAT_STREAM_EVENT.done) {
           void invalidateAiChatListQueries(queryClient)
@@ -228,6 +209,13 @@ export function useStreamingTurn({
     },
     [prependPartialAssistant, queryClient],
   )
+
+  const handleStreamHttp404 = useCallback((chatId: ChatId): void => {
+    removeAiChatQueries(queryClient, chatId)
+    if (routeActiveChatId === chatId) {
+      resetActiveChat()
+    }
+  }, [queryClient, resetActiveChat, routeActiveChatId])
 
   const runTurn = useCallback(
     async (chatId: ChatId, trimmed: string, clientMessageId: ClientMessageId): Promise<void> => {
@@ -245,12 +233,7 @@ export function useStreamingTurn({
         }
         if (isStreamingBusy(stateRef.current)) {
           flushPartialAssistantToCache(chatId)
-          dispatchFetchError({
-            title: 'Error',
-            message: AI_ASSISTANT_NETWORK_STREAM_ERROR_MESSAGE,
-            code: '',
-            status: null,
-          })
+          dispatchAiChatFetchError(streamErrorDetail(AI_ASSISTANT_NETWORK_STREAM_ERROR_MESSAGE))
           dispatch({ type: STREAMING_TURN_ACTION.reset })
         }
       } catch (e) {
@@ -259,47 +242,30 @@ export function useStreamingTurn({
           dispatch({ type: STREAMING_TURN_ACTION.aborted })
           return
         }
-        if (e instanceof HttpError) {
-          flushPartialAssistantToCache(chatId)
-          dispatch({ type: STREAMING_TURN_ACTION.reset })
-          if (e.status === 404) {
-            removeChatCaches(chatId)
-            if (routeActiveChatId === chatId) {
-              resetActiveChat()
-            }
-          }
+        flushPartialAssistantToCache(chatId)
+        dispatch({ type: STREAMING_TURN_ACTION.reset })
+        if (e instanceof HttpError && e.status === 404) {
+          handleStreamHttp404(chatId)
           return
         }
-        flushPartialAssistantToCache(chatId)
-        dispatchFetchError({
-          title: 'Error',
-          message: e instanceof Error ? e.message : AI_ASSISTANT_NETWORK_STREAM_ERROR_MESSAGE,
-          code: '',
-          status: null,
-        })
-        dispatch({ type: STREAMING_TURN_ACTION.reset })
+        if (!(e instanceof HttpError)) {
+          dispatchAiChatFetchError(streamErrorDetail(
+            e instanceof Error ? e.message : AI_ASSISTANT_NETWORK_STREAM_ERROR_MESSAGE,
+          ))
+        }
       } finally {
         if (abortControllerRef.current === ac) {
           abortControllerRef.current = null
         }
       }
     },
-    [
-      flushPartialAssistantToCache,
-      processBatch,
-      removeChatCaches,
-      resetActiveChat,
-      routeActiveChatId,
-    ],
+    [flushPartialAssistantToCache, handleStreamHttp404, processBatch],
   )
 
   const submit = useCallback(
     async (activeChatId: ChatId | null, content: string): Promise<void> => {
       const trimmed = content.trim()
-      if (!trimmed) {
-        return
-      }
-      if (turnLockRef.current) {
+      if (!trimmed || turnLockRef.current) {
         return
       }
       turnLockRef.current = true
@@ -307,11 +273,7 @@ export function useStreamingTurn({
         let chatId = activeChatId
         const fromWelcome = activeChatId === null
         if (!chatId) {
-          const newChat = await aiChatJson<AiChat>('/ai-chat/chats', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({}),
-          })
+          const newChat = await createAiChat()
           const { chatId: createdChatId } = newChat
           chatId = createdChatId
           queryClient.setQueryData(aiChatItemKey(chatId), newChat)
@@ -325,27 +287,27 @@ export function useStreamingTurn({
         const optimisticUserMessageId = `${OPTIMISTIC_MESSAGE_ID_PREFIX}${uuidv4()}` as MessageId
         const nowIso = new Date().toISOString()
 
-        const optimistic = buildOptimisticUserMessage({
-          optimisticMessageId: optimisticUserMessageId,
-          clientMessageId: clientMessageId,
-          content: trimmed,
-          createdAt: nowIso,
-        })
-
         queryClient.setQueryData(
           aiChatMessagesKey(chatId),
           (previous: InfiniteData<AiChatMessagesListResponse> | undefined) =>
-            prependMessageToInfiniteMessages(previous, optimistic),
+            prependMessageToInfiniteMessages(
+              previous,
+              buildOptimisticUserMessage({
+                optimisticMessageId: optimisticUserMessageId,
+                clientMessageId: clientMessageId,
+                content: trimmed,
+                createdAt: nowIso,
+              }),
+            ),
         )
 
-        const pendingSnapshot: StreamingTurnState = {
+        turnBootstrapRef.current = {
           status: STREAMING_TURN_STATUS.pending,
           chatId: chatId,
           clientMessageId: clientMessageId,
           optimisticUserMessageId: optimisticUserMessageId,
           submittedContent: trimmed,
         }
-        turnBootstrapRef.current = pendingSnapshot
 
         dispatch({
           type: STREAMING_TURN_ACTION.turnRequested,

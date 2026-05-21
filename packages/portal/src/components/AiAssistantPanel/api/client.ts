@@ -1,7 +1,7 @@
 import { API_V1, requestJson, requestVoid } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { HttpError } from '@netcracker/qubership-apihub-ui-shared/utils/responses'
 
-import { toAiChatHttpError } from '../streaming/transport/dispatchFetchError'
+import { toAiChatHttpError } from './errors'
 
 function aiChatCustomErrorHandler(response: Response): void {
   void toAiChatHttpError(response)
