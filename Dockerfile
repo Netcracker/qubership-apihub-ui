@@ -12,7 +12,7 @@ FROM docker.io/nginx:1.28.0-alpine3.21
 WORKDIR /tmp/build
 
 COPY nginx/errors                        /var/www/error
-COPY nginx/nginx.conf.template           /etc/nginx/nginx.conf.template
+COPY nginx/nginx.conf.template           /app/nginx.conf.template
 COPY nginx/entrypoint.sh                 /tmp
 
 RUN mkdir /usr/share/nginx/html/agents && mkdir /usr/share/nginx/html/portal
@@ -27,7 +27,7 @@ RUN tar zxvf ./qubership-apihub-ui-portal.tgz && mv ./package/dist/* /usr/share/
 RUN find /usr/share/nginx/html -type f -exec touch {} +
 
 # giving permissions to nginx
-RUN chmod -R 777 /var/log/nginx /var/cache/nginx/ /var/run/ /usr/share/nginx/html/ /etc/nginx/ && \
+RUN chmod -R 777 /var/log/nginx /var/cache/nginx/ /var/run/ /usr/share/nginx/html/ && \
     chmod -R +x /tmp/
 
 EXPOSE 8080
