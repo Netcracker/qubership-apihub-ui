@@ -13,7 +13,7 @@ import { useAiAssistantContext } from '../../state/AiAssistantContext'
 import { AiAssistantHeader } from '../header/AiAssistantHeader'
 import { AI_ASSISTANT_HEADER_MODE } from '../header/aiAssistantHeaderMode'
 import { ChatListRow } from './ChatListRow'
-import { DeleteChatConfirmation } from './DeleteChatConfirmation'
+import { DeleteChatConfirmation } from './DeleteChatDialog'
 import { HistorySearchField } from './HistorySearchField'
 
 const LOAD_NEXT_PAGE_THRESHOLD_PX = 120

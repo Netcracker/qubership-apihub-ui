@@ -40,7 +40,7 @@ export const DeleteChatConfirmation: FC<DeleteChatConfirmationProps> = memo(({
 
 const MessageTitleEmphasis = styled('span')(({ theme }) => ({
   fontSize: theme.typography.body2.fontSize,
-  fontWeight: 700,
+  fontWeight: 500,
 }))
 
 DeleteChatConfirmation.displayName = 'DeleteChatConfirmation'
