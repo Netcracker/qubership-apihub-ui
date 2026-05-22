@@ -75,4 +75,3 @@ export type AiChatStreamEvent =
   | { type: string; [k: string]: unknown }
 
 export const MAX_PINNED_PER_USER = 3 as const
-export const MAX_USER_MESSAGE_LENGTH = 32_000 as const

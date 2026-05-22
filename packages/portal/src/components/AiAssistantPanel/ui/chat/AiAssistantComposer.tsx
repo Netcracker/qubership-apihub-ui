@@ -8,7 +8,6 @@ import TextField from '@mui/material/TextField'
 import { SendIcon } from '@netcracker/qubership-apihub-ui-shared/icons/SendIcon'
 import { StopIcon } from '@netcracker/qubership-apihub-ui-shared/icons/StopIcon'
 
-import { MAX_USER_MESSAGE_LENGTH } from '../../api/types'
 import { useAiAssistantContext } from '../../state/AiAssistantContext'
 
 export type AiAssistantComposerProps = {
@@ -34,8 +33,7 @@ export const AiAssistantComposer: FC<AiAssistantComposerProps> = memo(({ panelOp
 
   const busy = streaming.isBusy
   const trimmedDraft = draft.trim()
-  const messageLength = [...draft].length
-  const canSend = !busy && trimmedDraft.length > 0 && messageLength <= MAX_USER_MESSAGE_LENGTH
+  const canSend = !busy && trimmedDraft.length > 0
 
   const handleSubmit = useCallback((): void => {
     if (!canSend) {
