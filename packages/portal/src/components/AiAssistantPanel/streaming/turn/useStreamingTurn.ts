@@ -41,6 +41,7 @@ import {
   peekPartialBeforeErrorInBatch,
   STREAMING_TURN_IDLE_STATE,
   streamingTurnReducer,
+  type StreamingTurnAction,
   type StreamingTurnState,
 } from './streamingTurnReducer'
 
@@ -89,6 +90,12 @@ export function useStreamingTurn({
   const turnBootstrapRef = useRef<StreamingTurnState | null>(null)
   const lastAssistantMessageActivityAtRef = useRef<number | null>(null)
   const [thinkingDuringAssistantPause, setThinkingDuringAssistantPause] = useState(false)
+
+  /** Keep ref in sync with reducer before React re-renders (post-stream busy check reads ref). */
+  const dispatchTurn = useCallback((action: StreamingTurnAction): void => {
+    stateRef.current = streamingTurnReducer(stateRef.current, action)
+    dispatch(action)
+  }, [])
 
   useEffect(() => {
     return () => {
@@ -204,10 +211,10 @@ export function useStreamingTurn({
         }
       }
 
-      dispatch({ type: STREAMING_TURN_ACTION.sseBatch, events: batch })
+      dispatchTurn({ type: STREAMING_TURN_ACTION.sseBatch, events: batch })
       turnBootstrapRef.current = null
     },
-    [prependPartialAssistant, queryClient],
+    [dispatchTurn, prependPartialAssistant, queryClient],
   )
 
   const handleStreamHttp404 = useCallback((chatId: ChatId): void => {
@@ -234,16 +241,16 @@ export function useStreamingTurn({
         if (isStreamingBusy(stateRef.current)) {
           flushPartialAssistantToCache(chatId)
           dispatchAiChatFetchError(streamErrorDetail(AI_ASSISTANT_NETWORK_STREAM_ERROR_MESSAGE))
-          dispatch({ type: STREAMING_TURN_ACTION.reset })
+          dispatchTurn({ type: STREAMING_TURN_ACTION.reset })
         }
       } catch (e) {
         if (isAbortError(e)) {
           flushPartialAssistantToCache(chatId)
-          dispatch({ type: STREAMING_TURN_ACTION.aborted })
+          dispatchTurn({ type: STREAMING_TURN_ACTION.aborted })
           return
         }
         flushPartialAssistantToCache(chatId)
-        dispatch({ type: STREAMING_TURN_ACTION.reset })
+        dispatchTurn({ type: STREAMING_TURN_ACTION.reset })
         if (e instanceof HttpError && e.status === 404) {
           handleStreamHttp404(chatId)
           return
@@ -259,7 +266,7 @@ export function useStreamingTurn({
         }
       }
     },
-    [flushPartialAssistantToCache, handleStreamHttp404, processBatch],
+    [dispatchTurn, flushPartialAssistantToCache, handleStreamHttp404, processBatch],
   )
 
   const submit = useCallback(
@@ -309,7 +316,7 @@ export function useStreamingTurn({
           submittedContent: trimmed,
         }
 
-        dispatch({
+        dispatchTurn({
           type: STREAMING_TURN_ACTION.turnRequested,
           chatId: chatId,
           clientMessageId: clientMessageId,
@@ -322,7 +329,7 @@ export function useStreamingTurn({
         turnLockRef.current = false
       }
     },
-    [openChatScreen, queryClient, runTurn],
+    [dispatchTurn, openChatScreen, queryClient, runTurn],
   )
 
   const abort = useCallback((): void => {
@@ -330,8 +337,8 @@ export function useStreamingTurn({
   }, [])
 
   const reset = useCallback((): void => {
-    dispatch({ type: STREAMING_TURN_ACTION.reset })
-  }, [])
+    dispatchTurn({ type: STREAMING_TURN_ACTION.reset })
+  }, [dispatchTurn])
 
   return useMemo(() => {
     const busy = isStreamingBusy(state)

@@ -104,7 +104,7 @@ stateDiagram-v2
 | `pending` | User message shown; **Thinking** (waiting for first assistant token) |
 | `started` | Live assistant bubble with text from `buffer`                        |
 
-`streamingTurnReducer.ts` holds `buffer` and status. `processBatch` in `useStreamingTurn` applies side effects (cache writes, toasts) then dispatches `sseBatch` to the reducer.
+`streamingTurnReducer.ts` holds `buffer` and status. `processBatch` applies side effects (cache, toasts) then `dispatchTurn` (`stateRef` and React state both run `streamingTurnReducer`).
 
 React Query:
 
@@ -127,22 +127,23 @@ Jump-to-latest FAB phase constants live in `../ui/chat/chatScreenConstants.ts` (
 
 ### Errors and the global handler
 
-Portal-wide fetch errors go through `fetch-error` → `ExceptionSituationHandler`. For `status` 404 or 500 in the event it renders a **full-page** `ErrorPage`; otherwise a snackbar.
+Portal-wide fetch errors go through `fetch-error` and `ExceptionSituationHandler`. For `status` 404 or 500 in the event it renders a **full-page** `ErrorPage`; otherwise a snackbar.
 
 AI Chat uses the same event but sets `forceSnackbar: true` so 500/400 never replace the portal under the open panel (see `api/errors.ts`).
 
-| Failure                                     | Who notifies                                    | UI                               |
-| ------------------------------------------- | ----------------------------------------------- | -------------------------------- |
-| REST `aiChatJson` / `aiChatVoid` HTTP error | `api/client.ts` → `toAiChatHttpError`           | Snackbar (except 404, see below) |
-| Stream POST HTTP error (before SSE)         | `api/requests.ts` → `toAiChatHttpError`         | Same                             |
-| SSE `error` frame (HTTP still 200)          | `useStreamingTurn` → `dispatchAiChatFetchError` | Snackbar                         |
-| Stream ends without `error` / `done`        | `useStreamingTurn` after read loop              | Snackbar + reset turn            |
+After the SSE read loop, if `isStreamingBusy(stateRef)` is still true, the hook shows **Network error while streaming.** (HTTP 200 but no terminal event: `completed`, `done`, or `error`). `dispatchTurn` updates `stateRef` in the same reducer pass as React `dispatch` so a normal `done` frame does not hit this guard before re-render.
 
-Mid-turn SSE errors are not HTTP failures — `requestJson` is not involved; the turn layer dispatches `fetch-error` manually after parsing the frame.
+| Failure                           | Who notifies                            | UI                                          |
+| --------------------------------- | --------------------------------------- | ------------------------------------------- |
+| REST / stream POST HTTP error     | `toAiChatHttpError`                     | Snackbar (404: see below)                   |
+| SSE `error` frame                 | `dispatchAiChatFetchError`              | Snackbar (code/message from SSE)            |
+| Stream body ends, turn still busy | post-stream guard in `useStreamingTurn` | Snackbar **Network error while streaming.** |
 
-### Stream HTTP 404 — local only
+Mid-turn SSE errors are not HTTP failures; the turn layer dispatches `fetch-error` after parsing the frame.
 
-`POST .../messages/stream` may return **404** + `APIHUB-AI-3001` before any SSE byte (chat deleted, stale `chatId` in the panel, or send raced with delete). Global `fetch-error` with `status: 404` would show a full-portal **ErrorPage** under the open drawer — we skip that.
+### Stream HTTP 404 - local only
+
+`POST .../messages/stream` may return **404** + `APIHUB-AI-3001` before any SSE byte (chat deleted, stale `chatId` in the panel, or send raced with delete). Global `fetch-error` with `status: 404` would show a full-portal **ErrorPage** under the open drawer - we skip that.
 
 `toAiChatHttpError` does not dispatch on 404; `useStreamingTurn` catches `HttpError`, keeps any partial assistant text, clears caches for the `chatId`, and `resetActiveChat()` when it was active (welcome/history, no toast). Other HTTP statuses still use `dispatchAiChatFetchError` (`forceSnackbar: true`).
 
@@ -173,7 +174,13 @@ the server message -> `done` refreshes queries.
 Stop aborts `fetch` and may keep partial text. The generator in `sse.ts` bridges network chunks and React; the turn
 hook bridges events and UI/cache.
 
-## Tests
+## Tests and mock coverage
 
-- `transport/sseFramer.unit-test.ts` - SSE frame splitting
-- `turn/streamingTurnReducer.unit-test.ts` - reducer folding and error peek helper
+| Case                                                             | Mock (`debug:*`)                              | Automated test                                          |
+| ---------------------------------------------------------------- | --------------------------------------------- | ------------------------------------------------------- |
+| Happy path ends with `completed` + `done`                        | default / most scenarios                      | `ai-chat.spec.ts` happy path; reducer tests             |
+| Stream ends without terminal SSE (real guard)                    | `debug:truncated-stream` (manual UI snackbar) | `ai-chat.spec.ts` asserts SSE has no `completed`/`done` |
+| SSE `error` frame                                                | `debug:error`                                 | `ai-chat.spec.ts`                                       |
+| False snackbar when `done` arrived but `stateRef` lagged (fixed) | not reproducible on mock                      | `streamingTurnPostStream.unit-test.ts`                  |
+
+Unit files: `sseFramer.unit-test.ts`, `streamingTurnReducer.unit-test.ts`, `streamingTurnPostStream.unit-test.ts`. Mock scenario table: `packages/portal/server/README.md`.
