@@ -102,9 +102,11 @@ const CodeBlockBody = styled(Box)(({ theme }) => ({
   overflow: 'auto',
   maxHeight: 320,
   lineHeight: 1.6,
-  // github-markdown-css / highlight.js set their own backgrounds on pre/code; keep the shell bg only.
   '& pre, & .hljs, & code': {
+    // github-markdown-css / highlight.js set their own backgrounds on pre/code; keep the shell bg only.
     backgroundColor: 'transparent',
+    // github-markdown-css uses 85% on code; fenced blocks use body2 (inline code keeps default)
+    fontSize: theme.typography.body2.fontSize,
   },
 }))
 
