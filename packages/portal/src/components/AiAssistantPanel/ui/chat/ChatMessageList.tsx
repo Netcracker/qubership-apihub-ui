@@ -12,6 +12,7 @@ import { ChatAssistantMessage } from './ChatAssistantMessage'
 import { CHAT_MESSAGE_LIST_JUMP_PHASE, type ChatMessageListJumpPhase } from './chatScreenConstants'
 import { ChatUserMessage } from './ChatUserMessage'
 import { useMessageListScroll } from './hooks/useMessageListScroll'
+import { ThinkingIndicator } from './ThinkingIndicator'
 
 export type ChatMessageListProps = {
   chatId: ChatId
@@ -21,6 +22,7 @@ export type ChatMessageListProps = {
   fetchNextPage: (options?: FetchNextPageOptions) => Promise<unknown>
   jumpButtonStreamPhase: ChatMessageListJumpPhase
   streamingAssistantMessageId: MessageId | null
+  thinkingVisible: boolean
 }
 
 export const ChatMessageList: FC<ChatMessageListProps> = memo(
@@ -32,6 +34,7 @@ export const ChatMessageList: FC<ChatMessageListProps> = memo(
     fetchNextPage,
     jumpButtonStreamPhase,
     streamingAssistantMessageId,
+    thinkingVisible,
   }) => {
     const { scrollRef, handleScroll, scrollToBottom, showJumpButton } = useMessageListScroll({
       chatId,
@@ -57,6 +60,7 @@ export const ChatMessageList: FC<ChatMessageListProps> = memo(
                   message.messageId === streamingAssistantMessageId}
               />
             ))}
+            <ThinkingIndicator visible={thinkingVisible} />
           </MessagesColumn>
         </ListScrollArea>
         {showJumpButton

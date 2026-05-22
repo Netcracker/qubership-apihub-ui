@@ -11,8 +11,6 @@ import { AiAssistantComposer } from './AiAssistantComposer'
 import { AiAssistantPlaceholder } from './AiAssistantPlaceholder'
 import { ChatMessageList } from './ChatMessageList'
 import { useChatScreenMessages } from './hooks/useChatScreenMessages'
-import { ThinkingIndicator } from './ThinkingIndicator'
-
 export const AiAssistantChatScreen: FC = memo(() => {
   const { open, activeChatId, streaming } = useAiAssistantContext()
   const headerHandlers = useAiAssistantHeaderHandlers()
@@ -49,8 +47,8 @@ export const AiAssistantChatScreen: FC = memo(() => {
                 fetchNextPage={messagesQuery.fetchNextPage}
                 jumpButtonStreamPhase={jumpPhase}
                 streamingAssistantMessageId={streamingAssistantMessageId}
+                thinkingVisible={thinkingVisible}
               />
-              <ThinkingIndicator visible={thinkingVisible} />
             </>
           )
           : null}
