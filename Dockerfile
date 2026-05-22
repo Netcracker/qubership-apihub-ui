@@ -27,7 +27,8 @@ RUN tar zxvf ./qubership-apihub-ui-portal.tgz && mv ./package/dist/* /usr/share/
 RUN find /usr/share/nginx/html -type f -exec touch {} +
 
 # giving permissions to nginx
-RUN chmod -R 777 /var/log/nginx /var/cache/nginx/ /var/run/ /usr/share/nginx/html/ && \
+RUN mkdir -p /app/nginx && \
+    chmod -R 777 /var/log/nginx /var/cache/nginx/ /var/run/ /usr/share/nginx/html/ /app/nginx && \
     chmod -R +x /app/
 
 WORKDIR /app

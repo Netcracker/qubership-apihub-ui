@@ -45,7 +45,6 @@ adjust_addr API_LINTER_SERVICE_ADDRESS
 adjust_addr APIHUB_AGENTS_BACKEND_ADDRESS
 
 # No need to modify APIHUB_BACKEND_ADDRESS as its resolution is static
-mkdir -p /app/nginx
 # shellcheck disable=SC2016 # envsubst requires literal variable names in single quotes
 envsubst '${APIHUB_BACKEND_ADDRESS} ${APIHUB_NC_SERVICE_ADDRESS} ${API_LINTER_SERVICE_ADDRESS} ${APIHUB_AGENTS_BACKEND_ADDRESS} ${DNS_RESOLVERS}' < /app/nginx.conf.template > /app/nginx/nginx.conf
 nginx -c /app/nginx/nginx.conf -g "daemon off;"
