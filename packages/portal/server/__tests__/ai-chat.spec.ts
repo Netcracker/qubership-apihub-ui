@@ -12,7 +12,7 @@ import {
   FIXTURE_RECENT_CHAT_ID,
   FIXTURE_WITH_HISTORY_CHAT_ID,
 } from '../mocks/ai-chat/fixtures'
-import { MOCK_ATTACHMENT_FILE_ID } from '../mocks/ai-chat/generatedFileUrl'
+import { MOCK_ATTACHMENT_FILE_ID } from '../mocks/ai-chat/ephemeralFileUrl'
 import { aiChatStore } from '../mocks/ai-chat/store'
 import type {
   AiChat,
@@ -25,7 +25,7 @@ import type {
 } from '../mocks/ai-chat/types'
 
 const BASE = '/api/v1/ai-chat'
-const GEN = '/api/v1/generated-files'
+const GEN = '/api/v1/ephemeral-files'
 const CLIENT_MESSAGE_ID_1 = '10000000-0000-4000-8000-000000000001'
 const CLIENT_MESSAGE_ID_2 = '10000000-0000-4000-8000-000000000002'
 const CLIENT_MESSAGE_ID_3 = '10000000-0000-4000-8000-000000000003'
@@ -299,7 +299,7 @@ describe('AI Chat mock server - POST /chats/:id/messages (non-streaming)', () =>
     expect((listed.body as AiChatMessagesListResponse).messages.length).toBe(2)
   })
 
-  it('rejects messages beyond the max length with APIHUB-AI-4004', async () => {
+  it('rejects messages beyond the max length with APIHUB-AI-4001', async () => {
     const create = await request(app).post(`${BASE}/chats`).send({}).expect(201)
     const { chatId } = create.body as AiChat
     const tooLong = 'x'.repeat(32001)
@@ -307,7 +307,7 @@ describe('AI Chat mock server - POST /chats/:id/messages (non-streaming)', () =>
       .post(`${BASE}/chats/${chatId}/messages`)
       .send({ content: tooLong })
       .expect(400)
-    expect((res.body as AiChatErrorResponse).code).toBe('APIHUB-AI-4004')
+    expect((res.body as AiChatErrorResponse).code).toBe('APIHUB-AI-4001')
   })
 
   it('rejects empty messages with APIHUB-AI-4001', async () => {
@@ -491,7 +491,7 @@ describe('AI Chat mock server - POST /chats/:id/messages/stream (SSE)', () => {
   })
 })
 
-describe('Mock server - GET /api/v1/generated-files/:fileId', () => {
+describe('Mock server - GET /api/v1/ephemeral-files/:fileId', () => {
   it('returns a Markdown body with content-disposition for the attachment mock id', async () => {
     const res = await request(app)
       .get(`${GEN}/${encodeURIComponent(MOCK_ATTACHMENT_FILE_ID)}`)
@@ -512,28 +512,28 @@ describe('Mock server - GET /api/v1/generated-files/:fileId', () => {
     expect((res.text as string).split('\n')[0]).toBe('operation,method,path,package,version')
   })
 
-  it('magic missing UUID returns 404 APIHUB-AI-3002', async () => {
+  it('magic missing UUID returns 404 APIHUB-EF-3001', async () => {
     const res = await request(app)
       .get(`${GEN}/${MAGIC_MISSING_FILE_ID}`)
       .query({ token: MOCK_FILE_DOWNLOAD_TOKEN })
       .expect(404)
-    expect((res.body as AiChatErrorResponse).code).toBe('APIHUB-AI-3002')
+    expect((res.body as AiChatErrorResponse).code).toBe('APIHUB-EF-3001')
   })
 
-  it('magic expired UUID returns 410 APIHUB-AI-4101', async () => {
+  it('magic expired UUID returns 410 APIHUB-EF-4101', async () => {
     const res = await request(app)
       .get(`${GEN}/${MAGIC_EXPIRED_FILE_ID}`)
       .query({ token: MOCK_FILE_DOWNLOAD_TOKEN })
       .expect(410)
-    expect((res.body as AiChatErrorResponse).code).toBe('APIHUB-AI-4101')
+    expect((res.body as AiChatErrorResponse).code).toBe('APIHUB-EF-4101')
   })
 
   it('rejects downloads without a token (401)', async () => {
     const res = await request(app).get(`${GEN}/22222222-2222-4222-8222-222222222222`).expect(401)
-    expect((res.body as AiChatErrorResponse).code).toBe('APIHUB-4101')
+    expect((res.body as AiChatErrorResponse).code).toBe('APIHUB-EF-3003')
   })
 
-  it('debug:attachment stream links to generated-files and download succeeds', async () => {
+  it('debug:attachment stream links to ephemeral-files and download succeeds', async () => {
     const create = await request(app).post(`${BASE}/chats`).send({}).expect(201)
     const { chatId } = create.body as AiChat
     const stream = await request(app)
@@ -549,9 +549,9 @@ describe('Mock server - GET /api/v1/generated-files/:fileId', () => {
     const frames = parseSse(stream.body as string)
     const completed = frames.find((f) => f.event === 'message.assistant.completed') as SseFrame
     const { message } = completed.data as { message: AiChatMessage }
-    expect(message.content).toMatch(/\/api\/v1\/generated-files\//)
+    expect(message.content).toMatch(/\/api\/v1\/ephemeral-files\//)
     expect(message.content).not.toMatch(/\/api\/v1\/ai-chat\/files\//)
-    const match = message.content.match(/\]\((\/api\/v1\/generated-files\/[^)]+)\)/)
+    const match = message.content.match(/\]\((\/api\/v1\/ephemeral-files\/[^)]+)\)/)
     expect(match).toBeTruthy()
     const download = await request(app).get(match![1]).expect(200)
     expect((download.text as string).length).toBeGreaterThan(0)

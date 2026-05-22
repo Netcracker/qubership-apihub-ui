@@ -1,6 +1,6 @@
 import type { Router } from 'express'
 import { randomUUID } from 'node:crypto'
-import { buildGeneratedFileUrl } from '../../mocks/ai-chat/generatedFileUrl'
+import { buildEphemeralFileUrl } from '../../mocks/ai-chat/ephemeralFileUrl'
 import { assistantMessageFromScenario, pickScenario } from '../../mocks/ai-chat/scriptedStreams'
 import { aiChatStore } from '../../mocks/ai-chat/store'
 import {
@@ -75,7 +75,7 @@ export function sendMessageNonStreaming(router: Router): void {
     }
     const maxLen = MAX_USER_MESSAGE_LENGTH
     if (content.length > maxLen) {
-      sendError(res, 400, 'APIHUB-AI-4004', `Message exceeds maximum length of ${maxLen} characters.`)
+      sendError(res, 400, 'APIHUB-AI-4001', `Message exceeds maximum length of ${maxLen} characters.`)
       return
     }
 
@@ -116,7 +116,7 @@ export function sendMessageNonStreaming(router: Router): void {
       messageId: assistantMessageId,
       nowIso: assistantCreatedAt,
       clientMessageId: null,
-      buildFileUrl: (fileId) => buildGeneratedFileUrl(fileId),
+      buildFileUrl: (fileId) => buildEphemeralFileUrl(fileId),
     })
     aiChatStore.appendMessage(chatId, assistantMessage)
     if (clientMessageId) {

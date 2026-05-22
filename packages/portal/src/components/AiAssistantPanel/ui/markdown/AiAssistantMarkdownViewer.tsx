@@ -30,7 +30,7 @@ import {
   type AiAssistantMarkdownRenderMode,
 } from '../../streaming/markdown/aiAssistantMarkdownMode'
 import {
-  isGeneratedFileLink,
+  isEphemeralFileLink,
   isInternalPortalLink,
   markdownLinkBaseOrigin,
   resolveToUrl,
@@ -144,7 +144,7 @@ const MarkdownLink: FC<ComponentPropsWithoutRef<'a'> & ReactMarkdownProps> = mem
     [closePanel, resetActiveChat],
   )
   const origin = markdownLinkBaseOrigin()
-  if (isGeneratedFileLink(href, origin)) {
+  if (isEphemeralFileLink(href, origin)) {
     return <FileDownloadLink href={resolveToUrl(href, origin).href}>{children}</FileDownloadLink>
   }
   if (isInternalPortalLink(href, origin)) {
