@@ -161,8 +161,8 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
     enabled: enabledFilters,
     textFilter: workspacesFilter,
   })
-  const onWorkspaceInputChange = useMemo(() => debounce((_: SyntheticEvent, value: string) =>
-    setWorkspacesFilter(value), DEFAULT_DEBOUNCE), [])
+  const onWorkspaceInputChange = useMemo(() => debounce((_: SyntheticEvent, value: string, reason: string) =>
+    reason === 'input' && setWorkspacesFilter(value), DEFAULT_DEBOUNCE), [])
 
   const groupKey = watch().group?.key
 
@@ -372,11 +372,7 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
               {...params}
               required
               label="Workspace"/>}
-          onInputChange={(event, value, reason) => {
-            if (reason === 'input') {
-              onWorkspaceInputChange(event, value)
-            }
-          }}
+          onInputChange={onWorkspaceInputChange}
           onBlur={() => {
             onWorkspaceInputChange.clear()
             setWorkspacesFilter('')
