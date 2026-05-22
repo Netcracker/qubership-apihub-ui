@@ -20,7 +20,13 @@ export type StreamingTurnActionType = (typeof STREAMING_TURN_ACTION)[keyof typeo
 
 export const AI_ASSISTANT_STREAM_ERROR_DEFAULT_MESSAGE = 'Assistant stream reported an error.'
 
-export const AI_ASSISTANT_NETWORK_STREAM_ERROR_MESSAGE = 'Network error while streaming.'
+/** Shown when the stream connection closed before the assistant turn finished (warning snackbar). */
+export const AI_ASSISTANT_INCOMPLETE_STREAM_MESSAGE =
+  'The reply stopped before the assistant finished. What you see may be incomplete - try sending your message again if something is missing.'
+
+/** Fallback when the stream request fails before a normal SSE body (error snackbar). */
+export const AI_ASSISTANT_STREAM_REQUEST_FAILED_MESSAGE =
+  'Could not complete the request. Check your connection and try again.'
 
 export const OPTIMISTIC_MESSAGE_ID_PREFIX = 'optimistic-'
 

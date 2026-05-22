@@ -351,6 +351,24 @@ Same link on its own line (easier to tap):
   },
 }
 
+const TRUNCATED_STREAM_MARKDOWN =
+  'Mock: TCP closes after deltas only - no `message.assistant.completed` or `done`. UI should show the incomplete-reply warning snackbar.'
+
+const truncatedStreamScenario: Scenario = {
+  id: 'debug:truncated-stream',
+  description:
+    'Happy-path deltas then connection close without terminal SSE frames (exercises post-stream network error snackbar).',
+  build: ({ messageId }) => {
+    const frames: ScriptedFrame[] = []
+    frames.push({
+      delay: 40,
+      event: { type: 'message.assistant.start', messageId: messageId },
+    })
+    frames.push(...deltaFrames(TRUNCATED_STREAM_MARKDOWN))
+    return frames
+  },
+}
+
 const errorScenario: Scenario = {
   id: 'debug:error',
   description: 'A few deltas then an SSE error frame (APIHUB-AI-5001).',
@@ -513,6 +531,7 @@ const offtopicScenario: Scenario = {
 // fall through to the happy path.
 export const SCENARIOS: Scenario[] = [
   errorScenario,
+  truncatedStreamScenario,
   linksScenario,
   longmdScenario,
   jsonScenario,
