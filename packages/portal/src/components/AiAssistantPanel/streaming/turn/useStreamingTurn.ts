@@ -5,7 +5,11 @@ import { v4 as uuidv4 } from 'uuid'
 import { HttpError } from '@netcracker/qubership-apihub-ui-shared/utils/responses'
 
 import { removeAiChatQueries } from '../../api/chatCache'
-import { AI_CHAT_FETCH_ERROR_TITLE, dispatchAiChatFetchError } from '../../api/errors'
+import {
+  AI_CHAT_FETCH_ERROR_TITLE,
+  dispatchAiChatFetchError,
+  dispatchAiChatWarning,
+} from '../../api/errors'
 import { invalidateAiChatListQueries } from '../../api/invalidateAiChatListQueries'
 import { aiChatItemKey, aiChatMessagesKey } from '../../api/queryKeys'
 import { createAiChat } from '../../api/requests'
@@ -26,8 +30,9 @@ import {
 } from './aiChatMessagesCache'
 import {
   ABORT_ERROR_NAME,
-  AI_ASSISTANT_NETWORK_STREAM_ERROR_MESSAGE,
+  AI_ASSISTANT_INCOMPLETE_STREAM_MESSAGE,
   AI_ASSISTANT_STREAM_ERROR_DEFAULT_MESSAGE,
+  AI_ASSISTANT_STREAM_REQUEST_FAILED_MESSAGE,
   ASSISTANT_MESSAGE_IDLE_FOR_THINKING_MS,
   OPTIMISTIC_MESSAGE_ID_PREFIX,
   STREAM_THINKING_POLL_MS,
@@ -240,7 +245,7 @@ export function useStreamingTurn({
         }
         if (isStreamingBusy(stateRef.current)) {
           flushPartialAssistantToCache(chatId)
-          dispatchAiChatFetchError(streamErrorDetail(AI_ASSISTANT_NETWORK_STREAM_ERROR_MESSAGE))
+          dispatchAiChatWarning({ message: AI_ASSISTANT_INCOMPLETE_STREAM_MESSAGE })
           dispatchTurn({ type: STREAMING_TURN_ACTION.reset })
         }
       } catch (e) {
@@ -257,7 +262,7 @@ export function useStreamingTurn({
         }
         if (!(e instanceof HttpError)) {
           dispatchAiChatFetchError(streamErrorDetail(
-            e instanceof Error ? e.message : AI_ASSISTANT_NETWORK_STREAM_ERROR_MESSAGE,
+            e instanceof Error ? e.message : AI_ASSISTANT_STREAM_REQUEST_FAILED_MESSAGE,
           ))
         }
       } finally {

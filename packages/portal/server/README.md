@@ -64,7 +64,7 @@ OpenAPI path (not under `ai-chat`):
 | ------------------------ | ---------- | --------------------------------------------------------------------------------------------------------------- |
 | `debug:http-500`         | (HTTP)     | `500` + `APIHUB-AI-5000` **before** the SSE stream starts (standard `ErrorResponse`, no frames).                |
 | `debug:error`            | error      | ~3 deltas then an `error` SSE frame with code `APIHUB-AI-5001`. No `done` frame (per OpenAPI terminal rules).   |
-| `debug:truncated-stream` | truncated  | `start` + deltas, no `completed` / `done`; UI snackbar **Network error while streaming.** (not `debug:error`)   |
+| `debug:truncated-stream` | truncated  | `start` + deltas, no `completed` / `done`; UI warning snackbar (incomplete reply). Not `debug:error`.           |
 | `debug:links`            | links      | Markdown with internal `/portal/packages/...` package and operation links.                                      |
 | `debug:longmd`           | longmd     | Markdown **>= 4000** chars: headings, table, bullets, blockquote, **YAML** + **json** fences.                   |
 | `debug:json`             | json       | Default happy-path Markdown but the code block is a JSON snippet instead of YAML.                               |

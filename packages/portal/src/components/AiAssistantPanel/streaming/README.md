@@ -131,13 +131,13 @@ Portal-wide fetch errors go through `fetch-error` and `ExceptionSituationHandler
 
 AI Chat uses the same event but sets `forceSnackbar: true` so 500/400 never replace the portal under the open panel (see `api/errors.ts`).
 
-After the SSE read loop, if `isStreamingBusy(stateRef)` is still true, the hook shows **Network error while streaming.** (HTTP 200 but no terminal event: `completed`, `done`, or `error`). `dispatchTurn` updates `stateRef` in the same reducer pass as React `dispatch` so a normal `done` frame does not hit this guard before re-render.
+After the SSE read loop, if `isStreamingBusy(stateRef)` is still true, the hook shows a **warning** snackbar (`dispatchAiChatWarning`) with `AI_ASSISTANT_INCOMPLETE_STREAM_MESSAGE` - HTTP 200 but no terminal event (`completed`, `done`, or `error`). `dispatchTurn` updates `stateRef` in the same reducer pass as React `dispatch` so a normal `done` frame does not hit this guard before re-render.
 
-| Failure                           | Who notifies                            | UI                                          |
-| --------------------------------- | --------------------------------------- | ------------------------------------------- |
-| REST / stream POST HTTP error     | `toAiChatHttpError`                     | Snackbar (404: see below)                   |
-| SSE `error` frame                 | `dispatchAiChatFetchError`              | Snackbar (code/message from SSE)            |
-| Stream body ends, turn still busy | post-stream guard in `useStreamingTurn` | Snackbar **Network error while streaming.** |
+| Failure                           | Who notifies                            | UI                                  |
+| --------------------------------- | --------------------------------------- | ----------------------------------- |
+| REST / stream POST HTTP error     | `toAiChatHttpError`                     | Snackbar (404: see below)           |
+| SSE `error` frame                 | `dispatchAiChatFetchError`              | Snackbar (code/message from SSE)    |
+| Stream body ends, turn still busy | post-stream guard in `useStreamingTurn` | Warning snackbar (incomplete reply) |
 
 Mid-turn SSE errors are not HTTP failures; the turn layer dispatches `fetch-error` after parsing the frame.
 
@@ -176,11 +176,11 @@ hook bridges events and UI/cache.
 
 ## Tests and mock coverage
 
-| Case                                                             | Mock (`debug:*`)                              | Automated test                                          |
-| ---------------------------------------------------------------- | --------------------------------------------- | ------------------------------------------------------- |
-| Happy path ends with `completed` + `done`                        | default / most scenarios                      | `ai-chat.spec.ts` happy path; reducer tests             |
-| Stream ends without terminal SSE (real guard)                    | `debug:truncated-stream` (manual UI snackbar) | `ai-chat.spec.ts` asserts SSE has no `completed`/`done` |
-| SSE `error` frame                                                | `debug:error`                                 | `ai-chat.spec.ts`                                       |
-| False snackbar when `done` arrived but `stateRef` lagged (fixed) | not reproducible on mock                      | `streamingTurnPostStream.unit-test.ts`                  |
+| Case                                                             | Mock (`debug:*`)                                      | Automated test                                          |
+| ---------------------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------- |
+| Happy path ends with `completed` + `done`                        | default / most scenarios                              | `ai-chat.spec.ts` happy path; reducer tests             |
+| Stream ends without terminal SSE (real guard)                    | `debug:truncated-stream` (manual UI warning snackbar) | `ai-chat.spec.ts` asserts SSE has no `completed`/`done` |
+| SSE `error` frame                                                | `debug:error`                                         | `ai-chat.spec.ts`                                       |
+| False snackbar when `done` arrived but `stateRef` lagged (fixed) | not reproducible on mock                              | `streamingTurnPostStream.unit-test.ts`                  |
 
 Unit files: `sseFramer.unit-test.ts`, `streamingTurnReducer.unit-test.ts`, `streamingTurnPostStream.unit-test.ts`. Mock scenario table: `packages/portal/server/README.md`.

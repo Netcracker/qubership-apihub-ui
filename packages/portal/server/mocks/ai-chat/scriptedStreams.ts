@@ -352,7 +352,7 @@ Same link on its own line (easier to tap):
 }
 
 const TRUNCATED_STREAM_MARKDOWN =
-  'Mock: TCP closes after deltas only - no `message.assistant.completed` or `done`. UI should show **Network error while streaming.**'
+  'Mock: TCP closes after deltas only - no `message.assistant.completed` or `done`. UI should show the incomplete-reply warning snackbar.'
 
 const truncatedStreamScenario: Scenario = {
   id: 'debug:truncated-stream',
