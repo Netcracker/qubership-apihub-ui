@@ -9,7 +9,7 @@ export const CHAT_CARD_LINK_CLASS = 'assistant-chat-card-link'
 export function chatCardSurface(theme: Theme): CSSObject {
   return {
     margin: theme.spacing(1, 0),
-    padding: theme.spacing(1),
+    padding: theme.spacing(1, 1, 1, 1.5),
     boxSizing: 'border-box',
     border: 'none',
     borderRadius: 12,
