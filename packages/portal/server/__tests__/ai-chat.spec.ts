@@ -34,6 +34,7 @@ const CLIENT_MESSAGE_ID_5 = '10000000-0000-4000-8000-000000000005'
 const CLIENT_MESSAGE_ID_6 = '10000000-0000-4000-8000-000000000006'
 const CLIENT_MESSAGE_ID_7 = '10000000-0000-4000-8000-000000000007'
 const CLIENT_MESSAGE_ID_8 = '10000000-0000-4000-8000-000000000008'
+const CLIENT_MESSAGE_ID_9 = '10000000-0000-4000-8000-000000000009'
 
 let app: Express
 
@@ -404,6 +405,28 @@ describe('AI Chat mock server - POST /chats/:id/messages/stream (SSE)', () => {
     const listed = await request(app).get(`${BASE}/chats/${chatId}/messages`).expect(200)
     const body = listed.body as AiChatMessagesListResponse
     expect(body.messages.filter((m) => m.role === 'assistant').length).toBe(0)
+  })
+
+  it('debug:truncated-stream closes without completed or done', async () => {
+    const create = await request(app).post(`${BASE}/chats`).send({}).expect(201)
+    const { chatId } = create.body as AiChat
+    const res = await request(app)
+      .post(`${BASE}/chats/${chatId}/messages/stream`)
+      .send({ content: 'please debug:truncated-stream', clientMessageId: CLIENT_MESSAGE_ID_9 })
+      .buffer(true)
+      .parse((response, cb) => {
+        const chunks: Buffer[] = []
+        response.on('data', (c: Buffer) => chunks.push(c))
+        response.on('end', () => cb(null, Buffer.concat(chunks).toString('utf-8')))
+      })
+      .expect(200)
+    const frames = parseSse(res.body as string)
+    const types = frames.map((f) => f.event)
+    expect(types[0]).toBe('message.assistant.start')
+    expect(types).toContain('message.assistant.delta')
+    expect(types).not.toContain('message.assistant.completed')
+    expect(types).not.toContain('done')
+    expect(types).not.toContain('error')
   })
 
   it('debug:error scenario emits an error SSE frame with APIHUB-AI-5001', async () => {
