@@ -74,16 +74,15 @@ export type AiChatStreamEvent =
   | { type: 'done' }
 
 export type AiChatErrorCode =
-  | 'APIHUB-4101'
+  | 'APIHUB-EF-3001'
+  | 'APIHUB-EF-3002'
+  | 'APIHUB-EF-3003'
+  | 'APIHUB-EF-4101'
   | 'APIHUB-AI-3001'
-  | 'APIHUB-AI-3002'
   | 'APIHUB-AI-4001'
   | 'APIHUB-AI-4003'
-  | 'APIHUB-AI-4004'
-  | 'APIHUB-AI-4101'
   | 'APIHUB-AI-5000'
   | 'APIHUB-AI-5001'
-  | 'APIHUB-AI-5002'
 
 export type AiChatErrorResponse = {
   status: number

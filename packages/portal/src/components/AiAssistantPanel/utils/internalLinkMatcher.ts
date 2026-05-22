@@ -1,6 +1,6 @@
 const PORTAL_INTERNAL_PATH_PREFIX = '/portal/'
 
-const GENERATED_FILES_PATH_PREFIX = '/api/v1/generated-files/'
+const EPHEMERAL_FILES_PATH_PREFIX = '/api/v1/ephemeral-files/'
 
 /** Base URL for resolving relative markdown `href` during render (SSR-safe fallback). */
 export function markdownLinkBaseOrigin(): string {
@@ -11,17 +11,17 @@ export function resolveToUrl(href: string, origin: string): URL {
   return new URL(href, origin)
 }
 
-export function isGeneratedFileLink(href: string, origin: string): boolean {
+export function isEphemeralFileLink(href: string, origin: string): boolean {
   try {
     const url = resolveToUrl(href, origin)
-    return url.pathname.startsWith(GENERATED_FILES_PATH_PREFIX)
+    return url.pathname.startsWith(EPHEMERAL_FILES_PATH_PREFIX)
   } catch {
     return false
   }
 }
 
 export function isInternalPortalLink(href: string, origin: string): boolean {
-  if (isGeneratedFileLink(href, origin)) {
+  if (isEphemeralFileLink(href, origin)) {
     return false
   }
   try {

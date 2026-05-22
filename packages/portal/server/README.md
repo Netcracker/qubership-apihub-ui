@@ -8,7 +8,7 @@ From `packages/portal`:
 
 - `npm run dev:backend` - start the mock server with nodemon (auto-reloads on file changes).
 - `npm run dev:frontend` - Vite dev server that proxies `/api` to the mock (full mock mode).
-- `npm run proxy` - Vite dev server that proxies `/api` to the real backend, except **`/api/v1/ai-chat`** and **`/api/v1/generated-files`**, which are always routed to the local mock (mixed mode; see AI Chat notes below).
+- `npm run proxy` - Vite dev server that proxies `/api` to the real backend, except **`/api/v1/ai-chat`** and **`/api/v1/ephemeral-files`**, which are always routed to the local mock (mixed mode; see AI Chat notes below).
 - `npm run test:server` - Jest + supertest integration tests for the mock server.
 
 ## Two-process dev workflow (recommended during AI Chat development)
@@ -23,7 +23,7 @@ When you want a real backend for everything except AI chat and signed file downl
    ```bash
    npm run proxy
    ```
-3. Open the portal in your browser via Vite's address. Non-AI traffic hits the real backend you configured (e.g. `APIHUB_PROXY_URL` in `.env`), while **`/api/v1/ai-chat/**`** and **`/api/v1/generated-files/**`** are intercepted by the Vite proxy and routed to the local mock (see `vite.config.ts`; both entries must appear **before** the generic `/api` rule).
+3. Open the portal in your browser via Vite's address. Non-AI traffic hits the real backend you configured (e.g. `APIHUB_PROXY_URL` in `.env`), while **`/api/v1/ai-chat/**`** and **`/api/v1/ephemeral-files/**`** are intercepted by the Vite proxy and routed to the local mock (see `vite.config.ts`; both entries must appear **before** the generic `/api` rule).
 
 To verify AI traffic is hitting the mock rather than the real backend:
 
@@ -31,11 +31,11 @@ To verify AI traffic is hitting the mock rather than the real backend:
 curl http://<vite-port>/api/v1/ai-chat/chats?limit=1
 # => JSON with seeded chats (not an upstream HTML error page)
 
-curl "http://<vite-port>/api/v1/generated-files/11111111-1111-4111-8111-111111111111?token=mock-dev-token"
+curl "http://<vite-port>/api/v1/ephemeral-files/11111111-1111-4111-8111-111111111111?token=mock-dev-token"
 # => Markdown sample body (debug:attachment fixture id)
 ```
 
-If AI responses look like an APIHUB backend error envelope or HTML from the wrong host, the proxy rules for `/api/v1/ai-chat` and `/api/v1/generated-files` are either missing or declared after the generic `/api` rule in `vite.config.ts` - Vite matches the first registered prefix.
+If AI responses look like an APIHUB backend error envelope or HTML from the wrong host, the proxy rules for `/api/v1/ai-chat` and `/api/v1/ephemeral-files` are either missing or declared after the generic `/api` rule in `vite.config.ts` - Vite matches the first registered prefix.
 
 ## AI Chat endpoints (mock)
 
@@ -54,7 +54,7 @@ Under **`/api/v1/ai-chat/`** (mirrors backend contract). Pin limit (**3**) and m
 
 OpenAPI path (not under `ai-chat`):
 
-- **`GET /api/v1/generated-files/:fileId?token=...`** - signed download mock. Returns a small CSV (or Markdown for the `debug:attachment` fixture UUID). Query token: use **`mock-dev-token`**, or any `mock-*` token for compatibility with older examples. Missing or invalid token returns `401`, matching the OpenAPI download contract.
+- **`GET /api/v1/ephemeral-files/:fileId?token=...`** - signed download mock. Returns a small CSV (or Markdown for the `debug:attachment` fixture UUID). Query token: use **`mock-dev-token`**, or any `mock-*` token for compatibility with older examples. Missing or invalid token returns `401`, matching the OpenAPI download contract.
 
 ### Scripted stream scenarios
 
@@ -79,10 +79,10 @@ Pass a UUID `clientMessageId` on `POST /chats/:id/messages` or `POST /chats/:id/
 
 ### Magic file IDs
 
-`GET /api/v1/generated-files/:ID` recognizes two magic IDs for exercising error paths:
+`GET /api/v1/ephemeral-files/:ID` recognizes two magic IDs for exercising error paths:
 
-- `00000000-0000-4000-8000-000000000404` - 404 with `APIHUB-AI-3002` (stands in for "file was cleaned up").
-- `00000000-0000-4000-8000-000000000410` - 410 with `APIHUB-AI-4101` (stands in for "signed URL timed out").
+- `00000000-0000-4000-8000-000000000404` - 404 with `APIHUB-EF-3001` (stands in for "file was cleaned up").
+- `00000000-0000-4000-8000-000000000410` - 410 with `APIHUB-EF-4101` (stands in for "signed URL timed out").
 
 Any other ID returns a small CSV, except `11111111-1111-4111-8111-111111111111`, which returns the Markdown report used by `debug:attachment`. All successful responses include `Content-Disposition: attachment`.
 

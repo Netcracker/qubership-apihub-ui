@@ -2,7 +2,7 @@ import type { Router } from 'express'
 import { Router as createRouter } from 'express'
 
 import { MAGIC_EXPIRED_FILE_ID, MAGIC_MISSING_FILE_ID, MOCK_FILE_DOWNLOAD_TOKEN } from '../../mocks/ai-chat/constants'
-import { MOCK_ATTACHMENT_FILE_ID } from '../../mocks/ai-chat/generatedFileUrl'
+import { MOCK_ATTACHMENT_FILE_ID } from '../../mocks/ai-chat/ephemeralFileUrl'
 import { sendError } from '../ai-chat/errors'
 
 const DUMMY_CSV = `operation,method,path,package,version
@@ -26,7 +26,7 @@ function isValidToken(token: string): boolean {
   return false
 }
 
-export function GeneratedFilesRouter(): Router {
+export function EphemeralFilesRouter(): Router {
   const router = createRouter()
 
   router.get('/:fileId', (req, res) => {
@@ -34,15 +34,19 @@ export function GeneratedFilesRouter(): Router {
     const token = typeof req.query.token === 'string' ? req.query.token : ''
 
     if (fileId === MAGIC_MISSING_FILE_ID) {
-      sendError(res, 404, 'APIHUB-AI-3002', 'Generated file no longer exists.')
+      sendError(res, 404, 'APIHUB-EF-3001', 'ephemeral file with fileId = $fileId not found')
       return
     }
     if (fileId === MAGIC_EXPIRED_FILE_ID) {
-      sendError(res, 410, 'APIHUB-AI-4101', 'Signed download token expired.')
+      sendError(res, 410, 'APIHUB-EF-4101', 'download token expired, please request the file again')
       return
     }
-    if (!token || !isValidToken(token)) {
-      sendError(res, 401, 'APIHUB-4101', 'Generated file token is missing or invalid.')
+    if (!token) {
+      sendError(res, 401, 'APIHUB-EF-3003', 'Missing token query parameter')
+      return
+    }
+    if (!isValidToken(token)) {
+      sendError(res, 401, 'APIHUB-EF-3002', 'Invalid download token')
       return
     }
 

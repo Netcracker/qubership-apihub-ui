@@ -1,4 +1,4 @@
-import { MOCK_ATTACHMENT_FILE_ID } from './generatedFileUrl'
+import { MOCK_ATTACHMENT_FILE_ID } from './ephemeralFileUrl'
 import type { AiChatMessage, AiChatStreamEvent } from './types'
 
 export type ScriptedFrame = {
@@ -17,7 +17,7 @@ export type ScriptedBuildArgs = {
   messageId: string
   nowIso: string
   clientMessageId: string | null
-  /** Relative `GET /api/v1/generated-files/...` URL for markdown download links */
+  /** Relative `GET /api/v1/ephemeral-files/...` URL for markdown download links */
   buildFileUrl: (fileId: string) => string
 }
 

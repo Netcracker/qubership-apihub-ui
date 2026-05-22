@@ -1,6 +1,6 @@
 import type { Request, Response, Router } from 'express'
 import { randomUUID } from 'node:crypto'
-import { buildGeneratedFileUrl } from '../../mocks/ai-chat/generatedFileUrl'
+import { buildEphemeralFileUrl } from '../../mocks/ai-chat/ephemeralFileUrl'
 import { pickScenario } from '../../mocks/ai-chat/scriptedStreams'
 import { aiChatStore } from '../../mocks/ai-chat/store'
 import { type AiChatMessage, type AiChatStreamEvent, MAX_USER_MESSAGE_LENGTH } from '../../mocks/ai-chat/types'
@@ -74,7 +74,7 @@ async function streamScenario(
     messageId: messageId,
     nowIso: nowIso,
     clientMessageId: clientMessageId,
-    buildFileUrl: (fileId) => buildGeneratedFileUrl(fileId),
+    buildFileUrl: (fileId) => buildEphemeralFileUrl(fileId),
   })
 
   primeSseHeaders(req, res)
@@ -139,7 +139,7 @@ export function streamMessage(router: Router): void {
       }
       const maxLen = MAX_USER_MESSAGE_LENGTH
       if (content.length > maxLen) {
-        sendError(res, 400, 'APIHUB-AI-4004', `Message exceeds maximum length of ${maxLen} characters.`)
+        sendError(res, 400, 'APIHUB-AI-4001', `Message exceeds maximum length of ${maxLen} characters.`)
         return
       }
 

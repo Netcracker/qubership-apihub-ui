@@ -1,4 +1,4 @@
-/** Token accepted by the mock `GET /api/v1/generated-files/:fileId` handler. */
+/** Token accepted by the mock `GET /api/v1/ephemeral-files/:fileId` handler. */
 export const MOCK_FILE_DOWNLOAD_TOKEN = 'mock-dev-token'
 
 /** Magic file ids for download error paths in the mock. */
