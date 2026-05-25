@@ -29,12 +29,7 @@ import {
   AI_ASSISTANT_MARKDOWN_MODE,
   type AiAssistantMarkdownRenderMode,
 } from '../../streaming/markdown/aiAssistantMarkdownMode'
-import {
-  isEphemeralFileLink,
-  isInternalPortalLink,
-  markdownLinkBaseOrigin,
-  resolveToUrl,
-} from '../../utils/internalLinkMatcher'
+import { isEphemeralFileLink, isInternalPortalLink, resolveToUrl } from '../../utils/internalLinkMatcher'
 import { CHAT_CARD_LINK_CLASS } from './chatCard'
 import { CodeBlock } from './CodeBlock'
 import { FileDownloadLink } from './FileDownloadLink'
@@ -143,7 +138,7 @@ const MarkdownLink: FC<ComponentPropsWithoutRef<'a'> & ReactMarkdownProps> = mem
     },
     [closePanel, resetActiveChat],
   )
-  const origin = markdownLinkBaseOrigin()
+  const origin = window.location.origin
   if (isEphemeralFileLink(href, origin)) {
     return <FileDownloadLink href={resolveToUrl(href, origin).href}>{children}</FileDownloadLink>
   }

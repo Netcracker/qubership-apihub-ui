@@ -110,10 +110,6 @@ const PanelContainer = styled(Box)(({ theme }) => ({
 }))
 
 function readStoredPanelWidth(): number {
-  if (typeof window === 'undefined') {
-    return AI_ASSISTANT_PANEL_DEFAULT_WIDTH
-  }
-
   const rawPanelWidth = localStorage.getItem(AI_ASSISTANT_PANEL_WIDTH_STORAGE_KEY)
   if (!rawPanelWidth) {
     return AI_ASSISTANT_PANEL_DEFAULT_WIDTH

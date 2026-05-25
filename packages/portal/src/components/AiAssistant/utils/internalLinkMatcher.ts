@@ -2,11 +2,6 @@ const PORTAL_INTERNAL_PATH_PREFIX = '/portal/'
 
 const EPHEMERAL_FILES_PATH_PREFIX = '/api/v1/ephemeral-files/'
 
-/** Base URL for resolving relative markdown `href` during render (SSR-safe fallback). */
-export function markdownLinkBaseOrigin(): string {
-  return typeof window !== 'undefined' ? window.location.origin : 'http://localhost'
-}
-
 export function resolveToUrl(href: string, origin: string): URL {
   return new URL(href, origin)
 }
