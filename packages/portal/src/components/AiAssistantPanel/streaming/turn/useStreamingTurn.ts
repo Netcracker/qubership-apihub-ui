@@ -4,13 +4,9 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { HttpError } from '@netcracker/qubership-apihub-ui-shared/utils/responses'
 
+import { invalidateAiChatListQueries, invalidateAiChatMessagesQuery } from '../../api/aiChatQueryInvalidation'
 import { removeAiChatQueries } from '../../api/chatCache'
-import {
-  AI_CHAT_FETCH_ERROR_TITLE,
-  dispatchAiChatFetchError,
-  dispatchAiChatWarning,
-} from '../../api/errors'
-import { invalidateAiChatListQueries } from '../../api/invalidateAiChatListQueries'
+import { AI_CHAT_FETCH_ERROR_TITLE, dispatchAiChatFetchError, dispatchAiChatWarning } from '../../api/errors'
 import { aiChatItemKey, aiChatMessagesKey } from '../../api/queryKeys'
 import { createAiChat } from '../../api/requests'
 import { AI_CHAT_STREAM_EVENT, isAssistantStreamProgressEvent } from '../../api/streamEvents'
@@ -45,8 +41,8 @@ import {
   isStreamingTurnStatus,
   peekPartialBeforeErrorInBatch,
   STREAMING_TURN_IDLE_STATE,
-  streamingTurnReducer,
   type StreamingTurnAction,
+  streamingTurnReducer,
   type StreamingTurnState,
 } from './streamingTurnReducer'
 
@@ -93,6 +89,7 @@ export function useStreamingTurn({
   const abortControllerRef = useRef<AbortController | null>(null)
   const turnLockRef = useRef(false)
   const turnBootstrapRef = useRef<StreamingTurnState | null>(null)
+  const createdChatThisTurnRef = useRef(false)
   const lastAssistantMessageActivityAtRef = useRef<number | null>(null)
   const [thinkingDuringAssistantPause, setThinkingDuringAssistantPause] = useState(false)
 
@@ -211,8 +208,13 @@ export function useStreamingTurn({
           dispatchAiChatFetchError(streamErrorDetail(message, code))
         }
         if (event.type === AI_CHAT_STREAM_EVENT.done) {
-          void invalidateAiChatListQueries(queryClient)
-          void queryClient.invalidateQueries({ queryKey: aiChatMessagesKey(chatId) })
+          void invalidateAiChatMessagesQuery(queryClient, chatId, { refetchType: 'none' })
+        }
+
+        const isFirstTurnInNewChat = event.type === AI_CHAT_STREAM_EVENT.done && createdChatThisTurnRef.current
+        if (isFirstTurnInNewChat) {
+          createdChatThisTurnRef.current = false
+          void invalidateAiChatListQueries(queryClient, { refetchType: 'none' })
         }
       }
 
@@ -284,12 +286,14 @@ export function useStreamingTurn({
       try {
         let chatId = activeChatId
         const fromWelcome = activeChatId === null
+        createdChatThisTurnRef.current = false
         if (!chatId) {
+          createdChatThisTurnRef.current = true
           const newChat = await createAiChat()
           const { chatId: createdChatId } = newChat
           chatId = createdChatId
           queryClient.setQueryData(aiChatItemKey(chatId), newChat)
-          void invalidateAiChatListQueries(queryClient)
+          void invalidateAiChatListQueries(queryClient, { refetchType: 'none' })
           if (fromWelcome) {
             openChatScreen(chatId)
           }
@@ -331,6 +335,7 @@ export function useStreamingTurn({
 
         await runTurn(chatId, trimmed, clientMessageId)
       } finally {
+        createdChatThisTurnRef.current = false
         turnLockRef.current = false
       }
     },

@@ -1,8 +1,8 @@
 import { useMutation, type UseMutationResult, useQueryClient } from '@tanstack/react-query'
 
+import { invalidateAiChatListQueries } from './aiChatQueryInvalidation'
 import { removeAiChatQueries } from './chatCache'
 import { aiChatVoid } from './client'
-import { invalidateAiChatListQueries } from './invalidateAiChatListQueries'
 import { aiChatItemPath } from './paths'
 import { AI_CHAT_ROOT, aiChatItemKey, aiChatMessagesKey } from './queryKeys'
 import type { ChatId } from './types'

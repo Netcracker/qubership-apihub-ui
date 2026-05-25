@@ -52,7 +52,7 @@ sequenceDiagram
   end
   Server-->>streamAiChatTurn: stream end
   streamAiChatTurn-->>useStreamingTurn: tail flush if needed
-  useStreamingTurn->>ReactQuery: invalidate on done
+  useStreamingTurn->>ReactQuery: mark queries stale on done
   useStreamingTurn->>useStreamingTurn: state idle
 ```
 
@@ -72,13 +72,13 @@ Rough steps after the POST succeeds:
 
 Event types the turn layer cares about most:
 
-| Event                         | Effect on UI state                                                    |
-| ----------------------------- | --------------------------------------------------------------------- |
-| `message.assistant.start`     | Turn moves to "started", new assistant `messageId`                    |
-| `message.assistant.delta`     | Append `delta` string to in-memory `buffer`                           |
-| `message.assistant.completed` | Final message written to React Query cache                            |
-| `error`                       | `fetch-error` toast (same event as REST) + partial answer kept if any |
-| `done`                        | Invalidate chat list / messages queries                               |
+| Event                         | Effect on UI state                                                          |
+| ----------------------------- | --------------------------------------------------------------------------- |
+| `message.assistant.start`     | Turn moves to "started", new assistant `messageId`                          |
+| `message.assistant.delta`     | Append `delta` string to in-memory `buffer`                                 |
+| `message.assistant.completed` | Final message written to React Query cache                                  |
+| `error`                       | `fetch-error` toast (same event as REST) + partial answer kept if any       |
+| `done`                        | Messages stale every turn; chat list stale only on first turn of a new chat |
 
 Other events (`tool.started`, `tool.completed`, `context.compacted`, ...) are part of the backend contract but are **not** rendered yet. They still affect UX indirectly (see Thinking below).
 
@@ -111,7 +111,8 @@ React Query:
 - **Optimistic user message** is prepended immediately on send.
 - On **completed**, the final assistant row is prepended to the cache.
 - On **abort** or **error** with partial text, a partial assistant message may be saved.
-- On **done**, queries are invalidated so history matches the server.
+- On **done**, `invalidateAiChatMessagesQuery(..., { refetchType: 'none' })` every turn: cache stays from SSE while the chat is open; refetch when the chat is opened again later.
+- Chat list: `invalidateAiChatListQueries(..., { refetchType: 'none' })` only on the first turn after `createAiChat` (server auto-title is async after `done`).
 
 ### "Thinking" during tool / network gaps
 
@@ -169,7 +170,7 @@ When the turn ends, the same message renders in **full** mode (highlighting, cop
 
 User sends -> optimistic user row + HTTP SSE stream opens -> each network chunk becomes a **batch of events** ->
 reducer appends text to `buffer` -> chat UI shows a synthetic assistant message until `completed` replaces it with
-the server message -> `done` refreshes queries.
+the server message -> `done` marks messages stale (refetch when revisiting the chat); list stale on first turn of a new chat.
 
 Stop aborts `fetch` and may keep partial text. The generator in `sse.ts` bridges network chunks and React; the turn
 hook bridges events and UI/cache.

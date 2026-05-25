@@ -112,9 +112,9 @@ const Brand = styled(Box)(({ theme }) => ({
   paddingRight: theme.spacing(2),
 }))
 
-const TitleContent = styled(Typography)<TypographyProps<'div'>>(({ theme }) => ({
+const TitleContent = styled(Typography)<TypographyProps<'div'>>({
   margin: 0,
-}))
+})
 
 const LogoContent = styled(Box)(({ theme }) => ({
   fontSize: theme.typography.h2.fontSize,
