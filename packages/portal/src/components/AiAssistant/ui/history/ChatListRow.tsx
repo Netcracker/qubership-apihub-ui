@@ -2,8 +2,8 @@ import { type FC, type KeyboardEvent, memo, useCallback, useEffect, useState } f
 
 import Box from '@mui/material/Box'
 import { styled, type Theme } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
 
+import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
 import { PinIcon } from '@netcracker/qubership-apihub-ui-shared/icons/PinIcon'
 
 import type { AiChat, ChatId } from '../../api/types'
@@ -102,7 +102,11 @@ export const ChatListRow: FC<ChatListRowProps> = memo(({
               onCancel={onCancelRename}
             />
           )
-          : <RowTitle>{displayedTitle}</RowTitle>}
+          : (
+            <RowTitle tooltipText={displayedTitle}>
+              {displayedTitle}
+            </RowTitle>
+          )}
       </TitleSlot>
       {!isEditing
         ? (
@@ -170,16 +174,16 @@ const TitleSlot = styled(Box)({
   alignItems: 'center',
 })
 
-const RowTitle = styled(Typography)(({ theme }) => ({
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
+const RowTitle = styled(TextWithOverflowTooltip)(({ theme }) => ({
+  display: 'block',
+  width: '100%',
   color: theme.palette.text.primary,
   fontSize: 13,
   lineHeight: '20px',
-  letterSpacing: '-0.0325px',
   fontWeight: 500,
 }))
+
+RowTitle.displayName = 'RowTitle'
 
 const ActionsSlot = styled(Box)({
   display: 'flex',
