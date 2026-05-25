@@ -1,4 +1,4 @@
-import { type FC, memo, type PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react'
+import { type FC, memo, type PropsWithChildren, useCallback, useMemo, useState } from 'react'
 import { useEvent } from 'react-use'
 
 import {
@@ -13,16 +13,11 @@ import {
   type AiAssistantContextValue,
   type AiAssistantScreen,
 } from './AiAssistantContext'
-import { AI_ASSISTANT_PANEL_MIN_WIDTH, getAiAssistantPanelMaxWidth, subscribeViewportForAiPanel } from './panelWidth'
-
-export const AI_ASSISTANT_PANEL_DEFAULT_WIDTH = 480
-export const AI_ASSISTANT_PANEL_WIDTH_STORAGE_KEY = 'apihub.aiAssistant.panelWidth'
 
 export const AiAssistantProvider: FC<PropsWithChildren> = memo<PropsWithChildren>(({ children }) => {
   const [open, setOpen] = useState<boolean>(false)
   const [screen, setScreen] = useState<AiAssistantScreen>(AI_ASSISTANT_CHAT_SCREEN)
   const [activeChatId, setActiveChatId] = useState<ChatId | null>(null)
-  const [panelWidth, setPanelWidthState] = useState<number>(getInitialPanelWidth)
 
   const openPanel = useCallback((): void => {
     setOpen(true)
@@ -52,10 +47,6 @@ export const AiAssistantProvider: FC<PropsWithChildren> = memo<PropsWithChildren
     setActiveChatId(null)
   }, [])
 
-  const setPanelWidth = useCallback((width: number): void => {
-    setPanelWidthState(clampAiAssistantPanelWidth(width))
-  }, [])
-
   const streaming = useStreamingTurn({
     openChatScreen,
     resetActiveChat,
@@ -65,42 +56,27 @@ export const AiAssistantProvider: FC<PropsWithChildren> = memo<PropsWithChildren
   useEvent(SHOW_AI_ASSISTANT_PANEL, openPanel)
   useEvent(HIDE_AI_ASSISTANT_PANEL, closePanel)
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    localStorage.setItem(AI_ASSISTANT_PANEL_WIDTH_STORAGE_KEY, `${panelWidth}`)
-  }, [panelWidth])
-
-  useEffect(() => {
-    return subscribeViewportForAiPanel(() => {
-      setPanelWidthState((current) => clampAiAssistantPanelWidth(current))
-    })
-  }, [])
-
   const contextValue = useMemo<AiAssistantContextValue>(() => ({
     open,
     screen,
     activeChatId,
-    panelWidth,
     openPanel,
     closePanel,
     openHistory,
     openChatScreen,
     resetActiveChat,
     clearActiveChat,
-    setPanelWidth,
     streaming,
   }), [
     open,
     screen,
     activeChatId,
-    panelWidth,
     openPanel,
     closePanel,
     openHistory,
     openChatScreen,
     resetActiveChat,
     clearActiveChat,
-    setPanelWidth,
     streaming,
   ])
 
@@ -110,29 +86,3 @@ export const AiAssistantProvider: FC<PropsWithChildren> = memo<PropsWithChildren
     </AiAssistantContext.Provider>
   )
 })
-
-function clampAiAssistantPanelWidth(width: number): number {
-  if (!Number.isFinite(width)) {
-    return AI_ASSISTANT_PANEL_DEFAULT_WIDTH
-  }
-
-  const normalizedWidth = Math.round(width)
-  return Math.min(
-    Math.max(normalizedWidth, AI_ASSISTANT_PANEL_MIN_WIDTH),
-    getAiAssistantPanelMaxWidth(),
-  )
-}
-
-function getInitialPanelWidth(): number {
-  if (typeof window === 'undefined') {
-    return AI_ASSISTANT_PANEL_DEFAULT_WIDTH
-  }
-
-  const rawPanelWidth = localStorage.getItem(AI_ASSISTANT_PANEL_WIDTH_STORAGE_KEY)
-  if (!rawPanelWidth) {
-    return AI_ASSISTANT_PANEL_DEFAULT_WIDTH
-  }
-
-  const parsedPanelWidth = Number.parseInt(rawPanelWidth, 10)
-  return clampAiAssistantPanelWidth(parsedPanelWidth)
-}

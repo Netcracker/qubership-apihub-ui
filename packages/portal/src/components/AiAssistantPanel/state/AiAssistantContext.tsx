@@ -14,14 +14,12 @@ export type AiAssistantContextValue = {
   open: boolean
   screen: AiAssistantScreen
   activeChatId: ChatId | null
-  panelWidth: number
   openPanel: () => void
   closePanel: () => void
   openHistory: () => void
   openChatScreen: (chatId: ChatId | null) => void
   resetActiveChat: () => void
   clearActiveChat: () => void
-  setPanelWidth: (width: number) => void
   streaming: AiAssistantStreamingApi
 }
 

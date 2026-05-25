@@ -1,13 +1,17 @@
 import { Box, ClickAwayListener, Drawer } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import { Resizable, type ResizeCallback } from 're-resizable'
-import { type FC, useCallback } from 'react'
+import { type FC, useCallback, useState } from 'react'
 
 import { APP_HEADER_HEIGHT } from '@netcracker/qubership-apihub-ui-shared/themes/components'
 import { AI_ASSISTANT_HISTORY_SCREEN, useAiAssistantContext } from './state/AiAssistantContext'
-import { AI_ASSISTANT_PANEL_MIN_WIDTH, getAiAssistantPanelMaxWidth } from './state/panelWidth'
 import { AiAssistantChatScreen } from './ui/chat/AiAssistantChatScreen'
 import { AiAssistantHistoryScreen } from './ui/history/AiAssistantHistoryScreen'
+
+const AI_ASSISTANT_PANEL_WIDTH_STORAGE_KEY = 'apihub.aiAssistant.panelWidth'
+const AI_ASSISTANT_PANEL_MIN_WIDTH = 360
+const AI_ASSISTANT_PANEL_DEFAULT_WIDTH = 440
+const AI_ASSISTANT_PANEL_MAX_WIDTH = '50vw'
 
 const RESIZE_ENABLE = {
   top: false,
@@ -39,12 +43,14 @@ const DRAWER_LAYOUT_STYLES = {
 }
 
 export const AiAssistantPanel: FC = () => {
-  const { open, closePanel, panelWidth, setPanelWidth, screen } = useAiAssistantContext()
+  const { open, closePanel, screen } = useAiAssistantContext()
+  const [panelWidth, setPanelWidth] = useState(readStoredPanelWidth)
 
   const handleResizeStop: ResizeCallback = useCallback((_event, _direction, elementRef) => {
-    const width = elementRef.offsetWidth
+    const width = normalizePanelWidth(elementRef.offsetWidth)
     setPanelWidth(width)
-  }, [setPanelWidth])
+    localStorage.setItem(AI_ASSISTANT_PANEL_WIDTH_STORAGE_KEY, `${width}`)
+  }, [])
 
   return (
     <StyledDrawer
@@ -56,7 +62,7 @@ export const AiAssistantPanel: FC = () => {
         <Resizable
           size={{ width: panelWidth, height: '100%' }}
           minWidth={AI_ASSISTANT_PANEL_MIN_WIDTH}
-          maxWidth={getAiAssistantPanelMaxWidth()}
+          maxWidth={AI_ASSISTANT_PANEL_MAX_WIDTH}
           enable={RESIZE_ENABLE}
           handleStyles={RESIZE_HANDLE_STYLES}
           boundsByDirection={true}
@@ -102,3 +108,24 @@ const PanelContainer = styled(Box)(({ theme }) => ({
   height: '100%',
   backgroundColor: theme.palette.background.paper,
 }))
+
+function readStoredPanelWidth(): number {
+  if (typeof window === 'undefined') {
+    return AI_ASSISTANT_PANEL_DEFAULT_WIDTH
+  }
+
+  const rawPanelWidth = localStorage.getItem(AI_ASSISTANT_PANEL_WIDTH_STORAGE_KEY)
+  if (!rawPanelWidth) {
+    return AI_ASSISTANT_PANEL_DEFAULT_WIDTH
+  }
+
+  return normalizePanelWidth(Number.parseInt(rawPanelWidth, 10))
+}
+
+function normalizePanelWidth(width: number): number {
+  if (!Number.isFinite(width)) {
+    return AI_ASSISTANT_PANEL_DEFAULT_WIDTH
+  }
+
+  return Math.max(Math.round(width), AI_ASSISTANT_PANEL_MIN_WIDTH)
+}
