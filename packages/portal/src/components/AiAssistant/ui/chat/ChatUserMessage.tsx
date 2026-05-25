@@ -1,6 +1,8 @@
 import Box from '@mui/material/Box'
-import { alpha, styled } from '@mui/material/styles'
+import { styled } from '@mui/material/styles'
 import { type FC, memo } from 'react'
+
+import { MESSAGE_BACKGROUND_COLOR } from '@netcracker/qubership-apihub-ui-shared/themes/colors'
 
 type ChatUserMessageProps = {
   content: string
@@ -14,10 +16,10 @@ ChatUserMessage.displayName = 'ChatUserMessage'
 
 const UserBubble = styled(Box)(({ theme }) => ({
   alignSelf: 'flex-end',
-  maxWidth: '85%',
+  maxWidth: '100%',
   padding: theme.spacing(1.25, 1.5),
   borderRadius: theme.spacing(2),
-  backgroundColor: alpha(theme.palette.primary.main, theme.palette.mode === 'dark' ? 0.28 : 0.14),
+  backgroundColor: MESSAGE_BACKGROUND_COLOR,
   color: theme.palette.text.primary,
   whiteSpace: 'pre-wrap',
   wordBreak: 'break-word',
