@@ -1,4 +1,4 @@
-// Mirror of `src/routes/root/BasePage/AiAssistantPanel/api/types.ts` (OpenAPI-aligned).
+// Mirror of `src/components/AiAssistant/api/types.ts` (OpenAPI-aligned).
 // Kept under server/ so Jest and the mock compile without the portal TS path aliases.
 // When the contract changes, update both files together.
 

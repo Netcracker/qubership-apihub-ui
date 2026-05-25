@@ -1,6 +1,6 @@
 # AI Assistant - streaming (portal)
 
-This folder contains the **live turn** path: sending a user message and showing the assistant reply while it is still being generated. Chat history, sidebar CRUD, and panel chrome live elsewhere under `AiAssistantPanel/`.
+This folder contains the **live turn** path: sending a user message and showing the assistant reply while it is still being generated. Chat history, sidebar CRUD, and panel chrome live elsewhere under `AiAssistant/`.
 
 The backend contract is documented in `qubership-apihub-backend/docs/feature_design/ai_assistant/ai-chat-frontend-contract.md` and `APIHUB_API.yaml` (tag **AI Chat**). This readme explains how the portal code uses that contract, in plain language.
 
