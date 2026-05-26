@@ -22,7 +22,24 @@ You cannot use the browser `EventSource` API for this flow (it only supports GET
 
 Shared API types (`AiChatStreamEvent`, messages, roles) stay in `../api/types.ts`. Stream POST and REST live in `../api/` (`requests.ts`, `client.ts`, `errors.ts`). Event name constants are in `../api/streamEvents.ts`.
 
-UI wiring (message list, Thinking label, composer, jump button) stays in `../ui/chat/`. Volatile buffer state is read via `useAiAssistantStreamingLive()` inside `ChatStreamingBody`; composer and history use `useAiAssistantStreamingTurnMeta()` / `useAiAssistantStreamingActions()`.
+UI wiring (message list, Thinking label, composer, jump button) stays in `../ui/chat/`. See **React context** below for which hook each component uses.
+
+## React context (`../state/`)
+
+`useStreamingTurn` runs inside `AiAssistantProvider` and exposes three separate context values so high-frequency buffer updates do not re-render unrelated UI (header button, panel shell, composer, history list).
+
+| Context / hook                      | Fields                                                         | Updates when                                       | Typical consumers                                                                                       |
+| ----------------------------------- | -------------------------------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `useAiAssistantPanel()`             | `open`, `screen`, `activeChatId`, navigation callbacks         | Panel open/close, screen switch, chat selection    | `AiAssistantButton`, `AiAssistantPanel`, `AiAssistantMarkdownViewer` (internal links), delete-chat hook |
+| `useAiAssistantStreamingActions()`  | `submit`, `abort`, `reset`                                     | Stable for a mounted provider                      | `AiAssistantComposer`, `AiAssistantHeader` (via `useAiAssistantHeaderHandlers`)                         |
+| `useAiAssistantStreamingTurnMeta()` | `isBusy`, `activeTurnChatId`                                   | Turn start/end, chat ID change (not on each token) | `AiAssistantComposer`, `AiAssistantHistoryScreen` (delete disabled while turn runs)                     |
+| `useAiAssistantStreamingLive()`     | `state` (`StreamingTurnState`), `thinkingDuringAssistantPause` | Each assistant delta, thinking poll                | `ChatStreamingBody` only                                                                                |
+
+`ChatStreamingBody` is the only component that subscribes to **live** context during chat. `AiAssistantChatScreen` keeps React Query + welcome/placeholder layout; it does not read streaming context directly.
+
+Panel width is **not** in context: `AiAssistantPanel` stores it in local state + `localStorage` (`apihub.aiAssistant.panelWidth`).
+
+Types for the three streaming slices are defined once in `state/AiAssistantContext.tsx` and reused by `useStreamingTurn` return values.
 
 ## End-to-end flow
 
@@ -34,7 +51,7 @@ sequenceDiagram
   participant streamAiChatTurn
   participant Server
   participant ReactQuery
-  participant ChatUI
+  participant ChatStreamingBody
 
   User->>Composer: Send
   Composer->>useStreamingTurn: submit(chatId, text)
@@ -47,8 +64,8 @@ sequenceDiagram
     streamAiChatTurn-->>useStreamingTurn: yield event batch
     useStreamingTurn->>ReactQuery: side effects (e.g. completed)
     useStreamingTurn->>useStreamingTurn: reducer buffer += deltas
-    useStreamingTurn->>ChatUI: state started + buffer
-    ChatUI->>User: growing assistant text
+    useStreamingTurn->>ChatStreamingBody: live context (buffer)
+    ChatStreamingBody->>User: growing assistant text
   end
   Server-->>streamAiChatTurn: stream end
   streamAiChatTurn-->>useStreamingTurn: tail flush if needed
@@ -158,13 +175,17 @@ When the turn ends, the same message renders in **full** mode (highlighting, cop
 
 ## What lives outside this folder
 
-| Location                                    | Responsibility                                      |
-| ------------------------------------------- | --------------------------------------------------- |
-| `state/AiAssistantProvider.tsx`             | Panel + streaming actions/meta/live contexts        |
-| `ui/chat/*`                                 | Message list, Thinking, composer, scroll / jump FAB |
-| `ui/markdown/AiAssistantMarkdownViewer.tsx` | Shared Markdown viewer (history + stream)           |
-| `api/*`                                     | REST client, paths, errors, stream POST, hooks      |
-| `hooks/useAiAssistantDeleteChat.ts`         | Delete mutation + panel navigation on failure       |
+| Location                                    | Responsibility                                         |
+| ------------------------------------------- | ------------------------------------------------------ |
+| `state/AiAssistantContext.tsx`              | Panel + streaming actions/meta/live types and hooks    |
+| `state/AiAssistantProvider.tsx`             | Hosts `useStreamingTurn`, nests four context providers |
+| `ui/chat/AiAssistantChatScreen.tsx`         | Welcome vs thread layout; mounts `ChatStreamingBody`   |
+| `ui/chat/ChatStreamingBody.tsx`             | Subscribes to live context; renders `ChatMessageList`  |
+| `ui/chat/AiAssistantComposer.tsx`           | Turn meta + actions (Send/Stop)                        |
+| `ui/header/AiAssistantHeader.tsx`           | Header chrome; handlers use actions + panel            |
+| `ui/markdown/AiAssistantMarkdownViewer.tsx` | Shared Markdown viewer (history + stream)              |
+| `api/*`                                     | REST client, paths, errors, stream POST, hooks         |
+| `hooks/useAiAssistantDeleteChat.ts`         | Delete mutation + panel navigation on failure          |
 
 ## Mental model (one paragraph)
 

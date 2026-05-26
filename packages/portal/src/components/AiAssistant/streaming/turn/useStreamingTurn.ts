@@ -18,6 +18,11 @@ import type {
   ClientMessageId,
   MessageId,
 } from '../../api/types'
+import type {
+  AiAssistantStreamingActions,
+  AiAssistantStreamingLive,
+  AiAssistantStreamingTurnMeta,
+} from '../../state/AiAssistantContext'
 import { streamAiChatTurn } from '../transport/sse'
 import {
   buildOptimisticUserMessage,
@@ -52,26 +57,10 @@ export type StreamingTurnDeps = {
   activeChatId: ChatId | null
 }
 
-export type StreamingTurnActions = {
-  submit: (activeChatId: ChatId | null, content: string) => Promise<void>
-  abort: () => void
-  reset: () => void
-}
-
-export type StreamingTurnMeta = {
-  isBusy: boolean
-  activeTurnChatId: ChatId | null
-}
-
-export type StreamingTurnLive = {
-  state: StreamingTurnState
-  thinkingDuringAssistantPause: boolean
-}
-
 export type UseStreamingTurnResult = {
-  actions: StreamingTurnActions
-  turnMeta: StreamingTurnMeta
-  live: StreamingTurnLive
+  actions: AiAssistantStreamingActions
+  turnMeta: AiAssistantStreamingTurnMeta
+  live: AiAssistantStreamingLive
 }
 
 function isAbortError(e: unknown): boolean {
@@ -362,7 +351,7 @@ export function useStreamingTurn({
     dispatchTurn({ type: STREAMING_TURN_ACTION.reset })
   }, [dispatchTurn])
 
-  const actions = useMemo<StreamingTurnActions>(() => ({
+  const actions = useMemo<AiAssistantStreamingActions>(() => ({
     submit: submit,
     abort: abort,
     reset: reset,
@@ -371,12 +360,12 @@ export function useStreamingTurn({
   const isBusy = isStreamingBusy(state)
   const activeTurnChatId = getActiveTurnChatId(state)
 
-  const turnMeta = useMemo<StreamingTurnMeta>(() => ({
+  const turnMeta = useMemo<AiAssistantStreamingTurnMeta>(() => ({
     isBusy: isBusy,
     activeTurnChatId: activeTurnChatId,
   }), [isBusy, activeTurnChatId])
 
-  const live = useMemo<StreamingTurnLive>(() => ({
+  const live = useMemo<AiAssistantStreamingLive>(() => ({
     state: state,
     thinkingDuringAssistantPause: thinkingDuringAssistantPause,
   }), [state, thinkingDuringAssistantPause])

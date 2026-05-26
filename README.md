@@ -6,16 +6,19 @@
 </picture>
 
 APIHUB is a comprehensive solution designed to achieve the following goals:
+
 - Increase quality and completeness of API documentation.
 - Provide a single point of truth for API documentation.
 - Enable an API design-first approach.
 - Automate API backward compatibility validation and integrate with CI process.
 
 APIHUB consists of two main components:
+
 - Portal
 - Agent
 
 **Portal** is centralized repository for storing and managing API specification. Portal allows you to:
+
 - Upload API specifications, Markdown files and any other artifacts related to API.
 - View API specifications and Markdown files in human-readable format.
 - Compare API.
@@ -77,11 +80,11 @@ npm run preview
 
 Builds the Portal (`npm run build` inside the script) and serves the production bundle via `vite preview` in proxy mode. Use this to validate the production build against a real backend.
 
-| Script (in `packages/portal`) | Mode | Backend target |
-| --- | --- | --- |
-| `dev:backend` + `dev:frontend` | Mock | Local mock (`localhost:3003`) |
-| `proxy` | Proxy | `proxyServer` in `vite.config.ts` |
-| `preview` | Preview (proxy) | Same as `proxy` |
+| Script (in `packages/portal`)  | Mode            | Backend target                    |
+| ------------------------------ | --------------- | --------------------------------- |
+| `dev:backend` + `dev:frontend` | Mock            | Local mock (`localhost:3003`)     |
+| `proxy`                        | Proxy           | `proxyServer` in `vite.config.ts` |
+| `preview`                      | Preview (proxy) | Same as `proxy`                   |
 
 ### Building the app locally
 

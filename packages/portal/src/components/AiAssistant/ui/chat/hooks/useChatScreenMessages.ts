@@ -80,11 +80,11 @@ export function useChatScreenMessages({
 
   const showThread = messagesLoaded && displayMessages.length > 0
 
-  const thinkingVisible = activeTurnChatId !== null
-    && activeTurnChatId === activeChatId
-    && (isStreamingTurnStatus(live.state, STREAMING_TURN_STATUS.pending)
-      || (isStreamingTurnStatus(live.state, STREAMING_TURN_STATUS.started)
-        && live.thinkingDuringAssistantPause))
+  const thinkingVisible = activeTurnChatId !== null &&
+    activeTurnChatId === activeChatId &&
+    (isStreamingTurnStatus(live.state, STREAMING_TURN_STATUS.pending) ||
+      (isStreamingTurnStatus(live.state, STREAMING_TURN_STATUS.started) &&
+        live.thinkingDuringAssistantPause))
 
   const jumpPhase = isStreamingBusy(live.state)
     ? CHAT_MESSAGE_LIST_JUMP_PHASE.active
