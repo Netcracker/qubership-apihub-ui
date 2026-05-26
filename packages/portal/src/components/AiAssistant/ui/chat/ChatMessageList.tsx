@@ -42,6 +42,8 @@ export const ChatMessageList: FC<ChatMessageListProps> = memo(
       hasNextPage,
       isFetchingNextPage,
       fetchNextPage,
+      streamingAssistantMessageId,
+      thinkingVisible,
     })
 
     const jumpIcon = jumpButtonStreamPhase === CHAT_MESSAGE_LIST_JUMP_PHASE.active

@@ -1,7 +1,7 @@
 import type { FetchNextPageOptions } from '@tanstack/react-query'
 import { type RefObject, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
 
-import type { AiChatMessage, ChatId } from '../../../api/types'
+import type { AiChatMessage, ChatId, MessageId } from '../../../api/types'
 
 const NEAR_BOTTOM_THRESHOLD_PX = 40
 const LOAD_OLDER_SCROLL_TOP_PX = 72
@@ -12,6 +12,8 @@ type UseMessageListScrollParams = {
   hasNextPage: boolean
   isFetchingNextPage: boolean
   fetchNextPage: (options?: FetchNextPageOptions) => Promise<unknown>
+  streamingAssistantMessageId: MessageId | null
+  thinkingVisible: boolean
 }
 
 export function useMessageListScroll({
@@ -20,6 +22,8 @@ export function useMessageListScroll({
   hasNextPage,
   isFetchingNextPage,
   fetchNextPage,
+  streamingAssistantMessageId,
+  thinkingVisible,
 }: UseMessageListScrollParams): {
   scrollRef: RefObject<HTMLDivElement | null>
   handleScroll: () => void
@@ -58,13 +62,15 @@ export function useMessageListScroll({
     el.scrollTop = anchor.scrollTop + delta
   }, [isFetchingNextPage, messages.length])
 
+  // Stick to bottom while the user has not scrolled up. `messages` alone is not enough:
+  // stream end (streaming → full markdown) and thinking toggle change height without new rows.
   useLayoutEffect(() => {
     const el = scrollRef.current
     if (!el || !nearBottom || messages.length === 0) {
       return
     }
     el.scrollTop = el.scrollHeight
-  }, [messages, nearBottom])
+  }, [messages, nearBottom, streamingAssistantMessageId, thinkingVisible])
 
   const handleScroll = useCallback(() => {
     const el = scrollRef.current
