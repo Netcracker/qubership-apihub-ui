@@ -4,7 +4,7 @@ import { type FC, memo } from 'react'
 
 import { useAiChatMessages } from '../../api/useAiChatMessages'
 import { useAiAssistantHeaderHandlers } from '../../hooks/useAiAssistantHeaderHandlers'
-import { useAiAssistantContext } from '../../state/AiAssistantContext'
+import { useAiAssistantPanel, useAiAssistantStreaming } from '../../state/AiAssistantContext'
 import { AiAssistantHeader } from '../header/AiAssistantHeader'
 import { AI_ASSISTANT_HEADER_MODE } from '../header/aiAssistantHeaderMode'
 import { AiAssistantComposer } from './AiAssistantComposer'
@@ -12,7 +12,8 @@ import { AiAssistantPlaceholder } from './AiAssistantPlaceholder'
 import { ChatMessageList } from './ChatMessageList'
 import { useChatScreenMessages } from './hooks/useChatScreenMessages'
 export const AiAssistantChatScreen: FC = memo(() => {
-  const { open, activeChatId, streaming } = useAiAssistantContext()
+  const { open, activeChatId } = useAiAssistantPanel()
+  const streaming = useAiAssistantStreaming()
   const headerHandlers = useAiAssistantHeaderHandlers()
   const messagesQuery = useAiChatMessages(activeChatId)
 

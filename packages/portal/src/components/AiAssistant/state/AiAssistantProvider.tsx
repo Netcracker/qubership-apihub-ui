@@ -9,9 +9,10 @@ import type { ChatId } from '../api/types'
 import { useStreamingTurn } from '../streaming/turn/useStreamingTurn'
 import {
   AI_ASSISTANT_CHAT_SCREEN,
-  AiAssistantContext,
-  type AiAssistantContextValue,
+  AiAssistantPanelContext,
+  type AiAssistantPanelContextValue,
   type AiAssistantScreen,
+  AiAssistantStreamingContext,
 } from './AiAssistantContext'
 
 export const AiAssistantProvider: FC<PropsWithChildren> = memo<PropsWithChildren>(({ children }) => {
@@ -56,7 +57,7 @@ export const AiAssistantProvider: FC<PropsWithChildren> = memo<PropsWithChildren
   useEvent(SHOW_AI_ASSISTANT_PANEL, openPanel)
   useEvent(HIDE_AI_ASSISTANT_PANEL, closePanel)
 
-  const contextValue = useMemo<AiAssistantContextValue>(() => ({
+  const panelContextValue = useMemo<AiAssistantPanelContextValue>(() => ({
     open,
     screen,
     activeChatId,
@@ -66,7 +67,6 @@ export const AiAssistantProvider: FC<PropsWithChildren> = memo<PropsWithChildren
     openChatScreen,
     resetActiveChat,
     clearActiveChat,
-    streaming,
   }), [
     open,
     screen,
@@ -77,12 +77,15 @@ export const AiAssistantProvider: FC<PropsWithChildren> = memo<PropsWithChildren
     openChatScreen,
     resetActiveChat,
     clearActiveChat,
-    streaming,
   ])
 
   return (
-    <AiAssistantContext.Provider value={contextValue}>
-      {children}
-    </AiAssistantContext.Provider>
+    <AiAssistantPanelContext.Provider value={panelContextValue}>
+      <AiAssistantStreamingContext.Provider value={streaming}>
+        {children}
+      </AiAssistantStreamingContext.Provider>
+    </AiAssistantPanelContext.Provider>
   )
 })
+
+AiAssistantProvider.displayName = 'AiAssistantProvider'

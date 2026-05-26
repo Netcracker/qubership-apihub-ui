@@ -24,7 +24,7 @@ import rehypeHighlight from 'rehype-highlight'
 import remarkGfm from 'remark-gfm'
 import type { PluggableList } from 'unified'
 
-import { useAiAssistantContext } from '../../state/AiAssistantContext'
+import { useAiAssistantPanel } from '../../state/AiAssistantContext'
 import {
   AI_ASSISTANT_MARKDOWN_MODE,
   type AiAssistantMarkdownRenderMode,
@@ -129,7 +129,7 @@ const MarkdownLink: FC<ComponentPropsWithoutRef<'a'> & ReactMarkdownProps> = mem
   href = '',
   children,
 }) => {
-  const { closePanel, resetActiveChat } = useAiAssistantContext()
+  const { closePanel, resetActiveChat } = useAiAssistantPanel()
   const onInternalPortalLinkClick = useCallback(
     (event: MouseEvent<HTMLAnchorElement>) => {
       if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return
@@ -138,7 +138,7 @@ const MarkdownLink: FC<ComponentPropsWithoutRef<'a'> & ReactMarkdownProps> = mem
     },
     [closePanel, resetActiveChat],
   )
-  const {origin} = window.location
+  const { origin } = window.location
   if (isEphemeralFileLink(href, origin)) {
     return <FileDownloadLink href={resolveToUrl(href, origin).href}>{children}</FileDownloadLink>
   }

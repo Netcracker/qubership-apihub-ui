@@ -10,7 +10,7 @@ export type AiAssistantScreen =
   | typeof AI_ASSISTANT_CHAT_SCREEN
   | typeof AI_ASSISTANT_HISTORY_SCREEN
 
-export type AiAssistantContextValue = {
+export type AiAssistantPanelContextValue = {
   open: boolean
   screen: AiAssistantScreen
   activeChatId: ChatId | null
@@ -20,7 +20,6 @@ export type AiAssistantContextValue = {
   openChatScreen: (chatId: ChatId | null) => void
   resetActiveChat: () => void
   clearActiveChat: () => void
-  streaming: AiAssistantStreamingApi
 }
 
 export type AiAssistantStreamingApi = {
@@ -34,8 +33,13 @@ export type AiAssistantStreamingApi = {
   reset: () => void
 }
 
-export const AiAssistantContext = createContext<AiAssistantContextValue>()
+export const AiAssistantPanelContext = createContext<AiAssistantPanelContextValue>()
+export const AiAssistantStreamingContext = createContext<AiAssistantStreamingApi>()
 
-export function useAiAssistantContext(): AiAssistantContextValue {
-  return useContext(AiAssistantContext)
+export function useAiAssistantPanel(): AiAssistantPanelContextValue {
+  return useContext(AiAssistantPanelContext)
+}
+
+export function useAiAssistantStreaming(): AiAssistantStreamingApi {
+  return useContext(AiAssistantStreamingContext)
 }

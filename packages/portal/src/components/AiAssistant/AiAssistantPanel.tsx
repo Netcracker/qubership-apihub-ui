@@ -4,7 +4,7 @@ import { Resizable, type ResizeCallback } from 're-resizable'
 import { type FC, useCallback, useState } from 'react'
 
 import { APP_HEADER_HEIGHT } from '@netcracker/qubership-apihub-ui-shared/themes/components'
-import { AI_ASSISTANT_HISTORY_SCREEN, useAiAssistantContext } from './state/AiAssistantContext'
+import { AI_ASSISTANT_HISTORY_SCREEN, useAiAssistantPanel } from './state/AiAssistantContext'
 import { AiAssistantChatScreen } from './ui/chat/AiAssistantChatScreen'
 import { AiAssistantHistoryScreen } from './ui/history/AiAssistantHistoryScreen'
 
@@ -43,7 +43,7 @@ const DRAWER_LAYOUT_STYLES = {
 }
 
 export const AiAssistantPanel: FC = () => {
-  const { open, closePanel, screen } = useAiAssistantContext()
+  const { open, closePanel, screen } = useAiAssistantPanel()
   const [panelWidth, setPanelWidth] = useState(readStoredPanelWidth)
 
   const handleResizeStop: ResizeCallback = useCallback((_event, _direction, elementRef) => {

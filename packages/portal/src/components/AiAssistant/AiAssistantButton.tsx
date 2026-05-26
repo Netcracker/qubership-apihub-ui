@@ -4,10 +4,10 @@ import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/component
 import { RobotIcon } from '@netcracker/qubership-apihub-ui-shared/icons/RobotIcon'
 
 import { useEventBus } from '@netcracker/qubership-apihub-ui-portal/src/routes/EventBusProvider'
-import { useAiAssistantContext } from './state/AiAssistantContext'
+import { useAiAssistantPanel } from './state/AiAssistantContext'
 
 export const AiAssistantButton: FC = memo(() => {
-  const { open } = useAiAssistantContext()
+  const { open } = useAiAssistantPanel()
   const { showAiAssistantPanel, hideAiAssistantPanel } = useEventBus()
 
   const handleClick = useCallback((): void => {

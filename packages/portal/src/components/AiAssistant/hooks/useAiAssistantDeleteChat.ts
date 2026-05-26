@@ -3,12 +3,11 @@ import { useCallback } from 'react'
 
 import type { ChatId } from '../api/types'
 import { useDeleteAiChat } from '../api/useDeleteAiChat'
-import { AI_ASSISTANT_HISTORY_SCREEN, useAiAssistantContext } from '../state/AiAssistantContext'
+import { AI_ASSISTANT_HISTORY_SCREEN, useAiAssistantPanel } from '../state/AiAssistantContext'
 
 export function useAiAssistantDeleteChat(): UseMutationResult<void, Error, ChatId, unknown> {
   const deleteChat = useDeleteAiChat()
-  const { activeChatId, screen, openChatScreen, openHistory, resetActiveChat, clearActiveChat } =
-    useAiAssistantContext()
+  const { activeChatId, screen, openChatScreen, openHistory, resetActiveChat, clearActiveChat } = useAiAssistantPanel()
 
   const mutate = useCallback((chatId: ChatId) => {
     const wasActiveChat = activeChatId === chatId

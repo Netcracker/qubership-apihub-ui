@@ -8,7 +8,7 @@ import TextField from '@mui/material/TextField'
 import { SendIcon } from '@netcracker/qubership-apihub-ui-shared/icons/SendIcon'
 import { StopIcon } from '@netcracker/qubership-apihub-ui-shared/icons/StopIcon'
 
-import { useAiAssistantContext } from '../../state/AiAssistantContext'
+import { useAiAssistantPanel, useAiAssistantStreaming } from '../../state/AiAssistantContext'
 
 export type AiAssistantComposerProps = {
   panelOpen: boolean
@@ -16,7 +16,8 @@ export type AiAssistantComposerProps = {
 }
 
 export const AiAssistantComposer: FC<AiAssistantComposerProps> = memo(({ panelOpen, chatKey }) => {
-  const { activeChatId, streaming } = useAiAssistantContext()
+  const { activeChatId } = useAiAssistantPanel()
+  const { isBusy, submit, abort } = useAiAssistantStreaming()
   const inputRef = useRef<HTMLTextAreaElement | null>(null)
   const [draft, setDraft] = useState('')
 
@@ -31,9 +32,8 @@ export const AiAssistantComposer: FC<AiAssistantComposerProps> = memo(({ panelOp
     inputRef.current?.focus()
   }, [panelOpen, chatKey])
 
-  const busy = streaming.isBusy
   const trimmedDraft = draft.trim()
-  const canSend = !busy && trimmedDraft.length > 0
+  const canSend = !isBusy && trimmedDraft.length > 0
 
   const handleSubmit = useCallback((): void => {
     if (!canSend) {
@@ -41,8 +41,8 @@ export const AiAssistantComposer: FC<AiAssistantComposerProps> = memo(({ panelOp
     }
     const text = draft.trim()
     setDraft('')
-    void streaming.submit(activeChatId, text)
-  }, [activeChatId, canSend, draft, streaming])
+    void submit(activeChatId, text)
+  }, [activeChatId, canSend, draft, submit])
 
   const handleShellKeyDown = useCallback((event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key !== 'Enter' || !(event.ctrlKey || event.metaKey)) {
@@ -53,8 +53,8 @@ export const AiAssistantComposer: FC<AiAssistantComposerProps> = memo(({ panelOp
   }, [handleSubmit])
 
   const handleAbort = useCallback((): void => {
-    streaming.abort()
-  }, [streaming])
+    abort()
+  }, [abort])
 
   return (
     <AiAssistantComposerShell onKeyDown={handleShellKeyDown}>
@@ -69,7 +69,7 @@ export const AiAssistantComposer: FC<AiAssistantComposerProps> = memo(({ panelOp
         onChange={(e) => setDraft(e.target.value)}
         InputProps={{ disableUnderline: true }}
       />
-      {busy
+      {isBusy
         ? (
           <SendStopButton
             variant="contained"

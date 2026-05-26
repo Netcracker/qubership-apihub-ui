@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 
-import { useAiAssistantContext } from '../state/AiAssistantContext'
+import { useAiAssistantPanel, useAiAssistantStreaming } from '../state/AiAssistantContext'
 
 export type AiAssistantHeaderHandlers = {
   newChatDisabled: boolean
@@ -10,13 +10,14 @@ export type AiAssistantHeaderHandlers = {
 }
 
 export function useAiAssistantHeaderHandlers(): AiAssistantHeaderHandlers {
-  const { closePanel, openHistory, resetActiveChat, streaming } = useAiAssistantContext()
+  const { closePanel, openHistory, resetActiveChat } = useAiAssistantPanel()
+  const { abort, reset } = useAiAssistantStreaming()
 
   const onNewChat = useCallback((): void => {
-    streaming.abort()
-    streaming.reset()
+    abort()
+    reset()
     resetActiveChat()
-  }, [resetActiveChat, streaming])
+  }, [abort, reset, resetActiveChat])
 
   return {
     newChatDisabled: false,

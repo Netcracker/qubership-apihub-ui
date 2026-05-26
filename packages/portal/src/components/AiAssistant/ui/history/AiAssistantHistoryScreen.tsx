@@ -9,7 +9,7 @@ import { useAiChats } from '../../api/useAiChats'
 import { useUpdateAiChat } from '../../api/useUpdateAiChat'
 import { useAiAssistantDeleteChat } from '../../hooks/useAiAssistantDeleteChat'
 import { useAiAssistantHeaderHandlers } from '../../hooks/useAiAssistantHeaderHandlers'
-import { useAiAssistantContext } from '../../state/AiAssistantContext'
+import { useAiAssistantPanel, useAiAssistantStreaming } from '../../state/AiAssistantContext'
 import { AiAssistantHeader } from '../header/AiAssistantHeader'
 import { AI_ASSISTANT_HEADER_MODE } from '../header/aiAssistantHeaderMode'
 import { ChatListRow } from './ChatListRow'
@@ -21,7 +21,8 @@ const LOAD_NEXT_PAGE_THRESHOLD_PX = 120
 const PIN_LIMIT_TOOLTIP = `The maximum of ${MAX_PINNED_PER_USER} pinned chats is reached. Unpin one to pin another.`
 
 export const AiAssistantHistoryScreen: FC = memo(() => {
-  const { activeChatId, openChatScreen, streaming } = useAiAssistantContext()
+  const { activeChatId, openChatScreen } = useAiAssistantPanel()
+  const streaming = useAiAssistantStreaming()
   const headerHandlers = useAiAssistantHeaderHandlers()
   const updateChat = useUpdateAiChat()
   const deleteChat = useAiAssistantDeleteChat()
