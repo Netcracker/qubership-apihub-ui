@@ -14,6 +14,7 @@ import { redirectToLogin } from '@netcracker/qubership-apihub-ui-shared/utils/re
 
 import { useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
 import { getProfilePath } from '@apihub/routes/NavigationProvider'
+import { useEventBus } from '@netcracker/qubership-apihub-ui-portal/src/routes/EventBusProvider'
 
 export const UserPanel: FC = memo(() => {
   const navigate = useNavigate()
@@ -22,10 +23,12 @@ export const UserPanel: FC = memo(() => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [user] = useUser()
   const [logout] = useLogoutUser()
+  const { hideAiAssistantPanel } = useEventBus()
 
   const handleMenuOpen = useCallback(() => {
+    hideAiAssistantPanel()
     setIsMenuOpen(true)
-  }, [])
+  }, [hideAiAssistantPanel])
 
   const handleMenuClose = useCallback(() => {
     setIsMenuOpen(false)
@@ -86,6 +89,8 @@ export const UserPanel: FC = memo(() => {
     </>
   )
 })
+
+UserPanel.displayName = 'UserPanel'
 
 const UserPanelAvatar = styled(Box)(({ theme }) => ({
   display: 'flex',

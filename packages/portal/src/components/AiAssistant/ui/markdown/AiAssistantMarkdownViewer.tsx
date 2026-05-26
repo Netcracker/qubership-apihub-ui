@@ -138,7 +138,7 @@ const MarkdownLink: FC<ComponentPropsWithoutRef<'a'> & ReactMarkdownProps> = mem
     },
     [closePanel, resetActiveChat],
   )
-  const origin = window.location.origin
+  const {origin} = window.location
   if (isEphemeralFileLink(href, origin)) {
     return <FileDownloadLink href={resolveToUrl(href, origin).href}>{children}</FileDownloadLink>
   }

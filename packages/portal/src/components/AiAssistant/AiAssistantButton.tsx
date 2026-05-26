@@ -1,42 +1,34 @@
-import Box from '@mui/material/Box'
-import { styled } from '@mui/material/styles'
-import { type FC, memo, type MouseEvent, useCallback } from 'react'
+import { type FC, memo, useCallback } from 'react'
 
 import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
 import { RobotIcon } from '@netcracker/qubership-apihub-ui-shared/icons/RobotIcon'
 
+import { useEventBus } from '@netcracker/qubership-apihub-ui-portal/src/routes/EventBusProvider'
 import { useAiAssistantContext } from './state/AiAssistantContext'
 
 export const AiAssistantButton: FC = memo(() => {
-  const { open, openPanel, closePanel } = useAiAssistantContext()
-
-  // A mouse down event handler to prevent immediate reopening of the panel when clicking on the header while it is open
-  const handleMouseDown = useCallback((event: MouseEvent): void => {
-    if (open) {
-      event.stopPropagation()
-    }
-  }, [open])
+  const { open } = useAiAssistantContext()
+  const { showAiAssistantPanel, hideAiAssistantPanel } = useEventBus()
 
   const handleClick = useCallback((): void => {
-    const togglePanel = open ? closePanel : openPanel
-    togglePanel()
-  }, [closePanel, open, openPanel])
+    if (open) {
+      hideAiAssistantPanel()
+      return
+    }
+    showAiAssistantPanel()
+  }, [hideAiAssistantPanel, open, showAiAssistantPanel])
 
   return (
-    <ToggleWrap onMouseDown={handleMouseDown}>
-      <ButtonWithHint
-        hint="AI Assistant"
-        startIcon={<RobotIcon />}
-        aria-label="AI Assistant"
-        size="large"
-        color="inherit"
-        data-testid="AiAssistantButton"
-        onClick={handleClick}
-      />
-    </ToggleWrap>
+    <ButtonWithHint
+      hint="AI Assistant"
+      startIcon={<RobotIcon />}
+      aria-label="AI Assistant"
+      size="large"
+      color="inherit"
+      data-testid="AiAssistantButton"
+      onClick={handleClick}
+    />
   )
 })
 
-const ToggleWrap = styled(Box)({
-  display: 'inline-flex',
-})
+AiAssistantButton.displayName = 'AiAssistantButton'

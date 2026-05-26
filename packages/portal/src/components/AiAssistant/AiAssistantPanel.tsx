@@ -1,4 +1,4 @@
-import { Box, ClickAwayListener, Drawer } from '@mui/material'
+import { Box, Drawer } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import { Resizable, type ResizeCallback } from 're-resizable'
 import { type FC, useCallback, useState } from 'react'
@@ -58,21 +58,19 @@ export const AiAssistantPanel: FC = () => {
       open={open}
       onClose={closePanel}
     >
-      <ClickAwayListener onClickAway={closePanel} mouseEvent="onMouseDown">
-        <Resizable
-          size={{ width: panelWidth, height: '100%' }}
-          minWidth={AI_ASSISTANT_PANEL_MIN_WIDTH}
-          maxWidth={AI_ASSISTANT_PANEL_MAX_WIDTH}
-          enable={RESIZE_ENABLE}
-          handleStyles={RESIZE_HANDLE_STYLES}
-          boundsByDirection={true}
-          onResizeStop={handleResizeStop}
-        >
-          <PanelContainer data-testid="AiAssistantPanel">
-            {screen === AI_ASSISTANT_HISTORY_SCREEN ? <AiAssistantHistoryScreen /> : <AiAssistantChatScreen />}
-          </PanelContainer>
-        </Resizable>
-      </ClickAwayListener>
+      <Resizable
+        size={{ width: panelWidth, height: '100%' }}
+        minWidth={AI_ASSISTANT_PANEL_MIN_WIDTH}
+        maxWidth={AI_ASSISTANT_PANEL_MAX_WIDTH}
+        enable={RESIZE_ENABLE}
+        handleStyles={RESIZE_HANDLE_STYLES}
+        boundsByDirection={true}
+        onResizeStop={handleResizeStop}
+      >
+        <PanelContainer data-testid="AiAssistantPanel">
+          {screen === AI_ASSISTANT_HISTORY_SCREEN ? <AiAssistantHistoryScreen /> : <AiAssistantChatScreen />}
+        </PanelContainer>
+      </Resizable>
     </StyledDrawer>
   )
 }
@@ -83,6 +81,7 @@ export const AiAssistantPanel: FC = () => {
  * - modal wrapper: no pointer events (header strip stays interactive),
  * - backdrop: captures clicks in the shaded area and closes via Drawer onClose,
  * - drawer paper: pointer events enabled (panel is clickable).
+ * App-header actions close the panel via `hideAiAssistantPanel` on the event bus.
  */
 const StyledDrawer = styled(Drawer)({
   pointerEvents: 'none',

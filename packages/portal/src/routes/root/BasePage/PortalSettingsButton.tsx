@@ -1,35 +1,23 @@
-/**
- * Copyright 2024-2025 NetCracker Technology Corporation
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-import type { FC } from 'react'
-import { memo } from 'react'
-import { useLocation } from 'react-use'
+import { type FC, memo, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { PortalSettingsIcon } from '@netcracker/qubership-apihub-ui-shared/icons/PortalSettingsIcon'
+import { useLocation } from 'react-use'
+
 import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
-import { getSettingsPath } from '../../NavigationProvider'
+import { PortalSettingsIcon } from '@netcracker/qubership-apihub-ui-shared/icons/PortalSettingsIcon'
+
 import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
+import { useEventBus } from '@netcracker/qubership-apihub-ui-portal/src/routes/EventBusProvider'
+import { getSettingsPath } from '../../NavigationProvider'
 
 export const PortalSettingsButton: FC = memo(() => {
   const location = useLocation()
   const backwardLocation = useBackwardLocationContext()
   const setBackwardLocation = useSetBackwardLocationContext()
   const navigate = useNavigate()
+  const { hideAiAssistantPanel } = useEventBus()
 
-  const packageSettingsLinkHandle = (): void => {
+  const packageSettingsLinkHandle = useCallback((): void => {
+    hideAiAssistantPanel()
     setBackwardLocation({
       ...backwardLocation,
       fromPackageSettings: {
@@ -38,12 +26,19 @@ export const PortalSettingsButton: FC = memo(() => {
       },
     })
     navigate(getSettingsPath())
-  }
+  }, [
+    backwardLocation,
+    hideAiAssistantPanel,
+    location.pathname,
+    location.search,
+    navigate,
+    setBackwardLocation,
+  ])
 
   return (
     <ButtonWithHint
       hint="Portal Settings"
-      startIcon={<PortalSettingsIcon/>}
+      startIcon={<PortalSettingsIcon />}
       aria-label="Portal Settings"
       size="large"
       color="inherit"
@@ -52,3 +47,5 @@ export const PortalSettingsButton: FC = memo(() => {
     />
   )
 })
+
+PortalSettingsButton.displayName = 'PortalSettingsButton'
