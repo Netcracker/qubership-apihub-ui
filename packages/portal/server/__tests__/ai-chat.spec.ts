@@ -556,12 +556,12 @@ describe('Mock server - GET /api/v1/ephemeral-files/:fileId', () => {
     expect((res.body as AiChatErrorResponse).code).toBe('APIHUB-EF-3003')
   })
 
-  it('debug:attachment stream links to ephemeral-files and download succeeds', async () => {
+  it('debug:files stream links to ephemeral-files and download succeeds', async () => {
     const create = await request(app).post(`${BASE}/chats`).send({}).expect(201)
     const { chatId } = create.body as AiChat
     const stream = await request(app)
       .post(`${BASE}/chats/${chatId}/messages/stream`)
-      .send({ content: 'debug:attachment please', clientMessageId: CLIENT_MESSAGE_ID_7 })
+      .send({ content: 'debug:files please', clientMessageId: CLIENT_MESSAGE_ID_7 })
       .buffer(true)
       .parse((response, cb) => {
         const chunks: Buffer[] = []

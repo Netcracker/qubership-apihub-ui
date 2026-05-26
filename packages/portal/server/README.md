@@ -32,7 +32,7 @@ curl http://<vite-port>/api/v1/ai-chat/chats?limit=1
 # => JSON with seeded chats (not an upstream HTML error page)
 
 curl "http://<vite-port>/api/v1/ephemeral-files/11111111-1111-4111-8111-111111111111?token=mock-dev-token"
-# => Markdown sample body (debug:attachment fixture id)
+# => Markdown sample body (debug:files fixture id)
 ```
 
 If AI responses look like an APIHUB backend error envelope or HTML from the wrong host, the proxy rules for `/api/v1/ai-chat` and `/api/v1/ephemeral-files` are either missing or declared after the generic `/api` rule in `vite.config.ts` - Vite matches the first registered prefix.
@@ -54,24 +54,24 @@ Under **`/api/v1/ai-chat/`** (mirrors backend contract). Pin limit (**3**) and m
 
 OpenAPI path (not under `ai-chat`):
 
-- **`GET /api/v1/ephemeral-files/:fileId?token=...`** - signed download mock. Returns a small CSV (or Markdown for the `debug:attachment` fixture UUID). Query token: use **`mock-dev-token`**, or any `mock-*` token for compatibility with older examples. Missing or invalid token returns `401`, matching the OpenAPI download contract.
+- **`GET /api/v1/ephemeral-files/:fileId?token=...`** - signed download mock. Returns a small CSV (or Markdown for the `debug:files` fixture UUID). Query token: use **`mock-dev-token`**, or any `mock-*` token for compatibility with older examples. Missing or invalid token returns `401`, matching the OpenAPI download contract.
 
 ### Scripted stream scenarios
 
 `POST /chats/:id/messages/stream` picks a scripted scenario by substring match against the user's message (lower-cased). First match wins; the `debug:*` scenarios are matched before the default so `debug:error` doesn't fall through.
 
-| Substring in `content`   | Scenario   | Purpose                                                                                                         |
-| ------------------------ | ---------- | --------------------------------------------------------------------------------------------------------------- |
-| `debug:http-500`         | (HTTP)     | `500` + `APIHUB-AI-5000` **before** the SSE stream starts (standard `ErrorResponse`, no frames).                |
-| `debug:error`            | error      | ~3 deltas then an `error` SSE frame with code `APIHUB-AI-5001`. No `done` frame (per OpenAPI terminal rules).   |
-| `debug:truncated-stream` | truncated  | `start` + deltas, no `completed` / `done`; UI warning snackbar (incomplete reply). Not `debug:error`.           |
-| `debug:links`            | links      | Markdown with internal `/portal/packages/...` package and operation links.                                      |
-| `debug:longmd`           | longmd     | Markdown **>= 4000** chars: headings, table, bullets, blockquote, **YAML** + **json** fences.                   |
-| `debug:json`             | json       | Default happy-path Markdown but the code block is a JSON snippet instead of YAML.                               |
-| `debug:attachment`       | attachment | Completed Markdown links to **`/api/v1/generated-files/{uuid}?token=mock-dev-token`** (Markdown download mock). |
-| `debug:thinking`         | thinking   | Long idle gaps + tool frames + mid-answer pause (exercises the Thinking indicator during `started`).            |
-| `debug:offtopic`         | offtopic   | Short polite refusal.                                                                                           |
-| (none of the above)      | default    | Long Markdown with a YAML code block and a table.                                                               |
+| Substring in `content`   | Scenario  | Purpose                                                                                                         |
+| ------------------------ | --------- | --------------------------------------------------------------------------------------------------------------- |
+| `debug:http-500`         | (HTTP)    | `500` + `APIHUB-AI-5000` **before** the SSE stream starts (standard `ErrorResponse`, no frames).                |
+| `debug:error`            | error     | ~3 deltas then an `error` SSE frame with code `APIHUB-AI-5001`. No `done` frame (per OpenAPI terminal rules).   |
+| `debug:truncated-stream` | truncated | `start` + deltas, no `completed` / `done`; UI warning snackbar (incomplete reply). Not `debug:error`.           |
+| `debug:links`            | links     | Markdown with internal `/portal/packages/...` package and operation links.                                      |
+| `debug:longmd`           | longmd    | Markdown **>= 4000** chars: headings, table, bullets, blockquote, **YAML** + **json** fences.                   |
+| `debug:json`             | json      | Default happy-path Markdown but the code block is a JSON snippet instead of YAML.                               |
+| `debug:files`            | files     | Completed Markdown links to **`/api/v1/generated-files/{uuid}?token=mock-dev-token`** (Markdown download mock). |
+| `debug:thinking`         | thinking  | Long idle gaps + tool frames + mid-answer pause (exercises the Thinking indicator during `started`).            |
+| `debug:offtopic`         | offtopic  | Short polite refusal.                                                                                           |
+| (none of the above)      | default   | Long Markdown with a YAML code block and a table.                                                               |
 
 ### Idempotent send
 
@@ -84,7 +84,7 @@ Pass a UUID `clientMessageId` on `POST /chats/:id/messages` or `POST /chats/:id/
 - `00000000-0000-4000-8000-000000000404` - 404 with `APIHUB-EF-3001` (stands in for "file was cleaned up").
 - `00000000-0000-4000-8000-000000000410` - 410 with `APIHUB-EF-4101` (stands in for "signed URL timed out").
 
-Any other ID returns a small CSV, except `11111111-1111-4111-8111-111111111111`, which returns the Markdown report used by `debug:attachment`. All successful responses include `Content-Disposition: attachment`.
+Any other ID returns a small CSV, except `11111111-1111-4111-8111-111111111111`, which returns the Markdown report used by `debug:files`. All successful responses include `Content-Disposition: attachment`.
 
 ### Seed fixtures
 

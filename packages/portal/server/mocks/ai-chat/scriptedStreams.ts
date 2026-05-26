@@ -316,8 +316,8 @@ const longmdScenario: Scenario = {
   },
 }
 
-const attachmentScenario: Scenario = {
-  id: 'debug:attachment',
+const filesScenario: Scenario = {
+  id: 'debug:files',
   description: 'Generated file link mid-sentence and on its own line.',
   build: ({ messageId, nowIso, clientMessageId, buildFileUrl }) => {
     const url = buildFileUrl(MOCK_ATTACHMENT_FILE_ID)
@@ -401,7 +401,7 @@ const thinkingScenario: Scenario = {
     '~4s idle before tool frames, IDS-style tool sequence, ~4s gap mid answer, then completion (English + file link).',
   build: ({ messageId, nowIso, buildFileUrl }) => {
     const url = buildFileUrl(MOCK_ATTACHMENT_FILE_ID)
-    const fullText = `${THINKING_MARKDOWN_PREFIX} [IDS_BSS-CIM.md](${url})\n\n${THINKING_MARKDOWN_SUFFIX.trim()}`
+    const fullText = `${THINKING_MARKDOWN_PREFIX} [create-customer-ids.md](${url})\n\n${THINKING_MARKDOWN_SUFFIX.trim()}`
     const midMarker = 'I did not find'
     const splitAt = fullText.indexOf(midMarker)
     const part1 = splitAt === -1 ? fullText : fullText.slice(0, splitAt)
@@ -535,7 +535,7 @@ export const SCENARIOS: Scenario[] = [
   linksScenario,
   longmdScenario,
   jsonScenario,
-  attachmentScenario,
+  filesScenario,
   thinkingScenario,
   offtopicScenario,
   defaultScenario,
