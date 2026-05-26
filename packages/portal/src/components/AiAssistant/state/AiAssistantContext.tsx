@@ -22,24 +22,40 @@ export type AiAssistantPanelContextValue = {
   clearActiveChat: () => void
 }
 
-export type AiAssistantStreamingApi = {
-  state: StreamingTurnState
-  isBusy: boolean
-  activeTurnChatId: ChatId | null
-  /** True while assistant is streaming text but no start/delta arrived for a few seconds (tools / network gaps). */
-  thinkingDuringAssistantPause: boolean
+export type AiAssistantStreamingActions = {
   submit: (activeChatId: ChatId | null, content: string) => Promise<void>
   abort: () => void
   reset: () => void
 }
 
+export type AiAssistantStreamingTurnMeta = {
+  isBusy: boolean
+  activeTurnChatId: ChatId | null
+}
+
+export type AiAssistantStreamingLive = {
+  state: StreamingTurnState
+  /** True while assistant is streaming text but no start/delta arrived for a few seconds (tools / network gaps). */
+  thinkingDuringAssistantPause: boolean
+}
+
 export const AiAssistantPanelContext = createContext<AiAssistantPanelContextValue>()
-export const AiAssistantStreamingContext = createContext<AiAssistantStreamingApi>()
+export const AiAssistantStreamingActionsContext = createContext<AiAssistantStreamingActions>()
+export const AiAssistantStreamingTurnMetaContext = createContext<AiAssistantStreamingTurnMeta>()
+export const AiAssistantStreamingLiveContext = createContext<AiAssistantStreamingLive>()
 
 export function useAiAssistantPanel(): AiAssistantPanelContextValue {
   return useContext(AiAssistantPanelContext)
 }
 
-export function useAiAssistantStreaming(): AiAssistantStreamingApi {
-  return useContext(AiAssistantStreamingContext)
+export function useAiAssistantStreamingActions(): AiAssistantStreamingActions {
+  return useContext(AiAssistantStreamingActionsContext)
+}
+
+export function useAiAssistantStreamingTurnMeta(): AiAssistantStreamingTurnMeta {
+  return useContext(AiAssistantStreamingTurnMetaContext)
+}
+
+export function useAiAssistantStreamingLive(): AiAssistantStreamingLive {
+  return useContext(AiAssistantStreamingLiveContext)
 }

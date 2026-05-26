@@ -22,7 +22,7 @@ You cannot use the browser `EventSource` API for this flow (it only supports GET
 
 Shared API types (`AiChatStreamEvent`, messages, roles) stay in `../api/types.ts`. Stream POST and REST live in `../api/` (`requests.ts`, `client.ts`, `errors.ts`). Event name constants are in `../api/streamEvents.ts`.
 
-UI wiring (message list, Thinking label, composer, jump button) stays in `../ui/chat/` and reads streaming state via `useAiAssistantStreaming()` (`AiAssistantStreamingContext`).
+UI wiring (message list, Thinking label, composer, jump button) stays in `../ui/chat/`. Volatile buffer state is read via `useAiAssistantStreamingLive()` inside `ChatStreamingBody`; composer and history use `useAiAssistantStreamingTurnMeta()` / `useAiAssistantStreamingActions()`.
 
 ## End-to-end flow
 
@@ -84,7 +84,7 @@ Other events (`tool.started`, `tool.completed`, `context.compacted`, ...) are pa
 
 ## Layer 2 - Turn (`turn/`)
 
-**Entry point:** `useStreamingTurn` - used from `AiAssistantProvider`, exposed on `AiAssistantStreamingContext`.
+**Entry point:** `useStreamingTurn` - used from `AiAssistantProvider`, split across actions / turn-meta / live contexts.
 
 ### Turn states
 
@@ -158,13 +158,13 @@ When the turn ends, the same message renders in **full** mode (highlighting, cop
 
 ## What lives outside this folder
 
-| Location                                    | Responsibility                                       |
-| ------------------------------------------- | ---------------------------------------------------- |
-| `state/AiAssistantProvider.tsx`             | Panel + streaming contexts; hosts `useStreamingTurn` |
-| `ui/chat/*`                                 | Message list, Thinking, composer, scroll / jump FAB  |
-| `ui/markdown/AiAssistantMarkdownViewer.tsx` | Shared Markdown viewer (history + stream)            |
-| `api/*`                                     | REST client, paths, errors, stream POST, hooks       |
-| `hooks/useAiAssistantDeleteChat.ts`         | Delete mutation + panel navigation on failure        |
+| Location                                    | Responsibility                                      |
+| ------------------------------------------- | --------------------------------------------------- |
+| `state/AiAssistantProvider.tsx`             | Panel + streaming actions/meta/live contexts        |
+| `ui/chat/*`                                 | Message list, Thinking, composer, scroll / jump FAB |
+| `ui/markdown/AiAssistantMarkdownViewer.tsx` | Shared Markdown viewer (history + stream)           |
+| `api/*`                                     | REST client, paths, errors, stream POST, hooks      |
+| `hooks/useAiAssistantDeleteChat.ts`         | Delete mutation + panel navigation on failure       |
 
 ## Mental model (one paragraph)
 

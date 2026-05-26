@@ -1,9 +1,13 @@
 import { useMemo } from 'react'
 
 import { AI_CHAT_ROLE, type AiChatMessage, type ChatId, type MessageId } from '../../../api/types'
-import type { AiAssistantStreamingApi } from '../../../state/AiAssistantContext'
+import type { AiAssistantStreamingLive } from '../../../state/AiAssistantContext'
 import { STREAMING_TURN_STATUS } from '../../../streaming/turn/streamingTurnConstants'
-import { isStreamingTurnStatus } from '../../../streaming/turn/streamingTurnReducer'
+import {
+  getActiveTurnChatId,
+  isStreamingBusy,
+  isStreamingTurnStatus,
+} from '../../../streaming/turn/streamingTurnReducer'
 import { CHAT_MESSAGE_LIST_JUMP_PHASE, type ChatMessageListJumpPhase } from '../chatScreenConstants'
 
 type MessagePage = {
@@ -11,15 +15,14 @@ type MessagePage = {
 }
 
 type UseChatScreenMessagesParams = {
-  activeChatId: ChatId | null
+  activeChatId: ChatId
   messagePages: MessagePage[] | undefined
   messagesLoaded: boolean
-  streaming: AiAssistantStreamingApi
+  live: AiAssistantStreamingLive
 }
 
 type ChatScreenMessagesView = {
   displayMessages: AiChatMessage[]
-  showWelcome: boolean
   showThread: boolean
   thinkingVisible: boolean
   jumpPhase: ChatMessageListJumpPhase
@@ -30,8 +33,9 @@ export function useChatScreenMessages({
   activeChatId,
   messagePages,
   messagesLoaded,
-  streaming,
+  live,
 }: UseChatScreenMessagesParams): ChatScreenMessagesView {
+  const activeTurnChatId = getActiveTurnChatId(live.state)
   const messagesOldestFirst = useMemo((): AiChatMessage[] => {
     if (!messagePages?.length) {
       return []
@@ -41,18 +45,17 @@ export function useChatScreenMessages({
   }, [messagePages])
 
   const streamingAssistantLive = useMemo((): { messageId: MessageId; content: string } | null => {
-    if (!isStreamingTurnStatus(streaming.state, STREAMING_TURN_STATUS.started)) {
+    if (!isStreamingTurnStatus(live.state, STREAMING_TURN_STATUS.started)) {
       return null
     }
-    const turnChatId = streaming.activeTurnChatId
-    if (turnChatId === null || turnChatId !== activeChatId) {
+    if (activeTurnChatId === null || activeTurnChatId !== activeChatId) {
       return null
     }
     return {
-      messageId: streaming.state.assistantMessageId,
-      content: streaming.state.buffer,
+      messageId: live.state.assistantMessageId,
+      content: live.state.buffer,
     }
-  }, [activeChatId, streaming.activeTurnChatId, streaming.state])
+  }, [activeChatId, activeTurnChatId, live.state])
 
   const displayMessages = useMemo((): AiChatMessage[] => {
     const base = messagesOldestFirst
@@ -75,28 +78,41 @@ export function useChatScreenMessages({
     return [...base, synthetic]
   }, [messagesOldestFirst, streamingAssistantLive])
 
-  const showWelcome = activeChatId === null ||
-    (messagesLoaded && displayMessages.length === 0)
+  const showThread = messagesLoaded && displayMessages.length > 0
 
-  const showThread = activeChatId !== null && displayMessages.length > 0
+  const thinkingVisible = activeTurnChatId !== null
+    && activeTurnChatId === activeChatId
+    && (isStreamingTurnStatus(live.state, STREAMING_TURN_STATUS.pending)
+      || (isStreamingTurnStatus(live.state, STREAMING_TURN_STATUS.started)
+        && live.thinkingDuringAssistantPause))
 
-  const thinkingVisible = streaming.activeTurnChatId !== null &&
-    streaming.activeTurnChatId === activeChatId &&
-    (isStreamingTurnStatus(streaming.state, STREAMING_TURN_STATUS.pending) ||
-      (isStreamingTurnStatus(streaming.state, STREAMING_TURN_STATUS.started) &&
-        streaming.thinkingDuringAssistantPause))
-
-  const jumpPhase = streaming.isBusy
+  const jumpPhase = isStreamingBusy(live.state)
     ? CHAT_MESSAGE_LIST_JUMP_PHASE.active
     : CHAT_MESSAGE_LIST_JUMP_PHASE.idle
   const streamingAssistantMessageId = streamingAssistantLive?.messageId ?? null
 
   return {
     displayMessages,
-    showWelcome,
     showThread,
     thinkingVisible,
     jumpPhase,
     streamingAssistantMessageId,
   }
+}
+
+export function isChatScreenWelcome(
+  activeChatId: ChatId | null,
+  messagePages: MessagePage[] | undefined,
+  messagesLoaded: boolean,
+): boolean {
+  if (activeChatId === null) {
+    return true
+  }
+  if (!messagesLoaded) {
+    return false
+  }
+  if (!messagePages?.length) {
+    return true
+  }
+  return messagePages.flatMap((page) => page.messages).length === 0
 }

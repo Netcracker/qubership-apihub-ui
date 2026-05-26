@@ -8,7 +8,11 @@ import TextField from '@mui/material/TextField'
 import { SendIcon } from '@netcracker/qubership-apihub-ui-shared/icons/SendIcon'
 import { StopIcon } from '@netcracker/qubership-apihub-ui-shared/icons/StopIcon'
 
-import { useAiAssistantPanel, useAiAssistantStreaming } from '../../state/AiAssistantContext'
+import {
+  useAiAssistantPanel,
+  useAiAssistantStreamingActions,
+  useAiAssistantStreamingTurnMeta,
+} from '../../state/AiAssistantContext'
 
 export type AiAssistantComposerProps = {
   panelOpen: boolean
@@ -17,7 +21,8 @@ export type AiAssistantComposerProps = {
 
 export const AiAssistantComposer: FC<AiAssistantComposerProps> = memo(({ panelOpen, chatKey }) => {
   const { activeChatId } = useAiAssistantPanel()
-  const { isBusy, submit, abort } = useAiAssistantStreaming()
+  const { isBusy } = useAiAssistantStreamingTurnMeta()
+  const { submit, abort } = useAiAssistantStreamingActions()
   const inputRef = useRef<HTMLTextAreaElement | null>(null)
   const [draft, setDraft] = useState('')
 

@@ -9,31 +9,25 @@ import Typography from '@mui/material/Typography'
 import { BackArrowIcon } from '@netcracker/qubership-apihub-ui-shared/icons/BackArrowIcon'
 import { RobotFilledIcon } from '@netcracker/qubership-apihub-ui-shared/icons/RobotFilledIcon'
 
-import type { AiAssistantHeaderHandlers } from '../../hooks/useAiAssistantHeaderHandlers'
+import { useAiAssistantHeaderHandlers } from '../../hooks/useAiAssistantHeaderHandlers'
 import { AiAssistantHeaderActions } from './AiAssistantHeaderActions'
 import { AI_ASSISTANT_HEADER_MODE, AI_ASSISTANT_HEADER_TITLE } from './aiAssistantHeaderMode'
 
 export type AiAssistantHeaderProps =
-  | (AiAssistantHeaderHandlers & { mode: typeof AI_ASSISTANT_HEADER_MODE.chat })
-  | (AiAssistantHeaderHandlers & {
+  | { mode: typeof AI_ASSISTANT_HEADER_MODE.chat }
+  | {
     mode: typeof AI_ASSISTANT_HEADER_MODE.history
     onBack: () => void
-  })
+  }
 
 export const AiAssistantHeader: FC<AiAssistantHeaderProps> = memo((props) => {
-  const {
-    mode,
-    newChatDisabled,
-    onNewChat,
-    onHistory,
-    onClose,
-  } = props
+  const { newChatDisabled, onNewChat, onHistory, onClose } = useAiAssistantHeaderHandlers()
 
   return (
     <HeaderRoot>
       <HeaderToolbar>
         <HeaderLeading>
-          {mode === AI_ASSISTANT_HEADER_MODE.history
+          {props.mode === AI_ASSISTANT_HEADER_MODE.history
             ? (
               <IconButton
                 aria-label="Back to chat"
@@ -50,7 +44,7 @@ export const AiAssistantHeader: FC<AiAssistantHeaderProps> = memo((props) => {
               </HeaderAvatar>
             )}
           <HeaderHeading variant="h5">
-            {AI_ASSISTANT_HEADER_TITLE[mode]}
+            {AI_ASSISTANT_HEADER_TITLE[props.mode]}
           </HeaderHeading>
         </HeaderLeading>
         <AiAssistantHeaderActions

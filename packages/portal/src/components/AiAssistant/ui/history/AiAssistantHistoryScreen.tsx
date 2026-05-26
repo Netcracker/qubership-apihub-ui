@@ -8,8 +8,7 @@ import { type AiChat, type ChatId, MAX_PINNED_PER_USER } from '../../api/types'
 import { useAiChats } from '../../api/useAiChats'
 import { useUpdateAiChat } from '../../api/useUpdateAiChat'
 import { useAiAssistantDeleteChat } from '../../hooks/useAiAssistantDeleteChat'
-import { useAiAssistantHeaderHandlers } from '../../hooks/useAiAssistantHeaderHandlers'
-import { useAiAssistantPanel, useAiAssistantStreaming } from '../../state/AiAssistantContext'
+import { useAiAssistantPanel, useAiAssistantStreamingTurnMeta } from '../../state/AiAssistantContext'
 import { AiAssistantHeader } from '../header/AiAssistantHeader'
 import { AI_ASSISTANT_HEADER_MODE } from '../header/aiAssistantHeaderMode'
 import { ChatListRow } from './ChatListRow'
@@ -22,8 +21,7 @@ const PIN_LIMIT_TOOLTIP = `The maximum of ${MAX_PINNED_PER_USER} pinned chats is
 
 export const AiAssistantHistoryScreen: FC = memo(() => {
   const { activeChatId, openChatScreen } = useAiAssistantPanel()
-  const streaming = useAiAssistantStreaming()
-  const headerHandlers = useAiAssistantHeaderHandlers()
+  const { isBusy, activeTurnChatId } = useAiAssistantStreamingTurnMeta()
   const updateChat = useUpdateAiChat()
   const deleteChat = useAiAssistantDeleteChat()
 
@@ -137,9 +135,9 @@ export const AiAssistantHistoryScreen: FC = memo(() => {
           const isPinned = chat.pinned === true
           const pinnedOthersCount = loadedPinnedCount - (isPinned ? 1 : 0)
           const pinDisabled = !isPinned && pinnedOthersCount >= MAX_PINNED_PER_USER
-          const deleteDisabled = streaming.isBusy &&
-            streaming.activeTurnChatId !== null &&
-            streaming.activeTurnChatId === chat.chatId
+          const deleteDisabled = isBusy
+            && activeTurnChatId !== null
+            && activeTurnChatId === chat.chatId
 
           return (
             <ChatListRow
@@ -170,7 +168,6 @@ export const AiAssistantHistoryScreen: FC = memo(() => {
       <AiAssistantHeader
         mode={AI_ASSISTANT_HEADER_MODE.history}
         onBack={handleBack}
-        {...headerHandlers}
       />
       <HistorySearchField value={searchQuery} onChange={setSearchQuery} />
       <ListArea

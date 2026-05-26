@@ -3,56 +3,40 @@ import { styled } from '@mui/material/styles'
 import { type FC, memo } from 'react'
 
 import { useAiChatMessages } from '../../api/useAiChatMessages'
-import { useAiAssistantHeaderHandlers } from '../../hooks/useAiAssistantHeaderHandlers'
-import { useAiAssistantPanel, useAiAssistantStreaming } from '../../state/AiAssistantContext'
+import { useAiAssistantPanel } from '../../state/AiAssistantContext'
 import { AiAssistantHeader } from '../header/AiAssistantHeader'
 import { AI_ASSISTANT_HEADER_MODE } from '../header/aiAssistantHeaderMode'
 import { AiAssistantComposer } from './AiAssistantComposer'
 import { AiAssistantPlaceholder } from './AiAssistantPlaceholder'
-import { ChatMessageList } from './ChatMessageList'
-import { useChatScreenMessages } from './hooks/useChatScreenMessages'
+import { ChatStreamingBody } from './ChatStreamingBody'
+import { isChatScreenWelcome } from './hooks/useChatScreenMessages'
+
 export const AiAssistantChatScreen: FC = memo(() => {
   const { open, activeChatId } = useAiAssistantPanel()
-  const streaming = useAiAssistantStreaming()
-  const headerHandlers = useAiAssistantHeaderHandlers()
   const messagesQuery = useAiChatMessages(activeChatId)
 
-  const {
-    displayMessages,
-    showWelcome,
-    showThread,
-    thinkingVisible,
-    jumpPhase,
-    streamingAssistantMessageId,
-  } = useChatScreenMessages({
-    activeChatId: activeChatId,
-    messagePages: messagesQuery.data?.pages,
-    messagesLoaded: messagesQuery.isSuccess,
-    streaming: streaming,
-  })
+  const showWelcome = isChatScreenWelcome(
+    activeChatId,
+    messagesQuery.data?.pages,
+    messagesQuery.isSuccess,
+  )
 
   return (
     <ChatLayout>
-      <AiAssistantHeader mode={AI_ASSISTANT_HEADER_MODE.chat} {...headerHandlers} />
+      <AiAssistantHeader mode={AI_ASSISTANT_HEADER_MODE.chat} />
       <Body>
         {showWelcome
           ? <AiAssistantPlaceholder />
-          : showThread && activeChatId
-          ? (
-            <>
-              <ChatMessageList
-                chatId={activeChatId}
-                messages={displayMessages}
-                hasNextPage={Boolean(messagesQuery.hasNextPage)}
-                isFetchingNextPage={messagesQuery.isFetchingNextPage}
-                fetchNextPage={messagesQuery.fetchNextPage}
-                jumpButtonStreamPhase={jumpPhase}
-                streamingAssistantMessageId={streamingAssistantMessageId}
-                thinkingVisible={thinkingVisible}
-              />
-            </>
-          )
-          : null}
+          : activeChatId && (
+            <ChatStreamingBody
+              activeChatId={activeChatId}
+              messagePages={messagesQuery.data?.pages}
+              messagesLoaded={messagesQuery.isSuccess}
+              hasNextPage={Boolean(messagesQuery.hasNextPage)}
+              isFetchingNextPage={messagesQuery.isFetchingNextPage}
+              fetchNextPage={messagesQuery.fetchNextPage}
+            />
+          )}
       </Body>
       <AiAssistantComposer panelOpen={open} chatKey={activeChatId ?? 'none'} />
     </ChatLayout>

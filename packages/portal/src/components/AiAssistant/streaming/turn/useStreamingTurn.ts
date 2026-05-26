@@ -52,14 +52,26 @@ export type StreamingTurnDeps = {
   activeChatId: ChatId | null
 }
 
-export type UseStreamingTurnResult = {
-  state: StreamingTurnState
-  isBusy: boolean
-  activeTurnChatId: ChatId | null
-  thinkingDuringAssistantPause: boolean
+export type StreamingTurnActions = {
   submit: (activeChatId: ChatId | null, content: string) => Promise<void>
   abort: () => void
   reset: () => void
+}
+
+export type StreamingTurnMeta = {
+  isBusy: boolean
+  activeTurnChatId: ChatId | null
+}
+
+export type StreamingTurnLive = {
+  state: StreamingTurnState
+  thinkingDuringAssistantPause: boolean
+}
+
+export type UseStreamingTurnResult = {
+  actions: StreamingTurnActions
+  turnMeta: StreamingTurnMeta
+  live: StreamingTurnLive
 }
 
 function isAbortError(e: unknown): boolean {
@@ -350,17 +362,28 @@ export function useStreamingTurn({
     dispatchTurn({ type: STREAMING_TURN_ACTION.reset })
   }, [dispatchTurn])
 
-  return useMemo(() => {
-    const busy = isStreamingBusy(state)
-    const turnChat = getActiveTurnChatId(state)
-    return {
-      state: state,
-      isBusy: busy,
-      activeTurnChatId: turnChat,
-      thinkingDuringAssistantPause: thinkingDuringAssistantPause,
-      submit: submit,
-      abort: abort,
-      reset: reset,
-    }
-  }, [state, submit, abort, reset, thinkingDuringAssistantPause])
+  const actions = useMemo<StreamingTurnActions>(() => ({
+    submit: submit,
+    abort: abort,
+    reset: reset,
+  }), [submit, abort, reset])
+
+  const isBusy = isStreamingBusy(state)
+  const activeTurnChatId = getActiveTurnChatId(state)
+
+  const turnMeta = useMemo<StreamingTurnMeta>(() => ({
+    isBusy: isBusy,
+    activeTurnChatId: activeTurnChatId,
+  }), [isBusy, activeTurnChatId])
+
+  const live = useMemo<StreamingTurnLive>(() => ({
+    state: state,
+    thinkingDuringAssistantPause: thinkingDuringAssistantPause,
+  }), [state, thinkingDuringAssistantPause])
+
+  return {
+    actions: actions,
+    turnMeta: turnMeta,
+    live: live,
+  }
 }
