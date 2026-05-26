@@ -7,6 +7,7 @@ import type { TypographyProps } from '@mui/material/Typography'
 import type { FC, ReactNode } from 'react'
 import { memo } from 'react'
 
+import { BUTTON_PRESSED_COLOR } from '../themes/colors'
 import { APP_HEADER_HEIGHT } from '../themes/components'
 import type { TestableProps } from './Testable'
 
@@ -99,6 +100,9 @@ const AppHeaderToolbar = styled(Toolbar)(({ theme }) => ({
     borderRadius: 0,
     '&:hover': {
       backgroundColor: theme.palette.primary.dark,
+    },
+    '&:active': {
+      backgroundColor: BUTTON_PRESSED_COLOR,
     },
   },
 }))
