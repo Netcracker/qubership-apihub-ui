@@ -36,5 +36,5 @@ export const ABORT_ERROR_NAME = 'AbortError'
 /** No assistant tokens for this long while `started` -> show Thinking (tools / network gaps). */
 export const ASSISTANT_MESSAGE_IDLE_FOR_THINKING_MS = 1000
 
-/** Interval for `useStreamingTurn` thinking poll; see comment there for why polling is required. */
+/** Interval for `useAssistantThinkingDuringPause`; see comment there for why polling is required. */
 export const STREAM_THINKING_POLL_MS = 250

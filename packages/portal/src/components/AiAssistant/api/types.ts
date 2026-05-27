@@ -72,6 +72,5 @@ export type AiChatStreamEvent =
   | { type: typeof AI_CHAT_STREAM_EVENT.assistantCompleted; message: AiChatMessage }
   | { type: typeof AI_CHAT_STREAM_EVENT.error; code: string; message: string }
   | { type: typeof AI_CHAT_STREAM_EVENT.done }
-  | { type: string; [k: string]: unknown }
 
 export const MAX_PINNED_PER_USER = 3 as const

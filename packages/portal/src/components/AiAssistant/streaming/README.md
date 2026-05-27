@@ -121,7 +121,7 @@ stateDiagram-v2
 | `pending` | User message shown; **Thinking** (waiting for first assistant token) |
 | `started` | Live assistant bubble with text from `buffer`                        |
 
-`streamingTurnReducer.ts` holds `buffer` and status. `processBatch` applies side effects (cache, toasts) then `dispatchTurn` (`stateRef` and React state both run `streamingTurnReducer`).
+`streamingTurnReducer.ts` holds `buffer` and status. `useStreamingTurnSseBatchProcessor` / `processStreamingTurnSseBatch` apply side effects (cache, toasts) then `dispatchTurn` (`stateRef` and React state both run `streamingTurnReducer`).
 
 React Query:
 
@@ -135,7 +135,7 @@ React Query:
 
 While status is `started`, only `message.assistant.start` / `delta` refresh a "last text activity" timestamp. Other SSE events (tools, compaction) can leave the turn in `started` **without new text** for a while.
 
-A **short poll** (see `STREAM_THINKING_POLL_MS` in `streamingTurnConstants.ts` and the comment in `useStreamingTurn`) shows the **Thinking** indicator if no assistant token arrived for ~1s. A single timeout per delta is not enough when non-text events arrive with no deltas in between.
+A **short poll** (see `STREAM_THINKING_POLL_MS` in `streamingTurnConstants.ts` and the comment in `useAssistantThinkingDuringPause.ts`) shows the **Thinking** indicator if no assistant token arrived for ~1s. A single timeout per delta is not enough when non-text events arrive with no deltas in between.
 
 ### Constants
 
