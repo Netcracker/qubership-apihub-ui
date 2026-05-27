@@ -5,13 +5,7 @@ import { ABORT_ERROR_NAME } from './streamingTurnConstants'
 
 /** True when the user pressed Stop and `fetch` was aborted (not a server error). */
 export function isStreamAbortError(e: unknown): boolean {
-  if (e instanceof DOMException && e.name === ABORT_ERROR_NAME) {
-    return true
-  }
-  if (e instanceof Error && e.name === ABORT_ERROR_NAME) {
-    return true
-  }
-  return false
+  return e instanceof Error && e.name === ABORT_ERROR_NAME
 }
 
 /** Shape for `dispatchAiChatFetchError` from SSE `error` frames and non-HTTP stream failures. */

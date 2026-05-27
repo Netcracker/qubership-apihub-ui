@@ -48,7 +48,7 @@ export function useChatScreenMessages({
     if (!isStreamingTurnStatus(live.state, STREAMING_TURN_STATUS.started)) {
       return null
     }
-    if (activeTurnChatId === null || activeTurnChatId !== activeChatId) {
+    if (activeTurnChatId !== activeChatId) {
       return null
     }
     return {
@@ -80,8 +80,7 @@ export function useChatScreenMessages({
 
   const showThread = messagesLoaded && displayMessages.length > 0
 
-  const thinkingVisible = activeTurnChatId !== null &&
-    activeTurnChatId === activeChatId &&
+  const thinkingVisible = activeTurnChatId === activeChatId &&
     (isStreamingTurnStatus(live.state, STREAMING_TURN_STATUS.pending) ||
       (isStreamingTurnStatus(live.state, STREAMING_TURN_STATUS.started) &&
         live.thinkingDuringAssistantPause))

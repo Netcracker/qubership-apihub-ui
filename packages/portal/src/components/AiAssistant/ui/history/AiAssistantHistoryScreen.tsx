@@ -132,12 +132,8 @@ export const AiAssistantHistoryScreen: FC = memo(() => {
       <RowsColumn>
         <RecentlyLabel>Recent</RecentlyLabel>
         {chats.map((chat) => {
-          const isPinned = chat.pinned === true
-          const pinnedOthersCount = loadedPinnedCount - (isPinned ? 1 : 0)
-          const pinDisabled = !isPinned && pinnedOthersCount >= MAX_PINNED_PER_USER
-          const deleteDisabled = isBusy &&
-            activeTurnChatId !== null &&
-            activeTurnChatId === chat.chatId
+          const pinDisabled = !chat.pinned && loadedPinnedCount >= MAX_PINNED_PER_USER
+          const deleteDisabled = isBusy && activeTurnChatId === chat.chatId
 
           return (
             <ChatListRow

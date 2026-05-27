@@ -58,8 +58,7 @@ export const ChatMessageList: FC<ChatMessageListProps> = memo(
               <ChatMessageRow
                 key={message.messageId}
                 message={message}
-                isStreamingAssistant={streamingAssistantMessageId !== null &&
-                  message.messageId === streamingAssistantMessageId}
+                isStreamingAssistant={message.messageId === streamingAssistantMessageId}
               />
             ))}
             <ThinkingIndicator visible={thinkingVisible} />

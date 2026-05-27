@@ -86,27 +86,27 @@ export function useStreamingTurn({
   }, [dispatchTurn])
 
   const actions = useMemo<AiAssistantStreamingActions>(() => ({
-    submit: submit,
-    abort: abort,
-    reset: reset,
+    submit,
+    abort,
+    reset,
   }), [submit, abort, reset])
 
   const isBusy = isStreamingBusy(state)
   const activeTurnChatId = getActiveTurnChatId(state)
 
   const turnMeta = useMemo<AiAssistantStreamingTurnMeta>(() => ({
-    isBusy: isBusy,
-    activeTurnChatId: activeTurnChatId,
+    isBusy,
+    activeTurnChatId,
   }), [isBusy, activeTurnChatId])
 
   const live = useMemo<AiAssistantStreamingLive>(() => ({
-    state: state,
-    thinkingDuringAssistantPause: thinkingDuringAssistantPause,
+    state,
+    thinkingDuringAssistantPause,
   }), [state, thinkingDuringAssistantPause])
 
   return {
-    actions: actions,
-    turnMeta: turnMeta,
-    live: live,
+    actions,
+    turnMeta,
+    live,
   }
 }

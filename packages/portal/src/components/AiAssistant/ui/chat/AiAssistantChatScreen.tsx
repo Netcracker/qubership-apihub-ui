@@ -32,7 +32,7 @@ export const AiAssistantChatScreen: FC = memo(() => {
               activeChatId={activeChatId}
               messagePages={messagesQuery.data?.pages}
               messagesLoaded={messagesQuery.isSuccess}
-              hasNextPage={Boolean(messagesQuery.hasNextPage)}
+              hasNextPage={!!messagesQuery.hasNextPage}
               isFetchingNextPage={messagesQuery.isFetchingNextPage}
               fetchNextPage={messagesQuery.fetchNextPage}
             />

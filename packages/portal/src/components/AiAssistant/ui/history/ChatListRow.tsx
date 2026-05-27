@@ -113,7 +113,7 @@ export const ChatListRow: FC<ChatListRowProps> = memo(({
           <ActionsSlot>
             {chat.pinned ? <PinIcon aria-hidden fontSize="small" /> : null}
             <ChatRowActionsMenu
-              pinned={Boolean(chat.pinned)}
+              pinned={!!chat.pinned}
               pinDisabled={isPinDisabled}
               pinDisabledTooltip={pinDisabledTooltip}
               deleteDisabled={isDeleteDisabled}
