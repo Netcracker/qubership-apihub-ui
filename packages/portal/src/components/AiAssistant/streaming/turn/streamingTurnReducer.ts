@@ -2,12 +2,18 @@ import { AI_CHAT_STREAM_EVENT } from '../../api/streamEvents'
 import type { AiChatStreamEvent, ChatId, ClientMessageId, MessageId } from '../../api/types'
 import { STREAMING_TURN_ACTION, STREAMING_TURN_STATUS, type StreamingTurnStatus } from './streamingTurnConstants'
 
+type AssistantStreamBuffer = {
+  chatId: ChatId
+  assistantMessageId: MessageId
+  buffer: string
+}
+
 export type StreamingTurnState =
   | { status: typeof STREAMING_TURN_STATUS.idle }
   | {
     status: typeof STREAMING_TURN_STATUS.pending
     chatId: ChatId
-    optimisticUserMessageId: MessageId
+    cachedUserMessageId: MessageId
     clientMessageId: ClientMessageId
     submittedContent: string
   }
@@ -24,7 +30,7 @@ export type StreamingTurnAction =
     type: typeof STREAMING_TURN_ACTION.turnRequested
     chatId: ChatId
     clientMessageId: ClientMessageId
-    optimisticUserMessageId: MessageId
+    cachedUserMessageId: MessageId
     submittedContent: string
   }
   | { type: typeof STREAMING_TURN_ACTION.sse; event: AiChatStreamEvent }
@@ -47,7 +53,7 @@ export function streamingTurnReducer(
         status: STREAMING_TURN_STATUS.pending,
         chatId: action.chatId,
         clientMessageId: action.clientMessageId,
-        optimisticUserMessageId: action.optimisticUserMessageId,
+        cachedUserMessageId: action.cachedUserMessageId,
         submittedContent: action.submittedContent,
       }
     case STREAMING_TURN_ACTION.sse:
@@ -98,11 +104,11 @@ export function applyStreamingSseEvent(
   }
 }
 
-/** When a batch contains `error`, returns partial buffer to persist before reducer clears state. */
-export function peekPartialBeforeErrorInBatch(
+/** When a batch contains `error`, returns stream buffer to cache before reducer clears state. */
+export function peekAssistantBufferBeforeErrorInBatch(
   state: StreamingTurnState,
   events: readonly AiChatStreamEvent[],
-): { chatId: ChatId; assistantMessageId: MessageId; buffer: string } | null {
+): AssistantStreamBuffer | null {
   let s = state
   for (const ev of events) {
     if (ev.type === AI_CHAT_STREAM_EVENT.error) {

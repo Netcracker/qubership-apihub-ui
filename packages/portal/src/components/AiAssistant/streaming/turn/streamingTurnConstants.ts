@@ -28,7 +28,8 @@ export const AI_ASSISTANT_INCOMPLETE_STREAM_MESSAGE =
 export const AI_ASSISTANT_STREAM_REQUEST_FAILED_MESSAGE =
   'Could not complete the request. Check your connection and try again.'
 
-export const OPTIMISTIC_MESSAGE_ID_PREFIX = 'optimistic-'
+/** Prefix for client-generated user message ids written to the messages cache before the server responds. */
+export const CACHED_USER_MESSAGE_ID_PREFIX = 'cached-'
 
 export const ABORT_ERROR_NAME = 'AbortError'
 

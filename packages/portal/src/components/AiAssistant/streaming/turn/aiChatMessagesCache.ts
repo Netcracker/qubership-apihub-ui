@@ -8,6 +8,19 @@ import {
   type MessageId,
 } from '../../api/types'
 
+type CachedUserMessageInput = {
+  messageId: MessageId
+  clientMessageId: ClientMessageId
+  content: string
+  createdAt: string
+}
+
+type CachedAssistantMessageInput = {
+  messageId: MessageId
+  content: string
+  createdAt: string
+}
+
 export function emptyMessagesInfiniteData(): InfiniteData<AiChatMessagesListResponse> {
   return {
     pages: [{ messages: [], hasMore: false }],
@@ -40,14 +53,9 @@ export function prependMessageToInfiniteMessages(
   }
 }
 
-export function buildOptimisticUserMessage(input: {
-  optimisticMessageId: MessageId
-  clientMessageId: ClientMessageId
-  content: string
-  createdAt: string
-}): AiChatMessage {
+export function buildCachedUserMessage(input: CachedUserMessageInput): AiChatMessage {
   return {
-    messageId: input.optimisticMessageId,
+    messageId: input.messageId,
     clientMessageId: input.clientMessageId,
     role: AI_CHAT_ROLE.user,
     content: input.content,
@@ -55,11 +63,7 @@ export function buildOptimisticUserMessage(input: {
   }
 }
 
-export function buildPartialAssistantMessage(input: {
-  messageId: MessageId
-  content: string
-  createdAt: string
-}): AiChatMessage {
+export function buildCachedAssistantMessage(input: CachedAssistantMessageInput): AiChatMessage {
   return {
     messageId: input.messageId,
     clientMessageId: null,

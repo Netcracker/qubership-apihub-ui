@@ -25,8 +25,8 @@ import type {
 } from '../../state/AiAssistantContext'
 import { streamAiChatTurn } from '../transport/sse'
 import {
-  buildOptimisticUserMessage,
-  buildPartialAssistantMessage,
+  buildCachedAssistantMessage,
+  buildCachedUserMessage,
   prependMessageToInfiniteMessages,
 } from './aiChatMessagesCache'
 import {
@@ -35,7 +35,7 @@ import {
   AI_ASSISTANT_STREAM_ERROR_DEFAULT_MESSAGE,
   AI_ASSISTANT_STREAM_REQUEST_FAILED_MESSAGE,
   ASSISTANT_MESSAGE_IDLE_FOR_THINKING_MS,
-  OPTIMISTIC_MESSAGE_ID_PREFIX,
+  CACHED_USER_MESSAGE_ID_PREFIX,
   STREAM_THINKING_POLL_MS,
   STREAMING_TURN_ACTION,
   STREAMING_TURN_STATUS,
@@ -44,7 +44,7 @@ import {
   getActiveTurnChatId,
   isStreamingBusy,
   isStreamingTurnStatus,
-  peekPartialBeforeErrorInBatch,
+  peekAssistantBufferBeforeErrorInBatch,
   STREAMING_TURN_IDLE_STATE,
   type StreamingTurnAction,
   streamingTurnReducer,
@@ -144,7 +144,7 @@ export function useStreamingTurn({
     return () => window.clearInterval(id)
   }, [state, streamPollKey])
 
-  const prependPartialAssistant = useCallback(
+  const prependCachedAssistantMessage = useCallback(
     (chatId: ChatId, messageId: MessageId, buffer: string): void => {
       if (!buffer) {
         return
@@ -154,7 +154,7 @@ export function useStreamingTurn({
         (previous: InfiniteData<AiChatMessagesListResponse> | undefined) =>
           prependMessageToInfiniteMessages(
             previous,
-            buildPartialAssistantMessage({
+            buildCachedAssistantMessage({
               messageId: messageId,
               content: buffer,
               createdAt: new Date().toISOString(),
@@ -165,13 +165,13 @@ export function useStreamingTurn({
     [queryClient],
   )
 
-  const flushPartialAssistantToCache = useCallback((chatId: ChatId): void => {
+  const flushAssistantBufferToCache = useCallback((chatId: ChatId): void => {
     const s = stateRef.current
     if (!isStreamingTurnStatus(s, STREAMING_TURN_STATUS.started) || s.chatId !== chatId) {
       return
     }
-    prependPartialAssistant(chatId, s.assistantMessageId, s.buffer)
-  }, [prependPartialAssistant])
+    prependCachedAssistantMessage(chatId, s.assistantMessageId, s.buffer)
+  }, [prependCachedAssistantMessage])
 
   const processBatch = useCallback(
     (chatId: ChatId, batch: readonly AiChatStreamEvent[]): void => {
@@ -179,12 +179,12 @@ export function useStreamingTurn({
         ? stateRef.current
         : (turnBootstrapRef.current ?? stateRef.current)
 
-      const partialBeforeError = peekPartialBeforeErrorInBatch(running, batch)
-      if (partialBeforeError !== null) {
-        prependPartialAssistant(
+      const bufferBeforeError = peekAssistantBufferBeforeErrorInBatch(running, batch)
+      if (bufferBeforeError !== null) {
+        prependCachedAssistantMessage(
           chatId,
-          partialBeforeError.assistantMessageId,
-          partialBeforeError.buffer,
+          bufferBeforeError.assistantMessageId,
+          bufferBeforeError.buffer,
         )
       }
 
@@ -222,7 +222,7 @@ export function useStreamingTurn({
       dispatchTurn({ type: STREAMING_TURN_ACTION.sseBatch, events: batch })
       turnBootstrapRef.current = null
     },
-    [dispatchTurn, prependPartialAssistant, queryClient],
+    [dispatchTurn, prependCachedAssistantMessage, queryClient],
   )
 
   const handleStreamHttp404 = useCallback((chatId: ChatId): void => {
@@ -247,17 +247,17 @@ export function useStreamingTurn({
           processBatch(chatId, batch)
         }
         if (isStreamingBusy(stateRef.current)) {
-          flushPartialAssistantToCache(chatId)
+          flushAssistantBufferToCache(chatId)
           dispatchAiChatWarning({ message: AI_ASSISTANT_INCOMPLETE_STREAM_MESSAGE })
           dispatchTurn({ type: STREAMING_TURN_ACTION.reset })
         }
       } catch (e) {
         if (isAbortError(e)) {
-          flushPartialAssistantToCache(chatId)
+          flushAssistantBufferToCache(chatId)
           dispatchTurn({ type: STREAMING_TURN_ACTION.aborted })
           return
         }
-        flushPartialAssistantToCache(chatId)
+        flushAssistantBufferToCache(chatId)
         dispatchTurn({ type: STREAMING_TURN_ACTION.reset })
         if (e instanceof HttpError && e.status === 404) {
           handleStreamHttp404(chatId)
@@ -274,7 +274,7 @@ export function useStreamingTurn({
         }
       }
     },
-    [dispatchTurn, flushPartialAssistantToCache, handleStreamHttp404, processBatch],
+    [dispatchTurn, flushAssistantBufferToCache, handleStreamHttp404, processBatch],
   )
 
   const submit = useCallback(
@@ -301,7 +301,7 @@ export function useStreamingTurn({
         }
 
         const clientMessageId = uuidv4() as ClientMessageId
-        const optimisticUserMessageId = `${OPTIMISTIC_MESSAGE_ID_PREFIX}${uuidv4()}` as MessageId
+        const cachedUserMessageId = `${CACHED_USER_MESSAGE_ID_PREFIX}${uuidv4()}` as MessageId
         const nowIso = new Date().toISOString()
 
         queryClient.setQueryData(
@@ -309,8 +309,8 @@ export function useStreamingTurn({
           (previous: InfiniteData<AiChatMessagesListResponse> | undefined) =>
             prependMessageToInfiniteMessages(
               previous,
-              buildOptimisticUserMessage({
-                optimisticMessageId: optimisticUserMessageId,
+              buildCachedUserMessage({
+                messageId: cachedUserMessageId,
                 clientMessageId: clientMessageId,
                 content: trimmed,
                 createdAt: nowIso,
@@ -322,7 +322,7 @@ export function useStreamingTurn({
           status: STREAMING_TURN_STATUS.pending,
           chatId: chatId,
           clientMessageId: clientMessageId,
-          optimisticUserMessageId: optimisticUserMessageId,
+          cachedUserMessageId: cachedUserMessageId,
           submittedContent: trimmed,
         }
 
@@ -330,7 +330,7 @@ export function useStreamingTurn({
           type: STREAMING_TURN_ACTION.turnRequested,
           chatId: chatId,
           clientMessageId: clientMessageId,
-          optimisticUserMessageId: optimisticUserMessageId,
+          cachedUserMessageId: cachedUserMessageId,
           submittedContent: trimmed,
         })
 

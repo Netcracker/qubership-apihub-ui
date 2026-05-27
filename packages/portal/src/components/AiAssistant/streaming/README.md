@@ -55,7 +55,7 @@ sequenceDiagram
 
   User->>Composer: Send
   Composer->>useStreamingTurn: submit(chatId, text)
-  useStreamingTurn->>ReactQuery: optimistic user message
+  useStreamingTurn->>ReactQuery: cached user message
   useStreamingTurn->>useStreamingTurn: state pending
   useStreamingTurn->>streamAiChatTurn: for await batches
   streamAiChatTurn->>Server: POST .../messages/stream (SSE)
@@ -94,7 +94,7 @@ Event types the turn layer cares about most:
 | `message.assistant.start`     | Turn moves to "started", new assistant `messageId`                          |
 | `message.assistant.delta`     | Append `delta` string to in-memory `buffer`                                 |
 | `message.assistant.completed` | Final message written to React Query cache                                  |
-| `error`                       | `fetch-error` toast (same event as REST) + partial answer kept if any       |
+| `error`                       | `fetch-error` toast (same event as REST) + cached assistant message if any  |
 | `done`                        | Messages stale every turn; chat list stale only on first turn of a new chat |
 
 Other events (`tool.started`, `tool.completed`, `context.compacted`, ...) are part of the backend contract but are **not** rendered yet. They still affect UX indirectly (see Thinking below).
@@ -125,9 +125,9 @@ stateDiagram-v2
 
 React Query:
 
-- **Optimistic user message** is prepended immediately on send.
+- **Cached user message** is prepended immediately on send.
 - On **completed**, the final assistant row is prepended to the cache.
-- On **abort** or **error** with partial text, a partial assistant message may be saved.
+- On **abort** or **error** with streamed text, a cached assistant message may be saved.
 - On **done**, `invalidateAiChatMessagesQuery(..., { refetchType: 'none' })` every turn: cache stays from SSE while the chat is open; refetch when the chat is opened again later.
 - Chat list: `invalidateAiChatListQueries(..., { refetchType: 'none' })` only on the first turn after `createAiChat` (server auto-title is async after `done`).
 
@@ -139,7 +139,7 @@ A **short poll** (see `STREAM_THINKING_POLL_MS` in `streamingTurnConstants.ts` a
 
 ### Constants
 
-`streamingTurnConstants.ts` - turn statuses, reducer action names, error copy, thinking timings, optimistic ID prefix.
+`streamingTurnConstants.ts` - turn statuses, reducer action names, error copy, thinking timings, cached user message ID prefix.
 
 Jump-to-latest FAB phase constants live in `../ui/chat/chatScreenConstants.ts` (UI-only, not turn logic).
 
@@ -163,7 +163,7 @@ Mid-turn SSE errors are not HTTP failures; the turn layer dispatches `fetch-erro
 
 `POST .../messages/stream` may return **404** + `APIHUB-AI-3001` before any SSE byte (chat deleted, stale `chatId` in the panel, or send raced with delete). Global `fetch-error` with `status: 404` would show a full-portal **ErrorPage** under the open drawer - we skip that.
 
-`toAiChatHttpError` does not dispatch on 404; `useStreamingTurn` catches `HttpError`, keeps any partial assistant text, clears caches for the `chatId`, and `resetActiveChat()` when it was active (welcome/history, no toast). Other HTTP statuses still use `dispatchAiChatFetchError` (`forceSnackbar: true`).
+`toAiChatHttpError` does not dispatch on 404; `useStreamingTurn` catches `HttpError`, keeps any cached assistant message from the stream buffer, clears caches for the `chatId`, and `resetActiveChat()` when it was active (welcome/history, no toast). Other HTTP statuses still use `dispatchAiChatFetchError` (`forceSnackbar: true`).
 
 ## Layer 3 - Live Markdown (`markdown/`)
 
@@ -189,11 +189,11 @@ When the turn ends, the same message renders in **full** mode (highlighting, cop
 
 ## Mental model (one paragraph)
 
-User sends -> optimistic user row + HTTP SSE stream opens -> each network chunk becomes a **batch of events** ->
+User sends -> cached user row + HTTP SSE stream opens -> each network chunk becomes a **batch of events** ->
 reducer appends text to `buffer` -> chat UI shows a synthetic assistant message until `completed` replaces it with
 the server message -> `done` marks messages stale (refetch when revisiting the chat); list stale on first turn of a new chat.
 
-Stop aborts `fetch` and may keep partial text. The generator in `sse.ts` bridges network chunks and React; the turn
+Stop aborts `fetch` and may persist a cached assistant message. The generator in `sse.ts` bridges network chunks and React; the turn
 hook bridges events and UI/cache.
 
 ## Tests and mock coverage
