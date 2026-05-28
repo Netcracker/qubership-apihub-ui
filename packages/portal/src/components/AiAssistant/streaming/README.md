@@ -175,17 +175,18 @@ When the turn ends, the same message renders in **full** mode (highlighting, cop
 
 ## What lives outside this folder
 
-| Location                                    | Responsibility                                         |
-| ------------------------------------------- | ------------------------------------------------------ |
-| `state/AiAssistantContext.tsx`              | Panel + streaming actions/meta/live types and hooks    |
-| `state/AiAssistantProvider.tsx`             | Hosts `useStreamingTurn`, nests four context providers |
-| `ui/chat/AiAssistantChatScreen.tsx`         | Welcome vs thread layout; mounts `ChatStreamingBody`   |
-| `ui/chat/ChatStreamingBody.tsx`             | Subscribes to live context; renders `ChatMessageList`  |
-| `ui/chat/AiAssistantComposer.tsx`           | Turn meta + actions (Send/Stop)                        |
-| `ui/header/AiAssistantHeader.tsx`           | Header chrome; handlers use actions + panel            |
-| `ui/markdown/AiAssistantMarkdownViewer.tsx` | Shared Markdown viewer (history + stream)              |
-| `api/*`                                     | REST client, paths, errors, stream POST, hooks         |
-| `hooks/useAiAssistantDeleteChat.ts`         | Delete mutation + panel navigation on failure          |
+| Location                                          | Responsibility                                         |
+| ------------------------------------------------- | ------------------------------------------------------ |
+| `state/AiAssistantContext.tsx`                    | Panel + streaming actions/meta/live types and hooks    |
+| `state/AiAssistantProvider.tsx`                   | Hosts `useStreamingTurn`, nests four context providers |
+| `ui/chat/AiAssistantChatScreen.tsx`               | Welcome vs thread layout; mounts `ChatStreamingBody`   |
+| `ui/chat/ChatStreamingBody.tsx`                   | Subscribes to live context; renders `ChatMessageList`  |
+| `ui/chat/AiAssistantComposer.tsx`                 | Turn meta + actions (Send/Stop)                        |
+| `ui/header/AiAssistantHeader.tsx`                 | Header chrome; handlers use actions + panel            |
+| `ui/markdown/AiAssistantMarkdownViewer.tsx`       | Shared Markdown viewer (history + stream)              |
+| `api/*`                                           | REST client, paths, errors, stream POST, hooks         |
+| `api/useDeleteAiChat.ts`                          | Delete mutation and cache updates                      |
+| `ui/history/hooks/useDeleteAiChatPanelActions.ts` | Panel clear/rollback around delete                     |
 
 ## Mental model (one paragraph)
 

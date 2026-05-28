@@ -1,16 +1,30 @@
-import { useMutation, type UseMutationResult, useQueryClient } from '@tanstack/react-query'
+import {
+  type QueryClient,
+  useMutation,
+  type UseMutationOptions,
+  type UseMutationResult,
+  useQueryClient,
+} from '@tanstack/react-query'
+import { useCallback } from 'react'
 
 import { invalidateAiChatListQueries } from './aiChatQueryInvalidation'
 import { removeAiChatQueries } from './chatCache'
 import { aiChatVoid } from './client'
+import type { DeleteAiChatPanelActions } from './deleteAiChatPanelActions'
 import { aiChatItemPath } from './paths'
 import { AI_CHAT_ROOT, aiChatItemKey, aiChatMessagesKey } from './queryKeys'
 import type { ChatId } from './types'
 
-export function useDeleteAiChat(): UseMutationResult<void, Error, ChatId> {
-  const queryClient = useQueryClient()
+type DeleteAiChatMutation = UseMutationResult<void, Error, ChatId, unknown>
 
-  return useMutation({
+export type UseDeleteAiChatResult = Omit<DeleteAiChatMutation, 'mutate' | 'mutateAsync'> & {
+  deleteChat: (chatId: ChatId) => void
+}
+
+function deleteAiChatMutationOptions(
+  queryClient: QueryClient,
+): UseMutationOptions<void, Error, ChatId, unknown> {
+  return {
     mutationFn: async (chatId: ChatId) => {
       await aiChatVoid(aiChatItemPath(chatId), { method: 'DELETE' })
     },
@@ -30,5 +44,28 @@ export function useDeleteAiChat(): UseMutationResult<void, Error, ChatId> {
     onSettled: () => {
       void invalidateAiChatListQueries(queryClient)
     },
-  })
+  }
+}
+
+export function useDeleteAiChat(panelActions: DeleteAiChatPanelActions): UseDeleteAiChatResult {
+  const queryClient = useQueryClient()
+
+  const mutation = useMutation(deleteAiChatMutationOptions(queryClient))
+  const { mutate, mutateAsync, ...mutationState } = mutation
+  void mutateAsync
+
+  const deleteChat = useCallback((chatId: ChatId) => {
+    const context = panelActions.getDeleteContext(chatId)
+    panelActions.onBeforeDelete(chatId, context)
+    mutate(chatId, {
+      onError: () => {
+        panelActions.onDeleteFailed(chatId, context)
+      },
+    })
+  }, [mutate, panelActions])
+
+  return {
+    ...mutationState,
+    deleteChat,
+  }
 }

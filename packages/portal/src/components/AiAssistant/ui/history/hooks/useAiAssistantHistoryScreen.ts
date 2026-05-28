@@ -3,10 +3,11 @@ import { type Dispatch, type RefObject, type SetStateAction, useCallback, useMem
 
 import { type AiChat, type AiChatsListResponse, type ChatId } from '../../../api/types'
 import { useAiChats } from '../../../api/useAiChats'
+import { useDeleteAiChat, type UseDeleteAiChatResult } from '../../../api/useDeleteAiChat'
 import { useUpdateAiChat } from '../../../api/useUpdateAiChat'
-import { useAiAssistantDeleteChat } from '../../../hooks/useAiAssistantDeleteChat'
 import { useAiAssistantPanel, useAiAssistantStreamingTurnMeta } from '../../../state/AiAssistantContext'
 import { selectChatsFromPages, selectPinnedChatCount } from '../aiChatHistorySelectors'
+import { useDeleteAiChatPanelActions } from './useDeleteAiChatPanelActions'
 
 const LOAD_NEXT_PAGE_THRESHOLD_PX = 120
 
@@ -17,7 +18,7 @@ type AiAssistantHistoryScreenState = {
   chats: AiChat[]
   chatsQuery: UseInfiniteQueryResult<AiChatsListResponse, Error>
   clearRowTitleOverride: (chatId: ChatId) => void
-  deleteChat: ReturnType<typeof useAiAssistantDeleteChat>
+  deleteChat: UseDeleteAiChatResult
   handleBack: () => void
   handleCancelDelete: () => void
   handleCancelRename: () => void
@@ -41,7 +42,8 @@ export function useAiAssistantHistoryScreen(): AiAssistantHistoryScreenState {
   const { activeChatId, openChatScreen } = useAiAssistantPanel()
   const { isBusy, activeTurnChatId } = useAiAssistantStreamingTurnMeta()
   const { renameChat, setChatPinned } = useUpdateAiChat()
-  const deleteChat = useAiAssistantDeleteChat()
+  const deleteChatPanelActions = useDeleteAiChatPanelActions()
+  const deleteChat = useDeleteAiChat(deleteChatPanelActions)
 
   const [searchQuery, setSearchQuery] = useState('')
   const [renamingChatId, setRenamingChatId] = useState<ChatId | null>(null)
@@ -116,7 +118,7 @@ export function useAiAssistantHistoryScreen(): AiAssistantHistoryScreenState {
     const chatToDelete = chatPendingDelete.chatId
     setChatPendingDelete(null)
     setRenamingChatId((current) => (current === chatToDelete ? null : current))
-    deleteChat.mutate(chatToDelete)
+    deleteChat.deleteChat(chatToDelete)
   }, [chatPendingDelete, deleteChat])
 
   const handleCancelDelete = useCallback(() => {
