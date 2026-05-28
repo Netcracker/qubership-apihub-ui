@@ -18,6 +18,7 @@ export function invalidateAiChatListQueries(
   queryClient: QueryClient,
   options: InvalidateOptions = {},
 ): Promise<void> {
+  // Drop unsubscribed list caches (e.g. previous History search strings) so they do not linger stale.
   queryClient.removeQueries({
     predicate: (query) => listQueryPredicate(query) && query.getObserversCount() === 0,
   })
