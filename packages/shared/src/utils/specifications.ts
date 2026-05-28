@@ -212,9 +212,24 @@ export function decodeKey(key: Key): Key {
 export function toYaml(value: unknown): string | null {
   let yaml: string | null
   try {
-    yaml = dump(value, { noRefs: true } as DumpOptions)
+    yaml = dump(replaceTabsInStrings(value), { noRefs: true, lineWidth: -1 } as DumpOptions)
   } catch (e) {
     yaml = null
   }
   return yaml
+}
+
+function replaceTabsInStrings(value: unknown): unknown {
+  if (typeof value === 'string') {
+    return value.replace(/\t/g, '    ')
+  }
+  if (Array.isArray(value)) {
+    return value.map(replaceTabsInStrings)
+  }
+  if (value !== null && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>).map(([k, v]) => [k, replaceTabsInStrings(v)])
+    )
+  }
+  return value
 }
