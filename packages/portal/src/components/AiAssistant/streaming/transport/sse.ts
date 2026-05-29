@@ -1,6 +1,6 @@
 import { type AiChatStreamRequestBody, postAiChatMessageStream } from '../../api/requests'
 import type { AiChatStreamEvent, ChatId } from '../../api/types'
-import type { SseFrame } from './sseFramer'
+import { parseSseFrame } from './sseFrameParser'
 import { splitSseFrames } from './sseFramer'
 
 type ParsedSseBufferResult = {
@@ -44,16 +44,6 @@ export async function* streamAiChatTurn(
     yield* yieldEventBatchIfAny(tail.events)
   } finally {
     reader.releaseLock()
-  }
-}
-
-function parseSseFrame(frame: SseFrame): AiChatStreamEvent | null {
-  try {
-    const payload = JSON.parse(frame.data) as Record<string, unknown>
-    const mergedType = String(payload.type ?? frame.event)
-    return { ...payload, type: mergedType } as AiChatStreamEvent
-  } catch {
-    return null
   }
 }
 
