@@ -4,6 +4,7 @@ import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
+import type { PopoverOrigin } from '@mui/material/Popover'
 import { styled } from '@mui/material/styles'
 import Tooltip from '@mui/material/Tooltip'
 
@@ -20,6 +21,16 @@ type ChatRowActionsMenuProps = {
   onMenuOpenChange?: (open: boolean) => void
 }
 
+const MENU_ANCHOR_ORIGIN: PopoverOrigin = {
+  vertical: 'bottom',
+  horizontal: 'right',
+}
+
+const MENU_TRANSFORM_ORIGIN: PopoverOrigin = {
+  vertical: 'top',
+  horizontal: 'right',
+}
+
 export const ChatRowActionsMenu: FC<ChatRowActionsMenuProps> = memo(({
   pinned,
   pinDisabled,
@@ -33,37 +44,41 @@ export const ChatRowActionsMenu: FC<ChatRowActionsMenuProps> = memo(({
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
 
+  const stopPropagation = useCallback((event: MouseEvent) => {
+    event.stopPropagation()
+  }, [])
+
   const closeMenu = useCallback(() => {
     setAnchorEl(null)
     onMenuOpenChange?.(false)
   }, [onMenuOpenChange])
 
   const handleOpen = useCallback((event: MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation()
+    stopPropagation(event)
     setAnchorEl(event.currentTarget)
     onMenuOpenChange?.(true)
-  }, [onMenuOpenChange])
+  }, [onMenuOpenChange, stopPropagation])
 
   const handleRename = useCallback((event: MouseEvent<HTMLElement>) => {
-    event.stopPropagation()
+    stopPropagation(event)
     closeMenu()
     onRename()
-  }, [closeMenu, onRename])
+  }, [closeMenu, onRename, stopPropagation])
 
   const handlePinClick = useCallback((event: MouseEvent<HTMLElement>) => {
-    event.stopPropagation()
+    stopPropagation(event)
     if (pinDisabled) {
       return
     }
     closeMenu()
     onTogglePin(!pinned)
-  }, [closeMenu, onTogglePin, pinned, pinDisabled])
+  }, [closeMenu, onTogglePin, pinned, pinDisabled, stopPropagation])
 
   const handleDelete = useCallback((event: MouseEvent<HTMLElement>) => {
-    event.stopPropagation()
+    stopPropagation(event)
     closeMenu()
     onDelete()
-  }, [closeMenu, onDelete])
+  }, [closeMenu, onDelete, stopPropagation])
 
   const pinLimitBlocked = pinDisabled && !!pinDisabledTooltip
 
@@ -77,7 +92,7 @@ export const ChatRowActionsMenu: FC<ChatRowActionsMenuProps> = memo(({
         aria-haspopup="true"
         data-testid="AiAssistantHistoryChatActionsButton"
         onClick={handleOpen}
-        onMouseDown={(event) => event.stopPropagation()}
+        onMouseDown={stopPropagation}
       >
         <ActionsIcon fontSize="small" />
       </ActionsMenuIconButton>
@@ -85,9 +100,9 @@ export const ChatRowActionsMenu: FC<ChatRowActionsMenuProps> = memo(({
         anchorEl={anchorEl}
         open={open}
         onClose={closeMenu}
-        onClick={(event) => event.stopPropagation()}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        onClick={stopPropagation}
+        anchorOrigin={MENU_ANCHOR_ORIGIN}
+        transformOrigin={MENU_TRANSFORM_ORIGIN}
       >
         <MenuItem onClick={handleRename}>
           Rename
