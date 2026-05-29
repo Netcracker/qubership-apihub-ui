@@ -9,14 +9,12 @@ import { CloseIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CloseIco
 import { NewChatIcon } from '@netcracker/qubership-apihub-ui-shared/icons/NewChatIcon'
 
 type AiAssistantHeaderActionsProps = {
-  newChatDisabled: boolean
   onNewChat: () => void
   onHistory: () => void
   onClose: () => void
 }
 
 export const AiAssistantHeaderActions: FC<AiAssistantHeaderActionsProps> = memo(({
-  newChatDisabled,
   onNewChat,
   onHistory,
   onClose,
@@ -26,7 +24,6 @@ export const AiAssistantHeaderActions: FC<AiAssistantHeaderActionsProps> = memo(
       <IconButton
         aria-label="New chat"
         data-testid="NewChatButton"
-        disabled={newChatDisabled}
         onClick={onNewChat}
         color="inherit"
       >

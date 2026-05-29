@@ -20,6 +20,7 @@ export type AiAssistantPanelContextValue = {
   openChatScreen: (chatId: ChatId | null) => void
   resetActiveChat: () => void
   clearActiveChat: () => void
+  startNewChat: () => void
 }
 
 export type SubmitTurnHandler = (activeChatId: ChatId | null, content: string) => Promise<void>

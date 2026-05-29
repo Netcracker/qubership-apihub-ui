@@ -56,6 +56,14 @@ export const AiAssistantProvider: FC<PropsWithChildren> = memo<PropsWithChildren
     activeChatId,
   })
 
+  const { abort, reset } = actions
+
+  const startNewChat = useCallback((): void => {
+    abort()
+    reset()
+    resetActiveChat()
+  }, [abort, reset, resetActiveChat])
+
   useEvent(SHOW_AI_ASSISTANT_PANEL, openPanel)
   useEvent(HIDE_AI_ASSISTANT_PANEL, closePanel)
 
@@ -69,6 +77,7 @@ export const AiAssistantProvider: FC<PropsWithChildren> = memo<PropsWithChildren
     openChatScreen,
     resetActiveChat,
     clearActiveChat,
+    startNewChat,
   }), [
     open,
     screen,
@@ -79,6 +88,7 @@ export const AiAssistantProvider: FC<PropsWithChildren> = memo<PropsWithChildren
     openChatScreen,
     resetActiveChat,
     clearActiveChat,
+    startNewChat,
   ])
 
   return (

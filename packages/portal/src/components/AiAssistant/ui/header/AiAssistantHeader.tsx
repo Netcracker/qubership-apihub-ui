@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography'
 import { BackArrowIcon } from '@netcracker/qubership-apihub-ui-shared/icons/BackArrowIcon'
 import { RobotFilledIcon } from '@netcracker/qubership-apihub-ui-shared/icons/RobotFilledIcon'
 
-import { useAiAssistantHeaderHandlers } from '../../hooks/useAiAssistantHeaderHandlers'
+import { useAiAssistantPanel } from '../../state/AiAssistantContext'
 import { AiAssistantHeaderActions } from './AiAssistantHeaderActions'
 import { AI_ASSISTANT_HEADER_MODE, AI_ASSISTANT_HEADER_TITLE } from './aiAssistantHeaderMode'
 
@@ -21,7 +21,7 @@ type AiAssistantHeaderProps =
   }
 
 export const AiAssistantHeader: FC<AiAssistantHeaderProps> = memo((props) => {
-  const { newChatDisabled, onNewChat, onHistory, onClose } = useAiAssistantHeaderHandlers()
+  const { startNewChat, openHistory, closePanel } = useAiAssistantPanel()
 
   return (
     <HeaderRoot>
@@ -48,10 +48,9 @@ export const AiAssistantHeader: FC<AiAssistantHeaderProps> = memo((props) => {
           </HeaderHeading>
         </HeaderLeading>
         <AiAssistantHeaderActions
-          newChatDisabled={newChatDisabled}
-          onNewChat={onNewChat}
-          onHistory={onHistory}
-          onClose={onClose}
+          onNewChat={startNewChat}
+          onHistory={openHistory}
+          onClose={closePanel}
         />
       </HeaderToolbar>
       <Divider orientation="horizontal" variant="fullWidth" flexItem />
