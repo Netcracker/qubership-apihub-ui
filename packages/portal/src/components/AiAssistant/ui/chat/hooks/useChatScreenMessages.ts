@@ -19,12 +19,12 @@ type UseChatScreenMessagesParams = {
   activeChatId: ChatId
   messagePages: MessagePage[] | undefined
   messagesLoaded: boolean
-  live: AiAssistantStreamingLive
+  streamingLive: AiAssistantStreamingLive
 }
 
-type StreamingAssistantLive = {
+type StreamingAssistantBuffer = {
   messageId: MessageId
-  content: string
+  buffer: string
 }
 
 type ChatScreenMessagesView = {
@@ -39,9 +39,9 @@ export function useChatScreenMessages({
   activeChatId,
   messagePages,
   messagesLoaded,
-  live,
+  streamingLive,
 }: UseChatScreenMessagesParams): ChatScreenMessagesView {
-  const activeTurnChatId = getActiveTurnChatId(live.state)
+  const activeTurnChatId = getActiveTurnChatId(streamingLive.state)
   const messagesOldestFirst = useMemo((): AiChatMessage[] => {
     if (!messagePages?.length) {
       return []
@@ -50,49 +50,52 @@ export function useChatScreenMessages({
     return [...newestFirst].reverse()
   }, [messagePages])
 
-  const streamingAssistantLive = useMemo((): StreamingAssistantLive | null => {
-    if (!isStreamingTurnStatus(live.state, STREAMING_TURN_STATUS.started)) {
+  const streamingAssistantBuffer = useMemo((): StreamingAssistantBuffer | null => {
+    if (!isStreamingTurnStatus(streamingLive.state, STREAMING_TURN_STATUS.started)) {
       return null
     }
     if (activeTurnChatId !== activeChatId) {
       return null
     }
     return {
-      messageId: live.state.assistantMessageId,
-      content: live.state.buffer,
+      messageId: streamingLive.state.assistantMessageId,
+      buffer: streamingLive.state.buffer,
     }
-  }, [activeChatId, activeTurnChatId, live.state])
+  }, [activeChatId, activeTurnChatId, streamingLive.state])
 
   const displayMessages = useMemo((): AiChatMessage[] => {
-    const base = messagesOldestFirst
-    if (!streamingAssistantLive) {
-      return base
+    if (!streamingAssistantBuffer) {
+      return messagesOldestFirst
     }
-    const hasFinalAssistant = base.some(
-      (m) => m.messageId === streamingAssistantLive.messageId && m.role === AI_CHAT_ROLE.assistant,
+
+    const assistantMessageInThread = messagesOldestFirst.some(
+      (message) =>
+        message.messageId === streamingAssistantBuffer.messageId &&
+        message.role === AI_CHAT_ROLE.assistant,
     )
-    if (hasFinalAssistant) {
-      return base
+    if (assistantMessageInThread) {
+      return messagesOldestFirst
     }
-    const synthetic = buildCachedAssistantMessage({
-      messageId: streamingAssistantLive.messageId,
-      content: streamingAssistantLive.content,
+
+    const streamingAssistantMessage = buildCachedAssistantMessage({
+      messageId: streamingAssistantBuffer.messageId,
+      content: streamingAssistantBuffer.buffer,
       createdAt: new Date().toISOString(),
     })
-    return [...base, synthetic]
-  }, [messagesOldestFirst, streamingAssistantLive])
+    return [...messagesOldestFirst, streamingAssistantMessage]
+  }, [messagesOldestFirst, streamingAssistantBuffer])
 
   const showThread = messagesLoaded && displayMessages.length > 0
 
   const thinkingVisible = activeTurnChatId === activeChatId &&
-    (isStreamingTurnStatus(live.state, STREAMING_TURN_STATUS.pending) ||
-      (isStreamingTurnStatus(live.state, STREAMING_TURN_STATUS.started) &&
-        live.thinkingDuringAssistantPause))
+    (isStreamingTurnStatus(streamingLive.state, STREAMING_TURN_STATUS.pending) ||
+      (isStreamingTurnStatus(streamingLive.state, STREAMING_TURN_STATUS.started) &&
+        streamingLive.thinkingDuringAssistantPause))
 
-  const jumpPhase = isStreamingBusy(live.state)
+  const jumpPhase = isStreamingBusy(streamingLive.state)
     ? CHAT_MESSAGE_LIST_JUMP_PHASE.active
     : CHAT_MESSAGE_LIST_JUMP_PHASE.idle
-  const streamingAssistantMessageId = streamingAssistantLive?.messageId ?? null
+  const streamingAssistantMessageId = streamingAssistantBuffer?.messageId ?? null
 
   return {
     displayMessages,

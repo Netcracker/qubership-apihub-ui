@@ -28,7 +28,7 @@ export const ChatStreamingBody: FC<ChatStreamingBodyProps> = memo(({
   isFetchingNextPage,
   fetchNextPage,
 }) => {
-  const live = useAiAssistantStreamingLive()
+  const streamingLive = useAiAssistantStreamingLive()
 
   const {
     displayMessages,
@@ -40,7 +40,7 @@ export const ChatStreamingBody: FC<ChatStreamingBodyProps> = memo(({
     activeChatId: activeChatId,
     messagePages: messagePages,
     messagesLoaded: messagesLoaded,
-    live: live,
+    streamingLive: streamingLive,
   })
 
   if (!showThread) {
