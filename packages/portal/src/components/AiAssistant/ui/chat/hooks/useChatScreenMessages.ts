@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 
 import { AI_CHAT_ROLE, type AiChatMessage, type ChatId, type MessageId } from '../../../api/types'
 import type { AiAssistantStreamingLive } from '../../../state/AiAssistantContext'
+import { buildCachedAssistantMessage } from '../../../streaming/turn/aiChatMessagesCache'
 import { STREAMING_TURN_STATUS } from '../../../streaming/turn/streamingTurnConstants'
 import {
   getActiveTurnChatId,
@@ -73,13 +74,11 @@ export function useChatScreenMessages({
     if (hasFinalAssistant) {
       return base
     }
-    const synthetic: AiChatMessage = {
+    const synthetic = buildCachedAssistantMessage({
       messageId: streamingAssistantLive.messageId,
-      clientMessageId: null,
-      role: AI_CHAT_ROLE.assistant,
       content: streamingAssistantLive.content,
       createdAt: new Date().toISOString(),
-    }
+    })
     return [...base, synthetic]
   }, [messagesOldestFirst, streamingAssistantLive])
 

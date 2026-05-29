@@ -1,13 +1,17 @@
-import { type InfiniteData, type QueryClient, useQueryClient } from '@tanstack/react-query'
+import { type QueryClient, useQueryClient } from '@tanstack/react-query'
 import { type MutableRefObject, useCallback, useRef } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { invalidateAiChatListQueries } from '../../api/aiChatQueryInvalidation'
-import { aiChatItemKey, aiChatMessagesKey } from '../../api/queryKeys'
+import { aiChatItemKey } from '../../api/queryKeys'
 import { createAiChat } from '../../api/requests'
-import type { AiChatMessagesListResponse, ChatId, ClientMessageId, MessageId } from '../../api/types'
+import type { ChatId, ClientMessageId, MessageId } from '../../api/types'
 import type { SubmitTurnHandler } from '../../state/AiAssistantContext'
-import { buildCachedUserMessage, prependMessageToInfiniteMessages } from './aiChatMessagesCache'
+import {
+  buildCachedUserMessage,
+  prependMessageToInfiniteMessages,
+  updateAiChatMessagesCache,
+} from './aiChatMessagesCache'
 import { CACHED_USER_MESSAGE_ID_PREFIX, STREAMING_TURN_ACTION, STREAMING_TURN_STATUS } from './streamingTurnConstants'
 import type { RunStreamingTurnHandler } from './streamingTurnHandlers'
 import { type StreamingTurnAction, type StreamingTurnState } from './streamingTurnReducer'
@@ -126,17 +130,14 @@ function prependOptimisticUserMessage(
   chatId: ChatId,
   params: OptimisticUserMessageParams,
 ): void {
-  queryClient.setQueryData(
-    aiChatMessagesKey(chatId),
-    (previous: InfiniteData<AiChatMessagesListResponse> | undefined) =>
-      prependMessageToInfiniteMessages(
-        previous,
-        buildCachedUserMessage({
-          messageId: params.cachedUserMessageId,
-          clientMessageId: params.clientMessageId,
-          content: params.content,
-          createdAt: params.createdAt,
-        }),
-      ),
-  )
+  updateAiChatMessagesCache(queryClient, chatId, (previous) =>
+    prependMessageToInfiniteMessages(
+      previous,
+      buildCachedUserMessage({
+        messageId: params.cachedUserMessageId,
+        clientMessageId: params.clientMessageId,
+        content: params.content,
+        createdAt: params.createdAt,
+      }),
+    ))
 }

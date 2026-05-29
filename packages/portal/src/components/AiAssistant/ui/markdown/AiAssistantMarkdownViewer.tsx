@@ -6,16 +6,7 @@ import { styled } from '@mui/material/styles'
 import http from 'highlight.js/lib/languages/http'
 import json from 'highlight.js/lib/languages/json'
 import yaml from 'highlight.js/lib/languages/yaml'
-import {
-  type ComponentPropsWithoutRef,
-  type FC,
-  isValidElement,
-  memo,
-  type MouseEvent,
-  type ReactNode,
-  useCallback,
-  useMemo,
-} from 'react'
+import { type ComponentPropsWithoutRef, type FC, memo, type MouseEvent, useCallback, useMemo } from 'react'
 import ReactMarkdown from 'react-markdown'
 import type { CodeProps } from 'react-markdown/lib/ast-to-react'
 import type { ReactMarkdownProps } from 'react-markdown/lib/complex-types'
@@ -30,6 +21,7 @@ import {
   type AiAssistantMarkdownRenderMode,
 } from '../../streaming/markdown/aiAssistantMarkdownMode'
 import { isEphemeralFileLink, isInternalPortalLink, resolveToUrl } from '../../utils/internalLinkMatcher'
+import { plainChildrenText } from '../../utils/plainChildrenText'
 import { CHAT_CARD_LINK_CLASS } from './chatCard'
 import { CodeBlock } from './CodeBlock'
 import { FileDownloadLink } from './FileDownloadLink'
@@ -104,7 +96,7 @@ function markdownCodeRenderer(showHeader: boolean): FC<CodeProps> {
         </code>
       )
     }
-    const rawText = (node as { value?: string }).value ?? extractCodeText(children)
+    const rawText = (node as { value?: string }).value ?? plainChildrenText(children)
     return (
       <CodeBlock className={className} rawText={rawText} showHeader={showHeader}>
         {children}
@@ -184,19 +176,3 @@ const AssistantMarkdownSurface = styled(Box)(({ theme }) => ({
     },
   },
 }))
-
-function extractCodeText(children: ReactNode): string {
-  if (children === null || children === undefined || typeof children === 'boolean') {
-    return ''
-  }
-  if (typeof children === 'string' || typeof children === 'number') {
-    return String(children)
-  }
-  if (Array.isArray(children)) {
-    return children.map(extractCodeText).join('')
-  }
-  if (isValidElement(children)) {
-    return extractCodeText(children.props.children)
-  }
-  return ''
-}

@@ -7,12 +7,11 @@ import {
 } from '@tanstack/react-query'
 import { useCallback } from 'react'
 
-import { invalidateAiChatListQueries } from './aiChatQueryInvalidation'
-import { removeAiChatQueries } from './chatCache'
+import { invalidateAiChatListQueries, invalidateAiChatPerChatQueries } from './aiChatQueryInvalidation'
+import { cancelAiChatMutationQueries, removeAiChatQueries } from './chatCache'
 import { aiChatVoid } from './client'
 import type { DeleteAiChatPanelActions } from './deleteAiChatPanelActions'
 import { aiChatItemPath } from './paths'
-import { AI_CHAT_ROOT, aiChatItemKey, aiChatMessagesKey } from './queryKeys'
 import type { ChatId } from './types'
 
 type DeleteAiChatMutation = UseMutationResult<void, Error, ChatId, unknown>
@@ -29,14 +28,10 @@ function deleteAiChatMutationOptions(
       await aiChatVoid(aiChatItemPath(chatId), { method: 'DELETE' })
     },
     onMutate: async (chatId) => {
-      await queryClient.cancelQueries({ queryKey: [AI_CHAT_ROOT, 'chats'] })
-      await queryClient.cancelQueries({ queryKey: aiChatItemKey(chatId), exact: true })
-      await queryClient.cancelQueries({ queryKey: aiChatMessagesKey(chatId), exact: true })
+      await cancelAiChatMutationQueries(queryClient, chatId, { includeMessages: true })
     },
     onError: (_error, chatId) => {
-      void queryClient.invalidateQueries({ queryKey: aiChatItemKey(chatId), exact: true })
-      void queryClient.invalidateQueries({ queryKey: aiChatMessagesKey(chatId), exact: true })
-      void invalidateAiChatListQueries(queryClient)
+      invalidateAiChatPerChatQueries(queryClient, chatId)
     },
     onSuccess: (_data, chatId) => {
       removeAiChatQueries(queryClient, chatId)

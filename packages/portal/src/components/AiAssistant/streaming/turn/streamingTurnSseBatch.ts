@@ -1,9 +1,8 @@
-import { type InfiniteData, type QueryClient, useQueryClient } from '@tanstack/react-query'
+import { type QueryClient, useQueryClient } from '@tanstack/react-query'
 import { type MutableRefObject, useCallback } from 'react'
 
 import { invalidateAiChatListQueries, invalidateAiChatMessagesQuery } from '../../api/aiChatQueryInvalidation'
 import { dispatchAiChatFetchError } from '../../api/errors'
-import { aiChatMessagesKey } from '../../api/queryKeys'
 import {
   type AiChatStreamErrorEvent,
   isAiChatAssistantCompletedStreamEvent,
@@ -11,8 +10,8 @@ import {
   isAiChatStreamErrorEvent,
   isAssistantStreamProgressEvent,
 } from '../../api/streamEvents'
-import type { AiChatMessage, AiChatMessagesListResponse, AiChatStreamEvent, ChatId, MessageId } from '../../api/types'
-import { prependMessageToInfiniteMessages } from './aiChatMessagesCache'
+import type { AiChatMessage, AiChatStreamEvent, ChatId, MessageId } from '../../api/types'
+import { prependMessageToInfiniteMessages, updateAiChatMessagesCache } from './aiChatMessagesCache'
 import {
   AI_ASSISTANT_STREAM_ERROR_DEFAULT_MESSAGE,
   STREAMING_TURN_ACTION,
@@ -176,9 +175,5 @@ function prependAssistantCompletedMessageToCache(
   chatId: ChatId,
   message: AiChatMessage,
 ): void {
-  queryClient.setQueryData(
-    aiChatMessagesKey(chatId),
-    (previous: InfiniteData<AiChatMessagesListResponse> | undefined) =>
-      prependMessageToInfiniteMessages(previous, message),
-  )
+  updateAiChatMessagesCache(queryClient, chatId, (previous) => prependMessageToInfiniteMessages(previous, message))
 }

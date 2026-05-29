@@ -1,7 +1,19 @@
 import type { QueryClient } from '@tanstack/react-query'
 
-import { aiChatItemKey, aiChatMessagesKey } from './queryKeys'
+import { AI_CHAT_ROOT, aiChatItemKey, aiChatMessagesKey } from './queryKeys'
 import type { AiChat, ChatId } from './types'
+
+export async function cancelAiChatMutationQueries(
+  queryClient: QueryClient,
+  chatId: ChatId,
+  options?: { includeMessages?: boolean },
+): Promise<void> {
+  await queryClient.cancelQueries({ queryKey: [AI_CHAT_ROOT, 'chats'] })
+  await queryClient.cancelQueries({ queryKey: aiChatItemKey(chatId), exact: true })
+  if (options?.includeMessages) {
+    await queryClient.cancelQueries({ queryKey: aiChatMessagesKey(chatId), exact: true })
+  }
+}
 
 export function removeAiChatQueries(queryClient: QueryClient, chatId: ChatId): void {
   queryClient.removeQueries({ queryKey: aiChatItemKey(chatId), exact: true })

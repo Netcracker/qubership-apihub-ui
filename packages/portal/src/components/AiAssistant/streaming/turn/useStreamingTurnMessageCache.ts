@@ -1,9 +1,12 @@
-import { type InfiniteData, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { type MutableRefObject, useCallback } from 'react'
 
-import { aiChatMessagesKey } from '../../api/queryKeys'
-import type { AiChatMessagesListResponse, ChatId, MessageId } from '../../api/types'
-import { buildCachedAssistantMessage, prependMessageToInfiniteMessages } from './aiChatMessagesCache'
+import type { ChatId, MessageId } from '../../api/types'
+import {
+  buildCachedAssistantMessage,
+  prependMessageToInfiniteMessages,
+  updateAiChatMessagesCache,
+} from './aiChatMessagesCache'
 import { STREAMING_TURN_STATUS } from './streamingTurnConstants'
 import { isStreamingTurnStatus, type StreamingTurnState } from './streamingTurnReducer'
 
@@ -26,18 +29,15 @@ export function useStreamingTurnMessageCache(
       if (!buffer) {
         return
       }
-      queryClient.setQueryData(
-        aiChatMessagesKey(chatId),
-        (previous: InfiniteData<AiChatMessagesListResponse> | undefined) =>
-          prependMessageToInfiniteMessages(
-            previous,
-            buildCachedAssistantMessage({
-              messageId: messageId,
-              content: buffer,
-              createdAt: new Date().toISOString(),
-            }),
-          ),
-      )
+      updateAiChatMessagesCache(queryClient, chatId, (previous) =>
+        prependMessageToInfiniteMessages(
+          previous,
+          buildCachedAssistantMessage({
+            messageId: messageId,
+            content: buffer,
+            createdAt: new Date().toISOString(),
+          }),
+        ))
     },
     [queryClient],
   )

@@ -2,8 +2,8 @@ import { useMutation, type UseMutationResult, useQueryClient } from '@tanstack/r
 import { useCallback } from 'react'
 
 import { invalidateAiChatListQueries } from './aiChatQueryInvalidation'
-import { applyLocalChatPatch } from './chatCache'
-import { AI_CHAT_ROOT, aiChatItemKey } from './queryKeys'
+import { applyLocalChatPatch, cancelAiChatMutationQueries } from './chatCache'
+import { aiChatItemKey } from './queryKeys'
 import { updateAiChat } from './requests'
 import type { AiChat, AiChatUpdateRequest, ChatId } from './types'
 
@@ -44,13 +44,13 @@ export function useUpdateAiChat(): UseUpdateAiChatResult {
   >({
     mutationFn: ({ chatId, patch }) => updateAiChat(chatId, patch),
     onMutate: async ({ chatId, patch }) => {
-      await queryClient.cancelQueries({ queryKey: [AI_CHAT_ROOT, 'chats'] })
-      await queryClient.cancelQueries({ queryKey: aiChatItemKey(chatId), exact: true })
+      const itemKey = aiChatItemKey(chatId)
+      await cancelAiChatMutationQueries(queryClient, chatId)
 
-      const chatSnapshot = queryClient.getQueryData<AiChat>(aiChatItemKey(chatId))
+      const chatSnapshot = queryClient.getQueryData<AiChat>(itemKey)
 
       if (chatSnapshot) {
-        queryClient.setQueryData(aiChatItemKey(chatId), applyLocalChatPatch(chatSnapshot, patch))
+        queryClient.setQueryData(itemKey, applyLocalChatPatch(chatSnapshot, patch))
       }
 
       return {

@@ -1,9 +1,11 @@
-import type { InfiniteData } from '@tanstack/react-query'
+import type { InfiniteData, QueryClient } from '@tanstack/react-query'
 
+import { aiChatMessagesKey } from '../../api/queryKeys'
 import {
   AI_CHAT_ROLE,
   type AiChatMessage,
   type AiChatMessagesListResponse,
+  type ChatId,
   type ClientMessageId,
   type MessageId,
 } from '../../api/types'
@@ -71,4 +73,14 @@ export function buildCachedAssistantMessage(input: CachedAssistantMessageInput):
     content: input.content,
     createdAt: input.createdAt,
   }
+}
+
+export function updateAiChatMessagesCache(
+  queryClient: QueryClient,
+  chatId: ChatId,
+  updater: (
+    previous: InfiniteData<AiChatMessagesListResponse> | undefined,
+  ) => InfiniteData<AiChatMessagesListResponse>,
+): void {
+  queryClient.setQueryData(aiChatMessagesKey(chatId), updater)
 }
