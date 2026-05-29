@@ -21,6 +21,11 @@ type UseChatScreenMessagesParams = {
   live: AiAssistantStreamingLive
 }
 
+type StreamingAssistantLive = {
+  messageId: MessageId
+  content: string
+}
+
 type ChatScreenMessagesView = {
   displayMessages: AiChatMessage[]
   showThread: boolean
@@ -44,7 +49,7 @@ export function useChatScreenMessages({
     return [...newestFirst].reverse()
   }, [messagePages])
 
-  const streamingAssistantLive = useMemo((): { messageId: MessageId; content: string } | null => {
+  const streamingAssistantLive = useMemo((): StreamingAssistantLive | null => {
     if (!isStreamingTurnStatus(live.state, STREAMING_TURN_STATUS.started)) {
       return null
     }

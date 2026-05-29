@@ -16,6 +16,18 @@ type UseMessageListScrollParams = {
   thinkingVisible: boolean
 }
 
+type MessageListScrollAnchor = {
+  scrollHeight: number
+  scrollTop: number
+}
+
+type UseMessageListScrollResult = {
+  scrollRef: RefObject<HTMLDivElement | null>
+  handleScroll: () => void
+  scrollToBottom: () => void
+  showJumpButton: boolean
+}
+
 export function useMessageListScroll({
   chatId,
   messages,
@@ -24,14 +36,9 @@ export function useMessageListScroll({
   fetchNextPage,
   streamingAssistantMessageId,
   thinkingVisible,
-}: UseMessageListScrollParams): {
-  scrollRef: RefObject<HTMLDivElement | null>
-  handleScroll: () => void
-  scrollToBottom: () => void
-  showJumpButton: boolean
-} {
+}: UseMessageListScrollParams): UseMessageListScrollResult {
   const scrollRef = useRef<HTMLDivElement>(null)
-  const anchorRef = useRef<{ scrollHeight: number; scrollTop: number } | null>(null)
+  const anchorRef = useRef<MessageListScrollAnchor | null>(null)
   const [nearBottom, setNearBottom] = useState(true)
   const didInitialScrollRef = useRef(false)
 

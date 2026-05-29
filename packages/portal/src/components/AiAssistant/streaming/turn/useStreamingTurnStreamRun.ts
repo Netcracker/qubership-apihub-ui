@@ -12,6 +12,7 @@ import {
   AI_ASSISTANT_STREAM_REQUEST_FAILED_MESSAGE,
   STREAMING_TURN_ACTION,
 } from './streamingTurnConstants'
+import type { ProcessStreamingTurnSseBatchHandler, RunStreamingTurnHandler } from './streamingTurnHandlers'
 import { isStreamingBusy, type StreamingTurnAction, type StreamingTurnState } from './streamingTurnReducer'
 import { isStreamAbortError, toStreamFetchErrorDetail } from './streamingTurnStreamErrors'
 
@@ -20,7 +21,7 @@ type StreamingTurnStreamRunDeps = {
   abortControllerRef: MutableRefObject<AbortController | null>
   dispatchTurn: (action: StreamingTurnAction) => void
   flushAssistantBufferToCache: (chatId: ChatId) => void
-  processBatch: (chatId: ChatId, batch: readonly AiChatStreamEvent[]) => void
+  processBatch: ProcessStreamingTurnSseBatchHandler
   routeActiveChatId: ChatId | null
   resetActiveChat: () => void
 }
@@ -28,9 +29,7 @@ type StreamingTurnStreamRunDeps = {
 /**
  * Consumes `streamAiChatTurn` for one send: batches, post-stream incomplete guard, abort/404/errors.
  */
-export function useStreamingTurnStreamRun(
-  deps: StreamingTurnStreamRunDeps,
-): (chatId: ChatId, trimmed: string, clientMessageId: ClientMessageId) => Promise<void> {
+export function useStreamingTurnStreamRun(deps: StreamingTurnStreamRunDeps): RunStreamingTurnHandler {
   const queryClient = useQueryClient()
   const {
     stateRef,

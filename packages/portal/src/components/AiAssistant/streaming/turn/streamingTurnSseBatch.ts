@@ -18,6 +18,7 @@ import {
   STREAMING_TURN_ACTION,
   STREAMING_TURN_STATUS,
 } from './streamingTurnConstants'
+import type { ProcessStreamingTurnSseBatchHandler } from './streamingTurnHandlers'
 import {
   isStreamingTurnStatus,
   peekAssistantBufferBeforeErrorInBatch,
@@ -48,7 +49,7 @@ type ProcessStreamingTurnSseBatchParams = StreamingTurnSseBatchProcessorDeps & {
  */
 export function useStreamingTurnSseBatchProcessor(
   deps: StreamingTurnSseBatchProcessorDeps,
-): (chatId: ChatId, batch: readonly AiChatStreamEvent[]) => void {
+): ProcessStreamingTurnSseBatchHandler {
   const queryClient = useQueryClient()
   const {
     stateRef,

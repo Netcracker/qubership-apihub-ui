@@ -3,14 +3,18 @@ import { useCopyToClipboard } from 'react-use'
 
 const DEFAULT_FEEDBACK_MS = 1500
 
-export type UseCopyWithFeedbackOptions = {
+type UseCopyWithFeedbackOptions = {
   feedbackMs?: number
 }
 
-export function useCopyWithFeedback(options: UseCopyWithFeedbackOptions = {}): {
-  createCopyHandler: (text: string) => () => void
+type CopyHandler = () => void
+
+type UseCopyWithFeedbackResult = {
+  createCopyHandler: (text: string) => CopyHandler
   copied: boolean
-} {
+}
+
+export function useCopyWithFeedback(options: UseCopyWithFeedbackOptions = {}): UseCopyWithFeedbackResult {
   const { feedbackMs = DEFAULT_FEEDBACK_MS } = options
   const [copied, setCopied] = useState(false)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)

@@ -3,13 +3,18 @@ export type SseFrame = {
   data: string
 }
 
+type SplitSseFramesResult = {
+  frames: SseFrame[]
+  rest: string
+}
+
 const DOUBLE_NEWLINE = /\r?\n\r?\n/
 
 /**
  * Splits a buffer into complete SSE frames (delimited by blank line).
  * Ignores comment/heartbeat lines (`:` prefix). Joins multi-line `data:` fields with newline.
  */
-export function splitSseFrames(input: string): { frames: SseFrame[]; rest: string } {
+export function splitSseFrames(input: string): SplitSseFramesResult {
   const frames: SseFrame[] = []
   let rest = input
   while (rest.length > 0) {

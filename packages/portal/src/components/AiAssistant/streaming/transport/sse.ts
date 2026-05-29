@@ -3,6 +3,11 @@ import type { AiChatStreamEvent, ChatId } from '../../api/types'
 import type { SseFrame } from './sseFramer'
 import { splitSseFrames } from './sseFramer'
 
+type ParsedSseBufferResult = {
+  events: AiChatStreamEvent[]
+  rest: string
+}
+
 export type { AiChatStreamRequestBody }
 
 /**
@@ -54,7 +59,7 @@ function parseSseFrame(frame: SseFrame): AiChatStreamEvent | null {
   }
 }
 
-function drainSseBuffer(buffer: string): { events: AiChatStreamEvent[]; rest: string } {
+function drainSseBuffer(buffer: string): ParsedSseBufferResult {
   const { frames, rest } = splitSseFrames(buffer)
   const events: AiChatStreamEvent[] = []
   for (const frame of frames) {
@@ -69,7 +74,7 @@ function drainSseBuffer(buffer: string): { events: AiChatStreamEvent[]; rest: st
 function takeParsedEvents(
   buffer: string,
   appendTrailingDelimiter = false,
-): { events: AiChatStreamEvent[]; rest: string } {
+): ParsedSseBufferResult {
   const input = appendTrailingDelimiter && buffer.length > 0 ? `${buffer}\n\n` : buffer
   const drained = drainSseBuffer(input)
   return {

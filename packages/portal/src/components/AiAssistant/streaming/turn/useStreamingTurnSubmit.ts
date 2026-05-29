@@ -6,8 +6,10 @@ import { invalidateAiChatListQueries } from '../../api/aiChatQueryInvalidation'
 import { aiChatItemKey, aiChatMessagesKey } from '../../api/queryKeys'
 import { createAiChat } from '../../api/requests'
 import type { AiChatMessagesListResponse, ChatId, ClientMessageId, MessageId } from '../../api/types'
+import type { SubmitTurnHandler } from '../../state/AiAssistantContext'
 import { buildCachedUserMessage, prependMessageToInfiniteMessages } from './aiChatMessagesCache'
 import { CACHED_USER_MESSAGE_ID_PREFIX, STREAMING_TURN_ACTION, STREAMING_TURN_STATUS } from './streamingTurnConstants'
+import type { RunStreamingTurnHandler } from './streamingTurnHandlers'
 import { type StreamingTurnAction, type StreamingTurnState } from './streamingTurnReducer'
 
 type StreamingTurnSubmitDeps = {
@@ -15,7 +17,7 @@ type StreamingTurnSubmitDeps = {
   dispatchTurn: (action: StreamingTurnAction) => void
   turnBootstrapRef: MutableRefObject<StreamingTurnState | null>
   createdChatThisTurnRef: MutableRefObject<boolean>
-  runTurn: (chatId: ChatId, trimmed: string, clientMessageId: ClientMessageId) => Promise<void>
+  runTurn: RunStreamingTurnHandler
 }
 
 type ResolveChatIdForTurnDeps = {
@@ -34,9 +36,7 @@ type OptimisticUserMessageParams = {
 /**
  * Send handler: create chat if needed, optimistic user row, `turnRequested`, then stream run.
  */
-export function useStreamingTurnSubmit(
-  deps: StreamingTurnSubmitDeps,
-): (activeChatId: ChatId | null, content: string) => Promise<void> {
+export function useStreamingTurnSubmit(deps: StreamingTurnSubmitDeps): SubmitTurnHandler {
   const queryClient = useQueryClient()
   const turnLockRef = useRef(false)
   const {

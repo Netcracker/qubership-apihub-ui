@@ -22,8 +22,10 @@ export type AiAssistantPanelContextValue = {
   clearActiveChat: () => void
 }
 
+export type SubmitTurnHandler = (activeChatId: ChatId | null, content: string) => Promise<void>
+
 export type AiAssistantStreamingActions = {
-  submit: (activeChatId: ChatId | null, content: string) => Promise<void>
+  submit: SubmitTurnHandler
   abort: () => void
   reset: () => void
 }
