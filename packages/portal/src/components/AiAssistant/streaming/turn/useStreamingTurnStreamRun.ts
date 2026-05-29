@@ -5,7 +5,7 @@ import { HttpError } from '@netcracker/qubership-apihub-ui-shared/utils/response
 
 import { removeAiChatQueries } from '../../api/chatCache'
 import { dispatchAiChatFetchError, dispatchAiChatWarning } from '../../api/errors'
-import type { AiChatStreamEvent, ChatId, ClientMessageId } from '../../api/types'
+import type { ChatId, ClientMessageId } from '../../api/types'
 import { streamAiChatTurn } from '../transport/sse'
 import {
   AI_ASSISTANT_INCOMPLETE_STREAM_MESSAGE,

@@ -7,7 +7,6 @@ const started: Extract<StreamingTurnState, { status: typeof STREAMING_TURN_STATU
   chatId: 'c1',
   assistantMessageId: 'asst-1',
   buffer: 'partial answer',
-  clientMessageId: 'client-1',
 }
 
 describe('post-stream busy guard', () => {

@@ -8,8 +8,6 @@ type ParsedSseBufferResult = {
   rest: string
 }
 
-export type { AiChatStreamRequestBody }
-
 /**
  * Async generator (`async function*` + `yield`) for POST `/messages/stream`.
  *

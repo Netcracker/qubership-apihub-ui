@@ -10,7 +10,7 @@ import type { AiChat, ChatId } from '../../api/types'
 import { ChatRowActionsMenu } from './ChatRowActionsMenu'
 import { InlineRenameField } from './InlineRenameField'
 
-export type ChatListRowProps = {
+type ChatListRowProps = {
   chat: AiChat
   /** Shown until list cache matches (rename save). */
   rowTitleOverride?: string

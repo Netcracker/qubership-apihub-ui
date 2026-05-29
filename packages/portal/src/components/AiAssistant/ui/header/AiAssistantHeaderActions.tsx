@@ -8,7 +8,7 @@ import { ClockBackwardIcon } from '@netcracker/qubership-apihub-ui-shared/icons/
 import { CloseIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CloseIcon'
 import { NewChatIcon } from '@netcracker/qubership-apihub-ui-shared/icons/NewChatIcon'
 
-export type AiAssistantHeaderActionsProps = {
+type AiAssistantHeaderActionsProps = {
   newChatDisabled: boolean
   onNewChat: () => void
   onHistory: () => void

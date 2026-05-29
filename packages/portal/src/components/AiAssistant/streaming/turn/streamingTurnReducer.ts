@@ -1,5 +1,5 @@
 import { AI_CHAT_STREAM_EVENT } from '../../api/streamEvents'
-import type { AiChatStreamEvent, ChatId, ClientMessageId, MessageId } from '../../api/types'
+import type { AiChatStreamEvent, ChatId, MessageId } from '../../api/types'
 import { STREAMING_TURN_ACTION, STREAMING_TURN_STATUS, type StreamingTurnStatus } from './streamingTurnConstants'
 
 type AssistantStreamBuffer = {
@@ -13,27 +13,19 @@ export type StreamingTurnState =
   | {
     status: typeof STREAMING_TURN_STATUS.pending
     chatId: ChatId
-    cachedUserMessageId: MessageId
-    clientMessageId: ClientMessageId
-    submittedContent: string
   }
   | {
     status: typeof STREAMING_TURN_STATUS.started
     chatId: ChatId
     assistantMessageId: MessageId
     buffer: string
-    clientMessageId: ClientMessageId
   }
 
 export type StreamingTurnAction =
   | {
     type: typeof STREAMING_TURN_ACTION.turnRequested
     chatId: ChatId
-    clientMessageId: ClientMessageId
-    cachedUserMessageId: MessageId
-    submittedContent: string
   }
-  | { type: typeof STREAMING_TURN_ACTION.sse; event: AiChatStreamEvent }
   | { type: typeof STREAMING_TURN_ACTION.sseBatch; events: readonly AiChatStreamEvent[] }
   | { type: typeof STREAMING_TURN_ACTION.aborted }
   | { type: typeof STREAMING_TURN_ACTION.reset }
@@ -52,12 +44,7 @@ export function streamingTurnReducer(
       return {
         status: STREAMING_TURN_STATUS.pending,
         chatId: action.chatId,
-        clientMessageId: action.clientMessageId,
-        cachedUserMessageId: action.cachedUserMessageId,
-        submittedContent: action.submittedContent,
       }
-    case STREAMING_TURN_ACTION.sse:
-      return applyStreamingSseEvent(state, action.event)
     case STREAMING_TURN_ACTION.sseBatch:
       return action.events.reduce<StreamingTurnState>((s, ev) => applyStreamingSseEvent(s, ev), state)
     default:
@@ -82,7 +69,6 @@ export function applyStreamingSseEvent(
         chatId: state.chatId,
         assistantMessageId: event.messageId as MessageId,
         buffer: '',
-        clientMessageId: state.clientMessageId,
       }
     case AI_CHAT_STREAM_EVENT.assistantDelta:
       if (state.status !== STREAMING_TURN_STATUS.started) {

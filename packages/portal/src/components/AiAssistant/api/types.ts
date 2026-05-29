@@ -12,7 +12,7 @@ export const AI_CHAT_ROLE = {
   assistant: 'assistant',
 } as const
 
-export type AiChatRole = (typeof AI_CHAT_ROLE)[keyof typeof AI_CHAT_ROLE]
+type AiChatRole = (typeof AI_CHAT_ROLE)[keyof typeof AI_CHAT_ROLE]
 
 export type AiChat = {
   chatId: ChatId
@@ -23,7 +23,7 @@ export type AiChat = {
   messagesCount: number
 }
 
-export type AiChatToolInvocation = {
+type AiChatToolInvocation = {
   name: string
   status: 'ok' | 'error'
   durationMs?: number

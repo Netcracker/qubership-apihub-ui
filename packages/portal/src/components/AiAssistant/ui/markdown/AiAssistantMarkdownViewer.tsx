@@ -50,8 +50,6 @@ const rehypePluginsFull: PluggableList = [
   ],
 ]
 
-export type { AiAssistantMarkdownRenderMode }
-
 type AiAssistantMarkdownViewerProps = {
   markdown: string
   mode?: AiAssistantMarkdownRenderMode

@@ -2,7 +2,7 @@ import { keyframes, styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { type FC, memo } from 'react'
 
-export type ThinkingIndicatorProps = {
+type ThinkingIndicatorProps = {
   visible: boolean
 }
 

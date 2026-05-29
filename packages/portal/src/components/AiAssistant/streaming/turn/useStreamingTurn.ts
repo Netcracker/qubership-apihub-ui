@@ -15,13 +15,13 @@ import { useStreamingTurnReducerSync } from './useStreamingTurnReducerSync'
 import { useStreamingTurnStreamRun } from './useStreamingTurnStreamRun'
 import { useStreamingTurnSubmit } from './useStreamingTurnSubmit'
 
-export type StreamingTurnDeps = {
+type StreamingTurnDeps = {
   openChatScreen: (chatId: ChatId | null) => void
   resetActiveChat: () => void
   activeChatId: ChatId | null
 }
 
-export type UseStreamingTurnResult = {
+type UseStreamingTurnResult = {
   actions: AiAssistantStreamingActions
   turnMeta: AiAssistantStreamingTurnMeta
   live: AiAssistantStreamingLive

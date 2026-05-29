@@ -76,17 +76,11 @@ export function useStreamingTurnSubmit(deps: StreamingTurnSubmitDeps): SubmitTur
         turnBootstrapRef.current = {
           status: STREAMING_TURN_STATUS.pending,
           chatId: chatId,
-          clientMessageId: clientMessageId,
-          cachedUserMessageId: cachedUserMessageId,
-          submittedContent: trimmed,
         }
 
         dispatchTurn({
           type: STREAMING_TURN_ACTION.turnRequested,
           chatId: chatId,
-          clientMessageId: clientMessageId,
-          cachedUserMessageId: cachedUserMessageId,
-          submittedContent: trimmed,
         })
 
         await runTurn(chatId, trimmed, clientMessageId)

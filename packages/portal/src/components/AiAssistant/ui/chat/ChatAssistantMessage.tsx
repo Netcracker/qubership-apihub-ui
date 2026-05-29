@@ -8,7 +8,7 @@ import { normalizeStreamingMarkdown } from '../../streaming/markdown/normalizeSt
 import { CopyIconButton } from '../common/CopyIconButton'
 import { AiAssistantMarkdownViewer } from '../markdown/AiAssistantMarkdownViewer'
 
-export type ChatAssistantMessageProps = {
+type ChatAssistantMessageProps = {
   content: string
   isStreaming?: boolean
 }

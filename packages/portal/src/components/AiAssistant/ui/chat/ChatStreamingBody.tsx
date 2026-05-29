@@ -11,7 +11,7 @@ type MessagePage = {
   messages: AiChatMessage[]
 }
 
-export type ChatStreamingBodyProps = {
+type ChatStreamingBodyProps = {
   activeChatId: ChatId
   messagePages: MessagePage[] | undefined
   messagesLoaded: boolean

@@ -14,7 +14,7 @@ import {
   useAiAssistantStreamingTurnMeta,
 } from '../../state/AiAssistantContext'
 
-export type AiAssistantComposerProps = {
+type AiAssistantComposerProps = {
   panelOpen: boolean
   chatKey: string
 }

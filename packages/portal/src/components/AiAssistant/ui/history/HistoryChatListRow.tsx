@@ -5,7 +5,7 @@ import { ChatListRow } from './ChatListRow'
 
 const PIN_LIMIT_TOOLTIP = `The maximum of ${MAX_PINNED_PER_USER} pinned chats is reached. Unpin one to pin another.`
 
-export type HistoryChatListRowProps = {
+type HistoryChatListRowProps = {
   chat: AiChat
   rowTitleOverride?: string
   isActive: boolean

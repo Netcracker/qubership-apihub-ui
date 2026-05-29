@@ -10,13 +10,10 @@ export type StreamingTurnStatus = (typeof STREAMING_TURN_STATUS)[keyof typeof ST
 /** Client-side streaming turn reducer / hook actions. */
 export const STREAMING_TURN_ACTION = {
   turnRequested: 'turn.requested',
-  sse: 'sse',
   sseBatch: 'sseBatch',
   aborted: 'aborted',
   reset: 'reset',
 } as const
-
-export type StreamingTurnActionType = (typeof STREAMING_TURN_ACTION)[keyof typeof STREAMING_TURN_ACTION]
 
 export const AI_ASSISTANT_STREAM_ERROR_DEFAULT_MESSAGE = 'Assistant stream reported an error.'
 

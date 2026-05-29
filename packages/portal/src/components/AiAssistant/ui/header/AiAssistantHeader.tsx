@@ -13,7 +13,7 @@ import { useAiAssistantHeaderHandlers } from '../../hooks/useAiAssistantHeaderHa
 import { AiAssistantHeaderActions } from './AiAssistantHeaderActions'
 import { AI_ASSISTANT_HEADER_MODE, AI_ASSISTANT_HEADER_TITLE } from './aiAssistantHeaderMode'
 
-export type AiAssistantHeaderProps =
+type AiAssistantHeaderProps =
   | { mode: typeof AI_ASSISTANT_HEADER_MODE.chat }
   | {
     mode: typeof AI_ASSISTANT_HEADER_MODE.history

@@ -12,7 +12,7 @@ export const AI_CHAT_STREAM_EVENT = {
   done: 'done',
 } as const
 
-export type AiChatAssistantCompletedStreamEvent = Extract<
+type AiChatAssistantCompletedStreamEvent = Extract<
   AiChatStreamEvent,
   { type: typeof AI_CHAT_STREAM_EVENT.assistantCompleted }
 >
@@ -22,9 +22,14 @@ export type AiChatStreamErrorEvent = Extract<
   { type: typeof AI_CHAT_STREAM_EVENT.error }
 >
 
-export type AiChatAssistantStreamProgressEvent =
+type AiChatAssistantStreamProgressEvent =
   | Extract<AiChatStreamEvent, { type: typeof AI_CHAT_STREAM_EVENT.assistantStart }>
   | Extract<AiChatStreamEvent, { type: typeof AI_CHAT_STREAM_EVENT.assistantDelta }>
+
+type AiChatStreamDoneEvent = Extract<
+  AiChatStreamEvent,
+  { type: typeof AI_CHAT_STREAM_EVENT.done }
+>
 
 export function isAssistantStreamProgressEvent(
   event: AiChatStreamEvent,
@@ -45,6 +50,6 @@ export function isAiChatStreamErrorEvent(event: AiChatStreamEvent): event is AiC
 
 export function isAiChatStreamDoneEvent(
   event: AiChatStreamEvent,
-): event is Extract<AiChatStreamEvent, { type: typeof AI_CHAT_STREAM_EVENT.done }> {
+): event is AiChatStreamDoneEvent {
   return event.type === AI_CHAT_STREAM_EVENT.done
 }

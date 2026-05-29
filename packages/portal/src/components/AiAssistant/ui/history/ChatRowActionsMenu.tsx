@@ -9,7 +9,7 @@ import Tooltip from '@mui/material/Tooltip'
 
 import { ActionsIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ActionsIcon'
 
-export type ChatRowActionsMenuProps = {
+type ChatRowActionsMenuProps = {
   pinned: boolean
   pinDisabled: boolean
   pinDisabledTooltip?: string
@@ -65,7 +65,7 @@ export const ChatRowActionsMenu: FC<ChatRowActionsMenuProps> = memo(({
     onDelete()
   }, [closeMenu, onDelete])
 
-  const pinLimitBlocked = pinDisabled && Boolean(pinDisabledTooltip)
+  const pinLimitBlocked = pinDisabled && !!pinDisabledTooltip
 
   return (
     <>

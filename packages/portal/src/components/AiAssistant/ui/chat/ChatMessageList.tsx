@@ -14,7 +14,7 @@ import { ChatUserMessage } from './ChatUserMessage'
 import { useMessageListScroll } from './hooks/useMessageListScroll'
 import { ThinkingIndicator } from './ThinkingIndicator'
 
-export type ChatMessageListProps = {
+type ChatMessageListProps = {
   chatId: ChatId
   messages: AiChatMessage[]
   hasNextPage: boolean

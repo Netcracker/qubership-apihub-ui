@@ -11,9 +11,6 @@ import {
 const pending: Extract<StreamingTurnState, { status: typeof STREAMING_TURN_STATUS.pending }> = {
   status: STREAMING_TURN_STATUS.pending,
   chatId: 'c1',
-  cachedUserMessageId: 'cached-1',
-  clientMessageId: 'client-1',
-  submittedContent: 'hi',
 }
 
 describe('streamingTurnReducer', () => {
@@ -21,9 +18,6 @@ describe('streamingTurnReducer', () => {
     const next = streamingTurnReducer(STREAMING_TURN_IDLE_STATE, {
       type: STREAMING_TURN_ACTION.turnRequested,
       chatId: 'c1',
-      clientMessageId: 'client-1',
-      cachedUserMessageId: 'cached-1',
-      submittedContent: 'hi',
     })
     expect(next).toEqual(pending)
   })

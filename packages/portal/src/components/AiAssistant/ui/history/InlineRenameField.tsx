@@ -4,7 +4,7 @@ import Box from '@mui/material/Box'
 import InputBase from '@mui/material/InputBase'
 import { styled } from '@mui/material/styles'
 
-export type InlineRenameFieldProps = {
+type InlineRenameFieldProps = {
   initialTitle: string
   onSave: (title: string) => void
   onCancel: () => void

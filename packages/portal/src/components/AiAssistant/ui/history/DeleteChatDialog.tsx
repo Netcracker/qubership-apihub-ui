@@ -4,7 +4,7 @@ import { styled } from '@mui/material/styles'
 
 import { ConfirmationDialog } from '@netcracker/qubership-apihub-ui-shared/components/ConfirmationDialog/ConfirmationDialog'
 
-export type DeleteChatConfirmationProps = {
+type DeleteChatConfirmationProps = {
   open: boolean
   loading: boolean
   chatTitle?: string
