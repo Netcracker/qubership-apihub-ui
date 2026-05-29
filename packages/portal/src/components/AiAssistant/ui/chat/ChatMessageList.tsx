@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import IconButton from '@mui/material/IconButton'
+import IconButton, { type IconButtonProps } from '@mui/material/IconButton'
 import { styled } from '@mui/material/styles'
 import type { FetchNextPageOptions } from '@tanstack/react-query'
 import { type FC, memo } from 'react'
@@ -46,10 +46,6 @@ export const ChatMessageList: FC<ChatMessageListProps> = memo(
       thinkingVisible,
     })
 
-    const jumpIcon = jumpButtonStreamPhase === CHAT_MESSAGE_LIST_JUMP_PHASE.active
-      ? <JumpToLatestStreamingIcon fontSize="small" />
-      : <JumpToLatestArrowIcon fontSize="small" />
-
     return (
       <ListRoot>
         <ListScrollArea ref={scrollRef} onScroll={handleScroll} data-testid="AiAssistantMessageList">
@@ -71,11 +67,10 @@ export const ChatMessageList: FC<ChatMessageListProps> = memo(
                 aria-label="Jump to latest messages"
                 data-testid="AiAssistantJumpToLatestButton"
                 onClick={scrollToBottom}
+                streamPhase={jumpButtonStreamPhase}
                 color="inherit"
                 size="small"
-              >
-                {jumpIcon}
-              </JumpToLatestButton>
+              />
             </JumpFabWrap>
           )
           : null}
@@ -118,7 +113,25 @@ const JumpFabWrap = styled(Box)(({ theme }) => ({
   zIndex: 1,
 }))
 
-const JumpToLatestButton = styled(IconButton)(({ theme }) => {
+type JumpToLatestButtonProps = Omit<IconButtonProps, 'children'> & {
+  streamPhase: ChatMessageListJumpPhase
+}
+
+const JumpToLatestButton = memo<JumpToLatestButtonProps>(({ streamPhase, ...iconButtonProps }) => {
+  const icon = streamPhase === CHAT_MESSAGE_LIST_JUMP_PHASE.active
+    ? <JumpToLatestStreamingIcon fontSize="small" />
+    : <JumpToLatestArrowIcon fontSize="small" />
+
+  return (
+    <JumpToLatestButtonRoot {...iconButtonProps}>
+      {icon}
+    </JumpToLatestButtonRoot>
+  )
+})
+
+JumpToLatestButton.displayName = 'JumpToLatestButton'
+
+const JumpToLatestButtonRoot = styled(IconButton)(({ theme }) => {
   const border = `1px solid ${theme.palette.divider}`
   const backgroundColor = theme.palette.background.paper
   const diameter = theme.spacing(5)
