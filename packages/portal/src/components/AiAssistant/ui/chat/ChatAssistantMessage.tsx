@@ -2,7 +2,6 @@ import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 import { type FC, memo, useMemo } from 'react'
 
-import { useShowErrorNotification } from '@netcracker/qubership-apihub-ui-portal/src/routes/root/BasePage/Notification'
 import { useCopyWithFeedback } from '../../hooks/useCopyWithFeedback'
 import { AI_ASSISTANT_MARKDOWN_MODE } from '../../streaming/markdown/aiAssistantMarkdownMode'
 import { normalizeStreamingMarkdown } from '../../streaming/markdown/normalizeStreamingMarkdown'
@@ -15,14 +14,7 @@ export type ChatAssistantMessageProps = {
 }
 
 export const ChatAssistantMessage: FC<ChatAssistantMessageProps> = memo(({ content, isStreaming = false }) => {
-  const showError = useShowErrorNotification()
-  const { createCopyHandler, copied } = useCopyWithFeedback({
-    onError: (error) =>
-      showError({
-        title: 'Copy failed',
-        message: error instanceof Error ? error.message : 'Clipboard access was denied.',
-      }),
-  })
+  const { createCopyHandler, copied } = useCopyWithFeedback()
 
   const markdownForViewer = useMemo(
     () => (isStreaming ? normalizeStreamingMarkdown(content) : content),

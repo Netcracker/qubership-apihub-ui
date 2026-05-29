@@ -3,7 +3,6 @@ import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { type FC, memo, type ReactNode } from 'react'
 
-import { useShowErrorNotification } from '@netcracker/qubership-apihub-ui-portal/src/routes/root/BasePage/Notification'
 import { useCopyWithFeedback } from '../../hooks/useCopyWithFeedback'
 import { CopyIconButton } from '../common/CopyIconButton'
 
@@ -39,14 +38,7 @@ type CodeBlockHeaderBarProps = {
 }
 
 const CodeBlockHeaderBar: FC<CodeBlockHeaderBarProps> = memo(({ className, rawText }) => {
-  const showError = useShowErrorNotification()
-  const { createCopyHandler, copied } = useCopyWithFeedback({
-    onError: (error) =>
-      showError({
-        title: 'Copy failed',
-        message: error instanceof Error ? error.message : 'Clipboard access was denied.',
-      }),
-  })
+  const { createCopyHandler, copied } = useCopyWithFeedback()
 
   const languageLabel = languageLabelFromClassName(className)
 
