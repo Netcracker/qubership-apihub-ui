@@ -19,7 +19,7 @@ export const DeleteChatConfirmation: FC<DeleteChatConfirmationProps> = memo(({
   onConfirm,
   onCancel,
 }) => {
-  const title = chatTitle?.trim() ? chatTitle.trim() : 'this chat'
+  const title = chatTitle?.trim() || 'this chat'
 
   return (
     <ConfirmationDialog

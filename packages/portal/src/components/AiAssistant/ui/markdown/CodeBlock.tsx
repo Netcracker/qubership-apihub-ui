@@ -25,7 +25,7 @@ export const CodeBlock: FC<CodeBlockProps> = memo(({ className, rawText, childre
   <CodeBlockRoot>
     {showHeader ? <CodeBlockHeaderBar className={className} rawText={rawText} /> : null}
     <CodeBlockBody>
-      <CodeBlockCode className={className}>{children}</CodeBlockCode>
+      <CodeBlockContent className={className}>{children}</CodeBlockContent>
     </CodeBlockBody>
   </CodeBlockRoot>
 ))
@@ -102,7 +102,7 @@ const CodeBlockBody = styled(Box)(({ theme }) => ({
   },
 }))
 
-const CodeBlockCode = styled('code')({
+const CodeBlockContent = styled('code')({
   fontFamily: 'monospace',
   display: 'block',
   whiteSpace: 'pre',
