@@ -1,9 +1,8 @@
-import { type FC, type KeyboardEvent, memo, useCallback, useEffect, useRef, useState } from 'react'
-
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import { styled } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
+import { type ChangeEvent, type FC, type KeyboardEvent, memo, useCallback, useEffect, useRef, useState } from 'react'
 
 import { SendIcon } from '@netcracker/qubership-apihub-ui-shared/icons/SendIcon'
 import { StopIcon } from '@netcracker/qubership-apihub-ui-shared/icons/StopIcon'
@@ -13,6 +12,12 @@ import {
   useAiAssistantStreamingActions,
   useAiAssistantStreamingTurnMeta,
 } from '../../state/AiAssistantContext'
+import {
+  COMPOSER_ACTION_RESERVE_CSS_VAR,
+  COMPOSER_SEND_BUTTON_SIZE_SPACING,
+  composerActionReserve,
+} from './composerMultilineLayout'
+import { useComposerMultilineLayout } from './useComposerMultilineLayout'
 
 type AiAssistantComposerProps = {
   panelOpen: boolean
@@ -23,8 +28,10 @@ export const AiAssistantComposer: FC<AiAssistantComposerProps> = memo(({ panelOp
   const { activeChatId } = useAiAssistantPanel()
   const { isBusy } = useAiAssistantStreamingTurnMeta()
   const { submit, abort } = useAiAssistantStreamingActions()
+  const shellRef = useRef<HTMLDivElement | null>(null)
   const inputRef = useRef<HTMLTextAreaElement | null>(null)
   const [draft, setDraft] = useState('')
+  const multilineLayout = useComposerMultilineLayout(shellRef, inputRef, draft, chatKey)
 
   useEffect(() => {
     setDraft('')
@@ -57,12 +64,16 @@ export const AiAssistantComposer: FC<AiAssistantComposerProps> = memo(({ panelOp
     handleSubmit()
   }, [handleSubmit])
 
-  const handleAbort = useCallback((): void => {
-    abort()
-  }, [abort])
+  const handleDraftChange = useCallback((event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setDraft(event.target.value)
+  }, [])
 
   return (
-    <AiAssistantComposerShell onKeyDown={handleShellKeyDown}>
+    <AiAssistantComposerShell
+      ref={shellRef}
+      $multiline={multilineLayout}
+      onKeyDown={handleShellKeyDown}
+    >
       <AiAssistantComposerDraftField
         inputRef={inputRef}
         multiline
@@ -71,53 +82,61 @@ export const AiAssistantComposer: FC<AiAssistantComposerProps> = memo(({ panelOp
         variant="standard"
         placeholder="Type your message..."
         value={draft}
-        onChange={(e) => setDraft(e.target.value)}
+        onChange={handleDraftChange}
         InputProps={{ disableUnderline: true }}
       />
-      {isBusy
-        ? (
-          <SendStopButton
-            variant="contained"
-            aria-label="Stop response"
-            onClick={handleAbort}
-          >
-            <StopIcon />
-          </SendStopButton>
-        )
-        : (
-          <SendStopButton
-            variant="contained"
-            aria-label="Send message"
-            onClick={handleSubmit}
-          >
-            <SendIcon />
-          </SendStopButton>
-        )}
+      <SendStopButton
+        variant="contained"
+        aria-label={isBusy ? 'Stop response' : 'Send message'}
+        onClick={isBusy ? abort : handleSubmit}
+      >
+        {isBusy ? <StopIcon /> : <SendIcon />}
+      </SendStopButton>
     </AiAssistantComposerShell>
   )
 })
 
 AiAssistantComposer.displayName = 'AiAssistantComposer'
 
-const AiAssistantComposerShell = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'flex-end',
-  gap: theme.spacing(1),
-  margin: theme.spacing(3),
-  padding: theme.spacing(1.25, 1.25, 1.25, 2),
-  borderRadius: 30,
-  boxSizing: 'border-box',
-  border: `1px solid ${theme.palette.divider}`,
-  '&:focus-within': {
-    boxShadow: `0 0 0 2px ${theme.palette.primary.main}`,
-  },
-}))
+const AiAssistantComposerShell = styled(Box, {
+  shouldForwardProp: (prop) => prop !== '$multiline',
+})<{ $multiline: boolean }>(({ theme, $multiline }) => {
+  const actionReserve = composerActionReserve(theme)
+  return {
+    [COMPOSER_ACTION_RESERVE_CSS_VAR]: actionReserve,
+    display: 'grid',
+    alignItems: 'end',
+    gap: theme.spacing(1),
+    margin: theme.spacing(3),
+    padding: theme.spacing(1.25, 1.25, 1.25, 2),
+    borderRadius: 30,
+    boxSizing: 'border-box',
+    border: `1px solid ${theme.palette.divider}`,
+    gridTemplateColumns: '1fr auto',
+    gridTemplateRows: $multiline ? 'auto auto' : 'auto',
+    '&:focus-within': {
+      boxShadow: `0 0 0 2px ${theme.palette.primary.main}`,
+    },
+    '& > .MuiTextField-root': {
+      gridColumn: '1 / 3',
+      gridRow: 1,
+      margin: 0,
+      '& .MuiInputBase-input': {
+        paddingRight: $multiline ? undefined : actionReserve,
+      },
+    },
+    '& > .MuiButton-root': {
+      gridColumn: 2,
+      gridRow: $multiline ? 2 : 1,
+      justifySelf: 'end',
+      zIndex: 1,
+    },
+  }
+})
 
 AiAssistantComposerShell.displayName = 'AiAssistantComposerShell'
 
 const AiAssistantComposerDraftField = styled(TextField)(({ theme }) => ({
-  flex: '1 1 0',
-  margin: 0,
   '& .MuiInputBase-input::-webkit-scrollbar': {
     width: theme.spacing(0.5),
   },
@@ -130,8 +149,8 @@ AiAssistantComposerDraftField.displayName = 'AiAssistantComposerDraftField'
 
 const SendStopButton = styled(Button)(({ theme }) => ({
   minWidth: 0,
-  width: theme.spacing(5),
-  height: theme.spacing(5),
+  width: theme.spacing(COMPOSER_SEND_BUTTON_SIZE_SPACING),
+  height: theme.spacing(COMPOSER_SEND_BUTTON_SIZE_SPACING),
   padding: 0,
   borderRadius: '50%',
 }))
