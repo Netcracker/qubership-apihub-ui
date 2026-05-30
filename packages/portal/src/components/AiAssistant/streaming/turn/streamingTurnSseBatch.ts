@@ -1,7 +1,7 @@
 import { type QueryClient, useQueryClient } from '@tanstack/react-query'
 import { type MutableRefObject, useCallback } from 'react'
 
-import { invalidateAiChatListQueries, invalidateAiChatMessagesQuery } from '../../api/aiChatQueryInvalidation'
+import { invalidateAiChatMessagesQuery } from '../../api/aiChatQueryInvalidation'
 import { dispatchAiChatFetchError } from '../../api/errors'
 import {
   type AiChatStreamErrorEvent,
@@ -17,7 +17,7 @@ import {
   STREAMING_TURN_ACTION,
   STREAMING_TURN_STATUS,
 } from './streamingTurnConstants'
-import type { ProcessStreamingTurnSseBatchHandler } from './streamingTurnHandlers'
+import type { ProcessStreamingTurnSseBatchHandler, StartAutoTitlePollingHandler } from './streamingTurnHandlers'
 import {
   isStreamingTurnStatus,
   peekAssistantBufferBeforeErrorInBatch,
@@ -30,6 +30,7 @@ type StreamingTurnSseBatchProcessorDeps = {
   stateRef: MutableRefObject<StreamingTurnState>
   turnBootstrapRef: MutableRefObject<StreamingTurnState | null>
   createdChatThisTurnRef: MutableRefObject<boolean>
+  startAutoTitlePolling: StartAutoTitlePollingHandler
   lastAssistantMessageActivityAtRef: MutableRefObject<number | null>
   clearThinkingDuringAssistantPause: () => void
   prependCachedAssistantMessage: (chatId: ChatId, messageId: MessageId, buffer: string) => void
@@ -54,6 +55,7 @@ export function useStreamingTurnSseBatchProcessor(
     stateRef,
     turnBootstrapRef,
     createdChatThisTurnRef,
+    startAutoTitlePolling,
     lastAssistantMessageActivityAtRef,
     clearThinkingDuringAssistantPause,
     prependCachedAssistantMessage,
@@ -69,6 +71,7 @@ export function useStreamingTurnSseBatchProcessor(
         stateRef,
         turnBootstrapRef,
         createdChatThisTurnRef,
+        startAutoTitlePolling,
         lastAssistantMessageActivityAtRef,
         clearThinkingDuringAssistantPause,
         prependCachedAssistantMessage,
@@ -80,6 +83,7 @@ export function useStreamingTurnSseBatchProcessor(
       stateRef,
       turnBootstrapRef,
       createdChatThisTurnRef,
+      startAutoTitlePolling,
       lastAssistantMessageActivityAtRef,
       clearThinkingDuringAssistantPause,
       prependCachedAssistantMessage,
@@ -96,6 +100,7 @@ function processStreamingTurnSseBatch(params: ProcessStreamingTurnSseBatchParams
     stateRef,
     turnBootstrapRef,
     createdChatThisTurnRef,
+    startAutoTitlePolling,
     lastAssistantMessageActivityAtRef,
     clearThinkingDuringAssistantPause,
     prependCachedAssistantMessage,
@@ -124,7 +129,7 @@ function processStreamingTurnSseBatch(params: ProcessStreamingTurnSseBatchParams
       applyStreamErrorEvent(event)
     }
     if (isAiChatStreamDoneEvent(event)) {
-      applyStreamDoneSideEffects(queryClient, chatId, createdChatThisTurnRef)
+      applyStreamDoneSideEffects(queryClient, chatId, createdChatThisTurnRef, startAutoTitlePolling)
     }
   }
 
@@ -161,13 +166,14 @@ function applyStreamDoneSideEffects(
   queryClient: QueryClient,
   chatId: ChatId,
   createdChatThisTurnRef: MutableRefObject<boolean>,
+  startAutoTitlePolling: StartAutoTitlePollingHandler,
 ): void {
   void invalidateAiChatMessagesQuery(queryClient, chatId, { refetchType: 'none' })
   if (!createdChatThisTurnRef.current) {
     return
   }
   createdChatThisTurnRef.current = false
-  void invalidateAiChatListQueries(queryClient, { refetchType: 'none' })
+  startAutoTitlePolling(chatId)
 }
 
 function prependAssistantCompletedMessageToCache(

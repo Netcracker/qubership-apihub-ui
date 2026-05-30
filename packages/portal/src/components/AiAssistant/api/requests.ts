@@ -19,6 +19,10 @@ export function createAiChat(request: AiChatCreateRequest = {}, signal?: AbortSi
   }, signal)
 }
 
+export function fetchAiChat(chatId: ChatId, signal?: AbortSignal): Promise<AiChat> {
+  return aiChatJson<AiChat>(aiChatItemPath(chatId), { method: 'GET' }, signal)
+}
+
 export function updateAiChat(chatId: ChatId, patch: AiChatUpdateRequest): Promise<AiChat> {
   if (patch.title === undefined && patch.pinned === undefined) {
     throw new Error('AiChat update patch must contain at least one field.')

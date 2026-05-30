@@ -129,7 +129,7 @@ React Query:
 - On **completed**, the final assistant row is prepended to the cache.
 - On **abort** or **error** with streamed text, a cached assistant message may be saved.
 - On **done**, `invalidateAiChatMessagesQuery(..., { refetchType: 'none' })` every turn: cache stays from SSE while the chat is open; refetch when the chat is opened again later.
-- Chat list: `invalidateAiChatListQueries(..., { refetchType: 'none' })` only on the first turn after `createAiChat` (server auto-title is async after `done`).
+- Chat list: `invalidateAiChatListQueries(..., { refetchType: 'none' })` on `createAiChat` so History refetches when the new row is not in list cache yet. After `done`, `useAiChatTitlePolling` polls `GET /chats/:id` and `syncAiChatCaches` patches that chat in item + list caches (no full-list invalidation).
 
 ### "Thinking" during tool / network gaps
 

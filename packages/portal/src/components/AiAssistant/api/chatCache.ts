@@ -1,7 +1,7 @@
-import type { QueryClient } from '@tanstack/react-query'
+import type { InfiniteData, QueryClient } from '@tanstack/react-query'
 
-import { AI_CHAT_ROOT, aiChatItemKey, aiChatMessagesKey } from './queryKeys'
-import type { AiChat, ChatId } from './types'
+import { AI_CHAT_ROOT, aiChatItemKey, aiChatMessagesKey, isAiChatsInfiniteListQueryKey } from './queryKeys'
+import type { AiChat, AiChatsListResponse, ChatId } from './types'
 
 export async function cancelAiChatMutationQueries(
   queryClient: QueryClient,
@@ -18,6 +18,29 @@ export async function cancelAiChatMutationQueries(
 export function removeAiChatQueries(queryClient: QueryClient, chatId: ChatId): void {
   queryClient.removeQueries({ queryKey: aiChatItemKey(chatId), exact: true })
   queryClient.removeQueries({ queryKey: aiChatMessagesKey(chatId), exact: true })
+}
+
+export function syncAiChatCaches(queryClient: QueryClient, chat: AiChat): void {
+  queryClient.setQueryData(aiChatItemKey(chat.chatId), chat)
+  patchAiChatInListCaches(queryClient, chat)
+}
+
+export function patchAiChatInListCaches(queryClient: QueryClient, chat: AiChat): void {
+  queryClient.setQueriesData<InfiniteData<AiChatsListResponse>>(
+    { predicate: (query) => isAiChatsInfiniteListQueryKey(query.queryKey) },
+    (previous) => {
+      if (!previous) {
+        return previous
+      }
+      return {
+        ...previous,
+        pages: previous.pages.map((page) => ({
+          ...page,
+          chats: page.chats.map((row) => (row.chatId === chat.chatId ? { ...row, ...chat } : row)),
+        })),
+      }
+    },
+  )
 }
 
 export function applyLocalChatPatch(chat: AiChat, patch: { title?: string; pinned?: boolean }): AiChat {

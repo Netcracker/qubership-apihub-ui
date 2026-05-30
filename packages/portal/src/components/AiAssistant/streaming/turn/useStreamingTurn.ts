@@ -1,6 +1,7 @@
-import { useCallback, useMemo, useRef } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 
 import type { ChatId } from '../../api/types'
+import { useAiChatTitlePolling } from '../../api/useAiChatTitlePolling'
 import type {
   AiAssistantStreamingActions,
   AiAssistantStreamingLive,
@@ -40,6 +41,17 @@ export function useStreamingTurn({
 
   const turnBootstrapRef = useRef<StreamingTurnState | null>(null)
   const createdChatThisTurnRef = useRef(false)
+  const [chatIdAwaitingAutoTitle, setChatIdAwaitingAutoTitle] = useState<ChatId | null>(null)
+
+  const stopAutoTitlePolling = useCallback((): void => {
+    setChatIdAwaitingAutoTitle(null)
+  }, [])
+
+  const startAutoTitlePolling = useCallback((chatId: ChatId): void => {
+    setChatIdAwaitingAutoTitle(chatId)
+  }, [])
+
+  useAiChatTitlePolling(chatIdAwaitingAutoTitle, stopAutoTitlePolling)
 
   const {
     thinkingDuringAssistantPause,
@@ -53,6 +65,7 @@ export function useStreamingTurn({
     stateRef,
     turnBootstrapRef,
     createdChatThisTurnRef,
+    startAutoTitlePolling,
     lastAssistantMessageActivityAtRef,
     clearThinkingDuringAssistantPause,
     prependCachedAssistantMessage,

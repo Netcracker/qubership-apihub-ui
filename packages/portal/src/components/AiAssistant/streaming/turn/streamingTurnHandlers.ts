@@ -10,3 +10,5 @@ export type ProcessStreamingTurnSseBatchHandler = (
   chatId: ChatId,
   batch: readonly AiChatStreamEvent[],
 ) => void
+
+export type StartAutoTitlePollingHandler = (chatId: ChatId) => void
