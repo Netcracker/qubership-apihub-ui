@@ -78,7 +78,7 @@ export const AiAssistantComposer: FC<AiAssistantComposerProps> = memo(({ panelOp
         ? (
           <SendStopButton
             variant="contained"
-            aria-label="Stop generation"
+            aria-label="Stop response"
             onClick={handleAbort}
           >
             <StopIcon />

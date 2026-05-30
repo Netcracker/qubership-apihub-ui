@@ -91,7 +91,6 @@ export const ChatListRow: FC<ChatListRowProps> = memo(({
       onClick={handleOpen}
       onKeyDown={handleKeyDown}
       data-testid="AiAssistantHistoryChatRow"
-      aria-label={isEditing ? undefined : displayedTitle}
     >
       <TitleSlot>
         {isEditing
