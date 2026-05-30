@@ -60,20 +60,18 @@ export const ChatMessageList: FC<ChatMessageListProps> = memo(
             <ThinkingIndicator visible={thinkingVisible} />
           </MessagesColumn>
         </ListScrollArea>
-        {showJumpButton
-          ? (
-            <JumpFabWrap>
-              <JumpToLatestButton
-                aria-label="Jump to latest messages"
-                data-testid="AiAssistantJumpToLatestButton"
-                onClick={scrollToBottom}
-                streamPhase={jumpButtonStreamPhase}
-                color="inherit"
-                size="small"
-              />
-            </JumpFabWrap>
-          )
-          : null}
+        {showJumpButton && (
+          <JumpFabWrap>
+            <JumpToLatestButton
+              aria-label="Jump to latest messages"
+              data-testid="AiAssistantJumpToLatestButton"
+              onClick={scrollToBottom}
+              streamPhase={jumpButtonStreamPhase}
+              color="inherit"
+              size="small"
+            />
+          </JumpFabWrap>
+        )}
       </ListRoot>
     )
   },

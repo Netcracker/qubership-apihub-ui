@@ -107,23 +107,21 @@ export const ChatListRow: FC<ChatListRowProps> = memo(({
             </RowTitle>
           )}
       </TitleSlot>
-      {!isEditing
-        ? (
-          <ActionsSlot>
-            {chat.pinned ? <PinIcon aria-hidden fontSize="small" /> : null}
-            <ChatRowActionsMenu
-              pinned={!!chat.pinned}
-              pinDisabled={isPinDisabled}
-              pinDisabledTooltip={pinDisabledTooltip}
-              deleteDisabled={isDeleteDisabled}
-              onRename={onStartRename}
-              onTogglePin={onTogglePin}
-              onDelete={onDelete}
-              onMenuOpenChange={setActionsMenuOpen}
-            />
-          </ActionsSlot>
-        )
-        : null}
+      {!isEditing && (
+        <ActionsSlot>
+          {chat.pinned && <PinIcon aria-hidden fontSize="small" />}
+          <ChatRowActionsMenu
+            pinned={!!chat.pinned}
+            pinDisabled={isPinDisabled}
+            pinDisabledTooltip={pinDisabledTooltip}
+            deleteDisabled={isDeleteDisabled}
+            onRename={onStartRename}
+            onTogglePin={onTogglePin}
+            onDelete={onDelete}
+            onMenuOpenChange={setActionsMenuOpen}
+          />
+        </ActionsSlot>
+      )}
     </RowRoot>
   )
 })
