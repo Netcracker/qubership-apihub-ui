@@ -37,10 +37,10 @@ export const ChatStreamingBody: FC<ChatStreamingBodyProps> = memo(({
     jumpPhase,
     streamingAssistantMessageId,
   } = useChatScreenMessages({
-    activeChatId: activeChatId,
-    messagePages: messagePages,
-    messagesLoaded: messagesLoaded,
-    streamingLive: streamingLive,
+    activeChatId,
+    messagePages,
+    messagesLoaded,
+    streamingLive,
   })
 
   if (!showThread) {

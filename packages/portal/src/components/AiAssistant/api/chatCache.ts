@@ -25,7 +25,23 @@ export function syncAiChatCaches(queryClient: QueryClient, chat: AiChat): void {
   patchAiChatInListCaches(queryClient, chat)
 }
 
-export function patchAiChatInListCaches(queryClient: QueryClient, chat: AiChat): void {
+export function applyLocalChatPatch(chat: AiChat, patch: { title?: string; pinned?: boolean }): AiChat {
+  const next: AiChat = patch.title !== undefined
+    ? { ...chat, title: patch.title }
+    : { ...chat }
+
+  if (patch.pinned === true) {
+    next.pinned = true
+    return next
+  }
+  if (patch.pinned === false) {
+    delete next.pinned
+    return next
+  }
+  return next
+}
+
+function patchAiChatInListCaches(queryClient: QueryClient, chat: AiChat): void {
   queryClient.setQueriesData<InfiniteData<AiChatsListResponse>>(
     { predicate: (query) => isAiChatsInfiniteListQueryKey(query.queryKey) },
     (previous) => {
@@ -41,20 +57,4 @@ export function patchAiChatInListCaches(queryClient: QueryClient, chat: AiChat):
       }
     },
   )
-}
-
-export function applyLocalChatPatch(chat: AiChat, patch: { title?: string; pinned?: boolean }): AiChat {
-  const next: AiChat = patch.title !== undefined
-    ? { ...chat, title: patch.title }
-    : { ...chat }
-
-  if (patch.pinned === true) {
-    next.pinned = true
-    return next
-  }
-  if (patch.pinned === false) {
-    delete next.pinned
-    return next
-  }
-  return next
 }

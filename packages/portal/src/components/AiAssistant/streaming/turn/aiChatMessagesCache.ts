@@ -23,13 +23,6 @@ type CachedAssistantMessageInput = {
   createdAt: string
 }
 
-export function emptyMessagesInfiniteData(): InfiniteData<AiChatMessagesListResponse> {
-  return {
-    pages: [{ messages: [], hasMore: false }],
-    pageParams: [undefined],
-  }
-}
-
 export function prependMessageToInfiniteMessages(
   previous: InfiniteData<AiChatMessagesListResponse> | undefined,
   message: AiChatMessage,
@@ -83,4 +76,11 @@ export function updateAiChatMessagesCache(
   ) => InfiniteData<AiChatMessagesListResponse>,
 ): void {
   queryClient.setQueryData(aiChatMessagesKey(chatId), updater)
+}
+
+function emptyMessagesInfiniteData(): InfiniteData<AiChatMessagesListResponse> {
+  return {
+    pages: [{ messages: [], hasMore: false }],
+    pageParams: [undefined],
+  }
 }
