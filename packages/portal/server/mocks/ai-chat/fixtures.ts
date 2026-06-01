@@ -7,7 +7,7 @@ import type { AiChat, AiChatMessage } from './types'
 export const FIXTURE_CUSTOMERS_CHAT_ID = 'fc000001-0000-4000-8000-000000000001'
 export const FIXTURE_OVERVIEW_CHAT_ID = 'fc000001-0000-4000-8000-000000000002'
 export const FIXTURE_RECENT_CHAT_ID = 'fc000001-0000-4000-8000-000000000003'
-/** 120 user + 120 assistant (newest-first: Response #120 / Request #120 ... #1). See server/README.md. */
+// 120 user + 120 assistant
 export const FIXTURE_PAGINATION_120_CHAT_ID = 'fc000001-0000-4000-8000-0000000000b0'
 
 const DAY_MS = 24 * 60 * 60 * 1000

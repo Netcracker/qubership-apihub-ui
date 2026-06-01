@@ -15,7 +15,6 @@ type AssistantThinkingDuringPauseResult = {
 
 /**
  * Thinking during `started` when no assistant token for ~1s.
- * See `streaming/README.md` ("Thinking during tool / network gaps").
  */
 export function useAssistantThinkingDuringPause(
   state: StreamingTurnState,
