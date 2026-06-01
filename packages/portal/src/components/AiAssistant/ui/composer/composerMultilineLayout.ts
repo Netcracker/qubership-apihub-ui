@@ -7,7 +7,9 @@ export const COMPOSER_SEND_BUTTON_SIZE_SPACING = 5
 const COMPOSER_SEND_BUTTON_GAP_SPACING = 1
 
 export function composerActionReserve(theme: Theme): string {
-  return `calc(${theme.spacing(COMPOSER_SEND_BUTTON_SIZE_SPACING)} + ${theme.spacing(COMPOSER_SEND_BUTTON_GAP_SPACING)})`
+  return `calc(${theme.spacing(COMPOSER_SEND_BUTTON_SIZE_SPACING)} + ${
+    theme.spacing(COMPOSER_SEND_BUTTON_GAP_SPACING)
+  })`
 }
 
 /*

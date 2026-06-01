@@ -8,8 +8,8 @@ import { dispatchAiChatFetchError, dispatchAiChatWarning } from '../../api/error
 import type { ChatId, ClientMessageId } from '../../api/types'
 import { streamAiChatTurn } from '../transport/sse'
 import {
-  AI_ASSISTANT_INCOMPLETE_STREAM_MESSAGE,
-  AI_ASSISTANT_STREAM_REQUEST_FAILED_MESSAGE,
+  STREAM_INCOMPLETE_MESSAGE,
+  STREAM_REQUEST_FAILED_MESSAGE,
   STREAMING_TURN_ACTION,
 } from './streamingTurnConstants'
 import type { ProcessStreamingTurnSseBatchHandler, RunStreamingTurnHandler } from './streamingTurnHandlers'
@@ -53,7 +53,7 @@ export function useStreamingTurnStreamRun(deps: StreamingTurnStreamRunDeps): Run
       return
     }
     flushAssistantBufferToCache(chatId)
-    dispatchAiChatWarning({ message: AI_ASSISTANT_INCOMPLETE_STREAM_MESSAGE })
+    dispatchAiChatWarning({ message: STREAM_INCOMPLETE_MESSAGE })
     dispatchTurn({ type: STREAMING_TURN_ACTION.reset })
   }, [dispatchTurn, flushAssistantBufferToCache, stateRef])
 
@@ -71,7 +71,7 @@ export function useStreamingTurnStreamRun(deps: StreamingTurnStreamRunDeps): Run
     }
     if (!(e instanceof HttpError)) {
       dispatchAiChatFetchError(toStreamFetchErrorDetail(
-        e instanceof Error ? e.message : AI_ASSISTANT_STREAM_REQUEST_FAILED_MESSAGE,
+        e instanceof Error ? e.message : STREAM_REQUEST_FAILED_MESSAGE,
       ))
     }
   }, [dispatchTurn, flushAssistantBufferToCache, handleStreamHttp404])

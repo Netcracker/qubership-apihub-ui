@@ -22,24 +22,24 @@ You cannot use the browser `EventSource` API for this flow (it only supports GET
 
 Shared API types (`AiChatStreamEvent`, messages, roles) stay in `../api/types.ts`. Stream POST and REST live in `../api/` (`requests.ts`, `client.ts`, `errors.ts`). Event name constants are in `../api/streamEvents.ts`.
 
-UI wiring (message list, Thinking label, composer, jump button) stays in `../ui/chat/`. See **React context** below for which hook each component uses.
+UI wiring: message list and jump button in `../ui/conversation/`, composer in `../ui/composer/`, screens in `../ui/screens/`. See **React context** below for which hook each component uses.
 
 ## React context (`../state/`)
 
 `useStreamingTurn` runs inside `AiAssistantProvider` and exposes three separate context values so high-frequency buffer updates do not re-render unrelated UI (header button, panel shell, composer, history list).
 
-| Context / hook                      | Fields                                                                 | Updates when                                       | Typical consumers                                                                                                            |
-| ----------------------------------- | ---------------------------------------------------------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `useAiAssistantPanel()`             | `open`, `screen`, `activeChatId`, navigation callbacks, `startNewChat` | Panel open/close, screen switch, chat selection    | `AiAssistantButton`, `AiAssistantPanel`, `AiAssistantHeader`, `AiAssistantMarkdownViewer` (internal links), delete-chat hook |
-| `useAiAssistantStreamingActions()`  | `submit`, `abort`, `reset`                                             | Stable for a mounted provider                      | `AiAssistantComposer`                                                                                                        |
-| `useAiAssistantStreamingTurnMeta()` | `isBusy`, `activeTurnChatId`                                           | Turn start/end, chat ID change (not on each token) | `AiAssistantComposer`, `AiAssistantHistoryScreen` (delete disabled while turn runs)                                          |
-| `useAiAssistantStreamingLive()`     | `state` (`StreamingTurnState`), `thinkingDuringAssistantPause`         | Each assistant delta, thinking poll                | `ChatStreamingBody` only                                                                                                     |
+| Context / hook           | Fields                                                                 | Updates when                                       | Typical consumers                                                                                           |
+| ------------------------ | ---------------------------------------------------------------------- | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `usePanel()`             | `open`, `screen`, `activeChatId`, navigation callbacks, `startNewChat` | Panel open/close, screen switch, chat selection    | `AiAssistantButton`, `AiAssistantPanel`, `PanelHeader`, `MarkdownViewer` (internal links), delete-chat hook |
+| `useStreamingActions()`  | `submit`, `abort`, `reset`                                             | Stable for a mounted provider                      | `Composer`                                                                                                  |
+| `useStreamingTurnMeta()` | `isBusy`, `activeTurnChatId`                                           | Turn start/end, chat ID change (not on each token) | `Composer`, `HistoryScreen` (delete disabled while turn runs)                                               |
+| `useStreamingLive()`     | `state` (`StreamingTurnState`), `thinkingDuringAssistantPause`         | Each assistant delta, thinking poll                | `ChatStreamingBody` only                                                                                    |
 
-`ChatStreamingBody` is the only component that subscribes to **live** context during chat. `AiAssistantChatScreen` keeps React Query + welcome/placeholder layout; it does not read streaming context directly.
+`ChatStreamingBody` is the only component that subscribes to **live** context during chat. `ChatScreen` keeps React Query + welcome/placeholder layout; it does not read streaming context directly.
 
 Panel width is **not** in context: `AiAssistantPanel` stores it in local state + `localStorage` (`apihub.aiAssistant.panelWidth`).
 
-Types for the three streaming slices are defined once in `state/AiAssistantContext.tsx` and reused by `useStreamingTurn` return values.
+Types for the three streaming slices are defined once in `state/panelContext.ts` and reused by `useStreamingTurn` return values.
 
 ## End-to-end flow
 
@@ -141,7 +141,7 @@ A **short poll** (see `STREAM_THINKING_POLL_MS` in `streamingTurnConstants.ts` a
 
 `streamingTurnConstants.ts` - turn statuses, reducer action names, error copy, thinking timings, cached user message ID prefix.
 
-Jump-to-latest FAB phase constants live in `../ui/chat/chatScreenConstants.ts` (UI-only, not turn logic).
+Jump-to-latest FAB phase constants live in `../ui/conversation/chatScreenConstants.ts` (UI-only, not turn logic).
 
 ### Errors and the global handler
 
@@ -149,7 +149,7 @@ Portal-wide fetch errors go through `fetch-error` and `ExceptionSituationHandler
 
 AI Chat uses the same event but sets `forceSnackbar: true` so 500/400 never replace the portal under the open panel (see `api/errors.ts`).
 
-After the SSE read loop, if `isStreamingBusy(stateRef)` is still true, the hook shows a **warning** snackbar (`dispatchAiChatWarning`) with `AI_ASSISTANT_INCOMPLETE_STREAM_MESSAGE` - HTTP 200 but no terminal event (`completed`, `done`, or `error`). `dispatchTurn` updates `stateRef` in the same reducer pass as React `dispatch` so a normal `done` frame does not hit this guard before re-render.
+After the SSE read loop, if `isStreamingBusy(stateRef)` is still true, the hook shows a **warning** snackbar (`dispatchAiChatWarning`) with `STREAM_INCOMPLETE_MESSAGE` - HTTP 200 but no terminal event (`completed`, `done`, or `error`). `dispatchTurn` updates `stateRef` in the same reducer pass as React `dispatch` so a normal `done` frame does not hit this guard before re-render.
 
 | Failure                           | Who notifies                            | UI                                  |
 | --------------------------------- | --------------------------------------- | ----------------------------------- |
@@ -167,7 +167,7 @@ Mid-turn SSE errors are not HTTP failures; the turn layer dispatches `fetch-erro
 
 ## Layer 3 - Live Markdown (`markdown/`)
 
-While streaming, `ChatAssistantMessage` uses `AI_ASSISTANT_MARKDOWN_MODE.streaming`: GFM without syntax highlighting, via `CodeBlock` with header hidden.
+While streaming, `ChatAssistantMessage` uses `MARKDOWN_MODE.streaming`: GFM without syntax highlighting, via `CodeBlock` with header hidden.
 
 When the turn ends, the same message renders in **full** mode (highlighting, copy button) using authoritative `content` from the cache after `completed`.
 
@@ -175,18 +175,18 @@ When the turn ends, the same message renders in **full** mode (highlighting, cop
 
 ## What lives outside this folder
 
-| Location                                          | Responsibility                                         |
-| ------------------------------------------------- | ------------------------------------------------------ |
-| `state/AiAssistantContext.tsx`                    | Panel + streaming actions/meta/live types and hooks    |
-| `state/AiAssistantProvider.tsx`                   | Hosts `useStreamingTurn`, nests four context providers |
-| `ui/chat/AiAssistantChatScreen.tsx`               | Welcome vs thread layout; mounts `ChatStreamingBody`   |
-| `ui/chat/ChatStreamingBody.tsx`                   | Subscribes to live context; renders `ChatMessageList`  |
-| `ui/chat/AiAssistantComposer.tsx`                 | Turn meta + actions (Send/Stop)                        |
-| `ui/header/AiAssistantHeader.tsx`                 | Header chrome; handlers use actions + panel            |
-| `ui/markdown/AiAssistantMarkdownViewer.tsx`       | Shared Markdown viewer (history + stream)              |
-| `api/*`                                           | REST client, paths, errors, stream POST, hooks         |
-| `api/useDeleteAiChat.ts`                          | Delete mutation and cache updates                      |
-| `ui/history/hooks/useDeleteAiChatPanelActions.ts` | Panel clear/rollback around delete                     |
+| Location                                    | Responsibility                                         |
+| ------------------------------------------- | ------------------------------------------------------ |
+| `state/panelContext.ts`                     | Panel + streaming actions/meta/live types and hooks    |
+| `state/AiAssistantProvider.tsx`             | Hosts `useStreamingTurn`, nests four context providers |
+| `ui/screens/ChatScreen.tsx`                 | Welcome vs thread layout; mounts `ChatStreamingBody`   |
+| `ui/conversation/ChatStreamingBody.tsx`     | Subscribes to live context; renders `ChatMessageList`  |
+| `ui/composer/Composer.tsx`                  | Turn meta + actions (Send/Stop)                        |
+| `ui/header/PanelHeader.tsx`                 | Header chrome; handlers use actions + panel            |
+| `ui/markdown/MarkdownViewer.tsx`            | Shared Markdown viewer (history + stream)              |
+| `api/*`                                     | REST client, paths, errors, stream POST, hooks         |
+| `api/useDeleteAiChat.ts`                    | Delete mutation and cache updates                      |
+| `ui/history/useDeleteAiChatPanelActions.ts` | Panel clear/rollback around delete                     |
 
 ## Mental model (one paragraph)
 

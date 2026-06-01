@@ -4,14 +4,14 @@ import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 
-import { AiAssistantHeader } from '../header/AiAssistantHeader'
-import { AI_ASSISTANT_HEADER_MODE } from '../header/aiAssistantHeaderMode'
-import { DeleteChatConfirmation } from './DeleteChatDialog'
-import { HistoryChatListRow } from './HistoryChatListRow'
-import { HistorySearchField } from './HistorySearchField'
-import { useAiAssistantHistoryScreen } from './hooks/useAiAssistantHistoryScreen'
+import { PanelHeader } from '../header/PanelHeader'
+import { PANEL_HEADER_MODE } from '../header/panelHeaderMode'
+import { DeleteChatConfirmation } from '../history/DeleteChatDialog'
+import { HistoryChatListRow } from '../history/HistoryChatListRow'
+import { HistorySearchField } from '../history/HistorySearchField'
+import { useHistoryScreen } from '../history/useHistoryScreen'
 
-export const AiAssistantHistoryScreen: FC = memo(() => {
+export const HistoryScreen: FC = memo(() => {
   const {
     activeChatId,
     activeTurnChatId,
@@ -37,14 +37,14 @@ export const AiAssistantHistoryScreen: FC = memo(() => {
     rowTitleOverrideByChatId,
     searchQuery,
     setSearchQuery,
-  } = useAiAssistantHistoryScreen()
+  } = useHistoryScreen()
 
   const isEmpty = chats.length === 0
 
   return (
     <HistoryLayout>
-      <AiAssistantHeader
-        mode={AI_ASSISTANT_HEADER_MODE.history}
+      <PanelHeader
+        mode={PANEL_HEADER_MODE.history}
         onBack={handleBack}
       />
       <HistorySearchField value={searchQuery} onChange={setSearchQuery} />
@@ -102,7 +102,7 @@ export const AiAssistantHistoryScreen: FC = memo(() => {
   )
 })
 
-AiAssistantHistoryScreen.displayName = 'AiAssistantHistoryScreen'
+HistoryScreen.displayName = 'HistoryScreen'
 
 const HistoryLayout = styled(Box)({
   display: 'flex',

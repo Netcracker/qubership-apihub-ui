@@ -1,33 +1,32 @@
-import { type FC, memo } from 'react'
-
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import { type FC, memo } from 'react'
 
 import { BackArrowIcon } from '@netcracker/qubership-apihub-ui-shared/icons/BackArrowIcon'
 import { RobotFilledIcon } from '@netcracker/qubership-apihub-ui-shared/icons/RobotFilledIcon'
 
-import { useAiAssistantPanel } from '../../state/AiAssistantContext'
-import { AiAssistantHeaderActions } from './AiAssistantHeaderActions'
-import { AI_ASSISTANT_HEADER_MODE, AI_ASSISTANT_HEADER_TITLE } from './aiAssistantHeaderMode'
+import { usePanel } from '../../state/panelContext'
+import { PanelHeaderActions } from './PanelHeaderActions'
+import { PANEL_HEADER_MODE, PANEL_HEADER_TITLE } from './panelHeaderMode'
 
-type AiAssistantHeaderProps =
-  | { mode: typeof AI_ASSISTANT_HEADER_MODE.chat }
+type PanelHeaderProps =
+  | { mode: typeof PANEL_HEADER_MODE.chat }
   | {
-    mode: typeof AI_ASSISTANT_HEADER_MODE.history
+    mode: typeof PANEL_HEADER_MODE.history
     onBack: () => void
   }
 
-export const AiAssistantHeader: FC<AiAssistantHeaderProps> = memo((props) => {
-  const { startNewChat, openHistory, closePanel } = useAiAssistantPanel()
+export const PanelHeader: FC<PanelHeaderProps> = memo((props) => {
+  const { startNewChat, openHistory, closePanel } = usePanel()
 
   return (
     <HeaderRoot>
       <HeaderToolbar>
         <HeaderLeading>
-          {props.mode === AI_ASSISTANT_HEADER_MODE.history
+          {props.mode === PANEL_HEADER_MODE.history
             ? (
               <IconButton
                 aria-label="Back to chat"
@@ -44,10 +43,10 @@ export const AiAssistantHeader: FC<AiAssistantHeaderProps> = memo((props) => {
               </HeaderAvatar>
             )}
           <HeaderHeading variant="h5">
-            {AI_ASSISTANT_HEADER_TITLE[props.mode]}
+            {PANEL_HEADER_TITLE[props.mode]}
           </HeaderHeading>
         </HeaderLeading>
-        <AiAssistantHeaderActions
+        <PanelHeaderActions
           onNewChat={startNewChat}
           onHistory={openHistory}
           onClose={closePanel}
@@ -58,7 +57,7 @@ export const AiAssistantHeader: FC<AiAssistantHeaderProps> = memo((props) => {
   )
 })
 
-AiAssistantHeader.displayName = 'AiAssistantHeader'
+PanelHeader.displayName = 'PanelHeader'
 
 const HeaderRoot = styled(Box)(({ theme }) => ({
   display: 'flex',

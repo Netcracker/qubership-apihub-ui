@@ -1,15 +1,11 @@
 import { useMemo } from 'react'
 
-import { AI_CHAT_ROLE, type AiChatMessage, type ChatId, type MessageId } from '../../../api/types'
-import type { AiAssistantStreamingLive } from '../../../state/AiAssistantContext'
-import { buildCachedAssistantMessage } from '../../../streaming/turn/aiChatMessagesCache'
-import { STREAMING_TURN_STATUS } from '../../../streaming/turn/streamingTurnConstants'
-import {
-  getActiveTurnChatId,
-  isStreamingBusy,
-  isStreamingTurnStatus,
-} from '../../../streaming/turn/streamingTurnReducer'
-import { CHAT_MESSAGE_LIST_JUMP_PHASE, type ChatMessageListJumpPhase } from '../chatScreenConstants'
+import { AI_CHAT_ROLE, type AiChatMessage, type ChatId, type MessageId } from '../../api/types'
+import type { StreamingLive } from '../../state/panelContext'
+import { buildCachedAssistantMessage } from '../../streaming/turn/aiChatMessagesCache'
+import { STREAMING_TURN_STATUS } from '../../streaming/turn/streamingTurnConstants'
+import { getActiveTurnChatId, isStreamingBusy, isStreamingTurnStatus } from '../../streaming/turn/streamingTurnReducer'
+import { CHAT_MESSAGE_LIST_JUMP_PHASE, type ChatMessageListJumpPhase } from './chatScreenConstants'
 
 type MessagePage = {
   messages: AiChatMessage[]
@@ -19,7 +15,7 @@ type UseChatScreenMessagesParams = {
   activeChatId: ChatId
   messagePages: MessagePage[] | undefined
   messagesLoaded: boolean
-  streamingLive: AiAssistantStreamingLive
+  streamingLive: StreamingLive
 }
 
 type StreamingAssistantBuffer = {

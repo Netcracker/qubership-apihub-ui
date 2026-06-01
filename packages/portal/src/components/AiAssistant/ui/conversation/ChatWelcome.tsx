@@ -11,7 +11,7 @@ import {
 
 const IMAGE_MAX_HEIGHT = 160
 
-export const AiAssistantPlaceholder: FC = memo(() => {
+export const ChatWelcome: FC = memo(() => {
   return (
     <Placeholder
       invisible={false}
@@ -33,7 +33,7 @@ export const AiAssistantPlaceholder: FC = memo(() => {
   )
 })
 
-AiAssistantPlaceholder.displayName = 'AiAssistantPlaceholder'
+ChatWelcome.displayName = 'ChatWelcome'
 
 const placeholderSx: SxProps = { maxHeight: IMAGE_MAX_HEIGHT }
 

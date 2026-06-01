@@ -1,9 +1,9 @@
-import type { AiAssistantScreen } from '../state/AiAssistantContext'
+import type { PanelScreen } from '../state/panelContext'
 import type { ChatId } from './types'
 
 export type DeleteAiChatContext = {
   wasActiveChat: boolean
-  previousScreen: AiAssistantScreen
+  previousScreen: PanelScreen
 }
 
 export type DeleteAiChatPanelActions = {

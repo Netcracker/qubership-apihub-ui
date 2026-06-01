@@ -15,13 +15,10 @@ import rehypeHighlight from 'rehype-highlight'
 import remarkGfm from 'remark-gfm'
 import type { PluggableList } from 'unified'
 
-import { useAiAssistantPanel } from '../../state/AiAssistantContext'
-import {
-  AI_ASSISTANT_MARKDOWN_MODE,
-  type AiAssistantMarkdownRenderMode,
-} from '../../streaming/markdown/aiAssistantMarkdownMode'
+import { usePanel } from '../../state/panelContext'
 import { isEphemeralFileLink, isInternalPortalLink, resolveToUrl } from '../../utils/internalLinkMatcher'
 import { plainChildrenText } from '../../utils/plainChildrenText'
+import { MARKDOWN_MODE, type MarkdownRenderMode } from '../markdown/markdownMode'
 import { CHAT_CARD_LINK_CLASS } from './chatCard'
 import { CodeBlock } from './CodeBlock'
 import { FileDownloadLink } from './FileDownloadLink'
@@ -42,19 +39,19 @@ const rehypePluginsFull: PluggableList = [
   ],
 ]
 
-type AiAssistantMarkdownViewerProps = {
+type MarkdownViewerProps = {
   markdown: string
-  mode?: AiAssistantMarkdownRenderMode
+  mode?: MarkdownRenderMode
   normalizeMarkdown?: (markdown: string) => string
 }
 
-export const AiAssistantMarkdownViewer: FC<AiAssistantMarkdownViewerProps> = memo(({
+export const MarkdownViewer: FC<MarkdownViewerProps> = memo(({
   markdown,
-  mode = AI_ASSISTANT_MARKDOWN_MODE.full,
+  mode = MARKDOWN_MODE.full,
   normalizeMarkdown,
 }) => {
   const source = normalizeMarkdown ? normalizeMarkdown(markdown) : markdown
-  const isStreaming = mode === AI_ASSISTANT_MARKDOWN_MODE.streaming
+  const isStreaming = mode === MARKDOWN_MODE.streaming
 
   const components = useMemo(
     () => ({
@@ -82,7 +79,7 @@ export const AiAssistantMarkdownViewer: FC<AiAssistantMarkdownViewerProps> = mem
   )
 })
 
-AiAssistantMarkdownViewer.displayName = 'AiAssistantMarkdownViewer'
+MarkdownViewer.displayName = 'MarkdownViewer'
 
 const MarkdownPre: FC<ComponentPropsWithoutRef<'pre'> & ReactMarkdownProps> = ({ children }) => <>{children}</>
 MarkdownPre.displayName = 'MarkdownPre'
@@ -119,7 +116,7 @@ const MarkdownLink: FC<ComponentPropsWithoutRef<'a'> & ReactMarkdownProps> = mem
   href = '',
   children,
 }) => {
-  const { closePanel, resetActiveChat } = useAiAssistantPanel()
+  const { closePanel, resetActiveChat } = usePanel()
   const onInternalPortalLinkClick = useCallback(
     (event: MouseEvent<HTMLAnchorElement>) => {
       if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return

@@ -3,8 +3,8 @@ import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { type FC, memo, type ReactNode } from 'react'
 
-import { useCopyWithFeedback } from '../../hooks/useCopyWithFeedback'
 import { CopyIconButton } from '../common/CopyIconButton'
+import { useCopyWithFeedback } from '../common/useCopyWithFeedback'
 
 type CodeBlockProps = {
   className?: string

@@ -6,7 +6,7 @@ import { invalidateAiChatListQueries } from '../../api/aiChatQueryInvalidation'
 import { aiChatItemKey } from '../../api/queryKeys'
 import { createAiChat } from '../../api/requests'
 import type { ChatId, ClientMessageId, MessageId } from '../../api/types'
-import type { SubmitTurnHandler } from '../../state/AiAssistantContext'
+import type { SubmitTurnHandler } from '../../state/panelContext'
 import {
   buildCachedUserMessage,
   prependMessageToInfiniteMessages,

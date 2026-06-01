@@ -1,20 +1,19 @@
-import { type FC, memo } from 'react'
-
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import { styled } from '@mui/material/styles'
+import { type FC, memo } from 'react'
 
 import { ClockBackwardIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ClockBackwardIcon'
 import { CloseIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CloseIcon'
 import { NewChatIcon } from '@netcracker/qubership-apihub-ui-shared/icons/NewChatIcon'
 
-type AiAssistantHeaderActionsProps = {
+type PanelHeaderActionsProps = {
   onNewChat: () => void
   onHistory: () => void
   onClose: () => void
 }
 
-export const AiAssistantHeaderActions: FC<AiAssistantHeaderActionsProps> = memo(({
+export const PanelHeaderActions: FC<PanelHeaderActionsProps> = memo(({
   onNewChat,
   onHistory,
   onClose,
@@ -49,7 +48,7 @@ export const AiAssistantHeaderActions: FC<AiAssistantHeaderActionsProps> = memo(
   )
 })
 
-AiAssistantHeaderActions.displayName = 'AiAssistantHeaderActions'
+PanelHeaderActions.displayName = 'PanelHeaderActions'
 
 const HeaderActions = styled(Box)(({ theme }) => ({
   display: 'flex',

@@ -11,8 +11,8 @@ import type { AiChatMessage, ChatId, MessageId } from '../../api/types'
 import { ChatAssistantMessage } from './ChatAssistantMessage'
 import { CHAT_MESSAGE_LIST_JUMP_PHASE, type ChatMessageListJumpPhase } from './chatScreenConstants'
 import { ChatUserMessage } from './ChatUserMessage'
-import { useMessageListScroll } from './hooks/useMessageListScroll'
 import { ThinkingIndicator } from './ThinkingIndicator'
+import { useMessageListScroll } from './useMessageListScroll'
 
 type ChatMessageListProps = {
   chatId: ChatId

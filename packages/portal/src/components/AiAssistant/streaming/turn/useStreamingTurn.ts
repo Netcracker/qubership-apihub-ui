@@ -2,11 +2,7 @@ import { useCallback, useMemo, useRef, useState } from 'react'
 
 import type { ChatId } from '../../api/types'
 import { useAiChatTitlePolling } from '../../api/useAiChatTitlePolling'
-import type {
-  AiAssistantStreamingActions,
-  AiAssistantStreamingLive,
-  AiAssistantStreamingTurnMeta,
-} from '../../state/AiAssistantContext'
+import type { StreamingActions, StreamingLive, StreamingTurnMeta } from '../../state/panelContext'
 import { STREAMING_TURN_ACTION } from './streamingTurnConstants'
 import { getActiveTurnChatId, isStreamingBusy, type StreamingTurnState } from './streamingTurnReducer'
 import { useStreamingTurnSseBatchProcessor } from './streamingTurnSseBatch'
@@ -23,9 +19,9 @@ type StreamingTurnDeps = {
 }
 
 type UseStreamingTurnResult = {
-  actions: AiAssistantStreamingActions
-  turnMeta: AiAssistantStreamingTurnMeta
-  live: AiAssistantStreamingLive
+  actions: StreamingActions
+  turnMeta: StreamingTurnMeta
+  live: StreamingLive
 }
 
 /**
@@ -98,7 +94,7 @@ export function useStreamingTurn({
     dispatchTurn({ type: STREAMING_TURN_ACTION.reset })
   }, [dispatchTurn])
 
-  const actions = useMemo<AiAssistantStreamingActions>(() => ({
+  const actions = useMemo<StreamingActions>(() => ({
     submit,
     abort,
     reset,
@@ -107,12 +103,12 @@ export function useStreamingTurn({
   const isBusy = isStreamingBusy(state)
   const activeTurnChatId = getActiveTurnChatId(state)
 
-  const turnMeta = useMemo<AiAssistantStreamingTurnMeta>(() => ({
+  const turnMeta = useMemo<StreamingTurnMeta>(() => ({
     isBusy,
     activeTurnChatId,
   }), [isBusy, activeTurnChatId])
 
-  const live = useMemo<AiAssistantStreamingLive>(() => ({
+  const live = useMemo<StreamingLive>(() => ({
     state,
     thinkingDuringAssistantPause,
   }), [state, thinkingDuringAssistantPause])

@@ -2,11 +2,11 @@ import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 import { type FC, memo, useMemo } from 'react'
 
-import { useCopyWithFeedback } from '../../hooks/useCopyWithFeedback'
-import { AI_ASSISTANT_MARKDOWN_MODE } from '../../streaming/markdown/aiAssistantMarkdownMode'
 import { normalizeStreamingMarkdown } from '../../streaming/markdown/normalizeStreamingMarkdown'
 import { CopyIconButton } from '../common/CopyIconButton'
-import { AiAssistantMarkdownViewer } from '../markdown/AiAssistantMarkdownViewer'
+import { useCopyWithFeedback } from '../common/useCopyWithFeedback'
+import { MARKDOWN_MODE } from '../markdown/markdownMode'
+import { MarkdownViewer } from '../markdown/MarkdownViewer'
 
 type ChatAssistantMessageProps = {
   content: string
@@ -23,9 +23,9 @@ export const ChatAssistantMessage: FC<ChatAssistantMessageProps> = memo(({ conte
 
   return (
     <AssistantColumn>
-      <AiAssistantMarkdownViewer
+      <MarkdownViewer
         markdown={markdownForViewer}
-        mode={isStreaming ? AI_ASSISTANT_MARKDOWN_MODE.streaming : AI_ASSISTANT_MARKDOWN_MODE.full}
+        mode={isStreaming ? MARKDOWN_MODE.streaming : MARKDOWN_MODE.full}
       />
       {!isStreaming
         ? (

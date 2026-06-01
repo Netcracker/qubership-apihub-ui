@@ -1,17 +1,17 @@
 import { type UseInfiniteQueryResult } from '@tanstack/react-query'
 import { type Dispatch, type RefObject, type SetStateAction, useCallback, useMemo, useRef, useState } from 'react'
 
-import { type AiChat, type AiChatsListResponse, type ChatId } from '../../../api/types'
-import { useAiChats } from '../../../api/useAiChats'
-import { useDeleteAiChat, type UseDeleteAiChatResult } from '../../../api/useDeleteAiChat'
-import { useUpdateAiChat } from '../../../api/useUpdateAiChat'
-import { useAiAssistantPanel, useAiAssistantStreamingTurnMeta } from '../../../state/AiAssistantContext'
-import { selectChatsFromPages, selectPinnedChatCount } from '../aiChatHistorySelectors'
+import { type AiChat, type AiChatsListResponse, type ChatId } from '../../api/types'
+import { useAiChats } from '../../api/useAiChats'
+import { useDeleteAiChat, type UseDeleteAiChatResult } from '../../api/useDeleteAiChat'
+import { useUpdateAiChat } from '../../api/useUpdateAiChat'
+import { usePanel, useStreamingTurnMeta } from '../../state/panelContext'
+import { selectChatsFromPages, selectPinnedChatCount } from './aiChatHistorySelectors'
 import { useDeleteAiChatPanelActions } from './useDeleteAiChatPanelActions'
 
 const LOAD_NEXT_PAGE_THRESHOLD_PX = 120
 
-type AiAssistantHistoryScreenState = {
+type HistoryScreenState = {
   activeChatId: ChatId | null
   activeTurnChatId: ChatId | null
   chatPendingDelete: AiChat | null
@@ -38,9 +38,9 @@ type AiAssistantHistoryScreenState = {
   setSearchQuery: Dispatch<SetStateAction<string>>
 }
 
-export function useAiAssistantHistoryScreen(): AiAssistantHistoryScreenState {
-  const { activeChatId, openChatScreen } = useAiAssistantPanel()
-  const { isBusy, activeTurnChatId } = useAiAssistantStreamingTurnMeta()
+export function useHistoryScreen(): HistoryScreenState {
+  const { activeChatId, openChatScreen } = usePanel()
+  const { isBusy, activeTurnChatId } = useStreamingTurnMeta()
   const { renameChat, setChatPinned } = useUpdateAiChat()
   const deleteChatPanelActions = useDeleteAiChatPanelActions()
   const deleteChat = useDeleteAiChat(deleteChatPanelActions)

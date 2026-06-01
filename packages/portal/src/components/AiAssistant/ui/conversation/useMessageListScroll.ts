@@ -1,7 +1,7 @@
 import type { FetchNextPageOptions } from '@tanstack/react-query'
 import { type RefObject, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
 
-import type { AiChatMessage, ChatId, MessageId } from '../../../api/types'
+import type { AiChatMessage, ChatId, MessageId } from '../../api/types'
 
 const NEAR_BOTTOM_THRESHOLD_PX = 40
 const LOAD_OLDER_SCROLL_TOP_PX = 72

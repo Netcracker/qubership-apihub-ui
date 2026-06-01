@@ -12,11 +12,7 @@ import {
 } from '../../api/streamEvents'
 import type { AiChatMessage, AiChatStreamEvent, ChatId, MessageId } from '../../api/types'
 import { prependMessageToInfiniteMessages, updateAiChatMessagesCache } from './aiChatMessagesCache'
-import {
-  AI_ASSISTANT_STREAM_ERROR_DEFAULT_MESSAGE,
-  STREAMING_TURN_ACTION,
-  STREAMING_TURN_STATUS,
-} from './streamingTurnConstants'
+import { STREAM_ERROR_DEFAULT_MESSAGE, STREAMING_TURN_ACTION, STREAMING_TURN_STATUS } from './streamingTurnConstants'
 import type { ProcessStreamingTurnSseBatchHandler, StartAutoTitlePollingHandler } from './streamingTurnHandlers'
 import {
   isStreamingTurnStatus,
@@ -157,7 +153,7 @@ function recordAssistantStreamProgress(
 
 function applyStreamErrorEvent(event: AiChatStreamErrorEvent): void {
   dispatchAiChatFetchError(toStreamFetchErrorDetail(
-    event.message || AI_ASSISTANT_STREAM_ERROR_DEFAULT_MESSAGE,
+    event.message || STREAM_ERROR_DEFAULT_MESSAGE,
     event.code,
   ))
 }

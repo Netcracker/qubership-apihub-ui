@@ -7,11 +7,7 @@ import { type ChangeEvent, type FC, type KeyboardEvent, memo, useCallback, useEf
 import { SendIcon } from '@netcracker/qubership-apihub-ui-shared/icons/SendIcon'
 import { StopIcon } from '@netcracker/qubership-apihub-ui-shared/icons/StopIcon'
 
-import {
-  useAiAssistantPanel,
-  useAiAssistantStreamingActions,
-  useAiAssistantStreamingTurnMeta,
-} from '../../state/AiAssistantContext'
+import { usePanel, useStreamingActions, useStreamingTurnMeta } from '../../state/panelContext'
 import {
   COMPOSER_ACTION_RESERVE_CSS_VAR,
   COMPOSER_SEND_BUTTON_SIZE_SPACING,
@@ -19,15 +15,15 @@ import {
 } from './composerMultilineLayout'
 import { useComposerMultilineLayout } from './useComposerMultilineLayout'
 
-type AiAssistantComposerProps = {
+type ComposerProps = {
   panelOpen: boolean
   chatKey: string
 }
 
-export const AiAssistantComposer: FC<AiAssistantComposerProps> = memo(({ panelOpen, chatKey }) => {
-  const { activeChatId } = useAiAssistantPanel()
-  const { isBusy } = useAiAssistantStreamingTurnMeta()
-  const { submit, abort } = useAiAssistantStreamingActions()
+export const Composer: FC<ComposerProps> = memo(({ panelOpen, chatKey }) => {
+  const { activeChatId } = usePanel()
+  const { isBusy } = useStreamingTurnMeta()
+  const { submit, abort } = useStreamingActions()
   const shellRef = useRef<HTMLDivElement | null>(null)
   const inputRef = useRef<HTMLTextAreaElement | null>(null)
   const [draft, setDraft] = useState('')
@@ -69,12 +65,12 @@ export const AiAssistantComposer: FC<AiAssistantComposerProps> = memo(({ panelOp
   }, [])
 
   return (
-    <AiAssistantComposerShell
+    <ComposerShell
       ref={shellRef}
       $multiline={multilineLayout}
       onKeyDown={handleShellKeyDown}
     >
-      <AiAssistantComposerDraftField
+      <ComposerDraftField
         inputRef={inputRef}
         multiline
         maxRows={10}
@@ -92,13 +88,13 @@ export const AiAssistantComposer: FC<AiAssistantComposerProps> = memo(({ panelOp
       >
         {isBusy ? <StopIcon /> : <SendIcon />}
       </SendStopButton>
-    </AiAssistantComposerShell>
+    </ComposerShell>
   )
 })
 
-AiAssistantComposer.displayName = 'AiAssistantComposer'
+Composer.displayName = 'Composer'
 
-const AiAssistantComposerShell = styled(Box, {
+const ComposerShell = styled(Box, {
   shouldForwardProp: (prop) => prop !== '$multiline',
 })<{ $multiline: boolean }>(({ theme, $multiline }) => {
   const actionReserve = composerActionReserve(theme)
@@ -134,9 +130,9 @@ const AiAssistantComposerShell = styled(Box, {
   }
 })
 
-AiAssistantComposerShell.displayName = 'AiAssistantComposerShell'
+ComposerShell.displayName = 'ComposerShell'
 
-const AiAssistantComposerDraftField = styled(TextField)(({ theme }) => ({
+const ComposerDraftField = styled(TextField)(({ theme }) => ({
   '& .MuiInputBase-input::-webkit-scrollbar': {
     width: theme.spacing(0.5),
   },
@@ -145,7 +141,7 @@ const AiAssistantComposerDraftField = styled(TextField)(({ theme }) => ({
   },
 }))
 
-AiAssistantComposerDraftField.displayName = 'AiAssistantComposerDraftField'
+ComposerDraftField.displayName = 'ComposerDraftField'
 
 const SendStopButton = styled(Button)(({ theme }) => ({
   minWidth: 0,

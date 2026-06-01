@@ -1,11 +1,11 @@
 import { useMemo } from 'react'
 
-import type { DeleteAiChatPanelActions } from '../../../api/deleteAiChatPanelActions'
-import type { ChatId } from '../../../api/types'
-import { AI_ASSISTANT_HISTORY_SCREEN, useAiAssistantPanel } from '../../../state/AiAssistantContext'
+import type { DeleteAiChatPanelActions } from '../../api/deleteAiChatPanelActions'
+import type { ChatId } from '../../api/types'
+import { PANEL_SCREEN_HISTORY, usePanel } from '../../state/panelContext'
 
 export function useDeleteAiChatPanelActions(): DeleteAiChatPanelActions {
-  const { activeChatId, screen, openChatScreen, openHistory, resetActiveChat, clearActiveChat } = useAiAssistantPanel()
+  const { activeChatId, screen, openChatScreen, openHistory, resetActiveChat, clearActiveChat } = usePanel()
 
   return useMemo<DeleteAiChatPanelActions>(() => ({
     getDeleteContext: (chatId: ChatId) => ({
@@ -21,7 +21,7 @@ export function useDeleteAiChatPanelActions(): DeleteAiChatPanelActions {
       if (!context.wasActiveChat) {
         return
       }
-      if (context.previousScreen === AI_ASSISTANT_HISTORY_SCREEN) {
+      if (context.previousScreen === PANEL_SCREEN_HISTORY) {
         openHistory()
       } else {
         resetActiveChat()

@@ -8,18 +8,18 @@ import {
 import type { ChatId } from '../api/types'
 import { useStreamingTurn } from '../streaming/turn/useStreamingTurn'
 import {
-  AI_ASSISTANT_CHAT_SCREEN,
-  AiAssistantPanelContext,
-  type AiAssistantPanelContextValue,
-  type AiAssistantScreen,
-  AiAssistantStreamingActionsContext,
-  AiAssistantStreamingLiveContext,
-  AiAssistantStreamingTurnMetaContext,
-} from './AiAssistantContext'
+  PANEL_SCREEN_CHAT,
+  PanelContext,
+  type PanelContextValue,
+  type PanelScreen,
+  StreamingActionsContext,
+  StreamingLiveContext,
+  StreamingTurnMetaContext,
+} from './panelContext'
 
 export const AiAssistantProvider: FC<PropsWithChildren> = memo<PropsWithChildren>(({ children }) => {
   const [open, setOpen] = useState<boolean>(false)
-  const [screen, setScreen] = useState<AiAssistantScreen>(AI_ASSISTANT_CHAT_SCREEN)
+  const [screen, setScreen] = useState<PanelScreen>(PANEL_SCREEN_CHAT)
   const [activeChatId, setActiveChatId] = useState<ChatId | null>(null)
 
   const openPanel = useCallback((): void => {
@@ -67,7 +67,7 @@ export const AiAssistantProvider: FC<PropsWithChildren> = memo<PropsWithChildren
   useEvent(SHOW_AI_ASSISTANT_PANEL, openPanel)
   useEvent(HIDE_AI_ASSISTANT_PANEL, closePanel)
 
-  const panelContextValue = useMemo<AiAssistantPanelContextValue>(() => ({
+  const panelContextValue = useMemo<PanelContextValue>(() => ({
     open,
     screen,
     activeChatId,
@@ -92,15 +92,15 @@ export const AiAssistantProvider: FC<PropsWithChildren> = memo<PropsWithChildren
   ])
 
   return (
-    <AiAssistantPanelContext.Provider value={panelContextValue}>
-      <AiAssistantStreamingActionsContext.Provider value={actions}>
-        <AiAssistantStreamingTurnMetaContext.Provider value={turnMeta}>
-          <AiAssistantStreamingLiveContext.Provider value={live}>
+    <PanelContext.Provider value={panelContextValue}>
+      <StreamingActionsContext.Provider value={actions}>
+        <StreamingTurnMetaContext.Provider value={turnMeta}>
+          <StreamingLiveContext.Provider value={live}>
             {children}
-          </AiAssistantStreamingLiveContext.Provider>
-        </AiAssistantStreamingTurnMetaContext.Provider>
-      </AiAssistantStreamingActionsContext.Provider>
-    </AiAssistantPanelContext.Provider>
+          </StreamingLiveContext.Provider>
+        </StreamingTurnMetaContext.Provider>
+      </StreamingActionsContext.Provider>
+    </PanelContext.Provider>
   )
 })
 

@@ -1,11 +1,10 @@
+import type { FetchNextPageOptions } from '@tanstack/react-query'
 import { type FC, memo } from 'react'
 
-import type { FetchNextPageOptions } from '@tanstack/react-query'
-
 import type { AiChatMessage, ChatId } from '../../api/types'
-import { useAiAssistantStreamingLive } from '../../state/AiAssistantContext'
+import { useStreamingLive } from '../../state/panelContext'
 import { ChatMessageList } from './ChatMessageList'
-import { useChatScreenMessages } from './hooks/useChatScreenMessages'
+import { useChatScreenMessages } from './useChatScreenMessages'
 
 type MessagePage = {
   messages: AiChatMessage[]
@@ -28,7 +27,7 @@ export const ChatStreamingBody: FC<ChatStreamingBodyProps> = memo(({
   isFetchingNextPage,
   fetchNextPage,
 }) => {
-  const streamingLive = useAiAssistantStreamingLive()
+  const streamingLive = useStreamingLive()
 
   const {
     displayMessages,
