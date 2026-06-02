@@ -220,7 +220,7 @@ const defaultScenario: Scenario = {
         type: 'message.assistant.completed',
         message: {
           messageId: messageId,
-          clientMessageId: null,
+          clientMessageId: clientMessageId,
           role: 'assistant',
           content: DEFAULT_MARKDOWN,
           createdAt: nowIso,
@@ -248,7 +248,7 @@ const jsonScenario: Scenario = {
         type: 'message.assistant.completed',
         message: {
           messageId: messageId,
-          clientMessageId: null,
+          clientMessageId: clientMessageId,
           role: 'assistant',
           content: JSON_MARKDOWN,
           createdAt: nowIso,
@@ -276,7 +276,7 @@ const linksScenario: Scenario = {
         type: 'message.assistant.completed',
         message: {
           messageId: messageId,
-          clientMessageId: null,
+          clientMessageId: clientMessageId,
           role: 'assistant',
           content: LINKS_MARKDOWN,
           createdAt: nowIso,
@@ -304,7 +304,7 @@ const longmdScenario: Scenario = {
         type: 'message.assistant.completed',
         message: {
           messageId: messageId,
-          clientMessageId: null,
+          clientMessageId: clientMessageId,
           role: 'assistant',
           content: LONG_MD_CONTENT,
           createdAt: nowIso,
@@ -339,7 +339,7 @@ Same link on its own line (easier to tap):
         type: 'message.assistant.completed',
         message: {
           messageId: messageId,
-          clientMessageId: null,
+          clientMessageId: clientMessageId,
           role: 'assistant',
           content: markdownWithLink,
           createdAt: nowIso,
@@ -399,7 +399,7 @@ const thinkingScenario: Scenario = {
   id: 'debug:thinking',
   description:
     '~4s idle before tool frames, IDS-style tool sequence, ~4s gap mid answer, then completion (English + file link).',
-  build: ({ messageId, nowIso, buildFileUrl }) => {
+  build: ({ messageId, nowIso, clientMessageId, buildFileUrl }) => {
     const url = buildFileUrl(MOCK_ATTACHMENT_FILE_ID)
     const fullText = `${THINKING_MARKDOWN_PREFIX} [create-customer-ids.md](${url})\n\n${THINKING_MARKDOWN_SUFFIX.trim()}`
     const midMarker = 'I did not find'
@@ -486,7 +486,7 @@ const thinkingScenario: Scenario = {
         type: 'message.assistant.completed',
         message: {
           messageId: messageId,
-          clientMessageId: null,
+          clientMessageId: clientMessageId,
           role: 'assistant',
           content: fullText,
           createdAt: nowIso,
@@ -514,7 +514,7 @@ const offtopicScenario: Scenario = {
         type: 'message.assistant.completed',
         message: {
           messageId: messageId,
-          clientMessageId: null,
+          clientMessageId: clientMessageId,
           role: 'assistant',
           content: OFFTOPIC_MARKDOWN,
           createdAt: nowIso,
