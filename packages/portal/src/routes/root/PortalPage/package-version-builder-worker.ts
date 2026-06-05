@@ -140,6 +140,15 @@ const worker: PackageVersionBuilderWorker = {
       config: buildConfig,
     } = await startPackageVersionPublication(options, builderId, sourcesZip)
 
+    // HARDCODE: the UI/backend does not yet support specifying an MCP endpoint during publishing.
+    // MCP files are detected structurally by the builder (by JSON shape), but each MCP file must
+    // carry `metadata.mcpEndpoint` or the build throws. Inject a default endpoint here, after the
+    // backend round-trip, so it reaches the builder regardless of backend passthrough. Harmless for
+    // non-MCP files (their builders ignore the metadata). Remove once endpoint config is implemented.
+    buildConfig.files?.forEach((file) => {
+      file.metadata = { mcpEndpoint: '/mcp', ...file.metadata }
+    })
+
     const fileSources = sources && toFileSourceMap(sources)
 
     const builder = new PackageVersionBuilder(buildConfig, {
