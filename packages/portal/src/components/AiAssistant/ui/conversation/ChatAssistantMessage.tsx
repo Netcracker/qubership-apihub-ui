@@ -4,7 +4,7 @@ import { type FC, memo, useMemo } from 'react'
 
 import { normalizeStreamingMarkdown } from '../../streaming/markdown/normalizeStreamingMarkdown'
 import { CopyIconButton } from '../common/CopyIconButton'
-import { useCopyWithFeedback } from '../common/useCopyWithFeedback'
+import { useCopyToClipboardWithFeedback } from '../common/useCopyToClipboardWithFeedback'
 import { MARKDOWN_MODE } from '../markdown/markdownMode'
 import { MarkdownViewer } from '../markdown/MarkdownViewer'
 
@@ -14,7 +14,7 @@ type ChatAssistantMessageProps = {
 }
 
 export const ChatAssistantMessage: FC<ChatAssistantMessageProps> = memo(({ content, isStreaming = false }) => {
-  const { createCopyHandler, copied } = useCopyWithFeedback()
+  const { createCopyHandler, copied } = useCopyToClipboardWithFeedback()
 
   const markdownForViewer = useMemo(
     () => (isStreaming ? normalizeStreamingMarkdown(content) : content),

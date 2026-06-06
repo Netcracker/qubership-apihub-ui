@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography'
 import { type FC, memo, type ReactNode } from 'react'
 
 import { CopyIconButton } from '../common/CopyIconButton'
-import { useCopyWithFeedback } from '../common/useCopyWithFeedback'
+import { useCopyToClipboardWithFeedback } from '../common/useCopyToClipboardWithFeedback'
 
 type CodeBlockProps = {
   className?: string
@@ -38,7 +38,7 @@ type CodeBlockHeaderBarProps = {
 }
 
 const CodeBlockHeaderBar: FC<CodeBlockHeaderBarProps> = memo(({ className, rawText }) => {
-  const { createCopyHandler, copied } = useCopyWithFeedback()
+  const { createCopyHandler, copied } = useCopyToClipboardWithFeedback()
 
   const languageLabel = languageLabelFromClassName(className)
 
