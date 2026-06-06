@@ -42,6 +42,7 @@ export function useChatScreenMessages({
     if (!messagePages?.length) {
       return []
     }
+    // API pages and in-page messages are both newest-first; one reverse yields oldest-first.
     const newestFirst = messagePages.flatMap((page) => page.messages)
     return [...newestFirst].reverse()
   }, [messagePages])
