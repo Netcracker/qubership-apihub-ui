@@ -1,6 +1,6 @@
 import type { InfiniteData, QueryClient } from '@tanstack/react-query'
 
-import { aiChatMessagesKey } from '../../api/queryKeys'
+import { aiChatMessagesKey } from '../queryKeys'
 import {
   AI_CHAT_ROLE,
   type AiChatMessage,
@@ -8,7 +8,7 @@ import {
   type ChatId,
   type ClientMessageId,
   type MessageId,
-} from '../../api/types'
+} from '../types'
 
 type CachedUserMessageInput = {
   messageId: MessageId

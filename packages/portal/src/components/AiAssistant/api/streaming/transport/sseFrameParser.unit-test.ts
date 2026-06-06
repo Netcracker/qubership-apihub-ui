@@ -1,5 +1,4 @@
-import { AI_CHAT_STREAM_EVENT } from '../../api/types'
-
+import { AI_CHAT_STREAM_EVENT } from '../../types'
 import { parseSseFrame } from './sseFrameParser'
 
 describe('parseSseFrame', () => {

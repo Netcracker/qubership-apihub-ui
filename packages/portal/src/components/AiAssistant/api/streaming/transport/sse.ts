@@ -1,5 +1,5 @@
-import { type AiChatStreamRequestBody, postAiChatMessageStream } from '../../api/requests'
-import type { AiChatStreamEvent, ChatId } from '../../api/types'
+import { type AiChatStreamRequestBody, postAiChatMessageStream } from '../../requests'
+import type { AiChatStreamEvent, ChatId } from '../../types'
 import { parseSseFrame } from './sseFrameParser'
 import { splitSseFrames } from './sseFramer'
 

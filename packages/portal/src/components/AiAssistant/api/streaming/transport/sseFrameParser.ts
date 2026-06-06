@@ -1,6 +1,6 @@
 import isPlainObject from 'lodash-es/isPlainObject'
 
-import type { AiChatStreamEvent } from '../../api/types'
+import type { AiChatStreamEvent } from '../../types'
 import type { SseFrame } from './sseFramer'
 
 export function parseSseFrame(frame: SseFrame): AiChatStreamEvent | null {

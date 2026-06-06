@@ -1,8 +1,8 @@
 import { useMemo } from 'react'
 
+import { buildCachedAssistantMessage } from '../../api/streaming/messagesCache'
 import { AI_CHAT_ROLE, type AiChatMessage, type ChatId, type MessageId } from '../../api/types'
 import type { StreamingLive } from '../../state/panelContext'
-import { buildCachedAssistantMessage } from '../../streaming/turn/aiChatMessagesCache'
 import { STREAMING_TURN_STATUS } from '../../streaming/turn/streamingTurnConstants'
 import { getActiveTurnChatId, isStreamingBusy, isStreamingTurnStatus } from '../../streaming/turn/streamingTurnReducer'
 import { CHAT_MESSAGE_LIST_JUMP_PHASE, type ChatMessageListJumpPhase } from './chatScreenConstants'

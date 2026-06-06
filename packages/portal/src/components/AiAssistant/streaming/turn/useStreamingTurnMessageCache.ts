@@ -1,12 +1,12 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { type MutableRefObject, useCallback } from 'react'
 
-import type { ChatId, MessageId } from '../../api/types'
 import {
   buildCachedAssistantMessage,
   prependMessageToInfiniteMessages,
   updateAiChatMessagesCache,
-} from './aiChatMessagesCache'
+} from '../../api/streaming/messagesCache'
+import type { ChatId, MessageId } from '../../api/types'
 import { STREAMING_TURN_STATUS } from './streamingTurnConstants'
 import { isStreamingTurnStatus, type StreamingTurnState } from './streamingTurnReducer'
 

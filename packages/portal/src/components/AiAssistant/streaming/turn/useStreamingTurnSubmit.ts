@@ -5,15 +5,15 @@ import { v4 as uuidv4 } from 'uuid'
 import { invalidateAiChatListQueries } from '../../api/aiChatQueryInvalidation'
 import { aiChatItemKey } from '../../api/queryKeys'
 import { createAiChat } from '../../api/requests'
-import type { ChatId, ClientMessageId, MessageId } from '../../api/types'
-import type { SubmitTurnHandler } from '../../state/panelContext'
 import {
   buildCachedUserMessage,
   prependMessageToInfiniteMessages,
   updateAiChatMessagesCache,
-} from './aiChatMessagesCache'
+} from '../../api/streaming/messagesCache'
+import type { RunStreamTurnHandler } from '../../api/streaming/types'
+import type { ChatId, ClientMessageId, MessageId } from '../../api/types'
+import type { SubmitTurnHandler } from '../../state/panelContext'
 import { CACHED_USER_MESSAGE_ID_PREFIX, STREAMING_TURN_ACTION, STREAMING_TURN_STATUS } from './streamingTurnConstants'
-import type { RunStreamingTurnHandler } from './streamingTurnHandlers'
 import { type StreamingTurnAction, type StreamingTurnState } from './streamingTurnReducer'
 
 type StreamingTurnSubmitDeps = {
@@ -21,7 +21,7 @@ type StreamingTurnSubmitDeps = {
   dispatchTurn: (action: StreamingTurnAction) => void
   turnBootstrapRef: MutableRefObject<StreamingTurnState | null>
   createdChatThisTurnRef: MutableRefObject<boolean>
-  runTurn: RunStreamingTurnHandler
+  runTurn: RunStreamTurnHandler
 }
 
 type ResolveChatIdForTurnDeps = {

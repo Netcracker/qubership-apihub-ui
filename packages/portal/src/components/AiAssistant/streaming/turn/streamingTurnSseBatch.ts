@@ -9,17 +9,19 @@ import {
   isAiChatStreamErrorEvent,
   isAssistantStreamProgressEvent,
 } from '../../api/streamEvents'
+import { prependMessageToInfiniteMessages, updateAiChatMessagesCache } from '../../api/streaming/messagesCache'
+import { toStreamFetchErrorDetail } from '../../api/streaming/streamErrors'
+import type { ProcessStreamBatchHandler } from '../../api/streaming/types'
 import type { AiChatMessage, AiChatStreamErrorEvent, AiChatStreamEvent, ChatId, MessageId } from '../../api/types'
-import { prependMessageToInfiniteMessages, updateAiChatMessagesCache } from './aiChatMessagesCache'
 import { STREAM_ERROR_DEFAULT_MESSAGE, STREAMING_TURN_ACTION, STREAMING_TURN_STATUS } from './streamingTurnConstants'
-import type { ProcessStreamingTurnSseBatchHandler, StartAutoTitlePollingHandler } from './streamingTurnHandlers'
 import {
   isStreamingTurnStatus,
   peekAssistantBufferBeforeErrorInBatch,
   type StreamingTurnAction,
   type StreamingTurnState,
 } from './streamingTurnReducer'
-import { toStreamFetchErrorDetail } from './streamingTurnStreamErrors'
+
+type StartAutoTitlePollingHandler = (chatId: ChatId) => void
 
 type StreamingTurnSseBatchProcessorDeps = {
   stateRef: MutableRefObject<StreamingTurnState>
@@ -32,7 +34,7 @@ type StreamingTurnSseBatchProcessorDeps = {
   dispatchTurn: (action: StreamingTurnAction) => void
 }
 
-type ProcessStreamingTurnSseBatchParams = StreamingTurnSseBatchProcessorDeps & {
+type ProcessStreamBatchParams = StreamingTurnSseBatchProcessorDeps & {
   queryClient: QueryClient
   chatId: ChatId
   batch: readonly AiChatStreamEvent[]
@@ -44,7 +46,7 @@ type ProcessStreamingTurnSseBatchParams = StreamingTurnSseBatchProcessorDeps & {
  */
 export function useStreamingTurnSseBatchProcessor(
   deps: StreamingTurnSseBatchProcessorDeps,
-): ProcessStreamingTurnSseBatchHandler {
+): ProcessStreamBatchHandler {
   const queryClient = useQueryClient()
   const {
     stateRef,
@@ -59,7 +61,7 @@ export function useStreamingTurnSseBatchProcessor(
 
   return useCallback(
     (chatId: ChatId, batch: readonly AiChatStreamEvent[]): void => {
-      processStreamingTurnSseBatch({
+      processStreamBatch({
         queryClient,
         chatId,
         batch,
@@ -87,7 +89,7 @@ export function useStreamingTurnSseBatchProcessor(
   )
 }
 
-function processStreamingTurnSseBatch(params: ProcessStreamingTurnSseBatchParams): void {
+function processStreamBatch(params: ProcessStreamBatchParams): void {
   const {
     queryClient,
     chatId,
