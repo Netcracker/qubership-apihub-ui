@@ -52,9 +52,19 @@ function patchAiChatInListCaches(queryClient: QueryClient, chat: AiChat): void {
         ...previous,
         pages: previous.pages.map((page) => ({
           ...page,
-          chats: page.chats.map((row) => (row.chatId === chat.chatId ? { ...row, ...chat } : row)),
+          chats: replaceChatInList(page.chats, chat),
         })),
       }
     },
   )
+}
+
+function replaceChatInList(chats: AiChat[], updatedChat: AiChat): AiChat[] {
+  const index = chats.findIndex((existingChat) => existingChat.chatId === updatedChat.chatId)
+  if (index === -1) {
+    return chats
+  }
+  const updatedChats = chats.slice()
+  updatedChats[index] = updatedChat
+  return updatedChats
 }
