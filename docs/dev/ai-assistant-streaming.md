@@ -31,12 +31,12 @@ UI wiring: message list and jump button in `ui/conversation/`, composer in `ui/c
 
 `useStreamingTurn` runs inside `AiAssistantProvider` and exposes three separate context values so high-frequency buffer updates do not re-render unrelated UI (header button, panel shell, composer, history list).
 
-| Context / hook           | Fields                                                                 | Updates when                                       | Typical consumers                                                                                           |
-| ------------------------ | ---------------------------------------------------------------------- | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `usePanel()`             | `open`, `screen`, `activeChatId`, navigation callbacks, `startNewChat` | Panel open/close, screen switch, chat selection    | `AiAssistantButton`, `AiAssistantPanel`, `PanelHeader`, `MarkdownViewer` (internal links), delete-chat hook |
-| `useStreamingActions()`  | `submit`, `abort`, `reset`                                             | Stable for a mounted provider                      | `Composer`                                                                                                  |
-| `useStreamingTurnMeta()` | `isBusy`, `activeTurnChatId`                                           | Turn start/end, chat ID change (not on each token) | `Composer`, `HistoryScreen` (delete disabled while turn runs)                                               |
-| `useStreamingLive()`     | `state` (`StreamingTurnState`), `thinkingDuringAssistantPause`         | Each assistant delta, thinking poll                | `ChatStreamingBody` only                                                                                    |
+| Context / hook             | Fields                                                                 | Updates when                                       | Typical consumers                                                                                           |
+| -------------------------- | ---------------------------------------------------------------------- | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `usePanel()`               | `open`, `screen`, `activeChatId`, navigation callbacks, `startNewChat` | Panel open/close, screen switch, chat selection    | `AiAssistantButton`, `AiAssistantPanel`, `PanelHeader`, `MarkdownViewer` (internal links), delete-chat hook |
+| `useStreamingActions()`    | `submit`, `abort`, `reset`                                             | Stable for a mounted provider                      | `Composer`                                                                                                  |
+| `useStreamingTurnStatus()` | `isBusy`, `activeTurnChatId`                                           | Turn start/end, chat ID change (not on each token) | `Composer`, `HistoryScreen` (delete disabled while turn runs)                                               |
+| `useStreamingLive()`       | `state` (`StreamingTurnState`), `thinkingDuringAssistantPause`         | Each assistant delta, thinking poll                | `ChatStreamingBody` only                                                                                    |
 
 `ChatStreamingBody` is the only component that subscribes to **live** context during chat. `ChatScreen` keeps React Query + welcome/placeholder layout; it does not read streaming context directly.
 

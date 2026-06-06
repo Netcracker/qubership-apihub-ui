@@ -31,7 +31,7 @@ export type StreamingActions = {
   reset: () => void
 }
 
-export type StreamingTurnMeta = {
+export type StreamingTurnStatus = {
   isBusy: boolean
   activeTurnChatId: ChatId | null
 }
@@ -44,7 +44,7 @@ export type StreamingLive = {
 
 export const PanelContext = createContext<PanelContextValue>()
 export const StreamingActionsContext = createContext<StreamingActions>()
-export const StreamingTurnMetaContext = createContext<StreamingTurnMeta>()
+export const StreamingTurnStatusContext = createContext<StreamingTurnStatus>()
 export const StreamingLiveContext = createContext<StreamingLive>()
 
 export function usePanel(): PanelContextValue {
@@ -55,8 +55,8 @@ export function useStreamingActions(): StreamingActions {
   return useContext(StreamingActionsContext)
 }
 
-export function useStreamingTurnMeta(): StreamingTurnMeta {
-  return useContext(StreamingTurnMetaContext)
+export function useStreamingTurnStatus(): StreamingTurnStatus {
+  return useContext(StreamingTurnStatusContext)
 }
 
 export function useStreamingLive(): StreamingLive {

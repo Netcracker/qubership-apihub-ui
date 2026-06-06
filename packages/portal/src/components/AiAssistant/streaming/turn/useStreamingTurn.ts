@@ -2,7 +2,7 @@ import { useCallback, useMemo, useRef, useState } from 'react'
 
 import type { ChatId } from '../../api/types'
 import { useAiChatTitlePolling } from '../../api/useAiChatTitlePolling'
-import type { StreamingActions, StreamingLive, StreamingTurnMeta } from '../../state/panelContext'
+import type { StreamingActions, StreamingLive, StreamingTurnStatus } from '../../state/panelContext'
 import { STREAMING_TURN_ACTION } from './streamingTurnConstants'
 import { getActiveTurnChatId, isStreamingBusy, type StreamingTurnState } from './streamingTurnReducer'
 import { useStreamingTurnSseBatchProcessor } from './streamingTurnSseBatch'
@@ -20,13 +20,13 @@ type StreamingTurnDeps = {
 
 type UseStreamingTurnResult = {
   actions: StreamingActions
-  turnMeta: StreamingTurnMeta
+  streamingTurnStatus: StreamingTurnStatus
   live: StreamingLive
 }
 
 /**
  * Live turn orchestration for `AiAssistantProvider`: submit/abort, reducer, SSE batches, cache.
- * Splits return value into actions / turnMeta / live contexts (see streaming README).
+ * Splits return value into actions / streamingTurnStatus / live contexts (see streaming README).
  */
 export function useStreamingTurn({
   openChatScreen,
@@ -103,7 +103,7 @@ export function useStreamingTurn({
   const isBusy = isStreamingBusy(state)
   const activeTurnChatId = getActiveTurnChatId(state)
 
-  const turnMeta = useMemo<StreamingTurnMeta>(() => ({
+  const streamingTurnStatus = useMemo<StreamingTurnStatus>(() => ({
     isBusy,
     activeTurnChatId,
   }), [isBusy, activeTurnChatId])
@@ -115,7 +115,7 @@ export function useStreamingTurn({
 
   return {
     actions,
-    turnMeta,
+    streamingTurnStatus,
     live,
   }
 }

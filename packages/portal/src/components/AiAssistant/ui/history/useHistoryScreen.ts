@@ -5,7 +5,7 @@ import { type AiChat, type AiChatsListResponse, type ChatId } from '../../api/ty
 import { useAiChats } from '../../api/useAiChats'
 import { useDeleteAiChat, type UseDeleteAiChatResult } from '../../api/useDeleteAiChat'
 import { useUpdateAiChat } from '../../api/useUpdateAiChat'
-import { usePanel, useStreamingTurnMeta } from '../../state/panelContext'
+import { usePanel, useStreamingTurnStatus } from '../../state/panelContext'
 import { selectChatsFromPages, selectPinnedChatCount } from './aiChatHistorySelectors'
 import { useDeleteAiChatPanelActions } from './useDeleteAiChatPanelActions'
 
@@ -40,7 +40,7 @@ type HistoryScreenState = {
 
 export function useHistoryScreen(): HistoryScreenState {
   const { activeChatId, openChatScreen } = usePanel()
-  const { isBusy, activeTurnChatId } = useStreamingTurnMeta()
+  const { isBusy, activeTurnChatId } = useStreamingTurnStatus()
   const { renameChat, setChatPinned } = useUpdateAiChat()
   const deleteChatPanelActions = useDeleteAiChatPanelActions()
   const deleteChat = useDeleteAiChat(deleteChatPanelActions)

@@ -7,7 +7,7 @@ import { type ChangeEvent, type FC, type KeyboardEvent, memo, useCallback, useEf
 import { SendIcon } from '@netcracker/qubership-apihub-ui-shared/icons/SendIcon'
 import { StopIcon } from '@netcracker/qubership-apihub-ui-shared/icons/StopIcon'
 
-import { usePanel, useStreamingActions, useStreamingTurnMeta } from '../../state/panelContext'
+import { usePanel, useStreamingActions, useStreamingTurnStatus } from '../../state/panelContext'
 import {
   COMPOSER_ACTION_RESERVE_CSS_VAR,
   COMPOSER_SEND_BUTTON_SIZE_SPACING,
@@ -22,7 +22,7 @@ type ComposerProps = {
 
 export const Composer: FC<ComposerProps> = memo(({ panelOpen, chatKey }) => {
   const { activeChatId } = usePanel()
-  const { isBusy } = useStreamingTurnMeta()
+  const { isBusy } = useStreamingTurnStatus()
   const { submit, abort } = useStreamingActions()
   const shellRef = useRef<HTMLDivElement | null>(null)
   const inputRef = useRef<HTMLTextAreaElement | null>(null)

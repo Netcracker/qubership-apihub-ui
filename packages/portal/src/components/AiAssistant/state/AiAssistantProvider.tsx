@@ -14,7 +14,7 @@ import {
   type PanelScreen,
   StreamingActionsContext,
   StreamingLiveContext,
-  StreamingTurnMetaContext,
+  StreamingTurnStatusContext,
 } from './panelContext'
 
 export const AiAssistantProvider: FC<PropsWithChildren> = memo<PropsWithChildren>(({ children }) => {
@@ -50,7 +50,7 @@ export const AiAssistantProvider: FC<PropsWithChildren> = memo<PropsWithChildren
     setActiveChatId(null)
   }, [])
 
-  const { actions, turnMeta, live } = useStreamingTurn({
+  const { actions, streamingTurnStatus, live } = useStreamingTurn({
     openChatScreen,
     resetActiveChat,
     activeChatId,
@@ -94,11 +94,11 @@ export const AiAssistantProvider: FC<PropsWithChildren> = memo<PropsWithChildren
   return (
     <PanelContext.Provider value={panelContextValue}>
       <StreamingActionsContext.Provider value={actions}>
-        <StreamingTurnMetaContext.Provider value={turnMeta}>
+        <StreamingTurnStatusContext.Provider value={streamingTurnStatus}>
           <StreamingLiveContext.Provider value={live}>
             {children}
           </StreamingLiveContext.Provider>
-        </StreamingTurnMetaContext.Provider>
+        </StreamingTurnStatusContext.Provider>
       </StreamingActionsContext.Provider>
     </PanelContext.Provider>
   )
