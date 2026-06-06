@@ -1,5 +1,5 @@
-import type { PanelScreen } from '../state/panelContext'
-import type { ChatId } from './types'
+import type { PanelScreen } from '../../state/panelContext'
+import type { ChatId } from '../types'
 
 export type DeleteAiChatContext = {
   wasActiveChat: boolean

@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 
-import type { DeleteAiChatPanelActions } from '../../api/deleteAiChatPanelActions'
 import type { ChatId } from '../../api/types'
+import type { DeleteAiChatPanelActions } from '../../api/types/deleteAiChatPanelActions'
 import { PANEL_SCREEN_HISTORY, usePanel } from '../../state/panelContext'
 
 export function useDeleteAiChatPanelActions(): DeleteAiChatPanelActions {

@@ -10,7 +10,7 @@ import { useCallback } from 'react'
 import { invalidateAiChatListQueries, invalidateAiChatPerChatQueries } from './aiChatQueryInvalidation'
 import { cancelAiChatMutationQueries, removeAiChatQueries } from './chatCache'
 import { aiChatVoid } from './client'
-import type { DeleteAiChatPanelActions } from './deleteAiChatPanelActions'
+import type { DeleteAiChatPanelActions } from './types/deleteAiChatPanelActions'
 import { aiChatItemPath } from './paths'
 import type { ChatId } from './types'
 
