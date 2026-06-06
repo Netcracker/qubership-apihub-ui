@@ -17,10 +17,11 @@ TypeScript, React, MUI, and file conventions for **APIHUB UI** (`packages/portal
 - Prefer **`const` object unions** with `as const` over `enum` for new code.
 - **Naming**: related constants, types, and factories for one entity share a **common prefix** at the start (e.g. `AI_CHAT_ROOT`, `aiChatListKey`, `AiChatMessage`).
 - **Filenames** (match `qubership-apihub-ui` portal conventions):
-  - **`.tsx` with a primary React component**: PascalCase, same as the exported component (`ChatScreen.tsx` → `ChatScreen`).
+  - **`.tsx` with a primary React component**: PascalCase, same as the exported component (`ChatScreen.tsx` -> `ChatScreen`).
   - **`.ts` without a primary component** (hooks, utils, reducers, constants, types, `/api`): **camelCase** (`panelContext.ts`, `useHistoryScreen.ts`, `composerMultilineLayout.ts`).
   - Suffixes: `*.story.ts` for Storybook; `*.unit.test.ts` for unit tests.
   - Do not use kebab-case for new portal source files unless an existing folder already standardizes on it.
+  - **No `index.ts` / `index.tsx` barrel files** for new code (`filenames/no-index` in ESLint). Import from concrete module files (e.g. `types/chat.ts`, not `types/index.ts`). Legacy `index.*` entry points may exist with an eslint-disable; do not add new barrels or reexport folders.
 - Export symbols only when another file imports them. Helpers, types, constants, and child components used only within the same file stay unexported.
 - Avoid duplicating logic and bloated conditions: extract shared helpers, hooks, or functions instead of copypasting branches. Prefer early returns, named booleans, or `if`/`switch` over nested or chained ternaries and long inline `&&` / `?:` trees.
 
@@ -51,7 +52,7 @@ Do not call a `const` helper during module initialization from a line above its 
 
 - Prefer function components + hooks.
 - Every new React component must set an explicit `displayName` (including components wrapped with `memo`, `forwardRef`, or other HOCs) so DevTools, error boundaries, and tests show stable names.
-- Colocatee state with the smallest owning component; split components before adding memoization.
+- Colocate state with the smallest owning component; split components before adding memoization.
 - Use memoization (`useMemo`, `useCallback`, `React.memo`) only with a measured need (re-renders, expensive compute, unstable deps).
 - Error handling: use explicit empty/error/loading states; add error boundaries where a subtree failure must not crash the whole tree.
 - Conditional JSX: if a branch renders nothing, use `{condition && <Node />}`, not `{condition ? <Node /> : null}`. Use a ternary only when both branches render different non-null content.
