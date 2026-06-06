@@ -4,13 +4,12 @@ import { type MutableRefObject, useCallback } from 'react'
 import { invalidateAiChatMessagesQuery } from '../../api/aiChatQueryInvalidation'
 import { dispatchAiChatFetchError } from '../../api/errors'
 import {
-  type AiChatStreamErrorEvent,
   isAiChatAssistantCompletedStreamEvent,
   isAiChatStreamDoneEvent,
   isAiChatStreamErrorEvent,
   isAssistantStreamProgressEvent,
 } from '../../api/streamEvents'
-import type { AiChatMessage, AiChatStreamEvent, ChatId, MessageId } from '../../api/types'
+import type { AiChatMessage, AiChatStreamErrorEvent, AiChatStreamEvent, ChatId, MessageId } from '../../api/types'
 import { prependMessageToInfiniteMessages, updateAiChatMessagesCache } from './aiChatMessagesCache'
 import { STREAM_ERROR_DEFAULT_MESSAGE, STREAMING_TURN_ACTION, STREAMING_TURN_STATUS } from './streamingTurnConstants'
 import type { ProcessStreamingTurnSseBatchHandler, StartAutoTitlePollingHandler } from './streamingTurnHandlers'

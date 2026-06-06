@@ -1,7 +1,5 @@
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 
-import type { AI_CHAT_STREAM_EVENT } from './streamEvents'
-
 // Portal UI contract. Shared shapes also live in `server/mocks/ai-chat/types.ts` (server adds REST-only types).
 export type ChatId = Key
 export type MessageId = Key
@@ -57,20 +55,70 @@ export type AiChatUpdateRequest = {
   pinned?: boolean
 }
 
+/** SSE `event` / `data.type` values from the AI chat stream contract. */
+export const AI_CHAT_STREAM_EVENT = {
+  contextCompacted: 'context.compacted',
+  assistantStart: 'message.assistant.start',
+  assistantDelta: 'message.assistant.delta',
+  assistantCompleted: 'message.assistant.completed',
+  toolStarted: 'tool.started',
+  toolCompleted: 'tool.completed',
+  error: 'error',
+  done: 'done',
+} as const
+
+export type AiChatAssistantStartStreamEvent = {
+  type: typeof AI_CHAT_STREAM_EVENT.assistantStart
+  messageId: MessageId
+}
+
+export type AiChatAssistantDeltaStreamEvent = {
+  type: typeof AI_CHAT_STREAM_EVENT.assistantDelta
+  delta: string
+}
+
+export type AiChatAssistantCompletedStreamEvent = {
+  type: typeof AI_CHAT_STREAM_EVENT.assistantCompleted
+  message: AiChatMessage
+}
+
+type AiChatContextCompactedStreamEvent = {
+  type: typeof AI_CHAT_STREAM_EVENT.contextCompacted
+  messagesCompactedCount: number
+}
+
+type AiChatToolStartedStreamEvent = {
+  type: typeof AI_CHAT_STREAM_EVENT.toolStarted
+  toolCallId: string
+  name: string
+}
+
+type AiChatToolCompletedStreamEvent = {
+  type: typeof AI_CHAT_STREAM_EVENT.toolCompleted
+  toolCallId: string
+  name: string
+  status: 'ok' | 'error'
+  durationMs?: number
+}
+
+export type AiChatStreamErrorEvent = {
+  type: typeof AI_CHAT_STREAM_EVENT.error
+  code: string
+  message: string
+}
+
+export type AiChatStreamDoneEvent = {
+  type: typeof AI_CHAT_STREAM_EVENT.done
+}
+
 export type AiChatStreamEvent =
-  | { type: typeof AI_CHAT_STREAM_EVENT.contextCompacted; messagesCompactedCount: number }
-  | { type: typeof AI_CHAT_STREAM_EVENT.assistantStart; messageId: MessageId }
-  | { type: typeof AI_CHAT_STREAM_EVENT.toolStarted; toolCallId: string; name: string }
-  | {
-    type: typeof AI_CHAT_STREAM_EVENT.toolCompleted
-    toolCallId: string
-    name: string
-    status: 'ok' | 'error'
-    durationMs?: number
-  }
-  | { type: typeof AI_CHAT_STREAM_EVENT.assistantDelta; delta: string }
-  | { type: typeof AI_CHAT_STREAM_EVENT.assistantCompleted; message: AiChatMessage }
-  | { type: typeof AI_CHAT_STREAM_EVENT.error; code: string; message: string }
-  | { type: typeof AI_CHAT_STREAM_EVENT.done }
+  | AiChatContextCompactedStreamEvent
+  | AiChatAssistantStartStreamEvent
+  | AiChatToolStartedStreamEvent
+  | AiChatToolCompletedStreamEvent
+  | AiChatAssistantDeltaStreamEvent
+  | AiChatAssistantCompletedStreamEvent
+  | AiChatStreamErrorEvent
+  | AiChatStreamDoneEvent
 
 export const MAX_PINNED_PER_USER = 3 as const

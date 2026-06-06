@@ -1,35 +1,16 @@
-import type { AiChatStreamEvent } from './types'
-
-/** SSE `event` / `data.type` values from the AI chat stream contract. */
-export const AI_CHAT_STREAM_EVENT = {
-  contextCompacted: 'context.compacted',
-  assistantStart: 'message.assistant.start',
-  assistantDelta: 'message.assistant.delta',
-  assistantCompleted: 'message.assistant.completed',
-  toolStarted: 'tool.started',
-  toolCompleted: 'tool.completed',
-  error: 'error',
-  done: 'done',
-} as const
-
-type AiChatAssistantCompletedStreamEvent = Extract<
-  AiChatStreamEvent,
-  { type: typeof AI_CHAT_STREAM_EVENT.assistantCompleted }
->
-
-export type AiChatStreamErrorEvent = Extract<
-  AiChatStreamEvent,
-  { type: typeof AI_CHAT_STREAM_EVENT.error }
->
+import {
+  AI_CHAT_STREAM_EVENT,
+  type AiChatAssistantCompletedStreamEvent,
+  type AiChatAssistantDeltaStreamEvent,
+  type AiChatAssistantStartStreamEvent,
+  type AiChatStreamDoneEvent,
+  type AiChatStreamErrorEvent,
+  type AiChatStreamEvent,
+} from './types'
 
 type AiChatAssistantStreamProgressEvent =
-  | Extract<AiChatStreamEvent, { type: typeof AI_CHAT_STREAM_EVENT.assistantStart }>
-  | Extract<AiChatStreamEvent, { type: typeof AI_CHAT_STREAM_EVENT.assistantDelta }>
-
-type AiChatStreamDoneEvent = Extract<
-  AiChatStreamEvent,
-  { type: typeof AI_CHAT_STREAM_EVENT.done }
->
+  | AiChatAssistantStartStreamEvent
+  | AiChatAssistantDeltaStreamEvent
 
 export function isAssistantStreamProgressEvent(
   event: AiChatStreamEvent,

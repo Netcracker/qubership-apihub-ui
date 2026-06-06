@@ -1,4 +1,4 @@
-import { AI_CHAT_STREAM_EVENT } from '../../api/streamEvents'
+import { AI_CHAT_STREAM_EVENT } from '../../api/types'
 import { STREAMING_TURN_ACTION, STREAMING_TURN_STATUS } from './streamingTurnConstants'
 import { isStreamingBusy, streamingTurnReducer, type StreamingTurnState } from './streamingTurnReducer'
 
