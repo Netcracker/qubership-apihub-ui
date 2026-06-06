@@ -53,43 +53,35 @@ export const HistoryScreen: FC = memo(() => {
         onScroll={handleListScroll}
         data-testid="AiAssistantHistoryList"
       >
-        {isEmpty
-          ? (
-            <HistoryEmptyListColumn>
-              <RecentlyLabel>Recent</RecentlyLabel>
-              {!chatsQuery.isLoading && (
-                <CenteredState>
-                  <Typography color="text.secondary" variant="body2">
-                    No chats found.
-                  </Typography>
-                </CenteredState>
-              )}
-            </HistoryEmptyListColumn>
-          )
-          : (
-            <HistoryChatListColumn>
-              <RecentlyLabel>Recent</RecentlyLabel>
-              {chats.map((chat) => (
-                <HistoryChatListRow
-                  key={chat.chatId}
-                  chat={chat}
-                  rowTitleOverride={rowTitleOverrideByChatId[chat.chatId]}
-                  isActive={activeChatId === chat.chatId}
-                  isEditing={renamingChatId === chat.chatId}
-                  loadedPinnedCount={loadedPinnedCount}
-                  isBusy={isBusy}
-                  activeTurnChatId={activeTurnChatId}
-                  onOpenChat={handleOpenChat}
-                  onStartRename={handleStartRename}
-                  onRenameChat={handleRenameChat}
-                  onCancelRename={handleCancelRename}
-                  onTogglePin={handlePinToggle}
-                  onRequestDelete={handleRequestDelete}
-                  onReleaseRowTitleOverride={clearRowTitleOverride}
-                />
-              ))}
-            </HistoryChatListColumn>
+        <HistoryListColumn $isEmpty={isEmpty}>
+          <RecentlyLabel>Recent</RecentlyLabel>
+          {isEmpty && !chatsQuery.isLoading && (
+            <CenteredState>
+              <Typography color="text.secondary" variant="body2">
+                No chats found.
+              </Typography>
+            </CenteredState>
           )}
+          {!isEmpty && chats.map((chat) => (
+            <HistoryChatListRow
+              key={chat.chatId}
+              chat={chat}
+              rowTitleOverride={rowTitleOverrideByChatId[chat.chatId]}
+              isActive={activeChatId === chat.chatId}
+              isEditing={renamingChatId === chat.chatId}
+              loadedPinnedCount={loadedPinnedCount}
+              isBusy={isBusy}
+              activeTurnChatId={activeTurnChatId}
+              onOpenChat={handleOpenChat}
+              onStartRename={handleStartRename}
+              onRenameChat={handleRenameChat}
+              onCancelRename={handleCancelRename}
+              onTogglePin={handlePinToggle}
+              onRequestDelete={handleRequestDelete}
+              onReleaseRowTitleOverride={clearRowTitleOverride}
+            />
+          ))}
+        </HistoryListColumn>
       </ListArea>
       <DeleteChatConfirmation
         open={chatPendingDelete !== null}
@@ -121,14 +113,11 @@ const ListArea = styled(Box)(({ theme }) => ({
   ...LIST_FLEX_COLUMN,
 }))
 
-const HistoryEmptyListColumn = styled(Box)(() => ({
-  flex: 1,
+const HistoryListColumn = styled(Box, {
+  shouldForwardProp: (prop) => prop !== '$isEmpty',
+})<{ $isEmpty?: boolean }>(({ theme, $isEmpty }) => ({
   ...LIST_FLEX_COLUMN,
-}))
-
-const HistoryChatListColumn = styled(Box)(({ theme }) => ({
-  ...LIST_FLEX_COLUMN,
-  gap: theme.spacing(0.5),
+  ...($isEmpty ? { flex: 1 } : { gap: theme.spacing(0.5) }),
 }))
 
 const RecentlyLabel = styled(Typography)(({ theme }) => ({
