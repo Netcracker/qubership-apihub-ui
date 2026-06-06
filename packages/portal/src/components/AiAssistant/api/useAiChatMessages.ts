@@ -1,4 +1,4 @@
-import { useInfiniteQuery, type UseInfiniteQueryResult } from '@tanstack/react-query'
+import { type QueryFunction, useInfiniteQuery, type UseInfiniteQueryResult } from '@tanstack/react-query'
 
 import { aiChatJson } from './client'
 import { AI_CHAT_PAGE_LIMIT } from './constants'
@@ -7,13 +7,18 @@ import { aiChatMessagesKey } from './queryKeys'
 import type { AiChatMessagesListResponse, ChatId } from './types'
 
 export function useAiChatMessages(chatId: ChatId | null): UseInfiniteQueryResult<AiChatMessagesListResponse, Error> {
-  return useInfiniteQuery<AiChatMessagesListResponse, Error>({
+  return useInfiniteQuery<
+    AiChatMessagesListResponse,
+    Error,
+    AiChatMessagesListResponse,
+    ReturnType<typeof aiChatMessagesKey>
+  >({
     queryKey: aiChatMessagesKey(chatId),
     enabled: chatId !== null,
     staleTime: Number.POSITIVE_INFINITY,
-    queryFn: async ({ pageParam, signal }) => {
+    queryFn: (async ({ pageParam, signal }) => {
       const params = new URLSearchParams({ limit: String(AI_CHAT_PAGE_LIMIT) })
-      if (typeof pageParam === 'string' && pageParam.length > 0) {
+      if (pageParam !== undefined) {
         params.set('before', pageParam)
       }
       return aiChatJson<AiChatMessagesListResponse>(
@@ -21,8 +26,12 @@ export function useAiChatMessages(chatId: ChatId | null): UseInfiniteQueryResult
         undefined,
         signal,
       )
-    },
-    getNextPageParam: (lastPage) => {
+    }) satisfies QueryFunction<
+      AiChatMessagesListResponse,
+      ReturnType<typeof aiChatMessagesKey>,
+      string | undefined
+    >,
+    getNextPageParam: (lastPage): string | undefined => {
       if (!lastPage.hasMore || lastPage.messages.length === 0) {
         return undefined
       }
