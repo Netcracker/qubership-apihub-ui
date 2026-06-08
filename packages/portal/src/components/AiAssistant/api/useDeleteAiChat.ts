@@ -1,23 +1,18 @@
-import {
-  type QueryClient,
-  useMutation,
-  type UseMutationOptions,
-  type UseMutationResult,
-  useQueryClient,
-} from '@tanstack/react-query'
+import { type QueryClient, useMutation, type UseMutationOptions, useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
 
 import { invalidateAiChatListQueries, invalidateAiChatPerChatQueries } from './aiChatQueryInvalidation'
 import { cancelAiChatMutationQueries, removeAiChatQueries } from './chatCache'
 import { aiChatVoid } from './client'
-import type { DeleteAiChatPanelActions } from './types/deleteAiChatPanelActions'
 import { aiChatItemPath } from './paths'
 import type { ChatId } from './types'
+import type { DeleteAiChatPanelActions } from './types/deleteAiChatPanelActions'
 
-type DeleteAiChatMutation = UseMutationResult<void, Error, ChatId, unknown>
+type DeleteChat = (chatId: ChatId) => void
 
-export type UseDeleteAiChatResult = Omit<DeleteAiChatMutation, 'mutate' | 'mutateAsync'> & {
-  deleteChat: (chatId: ChatId) => void
+export type UseDeleteAiChatResult = {
+  deleteChat: DeleteChat
+  isPending: boolean
 }
 
 function deleteAiChatMutationOptions(
@@ -45,9 +40,7 @@ function deleteAiChatMutationOptions(
 export function useDeleteAiChat(panelActions: DeleteAiChatPanelActions): UseDeleteAiChatResult {
   const queryClient = useQueryClient()
 
-  const mutation = useMutation(deleteAiChatMutationOptions(queryClient))
-  const { mutate, mutateAsync, ...mutationState } = mutation
-  void mutateAsync
+  const { mutate, isPending } = useMutation(deleteAiChatMutationOptions(queryClient))
 
   const deleteChat = useCallback((chatId: ChatId) => {
     const context = panelActions.getDeleteContext(chatId)
@@ -60,7 +53,7 @@ export function useDeleteAiChat(panelActions: DeleteAiChatPanelActions): UseDele
   }, [mutate, panelActions])
 
   return {
-    ...mutationState,
     deleteChat,
+    isPending,
   }
 }
