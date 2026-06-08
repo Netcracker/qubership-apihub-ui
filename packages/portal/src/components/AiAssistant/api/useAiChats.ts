@@ -1,7 +1,7 @@
-import { useInfiniteQuery, type QueryFunction, type UseInfiniteQueryResult } from '@tanstack/react-query'
+import { type QueryFunction, useInfiniteQuery, type UseInfiniteQueryResult } from '@tanstack/react-query'
 
+import { buildAiChatPaginationQuery } from './aiChatPaginationQuery'
 import { aiChatJson } from './client'
-import { AI_CHAT_PAGE_LIMIT } from './constants'
 import { AI_CHAT_CHATS_PATH } from './paths'
 import { aiChatListKey } from './queryKeys'
 import type { AiChatsListResponse } from './types'
@@ -17,16 +17,13 @@ export function useAiChats(search: string): UseInfiniteQueryResult<AiChatsListRe
   >({
     queryKey: aiChatListKey(normalizedSearch),
     queryFn: (async ({ pageParam, signal }) => {
-      const params = new URLSearchParams({ limit: String(AI_CHAT_PAGE_LIMIT) })
-      if (normalizedSearch) {
-        params.set('search', normalizedSearch)
-      }
-      if (pageParam !== undefined) {
-        params.set('before', pageParam)
-      }
+      const query = buildAiChatPaginationQuery({
+        before: pageParam,
+        ...(normalizedSearch ? { search: normalizedSearch } : {}),
+      })
 
       return aiChatJson<AiChatsListResponse>(
-        `${AI_CHAT_CHATS_PATH}?${params.toString()}`,
+        `${AI_CHAT_CHATS_PATH}?${query}`,
         undefined,
         signal,
       )
