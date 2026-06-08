@@ -4,8 +4,8 @@ import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 
+import { PANEL_SCREEN_HISTORY } from '../../state/panelContext'
 import { PanelHeader } from '../header/PanelHeader'
-import { PANEL_HEADER_MODE } from '../header/panelHeaderMode'
 import { DeleteChatConfirmation } from '../history/DeleteChatDialog'
 import { HistoryChatListRow } from '../history/HistoryChatListRow'
 import { HistorySearchField } from '../history/HistorySearchField'
@@ -44,7 +44,7 @@ export const HistoryScreen: FC = memo(() => {
   return (
     <HistoryLayout>
       <PanelHeader
-        mode={PANEL_HEADER_MODE.history}
+        mode={PANEL_SCREEN_HISTORY}
         onBack={handleBack}
       />
       <HistorySearchField value={searchQuery} onChange={setSearchQuery} />

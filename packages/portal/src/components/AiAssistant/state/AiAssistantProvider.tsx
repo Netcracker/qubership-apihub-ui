@@ -9,6 +9,7 @@ import type { ChatId } from '../api/types'
 import { useStreamingTurn } from '../streaming/turn/useStreamingTurn'
 import {
   PANEL_SCREEN_CHAT,
+  PANEL_SCREEN_HISTORY,
   PanelContext,
   type PanelContextValue,
   type PanelScreen,
@@ -31,19 +32,19 @@ export const AiAssistantProvider: FC<PropsWithChildren> = memo<PropsWithChildren
   }, [])
 
   const openHistory = useCallback((): void => {
-    setScreen('history')
+    setScreen(PANEL_SCREEN_HISTORY)
     setOpen(true)
   }, [])
 
   const openChatScreen = useCallback((chatId: ChatId | null): void => {
     setActiveChatId(chatId)
-    setScreen('chat')
+    setScreen(PANEL_SCREEN_CHAT)
     setOpen(true)
   }, [])
 
   const resetActiveChat = useCallback((): void => {
     setActiveChatId(null)
-    setScreen('chat')
+    setScreen(PANEL_SCREEN_CHAT)
   }, [])
 
   const clearActiveChat = useCallback((): void => {

@@ -1,11 +1,6 @@
-export const PANEL_HEADER_MODE = {
-  chat: 'chat',
-  history: 'history',
-} as const
+import { PANEL_SCREEN_CHAT, PANEL_SCREEN_HISTORY, type PanelScreen } from '../../state/panelContext'
 
-type PanelHeaderMode = (typeof PANEL_HEADER_MODE)[keyof typeof PANEL_HEADER_MODE]
-
-export const PANEL_HEADER_TITLE: Record<PanelHeaderMode, string> = {
-  [PANEL_HEADER_MODE.chat]: 'AI Assistant',
-  [PANEL_HEADER_MODE.history]: 'History',
+export const PANEL_HEADER_TITLE: Record<PanelScreen, string> = {
+  [PANEL_SCREEN_CHAT]: 'AI Assistant',
+  [PANEL_SCREEN_HISTORY]: 'History',
 }

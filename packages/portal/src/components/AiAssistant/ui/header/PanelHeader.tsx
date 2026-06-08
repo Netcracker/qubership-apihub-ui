@@ -8,14 +8,15 @@ import { type FC, memo } from 'react'
 import { BackArrowIcon } from '@netcracker/qubership-apihub-ui-shared/icons/BackArrowIcon'
 import { RobotFilledIcon } from '@netcracker/qubership-apihub-ui-shared/icons/RobotFilledIcon'
 
-import { usePanel } from '../../state/panelContext'
+import type { PANEL_SCREEN_CHAT } from '../../state/panelContext'
+import { PANEL_SCREEN_HISTORY, usePanel } from '../../state/panelContext'
 import { PanelHeaderActions } from './PanelHeaderActions'
-import { PANEL_HEADER_MODE, PANEL_HEADER_TITLE } from './panelHeaderMode'
+import { PANEL_HEADER_TITLE } from './panelHeaderMode'
 
 type PanelHeaderProps =
-  | { mode: typeof PANEL_HEADER_MODE.chat }
+  | { mode: typeof PANEL_SCREEN_CHAT }
   | {
-    mode: typeof PANEL_HEADER_MODE.history
+    mode: typeof PANEL_SCREEN_HISTORY
     onBack: () => void
   }
 
@@ -26,7 +27,7 @@ export const PanelHeader: FC<PanelHeaderProps> = memo((props) => {
     <HeaderRoot>
       <HeaderToolbar>
         <HeaderLeading>
-          {props.mode === PANEL_HEADER_MODE.history
+          {props.mode === PANEL_SCREEN_HISTORY
             ? (
               <IconButton
                 aria-label="Back to chat"

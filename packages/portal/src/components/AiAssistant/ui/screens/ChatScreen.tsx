@@ -3,13 +3,12 @@ import { styled } from '@mui/material/styles'
 import { type FC, memo } from 'react'
 
 import { useAiChatMessages } from '../../api/useAiChatMessages'
-import { usePanel } from '../../state/panelContext'
+import { PANEL_SCREEN_CHAT, usePanel } from '../../state/panelContext'
 import { Composer } from '../composer/Composer'
 import { ChatStreamingBody } from '../conversation/ChatStreamingBody'
 import { ChatWelcome } from '../conversation/ChatWelcome'
 import { isChatScreenWelcome } from '../conversation/useChatScreenMessages'
 import { PanelHeader } from '../header/PanelHeader'
-import { PANEL_HEADER_MODE } from '../header/panelHeaderMode'
 
 export const ChatScreen: FC = memo(() => {
   const { open, activeChatId } = usePanel()
@@ -23,7 +22,7 @@ export const ChatScreen: FC = memo(() => {
 
   return (
     <ChatLayout>
-      <PanelHeader mode={PANEL_HEADER_MODE.chat} />
+      <PanelHeader mode={PANEL_SCREEN_CHAT} />
       <Body>
         {showWelcome
           ? <ChatWelcome />
