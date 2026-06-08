@@ -6,8 +6,8 @@ import Typography from '@mui/material/Typography'
 
 import { PANEL_SCREEN_HISTORY } from '../../state/panelContext'
 import { PanelHeader } from '../header/PanelHeader'
+import { ChatListRow } from '../history/ChatListRow'
 import { DeleteChatConfirmation } from '../history/DeleteChatDialog'
-import { HistoryChatListRow } from '../history/HistoryChatListRow'
 import { HistorySearchField } from '../history/HistorySearchField'
 import { useHistoryScreen } from '../history/useHistoryScreen'
 
@@ -63,7 +63,7 @@ export const HistoryScreen: FC = memo(() => {
             </CenteredState>
           )}
           {!isEmpty && chats.map((chat) => (
-            <HistoryChatListRow
+            <ChatListRow
               key={chat.chatId}
               chat={chat}
               rowTitleOverride={rowTitleOverrideByChatId[chat.chatId]}
