@@ -119,7 +119,7 @@ const thinkingScenario: Scenario = {
   id: 'debug:thinking',
   description:
     '~4s idle before tool frames, IDS-style tool sequence, ~4s gap mid answer, then completion (English + file link).',
-  build: ({ messageId, nowIso, clientMessageId, buildFileUrl }) => {
+  build: ({ messageId, nowIso, buildFileUrl }) => {
     const fullText = buildThinkingMarkdown(buildFileUrl(MOCK_ATTACHMENT_FILE_ID))
     const midMarker = 'I did not find'
     const splitAt = fullText.indexOf(midMarker)
