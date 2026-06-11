@@ -17,6 +17,9 @@
 import { ASYNCAPI_API_TYPE, GRAPHQL_API_TYPE, REST_API_TYPE } from '@netcracker/qubership-apihub-api-processor'
 import { isNotEmpty } from '../utils/arrays'
 
+// TODO(contracts): review usage of API_TYPE_REST / API_TYPE_GRAPHQL / API_TYPE_ASYNCAPI now that the
+// broader ContractType model exists in contract-types.ts - check whether these aliases are still
+// needed or callers can use CONTRACT_TYPE_* instead.
 export const API_TYPE_REST = REST_API_TYPE
 export const API_TYPE_GRAPHQL = GRAPHQL_API_TYPE
 export const API_TYPE_ASYNCAPI = ASYNCAPI_API_TYPE
