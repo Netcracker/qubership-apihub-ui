@@ -31,3 +31,10 @@ export type DdlTableContract = DdlTableContractDto
 export type DdlTableContractDetails = DdlTableContractDetailsDto
 
 export type DdlContractsSummary = DdlContractsSummaryDto
+
+export function hasDdlContracts(ddl?: DdlContractsSummary): ddl is DdlContractsSummary {
+  if (!ddl) {
+    return false
+  }
+  return ddl.tables > 0 || ddl.views > 0
+}
