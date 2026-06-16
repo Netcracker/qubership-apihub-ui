@@ -146,11 +146,11 @@ export const VersionOperationsSubPage: FC = memo(() => {
           refPackageId={refKey}
           emptyTag={emptyTag}
         />}
-      data-testid="OperationsTab"
+      data-testid="ContractsTab"
     />
   )
 })
 
-const VERSION_OPERATIONS_TITLE = 'API Operations'
+const VERSION_OPERATIONS_TITLE = 'API Contracts'
 
 const SUBPAGE_MARGIN = 24

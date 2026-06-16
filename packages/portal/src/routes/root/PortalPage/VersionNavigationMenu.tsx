@@ -239,10 +239,10 @@ const getAvailableSidebarMenuItems = (
     },
     {
       id: OPERATIONS_PAGE,
-      title: 'Operations',
-      tooltip: 'Operations',
+      title: 'Contracts',
+      tooltip: 'Contracts',
       icon: <ApiIcon />,
-      'data-testid': 'OperationsButton',
+      'data-testid': 'ContractsButton',
     },
     {
       id: API_CHANGES_PAGE,
