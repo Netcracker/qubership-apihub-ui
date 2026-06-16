@@ -25,7 +25,7 @@ import {
   useResolvedOperationGroupParameters,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/operation-groups/useResolvedOperationGroupParameters'
 import { ExportMenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ExportMenuButton'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { ContractType } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 
 export type ExportChangesMenuProps = {
   textFilter?: string
@@ -41,7 +41,7 @@ export type ExportChangesMenuProps = {
   previousVersion?: string
   previousVersionPackageId?: string
   onDownloadAllChanges?: () => void
-  apiType: ApiType
+  contractType: ContractType
 }
 
 export const ExportChangesMenu: FC<ExportChangesMenuProps> = memo(({
@@ -56,7 +56,7 @@ export const ExportChangesMenu: FC<ExportChangesMenuProps> = memo(({
   group,
   previousVersion,
   previousVersionPackageId,
-  apiType,
+  contractType,
   onDownloadAllChanges: onDownloadAllChangesProps,
 }) => {
   const { packageId, versionId } = useParams<{
@@ -68,7 +68,7 @@ export const ExportChangesMenu: FC<ExportChangesMenuProps> = memo(({
 
   const [downloadChangesAsExcel] = useDownloadChangesAsExcel()
 
-  const changesSummaryFromContext = useOrderedComparisonFiltersSummary({ apiType })
+  const changesSummaryFromContext = useOrderedComparisonFiltersSummary({ contractType })
   const isDownloadButtonDisabled = isEmptyChangesSummary(severityChanges, changesSummaryFromContext)
 
   const onDownloadAllChanges = (): void => {
@@ -79,7 +79,7 @@ export const ExportChangesMenu: FC<ExportChangesMenuProps> = memo(({
     downloadChangesAsExcel({
       packageKey: packageId!,
       version: versionId!,
-      apiType: apiType!,
+      apiType: contractType,
     })
   }
 
@@ -87,7 +87,7 @@ export const ExportChangesMenu: FC<ExportChangesMenuProps> = memo(({
     downloadChangesAsExcel({
       packageKey: packageId!,
       version: versionId!,
-      apiType: apiType!,
+      apiType: contractType,
       textFilter: textFilter!,
       apiKind: kind!,
       apiAudience: apiAudience,

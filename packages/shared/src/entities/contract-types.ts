@@ -18,6 +18,8 @@ export type NonApiContractType = typeof CONTRACT_TYPE_MCP | typeof CONTRACT_TYPE
 
 export type ContractType = ApiType | NonApiContractType
 
+export const DEFAULT_CONTRACT_TYPE: ContractType = CONTRACT_TYPE_REST
+
 export const NON_API_CONTRACT_TYPES: ReadonlyArray<NonApiContractType> = [
   CONTRACT_TYPE_MCP,
   CONTRACT_TYPE_DDL,

@@ -27,7 +27,7 @@ import {
   CONFIGURATION_PAGE,
   DEPRECATED_PAGE,
   DOCUMENTS_PAGE,
-  OPERATIONS_PAGE,
+  CONTRACTS_PAGE,
   OVERVIEW_PAGE,
   PACKAGE_SETTINGS_PAGE,
 } from '../../../routes'
@@ -101,7 +101,13 @@ export const VersionNavigationMenu: FC<VersionNavigationMenuProps> = memo<Versio
     includeSummary: true,
   })
   const { previousVersion, operationTypes } = versionContent ?? {}
-  const defaultApiType = useMemo(() => getDefaultApiType(operationTypes), [operationTypes])
+  // TODO(contracts): stop casting operationTypes keys to ApiType[] and pass version summary through
+  // ContractType-aware helpers instead. That requires retooling navigation, compare, and related
+  // defaults in one go.
+  const defaultApiType = useMemo(
+    () => getDefaultApiType(operationTypes ? Object.keys(operationTypes) as ApiType[] : undefined),
+    [operationTypes],
+  )
   const { expandMainMenu, toggleExpandMainMenu, operationsViewMode } = usePortalPageSettingsContext()
   const [operationsView] = useOperationsView(operationsViewMode)
 
@@ -170,7 +176,7 @@ const getPagePathsMap = (
       versionKey: versionKey,
       search: commonSearchParams,
     }),
-    [OPERATIONS_PAGE]: getOperationsPath({
+    [CONTRACTS_PAGE]: getOperationsPath({
       packageKey: packageKey,
       versionKey: versionKey,
       apiType: defaultApiType,
@@ -238,7 +244,7 @@ const getAvailableSidebarMenuItems = (
       'data-testid': 'OverviewButton',
     },
     {
-      id: OPERATIONS_PAGE,
+      id: CONTRACTS_PAGE,
       title: 'Contracts',
       tooltip: 'Contracts',
       icon: <ApiIcon />,

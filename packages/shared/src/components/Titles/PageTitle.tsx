@@ -18,24 +18,27 @@ import type { FC, ReactNode } from 'react'
 import * as React from 'react'
 import { memo } from 'react'
 import { Box, Typography } from '@mui/material'
-import { ApiTypeSelector } from '../ApiTypeSelector'
-import type { ApiType } from '../../entities/api-types'
+
+import { ContractTypeSelector } from '../ContractTypeSelector'
+import type { ContractType } from '../../entities/contract-types'
 
 export type PageTitleProps = {
   title: string
   titleComponent?: ReactNode
-  apiType?: ApiType
-  withApiSelector?: boolean
-  onApiTypeChange?: (value: ApiType) => void
+  contractType?: ContractType
+  allowedContractTypes?: ReadonlyArray<ContractType>
+  withContractTypeSelector?: boolean
+  onContractTypeChange?: (contractType: ContractType) => void
 }
 
 // First Order Component //
 export const PageTitle: FC<PageTitleProps> = memo<PageTitleProps>(({
   title,
   titleComponent,
-  apiType,
-  withApiSelector = false,
-  onApiTypeChange,
+  contractType,
+  allowedContractTypes,
+  withContractTypeSelector = false,
+  onContractTypeChange,
 }) => {
   return (
     <Box
@@ -52,14 +55,17 @@ export const PageTitle: FC<PageTitleProps> = memo<PageTitleProps>(({
         {titleComponent && <Box fontSize={15} fontWeight={600}>{titleComponent}</Box>}
       </Box>
 
-      {withApiSelector && apiType && (
+      {withContractTypeSelector && contractType && allowedContractTypes && (
         <Box>
-          <ApiTypeSelector
-            apiType={apiType}
-            onChange={onApiTypeChange}
+          <ContractTypeSelector
+            contractType={contractType}
+            allowedContractTypes={allowedContractTypes}
+            onChange={onContractTypeChange}
           />
         </Box>
       )}
     </Box>
   )
 })
+
+PageTitle.displayName = 'PageTitle'

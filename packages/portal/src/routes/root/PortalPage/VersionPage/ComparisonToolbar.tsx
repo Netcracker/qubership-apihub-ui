@@ -27,7 +27,7 @@ import { useApiTypeSearchParam } from '@apihub/routes/root/PortalPage/VersionPag
 import { useDownloadChangesAsExcel } from '@apihub/routes/root/PortalPage/VersionPage/useDownloadChangesAsExcel'
 import { useTagSearchFilter } from '@apihub/routes/root/PortalPage/VersionPage/useTagSearchFilter'
 import { useVersionSearchParam } from '@apihub/routes/root/useVersionSearchParam'
-import { isApiTypeSelectorShown } from '@apihub/utils/operation-types'
+import { isContractTypeSelectorShown } from '@apihub/utils/operation-types'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { Box, IconButton, Typography } from '@mui/material'
 import type { ChangesTooltipCategory } from '@netcracker/qubership-apihub-ui-shared/components/ChangesTooltip'
@@ -139,7 +139,7 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
         .map(({ operationTypes }) => operationTypes.map(typeSummary => typeSummary.apiType))
         .flat()
       const apiTypeSet = new Set(allPackagesApiTypes)
-      return isApiTypeSelectorShown(Array.from(apiTypeSet))
+      return isContractTypeSelectorShown(Array.from(apiTypeSet))
     },
     [changesSummary],
   )
@@ -200,7 +200,7 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
             : <>
               <ComparisonChangeSeverityFilters
                 category={getChangeSeverityCategory(isDashboardsComparison, isPackagesComparison)}
-                apiType={apiTypeFromUrl ?? API_TYPES.find(type => type.toString() === apiTypeSearchParam)}
+                contractType={apiTypeFromUrl ?? API_TYPES.find(type => type.toString() === apiTypeSearchParam)}
               />
               {isDashboardsComparison && showApiTypeSelector && <ApiTypeSegmentedSelector/>}
             </>
@@ -208,7 +208,7 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
       </Box>
       {!isOperationsGroupCompare &&
         <ExportChangesMenu
-          apiType={apiTypeFromUrl}
+          contractType={apiTypeFromUrl}
           severityFilter={severityFilter}
           severityChanges={CHANGE_SEVERITIES}
           tag={selectedTag}

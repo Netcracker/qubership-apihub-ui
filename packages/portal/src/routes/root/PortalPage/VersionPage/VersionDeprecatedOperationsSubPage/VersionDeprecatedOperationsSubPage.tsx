@@ -28,7 +28,7 @@ import type { NumberSize, ResizeDirection } from 're-resizable'
 import { DeprecatedOperationsTable } from './DeprecatedOperationsTable'
 import { OperationListWithPreview } from '../OperationListWithPreview'
 import { DeprecatedItemsList } from './DeprecatedItemList'
-import { VersionOperationsPanel } from '../VersionOperationsPanel'
+import { VersionContractsPanel } from '../VersionContractsPanel'
 import { DeprecatedOperationsNavigation } from './DeprecatedOperationsNavigation'
 import type { OperationData, OperationWithDeprecations } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
@@ -93,7 +93,7 @@ export const VersionDeprecatedOperationsSubPage: FC = memo(() => {
       togglePreviewSize(previewSize + delta.width)
     }, [previewSize, togglePreviewSize])
 
-  //todo move to low level (VersionOperationsPanel or OperationListWithPreview)
+  //todo move to low level (VersionContractsPanel or OperationListWithPreview)
   const maxPreviewWidth = useMemo(() => {
     if (bodyRef.current?.clientWidth) {
       return bodyRef.current.clientWidth - SUBPAGE_MARGIN
@@ -110,7 +110,7 @@ export const VersionDeprecatedOperationsSubPage: FC = memo(() => {
   }, [])
 
   return (
-    <VersionOperationsPanel
+    <VersionContractsPanel
       hideFiltersPanel={hideFiltersPanel}
       toggleHideFiltersPanel={toggleHideFiltersPanel}
       operationsViewMode={operationsViewMode}

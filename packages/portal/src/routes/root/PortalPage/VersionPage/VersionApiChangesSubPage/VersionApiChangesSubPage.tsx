@@ -20,7 +20,7 @@ import { memo, useMemo, useState } from 'react'
 import { ApiChangesCard } from './ApiChangesCard'
 import { ChangesSummaryProvider } from '../ChangesSummaryProvider'
 import { NavLink, useParams } from 'react-router-dom'
-import { usePackageVersionApiTypes } from '../usePackageVersionApiTypes'
+import { usePackageVersionContractTypes } from '../usePackageVersionContractTypes'
 import { useVersionSearchParam } from '../../../useVersionSearchParam'
 import {
   usePackageSearchParam,
@@ -45,12 +45,11 @@ import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/ut
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { RichFiltersLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/RichFiltersLayout'
 import { PageTitle } from '@netcracker/qubership-apihub-ui-shared/components/Titles/PageTitle'
-import { isApiTypeSelectorShown } from '@apihub/utils/operation-types'
+import { isContractTypeSelectorShown } from '@apihub/utils/operation-types'
 import { CHANGE_SEVERITIES } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
 import { usePortalPageSettingsContext } from '@apihub/routes/PortalPageSettingsProvider'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { DEFAULT_CONTRACT_TYPE, type ContractType } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 import { CATEGORY_OPERATION } from '@netcracker/qubership-apihub-ui-shared/components/ChangesTooltip'
-import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { useApiAudienceSearchFilter } from '../useApiAudienceSearchFilters'
 import {
   useSeverityFiltersSearchParam,
@@ -61,8 +60,9 @@ export const VersionApiChangesSubPage: FC = memo(() => {
   const { packageId, versionId, apiType } = useParams<{
     packageId: string
     versionId: string
-    apiType: ApiType
+    apiType?: ContractType
   }>()
+  const contractType = apiType ?? DEFAULT_CONTRACT_TYPE
   const [apiKindFilter] = useApiKindSearchFilter()
   const [apiAudienceFilter] = useApiAudienceSearchFilter()
   const [selectedTag] = useTagSearchFilter()
@@ -73,7 +73,7 @@ export const VersionApiChangesSubPage: FC = memo(() => {
   const [operationGroup] = useOperationGroupSearchFilter()
   const setPathParam = useSetPathParam()
 
-  const { apiTypes } = usePackageVersionApiTypes(packageId!, versionId!)
+  const { allowedContractTypes } = usePackageVersionContractTypes(packageId!, versionId!)
   const emptyTag = isEmptyTag(selectedTag)
 
   const previousReleaseVersion = usePreviousReleaseVersion()
@@ -103,15 +103,16 @@ export const VersionApiChangesSubPage: FC = memo(() => {
         title={<PageTitle
           title={API_CHANGES_TITLE}
           titleComponent={versionElement}
-          onApiTypeChange={setPathParam}
-          apiType={apiType}
-          withApiSelector={isApiTypeSelectorShown(apiTypes)}
+          onContractTypeChange={setPathParam}
+          contractType={contractType}
+          allowedContractTypes={allowedContractTypes}
+          withContractTypeSelector={isContractTypeSelectorShown(allowedContractTypes)}
         />}
         searchPlaceholder="Search Operations"
         setSearchValue={setSearchValue}
         exportButton={
           <ExportChangesMenu
-            apiType={apiType ?? DEFAULT_API_TYPE}
+            contractType={contractType}
             textFilter={searchValue}
             severityChanges={CHANGE_SEVERITIES}
             kind={apiKindFilter}
@@ -128,7 +129,7 @@ export const VersionApiChangesSubPage: FC = memo(() => {
         additionalActions={
           <ComparisonChangeSeverityFilters
             category={CATEGORY_OPERATION}
-            apiType={apiType ?? DEFAULT_API_TYPE}
+            contractType={contractType}
           />
         }
         filtersApplied={filtersApplied}

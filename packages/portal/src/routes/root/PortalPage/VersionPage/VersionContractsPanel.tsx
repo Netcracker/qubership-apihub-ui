@@ -14,30 +14,33 @@
  * limitations under the License.
  */
 
+import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined'
 import type { FC, MutableRefObject, ReactNode } from 'react'
 import { memo, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
-import { usePackageVersionApiTypes } from './usePackageVersionApiTypes'
-import { useFullMainVersion } from '../FullMainVersionProvider'
-import { usePackage } from '../../usePackage'
-import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined'
-import { useSetSelectedPreviewOperation } from '../SelectedPreviewOperationProvider'
-import { useSetPathParam } from './useSetPathParam'
-import { useCheckOperationFiltersApplied } from './useCheckOperationFiltersApplied'
-import type { TestableProps } from '@netcracker/qubership-apihub-ui-shared/components/Testable'
-import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { RichFiltersLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/RichFiltersLayout'
-import { PageTitle } from '@netcracker/qubership-apihub-ui-shared/components/Titles/PageTitle'
-import { isApiTypeSelectorShown } from '@apihub/utils/operation-types'
-import { SegmentItemIcon } from '@netcracker/qubership-apihub-ui-shared/icons/SegmentItemIcon'
-import { ListBox } from '@netcracker/qubership-apihub-ui-shared/components/Panels/ListBox'
-import { useOperationsView } from './useOperationsView'
-import type { OperationsViewMode } from '@netcracker/qubership-apihub-ui-shared/types/views'
-import { DETAILED_OPERATIONS_VIEW_MODE, LIST_OPERATIONS_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/types/views'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 
-export type VersionOperationsProps = {
+import { isContractTypeSelectorShown } from '@apihub/utils/operation-types'
+import { RichFiltersLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/RichFiltersLayout'
+import { ListBox } from '@netcracker/qubership-apihub-ui-shared/components/Panels/ListBox'
+import type { TestableProps } from '@netcracker/qubership-apihub-ui-shared/components/Testable'
+import { PageTitle } from '@netcracker/qubership-apihub-ui-shared/components/Titles/PageTitle'
+import { DEFAULT_CONTRACT_TYPE, type ContractType } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
+import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { SegmentItemIcon } from '@netcracker/qubership-apihub-ui-shared/icons/SegmentItemIcon'
+import type { OperationsViewMode } from '@netcracker/qubership-apihub-ui-shared/types/views'
+import {
+  DETAILED_OPERATIONS_VIEW_MODE,
+  LIST_OPERATIONS_VIEW_MODE,
+} from '@netcracker/qubership-apihub-ui-shared/types/views'
+import { usePackage } from '../../usePackage'
+import { useFullMainVersion } from '../FullMainVersionProvider'
+import { useSetSelectedPreviewOperation } from '../SelectedPreviewOperationProvider'
+import { useCheckOperationFiltersApplied } from './useCheckOperationFiltersApplied'
+import { useOperationsView } from './useOperationsView'
+import { usePackageVersionContractTypes } from './usePackageVersionContractTypes'
+import { useSetPathParam } from './useSetPathParam'
+
+export type VersionContractsProps = {
   title: string
   onContextSearch: (value: string) => void
   bodyRef: MutableRefObject<HTMLDivElement | null>
@@ -52,7 +55,7 @@ export type VersionOperationsProps = {
 } & TestableProps
 
 // High Order Component //
-export const VersionOperationsPanel: FC<VersionOperationsProps> = memo<VersionOperationsProps>(({
+export const VersionContractsPanel: FC<VersionContractsProps> = memo<VersionContractsProps>(({
   title,
   onContextSearch,
   bodyRef,
@@ -66,7 +69,8 @@ export const VersionOperationsPanel: FC<VersionOperationsProps> = memo<VersionOp
   hideFiltersPanel,
   'data-testid': dataTestId,
 }) => {
-  const { apiType = DEFAULT_API_TYPE } = useParams<{ apiType: ApiType }>()
+  const { apiType } = useParams<{ apiType?: ContractType }>()
+  const contractType = apiType ?? DEFAULT_CONTRACT_TYPE
   const [packageObject] = usePackage({ showParents: true })
   const setPathParam = useSetPathParam()
   const setPreviewOperation = useSetSelectedPreviewOperation()
@@ -75,7 +79,7 @@ export const VersionOperationsPanel: FC<VersionOperationsProps> = memo<VersionOp
   const isDashboard = packageObject?.kind === DASHBOARD_KIND
   const showFilterBadge = useCheckOperationFiltersApplied(isDashboard)
 
-  const { apiTypes } = usePackageVersionApiTypes(packageObject?.key ?? '', fullMainVersion!)
+  const { allowedContractTypes } = usePackageVersionContractTypes(packageObject?.key ?? '', fullMainVersion!)
 
   const [operationsView, setOperationsView] = useOperationsView(operationsViewMode)
   const onOperationsViewChange = useCallback((value: OperationsViewMode | undefined) => {
@@ -85,19 +89,22 @@ export const VersionOperationsPanel: FC<VersionOperationsProps> = memo<VersionOp
     }
   }, [setOperationsView, toggleOperationsViewMode])
 
-  const onApiTypeChange = useCallback((apiType: ApiType) => {
+  const onContractTypeChange = useCallback((contractType: ContractType) => {
     setPreviewOperation?.(undefined)
-    setPathParam?.(apiType)
+    setPathParam?.(contractType)
   }, [setPathParam, setPreviewOperation])
 
   return (
     <RichFiltersLayout
-      title={<PageTitle
-        apiType={apiType}
-        title={title}
-        withApiSelector={isApiTypeSelectorShown(apiTypes)}
-        onApiTypeChange={onApiTypeChange}
-      />}
+      title={
+        <PageTitle
+          contractType={contractType}
+          allowedContractTypes={allowedContractTypes}
+          title={title}
+          withContractTypeSelector={isContractTypeSelectorShown(allowedContractTypes)}
+          onContractTypeChange={onContractTypeChange}
+        />
+      }
       searchPlaceholder="Search Operations"
       setSearchValue={onContextSearch}
       viewMode={operationsView}
@@ -111,19 +118,20 @@ export const VersionOperationsPanel: FC<VersionOperationsProps> = memo<VersionOp
       bodyRef={bodyRef}
       body={operationsView === LIST_OPERATIONS_VIEW_MODE
         ? <ListBox>{table}</ListBox>
-        : list
-      }
+        : list}
       data-testid={dataTestId}
     />
   )
 })
 
+VersionContractsPanel.displayName = 'VersionContractsPanel'
+
 const VIEW_OPTIONS = [{
-  icon: <MenuOutlinedIcon fontSize="small"/>,
+  icon: <MenuOutlinedIcon fontSize="small" />,
   value: LIST_OPERATIONS_VIEW_MODE,
   tooltip: 'List view',
 }, {
-  icon: <SegmentItemIcon/>,
+  icon: <SegmentItemIcon />,
   value: DETAILED_OPERATIONS_VIEW_MODE,
   tooltip: 'Detailed view',
 }]

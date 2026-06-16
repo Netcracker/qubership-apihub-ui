@@ -20,7 +20,7 @@ import { Box } from '@mui/material'
 import type { PageTitleProps } from '../components/Titles/PageTitle'
 import { PageTitle } from '../components/Titles/PageTitle'
 import { BLUE_SECTION_COLOR } from './commons/placeholder-colors'
-import { API_TYPE_REST } from '../entities/api-types'
+import { CONTRACT_TYPE_GRAPHQL, DEFAULT_CONTRACT_TYPE } from '../entities/contract-types'
 
 export default {
   title: 'Titles',
@@ -32,7 +32,8 @@ export const PageTitleStory = PageTitleFn.bind({})
 PageTitleStory.args = {
   title: 'Some Title',
   titleComponent: <Box sx={{ backgroundColor: BLUE_SECTION_COLOR }}>extra component</Box>,
-  withApiSelector: true,
-  apiType: API_TYPE_REST,
+  withContractTypeSelector: true,
+  contractType: DEFAULT_CONTRACT_TYPE,
+  allowedContractTypes: [DEFAULT_CONTRACT_TYPE, CONTRACT_TYPE_GRAPHQL],
 }
 PageTitleStory.storyName = 'Page Title'

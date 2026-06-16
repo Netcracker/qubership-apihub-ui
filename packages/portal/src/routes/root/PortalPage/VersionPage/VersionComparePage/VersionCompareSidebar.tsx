@@ -24,7 +24,7 @@ import { ApiTypeListSelector } from './ApiTypeListSelector'
 import { useApiTypeSearchParam } from '../useApiTypeSearchParam'
 import { useApiTypesFromChangesSummary } from './useApiTypesFromChangesSummary'
 import { isDashboardComparisonSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
-import { getDefaultApiType, isApiTypeSelectorShown } from '@apihub/utils/operation-types'
+import { getDefaultApiType, isContractTypeSelectorShown } from '@apihub/utils/operation-types'
 import { isAppliedSearchValueForTag } from '@netcracker/qubership-apihub-ui-shared/utils/tags'
 import { SidebarPanel } from '@netcracker/qubership-apihub-ui-shared/components/Panels/SidebarPanel'
 import { SidebarWithTags } from '@netcracker/qubership-apihub-ui-shared/components/SidebarWithTags/SidebarWithTags'
@@ -61,9 +61,9 @@ export const VersionCompareSidebar = memo(() => {
 
   return (
     <SidebarPanel
-      header={isApiTypeSelectorShown(apiTypes) && <ApiTypeListSelector/>}
+      header={isContractTypeSelectorShown(apiTypes) && <ApiTypeListSelector/>}
       headerFullWidth
-      withDivider={isApiTypeSelectorShown(apiTypes)}
+      withDivider={isContractTypeSelectorShown(apiTypes)}
       body={
         <SidebarWithTags
           tags={filteredTags}

@@ -14,33 +14,34 @@
  * limitations under the License.
  */
 
+import type { NumberSize, ResizeDirection } from 're-resizable'
 import type { FC, MutableRefObject } from 'react'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { ExportOperationsMenu } from '../ExportOperationsMenu'
 import { useParams } from 'react-router-dom'
-import { useApiKindSearchFilter } from '../useApiKindSearchFilters'
-import { useTagSearchFilter } from '../useTagSearchFilter'
-import { useStatusSearchFilter } from '../useStatusSearchFIlter'
-import { useRefSearchParam } from '../../useRefSearchParam'
-import { useOperationGroupSearchFilter } from '../useOperationGroupSearchFilter'
-import { useOperations } from '../useOperations'
-import { OperationTable } from '../OpenApiViewer/OperationTable'
-import { OperationListWithPreview } from '../OperationListWithPreview'
-import { useSetSelectedPreviewOperation } from '../../SelectedPreviewOperationProvider'
-import type { NumberSize, ResizeDirection } from 're-resizable'
-import { VersionOperationsPanel } from '../VersionOperationsPanel'
-import { OperationsNavigation } from '../OperationsNavigation'
-import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import { isEmptyTag } from '@netcracker/qubership-apihub-ui-shared/utils/tags'
-import { isEmpty, isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import { NAVIGATION_MAX_WIDTH } from '@netcracker/qubership-apihub-ui-shared/utils/page-layouts'
+
 import type { Key } from '@apihub/entities/keys'
 import { usePortalPageSettingsContext } from '@apihub/routes/PortalPageSettingsProvider'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import { isEmpty, isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+import { NAVIGATION_MAX_WIDTH } from '@netcracker/qubership-apihub-ui-shared/utils/page-layouts'
+import { isEmptyTag } from '@netcracker/qubership-apihub-ui-shared/utils/tags'
+import { useSetSelectedPreviewOperation } from '../../SelectedPreviewOperationProvider'
+import { useRefSearchParam } from '../../useRefSearchParam'
+import { ExportOperationsMenu } from '../ExportOperationsMenu'
+import { OperationTable } from '../OpenApiViewer/OperationTable'
+import { OperationListWithPreview } from '../OperationListWithPreview'
+import { OperationsNavigation } from '../OperationsNavigation'
 import { useApiAudienceSearchFilter } from '../useApiAudienceSearchFilters'
+import { useApiKindSearchFilter } from '../useApiKindSearchFilters'
+import { useOperationGroupSearchFilter } from '../useOperationGroupSearchFilter'
+import { useOperations } from '../useOperations'
+import { useStatusSearchFilter } from '../useStatusSearchFIlter'
+import { useTagSearchFilter } from '../useTagSearchFilter'
+import { VersionContractsPanel } from '../VersionContractsPanel'
 
 // High Order Component //
-export const VersionOperationsSubPage: FC = memo(() => {
+export const VersionContractsSubPage: FC = memo(() => {
   const [searchValue, setSearchValue] = useState('')
   const { packageId, versionId, apiType = DEFAULT_API_TYPE } = useParams<{
     packageId: Key
@@ -92,7 +93,9 @@ export const VersionOperationsSubPage: FC = memo(() => {
   const onResize = useCallback(
     (_: MouseEvent | TouchEvent, __: ResizeDirection, ___: HTMLElement, delta: NumberSize) => {
       togglePreviewSize(previewSize + delta.width)
-    }, [previewSize, togglePreviewSize])
+    },
+    [previewSize, togglePreviewSize],
+  )
 
   const maxPreviewWidth = useMemo(() => {
     if (bodyRef.current?.clientWidth) {
@@ -104,36 +107,40 @@ export const VersionOperationsSubPage: FC = memo(() => {
   }, [bodyRef.current?.clientWidth])
 
   return (
-    <VersionOperationsPanel
+    <VersionContractsPanel
       onContextSearch={setSearchValue}
-      title={VERSION_OPERATIONS_TITLE}
+      title={VERSION_CONTRACTS_TITLE}
       bodyRef={bodyRef}
       hideFiltersPanel={hideFiltersPanel}
       toggleHideFiltersPanel={toggleHideFiltersPanel}
       operationsViewMode={operationsViewMode}
       toggleOperationsViewMode={toggleOperationsViewMode}
-      table={<OperationTable
-        value={operations}
-        fetchNextPage={fetchNextPage}
-        isNextPageFetching={isFetchingNextPage}
-        hasNextPage={hasNextPage}
-        isLoading={isLoading}
-        apiType={apiType}
-        textFilter={searchValue}
-      />}
-      list={<OperationListWithPreview
-        operations={operations}
-        fetchNextPage={fetchNextPage}
-        hasNextPage={hasNextPage}
-        isListLoading={isLoading}
-        isNextPageFetching={isFetchingNextPage}
-        packageKey={packageId!}
-        versionKey={versionId!}
-        apiType={apiType}
-        initialSize={previewSize}
-        handleResize={onResize}
-        maxPreviewWidth={maxPreviewWidth}
-      />}
+      table={
+        <OperationTable
+          value={operations}
+          fetchNextPage={fetchNextPage}
+          isNextPageFetching={isFetchingNextPage}
+          hasNextPage={hasNextPage}
+          isLoading={isLoading}
+          apiType={apiType}
+          textFilter={searchValue}
+        />
+      }
+      list={
+        <OperationListWithPreview
+          operations={operations}
+          fetchNextPage={fetchNextPage}
+          hasNextPage={hasNextPage}
+          isListLoading={isLoading}
+          isNextPageFetching={isFetchingNextPage}
+          packageKey={packageId!}
+          versionKey={versionId!}
+          apiType={apiType}
+          initialSize={previewSize}
+          handleResize={onResize}
+          maxPreviewWidth={maxPreviewWidth}
+        />
+      }
       filters={<OperationsNavigation />}
       exportButton={
         <ExportOperationsMenu
@@ -145,12 +152,15 @@ export const VersionOperationsSubPage: FC = memo(() => {
           group={operationGroup}
           refPackageId={refKey}
           emptyTag={emptyTag}
-        />}
+        />
+      }
       data-testid="ContractsTab"
     />
   )
 })
 
-const VERSION_OPERATIONS_TITLE = 'API Contracts'
+VersionContractsSubPage.displayName = 'VersionContractsSubPage'
+
+const VERSION_CONTRACTS_TITLE = 'API Contracts'
 
 const SUBPAGE_MARGIN = 24

@@ -17,23 +17,24 @@
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { ContractType } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 
-export type OperationTypeForm =
-  | ReadonlyArray<ApiType>
-  | Record<ApiType, unknown>
+export type ContractTypeForm =
+  | ReadonlyArray<ContractType>
+  | Record<ContractType, unknown>
   | undefined
   | null
 
-export function isApiTypeSelectorShown(operationTypes: OperationTypeForm): boolean {
-  if (!operationTypes) {
+export function isContractTypeSelectorShown(contractTypes: ContractTypeForm): boolean {
+  if (!contractTypes) {
     return false
   }
-  return Array.isArray(operationTypes)
-    ? operationTypes.length > 1
-    : Object.keys(operationTypes).length > 1
+  return Array.isArray(contractTypes)
+    ? contractTypes.length > 1
+    : Object.keys(contractTypes).length > 1
 }
 
-export function getDefaultApiType(operationTypes: OperationTypeForm): ApiType {
+export function getDefaultApiType(operationTypes: ContractTypeForm): ApiType {
   if (!operationTypes) {
     return DEFAULT_API_TYPE
   }

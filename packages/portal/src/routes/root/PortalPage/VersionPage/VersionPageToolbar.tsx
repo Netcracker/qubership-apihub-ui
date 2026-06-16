@@ -70,7 +70,10 @@ export const VersionPageToolbar: FC = memo(() => {
   })
   const { version: fullVersion, status, latestRevision, operationTypes } = versionContent ?? {}
   const { restGroupingPrefix, permissions } = currentPackage ?? {}
-  const defaultApiType = useEffectiveApiType(operationTypes)
+  // TODO(contracts): stop casting operationTypes keys to ApiType[] and pass version summary through
+  // ContractType-aware helpers instead. That requires retooling navigation, compare, and related
+  // defaults in one go.
+  const defaultApiType = useEffectiveApiType(operationTypes ? Object.keys(operationTypes) as ApiType[] : undefined)
 
   const [config, isConfigLoading] = usePackageVersionConfig(packageId, versionId)
 

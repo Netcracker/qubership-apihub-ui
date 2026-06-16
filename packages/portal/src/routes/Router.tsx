@@ -26,7 +26,7 @@ import {
   DOCUMENTS_PAGE,
   FAVORITE_PAGE,
   GROUPS_PAGE,
-  OPERATIONS_PAGE,
+  CONTRACTS_PAGE,
   PACKAGE_SETTINGS_PAGE,
   PREVIEW_PAGE,
   PRIVATE_PAGE,
@@ -93,7 +93,7 @@ export const router = createBrowserRouter(
             <Route index element={<Navigate to={SUMMARY_ROUTE} replace/>}/>
             <Route path="*" element={<VersionPage/>}/>
             <Route path={`${API_CHANGES_PAGE}/:apiType`} element={<VersionPage/>}/>
-            <Route path={`${OPERATIONS_PAGE}/:apiType`}>
+            <Route path={`${CONTRACTS_PAGE}/:apiType`}>
               <Route index element={<VersionPage/>}/>
               <Route path=":operationId/*" element={<OperationPage/>}/>
             </Route>

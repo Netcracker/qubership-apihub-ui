@@ -55,7 +55,7 @@ import {
   GROUPS_OPERATIONS_COMPARE_PAGE_PATH_PATTERN,
   GROUPS_PAGE_PATH_PATTERN,
   OPERATION_COMPARE_PAGE_PATH_PATTERN,
-  OPERATIONS_PAGE_PATH_PATTERN,
+  CONTRACTS_PAGE_PATH_PATTERN,
   OVERVIEW_PATH_PATTERN,
   PACKAGE_PAGE_PATH_PATTERN,
   PACKAGE_SETTINGS_PAGE_PATH_PATTERN,
@@ -531,7 +531,7 @@ export function getOperationsPath({
   const operationId = operationKey ? encodeURIComponent(operationKey) : ''
   return {
     pathname: generatePath(
-      `${OPERATIONS_PAGE_PATH_PATTERN}${operationId}`,
+      `${CONTRACTS_PAGE_PATH_PATTERN}${operationId}`,
       { packageId, versionId, apiType },
     ),
     ...(search ? { search: `${optionalSearchParams(search)}` } : {}),
