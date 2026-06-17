@@ -1,0 +1,9 @@
+// TODO(icons): replace with final SVG from Figma MCP Registry (node 2065:85436)
+import { createSvgIcon } from '@mui/material'
+
+export const McpPromptIcon = createSvgIcon(
+  <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+    <path d="M4 3.5C3.17157 3.5 2.5 4.17157 2.5 5V11.5C2.5 12.3284 3.17157 13 4 13H6.5L9.5 16V13H14C14.8284 13 15.5 12.3284 15.5 11.5V5C15.5 4.17157 14.8284 3.5 14 3.5H4ZM5.25 7C5.25 6.58579 5.58579 6.25 6 6.25H12C12.4142 6.25 12.75 6.58579 12.75 7C12.75 7.41421 12.4142 7.75 12 7.75H6C5.58579 7.75 5.25 7.41421 5.25 7ZM5.25 9.5C5.25 9.08579 5.58579 8.75 6 8.75H10C10.4142 8.75 10.75 9.08579 10.75 9.5C10.75 9.91421 10.4142 10.25 10 10.25H6C5.58579 10.25 5.25 9.91421 5.25 9.5Z" />
+  </svg>,
+  'McpPrompt',
+)
