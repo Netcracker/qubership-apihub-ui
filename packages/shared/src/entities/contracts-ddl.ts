@@ -32,9 +32,38 @@ export type DdlTableContractDetails = DdlTableContractDetailsDto
 
 export type DdlContractsSummary = DdlContractsSummaryDto
 
+export const DDL_TABLES_EMPTY_MESSAGE = 'No tables'
+
 export function hasDdlContracts(ddl?: DdlContractsSummary): ddl is DdlContractsSummary {
   if (!ddl) {
     return false
   }
   return ddl.tables > 0 || ddl.views > 0
+}
+
+export function toDdlTable(dto: DdlTableContractDto): DdlTableContract {
+  return dto
+}
+
+export function getDdlTableTitle(
+  table: Readonly<Pick<DdlTableContractDto, 'tableName' | 'tableId'>>,
+): string {
+  return table.tableName ?? table.tableId
+}
+
+export function getDdlTableSchemaName(
+  table: Readonly<Pick<DdlTableContractDto, 'schemaName'>>,
+): string | undefined {
+  return table.schemaName
+}
+
+export function getDdlTableDescription(
+  table: Readonly<Pick<DdlTableContractDto, 'metadata'>>,
+): string | undefined {
+  const description = table.metadata?.description
+  if (typeof description !== 'string') {
+    return undefined
+  }
+  const trimmed = description.trim()
+  return trimmed === '' ? undefined : trimmed
 }

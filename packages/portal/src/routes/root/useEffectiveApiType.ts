@@ -19,11 +19,16 @@ import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import type { ContractTypeForm } from '@apihub/utils/operation-types'
 import { getDefaultApiType } from '@apihub/utils/operation-types'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { isApiType, type ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 
 export function useEffectiveApiType(operationTypes: ContractTypeForm): ApiType {
   const { apiType } = useParams()
   const operationApiType: ApiType = useMemo(() => getDefaultApiType(operationTypes), [operationTypes])
 
-  return useMemo(() => (apiType ? apiType as ApiType : operationApiType), [apiType, operationApiType])
+  return useMemo(() => {
+    if (apiType && isApiType(apiType)) {
+      return apiType
+    }
+    return operationApiType
+  }, [apiType, operationApiType])
 }

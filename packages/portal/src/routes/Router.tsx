@@ -50,7 +50,7 @@ import { PackagePage } from '@apihub/routes/root/PortalPage/PackagePage/PackageP
 import { PackageSettingsPage } from '@apihub/routes/root/PortalPage/PackageSettingsPage/PackageSettingsPage'
 import { SPECIAL_VERSION_KEY } from '@apihub/entities/versions'
 import { VersionPage } from '@apihub/routes/root/PortalPage/VersionPage/VersionPage'
-import { OperationPage } from '@apihub/routes/root/PortalPage/VersionPage/OperationPage/OperationPage'
+import { ContractDetailPage } from '@apihub/routes/root/PortalPage/VersionPage/ContractDetailPage'
 import { DocumentPreviewPage } from '@apihub/routes/root/PortalPage/VersionPage/DocumentPreviewPage/DocumentPreviewPage'
 import { ChangesSummaryProvider } from '@apihub/routes/root/PortalPage/VersionPage/ChangesSummaryProvider'
 import { VersionComparePage } from '@apihub/routes/root/PortalPage/VersionPage/VersionComparePage/VersionComparePage'
@@ -95,7 +95,7 @@ export const router = createBrowserRouter(
             <Route path={`${API_CHANGES_PAGE}/:apiType`} element={<VersionPage/>}/>
             <Route path={`${CONTRACTS_PAGE}/:apiType`}>
               <Route index element={<VersionPage/>}/>
-              <Route path=":operationId/*" element={<OperationPage/>}/>
+              <Route path=":operationId/*" element={<ContractDetailPage/>}/>
             </Route>
             <Route path={`${DEPRECATED_PAGE}/:apiType`} element={<VersionPage/>}/>
             <Route path={DOCUMENTS_PAGE}>

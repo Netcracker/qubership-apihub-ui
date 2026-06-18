@@ -88,9 +88,7 @@ export const VersionPageToolbar: FC = memo(() => {
   }, [latestRevision, setBackwardLocation, setFullMainVersion, setIsLatestRevision, fullVersion])
 
   const showCompareGroups = useMemo(
-    () => (
-      API_TYPE_SHOW_COMPARE_GROUPS_MAP[defaultApiType](isPackage, restGroupingPrefix)
-    ),
+    () => API_TYPE_SHOW_COMPARE_GROUPS_MAP[defaultApiType](isPackage, restGroupingPrefix),
     [defaultApiType, isPackage, restGroupingPrefix],
   )
 

@@ -18,12 +18,7 @@ import type { FC, ReactElement } from 'react'
 import { memo } from 'react'
 
 import { CONTRACT_TYPE_DDL } from '../entities/contract-types'
-import {
-  MCP_ARTIFACT_OVERVIEW,
-  MCP_ARTIFACT_PROMPTS,
-  MCP_ARTIFACT_RESOURCES,
-  MCP_ARTIFACT_TOOLS,
-} from '../entities/contracts-mcp'
+import { MCP_COLLECTION_INIT, MCP_COLLECTION_PROMPTS, MCP_COLLECTION_RESOURCES, MCP_COLLECTION_TOOLS } from '../entities/contracts-mcp'
 import type { ApiType } from '../entities/api-types'
 import { API_TYPE_ASYNCAPI, API_TYPE_GRAPHQL, API_TYPE_REST } from '../entities/api-types'
 import { AsyncApiIcon } from '../icons/AsyncApiIcon'
@@ -90,16 +85,16 @@ export const SpecLogo: FC<SpecLogoProps> = memo<SpecLogoProps>(({ value }) => {
     return (<AsyncApiIcon/>)
   }
 
-  if (value === MCP_ARTIFACT_OVERVIEW) {
+  if (value === MCP_COLLECTION_INIT) {
     return (<McpInitIcon/>)
   }
-  if (value === MCP_ARTIFACT_TOOLS) {
+  if (value === MCP_COLLECTION_TOOLS) {
     return (<McpToolIcon/>)
   }
-  if (value === MCP_ARTIFACT_PROMPTS) {
+  if (value === MCP_COLLECTION_PROMPTS) {
     return (<McpPromptIcon/>)
   }
-  if (value === MCP_ARTIFACT_RESOURCES) {
+  if (value === MCP_COLLECTION_RESOURCES) {
     return (<McpResourceIcon/>)
   }
 

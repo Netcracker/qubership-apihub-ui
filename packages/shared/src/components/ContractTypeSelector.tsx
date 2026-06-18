@@ -1,9 +1,10 @@
 import type { SelectChangeEvent } from '@mui/material'
-import { MenuItem, Select, TextField } from '@mui/material'
+import { MenuItem, Select } from '@mui/material'
 import type { ChangeEvent, FC } from 'react'
 import { memo } from 'react'
 
 import { CONTRACT_TYPE_TITLE_MAP, type ContractType } from '../entities/contract-types'
+import { FilledSelectField } from './FilledSelectField'
 
 export type ContractTypeSelectorProps = {
   contractType: ContractType
@@ -12,7 +13,6 @@ export type ContractTypeSelectorProps = {
   onChange?: (contractType: ContractType) => void
 }
 
-// First Order Component //
 export const ContractTypeSelector: FC<ContractTypeSelectorProps> = memo<ContractTypeSelectorProps>(({
   standard = false,
   contractType,
@@ -47,17 +47,13 @@ export const ContractTypeSelector: FC<ContractTypeSelectorProps> = memo<Contract
       </Select>
     )
     : (
-      <TextField
-        sx={{ height: '32px', m: 0 }}
-        select
-        variant="filled"
+      <FilledSelectField
         value={contractType}
-        hiddenLabel
         onChange={handleChange}
         data-testid="ContractTypeSelector"
       >
         {options}
-      </TextField>
+      </FilledSelectField>
     )
 })
 

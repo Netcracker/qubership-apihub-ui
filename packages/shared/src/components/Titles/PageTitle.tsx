@@ -25,6 +25,7 @@ import type { ContractType } from '../../entities/contract-types'
 export type PageTitleProps = {
   title: string
   titleComponent?: ReactNode
+  additionalSelectors?: ReactNode
   contractType?: ContractType
   allowedContractTypes?: ReadonlyArray<ContractType>
   withContractTypeSelector?: boolean
@@ -35,6 +36,7 @@ export type PageTitleProps = {
 export const PageTitle: FC<PageTitleProps> = memo<PageTitleProps>(({
   title,
   titleComponent,
+  additionalSelectors,
   contractType,
   allowedContractTypes,
   withContractTypeSelector = false,
@@ -55,15 +57,16 @@ export const PageTitle: FC<PageTitleProps> = memo<PageTitleProps>(({
         {titleComponent && <Box fontSize={15} fontWeight={600}>{titleComponent}</Box>}
       </Box>
 
-      {withContractTypeSelector && contractType && allowedContractTypes && (
-        <Box>
+      <Box display="flex" alignItems="center" gap={1}>
+        {withContractTypeSelector && contractType && allowedContractTypes && (
           <ContractTypeSelector
             contractType={contractType}
             allowedContractTypes={allowedContractTypes}
             onChange={onContractTypeChange}
           />
-        </Box>
-      )}
+        )}
+        {additionalSelectors}
+      </Box>
     </Box>
   )
 })

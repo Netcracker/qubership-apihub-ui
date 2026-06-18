@@ -24,8 +24,13 @@ import { RichFiltersLayout } from '@netcracker/qubership-apihub-ui-shared/compon
 import { ListBox } from '@netcracker/qubership-apihub-ui-shared/components/Panels/ListBox'
 import type { TestableProps } from '@netcracker/qubership-apihub-ui-shared/components/Testable'
 import { PageTitle } from '@netcracker/qubership-apihub-ui-shared/components/Titles/PageTitle'
-import { DEFAULT_CONTRACT_TYPE, type ContractType } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
+import {
+  CONTRACT_TYPE_MCP,
+  type ContractType,
+  DEFAULT_CONTRACT_TYPE,
+} from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { useSetSearchParams } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSetSearchParams'
 import { SegmentItemIcon } from '@netcracker/qubership-apihub-ui-shared/icons/SegmentItemIcon'
 import type { OperationsViewMode } from '@netcracker/qubership-apihub-ui-shared/types/views'
 import {
@@ -36,6 +41,8 @@ import { usePackage } from '../../usePackage'
 import { useFullMainVersion } from '../FullMainVersionProvider'
 import { useSetSelectedPreviewOperation } from '../SelectedPreviewOperationProvider'
 import { useCheckOperationFiltersApplied } from './useCheckOperationFiltersApplied'
+import { MCP_ENDPOINT_SEARCH_PARAM } from './useMcpEndpointSearchParam'
+import { MCP_ENTITY_SEARCH_PARAM } from './useMcpEntitySearchParam'
 import { useOperationsView } from './useOperationsView'
 import { usePackageVersionContractTypes } from './usePackageVersionContractTypes'
 import { useSetPathParam } from './useSetPathParam'
@@ -52,6 +59,12 @@ export type VersionContractsProps = {
   hideFiltersPanel: boolean
   toggleHideFiltersPanel: (value: boolean) => void
   toggleOperationsViewMode: (value: string) => void
+  additionalSelectors?: ReactNode
+  hideSearch?: boolean
+  hideFilter?: boolean
+  hideViewToggle?: boolean
+  hideExport?: boolean
+  searchPlaceholder?: string
 } & TestableProps
 
 // High Order Component //
@@ -67,12 +80,19 @@ export const VersionContractsPanel: FC<VersionContractsProps> = memo<VersionCont
   toggleOperationsViewMode,
   toggleHideFiltersPanel,
   hideFiltersPanel,
+  additionalSelectors,
+  hideSearch = false,
+  hideFilter = false,
+  hideViewToggle = false,
+  hideExport = false,
+  searchPlaceholder = 'Search Operations',
   'data-testid': dataTestId,
 }) => {
   const { apiType } = useParams<{ apiType?: ContractType }>()
   const contractType = apiType ?? DEFAULT_CONTRACT_TYPE
   const [packageObject] = usePackage({ showParents: true })
   const setPathParam = useSetPathParam()
+  const setSearchParams = useSetSearchParams()
   const setPreviewOperation = useSetSelectedPreviewOperation()
   const fullMainVersion = useFullMainVersion()
 
@@ -89,10 +109,16 @@ export const VersionContractsPanel: FC<VersionContractsProps> = memo<VersionCont
     }
   }, [setOperationsView, toggleOperationsViewMode])
 
-  const onContractTypeChange = useCallback((contractType: ContractType) => {
+  const onContractTypeChange = useCallback((nextContractType: ContractType) => {
     setPreviewOperation?.(undefined)
-    setPathParam?.(contractType)
-  }, [setPathParam, setPreviewOperation])
+    if (contractType === CONTRACT_TYPE_MCP && nextContractType !== CONTRACT_TYPE_MCP) {
+      setSearchParams({
+        [MCP_ENDPOINT_SEARCH_PARAM]: '',
+        [MCP_ENTITY_SEARCH_PARAM]: '',
+      }, { replace: true })
+    }
+    setPathParam?.(nextContractType)
+  }, [contractType, setPathParam, setPreviewOperation, setSearchParams])
 
   return (
     <RichFiltersLayout
@@ -103,10 +129,15 @@ export const VersionContractsPanel: FC<VersionContractsProps> = memo<VersionCont
           title={title}
           withContractTypeSelector={isContractTypeSelectorShown(allowedContractTypes)}
           onContractTypeChange={onContractTypeChange}
+          additionalSelectors={additionalSelectors}
         />
       }
-      searchPlaceholder="Search Operations"
+      searchPlaceholder={searchPlaceholder}
       setSearchValue={onContextSearch}
+      hideSearch={hideSearch}
+      hideFilter={hideFilter}
+      hideViewToggle={hideViewToggle}
+      hideExport={hideExport}
       viewMode={operationsView}
       viewOptions={VIEW_OPTIONS}
       onOperationsViewChange={onOperationsViewChange}

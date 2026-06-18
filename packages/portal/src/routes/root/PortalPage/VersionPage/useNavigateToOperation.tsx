@@ -15,6 +15,9 @@
  */
 
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { CONTRACT_TYPE_DDL, CONTRACT_TYPE_MCP } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
+import type { McpCollection } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
+import { MCP_COLLECTION_INIT } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 import { YAML_FILE_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/entities/file-format-view'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { DOC_OPERATION_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
@@ -35,13 +38,15 @@ import {
 import type { Path } from '@remix-run/router'
 import type { Dispatch, SetStateAction } from 'react'
 import { useCallback } from 'react'
-import { getOperationsPath, useNavigation } from '../../../NavigationProvider'
+import { getOperationsPath, useNavigation, type OperationsDetail } from '../../../NavigationProvider'
 import { useTextSearchParam } from '../../useTextSearchParam'
 import { useDocumentSearchParam } from './useDocumentSearchParam'
 import { useFileViewMode } from './useFileViewMode'
 import { useOperationSearchParam } from './useOperationSearchParam'
 import { useOperationViewMode } from './useOperationViewMode'
 import { useSidebarPlaygroundViewMode } from './useSidebarPlaygroundViewMode'
+import { MCP_ENDPOINT_SEARCH_PARAM } from './useMcpEndpointSearchParam'
+import { MCP_ENTITY_SEARCH_PARAM } from './useMcpEntitySearchParam'
 
 export function useNavigateToOperation(packageKey: Key, versionKey: Key, apiType: ApiType, setShouldAutoExpand: Dispatch<SetStateAction<boolean>>): (operationKey: Key) => void {
   const { navigateToOperations } = useNavigation()
@@ -107,5 +112,47 @@ export function getOperationLink(params: {
       [DOCUMENT_SEARCH_PARAM]: { value: documentSlug },
     },
   })
+}
+
+export function getMcpEntityLink(params: {
+  packageKey: Key
+  versionKey: Key
+  entityId: Key
+  mcpEndpoint?: string
+  mcpEntity?: McpCollection
+}): Partial<Path> {
+  const {
+    packageKey,
+    versionKey,
+    entityId,
+    mcpEndpoint,
+    mcpEntity = MCP_COLLECTION_INIT,
+  } = params
+
+  return getOperationsPath({
+    packageKey: packageKey,
+    versionKey: versionKey,
+    apiType: CONTRACT_TYPE_MCP,
+    operationKey: entityId,
+    search: {
+      [MCP_ENDPOINT_SEARCH_PARAM]: { value: mcpEndpoint ?? '' },
+      [MCP_ENTITY_SEARCH_PARAM]: { value: mcpEntity },
+    },
+  } as unknown as OperationsDetail)
+}
+
+export function getDdlTableLink(params: {
+  packageKey: Key
+  versionKey: Key
+  tableId: Key
+}): Partial<Path> {
+  const { packageKey, versionKey, tableId } = params
+
+  return getOperationsPath({
+    packageKey: packageKey,
+    versionKey: versionKey,
+    apiType: CONTRACT_TYPE_DDL,
+    operationKey: tableId,
+  } as unknown as OperationsDetail)
 }
 

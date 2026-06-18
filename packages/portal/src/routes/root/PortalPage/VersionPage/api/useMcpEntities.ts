@@ -1,0 +1,135 @@
+import { useInfiniteQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
+import { generatePath } from 'react-router-dom'
+
+import type { FetchNextMetaList } from '@netcracker/qubership-apihub-ui-shared/components/MetaClickableListWithPreview'
+import type {
+  McpCollection,
+  McpContractDto,
+  McpEntity,
+} from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
+import { toMcpEntity } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { HasNextPage, IsFetchingNextPage, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import { API_V1, requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
+
+import { useVersionWithRevision } from '../../../useVersionWithRevision'
+
+export const MCP_ENTITIES_QUERY_KEY = 'mcp-entities-query-key'
+
+type McpEntitiesDto = Readonly<{
+  entities: ReadonlyArray<McpContractDto>
+}>
+
+type UseMcpEntitiesOptions = Readonly<{
+  packageKey?: Key
+  versionKey?: Key
+  collection: McpCollection
+  textFilter?: string
+  mcpEndpoint?: string
+  limit?: number
+  enabled?: boolean
+}>
+
+export function useMcpEntities(options: UseMcpEntitiesOptions): [
+  ReadonlyArray<McpEntity>,
+  IsLoading,
+  FetchNextMetaList,
+  IsFetchingNextPage,
+  HasNextPage,
+] {
+  const {
+    packageKey,
+    versionKey,
+    collection,
+    textFilter,
+    mcpEndpoint,
+    limit = 100,
+    enabled = true,
+  } = options
+
+  const { fullVersion } = useVersionWithRevision(versionKey, packageKey)
+
+  const {
+    data: entitiesList,
+    isLoading,
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
+  } = useInfiniteQuery<ReadonlyArray<McpEntity>, Error>({
+    queryKey: [MCP_ENTITIES_QUERY_KEY, packageKey, fullVersion, collection, mcpEndpoint, textFilter],
+    queryFn: ({ pageParam = 0, signal }) =>
+      getMcpEntities({
+        packageKey: packageKey!,
+        versionKey: fullVersion!,
+        collection: collection,
+        textFilter: textFilter,
+        limit: limit,
+        offset: pageParam,
+      }, signal),
+    getNextPageParam: (lastPage, allPages) => {
+      if (!limit) {
+        return undefined
+      }
+      return lastPage.length === limit ? allPages.length * limit : undefined
+    },
+    enabled: !!packageKey && !!fullVersion && enabled,
+    keepPreviousData: true,
+  })
+
+  const entities = useMemo(() => {
+    const allEntities = entitiesList?.pages.flat() ?? []
+    if (!mcpEndpoint) {
+      return allEntities
+    }
+    return allEntities.filter(entity => entity.mcpEndpoint === mcpEndpoint)
+  }, [entitiesList?.pages, mcpEndpoint])
+
+  return [
+    entities,
+    isLoading,
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
+  ]
+}
+
+async function getMcpEntities(
+  options: {
+    packageKey: Key
+    versionKey: Key
+    collection: McpCollection
+    textFilter?: string
+    limit?: number
+    offset?: number
+  },
+  signal?: AbortSignal,
+): Promise<ReadonlyArray<McpEntity>> {
+  const {
+    packageKey,
+    versionKey,
+    collection,
+    textFilter,
+    limit,
+    offset,
+  } = options
+
+  const packageId = encodeURIComponent(packageKey)
+  const versionId = encodeURIComponent(versionKey)
+
+  const queryParams = optionalSearchParams({
+    textFilter: { value: textFilter },
+    limit: { value: limit },
+    offset: { value: offset, toStringValue: value => `${value}` },
+  })
+
+  const pathPattern = '/packages/:packageId/versions/:versionId/mcp/:apiEntity'
+  const response = await requestJson<McpEntitiesDto>(
+    `${generatePath(pathPattern, { packageId: packageId, versionId: versionId, apiEntity: collection })}?${queryParams}`,
+    { method: 'get', signal: signal },
+    { basePath: API_V1 },
+  )
+
+  return response.entities.map(toMcpEntity)
+}
