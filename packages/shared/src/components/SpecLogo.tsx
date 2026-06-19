@@ -17,8 +17,6 @@
 import type { FC, ReactElement } from 'react'
 import { memo } from 'react'
 
-import { CONTRACT_TYPE_DDL } from '../entities/contract-types'
-import { MCP_COLLECTION_INIT, MCP_COLLECTION_PROMPTS, MCP_COLLECTION_RESOURCES, MCP_COLLECTION_TOOLS } from '../entities/contracts-mcp'
 import type { ApiType } from '../entities/api-types'
 import { API_TYPE_ASYNCAPI, API_TYPE_GRAPHQL, API_TYPE_REST } from '../entities/api-types'
 import { AsyncApiIcon } from '../icons/AsyncApiIcon'
@@ -38,10 +36,12 @@ import { SwaggerIcon } from '../icons/SwaggerIcon'
 import type { SpecType } from '../utils/specs'
 import { isAsyncApiSpecType } from '../utils/specs'
 import {
+  DDL_DOCUMENT_TYPE,
   isGraphQlSpecType,
   isOpenApiSpecType,
   JSON_SCHEMA_SPEC_TYPE,
   MARKDOWN_SPEC_TYPE,
+  MCP_DOCUMENT_TYPE,
   OPENAPI_2_0_SPEC_TYPE,
   PROTOBUF_3_SPEC_TYPE,
 } from '../utils/specs'
@@ -85,25 +85,30 @@ export const SpecLogo: FC<SpecLogoProps> = memo<SpecLogoProps>(({ value }) => {
     return (<AsyncApiIcon/>)
   }
 
-  if (value === MCP_COLLECTION_INIT) {
-    return (<McpInitIcon/>)
-  }
-  if (value === MCP_COLLECTION_TOOLS) {
-    return (<McpToolIcon/>)
-  }
-  if (value === MCP_COLLECTION_PROMPTS) {
-    return (<McpPromptIcon/>)
-  }
-  if (value === MCP_COLLECTION_RESOURCES) {
-    return (<McpResourceIcon/>)
+  if (value === MCP_DOCUMENT_TYPE.MCP_INIT) {
+    return (<McpInitIcon fontSize="small"/>)
   }
 
-  if (value === CONTRACT_TYPE_DDL) {
-    return (<DdlIcon/>)
+  if (value === MCP_DOCUMENT_TYPE.MCP_TOOLS) {
+    return (<McpToolIcon fontSize="small"/>)
+  }
+
+  if (value === MCP_DOCUMENT_TYPE.MCP_PROMPTS) {
+    return (<McpPromptIcon fontSize="small"/>)
+  }
+
+  if (value === MCP_DOCUMENT_TYPE.MCP_RESOURCES) {
+    return (<McpResourceIcon fontSize="small"/>)
+  }
+
+  if (value === DDL_DOCUMENT_TYPE.DDL) {
+    return (<DdlIcon fontSize="small"/>)
   }
 
   return API_TYPE_ICON_MAP[value as ApiType] ?? <FileIcon/>
 })
+
+SpecLogo.displayName = 'SpecLogo'
 
 const API_TYPE_ICON_MAP: Record<ApiType, ReactElement | null> = {
   [API_TYPE_REST]: <RestApiIcon/>,

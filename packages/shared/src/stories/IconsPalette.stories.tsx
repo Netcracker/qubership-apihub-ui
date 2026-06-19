@@ -32,11 +32,11 @@ import { ComponentIcon } from '../icons/ComponentIcon'
 import { ConfigureIcon } from '../icons/ConfigureIcon'
 import { CopyIcon } from '../icons/CopyIcon'
 import { DashboardIcon } from '../icons/DashboardIcon'
+import { DdlIcon } from '../icons/DdlIcon'
 import { DefaultSideBarIcon } from '../icons/DefaultSideBarIcon'
 import { DeleteIcon } from '../icons/DeleteIcon'
 import { DeleteIconMui } from '../icons/DeleteIconMui'
 import { DoneIcon } from '../icons/DoneIcon'
-import { DdlIcon } from '../icons/DdlIcon'
 import { DownloadIcon } from '../icons/DownloadIcon'
 import { DownloadIconMui } from '../icons/DownloadIconMui'
 import { DragIcon } from '../icons/DragIcon'
@@ -144,7 +144,6 @@ const CUSTOM_ICONS_REGISTRY: readonly IconItem<CustomIconComponent>[] = [
   { name: 'DefaultWarningIcon', component: DefaultWarningIcon },
   { name: 'DeleteIcon', component: DeleteIcon },
   { name: 'DoneIcon', component: DoneIcon },
-  { name: 'DdlIcon', component: DdlIcon },
   { name: 'DownloadIcon', component: DownloadIcon },
   { name: 'DragIcon', component: DragIcon },
   { name: 'EditIcon', component: EditIcon },
@@ -202,6 +201,7 @@ const MUI_ICONS_REGISTRY: readonly IconItem<MuiIconComponent>[] = [
   { name: 'CloseIcon', component: CloseIcon },
   { name: 'CloudUploadIcon', component: CloudUploadIcon },
   { name: 'CopyIcon', component: CopyIcon },
+  { name: 'DdlIcon', component: DdlIcon },
   { name: 'DeleteIconMui', component: DeleteIconMui },
   { name: 'DownloadIconMui', component: DownloadIconMui },
   { name: 'ErrorIcon', component: ErrorIcon },

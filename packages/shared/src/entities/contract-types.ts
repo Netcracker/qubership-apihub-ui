@@ -1,5 +1,6 @@
 import {
   ASYNCAPI_API_TYPE,
+  DDL_CONTRACT_TYPE,
   GRAPHQL_API_TYPE,
   MCP_API_TYPE,
   REST_API_TYPE,
@@ -11,8 +12,7 @@ export const CONTRACT_TYPE_REST = REST_API_TYPE
 export const CONTRACT_TYPE_GRAPHQL = GRAPHQL_API_TYPE
 export const CONTRACT_TYPE_ASYNCAPI = ASYNCAPI_API_TYPE
 export const CONTRACT_TYPE_MCP = MCP_API_TYPE
-// TODO(DDL/api-processor): replace with DDL_API_TYPE import when api-processor exports it
-export const CONTRACT_TYPE_DDL = 'ddl'
+export const CONTRACT_TYPE_DDL = DDL_CONTRACT_TYPE
 
 export type NonApiContractType = typeof CONTRACT_TYPE_MCP | typeof CONTRACT_TYPE_DDL
 
