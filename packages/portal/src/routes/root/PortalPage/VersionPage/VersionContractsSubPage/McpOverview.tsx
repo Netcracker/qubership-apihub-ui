@@ -1,25 +1,27 @@
-import { Box, Typography } from '@mui/material'
+import { Box } from '@mui/material'
 import { styled } from '@mui/material/styles'
-import type { FC } from 'react'
-import { memo, useMemo } from 'react'
+import { isPlainObject } from 'lodash-es'
+import { type FC, memo, useMemo } from 'react'
 
-import type { Key } from '@apihub/entities/keys'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
+import { McpOverviewDetails } from '@netcracker/qubership-apihub-ui-shared/components/Mcp/McpOverviewDetails'
 import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import { DocumentTitleWithVersion } from '@netcracker/qubership-apihub-ui-shared/components/Titles/DocumentTitleWithVersion'
 import type { McpEntity } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 import { MCP_COLLECTION_INIT } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
+import { toOptionalString } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
 
+import type { Key } from '@apihub/entities/keys'
 import { useMcpEntityDetails } from '../api/useMcpEntityDetails'
 
-export type McpOverviewProps = {
+export type McpOverviewProps = Readonly<{
   packageKey: Key
   versionKey: Key
   mcpEndpoint?: string
   selectedEntity?: McpEntity
   isInitLoading?: boolean
-}
+}>
 
 export const McpOverview: FC<McpOverviewProps> = memo<McpOverviewProps>(({
   packageKey,
@@ -37,17 +39,7 @@ export const McpOverview: FC<McpOverviewProps> = memo<McpOverviewProps>(({
   })
 
   const serverInfo = useMemo(
-    () => extractServerInfo(entityDetails?.data),
-    [entityDetails?.data],
-  )
-
-  const capabilities = useMemo(
-    () => extractCapabilities(entityDetails?.data),
-    [entityDetails?.data],
-  )
-
-  const instructions = useMemo(
-    () => extractInstructions(entityDetails?.data),
+    () => extractMcpServerInfo(entityDetails?.data),
     [entityDetails?.data],
   )
 
@@ -68,28 +60,8 @@ export const McpOverview: FC<McpOverviewProps> = memo<McpOverviewProps>(({
         />
       }
       body={
-        <OverviewBody data-testid="McpOverview">
-          {capabilities.length > 0 && (
-            <Section>
-              <SectionTitle variant="subtitle1">Capabilities:</SectionTitle>
-              <BulletList>
-                {capabilities.map(label => (
-                  <Typography key={label} component="li" variant="body2">
-                    {label}
-                  </Typography>
-                ))}
-              </BulletList>
-            </Section>
-          )}
-
-          {instructions && (
-            <Section>
-              <SectionTitle variant="subtitle1">Instructions:</SectionTitle>
-              <InstructionsText variant="body2">
-                {instructions}
-              </InstructionsText>
-            </Section>
-          )}
+        <OverviewBody>
+          <McpOverviewDetails data={entityDetails?.data} data-testid="McpOverview" />
 
           {!selectedEntity && (
             <Placeholder
@@ -112,44 +84,16 @@ type McpServerInfo = Readonly<{
   version?: string
 }>
 
-type McpCapabilities = Readonly<Record<string, unknown>>
-
-const MCP_CAPABILITY_LABELS: ReadonlyArray<readonly [string, string]> = [
-  ['tools', 'Tools'],
-  ['resources', 'Resources'],
-  ['prompts', 'Prompts'],
-]
-
-function extractServerInfo(data: Record<string, unknown> | undefined): McpServerInfo {
+function extractMcpServerInfo(data: Record<string, unknown> | undefined): McpServerInfo {
   const serverInfo = data?.serverInfo
-  if (!serverInfo || typeof serverInfo !== 'object') {
+  if (!isPlainObject(serverInfo)) {
     return {}
   }
-  const info = serverInfo as Record<string, unknown>
+  const { name, version } = serverInfo as Record<string, unknown>
   return {
-    name: typeof info.name === 'string' ? info.name : undefined,
-    version: typeof info.version === 'string' ? info.version : undefined,
+    name: toOptionalString(name),
+    version: toOptionalString(version),
   }
-}
-
-function extractCapabilities(data: Record<string, unknown> | undefined): ReadonlyArray<string> {
-  const capabilities = data?.capabilities
-  if (!capabilities || typeof capabilities !== 'object') {
-    return []
-  }
-  const capabilityRecord = capabilities as McpCapabilities
-  return MCP_CAPABILITY_LABELS
-    .filter(([key]) => key in capabilityRecord)
-    .map(([, label]) => label)
-}
-
-function extractInstructions(data: Record<string, unknown> | undefined): string | undefined {
-  const instructions = data?.instructions
-  if (typeof instructions !== 'string') {
-    return undefined
-  }
-  const trimmed = instructions.trim()
-  return trimmed === '' ? undefined : trimmed
 }
 
 const OverviewBody = styled(Box)(({ theme }) => ({
@@ -159,26 +103,3 @@ const OverviewBody = styled(Box)(({ theme }) => ({
   height: '100%',
   overflow: 'auto',
 }))
-
-const Section = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: theme.spacing(1),
-}))
-
-const SectionTitle = styled(Typography)({
-  fontWeight: 600,
-})
-
-const BulletList = styled('ul')(({ theme }) => ({
-  margin: 0,
-  paddingLeft: theme.spacing(3),
-  display: 'flex',
-  flexDirection: 'column',
-  gap: theme.spacing(0.5),
-}))
-
-const InstructionsText = styled(Typography)({
-  whiteSpace: 'pre-wrap',
-  wordBreak: 'break-word',
-})

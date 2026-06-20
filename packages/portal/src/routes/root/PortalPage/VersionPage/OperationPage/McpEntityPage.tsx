@@ -1,11 +1,13 @@
-import { useBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { Box, IconButton, Skeleton, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
+import { type FC, memo, useCallback, useMemo } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+
 import { ContractSiblingSelector } from '@netcracker/qubership-apihub-ui-shared/components/ContractSiblingSelector'
 import { McpEntityWithMetaList } from '@netcracker/qubership-apihub-ui-shared/components/Mcp/McpEntityWithMetaList'
 import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
-import { RawSpecView } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/RawSpecView'
+import { JsonRawSpecView } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/JsonRawSpecView'
 import { Toolbar } from '@netcracker/qubership-apihub-ui-shared/components/Toolbar'
 import { ToolbarTitle } from '@netcracker/qubership-apihub-ui-shared/components/ToolbarTitle'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
@@ -17,14 +19,9 @@ import {
   MCP_COLLECTION_LABELS,
   type McpEntity,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
-import { JSON_FILE_EXTENSION } from '@netcracker/qubership-apihub-ui-shared/utils/files'
-import { JSON_SCHEMA_SPEC_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import { toFormattedJsonString } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
-import type { FC } from 'react'
-import { memo, useCallback, useMemo } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
 
 import type { Key } from '@apihub/entities/keys'
+import { useBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
 import { type OperationsDetail, useNavigation } from '../../../../NavigationProvider'
 import { PackageBreadcrumbs } from '../../../PackageBreadcrumbs'
 import { usePackage } from '../../../usePackage'
@@ -115,10 +112,6 @@ export const McpEntityPage: FC = memo(() => {
   const sectionTitle = MCP_COLLECTION_LABELS[mcpCollection]
   const emptyMessage = MCP_COLLECTION_EMPTY_MESSAGES[mcpCollection]
 
-  const rawContent = entityDetails?.data
-    ? toFormattedJsonString(entityDetails.data)
-    : ''
-
   const handleSelectorClose = useCallback(() => undefined, [])
 
   return (
@@ -171,15 +164,7 @@ export const McpEntityPage: FC = memo(() => {
         <BodyBox>
           {isInitialLoading
             ? <Skeleton variant="rectangular" height="100%" />
-            : (
-              <RawViewBox>
-                <RawSpecView
-                  value={rawContent}
-                  extension={JSON_FILE_EXTENSION}
-                  type={JSON_SCHEMA_SPEC_TYPE}
-                />
-              </RawViewBox>
-            )}
+            : <JsonRawSpecView data={entityDetails?.data} />}
         </BodyBox>
       }
     />
@@ -198,10 +183,4 @@ const BodyBox = styled(Box)({
   height: '100%',
   minHeight: 0,
   overflow: 'hidden',
-})
-
-const RawViewBox = styled(Box)({
-  display: 'grid',
-  height: 'inherit',
-  overflow: 'scroll',
 })
