@@ -33,6 +33,7 @@ import { LayoutWithToolbar } from '@netcracker/qubership-apihub-ui-shared/compon
 import { DeleteFileDialog } from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/DeleteFileDialog'
 import { LayoutWithTabs } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/LayoutWithTabs'
 import { EditFileLabelsDialog } from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/EditFileLabelsDialog'
+import { McpEndpointDialog } from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/McpEndpointDialog'
 
 export const ConfigurePackageVersionPage: FC = memo(() => {
   const [menuItem] = useActiveTabs()
@@ -50,6 +51,7 @@ export const ConfigurePackageVersionPage: FC = memo(() => {
         </NoPackageVersionPlaceholder>
         <DeleteFileDialog/>
         <EditFileLabelsDialog/>
+        <McpEndpointDialog/>
         <PublishPackageVersionDialog/>
         <PortalSpecificationDialog/>
       </FilesProvider>

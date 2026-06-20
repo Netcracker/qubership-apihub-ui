@@ -32,6 +32,7 @@ import {
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
 import { filesRecordToArray, sortFilesRecord } from '@apihub/routes/root/PortalPage/PackagePage/files'
+import { ConfigureFileTableTree } from '@apihub/routes/root/PortalPage/PackagePage/ConfigureFileTableTree'
 import { find, xorBy } from 'lodash-es'
 import { UploadButton } from '@netcracker/qubership-apihub-ui-shared/components/UploadButton'
 
@@ -41,7 +42,7 @@ export const VersionConfigurationSubPage: FC = memo(() => {
   const { showSpecificationDialog, showDeleteFileDialog, showEditFileLabelsDialog } = useEventBus()
   const [searchValue, setSearchValue] = useState('')
 
-  const { fileTypesMap, filesWithLabels, replacedFiles, sources } = useFiles()
+  const { fileTypesMap, filesWithLabels, mcpFiles, mcpEndpoints, replacedFiles, sources } = useFiles()
   const isFilesLoading = useFilesLoading()
 
   const { addFiles, deleteFile, editFile, restoreFile } = useFileActions()
@@ -115,6 +116,8 @@ export const VersionConfigurationSubPage: FC = memo(() => {
     return find(replacedFiles, { name }) ? <FileInfoIcon/> : null
   }, [replacedFiles])
 
+  const hasMcpFiles = mcpFiles.size > 0
+
   useEffect(() => {
     if (!hasChanges) {
       return
@@ -171,6 +174,19 @@ export const VersionConfigurationSubPage: FC = memo(() => {
           getFileActions={getFileActions}
           showPlaceholder={isNotEmptyRecord(filesWithLabels) && isEmpty(sortedFiles)}
           isLoading={isFilesLoading}
+          customFilesTable={hasMcpFiles && (
+            <ConfigureFileTableTree
+              filesMap={{ ...sortedFiles }}
+              mcpFiles={mcpFiles}
+              mcpEndpoints={mcpEndpoints}
+              isLoading={isFilesLoading}
+              showPlaceholder={isNotEmptyRecord(filesWithLabels) && isEmpty(sortedFiles)}
+              getFileClickHandler={getFileClickHandler}
+              getFileActions={getFileActions}
+              getFileLeftIcon={getFileIcon}
+              getFileRightIcon={getFileInfoIcon}
+            />
+          )}
         />
       }
       overrideBodySx={{

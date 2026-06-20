@@ -1,9 +1,6 @@
 import { groupBy, sortBy } from 'lodash-es'
 
-import {
-  mapMcpDocumentSpecTypeToCollection,
-  MCP_COLLECTIONS,
-} from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
+import { compareMcpDocumentTypes } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 import { alphabeticallyBy } from '@netcracker/qubership-apihub-ui-shared/utils/comparers'
 import {
   isAsyncApiSpecType,
@@ -186,12 +183,12 @@ function getGroupNameBySpecType(type: SpecType): Exclude<GroupName, typeof GROUP
 }
 
 function compareMcpDocuments(documentA: Document, documentB: Document): number {
-  const collectionA = mapMcpDocumentSpecTypeToCollection(documentA.type as McpDocumentType)
-  const collectionB = mapMcpDocumentSpecTypeToCollection(documentB.type as McpDocumentType)
-  const collectionOrderA = MCP_COLLECTIONS.indexOf(collectionA)
-  const collectionOrderB = MCP_COLLECTIONS.indexOf(collectionB)
-  if (collectionOrderA !== collectionOrderB) {
-    return collectionOrderA - collectionOrderB
+  const typeCompare = compareMcpDocumentTypes(
+    documentA.type as McpDocumentType,
+    documentB.type as McpDocumentType,
+  )
+  if (typeCompare !== 0) {
+    return typeCompare
   }
   return alphabeticallyBy('title', documentA, documentB)
 }

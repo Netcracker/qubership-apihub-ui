@@ -11,8 +11,8 @@ export const MCP_COLLECTION_RESOURCES = 'resources'
 export const MCP_COLLECTIONS = [
   MCP_COLLECTION_INIT,
   MCP_COLLECTION_TOOLS,
-  MCP_COLLECTION_PROMPTS,
   MCP_COLLECTION_RESOURCES,
+  MCP_COLLECTION_PROMPTS,
 ] as const
 
 export type McpCollection = (typeof MCP_COLLECTIONS)[number]
@@ -107,6 +107,12 @@ export function mapMcpDocumentSpecTypeToCollection(documentType: McpDocumentType
 
 export function mapMcpKindToDocumentSpecType(kind: McpKind): McpDocumentType {
   return MCP_KIND_TO_DOCUMENT_SPEC_TYPE[kind]
+}
+
+export function compareMcpDocumentTypes(typeA: McpDocumentType, typeB: McpDocumentType): number {
+  const orderA = MCP_COLLECTIONS.indexOf(mapMcpDocumentSpecTypeToCollection(typeA))
+  const orderB = MCP_COLLECTIONS.indexOf(mapMcpDocumentSpecTypeToCollection(typeB))
+  return orderA - orderB
 }
 
 const MCP_DOCUMENT_SPEC_TYPE_TO_COLLECTION: Record<McpDocumentType, McpCollection> = {

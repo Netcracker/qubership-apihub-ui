@@ -39,6 +39,7 @@ export type FileTableUploadProps = PropsWithChildren<{
   getFileActions: (file: File) => ReactNode
   showPlaceholder?: boolean
   isLoading: boolean
+  customFilesTable?: ReactNode
 }>
 
 export const FileTableUpload: FC<FileTableUploadProps> = memo<FileTableUploadProps>(({
@@ -51,6 +52,7 @@ export const FileTableUpload: FC<FileTableUploadProps> = memo<FileTableUploadPro
   getFileActions,
   showPlaceholder,
   isLoading,
+  customFilesTable,
 }) => {
   const [isDragOver, setIsDragOver] = useState<boolean>(false)
   const hasFiles = isNotEmptyRecord(uploadFilesMap)
@@ -93,19 +95,21 @@ export const FileTableUpload: FC<FileTableUploadProps> = memo<FileTableUploadPro
   const filesTable = useMemo(() => (
       <>
         {showTable && (
-          <FileTable
-            isLoading={isLoading}
-            showPlaceholder={showPlaceholder}
-            filesMap={uploadFilesMap}
-            getFileClickHandler={getFileClickHandler}
-            getFileActions={getFileActions}
-            getFileLeftIcon={getFileLeftIcon}
-            getFileRightIcon={getFileRightIcon}
-          />
+          customFilesTable ?? (
+            <FileTable
+              isLoading={isLoading}
+              showPlaceholder={showPlaceholder}
+              filesMap={uploadFilesMap}
+              getFileClickHandler={getFileClickHandler}
+              getFileActions={getFileActions}
+              getFileLeftIcon={getFileLeftIcon}
+              getFileRightIcon={getFileRightIcon}
+            />
+          )
         )}
       </>
     ),
-    [showTable, isLoading, showPlaceholder, uploadFilesMap, getFileClickHandler, getFileActions, getFileLeftIcon, getFileRightIcon],
+    [showTable, customFilesTable, isLoading, showPlaceholder, uploadFilesMap, getFileClickHandler, getFileActions, getFileLeftIcon, getFileRightIcon],
   )
 
   if (!isDragOver && showTable) {
