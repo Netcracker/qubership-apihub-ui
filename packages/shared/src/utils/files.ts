@@ -28,6 +28,7 @@ import {
   OPENAPI_2_0_SPEC_TYPE,
   OPENAPI_3_0_SPEC_TYPE,
   OPENAPI_3_1_SPEC_TYPE,
+  DDL_DOCUMENT_TYPE,
   PROTOBUF_3_SPEC_TYPE,
   UNKNOWN_SPEC_TYPE,
 } from './specs'
@@ -80,6 +81,10 @@ export function calculateSpecType(extension: Exclude<FileExtension, typeof YML_F
 
   if (extension === PROTO_FILE_EXTENSION) {
     return PROTOBUF_3_SPEC_TYPE
+  }
+
+  if (extension === SQL_FILE_EXTENSION || extension === DDL_FILE_EXTENSION) {
+    return DDL_DOCUMENT_TYPE.DDL
   }
 
   if (!extension) {
