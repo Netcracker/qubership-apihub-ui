@@ -144,6 +144,7 @@
     "jest": "30.4.2",
     "nodemon": "2.0.20",
     "openapi-types": "^12.1.0",
+    "prettier": "3.6.2",
     "rollup-plugin-copy": "3.4.0",
     "rollup-plugin-visualizer": "5.9.0",
     "storybook": "7.5.1",
