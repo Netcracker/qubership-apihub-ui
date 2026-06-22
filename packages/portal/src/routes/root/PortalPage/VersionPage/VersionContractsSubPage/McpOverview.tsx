@@ -34,8 +34,8 @@ export const McpOverview: FC<McpOverviewProps> = memo<McpOverviewProps>(({
     packageKey: packageKey,
     versionKey: versionKey,
     collection: MCP_COLLECTION_INIT,
-    entityId: selectedEntity?.entityId,
-    enabled: !!selectedEntity?.entityId,
+    mcpEntityId: selectedEntity?.mcpEntityId,
+    enabled: !!selectedEntity?.mcpEntityId,
   })
 
   const serverInfo = useMemo(

@@ -24,10 +24,10 @@ export function usePackageVersionContractTypes(packageKey: string, versionKey: s
   if (versionContent?.operationTypes) {
     allowedContractTypes.push(...Object.keys(versionContent.operationTypes) as ApiType[])
   }
-  if (hasMcpContracts(versionContent?.contracts?.mcp)) {
+  if (hasMcpContracts(versionContent?.contractsSummary?.mcp)) {
     allowedContractTypes.push(CONTRACT_TYPE_MCP)
   }
-  if (hasDdlContracts(versionContent?.contracts?.ddl)) {
+  if (hasDdlContracts(versionContent?.contractsSummary?.ddl)) {
     allowedContractTypes.push(CONTRACT_TYPE_DDL)
   }
 

@@ -4,10 +4,10 @@ import { generatePath } from 'react-router-dom'
 
 import type { FetchNextMetaList } from '@netcracker/qubership-apihub-ui-shared/components/MetaClickableListWithPreview'
 import type {
-  DdlTableContract,
-  DdlTableContractDto,
+  DdlContractEntity,
+  DdlContractEntityDto,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
-import { toDdlTable } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
+import { toDdlContractEntity } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { HasNextPage, IsFetchingNextPage, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { API_V1, requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
@@ -17,8 +17,8 @@ import { useVersionWithRevision } from '../../../useVersionWithRevision'
 
 export const DDL_TABLES_QUERY_KEY = 'ddl-tables-query-key'
 
-type DdlTablesDto = Readonly<{
-  tables: ReadonlyArray<DdlTableContractDto>
+type DdlEntitiesDto = Readonly<{
+  entities: ReadonlyArray<DdlContractEntityDto>
 }>
 
 type UseDdlTablesOptions = Readonly<{
@@ -30,7 +30,7 @@ type UseDdlTablesOptions = Readonly<{
 }>
 
 export function useDdlTables(options?: UseDdlTablesOptions): [
-  ReadonlyArray<DdlTableContract>,
+  ReadonlyArray<DdlContractEntity>,
   IsLoading,
   FetchNextMetaList,
   IsFetchingNextPage,
@@ -52,7 +52,7 @@ export function useDdlTables(options?: UseDdlTablesOptions): [
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
-  } = useInfiniteQuery<ReadonlyArray<DdlTableContract>, Error>({
+  } = useInfiniteQuery<ReadonlyArray<DdlContractEntity>, Error>({
     queryKey: [DDL_TABLES_QUERY_KEY, packageKey, fullVersion, textFilter],
     queryFn: ({ pageParam = 0, signal }) =>
       getDdlTables({
@@ -90,7 +90,7 @@ async function getDdlTables(
     offset?: number
   },
   signal?: AbortSignal,
-): Promise<ReadonlyArray<DdlTableContract>> {
+): Promise<ReadonlyArray<DdlContractEntity>> {
   const {
     packageKey,
     versionKey,
@@ -108,12 +108,12 @@ async function getDdlTables(
     offset: { value: offset, toStringValue: value => `${value}` },
   })
 
-  const pathPattern = '/packages/:packageId/versions/:versionId/ddl/tables'
-  const response = await requestJson<DdlTablesDto>(
+  const pathPattern = '/packages/:packageId/versions/:versionId/ddl/entities'
+  const response = await requestJson<DdlEntitiesDto>(
     `${generatePath(pathPattern, { packageId: packageId, versionId: versionId })}?${queryParams}`,
     { method: 'get', signal: signal },
     { basePath: API_V1 },
   )
 
-  return response.tables.map(toDdlTable)
+  return response.entities.map(toDdlContractEntity)
 }

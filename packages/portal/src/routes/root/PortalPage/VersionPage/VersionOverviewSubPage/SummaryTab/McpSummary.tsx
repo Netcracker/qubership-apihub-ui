@@ -21,28 +21,28 @@ export const McpSummary: FC<McpSummaryProps> = memo(({ mcpSummary }) => {
       <SummaryPanels
         numbers={{
           metrics: [
-          {
-            label: 'MCP Endpoints',
-            value: mcpSummary.endpoints,
-            visible: showEndpoints,
-            'data-testid': 'McpCount-MCP Endpoints',
-          },
-          {
-            label: 'Total number of tools',
-            value: mcpSummary.tools,
-            'data-testid': 'McpCount-Tools',
-          },
-          {
-            label: 'Total number of resources',
-            value: mcpSummary.resources,
-            'data-testid': 'McpCount-Resources',
-          },
-          {
-            label: 'Total number of prompts',
-            value: mcpSummary.prompts,
-            'data-testid': 'McpCount-Prompts',
-          },
-        ],
+            {
+              label: 'MCP Endpoints',
+              value: mcpSummary.endpoints,
+              visible: showEndpoints,
+              'data-testid': 'McpCount-MCP Endpoints',
+            },
+            {
+              label: 'Total number of tools',
+              value: mcpSummary.toolsCount,
+              'data-testid': 'McpCount-Tools',
+            },
+            {
+              label: 'Total number of resources',
+              value: mcpSummary.resourcesCount,
+              'data-testid': 'McpCount-Resources',
+            },
+            {
+              label: 'Total number of prompts',
+              value: mcpSummary.promptsCount,
+              'data-testid': 'McpCount-Prompts',
+            },
+          ],
         }}
       />
     </SummarySection>

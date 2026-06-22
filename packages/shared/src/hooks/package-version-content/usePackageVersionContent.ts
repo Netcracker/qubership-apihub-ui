@@ -87,7 +87,7 @@ export function toPackageVersionContent(value: PackageVersionContentDto): Packag
     packageKey: value.packageId,
     createdAt: new Date(value.createdAt).toDateString(),
     operationTypes: toApiTypeMap(convertDtoFieldOperationTypesWithApiType(value.operationTypes)),
-    contracts: toVersionContractsSummary(value.contracts),
+    contractsSummary: toVersionContractsSummary(value.contractsSummary),
     latestRevision: !value?.notLatestRevision,
     revisionsCount: value.revisionsCount ?? 0,
     operationGroups: value.operationGroups?.map(groupDto => ({

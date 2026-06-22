@@ -117,14 +117,14 @@ export function getOperationLink(params: {
 export function getMcpEntityLink(params: {
   packageKey: Key
   versionKey: Key
-  entityId: Key
+  mcpEntityId: Key
   mcpEndpoint?: string
   mcpEntity?: McpCollection
 }): Partial<Path> {
   const {
     packageKey,
     versionKey,
-    entityId,
+    mcpEntityId,
     mcpEndpoint,
     mcpEntity = MCP_COLLECTION_INIT,
   } = params
@@ -133,7 +133,7 @@ export function getMcpEntityLink(params: {
     packageKey: packageKey,
     versionKey: versionKey,
     apiType: CONTRACT_TYPE_MCP,
-    operationKey: entityId,
+    operationKey: mcpEntityId,
     search: {
       [MCP_ENDPOINT_SEARCH_PARAM]: { value: mcpEndpoint ?? '' },
       [MCP_ENTITY_SEARCH_PARAM]: { value: mcpEntity },
@@ -144,15 +144,15 @@ export function getMcpEntityLink(params: {
 export function getDdlTableLink(params: {
   packageKey: Key
   versionKey: Key
-  tableId: Key
+  ddlEntityId: Key
 }): Partial<Path> {
-  const { packageKey, versionKey, tableId } = params
+  const { packageKey, versionKey, ddlEntityId } = params
 
   return getOperationsPath({
     packageKey: packageKey,
     versionKey: versionKey,
     apiType: CONTRACT_TYPE_DDL,
-    operationKey: tableId,
+    operationKey: ddlEntityId,
   } as unknown as OperationsDetail)
 }
 

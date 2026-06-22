@@ -22,7 +22,7 @@ export const McpEntityWithMetaList: FC<McpEntityWithMetaListProps> = memo<McpEnt
       const link = prepareLinkFn(entity)
 
       return (
-        <Box key={entity.entityId} data-testid="McpEntityListItem">
+        <Box key={entity.mcpEntityId} data-testid="McpEntityListItem">
           <McpEntityTitleWithMeta
             entity={entity}
             link={link}

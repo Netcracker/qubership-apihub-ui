@@ -31,36 +31,45 @@ export const MCP_COLLECTION_EMPTY_MESSAGES: Record<McpCollection, string> = {
   [MCP_COLLECTION_RESOURCES]: 'No resources',
 }
 
-export type McpContractDto = Readonly<{
-  entityId: string
+export type McpContractEntityDto = Readonly<{
+  mcpEntityId: string
   kind: McpKind
+  title: string
+  description?: string
   mcpEndpoint: string
-  name?: string
-  documentId?: string
+  documentId: string
+  versionInternalDocumentId: string
   packageRef?: string
-  metadata?: Record<string, unknown>
 }>
 
-export type McpContractDetailsDto =
-  & McpContractDto
+export type McpContractEntityDetailsDto =
+  & McpContractEntityDto
   & Readonly<{
     data?: Record<string, unknown>
   }>
 
-export type McpEntity = McpContractDto
+export type McpEntity = McpContractEntityDto
 
-export type McpEntityDetails = McpContractDetailsDto
+export type McpEntityDetails = McpContractEntityDetailsDto
 
-export type McpContractsSummaryDto = Readonly<{
-  init: number
-  tools: number
-  prompts: number
-  resources: number
+export type McpEndpointSummaryDto = Readonly<{
+  toolsCount: number
+  promptsCount: number
+  resourcesCount: number
 }>
 
-export type McpContractsSummary = Readonly<
-  Omit<McpContractsSummaryDto, 'init'> & { endpoints: number }
->
+export type McpContractsSummaryDto = Readonly<Record<string, McpEndpointSummaryDto>>
+
+export type McpContractsSummary = Readonly<{
+  endpoints: number
+  toolsCount: number
+  promptsCount: number
+  resourcesCount: number
+}>
+
+export function mcpCollectionToApiSegment(collection: McpCollection): string {
+  return collection === MCP_COLLECTION_INIT ? 'inits' : collection
+}
 
 export function parseMcpCollectionParam(value: string | undefined): McpCollection | undefined {
   if (value === undefined) {
@@ -72,9 +81,32 @@ export function parseMcpCollectionParam(value: string | undefined): McpCollectio
   return MCP_COLLECTIONS.find(collection => collection === value)
 }
 
-export function toMcpContractsSummary(dto: McpContractsSummaryDto): McpContractsSummary {
-  const { init, ...counts } = dto
-  return { endpoints: init, ...counts }
+export function toMcpContractsSummary(dto: McpContractsSummaryDto | undefined): McpContractsSummary | undefined {
+  if (!dto) {
+    return undefined
+  }
+
+  const endpointSummaries = Object.values(dto)
+  if (endpointSummaries.length === 0) {
+    return undefined
+  }
+
+  let toolsCount = 0
+  let promptsCount = 0
+  let resourcesCount = 0
+
+  for (const { toolsCount: tools = 0, promptsCount: prompts = 0, resourcesCount: resources = 0 } of endpointSummaries) {
+    toolsCount += tools
+    promptsCount += prompts
+    resourcesCount += resources
+  }
+
+  return {
+    endpoints: endpointSummaries.length,
+    toolsCount: toolsCount,
+    promptsCount: promptsCount,
+    resourcesCount: resourcesCount,
+  }
 }
 
 export function hasMcpContracts(mcp?: McpContractsSummary): mcp is McpContractsSummary {
@@ -84,16 +116,20 @@ export function hasMcpContracts(mcp?: McpContractsSummary): mcp is McpContractsS
   return mcp.endpoints > 0
 }
 
-export function toMcpEntity(dto: McpContractDto): McpEntity {
+export function toMcpEntity(dto: McpContractEntityDto): McpEntity {
   return dto
 }
 
-export function getMcpEntityDisplayName(entity: Readonly<Pick<McpEntity, 'name' | 'entityId'>>): string {
-  return entity.name ?? entity.entityId
+export function getMcpEntityDisplayName(
+  entity: Readonly<Pick<McpEntity, 'title' | 'mcpEntityId'>>,
+): string {
+  return entity.title || entity.mcpEntityId
 }
 
-export function getMcpEntityDescription(entity: Readonly<Pick<McpEntity, 'metadata'>>): string | undefined {
-  const description = entity.metadata?.description
+export function getMcpEntityDescription(
+  entity: Readonly<Pick<McpEntity, 'description'>>,
+): string | undefined {
+  const { description } = entity
   if (typeof description !== 'string') {
     return undefined
   }

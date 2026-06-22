@@ -4,10 +4,10 @@ import { generatePath } from 'react-router-dom'
 
 import type {
   McpCollection,
-  McpContractDetailsDto,
+  McpContractEntityDetailsDto,
   McpEntityDetails,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
-import { toMcpEntity } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
+import { mcpCollectionToApiSegment, toMcpEntity } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { IsInitialLoading, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { API_V1, requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
@@ -26,7 +26,7 @@ type UseMcpEntityDetailsOptions = Readonly<{
   packageKey?: Key
   versionKey?: Key
   collection: McpCollection
-  entityId?: Key
+  mcpEntityId?: Key
   enabled?: boolean
 }>
 
@@ -35,16 +35,16 @@ export function useMcpEntityDetails(options: UseMcpEntityDetailsOptions): McpEnt
     packageKey,
     versionKey,
     collection,
-    entityId,
+    mcpEntityId,
     enabled = true,
   } = options
 
   const { fullVersion } = useVersionWithRevision(versionKey, packageKey)
 
-  const { data, isLoading, isInitialLoading } = useQuery<McpContractDetailsDto, Error, McpEntityDetails>({
-    queryKey: [MCP_ENTITY_DETAILS_QUERY_KEY, packageKey, fullVersion, collection, entityId],
-    queryFn: () => getMcpEntityDetails(packageKey!, fullVersion!, collection, entityId!),
-    enabled: !!packageKey && !!fullVersion && !!entityId && enabled,
+  const { data, isLoading, isInitialLoading } = useQuery<McpContractEntityDetailsDto, Error, McpEntityDetails>({
+    queryKey: [MCP_ENTITY_DETAILS_QUERY_KEY, packageKey, fullVersion, collection, mcpEntityId],
+    queryFn: () => getMcpEntityDetails(packageKey!, fullVersion!, collection, mcpEntityId!),
+    enabled: !!packageKey && !!fullVersion && !!mcpEntityId && enabled,
     keepPreviousData: true,
     select: dto => ({ ...toMcpEntity(dto), data: dto.data }),
   })
@@ -60,19 +60,19 @@ async function getMcpEntityDetails(
   packageKey: Key,
   versionKey: Key,
   collection: McpCollection,
-  entityId: Key,
-): Promise<McpContractDetailsDto> {
+  mcpEntityId: Key,
+): Promise<McpContractEntityDetailsDto> {
   const packageId = encodeURIComponent(packageKey)
   const versionId = encodeURIComponent(versionKey)
-  const encodedEntityId = encodeURIComponent(entityId)
+  const encodedMcpEntityId = encodeURIComponent(mcpEntityId)
 
-  const pathPattern = '/packages/:packageId/versions/:versionId/mcp/:apiEntity/:entityId'
-  return requestJson<McpContractDetailsDto>(
+  const pathPattern = '/packages/:packageId/versions/:versionId/mcp/:apiEntity/:mcpEntityId'
+  return requestJson<McpContractEntityDetailsDto>(
     generatePath(pathPattern, {
       packageId: packageId,
       versionId: versionId,
-      apiEntity: collection,
-      entityId: encodedEntityId,
+      apiEntity: mcpCollectionToApiSegment(collection),
+      mcpEntityId: encodedMcpEntityId,
     }),
     { method: 'get' },
     { basePath: API_V1 },

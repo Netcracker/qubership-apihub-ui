@@ -57,14 +57,14 @@ export const McpEntityListView: FC<McpEntityListViewProps> = memo<McpEntityListV
           </TableHead>
           <TableBody>
             {entities.map(entity => (
-              <TableRow key={entity.entityId} hover>
+              <TableRow key={entity.mcpEntityId} hover>
                 <TableCell data-testid="Cell-name">
                   <McpEntityTitleWithMeta
                     entity={entity}
                     link={getMcpEntityLink({
                       packageKey: packageKey,
                       versionKey: versionKey,
-                      entityId: entity.entityId,
+                      mcpEntityId: entity.mcpEntityId,
                       mcpEndpoint: mcpEndpoint ?? entity.mcpEndpoint,
                       mcpEntity: mcpEntity ?? collection,
                     })}

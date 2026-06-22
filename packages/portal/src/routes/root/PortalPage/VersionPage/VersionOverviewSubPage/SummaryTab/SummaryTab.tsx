@@ -75,7 +75,7 @@ export const SummaryTab: FC = memo(() => {
   })
   const {
     operationTypes,
-    contracts,
+    contractsSummary,
     versionLabels,
     previousVersion,
     previousVersionPackageId,
@@ -84,8 +84,8 @@ export const SummaryTab: FC = memo(() => {
     latestRevision,
     revisionsCount,
   } = versionContent ?? {}
-  const mcpSummary = contracts?.mcp
-  const ddlSummary = contracts?.ddl
+  const mcpSummary = contractsSummary?.mcp
+  const ddlSummary = contractsSummary?.ddl
   const { versionKey: splittedVersionKey } = getSplittedVersionKey(versionId, latestRevision)
   const { versionKey: previousVersionKey } = getSplittedVersionKey(previousVersion)
 

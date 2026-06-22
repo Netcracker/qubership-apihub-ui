@@ -31,7 +31,7 @@ const DDL_SPEC: Spec = {
 }
 
 export type DdlTableContentViewProps = {
-  data: Record<string, unknown> | undefined
+  data: string | Record<string, unknown> | undefined
   viewModeSelector?: boolean
 }
 
@@ -41,10 +41,15 @@ export const DdlTableContentView: FC<DdlTableContentViewProps> = memo<DdlTableCo
 }) => {
   const [viewMode, setViewMode] = useState<SpecViewMode>(DOC_SPEC_VIEW_MODE)
 
-  const formattedContent = useMemo(
-    () => (data ? toFormattedJsonString(data) : ''),
-    [data],
-  )
+  const formattedContent = useMemo(() => {
+    if (!data) {
+      return ''
+    }
+    if (typeof data === 'string') {
+      return data
+    }
+    return toFormattedJsonString(data)
+  }, [data])
 
   return (
     <ContentContainer>

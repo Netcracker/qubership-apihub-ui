@@ -4,15 +4,15 @@ import { memo } from 'react'
 import { ContractPreviewPanel } from '@netcracker/qubership-apihub-ui-shared/components/ContractPreviewPanel'
 import { DdlTableTitleWithMeta } from '@netcracker/qubership-apihub-ui-shared/components/Ddl/DdlTableTitleWithMeta'
 import type {
-  DdlTableContract,
-  DdlTableContractDetails,
+  DdlContractEntity,
+  DdlContractEntityDetails,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
 
 import { DdlTableContentView } from './DdlTableContentView'
 
 export type DdlTablePreviewProps = {
-  table: DdlTableContract | undefined
-  tableDetails: DdlTableContractDetails | undefined
+  table: DdlContractEntity | undefined
+  tableDetails: DdlContractEntityDetails | undefined
   isLoading: boolean
   maxWidthHeaderToolbar?: number
 }

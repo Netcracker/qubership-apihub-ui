@@ -3,13 +3,13 @@ import type { Path } from '@remix-run/router'
 import type { FC } from 'react'
 import { memo } from 'react'
 
-import type { DdlTableContract } from '../../entities/contracts-ddl'
+import type { DdlContractEntity } from '../../entities/contracts-ddl'
 import { DdlTableTitleWithMeta } from './DdlTableTitleWithMeta'
 
 export type DdlTableWithMetaListProps = {
-  tables: ReadonlyArray<DdlTableContract>
+  tables: ReadonlyArray<DdlContractEntity>
   onClick?: () => void
-  prepareLinkFn: (table: DdlTableContract) => Partial<Path>
+  prepareLinkFn: (table: DdlContractEntity) => Partial<Path>
 }
 
 export const DdlTableWithMetaList: FC<DdlTableWithMetaListProps> = memo<DdlTableWithMetaListProps>(({
@@ -22,7 +22,7 @@ export const DdlTableWithMetaList: FC<DdlTableWithMetaListProps> = memo<DdlTable
       const link = prepareLinkFn(table)
 
       return (
-        <Box key={table.tableId} data-testid="DdlTableListItem">
+        <Box key={table.ddlEntityId} data-testid="DdlTableListItem">
           <DdlTableTitleWithMeta
             table={table}
             link={link}

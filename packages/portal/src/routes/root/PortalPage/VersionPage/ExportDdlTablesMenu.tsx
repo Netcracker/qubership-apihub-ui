@@ -3,11 +3,11 @@ import { memo, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { ExportMenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ExportMenuButton'
-import type { DdlTableContract } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
+import type { DdlContractEntity } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
 import { toFormattedJsonString } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
 
 export type ExportDdlTablesMenuProps = {
-  tables: ReadonlyArray<DdlTableContract>
+  tables: ReadonlyArray<DdlContractEntity>
   textFilter?: string
   disabled?: boolean
 }
@@ -19,7 +19,7 @@ export const ExportDdlTablesMenu: FC<ExportDdlTablesMenuProps> = memo<ExportDdlT
 }) => {
   const { packageId, versionId } = useParams()
 
-  const downloadJson = useCallback((data: ReadonlyArray<DdlTableContract>, filename: string) => {
+  const downloadJson = useCallback((data: ReadonlyArray<DdlContractEntity>, filename: string) => {
     const blob = new Blob([toFormattedJsonString(data as object)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
@@ -36,7 +36,7 @@ export const ExportDdlTablesMenu: FC<ExportDdlTablesMenuProps> = memo<ExportDdlT
   const onDownloadFiltered = useCallback(() => {
     const filtered = textFilter
       ? tables.filter(table => {
-        const name = [table.schemaName, table.tableName, table.tableId].filter(Boolean).join('.')
+        const name = [table.schemaName, table.name, table.ddlEntityId].filter(Boolean).join('.')
         return name.toLowerCase().includes(textFilter.toLowerCase())
       })
       : tables

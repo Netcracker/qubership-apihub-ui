@@ -6,7 +6,7 @@ import { DdlTableTitleWithMeta } from '@netcracker/qubership-apihub-ui-shared/co
 import type { FetchNextMetaList } from '@netcracker/qubership-apihub-ui-shared/components/MetaClickableListWithPreview'
 import { MetaClickableListWithPreview } from '@netcracker/qubership-apihub-ui-shared/components/MetaClickableListWithPreview'
 import { NAVIGATION_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
-import type { DdlTableContract } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
+import type { DdlContractEntity } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
 import { DDL_TABLES_EMPTY_MESSAGE } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 
@@ -17,7 +17,7 @@ import { getDdlTableLink } from '../useNavigateToOperation'
 import { DdlTablePreview } from './DdlTablePreview'
 
 export type DdlTableListWithPreviewProps = {
-  tables: ReadonlyArray<DdlTableContract>
+  tables: ReadonlyArray<DdlContractEntity>
   fetchNextPage?: FetchNextMetaList
   isNextPageFetching?: boolean
   hasNextPage?: boolean
@@ -47,32 +47,32 @@ export const DdlTableListWithPreview: FC<DdlTableListWithPreviewProps> = memo<Dd
   const setSelectedPreviewOperation = useSetSelectedPreviewOperation()
 
   const selectedTable = useMemo(
-    () => tables.find(table => table.tableId === selectedPreviewOperation?.operationKey),
+    () => tables.find(table => table.ddlEntityId === selectedPreviewOperation?.operationKey),
     [tables, selectedPreviewOperation?.operationKey],
   )
 
   const { data: tableDetails, isInitialLoading } = useDdlTableDetails({
     packageKey: packageKey,
     versionKey: versionKey,
-    tableId: selectedTable?.tableId,
-    enabled: !!selectedTable?.tableId,
+    ddlEntityId: selectedTable?.ddlEntityId,
+    enabled: !!selectedTable?.ddlEntityId,
   })
 
-  const onRowClick = useCallback((tableId: Key) => {
-    setSelectedPreviewOperation({ operationKey: tableId })
+  const onRowClick = useCallback((ddlEntityId: Key) => {
+    setSelectedPreviewOperation({ operationKey: ddlEntityId })
   }, [setSelectedPreviewOperation])
 
-  const prepareLinkFn = useCallback((table: DdlTableContract) =>
+  const prepareLinkFn = useCallback((table: DdlContractEntity) =>
     getDdlTableLink({
       packageKey: packageKey,
       versionKey: versionKey,
-      tableId: table.tableId,
+      ddlEntityId: table.ddlEntityId,
     }), [packageKey, versionKey])
 
   const onClickLink = useContractBrowseLinkHandlers()
 
   const renderTitle = useCallback(
-    (table: DdlTableContract, link?: Parameters<typeof DdlTableTitleWithMeta>[0]['link']) => (
+    (table: DdlContractEntity, link?: Parameters<typeof DdlTableTitleWithMeta>[0]['link']) => (
       <DdlTableTitleWithMeta
         table={table}
         link={link}
@@ -94,7 +94,7 @@ export const DdlTableListWithPreview: FC<DdlTableListWithPreviewProps> = memo<Dd
   return (
     <MetaClickableListWithPreview
       items={tables}
-      getItemKey={table => table.tableId}
+      getItemKey={table => table.ddlEntityId}
       renderTitle={renderTitle}
       prepareLinkFn={prepareLinkFn}
       onRowClick={onRowClick}

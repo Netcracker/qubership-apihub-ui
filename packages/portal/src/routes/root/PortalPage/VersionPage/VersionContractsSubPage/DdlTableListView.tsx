@@ -5,7 +5,7 @@ import { memo, useRef } from 'react'
 import { DdlTableTitleWithMeta } from '@netcracker/qubership-apihub-ui-shared/components/Ddl/DdlTableTitleWithMeta'
 import type { FetchNextMetaList } from '@netcracker/qubership-apihub-ui-shared/components/MetaClickableListWithPreview'
 import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
-import type { DdlTableContract } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
+import type { DdlContractEntity } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
 import { DDL_TABLES_EMPTY_MESSAGE } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { useIntersectionObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useIntersectionObserver'
@@ -14,7 +14,7 @@ import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import { getDdlTableLink } from '../useNavigateToOperation'
 
 export type DdlTableListViewProps = {
-  tables: ReadonlyArray<DdlTableContract>
+  tables: ReadonlyArray<DdlContractEntity>
   packageKey: Key
   versionKey: Key
   fetchNextPage?: FetchNextMetaList
@@ -51,14 +51,14 @@ export const DdlTableListView: FC<DdlTableListViewProps> = memo<DdlTableListView
           </TableHead>
           <TableBody>
             {tables.map(table => (
-              <TableRow key={table.tableId} hover>
+              <TableRow key={table.ddlEntityId} hover>
                 <TableCell data-testid="Cell-tables">
                   <DdlTableTitleWithMeta
                     table={table}
                     link={getDdlTableLink({
                       packageKey: packageKey,
                       versionKey: versionKey,
-                      tableId: table.tableId,
+                      ddlEntityId: table.ddlEntityId,
                     })}
                   />
                 </TableCell>

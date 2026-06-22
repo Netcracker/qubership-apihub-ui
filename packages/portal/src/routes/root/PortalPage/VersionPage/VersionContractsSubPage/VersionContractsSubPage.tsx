@@ -171,11 +171,11 @@ export const VersionContractsSubPage: FC = memo(() => {
       return
     }
     if (isMcp && isNotEmpty(mcpEntities)) {
-      setPreviewOperation({ operationKey: mcpEntities[0].entityId })
+      setPreviewOperation({ operationKey: mcpEntities[0].mcpEntityId })
       return
     }
     if (isDdl && isNotEmpty(ddlTables)) {
-      setPreviewOperation({ operationKey: ddlTables[0].tableId })
+      setPreviewOperation({ operationKey: ddlTables[0].ddlEntityId })
       return
     }
     if (isApiContract) {

@@ -9,8 +9,8 @@ import { Toolbar } from '@netcracker/qubership-apihub-ui-shared/components/Toolb
 import { ToolbarTitle } from '@netcracker/qubership-apihub-ui-shared/components/ToolbarTitle'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { CONTRACT_TYPE_DDL } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
-import type { DdlTableContract } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
-import { getDdlTableTitle } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
+import type { DdlContractEntity } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
+import { getDdlEntityDisplayName } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
 import type { FC } from 'react'
 import { memo, useCallback, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -25,7 +25,7 @@ import { getDdlTableLink } from '../useNavigateToOperation'
 import { DdlTableContentView } from '../VersionContractsSubPage/DdlTableContentView'
 
 export const DdlTablePage: FC = memo(() => {
-  const { packageId, versionId, operationId: tableId } = useParams<{
+  const { packageId, versionId, operationId: ddlEntityId } = useParams<{
     packageId: Key
     versionId: Key
     operationId: Key
@@ -36,7 +36,7 @@ export const DdlTablePage: FC = memo(() => {
   const { data: tableDetails, isInitialLoading } = useDdlTableDetails({
     packageKey: packageId,
     versionKey: versionId,
-    tableId: tableId,
+    ddlEntityId: ddlEntityId,
   })
 
   const [allTables, isTablesLoading] = useDdlTables({
@@ -46,8 +46,8 @@ export const DdlTablePage: FC = memo(() => {
   })
 
   const filteredSiblings = useMemo(
-    () => allTables.filter(table => table.tableId !== tableId),
-    [allTables, tableId],
+    () => allTables.filter(table => table.ddlEntityId !== ddlEntityId),
+    [allTables, ddlEntityId],
   )
 
   const navigate = useNavigate()
@@ -66,18 +66,18 @@ export const DdlTablePage: FC = memo(() => {
     })
   }, [backwardLocation, navigate, navigateToOperations, packageId, versionId])
 
-  const prepareLinkFn = useCallback((table: DdlTableContract) =>
+  const prepareLinkFn = useCallback((table: DdlContractEntity) =>
     getDdlTableLink({
       packageKey: packageId!,
       versionKey: versionId!,
-      tableId: table.tableId,
+      ddlEntityId: table.ddlEntityId,
     }), [packageId, versionId])
 
   const title = useMemo(() => {
     if (!tableDetails) {
       return ''
     }
-    return getDdlTableTitle(tableDetails)
+    return getDdlEntityDisplayName(tableDetails)
   }, [tableDetails])
 
   const handleSelectorClose = useCallback(() => undefined, [])

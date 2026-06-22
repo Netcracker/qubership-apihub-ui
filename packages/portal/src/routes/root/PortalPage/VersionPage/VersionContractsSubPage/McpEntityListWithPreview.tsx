@@ -55,7 +55,7 @@ export const McpEntityListWithPreview: FC<McpEntityListWithPreviewProps> = memo<
     const setSelectedPreviewOperation = useSetSelectedPreviewOperation()
 
     const selectedEntity = useMemo(
-      () => entities.find(entity => entity.entityId === selectedPreviewOperation?.operationKey),
+      () => entities.find(entity => entity.mcpEntityId === selectedPreviewOperation?.operationKey),
       [entities, selectedPreviewOperation?.operationKey],
     )
 
@@ -63,19 +63,19 @@ export const McpEntityListWithPreview: FC<McpEntityListWithPreviewProps> = memo<
       packageKey: packageKey,
       versionKey: versionKey,
       collection: collection,
-      entityId: selectedEntity?.entityId,
-      enabled: !!selectedEntity?.entityId,
+      mcpEntityId: selectedEntity?.mcpEntityId,
+      enabled: !!selectedEntity?.mcpEntityId,
     })
 
-    const onRowClick = useCallback((entityId: Key) => {
-      setSelectedPreviewOperation({ operationKey: entityId })
+    const onRowClick = useCallback((selectedMcpEntityId: Key) => {
+      setSelectedPreviewOperation({ operationKey: selectedMcpEntityId })
     }, [setSelectedPreviewOperation])
 
     const prepareLinkFn = useCallback((entity: McpEntity) =>
       getMcpEntityLink({
         packageKey: packageKey,
         versionKey: versionKey,
-        entityId: entity.entityId,
+        mcpEntityId: entity.mcpEntityId,
         mcpEndpoint: mcpEndpoint ?? entity.mcpEndpoint,
         mcpEntity: mcpEntity ?? collection,
       }), [collection, mcpEndpoint, mcpEntity, packageKey, versionKey])
@@ -105,7 +105,7 @@ export const McpEntityListWithPreview: FC<McpEntityListWithPreviewProps> = memo<
     return (
       <MetaClickableListWithPreview
         items={entities}
-        getItemKey={entity => entity.entityId}
+        getItemKey={entity => entity.mcpEntityId}
         renderTitle={renderTitle}
         prepareLinkFn={prepareLinkFn}
         onRowClick={onRowClick}

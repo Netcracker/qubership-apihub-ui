@@ -32,7 +32,7 @@ import { MCP_ENTITY_SEARCH_PARAM, useMcpEntitySearchParam } from '../useMcpEntit
 import { getMcpEntityLink } from '../useNavigateToOperation'
 
 export const McpEntityPage: FC = memo(() => {
-  const { packageId, versionId, operationId: entityId } = useParams<{
+  const { packageId, versionId, operationId: mcpEntityId } = useParams<{
     packageId: Key
     versionId: Key
     operationId: Key
@@ -48,7 +48,7 @@ export const McpEntityPage: FC = memo(() => {
     packageKey: packageId,
     versionKey: versionId,
     collection: mcpCollection,
-    entityId: entityId,
+    mcpEntityId: mcpEntityId,
   })
 
   const [siblingEntities, isSiblingsLoading] = useMcpEntities({
@@ -60,8 +60,8 @@ export const McpEntityPage: FC = memo(() => {
   })
 
   const filteredSiblings = useMemo(
-    () => siblingEntities.filter(entity => entity.entityId !== entityId),
-    [entityId, siblingEntities],
+    () => siblingEntities.filter(entity => entity.mcpEntityId !== mcpEntityId),
+    [mcpEntityId, siblingEntities],
   )
 
   const navigate = useNavigate()
@@ -97,7 +97,7 @@ export const McpEntityPage: FC = memo(() => {
     getMcpEntityLink({
       packageKey: packageId!,
       versionKey: versionId!,
-      entityId: entity.entityId,
+      mcpEntityId: entity.mcpEntityId,
       mcpEndpoint: mcpEndpoint ?? entity.mcpEndpoint,
       mcpEntity: mcpCollection,
     }), [mcpCollection, mcpEndpoint, packageId, versionId])
