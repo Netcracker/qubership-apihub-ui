@@ -15,10 +15,11 @@
  */
 
 import { ErrorPage, NOT_FOUND_TITLE } from '@netcracker/qubership-apihub-ui-shared/components/ErrorPage'
+import { FaroRoutesWrapper } from '@netcracker/qubership-apihub-ui-shared/components/FaroRoutesWrapper'
 import { LoginPage } from '@netcracker/qubership-apihub-ui-shared/pages/login'
 import type { FC } from 'react'
 import { memo } from 'react'
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route } from 'react-router-dom'
 import { EventBusProvider } from './EventBusProvider'
 import { NavigationProvider } from './NavigationProvider'
 import { BasePage } from './root/BasePage/BasePage'
@@ -32,7 +33,7 @@ export const Router: FC = memo(() => {
       <EventBusProvider>
         <BrowserRouter>
           <NavigationProvider>
-            <Routes>
+            <FaroRoutesWrapper>
               <Route path="/login" element={<LoginPage applicationName={'APIHUB NC Custom Service'} />} />
               <Route path="/" element={<BasePage />}>
                 <Route index element={<Navigate to="agents" replace />} />
@@ -53,7 +54,7 @@ export const Router: FC = memo(() => {
                 </Route>
                 <Route path="*" element={<ErrorPage title={NOT_FOUND_TITLE} homePath="/agents" />} />
               </Route>
-            </Routes>
+            </FaroRoutesWrapper>
           </NavigationProvider>
         </BrowserRouter>
       </EventBusProvider>

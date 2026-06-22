@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line filenames/no-index
-import './faro' // initialize Grafana Faro before any app/router module is evaluated
-import 'virtual:fonts.css'
-import { App } from './App'
-import { createRoot } from 'react-dom/client'
+import { createReactRouterV6DataOptions } from '@grafana/faro-react'
+import { matchRoutes } from 'react-router-dom'
 
-const container = document.createElement('div')
-document.body.appendChild(container)
-createRoot(container).render(<App/>)
+import { initFaro } from '@netcracker/qubership-apihub-ui-shared/utils/faro'
+
+// Must run before the router module is evaluated (see index.tsx import order),
+// because Router.tsx wires the data router via withFaroRouterInstrumentation.
+initFaro({
+  app: { name: 'apihub-portal' },
+  router: createReactRouterV6DataOptions({ matchRoutes }),
+})

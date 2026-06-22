@@ -15,6 +15,7 @@
  */
 
 // eslint-disable-next-line filenames/no-index
+import './faro' // initialize Grafana Faro before any app/router module is evaluated
 import 'virtual:fonts.css'
 import { App } from './App'
 import { createRoot } from 'react-dom/client'

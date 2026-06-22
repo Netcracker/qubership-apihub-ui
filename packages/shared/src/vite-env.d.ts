@@ -118,6 +118,15 @@ interface CustomEventMap {
 }
 
 declare global {
+  interface ImportMetaEnv {
+    // Base OTLP/HTTP collector URL (Grafana Alloy faro.receiver or an edge proxy).
+    // Faro is initialized only when this is set; "/v1/traces" and "/v1/logs" are appended.
+    readonly VITE_FARO_COLLECTOR_URL?: string
+    readonly VITE_FARO_API_KEY?: string
+    readonly VITE_FARO_ENVIRONMENT?: string
+    readonly VITE_FARO_APP_VERSION?: string
+  }
+
   interface Window {
     scheduler: Scheduler
     TaskController: TaskController

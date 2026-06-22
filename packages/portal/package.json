@@ -6,7 +6,7 @@
     "/dist"
   ],
   "scripts": {
-    "build": "tsc && tsc --project server/tsconfig.json && cross-env NODE_OPTIONS=--max-old-space-size=8192 vite build",
+    "build": "tsc && tsc --project server/tsconfig.json && cross-env NODE_OPTIONS=--max-old-space-size=1024 vite build",
     "dev:backend": "nodemon --watch server --ext ts,json server/index.ts",
     "dev:frontend": "vite --host --force",
     "proxy": "vite --host --mode=proxy --force",
