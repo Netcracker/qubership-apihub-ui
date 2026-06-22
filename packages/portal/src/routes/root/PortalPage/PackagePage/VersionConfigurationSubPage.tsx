@@ -116,8 +116,6 @@ export const VersionConfigurationSubPage: FC = memo(() => {
     return find(replacedFiles, { name }) ? <FileInfoIcon/> : null
   }, [replacedFiles])
 
-  const hasMcpFiles = mcpFiles.size > 0
-
   useEffect(() => {
     if (!hasChanges) {
       return
@@ -174,7 +172,7 @@ export const VersionConfigurationSubPage: FC = memo(() => {
           getFileActions={getFileActions}
           showPlaceholder={isNotEmptyRecord(filesWithLabels) && isEmpty(sortedFiles)}
           isLoading={isFilesLoading}
-          customFilesTable={hasMcpFiles && (
+          customFilesTable={
             <ConfigureFileTableTree
               filesMap={{ ...sortedFiles }}
               mcpFiles={mcpFiles}
@@ -186,7 +184,7 @@ export const VersionConfigurationSubPage: FC = memo(() => {
               getFileLeftIcon={getFileIcon}
               getFileRightIcon={getFileInfoIcon}
             />
-          )}
+          }
         />
       }
       overrideBodySx={{

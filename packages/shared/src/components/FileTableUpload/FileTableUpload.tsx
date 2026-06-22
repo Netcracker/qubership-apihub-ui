@@ -56,7 +56,7 @@ export const FileTableUpload: FC<FileTableUploadProps> = memo<FileTableUploadPro
 }) => {
   const [isDragOver, setIsDragOver] = useState<boolean>(false)
   const hasFiles = isNotEmptyRecord(uploadFilesMap)
-  const showTable = showPlaceholder || isLoading
+  const showTable = showPlaceholder || isLoading || hasFiles
 
   const handleCommonDragEvent = (event: DragEvent<HTMLElement>): void => {
     event.stopPropagation()
@@ -95,7 +95,7 @@ export const FileTableUpload: FC<FileTableUploadProps> = memo<FileTableUploadPro
   const filesTable = useMemo(() => (
       <>
         {showTable && (
-          customFilesTable ?? (
+          customFilesTable || (
             <FileTable
               isLoading={isLoading}
               showPlaceholder={showPlaceholder}
