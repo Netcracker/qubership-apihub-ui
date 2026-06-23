@@ -15,6 +15,9 @@
     "build:showcase": "storybook build -o ../../dist-showcase --disable-telemetry",
     "test": "jest -c .jest/unit-tests/unit-test.jest.config.js"
   },
+  "dependencies": {
+    "@netcracker/qubership-apihub-api-processor": "bugfix-system-converts-table-to-string-2"
+  },
   "peerDependencies": {
     "@emotion/react": "11.10.6",
     "@emotion/styled": "11.10.6",

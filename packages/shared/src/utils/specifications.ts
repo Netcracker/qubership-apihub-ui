@@ -17,7 +17,8 @@
 import type { JSONSchema } from '@stoplight/spectral-core'
 import type { ILocation } from '@stoplight/types'
 import { getLocationForJsonPath, parseWithPointers } from '@stoplight/yaml'
-import { Document, visit, Scalar, stringify } from 'yaml'
+import { Document, visit, Scalar } from 'yaml'
+import { stringifyYaml } from '@netcracker/qubership-apihub-api-processor'
 import type { Key } from './types'
 import { loadYaml } from '@netcracker/qubership-apihub-api-unifier'
 
@@ -219,7 +220,7 @@ export function toYaml(value: unknown): string | null {
         }
       },
     })
-    return stringify(doc, { aliasDuplicateObjects: false, lineWidth: 0 })
+    return stringifyYaml(doc)
   } catch (e) {
     return null
   }
