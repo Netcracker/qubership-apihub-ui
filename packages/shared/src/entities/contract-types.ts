@@ -2,7 +2,7 @@ import {
   ASYNCAPI_API_TYPE,
   DDL_CONTRACT_TYPE,
   GRAPHQL_API_TYPE,
-  MCP_API_TYPE,
+  MCP_CONTRACT_TYPE,
   REST_API_TYPE,
 } from '@netcracker/qubership-apihub-api-processor'
 
@@ -11,7 +11,7 @@ import { API_TYPE_TITLE_MAP, API_TYPES, type ApiType } from './api-types'
 export const CONTRACT_TYPE_REST = REST_API_TYPE
 export const CONTRACT_TYPE_GRAPHQL = GRAPHQL_API_TYPE
 export const CONTRACT_TYPE_ASYNCAPI = ASYNCAPI_API_TYPE
-export const CONTRACT_TYPE_MCP = MCP_API_TYPE
+export const CONTRACT_TYPE_MCP = MCP_CONTRACT_TYPE
 export const CONTRACT_TYPE_DDL = DDL_CONTRACT_TYPE
 
 export type NonApiContractType = typeof CONTRACT_TYPE_MCP | typeof CONTRACT_TYPE_DDL
