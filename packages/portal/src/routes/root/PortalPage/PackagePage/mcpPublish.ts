@@ -1,4 +1,6 @@
-import { groupBy, isString } from 'lodash-es'
+import { groupBy } from 'lodash-es'
+
+import { detectMcpDocumentType, unwrapJsonRpc } from '@netcracker/qubership-apihub-api-processor'
 
 import type { FileLabelsRecord } from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/FileTableUpload'
 import { compareMcpDocumentTypes } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
@@ -10,7 +12,6 @@ import {
 import { isObject } from '@netcracker/qubership-apihub-ui-shared/utils/objects'
 import {
   isMcpDocumentSpecType,
-  MCP_DOCUMENT_TYPE,
   type McpDocumentType,
   type SpecType,
 } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
@@ -143,26 +144,6 @@ export async function partitionFilesByMcp(files: File[]): Promise<
   }))
 
   return { regularFiles: regularFiles, mcpCandidates: mcpCandidates }
-}
-
-function unwrapJsonRpc(parsed: Record<string, unknown>): Record<string, unknown> {
-  return isString(parsed.jsonrpc) && isObject(parsed.result) ? parsed.result : parsed
-}
-
-function detectMcpDocumentType(obj: Record<string, unknown>): McpDocumentType | undefined {
-  if (isObject(obj.capabilities) && isObject(obj.serverInfo)) {
-    return MCP_DOCUMENT_TYPE.MCP_INIT
-  }
-  if (Array.isArray(obj.tools)) {
-    return MCP_DOCUMENT_TYPE.MCP_TOOLS
-  }
-  if (Array.isArray(obj.resources)) {
-    return MCP_DOCUMENT_TYPE.MCP_RESOURCES
-  }
-  if (Array.isArray(obj.prompts)) {
-    return MCP_DOCUMENT_TYPE.MCP_PROMPTS
-  }
-  return undefined
 }
 
 function detectMcpDocumentTypeFromJson(json: unknown): McpDocumentType | undefined {
