@@ -15,9 +15,6 @@
     "lint:check": "eslint . --ext .ts,.tsx,.json --ignore-path ../../.gitignore --max-warnings 0 --report-unused-disable-directives",
     "lint:fix": "npm run lint:check -- --fix"
   },
-  "dependencies": {
-    "@netcracker/qubership-apihub-api-processor": "bugfix-system-converts-table-to-string-2"
-  },
   "peerDependencies": {
     "@emotion/react": "11.10.6",
     "@emotion/styled": "11.10.6",
