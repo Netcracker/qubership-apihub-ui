@@ -16,33 +16,50 @@
 
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { isApiType, type ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { ContractType } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 
-export type ContractTypeForm =
-  | ReadonlyArray<ContractType>
-  | Record<ContractType, unknown>
+export type OperationTypeForm =
+  | ReadonlyArray<ApiType | ContractType>
+  | Record<ApiType | ContractType, unknown>
   | undefined
   | null
 
-export function isContractTypeSelectorShown(contractTypes: ContractTypeForm): boolean {
-  if (!contractTypes) {
+export function isApiTypeSelectorShown(operationTypes: OperationTypeForm): boolean {
+  if (!operationTypes) {
     return false
   }
-  return Array.isArray(contractTypes)
-    ? contractTypes.length > 1
-    : Object.keys(contractTypes).length > 1
+  return Array.isArray(operationTypes)
+    ? operationTypes.length > 1
+    : Object.keys(operationTypes).length > 1
 }
 
-export function getDefaultApiType(operationTypes: ContractTypeForm): ApiType {
+export function getDefaultApiType(operationTypes: OperationTypeForm): ApiType {
   if (!operationTypes) {
     return DEFAULT_API_TYPE
   }
 
-  const apiTypes = Array.isArray(operationTypes) ? operationTypes : Object.keys(operationTypes!) as ApiType[]
+  const apiTypes = Array.isArray(operationTypes)
+    ? operationTypes.filter(isApiType)
+    : (Object.keys(operationTypes!) as Array<ApiType | ContractType>).filter(isApiType)
   if (apiTypes.length > 1 || isEmpty(apiTypes)) {
     return DEFAULT_API_TYPE
   }
 
   return apiTypes[0]
+}
+
+export function getDefaultRouteApiType(operationTypes: OperationTypeForm): ApiType | ContractType {
+  if (!operationTypes) {
+    return DEFAULT_API_TYPE
+  }
+
+  const types = Array.isArray(operationTypes)
+    ? operationTypes
+    : Object.keys(operationTypes!) as Array<ApiType | ContractType>
+  if (types.length > 1 || isEmpty(types)) {
+    return DEFAULT_API_TYPE
+  }
+
+  return types[0]
 }

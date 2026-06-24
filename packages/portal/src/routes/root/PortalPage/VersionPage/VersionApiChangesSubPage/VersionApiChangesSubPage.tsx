@@ -20,7 +20,7 @@ import { memo, useMemo, useState } from 'react'
 import { ApiChangesCard } from './ApiChangesCard'
 import { ChangesSummaryProvider } from '../ChangesSummaryProvider'
 import { NavLink, useParams } from 'react-router-dom'
-import { usePackageVersionContractTypes } from '../usePackageVersionContractTypes'
+import { usePackageVersionApiTypes } from '../usePackageVersionApiTypes'
 import { useVersionSearchParam } from '../../../useVersionSearchParam'
 import {
   usePackageSearchParam,
@@ -45,10 +45,12 @@ import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/ut
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { RichFiltersLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/RichFiltersLayout'
 import { PageTitle } from '@netcracker/qubership-apihub-ui-shared/components/Titles/PageTitle'
-import { isContractTypeSelectorShown } from '@apihub/utils/operation-types'
+import { isApiTypeSelectorShown } from '@apihub/utils/operation-types'
 import { CHANGE_SEVERITIES } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
 import { usePortalPageSettingsContext } from '@apihub/routes/PortalPageSettingsProvider'
-import { DEFAULT_CONTRACT_TYPE, type ContractType } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { toRouteApiType, type ContractType } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
+import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { CATEGORY_OPERATION } from '@netcracker/qubership-apihub-ui-shared/components/ChangesTooltip'
 import { useApiAudienceSearchFilter } from '../useApiAudienceSearchFilters'
 import {
@@ -57,12 +59,12 @@ import {
 
 // High Order Component //
 export const VersionApiChangesSubPage: FC = memo(() => {
-  const { packageId, versionId, apiType } = useParams<{
+  const { packageId, versionId, apiType = DEFAULT_API_TYPE } = useParams<{
     packageId: string
     versionId: string
-    apiType?: ContractType
+    apiType?: ApiType | ContractType
   }>()
-  const contractType = apiType ?? DEFAULT_CONTRACT_TYPE
+  const routeApiType = toRouteApiType(apiType)
   const [apiKindFilter] = useApiKindSearchFilter()
   const [apiAudienceFilter] = useApiAudienceSearchFilter()
   const [selectedTag] = useTagSearchFilter()
@@ -73,7 +75,7 @@ export const VersionApiChangesSubPage: FC = memo(() => {
   const [operationGroup] = useOperationGroupSearchFilter()
   const setPathParam = useSetPathParam()
 
-  const { allowedContractTypes } = usePackageVersionContractTypes(packageId!, versionId!)
+  const { apiTypes } = usePackageVersionApiTypes(packageId!, versionId!, { excludeMcp: true })
   const emptyTag = isEmptyTag(selectedTag)
 
   const previousReleaseVersion = usePreviousReleaseVersion()
@@ -103,16 +105,16 @@ export const VersionApiChangesSubPage: FC = memo(() => {
         title={<PageTitle
           title={API_CHANGES_TITLE}
           titleComponent={versionElement}
-          onContractTypeChange={setPathParam}
-          contractType={contractType}
-          allowedContractTypes={allowedContractTypes}
-          withContractTypeSelector={isContractTypeSelectorShown(allowedContractTypes)}
+          onApiTypeChange={setPathParam}
+          apiType={routeApiType}
+          allowedApiTypes={apiTypes}
+          withApiSelector={isApiTypeSelectorShown(apiTypes)}
         />}
         searchPlaceholder="Search Operations"
         setSearchValue={setSearchValue}
         exportButton={
           <ExportChangesMenu
-            contractType={contractType}
+            apiType={routeApiType}
             textFilter={searchValue}
             severityChanges={CHANGE_SEVERITIES}
             kind={apiKindFilter}
@@ -129,7 +131,7 @@ export const VersionApiChangesSubPage: FC = memo(() => {
         additionalActions={
           <ComparisonChangeSeverityFilters
             category={CATEGORY_OPERATION}
-            contractType={contractType}
+            apiType={routeApiType}
           />
         }
         filtersApplied={filtersApplied}

@@ -41,14 +41,16 @@ import {
 } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import { useRefSearchParam } from '@apihub/routes/root/PortalPage/useRefSearchParam'
-import { DEFAULT_CONTRACT_TYPE, type ContractType } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { ContractType } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
+import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 
 export type ChangelogViewProps = {
   versionKey: Key
   packageKey: Key
   tag?: string
   searchValue?: string
-  contractType?: ContractType
+  apiType?: ApiType | ContractType
   apiKind?: ApiKind
   apiAudience?: ApiAudience
   group?: OperationGroupName
@@ -60,14 +62,14 @@ export const ChangelogView: FC<ChangelogViewProps> = memo<ChangelogViewProps>(pr
     packageKey,
     tag,
     searchValue,
-    contractType = DEFAULT_CONTRACT_TYPE,
+    apiType = DEFAULT_API_TYPE,
     apiKind,
     apiAudience,
     group,
   } = props
   const [mainPackageKind] = usePackageKind()
   const [severityFilters] = useSeverityFiltersSearchParam()
-  const changes = useOrderedComparisonFiltersSummary({ contractType: contractType })
+  const changes = useOrderedComparisonFiltersSummary({ apiType: apiType })
   const [refKey] = useRefSearchParam()
 
   const {
@@ -81,7 +83,7 @@ export const ChangelogView: FC<ChangelogViewProps> = memo<ChangelogViewProps>(pr
     versionKey: versionKey,
     tag: tag,
     searchValue: searchValue,
-    apiType: contractType,
+    apiType: apiType,
     apiKind: apiKind,
     apiAudience: apiAudience,
     group: group,
@@ -108,7 +110,7 @@ export const ChangelogView: FC<ChangelogViewProps> = memo<ChangelogViewProps>(pr
         packageKey={packageKey}
         versionKey={versionKey}
         packageObject={currentPackage}
-        apiType={contractType}
+        apiType={apiType}
         mainPackageKind={mainPackageKind}
         fetchNextPage={fetchNextPage}
         isNextPageFetching={isNextPageFetching}

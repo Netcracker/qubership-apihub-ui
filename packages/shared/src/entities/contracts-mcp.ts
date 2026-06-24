@@ -137,17 +137,9 @@ export function getMcpEntityDescription(
   return trimmed === '' ? undefined : trimmed
 }
 
-export function mapMcpDocumentSpecTypeToCollection(documentType: McpDocumentType): McpCollection {
-  return MCP_DOCUMENT_SPEC_TYPE_TO_COLLECTION[documentType]
-}
-
-export function mapMcpKindToDocumentSpecType(kind: McpKind): McpDocumentType {
-  return MCP_KIND_TO_DOCUMENT_SPEC_TYPE[kind]
-}
-
 export function compareMcpDocumentTypes(typeA: McpDocumentType, typeB: McpDocumentType): number {
-  const orderA = MCP_COLLECTIONS.indexOf(mapMcpDocumentSpecTypeToCollection(typeA))
-  const orderB = MCP_COLLECTIONS.indexOf(mapMcpDocumentSpecTypeToCollection(typeB))
+  const orderA = MCP_COLLECTIONS.indexOf(MCP_DOCUMENT_SPEC_TYPE_TO_COLLECTION[typeA])
+  const orderB = MCP_COLLECTIONS.indexOf(MCP_DOCUMENT_SPEC_TYPE_TO_COLLECTION[typeB])
   return orderA - orderB
 }
 
@@ -156,11 +148,4 @@ const MCP_DOCUMENT_SPEC_TYPE_TO_COLLECTION: Record<McpDocumentType, McpCollectio
   [MCP_DOCUMENT_TYPE.MCP_TOOLS]: MCP_COLLECTION_TOOLS,
   [MCP_DOCUMENT_TYPE.MCP_PROMPTS]: MCP_COLLECTION_PROMPTS,
   [MCP_DOCUMENT_TYPE.MCP_RESOURCES]: MCP_COLLECTION_RESOURCES,
-}
-
-const MCP_KIND_TO_DOCUMENT_SPEC_TYPE: Record<McpKind, McpDocumentType> = {
-  init: MCP_DOCUMENT_TYPE.MCP_INIT,
-  tool: MCP_DOCUMENT_TYPE.MCP_TOOLS,
-  prompt: MCP_DOCUMENT_TYPE.MCP_PROMPTS,
-  resource: MCP_DOCUMENT_TYPE.MCP_RESOURCES,
 }

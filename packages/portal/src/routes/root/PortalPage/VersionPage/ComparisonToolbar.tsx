@@ -27,14 +27,16 @@ import { useApiTypeSearchParam } from '@apihub/routes/root/PortalPage/VersionPag
 import { useDownloadChangesAsExcel } from '@apihub/routes/root/PortalPage/VersionPage/useDownloadChangesAsExcel'
 import { useTagSearchFilter } from '@apihub/routes/root/PortalPage/VersionPage/useTagSearchFilter'
 import { useVersionSearchParam } from '@apihub/routes/root/useVersionSearchParam'
-import { isContractTypeSelectorShown } from '@apihub/utils/operation-types'
+import { isApiTypeSelectorShown } from '@apihub/utils/operation-types'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { Box, IconButton, Typography } from '@mui/material'
 import type { ChangesTooltipCategory } from '@netcracker/qubership-apihub-ui-shared/components/ChangesTooltip'
 import { CATEGORY_OPERATION, CATEGORY_PACKAGE } from '@netcracker/qubership-apihub-ui-shared/components/ChangesTooltip'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { API_TYPES, API_TYPE_TITLE_MAP, isApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { API_TYPES, isApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { CHANGE_SEVERITIES } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
+import { getRouteApiTypeTitle } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
+import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import {
   DEFAULT_VIEW_MODE_MAP_BY_API_TYPE,
@@ -95,6 +97,7 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
     apiType: ApiType
   }>()
   const apiTypeFromUrl = operationApiTypeInUrl ?? apiTypeSearchParam
+  const operationsApiType: ApiType = isApiType(apiTypeFromUrl) ? apiTypeFromUrl : DEFAULT_API_TYPE
   const previousVersionPackageId = packageSearchParam ?? mainPackageId
 
   const { isPackageFromDashboard } = useIsPackageFromDashboard(true)
@@ -139,7 +142,7 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
         .map(({ operationTypes }) => operationTypes.map(typeSummary => typeSummary.apiType))
         .flat()
       const apiTypeSet = new Set(allPackagesApiTypes)
-      return isContractTypeSelectorShown(Array.from(apiTypeSet))
+      return isApiTypeSelectorShown(Array.from(apiTypeSet))
     },
     [changesSummary],
   )
@@ -160,11 +163,11 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
 
   const title = useMemo(() => (
     isOperationsComparison
-      ? `${TITLE_BY_COMPARE_MODE[compareToolbarMode]} ${API_TYPE_TITLE_MAP[apiTypeFromUrl]}`
+      ? `${TITLE_BY_COMPARE_MODE[compareToolbarMode]} ${getRouteApiTypeTitle(operationsApiType)}`
       : group
         ? COMPARE_API_BY_GROUPS
         : TITLE_BY_COMPARE_MODE[compareToolbarMode]
-  ), [compareToolbarMode, group, isOperationsComparison, apiTypeFromUrl])
+  ), [compareToolbarMode, group, isOperationsComparison, operationsApiType])
 
   return (
     <Box sx={COMPARISON_PAGE_TOOLBAR_STYLES} data-testid="ComparisonToolbar">
@@ -189,18 +192,18 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
               {mode !== RAW_OPERATION_VIEW_MODE && (
                 <ComparisonOperationChangeSeverityFilters
                   internalDocumentOptions={internalDocumentOptions}
-                  apiType={apiTypeFromUrl}
+                  apiType={operationsApiType}
                 />
               )}
               <OperationViewModeSelector
                 defaultValue={defaultViewMode}
-                modes={OPERATION_COMPARE_VIEW_MODES.get(apiTypeFromUrl)!}
+                modes={OPERATION_COMPARE_VIEW_MODES.get(operationsApiType)!}
               />
             </>
             : <>
               <ComparisonChangeSeverityFilters
                 category={getChangeSeverityCategory(isDashboardsComparison, isPackagesComparison)}
-                contractType={apiTypeFromUrl ?? API_TYPES.find(type => type.toString() === apiTypeSearchParam)}
+                apiType={apiTypeFromUrl ?? API_TYPES.find(type => type.toString() === apiTypeSearchParam)}
               />
               {isDashboardsComparison && showApiTypeSelector && <ApiTypeSegmentedSelector/>}
             </>
@@ -208,7 +211,7 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
       </Box>
       {!isOperationsGroupCompare &&
         <ExportChangesMenu
-          contractType={apiTypeFromUrl}
+          apiType={apiTypeFromUrl}
           severityFilter={severityFilter}
           severityChanges={CHANGE_SEVERITIES}
           tag={selectedTag}
@@ -266,4 +269,3 @@ const TITLE_BY_COMPARE_MODE = {
 }
 
 const COMPARE_API_BY_GROUPS = 'Compare API by Groups'
-

@@ -34,12 +34,13 @@ import {
   EMPTY_CHANGE_SUMMARY,
 } from '@netcracker/qubership-apihub-api-processor'
 import type { ContractType } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 
 export function useOrderedComparisonFiltersSummary(options: {
   isDashboardsComparison?: boolean
-  contractType: ContractType | undefined
+  apiType: ApiType | ContractType | undefined
 }): Record<ChangeSeverity, number> | undefined {
-  const { isDashboardsComparison = false, contractType } = options
+  const { isDashboardsComparison = false, apiType } = options
 
   const versionChangesSummary = useChangesSummaryFromContext()
 
@@ -49,15 +50,15 @@ export function useOrderedComparisonFiltersSummary(options: {
     }
 
     if (isDashboardComparisonSummary(versionChangesSummary)) {
-      return calculateDashboardChangesSummary(versionChangesSummary, isDashboardsComparison, contractType)
+      return calculateDashboardChangesSummary(versionChangesSummary, isDashboardsComparison, apiType)
     }
 
     const refChangesSummaries = versionChangesSummary.operationTypes
-      .filter(type => type.apiType === contractType)
+      .filter(type => type.apiType === apiType)
       .map(type => type.numberOfImpactedOperations ?? EMPTY_CHANGE_SUMMARY)
 
     return calculateTotalChangeSummary(refChangesSummaries)
-  }, [contractType, isDashboardsComparison, versionChangesSummary])
+  }, [apiType, isDashboardsComparison, versionChangesSummary])
 
   if (!totalVersionChanges) {
     return undefined
@@ -76,13 +77,13 @@ export function useOrderedComparisonFiltersSummary(options: {
 function calculateDashboardChangesSummary(
   versionChangesSummary: DashboardComparisonSummary,
   isDashboardsComparison: boolean,
-  contractType: ContractType | undefined,
+  apiType: ApiType | ContractType | undefined,
 ): ChangesSummary {
   if (isDashboardsComparison) {
     return calculateTotalImpactedSummary(
       versionChangesSummary.map(({ operationTypes }) => {
         const refChangesSummaries = operationTypes
-          .filter(type => (contractType ? type.apiType === contractType : true))
+          .filter(type => (apiType ? type.apiType === apiType : true))
           .map(type => type.changesSummary ?? EMPTY_CHANGE_SUMMARY)
 
         return calculateImpactedSummary(refChangesSummaries)
@@ -91,7 +92,7 @@ function calculateDashboardChangesSummary(
   }
   const refChangesSummaries = versionChangesSummary
     .flatMap(({ operationTypes }) => operationTypes
-      .filter(type => type.apiType === contractType)
+      .filter(type => type.apiType === apiType)
       .map(type => type.numberOfImpactedOperations ?? EMPTY_CHANGE_SUMMARY))
 
   return calculateTotalChangeSummary(refChangesSummaries)

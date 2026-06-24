@@ -7,32 +7,42 @@ import {
 import { hasDdlContracts } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
 import { hasMcpContracts } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+
 import { usePackageVersionContent } from '../../usePackageVersionContent'
 
-export function usePackageVersionContractTypes(packageKey: string, versionKey: string): {
-  allowedContractTypes: ContractType[]
+export type UsePackageVersionApiTypesOptions = Readonly<{
+  excludeMcp?: boolean
+}>
+
+export function usePackageVersionApiTypes(
+  packageKey: string,
+  versionKey: string,
+  options?: UsePackageVersionApiTypesOptions,
+): {
+  apiTypes: Array<ApiType | ContractType>
   isLoading: IsLoading
 } {
+  const { excludeMcp = false } = options ?? {}
   const { versionContent, isLoading } = usePackageVersionContent({
     packageKey: packageKey,
     versionKey: versionKey,
     includeSummary: true,
   })
 
-  const allowedContractTypes: ContractType[] = []
+  const apiTypes: Array<ApiType | ContractType> = []
 
   if (versionContent?.operationTypes) {
-    allowedContractTypes.push(...Object.keys(versionContent.operationTypes) as ApiType[])
+    apiTypes.push(...Object.keys(versionContent.operationTypes) as ApiType[])
   }
-  if (hasMcpContracts(versionContent?.contractsSummary?.mcp)) {
-    allowedContractTypes.push(CONTRACT_TYPE_MCP)
+  if (!excludeMcp && hasMcpContracts(versionContent?.contractsSummary?.mcp)) {
+    apiTypes.push(CONTRACT_TYPE_MCP)
   }
   if (hasDdlContracts(versionContent?.contractsSummary?.ddl)) {
-    allowedContractTypes.push(CONTRACT_TYPE_DDL)
+    apiTypes.push(CONTRACT_TYPE_DDL)
   }
 
   return {
-    allowedContractTypes: allowedContractTypes,
+    apiTypes: apiTypes,
     isLoading: isLoading,
   }
 }

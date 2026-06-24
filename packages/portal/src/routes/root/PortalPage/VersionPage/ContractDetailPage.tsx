@@ -5,15 +5,15 @@ import { useParams } from 'react-router-dom'
 import {
   CONTRACT_TYPE_DDL,
   CONTRACT_TYPE_MCP,
-  isNonApiContractType,
-  type NonApiContractType,
+  type ContractType,
+  isContractType,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 
 import { DdlTablePage } from './OperationPage/DdlTablePage'
 import { McpEntityPage } from './OperationPage/McpEntityPage'
 import { OperationPage } from './OperationPage/OperationPage'
 
-const NON_API_CONTRACT_DETAIL_PAGES: Record<NonApiContractType, FC> = {
+const CONTRACT_DETAIL_PAGES: Record<ContractType, FC> = {
   [CONTRACT_TYPE_MCP]: McpEntityPage,
   [CONTRACT_TYPE_DDL]: DdlTablePage,
 }
@@ -21,8 +21,8 @@ const NON_API_CONTRACT_DETAIL_PAGES: Record<NonApiContractType, FC> = {
 export const ContractDetailPage: FC = memo(() => {
   const { apiType } = useParams<{ apiType: string }>()
 
-  if (apiType && isNonApiContractType(apiType)) {
-    const DetailPage = NON_API_CONTRACT_DETAIL_PAGES[apiType]
+  if (apiType && isContractType(apiType)) {
+    const DetailPage = CONTRACT_DETAIL_PAGES[apiType]
     return <DetailPage />
   }
 

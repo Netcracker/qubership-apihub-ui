@@ -26,10 +26,10 @@ import type { ComparisonChangeSeverityFiltersProps } from '@apihub/routes/root/P
 import { CATEGORY_PACKAGE } from '@netcracker/qubership-apihub-ui-shared/components/ChangesTooltip'
 
 export const ComparisonChangeSeverityFilters: FC<ComparisonChangeSeverityFiltersProps> =
-  memo<ComparisonChangeSeverityFiltersProps>(({ category, contractType }) => {
+  memo<ComparisonChangeSeverityFiltersProps>(({ category, apiType }) => {
     const changesSummaryFromContext = useOrderedComparisonFiltersSummary({
       isDashboardsComparison: category === CATEGORY_PACKAGE,
-      contractType: contractType,
+      apiType: apiType,
     })
 
     const changes = useMemo(

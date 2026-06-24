@@ -19,16 +19,18 @@ import type { FC, MutableRefObject, ReactNode } from 'react'
 import { memo, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { isContractTypeSelectorShown } from '@apihub/utils/operation-types'
+import { isApiTypeSelectorShown } from '@apihub/utils/operation-types'
 import { RichFiltersLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/RichFiltersLayout'
 import { ListBox } from '@netcracker/qubership-apihub-ui-shared/components/Panels/ListBox'
 import type { TestableProps } from '@netcracker/qubership-apihub-ui-shared/components/Testable'
 import { PageTitle } from '@netcracker/qubership-apihub-ui-shared/components/Titles/PageTitle'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import {
   CONTRACT_TYPE_MCP,
   type ContractType,
-  DEFAULT_CONTRACT_TYPE,
+  toRouteApiType,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
+import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { useSetSearchParams } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSetSearchParams'
 import { SegmentItemIcon } from '@netcracker/qubership-apihub-ui-shared/icons/SegmentItemIcon'
@@ -44,7 +46,7 @@ import { useCheckOperationFiltersApplied } from './useCheckOperationFiltersAppli
 import { MCP_ENDPOINT_SEARCH_PARAM } from './useMcpEndpointSearchParam'
 import { MCP_ENTITY_SEARCH_PARAM } from './useMcpEntitySearchParam'
 import { useOperationsView } from './useOperationsView'
-import { usePackageVersionContractTypes } from './usePackageVersionContractTypes'
+import { usePackageVersionApiTypes } from './usePackageVersionApiTypes'
 import { useSetPathParam } from './useSetPathParam'
 
 export type VersionContractsProps = {
@@ -88,8 +90,8 @@ export const VersionContractsPanel: FC<VersionContractsProps> = memo<VersionCont
   searchPlaceholder = 'Search Operations',
   'data-testid': dataTestId,
 }) => {
-  const { apiType } = useParams<{ apiType?: ContractType }>()
-  const contractType = apiType ?? DEFAULT_CONTRACT_TYPE
+  const { apiType = DEFAULT_API_TYPE } = useParams<{ apiType?: ApiType | ContractType }>()
+  const routeApiType = toRouteApiType(apiType)
   const [packageObject] = usePackage({ showParents: true })
   const setPathParam = useSetPathParam()
   const setSearchParams = useSetSearchParams()
@@ -99,7 +101,7 @@ export const VersionContractsPanel: FC<VersionContractsProps> = memo<VersionCont
   const isDashboard = packageObject?.kind === DASHBOARD_KIND
   const showFilterBadge = useCheckOperationFiltersApplied(isDashboard)
 
-  const { allowedContractTypes } = usePackageVersionContractTypes(packageObject?.key ?? '', fullMainVersion!)
+  const { apiTypes } = usePackageVersionApiTypes(packageObject?.key ?? '', fullMainVersion!)
 
   const [operationsView, setOperationsView] = useOperationsView(operationsViewMode)
   const onOperationsViewChange = useCallback((value: OperationsViewMode | undefined) => {
@@ -109,26 +111,26 @@ export const VersionContractsPanel: FC<VersionContractsProps> = memo<VersionCont
     }
   }, [setOperationsView, toggleOperationsViewMode])
 
-  const onContractTypeChange = useCallback((nextContractType: ContractType) => {
+  const onApiTypeChange = useCallback((nextApiType: ApiType | ContractType) => {
     setPreviewOperation?.(undefined)
-    if (contractType === CONTRACT_TYPE_MCP && nextContractType !== CONTRACT_TYPE_MCP) {
+    if (routeApiType === CONTRACT_TYPE_MCP && nextApiType !== CONTRACT_TYPE_MCP) {
       setSearchParams({
         [MCP_ENDPOINT_SEARCH_PARAM]: '',
         [MCP_ENTITY_SEARCH_PARAM]: '',
       }, { replace: true })
     }
-    setPathParam?.(nextContractType)
-  }, [contractType, setPathParam, setPreviewOperation, setSearchParams])
+    setPathParam?.(nextApiType)
+  }, [routeApiType, setPathParam, setPreviewOperation, setSearchParams])
 
   return (
     <RichFiltersLayout
       title={
         <PageTitle
-          contractType={contractType}
-          allowedContractTypes={allowedContractTypes}
+          apiType={routeApiType}
+          allowedApiTypes={apiTypes}
           title={title}
-          withContractTypeSelector={isContractTypeSelectorShown(allowedContractTypes)}
-          onContractTypeChange={onContractTypeChange}
+          withApiSelector={isApiTypeSelectorShown(apiTypes)}
+          onApiTypeChange={onApiTypeChange}
           additionalSelectors={additionalSelectors}
         />
       }

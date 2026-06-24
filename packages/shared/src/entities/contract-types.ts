@@ -1,45 +1,40 @@
-import {
-  ASYNCAPI_API_TYPE,
-  DDL_CONTRACT_TYPE,
-  GRAPHQL_API_TYPE,
-  MCP_CONTRACT_TYPE,
-  REST_API_TYPE,
-} from '@netcracker/qubership-apihub-api-processor'
+import { DDL_CONTRACT_TYPE, MCP_CONTRACT_TYPE } from '@netcracker/qubership-apihub-api-processor'
 
-import { API_TYPE_TITLE_MAP, API_TYPES, type ApiType } from './api-types'
+import { API_TYPE_TITLE_MAP, type ApiType, isApiType } from './api-types'
+import { DEFAULT_API_TYPE } from './operations'
 
-export const CONTRACT_TYPE_REST = REST_API_TYPE
-export const CONTRACT_TYPE_GRAPHQL = GRAPHQL_API_TYPE
-export const CONTRACT_TYPE_ASYNCAPI = ASYNCAPI_API_TYPE
 export const CONTRACT_TYPE_MCP = MCP_CONTRACT_TYPE
 export const CONTRACT_TYPE_DDL = DDL_CONTRACT_TYPE
 
-export type NonApiContractType = typeof CONTRACT_TYPE_MCP | typeof CONTRACT_TYPE_DDL
+export type ContractType = typeof CONTRACT_TYPE_MCP | typeof CONTRACT_TYPE_DDL
 
-export type ContractType = ApiType | NonApiContractType
-
-export const DEFAULT_CONTRACT_TYPE: ContractType = CONTRACT_TYPE_REST
-
-export const NON_API_CONTRACT_TYPES: ReadonlyArray<NonApiContractType> = [
+export const CONTRACT_TYPES: ReadonlyArray<ContractType> = [
   CONTRACT_TYPE_MCP,
   CONTRACT_TYPE_DDL,
 ]
 
-export const CONTRACT_TYPES: ReadonlyArray<ContractType> = [
-  ...API_TYPES,
-  ...NON_API_CONTRACT_TYPES,
-]
-
 export const CONTRACT_TYPE_TITLE_MAP: Record<ContractType, string> = {
-  ...API_TYPE_TITLE_MAP,
   [CONTRACT_TYPE_MCP]: 'MCP',
   [CONTRACT_TYPE_DDL]: 'DDL',
 }
 
-export function isNonApiContractType(value: string): value is NonApiContractType {
-  return NON_API_CONTRACT_TYPES.some(type => type === value)
-}
-
 export function isContractType(value: string): value is ContractType {
   return CONTRACT_TYPES.some(type => type === value)
+}
+
+export function isApiContract(value: string): value is ApiType | ContractType {
+  return isApiType(value) || isContractType(value)
+}
+
+export function toRouteApiType(
+  value: string | undefined,
+  fallback: ApiType | ContractType = DEFAULT_API_TYPE,
+): ApiType | ContractType {
+  return value && isApiContract(value) ? value : fallback
+}
+
+export function getRouteApiTypeTitle(routeApiType: ApiType | ContractType): string {
+  return isApiType(routeApiType)
+    ? API_TYPE_TITLE_MAP[routeApiType]
+    : CONTRACT_TYPE_TITLE_MAP[routeApiType]
 }

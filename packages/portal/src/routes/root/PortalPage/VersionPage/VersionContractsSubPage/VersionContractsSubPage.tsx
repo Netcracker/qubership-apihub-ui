@@ -21,11 +21,12 @@ import { useParams } from 'react-router-dom'
 
 import type { Key } from '@apihub/entities/keys'
 import { usePortalPageSettingsContext } from '@apihub/routes/PortalPageSettingsProvider'
-import { isApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { type ApiType, isApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import {
   CONTRACT_TYPE_DDL,
   CONTRACT_TYPE_MCP,
   type ContractType,
+  toRouteApiType,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 import { MCP_COLLECTION_INIT } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
@@ -62,9 +63,9 @@ export const VersionContractsSubPage: FC = memo(() => {
   const { packageId, versionId, apiType = DEFAULT_API_TYPE } = useParams<{
     packageId: Key
     versionId: Key
-    apiType: string
+    apiType?: ApiType | ContractType
   }>()
-  const contractType = apiType as ContractType
+  const routeApiType = toRouteApiType(apiType)
   const bodyRef: MutableRefObject<HTMLDivElement | null> = useRef(null)
 
   const [apiKindFilter] = useApiKindSearchFilter()
@@ -79,9 +80,9 @@ export const VersionContractsSubPage: FC = memo(() => {
   const [operationGroup] = useOperationGroupSearchFilter()
   const setPreviewOperation = useSetSelectedPreviewOperation()
 
-  const isMcp = contractType === CONTRACT_TYPE_MCP
-  const isDdl = contractType === CONTRACT_TYPE_DDL
-  const isApiContract = isApiType(contractType)
+  const isMcp = routeApiType === CONTRACT_TYPE_MCP
+  const isDdl = routeApiType === CONTRACT_TYPE_DDL
+  const isOperationsApiType = isApiType(routeApiType)
 
   const mcpCollection = mcpEntity ?? MCP_COLLECTION_INIT
   const isMcpOverview = isMcp && mcpCollection === MCP_COLLECTION_INIT
@@ -139,12 +140,12 @@ export const VersionContractsSubPage: FC = memo(() => {
     deprecated: statusFilter,
     tag: selectedTag,
     textFilter: searchValue,
-    apiType: isApiContract ? contractType : DEFAULT_API_TYPE,
+    apiType: isOperationsApiType ? routeApiType : DEFAULT_API_TYPE,
     groupName: operationGroup,
     refPackageKey: refKey,
     page: 1,
     limit: 100,
-    enabled: isApiContract,
+    enabled: isOperationsApiType,
   })
 
   const [mcpEntities, isMcpEntitiesLoading, fetchNextMcpPage, isFetchingNextMcpPage, hasNextMcpPage] = useMcpEntities({
@@ -178,14 +179,14 @@ export const VersionContractsSubPage: FC = memo(() => {
       setPreviewOperation({ operationKey: ddlTables[0].ddlEntityId })
       return
     }
-    if (isApiContract) {
+    if (isOperationsApiType) {
       isNotEmpty(operations)
         ? setPreviewOperation(operations[0])
         : setPreviewOperation(undefined)
     }
   }, [
     ddlTables,
-    isApiContract,
+    isOperationsApiType,
     isDdl,
     isMcp,
     isMcpOverview,
@@ -219,7 +220,7 @@ export const VersionContractsSubPage: FC = memo(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bodyRef.current?.clientWidth])
 
-  const searchPlaceholder = isApiContract ? 'Search Operations' : 'Search'
+  const searchPlaceholder = isOperationsApiType ? 'Search Operations' : 'Search'
 
   const table = useMemo(() => {
     if (isMcpOverview) {
@@ -259,12 +260,12 @@ export const VersionContractsSubPage: FC = memo(() => {
         isNextPageFetching={isFetchingNextOperationsPage}
         hasNextPage={hasNextOperationsPage}
         isLoading={isOperationsLoading}
-        apiType={contractType}
+        apiType={routeApiType}
         textFilter={searchValue}
       />
     )
   }, [
-    contractType,
+    routeApiType,
     ddlTables,
     fetchNextDdlPage,
     fetchNextMcpPage,
@@ -336,14 +337,14 @@ export const VersionContractsSubPage: FC = memo(() => {
         isNextPageFetching={isFetchingNextOperationsPage}
         packageKey={packageId!}
         versionKey={versionId!}
-        apiType={contractType}
+        apiType={routeApiType}
         initialSize={previewSize}
         handleResize={onResize}
         maxPreviewWidth={maxPreviewWidth}
       />
     )
   }, [
-    contractType,
+    routeApiType,
     ddlTables,
     fetchNextDdlPage,
     fetchNextMcpPage,
@@ -381,7 +382,7 @@ export const VersionContractsSubPage: FC = memo(() => {
         />
       )
     }
-    if (isApiContract) {
+    if (isOperationsApiType) {
       return (
         <ExportOperationsMenu
           disabled={isEmpty(operations)}
@@ -401,7 +402,7 @@ export const VersionContractsSubPage: FC = memo(() => {
     apiKindFilter,
     ddlTables,
     emptyTag,
-    isApiContract,
+    isOperationsApiType,
     isDdl,
     operationGroup,
     operations,

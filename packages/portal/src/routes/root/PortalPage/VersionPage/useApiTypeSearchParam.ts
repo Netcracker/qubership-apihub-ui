@@ -21,12 +21,13 @@ import { API_TYPE_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/ut
 import { useSetSearchParams } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSetSearchParams'
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { toRouteApiType, type ContractType } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 
 export function useApiTypeSearchParam(): {
-  apiType: ApiType
+  apiType: ApiType | ContractType
   setApiTypeSearchParam: SetApiTypeSearchParam
 } {
-  const param = useSearchParam<ApiType>(API_TYPE_SEARCH_PARAM) ?? DEFAULT_API_TYPE
+  const param = toRouteApiType(useSearchParam(API_TYPE_SEARCH_PARAM), DEFAULT_API_TYPE)
   const setSearchParams = useSetSearchParams()
 
   return useMemo(

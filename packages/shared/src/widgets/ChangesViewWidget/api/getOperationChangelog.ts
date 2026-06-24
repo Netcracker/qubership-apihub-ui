@@ -22,7 +22,9 @@ import { optionalSearchParams } from '../../../utils/search-params'
 import { API_V2, requestJson } from '../../../utils/requests'
 import { getPackageRedirectDetails } from '../../../utils/redirects'
 import { RISKY_CHANGE_SEVERITY } from '../../../entities/change-severities'
-import { DEFAULT_CONTRACT_TYPE, type ContractType } from '../../../entities/contract-types'
+import type { ApiType } from '../../../entities/api-types'
+import type { ContractType } from '../../../entities/contract-types'
+import { DEFAULT_API_TYPE } from '../../../entities/operations'
 import type { DiffType } from '@netcracker/qubership-apihub-api-diff'
 import type { DiffTypeDto} from '@netcracker/qubership-apihub-api-processor'
 import { SEMI_BREAKING_CHANGE_TYPE } from '@netcracker/qubership-apihub-api-processor'
@@ -31,7 +33,7 @@ export type UseOperationChangelogOptions = {
   packageKey: Key
   versionKey: Key
   operationKey: Key
-  apiType?: ContractType
+  apiType?: ApiType | ContractType
   previousVersion?: VersionKey
   previousVersionPackageId?: Key
   severity?: DiffType[]
@@ -46,7 +48,7 @@ export async function getOperationChangeLog(
     versionKey,
     packageKey,
     operationKey,
-    apiType = DEFAULT_CONTRACT_TYPE,
+    apiType = DEFAULT_API_TYPE,
     previousVersion,
     previousVersionPackageId,
     severity,
