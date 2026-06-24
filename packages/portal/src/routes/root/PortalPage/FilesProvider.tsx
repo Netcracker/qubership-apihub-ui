@@ -251,33 +251,34 @@ export const FilesProvider: FC<FilesProviderProps> = memo<FilesProviderProps>(({
       })
     }
 
-    let knownEndpoints = [...mcpEndpointsRef.current]
-
-    for (const candidate of mcpCandidates) {
+    if (mcpCandidates.length > 0) {
+      let knownEndpoints = [...mcpEndpointsRef.current]
+      const [firstCandidate] = mcpCandidates
       const mcpEndpoint = await promptMcpEndpoint({
-        file: candidate.file,
-        documentType: candidate.documentType,
+        file: firstCandidate.file,
+        documentType: firstCandidate.documentType,
         knownEndpoints: knownEndpoints,
         defaultEndpoint: lastSelectedMcpEndpointRef.current ?? knownEndpoints[0],
       })
-      if (mcpEndpoint === undefined) {
-        continue
+      if (mcpEndpoint !== undefined) {
+        for (const candidate of mcpCandidates) {
+          dispatch({
+            type: ASSIGN_MCP_FILE_ACTION,
+            fileName: candidate.file.name,
+            file: candidate.file,
+            meta: {
+              documentType: candidate.documentType,
+              mcpEndpoint: mcpEndpoint,
+            },
+            fileType: candidate.documentType,
+          })
+        }
+        if (!knownEndpoints.includes(mcpEndpoint)) {
+          knownEndpoints = [...knownEndpoints, mcpEndpoint]
+          mcpEndpointsRef.current = knownEndpoints
+        }
+        lastSelectedMcpEndpointRef.current = mcpEndpoint
       }
-      dispatch({
-        type: ASSIGN_MCP_FILE_ACTION,
-        fileName: candidate.file.name,
-        file: candidate.file,
-        meta: {
-          documentType: candidate.documentType,
-          mcpEndpoint: mcpEndpoint,
-        },
-        fileType: candidate.documentType,
-      })
-      if (!knownEndpoints.includes(mcpEndpoint)) {
-        knownEndpoints = [...knownEndpoints, mcpEndpoint]
-        mcpEndpointsRef.current = knownEndpoints
-      }
-      lastSelectedMcpEndpointRef.current = mcpEndpoint
     }
   }, [promptMcpEndpoint])
 
