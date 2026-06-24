@@ -46,6 +46,7 @@ import { OperationListWithPreview } from '../OperationListWithPreview'
 import { OperationsNavigation } from '../OperationsNavigation'
 import { useApiAudienceSearchFilter } from '../useApiAudienceSearchFilters'
 import { useApiKindSearchFilter } from '../useApiKindSearchFilters'
+import { useEnsureValidRouteApiType } from '../useEnsureValidRouteApiType'
 import { useMcpEndpointSearchParam } from '../useMcpEndpointSearchParam'
 import { useMcpEntitySearchParam } from '../useMcpEntitySearchParam'
 import { useOperationGroupSearchFilter } from '../useOperationGroupSearchFilter'
@@ -67,6 +68,7 @@ export const VersionContractsSubPage: FC = memo(() => {
     apiType?: ApiType | ContractType
   }>()
   const routeApiType = toRouteApiType(apiType)
+  useEnsureValidRouteApiType()
   const bodyRef: MutableRefObject<HTMLDivElement | null> = useRef(null)
 
   const [apiKindFilter] = useApiKindSearchFilter()

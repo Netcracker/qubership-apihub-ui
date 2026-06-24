@@ -57,9 +57,12 @@ export function getDefaultRouteApiType(operationTypes: OperationTypeForm): ApiTy
   const types = Array.isArray(operationTypes)
     ? operationTypes
     : Object.keys(operationTypes!) as Array<ApiType | ContractType>
-  if (types.length > 1 || isEmpty(types)) {
+  if (isEmpty(types)) {
     return DEFAULT_API_TYPE
   }
+  if (types.length === 1) {
+    return types[0]
+  }
 
-  return types[0]
+  return types.includes(DEFAULT_API_TYPE) ? DEFAULT_API_TYPE : types[0]
 }

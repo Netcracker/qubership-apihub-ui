@@ -33,10 +33,11 @@ import {
 } from '../../../routes'
 
 import { usePortalPageSettingsContext } from '@apihub/routes/PortalPageSettingsProvider'
-import { getDefaultApiType } from '@apihub/utils/operation-types'
+import { getDefaultApiType, getDefaultRouteApiType } from '@apihub/utils/operation-types'
 import type { SidebarMenu } from '@netcracker/qubership-apihub-ui-shared/components/NavigationMenu'
 import { NavigationMenu } from '@netcracker/qubership-apihub-ui-shared/components/NavigationMenu'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { isApiType, type ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { ContractType } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 import {
   API_TYPE_ASYNCAPI,
   API_TYPE_GRAPHQL,
@@ -80,6 +81,7 @@ import {
   useApiQualityTabTooltip,
 } from './VersionPage/ApiQualityValidationSummaryProvider'
 import { useOperationsView } from './VersionPage/useOperationsView'
+import { usePackageVersionApiTypes } from './VersionPage/usePackageVersionApiTypes'
 
 export type VersionNavigationMenuProps = {
   menuItems: string[]
@@ -101,12 +103,14 @@ export const VersionNavigationMenu: FC<VersionNavigationMenuProps> = memo<Versio
     includeSummary: true,
   })
   const { previousVersion, operationTypes } = versionContent ?? {}
-  // TODO(contracts): stop casting operationTypes keys to ApiType[] and pass version summary through
-  // ContractType-aware helpers instead. That requires retooling navigation, compare, and related
-  // defaults in one go.
+  const { apiTypes } = usePackageVersionApiTypes(packageId!, versionId!)
   const defaultApiType = useMemo(
     () => getDefaultApiType(operationTypes ? Object.keys(operationTypes) as ApiType[] : undefined),
     [operationTypes],
+  )
+  const defaultRouteApiType = useMemo(
+    () => getDefaultRouteApiType(apiTypes),
+    [apiTypes],
   )
   const { expandMainMenu, toggleExpandMainMenu, operationsViewMode } = usePortalPageSettingsContext()
   const [operationsView] = useOperationsView(operationsViewMode)
@@ -133,8 +137,8 @@ export const VersionNavigationMenu: FC<VersionNavigationMenuProps> = memo<Versio
     [menuItems, showSettings],
   )
   const pagePathsMap = useMemo(
-    () => getPagePathsMap(packageId!, versionId!, defaultApiType, operationsView, expandMainMenu),
-    [defaultApiType, operationsView, expandMainMenu, packageId, versionId],
+    () => getPagePathsMap(packageId!, versionId!, defaultApiType, defaultRouteApiType, operationsView, expandMainMenu),
+    [defaultApiType, defaultRouteApiType, operationsView, expandMainMenu, packageId, versionId],
   )
 
   const navigateAndSelect = useCallback((menuItemId: string): void => {
@@ -158,6 +162,7 @@ const getPagePathsMap = (
   packageKey: Key,
   versionKey: Key,
   defaultApiType: ApiType,
+  defaultRouteApiType: ApiType | ContractType,
   defaultOperationsView: OperationsViewMode,
   expandMenu: boolean,
 ): Record<string, To> => {
@@ -179,7 +184,7 @@ const getPagePathsMap = (
     [CONTRACTS_PAGE]: getOperationsPath({
       packageKey: packageKey,
       versionKey: versionKey,
-      apiType: defaultApiType,
+      apiType: defaultRouteApiType as ApiType,
       search: {
         ...commonSearchParams,
         [OPERATIONS_VIEW_MODE_PARAM]: { value: defaultOperationsView },
@@ -226,7 +231,9 @@ const getAvailableSidebarMenuItems = (
   productionMode: boolean,
   apiQualityTabOptions: ApiQualityTabOptions,
 ): SidebarMenu[] => {
-  const disableTab = API_TYPE_DISABLE_TAB_MAP[defaultApiType](productionMode)
+  const disableTab = isApiType(defaultApiType)
+    ? API_TYPE_DISABLE_TAB_MAP[defaultApiType](productionMode)
+    : false
 
   const menuItems = [
     {
