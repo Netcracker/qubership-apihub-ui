@@ -1,8 +1,10 @@
-import type { FC } from 'react'
-import { memo } from 'react'
+import { type FC, memo, useState } from 'react'
 
 import { ContractPreviewPanel } from '@netcracker/qubership-apihub-ui-shared/components/ContractPreviewPanel'
 import { DdlTableTitleWithMeta } from '@netcracker/qubership-apihub-ui-shared/components/Ddl/DdlTableTitleWithMeta'
+import { DdlTableViewModeToggler } from '@netcracker/qubership-apihub-ui-shared/components/Ddl/DdlTableViewModeToggler'
+import type { SpecViewMode } from '@netcracker/qubership-apihub-ui-shared/components/SpecViewToggler'
+import { DOC_SPEC_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/components/SpecViewToggler'
 import type {
   DdlContractEntity,
   DdlContractEntityDetails,
@@ -22,16 +24,24 @@ export const DdlTablePreview: FC<DdlTablePreviewProps> = memo<DdlTablePreviewPro
   tableDetails,
   isLoading,
   maxWidthHeaderToolbar,
-}) => (
-  <ContractPreviewPanel
-    title={table && <DdlTableTitleWithMeta onlyTitle table={table} />}
-    isLoading={isLoading}
-    hasContent={!!table}
-    maxWidthHeaderToolbar={maxWidthHeaderToolbar}
-    data-testid="DdlTablePreview"
-  >
-    <DdlTableContentView data={tableDetails?.data} />
-  </ContractPreviewPanel>
-))
+}) => {
+  const [viewMode, setViewMode] = useState<SpecViewMode>(DOC_SPEC_VIEW_MODE)
+
+  return (
+    <ContractPreviewPanel
+      title={table && <DdlTableTitleWithMeta onlyTitle table={table} />}
+      action={<DdlTableViewModeToggler mode={viewMode} onChange={setViewMode} />}
+      isLoading={isLoading}
+      hasContent={!!table}
+      maxWidthHeaderToolbar={maxWidthHeaderToolbar}
+      data-testid="DdlTablePreview"
+    >
+      <DdlTableContentView
+        data={tableDetails?.data}
+        viewMode={viewMode}
+      />
+    </ContractPreviewPanel>
+  )
+})
 
 DdlTablePreview.displayName = 'DdlTablePreview'

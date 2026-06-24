@@ -3,9 +3,8 @@ import { Box, IconButton, Skeleton, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import { type FC, memo, useCallback, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useAutoFetchInfinitePages } from '../useAutoFetchInfinitePages'
 
-import { ContractSiblingSelector } from '@netcracker/qubership-apihub-ui-shared/components/ContractSiblingSelector'
-import { McpEntityWithMetaList } from '@netcracker/qubership-apihub-ui-shared/components/Mcp/McpEntityWithMetaList'
 import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
 import { JsonRawSpecView } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/JsonRawSpecView'
 import { Toolbar } from '@netcracker/qubership-apihub-ui-shared/components/Toolbar'
@@ -30,6 +29,7 @@ import { useMcpEntityDetails } from '../api/useMcpEntityDetails'
 import { MCP_ENDPOINT_SEARCH_PARAM, useMcpEndpointSearchParam } from '../useMcpEndpointSearchParam'
 import { MCP_ENTITY_SEARCH_PARAM, useMcpEntitySearchParam } from '../useMcpEntitySearchParam'
 import { getMcpEntityLink } from '../useNavigateToOperation'
+import { McpEntitySelector } from './McpEntitySelector'
 
 export const McpEntityPage: FC = memo(() => {
   const { packageId, versionId, operationId: mcpEntityId } = useParams<{
@@ -51,13 +51,22 @@ export const McpEntityPage: FC = memo(() => {
     mcpEntityId: mcpEntityId,
   })
 
-  const [siblingEntities, isSiblingsLoading] = useMcpEntities({
+  const [siblingEntities, isSiblingsLoading, fetchNextPage, isFetchingNextPage, hasNextPage] = useMcpEntities({
     packageKey: packageId,
     versionKey: versionId,
     collection: mcpCollection,
     mcpEndpoint: mcpEndpoint ?? entityDetails?.mcpEndpoint,
     limit: 100,
   })
+
+  useAutoFetchInfinitePages({
+    isLoading: isSiblingsLoading,
+    isFetchingNextPage: isFetchingNextPage,
+    hasNextPage: hasNextPage,
+    fetchNextPage: fetchNextPage,
+  })
+
+  const isSiblingSelectorLoading = isSiblingsLoading || isFetchingNextPage || !!hasNextPage
 
   const filteredSiblings = useMemo(
     () => siblingEntities.filter(entity => entity.mcpEntityId !== mcpEntityId),
@@ -112,8 +121,6 @@ export const McpEntityPage: FC = memo(() => {
   const sectionTitle = MCP_COLLECTION_LABELS[mcpCollection]
   const emptyMessage = MCP_COLLECTION_EMPTY_MESSAGES[mcpCollection]
 
-  const handleSelectorClose = useCallback(() => undefined, [])
-
   return (
     <PageLayout
       toolbar={
@@ -140,19 +147,13 @@ export const McpEntityPage: FC = memo(() => {
                           {title}
                         </Typography>
                       )}
-                    <ContractSiblingSelector
+                    <McpEntitySelector
+                      entities={filteredSiblings}
+                      isLoading={isSiblingSelectorLoading}
                       sectionTitle={sectionTitle}
-                      isLoading={isSiblingsLoading}
-                      isEmpty={filteredSiblings.length === 0}
                       emptyMessage={emptyMessage}
-                      data-testid="McpEntitySelector"
-                    >
-                      <McpEntityWithMetaList
-                        entities={filteredSiblings}
-                        prepareLinkFn={prepareLinkFn}
-                        onClick={handleSelectorClose}
-                      />
-                    </ContractSiblingSelector>
+                      prepareLinkFn={prepareLinkFn}
+                    />
                   </Box>
                 }
               />

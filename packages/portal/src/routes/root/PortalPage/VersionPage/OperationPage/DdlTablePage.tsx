@@ -2,9 +2,10 @@ import { useBackwardLocationContext } from '@apihub/routes/BackwardLocationProvi
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { Box, IconButton, Skeleton, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
-import { ContractSiblingSelector } from '@netcracker/qubership-apihub-ui-shared/components/ContractSiblingSelector'
-import { DdlTableWithMetaList } from '@netcracker/qubership-apihub-ui-shared/components/Ddl/DdlTableWithMetaList'
+import { DdlTableViewModeToggler } from '@netcracker/qubership-apihub-ui-shared/components/Ddl/DdlTableViewModeToggler'
 import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
+import type { SpecViewMode } from '@netcracker/qubership-apihub-ui-shared/components/SpecViewToggler'
+import { DOC_SPEC_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/components/SpecViewToggler'
 import { Toolbar } from '@netcracker/qubership-apihub-ui-shared/components/Toolbar'
 import { ToolbarTitle } from '@netcracker/qubership-apihub-ui-shared/components/ToolbarTitle'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
@@ -12,8 +13,9 @@ import { CONTRACT_TYPE_DDL } from '@netcracker/qubership-apihub-ui-shared/entiti
 import type { DdlContractEntity } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
 import { getDdlEntityDisplayName } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
 import type { FC } from 'react'
-import { memo, useCallback, useMemo } from 'react'
+import { memo, useCallback, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useAutoFetchInfinitePages } from '../useAutoFetchInfinitePages'
 
 import type { Key } from '@apihub/entities/keys'
 import { useNavigation } from '../../../../NavigationProvider'
@@ -23,6 +25,7 @@ import { useDdlTableDetails } from '../api/useDdlTableDetails'
 import { useDdlTables } from '../api/useDdlTables'
 import { getDdlTableLink } from '../useNavigateToOperation'
 import { DdlTableContentView } from '../VersionContractsSubPage/DdlTableContentView'
+import { DdlEntitySelector } from './DdlEntitySelector'
 
 export const DdlTablePage: FC = memo(() => {
   const { packageId, versionId, operationId: ddlEntityId } = useParams<{
@@ -39,11 +42,20 @@ export const DdlTablePage: FC = memo(() => {
     ddlEntityId: ddlEntityId,
   })
 
-  const [allTables, isTablesLoading] = useDdlTables({
+  const [allTables, isTablesLoading, fetchNextPage, isFetchingNextPage, hasNextPage] = useDdlTables({
     packageKey: packageId,
     versionKey: versionId,
     limit: 100,
   })
+
+  useAutoFetchInfinitePages({
+    isLoading: isTablesLoading,
+    isFetchingNextPage: isFetchingNextPage,
+    hasNextPage: hasNextPage,
+    fetchNextPage: fetchNextPage,
+  })
+
+  const isSiblingsLoading = isTablesLoading || isFetchingNextPage || !!hasNextPage
 
   const filteredSiblings = useMemo(
     () => allTables.filter(table => table.ddlEntityId !== ddlEntityId),
@@ -53,6 +65,8 @@ export const DdlTablePage: FC = memo(() => {
   const navigate = useNavigate()
   const { navigateToOperations } = useNavigation()
   const backwardLocation = useBackwardLocationContext()
+
+  const [viewMode, setViewMode] = useState<SpecViewMode>(DOC_SPEC_VIEW_MODE)
 
   const handleBackClick = useCallback(() => {
     if (backwardLocation.fromOperation) {
@@ -80,8 +94,6 @@ export const DdlTablePage: FC = memo(() => {
     return getDdlEntityDisplayName(tableDetails)
   }, [tableDetails])
 
-  const handleSelectorClose = useCallback(() => undefined, [])
-
   return (
     <PageLayout
       toolbar={
@@ -108,31 +120,29 @@ export const DdlTablePage: FC = memo(() => {
                           {title}
                         </Typography>
                       )}
-                    <ContractSiblingSelector
-                      sectionTitle="Tables"
-                      isLoading={isTablesLoading}
-                      isEmpty={filteredSiblings.length === 0}
-                      emptyMessage="No tables"
-                      data-testid="DdlTableSelector"
-                    >
-                      <DdlTableWithMetaList
-                        tables={filteredSiblings}
-                        prepareLinkFn={prepareLinkFn}
-                        onClick={handleSelectorClose}
-                      />
-                    </ContractSiblingSelector>
+                    <DdlEntitySelector
+                      tables={filteredSiblings}
+                      isLoading={isSiblingsLoading}
+                      prepareLinkFn={prepareLinkFn}
+                    />
                   </Box>
                 }
               />
             </ToolbarHeaderRow>
           }
+          action={<DdlTableViewModeToggler mode={viewMode} onChange={setViewMode} />}
         />
       }
       body={
         <BodyBox>
           {isInitialLoading
             ? <Skeleton variant="rectangular" height="100%" />
-            : <DdlTableContentView data={tableDetails?.data} />}
+            : (
+              <DdlTableContentView
+                data={tableDetails?.data}
+                viewMode={viewMode}
+              />
+            )}
         </BodyBox>
       }
     />

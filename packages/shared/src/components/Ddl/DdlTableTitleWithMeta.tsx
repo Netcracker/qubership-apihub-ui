@@ -55,7 +55,13 @@ export const DdlTableTitleWithMeta: FC<DdlTableTitleWithMetaProps> = memo<DdlTab
       </TitleRow>
       {!onlyTitle && (
         <SubtitleRow data-testid="DdlTableSubtitle">
-          {schemaName && <CustomChip value={schemaName} variant="outlined" data-testid="DdlTableSchemaChip" />}
+          {schemaName && (
+            <CustomChip
+              value="ddlSchema"
+              label={schemaName}
+              data-testid="DdlTableSchemaChip"
+            />
+          )}
           <TextWithOverflowTooltip tooltipText={description} variant="subtitle2">
             {description ?? EMPTY_SUBTITLE_PLACEHOLDER}
           </TextWithOverflowTooltip>
