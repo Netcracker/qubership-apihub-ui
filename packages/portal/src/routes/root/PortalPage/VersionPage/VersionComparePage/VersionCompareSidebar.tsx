@@ -29,6 +29,7 @@ import { SidebarPanel } from '@netcracker/qubership-apihub-ui-shared/components/
 import { SidebarWithTags } from '@netcracker/qubership-apihub-ui-shared/components/SidebarWithTags/SidebarWithTags'
 import { isApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { useCompareAllowedApiTypes } from './useCompareAllowedApiTypes'
+import { isCompareApiTypeAll } from './compareApiTypeFilter'
 
 export const VersionCompareSidebar = memo(() => {
   const { apiType, setApiTypeSearchParam } = useApiTypeSearchParam()
@@ -51,7 +52,7 @@ export const VersionCompareSidebar = memo(() => {
   const apiTypes = useCompareAllowedApiTypes(versionChangesSummary, refPackageKey)
 
   useEffect(() => {
-    if (apiTypes.length > 0 && !apiTypes.includes(apiType)) {
+    if (apiTypes.length > 0 && (isCompareApiTypeAll(apiType) || !apiTypes.includes(apiType))) {
       setApiTypeSearchParam(getDefaultRouteApiType(apiTypes))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

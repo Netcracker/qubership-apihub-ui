@@ -33,7 +33,7 @@ import { Box, IconButton, Typography } from '@mui/material'
 import type { ChangesTooltipCategory } from '@netcracker/qubership-apihub-ui-shared/components/ChangesTooltip'
 import { CATEGORY_OPERATION, CATEGORY_PACKAGE } from '@netcracker/qubership-apihub-ui-shared/components/ChangesTooltip'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { API_TYPES, isApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { isApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { CHANGE_SEVERITIES } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
 import { getRouteApiTypeTitle } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
@@ -66,6 +66,7 @@ import { OperationViewModeSelector } from './OperationViewModeSelector'
 import { PackageSelector } from './PackageSelector'
 import { useOperationViewMode } from './useOperationViewMode'
 import { ApiTypeSegmentedSelector } from './VersionComparePage/ApiTypeSegmentedSelector'
+import { toComparedApiType, toComparedApiTypeFilter } from './VersionComparePage/compareApiTypeFilter'
 
 export type InternalDocumentOptions = {
   versionChanges: VersionChanges | undefined
@@ -98,6 +99,8 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
   }>()
   const apiTypeFromUrl = operationApiTypeInUrl ?? apiTypeSearchParam
   const operationsApiType: ApiType = isApiType(apiTypeFromUrl) ? apiTypeFromUrl : DEFAULT_API_TYPE
+  const comparedApiTypeFilter = toComparedApiTypeFilter(apiTypeFromUrl)
+  const comparedApiType = toComparedApiType(apiTypeFromUrl, DEFAULT_API_TYPE)
   const previousVersionPackageId = packageSearchParam ?? mainPackageId
 
   const { isPackageFromDashboard } = useIsPackageFromDashboard(true)
@@ -203,7 +206,7 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
             : <>
               <ComparisonChangeSeverityFilters
                 category={getChangeSeverityCategory(isDashboardsComparison, isPackagesComparison)}
-                apiType={apiTypeFromUrl ?? API_TYPES.find(type => type.toString() === apiTypeSearchParam)}
+                apiType={comparedApiTypeFilter}
               />
               {isDashboardsComparison && showApiTypeSelector && <ApiTypeSegmentedSelector/>}
             </>
@@ -211,7 +214,7 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
       </Box>
       {!isOperationsGroupCompare &&
         <ExportChangesMenu
-          apiType={apiTypeFromUrl}
+          apiType={comparedApiType}
           severityFilter={severityFilter}
           severityChanges={CHANGE_SEVERITIES}
           tag={selectedTag}
