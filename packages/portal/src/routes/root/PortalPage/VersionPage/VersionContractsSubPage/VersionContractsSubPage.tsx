@@ -21,6 +21,7 @@ import { useParams } from 'react-router-dom'
 
 import type { Key } from '@apihub/entities/keys'
 import { usePortalPageSettingsContext } from '@apihub/routes/PortalPageSettingsProvider'
+import { usePackageVersionContent } from '@apihub/routes/root/usePackageVersionContent'
 import { type ApiType, isApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import {
   CONTRACT_TYPE_DDL,
@@ -37,7 +38,7 @@ import { useSetSelectedPreviewOperation } from '../../SelectedPreviewOperationPr
 import { useRefSearchParam } from '../../useRefSearchParam'
 import { useDdlTables } from '../api/useDdlTables'
 import { useMcpEntities } from '../api/useMcpEntities'
-import { ExportDdlTablesMenu } from '../ExportDdlTablesMenu'
+import { ExportDdlEntitiesMenu } from '../ExportDdlEntitiesMenu'
 import { ExportOperationsMenu } from '../ExportOperationsMenu'
 import { McpContractsSelectors } from '../McpContractsSelectors'
 import { OperationTable } from '../OpenApiViewer/OperationTable'
@@ -87,21 +88,17 @@ export const VersionContractsSubPage: FC = memo(() => {
   const mcpCollection = mcpEntity ?? MCP_COLLECTION_INIT
   const isMcpOverview = isMcp && mcpCollection === MCP_COLLECTION_INIT
 
-  const [initEntities, isInitEntitiesLoading] = useMcpEntities({
+  const { versionContent } = usePackageVersionContent({
     packageKey: packageId,
     versionKey: versionId,
-    collection: MCP_COLLECTION_INIT,
+    includeSummary: true,
     enabled: isMcp,
   })
+  const mcpSummary = versionContent?.contractsSummary?.mcp
 
   const endpointOptions = useMemo(
-    () => [...new Set(initEntities.map(entity => entity.mcpEndpoint))],
-    [initEntities],
-  )
-
-  const selectedInitEntity = useMemo(
-    () => initEntities.find(entity => entity.mcpEndpoint === mcpEndpoint) ?? initEntities[0],
-    [initEntities, mcpEndpoint],
+    () => Object.keys(mcpSummary?.byEndpoint ?? {}),
+    [mcpSummary?.byEndpoint],
   )
 
   const mcpOverview = useMemo(() => (
@@ -109,10 +106,9 @@ export const VersionContractsSubPage: FC = memo(() => {
       packageKey={packageId!}
       versionKey={versionId!}
       mcpEndpoint={mcpEndpoint}
-      selectedEntity={selectedInitEntity}
-      isInitLoading={isInitEntitiesLoading}
+      hasEndpoints={endpointOptions.length > 0}
     />
-  ), [isInitEntitiesLoading, mcpEndpoint, packageId, selectedInitEntity, versionId])
+  ), [endpointOptions.length, mcpEndpoint, packageId, versionId])
 
   useEffect(() => {
     if (!isMcp) {
@@ -375,9 +371,9 @@ export const VersionContractsSubPage: FC = memo(() => {
   const exportButton = useMemo(() => {
     if (isDdl) {
       return (
-        <ExportDdlTablesMenu
-          tables={ddlTables}
+        <ExportDdlEntitiesMenu
           textFilter={searchValue}
+          refPackageId={refKey}
           disabled={isEmpty(ddlTables)}
         />
       )
@@ -420,7 +416,9 @@ export const VersionContractsSubPage: FC = memo(() => {
       toggleHideFiltersPanel={toggleHideFiltersPanel}
       operationsViewMode={operationsViewMode}
       toggleOperationsViewMode={toggleOperationsViewMode}
-      additionalSelectors={isMcp ? <McpContractsSelectors endpointOptions={endpointOptions} /> : undefined}
+      additionalSelectors={isMcp
+        ? <McpContractsSelectors endpointOptions={endpointOptions} mcpSummary={mcpSummary} />
+        : undefined}
       hideSearch={isMcpOverview}
       hideFilter={isMcp || isDdl}
       hideViewToggle={isMcpOverview}

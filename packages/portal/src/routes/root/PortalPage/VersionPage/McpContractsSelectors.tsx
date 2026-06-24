@@ -2,9 +2,7 @@ import type { SelectChangeEvent } from '@mui/material'
 import { MenuItem } from '@mui/material'
 import type { ChangeEvent, FC } from 'react'
 import { memo, useEffect, useMemo } from 'react'
-import { useParams } from 'react-router-dom'
 
-import type { Key } from '@apihub/entities/keys'
 import { FilledSelectField } from '@netcracker/qubership-apihub-ui-shared/components/FilledSelectField'
 import {
   MCP_COLLECTION_INIT,
@@ -14,53 +12,32 @@ import {
   MCP_COLLECTION_TOOLS,
   MCP_COLLECTIONS,
   type McpCollection,
+  type McpContractsSummary,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 
-import { useMcpEntities } from './api/useMcpEntities'
 import { useMcpEndpointSearchParam } from './useMcpEndpointSearchParam'
 import { useMcpEntitySearchParam } from './useMcpEntitySearchParam'
 
-export type McpContractsSelectorsProps = {
+export type McpContractsSelectorsProps = Readonly<{
   endpointOptions: ReadonlyArray<string>
-}
+  mcpSummary?: McpContractsSummary
+}>
 
 export const McpContractsSelectors: FC<McpContractsSelectorsProps> = memo<McpContractsSelectorsProps>(({
   endpointOptions,
+  mcpSummary,
 }) => {
-  const { packageId, versionId } = useParams<{ packageId: Key; versionId: Key }>()
   const [mcpEndpoint, setMcpEndpoint] = useMcpEndpointSearchParam()
   const [mcpEntity, setMcpEntity] = useMcpEntitySearchParam()
 
-  const [tools] = useMcpEntities({
-    packageKey: packageId,
-    versionKey: versionId,
-    collection: MCP_COLLECTION_TOOLS,
-    mcpEndpoint: mcpEndpoint,
-    enabled: !!mcpEndpoint,
-  })
-
-  const [prompts] = useMcpEntities({
-    packageKey: packageId,
-    versionKey: versionId,
-    collection: MCP_COLLECTION_PROMPTS,
-    mcpEndpoint: mcpEndpoint,
-    enabled: !!mcpEndpoint,
-  })
-
-  const [resources] = useMcpEntities({
-    packageKey: packageId,
-    versionKey: versionId,
-    collection: MCP_COLLECTION_RESOURCES,
-    mcpEndpoint: mcpEndpoint,
-    enabled: !!mcpEndpoint,
-  })
+  const endpointSummary = mcpEndpoint ? mcpSummary?.byEndpoint[mcpEndpoint] : undefined
 
   const entityCounts = useMemo<Record<McpCollection, number>>(() => ({
     [MCP_COLLECTION_INIT]: 0,
-    [MCP_COLLECTION_TOOLS]: tools.length,
-    [MCP_COLLECTION_PROMPTS]: prompts.length,
-    [MCP_COLLECTION_RESOURCES]: resources.length,
-  }), [prompts.length, resources.length, tools.length])
+    [MCP_COLLECTION_TOOLS]: endpointSummary?.toolsCount ?? 0,
+    [MCP_COLLECTION_PROMPTS]: endpointSummary?.promptsCount ?? 0,
+    [MCP_COLLECTION_RESOURCES]: endpointSummary?.resourcesCount ?? 0,
+  }), [endpointSummary])
 
   const visibleCollections = useMemo(
     () => MCP_COLLECTIONS.filter(collection => collection === MCP_COLLECTION_INIT || entityCounts[collection] > 0),

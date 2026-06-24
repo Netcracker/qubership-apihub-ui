@@ -8,42 +8,53 @@ import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/compone
 import { McpOverviewDetails } from '@netcracker/qubership-apihub-ui-shared/components/Mcp/McpOverviewDetails'
 import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import { DocumentTitleWithVersion } from '@netcracker/qubership-apihub-ui-shared/components/Titles/DocumentTitleWithVersion'
-import type { McpEntity } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 import { MCP_COLLECTION_INIT } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 import { toOptionalString } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
 
 import type { Key } from '@apihub/entities/keys'
+
+import { useMcpEntities } from '../api/useMcpEntities'
 import { useMcpEntityDetails } from '../api/useMcpEntityDetails'
 
 export type McpOverviewProps = Readonly<{
   packageKey: Key
   versionKey: Key
   mcpEndpoint?: string
-  selectedEntity?: McpEntity
-  isInitLoading?: boolean
+  hasEndpoints: boolean
 }>
 
 export const McpOverview: FC<McpOverviewProps> = memo<McpOverviewProps>(({
   packageKey,
   versionKey,
   mcpEndpoint,
-  selectedEntity,
-  isInitLoading = false,
+  hasEndpoints,
 }) => {
+  const [initEntities, isInitListLoading] = useMcpEntities({
+    packageKey: packageKey,
+    versionKey: versionKey,
+    collection: MCP_COLLECTION_INIT,
+    mcpEndpoint: mcpEndpoint,
+    enabled: hasEndpoints && !!mcpEndpoint,
+  })
+
+  const [initEntity] = initEntities
+
   const { data: entityDetails, isInitialLoading: isDetailsLoading } = useMcpEntityDetails({
     packageKey: packageKey,
     versionKey: versionKey,
     collection: MCP_COLLECTION_INIT,
-    mcpEntityId: selectedEntity?.mcpEntityId,
-    enabled: !!selectedEntity?.mcpEntityId,
+    mcpEntityId: initEntity?.mcpEntityId,
+    enabled: !!initEntity?.mcpEntityId,
   })
 
+  const overviewData = entityDetails?.data
+
   const serverInfo = useMemo(
-    () => extractMcpServerInfo(entityDetails?.data),
-    [entityDetails?.data],
+    () => extractMcpServerInfo(overviewData),
+    [overviewData],
   )
 
-  const isLoading = isInitLoading || isDetailsLoading
+  const isLoading = isInitListLoading || isDetailsLoading
 
   if (isLoading) {
     return <LoadingIndicator />
@@ -61,9 +72,9 @@ export const McpOverview: FC<McpOverviewProps> = memo<McpOverviewProps>(({
       }
       body={
         <OverviewBody>
-          <McpOverviewDetails data={entityDetails?.data} data-testid="McpOverview" />
+          <McpOverviewDetails data={overviewData} data-testid="McpOverview" />
 
-          {!selectedEntity && (
+          {!hasEndpoints && (
             <Placeholder
               invisible={false}
               area={CONTENT_PLACEHOLDER_AREA}

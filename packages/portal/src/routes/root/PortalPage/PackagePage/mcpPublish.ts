@@ -150,7 +150,11 @@ function detectMcpDocumentTypeFromJson(json: unknown): McpDocumentType | undefin
   if (!isObject(json)) {
     return undefined
   }
-  return detectMcpDocumentType(unwrapJsonRpc(json))
+  const unwrapped = unwrapJsonRpc(json as Record<string, unknown>)
+  if (!isObject(unwrapped)) {
+    return undefined
+  }
+  return detectMcpDocumentType(unwrapped as Record<string, unknown>)
 }
 
 async function readMcpDocumentTypeFromFile(file: File): Promise<McpDocumentType | undefined> {

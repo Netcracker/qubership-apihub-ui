@@ -58,13 +58,20 @@ export type McpEndpointSummaryDto = Readonly<{
   resourcesCount: number
 }>
 
+export type McpEndpointSummary = McpEndpointSummaryDto
+
 export type McpContractsSummaryDto = Readonly<Record<string, McpEndpointSummaryDto>>
 
-export type McpContractsSummary = Readonly<{
+export type McpContractsSummaryTotals = Readonly<{
   endpoints: number
   toolsCount: number
   promptsCount: number
   resourcesCount: number
+}>
+
+export type McpContractsSummary = Readonly<{
+  byEndpoint: Readonly<Record<string, McpEndpointSummary>>
+  totals: McpContractsSummaryTotals
 }>
 
 export function mcpCollectionToApiSegment(collection: McpCollection): string {
@@ -86,26 +93,32 @@ export function toMcpContractsSummary(dto: McpContractsSummaryDto | undefined): 
     return undefined
   }
 
-  const endpointSummaries = Object.values(dto)
-  if (endpointSummaries.length === 0) {
+  const endpointKeys = Object.keys(dto)
+  if (endpointKeys.length === 0) {
     return undefined
   }
 
+  const byEndpoint: Record<string, McpEndpointSummary> = {}
   let toolsCount = 0
   let promptsCount = 0
   let resourcesCount = 0
 
-  for (const { toolsCount: tools = 0, promptsCount: prompts = 0, resourcesCount: resources = 0 } of endpointSummaries) {
+  for (const endpoint of endpointKeys) {
+    const { toolsCount: tools = 0, promptsCount: prompts = 0, resourcesCount: resources = 0 } = dto[endpoint]!
+    byEndpoint[endpoint] = { toolsCount: tools, promptsCount: prompts, resourcesCount: resources }
     toolsCount += tools
     promptsCount += prompts
     resourcesCount += resources
   }
 
   return {
-    endpoints: endpointSummaries.length,
-    toolsCount: toolsCount,
-    promptsCount: promptsCount,
-    resourcesCount: resourcesCount,
+    byEndpoint: byEndpoint,
+    totals: {
+      endpoints: endpointKeys.length,
+      toolsCount: toolsCount,
+      promptsCount: promptsCount,
+      resourcesCount: resourcesCount,
+    },
   }
 }
 
@@ -113,7 +126,7 @@ export function hasMcpContracts(mcp?: McpContractsSummary): mcp is McpContractsS
   if (!mcp) {
     return false
   }
-  return mcp.endpoints > 0
+  return mcp.totals.endpoints > 0
 }
 
 export function toMcpEntity(dto: McpContractEntityDto): McpEntity {

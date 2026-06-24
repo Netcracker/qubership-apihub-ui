@@ -14,7 +14,8 @@ type McpSummaryProps = Readonly<{
 }>
 
 export const McpSummary: FC<McpSummaryProps> = memo(({ mcpSummary }) => {
-  const showEndpoints = mcpSummary.endpoints > 1
+  const { totals } = mcpSummary
+  const showEndpoints = totals.endpoints > 1
 
   return (
     <SummarySection title={CONTRACT_TYPE_TITLE_MAP[CONTRACT_TYPE_MCP]} data-testid="McpContractSummary">
@@ -23,23 +24,23 @@ export const McpSummary: FC<McpSummaryProps> = memo(({ mcpSummary }) => {
           metrics: [
             {
               label: 'MCP Endpoints',
-              value: mcpSummary.endpoints,
+              value: totals.endpoints,
               visible: showEndpoints,
-              'data-testid': 'McpCount-MCP Endpoints',
+              'data-testid': 'McpCount-McpEndpoints',
             },
             {
               label: 'Total number of tools',
-              value: mcpSummary.toolsCount,
+              value: totals.toolsCount,
               'data-testid': 'McpCount-Tools',
             },
             {
               label: 'Total number of resources',
-              value: mcpSummary.resourcesCount,
+              value: totals.resourcesCount,
               'data-testid': 'McpCount-Resources',
             },
             {
               label: 'Total number of prompts',
-              value: mcpSummary.promptsCount,
+              value: totals.promptsCount,
               'data-testid': 'McpCount-Prompts',
             },
           ],
