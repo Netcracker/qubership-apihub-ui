@@ -16,10 +16,11 @@
 
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined'
 import type { FC, MutableRefObject, ReactNode } from 'react'
-import { memo, useCallback } from 'react'
+import { memo, useCallback, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { isApiTypeSelectorShown } from '@apihub/utils/operation-types'
+import { getContractsTabApiTypes } from '@apihub/utils/tab-api-types'
 import { RichFiltersLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/RichFiltersLayout'
 import { ListBox } from '@netcracker/qubership-apihub-ui-shared/components/Panels/ListBox'
 import type { TestableProps } from '@netcracker/qubership-apihub-ui-shared/components/Testable'
@@ -43,6 +44,7 @@ import { usePackage } from '../../usePackage'
 import { useFullMainVersion } from '../FullMainVersionProvider'
 import { useSetSelectedPreviewOperation } from '../SelectedPreviewOperationProvider'
 import { useCheckOperationFiltersApplied } from './useCheckOperationFiltersApplied'
+import { useEnsureValidRouteApiType } from './useEnsureValidRouteApiType'
 import { MCP_ENDPOINT_SEARCH_PARAM } from './useMcpEndpointSearchParam'
 import { MCP_ENTITY_SEARCH_PARAM } from './useMcpEntitySearchParam'
 import { useOperationsView } from './useOperationsView'
@@ -67,6 +69,7 @@ export type VersionContractsProps = {
   hideViewToggle?: boolean
   hideExport?: boolean
   searchPlaceholder?: string
+  resolveAllowedApiTypes?: (published: ReadonlyArray<ApiType | ContractType>) => Array<ApiType | ContractType>
 } & TestableProps
 
 // High Order Component //
@@ -88,6 +91,7 @@ export const VersionContractsPanel: FC<VersionContractsProps> = memo<VersionCont
   hideViewToggle = false,
   hideExport = false,
   searchPlaceholder = 'Search Operations',
+  resolveAllowedApiTypes = getContractsTabApiTypes,
   'data-testid': dataTestId,
 }) => {
   const { apiType = DEFAULT_API_TYPE } = useParams<{ apiType?: ApiType | ContractType }>()
@@ -101,7 +105,13 @@ export const VersionContractsPanel: FC<VersionContractsProps> = memo<VersionCont
   const isDashboard = packageObject?.kind === DASHBOARD_KIND
   const showFilterBadge = useCheckOperationFiltersApplied(isDashboard)
 
-  const { apiTypes } = usePackageVersionApiTypes(packageObject?.key ?? '', fullMainVersion!)
+  const { apiTypes, isLoading } = usePackageVersionApiTypes(packageObject?.key ?? '', fullMainVersion!)
+  const allowedApiTypes = useMemo(
+    () => resolveAllowedApiTypes(apiTypes),
+    [apiTypes, resolveAllowedApiTypes],
+  )
+
+  useEnsureValidRouteApiType(allowedApiTypes, isLoading)
 
   const [operationsView, setOperationsView] = useOperationsView(operationsViewMode)
   const onOperationsViewChange = useCallback((value: OperationsViewMode | undefined) => {
@@ -127,9 +137,9 @@ export const VersionContractsPanel: FC<VersionContractsProps> = memo<VersionCont
       title={
         <PageTitle
           apiType={routeApiType}
-          allowedApiTypes={apiTypes}
+          allowedApiTypes={allowedApiTypes}
           title={title}
-          withApiSelector={isApiTypeSelectorShown(apiTypes)}
+          withApiSelector={isApiTypeSelectorShown(allowedApiTypes)}
           onApiTypeChange={onApiTypeChange}
           additionalSelectors={additionalSelectors}
         />

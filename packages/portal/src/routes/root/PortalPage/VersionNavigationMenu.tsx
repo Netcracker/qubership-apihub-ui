@@ -33,7 +33,13 @@ import {
 } from '../../../routes'
 
 import { usePortalPageSettingsContext } from '@apihub/routes/PortalPageSettingsProvider'
-import { getDefaultApiType, getDefaultRouteApiType } from '@apihub/utils/operation-types'
+import { getDefaultApiType } from '@apihub/utils/operation-types'
+import {
+  getApiChangesTabApiTypes,
+  getApiQualityTabApiTypes,
+  getContractsTabApiTypes,
+  getDeprecatedTabApiTypes,
+} from '@apihub/utils/tab-api-types'
 import type { SidebarMenu } from '@netcracker/qubership-apihub-ui-shared/components/NavigationMenu'
 import { NavigationMenu } from '@netcracker/qubership-apihub-ui-shared/components/NavigationMenu'
 import { isApiType, type ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
@@ -102,14 +108,22 @@ export const VersionNavigationMenu: FC<VersionNavigationMenuProps> = memo<Versio
     versionKey: versionId,
     includeSummary: true,
   })
-  const { previousVersion, operationTypes } = versionContent ?? {}
+  const { previousVersion } = versionContent ?? {}
   const { apiTypes } = usePackageVersionApiTypes(packageId!, versionId!)
-  const defaultApiType = useMemo(
-    () => getDefaultApiType(operationTypes ? Object.keys(operationTypes) as ApiType[] : undefined),
-    [operationTypes],
+  const contractsDefaultApiType = useMemo(
+    () => getDefaultApiType(getContractsTabApiTypes(apiTypes)),
+    [apiTypes],
   )
-  const defaultRouteApiType = useMemo(
-    () => getDefaultRouteApiType(apiTypes),
+  const apiChangesDefaultApiType = useMemo(
+    () => getDefaultApiType(getApiChangesTabApiTypes(apiTypes)),
+    [apiTypes],
+  )
+  const deprecatedDefaultApiType = useMemo(
+    () => getDefaultApiType(getDeprecatedTabApiTypes(apiTypes)),
+    [apiTypes],
+  )
+  const apiQualityDefaultApiType = useMemo(
+    () => getDefaultApiType(getApiQualityTabApiTypes(apiTypes)),
     [apiTypes],
   )
   const { expandMainMenu, toggleExpandMainMenu, operationsViewMode } = usePortalPageSettingsContext()
@@ -122,23 +136,41 @@ export const VersionNavigationMenu: FC<VersionNavigationMenuProps> = memo<Versio
     () =>
       getAvailableSidebarMenuItems(
         previousVersion,
-        defaultApiType,
+        apiChangesDefaultApiType,
         productionMode,
         {
           linterEnabled: linterEnabled,
           tooltip: apiQualityTabTooltip,
-          tabDisabled: !NotLintedApiTypes(defaultApiType) || !!apiQualityTabTooltip,
+          tabDisabled: !NotLintedApiTypes(apiQualityDefaultApiType) || !!apiQualityTabTooltip,
         },
       ).filter(({ id }) => menuItems.includes(id)),
-    [defaultApiType, menuItems, previousVersion, productionMode, linterEnabled, apiQualityTabTooltip],
+    [apiChangesDefaultApiType, apiQualityDefaultApiType, menuItems, previousVersion, productionMode, linterEnabled, apiQualityTabTooltip],
   )
   const sidebarServiceMenuItems = useMemo(
     () => getAvailableSidebarServiceMenuItems(showSettings).filter(({ id }) => menuItems.includes(id)),
     [menuItems, showSettings],
   )
   const pagePathsMap = useMemo(
-    () => getPagePathsMap(packageId!, versionId!, defaultApiType, defaultRouteApiType, operationsView, expandMainMenu),
-    [defaultApiType, defaultRouteApiType, operationsView, expandMainMenu, packageId, versionId],
+    () => getPagePathsMap(
+      packageId!,
+      versionId!,
+      contractsDefaultApiType,
+      apiChangesDefaultApiType,
+      deprecatedDefaultApiType,
+      apiQualityDefaultApiType,
+      operationsView,
+      expandMainMenu,
+    ),
+    [
+      apiChangesDefaultApiType,
+      apiQualityDefaultApiType,
+      contractsDefaultApiType,
+      deprecatedDefaultApiType,
+      operationsView,
+      expandMainMenu,
+      packageId,
+      versionId,
+    ],
   )
 
   const navigateAndSelect = useCallback((menuItemId: string): void => {
@@ -161,8 +193,10 @@ export const VersionNavigationMenu: FC<VersionNavigationMenuProps> = memo<Versio
 const getPagePathsMap = (
   packageKey: Key,
   versionKey: Key,
-  defaultApiType: ApiType,
-  defaultRouteApiType: ApiType | ContractType,
+  contractsDefaultApiType: ApiType | ContractType,
+  apiChangesDefaultApiType: ApiType | ContractType,
+  deprecatedDefaultApiType: ApiType | ContractType,
+  apiQualityDefaultApiType: ApiType | ContractType,
   defaultOperationsView: OperationsViewMode,
   expandMenu: boolean,
 ): Record<string, To> => {
@@ -184,7 +218,7 @@ const getPagePathsMap = (
     [CONTRACTS_PAGE]: getOperationsPath({
       packageKey: packageKey,
       versionKey: versionKey,
-      apiType: defaultRouteApiType as ApiType,
+      apiType: contractsDefaultApiType as ApiType,
       search: {
         ...commonSearchParams,
         [OPERATIONS_VIEW_MODE_PARAM]: { value: defaultOperationsView },
@@ -193,7 +227,7 @@ const getPagePathsMap = (
     [API_CHANGES_PAGE]: getApiChangesPath({
       packageKey: packageKey,
       versionKey: versionKey,
-      apiType: defaultApiType,
+      apiType: apiChangesDefaultApiType as ApiType,
       search: {
         ...commonSearchParams,
         [OPERATIONS_VIEW_MODE_PARAM]: { value: defaultOperationsView },
@@ -202,7 +236,7 @@ const getPagePathsMap = (
     [DEPRECATED_PAGE]: getDeprecatedPath({
       packageKey: packageKey,
       versionKey: versionKey,
-      apiType: defaultApiType,
+      apiType: deprecatedDefaultApiType as ApiType,
       search: {
         ...commonSearchParams,
         [OPERATIONS_VIEW_MODE_PARAM]: { value: defaultOperationsView },
@@ -211,7 +245,7 @@ const getPagePathsMap = (
     [API_QUALITY_PAGE]: getApiQualityPath({
       packageKey: packageKey,
       versionKey: versionKey,
-      apiType: defaultApiType,
+      apiType: apiQualityDefaultApiType as ApiType,
       search: commonSearchParams,
     }),
     [DOCUMENTS_PAGE]: getDocumentPath({ packageKey: packageKey, versionKey: versionKey, search: commonSearchParams }),
@@ -227,12 +261,12 @@ type ApiQualityTabOptions = {
 
 const getAvailableSidebarMenuItems = (
   previousVersion: Key | undefined,
-  defaultApiType: ApiType,
+  apiChangesDefaultApiType: ApiType | ContractType,
   productionMode: boolean,
   apiQualityTabOptions: ApiQualityTabOptions,
 ): SidebarMenu[] => {
-  const disableTab = isApiType(defaultApiType)
-    ? API_TYPE_DISABLE_TAB_MAP[defaultApiType](productionMode)
+  const disableTab = isApiType(apiChangesDefaultApiType)
+    ? API_TYPE_DISABLE_TAB_MAP[apiChangesDefaultApiType](productionMode)
     : false
 
   const menuItems = [

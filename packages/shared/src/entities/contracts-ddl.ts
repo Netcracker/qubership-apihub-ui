@@ -1,7 +1,9 @@
 import type { DiffType } from '@netcracker/qubership-apihub-api-diff'
-import { replacePropertyInChangesSummary, type DiffTypeDto } from '@netcracker/qubership-apihub-api-processor'
+import { type DiffTypeDto, replacePropertyInChangesSummary } from '@netcracker/qubership-apihub-api-processor'
 
+import { hasNoChangesInSummary } from '../utils/change-severities'
 import type { ChangesSummary } from './change-severities'
+import { EMPTY_CHANGE_SUMMARY } from './version-changelog'
 
 // TODO(DDL/api-processor): import DDL_ENTITY_KIND_* from api-processor when the DDL plugin ships.
 // 'view' is reserved for forward compatibility; v1 emits tables only.
@@ -60,8 +62,8 @@ export function toDdlContractsSummary(dto: DdlContractsSummaryDto | undefined): 
   return {
     tablesCount: dto.tablesCount ?? 0,
     changesSummary: dto.changesSummary && replacePropertyInChangesSummary(dto.changesSummary),
-    numberOfImpactedEntities:
-      dto.numberOfImpactedEntities && replacePropertyInChangesSummary(dto.numberOfImpactedEntities),
+    numberOfImpactedEntities: dto.numberOfImpactedEntities &&
+      replacePropertyInChangesSummary(dto.numberOfImpactedEntities),
   }
 }
 
@@ -90,4 +92,38 @@ export function getDdlEntityDescription(
   }
   const trimmed = description.trim()
   return trimmed === '' ? undefined : trimmed
+}
+
+export type DdlComparisonSummaryDto = Readonly<{
+  changesSummary?: ChangesSummary<DiffTypeDto>
+  numberOfImpactedEntities?: ChangesSummary<DiffTypeDto>
+}>
+
+export type DdlComparisonSummary = Readonly<{
+  changesSummary?: ChangesSummary<DiffType>
+  numberOfImpactedEntities?: ChangesSummary<DiffType>
+}>
+
+export function toDdlComparisonSummary(
+  dto: DdlComparisonSummaryDto | undefined,
+): DdlComparisonSummary | undefined {
+  if (!dto) {
+    return undefined
+  }
+
+  return {
+    changesSummary: dto.changesSummary && replacePropertyInChangesSummary(dto.changesSummary),
+    numberOfImpactedEntities: dto.numberOfImpactedEntities &&
+      replacePropertyInChangesSummary(dto.numberOfImpactedEntities),
+  }
+}
+
+export function hasDdlComparisonChanges(ddl?: DdlComparisonSummary): boolean {
+  if (!ddl) {
+    return false
+  }
+
+  const changesSummary = ddl.changesSummary ?? EMPTY_CHANGE_SUMMARY
+  const impactedSummary = ddl.numberOfImpactedEntities ?? EMPTY_CHANGE_SUMMARY
+  return !hasNoChangesInSummary(changesSummary) || !hasNoChangesInSummary(impactedSummary)
 }

@@ -10,19 +10,13 @@ import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/ali
 
 import { usePackageVersionContent } from '../../usePackageVersionContent'
 
-export type UsePackageVersionApiTypesOptions = Readonly<{
-  excludeMcp?: boolean
-}>
-
 export function usePackageVersionApiTypes(
   packageKey: string,
   versionKey: string,
-  options?: UsePackageVersionApiTypesOptions,
 ): {
   apiTypes: Array<ApiType | ContractType>
   isLoading: IsLoading
 } {
-  const { excludeMcp = false } = options ?? {}
   const { versionContent, isLoading } = usePackageVersionContent({
     packageKey: packageKey,
     versionKey: versionKey,
@@ -34,7 +28,7 @@ export function usePackageVersionApiTypes(
   if (versionContent?.operationTypes) {
     apiTypes.push(...Object.keys(versionContent.operationTypes) as ApiType[])
   }
-  if (!excludeMcp && hasMcpContracts(versionContent?.contractsSummary?.mcp)) {
+  if (hasMcpContracts(versionContent?.contractsSummary?.mcp)) {
     apiTypes.push(CONTRACT_TYPE_MCP)
   }
   if (hasDdlContracts(versionContent?.contractsSummary?.ddl)) {

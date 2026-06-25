@@ -1,42 +1,42 @@
 import { useMemo } from 'react'
-import type { VersionChangesSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
-import { isDashboardComparisonSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
+
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { ContractType } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
+import { getComparisonApiTypesFromSummary } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-changes-summary'
+import type { VersionChangesSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
 import {
-  CONTRACT_TYPE_MCP,
-  type ContractType,
-} from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
-
-export type UseApiTypesFromChangesSummaryOptions = Readonly<{
-  excludeMcp?: boolean
-}>
+  isDashboardComparisonSummary,
+  isPackageComparisonSummary,
+} from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
 
 export function useApiTypesFromChangesSummary(
   versionChangesSummary?: VersionChangesSummary,
   refPackageKey?: Key,
-  options?: UseApiTypesFromChangesSummaryOptions,
 ): Array<ApiType | ContractType> {
-  const { excludeMcp = true } = options ?? {}
-
   return useMemo(
     () => {
       if (!versionChangesSummary) {
         return []
       }
 
-      const operationTypes = isDashboardComparisonSummary(versionChangesSummary)
-        ? versionChangesSummary.find(refSummary => refSummary.refKey === refPackageKey)?.operationTypes
-        : versionChangesSummary.operationTypes
-
-      const apiTypes: Array<ApiType | ContractType> = operationTypes?.map(type => type.apiType) ?? []
-
-      if (excludeMcp) {
-        return apiTypes.filter(type => type !== CONTRACT_TYPE_MCP)
+      if (isDashboardComparisonSummary(versionChangesSummary)) {
+        const refSummary = versionChangesSummary.find(summary => summary.refKey === refPackageKey)
+        return getComparisonApiTypesFromSummary(
+          refSummary?.operationTypes,
+          refSummary?.contractsChangesSummary,
+        )
       }
 
-      return apiTypes
+      if (isPackageComparisonSummary(versionChangesSummary)) {
+        return getComparisonApiTypesFromSummary(
+          versionChangesSummary.operationTypes,
+          versionChangesSummary.contractsChangesSummary,
+        )
+      }
+
+      return []
     },
-    [excludeMcp, refPackageKey, versionChangesSummary],
+    [refPackageKey, versionChangesSummary],
   )
 }

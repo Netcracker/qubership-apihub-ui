@@ -37,6 +37,7 @@ import { isEmpty, isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/util
 import { NAVIGATION_MAX_WIDTH } from '@netcracker/qubership-apihub-ui-shared/utils/page-layouts'
 import type { Key } from '@apihub/entities/keys'
 import { usePortalPageSettingsContext } from '@apihub/routes/PortalPageSettingsProvider'
+import { getDeprecatedTabApiTypes } from '@apihub/utils/tab-api-types'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { useApiAudienceSearchFilter } from '../useApiAudienceSearchFilters'
 
@@ -111,6 +112,7 @@ export const VersionDeprecatedOperationsSubPage: FC = memo(() => {
 
   return (
     <VersionContractsPanel
+      resolveAllowedApiTypes={getDeprecatedTabApiTypes}
       hideFiltersPanel={hideFiltersPanel}
       toggleHideFiltersPanel={toggleHideFiltersPanel}
       operationsViewMode={operationsViewMode}

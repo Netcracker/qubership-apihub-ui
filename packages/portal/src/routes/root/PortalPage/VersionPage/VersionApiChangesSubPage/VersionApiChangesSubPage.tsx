@@ -46,6 +46,7 @@ import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/
 import { RichFiltersLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/RichFiltersLayout'
 import { PageTitle } from '@netcracker/qubership-apihub-ui-shared/components/Titles/PageTitle'
 import { isApiTypeSelectorShown } from '@apihub/utils/operation-types'
+import { getApiChangesTabApiTypes } from '@apihub/utils/tab-api-types'
 import { CHANGE_SEVERITIES } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
 import { usePortalPageSettingsContext } from '@apihub/routes/PortalPageSettingsProvider'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
@@ -75,7 +76,11 @@ export const VersionApiChangesSubPage: FC = memo(() => {
   const [operationGroup] = useOperationGroupSearchFilter()
   const setPathParam = useSetPathParam()
 
-  const { apiTypes } = usePackageVersionApiTypes(packageId!, versionId!, { excludeMcp: true })
+  const { apiTypes } = usePackageVersionApiTypes(packageId!, versionId!)
+  const allowedApiTypes = useMemo(
+    () => getApiChangesTabApiTypes(apiTypes),
+    [apiTypes],
+  )
   const emptyTag = isEmptyTag(selectedTag)
 
   const previousReleaseVersion = usePreviousReleaseVersion()
@@ -107,8 +112,8 @@ export const VersionApiChangesSubPage: FC = memo(() => {
           titleComponent={versionElement}
           onApiTypeChange={setPathParam}
           apiType={routeApiType}
-          allowedApiTypes={apiTypes}
-          withApiSelector={isApiTypeSelectorShown(apiTypes)}
+          allowedApiTypes={allowedApiTypes}
+          withApiSelector={isApiTypeSelectorShown(allowedApiTypes)}
         />}
         searchPlaceholder="Search Operations"
         setSearchValue={setSearchValue}

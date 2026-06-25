@@ -23,7 +23,7 @@ import { useTagSearchFilter } from '../useTagSearchFilter'
 import { ApiTypeListSelector } from './ApiTypeListSelector'
 import { useApiTypeSearchParam } from '../useApiTypeSearchParam'
 import { isDashboardComparisonSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
-import { getDefaultRouteApiType, isApiTypeSelectorShown } from '@apihub/utils/operation-types'
+import { getDefaultApiType, isApiTypeSelectorShown } from '@apihub/utils/operation-types'
 import { isAppliedSearchValueForTag } from '@netcracker/qubership-apihub-ui-shared/utils/tags'
 import { SidebarPanel } from '@netcracker/qubership-apihub-ui-shared/components/Panels/SidebarPanel'
 import { SidebarWithTags } from '@netcracker/qubership-apihub-ui-shared/components/SidebarWithTags/SidebarWithTags'
@@ -52,11 +52,13 @@ export const VersionCompareSidebar = memo(() => {
   const apiTypes = useCompareAllowedApiTypes(versionChangesSummary, refPackageKey)
 
   useEffect(() => {
-    if (apiTypes.length > 0 && (isCompareApiTypeAll(apiType) || !apiTypes.includes(apiType))) {
-      setApiTypeSearchParam(getDefaultRouteApiType(apiTypes))
+    if (!versionChangesSummary) {
+      return
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [apiType, apiTypes])
+    if (apiTypes.length > 0 && (isCompareApiTypeAll(apiType) || !apiTypes.includes(apiType))) {
+      setApiTypeSearchParam(getDefaultApiType(apiTypes))
+    }
+  }, [apiType, apiTypes, setApiTypeSearchParam, versionChangesSummary])
 
   const filteredTags = useMemo(
     () => tags.filter(tag => isAppliedSearchValueForTag(tag, searchValue)),
