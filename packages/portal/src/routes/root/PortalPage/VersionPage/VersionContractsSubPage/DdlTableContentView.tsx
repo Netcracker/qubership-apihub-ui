@@ -52,7 +52,6 @@ export const DdlTableContentView: FC<DdlTableContentViewProps> = memo<DdlTableCo
     let cancelled = false
 
     buildFromDdlInBrowser(content, {
-      strict: true,
       onError: (err) => {
         console.error('[DDL API Normalizing]', err)
       },
@@ -89,25 +88,34 @@ export const DdlTableContentView: FC<DdlTableContentViewProps> = memo<DdlTableCo
     return schema.tables[0]
   }, [schema])
 
+  const tableKey = useMemo(() => {
+    if (!schema || !table) {
+      return undefined
+    }
+    return { schemaName: schema.name, name: table.name }
+  }, [schema, table])
+
   const navigationCallback = useCallback(() => {
     if (!schema || !table) {
       return undefined
     }
     return () => alert(`${schema.name}.${table.name}`)
   }, [schema, table])
-  
+
   return (
     <ContentContainer>
       {viewMode === DOC_SPEC_VIEW_MODE && (
         parseError
           ? <ParseErrorMessage>{parseError}</ParseErrorMessage>
           : (
-            <DdlTableViewer
-              source={normalizedSource}
-              tableKey={table?.name}
-              navigationCallback={navigationCallback}
-              devMode={true}
-            />
+            <Box px={2} py={2}>
+              <DdlTableViewer
+                source={normalizedSource}
+                tableKey={tableKey}
+                navigationCallback={navigationCallback}
+                devMode={true}
+              />
+            </Box>
           )
       )}
 
