@@ -4,8 +4,21 @@ import {
   CONTRACT_TYPE_MCP,
   type ContractType,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
+import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
+
+import { getDefaultApiType } from './operation-types'
 
 export type PublishedApiTypes = ReadonlyArray<ApiType | ContractType>
+
+export function hasTabApiTypes(allowed: PublishedApiTypes): boolean {
+  return !isEmpty(allowed)
+}
+
+export function getTabDefaultApiType(
+  allowed: PublishedApiTypes,
+): ApiType | ContractType | undefined {
+  return hasTabApiTypes(allowed) ? getDefaultApiType(allowed) : undefined
+}
 
 export function getContractsTabApiTypes(types: PublishedApiTypes): Array<ApiType | ContractType> {
   return [...types]

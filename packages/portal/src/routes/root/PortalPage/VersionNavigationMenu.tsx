@@ -39,6 +39,9 @@ import {
   getApiQualityTabApiTypes,
   getContractsTabApiTypes,
   getDeprecatedTabApiTypes,
+  getTabDefaultApiType,
+  hasTabApiTypes,
+  type PublishedApiTypes,
 } from '@apihub/utils/tab-api-types'
 import type { SidebarMenu } from '@netcracker/qubership-apihub-ui-shared/components/NavigationMenu'
 import { NavigationMenu } from '@netcracker/qubership-apihub-ui-shared/components/NavigationMenu'
@@ -109,7 +112,7 @@ export const VersionNavigationMenu: FC<VersionNavigationMenuProps> = memo<Versio
     includeSummary: true,
   })
   const { previousVersion } = versionContent ?? {}
-  const { apiTypes } = usePackageVersionApiTypes(packageId!, versionId!)
+  const { apiTypes, isLoading } = usePackageVersionApiTypes(packageId!, versionId!)
   const contractsDefaultApiType = useMemo(
     () => getDefaultApiType(getContractsTabApiTypes(apiTypes)),
     [apiTypes],
@@ -118,13 +121,15 @@ export const VersionNavigationMenu: FC<VersionNavigationMenuProps> = memo<Versio
     () => getDefaultApiType(getApiChangesTabApiTypes(apiTypes)),
     [apiTypes],
   )
+  const deprecatedAllowedApiTypes = useMemo(() => getDeprecatedTabApiTypes(apiTypes), [apiTypes])
+  const apiQualityAllowedApiTypes = useMemo(() => getApiQualityTabApiTypes(apiTypes), [apiTypes])
   const deprecatedDefaultApiType = useMemo(
-    () => getDefaultApiType(getDeprecatedTabApiTypes(apiTypes)),
-    [apiTypes],
+    () => getTabDefaultApiType(deprecatedAllowedApiTypes),
+    [deprecatedAllowedApiTypes],
   )
   const apiQualityDefaultApiType = useMemo(
-    () => getDefaultApiType(getApiQualityTabApiTypes(apiTypes)),
-    [apiTypes],
+    () => getTabDefaultApiType(apiQualityAllowedApiTypes),
+    [apiQualityAllowedApiTypes],
   )
   const { expandMainMenu, toggleExpandMainMenu, operationsViewMode } = usePortalPageSettingsContext()
   const [operationsView] = useOperationsView(operationsViewMode)
@@ -138,13 +143,27 @@ export const VersionNavigationMenu: FC<VersionNavigationMenuProps> = memo<Versio
         previousVersion,
         apiChangesDefaultApiType,
         productionMode,
+        isLoading,
         {
+          deprecatedAllowedApiTypes: deprecatedAllowedApiTypes,
+          apiQualityAllowedApiTypes: apiQualityAllowedApiTypes,
+          apiQualityDefaultApiType: apiQualityDefaultApiType,
           linterEnabled: linterEnabled,
           tooltip: apiQualityTabTooltip,
-          tabDisabled: !NotLintedApiTypes(apiQualityDefaultApiType) || !!apiQualityTabTooltip,
         },
       ).filter(({ id }) => menuItems.includes(id)),
-    [apiChangesDefaultApiType, apiQualityDefaultApiType, menuItems, previousVersion, productionMode, linterEnabled, apiQualityTabTooltip],
+    [
+      apiChangesDefaultApiType,
+      apiQualityAllowedApiTypes,
+      apiQualityDefaultApiType,
+      apiQualityTabTooltip,
+      deprecatedAllowedApiTypes,
+      isLoading,
+      linterEnabled,
+      menuItems,
+      previousVersion,
+      productionMode,
+    ],
   )
   const sidebarServiceMenuItems = useMemo(
     () => getAvailableSidebarServiceMenuItems(showSettings).filter(({ id }) => menuItems.includes(id)),
@@ -195,8 +214,8 @@ const getPagePathsMap = (
   versionKey: Key,
   contractsDefaultApiType: ApiType | ContractType,
   apiChangesDefaultApiType: ApiType | ContractType,
-  deprecatedDefaultApiType: ApiType | ContractType,
-  apiQualityDefaultApiType: ApiType | ContractType,
+  deprecatedDefaultApiType: ApiType | ContractType | undefined,
+  apiQualityDefaultApiType: ApiType | ContractType | undefined,
   defaultOperationsView: OperationsViewMode,
   expandMenu: boolean,
 ): Record<string, To> => {
@@ -204,7 +223,7 @@ const getPagePathsMap = (
     [EXPAND_NAVIGATION_MENU_SEARCH_PARAM]: { value: expandMenu ? EXPAND_NAVIGATION_MENU : undefined },
   }
 
-  return {
+  const paths: Record<string, To> = {
     [CONFIGURATION_PAGE]: getVersionPath({
       packageKey: packageKey,
       versionKey: versionKey ?? SPECIAL_VERSION_KEY,
@@ -233,7 +252,12 @@ const getPagePathsMap = (
         [OPERATIONS_VIEW_MODE_PARAM]: { value: defaultOperationsView },
       },
     }),
-    [DEPRECATED_PAGE]: getDeprecatedPath({
+    [DOCUMENTS_PAGE]: getDocumentPath({ packageKey: packageKey, versionKey: versionKey, search: commonSearchParams }),
+    [PACKAGE_SETTINGS_PAGE]: getPackageSettingsPath({ packageKey }),
+  }
+
+  if (deprecatedDefaultApiType !== undefined) {
+    paths[DEPRECATED_PAGE] = getDeprecatedPath({
       packageKey: packageKey,
       versionKey: versionKey,
       apiType: deprecatedDefaultApiType as ApiType,
@@ -241,33 +265,46 @@ const getPagePathsMap = (
         ...commonSearchParams,
         [OPERATIONS_VIEW_MODE_PARAM]: { value: defaultOperationsView },
       },
-    }),
-    [API_QUALITY_PAGE]: getApiQualityPath({
+    })
+  }
+
+  if (apiQualityDefaultApiType !== undefined) {
+    paths[API_QUALITY_PAGE] = getApiQualityPath({
       packageKey: packageKey,
       versionKey: versionKey,
       apiType: apiQualityDefaultApiType as ApiType,
       search: commonSearchParams,
-    }),
-    [DOCUMENTS_PAGE]: getDocumentPath({ packageKey: packageKey, versionKey: versionKey, search: commonSearchParams }),
-    [PACKAGE_SETTINGS_PAGE]: getPackageSettingsPath({ packageKey }),
+    })
   }
+
+  return paths
 }
 
-type ApiQualityTabOptions = {
+type VersionTabMenuOptions = {
+  deprecatedAllowedApiTypes: PublishedApiTypes
+  apiQualityAllowedApiTypes: PublishedApiTypes
+  apiQualityDefaultApiType: ApiType | ContractType | undefined
   linterEnabled: boolean
   tooltip: ApiQualityTabTooltip
-  tabDisabled: boolean
 }
 
 const getAvailableSidebarMenuItems = (
   previousVersion: Key | undefined,
   apiChangesDefaultApiType: ApiType | ContractType,
   productionMode: boolean,
-  apiQualityTabOptions: ApiQualityTabOptions,
+  isLoading: boolean,
+  tabMenuOptions: VersionTabMenuOptions,
 ): SidebarMenu[] => {
   const disableTab = isApiType(apiChangesDefaultApiType)
     ? API_TYPE_DISABLE_TAB_MAP[apiChangesDefaultApiType](productionMode)
     : false
+  const deprecatedTabDisabled = !isLoading && !hasTabApiTypes(tabMenuOptions.deprecatedAllowedApiTypes)
+  const apiQualityTabDisabled = !isLoading && (
+    !hasTabApiTypes(tabMenuOptions.apiQualityAllowedApiTypes) ||
+    (tabMenuOptions.apiQualityDefaultApiType !== undefined &&
+      !NotLintedApiTypes(tabMenuOptions.apiQualityDefaultApiType)) ||
+    !!tabMenuOptions.tooltip
+  )
 
   const menuItems = [
     {
@@ -303,7 +340,7 @@ const getAvailableSidebarMenuItems = (
       id: DEPRECATED_PAGE,
       title: 'Deprecated',
       tooltip: 'Deprecated',
-      disabled: disableTab,
+      disabled: deprecatedTabDisabled || disableTab,
       icon: <DefaultWarningIcon />,
       'data-testid': 'DeprecatedButton',
     },
@@ -316,7 +353,7 @@ const getAvailableSidebarMenuItems = (
     },
   ]
 
-  if (apiQualityTabOptions.linterEnabled) {
+  if (tabMenuOptions.linterEnabled) {
     let index = -1
     for (let i = 0; i < menuItems.length; i++) {
       if (menuItems[i].id === DEPRECATED_PAGE) {
@@ -328,8 +365,8 @@ const getAvailableSidebarMenuItems = (
       menuItems.splice(index + 1, 0, {
         id: API_QUALITY_PAGE,
         title: 'API Quality',
-        disabled: apiQualityTabOptions.tabDisabled,
-        tooltip: apiQualityTabOptions.tooltip ?? 'API Quality',
+        disabled: apiQualityTabDisabled,
+        tooltip: tabMenuOptions.tooltip ?? 'API Quality',
         icon: <CertifiedFileIcon />,
         'data-testid': 'ApiQualityButton',
       })
