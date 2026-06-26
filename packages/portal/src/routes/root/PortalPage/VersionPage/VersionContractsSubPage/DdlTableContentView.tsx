@@ -1,7 +1,9 @@
 import { DocSpecView } from '@apihub/components/DocSpecView'
+import { buildFromDdlInBrowser } from '@apihub/utils/buildFromDdlInBrowser'
 import { Box } from '@mui/material'
 import { styled } from '@mui/material/styles'
-import { type FC, memo, useMemo } from 'react'
+import type { Realm } from '@netcracker/qubership-apihub-ddlapi'
+import { type FC, memo, useCallback, useEffect, useMemo, useState } from 'react'
 
 import { RawSpecView } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/RawSpecView'
 import type { SpecViewMode } from '@netcracker/qubership-apihub-ui-shared/components/SpecViewToggler'
@@ -11,12 +13,12 @@ import {
   SIMPLE_SPEC_VIEW_MODE,
 } from '@netcracker/qubership-apihub-ui-shared/components/SpecViewToggler'
 import {
-  DETAILED_SCHEMA_VIEW_MODE,
   SIMPLE_SCHEMA_VIEW_MODE,
 } from '@netcracker/qubership-apihub-ui-shared/entities/schema-view-mode'
 import { SQL_FILE_EXTENSION, SQL_FILE_FORMAT } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import { DDL_DOCUMENT_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import { toFormattedJsonString } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
+import { DdlTableViewer } from '@netcracker/qubership-apihub-api-doc-viewer'
 
 export type DdlTableContentViewProps = {
   data: string | Record<string, unknown> | undefined
@@ -37,16 +39,76 @@ export const DdlTableContentView: FC<DdlTableContentViewProps> = memo<DdlTableCo
     return toFormattedJsonString(data)
   }, [data])
 
+  const [normalizedSource, setNormalizedSource] = useState<Realm | undefined>(undefined)
+  const [parseError, setParseError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!content || viewMode !== DOC_SPEC_VIEW_MODE) {
+      setNormalizedSource(undefined)
+      setParseError(null)
+      return
+    }
+
+    let cancelled = false
+
+    buildFromDdlInBrowser(content, {
+      strict: true,
+      onError: (err) => {
+        console.error('[DDL API Normalizing]', err)
+      },
+    })
+      .then((realm) => {
+        if (!cancelled) {
+          setNormalizedSource(realm)
+          setParseError(null)
+        }
+      })
+      .catch((cause: unknown) => {
+        if (!cancelled) {
+          setNormalizedSource(undefined)
+          setParseError(cause instanceof Error ? cause.message : String(cause))
+        }
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [content, viewMode])
+
+  const schema = useMemo(() => {
+    if (!normalizedSource) {
+      return undefined
+    }
+    return normalizedSource.schemas[0]
+  }, [normalizedSource])
+
+  const table = useMemo(() => {
+    if (!schema || !schema.tables) {
+      return undefined
+    }
+    return schema.tables[0]
+  }, [schema])
+
+  const navigationCallback = useCallback(() => {
+    if (!schema || !table) {
+      return undefined
+    }
+    return () => alert(`${schema.name}.${table.name}`)
+  }, [schema, table])
+  
   return (
     <ContentContainer>
-      {/* TODO: replace DocSpecView with DdlTableViewer from api-doc-viewer when the DDL doc viewer ships in the UI dependency. */}
       {viewMode === DOC_SPEC_VIEW_MODE && (
-        <DocSpecView
-          value={content}
-          type={DDL_DOCUMENT_TYPE.DDL}
-          format={SQL_FILE_FORMAT}
-          schemaViewMode={DETAILED_SCHEMA_VIEW_MODE}
-        />
+        parseError
+          ? <ParseErrorMessage>{parseError}</ParseErrorMessage>
+          : (
+            <DdlTableViewer
+              source={normalizedSource}
+              tableKey={table?.name}
+              navigationCallback={navigationCallback}
+              devMode={true}
+            />
+          )
       )}
 
       {viewMode === SIMPLE_SPEC_VIEW_MODE && (
@@ -77,3 +139,9 @@ const ContentContainer = styled(Box)({
   height: '100%',
   overflow: 'hidden',
 })
+
+const ParseErrorMessage = styled(Box)(({ theme }) => ({
+  color: theme.palette.error.main,
+  padding: theme.spacing(1.5),
+  whiteSpace: 'pre-wrap',
+}))

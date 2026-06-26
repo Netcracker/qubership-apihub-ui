@@ -11,6 +11,11 @@ import { visualizer as bundleVisualizer } from 'rollup-plugin-visualizer'
 import inject from '@rollup/plugin-inject'
 import monacoWorkerHashPlugin from '../../vite-monaco-worker-hash'
 import createVersionJsonFilePlugin from '../../vite-create-version-json'
+import { conditionalPgsqlParserPlugin } from '../../vite-conditional-pgsql-parser'
+import { libpgQueryWasmInteropPlugin } from '../../vite-libpg-query-wasm-interop'
+import { libpgQueryWasmPlugin } from '../../vite-libpg-query-wasm-plugin'
+
+const uiRootDir = path.resolve(__dirname, '../..')
 
 // const proxyServer = 'https://qubership-apihub-2.localtest.me/'
 const proxyServer = 'http://host.docker.internal:8081'
@@ -22,6 +27,9 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [
+      conditionalPgsqlParserPlugin(uiRootDir),
+      libpgQueryWasmInteropPlugin(uiRootDir),
+      libpgQueryWasmPlugin(uiRootDir),
       react({ fastRefresh: false }),
       bundleVisualizer(),
       ignoreDotsOnDevServer(),
@@ -78,6 +86,10 @@ export default defineConfig(({ mode }) => {
       include: [
         '@netcracker/qubership-apihub-api-processor',
       ],
+      exclude: [
+        'pgsql-parser',
+        '@netcracker/qubership-apihub-ddlapi',
+      ],
       esbuildOptions: {
         plugins: [
           NodeModulesPolyfill(),
@@ -100,6 +112,7 @@ export default defineConfig(({ mode }) => {
         '@asyncapi/parser': '@asyncapi/parser/browser', // Use browser-compatible version of AsyncAPI parser
       },
     },
+    assetsInclude: ['**/*.wasm'],
     worker: {
       format: 'es',
     },
