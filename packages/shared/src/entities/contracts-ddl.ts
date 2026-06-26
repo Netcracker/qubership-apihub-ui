@@ -71,22 +71,22 @@ export function toDdlContractEntity(dto: DdlContractEntityDto): DdlContractEntit
   return dto
 }
 
-export function getDdlEntityDisplayName(
-  entity: Readonly<Pick<DdlContractEntity, 'name' | 'ddlEntityId'>>,
+export function getDdlTableDisplayName(
+  table: Readonly<Pick<DdlContractEntity, 'name' | 'ddlEntityId'>>,
 ): string {
-  return entity.name || entity.ddlEntityId
+  return table.name || table.ddlEntityId
 }
 
-export function getDdlEntitySchemaName(
-  entity: Readonly<Pick<DdlContractEntity, 'schemaName'>>,
+export function getDdlTableSchemaName(
+  table: Readonly<Pick<DdlContractEntity, 'schemaName'>>,
 ): string | undefined {
-  return entity.schemaName
+  return table.schemaName
 }
 
-export function getDdlEntityDescription(
-  entity: Readonly<Pick<DdlContractEntity, 'description'>>,
+export function getDdlTableDescription(
+  table: Readonly<Pick<DdlContractEntity, 'description'>>,
 ): string | undefined {
-  const { description } = entity
+  const { description } = table
   if (typeof description !== 'string') {
     return undefined
   }

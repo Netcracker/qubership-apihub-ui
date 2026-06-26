@@ -2,21 +2,21 @@ import { useMutation } from '@tanstack/react-query'
 import fileDownload from 'js-file-download'
 import { generatePath } from 'react-router-dom'
 
-import type { Key } from '@apihub/entities/keys'
-import { portalRequestBlob } from '@apihub/utils/requests'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
 import { API_V1 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 
+import type { Key } from '@apihub/entities/keys'
+import { portalRequestBlob } from '@apihub/utils/requests'
 import { useShowErrorNotification } from '../../BasePage/Notification'
 
-export function useDownloadDdlEntitiesAsExcel(): [DownloadDdlEntitiesAsExcelFunction, IsLoading] {
+export function useDownloadDdlTablesAsExcel(): [DownloadDdlTablesAsExcelFunction, IsLoading] {
   const showErrorNotification = useShowErrorNotification()
 
   const { mutate, isLoading } = useMutation<void, Error, Options>({
     mutationFn: ({ packageKey, version, textFilter, refPackageId }) =>
-      downloadDdlEntitiesAsExcel(packageKey!, version!, textFilter, refPackageId),
+      downloadDdlTablesAsExcel(packageKey!, version!, textFilter, refPackageId),
     onError: (error) => {
       showErrorNotification({ message: error?.message })
     },
@@ -25,7 +25,7 @@ export function useDownloadDdlEntitiesAsExcel(): [DownloadDdlEntitiesAsExcelFunc
   return [mutate, isLoading]
 }
 
-export async function downloadDdlEntitiesAsExcel(
+export async function downloadDdlTablesAsExcel(
   packageId: Key,
   versionId: Key,
   textFilter?: Key,
@@ -50,12 +50,12 @@ export async function downloadDdlEntitiesAsExcel(
   const contentDisposition = response.headers.get('content-disposition')
   const filename = contentDisposition
     ? contentDisposition.split('filename=')[1]!.split(';')[0]!
-    : `ddl-entities-${packageId}-${versionId}.xlsx`
+    : `ddl-tables-${packageId}-${versionId}.xlsx`
 
   fileDownload(await response.blob(), filename)
 }
 
-type DownloadDdlEntitiesAsExcelFunction = (options: Options) => void
+type DownloadDdlTablesAsExcelFunction = (options: Options) => void
 
 type Options = Readonly<{
   packageKey: Key

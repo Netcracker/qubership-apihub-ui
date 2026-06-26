@@ -8,9 +8,10 @@ import { DdlTableWithMetaList } from '@netcracker/qubership-apihub-ui-shared/com
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import { NAVIGATION_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import type { DdlContractEntity } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
+import { DDL_TABLES_EMPTY_MESSAGE } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
 import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 
-export type DdlEntitySelectorProps = {
+export type DdlTableSelectorProps = {
   tables: ReadonlyArray<DdlContractEntity>
   isLoading?: boolean
   sectionTitle?: string
@@ -18,11 +19,11 @@ export type DdlEntitySelectorProps = {
   prepareLinkFn: (table: DdlContractEntity) => Partial<Path>
 }
 
-export const DdlEntitySelector: FC<DdlEntitySelectorProps> = memo<DdlEntitySelectorProps>(({
+export const DdlTableSelector: FC<DdlTableSelectorProps> = memo<DdlTableSelectorProps>(({
   tables,
   isLoading,
-  sectionTitle = 'Entities',
-  emptyMessage = 'No entities',
+  sectionTitle = 'Tables',
+  emptyMessage = DDL_TABLES_EMPTY_MESSAGE,
   prepareLinkFn,
 }) => {
   const [anchor, setAnchor] = useState<HTMLElement>()
@@ -66,4 +67,4 @@ export const DdlEntitySelector: FC<DdlEntitySelectorProps> = memo<DdlEntitySelec
   )
 })
 
-DdlEntitySelector.displayName = 'DdlEntitySelector'
+DdlTableSelector.displayName = 'DdlTableSelector'

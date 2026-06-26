@@ -4,25 +4,25 @@ import { useParams } from 'react-router-dom'
 import { ExportMenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ExportMenuButton'
 
 import { useFullMainVersion } from '../FullMainVersionProvider'
-import { useDownloadDdlEntitiesAsExcel } from './useDownloadDdlEntitiesAsExcel'
+import { useDownloadDdlTablesAsExcel } from './useDownloadDdlTablesAsExcel'
 
-export type ExportDdlEntitiesMenuProps = Readonly<{
+export type ExportDdlTablesMenuProps = Readonly<{
   textFilter?: string
   refPackageId?: string
   disabled?: boolean
 }>
 
-export const ExportDdlEntitiesMenu: FC<ExportDdlEntitiesMenuProps> = memo<ExportDdlEntitiesMenuProps>(({
+export const ExportDdlTablesMenu: FC<ExportDdlTablesMenuProps> = memo<ExportDdlTablesMenuProps>(({
   textFilter,
   refPackageId,
   disabled,
 }) => {
   const { packageId } = useParams()
   const fullVersion = useFullMainVersion()
-  const [downloadDdlEntitiesAsExcel] = useDownloadDdlEntitiesAsExcel()
+  const [downloadDdlTablesAsExcel] = useDownloadDdlTablesAsExcel()
 
   const onDownloadAll = (): void => {
-    downloadDdlEntitiesAsExcel({
+    downloadDdlTablesAsExcel({
       packageKey: packageId!,
       version: fullVersion!,
       refPackageId: refPackageId,
@@ -30,7 +30,7 @@ export const ExportDdlEntitiesMenu: FC<ExportDdlEntitiesMenuProps> = memo<Export
   }
 
   const onDownloadFiltered = (): void => {
-    downloadDdlEntitiesAsExcel({
+    downloadDdlTablesAsExcel({
       packageKey: packageId!,
       version: fullVersion!,
       textFilter: textFilter,
@@ -40,14 +40,14 @@ export const ExportDdlEntitiesMenu: FC<ExportDdlEntitiesMenuProps> = memo<Export
 
   return (
     <ExportMenuButton
-      title="Export"
+      title="Export Tables to Excel"
       disabled={disabled}
-      allDownloadText="All entities"
-      filteredDownloadText="Filtered entities"
+      allDownloadText="All tables"
+      filteredDownloadText="Filtered tables"
       downloadAll={onDownloadAll}
       downloadFiltered={onDownloadFiltered}
     />
   )
 })
 
-ExportDdlEntitiesMenu.displayName = 'ExportDdlEntitiesMenu'
+ExportDdlTablesMenu.displayName = 'ExportDdlTablesMenu'

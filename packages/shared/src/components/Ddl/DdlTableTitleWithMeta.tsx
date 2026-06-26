@@ -6,7 +6,7 @@ import { memo } from 'react'
 import { NavLink } from 'react-router-dom'
 
 import type { DdlContractEntity } from '../../entities/contracts-ddl'
-import { getDdlEntityDescription, getDdlEntityDisplayName, getDdlEntitySchemaName } from '../../entities/contracts-ddl'
+import { getDdlTableDescription, getDdlTableDisplayName, getDdlTableSchemaName } from '../../entities/contracts-ddl'
 import { EMPTY_SUBTITLE_PLACEHOLDER } from '../../utils/placeholders'
 import { CustomChip } from '../CustomChip'
 import { OverflowTooltip } from '../OverflowTooltip'
@@ -25,9 +25,9 @@ export const DdlTableTitleWithMeta: FC<DdlTableTitleWithMetaProps> = memo<DdlTab
   onLinkClick,
   onlyTitle = false,
 }) => {
-  const title = getDdlEntityDisplayName(table)
-  const schemaName = getDdlEntitySchemaName(table)
-  const description = getDdlEntityDescription(table)
+  const title = getDdlTableDisplayName(table)
+  const schemaName = getDdlTableSchemaName(table)
+  const description = getDdlTableDescription(table)
 
   const titleNode = link
     ? (

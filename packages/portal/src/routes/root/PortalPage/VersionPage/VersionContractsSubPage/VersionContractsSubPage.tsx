@@ -38,7 +38,7 @@ import { useSetSelectedPreviewOperation } from '../../SelectedPreviewOperationPr
 import { useRefSearchParam } from '../../useRefSearchParam'
 import { useDdlTables } from '../api/useDdlTables'
 import { useMcpEntities } from '../api/useMcpEntities'
-import { ExportDdlEntitiesMenu } from '../ExportDdlEntitiesMenu'
+import { ExportDdlTablesMenu } from '../ExportDdlTablesMenu'
 import { ExportOperationsMenu } from '../ExportOperationsMenu'
 import { McpContractsSelectors } from '../McpContractsSelectors'
 import { OperationTable } from '../OpenApiViewer/OperationTable'
@@ -371,7 +371,7 @@ export const VersionContractsSubPage: FC = memo(() => {
   const exportButton = useMemo(() => {
     if (isDdl) {
       return (
-        <ExportDdlEntitiesMenu
+        <ExportDdlTablesMenu
           textFilter={searchValue}
           refPackageId={refKey}
           disabled={isEmpty(ddlTables)}

@@ -11,7 +11,7 @@ import { ToolbarTitle } from '@netcracker/qubership-apihub-ui-shared/components/
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { CONTRACT_TYPE_DDL } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 import type { DdlContractEntity } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
-import { getDdlEntityDisplayName } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
+import { getDdlTableDisplayName } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
 import type { FC } from 'react'
 import { memo, useCallback, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -25,7 +25,7 @@ import { useDdlTableDetails } from '../api/useDdlTableDetails'
 import { useDdlTables } from '../api/useDdlTables'
 import { getDdlTableLink } from '../useNavigateToOperation'
 import { DdlTableContentView } from '../VersionContractsSubPage/DdlTableContentView'
-import { DdlEntitySelector } from './DdlEntitySelector'
+import { DdlTableSelector } from './DdlTableSelector'
 
 export const DdlTablePage: FC = memo(() => {
   const { packageId, versionId, operationId: ddlEntityId } = useParams<{
@@ -91,7 +91,7 @@ export const DdlTablePage: FC = memo(() => {
     if (!tableDetails) {
       return ''
     }
-    return getDdlEntityDisplayName(tableDetails)
+    return getDdlTableDisplayName(tableDetails)
   }, [tableDetails])
 
   return (
@@ -120,7 +120,7 @@ export const DdlTablePage: FC = memo(() => {
                           {title}
                         </Typography>
                       )}
-                    <DdlEntitySelector
+                    <DdlTableSelector
                       tables={filteredSiblings}
                       isLoading={isSiblingsLoading}
                       prepareLinkFn={prepareLinkFn}
