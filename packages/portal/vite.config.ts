@@ -108,6 +108,8 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       emptyOutDir: true,
+      // Skip gzip-compressing every chunk just to print its size: costly in memory and time on a large bundle.
+      reportCompressedSize: false,
       rollupOptions: {
         input: {
           app: resolve(__dirname, 'index.html'),
