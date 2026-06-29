@@ -222,7 +222,6 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
       } = value
 
       const versionData = version ? [version] : []
-
       const packageIdsDataForPackageAndGroup = (): string[] => {
         if (packageKey) {
           return [packageKey]
