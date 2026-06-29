@@ -19,11 +19,14 @@ const devServer = 'http://localhost:3003'
 
 export default defineConfig(({ mode }) => {
   const isProxyMode = mode === 'proxy'
+  // Bundle-size report is opt-in: set ANALYZE=1. Generating it holds the full module
+  // graph in memory and renders an HTML treemap, which inflates build memory and time.
+  const analyzeBundle = process.env.ANALYZE === 'true' || process.env.ANALYZE === '1'
 
   return {
     plugins: [
       react({ fastRefresh: false }),
-      bundleVisualizer(),
+      analyzeBundle && bundleVisualizer(),
       ignoreDotsOnDevServer(),
       monacoEditor({
         languageWorkers: ['editorWorkerService', 'json'],
@@ -105,6 +108,8 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       emptyOutDir: true,
+      // Skip gzip-compressing every chunk just to print its size: costly in memory and time on a large bundle.
+      reportCompressedSize: false,
       rollupOptions: {
         input: {
           app: resolve(__dirname, 'index.html'),
