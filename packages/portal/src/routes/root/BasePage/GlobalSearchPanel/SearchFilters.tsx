@@ -222,12 +222,20 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
       } = value
 
       const versionData = version ? [version] : []
-      const packageIdsData = (): string[] => {
+
+      const packageIdsDataForPackageAndGroup = (): string[] => {
         if (packageKey) {
           return [packageKey]
         }
         if (groupKey) {
           return [groupKey]
+        }
+        return []
+      }
+
+      const packageIdsData = (): string[] => {
+        if (packageKey || groupKey) {
+          return packageIdsDataForPackageAndGroup()
         }
         if (workspaceKey) {
           return [workspaceKey]
@@ -274,7 +282,7 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
         : {
           filters: {
             workspace: workspaceKey,
-            packageIds: packageKey ? [packageKey] : [],
+            packageIds: packageIdsDataForPackageAndGroup(),
             versions: versionData,
             status: status as VersionStatus,
             creationDateInterval: {
