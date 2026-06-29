@@ -114,6 +114,7 @@ export const DdlTableContentView: FC<DdlTableContentViewProps> = memo<DdlTableCo
               tableKey={tableKey}
               navigationCallback={navigationCallback}
               displayMode={DETAILED_SCHEMA_VIEW_MODE}
+              // devMode={true}
             />
           )
       )}
@@ -127,7 +128,7 @@ export const DdlTableContentView: FC<DdlTableContentViewProps> = memo<DdlTableCo
               tableKey={tableKey}
               navigationCallback={navigationCallback}
               displayMode={SIMPLE_SCHEMA_VIEW_MODE}
-              devMode={true}
+              // devMode={true}
             />
           )
       )}
