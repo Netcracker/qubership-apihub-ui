@@ -212,7 +212,7 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
 
   const { useV3Search } = useSystemInfo()
 
-  const packageIdsDataForPackageAndGroup = useCallback(() => {
+  const packageIdsDataForPackageAndGroup = useMemo(() => {
     if (packageKey) {
       return [packageKey]
     }
@@ -235,7 +235,7 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
 
       const packageIdsData = (): string[] => {
         if (packageKey || groupKey) {
-          return packageIdsDataForPackageAndGroup()
+          return packageIdsDataForPackageAndGroup
         }
         if (workspaceKey) {
           return [workspaceKey]
@@ -282,7 +282,7 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
         : {
           filters: {
             workspace: workspaceKey,
-            packageIds: packageIdsDataForPackageAndGroup(),
+            packageIds: packageIdsDataForPackageAndGroup,
             versions: versionData,
             status: status as VersionStatus,
             creationDateInterval: {
