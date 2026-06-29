@@ -212,6 +212,16 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
 
   const { useV3Search } = useSystemInfo()
 
+  const packageIdsDataForPackageAndGroup = useCallback(() => {
+    if (packageKey) {
+      return [packageKey]
+    }
+    if (groupKey) {
+      return [groupKey]
+    }
+    return []
+  }, [packageKey, groupKey])
+
   const onSubmit = useMemo(
     () => handleSubmit((value) => {
       const {
@@ -222,15 +232,6 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
       } = value
 
       const versionData = version ? [version] : []
-      const packageIdsDataForPackageAndGroup = (): string[] => {
-        if (packageKey) {
-          return [packageKey]
-        }
-        if (groupKey) {
-          return [groupKey]
-        }
-        return []
-      }
 
       const packageIdsData = (): string[] => {
         if (packageKey || groupKey) {
