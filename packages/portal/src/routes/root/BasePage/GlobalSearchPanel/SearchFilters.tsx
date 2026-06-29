@@ -295,7 +295,7 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
 
       applyGlobalSearchFilters(globalSearchFilter)
     }),
-    [handleSubmit, useV3Search, applyGlobalSearchFilters, packageKey, groupKey, workspaceKey, detailedScope, methods],
+    [handleSubmit, detailedScope, methods, useV3Search, workspaceKey, packageIdsDataForPackageAndGroup, applyGlobalSearchFilters, packageKey, groupKey],
   )
 
   useDebounce(
