@@ -9,17 +9,21 @@ import {
   RAW_SPEC_VIEW_MODE,
   SIMPLE_SPEC_VIEW_MODE,
 } from '@netcracker/qubership-apihub-ui-shared/components/SpecViewToggler'
+import { calculateDdlEntityId } from '@netcracker/qubership-apihub-api-processor'
 import type { DdlContractEntityDetails } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
+import { DDL_ENTITY_KIND_TABLE } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
 import {
   DETAILED_SCHEMA_VIEW_MODE,
   SIMPLE_SCHEMA_VIEW_MODE,
 } from '@netcracker/qubership-apihub-ui-shared/entities/schema-view-mode'
+import { navigateToExternalPage } from '@netcracker/qubership-apihub-ui-shared/entities/external-navigation'
 import { theme } from '@netcracker/qubership-apihub-ui-shared/themes/theme'
 import { SQL_FILE_EXTENSION } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import { DDL_DOCUMENT_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import { type FC, memo, useCallback, useMemo } from 'react'
 
 import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
+import { getDdlTableLink } from '../useNavigateToOperation'
 
 export type DdlTableContentViewProps = {
   data: DdlContractEntityDetails | undefined
@@ -51,12 +55,19 @@ export const DdlTableContentView: FC<DdlTableContentViewProps> = memo<DdlTableCo
     return { schemaName: data.schemaName, name: data.name }
   }, [data])
 
-  const navigationCallback = useCallback(() => {
-    if (!data) {
-      return undefined
+  const navigationCallback = useCallback((schemaName: string, tableName: string) => {
+    if (!data || !packageKey || !versionKey) {
+      return
     }
-    return () => alert(`${data.schemaName}.${data.name}`)
-  }, [data])
+    const ddlEntityId = calculateDdlEntityId(schemaName, DDL_ENTITY_KIND_TABLE, tableName)
+    const link = getDdlTableLink({
+      packageKey: packageKey,
+      versionKey: versionKey,
+      ddlEntityId: ddlEntityId,
+    })
+    const url = `${link.pathname}${link.search ?? ''}`
+    navigateToExternalPage(url, true)
+  }, [data, packageKey, versionKey])
 
   const parseError = normalizedSourceError?.message ?? null
 
