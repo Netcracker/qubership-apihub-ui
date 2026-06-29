@@ -1,14 +1,14 @@
 /**
- * Browser-safe stub for pgsql-parser in the main portal bundle.
+ * Browser-safe stub for pgsql-parser in the portal bundle.
  *
- * Packages that only need ddlapi model constants must not pull libpg-query (WASM)
- * into shared chunks. Real parsing lives in a separate async chunk — see
- * buildFromDdlInBrowser.ts and the conditional resolver in portal vite.config.ts.
+ * ddlapi re-exports buildFromDdl, which depends on pgsql-parser / libpg-query (WASM).
+ * The portal consumes pre-normalised Realm data from internal documents and must not
+ * ship the parser stack. This stub is wired via resolve.alias in portal vite.config.ts.
  */
 
 const unavailable = (): never => {
   throw new Error(
-    'pgsql-parser stub: buildFromDdl is only available via buildFromDdlInBrowser().',
+    'pgsql-parser stub: browser DDL parsing is not supported in the portal.',
   )
 }
 
