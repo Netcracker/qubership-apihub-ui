@@ -44,7 +44,7 @@ export const DdlTableContentView: FC<DdlTableContentViewProps> = memo<DdlTableCo
   const [parseError, setParseError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!content || viewMode !== DOC_SPEC_VIEW_MODE) {
+    if (!content || viewMode === RAW_SPEC_VIEW_MODE) {
       setNormalizedSource(undefined)
       setParseError(null)
       return
