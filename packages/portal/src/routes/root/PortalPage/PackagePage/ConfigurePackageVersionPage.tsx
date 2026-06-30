@@ -23,7 +23,7 @@ import { NoPackageVersionPlaceholder } from '../../NoPackageVersionPlaceholder'
 import { PublishPackageVersionDialog } from '../DashboardPage/PublishPackageVersionDialog'
 import { PackageVersionPageToolbar } from './PackageVersionPageToolbar'
 import { VersionConfigurationSubPage } from './VersionConfigurationSubPage'
-import { PackageVersionNavigationMenu } from './PackageVersionNavigationMenu'
+import { ConfigureVersionNavigationMenu } from '../ConfigureVersionNavigationMenu'
 import { CurrentPackageProvider } from '@apihub/components/CurrentPackageProvider'
 import { FilesProvider } from '../FilesProvider'
 import { PortalSpecificationDialog } from './PortalSpecificationDialog'
@@ -70,7 +70,7 @@ type PackageVersionPageBodyProps = {
 const PackageVersionPageBody: FC<PackageVersionPageBodyProps> = memo<PackageVersionPageBodyProps>(({ menuItem }) => {
   return (
     <LayoutWithTabs
-      tabs={<PackageVersionNavigationMenu/>}
+      tabs={<ConfigureVersionNavigationMenu/>}
       body={PATH_PARAM_TO_SUB_PAGE_MAP[menuItem]}
     />
   )

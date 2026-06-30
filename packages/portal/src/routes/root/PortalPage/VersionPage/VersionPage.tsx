@@ -41,6 +41,7 @@ import type { ClientValidationStatus } from './ApiQualityValidationSummaryProvid
 import { ApiQualityDataProvider } from './ApiQualityValidationSummaryProvider'
 import { OutdatedRevisionNotification } from './OutdatedRevisionNotification/OutdatedRevisionNotification'
 import { usePollingForValidationSummaryReadiness } from './usePollingForValidationSummaryReadiness'
+import { VersionTabApiTypesProvider } from './VersionTabApiTypesProvider'
 import { VersionApiChangesSubPage } from './VersionApiChangesSubPage/VersionApiChangesSubPage'
 import { RulesetInfoDialog } from './VersionApiQualitySubPage/components/RulesetInfoDialog/RulesetInfoDialog'
 import { VersionApiQualitySubPage } from './VersionApiQualitySubPage/VersionApiQualitySubPage'
@@ -76,18 +77,20 @@ export const VersionPage: FC = memo(() => {
             clientValidationStatus={validationStatus}
             setClientValidationStatus={setValidationStatus}
           >
-            <NoPackagePlaceholder packageObject={packageObject} isLoading={isLoading}>
-              <NoPackageVersionPlaceholder packageObject={packageObject}>
-                <LayoutWithToolbar
-                  toolbar={<VersionPageToolbar />}
-                  body={<VersionPageBody menuItem={menuItem as VersionPageRoute} />}
-                />
-                <OutdatedRevisionNotification />
-              </NoPackageVersionPlaceholder>
-            </NoPackagePlaceholder>
-            {packageObject?.kind === DASHBOARD_KIND && <PublishDashboardVersionFromCSVDialog />}
-            <ExportSettingsDialog />
-            <RulesetInfoDialog />
+            <VersionTabApiTypesProvider>
+              <NoPackagePlaceholder packageObject={packageObject} isLoading={isLoading}>
+                <NoPackageVersionPlaceholder packageObject={packageObject}>
+                  <LayoutWithToolbar
+                    toolbar={<VersionPageToolbar />}
+                    body={<VersionPageBody menuItem={menuItem as VersionPageRoute} />}
+                  />
+                  <OutdatedRevisionNotification />
+                </NoPackageVersionPlaceholder>
+              </NoPackagePlaceholder>
+              {packageObject?.kind === DASHBOARD_KIND && <PublishDashboardVersionFromCSVDialog />}
+              <ExportSettingsDialog />
+              <RulesetInfoDialog />
+            </VersionTabApiTypesProvider>
           </ApiQualityDataProvider>
         </ActivityHistoryFiltersProvider>
       </FullMainVersionProvider>
@@ -137,3 +140,5 @@ const VersionPageBody: FC<VersionPageBodyProps> = memo<VersionPageBodyProps>(({ 
     />
   )
 })
+
+VersionPageBody.displayName = 'VersionPageBody'

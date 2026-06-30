@@ -1,5 +1,10 @@
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import {
+  API_TYPE_ASYNCAPI,
+  API_TYPE_GRAPHQL,
+  API_TYPE_REST,
+} from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import {
   CONTRACT_TYPE_DDL,
   CONTRACT_TYPE_MCP,
   type ContractType,
@@ -10,36 +15,95 @@ import { getDefaultApiType } from './operation-types'
 
 export type PublishedApiTypes = ReadonlyArray<ApiType | ContractType>
 
-export function hasTabApiTypes(allowed: PublishedApiTypes): boolean {
-  return !isEmpty(allowed)
+export type TabAllowedApiType = ApiType | ContractType
+
+export const VERSION_TAB_IDS = {
+  contracts: 'contracts',
+  apiChanges: 'apiChanges',
+  deprecated: 'deprecated',
+  apiQuality: 'apiQuality',
+} as const
+
+export type VersionTabId = (typeof VERSION_TAB_IDS)[keyof typeof VERSION_TAB_IDS]
+
+export type ResolveTabApiTypesContext = Readonly<{
+  productionMode?: boolean
+}>
+
+export const CONTRACTS_TAB_ALLOWED_API_TYPES = [
+  API_TYPE_REST,
+  API_TYPE_GRAPHQL,
+  API_TYPE_ASYNCAPI,
+  CONTRACT_TYPE_MCP,
+  CONTRACT_TYPE_DDL,
+] as const satisfies ReadonlyArray<TabAllowedApiType>
+
+export const API_CHANGES_TAB_ALLOWED_API_TYPES = [
+  API_TYPE_REST,
+  API_TYPE_GRAPHQL,
+  API_TYPE_ASYNCAPI,
+  CONTRACT_TYPE_DDL,
+] as const satisfies ReadonlyArray<TabAllowedApiType>
+
+export const API_CHANGES_TAB_ALLOWED_API_TYPES_PRODUCTION = [
+  API_TYPE_REST,
+  API_TYPE_ASYNCAPI,
+  CONTRACT_TYPE_DDL,
+] as const satisfies ReadonlyArray<TabAllowedApiType>
+
+export const DEPRECATED_TAB_ALLOWED_API_TYPES = [
+  API_TYPE_REST,
+  API_TYPE_GRAPHQL,
+  API_TYPE_ASYNCAPI,
+] as const satisfies ReadonlyArray<TabAllowedApiType>
+
+export const DEPRECATED_TAB_ALLOWED_API_TYPES_PRODUCTION = [
+  API_TYPE_REST,
+  API_TYPE_ASYNCAPI,
+] as const satisfies ReadonlyArray<TabAllowedApiType>
+
+export const API_QUALITY_TAB_ALLOWED_API_TYPES = [
+  API_TYPE_REST,
+  API_TYPE_ASYNCAPI,
+] as const satisfies ReadonlyArray<TabAllowedApiType>
+
+export const VERSION_TAB_ALLOWED_API_TYPES = {
+  [VERSION_TAB_IDS.contracts]: CONTRACTS_TAB_ALLOWED_API_TYPES,
+  [VERSION_TAB_IDS.apiChanges]: API_CHANGES_TAB_ALLOWED_API_TYPES,
+  [VERSION_TAB_IDS.deprecated]: DEPRECATED_TAB_ALLOWED_API_TYPES,
+  [VERSION_TAB_IDS.apiQuality]: API_QUALITY_TAB_ALLOWED_API_TYPES,
+} as const satisfies Record<VersionTabId, ReadonlyArray<TabAllowedApiType>>
+
+export function getTabAllowedApiTypes(
+  tab: VersionTabId,
+  context: ResolveTabApiTypesContext = {},
+): ReadonlyArray<TabAllowedApiType> {
+  if (context.productionMode === true) {
+    switch (tab) {
+      case VERSION_TAB_IDS.apiChanges:
+        return API_CHANGES_TAB_ALLOWED_API_TYPES_PRODUCTION
+      case VERSION_TAB_IDS.deprecated:
+        return DEPRECATED_TAB_ALLOWED_API_TYPES_PRODUCTION
+    }
+  }
+  return VERSION_TAB_ALLOWED_API_TYPES[tab]
 }
 
-export function getTabDefaultApiType(
-  allowed: PublishedApiTypes,
+export function resolveTabApiTypes(
+  tab: VersionTabId,
+  published: PublishedApiTypes,
+  context: ResolveTabApiTypesContext = {},
+): Array<ApiType | ContractType> {
+  const allowedApiTypes = getTabAllowedApiTypes(tab, context)
+  return published.filter(type => allowedApiTypes.includes(type))
+}
+
+export function isTabApiTypesEmpty(tabApiTypes: PublishedApiTypes): boolean {
+  return isEmpty(tabApiTypes)
+}
+
+export function getDefaultApiTypeFromTabApiTypes(
+  tabApiTypes: PublishedApiTypes,
 ): ApiType | ContractType | undefined {
-  return hasTabApiTypes(allowed) ? getDefaultApiType(allowed) : undefined
-}
-
-export function getContractsTabApiTypes(types: PublishedApiTypes): Array<ApiType | ContractType> {
-  return [...types]
-}
-
-export function getApiChangesTabApiTypes(types: PublishedApiTypes): Array<ApiType | ContractType> {
-  return excludeMcp(types)
-}
-
-export function getDeprecatedTabApiTypes(types: PublishedApiTypes): Array<ApiType | ContractType> {
-  return excludeMcpAndDdl(types)
-}
-
-export function getApiQualityTabApiTypes(types: PublishedApiTypes): Array<ApiType | ContractType> {
-  return excludeMcpAndDdl(types)
-}
-
-function excludeMcp(types: PublishedApiTypes): Array<ApiType | ContractType> {
-  return types.filter(type => type !== CONTRACT_TYPE_MCP)
-}
-
-function excludeMcpAndDdl(types: PublishedApiTypes): Array<ApiType | ContractType> {
-  return types.filter(type => type !== CONTRACT_TYPE_MCP && type !== CONTRACT_TYPE_DDL)
+  return isTabApiTypesEmpty(tabApiTypes) ? undefined : getDefaultApiType(tabApiTypes)
 }

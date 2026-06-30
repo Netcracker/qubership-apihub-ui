@@ -1,19 +1,3 @@
-/**
- * Copyright 2024-2025 NetCracker Technology Corporation
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import type { NumberSize, ResizeDirection } from 're-resizable'
 import type { FC, MutableRefObject } from 'react'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -22,6 +6,7 @@ import { useParams } from 'react-router-dom'
 import type { Key } from '@apihub/entities/keys'
 import { usePortalPageSettingsContext } from '@apihub/routes/PortalPageSettingsProvider'
 import { usePackageVersionContent } from '@apihub/routes/root/usePackageVersionContent'
+import { VERSION_TAB_IDS } from '@apihub/utils/tab-api-types'
 import { type ApiType, isApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import {
   CONTRACT_TYPE_DDL,
@@ -409,6 +394,7 @@ export const VersionContractsSubPage: FC = memo(() => {
 
   return (
     <VersionContractsPanel
+      versionTabId={VERSION_TAB_IDS.contracts}
       onContextSearch={setSearchValue}
       title={VERSION_CONTRACTS_TITLE}
       bodyRef={bodyRef}
