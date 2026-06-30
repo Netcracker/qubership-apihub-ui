@@ -42,13 +42,13 @@ export const API_CHANGES_TAB_ALLOWED_API_TYPES = [
   API_TYPE_REST,
   API_TYPE_GRAPHQL,
   API_TYPE_ASYNCAPI,
-  CONTRACT_TYPE_DDL,
+  // CONTRACT_TYPE_DDL, TODO: uncomment when full API changes support for DDL is ready.
 ] as const satisfies ReadonlyArray<TabAllowedApiType>
 
 export const API_CHANGES_TAB_ALLOWED_API_TYPES_PRODUCTION = [
   API_TYPE_REST,
   API_TYPE_ASYNCAPI,
-  CONTRACT_TYPE_DDL,
+  // CONTRACT_TYPE_DDL, TODO: uncomment when full API changes support for DDL is ready.
 ] as const satisfies ReadonlyArray<TabAllowedApiType>
 
 export const DEPRECATED_TAB_ALLOWED_API_TYPES = [

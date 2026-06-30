@@ -1,5 +1,5 @@
 import { API_TYPE_REST } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { CONTRACT_TYPE_DDL, CONTRACT_TYPE_MCP } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
+import { CONTRACT_TYPE_MCP } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 
 import { VERSION_TAB_IDS } from './tab-api-types'
 import { buildVersionTabsApiTypesState } from './versionTabApiTypesState'
@@ -69,14 +69,15 @@ describe('buildVersionTabsApiTypesState', () => {
     ).toBe(true)
   })
 
-  test('enables apiChanges and disables deprecated for DDL-only versions', () => {
-    const state = buildVersionTabsApiTypesState({
-      ...DEFAULT_INPUT,
-      publishedApiTypes: [CONTRACT_TYPE_DDL],
-    })
-
-    expect(state.tabs[VERSION_TAB_IDS.apiChanges].disabled).toBe(false)
-    expect(state.tabs[VERSION_TAB_IDS.apiChanges].defaultApiType).toBe(CONTRACT_TYPE_DDL)
-    expect(state.tabs[VERSION_TAB_IDS.deprecated].disabled).toBe(true)
-  })
+  // TODO(DDL): uncomment when CONTRACT_TYPE_DDL is restored in API_CHANGES_TAB_ALLOWED_API_TYPES.
+  // test('enables apiChanges and disables deprecated for DDL-only versions', () => {
+  //   const state = buildVersionTabsApiTypesState({
+  //     ...DEFAULT_INPUT,
+  //     publishedApiTypes: [CONTRACT_TYPE_DDL],
+  //   })
+  //
+  //   expect(state.tabs[VERSION_TAB_IDS.apiChanges].disabled).toBe(false)
+  //   expect(state.tabs[VERSION_TAB_IDS.apiChanges].defaultApiType).toBe(CONTRACT_TYPE_DDL)
+  //   expect(state.tabs[VERSION_TAB_IDS.deprecated].disabled).toBe(true)
+  // })
 })
