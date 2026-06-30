@@ -37,7 +37,7 @@ export const DdlTablePreview: FC<DdlTablePreviewProps> = memo<DdlTablePreviewPro
       data-testid="DdlTablePreview"
     >
       <DdlTableContentView
-        data={tableDetails?.data}
+        data={tableDetails}
         viewMode={viewMode}
       />
     </ContractPreviewPanel>

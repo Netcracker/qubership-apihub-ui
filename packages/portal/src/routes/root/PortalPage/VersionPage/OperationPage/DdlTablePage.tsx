@@ -15,6 +15,8 @@ import { getDdlTableDisplayName } from '@netcracker/qubership-apihub-ui-shared/e
 import type { FC } from 'react'
 import { memo, useCallback, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+
+import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
 import { useAutoFetchInfinitePages } from '../useAutoFetchInfinitePages'
 
 import type { Key } from '@apihub/entities/keys'
@@ -28,23 +30,24 @@ import { DdlTableContentView } from '../VersionContractsSubPage/DdlTableContentV
 import { DdlTableSelector } from './DdlTableSelector'
 
 export const DdlTablePage: FC = memo(() => {
-  const { packageId, versionId, operationId: ddlEntityId } = useParams<{
+  const { versionId, operationId: ddlEntityId } = useParams<{
     packageId: Key
     versionId: Key
     operationId: Key
   }>()
+  const [packageKey, versionKey] = usePackageParamsWithRef()
 
   const [packageObject] = usePackage({ showParents: true })
 
   const { data: tableDetails, isInitialLoading } = useDdlTableDetails({
-    packageKey: packageId,
-    versionKey: versionId,
+    packageKey: packageKey,
+    versionKey: versionKey,
     ddlEntityId: ddlEntityId,
   })
 
   const [allTables, isTablesLoading, fetchNextPage, isFetchingNextPage, hasNextPage] = useDdlTables({
-    packageKey: packageId,
-    versionKey: versionId,
+    packageKey: packageKey,
+    versionKey: versionKey,
     limit: 100,
   })
 
@@ -74,18 +77,18 @@ export const DdlTablePage: FC = memo(() => {
       return
     }
     navigateToOperations({
-      packageKey: packageId!,
-      versionKey: versionId!,
+      packageKey: packageKey!,
+      versionKey: versionKey!,
       apiType: CONTRACT_TYPE_DDL as unknown as ApiType,
     })
-  }, [backwardLocation, navigate, navigateToOperations, packageId, versionId])
+  }, [backwardLocation, navigate, navigateToOperations, packageKey, versionKey])
 
   const prepareLinkFn = useCallback((table: DdlContractEntity) =>
     getDdlTableLink({
-      packageKey: packageId!,
-      versionKey: versionId!,
+      packageKey: packageKey!,
+      versionKey: versionKey!,
       ddlEntityId: table.ddlEntityId,
-    }), [packageId, versionId])
+    }), [packageKey, versionKey])
 
   const title = useMemo(() => {
     if (!tableDetails) {
@@ -139,7 +142,7 @@ export const DdlTablePage: FC = memo(() => {
             ? <Skeleton variant="rectangular" height="100%" />
             : (
               <DdlTableContentView
-                data={tableDetails?.data}
+                data={tableDetails}
                 viewMode={viewMode}
               />
             )}

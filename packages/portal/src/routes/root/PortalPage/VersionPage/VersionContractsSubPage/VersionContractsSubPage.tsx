@@ -301,8 +301,6 @@ export const VersionContractsSubPage: FC = memo(() => {
           hasNextPage={hasNextDdlPage}
           isListLoading={isDdlTablesLoading}
           isNextPageFetching={isFetchingNextDdlPage}
-          packageKey={packageId!}
-          versionKey={versionId!}
           initialSize={previewSize}
           handleResize={onResize}
           maxPreviewWidth={maxPreviewWidth}

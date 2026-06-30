@@ -12,6 +12,8 @@ import inject from '@rollup/plugin-inject'
 import monacoWorkerHashPlugin from '../../vite-monaco-worker-hash'
 import createVersionJsonFilePlugin from '../../vite-create-version-json'
 
+const uiRootDir = path.resolve(__dirname, '../..')
+
 // const proxyServer = 'https://qubership-apihub-2.localtest.me/'
 const proxyServer = 'http://host.docker.internal:8081'
 const apiLinterProxyServer = 'http://host.docker.internal:8091'
@@ -98,6 +100,7 @@ export default defineConfig(({ mode }) => {
         '@netcracker/qubership-apihub-ui-shared': path.resolve(__dirname, './../shared/src'),
         'buffer': require.resolve('buffer/'),
         '@asyncapi/parser': '@asyncapi/parser/browser', // Use browser-compatible version of AsyncAPI parser
+        'pgsql-parser': path.resolve(uiRootDir, 'vite-stubs/pgsql-parser.ts'),
       },
     },
     worker: {

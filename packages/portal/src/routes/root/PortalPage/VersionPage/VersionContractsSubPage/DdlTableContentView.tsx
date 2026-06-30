@@ -1,8 +1,7 @@
-import { DocSpecView } from '@apihub/components/DocSpecView'
-import { Box } from '@mui/material'
+import { useNormalizedDdlContract } from '@apihub/api-hooks/InternalDocuments/useNormalizedDdlContract'
+import { Box, Skeleton } from '@mui/material'
 import { styled } from '@mui/material/styles'
-import { type FC, memo, useMemo } from 'react'
-
+import { DdlTableViewer } from '@netcracker/qubership-apihub-api-doc-viewer'
 import { RawSpecView } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/RawSpecView'
 import type { SpecViewMode } from '@netcracker/qubership-apihub-ui-shared/components/SpecViewToggler'
 import {
@@ -10,16 +9,24 @@ import {
   RAW_SPEC_VIEW_MODE,
   SIMPLE_SPEC_VIEW_MODE,
 } from '@netcracker/qubership-apihub-ui-shared/components/SpecViewToggler'
+import { calculateDdlEntityId } from '@netcracker/qubership-apihub-api-processor'
+import type { DdlContractEntityDetails } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
+import { DDL_ENTITY_KIND_TABLE } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
 import {
   DETAILED_SCHEMA_VIEW_MODE,
   SIMPLE_SCHEMA_VIEW_MODE,
 } from '@netcracker/qubership-apihub-ui-shared/entities/schema-view-mode'
-import { SQL_FILE_EXTENSION, SQL_FILE_FORMAT } from '@netcracker/qubership-apihub-ui-shared/utils/files'
+import { navigateToExternalPage } from '@netcracker/qubership-apihub-ui-shared/entities/external-navigation'
+import { theme } from '@netcracker/qubership-apihub-ui-shared/themes/theme'
+import { SQL_FILE_EXTENSION } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import { DDL_DOCUMENT_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import { toFormattedJsonString } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
+import { type FC, memo, useCallback, useMemo } from 'react'
+
+import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
+import { getDdlTableLink } from '../useNavigateToOperation'
 
 export type DdlTableContentViewProps = {
-  data: string | Record<string, unknown> | undefined
+  data: DdlContractEntityDetails | undefined
   viewMode: SpecViewMode
 }
 
@@ -27,40 +34,82 @@ export const DdlTableContentView: FC<DdlTableContentViewProps> = memo<DdlTableCo
   data,
   viewMode,
 }) => {
-  const content = useMemo(() => {
+  const [packageKey, versionKey] = usePackageParamsWithRef()
+
+  const {
+    data: normalizedSource,
+    isLoading: isNormalizedSourceLoading,
+    error: normalizedSourceError,
+  } = useNormalizedDdlContract({
+    ddlContract: data,
+    packageId: packageKey,
+    versionId: versionKey,
+  })
+
+  const rawContent = data?.data ?? ''
+
+  const tableKey = useMemo(() => {
     if (!data) {
-      return ''
+      return undefined
     }
-    if (typeof data === 'string') {
-      return data
-    }
-    return toFormattedJsonString(data)
+    return { schemaName: data.schemaName, name: data.name }
   }, [data])
+
+  const navigationCallback = useCallback((schemaName: string, tableName: string) => {
+    if (!data || !packageKey || !versionKey) {
+      return
+    }
+    const ddlEntityId = calculateDdlEntityId(schemaName, DDL_ENTITY_KIND_TABLE, tableName)
+    const link = getDdlTableLink({
+      packageKey: packageKey,
+      versionKey: versionKey,
+      ddlEntityId: ddlEntityId,
+    })
+    const url = `${link.pathname}${link.search ?? ''}`
+    navigateToExternalPage(url, true)
+  }, [data, packageKey, versionKey])
+
+  const parseError = normalizedSourceError?.message ?? null
+
+  if (viewMode !== RAW_SPEC_VIEW_MODE && isNormalizedSourceLoading) {
+    return (
+      <ContentContainer>
+        <Skeleton variant="rectangular" height="100%" />
+      </ContentContainer>
+    )
+  }
 
   return (
     <ContentContainer>
-      {/* TODO: replace DocSpecView with DdlTableViewer from api-doc-viewer when the DDL doc viewer ships in the UI dependency. */}
       {viewMode === DOC_SPEC_VIEW_MODE && (
-        <DocSpecView
-          value={content}
-          type={DDL_DOCUMENT_TYPE.DDL}
-          format={SQL_FILE_FORMAT}
-          schemaViewMode={DETAILED_SCHEMA_VIEW_MODE}
-        />
+        parseError
+          ? <ParseErrorMessage>{parseError}</ParseErrorMessage>
+          : (
+            <DdlTableViewer
+              source={normalizedSource}
+              tableKey={tableKey}
+              navigationCallback={navigationCallback}
+              displayMode={DETAILED_SCHEMA_VIEW_MODE}
+            />
+          )
       )}
 
       {viewMode === SIMPLE_SPEC_VIEW_MODE && (
-        <DocSpecView
-          value={content}
-          type={DDL_DOCUMENT_TYPE.DDL}
-          format={SQL_FILE_FORMAT}
-          schemaViewMode={SIMPLE_SCHEMA_VIEW_MODE}
-        />
+        parseError
+          ? <ParseErrorMessage>{parseError}</ParseErrorMessage>
+          : (
+            <DdlTableViewer
+              source={normalizedSource}
+              tableKey={tableKey}
+              navigationCallback={navigationCallback}
+              displayMode={SIMPLE_SCHEMA_VIEW_MODE}
+            />
+          )
       )}
 
       {viewMode === RAW_SPEC_VIEW_MODE && (
         <RawSpecView
-          value={content}
+          value={rawContent}
           extension={SQL_FILE_EXTENSION}
           type={DDL_DOCUMENT_TYPE.DDL}
         />
@@ -76,4 +125,11 @@ const ContentContainer = styled(Box)({
   flexDirection: 'column',
   height: '100%',
   overflow: 'hidden',
+  padding: theme.spacing(2),
 })
+
+const ParseErrorMessage = styled(Box)(({ theme }) => ({
+  color: theme.palette.error.main,
+  padding: theme.spacing(1.5),
+  whiteSpace: 'pre-wrap',
+}))
