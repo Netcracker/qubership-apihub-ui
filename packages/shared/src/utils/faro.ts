@@ -17,6 +17,7 @@
 import { getWebInstrumentations, initializeFaro, ReactIntegration, type Faro, type ReactIntegrationConfig } from '@grafana/faro-react'
 import { OtlpHttpTransport } from '@grafana/faro-transport-otlp-http'
 import { TracingInstrumentation } from '@grafana/faro-web-tracing'
+import { resolveFaroConfig } from './faro-config'
 
 const DEFAULT_FARO_ENVIRONMENT = 'production'
 const DEFAULT_FARO_APP_VERSION = '0.0.0'
@@ -36,7 +37,8 @@ export type InitFaroOptions = {
 let faroInstance: Faro | undefined
 
 // Initializes Grafana Faro with the OTLP/HTTP transport. Configuration is read from
-// build-time Vite env (VITE_FARO_*). When no collector URL is provided Faro stays
+// the runtime window.__APIHUB_FARO_CONFIG__ (injected by config.js) with build-time
+// VITE_FARO_* as a fallback. When no collector URL is provided Faro stays
 // disabled and the call is a no-op, so the apps run unchanged in environments
 // without an observability backend.
 export function initFaro(options: InitFaroOptions): Faro | undefined {
@@ -44,7 +46,11 @@ export function initFaro(options: InitFaroOptions): Faro | undefined {
     return faroInstance
   }
 
-  const collectorUrl = import.meta.env.VITE_FARO_COLLECTOR_URL
+  const config = resolveFaroConfig(
+    typeof window !== 'undefined' ? window.__APIHUB_FARO_CONFIG__ : undefined,
+    import.meta.env,
+  )
+  const collectorUrl = config.collectorUrl
   if (!collectorUrl) {
     return undefined
   }
@@ -54,14 +60,14 @@ export function initFaro(options: InitFaroOptions): Faro | undefined {
   faroInstance = initializeFaro({
     app: {
       name: options.app.name,
-      version: options.app.version ?? import.meta.env.VITE_FARO_APP_VERSION ?? DEFAULT_FARO_APP_VERSION,
-      environment: import.meta.env.VITE_FARO_ENVIRONMENT ?? DEFAULT_FARO_ENVIRONMENT,
+      version: options.app.version ?? config.appVersion ?? DEFAULT_FARO_APP_VERSION,
+      environment: config.environment ?? DEFAULT_FARO_ENVIRONMENT,
     },
     transports: [
       new OtlpHttpTransport({
         tracesURL: `${baseUrl}${OTLP_TRACES_PATH}`,
         logsURL: `${baseUrl}${OTLP_LOGS_PATH}`,
-        apiKey: import.meta.env.VITE_FARO_API_KEY,
+        apiKey: config.apiKey,
       }),
     ],
     instrumentations: [

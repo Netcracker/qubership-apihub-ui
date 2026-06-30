@@ -17,6 +17,8 @@
 /// <reference types="vite/client"/>
 /// <reference types="@emotion/react/types/css-prop"/>
 
+import type { FaroRuntimeConfig } from '../src/utils/faro-config'
+
 import '@mui/material/styles'
 import '@mui/material/Button'
 import '@mui/material/Chip'
@@ -128,6 +130,9 @@ declare global {
   }
 
   interface Window {
+    // Injected at container start by /config.js (see nginx/entrypoint.sh).
+    __APIHUB_FARO_CONFIG__?: FaroRuntimeConfig
+
     scheduler: Scheduler
     TaskController: TaskController
     TaskPriorityChangeEvent: TaskPriorityChangeEvent
