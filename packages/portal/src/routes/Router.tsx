@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { withFaroRouterInstrumentation } from '@grafana/faro-react'
 import type { RouteObject } from 'react-router-dom'
 import { createBrowserRouter, createRoutesFromElements, Navigate, Route } from 'react-router-dom'
 
@@ -65,7 +66,7 @@ import { ErrorPage, NOT_FOUND_TITLE } from '@netcracker/qubership-apihub-ui-shar
 import { LoginPage } from '@netcracker/qubership-apihub-ui-shared/pages/login'
 import { ProfilePage } from './root/ProfilePage/ProfilePage'
 
-export const router = createBrowserRouter(
+export const router = withFaroRouterInstrumentation(createBrowserRouter(
   createRoutes([
     <Route path="/" element={
       <NavigationProvider>
@@ -135,7 +136,7 @@ export const router = createBrowserRouter(
     </Route>,
     <Route path="/login" element={<LoginPage applicationName={'APIHUB Portal'}/>}/>,
   ]),
-)
+))
 
 function createRoutes(routers: ReactNode[]): RouteObject[] {
   return routers.map((router, index) => createRoutesFromElements(router, [index])).flat()

@@ -23,6 +23,7 @@ import { memo, StrictMode } from 'react'
 import { Router } from './routes/Router'
 import { useSystemConfiguration } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useSystemConfiguration'
 import { AppPlaceholder } from '@netcracker/qubership-apihub-ui-shared/components/AppPlaceholder'
+import { FaroErrorBoundaryWrapper } from '@netcracker/qubership-apihub-ui-shared/components/FaroErrorBoundaryWrapper'
 const client = new QueryClient({
   defaultOptions: {
     queries: {
@@ -39,9 +40,11 @@ const AppInner: FC = memo(() => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      {systemConfiguration
-        ? <Router />
-        : <AppPlaceholder />}
+      <FaroErrorBoundaryWrapper>
+        {systemConfiguration
+          ? <Router />
+          : <AppPlaceholder />}
+      </FaroErrorBoundaryWrapper>
     </ThemeProvider>
   )
 })

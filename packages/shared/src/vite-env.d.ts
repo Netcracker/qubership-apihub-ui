@@ -17,6 +17,8 @@
 /// <reference types="vite/client"/>
 /// <reference types="@emotion/react/types/css-prop"/>
 
+import type { FaroRuntimeConfig } from '../src/utils/faro-config'
+
 import '@mui/material/styles'
 import '@mui/material/Button'
 import '@mui/material/Chip'
@@ -118,7 +120,19 @@ interface CustomEventMap {
 }
 
 declare global {
+  interface ImportMetaEnv {
+    // Base OTLP/HTTP collector URL (Grafana Alloy faro.receiver or an edge proxy).
+    // Faro is initialized only when this is set; "/v1/traces" and "/v1/logs" are appended.
+    readonly VITE_FARO_COLLECTOR_URL?: string
+    readonly VITE_FARO_API_KEY?: string
+    readonly VITE_FARO_ENVIRONMENT?: string
+    readonly VITE_FARO_APP_VERSION?: string
+  }
+
   interface Window {
+    // Injected at container start by /config.js (see nginx/entrypoint.sh).
+    __APIHUB_FARO_CONFIG__?: FaroRuntimeConfig
+
     scheduler: Scheduler
     TaskController: TaskController
     TaskPriorityChangeEvent: TaskPriorityChangeEvent
