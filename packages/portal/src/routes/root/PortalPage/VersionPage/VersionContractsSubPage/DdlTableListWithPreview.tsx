@@ -112,6 +112,7 @@ export const DdlTableListWithPreview: FC<DdlTableListWithPreviewProps> = memo<Dd
           tableDetails={tableDetails}
           isLoading={isInitialLoading}
           maxWidthHeaderToolbar={initialSize}
+          noHeading={true}
         />
       }
     />
