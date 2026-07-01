@@ -1,16 +1,18 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import monacoEditor from 'vite-plugin-monaco-editor'
+import monacoEditor from 'vite-plugin-monaco-editor-esm'
 import path, { resolve } from 'path'
-import NodeModulesPolyfill from '@esbuild-plugins/node-modules-polyfill'
-import NodeGlobalsPolyfill from '@esbuild-plugins/node-globals-polyfill'
 import copy from 'rollup-plugin-copy'
 import ignoreDotsOnDevServer from 'vite-plugin-rewrite-all'
-import { VitePluginFonts } from 'vite-plugin-fonts'
+import Unfonts from 'unplugin-fonts/vite'
 import { visualizer as bundleVisualizer } from 'rollup-plugin-visualizer'
 import inject from '@rollup/plugin-inject'
 import monacoWorkerHashPlugin from '../../vite-monaco-worker-hash'
 import createVersionJsonFilePlugin from '../../vite-create-version-json'
+import { createRequire } from 'module'
+
+// The config is loaded as an ES module (.mts); recreate the CommonJS `require` used for `require.resolve` below.
+const require = createRequire(import.meta.url)
 
 // const proxyServer = 'https://qubership-apihub-2.localtest.me/'
 const proxyServer = 'http://host.docker.internal:8081'
@@ -19,11 +21,14 @@ const devServer = 'http://localhost:3003'
 
 export default defineConfig(({ mode }) => {
   const isProxyMode = mode === 'proxy'
+  // Bundle-size report is opt-in: set ANALYZE=1. Generating it holds the full module
+  // graph in memory and renders an HTML treemap, which inflates build memory and time.
+  const analyzeBundle = process.env.ANALYZE === 'true' || process.env.ANALYZE === '1'
 
   return {
     plugins: [
       react({ fastRefresh: false }),
-      bundleVisualizer(),
+      analyzeBundle && bundleVisualizer(),
       ignoreDotsOnDevServer(),
       monacoEditor({
         languageWorkers: ['editorWorkerService', 'json'],
@@ -54,7 +59,7 @@ export default defineConfig(({ mode }) => {
         flatten: true,
         hook: 'writeBundle',
       }),
-      VitePluginFonts({
+      Unfonts({
         custom: {
           families: [{
             name: 'Inter',
@@ -78,24 +83,19 @@ export default defineConfig(({ mode }) => {
       include: [
         '@netcracker/qubership-apihub-api-processor',
       ],
-      esbuildOptions: {
-        plugins: [
-          NodeModulesPolyfill(),
-          NodeGlobalsPolyfill({
-            buffer: true,
-            process: true,
-          }),
-        ],
-      },
+      // NOTE: Vite 8 optimises dependencies with Rolldown rather than esbuild, so the previous
+      // `esbuildOptions` with @esbuild-plugins node polyfills no longer applies and has been removed.
+      // The npm-linked api-processor in `npm run proxy` may again need Buffer/process polyfills;
+      // that dev-mode setup must be re-added the Rolldown way in a follow-up.
     },
     resolve: {
       alias: {
-        '@apihub/components': path.resolve(__dirname, './src/components/'),
-        '@apihub/entities': path.resolve(__dirname, './src/entities/'),
-        '@apihub/api-hooks': path.resolve(__dirname, './src/api-hooks/'),
-        '@apihub/routes': path.resolve(__dirname, './src/routes/'),
-        '@apihub/utils': path.resolve(__dirname, './src/utils/'),
-        '@netcracker/qubership-apihub-ui-shared': path.resolve(__dirname, './../shared/src'),
+        '@apihub/components': path.resolve(import.meta.dirname, './src/components/'),
+        '@apihub/entities': path.resolve(import.meta.dirname, './src/entities/'),
+        '@apihub/api-hooks': path.resolve(import.meta.dirname, './src/api-hooks/'),
+        '@apihub/routes': path.resolve(import.meta.dirname, './src/routes/'),
+        '@apihub/utils': path.resolve(import.meta.dirname, './src/utils/'),
+        '@netcracker/qubership-apihub-ui-shared': path.resolve(import.meta.dirname, './../shared/src'),
         'buffer': require.resolve('buffer/'),
         '@asyncapi/parser': '@asyncapi/parser/browser', // Use browser-compatible version of AsyncAPI parser
       },
@@ -105,9 +105,11 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       emptyOutDir: true,
+      // Skip gzip-compressing every chunk just to print its size: costly in memory and time on a large bundle.
+      reportCompressedSize: false,
       rollupOptions: {
         input: {
-          app: resolve(__dirname, 'index.html'),
+          app: resolve(import.meta.dirname, 'index.html'),
         },
         plugins: [inject({ Buffer: ['buffer', 'Buffer'] })],
       },
