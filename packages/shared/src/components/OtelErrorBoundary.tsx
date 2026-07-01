@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ErrorInfo, ReactNode } from 'react'
+import type { ErrorInfo, FC, ReactNode } from 'react'
 import { Component } from 'react'
 
 import { recordOtelException } from '../utils/otelErrorCapture'
@@ -53,9 +53,9 @@ class OtelErrorBoundary extends Component<Props, State> {
 
 // Wraps children in the OTel error boundary only when OTel is enabled; otherwise renders them
 // untouched so the app behaves exactly as before in environments without a collector.
-export function OtelErrorBoundaryWrapper({ children, fallback }: Props): ReactNode {
+export const OtelErrorBoundaryWrapper: FC<Props> = ({ children, fallback }) => {
   if (!isOtelEnabled()) {
-    return children
+    return <>{children}</>
   }
   return <OtelErrorBoundary fallback={fallback}>{children}</OtelErrorBoundary>
 }
