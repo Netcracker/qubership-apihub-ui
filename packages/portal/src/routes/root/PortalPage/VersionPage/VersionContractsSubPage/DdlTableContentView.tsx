@@ -27,12 +27,12 @@ import { getDdlTableLink } from '../useNavigateToOperation'
 export type DdlTableContentViewProps = {
   data: DdlContractEntityDetails | undefined
   viewMode: SpecViewMode
+  noHeading?: boolean
 }
 
-export const DdlTableContentView: FC<DdlTableContentViewProps> = memo<DdlTableContentViewProps>(({
-  data,
-  viewMode,
-}) => {
+export const DdlTableContentView: FC<DdlTableContentViewProps> = memo<DdlTableContentViewProps>((props) => {
+  const { data, viewMode, noHeading = false } = props
+
   const [packageKey, versionKey] = usePackageParamsWithRef()
 
   const {
@@ -54,6 +54,7 @@ export const DdlTableContentView: FC<DdlTableContentViewProps> = memo<DdlTableCo
     return { schemaName: data.schemaName, name: data.name }
   }, [data])
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const navigationLinkBuilder = useCallback((schemaName: string, tableName: string, _column: string) => {
     if (!data || !packageKey || !versionKey) {
       return '#'
@@ -88,6 +89,7 @@ export const DdlTableContentView: FC<DdlTableContentViewProps> = memo<DdlTableCo
               tableKey={tableKey}
               navigationLinkBuilder={navigationLinkBuilder}
               displayMode={DETAILED_SCHEMA_VIEW_MODE}
+              noHeading={noHeading}
             />
           )
       )}
@@ -101,6 +103,7 @@ export const DdlTableContentView: FC<DdlTableContentViewProps> = memo<DdlTableCo
               tableKey={tableKey}
               navigationLinkBuilder={navigationLinkBuilder}
               displayMode={SIMPLE_SCHEMA_VIEW_MODE}
+              noHeading={noHeading}
             />
           )
       )}

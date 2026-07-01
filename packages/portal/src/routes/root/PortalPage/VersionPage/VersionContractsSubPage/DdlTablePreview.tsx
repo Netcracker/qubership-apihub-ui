@@ -17,14 +17,18 @@ export type DdlTablePreviewProps = {
   tableDetails: DdlContractEntityDetails | undefined
   isLoading: boolean
   maxWidthHeaderToolbar?: number
+  noHeading?: boolean
 }
 
-export const DdlTablePreview: FC<DdlTablePreviewProps> = memo<DdlTablePreviewProps>(({
-  table,
-  tableDetails,
-  isLoading,
-  maxWidthHeaderToolbar,
-}) => {
+export const DdlTablePreview: FC<DdlTablePreviewProps> = memo<DdlTablePreviewProps>((props) => {
+  const {
+    table,
+    tableDetails,
+    isLoading,
+    maxWidthHeaderToolbar,
+    noHeading = false,
+  } = props
+
   const [viewMode, setViewMode] = useState<SpecViewMode>(DOC_SPEC_VIEW_MODE)
 
   return (
@@ -39,6 +43,7 @@ export const DdlTablePreview: FC<DdlTablePreviewProps> = memo<DdlTablePreviewPro
       <DdlTableContentView
         data={tableDetails}
         viewMode={viewMode}
+        noHeading={noHeading}
       />
     </ContractPreviewPanel>
   )
