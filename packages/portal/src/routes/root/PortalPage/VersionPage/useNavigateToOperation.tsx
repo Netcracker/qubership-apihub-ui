@@ -38,7 +38,7 @@ import {
 import type { Path } from '@remix-run/router'
 import type { Dispatch, SetStateAction } from 'react'
 import { useCallback } from 'react'
-import { getOperationsPath, useNavigation, type OperationsDetail } from '../../../NavigationProvider'
+import { getOperationsPath, useNavigation } from '../../../NavigationProvider'
 import { useTextSearchParam } from '../../useTextSearchParam'
 import { useDocumentSearchParam } from './useDocumentSearchParam'
 import { useFileViewMode } from './useFileViewMode'
@@ -138,7 +138,7 @@ export function getMcpEntityLink(params: {
       [MCP_ENDPOINT_SEARCH_PARAM]: { value: mcpEndpoint ?? '' },
       [MCP_ENTITY_SEARCH_PARAM]: { value: mcpEntity },
     },
-  } as unknown as OperationsDetail)
+  })
 }
 
 export function getDdlTableLink(params: {
@@ -153,6 +153,6 @@ export function getDdlTableLink(params: {
     versionKey: versionKey,
     apiType: CONTRACT_TYPE_DDL,
     operationKey: ddlEntityId,
-  } as unknown as OperationsDetail)
+  })
 }
 

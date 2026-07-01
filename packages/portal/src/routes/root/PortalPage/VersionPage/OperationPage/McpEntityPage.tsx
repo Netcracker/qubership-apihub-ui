@@ -9,7 +9,6 @@ import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/Pa
 import { JsonRawSpecView } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/JsonRawSpecView'
 import { Toolbar } from '@netcracker/qubership-apihub-ui-shared/components/Toolbar'
 import { ToolbarTitle } from '@netcracker/qubership-apihub-ui-shared/components/ToolbarTitle'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { CONTRACT_TYPE_MCP } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 import {
   getMcpEntityDisplayName,
@@ -21,7 +20,7 @@ import {
 
 import type { Key } from '@apihub/entities/keys'
 import { useBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
-import { type OperationsDetail, useNavigation } from '../../../../NavigationProvider'
+import { useNavigation } from '../../../../NavigationProvider'
 import { PackageBreadcrumbs } from '../../../PackageBreadcrumbs'
 import { usePackage } from '../../../usePackage'
 import { useMcpEntities } from '../api/useMcpEntities'
@@ -85,12 +84,12 @@ export const McpEntityPage: FC = memo(() => {
     navigateToOperations({
       packageKey: packageId!,
       versionKey: versionId!,
-      apiType: CONTRACT_TYPE_MCP as unknown as ApiType,
+      apiType: CONTRACT_TYPE_MCP,
       search: {
         [MCP_ENDPOINT_SEARCH_PARAM]: { value: mcpEndpoint ?? entityDetails?.mcpEndpoint ?? '' },
         [MCP_ENTITY_SEARCH_PARAM]: { value: mcpCollection },
       },
-    } as unknown as OperationsDetail)
+    })
   }, [
     backwardLocation,
     entityDetails?.mcpEndpoint,

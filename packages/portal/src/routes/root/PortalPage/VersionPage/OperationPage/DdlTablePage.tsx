@@ -8,7 +8,6 @@ import type { SpecViewMode } from '@netcracker/qubership-apihub-ui-shared/compon
 import { DOC_SPEC_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/components/SpecViewToggler'
 import { Toolbar } from '@netcracker/qubership-apihub-ui-shared/components/Toolbar'
 import { ToolbarTitle } from '@netcracker/qubership-apihub-ui-shared/components/ToolbarTitle'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { CONTRACT_TYPE_DDL } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 import type { DdlContractEntity } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
 import { getDdlTableDisplayName } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
@@ -79,7 +78,7 @@ export const DdlTablePage: FC = memo(() => {
     navigateToOperations({
       packageKey: packageKey!,
       versionKey: versionKey!,
-      apiType: CONTRACT_TYPE_DDL as unknown as ApiType,
+      apiType: CONTRACT_TYPE_DDL,
     })
   }, [backwardLocation, navigate, navigateToOperations, packageKey, versionKey])
 
