@@ -16,7 +16,6 @@ import {
   DETAILED_SCHEMA_VIEW_MODE,
   SIMPLE_SCHEMA_VIEW_MODE,
 } from '@netcracker/qubership-apihub-ui-shared/entities/schema-view-mode'
-import { navigateToExternalPage } from '@netcracker/qubership-apihub-ui-shared/entities/external-navigation'
 import { theme } from '@netcracker/qubership-apihub-ui-shared/themes/theme'
 import { SQL_FILE_EXTENSION } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import { DDL_DOCUMENT_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
@@ -55,9 +54,9 @@ export const DdlTableContentView: FC<DdlTableContentViewProps> = memo<DdlTableCo
     return { schemaName: data.schemaName, name: data.name }
   }, [data])
 
-  const navigationCallback = useCallback((schemaName: string, tableName: string) => {
+  const navigationLinkBuilder = useCallback((schemaName: string, tableName: string, _column: string): string => {
     if (!data || !packageKey || !versionKey) {
-      return
+      return ''
     }
     const ddlEntityId = calculateDdlEntityId(schemaName, DDL_ENTITY_KIND_TABLE, tableName)
     const link = getDdlTableLink({
@@ -65,8 +64,7 @@ export const DdlTableContentView: FC<DdlTableContentViewProps> = memo<DdlTableCo
       versionKey: versionKey,
       ddlEntityId: ddlEntityId,
     })
-    const url = `${link.pathname}${link.search ?? ''}`
-    navigateToExternalPage(url, true)
+    return `${link.pathname}${link.search ?? ''}`
   }, [data, packageKey, versionKey])
 
   const parseError = normalizedSourceError?.message ?? null
@@ -88,7 +86,7 @@ export const DdlTableContentView: FC<DdlTableContentViewProps> = memo<DdlTableCo
             <DdlTableViewer
               source={normalizedSource}
               tableKey={tableKey}
-              navigationCallback={navigationCallback}
+              navigationLinkBuilder={navigationLinkBuilder}
               displayMode={DETAILED_SCHEMA_VIEW_MODE}
             />
           )
@@ -101,7 +99,7 @@ export const DdlTableContentView: FC<DdlTableContentViewProps> = memo<DdlTableCo
             <DdlTableViewer
               source={normalizedSource}
               tableKey={tableKey}
-              navigationCallback={navigationCallback}
+              navigationLinkBuilder={navigationLinkBuilder}
               displayMode={SIMPLE_SCHEMA_VIEW_MODE}
             />
           )
