@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line filenames/no-index
-import './otel' // initialize OpenTelemetry before any app/router module is evaluated
-import 'virtual:fonts.css'
-import { App } from './App'
-import { createRoot } from 'react-dom/client'
+import { initOtel } from '@netcracker/qubership-apihub-ui-shared/utils/otel'
 
-const container = document.createElement('div')
-document.body.appendChild(container)
-createRoot(container).render(<App/>)
+// Must run before any app/router module is evaluated (see index.tsx import order),
+// so the tracer provider and fetch/xhr instrumentations are installed first.
+initOtel({ app: { name: 'apihub-portal' } })

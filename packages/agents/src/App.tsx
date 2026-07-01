@@ -23,6 +23,7 @@ import { memo, StrictMode } from 'react'
 import { Router } from './routes/Router'
 import { useSystemConfiguration } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useSystemConfiguration'
 import { AppPlaceholder } from '@netcracker/qubership-apihub-ui-shared/components/AppPlaceholder'
+import { OtelErrorBoundaryWrapper } from '@netcracker/qubership-apihub-ui-shared/components/OtelErrorBoundary'
 const client = new QueryClient({
   defaultOptions: {
     queries: {
@@ -39,9 +40,11 @@ const AppInner: FC = memo(() => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      {systemConfiguration
-        ? <Router />
-        : <AppPlaceholder />}
+      <OtelErrorBoundaryWrapper>
+        {systemConfiguration
+          ? <Router />
+          : <AppPlaceholder />}
+      </OtelErrorBoundaryWrapper>
     </ThemeProvider>
   )
 })

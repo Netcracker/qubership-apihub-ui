@@ -19,6 +19,7 @@ import { LoginPage } from '@netcracker/qubership-apihub-ui-shared/pages/login'
 import type { FC } from 'react'
 import { memo } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { OtelRouteTracer } from '@netcracker/qubership-apihub-ui-shared/components/OtelRouteTracer'
 import { EventBusProvider } from './EventBusProvider'
 import { NavigationProvider } from './NavigationProvider'
 import { BasePage } from './root/BasePage/BasePage'
@@ -31,6 +32,7 @@ export const Router: FC = memo(() => {
     <SystemConfigurationProvider>
       <EventBusProvider>
         <BrowserRouter>
+          <OtelRouteTracer />
           <NavigationProvider>
             <Routes>
               <Route path="/login" element={<LoginPage applicationName={'APIHUB NC Custom Service'} />} />

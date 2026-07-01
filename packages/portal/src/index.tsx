@@ -15,6 +15,7 @@
  */
 
 // eslint-disable-next-line filenames/no-index
+import './otel' // initialize OpenTelemetry before any app/router module is evaluated
 import 'virtual:fonts.css'
 import { App } from './App'
 import { createRoot } from 'react-dom/client'

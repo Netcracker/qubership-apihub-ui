@@ -19,6 +19,7 @@ import { EventBusProvider } from '@apihub/routes/EventBusProvider'
 import { router } from '@apihub/routes/Router'
 import { CssBaseline, ThemeProvider } from '@mui/material'
 import { AppPlaceholder } from '@netcracker/qubership-apihub-ui-shared/components/AppPlaceholder'
+import { OtelErrorBoundaryWrapper } from '@netcracker/qubership-apihub-ui-shared/components/OtelErrorBoundary'
 import { useUser } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization'
 import { useSystemConfiguration } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useSystemConfiguration'
 import { theme } from '@netcracker/qubership-apihub-ui-shared/themes/theme'
@@ -47,13 +48,15 @@ const AppInner: FC = memo(() => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <ErrorHandler>
-        <EventBusProvider>
-          {systemConfiguration && (isLoginPage || user)
-            ? <RouterProvider router={router} />
-            : <AppPlaceholder />}
-        </EventBusProvider>
-      </ErrorHandler>
+      <OtelErrorBoundaryWrapper>
+        <ErrorHandler>
+          <EventBusProvider>
+            {systemConfiguration && (isLoginPage || user)
+              ? <RouterProvider router={router} />
+              : <AppPlaceholder />}
+          </EventBusProvider>
+        </ErrorHandler>
+      </OtelErrorBoundaryWrapper>
     </ThemeProvider>
   )
 })

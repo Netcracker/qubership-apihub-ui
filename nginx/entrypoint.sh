@@ -45,7 +45,32 @@ adjust_addr APIHUB_NC_SERVICE_ADDRESS
 adjust_addr API_LINTER_SERVICE_ADDRESS
 adjust_addr APIHUB_AGENTS_BACKEND_ADDRESS
 
+# OpenTelemetry runtime config. When a collector address is provided the browser is pointed at
+# the same-origin "/otel" proxy (see nginx.conf.template); otherwise OTel stays disabled.
+# Escape backslashes and double quotes so a value with either can't produce invalid JS.
+otel_js_escape() {
+  printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'
+}
+if [ -n "${APIHUB_OTEL_COLLECTOR_ADDRESS:-}" ]; then
+  OTEL_BODY="window.__APIHUB_OTEL_CONFIG__ = {
+  collectorUrl: \"/otel\",
+  apiKey: \"$(otel_js_escape "${APIHUB_OTEL_API_KEY:-}")\",
+  environment: \"$(otel_js_escape "${APIHUB_OTEL_ENVIRONMENT:-}")\",
+  appVersion: \"$(otel_js_escape "${APIHUB_OTEL_APP_VERSION:-}")\"
+};"
+else
+  OTEL_BODY="window.__APIHUB_OTEL_CONFIG__ = {};"
+fi
+for dir in portal agents; do
+  target="/usr/share/nginx/html/${dir}/config.js"
+  [ -d "/usr/share/nginx/html/${dir}" ] && printf '%s\n' "$OTEL_BODY" >"$target"
+done
+
+# Default to a non-resolvable sentinel so the /otel location always renders even when unset.
+APIHUB_OTEL_COLLECTOR_ADDRESS="${APIHUB_OTEL_COLLECTOR_ADDRESS:-invalid.invalid.:80}"
+export APIHUB_OTEL_COLLECTOR_ADDRESS
+
 # No need to modify APIHUB_BACKEND_ADDRESS as its resolution is static
 # shellcheck disable=SC2016 # envsubst requires literal variable names in single quotes
-envsubst '${APIHUB_BACKEND_ADDRESS} ${APIHUB_NC_SERVICE_ADDRESS} ${API_LINTER_SERVICE_ADDRESS} ${APIHUB_AGENTS_BACKEND_ADDRESS} ${DNS_RESOLVERS}' </app/nginx.conf.template >/app/nginx/nginx.conf
+envsubst '${APIHUB_BACKEND_ADDRESS} ${APIHUB_NC_SERVICE_ADDRESS} ${API_LINTER_SERVICE_ADDRESS} ${APIHUB_AGENTS_BACKEND_ADDRESS} ${APIHUB_OTEL_COLLECTOR_ADDRESS} ${DNS_RESOLVERS}' </app/nginx.conf.template >/app/nginx/nginx.conf
 nginx -c /app/nginx/nginx.conf -g "daemon off;"

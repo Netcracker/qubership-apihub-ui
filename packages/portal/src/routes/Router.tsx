@@ -16,6 +16,7 @@
 
 import type { RouteObject } from 'react-router-dom'
 import { createBrowserRouter, createRoutesFromElements, Navigate, Route } from 'react-router-dom'
+import { instrumentDataRouterNavigation } from '@netcracker/qubership-apihub-ui-shared/utils/otelRouting'
 
 import type { ReactNode } from 'react'
 import {
@@ -136,6 +137,9 @@ export const router = createBrowserRouter(
     <Route path="/login" element={<LoginPage applicationName={'APIHUB Portal'}/>}/>,
   ]),
 )
+
+// Emit a route-change span on each navigation (OTel has no React Router integration).
+instrumentDataRouterNavigation(router)
 
 function createRoutes(routers: ReactNode[]): RouteObject[] {
   return routers.map((router, index) => createRoutesFromElements(router, [index])).flat()

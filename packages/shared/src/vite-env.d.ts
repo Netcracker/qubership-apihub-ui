@@ -29,6 +29,7 @@ import { Theme } from '@mui/material'
 import { Context } from 'react'
 import { FetchErrorDetails, FetchRedirectDetails } from '../src/utils'
 import type { SystemConfigurationDto } from './types/system-configuration'
+import type { OtelRuntimeConfig } from '../src/utils/otel-config'
 
 declare module 'react' {
   function createContext<T>(): Context<T>
@@ -118,10 +119,22 @@ interface CustomEventMap {
 }
 
 declare global {
+  interface ImportMetaEnv {
+    // Base OTLP/HTTP collector URL (dev/local fallback). At runtime the browser is
+    // pointed at the same-origin "/otel" proxy via window.__APIHUB_OTEL_CONFIG__ instead.
+    readonly VITE_OTEL_COLLECTOR_URL?: string
+    readonly VITE_OTEL_API_KEY?: string
+    readonly VITE_OTEL_ENVIRONMENT?: string
+    readonly VITE_OTEL_APP_VERSION?: string
+  }
+
   interface Window {
     scheduler: Scheduler
     TaskController: TaskController
     TaskPriorityChangeEvent: TaskPriorityChangeEvent
+
+    // Injected at container start by /config.js (see nginx/entrypoint.sh).
+    __APIHUB_OTEL_CONFIG__?: OtelRuntimeConfig
 
     addEventListener<K extends keyof CustomEventMap>(type: K, listener: (this: Document, ev: CustomEventMap[K]) => void): void
 

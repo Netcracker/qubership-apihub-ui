@@ -191,6 +191,27 @@ http {
             proxy_intercept_errors off;
         }
 
+        # Same-origin proxy to the OTLP/HTTP collector for OpenTelemetry (browser-side).
+        # Keeps the strict connect-src 'self' CSP intact. Dynamic upstream resolution.
+        location ^~ /otel {
+            set $otel_upstream http://${APIHUB_OTEL_COLLECTOR_ADDRESS};
+
+            add_header Cache-Control "no-store" always;
+            add_header X-Content-Type-Options  "nosniff"                         always;
+            add_header X-XSS-Protection        "0"                               always;
+            add_header Referrer-Policy         "strict-origin-when-cross-origin" always;
+            add_header X-Frame-Options         "DENY"                            always;
+            add_header Content-Security-Policy "frame-ancestors 'none'"          always;
+            rewrite ^/otel/(.*)$ /$1 break;
+            rewrite ^/otel$      /    break;
+
+            proxy_pass $otel_upstream;
+
+            proxy_connect_timeout 1s;
+            proxy_next_upstream off;
+            proxy_intercept_errors off;
+        }
+
         location ~ ^/(portal|agents)/version\.json$ {
             root /usr/share/nginx/html;
             add_header Cache-Control "no-store" always;
@@ -211,6 +232,19 @@ http {
             add_header X-Content-Type-Options    "nosniff"                         always;
             add_header X-XSS-Protection          "0"                               always;
             add_header Referrer-Policy           "strict-origin-when-cross-origin" always;
+        }
+
+        # Runtime OTel config must never be cached (regenerated each container start).
+        # Must precede the immutable *.js cache rules below so it wins (regex, file order).
+        location ~ ^/(?:agents/)?config\.js$ {
+            root /usr/share/nginx/html;
+            add_header Cache-Control "no-store" always;
+            add_header X-Content-Type-Options  "nosniff"                         always;
+            add_header X-XSS-Protection        "0"                               always;
+            add_header Referrer-Policy         "strict-origin-when-cross-origin" always;
+            add_header X-Frame-Options         "DENY"                            always;
+            add_header Content-Security-Policy "frame-ancestors 'none'"          always;
+            try_files $uri /portal$uri =404;
         }
 
         location ~* ^/agents/.*\.(?:js|css|woff2?|ttf|svg|png)$ {
