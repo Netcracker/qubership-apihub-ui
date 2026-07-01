@@ -11,7 +11,6 @@ import { DDL_TABLES_EMPTY_MESSAGE } from '@netcracker/qubership-apihub-ui-shared
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 
 import { useSelectedPreviewOperation, useSetSelectedPreviewOperation } from '../../SelectedPreviewOperationProvider'
-import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
 import { useDdlTableDetails } from '../api/useDdlTableDetails'
 import { useContractBrowseLinkHandlers } from '../useContractBrowseLinkHandlers'
 import { getDdlTableLink } from '../useNavigateToOperation'
@@ -23,6 +22,8 @@ export type DdlTableListWithPreviewProps = {
   isNextPageFetching?: boolean
   hasNextPage?: boolean
   isListLoading: boolean
+  packageKey: Key
+  versionKey: Key
   initialSize: number
   handleResize: ResizeCallback
   maxPreviewWidth: number
@@ -35,12 +36,12 @@ export const DdlTableListWithPreview: FC<DdlTableListWithPreviewProps> = memo<Dd
     fetchNextPage,
     isNextPageFetching,
     hasNextPage,
+    packageKey,
+    versionKey,
     initialSize,
     handleResize,
     maxPreviewWidth,
   } = props
-
-  const [packageKey, versionKey] = usePackageParamsWithRef()
 
   const selectedPreviewOperation = useSelectedPreviewOperation()
   const setSelectedPreviewOperation = useSetSelectedPreviewOperation()
@@ -63,8 +64,8 @@ export const DdlTableListWithPreview: FC<DdlTableListWithPreviewProps> = memo<Dd
 
   const prepareLinkFn = useCallback((table: DdlContractEntity) =>
     getDdlTableLink({
-      packageKey: packageKey!,
-      versionKey: versionKey!,
+      packageKey: packageKey,
+      versionKey: versionKey,
       ddlEntityId: table.ddlEntityId,
     }), [packageKey, versionKey])
 
