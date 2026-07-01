@@ -1,3 +1,5 @@
+import { useMemo } from 'react'
+
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import {
   CONTRACT_TYPE_DDL,
@@ -23,20 +25,19 @@ export function usePackageVersionApiTypes(
     includeSummary: true,
   })
 
-  const apiTypes: Array<ApiType | ContractType> = []
+  const apiTypes = useMemo<Array<ApiType | ContractType>>(() => {
+    const result: Array<ApiType | ContractType> = []
+    if (versionContent?.operationTypes) {
+      result.push(...Object.keys(versionContent.operationTypes) as ApiType[])
+    }
+    if (hasMcpContracts(versionContent?.contractsSummary?.mcp)) {
+      result.push(CONTRACT_TYPE_MCP)
+    }
+    if (hasDdlContracts(versionContent?.contractsSummary?.ddl)) {
+      result.push(CONTRACT_TYPE_DDL)
+    }
+    return result
+  }, [versionContent])
 
-  if (versionContent?.operationTypes) {
-    apiTypes.push(...Object.keys(versionContent.operationTypes) as ApiType[])
-  }
-  if (hasMcpContracts(versionContent?.contractsSummary?.mcp)) {
-    apiTypes.push(CONTRACT_TYPE_MCP)
-  }
-  if (hasDdlContracts(versionContent?.contractsSummary?.ddl)) {
-    apiTypes.push(CONTRACT_TYPE_DDL)
-  }
-
-  return {
-    apiTypes: apiTypes,
-    isLoading: isLoading,
-  }
+  return useMemo(() => ({ apiTypes, isLoading }), [apiTypes, isLoading])
 }
