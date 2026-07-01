@@ -23,6 +23,7 @@ import { type FC, memo, useCallback, useMemo } from 'react'
 
 import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
 import { getDdlTableLink } from '../useNavigateToOperation'
+import { DdlTableNavigationLink } from './DdlTableNavigationLink'
 
 export type DdlTableContentViewProps = {
   data: DdlContractEntityDetails | undefined
@@ -88,6 +89,7 @@ export const DdlTableContentView: FC<DdlTableContentViewProps> = memo<DdlTableCo
               source={normalizedSource}
               tableKey={tableKey}
               navigationLinkBuilder={navigationLinkBuilder}
+              navigationLinkComponent={DdlTableNavigationLink}
               displayMode={DETAILED_SCHEMA_VIEW_MODE}
               noHeading={noHeading}
             />
@@ -102,6 +104,7 @@ export const DdlTableContentView: FC<DdlTableContentViewProps> = memo<DdlTableCo
               source={normalizedSource}
               tableKey={tableKey}
               navigationLinkBuilder={navigationLinkBuilder}
+              navigationLinkComponent={DdlTableNavigationLink}
               displayMode={SIMPLE_SCHEMA_VIEW_MODE}
               noHeading={noHeading}
             />
