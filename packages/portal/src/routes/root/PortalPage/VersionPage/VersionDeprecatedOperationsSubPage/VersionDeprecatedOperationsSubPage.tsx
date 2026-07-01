@@ -21,7 +21,7 @@ import { isEmpty, isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/util
 import { NAVIGATION_MAX_WIDTH } from '@netcracker/qubership-apihub-ui-shared/utils/page-layouts'
 import type { Key } from '@apihub/entities/keys'
 import { usePortalPageSettingsContext } from '@apihub/routes/PortalPageSettingsProvider'
-import { VERSION_TAB_IDS } from '@apihub/utils/tab-api-types'
+import { VERSION_TAB_IDS } from '../VersionTabApiTypes/version-tab-allowed-api-types'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { useApiAudienceSearchFilter } from '../useApiAudienceSearchFilters'
 

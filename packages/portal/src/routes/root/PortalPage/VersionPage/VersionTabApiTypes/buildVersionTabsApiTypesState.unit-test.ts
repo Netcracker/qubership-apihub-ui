@@ -1,8 +1,8 @@
 import { API_TYPE_REST } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { CONTRACT_TYPE_MCP } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 
-import { VERSION_TAB_IDS } from './tab-api-types'
-import { buildVersionTabsApiTypesState } from './versionTabApiTypesState'
+import { buildVersionTabsApiTypesState } from './buildVersionTabsApiTypesState'
+import { VERSION_TAB_IDS } from './version-tab-allowed-api-types'
 
 const DEFAULT_INPUT = {
   publishedApiTypes: [API_TYPE_REST, CONTRACT_TYPE_MCP] as const,

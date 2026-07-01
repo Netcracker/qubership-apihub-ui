@@ -12,7 +12,7 @@ import {
   getTabAllowedApiTypes,
   resolveTabApiTypes,
   VERSION_TAB_IDS,
-} from './tab-api-types'
+} from './version-tab-allowed-api-types'
 
 const ALL_PUBLISHED = [
   API_TYPE_REST,

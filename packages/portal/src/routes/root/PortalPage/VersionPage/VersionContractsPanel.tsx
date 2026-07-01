@@ -20,7 +20,6 @@ import { memo, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { isApiTypeSelectorShown } from '@apihub/utils/operation-types'
-import { type VersionTabId } from '@apihub/utils/tab-api-types'
 import { RichFiltersLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/RichFiltersLayout'
 import { ListBox } from '@netcracker/qubership-apihub-ui-shared/components/Panels/ListBox'
 import type { TestableProps } from '@netcracker/qubership-apihub-ui-shared/components/Testable'
@@ -49,6 +48,7 @@ import { MCP_ENTITY_SEARCH_PARAM } from './useMcpEntitySearchParam'
 import { useOperationsView } from './useOperationsView'
 import { useSetPathParam } from './useSetPathParam'
 import { useVersionTabApiTypes } from './useVersionTabApiTypes'
+import { type VersionTabId } from './VersionTabApiTypes/version-tab-allowed-api-types'
 
 export type VersionContractsProps = {
   title: string

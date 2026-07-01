@@ -4,9 +4,12 @@ import { useParams } from 'react-router-dom'
 import { useSystemInfo } from '@netcracker/qubership-apihub-ui-shared/features/system-info'
 
 import { usePackageVersionContent } from '@apihub/routes/root/usePackageVersionContent'
-import { buildVersionTabsApiTypesState, type VersionTabsApiTypesState } from '@apihub/utils/versionTabApiTypesState'
 import { useApiQualityLinterEnabled, useApiQualityTabTooltip } from './ApiQualityValidationSummaryProvider'
 import { usePackageVersionApiTypes } from './usePackageVersionApiTypes'
+import {
+  buildVersionTabsApiTypesState,
+  type VersionTabsApiTypesState,
+} from './VersionTabApiTypes/buildVersionTabsApiTypesState'
 
 export const VersionTabApiTypesContext = createContext<VersionTabsApiTypesState | undefined>(undefined)
 

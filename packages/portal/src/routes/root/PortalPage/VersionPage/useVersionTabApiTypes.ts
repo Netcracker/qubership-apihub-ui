@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 
-import { type VersionTabsApiTypesState } from '@apihub/utils/versionTabApiTypesState'
+import { type VersionTabsApiTypesState } from './VersionTabApiTypes/buildVersionTabsApiTypesState'
 import { VersionTabApiTypesContext } from './VersionTabApiTypesProvider'
 
 export function useVersionTabApiTypes(): VersionTabsApiTypesState {

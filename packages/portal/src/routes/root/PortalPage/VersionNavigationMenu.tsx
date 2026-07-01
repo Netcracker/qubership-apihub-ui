@@ -24,8 +24,8 @@ import {
 
 import type { Key } from '@apihub/entities/keys'
 import { usePortalPageSettingsContext } from '@apihub/routes/PortalPageSettingsProvider'
-import { VERSION_TAB_IDS } from '@apihub/utils/tab-api-types'
-import type { VersionTabsApiTypesState } from '@apihub/utils/versionTabApiTypesState'
+import { VERSION_TAB_IDS } from './VersionPage/VersionTabApiTypes/version-tab-allowed-api-types'
+import type { VersionTabsApiTypesState } from './VersionPage/VersionTabApiTypes/buildVersionTabsApiTypesState'
 
 import {
   API_CHANGES_PAGE,

@@ -11,7 +11,7 @@ import {
 } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 
-import { getDefaultApiType } from './operation-types'
+import { getDefaultApiType } from '../../../../../utils/operation-types'
 
 export type PublishedApiTypes = ReadonlyArray<ApiType | ContractType>
 

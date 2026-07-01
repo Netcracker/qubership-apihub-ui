@@ -12,7 +12,7 @@ import {
   type TabAllowedApiType,
   VERSION_TAB_IDS,
   type VersionTabId,
-} from './tab-api-types'
+} from './version-tab-allowed-api-types'
 
 export type VersionTabApiTypesState = {
   allowedApiTypes: ReadonlyArray<TabAllowedApiType>

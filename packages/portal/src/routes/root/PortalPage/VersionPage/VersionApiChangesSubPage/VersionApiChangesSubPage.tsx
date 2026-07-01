@@ -24,7 +24,7 @@ import {
 
 import { usePortalPageSettingsContext } from '@apihub/routes/PortalPageSettingsProvider'
 import { isApiTypeSelectorShown } from '@apihub/utils/operation-types'
-import { VERSION_TAB_IDS } from '@apihub/utils/tab-api-types'
+import { VERSION_TAB_IDS } from '../VersionTabApiTypes/version-tab-allowed-api-types'
 import { getVersionPath } from '../../../../NavigationProvider'
 import { usePackage } from '../../../usePackage'
 import { useVersionSearchParam } from '../../../useVersionSearchParam'
