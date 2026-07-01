@@ -11,10 +11,6 @@ import { visualizer as bundleVisualizer } from 'rollup-plugin-visualizer'
 import inject from '@rollup/plugin-inject'
 import monacoWorkerHashPlugin from '../../vite-monaco-worker-hash'
 import createVersionJsonFilePlugin from '../../vite-create-version-json'
-import { libpgQueryWasmInteropPlugin } from '../../vite-libpg-query-wasm-interop'
-import { libpgQueryWasmPlugin } from '../../vite-libpg-query-wasm-plugin'
-
-const uiRootDir = path.resolve(__dirname, '../..')
 
 // const proxyServer = 'https://qubership-apihub-2.localtest.me/'
 const proxyServer = 'http://host.docker.internal:8081'
@@ -26,13 +22,6 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [
-      // DDL publishing parses SQL in the build worker via api-processor/processor ->
-      // ddlapi/parser -> libpg-query (WASM). These two plugins fix libpg-query's
-      // Emscripten ESM-default import and serve/copy libpg-query.wasm so locateFile
-      // resolves it. The model/main bundle stays parser-free (api-processor split),
-      // so no pgsql-parser stub or conditional routing is needed.
-      libpgQueryWasmInteropPlugin(uiRootDir),
-      libpgQueryWasmPlugin(uiRootDir),
       react({ fastRefresh: false }),
       bundleVisualizer(),
       ignoreDotsOnDevServer(),
@@ -89,13 +78,11 @@ export default defineConfig(({ mode }) => {
       include: [
         '@netcracker/qubership-apihub-api-processor',
       ],
-      // Keep the WASM parser chain out of esbuild pre-bundling so it stays in the
-      // build worker's async chunk and the libpg-query WASM plugins (rollup-level)
-      // are not bypassed. Reached only via api-processor/processor -> ddlapi/parser.
+      // Keep ddlapi out of esbuild pre-bundling so its self-contained '/parser'
+      // (WASM-inlined) stays in the build worker's lazily-loaded chunk rather than
+      // being eagerly pre-bundled. Reached only via api-processor/processor.
       exclude: [
         '@netcracker/qubership-apihub-ddlapi',
-        'pgsql-parser',
-        'libpg-query',
       ],
       esbuildOptions: {
         plugins: [
@@ -119,7 +106,6 @@ export default defineConfig(({ mode }) => {
         '@asyncapi/parser': '@asyncapi/parser/browser', // Use browser-compatible version of AsyncAPI parser
       },
     },
-    assetsInclude: ['**/*.wasm'],
     worker: {
       format: 'es',
     },
