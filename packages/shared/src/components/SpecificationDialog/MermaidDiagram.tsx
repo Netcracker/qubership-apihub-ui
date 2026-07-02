@@ -15,48 +15,63 @@
  */
 
 import type { FC } from 'react'
-import { memo, useEffect, useId, useRef, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
+import { v4 as uuidv4 } from 'uuid'
+
+// mermaid is a singleton — initialize it only once across all instances.
+let mermaidInitialized = false
 
 type MermaidDiagramProps = {
   value: string
 }
 
 const MermaidDiagram: FC<MermaidDiagramProps> = memo(({ value }) => {
-  const rawId = useId()
-  const diagramId = `mermaid-${rawId.replace(/:/g, '')}`
-  const containerRef = useRef<HTMLDivElement>(null)
+  const [svg, setSvg] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    let cancelled = false
+    let isMounted = true
+    const effectId = `mermaid-${uuidv4()}`
 
-    import('mermaid').then(({ default: mermaid }) => {
-      mermaid.initialize({ startOnLoad: false, theme: 'default' })
+    async function renderChart(): Promise<void> {
+      const { default: mermaid } = await import('mermaid')
 
-      mermaid.render(diagramId, value)
-        .then(({ svg }) => {
-          if (!cancelled && containerRef.current) {
-            containerRef.current.innerHTML = svg
-            setError(null)
-          }
-        })
-        .catch((err: unknown) => {
-          if (!cancelled) {
-            setError(String(err))
-          }
-        })
-    })
+      if (!mermaidInitialized) {
+        mermaid.initialize({ startOnLoad: false, theme: 'default' })
+        mermaidInitialized = true
+      }
+      const { svg: renderedSvg } = await mermaid.render(effectId, value)
+
+      if (isMounted) {
+        setSvg(renderedSvg)
+        setError(null)
+      }
+    }
+
+    renderChart()
+      .catch((err: unknown) => {
+        if (isMounted) {
+          setError(String(err))
+        }
+      })
+      .finally(() => {
+        // Clean up the temporary element mermaid appends to document.body.
+        document.getElementById(effectId)?.remove()
+      })
 
     return () => {
-      cancelled = true
+      isMounted = false
+      document.getElementById(effectId)?.remove()
     }
-  }, [diagramId, value])
+  }, [value])
 
   if (error !== null) {
     return <pre><code>{value}</code></pre>
   }
 
-  return <div ref={containerRef} />
+  // dangerouslySetInnerHTML tells React this content is managed explicitly —
+  // it will not overwrite the SVG during reconciliation.
+  return <div dangerouslySetInnerHTML={svg !== null ? { __html: svg } : undefined} />
 })
 
 MermaidDiagram.displayName = 'MermaidDiagram'

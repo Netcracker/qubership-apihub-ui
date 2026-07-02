@@ -28,9 +28,9 @@ export type MarkdownViewerProps = {
 }
 
 const MarkdownComponents: Components = {
-  code({ className, children, ...props }) {
+  code({ className, children, inline, node: _node, ...props }) {
     const language = /language-(\w+)/.exec(className ?? '')?.[1]
-    if (language === 'mermaid') {
+    if (!inline && language === 'mermaid') {
       return <MermaidDiagram value={String(children).replace(/\n$/, '')}/>
     }
     return <code className={className} {...props}>{children}</code>
