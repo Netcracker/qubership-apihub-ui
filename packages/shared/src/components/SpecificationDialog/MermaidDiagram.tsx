@@ -30,6 +30,9 @@ const MermaidDiagram: FC<MermaidDiagramProps> = memo(({ value }) => {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    setSvg(null)
+    setError(null)
+
     let isMounted = true
     const effectId = `mermaid-${uuidv4()}`
 
@@ -37,7 +40,11 @@ const MermaidDiagram: FC<MermaidDiagramProps> = memo(({ value }) => {
       const { default: mermaid } = await import('mermaid')
 
       if (!mermaidInitialized) {
-        mermaid.initialize({ startOnLoad: false, theme: 'default' })
+        mermaid.initialize({
+          startOnLoad: false,
+          theme: 'default',
+          securityLevel: 'strict',
+        })
         mermaidInitialized = true
       }
       const { svg: renderedSvg } = await mermaid.render(effectId, value)
