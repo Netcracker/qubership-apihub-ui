@@ -1,4 +1,5 @@
 import type { McpKind } from '@netcracker/qubership-apihub-api-processor'
+import { MCP_KIND } from '@netcracker/qubership-apihub-api-processor'
 
 import { MCP_DOCUMENT_TYPE, type McpDocumentType } from '../utils/specs'
 
@@ -156,9 +157,23 @@ export function compareMcpDocumentTypes(typeA: McpDocumentType, typeB: McpDocume
   return orderA - orderB
 }
 
-const MCP_DOCUMENT_SPEC_TYPE_TO_COLLECTION: Record<McpDocumentType, McpCollection> = {
+export const MCP_DOCUMENT_SPEC_TYPE_TO_COLLECTION: Record<McpDocumentType, McpCollection> = {
   [MCP_DOCUMENT_TYPE.MCP_INIT]: MCP_COLLECTION_INIT,
   [MCP_DOCUMENT_TYPE.MCP_TOOLS]: MCP_COLLECTION_TOOLS,
   [MCP_DOCUMENT_TYPE.MCP_PROMPTS]: MCP_COLLECTION_PROMPTS,
   [MCP_DOCUMENT_TYPE.MCP_RESOURCES]: MCP_COLLECTION_RESOURCES,
+}
+
+export const MCP_KIND_TO_DOCUMENT_SPEC_TYPE: Record<McpKind, McpDocumentType> = {
+  [MCP_KIND.INIT]: MCP_DOCUMENT_TYPE.MCP_INIT,
+  [MCP_KIND.TOOL]: MCP_DOCUMENT_TYPE.MCP_TOOLS,
+  [MCP_KIND.PROMPT]: MCP_DOCUMENT_TYPE.MCP_PROMPTS,
+  [MCP_KIND.RESOURCE]: MCP_DOCUMENT_TYPE.MCP_RESOURCES,
+}
+
+export const MCP_KIND_TO_COLLECTION: Record<McpKind, McpCollection> = {
+  [MCP_KIND.INIT]: MCP_COLLECTION_INIT,
+  [MCP_KIND.TOOL]: MCP_COLLECTION_TOOLS,
+  [MCP_KIND.PROMPT]: MCP_COLLECTION_PROMPTS,
+  [MCP_KIND.RESOURCE]: MCP_COLLECTION_RESOURCES,
 }

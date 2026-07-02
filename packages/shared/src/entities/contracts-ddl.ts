@@ -1,16 +1,20 @@
 import type { DiffType } from '@netcracker/qubership-apihub-api-diff'
-import { type DiffTypeDto, replacePropertyInChangesSummary } from '@netcracker/qubership-apihub-api-processor'
+import {
+  DDL_KIND,
+  type DdlKind,
+  type DiffTypeDto,
+  replacePropertyInChangesSummary,
+} from '@netcracker/qubership-apihub-api-processor'
 
 import { hasNoChangesInSummary } from '../utils/change-severities'
 import type { ChangesSummary } from './change-severities'
 import { EMPTY_CHANGE_SUMMARY } from './version-changelog'
 
-// TODO(DDL/api-processor): import DDL_ENTITY_KIND_* from api-processor when the DDL plugin ships.
-// 'view' is reserved for forward compatibility; v1 emits tables only.
-export const DDL_ENTITY_KIND_TABLE = 'table'
+export const DDL_ENTITY_KIND_TABLE = DDL_KIND.TABLE
+// Backend/OpenAPI wire value; api-processor DDL_KIND.VIEW not shipped yet (v1 is table-only).
 export const DDL_ENTITY_KIND_VIEW = 'view'
 
-export type DdlEntityKind = typeof DDL_ENTITY_KIND_TABLE | typeof DDL_ENTITY_KIND_VIEW
+export type DdlEntityKind = DdlKind | typeof DDL_ENTITY_KIND_VIEW
 
 export type DdlContractEntityDto = Readonly<{
   ddlEntityId: string

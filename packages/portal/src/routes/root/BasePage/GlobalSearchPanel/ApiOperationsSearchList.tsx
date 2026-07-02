@@ -14,25 +14,41 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useRef } from 'react'
-import { Box, Typography } from '@mui/material'
-import { CONTENT_WIDTH } from './GlobalSearchPanel'
+import { type FC, memo, useRef } from 'react'
 import { Marker } from 'react-mark.js'
-import type { FetchNextSearchResultList } from './global-search'
-import { getOperationsPath } from '../../../NavigationProvider'
-import type { OperationSearchResult } from '@apihub/entities/global-search'
-import { useIntersectionObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useIntersectionObserver'
-import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
-import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
+
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import {
-  OperationTitleWithMeta as OperationTitle,
+  OperationPathMeta,
+  useOperationTitleMeta,
 } from '@netcracker/qubership-apihub-ui-shared/components/Operations/OperationTitleWithMeta'
-import { useEventBus } from '@apihub/routes/EventBusProvider'
+import {
+  MCP_KIND_TO_COLLECTION,
+  MCP_KIND_TO_DOCUMENT_SPEC_TYPE,
+} from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
+import { useIntersectionObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useIntersectionObserver'
+import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 
-export type ApiOperationsSearchListProps = {
-  value: OperationSearchResult[]
+import type {
+  ContractElementSearchResult,
+  DdlContractSearchResult,
+  McpContractSearchResult,
+  OperationSearchResult,
+} from '@apihub/entities/global-search'
+import { DDL_LEVEL, MCP_LEVEL, OPERATION_LEVEL } from '@apihub/entities/global-search'
+import { getOperationsPath } from '../../../NavigationProvider'
+import { getDdlTableLink, getMcpEntityLink } from '../../PortalPage/VersionPage/useNavigateToOperation'
+import type { FetchNextSearchResultList } from './global-search'
+import { ResultCommonHeader } from './ResultCommonHeader'
+import {
+  SearchResultListRoot,
+  SearchResultListSentinel,
+  SearchResultMetaLine,
+  SearchResultRowRoot,
+} from './SearchResultRowLayout'
+
+type ApiOperationsSearchListProps = {
+  value: ContractElementSearchResult[]
   searchText: string
   fetchNextPage?: FetchNextSearchResultList
   isNextPageFetching?: boolean
@@ -45,51 +61,191 @@ export const ApiOperationsSearchList: FC<ApiOperationsSearchListProps> = memo<Ap
   const ref = useRef<HTMLDivElement>(null)
   useIntersectionObserver(ref, isNextPageFetching, hasNextPage, fetchNextPage)
 
-  const { hideGlobalSearchPanel } = useEventBus()
   return (
-    <Box width={CONTENT_WIDTH} position="relative">
-      {value.map((operation) => {
-        const { version, operationKey, packageKey, apiType, parentPackages, name } = operation
-        const { versionKey } = getSplittedVersionKey(version)
-        const breadcrumbs = [...parentPackages, name, versionKey].join(' / ')
-
-        return (
-          <Box mb={2} key={`api-operations-search-list-box-${packageKey}-${operationKey}-${version}`} data-testid="SearchResultRow">
-            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-              <OverflowTooltip title={breadcrumbs}>
-                <Typography
-                  variant="subtitle2"
-                  noWrap
-                  data-testid="PathToSearchResultItem"
-                >
-                  {breadcrumbs}
-                </Typography>
-              </OverflowTooltip>
-            </Box>
-            <Marker mark={searchText}>
-              <OperationTitle
-                operation={operation}
-                link={getOperationsPath({
-                  packageKey: packageKey,
-                  versionKey: versionKey,
-                  operationKey: operationKey,
-                  apiType: apiType,
-                })}
-                onLinkClick={hideGlobalSearchPanel}
-              />
-            </Marker>
-          </Box>
-        )
-      })}
+    <SearchResultListRoot>
+      {value.map((item) => (
+        <ContractElementSearchResultRow
+          key={getContractElementSearchResultKey(item)}
+          item={item}
+          searchText={searchText}
+        />
+      ))}
 
       {hasNextPage && (
-        <Box
-          ref={ref}
-          height="100px"
-        >
-          <LoadingIndicator/>
-        </Box>
+        <SearchResultListSentinel ref={ref}>
+          <LoadingIndicator />
+        </SearchResultListSentinel>
       )}
-    </Box>
+    </SearchResultListRoot>
   )
 })
+
+ApiOperationsSearchList.displayName = 'ApiOperationsSearchList'
+
+type ContractElementSearchResultRowProps = {
+  item: ContractElementSearchResult
+  searchText: string
+}
+
+const ContractElementSearchResultRow: FC<ContractElementSearchResultRowProps> = memo<
+  ContractElementSearchResultRowProps
+>(({
+  item,
+  searchText,
+}) => {
+  switch (item.level) {
+    case OPERATION_LEVEL:
+      return <OperationSearchResultRow operation={item.result} searchText={searchText} />
+    case MCP_LEVEL:
+      return <McpContractSearchResultRow result={item.result} searchText={searchText} />
+    case DDL_LEVEL:
+      return <DdlContractSearchResultRow result={item.result} searchText={searchText} />
+  }
+})
+
+ContractElementSearchResultRow.displayName = 'ContractElementSearchResultRow'
+
+type OperationSearchResultRowProps = {
+  operation: OperationSearchResult
+  searchText: string
+}
+
+const OperationSearchResultRow: FC<OperationSearchResultRowProps> = memo<OperationSearchResultRowProps>(({
+  operation,
+  searchText,
+}) => {
+  const { version, operationKey, packageKey, apiType, parentPackages, name } = operation
+  const { versionKey } = getSplittedVersionKey(version)
+  const { subtitle, type } = useOperationTitleMeta(operation)
+
+  return (
+    <SearchResultRowRoot data-testid="SearchResultRow">
+      <ResultCommonHeader
+        url={getOperationsPath({
+          packageKey: packageKey,
+          versionKey: versionKey,
+          operationKey: operationKey,
+          apiType: apiType,
+        })}
+        title={operation.title}
+        parents={[...parentPackages, name, versionKey]}
+        searchText={searchText}
+      />
+      <Marker mark={searchText}>
+        <OperationPathMeta subtitle={subtitle} type={type}/>
+      </Marker>
+    </SearchResultRowRoot>
+  )
+})
+
+OperationSearchResultRow.displayName = 'OperationSearchResultRow'
+
+type McpContractSearchResultRowProps = {
+  result: McpContractSearchResult
+  searchText: string
+}
+
+const McpContractSearchResultRow: FC<McpContractSearchResultRowProps> = memo<McpContractSearchResultRowProps>(({
+  result,
+  searchText,
+}) => {
+  const {
+    packageKey,
+    name,
+    parentPackages,
+    version,
+    entityId,
+    entityName,
+    kind,
+    mcpEndpoint,
+    status,
+  } = result
+  const { versionKey } = getSplittedVersionKey(version)
+
+  return (
+    <SearchResultRowRoot data-testid="SearchResultRow">
+      <ResultCommonHeader
+        url={getMcpEntityLink({
+          packageKey: packageKey,
+          versionKey: versionKey,
+          mcpEntityId: entityId,
+          mcpEndpoint: mcpEndpoint,
+          mcpEntity: MCP_KIND_TO_COLLECTION[kind],
+        })}
+        icon={MCP_KIND_TO_DOCUMENT_SPEC_TYPE[kind]}
+        breadCrumbsStatus={status}
+        title={entityName ?? entityId}
+        parents={[...parentPackages, name, versionKey]}
+        searchText={searchText}
+      />
+      <SearchResultMetaLine
+        label="MCP Endpoint"
+        value={mcpEndpoint}
+        searchText={searchText}
+        data-testid="McpEndpointValue"
+        valueTestId="McpEndpointPath"
+      />
+    </SearchResultRowRoot>
+  )
+})
+
+McpContractSearchResultRow.displayName = 'McpContractSearchResultRow'
+
+type DdlContractSearchResultRowProps = {
+  result: DdlContractSearchResult
+  searchText: string
+}
+
+const DdlContractSearchResultRow: FC<DdlContractSearchResultRowProps> = memo<DdlContractSearchResultRowProps>(({
+  result,
+  searchText,
+}) => {
+  const {
+    packageKey,
+    name,
+    parentPackages,
+    version,
+    entityId,
+    tableName,
+    schemaName,
+    status,
+  } = result
+  const { versionKey } = getSplittedVersionKey(version)
+
+  return (
+    <SearchResultRowRoot data-testid="SearchResultRow">
+      <ResultCommonHeader
+        url={getDdlTableLink({
+          packageKey: packageKey,
+          versionKey: versionKey,
+          ddlEntityId: entityId,
+        })}
+        breadCrumbsStatus={status}
+        title={tableName ?? entityId}
+        parents={[...parentPackages, name, versionKey]}
+        searchText={searchText}
+      />
+      {schemaName && (
+        <SearchResultMetaLine
+          value={schemaName}
+          searchText={searchText}
+          data-testid="DdlSchemaName"
+        />
+      )}
+    </SearchResultRowRoot>
+  )
+})
+
+DdlContractSearchResultRow.displayName = 'DdlContractSearchResultRow'
+
+function getContractElementSearchResultKey(item: ContractElementSearchResult): string {
+  const { level, result } = item
+  switch (level) {
+    case OPERATION_LEVEL:
+      return `${level}-${result.packageKey}-${result.operationKey}-${result.version}`
+    case MCP_LEVEL:
+      return `${level}-${result.packageKey}-${result.entityId}-${result.version}`
+    case DDL_LEVEL:
+      return `${level}-${result.packageKey}-${result.entityId}-${result.version}`
+  }
+}

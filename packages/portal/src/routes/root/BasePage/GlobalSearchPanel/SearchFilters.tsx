@@ -68,9 +68,14 @@ import {
   API_TYPE_ASYNCAPI,
   API_TYPE_GRAPHQL,
   API_TYPE_REST,
-  API_TYPE_TITLE_MAP,
   API_TYPES,
+  isApiType,
 } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { ApiContract } from '@apihub/entities/global-search'
+import {
+  CONTRACT_TYPES,
+  getRouteApiTypeTitle,
+} from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 import { DEFAULT_DEBOUNCE } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
 import { useSystemInfo } from '@netcracker/qubership-apihub-ui-shared/features/system-info'
 import { usePackage } from '@apihub/routes/root/usePackage'
@@ -88,7 +93,7 @@ type FiltersData = Partial<{
   version: Key
   status: VersionStatus
   publicationDatePeriod: string[]
-  apiType: ApiType
+  apiContract: ApiContract
   scope: Scopes[]
   detailedScope: OptionRestDetailedScope[]
   operationTypes: GraphQlOperationTypes[]
@@ -125,7 +130,7 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
       group: null,
       pkg: null,
       status: RELEASE_VERSION_STATUS,
-      apiType: API_TYPE_REST,
+      apiContract: API_TYPE_REST,
       publicationDatePeriod: defaultPublicationDatePeriod,
     },
   })
@@ -136,14 +141,14 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
       group: null,
       pkg: null,
       status: RELEASE_VERSION_STATUS,
-      apiType: API_TYPE_REST,
+      apiContract: API_TYPE_REST,
       publicationDatePeriod: defaultPublicationDatePeriod,
     })
   }, [defaultPublicationDatePeriod, defaultWorkspace, reset])
 
   const {
     operationTypes,
-    apiType,
+    apiContract,
     methods,
     version,
     status,
@@ -212,6 +217,11 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
 
   const { useV3Search } = useSystemInfo()
 
+  const apiContractOptions = useMemo(
+    () => (useV3Search ? API_TYPES : [...API_TYPES, ...CONTRACT_TYPES]),
+    [useV3Search],
+  )
+
   const packageIdsDataForPackageAndGroup = useMemo(() => {
     if (packageKey) {
       return [packageKey]
@@ -228,7 +238,7 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
         version,
         status,
         publicationDatePeriod,
-        apiType,
+        apiContract,
       } = value
 
       const versionData = version ? [version] : []
@@ -247,18 +257,18 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
       const apiTypeOperationsParams: Record<ApiType, SearchRestParams | SearchGQLParams> =
         {
           [API_TYPE_REST]: {
-            apiType: apiType,
+            apiType: API_TYPE_REST,
             scope: [REQUEST_SCOPE, RESPONSE_SCOPE],
             detailedScope: restDetailedScope,
             methods: methods,
           } satisfies SearchRestParams,
           [API_TYPE_GRAPHQL]: {
-            apiType: apiType,
+            apiType: API_TYPE_GRAPHQL,
             scope: [ARGUMENT_SCOPE, PROPERTY_SCOPE, ANNOTATION_SCOPE],
             operationTypes: [QUERY_OPERATION_TYPES, MUTATION_OPERATION_TYPES, SUBSCRIPTION_OPERATION_TYPES],
           } satisfies SearchGQLParams,
           [API_TYPE_ASYNCAPI]: {
-            apiType: apiType,
+            apiType: API_TYPE_ASYNCAPI,
           } as SearchAsyncApiParams,
         }
 
@@ -273,9 +283,10 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
               endDate: publicationDatePeriod?.[1] ?? '',
             },
             operationParams:
-              apiType
-                ? apiTypeOperationsParams[apiType]
+              apiContract !== undefined && isApiType(apiContract)
+                ? apiTypeOperationsParams[apiContract]
                 : {},
+            apiContract: apiContract,
           },
           apiSearchMode: true,
         }
@@ -289,7 +300,7 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
               startDate: publicationDatePeriod?.[0] ?? '',
               endDate: publicationDatePeriod?.[1] ?? '',
             },
-            apiType: apiType,
+            apiContract: apiContract,
           },
         }
 
@@ -306,7 +317,7 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
       groupKey,
       operationTypes,
       packageKey,
-      apiType,
+      apiContract,
       detailedScope,
       methods,
       scope,
@@ -320,12 +331,12 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
     <Typography sx={{ mb: 2, mt: 1 }} variant="h3">Filters</Typography>
     <Box component="form" sx={{ overflow: 'scroll', height: 'calc(100% - 60px)', pr: 1 }}>
       <Controller
-        name="apiType"
+        name="apiContract"
         control={control}
         render={({ field: { value, onChange } }) => <Autocomplete
           value={value ?? null}
-          options={API_TYPES}
-          getOptionLabel={(option) => API_TYPE_TITLE_MAP[option]!}
+          options={apiContractOptions}
+          getOptionLabel={(option) => getRouteApiTypeTitle(option)}
           isOptionEqualToValue={(option, value) => option === value}
           renderOption={(props, option) => (
             <ListItem
@@ -333,7 +344,7 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
               key={option}
               data-testid={`Option-${option}`}
             >
-              {API_TYPE_TITLE_MAP[option]!}
+              {getRouteApiTypeTitle(option)}
             </ListItem>
           )}
           onChange={(_, type) => {
@@ -347,9 +358,9 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
             <TextField
               required
               {...params}
-              label="API type"
+              label="API Contract"
               sx={{ mt: 0 }}
-              error={!!errors.apiType}
+              error={!!errors.apiContract}
             />
           )}
           data-testid="ApiTypeAutocomplete"

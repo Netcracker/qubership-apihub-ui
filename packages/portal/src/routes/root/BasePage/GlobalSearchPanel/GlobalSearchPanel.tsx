@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useState } from 'react'
-import { Box, Divider, Drawer, Typography } from '@mui/material'
+import { type FC, memo, useState } from 'react'
+import { Box, Divider, Drawer, Typography, styled } from '@mui/material'
 import { useEvent } from 'react-use'
+
+import { HIDE_GLOBAL_SEARCH_PANEL, SHOW_GLOBAL_SEARCH_PANEL } from '@apihub/routes/EventBusProvider'
+import { FILTERS_COLUMN_WIDTH, RESULTS_COLUMN_WIDTH } from './globalSearchConstants'
+import { GlobalSearchTextProvider } from './GlobalSearchTextProvider'
 import { SearchFilters } from './SearchFilters'
 import { SearchResults } from './SearchResults'
-import { GlobalSearchTextProvider } from './GlobalSearchTextProvider'
-import { HIDE_GLOBAL_SEARCH_PANEL, SHOW_GLOBAL_SEARCH_PANEL } from '@apihub/routes/EventBusProvider'
 
 export const GlobalSearchPanel: FC = memo(() => {
   const [open, setOpen] = useState(false)
@@ -45,21 +46,47 @@ export const GlobalSearchPanel: FC = memo(() => {
       open={open}
       onClose={() => setOpen(false)}
     >
-      <Box sx={{ p: 2, display: 'flex', flexDirection: 'row', overflow: 'hidden', height: '100%' }}
-           data-testid="GlobalSearchPanel">
+      <GlobalSearchPanelRoot data-testid="GlobalSearchPanel">
         <GlobalSearchTextProvider>
-          <Box sx={{ width: '330px' }}>
+          <GlobalSearchFiltersColumn>
             <SearchFilters enabledFilters={open}/>
-          </Box>
-          <Divider sx={{ mt: -2, mb: -2 }} orientation="vertical"/>
-          <Box sx={{ pl: 3, width: '500px' }}>
-            <Typography sx={{ mb: 2, mt: 1 }} variant="h3">Global Search</Typography>
+          </GlobalSearchFiltersColumn>
+          <GlobalSearchPanelDivider orientation="vertical"/>
+          <GlobalSearchResultsColumn>
+            <GlobalSearchTitle variant="h3">Global Search</GlobalSearchTitle>
             <SearchResults/>
-          </Box>
+          </GlobalSearchResultsColumn>
         </GlobalSearchTextProvider>
-      </Box>
+      </GlobalSearchPanelRoot>
     </Drawer>
   )
 })
 
-export const CONTENT_WIDTH = '460px'
+GlobalSearchPanel.displayName = 'GlobalSearchPanel'
+
+const GlobalSearchPanelRoot = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(2),
+  display: 'flex',
+  flexDirection: 'row',
+  overflow: 'hidden',
+  height: '100%',
+}))
+
+const GlobalSearchFiltersColumn = styled(Box)({
+  width: FILTERS_COLUMN_WIDTH,
+})
+
+const GlobalSearchPanelDivider = styled(Divider)(({ theme }) => ({
+  marginTop: theme.spacing(-2),
+  marginBottom: theme.spacing(-2),
+}))
+
+const GlobalSearchResultsColumn = styled(Box)(({ theme }) => ({
+  paddingLeft: theme.spacing(3),
+  width: RESULTS_COLUMN_WIDTH,
+}))
+
+const GlobalSearchTitle = styled(Typography)(({ theme }) => ({
+  marginBottom: theme.spacing(2),
+  marginTop: theme.spacing(1),
+}))

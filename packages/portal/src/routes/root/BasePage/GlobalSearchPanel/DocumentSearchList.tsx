@@ -14,22 +14,27 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import { memo, useRef } from 'react'
+import { type FC, memo, useRef } from 'react'
 import { Box, Typography } from '@mui/material'
-import { ResultCommonHeader } from './ResultCommonHeader'
-import { CONTENT_WIDTH } from './GlobalSearchPanel'
-import { RateResults } from './RateResults'
 import { Marker } from 'react-mark.js'
-import type { FetchNextSearchResultList } from './global-search'
-import { getDocumentPath } from '../../../NavigationProvider'
-import type { DocumentSearchResult } from '@apihub/entities/global-search'
+
+import { FormattedDate } from '@netcracker/qubership-apihub-ui-shared/components/FormattedDate'
+import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import { useIntersectionObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useIntersectionObserver'
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
-import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
-import { FormattedDate } from '@netcracker/qubership-apihub-ui-shared/components/FormattedDate'
 
-export type DocumentSearchListProps = {
+import type { DocumentSearchResult } from '@apihub/entities/global-search'
+import { getDocumentPath } from '../../../NavigationProvider'
+import type { FetchNextSearchResultList } from './global-search'
+import { RateResults } from './RateResults'
+import { ResultCommonHeader } from './ResultCommonHeader'
+import {
+  SearchResultListRoot,
+  SearchResultListSentinel,
+  SearchResultRowRoot,
+} from './SearchResultRowLayout'
+
+type DocumentSearchListProps = {
   value: DocumentSearchResult[]
   searchText: string
   fetchNextPage?: FetchNextSearchResultList
@@ -44,7 +49,7 @@ export const DocumentSearchList: FC<DocumentSearchListProps> = memo<DocumentSear
   useIntersectionObserver(ref, isNextPageFetching, hasNextPage, fetchNextPage)
 
   return (
-    <Box width={CONTENT_WIDTH} position="relative">
+    <SearchResultListRoot>
       {value.map(
         ({
           packageKey,
@@ -61,7 +66,7 @@ export const DocumentSearchList: FC<DocumentSearchListProps> = memo<DocumentSear
         }) => {
           const { versionKey } = getSplittedVersionKey(version)
           return (
-            <Box mb={2} data-testid="SearchResultRow">
+            <SearchResultRowRoot data-testid="SearchResultRow">
               <ResultCommonHeader
                 url={getDocumentPath({ packageKey: packageKey, versionKey: versionKey, documentKey: slug })}
                 icon={type}
@@ -83,18 +88,15 @@ export const DocumentSearchList: FC<DocumentSearchListProps> = memo<DocumentSear
                   {content ?? 'No content'}
                 </Typography>
               </Marker>
-            </Box>
+            </SearchResultRowRoot>
           )
         })}
 
       {hasNextPage && (
-        <Box
-          ref={ref}
-          height="100px"
-        >
+        <SearchResultListSentinel ref={ref}>
           <LoadingIndicator/>
-        </Box>
+        </SearchResultListSentinel>
       )}
-    </Box>
+    </SearchResultListRoot>
   )
 })

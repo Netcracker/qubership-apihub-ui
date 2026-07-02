@@ -25,13 +25,23 @@ import {
   API_TYPE_GRAPHQL,
   API_TYPE_REST,
 } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { ContractType } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
+import {
+  CONTRACT_TYPE_DDL,
+  CONTRACT_TYPE_MCP,
+} from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
+import type { DdlEntityKind } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
 import type { ApiKind, Operation } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import type { ApiAudience } from '@netcracker/qubership-apihub-api-processor'
+import type { ApiAudience, McpKind } from '@netcracker/qubership-apihub-api-processor'
+
+export type ApiContract = ApiType | ContractType
 
 export type SearchResults = Readonly<{
   packages: PackageSearchResult[]
   operations: OperationSearchResult[]
   documents: DocumentSearchResult[]
+  mcpContracts: McpContractSearchResult[]
+  ddlContracts: DdlContractSearchResult[]
 }>
 
 export type PackageSearchResult = Readonly<{
@@ -77,10 +87,36 @@ export type DocumentSearchResult = Readonly<{
   createdAt: string
 }>
 
+export type McpContractSearchResult = Readonly<{
+  packageKey: Key
+  name: string
+  parentPackages: string[]
+  version: Key
+  status: VersionStatus
+  entityId: Key
+  kind: McpKind
+  mcpEndpoint: string
+  entityName?: string
+}>
+
+export type DdlContractSearchResult = Readonly<{
+  packageKey: Key
+  name: string
+  parentPackages: string[]
+  version: Key
+  status: VersionStatus
+  entityId: Key
+  kind: DdlEntityKind
+  schemaName?: string
+  tableName?: string
+}>
+
 export type SearchResultsDto = Readonly<Partial<{
   packages: PackageSearchResultDto[]
   operations: OperationSearchResultDto[]
   documents: DocumentSearchResultDto[]
+  mcpContracts: McpContractSearchResultDto[]
+  ddlContracts: DdlContractSearchResultDto[]
 }>>
 
 export type PackageSearchResultDto = Readonly<{
@@ -126,14 +162,46 @@ export type DocumentSearchResultDto = Readonly<{
   createdAt: string
 }>
 
+export type McpContractSearchResultDto = Readonly<{
+  packageId: Key
+  name: string
+  parentPackages: string[]
+  version: Key
+  status: VersionStatus
+  entityId: Key
+  kind: McpKind
+  mcpEndpoint: string
+  entityName?: string
+}>
+
+export type DdlContractSearchResultDto = Readonly<{
+  packageId: Key
+  name: string
+  parentPackages: string[]
+  version: Key
+  status: VersionStatus
+  entityId: Key
+  kind: DdlEntityKind
+  schemaName?: string
+  tableName?: string
+}>
+
 export const PACKAGE_LEVEL = 'packages'
 export const OPERATION_LEVEL = 'operations'
 export const DOCUMENT_LEVEL = 'documents'
+export const MCP_LEVEL = CONTRACT_TYPE_MCP
+export const DDL_LEVEL = CONTRACT_TYPE_DDL
+
+export type ContractElementSearchResult =
+  | { level: typeof OPERATION_LEVEL; result: OperationSearchResult }
+  | { level: typeof MCP_LEVEL; result: McpContractSearchResult }
+  | { level: typeof DDL_LEVEL; result: DdlContractSearchResult }
 
 export type Level =
   | typeof PACKAGE_LEVEL
   | typeof OPERATION_LEVEL
   | typeof DOCUMENT_LEVEL
+  | ContractType
 
 export const REQUEST_SCOPE = 'request'
 export const RESPONSE_SCOPE = 'response'
@@ -186,6 +254,7 @@ export type GraphQlOperationTypes =
 
 export type SearchCriteria = {
   searchString: string
+  workspace?: Key
   packageIds?: Key[]
   versions?: Key[]
   statuses?: VersionStatus[]
@@ -195,8 +264,20 @@ export type SearchCriteria = {
     endDate: string
   }
   operationParams?: SearchRestParams | SearchGQLParams
+  apiContract?: ApiContract
   apiType?: ApiType
 }
+
+export const SEARCH_OPERATION_ONLY_CRITERIA = [
+  'operationParams',
+  'apiContract',
+  'apiType',
+] as const satisfies ReadonlyArray<keyof SearchCriteria>
+
+export type SearchCommonCriteria = Omit<
+  SearchCriteria,
+  (typeof SEARCH_OPERATION_ONLY_CRITERIA)[number]
+>
 
 export type SearchRestParams = Partial<{
   apiType: ApiType
