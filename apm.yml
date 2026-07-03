@@ -11,3 +11,4 @@ targets:
 dependencies:
   apm:
     - ./agent-packages/apihub-ui-authoring
+    - Netcracker/qubership-apihub-json-crawl/agent-packages/json-crawl-using
