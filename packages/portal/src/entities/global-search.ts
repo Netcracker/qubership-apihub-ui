@@ -108,7 +108,7 @@ export type DdlContractSearchResult = Readonly<{
   entityId: Key
   kind: DdlEntityKind
   schemaName?: string
-  tableName?: string
+  entityName?: string
 }>
 
 export type SearchResultsDto = Readonly<Partial<{
@@ -183,7 +183,7 @@ export type DdlContractSearchResultDto = Readonly<{
   entityId: Key
   kind: DdlEntityKind
   schemaName?: string
-  tableName?: string
+  entityName?: string
 }>
 
 export const PACKAGE_LEVEL = 'packages'

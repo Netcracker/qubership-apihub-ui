@@ -206,7 +206,7 @@ const DdlContractSearchResultRow: FC<DdlContractSearchResultRowProps> = memo<Ddl
     parentPackages,
     version,
     entityId,
-    tableName,
+    entityName,
     schemaName,
     status,
   } = result
@@ -221,7 +221,7 @@ const DdlContractSearchResultRow: FC<DdlContractSearchResultRowProps> = memo<Ddl
           ddlEntityId: entityId,
         })}
         breadCrumbsStatus={status}
-        title={tableName ?? entityId}
+        title={entityName ?? entityId}
         parents={[...parentPackages, name, versionKey]}
         searchText={searchText}
       />
