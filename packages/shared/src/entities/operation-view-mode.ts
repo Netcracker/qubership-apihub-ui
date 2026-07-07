@@ -16,6 +16,7 @@
 
 import type { ApiType } from './api-types'
 import { API_TYPE_ASYNCAPI, API_TYPE_GRAPHQL, API_TYPE_REST } from './api-types'
+import { CONTRACT_TYPE_DDL } from './contract-types'
 
 export const DOC_OPERATION_VIEW_MODE = 'doc'
 export const SIMPLE_OPERATION_VIEW_MODE = 'simple'
@@ -73,10 +74,24 @@ export const ASYNCAPI_OPERATION_COMPARE_VIEW_MODES: ReadonlyArray<OperationViewM
 ]
 
 export const OPERATION_COMPARE_VIEW_MODES = new Map<ApiType, ReadonlyArray<OperationViewMode>>([
-  [API_TYPE_GRAPHQL, REST_OPERATION_COMPARE_VIEW_MODES],
-  [API_TYPE_REST, GQL_OPERATION_COMPARE_VIEW_MODES],
+  [API_TYPE_GRAPHQL, GQL_OPERATION_COMPARE_VIEW_MODES],
+  [API_TYPE_REST, REST_OPERATION_COMPARE_VIEW_MODES],
   [API_TYPE_ASYNCAPI, ASYNCAPI_OPERATION_COMPARE_VIEW_MODES],
 ])
+
+// TODO(DDL/doc-compare): add DOC_OPERATION_VIEW_MODE when documentation compare is implemented.
+export const DDL_COMPARE_VIEW_MODES: ReadonlyArray<OperationViewMode> = [
+  RAW_OPERATION_VIEW_MODE,
+]
+
+export type CompareViewModeApiType = ApiType | typeof CONTRACT_TYPE_DDL
+
+export const COMPARE_VIEW_MODES_BY_API_TYPE: Record<CompareViewModeApiType, ReadonlyArray<OperationViewMode>> = {
+  [API_TYPE_REST]: REST_OPERATION_COMPARE_VIEW_MODES,
+  [API_TYPE_GRAPHQL]: GQL_OPERATION_COMPARE_VIEW_MODES,
+  [API_TYPE_ASYNCAPI]: ASYNCAPI_OPERATION_COMPARE_VIEW_MODES,
+  [CONTRACT_TYPE_DDL]: DDL_COMPARE_VIEW_MODES,
+}
 
 export const OPERATION_PREVIEW_VIEW_MODES_BY_API_TYPE = new Map<ApiType, ReadonlyArray<OperationViewMode>>([
   [API_TYPE_GRAPHQL, GQL_OPERATION_VIEW_MODES],
@@ -100,12 +115,18 @@ function getGraphQlDefaultViewMode(): typeof DOC_OPERATION_VIEW_MODE | typeof RA
   return DOC_OPERATION_VIEW_MODE
 }
 
-const getAsyncApiDefaultViewMode = (): typeof DOC_OPERATION_VIEW_MODE | typeof RAW_OPERATION_VIEW_MODE => {
+function getAsyncApiDefaultViewMode(): typeof DOC_OPERATION_VIEW_MODE | typeof RAW_OPERATION_VIEW_MODE {
   return DOC_OPERATION_VIEW_MODE
 }
 
-export const DEFAULT_VIEW_MODE_MAP_BY_API_TYPE: Record<ApiType, DefaultViewModeInComparisonMode> = {
+// TODO(DDL/doc-compare): return DOC_OPERATION_VIEW_MODE when doc compare is enabled in DDL_COMPARE_VIEW_MODES.
+function getDdlDefaultCompareViewMode(): typeof DOC_OPERATION_VIEW_MODE | typeof RAW_OPERATION_VIEW_MODE {
+  return RAW_OPERATION_VIEW_MODE
+}
+
+export const DEFAULT_VIEW_MODE_MAP_BY_API_TYPE: Record<CompareViewModeApiType, DefaultViewModeInComparisonMode> = {
   [API_TYPE_REST]: getRestApiDefaultViewMode,
   [API_TYPE_GRAPHQL]: getGraphQlDefaultViewMode,
   [API_TYPE_ASYNCAPI]: getAsyncApiDefaultViewMode,
+  [CONTRACT_TYPE_DDL]: getDdlDefaultCompareViewMode,
 }

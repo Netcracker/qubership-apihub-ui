@@ -398,7 +398,7 @@ export const VersionContractsSubPage: FC = memo(() => {
       onContextSearch={setSearchValue}
       title={VERSION_CONTRACTS_TITLE}
       bodyRef={bodyRef}
-      hideFiltersPanel={isMcp || isDdl ? true : hideFiltersPanel}
+      hideFiltersPanel={isMcp || isDdl || hideFiltersPanel}
       toggleHideFiltersPanel={toggleHideFiltersPanel}
       operationsViewMode={operationsViewMode}
       toggleOperationsViewMode={toggleOperationsViewMode}

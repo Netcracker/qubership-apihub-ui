@@ -24,6 +24,7 @@ import {
 import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
 import { SidebarSkeleton } from '@netcracker/qubership-apihub-ui-shared/components/SidebarSkeleton'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { ContractType } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { OperationPairsGroupedByTag } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { DEFAULT_TAG } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
@@ -38,71 +39,82 @@ import { useAutoExpandTags } from '../useAutoExpandTags'
 export type OperationsSidebarOnComparisonProps = {
   operationPackageKey: Key
   operationPackageVersion: VersionKey
+  apiType: ApiType | ContractType
+  hideEntityNavigation?: boolean
   searchValue: string
   setSearchValue: (value: string) => void
   tags: string[]
-  apiType: ApiType
   operationsGroupedByTag: OperationPairsGroupedByTag
   areChangesLoading: boolean
 }
 
-export const OperationsSidebarOnComparison: FC<OperationsSidebarOnComparisonProps> =
-  memo<OperationsSidebarOnComparisonProps>(props => {
-    const {
-      operationPackageKey,
-      operationPackageVersion,
-      searchValue,
-      setSearchValue,
-      tags,
-      apiType,
-      operationsGroupedByTag,
-      areChangesLoading,
-    } = props
+export const OperationsSidebarOnComparison: FC<OperationsSidebarOnComparisonProps> = memo<
+  OperationsSidebarOnComparisonProps
+>(props => {
+  const {
+    operationPackageKey,
+    operationPackageVersion,
+    apiType,
+    hideEntityNavigation = false,
+    searchValue,
+    setSearchValue,
+    tags,
+    operationsGroupedByTag,
+    areChangesLoading,
+  } = props
 
-    const [expanded, setExpanded] = useState<readonly string[]>([])
-    useAutoExpandTags(expanded, setExpanded, searchValue, tags)
+  const [expanded, setExpanded] = useState<readonly string[]>([])
+  useAutoExpandTags(expanded, setExpanded, searchValue, tags)
 
-    return (
-      <SidebarPanel
-        header={
-          <Box mr={4} width="100%" display="flex" flexDirection="column" gap={1}>
-            <OperationsFilterPanel
-              packageKey={operationPackageKey}
-              versionKey={operationPackageVersion}
-              apiTypeFilter={apiType}
-              comparisonPage={true}
-            />
-            <Divider flexItem sx={DIVIDER_STYLES}/>
-            <SearchBar
-              value={searchValue}
-              onValueChange={setSearchValue}
-              data-testid="SearchOperations"
-            />
-          </Box>
-        }
-        body={
+  return (
+    <SidebarPanel
+      header={
+        <Box mr={4} width="100%" display="flex" flexDirection="column" gap={1}>
+          <OperationsFilterPanel
+            packageKey={operationPackageKey}
+            versionKey={operationPackageVersion}
+            apiType={apiType}
+            comparisonPage={true}
+          />
+          {!hideEntityNavigation && (
+            <>
+              <Divider flexItem sx={DIVIDER_STYLES} />
+              <SearchBar
+                value={searchValue}
+                onValueChange={setSearchValue}
+                data-testid="SearchOperations"
+              />
+            </>
+          )}
+        </Box>
+      }
+      body={hideEntityNavigation
+        ? <CardContent sx={{ p: 1 }} />
+        : (
           <CardContent sx={{ p: 1 }}>
             {areChangesLoading && isEmpty(tags)
-              ? <SidebarSkeleton/>
-              : <Placeholder
-                invisible={isNotEmpty(tags)}
-                area={NAVIGATION_PLACEHOLDER_AREA}
-                message={searchValue ? NO_SEARCH_RESULTS : 'No tags'}
-                data-testid={searchValue ? 'NoSearchResultsPlaceholder' : 'NoTagsPlaceholder'}
-              >
-                {tags.map(tag =>
-                  <OperationsByTagList
-                    key={tag}
-                    tag={tag || DEFAULT_TAG}
-                    operationsGroupedByTag={operationsGroupedByTag}
-                    isLoading={areChangesLoading}
-                    expanded={expanded}
-                    setExpanded={setExpanded}
-                  />,
-                )}
-              </Placeholder>}
+              ? <SidebarSkeleton />
+              : (
+                <Placeholder
+                  invisible={isNotEmpty(tags)}
+                  area={NAVIGATION_PLACEHOLDER_AREA}
+                  message={searchValue ? NO_SEARCH_RESULTS : 'No tags'}
+                  data-testid={searchValue ? 'NoSearchResultsPlaceholder' : 'NoTagsPlaceholder'}
+                >
+                  {tags.map(tag => (
+                    <OperationsByTagList
+                      key={tag}
+                      tag={tag || DEFAULT_TAG}
+                      operationsGroupedByTag={operationsGroupedByTag}
+                      isLoading={areChangesLoading}
+                      expanded={expanded}
+                      setExpanded={setExpanded}
+                    />
+                  ))}
+                </Placeholder>
+              )}
           </CardContent>
-        }
-      />
-    )
-  })
+        )}
+    />
+  )
+})

@@ -25,6 +25,7 @@ import { useComparisonParams } from '@apihub/routes/root/PortalPage/VersionPage/
 import { groupOperationPairsByTags } from '@apihub/utils/operations'
 import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { CONTRACT_TYPE_DDL, toRouteApiType } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 import type { OperationData, OperationPair, OperationPairsGroupedByTag, OptionalOperationPair } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { OperationChangeBase } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
 import type {
@@ -71,7 +72,9 @@ import { VERSION_SWAPPER_HEIGHT } from '../shared-styles'
 import { useDocumentSearchParam } from '../useDocumentSearchParam'
 import { useOperation } from '../useOperation'
 import { useOperationSearchParam } from '../useOperationSearchParam'
+import { DdlEntityComparisonContent } from './DdlEntityComparisonContent'
 import { OperationsSidebarOnComparison } from './OperationsSidebarOnComparison'
+import { useDdlEntityComparisonState } from './useDdlEntityComparisonState'
 
 function getOperationPairsFromPackageChanges(
   packageChanges: ReadonlyArray<OperationChangeBase>,
@@ -90,7 +93,10 @@ function getOperationPairsFromPackageChanges(
 export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
   const navigate = useNavigate()
 
-  const { packageId: changedPackageKey, versionId: changedVersionKey, operationId: operationKey, apiType } = useParams()
+  const { packageId: changedPackageKey, versionId: changedVersionKey, operationId: operationKey, apiType: apiTypeParam } = useParams()
+  const apiTypeFromParams = toRouteApiType(apiTypeParam)
+  const isDdlComparison = apiTypeFromParams === CONTRACT_TYPE_DDL
+  const operationsApiType = isDdlComparison ? undefined : apiTypeFromParams as ApiType
   const [packageSearchParam] = usePackageSearchParam()
   const originPackageKey = packageSearchParam ?? changedPackageKey
   const [versionSearchParam] = useVersionSearchParam()
@@ -112,6 +118,19 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
   useCompareVersions(compareVersionsOptions)
 
   const [changesSummary, isContextValid] = useChangesSummaryContext(compareVersionsOptions)
+  const changesSummaryReady = !!changesSummary && isContextValid
+
+  const ddlComparisonState = useDdlEntityComparisonState({
+    enabled: isDdlComparison,
+    changedPackageKey: changedPackageKey,
+    changedVersionKey: changedVersionKey,
+    originPackageKey: originPackageKey,
+    originVersionKey: originVersionKey,
+    ddlEntityId: operationKey,
+    severityFilters: [...filters],
+    changesSummaryReady: changesSummaryReady,
+  })
+
   const {
     data: packageChangelog,
     isLoading: arePackageChangesLoading,
@@ -128,8 +147,8 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
     documentSlug: selectedDocumentSlug,
     searchValue: searchValue,
     packageIdFilter: operationPackageKey ?? refPackageKey,
-    enabled: !!changesSummary && isContextValid,
-    apiType: apiType as ApiType,
+    enabled: changesSummaryReady && !isDdlComparison,
+    apiType: operationsApiType as ApiType,
     page: 1,
     limit: 100,
   })
@@ -168,13 +187,15 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
     packageKey: !isPackageFromDashboard ? originPackageKey : refPackageKey,
     versionKey: !isPackageFromDashboard ? originVersionKey : refComparisonSummary?.previousVersion,
     operationKey: previousOperationKey,
-    apiType: apiType as ApiType,
+    apiType: operationsApiType as ApiType,
+    enabled: !isDdlComparison,
   })
   const { data: changedOperation, isInitialLoading: isChangedOperationInitialLoading } = useOperation({
     packageKey: !isPackageFromDashboard ? changedPackageKey : refPackageKey,
     versionKey: !isPackageFromDashboard ? changedVersionKey : refComparisonSummary?.version,
     operationKey: currentOperationKey,
-    apiType: apiType as ApiType,
+    apiType: operationsApiType as ApiType,
+    enabled: !isDdlComparison,
   })
 
   const filteredPackageChanges = useMemo(
@@ -221,14 +242,17 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
   useEffect(
     () => {
       if (
-        isChangelogReady &&
-        !isOriginOperationInitialLoading && !isChangedOperationInitialLoading &&
-        firstOperationPair && !packageChangesHaveCurrentOperation
+        isDdlComparison ||
+        !isChangelogReady ||
+        isOriginOperationInitialLoading || isChangedOperationInitialLoading ||
+        !firstOperationPair || packageChangesHaveCurrentOperation
       ) {
+        return
+      }
         const firstOperation = firstOperationPair.currentOperation ?? firstOperationPair.previousOperation!
         const firstOperationId = firstOperation.operationKey
 
-        const newPathName = `/portal/packages/${changedPackageKey}/${changedVersionKey}/compare/${apiType}/${firstOperationId}`
+        const newPathName = `/portal/packages/${changedPackageKey}/${changedVersionKey}/compare/${apiTypeParam}/${firstOperationId}`
         const searchParams = optionalSearchParams({
           [PACKAGE_SEARCH_PARAM]: { value: originPackageKey },
           [VERSION_SEARCH_PARAM]: { value: originVersionKey },
@@ -246,15 +270,15 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
           pathname: newPathName,
           search: `${searchParams}`,
         })
-      }
     },
     [
-      apiType,
+      apiTypeParam,
       changedPackageKey,
       changedVersionKey,
       filters,
       firstOperationPair,
       packageChangesHaveCurrentOperation,
+      isDdlComparison,
       isPackageFromDashboard,
       navigate,
       originPackageKey,
@@ -296,6 +320,10 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
   }, [changedOperation, handledOperationPairs, originOperation])
   // ---
 
+  const entityListChangelogReady = isDdlComparison
+    ? ddlComparisonState.isChangelogReady
+    : isChangelogReady
+
   return (
     <ShouldAutoExpandTagsProvider>
       <SelectedOperationTagsProvider>
@@ -307,6 +335,8 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
                   <ComparisonToolbar
                     compareToolbarMode={COMPARE_SAME_OPERATIONS_MODE}
                     internalDocumentOptions={internalDocumentOptions}
+                    ddlEntityChangeSummary={ddlComparisonState.currentChangeEntry?.changeSummary}
+                    isDdlEntityChangesLoading={ddlComparisonState.isContentLoading}
                   />
                 }
                 navigation={
@@ -314,24 +344,38 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
                     <OperationsSidebarOnComparison
                       operationPackageKey={operationPackageKey!}
                       operationPackageVersion={operationPackageVersion!}
+                      apiType={apiTypeFromParams}
+                      hideEntityNavigation={isDdlComparison}
                       searchValue={searchValue}
                       setSearchValue={setSearchValue}
                       tags={tags}
-                      apiType={apiType as ApiType}
                       operationsGroupedByTag={filteredOperationsGroupedByTags}
-                      areChangesLoading={!isChangelogReady}
+                      areChangesLoading={!entityListChangelogReady}
                     />
                   </HandledOperationPairsProvider>
                 }
                 body={
-                  <OperationContent
-                    changedOperation={changedOperation}
-                    originOperation={originOperation}
-                    isOperationExist={packageChangesHaveCurrentOperation}
-                    displayMode={COMPARE_SAME_OPERATIONS_MODE}
-                    isLoading={isOriginOperationInitialLoading || isChangedOperationInitialLoading || !isChangelogReady}
-                    paddingBottom={VERSION_SWAPPER_HEIGHT}
-                  />
+                  isDdlComparison
+                    ? (
+                      <DdlEntityComparisonContent
+                        originTableDetailsData={ddlComparisonState.originTableDetailsData}
+                        changedTableDetailsData={ddlComparisonState.changedTableDetailsData}
+                        isEntityExist={ddlComparisonState.ddlChangeExists}
+                        isLoading={ddlComparisonState.isContentLoading}
+                        displayMode={COMPARE_SAME_OPERATIONS_MODE}
+                        paddingBottom={VERSION_SWAPPER_HEIGHT}
+                      />
+                    )
+                    : (
+                      <OperationContent
+                        changedOperation={changedOperation}
+                        originOperation={originOperation}
+                        isOperationExist={packageChangesHaveCurrentOperation}
+                        displayMode={COMPARE_SAME_OPERATIONS_MODE}
+                        isLoading={isOriginOperationInitialLoading || isChangedOperationInitialLoading || !isChangelogReady}
+                        paddingBottom={VERSION_SWAPPER_HEIGHT}
+                      />
+                    )
                 }
               />
             </ComparedOperationsContext.Provider>

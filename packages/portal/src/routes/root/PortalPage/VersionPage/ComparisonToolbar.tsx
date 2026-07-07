@@ -25,6 +25,7 @@ import {
 } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationView/OperationDisplayMode'
 import { useApiTypeSearchParam } from '@apihub/routes/root/PortalPage/VersionPage/useApiTypeSearchParam'
 import { useDownloadChangesAsExcel } from '@apihub/routes/root/PortalPage/VersionPage/useDownloadChangesAsExcel'
+import { useDownloadDdlChangesAsExcel } from '@apihub/routes/root/PortalPage/VersionPage/useDownloadDdlChangesAsExcel'
 import { useTagSearchFilter } from '@apihub/routes/root/PortalPage/VersionPage/useTagSearchFilter'
 import { useVersionSearchParam } from '@apihub/routes/root/useVersionSearchParam'
 import { isApiTypeSelectorShown } from '@apihub/utils/operation-types'
@@ -34,11 +35,13 @@ import type { ChangesTooltipCategory } from '@netcracker/qubership-apihub-ui-sha
 import { CATEGORY_OPERATION, CATEGORY_PACKAGE } from '@netcracker/qubership-apihub-ui-shared/components/ChangesTooltip'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { isApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { CHANGE_SEVERITIES } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
-import { getRouteApiTypeTitle } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
+import { CHANGE_SEVERITIES, type ChangesSummary } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
+import { CONTRACT_TYPE_DDL, getRouteApiTypeTitle, isApiContract } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import {
+  COMPARE_VIEW_MODES_BY_API_TYPE,
+  type CompareViewModeApiType,
   DEFAULT_VIEW_MODE_MAP_BY_API_TYPE,
   OPERATION_COMPARE_VIEW_MODES,
   RAW_OPERATION_VIEW_MODE,
@@ -61,6 +64,7 @@ import { useChangesLoadingStatus } from './ChangesLoadingStatusProvider'
 import { useChangesSummaryFromContext } from './ChangesSummaryProvider'
 import { useBreadcrumbsData } from './ComparedPackagesBreadcrumbsProvider'
 import { ComparisonChangeSeverityFilters } from './ComparisonChangeSeverityFilters'
+import { ComparisonDdlEntityChangeSeverityFilters } from './ComparisonDdlEntityChangeSeverityFilters'
 import { ComparisonOperationChangeSeverityFilters } from './ComparisonOperationChangeSeverityFilters'
 import { OperationViewModeSelector } from './OperationViewModeSelector'
 import { PackageSelector } from './PackageSelector'
@@ -80,10 +84,12 @@ export type ComparisonPageToolbarProps = {
   compareToolbarMode: CompareToolbarMode
   internalDocumentOptions?: InternalDocumentOptions
   isOperationsGroupCompare?: boolean
+  ddlEntityChangeSummary?: ChangesSummary
+  isDdlEntityChangesLoading?: boolean
 }
 
 export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<ComparisonPageToolbarProps>((props) => {
-  const { compareToolbarMode, internalDocumentOptions, isOperationsGroupCompare = false } = props
+  const { compareToolbarMode, internalDocumentOptions, isOperationsGroupCompare = false, ddlEntityChangeSummary, isDdlEntityChangesLoading } = props
   const { apiType: apiTypeSearchParam } = useApiTypeSearchParam()
   const [packageSearchParam] = usePackageSearchParam()// in case of package/dashboard comparison we don't hase apiType in url, we have it in searchParams
   const {
@@ -108,8 +114,19 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
   const [selectedTag] = useTagSearchFilter()
   const [previousVersion] = useVersionSearchParam()
   const [downloadChangesAsExcel] = useDownloadChangesAsExcel()
+  const [downloadDdlChangesAsExcel] = useDownloadDdlChangesAsExcel()
+  const isDdlComparison = apiTypeFromUrl === CONTRACT_TYPE_DDL
 
   const onDownloadAllChanges = useCallback((): void => {
+    if (isDdlComparison) {
+      downloadDdlChangesAsExcel({
+        packageKey: mainPackageId!,
+        version: mainVersionId!,
+        previousVersion: previousVersion!,
+        previousVersionPackageId: previousVersionPackageId,
+      })
+      return
+    }
     downloadChangesAsExcel({
       packageKey: mainPackageId!,
       version: mainVersionId!,
@@ -117,7 +134,16 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
       previousVersion: previousVersion!,
       previousVersionPackageId: previousVersionPackageId,
     })
-  }, [downloadChangesAsExcel, mainPackageId, mainVersionId, apiTypeFromUrl, previousVersion, previousVersionPackageId])
+  }, [
+    downloadChangesAsExcel,
+    downloadDdlChangesAsExcel,
+    isDdlComparison,
+    mainPackageId,
+    mainVersionId,
+    apiTypeFromUrl,
+    previousVersion,
+    previousVersionPackageId,
+  ])
 
   const navigate = useNavigate()
   const backwardLocation = useBackwardLocationContext()
@@ -125,13 +151,19 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
   const breadcrumbsContext = useBreadcrumbsData()
   const commonLinkedBreadcrumbs = breadcrumbsContext?.common.filter(isLinkedComparedBreadcrumbPathItem)
 
-  const isOperationsComparison = [COMPARE_SAME_OPERATIONS_MODE, COMPARE_DIFFERENT_OPERATIONS_MODE].includes(compareToolbarMode)
+  const isEntityComparePage = [COMPARE_SAME_OPERATIONS_MODE, COMPARE_DIFFERENT_OPERATIONS_MODE].includes(compareToolbarMode)
   const isPackagesComparison = compareToolbarMode === COMPARE_PACKAGES_MODE
 
-  const defaultViewMode = isApiType(apiTypeFromUrl)
-    ? DEFAULT_VIEW_MODE_MAP_BY_API_TYPE[apiTypeFromUrl](isOperationsComparison)
+  const compareViewModeApiType = isApiContract(apiTypeFromUrl ?? '')
+    ? apiTypeFromUrl as CompareViewModeApiType
+    : undefined
+  const defaultViewMode = compareViewModeApiType
+    ? DEFAULT_VIEW_MODE_MAP_BY_API_TYPE[compareViewModeApiType](isEntityComparePage)
     : RAW_OPERATION_VIEW_MODE
   const { mode } = useOperationViewMode(defaultViewMode)
+  const entityCompareViewModes = compareViewModeApiType
+    ? COMPARE_VIEW_MODES_BY_API_TYPE[compareViewModeApiType]
+    : OPERATION_COMPARE_VIEW_MODES.get(operationsApiType)!
 
   const isDashboardsComparison = compareToolbarMode === COMPARE_DASHBOARDS_MODE
   const changesSummary = useChangesSummaryFromContext()
@@ -152,7 +184,7 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
 
   const handleBackClick = useCallback(() => {
     let target = getOverviewPath({ packageKey: mainPackageId!, versionKey: mainVersionId! })
-    if (isOperationsComparison) {
+    if (isEntityComparePage) {
       backwardLocation.fromOperationsComparison && (target = { ...backwardLocation.fromOperationsComparison })
     } else if (isPackagesComparison) {
       backwardLocation.fromPackagesComparison && (target = { ...backwardLocation.fromPackagesComparison })
@@ -160,17 +192,17 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
       backwardLocation.fromDocumentsComparison && (target = { ...backwardLocation.fromDocumentsComparison })
     }
     navigate(target)
-  }, [backwardLocation.fromDocumentsComparison, backwardLocation.fromOperationsComparison, backwardLocation.fromPackagesComparison, isOperationsComparison, isPackagesComparison, mainPackageId, mainVersionId, navigate])
+  }, [backwardLocation.fromDocumentsComparison, backwardLocation.fromOperationsComparison, backwardLocation.fromPackagesComparison, isEntityComparePage, isPackagesComparison, mainPackageId, mainVersionId, navigate])
 
   const changesLoadingStatus = useChangesLoadingStatus()
 
   const title = useMemo(() => (
-    isOperationsComparison
-      ? `${TITLE_BY_COMPARE_MODE[compareToolbarMode]} ${getRouteApiTypeTitle(operationsApiType)}`
+    isEntityComparePage
+      ? `${TITLE_BY_COMPARE_MODE[compareToolbarMode]} ${getRouteApiTypeTitle(isDdlComparison ? CONTRACT_TYPE_DDL : operationsApiType)}`
       : group
         ? COMPARE_API_BY_GROUPS
         : TITLE_BY_COMPARE_MODE[compareToolbarMode]
-  ), [compareToolbarMode, group, isOperationsComparison, operationsApiType])
+  ), [compareToolbarMode, group, isDdlComparison, isEntityComparePage, operationsApiType])
 
   return (
     <Box sx={COMPARISON_PAGE_TOOLBAR_STYLES} data-testid="ComparisonToolbar">
@@ -190,17 +222,23 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
       </Box>
       <Box sx={COMPARISON_PAGE_TOOLBAR_ACTIONS_STYLES}>
         {!changesLoadingStatus && (
-          isOperationsComparison
+          isEntityComparePage
             ? <>
-              {mode !== RAW_OPERATION_VIEW_MODE && (
+              {mode !== RAW_OPERATION_VIEW_MODE && !isDdlComparison && (
                 <ComparisonOperationChangeSeverityFilters
                   internalDocumentOptions={internalDocumentOptions}
                   apiType={operationsApiType}
                 />
               )}
+              {mode !== RAW_OPERATION_VIEW_MODE && isDdlComparison && (
+                <ComparisonDdlEntityChangeSeverityFilters
+                  changeSummary={ddlEntityChangeSummary}
+                  isLoading={isDdlEntityChangesLoading}
+                />
+              )}
               <OperationViewModeSelector
                 defaultValue={defaultViewMode}
-                modes={OPERATION_COMPARE_VIEW_MODES.get(operationsApiType)!}
+                modes={entityCompareViewModes}
               />
             </>
             : <>

@@ -26,7 +26,7 @@ import {
   UNCLASSIFIED_CHANGE_SEVERITY,
 } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
 import type { DashboardComparisonSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
-import { isDashboardComparisonSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
+import { isDashboardComparisonSummary, isPackageComparisonSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
 import {
   calculateImpactedSummary,
   calculateTotalChangeSummary,
@@ -34,6 +34,9 @@ import {
   EMPTY_CHANGE_SUMMARY,
 } from '@netcracker/qubership-apihub-api-processor'
 import type { ContractType } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
+import { CONTRACT_TYPE_DDL } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
+import { hasDdlComparisonChanges } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
+import type { VersionComparisonContractsSummary } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-changes-summary'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 
 export function useOrderedComparisonFiltersSummary(options: {
@@ -47,6 +50,18 @@ export function useOrderedComparisonFiltersSummary(options: {
   const totalVersionChanges: ChangesSummary | undefined = useMemo(() => {
     if (!versionChangesSummary) {
       return undefined
+    }
+
+    if (apiType === CONTRACT_TYPE_DDL) {
+      const contractsSummary = getContractsChangesSummary(
+        versionChangesSummary,
+        isDashboardsComparison,
+      )
+      const ddlSummary = contractsSummary?.ddl
+      if (!hasDdlComparisonChanges(ddlSummary)) {
+        return undefined
+      }
+      return ddlSummary?.numberOfImpactedEntities ?? ddlSummary?.changesSummary
     }
 
     if (isDashboardComparisonSummary(versionChangesSummary)) {
@@ -96,4 +111,22 @@ function calculateDashboardChangesSummary(
       .map(type => type.numberOfImpactedOperations ?? EMPTY_CHANGE_SUMMARY))
 
   return calculateTotalChangeSummary(refChangesSummaries)
+}
+
+function getContractsChangesSummary(
+  versionChangesSummary: NonNullable<ReturnType<typeof useChangesSummaryFromContext>>,
+  isDashboardsComparison: boolean,
+): VersionComparisonContractsSummary | undefined {
+  if (isDashboardComparisonSummary(versionChangesSummary)) {
+    if (isDashboardsComparison) {
+      return undefined
+    }
+    return versionChangesSummary[0]?.contractsChangesSummary
+  }
+
+  if (isPackageComparisonSummary(versionChangesSummary)) {
+    return versionChangesSummary.contractsChangesSummary
+  }
+
+  return undefined
 }
