@@ -83,7 +83,6 @@ export const DashboardsCompareContent: FC = memo(() => {
     originVersionKey,
     changedPackageKey,
     changedVersionKey,
-    apiType,
   } = useVersionsComparisonGlobalParams()
 
   const { showCompareVersionsDialog, showCompareRevisionsDialog } = useEventBus()
@@ -116,7 +115,7 @@ export const DashboardsCompareContent: FC = memo(() => {
       [VERSION_SEARCH_PARAM]: { value: changedVersionKey },
       [PACKAGE_SEARCH_PARAM]: { value: originPackageKey !== changedPackageKey ? encodeURIComponent(changedPackageKey!) : '' },
       [REF_SEARCH_PARAM]: { value: isPackageFromDashboard ? refPackageKey : undefined },
-      [API_TYPE_SEARCH_PARAM]: { value: apiType },
+      [API_TYPE_SEARCH_PARAM]: { value: apiTypeSearchParam },
       [FILTERS_SEARCH_PARAM]: { value: filters.join() },
     }
 
@@ -125,7 +124,7 @@ export const DashboardsCompareContent: FC = memo(() => {
       versionKey: originVersionKey!,
       search: searchParams,
     })
-  }, [apiType, changedPackageKey, changedVersionKey, filters, isPackageFromDashboard, navigateToComparison, originPackageKey, originVersionKey, refPackageKey])
+  }, [apiTypeSearchParam, changedPackageKey, changedVersionKey, filters, isPackageFromDashboard, navigateToComparison, originPackageKey, originVersionKey, refPackageKey])
 
   if (isLoading) {
     return (
