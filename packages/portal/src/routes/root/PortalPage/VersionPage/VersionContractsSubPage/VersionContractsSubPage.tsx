@@ -13,7 +13,10 @@ import {
   type ContractType,
   toRouteApiType,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
-import { MCP_COLLECTION_INIT } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
+import {
+  MCP_COLLECTION_INIT,
+  isExportableMcpCollection,
+} from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { isEmpty, isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import { NAVIGATION_MAX_WIDTH } from '@netcracker/qubership-apihub-ui-shared/utils/page-layouts'
@@ -23,6 +26,7 @@ import { useRefSearchParam } from '../../useRefSearchParam'
 import { useDdlTables } from '../api/useDdlTables'
 import { useMcpEntities } from '../api/useMcpEntities'
 import { ExportDdlTablesMenu } from '../ExportDdlTablesMenu'
+import { ExportMcpEntitiesMenu } from '../ExportMcpEntitiesMenu'
 import { ExportOperationsMenu } from '../ExportOperationsMenu'
 import { McpContractsSelectors } from '../McpContractsSelectors'
 import { OperationTable } from '../OpenApiViewer/OperationTable'
@@ -72,6 +76,7 @@ export const VersionContractsSubPage: FC = memo(() => {
 
   const mcpCollection = mcpEntity ?? MCP_COLLECTION_INIT
   const isMcpOverview = isMcp && mcpCollection === MCP_COLLECTION_INIT
+  const hasExportableMcpCollection = isMcp && isExportableMcpCollection(mcpCollection)
 
   const { versionContent } = usePackageVersionContent({
     packageKey: packageId,
@@ -136,7 +141,7 @@ export const VersionContractsSubPage: FC = memo(() => {
     textFilter: searchValue,
     mcpEndpoint: mcpEndpoint,
     limit: 100,
-    enabled: isMcp && !isMcpOverview,
+    enabled: hasExportableMcpCollection,
   })
 
   const [ddlTables, isDdlTablesLoading, fetchNextDdlPage, isFetchingNextDdlPage, hasNextDdlPage] = useDdlTables({
@@ -152,7 +157,7 @@ export const VersionContractsSubPage: FC = memo(() => {
       setPreviewOperation(undefined)
       return
     }
-    if (isMcp && isNotEmpty(mcpEntities)) {
+    if (hasExportableMcpCollection && isNotEmpty(mcpEntities)) {
       setPreviewOperation({ operationKey: mcpEntities[0].mcpEntityId })
       return
     }
@@ -169,7 +174,7 @@ export const VersionContractsSubPage: FC = memo(() => {
     ddlTables,
     isOperationsApiType,
     isDdl,
-    isMcp,
+    hasExportableMcpCollection,
     isMcpOverview,
     mcpEntities,
     operations,
@@ -207,7 +212,7 @@ export const VersionContractsSubPage: FC = memo(() => {
     if (isMcpOverview) {
       return mcpOverview
     }
-    if (isMcp) {
+    if (hasExportableMcpCollection) {
       return (
         <McpEntityListView
           entities={mcpEntities}
@@ -234,17 +239,20 @@ export const VersionContractsSubPage: FC = memo(() => {
         />
       )
     }
-    return (
-      <OperationTable
-        value={operations}
-        fetchNextPage={fetchNextOperationsPage}
-        isNextPageFetching={isFetchingNextOperationsPage}
-        hasNextPage={hasNextOperationsPage}
-        isLoading={isOperationsLoading}
-        apiType={routeApiType}
-        textFilter={searchValue}
-      />
-    )
+    if (isOperationsApiType) {
+      return (
+        <OperationTable
+          value={operations}
+          fetchNextPage={fetchNextOperationsPage}
+          isNextPageFetching={isFetchingNextOperationsPage}
+          hasNextPage={hasNextOperationsPage}
+          isLoading={isOperationsLoading}
+          apiType={routeApiType}
+          textFilter={searchValue}
+        />
+      )
+    }
+    return null
   }, [
     routeApiType,
     ddlTables,
@@ -259,12 +267,13 @@ export const VersionContractsSubPage: FC = memo(() => {
     isFetchingNextDdlPage,
     isFetchingNextMcpPage,
     isFetchingNextOperationsPage,
-    isMcp,
     isMcpEntitiesLoading,
     isMcpOverview,
+    isOperationsApiType,
     isOperationsLoading,
-    mcpCollection,
     mcpEntities,
+    hasExportableMcpCollection,
+    mcpCollection,
     mcpOverview,
     operations,
     packageId,
@@ -276,7 +285,7 @@ export const VersionContractsSubPage: FC = memo(() => {
     if (isMcpOverview) {
       return mcpOverview
     }
-    if (isMcp) {
+    if (hasExportableMcpCollection) {
       return (
         <McpEntityListWithPreview
           entities={mcpEntities}
@@ -309,21 +318,24 @@ export const VersionContractsSubPage: FC = memo(() => {
         />
       )
     }
-    return (
-      <OperationListWithPreview
-        operations={operations}
-        fetchNextPage={fetchNextOperationsPage}
-        hasNextPage={hasNextOperationsPage}
-        isListLoading={isOperationsLoading}
-        isNextPageFetching={isFetchingNextOperationsPage}
-        packageKey={packageId!}
-        versionKey={versionId!}
-        apiType={routeApiType}
-        initialSize={previewSize}
-        handleResize={onResize}
-        maxPreviewWidth={maxPreviewWidth}
-      />
-    )
+    if (isOperationsApiType) {
+      return (
+        <OperationListWithPreview
+          operations={operations}
+          fetchNextPage={fetchNextOperationsPage}
+          hasNextPage={hasNextOperationsPage}
+          isListLoading={isOperationsLoading}
+          isNextPageFetching={isFetchingNextOperationsPage}
+          packageKey={packageId!}
+          versionKey={versionId!}
+          apiType={routeApiType}
+          initialSize={previewSize}
+          handleResize={onResize}
+          maxPreviewWidth={maxPreviewWidth}
+        />
+      )
+    }
+    return null
   }, [
     routeApiType,
     ddlTables,
@@ -338,13 +350,14 @@ export const VersionContractsSubPage: FC = memo(() => {
     isFetchingNextDdlPage,
     isFetchingNextMcpPage,
     isFetchingNextOperationsPage,
-    isMcp,
     isMcpEntitiesLoading,
     isMcpOverview,
+    isOperationsApiType,
     isOperationsLoading,
     maxPreviewWidth,
-    mcpCollection,
     mcpEntities,
+    hasExportableMcpCollection,
+    mcpCollection,
     mcpOverview,
     onResize,
     operations,
@@ -354,6 +367,16 @@ export const VersionContractsSubPage: FC = memo(() => {
   ])
 
   const exportButton = useMemo(() => {
+    if (hasExportableMcpCollection) {
+      return (
+        <ExportMcpEntitiesMenu
+          collection={mcpCollection}
+          textFilter={searchValue}
+          refPackageId={refKey}
+          disabled={isEmpty(mcpEntities)}
+        />
+      )
+    }
     if (isDdl) {
       return (
         <ExportDdlTablesMenu
@@ -385,6 +408,9 @@ export const VersionContractsSubPage: FC = memo(() => {
     emptyTag,
     isOperationsApiType,
     isDdl,
+    hasExportableMcpCollection,
+    mcpCollection,
+    mcpEntities,
     operationGroup,
     operations,
     refKey,
@@ -408,7 +434,7 @@ export const VersionContractsSubPage: FC = memo(() => {
       hideSearch={isMcpOverview}
       hideFilter={isMcp || isDdl}
       hideViewToggle={isMcpOverview}
-      hideExport={isMcp}
+      hideExport={isMcpOverview}
       searchPlaceholder={searchPlaceholder}
       table={table}
       list={list}
