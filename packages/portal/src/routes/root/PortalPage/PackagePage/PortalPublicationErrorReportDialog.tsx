@@ -34,13 +34,12 @@ export const PortalPublicationErrorReportDialog: FC = memo(() => {
 PortalPublicationErrorReportDialog.displayName = 'PortalPublicationErrorReportDialog'
 
 const PortalPublicationErrorReportPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, detail }) => {
-  const { documentName, downloadFilename, errors } = detail as ShowPublicationErrorReportDetail
+  const { downloadFilename, errors } = detail as ShowPublicationErrorReportDetail
 
   return (
     <PublicationErrorReportDialog
       open={open}
       onClose={() => setOpen(false)}
-      documentName={documentName}
       downloadFilename={downloadFilename}
       errors={errors}
     />

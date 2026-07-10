@@ -21,13 +21,11 @@ import { styled } from '@mui/material/styles'
 import fileDownload from 'js-file-download'
 import { CloseIcon } from '../icons/CloseIcon'
 import { CopyIcon } from '../icons/CopyIcon'
-import { DownloadIcon } from '../icons/DownloadIcon'
 import { DownloadIconMui } from '../icons/DownloadIconMui'
 
 export type PublicationErrorReportDialogProps = {
   open: boolean
   onClose: () => void
-  documentName: string
   downloadFilename: string
   errors: string
 }
@@ -35,14 +33,11 @@ export type PublicationErrorReportDialogProps = {
 export const PublicationErrorReportDialog: FC<PublicationErrorReportDialogProps> = memo<PublicationErrorReportDialogProps>(({
   open,
   onClose,
-  documentName,
   downloadFilename,
   errors,
 }) => {
   const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(errors).catch(() => {
-      // clipboard not available in insecure contexts — silently ignore
-    })
+    navigator.clipboard.writeText(errors).catch()
   }, [errors])
 
   const handleDownload = useCallback(() => {
@@ -66,7 +61,7 @@ export const PublicationErrorReportDialog: FC<PublicationErrorReportDialogProps>
               data-testid="CopyErrorsButton"
               size="small"
               variant="outlined"
-              startIcon={<CopyIcon color="action"/>}
+              startIcon={<CopyIcon />}
               onClick={handleCopy}
             >
               Copy
@@ -75,7 +70,7 @@ export const PublicationErrorReportDialog: FC<PublicationErrorReportDialogProps>
               data-testid="DownloadErrorsButton"
               variant="outlined"
               size="small"
-              startIcon={<DownloadIconMui color="action" fontSize="small" />}
+              startIcon={<DownloadIconMui fontSize="small" />}
               onClick={handleDownload}
             >
               Download
@@ -125,8 +120,7 @@ const TitleActions = styled(Box)({
 
 const CloseIconButton = styled(IconButton)({
   padding: 0,
-  marginLeft: 4,
-  color: '#353C4E',
+  marginLeft: 'auto',
 })
 
 const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
