@@ -31,8 +31,10 @@ import type { ShowDeleteFileDetail } from '@netcracker/qubership-apihub-ui-share
 import { SHOW_DELETE_FILE_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/DeleteFileDialog'
 import type { ShowEditFileLabelsDetail } from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/EditFileLabelsDialog'
 import { SHOW_EDIT_FILE_LABELS_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/EditFileLabelsDialog'
-import type { ShowMcpEndpointDetail } from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/McpEndpointDialog'
-import { SHOW_MCP_ENDPOINT_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/McpEndpointDialog'
+import type { ShowMcpDuplicateKindDetail } from '@apihub/routes/root/PortalPage/PackagePage/McpDuplicateKindDialog'
+import { SHOW_MCP_DUPLICATE_KIND_DIALOG } from '@apihub/routes/root/PortalPage/PackagePage/McpDuplicateKindDialog'
+import type { ShowMcpEndpointDetail } from '@apihub/routes/root/PortalPage/PackagePage/McpEndpointDialog'
+import { SHOW_MCP_ENDPOINT_DIALOG } from '@apihub/routes/root/PortalPage/PackagePage/McpEndpointDialog'
 import type { SpecificationDialogDetail } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/SpecificationDialog'
 import { SHOW_SPECIFICATION_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/SpecificationDialog'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
@@ -246,6 +248,7 @@ type EventBus = {
   showDeleteFileDialog: (detail: ShowDeleteFileDetail) => void
   showEditFileLabelsDialog: (detail: ShowEditFileLabelsDetail) => void
   showMcpEndpointDialog: (detail: ShowMcpEndpointDetail) => void
+  showMcpDuplicateKindDialog: (detail: ShowMcpDuplicateKindDetail) => void
   showUserRolesDialog: () => void
   // Feature "Edit Manual Operation Groups"
   showCreateOperationGroupDialog: (detail: CreateOperationGroupDetail) => void
@@ -310,6 +313,7 @@ function eventBusProvider(): EventBus {
       showDeleteFileDialog: slot<ShowDeleteFileDetail>(),
       showEditFileLabelsDialog: slot<ShowEditFileLabelsDetail>(),
       showMcpEndpointDialog: slot<ShowMcpEndpointDetail>(),
+      showMcpDuplicateKindDialog: slot<ShowMcpDuplicateKindDetail>(),
       showUserRolesDialog: slot(),
       // Feature "Edit Manual Operation Groups"
       showCreateOperationGroupDialog: slot<CreateOperationGroupDetail>(),
@@ -474,6 +478,9 @@ function eventBusProvider(): EventBus {
   })
   eventBus.showMcpEndpointDialog.on((detail: ShowMcpEndpointDetail) => {
     dispatchEvent(new CustomEvent(SHOW_MCP_ENDPOINT_DIALOG, { detail }))
+  })
+  eventBus.showMcpDuplicateKindDialog.on((detail: ShowMcpDuplicateKindDetail) => {
+    dispatchEvent(new CustomEvent(SHOW_MCP_DUPLICATE_KIND_DIALOG, { detail }))
   })
   // Playground
   eventBus.showCreateCustomServerDialog.on(() => {

@@ -11,6 +11,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Tooltip,
 } from '@mui/material'
 import type {
   ColumnSizingInfoState,
@@ -37,9 +38,13 @@ import {
   useColumnsSizing,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
 import { McpEndpointIcon } from '@netcracker/qubership-apihub-ui-shared/icons/McpEndpointIcon'
+import { ErrorIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ErrorIcon'
+import { WarningIconMui } from '@netcracker/qubership-apihub-ui-shared/icons/WarningIconMui'
 import { isNotEmptyRecord } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import { createComponents } from '@netcracker/qubership-apihub-ui-shared/utils/components'
 import { DEFAULT_NUMBER_SKELETON_ROWS } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
+import type { McpEndpointValidation } from '@apihub/routes/root/PortalPage/PackagePage/mcpValidation'
+import { useMcpPublishValidation } from '@apihub/routes/root/PortalPage/PackagePage/useMcpPublishValidation'
 
 import { groupMcpFilesByEndpoint, type McpStagedFileMeta } from '@apihub/routes/root/PortalPage/PackagePage/mcpPublish'
 
@@ -63,7 +68,7 @@ const defaultMinWidth = COLUMNS_MODELS.reduce(
 
 type ConfigureFileTableTreeProps = Readonly<{
   filesMap: FileLabelsRecord
-  mcpFiles: ReadonlyMap<string, McpStagedFileMeta>
+  mcpStagedFileMetaByName: ReadonlyMap<string, McpStagedFileMeta>
   mcpEndpoints: ReadonlyArray<string>
   showPlaceholder?: boolean
   isLoading: boolean
@@ -76,7 +81,7 @@ type ConfigureFileTableTreeProps = Readonly<{
 export const ConfigureFileTableTree: FC<ConfigureFileTableTreeProps> = memo(props => {
   const {
     filesMap,
-    mcpFiles,
+    mcpStagedFileMetaByName,
     mcpEndpoints,
     showPlaceholder = false,
     isLoading,
@@ -87,9 +92,11 @@ export const ConfigureFileTableTree: FC<ConfigureFileTableTreeProps> = memo(prop
   } = props
 
   const flatFilesMap = useMemo(
-    () => splitNonMcpFiles(filesMap, mcpFiles),
-    [filesMap, mcpFiles],
+    () => splitNonMcpFiles(filesMap, mcpStagedFileMetaByName),
+    [filesMap, mcpStagedFileMetaByName],
   )
+
+  const { endpointValidations } = useMcpPublishValidation(mcpStagedFileMetaByName, filesMap)
 
   const flatFileRows: ConfigureFileTableData[] = useMemo(() => (
     Object.entries(flatFilesMap).map(([key, { file, labels }], index) => ({
@@ -101,7 +108,7 @@ export const ConfigureFileTableTree: FC<ConfigureFileTableTreeProps> = memo(prop
   ), [flatFilesMap, getFileActions])
 
   const endpointTreeData: McpEndpointTreeRow[] = useMemo(() => {
-    return groupMcpFilesByEndpoint(mcpFiles, mcpEndpoints)
+    return groupMcpFilesByEndpoint(mcpStagedFileMetaByName, mcpEndpoints)
       .map(({ mcpEndpoint, files }) => ({
         mcpEndpoint: mcpEndpoint,
         files: files
@@ -119,7 +126,7 @@ export const ConfigureFileTableTree: FC<ConfigureFileTableTreeProps> = memo(prop
           .filter((row): row is McpEndpointChildRow => row !== undefined),
       }))
       .filter(group => group.files.length > 0)
-  }, [mcpFiles, mcpEndpoints, filesMap, getFileActions])
+  }, [mcpStagedFileMetaByName, mcpEndpoints, filesMap, getFileActions])
 
   const [containerWidth, setContainerWidth] = useState(DEFAULT_CONTAINER_WIDTH)
   const [columnSizingInfo, setColumnSizingInfo] = useState<ColumnSizingInfoState>()
@@ -210,10 +217,13 @@ export const ConfigureFileTableTree: FC<ConfigureFileTableTreeProps> = memo(prop
             <TextWithOverflowTooltip tooltipText={`MCP Endpoint: ${row.original.mcpEndpoint}`}>
               {`MCP Endpoint: ${row.original.mcpEndpoint}`}
             </TextWithOverflowTooltip>
+            <McpEndpointValidationMarkers
+              endpointValidation={endpointValidations.get(row.original.mcpEndpoint)}
+            />
           </TreeIconTextRow>
         </TreeRowLayout>
       ),
-    [],
+    [endpointValidations],
   )
 
   const endpointColumns: ColumnDef<McpEndpointTreeRow>[] = useMemo(() => [
@@ -449,13 +459,56 @@ const CollapseIcon = styled(KeyboardArrowRightOutlinedIcon)({
   fontSize: '16px',
 })
 
+type McpEndpointValidationMarkersProps = Readonly<{
+  endpointValidation: McpEndpointValidation | undefined
+}>
+
+const McpEndpointValidationMarkers: FC<McpEndpointValidationMarkersProps> = memo(({ endpointValidation }) => {
+  if (!endpointValidation) {
+    return null
+  }
+
+  return (
+    <ValidationMarkersRow>
+      {endpointValidation.error && (
+        <Tooltip title={endpointValidation.error} placement="right">
+          <ValidationMarkerBox data-testid="ErrorIcon">
+            <ErrorIcon color="error" fontSize="extra-small" />
+          </ValidationMarkerBox>
+        </Tooltip>
+      )}
+      {endpointValidation.warning && !endpointValidation.error && (
+        <Tooltip title={endpointValidation.warning} placement="right">
+          <ValidationMarkerBox data-testid="YellowWarningIcon">
+            <WarningIconMui color="warning" fontSize="extra-small" />
+          </ValidationMarkerBox>
+        </Tooltip>
+      )}
+    </ValidationMarkersRow>
+  )
+})
+
+McpEndpointValidationMarkers.displayName = 'McpEndpointValidationMarkers'
+
+const ValidationMarkersRow = styled(Box)({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '4px',
+  flexShrink: 0,
+})
+
+const ValidationMarkerBox = styled(Box)({
+  display: 'flex',
+  alignItems: 'center',
+})
+
 function splitNonMcpFiles(
   filesMap: FileLabelsRecord,
-  mcpFiles: ReadonlyMap<string, McpStagedFileMeta>,
+  mcpStagedFileMetaByName: ReadonlyMap<string, McpStagedFileMeta>,
 ): FileLabelsRecord {
   const flatFilesMap: FileLabelsRecord = {}
   for (const [fileName, entry] of Object.entries(filesMap)) {
-    if (!mcpFiles.has(fileName)) {
+    if (!mcpStagedFileMetaByName.has(fileName)) {
       flatFilesMap[fileName] = entry
     }
   }

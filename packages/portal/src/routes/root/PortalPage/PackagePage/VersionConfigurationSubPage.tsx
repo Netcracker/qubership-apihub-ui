@@ -42,7 +42,7 @@ export const VersionConfigurationSubPage: FC = memo(() => {
   const { showSpecificationDialog, showDeleteFileDialog, showEditFileLabelsDialog } = useEventBus()
   const [searchValue, setSearchValue] = useState('')
 
-  const { fileTypesMap, filesWithLabels, mcpFiles, mcpEndpoints, replacedFiles, sources } = useFiles()
+  const { fileTypesMap, filesWithLabels, mcpStagedFileMetaByName, mcpEndpoints, replacedFiles, sources } = useFiles()
   const isFilesLoading = useFilesLoading()
 
   const { addFiles, deleteFile, editFile, restoreFile } = useFileActions()
@@ -175,7 +175,7 @@ export const VersionConfigurationSubPage: FC = memo(() => {
           customFilesTable={
             <ConfigureFileTableTree
               filesMap={{ ...sortedFiles }}
-              mcpFiles={mcpFiles}
+              mcpStagedFileMetaByName={mcpStagedFileMetaByName}
               mcpEndpoints={mcpEndpoints}
               isLoading={isFilesLoading}
               showPlaceholder={isNotEmptyRecord(filesWithLabels) && isEmpty(sortedFiles)}
