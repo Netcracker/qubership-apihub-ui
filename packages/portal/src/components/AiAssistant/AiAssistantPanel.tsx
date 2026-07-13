@@ -37,7 +37,7 @@ const RESIZE_HANDLE_STYLES = {
   },
 }
 
-const DRAWER_LAYOUT_STYLES = {
+export const DRAWER_LAYOUT_STYLES = {
   top: APP_HEADER_HEIGHT,
   height: `calc(100% - ${APP_HEADER_HEIGHT})`,
 }

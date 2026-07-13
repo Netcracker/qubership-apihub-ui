@@ -16,12 +16,15 @@
 
 import type { FC } from 'react'
 import { memo, useState } from 'react'
-import { Box, Divider, Drawer, Typography } from '@mui/material'
+import { Box, Divider, Drawer, IconButton, Typography } from '@mui/material'
 import { useEvent } from 'react-use'
 import { SearchFilters } from './SearchFilters'
 import { SearchResults } from './SearchResults'
 import { GlobalSearchTextProvider } from './GlobalSearchTextProvider'
 import { HIDE_GLOBAL_SEARCH_PANEL, SHOW_GLOBAL_SEARCH_PANEL } from '@apihub/routes/EventBusProvider'
+import { styled } from '@mui/material/styles'
+import { DRAWER_LAYOUT_STYLES } from '@apihub/components/AiAssistant/AiAssistantPanel'
+import { CloseIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CloseIcon'
 
 export const GlobalSearchPanel: FC = memo(() => {
   const [open, setOpen] = useState(false)
@@ -36,7 +39,7 @@ export const GlobalSearchPanel: FC = memo(() => {
   })
 
   return (
-    <Drawer
+    <StyledDrawer
       variant="temporary"
       ModalProps={{
         keepMounted: true,
@@ -53,13 +56,37 @@ export const GlobalSearchPanel: FC = memo(() => {
           </Box>
           <Divider sx={{ mt: -2, mb: -2 }} orientation="vertical"/>
           <Box sx={{ pl: 3, width: '500px' }}>
-            <Typography sx={{ mb: 2, mt: 1 }} variant="h3">Global Search</Typography>
+            <Box sx={{ display: 'flex' }}>
+              <Typography sx={{ mb: 1, mt: 1 }} variant="h3">Global Search</Typography>
+              <IconButton
+                aria-label="Close Global Search"
+                data-testid="CloseButton"
+                sx={{ ml: 'auto' }}
+                onClick={() => setOpen(false)}
+                color="inherit"
+              >
+                <CloseIcon fontSize="small"/>
+              </IconButton>
+            </Box>
             <SearchResults/>
           </Box>
         </GlobalSearchTextProvider>
       </Box>
-    </Drawer>
+    </StyledDrawer>
   )
 })
 
 export const CONTENT_WIDTH = '460px'
+
+const StyledDrawer = styled(Drawer)({
+  pointerEvents: 'none',
+  '& .MuiDrawer-paper': {
+    pointerEvents: 'auto',
+    overflow: 'visible',
+    ...DRAWER_LAYOUT_STYLES,
+  },
+  '& .MuiBackdrop-root': {
+    pointerEvents: 'auto',
+    ...DRAWER_LAYOUT_STYLES,
+  },
+})
