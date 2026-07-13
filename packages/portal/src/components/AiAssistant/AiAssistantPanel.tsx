@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles'
 import { Resizable, type ResizeCallback } from 're-resizable'
 import { type FC, useCallback, useState } from 'react'
 
-import { APP_HEADER_HEIGHT } from '@netcracker/qubership-apihub-ui-shared/themes/components'
+import { DRAWER_LAYOUT_STYLES } from '@netcracker/qubership-apihub-ui-shared/themes/components'
 import { PANEL_SCREEN_HISTORY, usePanel } from './state/panelContext'
 import { ChatScreen } from './ui/screens/ChatScreen'
 import { HistoryScreen } from './ui/screens/HistoryScreen'
@@ -35,11 +35,6 @@ const RESIZE_HANDLE_STYLES = {
     width: '8px',
     cursor: 'ew-resize',
   },
-}
-
-export const DRAWER_LAYOUT_STYLES = {
-  top: APP_HEADER_HEIGHT,
-  height: `calc(100% - ${APP_HEADER_HEIGHT})`,
 }
 
 export const AiAssistantPanel: FC = () => {

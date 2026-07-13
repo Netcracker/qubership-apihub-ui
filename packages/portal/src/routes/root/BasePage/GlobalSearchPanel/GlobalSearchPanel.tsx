@@ -23,8 +23,8 @@ import { SearchResults } from './SearchResults'
 import { GlobalSearchTextProvider } from './GlobalSearchTextProvider'
 import { HIDE_GLOBAL_SEARCH_PANEL, SHOW_GLOBAL_SEARCH_PANEL } from '@apihub/routes/EventBusProvider'
 import { styled } from '@mui/material/styles'
-import { DRAWER_LAYOUT_STYLES } from '@apihub/components/AiAssistant/AiAssistantPanel'
 import { CloseIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CloseIcon'
+import { DRAWER_LAYOUT_STYLES } from '@netcracker/qubership-apihub-ui-shared/themes/components'
 
 export const GlobalSearchPanel: FC = memo(() => {
   const [open, setOpen] = useState(false)
@@ -33,7 +33,6 @@ export const GlobalSearchPanel: FC = memo(() => {
     setOpen(true)
   })
 
-  // TODO: Add close listener
   useEvent(HIDE_GLOBAL_SEARCH_PANEL, (): void => {
     setOpen(false)
   })
@@ -82,7 +81,6 @@ const StyledDrawer = styled(Drawer)({
   pointerEvents: 'none',
   '& .MuiDrawer-paper': {
     pointerEvents: 'auto',
-    overflow: 'visible',
     ...DRAWER_LAYOUT_STYLES,
   },
   '& .MuiBackdrop-root': {
