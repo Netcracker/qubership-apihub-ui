@@ -47,6 +47,7 @@ import type { McpEndpointValidation } from '@apihub/routes/root/PortalPage/Packa
 import { useMcpPublishValidation } from '@apihub/routes/root/PortalPage/PackagePage/useMcpPublishValidation'
 
 import { groupMcpFilesByEndpoint, type McpStagedFileMeta } from '@apihub/routes/root/PortalPage/PackagePage/mcpPublish'
+import { McpEndpointActions } from '@apihub/routes/root/PortalPage/PackagePage/McpEndpointActions'
 
 const FILE_COLUMN_ID = 'file-column'
 const LABELS_COLUMN_ID = 'labels-column'
@@ -226,6 +227,18 @@ export const ConfigureFileTableTree: FC<ConfigureFileTableTreeProps> = memo(prop
     [endpointValidations],
   )
 
+  const renderEndpointActionsCell = useCallback(
+    ({ row: { original: { mcpEndpoint } } }: { row: { original: McpEndpointTreeRow } }) => (
+      <EndpointActionsCell>
+        <McpEndpointActions
+          mcpEndpoint={mcpEndpoint}
+          knownEndpoints={mcpEndpoints}
+        />
+      </EndpointActionsCell>
+    ),
+    [mcpEndpoints],
+  )
+
   const endpointColumns: ColumnDef<McpEndpointTreeRow>[] = useMemo(() => [
     {
       id: FILE_COLUMN_ID,
@@ -238,8 +251,9 @@ export const ConfigureFileTableTree: FC<ConfigureFileTableTreeProps> = memo(prop
     },
     {
       id: ACTIONS_COLUMN_ID,
+      cell: renderEndpointActionsCell,
     },
-  ], [renderEndpointCell])
+  ], [renderEndpointCell, renderEndpointActionsCell])
 
   const [expanded, setExpanded] = useState<ExpandedState>({})
 
@@ -500,6 +514,11 @@ const ValidationMarkersRow = styled(Box)({
 const ValidationMarkerBox = styled(Box)({
   display: 'flex',
   alignItems: 'center',
+})
+
+const EndpointActionsCell = styled(Box)({
+  display: 'flex',
+  justifyContent: 'flex-end',
 })
 
 function splitNonMcpFiles(

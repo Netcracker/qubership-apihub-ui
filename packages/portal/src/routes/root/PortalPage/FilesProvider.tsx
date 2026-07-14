@@ -27,6 +27,8 @@ const DELETE_FILE_ACTION = 'DeleteFileAction'
 const EDIT_FILE_ACTION = 'EditFileAction'
 const RESTORE_FILE_ACTION = 'RestoreFileAction'
 const ASSIGN_MCP_BATCH_ACTION = 'AssignMcpBatchAction'
+const RENAME_MCP_ENDPOINT_ACTION = 'RenameMcpEndpointAction'
+const DELETE_MCP_ENDPOINT_ACTION = 'DeleteMcpEndpointAction'
 
 interface InitFilesAction {
   type: typeof INIT_FILES_ACTION
@@ -70,6 +72,17 @@ interface AssignMcpBatchAction {
   }>
 }
 
+interface RenameMcpEndpointAction {
+  type: typeof RENAME_MCP_ENDPOINT_ACTION
+  oldEndpoint: string
+  newEndpoint: string
+}
+
+interface DeleteMcpEndpointAction {
+  type: typeof DELETE_MCP_ENDPOINT_ACTION
+  mcpEndpoint: string
+}
+
 type StateActions =
   | InitFilesAction
   | AddFilesAction
@@ -77,6 +90,8 @@ type StateActions =
   | EditFileAction
   | RestoreFileAction
   | AssignMcpBatchAction
+  | RenameMcpEndpointAction
+  | DeleteMcpEndpointAction
 
 interface State {
   sources: File[]
@@ -222,6 +237,54 @@ function reducer(state: State, action: StateActions): State {
         ...state,
         replacedFiles: replacedFiles.filter(file => file.name !== action.fileName),
       }
+    case RENAME_MCP_ENDPOINT_ACTION: {
+      const { oldEndpoint, newEndpoint } = action
+      if (oldEndpoint === newEndpoint) {
+        return state
+      }
+      const nextMcpStagedFileMetaByName = new Map(mcpStagedFileMetaByName)
+      for (const [fileName, meta] of nextMcpStagedFileMetaByName) {
+        if (meta.mcpEndpoint === oldEndpoint) {
+          nextMcpStagedFileMetaByName.set(fileName, { ...meta, mcpEndpoint: newEndpoint })
+        }
+      }
+      return {
+        ...state,
+        mcpEndpoints: mcpEndpoints.map(endpoint =>
+          (endpoint === oldEndpoint ? newEndpoint : endpoint),
+        ),
+        mcpStagedFileMetaByName: nextMcpStagedFileMetaByName,
+      }
+    }
+    case DELETE_MCP_ENDPOINT_ACTION: {
+      const fileNamesToDelete = [...mcpStagedFileMetaByName.entries()]
+        .filter(([, meta]) => meta.mcpEndpoint === action.mcpEndpoint)
+        .map(([fileName]) => fileName)
+
+      const nextMcpStagedFileMetaByName = new Map(mcpStagedFileMetaByName)
+      const nextFileTypesMap = new Map(fileTypesMap)
+      const nextFilesWithLabels = { ...filesWithLabels }
+      const fileNamesToDeleteSet = new Set(fileNamesToDelete)
+
+      for (const fileName of fileNamesToDelete) {
+        nextMcpStagedFileMetaByName.delete(fileName)
+        nextFileTypesMap.delete(fileName)
+        delete nextFilesWithLabels[fileName]
+      }
+
+      return {
+        ...state,
+        filesWithLabels: nextFilesWithLabels,
+        replacedFiles: replacedFiles.filter(file => !fileNamesToDeleteSet.has(file.name)),
+        fileTypesMap: nextFileTypesMap,
+        mcpStagedFileMetaByName: nextMcpStagedFileMetaByName,
+        mcpEndpoints: pruneMcpEndpoint(
+          mcpEndpoints,
+          nextMcpStagedFileMetaByName,
+          action.mcpEndpoint,
+        ),
+      }
+    }
     default:
       return state
   }
@@ -232,6 +295,8 @@ type Actions = {
   deleteFile: (fileName: string) => void
   editFile: (fileName: string, labels: string[]) => void
   restoreFile: (fileName: string) => void
+  renameMcpEndpoint: (oldEndpoint: string, newEndpoint: string) => void
+  deleteMcpEndpoint: (mcpEndpoint: string) => void
 }
 
 export type FilesProviderProps = {
@@ -364,14 +429,29 @@ export const FilesProvider: FC<FilesProviderProps> = memo<FilesProviderProps>(({
       fileName: fileName,
     }), [])
 
+  const renameMcpEndpoint = useCallback((oldEndpoint: string, newEndpoint: string): void =>
+    dispatch({
+      type: RENAME_MCP_ENDPOINT_ACTION,
+      oldEndpoint: oldEndpoint,
+      newEndpoint: newEndpoint,
+    }), [])
+
+  const deleteMcpEndpoint = useCallback((mcpEndpoint: string): void =>
+    dispatch({
+      type: DELETE_MCP_ENDPOINT_ACTION,
+      mcpEndpoint: mcpEndpoint,
+    }), [])
+
   const actions: Actions = useMemo(
     () => ({
       addFiles,
       deleteFile,
       editFile,
       restoreFile,
+      renameMcpEndpoint,
+      deleteMcpEndpoint,
     }),
-    [addFiles, deleteFile, editFile, restoreFile],
+    [addFiles, deleteFile, editFile, restoreFile, renameMcpEndpoint, deleteMcpEndpoint],
   )
 
   return (
