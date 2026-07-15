@@ -31,6 +31,7 @@ import {
   Typography,
 } from '@mui/material'
 import ArrowOutwardRoundedIcon from '@mui/icons-material/ArrowOutwardRounded'
+import ErrorOutlinedIcon from '@mui/icons-material/ErrorOutlined'
 import type {
   ColumnSizingInfoState,
   ColumnSizingState,
@@ -53,6 +54,8 @@ import {
   PUBLISH_STATUS_TO_STATUS_DESCRIPTION_MAP,
   PUBLISH_STATUS_TO_STATUS_MARKER_VARIANT_MAP,
 } from '../../../constants'
+import { ERROR_PUBLISH_STATUS } from '@apihub/entities/statuses'
+import { useEventBus } from '../../../../../EventBusProvider'
 import { useSnapshotPublicationInfo } from '../../../useSnapshotPublicationInfo'
 import { useConfigureServiceSelection } from '../useConfigureServiceSelection'
 import { ServiceLabelsTableCell } from '../ServiceLabelsTableCell'
@@ -164,8 +167,17 @@ export const CreateSnapshotStepTable: FC<CreateSnapshotStepTableProps> = memo<Cr
     },
     {
       id: VIEW_SNAPSHOT_URL_COLUMN_ID,
-      cell: isSnapshotPublicationInfoSuccess ? ({ row: { original: { service, viewSnapshotUrl } } }) => {
-        if (service && viewSnapshotUrl) {
+      cell: ({
+        row: {
+          original: {
+            service,
+            viewSnapshotUrl,
+            serviceConfig,
+            builderId,
+          },
+        },
+      }) => {
+        if (service && viewSnapshotUrl && isSnapshotPublicationInfoSuccess) {
           return (
             <Button
               data-testid="ViewSnapshotButton"
@@ -182,8 +194,8 @@ export const CreateSnapshotStepTable: FC<CreateSnapshotStepTableProps> = memo<Cr
           )
         }
 
-        return null
-      } : undefined,
+        return <ViewDetailsButton serviceConfig={serviceConfig} builderId={builderId} service={service}/>
+      },
     },
   ], [isSnapshotPublicationInfoSuccess, selectable])
 
@@ -349,6 +361,46 @@ const CreateSnapshotDetailsTableCell: FC<CreateSnapshotDetailsTableCellProps> = 
         {PUBLISH_STATUS_TO_STATUS_DESCRIPTION_MAP[publishDetails.status]}
       </Typography>
     </Box>
+  )
+})
+
+type ViewDetailsButtonProps = {
+  serviceConfig: ServiceConfig | undefined
+  builderId: string | undefined
+  service: Service | undefined
+}
+
+const ViewDetailsButton: FC<ViewDetailsButtonProps> = memo<ViewDetailsButtonProps>(({
+  serviceConfig,
+  builderId,
+  service,
+}) => {
+  const [publishDetails, isLoading] = useServicePublishDetails({ serviceConfig, builderId })
+  const { showPublicationErrorReportDialog } = useEventBus()
+
+  if (!serviceConfig || isLoading) {
+    return null
+  }
+
+  const hasError = publishDetails.status === ERROR_PUBLISH_STATUS && !!publishDetails.message
+  if (!hasError) {
+    return null
+  }
+
+  return (
+    <Button
+      data-testid="ViewDetailsButton"
+      sx={{ p: 0, height: 10, whiteSpace: 'nowrap' }}
+      variant="text"
+      color="error"
+      startIcon={<ErrorOutlinedIcon color="error"/>}
+      onClick={() => showPublicationErrorReportDialog({
+        downloadFilename: `${service?.key ?? serviceConfig.serviceId}-publication-errors.txt`,
+        errors: publishDetails.message!,
+      })}
+    >
+      Error Details
+    </Button>
   )
 })
 

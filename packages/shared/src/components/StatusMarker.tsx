@@ -37,7 +37,15 @@ export const StatusMarker: FC<StatusMarkerProps> = memo<StatusMarkerProps>(({ va
   }
 
   return (
-    <Tooltip title={title} placement={placement}>
+    <Tooltip
+      title={<Box sx={{ maxHeight: 300, overflow: 'auto', p: 1 }}>{title}</Box>}
+      placement={placement}
+      componentsProps={{
+        tooltip: {
+          sx: { p: 0 },
+        },
+      }}
+    >
       <Box
         display="flex"
         gap={0.5}
