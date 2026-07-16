@@ -64,7 +64,7 @@ export type VersionContractsProps = {
   toggleOperationsViewMode: (value: string) => void
   additionalSelectors?: ReactNode
   hideSearch?: boolean
-  hideFilter?: boolean
+  hideFilterButton?: boolean
   hideViewToggle?: boolean
   hideExport?: boolean
   searchPlaceholder?: string
@@ -86,7 +86,7 @@ export const VersionContractsPanel: FC<VersionContractsProps> = memo<VersionCont
   hideFiltersPanel,
   additionalSelectors,
   hideSearch = false,
-  hideFilter = false,
+  hideFilterButton = false,
   hideViewToggle = false,
   hideExport = false,
   searchPlaceholder = 'Search Operations',
@@ -141,7 +141,7 @@ export const VersionContractsPanel: FC<VersionContractsProps> = memo<VersionCont
       searchPlaceholder={searchPlaceholder}
       setSearchValue={onContextSearch}
       hideSearch={hideSearch}
-      hideFilter={hideFilter}
+      hideFilterButton={hideFilterButton}
       hideViewToggle={hideViewToggle}
       hideExport={hideExport}
       viewMode={operationsView}

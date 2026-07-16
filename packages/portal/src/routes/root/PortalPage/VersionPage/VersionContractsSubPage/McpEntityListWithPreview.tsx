@@ -1,16 +1,25 @@
 import type { ResizeCallback } from 're-resizable'
-import type { FC } from 'react'
-import { memo, useCallback, useMemo } from 'react'
+import { type FC, memo, useCallback, useMemo } from 'react'
 
 import { McpEntityTitleWithMeta } from '@netcracker/qubership-apihub-ui-shared/components/Mcp/McpEntityTitleWithMeta'
-import type { FetchNextMetaList } from '@netcracker/qubership-apihub-ui-shared/components/MetaClickableListWithPreview'
-import { MetaClickableListWithPreview } from '@netcracker/qubership-apihub-ui-shared/components/MetaClickableListWithPreview'
+import {
+  type FetchNextMetaList,
+  MetaClickableListWithPreview,
+} from '@netcracker/qubership-apihub-ui-shared/components/MetaClickableListWithPreview'
 import { NAVIGATION_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
-import type { McpCollection, McpEntity } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
-import { MCP_COLLECTION_EMPTY_MESSAGES } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
+import {
+  getMcpEntityListKey,
+  MCP_COLLECTION_EMPTY_MESSAGES,
+  type McpCollection,
+  type McpEntity,
+} from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 
 import { useSelectedPreviewOperation, useSetSelectedPreviewOperation } from '../../SelectedPreviewOperationProvider'
+import { usePackageKind } from '../../usePackageKind'
+import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
+import { useRefSearchParam } from '../../useRefSearchParam'
 import { useMcpEntityDetails } from '../api/useMcpEntityDetails'
 import { useContractBrowseLinkHandlers } from '../useContractBrowseLinkHandlers'
 import { useMcpEndpointSearchParam } from '../useMcpEndpointSearchParam'
@@ -50,26 +59,50 @@ export const McpEntityListWithPreview: FC<McpEntityListWithPreviewProps> = memo<
 
     const [mcpEndpoint] = useMcpEndpointSearchParam()
     const [mcpEntity] = useMcpEntitySearchParam()
+    const [refKey] = useRefSearchParam()
+    const [kind] = usePackageKind()
 
     const selectedPreviewOperation = useSelectedPreviewOperation()
     const setSelectedPreviewOperation = useSetSelectedPreviewOperation()
 
-    const selectedEntity = useMemo(
-      () => entities.find(entity => entity.mcpEntityId === selectedPreviewOperation?.operationKey),
-      [entities, selectedPreviewOperation?.operationKey],
+    const [detailsPackageKey, detailsVersionKey] = usePackageParamsWithRef(
+      kind === DASHBOARD_KIND ? selectedPreviewOperation?.packageRef?.key : '',
     )
 
+    const selectedEntity = useMemo(
+      () =>
+        entities.find(entity =>
+          entity.mcpEntityId === selectedPreviewOperation?.operationKey &&
+          entity.packageRef?.key === selectedPreviewOperation?.packageRef?.key,
+        ),
+      [entities, selectedPreviewOperation?.operationKey, selectedPreviewOperation?.packageRef?.key],
+    )
+
+    const selectedItemKey = useMemo(() => {
+      if (!selectedPreviewOperation?.operationKey) {
+        return undefined
+      }
+      return `${selectedPreviewOperation.packageRef?.key ?? ''}:${selectedPreviewOperation.operationKey}`
+    }, [selectedPreviewOperation?.operationKey, selectedPreviewOperation?.packageRef?.key])
+
     const { data: entityDetails, isInitialLoading } = useMcpEntityDetails({
-      packageKey: packageKey,
-      versionKey: versionKey,
+      packageKey: detailsPackageKey,
+      versionKey: detailsVersionKey,
       collection: collection,
       mcpEntityId: selectedEntity?.mcpEntityId,
       enabled: !!selectedEntity?.mcpEntityId,
     })
 
-    const onRowClick = useCallback((selectedMcpEntityId: Key) => {
-      setSelectedPreviewOperation({ operationKey: selectedMcpEntityId })
-    }, [setSelectedPreviewOperation])
+    const onRowClick = useCallback((itemKey: Key) => {
+      const entity = entities.find(candidate => getMcpEntityListKey(candidate) === itemKey)
+      if (!entity) {
+        return
+      }
+      setSelectedPreviewOperation({
+        operationKey: entity.mcpEntityId,
+        packageRef: entity.packageRef,
+      })
+    }, [entities, setSelectedPreviewOperation])
 
     const prepareLinkFn = useCallback((entity: McpEntity) =>
       getMcpEntityLink({
@@ -78,7 +111,8 @@ export const McpEntityListWithPreview: FC<McpEntityListWithPreviewProps> = memo<
         mcpEntityId: entity.mcpEntityId,
         mcpEndpoint: mcpEndpoint ?? entity.mcpEndpoint,
         mcpEntity: mcpEntity ?? collection,
-      }), [collection, mcpEndpoint, mcpEntity, packageKey, versionKey])
+        ref: entity.packageRef?.key ?? refKey,
+      }), [collection, mcpEndpoint, mcpEntity, packageKey, refKey, versionKey])
 
     const onClickLink = useContractBrowseLinkHandlers()
 
@@ -105,7 +139,7 @@ export const McpEntityListWithPreview: FC<McpEntityListWithPreviewProps> = memo<
     return (
       <MetaClickableListWithPreview
         items={entities}
-        getItemKey={entity => entity.mcpEntityId}
+        getItemKey={getMcpEntityListKey}
         renderTitle={renderTitle}
         prepareLinkFn={prepareLinkFn}
         onRowClick={onRowClick}
@@ -113,7 +147,7 @@ export const McpEntityListWithPreview: FC<McpEntityListWithPreviewProps> = memo<
         isNextPageFetching={isNextPageFetching}
         hasNextPage={hasNextPage}
         isLoading={isListLoading}
-        selectedItemKey={selectedPreviewOperation?.operationKey}
+        selectedItemKey={selectedItemKey}
         initialSize={initialSize}
         handleResize={handleResize}
         maxWidth={maxPreviewWidth}

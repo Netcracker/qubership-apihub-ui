@@ -156,5 +156,6 @@ export function toDdlContractEntityFromChange(change: DdlEntityChange): DdlContr
     description: change.description,
     documentId: change.documentId,
     versionInternalDocumentId: change.versionInternalDocumentId,
+    packageRef: change.packageRef,
   }
 }

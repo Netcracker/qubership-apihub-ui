@@ -14,14 +14,17 @@ import {
   toRouteApiType,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 import {
-  MCP_COLLECTION_INIT,
   isExportableMcpCollection,
+  MCP_COLLECTION_INIT,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { isEmpty, isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import { NAVIGATION_MAX_WIDTH } from '@netcracker/qubership-apihub-ui-shared/utils/page-layouts'
 import { isEmptyTag } from '@netcracker/qubership-apihub-ui-shared/utils/tags'
 import { useSetSelectedPreviewOperation } from '../../SelectedPreviewOperationProvider'
+import { usePackageKind } from '../../usePackageKind'
+import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
 import { useRefSearchParam } from '../../useRefSearchParam'
 import { useDdlTables } from '../api/useDdlTables'
 import { useMcpEntities } from '../api/useMcpEntities'
@@ -65,6 +68,9 @@ export const VersionContractsSubPage: FC = memo(() => {
   const [refKey] = useRefSearchParam()
   const [mcpEndpoint, setMcpEndpoint] = useMcpEndpointSearchParam()
   const [mcpEntity, setMcpEntity] = useMcpEntitySearchParam()
+  const [packageKind] = usePackageKind()
+  const isDashboard = packageKind === DASHBOARD_KIND
+  const [summaryPackageKey, summaryVersionKey] = usePackageParamsWithRef()
 
   const emptyTag = isEmptyTag(selectedTag)
   const [operationGroup] = useOperationGroupSearchFilter()
@@ -73,14 +79,15 @@ export const VersionContractsSubPage: FC = memo(() => {
   const isMcp = routeApiType === CONTRACT_TYPE_MCP
   const isDdl = routeApiType === CONTRACT_TYPE_DDL
   const isOperationsApiType = isApiType(routeApiType)
+  const hideContractFiltersOnPackage = (isMcp || isDdl) && !isDashboard
 
   const mcpCollection = mcpEntity ?? MCP_COLLECTION_INIT
   const isMcpOverview = isMcp && mcpCollection === MCP_COLLECTION_INIT
   const hasExportableMcpCollection = isMcp && isExportableMcpCollection(mcpCollection)
 
   const { versionContent } = usePackageVersionContent({
-    packageKey: packageId,
-    versionKey: versionId,
+    packageKey: summaryPackageKey,
+    versionKey: summaryVersionKey,
     includeSummary: true,
     enabled: isMcp,
   })
@@ -91,20 +98,42 @@ export const VersionContractsSubPage: FC = memo(() => {
     [mcpSummary?.byEndpoint],
   )
 
+  // Keep last non-empty options / summary while scoped content reloads after package filter change,
+  // so MCP Selects do not flash empty.
+  const [stableEndpointOptions, setStableEndpointOptions] = useState<ReadonlyArray<string>>([])
+  const [stableMcpSummary, setStableMcpSummary] = useState<typeof mcpSummary>()
+  useEffect(() => {
+    if (endpointOptions.length > 0) {
+      setStableEndpointOptions(endpointOptions)
+    }
+    if (mcpSummary) {
+      setStableMcpSummary(mcpSummary)
+    }
+  }, [endpointOptions, mcpSummary])
+
+  const selectorEndpointOptions = endpointOptions.length > 0 ? endpointOptions : stableEndpointOptions
+  const selectorMcpSummary = mcpSummary ?? stableMcpSummary
+
   const mcpOverview = useMemo(() => (
     <McpOverview
       packageKey={packageId!}
       versionKey={versionId!}
       mcpEndpoint={mcpEndpoint}
-      hasEndpoints={endpointOptions.length > 0}
+      refPackageKey={refKey}
+      hasEndpoints={selectorEndpointOptions.length > 0}
     />
-  ), [endpointOptions.length, mcpEndpoint, packageId, versionId])
+  ), [selectorEndpointOptions.length, mcpEndpoint, packageId, refKey, versionId])
 
   useEffect(() => {
     if (!isMcp) {
       return
     }
-    if (!mcpEndpoint && endpointOptions[0]) {
+    // Wait for the scoped summary; do not clear the endpoint up front (avoids Select flicker).
+    if (endpointOptions.length === 0) {
+      return
+    }
+    const endpointMissing = !mcpEndpoint || !endpointOptions.includes(mcpEndpoint)
+    if (endpointMissing) {
       setMcpEndpoint(endpointOptions[0])
     }
     if (!mcpEntity) {
@@ -140,6 +169,7 @@ export const VersionContractsSubPage: FC = memo(() => {
     collection: mcpCollection,
     textFilter: searchValue,
     mcpEndpoint: mcpEndpoint,
+    refPackageKey: refKey,
     limit: 100,
     enabled: hasExportableMcpCollection,
   })
@@ -148,6 +178,7 @@ export const VersionContractsSubPage: FC = memo(() => {
     packageKey: packageId,
     versionKey: versionId,
     textFilter: searchValue,
+    refPackageKey: refKey,
     limit: 100,
     enabled: isDdl,
   })
@@ -158,11 +189,17 @@ export const VersionContractsSubPage: FC = memo(() => {
       return
     }
     if (hasExportableMcpCollection && isNotEmpty(mcpEntities)) {
-      setPreviewOperation({ operationKey: mcpEntities[0].mcpEntityId })
+      setPreviewOperation({
+        operationKey: mcpEntities[0].mcpEntityId,
+        packageRef: mcpEntities[0].packageRef,
+      })
       return
     }
     if (isDdl && isNotEmpty(ddlTables)) {
-      setPreviewOperation({ operationKey: ddlTables[0].ddlEntityId })
+      setPreviewOperation({
+        operationKey: ddlTables[0].ddlEntityId,
+        packageRef: ddlTables[0].packageRef,
+      })
       return
     }
     if (isOperationsApiType) {
@@ -418,21 +455,28 @@ export const VersionContractsSubPage: FC = memo(() => {
     selectedTag,
   ])
 
+  const mcpToolbarSelectors = isMcp
+    ? (
+      <McpContractsSelectors
+        endpointOptions={selectorEndpointOptions}
+        mcpSummary={selectorMcpSummary}
+      />
+    )
+    : undefined
+
   return (
     <VersionContractsPanel
       versionTabId={VERSION_TAB_IDS.contracts}
       onContextSearch={setSearchValue}
       title={VERSION_CONTRACTS_TITLE}
       bodyRef={bodyRef}
-      hideFiltersPanel={isMcp || isDdl || hideFiltersPanel}
+      hideFiltersPanel={hideContractFiltersOnPackage || hideFiltersPanel}
       toggleHideFiltersPanel={toggleHideFiltersPanel}
       operationsViewMode={operationsViewMode}
       toggleOperationsViewMode={toggleOperationsViewMode}
-      additionalSelectors={isMcp
-        ? <McpContractsSelectors endpointOptions={endpointOptions} mcpSummary={mcpSummary} />
-        : undefined}
+      additionalSelectors={mcpToolbarSelectors}
       hideSearch={isMcpOverview}
-      hideFilter={isMcp || isDdl}
+      hideFilterButton={hideContractFiltersOnPackage}
       hideViewToggle={isMcpOverview}
       hideExport={isMcpOverview}
       searchPlaceholder={searchPlaceholder}

@@ -1,17 +1,18 @@
-import { useNormalizedDdlContract } from '@apihub/api-hooks/InternalDocuments/useNormalizedDdlContract'
 import { Box, Skeleton } from '@mui/material'
 import { styled } from '@mui/material/styles'
-import { DdlTableViewer } from '@netcracker/qubership-apihub-api-doc-viewer'
+import { type FC, memo, useCallback, useMemo } from 'react'
+import { useParams } from 'react-router-dom'
+
 import { RawSpecView } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/RawSpecView'
-import type { SpecViewMode } from '@netcracker/qubership-apihub-ui-shared/components/SpecViewToggler'
 import {
   DOC_SPEC_VIEW_MODE,
   RAW_SPEC_VIEW_MODE,
   SIMPLE_SPEC_VIEW_MODE,
+  type SpecViewMode,
 } from '@netcracker/qubership-apihub-ui-shared/components/SpecViewToggler'
-import { calculateDdlEntityId } from '@netcracker/qubership-apihub-api-processor'
 import type { DdlContractEntityDetails } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
 import { DDL_ENTITY_KIND_TABLE } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import {
   DETAILED_SCHEMA_VIEW_MODE,
   SIMPLE_SCHEMA_VIEW_MODE,
@@ -19,9 +20,12 @@ import {
 import { theme } from '@netcracker/qubership-apihub-ui-shared/themes/theme'
 import { SQL_FILE_EXTENSION } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import { DDL_DOCUMENT_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
-import { type FC, memo, useCallback, useMemo } from 'react'
 
+import { useNormalizedDdlContract } from '@apihub/api-hooks/InternalDocuments/useNormalizedDdlContract'
+import { DdlTableViewer } from '@netcracker/qubership-apihub-api-doc-viewer'
+import { calculateDdlEntityId } from '@netcracker/qubership-apihub-api-processor'
 import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
+import { useRefSearchParam } from '../../useRefSearchParam'
 import { getDdlTableLink } from '../useNavigateToOperation'
 import { DdlTableNavigationLink } from './DdlTableNavigationLink'
 
@@ -29,12 +33,25 @@ export type DdlTableContentViewProps = {
   data: DdlContractEntityDetails | undefined
   viewMode: SpecViewMode
   noHeading?: boolean
+  entityPackageKey?: Key
+  entityVersionKey?: Key
 }
 
 export const DdlTableContentView: FC<DdlTableContentViewProps> = memo<DdlTableContentViewProps>((props) => {
-  const { data, viewMode, noHeading = false } = props
+  const {
+    data,
+    viewMode,
+    noHeading = false,
+    entityPackageKey,
+    entityVersionKey,
+  } = props
 
-  const [packageKey, versionKey] = usePackageParamsWithRef()
+  const { packageId, versionId } = useParams()
+  const [refKey] = useRefSearchParam()
+  const [resolvedPackageKey, resolvedVersionKey] = usePackageParamsWithRef(data?.packageRef?.key)
+
+  const contentPackageKey = entityPackageKey ?? resolvedPackageKey
+  const contentVersionKey = entityVersionKey ?? resolvedVersionKey
 
   const {
     data: normalizedSource,
@@ -42,8 +59,8 @@ export const DdlTableContentView: FC<DdlTableContentViewProps> = memo<DdlTableCo
     error: normalizedSourceError,
   } = useNormalizedDdlContract({
     ddlContract: data,
-    packageId: packageKey,
-    versionId: versionKey,
+    packageId: contentPackageKey,
+    versionId: contentVersionKey,
   })
 
   const rawContent = data?.data ?? ''
@@ -57,17 +74,18 @@ export const DdlTableContentView: FC<DdlTableContentViewProps> = memo<DdlTableCo
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const navigationLinkBuilder = useCallback((schemaName: string, tableName: string, _column: string) => {
-    if (!data || !packageKey || !versionKey) {
+    if (!data || !packageId || !versionId) {
       return '#'
     }
     const ddlEntityId = calculateDdlEntityId(schemaName, DDL_ENTITY_KIND_TABLE, tableName)
     const link = getDdlTableLink({
-      packageKey: packageKey,
-      versionKey: versionKey,
+      packageKey: packageId,
+      versionKey: versionId,
       ddlEntityId: ddlEntityId,
+      ref: data.packageRef?.key ?? refKey,
     })
     return `${link.pathname}${link.search ?? ''}`
-  }, [data, packageKey, versionKey])
+  }, [data, packageId, refKey, versionId])
 
   const parseError = normalizedSourceError?.message ?? null
 

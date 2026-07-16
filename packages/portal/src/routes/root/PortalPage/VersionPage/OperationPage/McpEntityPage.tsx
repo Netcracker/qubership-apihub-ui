@@ -3,8 +3,9 @@ import { Box, IconButton, Skeleton, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import { type FC, memo, useCallback, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useAutoFetchInfinitePages } from '../useAutoFetchInfinitePages'
 
+import type { Key } from '@apihub/entities/keys'
+import { useBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
 import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
 import { JsonRawSpecView } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/JsonRawSpecView'
 import { Toolbar } from '@netcracker/qubership-apihub-ui-shared/components/Toolbar'
@@ -17,14 +18,14 @@ import {
   MCP_COLLECTION_LABELS,
   type McpEntity,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
-
-import type { Key } from '@apihub/entities/keys'
-import { useBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
 import { useNavigation } from '../../../../NavigationProvider'
 import { PackageBreadcrumbs } from '../../../PackageBreadcrumbs'
 import { usePackage } from '../../../usePackage'
+import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
+import { useRefSearchParam } from '../../useRefSearchParam'
 import { useMcpEntities } from '../api/useMcpEntities'
 import { useMcpEntityDetails } from '../api/useMcpEntityDetails'
+import { useAutoFetchInfinitePages } from '../useAutoFetchInfinitePages'
 import { MCP_ENDPOINT_SEARCH_PARAM, useMcpEndpointSearchParam } from '../useMcpEndpointSearchParam'
 import { MCP_ENTITY_SEARCH_PARAM, useMcpEntitySearchParam } from '../useMcpEntitySearchParam'
 import { getMcpEntityLink } from '../useNavigateToOperation'
@@ -39,13 +40,15 @@ export const McpEntityPage: FC = memo(() => {
 
   const [mcpEndpoint] = useMcpEndpointSearchParam()
   const [mcpEntityParam] = useMcpEntitySearchParam()
+  const [refKey] = useRefSearchParam()
+  const [detailsPackageKey, detailsVersionKey] = usePackageParamsWithRef()
   const mcpCollection = mcpEntityParam ?? MCP_COLLECTION_INIT
 
   const [packageObject] = usePackage({ showParents: true })
 
   const { data: entityDetails, isInitialLoading } = useMcpEntityDetails({
-    packageKey: packageId,
-    versionKey: versionId,
+    packageKey: detailsPackageKey,
+    versionKey: detailsVersionKey,
     collection: mcpCollection,
     mcpEntityId: mcpEntityId,
   })
@@ -55,6 +58,7 @@ export const McpEntityPage: FC = memo(() => {
     versionKey: versionId,
     collection: mcpCollection,
     mcpEndpoint: mcpEndpoint ?? entityDetails?.mcpEndpoint,
+    refPackageKey: refKey,
     limit: 100,
   })
 
@@ -108,7 +112,8 @@ export const McpEntityPage: FC = memo(() => {
       mcpEntityId: entity.mcpEntityId,
       mcpEndpoint: mcpEndpoint ?? entity.mcpEndpoint,
       mcpEntity: mcpCollection,
-    }), [mcpCollection, mcpEndpoint, packageId, versionId])
+      ref: entity.packageRef?.key ?? refKey,
+    }), [mcpCollection, mcpEndpoint, packageId, refKey, versionId])
 
   const title = useMemo(() => {
     if (!entityDetails) {

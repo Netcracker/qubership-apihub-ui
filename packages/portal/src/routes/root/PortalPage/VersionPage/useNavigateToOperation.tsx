@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
+import type { Path } from '@remix-run/router'
+import { type Dispatch, type SetStateAction, useCallback } from 'react'
+
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { CONTRACT_TYPE_DDL, CONTRACT_TYPE_MCP } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
-import type { McpCollection } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
-import { MCP_COLLECTION_INIT } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
+import { type McpCollection, MCP_COLLECTION_INIT } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 import { YAML_FILE_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/entities/file-format-view'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { DOC_OPERATION_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
-import type { PackageRef } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import type { PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
-import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { type PackageRef, DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import { type PackageKind, DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import {
   DOCUMENT_SEARCH_PARAM,
@@ -35,18 +35,16 @@ import {
   REF_SEARCH_PARAM,
   SEARCH_TEXT_PARAM_KEY,
 } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import type { Path } from '@remix-run/router'
-import type { Dispatch, SetStateAction } from 'react'
-import { useCallback } from 'react'
+
 import { getOperationsPath, useNavigation } from '../../../NavigationProvider'
 import { useTextSearchParam } from '../../useTextSearchParam'
 import { useDocumentSearchParam } from './useDocumentSearchParam'
 import { useFileViewMode } from './useFileViewMode'
+import { MCP_ENDPOINT_SEARCH_PARAM } from './useMcpEndpointSearchParam'
+import { MCP_ENTITY_SEARCH_PARAM } from './useMcpEntitySearchParam'
 import { useOperationSearchParam } from './useOperationSearchParam'
 import { useOperationViewMode } from './useOperationViewMode'
 import { useSidebarPlaygroundViewMode } from './useSidebarPlaygroundViewMode'
-import { MCP_ENDPOINT_SEARCH_PARAM } from './useMcpEndpointSearchParam'
-import { MCP_ENTITY_SEARCH_PARAM } from './useMcpEntitySearchParam'
 
 export function useNavigateToOperation(packageKey: Key, versionKey: Key, apiType: ApiType, setShouldAutoExpand: Dispatch<SetStateAction<boolean>>): (operationKey: Key) => void {
   const { navigateToOperations } = useNavigation()
@@ -120,6 +118,7 @@ export function getMcpEntityLink(params: {
   mcpEntityId: Key
   mcpEndpoint?: string
   mcpEntity?: McpCollection
+  ref?: Key
 }): Partial<Path> {
   const {
     packageKey,
@@ -127,6 +126,7 @@ export function getMcpEntityLink(params: {
     mcpEntityId,
     mcpEndpoint,
     mcpEntity = MCP_COLLECTION_INIT,
+    ref,
   } = params
 
   return getOperationsPath({
@@ -137,6 +137,7 @@ export function getMcpEntityLink(params: {
     search: {
       [MCP_ENDPOINT_SEARCH_PARAM]: { value: mcpEndpoint ?? '' },
       [MCP_ENTITY_SEARCH_PARAM]: { value: mcpEntity },
+      [REF_SEARCH_PARAM]: { value: ref ?? '' },
     },
   })
 }
@@ -145,14 +146,18 @@ export function getDdlTableLink(params: {
   packageKey: Key
   versionKey: Key
   ddlEntityId: Key
+  ref?: Key
 }): Partial<Path> {
-  const { packageKey, versionKey, ddlEntityId } = params
+  const { packageKey, versionKey, ddlEntityId, ref } = params
 
   return getOperationsPath({
     packageKey: packageKey,
     versionKey: versionKey,
     apiType: CONTRACT_TYPE_DDL,
     operationKey: ddlEntityId,
+    search: {
+      [REF_SEARCH_PARAM]: { value: ref ?? '' },
+    },
   })
 }
 

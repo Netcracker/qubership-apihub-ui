@@ -127,7 +127,7 @@ export const VersionApiChangesSubPage: FC = memo(() => {
           />
         }
         filtersApplied={filtersApplied}
-        hideFilter={isDdl}
+        hideFilterButton={isDdl}
         hideFiltersPanel={isDdl || hideFiltersPanel}
         filters={<ApiChangesNavigation />}
         onClickFilterButton={toggleHideFiltersPanel}

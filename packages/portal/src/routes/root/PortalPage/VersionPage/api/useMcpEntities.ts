@@ -5,11 +5,11 @@ import { generatePath } from 'react-router-dom'
 import type { FetchNextMetaList } from '@netcracker/qubership-apihub-ui-shared/components/MetaClickableListWithPreview'
 import type {
   McpCollection,
-  McpContractEntityDto,
+  McpEntitiesDto,
   McpEntity,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
-import { mcpCollectionToApiSegment, toMcpEntity } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { mcpCollectionToApiSegment, toMcpEntities } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
+import type { Key, PackageKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { HasNextPage, IsFetchingNextPage, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { API_V1, requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
@@ -18,16 +18,13 @@ import { useVersionWithRevision } from '../../../useVersionWithRevision'
 
 export const MCP_ENTITIES_QUERY_KEY = 'mcp-entities-query-key'
 
-type McpEntitiesDto = Readonly<{
-  entities: ReadonlyArray<McpContractEntityDto>
-}>
-
 type UseMcpEntitiesOptions = Readonly<{
   packageKey?: Key
   versionKey?: Key
   collection: McpCollection
   textFilter?: string
   mcpEndpoint?: string
+  refPackageKey?: PackageKey
   limit?: number
   enabled?: boolean
 }>
@@ -45,6 +42,7 @@ export function useMcpEntities(options: UseMcpEntitiesOptions): [
     collection,
     textFilter,
     mcpEndpoint,
+    refPackageKey,
     limit = 100,
     enabled = true,
   } = options
@@ -58,7 +56,7 @@ export function useMcpEntities(options: UseMcpEntitiesOptions): [
     isFetchingNextPage,
     hasNextPage,
   } = useInfiniteQuery<ReadonlyArray<McpEntity>, Error>({
-    queryKey: [MCP_ENTITIES_QUERY_KEY, packageKey, fullVersion, collection, mcpEndpoint, textFilter],
+    queryKey: [MCP_ENTITIES_QUERY_KEY, packageKey, fullVersion, collection, mcpEndpoint, textFilter, refPackageKey],
     queryFn: ({ pageParam = 0, signal }) =>
       getMcpEntities({
         packageKey: packageKey!,
@@ -66,6 +64,7 @@ export function useMcpEntities(options: UseMcpEntitiesOptions): [
         collection: collection,
         textFilter: textFilter,
         mcpEndpoint: mcpEndpoint,
+        refPackageKey: refPackageKey,
         limit: limit,
         offset: pageParam,
       }, signal),
@@ -97,6 +96,7 @@ async function getMcpEntities(
     collection: McpCollection
     textFilter?: string
     mcpEndpoint?: string
+    refPackageKey?: PackageKey
     limit?: number
     offset?: number
   },
@@ -108,6 +108,7 @@ async function getMcpEntities(
     collection,
     textFilter,
     mcpEndpoint,
+    refPackageKey,
     limit,
     offset,
   } = options
@@ -118,6 +119,7 @@ async function getMcpEntities(
   const queryParams = optionalSearchParams({
     textFilter: { value: textFilter },
     mcpEndpoint: { value: mcpEndpoint },
+    refPackageId: { value: refPackageKey },
     limit: { value: limit },
     offset: { value: offset, toStringValue: value => `${value}` },
   })
@@ -135,5 +137,5 @@ async function getMcpEntities(
     { basePath: API_V1 },
   )
 
-  return response.entities.map(toMcpEntity)
+  return toMcpEntities(response)
 }

@@ -2,6 +2,8 @@ import type { McpKind } from '@netcracker/qubership-apihub-api-processor'
 import { MCP_KIND } from '@netcracker/qubership-apihub-api-processor'
 
 import { MCP_DOCUMENT_TYPE, type McpDocumentType } from '../utils/specs'
+import type { PackageRef, PackagesRefs } from './operations'
+import { toPackageRef } from './operations'
 
 /** Browse/API collection segment (wire value, also used in URL search params). */
 export const MCP_COLLECTION_INIT = 'init'
@@ -51,9 +53,27 @@ export type McpContractEntityDetailsDto =
     data?: Record<string, unknown>
   }>
 
-export type McpEntity = McpContractEntityDto
+export type McpEntitiesDto = Readonly<{
+  entities: ReadonlyArray<McpContractEntityDto>
+  packages?: PackagesRefs
+}>
 
-export type McpEntityDetails = McpContractEntityDetailsDto
+export type McpEntity = Readonly<{
+  mcpEntityId: string
+  kind: McpKind
+  title: string
+  description?: string
+  mcpEndpoint: string
+  documentId: string
+  versionInternalDocumentId: string
+  packageRef?: PackageRef
+}>
+
+export type McpEntityDetails =
+  & McpEntity
+  & Readonly<{
+    data?: Record<string, unknown>
+  }>
 
 export type McpEndpointSummaryDto = Readonly<{
   toolsCount: number
@@ -132,8 +152,28 @@ export function hasMcpContracts(mcp?: McpContractsSummary): mcp is McpContractsS
   return mcp.totals.endpoints > 0
 }
 
-export function toMcpEntity(dto: McpContractEntityDto): McpEntity {
-  return dto
+export function toMcpEntity(
+  dto: McpContractEntityDto,
+  packagesRefs?: PackagesRefs,
+): McpEntity {
+  return {
+    mcpEntityId: dto.mcpEntityId,
+    kind: dto.kind,
+    title: dto.title,
+    description: dto.description,
+    mcpEndpoint: dto.mcpEndpoint,
+    documentId: dto.documentId,
+    versionInternalDocumentId: dto.versionInternalDocumentId,
+    packageRef: toPackageRef(dto.packageRef, packagesRefs),
+  }
+}
+
+export function toMcpEntities(dto: McpEntitiesDto): ReadonlyArray<McpEntity> {
+  return dto.entities?.map(entity => toMcpEntity(entity, dto.packages)) ?? []
+}
+
+export function getMcpEntityListKey(entity: Readonly<Pick<McpEntity, 'mcpEntityId' | 'packageRef'>>): string {
+  return `${entity.packageRef?.key ?? ''}:${entity.mcpEntityId}`
 }
 
 export function getMcpEntityDisplayName(

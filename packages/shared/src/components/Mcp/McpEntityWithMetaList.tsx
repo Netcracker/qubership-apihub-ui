@@ -3,7 +3,7 @@ import type { Path } from '@remix-run/router'
 import type { FC } from 'react'
 import { memo } from 'react'
 
-import type { McpEntity } from '../../entities/contracts-mcp'
+import { getMcpEntityListKey, type McpEntity } from '../../entities/contracts-mcp'
 import { McpEntityTitleWithMeta } from './McpEntityTitleWithMeta'
 
 export type McpEntityWithMetaListProps = {
@@ -22,7 +22,7 @@ export const McpEntityWithMetaList: FC<McpEntityWithMetaListProps> = memo<McpEnt
       const link = prepareLinkFn(entity)
 
       return (
-        <Box key={entity.mcpEntityId} data-testid="McpEntityListItem">
+        <Box key={getMcpEntityListKey(entity)} data-testid="McpEntityListItem">
           <McpEntityTitleWithMeta
             entity={entity}
             link={link}

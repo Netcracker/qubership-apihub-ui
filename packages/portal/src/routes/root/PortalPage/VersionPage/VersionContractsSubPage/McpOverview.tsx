@@ -9,10 +9,12 @@ import { McpOverviewDetails } from '@netcracker/qubership-apihub-ui-shared/compo
 import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import { DocumentTitleWithVersion } from '@netcracker/qubership-apihub-ui-shared/components/Titles/DocumentTitleWithVersion'
 import { MCP_COLLECTION_INIT } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
+import type { Key, PackageKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { toOptionalString } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
 
-import type { Key } from '@apihub/entities/keys'
-
+import { usePackageKind } from '../../usePackageKind'
+import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
 import { useMcpEntities } from '../api/useMcpEntities'
 import { useMcpEntityDetails } from '../api/useMcpEntityDetails'
 
@@ -20,6 +22,7 @@ export type McpOverviewProps = Readonly<{
   packageKey: Key
   versionKey: Key
   mcpEndpoint?: string
+  refPackageKey?: PackageKey
   hasEndpoints: boolean
 }>
 
@@ -27,21 +30,27 @@ export const McpOverview: FC<McpOverviewProps> = memo<McpOverviewProps>(({
   packageKey,
   versionKey,
   mcpEndpoint,
+  refPackageKey,
   hasEndpoints,
 }) => {
+  const [kind] = usePackageKind()
   const [initEntities, isInitListLoading] = useMcpEntities({
     packageKey: packageKey,
     versionKey: versionKey,
     collection: MCP_COLLECTION_INIT,
     mcpEndpoint: mcpEndpoint,
+    refPackageKey: refPackageKey,
     enabled: hasEndpoints && !!mcpEndpoint,
   })
 
   const [initEntity] = initEntities
+  const [detailsPackageKey, detailsVersionKey] = usePackageParamsWithRef(
+    kind === DASHBOARD_KIND ? initEntity?.packageRef?.key ?? refPackageKey : '',
+  )
 
   const { data: entityDetails, isInitialLoading: isDetailsLoading } = useMcpEntityDetails({
-    packageKey: packageKey,
-    versionKey: versionKey,
+    packageKey: detailsPackageKey,
+    versionKey: detailsVersionKey,
     collection: MCP_COLLECTION_INIT,
     mcpEntityId: initEntity?.mcpEntityId,
     enabled: !!initEntity?.mcpEntityId,

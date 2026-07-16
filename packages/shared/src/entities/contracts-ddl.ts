@@ -8,6 +8,8 @@ import {
 
 import { hasNoChangesInSummary } from '../utils/change-severities'
 import type { ChangesSummary } from './change-severities'
+import type { PackageRef, PackagesRefs } from './operations'
+import { toPackageRef } from './operations'
 import { EMPTY_CHANGE_SUMMARY } from './version-changelog'
 
 export const DDL_ENTITY_KIND_TABLE = DDL_KIND.TABLE
@@ -33,9 +35,27 @@ export type DdlContractEntityDetailsDto =
     data?: string
   }>
 
-export type DdlContractEntity = DdlContractEntityDto
+export type DdlEntitiesDto = Readonly<{
+  entities: ReadonlyArray<DdlContractEntityDto>
+  packages?: PackagesRefs
+}>
 
-export type DdlContractEntityDetails = DdlContractEntityDetailsDto
+export type DdlContractEntity = Readonly<{
+  ddlEntityId: string
+  kind: DdlEntityKind
+  name: string
+  schemaName: string
+  description?: string
+  documentId: string
+  versionInternalDocumentId: string
+  packageRef?: PackageRef
+}>
+
+export type DdlContractEntityDetails =
+  & DdlContractEntity
+  & Readonly<{
+    data?: string
+  }>
 
 export type DdlContractsSummaryDto = Readonly<{
   tablesCount: number
@@ -71,8 +91,28 @@ export function toDdlContractsSummary(dto: DdlContractsSummaryDto | undefined): 
   }
 }
 
-export function toDdlContractEntity(dto: DdlContractEntityDto): DdlContractEntity {
-  return dto
+export function toDdlContractEntity(
+  dto: DdlContractEntityDto,
+  packagesRefs?: PackagesRefs,
+): DdlContractEntity {
+  return {
+    ddlEntityId: dto.ddlEntityId,
+    kind: dto.kind,
+    name: dto.name,
+    schemaName: dto.schemaName,
+    description: dto.description,
+    documentId: dto.documentId,
+    versionInternalDocumentId: dto.versionInternalDocumentId,
+    packageRef: toPackageRef(dto.packageRef, packagesRefs),
+  }
+}
+
+export function toDdlContractEntities(dto: DdlEntitiesDto): ReadonlyArray<DdlContractEntity> {
+  return dto.entities?.map(entity => toDdlContractEntity(entity, dto.packages)) ?? []
+}
+
+export function getDdlTableListKey(table: Readonly<Pick<DdlContractEntity, 'ddlEntityId' | 'packageRef'>>): string {
+  return `${table.packageRef?.key ?? ''}:${table.ddlEntityId}`
 }
 
 export function getDdlTableDisplayName(
