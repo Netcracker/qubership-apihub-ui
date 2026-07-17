@@ -30,6 +30,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material'
+import { styled } from '@mui/material/styles'
 import ArrowOutwardRoundedIcon from '@mui/icons-material/ArrowOutwardRounded'
 import ErrorOutlinedIcon from '@mui/icons-material/ErrorOutlined'
 import type {
@@ -122,8 +123,7 @@ export const CreateSnapshotStepTable: FC<CreateSnapshotStepTableProps> = memo<Cr
       accessorFn: () => true,
       id: SELECTION_COLUMN_ID,
       header: ({ table: { getIsAllRowsSelected, getIsSomePageRowsSelected, getToggleAllRowsSelectedHandler } }) => (
-        <Checkbox
-          sx={{ py: 0 }}
+        <CompactCheckbox
           disabled={!selectable}
           checked={getIsAllRowsSelected()}
           indeterminate={getIsSomePageRowsSelected() && !getIsAllRowsSelected()}
@@ -133,8 +133,7 @@ export const CreateSnapshotStepTable: FC<CreateSnapshotStepTableProps> = memo<Cr
       cell: ({ row: { depth, getIsSelected, getIsSomeSelected, getToggleSelectedHandler } }) => {
         if (depth === 0) {
           return (
-            <Checkbox
-              sx={{ py: 0 }}
+            <CompactCheckbox
               disabled={!selectable}
               checked={getIsSelected()}
               indeterminate={getIsSomeSelected()}
@@ -179,9 +178,8 @@ export const CreateSnapshotStepTable: FC<CreateSnapshotStepTableProps> = memo<Cr
       }) => {
         if (service && viewSnapshotUrl && isSnapshotPublicationInfoSuccess) {
           return (
-            <Button
+            <ViewSnapshotActionButton
               data-testid="ViewSnapshotButton"
-              sx={{ visibility: 'hidden', p: 0, height: 10, whiteSpace: 'nowrap' }}
               className="hoverable"
               component="a"
               variant="text"
@@ -190,7 +188,7 @@ export const CreateSnapshotStepTable: FC<CreateSnapshotStepTableProps> = memo<Cr
               startIcon={<ArrowOutwardRoundedIcon/>}
             >
               View Snapshot
-            </Button>
+            </ViewSnapshotActionButton>
           )
         }
 
@@ -259,26 +257,21 @@ export const CreateSnapshotStepTable: FC<CreateSnapshotStepTableProps> = memo<Cr
       area={CONTENT_PLACEHOLDER_AREA}
       message={NO_SEARCH_RESULTS}
     >
-      <TableContainer sx={{ mt: 1, pb: 7 }} ref={tableContainerRef}>
+      <StyledTableContainer ref={tableContainerRef}>
         <Table>
           <TableHead>
             {getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header, index) => (
-                  <TableCell
+                  <HeadTableCell
                     data-testid={`HeadCell-${header.id}`}
                     key={header.id}
                     align="left"
                     width={actualColumnSizing ? actualColumnSizing[header.id] : header.getSize()}
-                    sx={{
-                      '&:hover': {
-                        borderRight: '2px solid rgba(224, 224, 224, 1)',
-                      },
-                    }}
                   >
                     {flexRender(header.column.columnDef.header, header.getContext())}
                     {index !== headerGroup.headers.length - 1 && <ColumnDelimiter header={header} resizable={true}/>}
-                  </TableCell>
+                  </HeadTableCell>
                 ))}
               </TableRow>
             ))}
@@ -300,7 +293,7 @@ export const CreateSnapshotStepTable: FC<CreateSnapshotStepTableProps> = memo<Cr
             {isServicesLoading && <TableSkeleton/>}
           </TableBody>
         </Table>
-      </TableContainer>
+      </StyledTableContainer>
     </Placeholder>
   )
 })
@@ -352,7 +345,7 @@ const CreateSnapshotDetailsTableCell: FC<CreateSnapshotDetailsTableCellProps> = 
   }
 
   return (
-    <Box display="flex" gap={1}>
+    <StatusCell>
       <StatusMarker
         value={PUBLISH_STATUS_TO_STATUS_MARKER_VARIANT_MAP[publishDetails.status]}
         title={publishDetails.message}
@@ -360,7 +353,7 @@ const CreateSnapshotDetailsTableCell: FC<CreateSnapshotDetailsTableCellProps> = 
       <Typography noWrap variant="inherit">
         {PUBLISH_STATUS_TO_STATUS_DESCRIPTION_MAP[publishDetails.status]}
       </Typography>
-    </Box>
+    </StatusCell>
   )
 })
 
@@ -388,9 +381,8 @@ const ViewDetailsButton: FC<ViewDetailsButtonProps> = memo<ViewDetailsButtonProp
   }
 
   return (
-    <Button
+    <ErrorDetailsButton
       data-testid="ViewDetailsButton"
-      sx={{ p: 0, height: 10, whiteSpace: 'nowrap' }}
       variant="text"
       color="error"
       startIcon={<ErrorOutlinedIcon color="error"/>}
@@ -400,7 +392,7 @@ const ViewDetailsButton: FC<ViewDetailsButtonProps> = memo<ViewDetailsButtonProp
       })}
     >
       Error Details
-    </Button>
+    </ErrorDetailsButton>
   )
 })
 
@@ -431,4 +423,38 @@ const RowSkeleton: FC = memo(() => {
       <TableCell/>
     </TableRow>
   )
+})
+
+const CompactCheckbox = styled(Checkbox)({
+  paddingTop: 0,
+  paddingBottom: 0,
+})
+
+const ViewSnapshotActionButton = styled(Button)({
+  visibility: 'hidden',
+  padding: 0,
+  height: 10,
+  whiteSpace: 'nowrap',
+}) as typeof Button
+
+const ErrorDetailsButton = styled(Button)({
+  padding: 0,
+  height: 10,
+  whiteSpace: 'nowrap',
+})
+
+const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
+  marginTop: theme.spacing(1),
+  paddingBottom: theme.spacing(7),
+}))
+
+const HeadTableCell = styled(TableCell)({
+  '&:hover': {
+    borderRight: '2px solid rgba(224, 224, 224, 1)',
+  },
+})
+
+const StatusCell = styled(Box)({
+  display: 'flex',
+  gap: 8,
 })
