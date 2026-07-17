@@ -14,10 +14,11 @@ export const PortalSettingsButton: FC = memo(() => {
   const backwardLocation = useBackwardLocationContext()
   const setBackwardLocation = useSetBackwardLocationContext()
   const navigate = useNavigate()
-  const { hideAiAssistantPanel } = useEventBus()
+  const { hideAiAssistantPanel, hideGlobalSearchPanel } = useEventBus()
 
   const packageSettingsLinkHandle = useCallback((): void => {
     hideAiAssistantPanel()
+    hideGlobalSearchPanel()
     setBackwardLocation({
       ...backwardLocation,
       fromPackageSettings: {
@@ -29,6 +30,7 @@ export const PortalSettingsButton: FC = memo(() => {
   }, [
     backwardLocation,
     hideAiAssistantPanel,
+    hideGlobalSearchPanel,
     location.pathname,
     location.search,
     navigate,

@@ -15,37 +15,33 @@
  */
 
 import type { FC } from 'react'
-import { memo, useState } from 'react'
-import { Box, Divider, Drawer, IconButton, Typography } from '@mui/material'
+import { memo, useCallback, useState } from 'react'
+import { Box, Divider, IconButton, Typography } from '@mui/material'
 import { useEvent } from 'react-use'
 import { SearchFilters } from './SearchFilters'
 import { SearchResults } from './SearchResults'
 import { GlobalSearchTextProvider } from './GlobalSearchTextProvider'
-import { HIDE_GLOBAL_SEARCH_PANEL, SHOW_GLOBAL_SEARCH_PANEL } from '@apihub/routes/EventBusProvider'
-import { styled } from '@mui/material/styles'
+import { HIDE_GLOBAL_SEARCH_PANEL, SHOW_GLOBAL_SEARCH_PANEL, useEventBus } from '@apihub/routes/EventBusProvider'
 import { CloseIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CloseIcon'
-import { DRAWER_LAYOUT_STYLES } from '@netcracker/qubership-apihub-ui-shared/themes/components'
+import { SidePanelDrawer } from '@netcracker/qubership-apihub-ui-shared/components/SidePanelDrawer'
 
 export const GlobalSearchPanel: FC = memo(() => {
   const [open, setOpen] = useState(false)
+  const { hideGlobalSearchPanel } = useEventBus()
 
-  useEvent(SHOW_GLOBAL_SEARCH_PANEL, (): void => {
-    setOpen(true)
-  })
+  useEvent(SHOW_GLOBAL_SEARCH_PANEL, (): void => setOpen(true))
+  useEvent(HIDE_GLOBAL_SEARCH_PANEL, (): void => setOpen(false))
 
-  useEvent(HIDE_GLOBAL_SEARCH_PANEL, (): void => {
+  const handleClose = useCallback((): void => {
     setOpen(false)
-  })
+    hideGlobalSearchPanel()
+  }, [hideGlobalSearchPanel])
 
   return (
-    <StyledDrawer
-      variant="temporary"
-      ModalProps={{
-        keepMounted: true,
-      }}
-      anchor="right"
+    <SidePanelDrawer
       open={open}
-      onClose={() => setOpen(false)}
+      onClose={handleClose}
+      keepMounted={true}
     >
       <Box sx={{ p: 2, display: 'flex', flexDirection: 'row', overflow: 'hidden', height: '100%' }}
            data-testid="GlobalSearchPanel">
@@ -61,7 +57,7 @@ export const GlobalSearchPanel: FC = memo(() => {
                 aria-label="Close Global Search"
                 data-testid="CloseButton"
                 sx={{ ml: 'auto' }}
-                onClick={() => setOpen(false)}
+                onClick={handleClose}
                 color="inherit"
               >
                 <CloseIcon fontSize="small"/>
@@ -71,20 +67,8 @@ export const GlobalSearchPanel: FC = memo(() => {
           </Box>
         </GlobalSearchTextProvider>
       </Box>
-    </StyledDrawer>
+    </SidePanelDrawer>
   )
 })
 
 export const CONTENT_WIDTH = '460px'
-
-const StyledDrawer = styled(Drawer)({
-  pointerEvents: 'none',
-  '& .MuiDrawer-paper': {
-    pointerEvents: 'auto',
-    ...DRAWER_LAYOUT_STYLES,
-  },
-  '& .MuiBackdrop-root': {
-    pointerEvents: 'auto',
-    ...DRAWER_LAYOUT_STYLES,
-  },
-})

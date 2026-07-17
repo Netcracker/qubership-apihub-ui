@@ -23,12 +23,13 @@ export const UserPanel: FC = memo(() => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [user] = useUser()
   const [logout] = useLogoutUser()
-  const { hideAiAssistantPanel } = useEventBus()
+  const { hideAiAssistantPanel, hideGlobalSearchPanel } = useEventBus()
 
   const handleMenuOpen = useCallback(() => {
     hideAiAssistantPanel()
+    hideGlobalSearchPanel()
     setIsMenuOpen(true)
-  }, [hideAiAssistantPanel])
+  }, [hideAiAssistantPanel, hideGlobalSearchPanel])
 
   const handleMenuClose = useCallback(() => {
     setIsMenuOpen(false)

@@ -2,7 +2,7 @@ import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
 import { Box } from '@mui/material'
 import type { Theme } from '@mui/material/styles'
 import type { SystemStyleObject } from '@mui/system/styleFunctionSx/styleFunctionSx'
-import { type FC, memo, useCallback, useMemo } from 'react'
+import { type FC, memo, useCallback, useMemo, useState } from 'react'
 import { generatePath, Outlet } from 'react-router-dom'
 
 import { AppHeader } from '@netcracker/qubership-apihub-ui-shared/components/AppHeader'
@@ -30,7 +30,12 @@ import { LogoIcon } from '@netcracker/qubership-apihub-ui-shared/icons/LogoIcon'
 import { cutViewPortStyleCalculator } from '@netcracker/qubership-apihub-ui-shared/utils/themes'
 import { matchPathname } from '@netcracker/qubership-apihub-ui-shared/utils/urls'
 
-import { useEventBus } from '@apihub/routes/EventBusProvider'
+import { useEvent } from 'react-use'
+import {
+  HIDE_GLOBAL_SEARCH_PANEL,
+  SHOW_GLOBAL_SEARCH_PANEL,
+  useEventBus,
+} from '@apihub/routes/EventBusProvider'
 import { AiAssistantButton } from '@netcracker/qubership-apihub-ui-portal/src/components/AiAssistant/AiAssistantButton'
 import { AiAssistantPanel } from '@netcracker/qubership-apihub-ui-portal/src/components/AiAssistant/AiAssistantPanel'
 import { AiAssistantProvider } from '@netcracker/qubership-apihub-ui-portal/src/components/AiAssistant/state/AiAssistantProvider'
@@ -43,7 +48,7 @@ import { PortalSettingsButton } from './PortalSettingsButton'
 import { UserPanel } from './UserPanel'
 
 export const BasePage: FC = memo(() => {
-  const { notification: systemNotification, aiChatEnabled } = useSystemInfo()
+  const { notification: systemNotification, aiChatEnabled=true } = useSystemInfo()
   const showErrorNotification = useShowErrorNotification()
   const isSuperAdmin = useSuperAdminCheck()
   const { frontendVersion, apiProcessorVersion } = useVersionInfo()
@@ -120,12 +125,20 @@ export const BasePage: FC = memo(() => {
 })
 
 const SearchButton: FC = memo(() => {
-  const { hideAiAssistantPanel, showGlobalSearchPanel } = useEventBus()
+  const { hideAiAssistantPanel, showGlobalSearchPanel, hideGlobalSearchPanel } = useEventBus()
+  const [open, setOpen] = useState(false)
+
+  useEvent(SHOW_GLOBAL_SEARCH_PANEL, () => setOpen(true))
+  useEvent(HIDE_GLOBAL_SEARCH_PANEL, () => setOpen(false))
 
   const handleClick = useCallback((): void => {
+    if (open) {
+      hideGlobalSearchPanel()
+      return
+    }
     hideAiAssistantPanel()
     showGlobalSearchPanel()
-  }, [hideAiAssistantPanel, showGlobalSearchPanel])
+  }, [hideAiAssistantPanel, hideGlobalSearchPanel, open, showGlobalSearchPanel])
 
   return (
     <ButtonWithHint

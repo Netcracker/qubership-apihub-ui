@@ -8,15 +8,16 @@ import { usePanel } from './state/panelContext'
 
 export const AiAssistantButton: FC = memo(() => {
   const { open } = usePanel()
-  const { showAiAssistantPanel, hideAiAssistantPanel } = useEventBus()
+  const { showAiAssistantPanel, hideAiAssistantPanel, hideGlobalSearchPanel } = useEventBus()
 
   const handleClick = useCallback((): void => {
     if (open) {
       hideAiAssistantPanel()
       return
     }
+    hideGlobalSearchPanel()
     showAiAssistantPanel()
-  }, [hideAiAssistantPanel, open, showAiAssistantPanel])
+  }, [hideAiAssistantPanel, hideGlobalSearchPanel, open, showAiAssistantPanel])
 
   return (
     <ButtonWithHint
