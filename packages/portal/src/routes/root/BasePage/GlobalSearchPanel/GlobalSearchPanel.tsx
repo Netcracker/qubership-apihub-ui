@@ -15,32 +15,22 @@
  */
 
 import type { FC } from 'react'
-import { memo, useCallback, useState } from 'react'
+import { memo } from 'react'
 import { Box, Divider, IconButton, Typography } from '@mui/material'
-import { useEvent } from 'react-use'
 import { SearchFilters } from './SearchFilters'
 import { SearchResults } from './SearchResults'
 import { GlobalSearchTextProvider } from './GlobalSearchTextProvider'
-import { HIDE_GLOBAL_SEARCH_PANEL, SHOW_GLOBAL_SEARCH_PANEL, useEventBus } from '@apihub/routes/EventBusProvider'
 import { CloseIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CloseIcon'
 import { SidePanelDrawer } from '@netcracker/qubership-apihub-ui-shared/components/SidePanelDrawer'
+import { GLOBAL_SEARCH_PANEL, useSidePanel } from '../SidePanelManager'
 
 export const GlobalSearchPanel: FC = memo(() => {
-  const [open, setOpen] = useState(false)
-  const { hideGlobalSearchPanel } = useEventBus()
-
-  useEvent(SHOW_GLOBAL_SEARCH_PANEL, (): void => setOpen(true))
-  useEvent(HIDE_GLOBAL_SEARCH_PANEL, (): void => setOpen(false))
-
-  const handleClose = useCallback((): void => {
-    setOpen(false)
-    hideGlobalSearchPanel()
-  }, [hideGlobalSearchPanel])
+  const { open, closePanel } = useSidePanel(GLOBAL_SEARCH_PANEL)
 
   return (
     <SidePanelDrawer
       open={open}
-      onClose={handleClose}
+      onClose={closePanel}
       keepMounted={true}
     >
       <Box sx={{ p: 2, display: 'flex', flexDirection: 'row', overflow: 'hidden', height: '100%' }}
@@ -57,7 +47,7 @@ export const GlobalSearchPanel: FC = memo(() => {
                 aria-label="Close Global Search"
                 data-testid="CloseButton"
                 sx={{ ml: 'auto' }}
-                onClick={handleClose}
+                onClick={closePanel}
                 color="inherit"
               >
                 <CloseIcon fontSize="small"/>

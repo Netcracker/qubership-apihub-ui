@@ -2,7 +2,7 @@ import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
 import { Box } from '@mui/material'
 import type { Theme } from '@mui/material/styles'
 import type { SystemStyleObject } from '@mui/system/styleFunctionSx/styleFunctionSx'
-import { type FC, memo, useCallback, useMemo, useState } from 'react'
+import { type FC, memo, useCallback, useMemo } from 'react'
 import { generatePath, Outlet } from 'react-router-dom'
 
 import { AppHeader } from '@netcracker/qubership-apihub-ui-shared/components/AppHeader'
@@ -30,12 +30,6 @@ import { LogoIcon } from '@netcracker/qubership-apihub-ui-shared/icons/LogoIcon'
 import { cutViewPortStyleCalculator } from '@netcracker/qubership-apihub-ui-shared/utils/themes'
 import { matchPathname } from '@netcracker/qubership-apihub-ui-shared/utils/urls'
 
-import { useEvent } from 'react-use'
-import {
-  HIDE_GLOBAL_SEARCH_PANEL,
-  SHOW_GLOBAL_SEARCH_PANEL,
-  useEventBus,
-} from '@apihub/routes/EventBusProvider'
 import { AiAssistantButton } from '@netcracker/qubership-apihub-ui-portal/src/components/AiAssistant/AiAssistantButton'
 import { AiAssistantPanel } from '@netcracker/qubership-apihub-ui-portal/src/components/AiAssistant/AiAssistantPanel'
 import { AiAssistantProvider } from '@netcracker/qubership-apihub-ui-portal/src/components/AiAssistant/state/AiAssistantProvider'
@@ -45,6 +39,7 @@ import { Notification, useShowErrorNotification } from '../BasePage/Notification
 import { MainPageProvider } from '../MainPage/MainPageProvider'
 import { GlobalSearchPanel } from './GlobalSearchPanel/GlobalSearchPanel'
 import { PortalSettingsButton } from './PortalSettingsButton'
+import { GLOBAL_SEARCH_PANEL, SidePanelManagerProvider, useSidePanel } from './SidePanelManager'
 import { UserPanel } from './UserPanel'
 
 export const BasePage: FC = memo(() => {
@@ -115,30 +110,19 @@ export const BasePage: FC = memo(() => {
 
   return (
     <MainPageProvider>
-      <ModuleFetchingErrorBoundary showReloadPopup={packageJson.version !== frontendVersion}>
-        {aiChatEnabled
-          ? <AiAssistantProvider>{pageContent}</AiAssistantProvider>
-          : pageContent}
-      </ModuleFetchingErrorBoundary>
+      <SidePanelManagerProvider>
+        <ModuleFetchingErrorBoundary showReloadPopup={packageJson.version !== frontendVersion}>
+          {aiChatEnabled
+            ? <AiAssistantProvider>{pageContent}</AiAssistantProvider>
+            : pageContent}
+        </ModuleFetchingErrorBoundary>
+      </SidePanelManagerProvider>
     </MainPageProvider>
   )
 })
 
 const SearchButton: FC = memo(() => {
-  const { hideAiAssistantPanel, showGlobalSearchPanel, hideGlobalSearchPanel } = useEventBus()
-  const [open, setOpen] = useState(false)
-
-  useEvent(SHOW_GLOBAL_SEARCH_PANEL, () => setOpen(true))
-  useEvent(HIDE_GLOBAL_SEARCH_PANEL, () => setOpen(false))
-
-  const handleClick = useCallback((): void => {
-    if (open) {
-      hideGlobalSearchPanel()
-      return
-    }
-    hideAiAssistantPanel()
-    showGlobalSearchPanel()
-  }, [hideAiAssistantPanel, hideGlobalSearchPanel, open, showGlobalSearchPanel])
+  const { togglePanel } = useSidePanel(GLOBAL_SEARCH_PANEL)
 
   return (
     <ButtonWithHint
@@ -148,7 +132,7 @@ const SearchButton: FC = memo(() => {
       size="large"
       color="inherit"
       data-testid="GlobalSearchButton"
-      onClick={handleClick}
+      onClick={togglePanel}
     />
   )
 })

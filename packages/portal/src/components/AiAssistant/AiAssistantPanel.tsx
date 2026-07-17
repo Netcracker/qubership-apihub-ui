@@ -76,7 +76,7 @@ export const AiAssistantPanel: FC = () => {
  * - modal wrapper: no pointer events (header strip stays interactive),
  * - backdrop: captures clicks in the shaded area and closes via Drawer onClose,
  * - drawer paper: pointer events enabled (panel is clickable).
- * App-header actions close the panel via `hideAiAssistantPanel` on the event bus.
+ * App-header actions close the panel via the SidePanelManager (single active panel).
  */
 const StyledDrawer = styled(Drawer)({
   pointerEvents: 'none',

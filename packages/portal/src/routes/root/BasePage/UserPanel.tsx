@@ -14,7 +14,7 @@ import { redirectToLogin } from '@netcracker/qubership-apihub-ui-shared/utils/re
 
 import { useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
 import { getProfilePath } from '@apihub/routes/NavigationProvider'
-import { useEventBus } from '@netcracker/qubership-apihub-ui-portal/src/routes/EventBusProvider'
+import { useSidePanelManager } from './SidePanelManager'
 
 export const UserPanel: FC = memo(() => {
   const navigate = useNavigate()
@@ -23,13 +23,12 @@ export const UserPanel: FC = memo(() => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [user] = useUser()
   const [logout] = useLogoutUser()
-  const { hideAiAssistantPanel, hideGlobalSearchPanel } = useEventBus()
+  const { closeAll } = useSidePanelManager()
 
   const handleMenuOpen = useCallback(() => {
-    hideAiAssistantPanel()
-    hideGlobalSearchPanel()
+    closeAll()
     setIsMenuOpen(true)
-  }, [hideAiAssistantPanel, hideGlobalSearchPanel])
+  }, [closeAll])
 
   const handleMenuClose = useCallback(() => {
     setIsMenuOpen(false)

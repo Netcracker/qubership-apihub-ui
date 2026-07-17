@@ -6,19 +6,18 @@ import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/component
 import { PortalSettingsIcon } from '@netcracker/qubership-apihub-ui-shared/icons/PortalSettingsIcon'
 
 import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
-import { useEventBus } from '@netcracker/qubership-apihub-ui-portal/src/routes/EventBusProvider'
 import { getSettingsPath } from '../../NavigationProvider'
+import { useSidePanelManager } from './SidePanelManager'
 
 export const PortalSettingsButton: FC = memo(() => {
   const location = useLocation()
   const backwardLocation = useBackwardLocationContext()
   const setBackwardLocation = useSetBackwardLocationContext()
   const navigate = useNavigate()
-  const { hideAiAssistantPanel, hideGlobalSearchPanel } = useEventBus()
+  const { closeAll } = useSidePanelManager()
 
   const packageSettingsLinkHandle = useCallback((): void => {
-    hideAiAssistantPanel()
-    hideGlobalSearchPanel()
+    closeAll()
     setBackwardLocation({
       ...backwardLocation,
       fromPackageSettings: {
@@ -29,8 +28,7 @@ export const PortalSettingsButton: FC = memo(() => {
     navigate(getSettingsPath())
   }, [
     backwardLocation,
-    hideAiAssistantPanel,
-    hideGlobalSearchPanel,
+    closeAll,
     location.pathname,
     location.search,
     navigate,

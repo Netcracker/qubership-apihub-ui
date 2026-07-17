@@ -1,23 +1,12 @@
-import { type FC, memo, useCallback } from 'react'
+import { type FC, memo } from 'react'
 
 import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
 import { RobotIcon } from '@netcracker/qubership-apihub-ui-shared/icons/RobotIcon'
 
-import { useEventBus } from '@netcracker/qubership-apihub-ui-portal/src/routes/EventBusProvider'
-import { usePanel } from './state/panelContext'
+import { AI_ASSISTANT_PANEL, useSidePanel } from '@netcracker/qubership-apihub-ui-portal/src/routes/root/BasePage/SidePanelManager'
 
 export const AiAssistantButton: FC = memo(() => {
-  const { open } = usePanel()
-  const { showAiAssistantPanel, hideAiAssistantPanel, hideGlobalSearchPanel } = useEventBus()
-
-  const handleClick = useCallback((): void => {
-    if (open) {
-      hideAiAssistantPanel()
-      return
-    }
-    hideGlobalSearchPanel()
-    showAiAssistantPanel()
-  }, [hideAiAssistantPanel, hideGlobalSearchPanel, open, showAiAssistantPanel])
+  const { togglePanel } = useSidePanel(AI_ASSISTANT_PANEL)
 
   return (
     <ButtonWithHint
@@ -27,7 +16,7 @@ export const AiAssistantButton: FC = memo(() => {
       size="large"
       color="inherit"
       data-testid="AiAssistantButton"
-      onClick={handleClick}
+      onClick={togglePanel}
     />
   )
 })
