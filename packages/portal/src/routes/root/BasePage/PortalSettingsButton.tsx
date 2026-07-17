@@ -7,7 +7,7 @@ import { PortalSettingsIcon } from '@netcracker/qubership-apihub-ui-shared/icons
 
 import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
 import { getSettingsPath } from '../../NavigationProvider'
-import { useSidePanelManager } from './SidePanelManager'
+import { useSidePanelManager } from './PanelManager/SidePanelManager'
 
 export const PortalSettingsButton: FC = memo(() => {
   const location = useLocation()

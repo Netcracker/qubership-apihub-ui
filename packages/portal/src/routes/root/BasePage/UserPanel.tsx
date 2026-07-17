@@ -14,7 +14,7 @@ import { redirectToLogin } from '@netcracker/qubership-apihub-ui-shared/utils/re
 
 import { useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
 import { getProfilePath } from '@apihub/routes/NavigationProvider'
-import { useSidePanelManager } from './SidePanelManager'
+import { useSidePanelManager } from './PanelManager/SidePanelManager'
 
 export const UserPanel: FC = memo(() => {
   const navigate = useNavigate()

@@ -6,7 +6,6 @@ import { type FC, memo, useCallback, useMemo } from 'react'
 import { generatePath, Outlet } from 'react-router-dom'
 
 import { AppHeader } from '@netcracker/qubership-apihub-ui-shared/components/AppHeader'
-import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
 import {
   VsCodeExtensionButton,
 } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/VsCodeExtensionButton/VsCodeExtensionButton'
@@ -27,19 +26,21 @@ import { SystemInfoPopup, useSystemInfo } from '@netcracker/qubership-apihub-ui-
 import { useVersionInfo } from '@netcracker/qubership-apihub-ui-shared/hooks/frontend-version/useVersionInfo'
 import { useSuperAdminCheck } from '@netcracker/qubership-apihub-ui-shared/hooks/user-roles/useSuperAdminCheck'
 import { LogoIcon } from '@netcracker/qubership-apihub-ui-shared/icons/LogoIcon'
+import { RobotIcon } from '@netcracker/qubership-apihub-ui-shared/icons/RobotIcon'
 import { cutViewPortStyleCalculator } from '@netcracker/qubership-apihub-ui-shared/utils/themes'
 import { matchPathname } from '@netcracker/qubership-apihub-ui-shared/utils/urls'
-
-import { AiAssistantButton } from '@netcracker/qubership-apihub-ui-portal/src/components/AiAssistant/AiAssistantButton'
 import { AiAssistantPanel } from '@netcracker/qubership-apihub-ui-portal/src/components/AiAssistant/AiAssistantPanel'
-import { AiAssistantProvider } from '@netcracker/qubership-apihub-ui-portal/src/components/AiAssistant/state/AiAssistantProvider'
+import {
+  AiAssistantProvider,
+} from '@netcracker/qubership-apihub-ui-portal/src/components/AiAssistant/state/AiAssistantProvider'
 import * as packageJson from '../../../../package.json'
 import { PORTAL_PATH_PATTERNS } from '../../../routes'
 import { Notification, useShowErrorNotification } from '../BasePage/Notification'
 import { MainPageProvider } from '../MainPage/MainPageProvider'
 import { GlobalSearchPanel } from './GlobalSearchPanel/GlobalSearchPanel'
+import { AI_ASSISTANT_PANEL, GLOBAL_SEARCH_PANEL, SidePanelManagerProvider } from './PanelManager/SidePanelManager'
+import { createSidePanelTriggerButton } from './PanelManager/SidePanelTriggerButton'
 import { PortalSettingsButton } from './PortalSettingsButton'
-import { GLOBAL_SEARCH_PANEL, SidePanelManagerProvider, useSidePanel } from './SidePanelManager'
 import { UserPanel } from './UserPanel'
 
 export const BasePage: FC = memo(() => {
@@ -81,7 +82,7 @@ export const BasePage: FC = memo(() => {
           <>
             <VsCodeExtensionButton />
             <AppHeaderDivider />
-            <SearchButton />
+            <GlobalSearchButton />
             {aiChatEnabled && <AiAssistantButton />}
             {isSuperAdmin && <PortalSettingsButton />}
             <SystemInfoPopup
@@ -121,23 +122,19 @@ export const BasePage: FC = memo(() => {
   )
 })
 
-const SearchButton: FC = memo(() => {
-  const { togglePanel } = useSidePanel(GLOBAL_SEARCH_PANEL)
-
-  return (
-    <ButtonWithHint
-      hint="Global Search"
-      startIcon={<SearchOutlinedIcon />}
-      aria-label="Global Search"
-      size="large"
-      color="inherit"
-      data-testid="GlobalSearchButton"
-      onClick={togglePanel}
-    />
-  )
+const GlobalSearchButton = createSidePanelTriggerButton({
+  panelId: GLOBAL_SEARCH_PANEL,
+  hint: 'Global Search',
+  icon: <SearchOutlinedIcon />,
+  testId: 'GlobalSearchButton',
 })
 
-SearchButton.displayName = 'SearchButton'
+const AiAssistantButton = createSidePanelTriggerButton({
+  panelId: AI_ASSISTANT_PANEL,
+  hint: 'AI Assistant',
+  icon: <RobotIcon />,
+  testId: 'AiAssistantButton',
+})
 
 function replacePackageId(locationPathname: string, searchParams: URLSearchParams, packageId: Key): string {
   const locationMatch = matchPathname(locationPathname, PORTAL_PATH_PATTERNS)!

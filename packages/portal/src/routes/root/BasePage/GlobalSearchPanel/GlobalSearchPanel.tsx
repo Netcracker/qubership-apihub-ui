@@ -22,7 +22,7 @@ import { SearchResults } from './SearchResults'
 import { GlobalSearchTextProvider } from './GlobalSearchTextProvider'
 import { CloseIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CloseIcon'
 import { SidePanelDrawer } from '@netcracker/qubership-apihub-ui-shared/components/SidePanelDrawer'
-import { GLOBAL_SEARCH_PANEL, useSidePanel } from '../SidePanelManager'
+import { GLOBAL_SEARCH_PANEL, useSidePanel } from '../PanelManager/SidePanelManager'
 
 export const GlobalSearchPanel: FC = memo(() => {
   const { open, closePanel } = useSidePanel(GLOBAL_SEARCH_PANEL)

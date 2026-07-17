@@ -29,7 +29,7 @@ import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/compone
 import {
   OperationTitleWithMeta as OperationTitle,
 } from '@netcracker/qubership-apihub-ui-shared/components/Operations/OperationTitleWithMeta'
-import { GLOBAL_SEARCH_PANEL, useSidePanel } from '../SidePanelManager'
+import { GLOBAL_SEARCH_PANEL, useSidePanel } from '../PanelManager/SidePanelManager'
 
 export type ApiOperationsSearchListProps = {
   value: OperationSearchResult[]
