@@ -1,4 +1,6 @@
 import type { DiffType } from '@netcracker/qubership-apihub-api-diff'
+import { useEffect, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { CONTRACT_TYPE_DDL } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 import {
@@ -14,10 +16,9 @@ import {
   OPERATION_SEARCH_PARAM,
   optionalSearchParams,
   PACKAGE_SEARCH_PARAM,
+  REF_SEARCH_PARAM,
   VERSION_SEARCH_PARAM,
 } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { useEffect, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
 
 import { useDdlChanges } from '../api/useDdlChanges'
 import { useDdlTableDetails } from '../api/useDdlTableDetails'
@@ -29,6 +30,11 @@ export type UseDdlEntityComparisonStateOptions = Readonly<{
   changedVersionKey?: VersionKey
   originPackageKey?: Key
   originVersionKey?: VersionKey
+  refPackageId?: Key
+  changedEntityPackageKey?: Key
+  changedEntityVersionKey?: VersionKey
+  originEntityPackageKey?: Key
+  originEntityVersionKey?: VersionKey
   ddlEntityId?: Key
   severityFilters: DiffType[]
   changesSummaryReady: boolean
@@ -54,6 +60,11 @@ export function useDdlEntityComparisonState(
     changedVersionKey,
     originPackageKey,
     originVersionKey,
+    refPackageId,
+    changedEntityPackageKey = changedPackageKey,
+    changedEntityVersionKey = changedVersionKey,
+    originEntityPackageKey = originPackageKey,
+    originEntityVersionKey = originVersionKey,
     ddlEntityId,
     severityFilters,
     changesSummaryReady,
@@ -73,6 +84,7 @@ export function useDdlEntityComparisonState(
     versionKey: changedVersionKey!,
     previousVersionPackageKey: originPackageKey,
     previousVersionKey: originVersionKey,
+    refPackageId: refPackageId,
     severityFilters: severityFilters,
     enabled: enabled && changesSummaryReady,
     page: 1,
@@ -108,17 +120,19 @@ export function useDdlEntityComparisonState(
   )
 
   const { data: changedTableDetails, isInitialLoading: isChangedTableLoading } = useDdlTableDetails({
-    packageKey: changedPackageKey,
-    versionKey: changedVersionKey,
+    packageKey: changedEntityPackageKey,
+    versionKey: changedEntityVersionKey,
     ddlEntityId: compareEntityIds?.currentDdlEntityId,
-    enabled: enabled && !!compareEntityIds?.currentDdlEntityId,
+    enabled: enabled && !!compareEntityIds?.currentDdlEntityId && !!changedEntityPackageKey &&
+      !!changedEntityVersionKey,
   })
 
   const { data: originTableDetails, isInitialLoading: isOriginTableLoading } = useDdlTableDetails({
-    packageKey: originPackageKey,
-    versionKey: originVersionKey,
+    packageKey: originEntityPackageKey,
+    versionKey: originEntityVersionKey,
     ddlEntityId: compareEntityIds?.previousDdlEntityId,
-    enabled: enabled && !!compareEntityIds?.previousDdlEntityId,
+    enabled: enabled && !!compareEntityIds?.previousDdlEntityId && !!originEntityPackageKey &&
+      !!originEntityVersionKey,
   })
 
   const ddlChangeExists = !!currentChangeEntry
@@ -144,6 +158,7 @@ export function useDdlEntityComparisonState(
     const searchParams = optionalSearchParams({
       [PACKAGE_SEARCH_PARAM]: { value: originPackageKey },
       [VERSION_SEARCH_PARAM]: { value: originVersionKey },
+      [REF_SEARCH_PARAM]: { value: refPackageId },
       [FILTERS_SEARCH_PARAM]: { value: severityFilters.join() },
       [OPERATION_SEARCH_PARAM]: {
         value: firstChangeEntry.ddlEntityData?.ddlEntityId
@@ -168,6 +183,7 @@ export function useDdlEntityComparisonState(
     navigate,
     originPackageKey,
     originVersionKey,
+    refPackageId,
     severityFilters,
   ])
 

@@ -260,6 +260,7 @@ export const VersionCompareContent: FC = memo(() => {
                 changedVersionKey!,
                 originPackageKey!,
                 originVersionKey!,
+                refPackageKey,
                 onClickOperationChange,
               ))
               : filteredPackageChanges.map((operationChange) => renderOperationComparisonRow(
@@ -358,6 +359,7 @@ function renderDdlComparisonRow(
   changedVersionKey: Key,
   originPackageKey: Key,
   originVersionKey: Key,
+  refPackageKey: Key | undefined,
   onClick: () => void,
 ): JSX.Element {
   const { action, changeSummary, ddlEntityData, previousDdlEntityData } = ddlChange
@@ -366,6 +368,7 @@ function renderDdlComparisonRow(
   const comparingSearchParams = optionalSearchParams({
     [PACKAGE_SEARCH_PARAM]: { value: changedPackageKey === originPackageKey ? '' : encodeURIComponent(originPackageKey) },
     [VERSION_SEARCH_PARAM]: { value: originVersionKey },
+    [REF_SEARCH_PARAM]: { value: refPackageKey },
     [OPERATION_SEARCH_PARAM]: {
       value: ddlEntityData?.ddlEntityId
         ? previousDdlEntityData?.ddlEntityId

@@ -7,10 +7,13 @@ import { useParams } from 'react-router-dom'
 import { DdlTableTitleWithMeta } from '../../../components/Ddl/DdlTableTitleWithMeta'
 import { ExpandableItem } from '../../../components/ExpandableItem'
 import { getDdlChangeEntityId, toDdlContractEntityFromChange } from '../../../entities/contracts-ddl-changelog'
+import type { PackageKind } from '../../../entities/packages'
+import { DASHBOARD_KIND } from '../../../entities/packages'
 import {
   OPERATION_SEARCH_PARAM,
   optionalSearchParams,
   PACKAGE_SEARCH_PARAM,
+  REF_SEARCH_PARAM,
   VERSION_SEARCH_PARAM,
 } from '../../../utils/search-params'
 import type { DdlChangesViewTableData } from '../const/ddlTable'
@@ -18,6 +21,7 @@ import { usePreviousReleasePackageKey, usePreviousReleaseVersion } from './Previ
 
 export type DdlEntityChangeCellProps = {
   value: Row<DdlChangesViewTableData>
+  mainPackageKind?: PackageKind
 }
 
 export const DdlEntityChangeCell: FC<DdlEntityChangeCellProps> = memo<DdlEntityChangeCellProps>(({
@@ -27,12 +31,16 @@ export const DdlEntityChangeCell: FC<DdlEntityChangeCellProps> = memo<DdlEntityC
     getIsExpanded,
     getToggleExpandedHandler,
   },
+  mainPackageKind,
 }) => {
   const { packageId, versionId, apiType } = useParams()
 
   const { ddlEntityData, previousDdlEntityData } = change
   const table = ddlEntityData ?? previousDdlEntityData!
   const ddlEntityId = getDdlChangeEntityId(change)
+  const packageRef = ddlEntityData?.packageRef ?? previousDdlEntityData?.packageRef
+  const previousPackageRef = previousDdlEntityData?.packageRef
+  const isDashboard = mainPackageKind === DASHBOARD_KIND
 
   const previousReleaseVersion = usePreviousReleaseVersion()
   const previousReleasePackageKey = usePreviousReleasePackageKey()
@@ -41,6 +49,9 @@ export const DdlEntityChangeCell: FC<DdlEntityChangeCellProps> = memo<DdlEntityC
     [VERSION_SEARCH_PARAM]: { value: previousReleaseVersion },
     [PACKAGE_SEARCH_PARAM]: {
       value: packageId !== previousReleasePackageKey ? previousReleasePackageKey : '',
+    },
+    [REF_SEARCH_PARAM]: {
+      value: isDashboard ? packageRef?.refId ?? previousPackageRef?.refId : undefined,
     },
     [OPERATION_SEARCH_PARAM]: {
       value: ddlEntityData?.ddlEntityId ? previousDdlEntityData?.ddlEntityId : undefined,

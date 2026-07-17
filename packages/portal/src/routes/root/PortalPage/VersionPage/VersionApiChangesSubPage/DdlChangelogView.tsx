@@ -18,6 +18,7 @@ import {
   usePreviousReleaseVersion,
 } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget/components/PreviousReleaseOptionsProvider'
 
+import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
 import { useRefSearchParam } from '@apihub/routes/root/PortalPage/useRefSearchParam'
 
 import { useDdlChanges } from '../api/useDdlChanges'
@@ -39,6 +40,7 @@ export const DdlChangelogView: FC<DdlChangelogViewProps> = memo<DdlChangelogView
   const [refKey] = useRefSearchParam()
   const previousReleaseVersion = usePreviousReleaseVersion()
   const previousReleasePackageKey = usePreviousReleasePackageKey()
+  const currentPackage = useCurrentPackage()
 
   const {
     data: ddlChangelog,
@@ -78,6 +80,7 @@ export const DdlChangelogView: FC<DdlChangelogViewProps> = memo<DdlChangelogView
         value={ddlChanges}
         packageKey={packageKey}
         versionKey={versionKey}
+        packageObject={currentPackage}
         fetchNextPage={fetchNextPage}
         isNextPageFetching={isNextPageFetching}
         hasNextPage={hasNextPage}

@@ -37,6 +37,7 @@ import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/ap
 import { isApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { CHANGE_SEVERITIES, type ChangesSummary } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
 import { CONTRACT_TYPE_DDL, getRouteApiTypeTitle, isApiContract } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
+import { getDashboardComparisonApiTypes } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-changes-summary'
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import {
@@ -173,11 +174,7 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
         return false
       }
 
-      const allPackagesApiTypes = changesSummary
-        .map(({ operationTypes }) => operationTypes.map(typeSummary => typeSummary.apiType))
-        .flat()
-      const apiTypeSet = new Set(allPackagesApiTypes)
-      return isApiTypeSelectorShown(Array.from(apiTypeSet))
+      return isApiTypeSelectorShown(getDashboardComparisonApiTypes(changesSummary))
     },
     [changesSummary],
   )

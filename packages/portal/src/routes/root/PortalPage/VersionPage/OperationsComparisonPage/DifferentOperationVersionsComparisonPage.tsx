@@ -120,12 +120,28 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
   const [changesSummary, isContextValid] = useChangesSummaryContext(compareVersionsOptions)
   const changesSummaryReady = !!changesSummary && isContextValid
 
+  const refComparisonSummary: RefComparisonSummary | undefined = useMemo(() => {
+    if (!isPackageFromDashboard) {
+      return undefined
+    }
+    return (changesSummary as DashboardComparisonSummary)?.find(summary => {
+      return summary.refKey === refPackageKey
+    })
+  }, [changesSummary, isPackageFromDashboard, refPackageKey])
+
   const ddlComparisonState = useDdlEntityComparisonState({
     enabled: isDdlComparison,
     changedPackageKey: changedPackageKey,
     changedVersionKey: changedVersionKey,
     originPackageKey: originPackageKey,
     originVersionKey: originVersionKey,
+    refPackageId: refPackageKey,
+    changedEntityPackageKey: !isPackageFromDashboard ? changedPackageKey : refPackageKey,
+    changedEntityVersionKey: !isPackageFromDashboard ? changedVersionKey : refComparisonSummary?.version,
+    originEntityPackageKey: !isPackageFromDashboard ? originPackageKey : refPackageKey,
+    originEntityVersionKey: !isPackageFromDashboard
+      ? originVersionKey
+      : refComparisonSummary?.previousVersion,
     ddlEntityId: operationKey,
     severityFilters: [...filters],
     changesSummaryReady: changesSummaryReady,
@@ -167,15 +183,6 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
     }
     // eslint-disable-next-line
   }, [packageChangelog])
-
-  const refComparisonSummary: RefComparisonSummary | undefined = useMemo(() => {
-    if (!isPackageFromDashboard) {
-      return undefined
-    }
-    return (changesSummary as DashboardComparisonSummary)?.find(summary => {
-      return summary.refKey === refPackageKey
-    })
-  }, [changesSummary, isPackageFromDashboard, refPackageKey])
 
   const { currentOperationKey, previousOperationKey } = safeOperationKeysPair({
     currentOperationKey: operationKey,

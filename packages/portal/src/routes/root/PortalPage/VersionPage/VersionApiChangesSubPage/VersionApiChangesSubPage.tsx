@@ -75,7 +75,8 @@ export const VersionApiChangesSubPage: FC = memo(() => {
   const [packageObject] = usePackage({ showParents: true })
   const isDashboard = packageObject?.kind === DASHBOARD_KIND
   const isDdl = routeApiType === CONTRACT_TYPE_DDL
-  const filtersApplied = useCheckOperationFiltersApplied(isDashboard) && !isDdl
+  const hideDdlFiltersOnPackage = isDdl && !isDashboard
+  const filtersApplied = useCheckOperationFiltersApplied(isDashboard) && !hideDdlFiltersOnPackage
 
   const { hideFiltersPanel, toggleHideFiltersPanel } = usePortalPageSettingsContext()
 
@@ -127,8 +128,8 @@ export const VersionApiChangesSubPage: FC = memo(() => {
           />
         }
         filtersApplied={filtersApplied}
-        hideFilterButton={isDdl}
-        hideFiltersPanel={isDdl || hideFiltersPanel}
+        hideFilterButton={hideDdlFiltersOnPackage}
+        hideFiltersPanel={hideDdlFiltersOnPackage || hideFiltersPanel}
         filters={<ApiChangesNavigation />}
         onClickFilterButton={toggleHideFiltersPanel}
         body={<ApiChangesCard searchValue={searchValue} />}

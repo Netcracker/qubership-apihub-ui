@@ -25,9 +25,13 @@ import {
 } from '../../../entities/change-severities'
 import type { DdlChangesPage, DdlEntityChangeEntry } from '../../../entities/contracts-ddl-changelog'
 import type { Key } from '../../../entities/keys'
+import type { Package } from '../../../entities/packages'
+import { DASHBOARD_KIND } from '../../../entities/packages'
+import { PACKAGE_COLUMN_ID } from '../../../entities/table-columns'
 import { useIntersectionObserver } from '../../../hooks/common/useIntersectionObserver'
 import { useResizeObserver } from '../../../hooks/common/useResizeObserver'
 import { DEFAULT_CONTAINER_WIDTH, useColumnsSizing } from '../../../hooks/table-resizing/useColumnResizing'
+import { insertIntoArrayByIndex } from '../../../utils/arrays'
 import { createComponents } from '../../../utils/components'
 import { DEFAULT_NUMBER_SKELETON_ROWS } from '../../../utils/constants'
 import type { DdlChangesViewTableData } from '../const/ddlTable'
@@ -43,6 +47,7 @@ export type DdlChangesViewTableProps = {
   value: ReadonlyArray<DdlEntityChangeEntry>
   packageKey: Key
   versionKey: Key
+  packageObject: Package | null
   fetchNextPage?: FetchNextDdlChangesPage
   isNextPageFetching?: boolean
   hasNextPage?: boolean
@@ -54,12 +59,15 @@ export const DdlChangesViewTable: FC<DdlChangesViewTableProps> = memo<DdlChanges
   value,
   packageKey,
   versionKey,
+  packageObject,
   fetchNextPage,
   isNextPageFetching,
   hasNextPage,
   SubTableComponent,
   isLoading,
 }) => {
+  const isDashboardType = packageObject?.kind === DASHBOARD_KIND
+
   const [containerWidth, setContainerWidth] = useState(DEFAULT_CONTAINER_WIDTH)
   const [columnSizingInfo, setColumnSizingInfo] = useState<ColumnSizingInfoState>()
   const [, setHandlingColumnSizing] = useState<ColumnSizingState>()
@@ -74,27 +82,48 @@ export const DdlChangesViewTable: FC<DdlChangesViewTableProps> = memo<DdlChanges
     defaultMinColumnSize: 60,
   })
 
-  const columns: ColumnDef<DdlChangesViewTableData>[] = useMemo(() => [
-    {
-      id: DDL_TABLE_COLUMN_ID,
-      header: () => <CustomTableHeadCell title="Table" />,
-      cell: ({ row }) => (
-        <TextWithOverflowTooltip>
-          <DdlEntityChangeCell value={row} />
-        </TextWithOverflowTooltip>
-      ),
-    },
-    {
-      id: CHANGES_COLUMN_ID,
-      header: () => <CustomTableHeadCell title="Changes summary" />,
-      cell: ({ row: { original: { change } } }) => {
-        const { changeSummary } = change
-        if (changeSummary) {
-          return <Changes value={changeSummary} mode="compact" />
-        }
+  const columns: ColumnDef<DdlChangesViewTableData>[] = useMemo(() => {
+    const result: ColumnDef<DdlChangesViewTableData>[] = [
+      {
+        id: DDL_TABLE_COLUMN_ID,
+        header: () => <CustomTableHeadCell title="Table" />,
+        cell: ({ row }) => (
+          <TextWithOverflowTooltip>
+            <DdlEntityChangeCell value={row} mainPackageKind={packageObject?.kind} />
+          </TextWithOverflowTooltip>
+        ),
       },
-    },
-  ], [])
+      {
+        id: CHANGES_COLUMN_ID,
+        header: () => <CustomTableHeadCell title="Changes summary" />,
+        cell: ({ row: { original: { change } } }) => {
+          const { changeSummary } = change
+          if (changeSummary) {
+            return <Changes value={changeSummary} mode="compact" />
+          }
+        },
+      },
+    ]
+
+    if (isDashboardType) {
+      insertIntoArrayByIndex(result, {
+        id: PACKAGE_COLUMN_ID,
+        header: () => <CustomTableHeadCell title="Package" />,
+        cell: ({ row: { original: { change: { ddlEntityData, previousDdlEntityData } } } }) => {
+          const ref = ddlEntityData?.packageRef ?? previousDdlEntityData?.packageRef
+          if (ref) {
+            return (
+              <TextWithOverflowTooltip tooltipText={ref.name}>
+                {ref.name}
+              </TextWithOverflowTooltip>
+            )
+          }
+        },
+      }, 1)
+    }
+
+    return result
+  }, [isDashboardType, packageObject?.kind])
 
   const data: DdlChangesViewTableData[] = useMemo(() =>
     value.map(change => {
@@ -185,8 +214,11 @@ export const DdlChangesViewTable: FC<DdlChangesViewTableProps> = memo<DdlChanges
               )}
             </Fragment>
           ))}
-          {isLoading && createComponents(<DdlRowSkeleton />, DEFAULT_NUMBER_SKELETON_ROWS)}
-          {hasNextPage && <DdlRowSkeleton refObject={ref} />}
+          {isLoading && createComponents(
+            <DdlRowSkeleton isDashboard={isDashboardType} />,
+            DEFAULT_NUMBER_SKELETON_ROWS,
+          )}
+          {hasNextPage && <DdlRowSkeleton refObject={ref} isDashboard={isDashboardType} />}
         </TableBody>
       </Table>
     </TableContainer>
@@ -197,17 +229,22 @@ DdlChangesViewTable.displayName = 'DdlChangesViewTable'
 
 type DdlRowSkeletonProps = {
   refObject?: RefObject<HTMLDivElement>
+  isDashboard?: boolean
 }
 
-const DdlRowSkeleton: FC<DdlRowSkeletonProps> = memo<DdlRowSkeletonProps>(({ refObject }) => (
+const DdlRowSkeleton: FC<DdlRowSkeletonProps> = memo<DdlRowSkeletonProps>(({ refObject, isDashboard }) => (
   <TableRow>
     <TableCell ref={refObject}>
       <Skeleton variant="rectangular" width="80%" />
     </TableCell>
+    {isDashboard && (
+      <TableCell>
+        <Skeleton variant="rectangular" width="80%" />
+      </TableCell>
+    )}
     <TableCell>
       <Skeleton variant="rectangular" width="80%" />
     </TableCell>
-    <TableCell />
   </TableRow>
 ))
 

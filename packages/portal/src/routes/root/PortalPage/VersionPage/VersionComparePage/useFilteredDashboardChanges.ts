@@ -15,38 +15,74 @@
  */
 
 import { useMemo } from 'react'
+
+import { calculateTotalChangeSummary } from '@netcracker/qubership-apihub-api-processor'
+import type { ChangeSeverity } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
+import { CONTRACT_TYPE_DDL } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
+import { hasDdlComparisonChanges } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
+import { EMPTY_CHANGE_SUMMARY } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
 import type {
   DashboardComparisonSummary,
   RefComparisonSummary,
 } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
-import type { ChangeSeverity } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
-import { filterChangesBySeverity, hasNoChangesInSummary } from '@netcracker/qubership-apihub-ui-shared/utils/change-severities'
-import { EMPTY_CHANGE_SUMMARY } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
 import { isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { calculateTotalChangeSummary } from '@netcracker/qubership-apihub-api-processor'
+import {
+  filterChangesBySeverity,
+  hasNoChangesInSummary,
+} from '@netcracker/qubership-apihub-ui-shared/utils/change-severities'
 
-function changeSeverityFilter({ operationTypes }: RefComparisonSummary, filters: ChangeSeverity[]): boolean {
-  const matchSeverities = operationTypes.some(apiType => filterChangesBySeverity(filters, apiType.changesSummary))
-  const wholePackageChangesSummary = isNotEmpty(operationTypes)
-    ? calculateTotalChangeSummary(operationTypes.map(type => type.changesSummary ?? EMPTY_CHANGE_SUMMARY))
-    : EMPTY_CHANGE_SUMMARY
-  return matchSeverities && !hasNoChangesInSummary(wholePackageChangesSummary)
-}
-
-function apiTypeFilter({ operationTypes }: RefComparisonSummary, apiType?: ApiType): boolean {
-  return apiType
-    ? !!operationTypes.find(operationType => operationType.apiType === apiType)
-    : true
-}
+import type { CompareSupportedApiType } from './compareApiTypeFilter'
 
 export function useFilteredDashboardChanges(
   dashboardChanges: DashboardComparisonSummary = [],
   severityFilter: ChangeSeverity[],
-  apiType?: ApiType,
+  apiType?: CompareSupportedApiType,
 ): DashboardComparisonSummary {
   return useMemo(
-    () => dashboardChanges?.filter((refChanges) => apiTypeFilter(refChanges, apiType))?.filter((refChanges) => changeSeverityFilter(refChanges, severityFilter)) ?? [],
+    () =>
+      dashboardChanges
+        ?.filter((refChanges) => apiTypeFilter(refChanges, apiType))
+        ?.filter((refChanges) => changeSeverityFilter(refChanges, severityFilter)) ??
+        [],
     [dashboardChanges, apiType, severityFilter],
   )
+}
+
+function changeSeverityFilter(
+  { operationTypes, contractsChangesSummary }: RefComparisonSummary,
+  filters: ChangeSeverity[],
+): boolean {
+  const ddlChangesSummary = contractsChangesSummary?.ddl?.changesSummary
+  const matchOperationSeverities = operationTypes.some(operationType =>
+    filterChangesBySeverity(filters, operationType.changesSummary),
+  )
+  const matchDdlSeverities = !!ddlChangesSummary &&
+    filterChangesBySeverity(filters, ddlChangesSummary)
+  const matchSeverities = matchOperationSeverities || matchDdlSeverities
+
+  const operationSummaries = operationTypes.map(type => type.changesSummary ?? EMPTY_CHANGE_SUMMARY)
+  if (hasDdlComparisonChanges(contractsChangesSummary?.ddl) && ddlChangesSummary) {
+    operationSummaries.push(ddlChangesSummary)
+  }
+
+  const wholePackageChangesSummary = isNotEmpty(operationSummaries)
+    ? calculateTotalChangeSummary(operationSummaries)
+    : EMPTY_CHANGE_SUMMARY
+
+  return matchSeverities && !hasNoChangesInSummary(wholePackageChangesSummary)
+}
+
+function apiTypeFilter(
+  { operationTypes, contractsChangesSummary }: RefComparisonSummary,
+  apiType?: CompareSupportedApiType,
+): boolean {
+  if (!apiType) {
+    return true
+  }
+
+  if (apiType === CONTRACT_TYPE_DDL) {
+    return hasDdlComparisonChanges(contractsChangesSummary?.ddl)
+  }
+
+  return !!operationTypes.find(operationType => operationType.apiType === apiType)
 }
