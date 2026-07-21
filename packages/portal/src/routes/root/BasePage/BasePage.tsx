@@ -50,7 +50,7 @@ import { PortalSettingsButton } from './PortalSettingsButton'
 import { UserPanel } from './UserPanel'
 
 export const BasePage: FC = memo(() => {
-  const { notification: systemNotification, aiChatEnabled = true } = useSystemInfo()
+  const { notification: systemNotification, aiChatEnabled } = useSystemInfo()
   const showErrorNotification = useShowErrorNotification()
   const isSuperAdmin = useSuperAdminCheck()
   const { frontendVersion, apiProcessorVersion } = useVersionInfo()
