@@ -22,47 +22,34 @@ import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/component
 import type { SidePanelId } from './SidePanelManager'
 import { useSidePanel } from './SidePanelManager'
 
-export type SidePanelTriggerButtonConfig = {
-  /** Panel this button toggles */
+export type SidePanelTriggerButtonProps = {
   panelId: SidePanelId
-  /** Tooltip text shown on hover */
   hint: string
-  /** Leading icon */
   icon: ReactElement
-  /** `data-testid` of the rendered button */
   testId: string
-  /** Accessible label; defaults to `hint` */
   ariaLabel?: string
 }
 
-/**
- * Factory that builds an app-header button toggling a side panel.
- *
- * Every panel-trigger button shares identical behaviour (toggle through the
- * SidePanelManager, closing any other open panel automatically) and differs
- * only in presentation. So they are produced from a small config object:
- * adding a button for a new panel is a single `createSidePanelTriggerButton({...})` call.
- */
-export function createSidePanelTriggerButton(config: SidePanelTriggerButtonConfig): FC {
-  const { panelId, hint, icon, testId, ariaLabel } = config
+export const SidePanelTriggerButton: FC<SidePanelTriggerButtonProps> = memo(({
+  panelId,
+  hint,
+  icon,
+  testId,
+  ariaLabel,
+}) => {
+  const { togglePanel } = useSidePanel(panelId)
 
-  const SidePanelTriggerButton: FC = memo(() => {
-    const { togglePanel } = useSidePanel(panelId)
+  return (
+    <ButtonWithHint
+      hint={hint}
+      startIcon={icon}
+      aria-label={ariaLabel ?? hint}
+      size="large"
+      color="inherit"
+      data-testid={testId}
+      onClick={togglePanel}
+    />
+  )
+})
 
-    return (
-      <ButtonWithHint
-        hint={hint}
-        startIcon={icon}
-        aria-label={ariaLabel ?? hint}
-        size="large"
-        color="inherit"
-        data-testid={testId}
-        onClick={togglePanel}
-      />
-    )
-  })
-
-  SidePanelTriggerButton.displayName = testId
-
-  return SidePanelTriggerButton
-}
+SidePanelTriggerButton.displayName = 'SidePanelTriggerButton'

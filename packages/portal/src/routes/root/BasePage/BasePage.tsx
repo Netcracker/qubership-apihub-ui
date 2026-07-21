@@ -38,13 +38,19 @@ import { PORTAL_PATH_PATTERNS } from '../../../routes'
 import { Notification, useShowErrorNotification } from '../BasePage/Notification'
 import { MainPageProvider } from '../MainPage/MainPageProvider'
 import { GlobalSearchPanel } from './GlobalSearchPanel/GlobalSearchPanel'
-import { AI_ASSISTANT_PANEL, GLOBAL_SEARCH_PANEL, SidePanelManagerProvider } from './PanelManager/SidePanelManager'
-import { createSidePanelTriggerButton } from './PanelManager/SidePanelTriggerButton'
+import type {
+  SidePanelId} from './PanelManager/SidePanelManager'
+import {
+  AI_ASSISTANT_PANEL,
+  GLOBAL_SEARCH_PANEL,
+  SidePanelManagerProvider,
+} from './PanelManager/SidePanelManager'
+import { SidePanelTriggerButton } from './PanelManager/SidePanelTriggerButton'
 import { PortalSettingsButton } from './PortalSettingsButton'
 import { UserPanel } from './UserPanel'
 
 export const BasePage: FC = memo(() => {
-  const { notification: systemNotification, aiChatEnabled=true } = useSystemInfo()
+  const { notification: systemNotification, aiChatEnabled = true } = useSystemInfo()
   const showErrorNotification = useShowErrorNotification()
   const isSuperAdmin = useSuperAdminCheck()
   const { frontendVersion, apiProcessorVersion } = useVersionInfo()
@@ -75,21 +81,21 @@ export const BasePage: FC = memo(() => {
       height="100vh"
     >
       <AppHeader
-        logo={<LogoIcon />}
+        logo={<LogoIcon/>}
         title="APIHUB"
         links={links}
         action={
           <>
-            <VsCodeExtensionButton />
-            <AppHeaderDivider />
-            <GlobalSearchButton />
-            {aiChatEnabled && <AiAssistantButton />}
-            {isSuperAdmin && <PortalSettingsButton />}
+            <VsCodeExtensionButton/>
+            <AppHeaderDivider/>
+            <SidePanelTriggerButton {...globalSearchButtonProps} />
+            {aiChatEnabled && <SidePanelTriggerButton {...aiAssistantButtonProps} />}
+            {isSuperAdmin && <PortalSettingsButton/>}
             <SystemInfoPopup
               frontendVersionKey={frontendVersion}
               apiProcessorVersion={apiProcessorVersion}
             />
-            <UserPanel />
+            <UserPanel/>
           </>
         }
       />
@@ -99,13 +105,13 @@ export const BasePage: FC = memo(() => {
           showErrorNotification={showErrorNotification}
           redirectUrlFactory={replacePackageId}
         >
-          <Outlet />
+          <Outlet/>
         </ExceptionSituationHandler>
       </Box>
-      <Notification />
-      <GlobalSearchPanel />
-      {aiChatEnabled && <AiAssistantPanel />}
-      {systemNotification && <MaintenanceNotification value={systemNotification} />}
+      <Notification/>
+      <GlobalSearchPanel/>
+      {aiChatEnabled && <AiAssistantPanel/>}
+      {systemNotification && <MaintenanceNotification value={systemNotification}/>}
     </Box>
   )
 
@@ -122,19 +128,19 @@ export const BasePage: FC = memo(() => {
   )
 })
 
-const GlobalSearchButton = createSidePanelTriggerButton({
-  panelId: GLOBAL_SEARCH_PANEL,
+const globalSearchButtonProps = {
+  panelId: GLOBAL_SEARCH_PANEL as SidePanelId,
   hint: 'Global Search',
-  icon: <SearchOutlinedIcon />,
+  icon: <SearchOutlinedIcon/>,
   testId: 'GlobalSearchButton',
-})
+}
 
-const AiAssistantButton = createSidePanelTriggerButton({
-  panelId: AI_ASSISTANT_PANEL,
+const aiAssistantButtonProps = {
+  panelId: AI_ASSISTANT_PANEL as SidePanelId,
   hint: 'AI Assistant',
-  icon: <RobotIcon />,
+  icon: <RobotIcon/>,
   testId: 'AiAssistantButton',
-})
+}
 
 function replacePackageId(locationPathname: string, searchParams: URLSearchParams, packageId: Key): string {
   const locationMatch = matchPathname(locationPathname, PORTAL_PATH_PATTERNS)!
