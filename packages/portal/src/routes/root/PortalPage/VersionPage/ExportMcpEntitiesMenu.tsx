@@ -41,7 +41,6 @@ export const ExportMcpEntitiesMenu: FC<ExportMcpEntitiesMenuProps> = memo(({
       packageKey: packageId!,
       version: fullVersion!,
       collection: collection,
-      refPackageId: refPackageId,
     })
   }
 
