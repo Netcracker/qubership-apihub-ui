@@ -36,12 +36,13 @@ export function useDdlTableDetails(options: UseDdlTableDetailsOptions): DdlTable
     enabled = true,
   } = options
 
-  const { fullVersion } = useVersionWithRevision(versionKey, packageKey)
+  const detailsEnabled = enabled && !!packageKey && !!versionKey && !!ddlEntityId
+  const { fullVersion } = useVersionWithRevision(versionKey, packageKey, detailsEnabled)
 
   const { data, isLoading, isInitialLoading } = useQuery<DdlContractEntityDetailsDto, Error, DdlContractEntityDetails>({
     queryKey: [DDL_TABLE_DETAILS_QUERY_KEY, packageKey, fullVersion, ddlEntityId],
     queryFn: () => getDdlTableDetails(packageKey!, fullVersion!, ddlEntityId!),
-    enabled: !!packageKey && !!fullVersion && !!ddlEntityId && enabled,
+    enabled: detailsEnabled && !!fullVersion,
     keepPreviousData: true,
     select: dto => ({ ...toDdlContractEntity(dto), data: dto.data }),
   })
