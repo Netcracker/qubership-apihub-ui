@@ -26,35 +26,13 @@ import DatePicker from 'react-multi-date-picker'
 
 import { usePackages } from '@netcracker/qubership-apihub-ui-shared/hooks/packages/usePackages'
 import { useDebounce } from 'react-use'
-import type {
-  GraphQlOperationTypes,
-  OptionRestDetailedScope,
-  Scopes,
-  SearchAsyncApiParams,
-  SearchGQLParams,
-  SearchRestParams,
-} from '@apihub/entities/global-search'
-import {
-  ANNOTATION_SCOPE,
-  ARGUMENT_SCOPE,
-  detailedScopeMapping,
-  MUTATION_OPERATION_TYPES,
-  PROPERTY_SCOPE,
-  QUERY_OPERATION_TYPES,
-  REQUEST_SCOPE,
-  RESPONSE_SCOPE,
-  SUBSCRIPTION_OPERATION_TYPES,
-} from '@apihub/entities/global-search'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 import {
-  ARCHIVED_VERSION_STATUS,
-  DRAFT_VERSION_STATUS,
   PUBLISH_STATUSES,
   RELEASE_VERSION_STATUS,
   VERSION_STATUSES,
 } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import type { MethodType } from '@netcracker/qubership-apihub-ui-shared/entities/method-types'
 import type { Package } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { GROUP_KIND, PACKAGE_KIND, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { handleVersionsRevision } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
@@ -63,13 +41,9 @@ import { disableAutocompleteSearch } from '@netcracker/qubership-apihub-ui-share
 import { OptionItem } from '@netcracker/qubership-apihub-ui-shared/components/OptionItem'
 import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
 import { CalendarIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CalendarIcon'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import {
-  API_TYPE_ASYNCAPI,
-  API_TYPE_GRAPHQL,
   API_TYPE_REST,
   API_TYPES,
-  isApiType,
 } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { ApiContract } from '@apihub/entities/global-search'
 import {
@@ -77,7 +51,6 @@ import {
   getRouteApiTypeTitle,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 import { DEFAULT_DEBOUNCE } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
-import { useSystemInfo } from '@netcracker/qubership-apihub-ui-shared/features/system-info'
 import { usePackage } from '@apihub/routes/root/usePackage'
 import { toISODateRange } from '@netcracker/qubership-apihub-ui-shared/utils/date'
 import {
@@ -85,6 +58,8 @@ import {
 } from '@netcracker/qubership-apihub-ui-shared/hooks/authorization/useSystemConfiguration'
 
 const DEFAULT_WORKSPACE_ID = ''
+
+const API_CONTRACT_OPTIONS = [...API_TYPES, ...CONTRACT_TYPES]
 
 type FiltersData = Partial<{
   workspace: Package | null
@@ -94,10 +69,6 @@ type FiltersData = Partial<{
   status: VersionStatus
   publicationDatePeriod: string[]
   apiContract: ApiContract
-  scope: Scopes[]
-  detailedScope: OptionRestDetailedScope[]
-  operationTypes: GraphQlOperationTypes[]
-  methods: MethodType[]
 }>
 
 type SearchFilters = {
@@ -147,14 +118,10 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
   }, [defaultPublicationDatePeriod, defaultWorkspace, reset])
 
   const {
-    operationTypes,
     apiContract,
-    methods,
     version,
     status,
     publicationDatePeriod,
-    detailedScope,
-    scope,
   } = watch()
 
   const workspaceKey = watch().workspace?.key
@@ -215,13 +182,6 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
     setValue('publicationDatePeriod', toISODateRange(start, end))
   }, [setValue])
 
-  const { useV3Search } = useSystemInfo()
-
-  const apiContractOptions = useMemo(
-    () => (useV3Search ? API_TYPES : [...API_TYPES, ...CONTRACT_TYPES]),
-    [useV3Search],
-  )
-
   const packageIdsDataForPackageAndGroup = useMemo(() => {
     if (packageKey) {
       return [packageKey]
@@ -243,70 +203,23 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
 
       const versionData = version ? [version] : []
 
-      const packageIdsData = (): string[] => {
-        if (packageKey || groupKey) {
-          return packageIdsDataForPackageAndGroup
-        }
-        if (workspaceKey) {
-          return [workspaceKey]
-        }
-        return []
+      const globalSearchFilter = {
+        filters: {
+          workspace: workspaceKey,
+          packageIds: packageIdsDataForPackageAndGroup,
+          versions: versionData,
+          status: status as VersionStatus,
+          creationDateInterval: {
+            startDate: publicationDatePeriod?.[0] ?? '',
+            endDate: publicationDatePeriod?.[1] ?? '',
+          },
+          apiContract: apiContract,
+        },
       }
-      const restDetailedScope = detailedScope?.map(scope => detailedScopeMapping[scope])
-
-      const apiTypeOperationsParams: Record<ApiType, SearchRestParams | SearchGQLParams> =
-        {
-          [API_TYPE_REST]: {
-            apiType: API_TYPE_REST,
-            scope: [REQUEST_SCOPE, RESPONSE_SCOPE],
-            detailedScope: restDetailedScope,
-            methods: methods,
-          } satisfies SearchRestParams,
-          [API_TYPE_GRAPHQL]: {
-            apiType: API_TYPE_GRAPHQL,
-            scope: [ARGUMENT_SCOPE, PROPERTY_SCOPE, ANNOTATION_SCOPE],
-            operationTypes: [QUERY_OPERATION_TYPES, MUTATION_OPERATION_TYPES, SUBSCRIPTION_OPERATION_TYPES],
-          } satisfies SearchGQLParams,
-          [API_TYPE_ASYNCAPI]: {
-            apiType: API_TYPE_ASYNCAPI,
-          } as SearchAsyncApiParams,
-        }
-
-      const globalSearchFilter = useV3Search
-        ? {
-          filters: {
-            packageIds: packageIdsData(),
-            versions: versionData,
-            statuses: [DRAFT_VERSION_STATUS, RELEASE_VERSION_STATUS, ARCHIVED_VERSION_STATUS] as VersionStatus[],
-            creationDateInterval: {
-              startDate: publicationDatePeriod?.[0] ?? '',
-              endDate: publicationDatePeriod?.[1] ?? '',
-            },
-            operationParams:
-              apiContract !== undefined && isApiType(apiContract)
-                ? apiTypeOperationsParams[apiContract]
-                : {},
-            apiContract: apiContract,
-          },
-          apiSearchMode: true,
-        }
-        : {
-          filters: {
-            workspace: workspaceKey,
-            packageIds: packageIdsDataForPackageAndGroup,
-            versions: versionData,
-            status: status as VersionStatus,
-            creationDateInterval: {
-              startDate: publicationDatePeriod?.[0] ?? '',
-              endDate: publicationDatePeriod?.[1] ?? '',
-            },
-            apiContract: apiContract,
-          },
-        }
 
       applyGlobalSearchFilters(globalSearchFilter)
     }),
-    [handleSubmit, detailedScope, methods, useV3Search, workspaceKey, packageIdsDataForPackageAndGroup, applyGlobalSearchFilters, packageKey, groupKey],
+    [handleSubmit, workspaceKey, packageIdsDataForPackageAndGroup, applyGlobalSearchFilters],
   )
 
   useDebounce(
@@ -315,12 +228,8 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
     [
       workspaceKey,
       groupKey,
-      operationTypes,
       packageKey,
       apiContract,
-      detailedScope,
-      methods,
-      scope,
       status,
       version,
       publicationDatePeriod,
@@ -335,7 +244,7 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
         control={control}
         render={({ field: { value, onChange } }) => <Autocomplete
           value={value ?? null}
-          options={apiContractOptions}
+          options={API_CONTRACT_OPTIONS}
           getOptionLabel={(option) => getRouteApiTypeTitle(option)}
           isOptionEqualToValue={(option, value) => option === value}
           renderOption={(props, option) => (
@@ -348,10 +257,6 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
             </ListItem>
           )}
           onChange={(_, type) => {
-            setValue('scope', [])
-            setValue('detailedScope', [])
-            setValue('methods', [])
-            setValue('operationTypes', [])
             onChange(type)
           }}
           renderInput={(params) => (

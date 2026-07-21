@@ -20,9 +20,7 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import {
   CONTRACT_TYPE_DDL,
   CONTRACT_TYPE_MCP,
-  isContractType,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
-import { useSystemInfo } from '@netcracker/qubership-apihub-ui-shared/features/system-info'
 import type { HasNextPage, IsFetchingNextPage, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 
 import type {
@@ -54,10 +52,8 @@ export function useOperationsGlobalSearch(options: {
   page?: number
 }): [ContractElementsSearchResults, IsLoading, FetchNextSearchResultList, IsFetchingNextPage, HasNextPage] {
   const { criteria, enabled, page = 1, limit = SEARCH_RESULTS_PAGE_SIZE } = options
-  const { useV3Search } = useSystemInfo()
   const apiContract = criteria.apiContract ?? criteria.apiType
   const level = getContractElementsSearchLevel(apiContract)
-  const isV4ContractSearch = isContractType(apiContract ?? '') && !useV3Search
 
   const {
     data,
@@ -67,8 +63,8 @@ export function useOperationsGlobalSearch(options: {
     hasNextPage,
   } = useInfiniteQuery<SearchResults, Error, SearchResults>({
     queryKey: [GLOBAL_OPERATIONS_SEARCH_RESULT_QUERY_KEY, criteria, level, apiContract],
-    queryFn: ({ pageParam = page }) => getSearchResult(criteria, level, limit, pageParam - 1, useV3Search),
-    enabled: enabled && !!criteria.searchString && (!isContractType(apiContract ?? '') || isV4ContractSearch),
+    queryFn: ({ pageParam = page }) => getSearchResult(criteria, level, limit, pageParam - 1),
+    enabled: enabled && !!criteria.searchString,
     getNextPageParam: (lastPage, allPages) => {
       if (limit && enabled) {
         return getActiveSearchResultsCount(lastPage, level) === limit ? allPages.length + 1 : undefined

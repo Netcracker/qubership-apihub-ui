@@ -20,7 +20,7 @@ import omit from 'lodash-es/omit'
 import { isApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { getOptionalBody } from '@netcracker/qubership-apihub-ui-shared/utils/request-bodies'
 import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { API_V3, API_V4, requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
+import { API_V4, requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 
 import type {
   DdlContractSearchResult,
@@ -48,7 +48,6 @@ export async function getSearchResult(
   level: Level,
   limit: number,
   page: number,
-  useV3Search: boolean,
 ): Promise<SearchResults> {
 
   const queryParams = optionalSearchParams({
@@ -58,9 +57,9 @@ export async function getSearchResult(
 
   const searchResultsDto = await requestJson<SearchResultsDto>(`/search/${level}?${queryParams}`, {
     method: 'POST',
-    body: JSON.stringify(buildSearchRequestBody(criteria, level, useV3Search)),
+    body: JSON.stringify(buildSearchRequestBody(criteria, level)),
   }, {
-    basePath: useV3Search ? API_V3 : API_V4,
+    basePath: API_V4,
   })
 
   return toSearchResults(searchResultsDto)
@@ -69,7 +68,6 @@ export async function getSearchResult(
 function buildSearchRequestBody(
   criteria: SearchCriteria,
   level: Level,
-  useV3Search: boolean,
 ): object {
   const common = pickSearchCommonCriteria(criteria)
 
@@ -80,11 +78,7 @@ function buildSearchRequestBody(
   const apiContract = criteria.apiContract ?? criteria.apiType
   const apiType = apiContract && isApiType(apiContract) ? apiContract : criteria.apiType
 
-  return getOptionalBody(
-    useV3Search
-      ? { ...common, operationParams: criteria.operationParams }
-      : { ...common, apiType: apiType },
-  ) ?? {}
+  return getOptionalBody({ ...common, apiType: apiType }) ?? {}
 }
 
 function pickSearchCommonCriteria(criteria: SearchCriteria): SearchCommonCriteria {
