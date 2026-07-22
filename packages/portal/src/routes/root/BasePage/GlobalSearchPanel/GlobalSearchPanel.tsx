@@ -14,37 +14,26 @@
  * limitations under the License.
  */
 
-import { type FC, memo, useState } from 'react'
-import { Box, Divider, Drawer, Typography, styled } from '@mui/material'
-import { useEvent } from 'react-use'
+import { type FC, memo } from 'react'
+import { Box, Divider, IconButton, Typography, styled } from '@mui/material'
 
-import { HIDE_GLOBAL_SEARCH_PANEL, SHOW_GLOBAL_SEARCH_PANEL } from '@apihub/routes/EventBusProvider'
+import { SidePanelDrawer } from '@netcracker/qubership-apihub-ui-shared/components/SidePanelDrawer'
+import { CloseIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CloseIcon'
+
+import { GLOBAL_SEARCH_PANEL, useSidePanel } from '../PanelManager/SidePanelManager'
 import { FILTERS_COLUMN_WIDTH, RESULTS_COLUMN_WIDTH } from './globalSearchConstants'
 import { GlobalSearchTextProvider } from './GlobalSearchTextProvider'
 import { SearchFilters } from './SearchFilters'
 import { SearchResults } from './SearchResults'
 
 export const GlobalSearchPanel: FC = memo(() => {
-  const [open, setOpen] = useState(false)
-
-  useEvent(SHOW_GLOBAL_SEARCH_PANEL, (): void => {
-    setOpen(true)
-  })
-
-  // TODO: Add close listener
-  useEvent(HIDE_GLOBAL_SEARCH_PANEL, (): void => {
-    setOpen(false)
-  })
+  const { open, closePanel } = useSidePanel(GLOBAL_SEARCH_PANEL)
 
   return (
-    <Drawer
-      variant="temporary"
-      ModalProps={{
-        keepMounted: true,
-      }}
-      anchor="right"
+    <SidePanelDrawer
       open={open}
-      onClose={() => setOpen(false)}
+      onClose={closePanel}
+      keepMounted={true}
     >
       <GlobalSearchPanelRoot data-testid="GlobalSearchPanel">
         <GlobalSearchTextProvider>
@@ -53,12 +42,22 @@ export const GlobalSearchPanel: FC = memo(() => {
           </GlobalSearchFiltersColumn>
           <GlobalSearchPanelDivider orientation="vertical"/>
           <GlobalSearchResultsColumn>
-            <GlobalSearchTitle variant="h3">Global Search</GlobalSearchTitle>
+            <GlobalSearchTitleRow>
+              <GlobalSearchTitle variant="h3">Global Search</GlobalSearchTitle>
+              <GlobalSearchCloseButton
+                aria-label="Close Global Search"
+                data-testid="CloseGlobalSearchButton"
+                onClick={closePanel}
+                color="inherit"
+              >
+                <CloseIcon fontSize="small"/>
+              </GlobalSearchCloseButton>
+            </GlobalSearchTitleRow>
             <SearchResults/>
           </GlobalSearchResultsColumn>
         </GlobalSearchTextProvider>
       </GlobalSearchPanelRoot>
-    </Drawer>
+    </SidePanelDrawer>
   )
 })
 
@@ -86,7 +85,15 @@ const GlobalSearchResultsColumn = styled(Box)(({ theme }) => ({
   width: RESULTS_COLUMN_WIDTH,
 }))
 
+const GlobalSearchTitleRow = styled(Box)({
+  display: 'flex',
+})
+
 const GlobalSearchTitle = styled(Typography)(({ theme }) => ({
-  marginBottom: theme.spacing(2),
+  marginBottom: theme.spacing(1),
   marginTop: theme.spacing(1),
 }))
+
+const GlobalSearchCloseButton = styled(IconButton)({
+  marginLeft: 'auto',
+})

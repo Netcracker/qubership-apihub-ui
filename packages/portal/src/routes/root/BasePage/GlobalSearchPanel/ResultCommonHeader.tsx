@@ -26,7 +26,7 @@ import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/ap
 import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 
-import { useEventBus } from '@apihub/routes/EventBusProvider'
+import { GLOBAL_SEARCH_PANEL, useSidePanel } from '../PanelManager/SidePanelManager'
 import { RESULT_TITLE_WIDTH } from './globalSearchConstants'
 import { SearchResultPrimaryTitle, SearchResultRowSection, SearchResultSecondaryText } from './SearchResultRowLayout'
 
@@ -51,7 +51,7 @@ export const ResultCommonHeader: FC<ResultCommonHeaderProps> = memo<ResultCommon
     searchText,
   },
 ) => {
-  const { hideGlobalSearchPanel } = useEventBus()
+  const { closePanel } = useSidePanel(GLOBAL_SEARCH_PANEL)
   const breadcrumbs = parents.join(' / ')
 
   return (
@@ -72,7 +72,7 @@ export const ResultCommonHeader: FC<ResultCommonHeaderProps> = memo<ResultCommon
             <SearchResultPrimaryTitle
               url={url}
               title={title}
-              onLinkClick={hideGlobalSearchPanel}
+              onLinkClick={closePanel}
             />
             {status && <CustomChip value={status} data-testid="VersionStatusChip" />}
           </SearchResultTitleContent>
