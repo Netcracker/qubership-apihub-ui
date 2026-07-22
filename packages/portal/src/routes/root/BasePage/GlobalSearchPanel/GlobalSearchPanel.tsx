@@ -45,7 +45,7 @@ export const GlobalSearchPanel: FC = memo(() => {
               <Typography sx={{ mb: 1, mt: 1 }} variant="h3">Global Search</Typography>
               <IconButton
                 aria-label="Close Global Search"
-                data-testid="CloseButton"
+                data-testid="CloseGlobalSearchButton"
                 sx={{ ml: 'auto' }}
                 onClick={closePanel}
                 color="inherit"

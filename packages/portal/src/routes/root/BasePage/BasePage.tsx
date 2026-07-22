@@ -38,13 +38,8 @@ import { PORTAL_PATH_PATTERNS } from '../../../routes'
 import { Notification, useShowErrorNotification } from '../BasePage/Notification'
 import { MainPageProvider } from '../MainPage/MainPageProvider'
 import { GlobalSearchPanel } from './GlobalSearchPanel/GlobalSearchPanel'
-import type {
-  SidePanelId} from './PanelManager/SidePanelManager'
-import {
-  AI_ASSISTANT_PANEL,
-  GLOBAL_SEARCH_PANEL,
-  SidePanelManagerProvider,
-} from './PanelManager/SidePanelManager'
+import type { SidePanelId } from './PanelManager/SidePanelManager'
+import { AI_ASSISTANT_PANEL, GLOBAL_SEARCH_PANEL, SidePanelManagerProvider } from './PanelManager/SidePanelManager'
 import { SidePanelTriggerButton } from './PanelManager/SidePanelTriggerButton'
 import { PortalSettingsButton } from './PortalSettingsButton'
 import { UserPanel } from './UserPanel'
