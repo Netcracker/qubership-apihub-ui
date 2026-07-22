@@ -98,7 +98,7 @@ export const ReferenceRow: FC<ReferenceRowProps> = memo<ReferenceRowProps>((
 
   const { versionKey } = getSplittedVersionKey(version, latestRevision)
 
-  const isLinkablePackage = kind === PACKAGE_KIND && !deletedAt
+  const isLinkable = !deletedAt
 
   const collapsedKeys = useDashboardCollapsedReferenceKeys()
   const setCollapsedKeys = useSetDashboardCollapsedReferenceKeys()
@@ -184,7 +184,7 @@ export const ReferenceRow: FC<ReferenceRowProps> = memo<ReferenceRowProps>((
                           {name}
                         </Box>
                       </Tooltip>
-                      : isLinkablePackage
+                      : isLinkable
                         ? <Link
                           component={NavLink}
                           to={getVersionPath({ packageKey: key!, versionKey: versionKey })}
