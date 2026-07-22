@@ -21,8 +21,8 @@ import { createContext, memo, useCallback, useContext, useMemo, useState } from 
  * Identifiers of the app's mutually-exclusive side panels.
  * Add a new literal here to register another panel — no other wiring is required.
  */
-export const GLOBAL_SEARCH_PANEL = 'global-search'
-export const AI_ASSISTANT_PANEL = 'ai-assistant'
+export const GLOBAL_SEARCH_PANEL = 'global-search' as const
+export const AI_ASSISTANT_PANEL = 'ai-assistant' as const
 
 export type SidePanelId =
   | typeof GLOBAL_SEARCH_PANEL

@@ -38,7 +38,6 @@ import { PORTAL_PATH_PATTERNS } from '../../../routes'
 import { Notification, useShowErrorNotification } from '../BasePage/Notification'
 import { MainPageProvider } from '../MainPage/MainPageProvider'
 import { GlobalSearchPanel } from './GlobalSearchPanel/GlobalSearchPanel'
-import type { SidePanelId } from './PanelManager/SidePanelManager'
 import { AI_ASSISTANT_PANEL, GLOBAL_SEARCH_PANEL, SidePanelManagerProvider } from './PanelManager/SidePanelManager'
 import { SidePanelTriggerButton } from './PanelManager/SidePanelTriggerButton'
 import { PortalSettingsButton } from './PortalSettingsButton'
@@ -124,14 +123,14 @@ export const BasePage: FC = memo(() => {
 })
 
 const globalSearchButtonProps = {
-  panelId: GLOBAL_SEARCH_PANEL as SidePanelId,
+  panelId: GLOBAL_SEARCH_PANEL,
   hint: 'Global Search',
   icon: <SearchOutlinedIcon/>,
   testId: 'GlobalSearchButton',
 }
 
 const aiAssistantButtonProps = {
-  panelId: AI_ASSISTANT_PANEL as SidePanelId,
+  panelId: AI_ASSISTANT_PANEL,
   hint: 'AI Assistant',
   icon: <RobotIcon/>,
   testId: 'AiAssistantButton',
