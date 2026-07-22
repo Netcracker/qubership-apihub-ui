@@ -3,15 +3,15 @@ import { useParams } from 'react-router-dom'
 
 import { ExportMenuButton } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ExportMenuButton'
 import {
-  type ExportableMcpCollection,
   MCP_COLLECTION_LABELS,
+  type McpCollection,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 
 import { useFullMainVersion } from '../FullMainVersionProvider'
 import { useDownloadMcpEntitiesAsExcel } from './useDownloadMcpEntitiesAsExcel'
 
 type ExportMcpEntitiesMenuProps = Readonly<{
-  collection: ExportableMcpCollection
+  collection: McpCollection
   textFilter?: string
   refPackageId?: string
   disabled?: boolean

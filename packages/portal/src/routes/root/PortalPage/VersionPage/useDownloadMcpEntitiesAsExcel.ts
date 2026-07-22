@@ -3,7 +3,7 @@ import fileDownload from 'js-file-download'
 import { generatePath } from 'react-router-dom'
 
 import {
-  type ExportableMcpCollection,
+  type McpCollection,
   mcpCollectionToApiSegment,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
@@ -18,7 +18,7 @@ import { useShowErrorNotification } from '../../BasePage/Notification'
 type DownloadMcpEntitiesAsExcelOptions = Readonly<{
   packageKey: Key
   version: Key
-  collection: ExportableMcpCollection
+  collection: McpCollection
   textFilter?: Key
   refPackageId?: Key
 }>

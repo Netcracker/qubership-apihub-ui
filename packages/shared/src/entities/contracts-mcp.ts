@@ -20,8 +20,6 @@ export const MCP_COLLECTIONS = [
 
 export type McpCollection = (typeof MCP_COLLECTIONS)[number]
 
-export type ExportableMcpCollection = Exclude<McpCollection, typeof MCP_COLLECTION_INIT>
-
 export const MCP_COLLECTION_LABELS: Record<McpCollection, string> = {
   [MCP_COLLECTION_INIT]: 'Overview',
   [MCP_COLLECTION_TOOLS]: 'Tools',
@@ -218,10 +216,4 @@ export const MCP_KIND_TO_COLLECTION: Record<McpKind, McpCollection> = {
   [MCP_KIND.TOOL]: MCP_COLLECTION_TOOLS,
   [MCP_KIND.PROMPT]: MCP_COLLECTION_PROMPTS,
   [MCP_KIND.RESOURCE]: MCP_COLLECTION_RESOURCES,
-}
-
-export function isExportableMcpCollection(
-  collection: McpCollection,
-): collection is ExportableMcpCollection {
-  return collection !== MCP_COLLECTION_INIT
 }

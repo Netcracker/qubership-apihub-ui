@@ -13,10 +13,7 @@ import {
   type ContractType,
   toRouteApiType,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
-import {
-  isExportableMcpCollection,
-  MCP_COLLECTION_INIT,
-} from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
+import { MCP_COLLECTION_INIT } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { isEmpty, isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
@@ -83,7 +80,12 @@ export const VersionContractsSubPage: FC = memo(() => {
 
   const mcpCollection = mcpEntity ?? MCP_COLLECTION_INIT
   const isMcpOverview = isMcp && mcpCollection === MCP_COLLECTION_INIT
-  const hasExportableMcpCollection = isMcp && isExportableMcpCollection(mcpCollection)
+
+  useEffect(() => {
+    if (isMcpOverview) {
+      setSearchValue('')
+    }
+  }, [isMcpOverview])
 
   const { versionContent } = usePackageVersionContent({
     packageKey: summaryPackageKey,
@@ -171,7 +173,7 @@ export const VersionContractsSubPage: FC = memo(() => {
     mcpEndpoint: mcpEndpoint,
     refPackageKey: refKey,
     limit: 100,
-    enabled: hasExportableMcpCollection,
+    enabled: isMcp,
   })
 
   const [ddlTables, isDdlTablesLoading, fetchNextDdlPage, isFetchingNextDdlPage, hasNextDdlPage] = useDdlTables({
@@ -188,7 +190,7 @@ export const VersionContractsSubPage: FC = memo(() => {
       setPreviewOperation(undefined)
       return
     }
-    if (hasExportableMcpCollection && isNotEmpty(mcpEntities)) {
+    if (isMcp && isNotEmpty(mcpEntities)) {
       setPreviewOperation({
         operationKey: mcpEntities[0].mcpEntityId,
         packageRef: mcpEntities[0].packageRef,
@@ -211,7 +213,7 @@ export const VersionContractsSubPage: FC = memo(() => {
     ddlTables,
     isOperationsApiType,
     isDdl,
-    hasExportableMcpCollection,
+    isMcp,
     isMcpOverview,
     mcpEntities,
     operations,
@@ -249,7 +251,7 @@ export const VersionContractsSubPage: FC = memo(() => {
     if (isMcpOverview) {
       return mcpOverview
     }
-    if (hasExportableMcpCollection) {
+    if (isMcp) {
       return (
         <McpEntityListView
           entities={mcpEntities}
@@ -304,12 +306,12 @@ export const VersionContractsSubPage: FC = memo(() => {
     isFetchingNextDdlPage,
     isFetchingNextMcpPage,
     isFetchingNextOperationsPage,
+    isMcp,
     isMcpEntitiesLoading,
     isMcpOverview,
     isOperationsApiType,
     isOperationsLoading,
     mcpEntities,
-    hasExportableMcpCollection,
     mcpCollection,
     mcpOverview,
     operations,
@@ -322,7 +324,7 @@ export const VersionContractsSubPage: FC = memo(() => {
     if (isMcpOverview) {
       return mcpOverview
     }
-    if (hasExportableMcpCollection) {
+    if (isMcp) {
       return (
         <McpEntityListWithPreview
           entities={mcpEntities}
@@ -387,13 +389,13 @@ export const VersionContractsSubPage: FC = memo(() => {
     isFetchingNextDdlPage,
     isFetchingNextMcpPage,
     isFetchingNextOperationsPage,
+    isMcp,
     isMcpEntitiesLoading,
     isMcpOverview,
     isOperationsApiType,
     isOperationsLoading,
     maxPreviewWidth,
     mcpEntities,
-    hasExportableMcpCollection,
     mcpCollection,
     mcpOverview,
     onResize,
@@ -404,7 +406,7 @@ export const VersionContractsSubPage: FC = memo(() => {
   ])
 
   const exportButton = useMemo(() => {
-    if (hasExportableMcpCollection) {
+    if (isMcp) {
       return (
         <ExportMcpEntitiesMenu
           collection={mcpCollection}
@@ -445,7 +447,7 @@ export const VersionContractsSubPage: FC = memo(() => {
     emptyTag,
     isOperationsApiType,
     isDdl,
-    hasExportableMcpCollection,
+    isMcp,
     mcpCollection,
     mcpEntities,
     operationGroup,
@@ -478,7 +480,6 @@ export const VersionContractsSubPage: FC = memo(() => {
       hideSearch={isMcpOverview}
       hideFilterButton={hideContractFiltersOnPackage}
       hideViewToggle={isMcpOverview}
-      hideExport={isMcpOverview}
       searchPlaceholder={searchPlaceholder}
       table={table}
       list={list}
