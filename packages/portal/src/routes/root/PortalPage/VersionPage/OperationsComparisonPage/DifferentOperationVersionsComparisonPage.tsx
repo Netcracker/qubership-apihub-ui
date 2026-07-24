@@ -327,10 +327,6 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
   }, [changedOperation, handledOperationPairs, originOperation])
   // ---
 
-  const entityListChangelogReady = isDdlComparison
-    ? ddlComparisonState.isChangelogReady
-    : isChangelogReady
-
   return (
     <ShouldAutoExpandTagsProvider>
       <SelectedOperationTagsProvider>
@@ -347,19 +343,22 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
                   />
                 }
                 navigation={
-                  <HandledOperationPairsProvider value={handledOperationPairs}>
-                    <OperationsSidebarOnComparison
-                      operationPackageKey={operationPackageKey!}
-                      operationPackageVersion={operationPackageVersion!}
-                      apiType={apiTypeFromParams}
-                      hideEntityNavigation={isDdlComparison}
-                      searchValue={searchValue}
-                      setSearchValue={setSearchValue}
-                      tags={tags}
-                      operationsGroupedByTag={filteredOperationsGroupedByTags}
-                      areChangesLoading={!entityListChangelogReady}
-                    />
-                  </HandledOperationPairsProvider>
+                  isDdlComparison
+                    ? undefined
+                    : (
+                      <HandledOperationPairsProvider value={handledOperationPairs}>
+                        <OperationsSidebarOnComparison
+                          operationPackageKey={operationPackageKey!}
+                          operationPackageVersion={operationPackageVersion!}
+                          searchValue={searchValue}
+                          setSearchValue={setSearchValue}
+                          tags={tags}
+                          apiType={operationsApiType as ApiType}
+                          operationsGroupedByTag={filteredOperationsGroupedByTags}
+                          areChangesLoading={!isChangelogReady}
+                        />
+                      </HandledOperationPairsProvider>
+                    )
                 }
                 body={
                   isDdlComparison
