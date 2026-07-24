@@ -1,2 +1,0 @@
-import{A as f,e as l}from"./mermaid-parser.core-bcd7231f.js";import"./iframe-b77b1582.js";import"../sb-preview/runtime.js";import"./mermaid.core-3d4aafc0.js";import"./_commonjsHelpers-de833af9.js";import"./_Set-c5d192bc.js";import"./index-356e4a49.js";import"./reduce-4a3b22a5.js";import"./_baseUniq-2773af2d.js";import"./_basePickBy-8516062a.js";import"./uniq-9f9a8bf7.js";import"./clone-b9dc13c1.js";import"./main-4b30b16b.js";export{f as ArchitectureModule,l as createArchitectureServices};
-//# sourceMappingURL=architecture-I3QFYML2-ab67f97f.js.map
