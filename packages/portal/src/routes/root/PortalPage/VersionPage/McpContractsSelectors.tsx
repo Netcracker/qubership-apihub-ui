@@ -1,7 +1,7 @@
 import type { SelectChangeEvent } from '@mui/material'
 import { MenuItem } from '@mui/material'
 import type { ChangeEvent, FC } from 'react'
-import { memo, useEffect, useMemo } from 'react'
+import { memo, useMemo } from 'react'
 
 import { FilledSelectField } from '@netcracker/qubership-apihub-ui-shared/components/FilledSelectField'
 import {
@@ -30,7 +30,12 @@ export const McpContractsSelectors: FC<McpContractsSelectorsProps> = memo<McpCon
   const [mcpEndpoint, setMcpEndpoint] = useMcpEndpointSearchParam()
   const [mcpEntity, setMcpEntity] = useMcpEntitySearchParam()
 
-  const endpointSummary = mcpEndpoint ? mcpSummary?.byEndpoint[mcpEndpoint] : undefined
+  // Prefer URL value when it is still in options; otherwise first option (URL syncs in layout effect).
+  const endpointValue = endpointOptions.find(endpoint => endpoint === mcpEndpoint) ??
+    endpointOptions[0] ?? ''
+  const hasMcpEndpoints = endpointOptions.length > 0
+
+  const endpointSummary = endpointValue ? mcpSummary?.byEndpoint[endpointValue] : undefined
 
   const entityCounts = useMemo<Record<McpCollection, number>>(() => ({
     [MCP_COLLECTION_INIT]: 0,
@@ -39,17 +44,15 @@ export const McpContractsSelectors: FC<McpContractsSelectorsProps> = memo<McpCon
     [MCP_COLLECTION_RESOURCES]: endpointSummary?.resourcesCount ?? 0,
   }), [endpointSummary])
 
-  const visibleCollections = useMemo(
-    () => MCP_COLLECTIONS.filter(collection => collection === MCP_COLLECTION_INIT || entityCounts[collection] > 0),
-    [entityCounts],
-  )
-
-  useEffect(() => {
-    const currentEntity = mcpEntity ?? MCP_COLLECTION_INIT
-    if (currentEntity !== MCP_COLLECTION_INIT && !visibleCollections.includes(currentEntity)) {
-      setMcpEntity(MCP_COLLECTION_INIT)
+  const visibleCollections = useMemo(() => {
+    if (!hasMcpEndpoints) {
+      return []
     }
-  }, [mcpEntity, setMcpEntity, visibleCollections])
+    return MCP_COLLECTIONS.filter(collection => collection === MCP_COLLECTION_INIT || entityCounts[collection] > 0)
+  }, [entityCounts, hasMcpEndpoints])
+
+  const entityValue = visibleCollections.find(collection => collection === (mcpEntity ?? MCP_COLLECTION_INIT)) ??
+    visibleCollections[0] ?? ''
 
   const handleEndpointChange = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent,
@@ -66,7 +69,7 @@ export const McpContractsSelectors: FC<McpContractsSelectorsProps> = memo<McpCon
   return (
     <>
       <FilledSelectField
-        value={mcpEndpoint ?? ''}
+        value={endpointValue}
         onChange={handleEndpointChange}
         data-testid="McpEndpointSelector"
       >
@@ -78,7 +81,7 @@ export const McpContractsSelectors: FC<McpContractsSelectorsProps> = memo<McpCon
       </FilledSelectField>
 
       <FilledSelectField
-        value={mcpEntity ?? MCP_COLLECTION_INIT}
+        value={entityValue}
         onChange={handleEntityChange}
         data-testid="McpEntitySelector"
       >

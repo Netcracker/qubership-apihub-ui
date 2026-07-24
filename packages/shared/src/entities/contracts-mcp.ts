@@ -34,6 +34,8 @@ export const MCP_COLLECTION_EMPTY_MESSAGES: Record<McpCollection, string> = {
   [MCP_COLLECTION_RESOURCES]: 'No resources',
 }
 
+export const MCP_EMPTY_SCOPE_MESSAGE = 'No MCP'
+
 export type McpContractEntityDto = Readonly<{
   mcpEntityId: string
   kind: McpKind

@@ -5,7 +5,6 @@ import { useParams } from 'react-router-dom'
 
 import type { Key } from '@apihub/entities/keys'
 import { usePortalPageSettingsContext } from '@apihub/routes/PortalPageSettingsProvider'
-import { usePackageVersionContent } from '@apihub/routes/root/usePackageVersionContent'
 import { type ApiType, isApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import {
   CONTRACT_TYPE_DDL,
@@ -19,9 +18,9 @@ import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/
 import { isEmpty, isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import { NAVIGATION_MAX_WIDTH } from '@netcracker/qubership-apihub-ui-shared/utils/page-layouts'
 import { isEmptyTag } from '@netcracker/qubership-apihub-ui-shared/utils/tags'
+
 import { useSetSelectedPreviewOperation } from '../../SelectedPreviewOperationProvider'
 import { usePackageKind } from '../../usePackageKind'
-import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
 import { useRefSearchParam } from '../../useRefSearchParam'
 import { useDdlTables } from '../api/useDdlTables'
 import { useMcpEntities } from '../api/useMcpEntities'
@@ -34,8 +33,7 @@ import { OperationListWithPreview } from '../OperationListWithPreview'
 import { OperationsNavigation } from '../OperationsNavigation'
 import { useApiAudienceSearchFilter } from '../useApiAudienceSearchFilters'
 import { useApiKindSearchFilter } from '../useApiKindSearchFilters'
-import { useMcpEndpointSearchParam } from '../useMcpEndpointSearchParam'
-import { useMcpEntitySearchParam } from '../useMcpEntitySearchParam'
+import { useMcpContractsScope } from '../useMcpContractsScope'
 import { useOperationGroupSearchFilter } from '../useOperationGroupSearchFilter'
 import { useOperations } from '../useOperations'
 import { useStatusSearchFilter } from '../useStatusSearchFIlter'
@@ -63,11 +61,8 @@ export const VersionContractsSubPage: FC = memo(() => {
   const [selectedTag] = useTagSearchFilter()
   const [statusFilter] = useStatusSearchFilter()
   const [refKey] = useRefSearchParam()
-  const [mcpEndpoint, setMcpEndpoint] = useMcpEndpointSearchParam()
-  const [mcpEntity, setMcpEntity] = useMcpEntitySearchParam()
   const [packageKind] = usePackageKind()
   const isDashboard = packageKind === DASHBOARD_KIND
-  const [summaryPackageKey, summaryVersionKey] = usePackageParamsWithRef()
 
   const emptyTag = isEmptyTag(selectedTag)
   const [operationGroup] = useOperationGroupSearchFilter()
@@ -78,6 +73,14 @@ export const VersionContractsSubPage: FC = memo(() => {
   const isOperationsApiType = isApiType(routeApiType)
   const hideContractFiltersOnPackage = (isMcp || isDdl) && !isDashboard
 
+  const {
+    mcpEndpoint,
+    mcpEntity,
+    endpointOptions,
+    mcpSummary,
+    isEmptyMcpScope,
+  } = useMcpContractsScope(isMcp)
+
   const mcpCollection = mcpEntity ?? MCP_COLLECTION_INIT
   const isMcpOverview = isMcp && mcpCollection === MCP_COLLECTION_INIT
 
@@ -87,61 +90,15 @@ export const VersionContractsSubPage: FC = memo(() => {
     }
   }, [isMcpOverview])
 
-  const { versionContent } = usePackageVersionContent({
-    packageKey: summaryPackageKey,
-    versionKey: summaryVersionKey,
-    includeSummary: true,
-    enabled: isMcp,
-  })
-  const mcpSummary = versionContent?.contractsSummary?.mcp
-
-  const endpointOptions = useMemo(
-    () => Object.keys(mcpSummary?.byEndpoint ?? {}),
-    [mcpSummary?.byEndpoint],
-  )
-
-  // Keep last non-empty options / summary while scoped content reloads after package filter change,
-  // so MCP Selects do not flash empty.
-  const [stableEndpointOptions, setStableEndpointOptions] = useState<ReadonlyArray<string>>([])
-  const [stableMcpSummary, setStableMcpSummary] = useState<typeof mcpSummary>()
-  useEffect(() => {
-    if (endpointOptions.length > 0) {
-      setStableEndpointOptions(endpointOptions)
-    }
-    if (mcpSummary) {
-      setStableMcpSummary(mcpSummary)
-    }
-  }, [endpointOptions, mcpSummary])
-
-  const selectorEndpointOptions = endpointOptions.length > 0 ? endpointOptions : stableEndpointOptions
-  const selectorMcpSummary = mcpSummary ?? stableMcpSummary
-
   const mcpOverview = useMemo(() => (
     <McpOverview
       packageKey={packageId!}
       versionKey={versionId!}
       mcpEndpoint={mcpEndpoint}
       refPackageKey={refKey}
-      hasEndpoints={selectorEndpointOptions.length > 0}
+      isEmptyMcpScope={isEmptyMcpScope}
     />
-  ), [selectorEndpointOptions.length, mcpEndpoint, packageId, refKey, versionId])
-
-  useEffect(() => {
-    if (!isMcp) {
-      return
-    }
-    // Wait for the scoped summary; do not clear the endpoint up front (avoids Select flicker).
-    if (endpointOptions.length === 0) {
-      return
-    }
-    const endpointMissing = !mcpEndpoint || !endpointOptions.includes(mcpEndpoint)
-    if (endpointMissing) {
-      setMcpEndpoint(endpointOptions[0])
-    }
-    if (!mcpEntity) {
-      setMcpEntity(MCP_COLLECTION_INIT)
-    }
-  }, [endpointOptions, isMcp, mcpEndpoint, mcpEntity, setMcpEndpoint, setMcpEntity])
+  ), [isEmptyMcpScope, mcpEndpoint, packageId, refKey, versionId])
 
   const [
     operations,
@@ -412,7 +369,7 @@ export const VersionContractsSubPage: FC = memo(() => {
           collection={mcpCollection}
           textFilter={searchValue}
           refPackageId={refKey}
-          disabled={isEmpty(mcpEntities)}
+          disabled={isEmptyMcpScope || isEmpty(mcpEntities)}
         />
       )
     }
@@ -445,6 +402,7 @@ export const VersionContractsSubPage: FC = memo(() => {
     apiKindFilter,
     ddlTables,
     emptyTag,
+    isEmptyMcpScope,
     isOperationsApiType,
     isDdl,
     isMcp,
@@ -460,8 +418,8 @@ export const VersionContractsSubPage: FC = memo(() => {
   const mcpToolbarSelectors = isMcp
     ? (
       <McpContractsSelectors
-        endpointOptions={selectorEndpointOptions}
-        mcpSummary={selectorMcpSummary}
+        endpointOptions={endpointOptions}
+        mcpSummary={mcpSummary}
       />
     )
     : undefined
