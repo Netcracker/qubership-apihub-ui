@@ -55,9 +55,10 @@ export const DdlTableListWithPreview: FC<DdlTableListWithPreviewProps> = memo<Dd
   const setSelectedPreviewOperation = useSetSelectedPreviewOperation()
   const [refKey] = useRefSearchParam()
   const [kind] = usePackageKind()
+  const isDashboard = kind === DASHBOARD_KIND
 
   const [detailsPackageKey, detailsVersionKey] = usePackageParamsWithRef(
-    kind === DASHBOARD_KIND ? selectedPreviewOperation?.packageRef?.key : '',
+    isDashboard ? selectedPreviewOperation?.packageRef?.key : '',
   )
 
   const selectedTable = useMemo(
@@ -99,8 +100,8 @@ export const DdlTableListWithPreview: FC<DdlTableListWithPreviewProps> = memo<Dd
       packageKey: packageKey,
       versionKey: versionKey,
       ddlEntityId: table.ddlEntityId,
-      ref: table.packageRef?.key ?? refKey,
-    }), [packageKey, refKey, versionKey])
+      ref: isDashboard ? table.packageRef?.key ?? refKey : undefined,
+    }), [isDashboard, packageKey, refKey, versionKey])
 
   const onClickLink = useContractBrowseLinkHandlers()
 

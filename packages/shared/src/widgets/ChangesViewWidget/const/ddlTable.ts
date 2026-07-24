@@ -10,7 +10,12 @@ export type DdlChangesViewTableData = Readonly<{
   canExpand: boolean
 }>
 
-export const DDL_CHANGES_COLUMNS_MODELS: ColumnModel[] = [
+export const PACKAGE_DDL_CHANGES_COLUMNS_MODELS: ColumnModel[] = [
+  { name: DDL_TABLE_COLUMN_ID },
+  { name: CHANGES_COLUMN_ID, fixedWidth: 218 },
+]
+
+export const DASHBOARD_DDL_CHANGES_COLUMNS_MODELS: ColumnModel[] = [
   { name: DDL_TABLE_COLUMN_ID },
   { name: PACKAGE_COLUMN_ID, width: 245 },
   { name: CHANGES_COLUMN_ID, fixedWidth: 218 },

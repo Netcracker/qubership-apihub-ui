@@ -1,4 +1,4 @@
-import { Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
+import { Skeleton, styled, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import type { FetchNextPageOptions, InfiniteQueryObserverResult } from '@tanstack/react-query'
 import type {
   ColumnSizingInfoState,
@@ -25,8 +25,7 @@ import {
 } from '../../../entities/change-severities'
 import type { DdlChangesPage, DdlEntityChangeEntry } from '../../../entities/contracts-ddl-changelog'
 import type { Key } from '../../../entities/keys'
-import type { Package } from '../../../entities/packages'
-import { DASHBOARD_KIND } from '../../../entities/packages'
+import { DASHBOARD_KIND, type Package } from '../../../entities/packages'
 import { PACKAGE_COLUMN_ID } from '../../../entities/table-columns'
 import { useIntersectionObserver } from '../../../hooks/common/useIntersectionObserver'
 import { useResizeObserver } from '../../../hooks/common/useResizeObserver'
@@ -34,8 +33,12 @@ import { DEFAULT_CONTAINER_WIDTH, useColumnsSizing } from '../../../hooks/table-
 import { insertIntoArrayByIndex } from '../../../utils/arrays'
 import { createComponents } from '../../../utils/components'
 import { DEFAULT_NUMBER_SKELETON_ROWS } from '../../../utils/constants'
-import type { DdlChangesViewTableData } from '../const/ddlTable'
-import { DDL_CHANGES_COLUMNS_MODELS, DDL_TABLE_COLUMN_ID } from '../const/ddlTable'
+import {
+  DASHBOARD_DDL_CHANGES_COLUMNS_MODELS,
+  DDL_TABLE_COLUMN_ID,
+  type DdlChangesViewTableData,
+  PACKAGE_DDL_CHANGES_COLUMNS_MODELS,
+} from '../const/ddlTable'
 import { CHANGES_COLUMN_ID } from '../const/table'
 import { DdlEntityChangeCell } from './DdlEntityChangeCell'
 
@@ -68,6 +71,13 @@ export const DdlChangesViewTable: FC<DdlChangesViewTableProps> = memo<DdlChanges
 }) => {
   const isDashboardType = packageObject?.kind === DASHBOARD_KIND
 
+  const strictColumnWidths = useMemo(
+    () => (isDashboardType ? DASHBOARD_DDL_CHANGES_COLUMNS_MODELS : PACKAGE_DDL_CHANGES_COLUMNS_MODELS),
+    [isDashboardType],
+  )
+
+  const columnCount = strictColumnWidths.length
+
   const [containerWidth, setContainerWidth] = useState(DEFAULT_CONTAINER_WIDTH)
   const [columnSizingInfo, setColumnSizingInfo] = useState<ColumnSizingInfoState>()
   const [, setHandlingColumnSizing] = useState<ColumnSizingState>()
@@ -77,7 +87,7 @@ export const DdlChangesViewTable: FC<DdlChangesViewTableProps> = memo<DdlChanges
 
   const actualColumnSizing = useColumnsSizing({
     containerWidth: containerWidth,
-    columnModels: DDL_CHANGES_COLUMNS_MODELS,
+    columnModels: strictColumnWidths,
     columnSizingInfo: columnSizingInfo,
     defaultMinColumnSize: 60,
   })
@@ -171,26 +181,21 @@ export const DdlChangesViewTable: FC<DdlChangesViewTableProps> = memo<DdlChanges
   useIntersectionObserver(ref, isNextPageFetching, hasNextPage, fetchNextPage)
 
   return (
-    <TableContainer ref={tableContainerRef} sx={{ mt: 1 }}>
-      <Table sx={{ minWidth: 500 }}>
+    <StyledTableContainer ref={tableContainerRef}>
+      <StyledTable>
         <TableHead>
           {getHeaderGroups().map(headerGroup => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((headerColumn, index) => (
-                <TableCell
+                <ResizableHeadCell
                   key={headerColumn.id}
                   align="left"
                   width={actualColumnSizing ? actualColumnSizing[headerColumn.id] : headerColumn.getSize()}
-                  sx={{
-                    '&:hover': {
-                      borderRight: '2px solid rgba(224, 224, 224, 1)',
-                    },
-                  }}
                 >
                   {flexRender(headerColumn.column.columnDef.header, headerColumn.getContext())}
                   {index !== headerGroup.headers.length - 1 &&
                     <ColumnDelimiter header={headerColumn} resizable={true} />}
-                </TableCell>
+                </ResizableHeadCell>
               ))}
             </TableRow>
           ))}
@@ -198,18 +203,19 @@ export const DdlChangesViewTable: FC<DdlChangesViewTableProps> = memo<DdlChanges
         <TableBody>
           {getRowModel().rows.map((row) => (
             <Fragment key={row.id}>
-              <TableRow sx={{ backgroundColor: ACTION_TYPE_COLOR_MAP[row.original.change.action] }}>
+              <ActionTableRow action={row.original.change.action}>
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id} data-testid={`Cell-${cell.column.id}`}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
-              </TableRow>
+              </ActionTableRow>
               {row.getIsExpanded() && (
                 <SubTableComponent
                   value={row}
                   packageKey={packageKey}
                   versionKey={versionKey}
+                  columnCount={columnCount}
                 />
               )}
             </Fragment>
@@ -220,8 +226,8 @@ export const DdlChangesViewTable: FC<DdlChangesViewTableProps> = memo<DdlChanges
           )}
           {hasNextPage && <DdlRowSkeleton refObject={ref} isDashboard={isDashboardType} />}
         </TableBody>
-      </Table>
-    </TableContainer>
+      </StyledTable>
+    </StyledTableContainer>
   )
 })
 
@@ -254,4 +260,29 @@ export type DdlSubTableComponentProps = {
   value: Row<DdlChangesViewTableData>
   packageKey: Key | undefined
   versionKey: Key | undefined
+  columnCount: number
 }
+
+const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
+  marginTop: theme.spacing(1),
+}))
+
+const StyledTable = styled(Table)({
+  minWidth: 500,
+})
+
+const ResizableHeadCell = styled(TableCell)(({ theme }) => ({
+  '&:hover': {
+    borderRight: `2px solid ${theme.palette.divider}`,
+  },
+}))
+
+type ActionTableRowProps = {
+  action: DdlEntityChangeEntry['action']
+}
+
+const ActionTableRow = styled(TableRow, {
+  shouldForwardProp: (prop) => prop !== 'action',
+})<ActionTableRowProps>(({ action }) => ({
+  backgroundColor: ACTION_TYPE_COLOR_MAP[action],
+}))

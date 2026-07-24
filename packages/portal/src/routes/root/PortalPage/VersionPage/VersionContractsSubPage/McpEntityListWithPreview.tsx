@@ -61,12 +61,13 @@ export const McpEntityListWithPreview: FC<McpEntityListWithPreviewProps> = memo<
     const [mcpEntity] = useMcpEntitySearchParam()
     const [refKey] = useRefSearchParam()
     const [kind] = usePackageKind()
+    const isDashboard = kind === DASHBOARD_KIND
 
     const selectedPreviewOperation = useSelectedPreviewOperation()
     const setSelectedPreviewOperation = useSetSelectedPreviewOperation()
 
     const [detailsPackageKey, detailsVersionKey] = usePackageParamsWithRef(
-      kind === DASHBOARD_KIND ? selectedPreviewOperation?.packageRef?.key : '',
+      isDashboard ? selectedPreviewOperation?.packageRef?.key : '',
     )
 
     const selectedEntity = useMemo(
@@ -111,8 +112,8 @@ export const McpEntityListWithPreview: FC<McpEntityListWithPreviewProps> = memo<
         mcpEntityId: entity.mcpEntityId,
         mcpEndpoint: mcpEndpoint ?? entity.mcpEndpoint,
         mcpEntity: mcpEntity ?? collection,
-        ref: entity.packageRef?.key ?? refKey,
-      }), [collection, mcpEndpoint, mcpEntity, packageKey, refKey, versionKey])
+        ref: isDashboard ? entity.packageRef?.key ?? refKey : undefined,
+      }), [collection, isDashboard, mcpEndpoint, mcpEntity, packageKey, refKey, versionKey])
 
     const onClickLink = useContractBrowseLinkHandlers()
 

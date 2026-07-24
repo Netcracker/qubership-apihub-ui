@@ -1,10 +1,9 @@
-import type { FC } from 'react'
-import { memo, useMemo } from 'react'
+import { type FC, memo, useMemo } from 'react'
 
 import { getDdlEntityChangesRequestIds } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl-changelog'
 import { sortChanges } from '@netcracker/qubership-apihub-ui-shared/utils/api-changes'
-import { OperationChangesSubTable } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget'
 import type { DdlSubTableComponentProps } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget/components/DdlChangesViewTable'
+import { DdlEntityChangesSubTable } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget/components/DdlEntityChangesSubTable'
 
 import { usePackageVersionContent } from '@apihub/routes/root/usePackageVersionContent'
 
@@ -14,6 +13,7 @@ export const DdlEntityChangesSubTableWrapper: FC<DdlSubTableComponentProps> = me
   value,
   packageKey,
   versionKey,
+  columnCount,
 }) => {
   const { ddlEntityId, previousVersionDdlEntityId } = getDdlEntityChangesRequestIds(value.original.change)
 
@@ -32,9 +32,10 @@ export const DdlEntityChangesSubTableWrapper: FC<DdlSubTableComponentProps> = me
   const sortedChanges = useMemo(() => sortChanges(changes), [changes])
 
   return (
-    <OperationChangesSubTable
+    <DdlEntityChangesSubTable
       changes={sortedChanges}
       isLoading={isLoading || isVersionLoading}
+      columnCount={columnCount}
     />
   )
 })
