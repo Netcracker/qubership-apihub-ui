@@ -16,7 +16,7 @@ import { Controller, useForm, useWatch } from 'react-hook-form'
 
 import { AlertCustom } from '@netcracker/qubership-apihub-ui-shared/components/AlertCustom'
 import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
-import { type PopupProps, PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
+import { PopupDelegate, type PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import type { TestableProps } from '@netcracker/qubership-apihub-ui-shared/components/Testable'
 import { ALERT_SEVERITY } from '@netcracker/qubership-apihub-ui-shared/themes/alert'
 import { type McpDocumentType } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
@@ -64,7 +64,7 @@ const McpEndpointPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, deta
 
   const hasKnownEndpoints = knownEndpoints.length > 0
 
-  const { control, getValues, reset, formState: { isValid } } = useForm<McpEndpointFormData>({
+  const { control, handleSubmit, reset, formState: { isValid } } = useForm<McpEndpointFormData>({
     defaultValues: { mcpEndpoint: '' },
     mode: 'onChange',
   })
@@ -92,19 +92,20 @@ const McpEndpointPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, deta
     onCancel()
   }, [setOpen, onCancel])
 
-  const onConfirmCallback = useCallback((): void => {
-    const endpoint = getValues().mcpEndpoint.trim()
+  const onConfirmCallback = useCallback((data: McpEndpointFormData): void => {
+    const endpoint = data.mcpEndpoint.trim()
     if (endpoint === '') {
       return
     }
     setOpen(false)
     onConfirm(endpoint)
-  }, [setOpen, onConfirm, getValues])
+  }, [setOpen, onConfirm])
 
   return (
     <DialogForm
       open={open}
       onClose={onClose}
+      onSubmit={handleSubmit(onConfirmCallback)}
       width="440px"
     >
       <DialogTitle>
@@ -160,7 +161,7 @@ const McpEndpointPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, deta
       <DialogActions>
         <Button
           variant="contained"
-          onClick={onConfirmCallback}
+          type="submit"
           disabled={!isValid}
           data-testid="SaveButton"
         >
@@ -168,6 +169,7 @@ const McpEndpointPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, deta
         </Button>
         <Button
           variant="outlined"
+          type="button"
           onClick={onClose}
           data-testid="CancelButton"
         >
