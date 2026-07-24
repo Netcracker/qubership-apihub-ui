@@ -1,17 +1,9 @@
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
-import {
-  Button,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  InputAdornment,
-  styled,
-  TextField,
-} from '@mui/material'
+import { Button, DialogActions, DialogContent, DialogTitle, IconButton, InputAdornment, styled } from '@mui/material'
 import { type FC, memo, useCallback, useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 
+import { ErrorTextField } from '@apihub/components/ErrorTextField'
 import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 import { PopupDelegate, type PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 
@@ -108,15 +100,15 @@ const McpRenameEndpointPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen
           name="mcpEndpoint"
           control={control}
           rules={{ validate: validateMcpEndpoint }}
-          render={({ field, fieldState: { error } }) => {
+          render={({ field, fieldState }) => {
             const showPrefix = isFocused || field.value !== ''
             return (
-              <TextField
-                {...field}
+              <ErrorTextField
+                field={field}
+                fieldState={fieldState}
                 fullWidth
                 label="URL"
-                error={!!error}
-                helperText={error?.message}
+                helperText={fieldState.error?.message || ' '}
                 data-testid="McpRenameEndpointInput"
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => {
@@ -140,7 +132,7 @@ const McpRenameEndpointPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen
         />
       </StyledDialogContent>
 
-      <DialogActions>
+      <StyledDialogActions>
         <Button
           variant="contained"
           type="submit"
@@ -157,7 +149,7 @@ const McpRenameEndpointPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen
         >
           Cancel
         </Button>
-      </DialogActions>
+      </StyledDialogActions>
     </DialogForm>
   )
 })
@@ -171,6 +163,11 @@ const StyledDialogContent = styled(DialogContent)({
   width: 'inherit',
   minWidth: 'unset',
   lineHeight: 'normal',
+})
+
+// Compensates for the always-reserved helper-text line (theme DialogActions paddingTop is 24).
+const StyledDialogActions = styled(DialogActions)({
+  paddingTop: 0,
 })
 
 const CloseDialogButton = styled(IconButton)(({ theme }) => ({
