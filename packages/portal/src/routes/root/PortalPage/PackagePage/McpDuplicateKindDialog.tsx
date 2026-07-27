@@ -61,14 +61,7 @@ const McpDuplicateKindPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen,
           onClick={onClose}
           data-testid="OkButton"
         >
-          OK
-        </Button>
-        <Button
-          variant="outlined"
-          onClick={onClose}
-          data-testid="CancelButton"
-        >
-          Cancel
+          Ok
         </Button>
       </DialogActions>
     </DialogForm>
