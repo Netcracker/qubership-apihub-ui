@@ -17,6 +17,7 @@
 import { type FC, memo, useRef } from 'react'
 import { Marker } from 'react-mark.js'
 
+import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import {
   OperationPathMeta,
@@ -45,6 +46,7 @@ import {
   SearchResultListSentinel,
   SearchResultMetaLine,
   SearchResultRowRoot,
+  SearchResultRowSection,
 } from './SearchResultRowLayout'
 
 type ApiOperationsSearchListProps = {
@@ -226,11 +228,13 @@ const DdlContractSearchResultRow: FC<DdlContractSearchResultRowProps> = memo<Ddl
         searchText={searchText}
       />
       {schemaName && (
-        <SearchResultMetaLine
-          value={schemaName}
-          searchText={searchText}
-          data-testid="DdlSchemaName"
-        />
+        <SearchResultRowSection>
+          <CustomChip
+            value="ddlSchema"
+            label={schemaName}
+            data-testid="DdlSchemaNameChip"
+          />
+        </SearchResultRowSection>
       )}
     </SearchResultRowRoot>
   )
