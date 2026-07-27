@@ -21,6 +21,10 @@ import { Marker } from 'react-mark.js'
 import { FormattedDate } from '@netcracker/qubership-apihub-ui-shared/components/FormattedDate'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import { useIntersectionObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useIntersectionObserver'
+import {
+  isDdlDocumentSpecType,
+  isMcpDocumentSpecType,
+} from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 
 import type { DocumentSearchResult } from '@apihub/entities/global-search'
@@ -84,9 +88,11 @@ export const DocumentSearchList: FC<DocumentSearchListProps> = memo<DocumentSear
                 </Box>
 
                 <RateResults searchText={searchText} labels={labels}/>
-                <Typography noWrap variant="body2" data-testid="DocumentContent">
-                  {content ?? 'No content'}
-                </Typography>
+                {!isMcpDocumentSpecType(type) && !isDdlDocumentSpecType(type) && (
+                  <Typography noWrap variant="body2" data-testid="DocumentContent">
+                    {content ?? 'No content'}
+                  </Typography>
+                )}
               </Marker>
             </SearchResultRowRoot>
           )
