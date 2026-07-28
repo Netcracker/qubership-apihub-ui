@@ -1,6 +1,7 @@
 import type { DiffTypeDto } from '@netcracker/qubership-apihub-api-processor'
 import { replacePropertyInChangesSummary } from '@netcracker/qubership-apihub-api-processor'
 
+import { truncateDescription } from '../utils/strings'
 import type { ActionType, ChangesSummary } from './change-severities'
 import type { DdlContractEntity, DdlContractEntityDto } from './contracts-ddl'
 import type { Key } from './keys'
@@ -62,7 +63,7 @@ export function toDdlEntityChange(
     kind: dto.kind,
     name: dto.name,
     schemaName: dto.schemaName,
-    description: dto.description,
+    description: truncateDescription(dto.description),
     documentId: dto.documentId,
     versionInternalDocumentId: dto.versionInternalDocumentId,
     packageRef: toPackageRef(dto.packageRef, packagesRefs),

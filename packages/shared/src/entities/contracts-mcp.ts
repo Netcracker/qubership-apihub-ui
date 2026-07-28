@@ -2,6 +2,7 @@ import type { McpKind } from '@netcracker/qubership-apihub-api-processor'
 import { MCP_KIND } from '@netcracker/qubership-apihub-api-processor'
 
 import { MCP_DOCUMENT_TYPE, type McpDocumentType } from '../utils/specs'
+import { truncateDescription } from '../utils/strings'
 import type { PackageRef, PackagesRefs } from './operations'
 import { toPackageRef } from './operations'
 
@@ -160,7 +161,7 @@ export function toMcpEntity(
     mcpEntityId: dto.mcpEntityId,
     kind: dto.kind,
     title: dto.title,
-    description: dto.description,
+    description: truncateDescription(dto.description),
     mcpEndpoint: dto.mcpEndpoint,
     documentId: dto.documentId,
     versionInternalDocumentId: dto.versionInternalDocumentId,

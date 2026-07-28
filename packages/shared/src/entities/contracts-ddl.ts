@@ -7,6 +7,7 @@ import {
 } from '@netcracker/qubership-apihub-api-processor'
 
 import { hasNoChangesInSummary } from '../utils/change-severities'
+import { truncateDescription } from '../utils/strings'
 import type { ChangesSummary } from './change-severities'
 import type { PackageRef, PackagesRefs } from './operations'
 import { toPackageRef } from './operations'
@@ -100,7 +101,7 @@ export function toDdlContractEntity(
     kind: dto.kind,
     name: dto.name,
     schemaName: dto.schemaName,
-    description: dto.description,
+    description: truncateDescription(dto.description),
     documentId: dto.documentId,
     versionInternalDocumentId: dto.versionInternalDocumentId,
     packageRef: toPackageRef(dto.packageRef, packagesRefs),
