@@ -1,7 +1,7 @@
 import { Box, Skeleton } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import { type FC, memo, useCallback, useMemo } from 'react'
-import { useParams } from 'react-router-dom'
+import { createPath, useParams } from 'react-router-dom'
 
 import { RawSpecView } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/RawSpecView'
 import {
@@ -13,6 +13,7 @@ import {
 import type { DdlContractEntityDetails } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
 import { DDL_ENTITY_KIND_TABLE } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import {
   DETAILED_SCHEMA_VIEW_MODE,
   SIMPLE_SCHEMA_VIEW_MODE,
@@ -24,6 +25,7 @@ import { DDL_DOCUMENT_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/
 import { useNormalizedDdlContract } from '@apihub/api-hooks/InternalDocuments/useNormalizedDdlContract'
 import { DdlTableViewer } from '@netcracker/qubership-apihub-api-doc-viewer'
 import { calculateDdlEntityId } from '@netcracker/qubership-apihub-api-processor'
+import { usePackageKind } from '../../usePackageKind'
 import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
 import { useRefSearchParam } from '../../useRefSearchParam'
 import { getDdlTableLink } from '../useNavigateToOperation'
@@ -48,6 +50,8 @@ export const DdlTableContentView: FC<DdlTableContentViewProps> = memo<DdlTableCo
 
   const { packageId, versionId } = useParams()
   const [refKey] = useRefSearchParam()
+  const [packageKind] = usePackageKind()
+  const isDashboard = packageKind === DASHBOARD_KIND
   const [resolvedPackageKey, resolvedVersionKey] = usePackageParamsWithRef(data?.packageRef?.key)
 
   const contentPackageKey = entityPackageKey ?? resolvedPackageKey
@@ -78,14 +82,13 @@ export const DdlTableContentView: FC<DdlTableContentViewProps> = memo<DdlTableCo
       return '#'
     }
     const ddlEntityId = calculateDdlEntityId(schemaName, DDL_ENTITY_KIND_TABLE, tableName)
-    const link = getDdlTableLink({
+    return createPath(getDdlTableLink({
       packageKey: packageId,
       versionKey: versionId,
       ddlEntityId: ddlEntityId,
-      ref: data.packageRef?.key ?? refKey,
-    })
-    return `${link.pathname}${link.search ?? ''}`
-  }, [data, packageId, refKey, versionId])
+      ref: isDashboard ? data.packageRef?.key ?? entityPackageKey ?? refKey : undefined,
+    }))
+  }, [data, entityPackageKey, isDashboard, packageId, refKey, versionId])
 
   const parseError = normalizedSourceError?.message ?? null
 

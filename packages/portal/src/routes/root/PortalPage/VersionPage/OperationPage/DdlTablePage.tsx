@@ -19,9 +19,11 @@ import {
   type DdlContractEntity,
   getDdlTableDisplayName,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
+import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { useNavigation } from '../../../../NavigationProvider'
 import { PackageBreadcrumbs } from '../../../PackageBreadcrumbs'
 import { usePackage } from '../../../usePackage'
+import { usePackageKind } from '../../usePackageKind'
 import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
 import { useRefSearchParam } from '../../useRefSearchParam'
 import { useDdlTableDetails } from '../api/useDdlTableDetails'
@@ -38,6 +40,8 @@ export const DdlTablePage: FC = memo(() => {
     operationId: Key
   }>()
   const [refKey] = useRefSearchParam()
+  const [packageKind] = usePackageKind()
+  const isDashboard = packageKind === DASHBOARD_KIND
   const [detailsPackageKey, detailsVersionKey] = usePackageParamsWithRef()
 
   const [packageObject] = usePackage({ showParents: true })
@@ -92,8 +96,8 @@ export const DdlTablePage: FC = memo(() => {
       packageKey: packageId!,
       versionKey: versionId!,
       ddlEntityId: table.ddlEntityId,
-      ref: table.packageRef?.key ?? refKey,
-    }), [packageId, refKey, versionId])
+      ref: isDashboard ? table.packageRef?.key ?? refKey : undefined,
+    }), [isDashboard, packageId, refKey, versionId])
 
   const title = useMemo(() => {
     if (!tableDetails) {

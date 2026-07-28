@@ -18,9 +18,11 @@ import {
   MCP_COLLECTION_LABELS,
   type McpEntity,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
+import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { useNavigation } from '../../../../NavigationProvider'
 import { PackageBreadcrumbs } from '../../../PackageBreadcrumbs'
 import { usePackage } from '../../../usePackage'
+import { usePackageKind } from '../../usePackageKind'
 import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
 import { useRefSearchParam } from '../../useRefSearchParam'
 import { useMcpEntities } from '../api/useMcpEntities'
@@ -41,6 +43,8 @@ export const McpEntityPage: FC = memo(() => {
   const [mcpEndpoint] = useMcpEndpointSearchParam()
   const [mcpEntityParam] = useMcpEntitySearchParam()
   const [refKey] = useRefSearchParam()
+  const [packageKind] = usePackageKind()
+  const isDashboard = packageKind === DASHBOARD_KIND
   const [detailsPackageKey, detailsVersionKey] = usePackageParamsWithRef()
   const mcpCollection = mcpEntityParam ?? MCP_COLLECTION_INIT
 
@@ -112,8 +116,8 @@ export const McpEntityPage: FC = memo(() => {
       mcpEntityId: entity.mcpEntityId,
       mcpEndpoint: mcpEndpoint ?? entity.mcpEndpoint,
       mcpEntity: mcpCollection,
-      ref: entity.packageRef?.key ?? refKey,
-    }), [mcpCollection, mcpEndpoint, packageId, refKey, versionId])
+      ref: isDashboard ? entity.packageRef?.key ?? refKey : undefined,
+    }), [isDashboard, mcpCollection, mcpEndpoint, packageId, refKey, versionId])
 
   const title = useMemo(() => {
     if (!entityDetails) {

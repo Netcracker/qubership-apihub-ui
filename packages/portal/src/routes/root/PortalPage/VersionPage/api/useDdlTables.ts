@@ -65,7 +65,6 @@ export function useDdlTables(options?: UseDdlTablesOptions): [
       return lastPage.length === limit ? allPages.length * limit : undefined
     },
     enabled: !!packageKey && !!fullVersion && enabled,
-    keepPreviousData: true,
   })
 
   return [

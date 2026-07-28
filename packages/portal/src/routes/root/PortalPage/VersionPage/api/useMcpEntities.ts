@@ -75,7 +75,6 @@ export function useMcpEntities(options: UseMcpEntitiesOptions): [
       return lastPage.length === limit ? allPages.length * limit : undefined
     },
     enabled: !!packageKey && !!fullVersion && enabled,
-    keepPreviousData: true,
   })
 
   const entities = useMemo(() => entitiesList?.pages.flat() ?? [], [entitiesList?.pages])
