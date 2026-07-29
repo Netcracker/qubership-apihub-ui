@@ -31,7 +31,7 @@
     "@mui/material": "5.11.10",
     "@mui/private-theming": "5.11.9",
     "@netcracker/qubership-apihub-api-diff": "dev",
-    "@netcracker/qubership-apihub-api-doc-viewer": "dev",
+    "@netcracker/qubership-apihub-api-doc-viewer": "feature-ddl-diffs-view",
     "@netcracker/qubership-apihub-api-processor": "dev",
     "@netcracker/qubership-apihub-api-unifier": "dev",
     "@netcracker/qubership-apihub-api-visitor": "dev",
