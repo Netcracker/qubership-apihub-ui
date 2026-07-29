@@ -34,8 +34,11 @@ import {
   type SpecViewMode,
 } from '@netcracker/qubership-apihub-ui-shared/components/SpecViewToggler'
 import { CONTRACT_TYPE_DDL } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
-import type { DdlContractEntityDetails } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
-import { DDL_ENTITY_KIND_TABLE } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
+import {
+  DDL_ENTITY_KIND_TABLE,
+  type DdlContractEntity,
+  type DdlContractEntityDetails,
+} from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { DEFAULT_VIEW_MODE_MAP_BY_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
@@ -56,6 +59,7 @@ import { DDL_DOCUMENT_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/
 
 import { useNormalizedDdlContract } from '@apihub/api-hooks/InternalDocuments/useNormalizedDdlContract'
 import { DdlTableDiffsViewer, DdlTableViewer } from '@netcracker/qubership-apihub-api-doc-viewer'
+import type { NavigationLinkBuilder } from '@netcracker/qubership-apihub-api-doc-viewer'
 import { calculateDdlEntityId } from '@netcracker/qubership-apihub-api-processor'
 import { DIFFS_AGGREGATED_META_KEY, DIFF_META_KEY } from '@netcracker/qubership-apihub-api-diff'
 import { usePackageKind } from '../../usePackageKind'
@@ -141,10 +145,6 @@ const RegularModeContent: FC<RegularModeContentProps> = memo<RegularModeContentP
   entityPackageKey,
   entityVersionKey,
 }) => {
-  const { packageId, versionId } = useParams()
-  const [refKey] = useRefSearchParam()
-  const [packageKind] = usePackageKind()
-  const isDashboard = packageKind === DASHBOARD_KIND
   const [resolvedPackageKey, resolvedVersionKey] = usePackageParamsWithRef(data?.packageRef?.key)
 
   const contentPackageKey = entityPackageKey ?? resolvedPackageKey
@@ -162,28 +162,14 @@ const RegularModeContent: FC<RegularModeContentProps> = memo<RegularModeContentP
 
   const rawContent = data?.data ?? ''
 
-  const tableKey = useMemo(() => {
-    if (!data) {
-      return undefined
-    }
-    return { schemaName: data.schemaName, name: data.name }
-  }, [data])
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const navigationLinkBuilder = useCallback((schemaName: string, tableName: string, _column: string) => {
-    if (!data || !packageId || !versionId) {
-      return '#'
-    }
-    const ddlEntityId = calculateDdlEntityId(schemaName, DDL_ENTITY_KIND_TABLE, tableName)
-    return createPath(getDdlTableLink({
-      packageKey: packageId,
-      versionKey: versionId,
-      ddlEntityId: ddlEntityId,
-      ref: isDashboard ? data.packageRef?.key ?? entityPackageKey ?? refKey : undefined,
-    }))
-  }, [data, entityPackageKey, isDashboard, packageId, refKey, versionId])
+  const tableKey = useMemo(() => buildDdlTableKey(data), [data])
+  const navigationLinkBuilder = useDdlTableNavigationLinkBuilder(data, entityPackageKey)
 
   const parseError = normalizedSourceError?.message ?? null
+  const schemaDisplayMode = viewMode === SIMPLE_SPEC_VIEW_MODE
+    ? SIMPLE_SCHEMA_VIEW_MODE
+    : DETAILED_SCHEMA_VIEW_MODE
+  const showSchemaView = viewMode === DOC_SPEC_VIEW_MODE || viewMode === SIMPLE_SPEC_VIEW_MODE
 
   if (viewMode !== RAW_SPEC_VIEW_MODE && isNormalizedSourceLoading) {
     return (
@@ -195,7 +181,7 @@ const RegularModeContent: FC<RegularModeContentProps> = memo<RegularModeContentP
 
   return (
     <ContentContainer>
-      {viewMode === DOC_SPEC_VIEW_MODE && (
+      {showSchemaView && (
         parseError
           ? <ParseErrorMessage>{parseError}</ParseErrorMessage>
           : tableKey && (
@@ -204,22 +190,7 @@ const RegularModeContent: FC<RegularModeContentProps> = memo<RegularModeContentP
               tableKey={tableKey}
               navigationLinkBuilder={navigationLinkBuilder}
               navigationLinkComponent={DdlTableNavigationLink}
-              displayMode={DETAILED_SCHEMA_VIEW_MODE}
-              noHeading={noHeading}
-            />
-          )
-      )}
-
-      {viewMode === SIMPLE_SPEC_VIEW_MODE && (
-        parseError
-          ? <ParseErrorMessage>{parseError}</ParseErrorMessage>
-          : tableKey && (
-            <DdlTableViewer
-              source={normalizedSource}
-              tableKey={tableKey}
-              navigationLinkBuilder={navigationLinkBuilder}
-              navigationLinkComponent={DdlTableNavigationLink}
-              displayMode={SIMPLE_SCHEMA_VIEW_MODE}
+              displayMode={schemaDisplayMode}
               noHeading={noHeading}
             />
           )
@@ -259,10 +230,6 @@ const ComparisonModeContent: FC<ComparisonModeContentProps> = memo<ComparisonMod
   isEntityExist,
   paddingBottom,
 }) => {
-  const { packageId, versionId } = useParams()
-  const [refKey] = useRefSearchParam()
-  const [packageKind] = usePackageKind()
-  const isDashboard = packageKind === DASHBOARD_KIND
   const breadcrumbsData = useBreadcrumbsData()
   const {
     previousDdlContract: originDdlContract,
@@ -282,12 +249,8 @@ const ComparisonModeContent: FC<ComparisonModeContentProps> = memo<ComparisonMod
 
   const tableEntity = changedDdlContract ?? originDdlContract ?? data
 
-  const tableKey = useMemo(() => {
-    if (!tableEntity) {
-      return undefined
-    }
-    return { schemaName: tableEntity.schemaName, name: tableEntity.name }
-  }, [tableEntity])
+  const tableKey = useMemo(() => buildDdlTableKey(tableEntity), [tableEntity])
+  const navigationLinkBuilder = useDdlTableNavigationLinkBuilder(tableEntity)
 
   const mergedDocument = apiDiffResult?.merged
 
@@ -296,20 +259,6 @@ const ComparisonModeContent: FC<ComparisonModeContentProps> = memo<ComparisonMod
       setApiDiffResult(undefined)
     }
   }, [setApiDiffResult])
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const navigationLinkBuilder = useCallback((schemaName: string, tableName: string, _column: string) => {
-    if (!tableEntity || !packageId || !versionId) {
-      return '#'
-    }
-    const ddlEntityId = calculateDdlEntityId(schemaName, DDL_ENTITY_KIND_TABLE, tableName)
-    return createPath(getDdlTableLink({
-      packageKey: packageId,
-      versionKey: versionId,
-      ddlEntityId: ddlEntityId,
-      ref: isDashboard ? tableEntity.packageRef?.key ?? refKey : undefined,
-    }))
-  }, [isDashboard, packageId, refKey, tableEntity, versionId])
 
   const noDataForDiffView = isDocViewMode && !mergedDocument
   const noDataForRawView = isRawViewMode && !originRawContent && !changedRawContent
@@ -369,6 +318,7 @@ const ComparisonModeContent: FC<ComparisonModeContentProps> = memo<ComparisonMod
               noHeading={noHeading}
               diffMetaKeys={DIFFS_META_KEYS}
               diffTypes={filters}
+              devMode
             />
           </DiffViewContainer>
         )}
@@ -390,6 +340,43 @@ const ComparisonModeContent: FC<ComparisonModeContentProps> = memo<ComparisonMod
 ComparisonModeContent.displayName = 'ComparisonModeContent'
 
 DdlTableContentView.displayName = 'DdlTableContentView'
+
+type DdlTableNavigationEntity = Pick<DdlContractEntity, 'packageRef'>
+
+function buildDdlTableKey(
+  entity: Pick<DdlContractEntityDetails, 'schemaName' | 'name'> | undefined,
+): { schemaName: string; name: string } | undefined {
+  if (!entity) {
+    return undefined
+  }
+  return { schemaName: entity.schemaName, name: entity.name }
+}
+
+function useDdlTableNavigationLinkBuilder(
+  tableEntity: DdlTableNavigationEntity | undefined,
+  entityPackageKey?: Key,
+): NavigationLinkBuilder {
+  const { packageId, versionId } = useParams()
+  const [refKey] = useRefSearchParam()
+  const [packageKind] = usePackageKind()
+  const isDashboard = packageKind === DASHBOARD_KIND
+
+  // `_column` is not used in the callback for now but it is required by the NavigationLinkBuilder type
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  return useCallback((schemaName: string, tableName: string, _column: string) => {
+    if (!tableEntity || !packageId || !versionId) {
+      return '#'
+    }
+    const ddlEntityId = calculateDdlEntityId(schemaName, DDL_ENTITY_KIND_TABLE, tableName)
+    const ddlTableLink = getDdlTableLink({
+      packageKey: packageId,
+      versionKey: versionId,
+      ddlEntityId: ddlEntityId,
+      ref: isDashboard ? tableEntity.packageRef?.key ?? entityPackageKey ?? refKey : undefined,
+    })
+    return createPath(ddlTableLink)
+  }, [entityPackageKey, isDashboard, packageId, refKey, tableEntity, versionId])
+}
 
 const ContentContainer = styled(Box)({
   display: 'flex',
