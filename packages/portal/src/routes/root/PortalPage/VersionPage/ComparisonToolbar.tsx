@@ -38,7 +38,6 @@ import { isApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-t
 import { CHANGE_SEVERITIES, type ChangesSummary } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
 import { CONTRACT_TYPE_DDL, getRouteApiTypeTitle, isApiContract } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 import { getDashboardComparisonApiTypes } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-changes-summary'
-import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import {
   COMPARE_VIEW_MODES_BY_API_TYPE,
@@ -47,6 +46,7 @@ import {
   OPERATION_COMPARE_VIEW_MODES,
   RAW_OPERATION_VIEW_MODE,
 } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
+import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { VersionChanges } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
 import { isDashboardComparisonSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
 import {
@@ -55,7 +55,7 @@ import {
 import {
   usePackageSearchParam,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/routes/package/usePackageSearchParam'
-import type { FC } from 'react'
+import type { FC, ReactNode } from 'react'
 import { memo, useCallback, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { getOverviewPath } from '../../../NavigationProvider'
@@ -87,10 +87,18 @@ export type ComparisonPageToolbarProps = {
   isOperationsGroupCompare?: boolean
   ddlEntityChangeSummary?: ChangesSummary
   isDdlEntityChangesLoading?: boolean
+  title?: ReactNode
 }
 
 export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<ComparisonPageToolbarProps>((props) => {
-  const { compareToolbarMode, internalDocumentOptions, isOperationsGroupCompare = false, ddlEntityChangeSummary, isDdlEntityChangesLoading } = props
+  const {
+    compareToolbarMode,
+    internalDocumentOptions,
+    isOperationsGroupCompare = false,
+    ddlEntityChangeSummary,
+    isDdlEntityChangesLoading,
+    title: titleOverride,
+  } = props
   const { apiType: apiTypeSearchParam } = useApiTypeSearchParam()
   const [packageSearchParam] = usePackageSearchParam()// in case of package/dashboard comparison we don't hase apiType in url, we have it in searchParams
   const {
@@ -117,7 +125,6 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
   const [downloadChangesAsExcel] = useDownloadChangesAsExcel()
   const [downloadDdlChangesAsExcel] = useDownloadDdlChangesAsExcel()
   const isDdlComparison = apiTypeFromUrl === CONTRACT_TYPE_DDL
-
   const onDownloadAllChanges = useCallback((): void => {
     if (isDdlComparison) {
       downloadDdlChangesAsExcel({
@@ -193,7 +200,7 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
 
   const changesLoadingStatus = useChangesLoadingStatus()
 
-  const title = useMemo(() => (
+  const defaultTitle = useMemo(() => (
     isEntityComparePage
       ? `${TITLE_BY_COMPARE_MODE[compareToolbarMode]} ${getRouteApiTypeTitle(isDdlComparison ? CONTRACT_TYPE_DDL : operationsApiType)}`
       : group
@@ -211,9 +218,11 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
           <IconButton color="primary" onClick={handleBackClick} data-testid="BackButton">
             <ArrowBackIcon />
           </IconButton>
-          <Typography sx={COMPARISON_PAGE_TOOLBAR_TEXT_STYLES}>
-            {title}
-          </Typography>
+          {titleOverride ?? (
+            <Typography sx={COMPARISON_PAGE_TOOLBAR_TEXT_STYLES}>
+              {defaultTitle}
+            </Typography>
+          )}
           {isPackageFromDashboard && compareToolbarMode !== COMPARE_DIFFERENT_OPERATIONS_MODE && <PackageSelector />}
         </Box>
       </Box>

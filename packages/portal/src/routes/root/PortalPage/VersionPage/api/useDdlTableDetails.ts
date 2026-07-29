@@ -43,7 +43,6 @@ export function useDdlTableDetails(options: UseDdlTableDetailsOptions): DdlTable
     queryKey: [DDL_TABLE_DETAILS_QUERY_KEY, packageKey, fullVersion, ddlEntityId],
     queryFn: () => getDdlTableDetails(packageKey!, fullVersion!, ddlEntityId!),
     enabled: detailsEnabled && !!fullVersion,
-    keepPreviousData: true,
     select: dto => ({ ...toDdlContractEntity(dto), data: dto.data }),
   })
 

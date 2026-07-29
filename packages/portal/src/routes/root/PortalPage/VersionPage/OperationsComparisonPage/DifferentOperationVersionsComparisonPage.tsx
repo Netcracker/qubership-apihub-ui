@@ -25,7 +25,9 @@ import { useComparisonParams } from '@apihub/routes/root/PortalPage/VersionPage/
 import { groupOperationPairsByTags } from '@apihub/utils/operations'
 import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { CONTRACT_TYPE_DDL, toRouteApiType } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
+import { CONTRACT_TYPE_DDL, getRouteApiTypeTitle, toRouteApiType } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
+import { getDdlTableDisplayName } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
+import { toDdlContractEntityFromChange } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl-changelog'
 import type { OperationData, OperationPair, OperationPairsGroupedByTag, OptionalOperationPair } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { OperationChangeBase } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
 import type {
@@ -51,6 +53,7 @@ import { useFlatVersionChangelog } from '@netcracker/qubership-apihub-ui-shared/
 import {
   usePagedVersionChangelog,
 } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget/api/useCommonPagedVersionChangelog'
+import { Box, Typography } from '@mui/material'
 import type { FC } from 'react'
 import { memo, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -65,6 +68,7 @@ import { ComparedOperationsContext } from '../ComparedOperationsContext'
 import { BreadcrumbsDataContext } from '../ComparedPackagesBreadcrumbsProvider'
 import type { InternalDocumentOptions } from '../ComparisonToolbar'
 import { ComparisonToolbar } from '../ComparisonToolbar'
+import { DdlTableSelector } from '../OperationPage/DdlTableSelector'
 import { SelectedOperationTagsProvider } from '../SelectedOperationTagsProvider'
 import { ShouldAutoExpandTagsProvider } from '../ShouldAutoExpandTagsProvider'
 import { VersionsComparisonGlobalParamsContext } from '../VersionsComparisonGlobalParams'
@@ -327,6 +331,41 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
   }, [changedOperation, handledOperationPairs, originOperation])
   // ---
 
+  const ddlToolbarTitle = useMemo(() => {
+    if (!isDdlComparison) {
+      return undefined
+    }
+    const changeData = ddlComparisonState.currentChangeEntry?.ddlEntityData ??
+      ddlComparisonState.currentChangeEntry?.previousDdlEntityData
+    const tableName = changeData
+      ? getDdlTableDisplayName(toDdlContractEntityFromChange(changeData))
+      : ''
+    return (
+      <Box display="flex" alignItems="center" mr={2}>
+        <Typography
+          component="span"
+          fontSize="18px"
+          fontWeight={600}
+          lineHeight="28px"
+          data-testid="ToolbarTitle"
+        >
+          {`${getRouteApiTypeTitle(CONTRACT_TYPE_DDL)}: ${tableName}`}
+        </Typography>
+        <DdlTableSelector
+          tables={ddlComparisonState.siblingTables}
+          isLoading={!ddlComparisonState.isChangelogReady}
+          prepareLinkFn={ddlComparisonState.prepareCompareLinkFn}
+        />
+      </Box>
+    )
+  }, [
+    ddlComparisonState.currentChangeEntry,
+    ddlComparisonState.isChangelogReady,
+    ddlComparisonState.prepareCompareLinkFn,
+    ddlComparisonState.siblingTables,
+    isDdlComparison,
+  ])
+
   return (
     <ShouldAutoExpandTagsProvider>
       <SelectedOperationTagsProvider>
@@ -340,6 +379,7 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
                     internalDocumentOptions={internalDocumentOptions}
                     ddlEntityChangeSummary={ddlComparisonState.currentChangeEntry?.changeSummary}
                     isDdlEntityChangesLoading={ddlComparisonState.isContentLoading}
+                    title={ddlToolbarTitle}
                   />
                 }
                 navigation={
