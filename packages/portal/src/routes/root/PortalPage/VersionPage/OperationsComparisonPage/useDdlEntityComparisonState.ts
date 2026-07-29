@@ -44,6 +44,7 @@ export type UseDdlEntityComparisonStateOptions = Readonly<{
 
 export type DdlEntityComparisonState = Readonly<{
   currentChangeEntry: DdlEntityChangeEntry | undefined
+  ddlChanges: ReadonlyArray<DdlEntityChangeEntry>
   ddlChangeExists: boolean
   isChangelogReady: boolean
   isContentLoading: boolean
@@ -231,6 +232,7 @@ export function useDdlEntityComparisonState(
 
   return {
     currentChangeEntry: currentChangeEntry,
+    ddlChanges: ddlChanges,
     ddlChangeExists: ddlChangeExists,
     isChangelogReady: isChangelogReady,
     isContentLoading: isContentLoading,

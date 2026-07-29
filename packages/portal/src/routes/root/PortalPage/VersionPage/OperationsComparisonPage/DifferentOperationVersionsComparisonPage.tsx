@@ -65,6 +65,7 @@ import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
 import { useChangesSummaryContext } from '../ChangesSummaryProvider'
 import { CompareOperationPathsDialog } from '../CompareOperationPathsDialog'
 import { ComparedOperationsContext } from '../ComparedOperationsContext'
+import { ComparedDdlContractsContext } from '../ComparedDdlContractsContext'
 import { BreadcrumbsDataContext } from '../ComparedPackagesBreadcrumbsProvider'
 import type { InternalDocumentOptions } from '../ComparisonToolbar'
 import { ComparisonToolbar } from '../ComparisonToolbar'
@@ -241,13 +242,26 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
 
   const internalDocumentOptions: InternalDocumentOptions = useMemo(
     () => ({
-      versionChanges: flatPackageChangelog,
+      versionChanges: isDdlComparison ? undefined : flatPackageChangelog,
+      ddlChanges: isDdlComparison ? ddlComparisonState.ddlChanges : undefined,
       currentPackageId: !isPackageFromDashboard ? changedPackageKey : refPackageKey,
       currentVersionId: !isPackageFromDashboard ? changedVersionKey : refComparisonSummary?.version,
       previousPackageId: !isPackageFromDashboard ? originPackageKey : refPackageKey,
       previousVersionId: !isPackageFromDashboard ? originVersionKey : refComparisonSummary?.previousVersion,
     }),
-    [flatPackageChangelog, isPackageFromDashboard, changedPackageKey, refPackageKey, changedVersionKey, refComparisonSummary?.version, refComparisonSummary?.previousVersion, originPackageKey, originVersionKey],
+    [
+      flatPackageChangelog,
+      isDdlComparison,
+      ddlComparisonState.ddlChanges,
+      isPackageFromDashboard,
+      changedPackageKey,
+      refPackageKey,
+      changedVersionKey,
+      refComparisonSummary?.version,
+      refComparisonSummary?.previousVersion,
+      originPackageKey,
+      originVersionKey,
+    ],
   )
 
   useEffect(
@@ -307,6 +321,19 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
     currentOperation: changedOperation,
     isLoading: isOriginOperationInitialLoading || isChangedOperationInitialLoading,
   }), [originOperation, changedOperation, isOriginOperationInitialLoading, isChangedOperationInitialLoading])
+
+  const comparedDdlContractsPair = useMemo(() => ({
+    previousDdlContract: ddlComparisonState.currentChangeEntry?.previousDdlEntityData
+      ? toDdlContractEntityFromChange(ddlComparisonState.currentChangeEntry.previousDdlEntityData)
+      : undefined,
+    currentDdlContract: ddlComparisonState.currentChangeEntry?.ddlEntityData
+      ? toDdlContractEntityFromChange(ddlComparisonState.currentChangeEntry.ddlEntityData)
+      : undefined,
+    isLoading: ddlComparisonState.isContentLoading,
+  }), [
+    ddlComparisonState.currentChangeEntry,
+    ddlComparisonState.isContentLoading,
+  ])
 
   // TODO 31.08.23 // Optimize it!
   // TODO 01.09.23 // Extract to hook? Can we optimize it and reuse some parameters?
@@ -372,13 +399,13 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
         <VersionsComparisonGlobalParamsContext.Provider value={versionsComparisonParams}>
           <BreadcrumbsDataContext.Provider value={mergedBreadcrumbsData}>
             <ComparedOperationsContext.Provider value={comparedOperationsPair}>
+              <ComparedDdlContractsContext.Provider value={comparedDdlContractsPair}>
               <PageLayout
                 toolbar={
                   <ComparisonToolbar
                     compareToolbarMode={COMPARE_SAME_OPERATIONS_MODE}
                     internalDocumentOptions={internalDocumentOptions}
                     ddlEntityChangeSummary={ddlComparisonState.currentChangeEntry?.changeSummary}
-                    isDdlEntityChangesLoading={ddlComparisonState.isContentLoading}
                     title={ddlToolbarTitle}
                   />
                 }
@@ -424,6 +451,7 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
                     )
                 }
               />
+              </ComparedDdlContractsContext.Provider>
             </ComparedOperationsContext.Provider>
           </BreadcrumbsDataContext.Provider>
         </VersionsComparisonGlobalParamsContext.Provider>

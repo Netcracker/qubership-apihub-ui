@@ -47,6 +47,7 @@ import {
   RAW_OPERATION_VIEW_MODE,
 } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
+import type { DdlEntityChangeEntry } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl-changelog'
 import type { VersionChanges } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
 import { isDashboardComparisonSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
 import {
@@ -75,6 +76,7 @@ import { toComparedApiType, toComparedApiTypeFilter } from './VersionComparePage
 
 export type InternalDocumentOptions = {
   versionChanges: VersionChanges | undefined
+  ddlChanges?: ReadonlyArray<DdlEntityChangeEntry> | undefined
   currentPackageId: Key | undefined
   currentVersionId: Key | undefined
   previousPackageId: Key | undefined
@@ -86,7 +88,6 @@ export type ComparisonPageToolbarProps = {
   internalDocumentOptions?: InternalDocumentOptions
   isOperationsGroupCompare?: boolean
   ddlEntityChangeSummary?: ChangesSummary
-  isDdlEntityChangesLoading?: boolean
   title?: ReactNode
 }
 
@@ -96,7 +97,6 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
     internalDocumentOptions,
     isOperationsGroupCompare = false,
     ddlEntityChangeSummary,
-    isDdlEntityChangesLoading,
     title: titleOverride,
   } = props
   const { apiType: apiTypeSearchParam } = useApiTypeSearchParam()
@@ -238,8 +238,8 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
               )}
               {mode !== RAW_OPERATION_VIEW_MODE && isDdlComparison && (
                 <ComparisonDdlEntityChangeSeverityFilters
-                  changeSummary={ddlEntityChangeSummary}
-                  isLoading={isDdlEntityChangesLoading}
+                  internalDocumentOptions={internalDocumentOptions}
+                  ddlEntityChangeSummary={ddlEntityChangeSummary}
                 />
               )}
               <OperationViewModeSelector
