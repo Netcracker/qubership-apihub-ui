@@ -369,11 +369,6 @@ function renderDdlComparisonRow(
     [PACKAGE_SEARCH_PARAM]: { value: changedPackageKey === originPackageKey ? '' : encodeURIComponent(originPackageKey) },
     [VERSION_SEARCH_PARAM]: { value: originVersionKey },
     [REF_SEARCH_PARAM]: { value: refPackageKey },
-    [OPERATION_SEARCH_PARAM]: {
-      value: ddlEntityData?.ddlEntityId
-        ? previousDdlEntityData?.ddlEntityId
-        : undefined,
-    },
   })
 
   return (

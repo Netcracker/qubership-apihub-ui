@@ -10,7 +10,6 @@ import { getDdlChangeEntityId, toDdlContractEntityFromChange } from '../../../en
 import type { PackageKind } from '../../../entities/packages'
 import { DASHBOARD_KIND } from '../../../entities/packages'
 import {
-  OPERATION_SEARCH_PARAM,
   optionalSearchParams,
   PACKAGE_SEARCH_PARAM,
   REF_SEARCH_PARAM,
@@ -52,9 +51,6 @@ export const DdlEntityChangeCell: FC<DdlEntityChangeCellProps> = memo<DdlEntityC
     },
     [REF_SEARCH_PARAM]: {
       value: isDashboard ? packageRef?.refId ?? previousPackageRef?.refId : undefined,
-    },
-    [OPERATION_SEARCH_PARAM]: {
-      value: ddlEntityData?.ddlEntityId ? previousDdlEntityData?.ddlEntityId : undefined,
     },
   })
 

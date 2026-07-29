@@ -16,7 +16,6 @@ import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/ent
 import { filterChangesBySeverity } from '@netcracker/qubership-apihub-ui-shared/utils/change-severities'
 import {
   FILTERS_SEARCH_PARAM,
-  OPERATION_SEARCH_PARAM,
   optionalSearchParams,
   PACKAGE_SEARCH_PARAM,
   REF_SEARCH_PARAM,
@@ -166,11 +165,6 @@ export function useDdlEntityComparisonState(
       [VERSION_SEARCH_PARAM]: { value: originVersionKey },
       [REF_SEARCH_PARAM]: { value: refPackageId },
       [FILTERS_SEARCH_PARAM]: { value: severityFilters.join() },
-      [OPERATION_SEARCH_PARAM]: {
-        value: changeEntry.ddlEntityData?.ddlEntityId
-          ? changeEntry.previousDdlEntityData?.ddlEntityId
-          : undefined,
-      },
     })
 
     return {
@@ -210,11 +204,6 @@ export function useDdlEntityComparisonState(
       [VERSION_SEARCH_PARAM]: { value: originVersionKey },
       [REF_SEARCH_PARAM]: { value: refPackageId },
       [FILTERS_SEARCH_PARAM]: { value: severityFilters.join() },
-      [OPERATION_SEARCH_PARAM]: {
-        value: firstChangeEntry.ddlEntityData?.ddlEntityId
-          ? firstChangeEntry.previousDdlEntityData?.ddlEntityId
-          : undefined,
-      },
     })
     navigate({
       pathname:
