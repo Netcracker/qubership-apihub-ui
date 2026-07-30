@@ -109,19 +109,24 @@ export const McpOverview: FC<McpOverviewProps> = memo<McpOverviewProps>(({
     'MCP Server'
 
   return (
-    <BodyCard
-      header={
-        <DocumentTitleWithVersion
-          title={displayTitle}
-          version={serverInfo.version}
-        />
-      }
-      body={
-        <OverviewBody>
-          <McpOverviewDetails data={displayData} data-testid="McpOverview" />
-        </OverviewBody>
-      }
-    />
+    <OverviewRoot>
+      <BodyCard
+        header={
+          <DocumentTitleWithVersion
+            title={displayTitle}
+            version={serverInfo.version}
+          />
+        }
+        body={
+          <OverviewBody>
+            <McpOverviewDetails data={displayData} data-testid="McpOverview" />
+          </OverviewBody>
+        }
+        overrideBodySx={{
+          overflowY: 'auto',
+        }}
+      />
+    </OverviewRoot>
   )
 })
 
@@ -158,10 +163,13 @@ function extractMcpServerInfo(data: Record<string, unknown>): McpServerInfo {
   }
 }
 
+const OverviewRoot = styled(Box)(({ theme }) => ({
+  height: '100%',
+  paddingBottom: theme.spacing(3),
+}))
+
 const OverviewBody = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(3),
-  height: '100%',
-  overflow: 'auto',
 }))

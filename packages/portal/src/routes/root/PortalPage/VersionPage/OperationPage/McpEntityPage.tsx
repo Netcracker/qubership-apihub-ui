@@ -173,7 +173,13 @@ export const McpEntityPage: FC = memo(() => {
         <BodyBox>
           {isInitialLoading
             ? <Skeleton variant="rectangular" height="100%" />
-            : <JsonRawSpecView data={entityDetails?.data} />}
+            : (
+              <JsonRawSpecView
+                data={entityDetails?.data}
+                // TODO: Needs a larger refactor to centralise Doc/Raw view spacing for all specification kinds.
+                sx={{ ml: -2, mr: 0, py: 2, pl: 2 }}
+              />
+            )}
         </BodyBox>
       }
     />

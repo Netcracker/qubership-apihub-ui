@@ -35,7 +35,11 @@ export const McpEntityPreview: FC<McpEntityPreviewProps> = memo<McpEntityPreview
         message="No content"
         data-testid="NoContentPlaceholder"
       >
-        <JsonRawSpecView data={entityDetails?.data} />
+        <JsonRawSpecView
+          data={entityDetails?.data}
+          // TODO: Needs a larger refactor to centralise Doc/Raw view spacing for all specification kinds.
+          sx={{ ml: -2, mr: 0, pb: 2 }}
+        />
       </Placeholder>
     </ContractPreviewPanel>
   )

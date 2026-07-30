@@ -201,6 +201,8 @@ const RegularModeContent: FC<RegularModeContentProps> = memo<RegularModeContentP
           value={rawContent}
           extension={SQL_FILE_EXTENSION}
           type={DDL_DOCUMENT_TYPE.DDL}
+          // TODO: Needs a larger refactor to centralise Doc/Raw view spacing for all specification kinds.
+          sx={{ ml: -4, mr: -2 }}
         />
       )}
     </ContentContainer>
@@ -409,7 +411,7 @@ const ComparisonContentInner = styled(Box)({
 const DiffViewContainer = styled(Box)({
   flex: '1 1 auto',
   minHeight: 0,
-  overflow: 'hidden',
+  overflow: 'auto',
 })
 
 const RawDiffContainer = styled(Box)({
