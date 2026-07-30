@@ -25,7 +25,7 @@ import { VitePluginFonts } from 'vite-plugin-fonts'
 import { visualizer as bundleVisualizer } from 'rollup-plugin-visualizer'
 import createVersionJsonFilePlugin from '../../vite-create-version-json'
 
-const proxyServer = 'https://qubership-apihub.localtest.me/'
+const proxyServer = 'http://host.docker.internal:8081'
 const devServer = 'http://localhost:3003'
 
 export default defineConfig(({ mode }) => {
