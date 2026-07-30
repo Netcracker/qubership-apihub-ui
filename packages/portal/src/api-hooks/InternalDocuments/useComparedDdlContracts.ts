@@ -2,7 +2,6 @@ import type { DdlContractEntity } from '@netcracker/qubership-apihub-ui-shared/e
 import type { DdlEntityChangeEntry } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl-changelog'
 import type { PackageKey, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 
-import { filterRealmForDdlContract } from '@apihub/utils/internal-documents/filter-realm-for-ddl-contract'
 import { INTERNAL_DOCUMENT_STRING_SYMBOL_MAPPING } from '@apihub/utils/internal-documents/constants'
 import { isDdlApiSpecification } from '@apihub/utils/internal-documents/type-guards'
 import { deserialize } from '@netcracker/qubership-apihub-api-unifier'
@@ -88,20 +87,16 @@ export function useComparedDdlContracts(
     return deserialize(rawComparisonInternalDocument, INTERNAL_DOCUMENT_STRING_SYMBOL_MAPPING)
   }, [rawComparisonInternalDocument])
 
-  const comparisonInternalDocumentWithOnlyDdlContract = useMemo(() => {
+  const comparisonInternalDocument = useMemo(() => {
     if (!isDdlApiSpecification(deserializedComparisonInternalDocument)) {
       return undefined
     }
-    const ddlContract = currentDdlContract ?? previousDdlContract
-    if (!ddlContract) {
-      return undefined
-    }
-    return filterRealmForDdlContract(deserializedComparisonInternalDocument, ddlContract)
-  }, [deserializedComparisonInternalDocument, currentDdlContract, previousDdlContract])
+    return deserializedComparisonInternalDocument
+  }, [deserializedComparisonInternalDocument])
 
   return useMemo(
     () => ({
-      data: comparisonInternalDocumentWithOnlyDdlContract,
+      data: comparisonInternalDocument,
       isLoading: loadingRawComparisonInternalDocument || loadingListComparisonInternalDocumentsMetadata,
       error: errorComparisonInternalDocument || errorComparisonInternalDocumentsMetadata,
       hasInternalDocument: hasComparisonInternalDocument,
@@ -109,7 +104,7 @@ export function useComparedDdlContracts(
     [
       errorComparisonInternalDocument,
       errorComparisonInternalDocumentsMetadata,
-      comparisonInternalDocumentWithOnlyDdlContract,
+      comparisonInternalDocument,
       loadingRawComparisonInternalDocument,
       loadingListComparisonInternalDocumentsMetadata,
       hasComparisonInternalDocument,
