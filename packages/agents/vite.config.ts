@@ -42,7 +42,7 @@ export default defineConfig(({ mode }) => {
     base: !isProxyMode ? '/agents' : '',
     plugins: [
       react({ fastRefresh: false }),
-      analyzeBundle && bundleVisualizer(),
+      ...(analyzeBundle ? [bundleVisualizer()] : []),
       ignoreDotsOnDevServer(),
       monacoEditor({
         languageWorkers: ['editorWorkerService', 'json'],

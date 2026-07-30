@@ -30,7 +30,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       react({ fastRefresh: false }),
-      analyzeBundle && bundleVisualizer(),
+      ...(analyzeBundle ? [bundleVisualizer()] : []),
       ignoreDotsOnDevServer(),
       monacoEditor({
         languageWorkers: ['editorWorkerService', 'json'],
