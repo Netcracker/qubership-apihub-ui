@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import type { FileLabelsRecord } from '@netcracker/qubership-apihub-ui-shared/components/FileTableUpload/FileTableUpload'
 import { MCP_DOCUMENT_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
@@ -18,6 +18,11 @@ export type UseMcpPublishValidationResult = Readonly<{
   publishDisabledHint: string | undefined
 }>
 
+type McpValidationSources = Readonly<{
+  mcpStagedFileMetaByName: ReadonlyMap<string, McpStagedFileMeta>
+  filesWithLabels: FileLabelsRecord
+}>
+
 export function useMcpPublishValidation(
   mcpStagedFileMetaByName: ReadonlyMap<string, McpStagedFileMeta>,
   filesWithLabels: FileLabelsRecord,
@@ -25,13 +30,19 @@ export function useMcpPublishValidation(
   const [endpointValidations, setEndpointValidations] = useState<ReadonlyMap<string, McpEndpointValidation>>(new Map())
   const [isValidating, setIsValidating] = useState(false)
 
-  const validationRevision = useMemo(
-    () => buildValidationRevision(mcpStagedFileMetaByName, filesWithLabels),
+  const sourcesRef = useRef<McpValidationSources>({ mcpStagedFileMetaByName, filesWithLabels })
+  sourcesRef.current = { mcpStagedFileMetaByName, filesWithLabels }
+
+  // Content fingerprint: re-validate only when MCP-relevant data changes, not on Map/record identity churn.
+  const validationContentKey = useMemo(
+    () => buildValidationContentKey(mcpStagedFileMetaByName, filesWithLabels),
     [mcpStagedFileMetaByName, filesWithLabels],
   )
 
   useEffect(() => {
     let cancelled = false
+    const { mcpStagedFileMetaByName, filesWithLabels } = sourcesRef.current
+
     if (mcpStagedFileMetaByName.size === 0) {
       setEndpointValidations(new Map())
       setIsValidating(false)
@@ -39,23 +50,26 @@ export function useMcpPublishValidation(
     }
 
     setIsValidating(true)
-    readInitFileContents(mcpStagedFileMetaByName, filesWithLabels).then(initFileContents => {
-      if (cancelled) {
-        return
-      }
-      setEndpointValidations(collectMcpEndpointValidations({
-        mcpStagedFileMetaByName: mcpStagedFileMetaByName,
-        initFileContents: initFileContents,
-      }))
-      setIsValidating(false)
-    })
+    void readInitFileContents(mcpStagedFileMetaByName, filesWithLabels)
+      .then(initFileContents => {
+        if (cancelled) {
+          return
+        }
+        setEndpointValidations(collectMcpEndpointValidations({
+          mcpStagedFileMetaByName,
+          initFileContents,
+        }))
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setIsValidating(false)
+        }
+      })
 
     return () => {
       cancelled = true
     }
-    // validationRevision tracks mcpStagedFileMetaByName/filesWithLabels content; avoid re-running on ref-only changes.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [validationRevision])
+  }, [validationContentKey])
 
   return useMemo(() => ({
     endpointValidations: endpointValidations,
@@ -83,17 +97,17 @@ async function readInitFileContents(
   return new Map(entries)
 }
 
-function buildValidationRevision(
+function buildValidationContentKey(
   mcpStagedFileMetaByName: ReadonlyMap<string, McpStagedFileMeta>,
   filesWithLabels: FileLabelsRecord,
 ): string {
   return [...mcpStagedFileMetaByName.entries()]
     .map(([fileName, meta]) => {
       const file = filesWithLabels[fileName]?.file
-      const initContentRevision = meta.documentType === MCP_DOCUMENT_TYPE.MCP_INIT
+      const initContentKey = meta.documentType === MCP_DOCUMENT_TYPE.MCP_INIT
         ? `:${file?.lastModified ?? 0}:${file?.size ?? 0}`
         : ''
-      return `${fileName}:${meta.documentType}:${meta.mcpEndpoint}${initContentRevision}`
+      return `${fileName}:${meta.documentType}:${meta.mcpEndpoint}${initContentKey}`
     })
     .sort()
     .join('|')
