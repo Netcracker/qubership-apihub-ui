@@ -1,26 +1,14 @@
 import type { DiffTypeDto } from '@netcracker/qubership-apihub-api-processor'
 import { replacePropertyInChangesSummary } from '@netcracker/qubership-apihub-api-processor'
 
-import { truncateDescription } from '../utils/strings'
 import type { ActionType, ChangesSummary } from './change-severities'
-import type { DdlContractEntity, DdlContractEntityDto } from './contracts-ddl'
+import { type DdlContractEntity, type DdlContractEntityDto, toDdlContractEntity } from './contracts-ddl'
 import type { Key } from './keys'
-import type { PackageRef, PackagesRefs } from './operations'
-import { toPackageRef } from './operations'
+import type { PackagesRefs } from './operations'
 import { calculateAction } from './version-changelog'
 
 export type DdlEntityChangeDto = DdlContractEntityDto
-
-export type DdlEntityChange = Readonly<{
-  ddlEntityId: string
-  kind: DdlContractEntityDto['kind']
-  name: string
-  schemaName: string
-  description?: string
-  documentId: string
-  versionInternalDocumentId: string
-  packageRef?: PackageRef
-}>
+export type DdlEntityChange = DdlContractEntity
 
 export type DdlEntityChangeEntryDto = Readonly<{
   ddlEntityData?: DdlEntityChangeDto
@@ -54,39 +42,23 @@ export const EMPTY_DDL_CHANGES: DdlChangesPage = {
   entities: [],
 }
 
-export function toDdlEntityChange(
-  dto: DdlEntityChangeDto,
-  packagesRefs?: PackagesRefs,
-): DdlEntityChange {
-  return {
-    ddlEntityId: dto.ddlEntityId,
-    kind: dto.kind,
-    name: dto.name,
-    schemaName: dto.schemaName,
-    description: truncateDescription(dto.description),
-    documentId: dto.documentId,
-    versionInternalDocumentId: dto.versionInternalDocumentId,
-    packageRef: toPackageRef(dto.packageRef, packagesRefs),
-  }
-}
-
 export function toDdlEntityChangeEntry(
   dto: DdlEntityChangeEntryDto,
   packagesRefs?: PackagesRefs,
 ): DdlEntityChangeEntry {
   return {
     ddlEntityData: dto.ddlEntityData
-      ? toDdlEntityChange(dto.ddlEntityData, packagesRefs)
+      ? toDdlContractEntity(dto.ddlEntityData, packagesRefs)
       : undefined,
     previousDdlEntityData: dto.previousDdlEntityData
-      ? toDdlEntityChange(dto.previousDdlEntityData, packagesRefs)
+      ? toDdlContractEntity(dto.previousDdlEntityData, packagesRefs)
       : undefined,
     changeSummary: replacePropertyInChangesSummary(dto.changeSummary),
     comparisonInternalDocumentId: dto.comparisonInternalDocumentId,
     action: getDdlChangeAction({
       ddlEntityData: dto.ddlEntityData,
       previousDdlEntityData: dto.previousDdlEntityData,
-    } as DdlEntityChangeEntryDto),
+    }),
   }
 }
 
@@ -145,18 +117,5 @@ export function getDdlEntityChangesRequestIds(entry: DdlEntityChangeEntry): Read
   return {
     ddlEntityId: currentDdlEntityId ?? previousDdlEntityId!,
     previousVersionDdlEntityId: currentDdlEntityId ? previousDdlEntityId : undefined,
-  }
-}
-
-export function toDdlContractEntityFromChange(change: DdlEntityChange): DdlContractEntity {
-  return {
-    ddlEntityId: change.ddlEntityId,
-    kind: change.kind,
-    name: change.name,
-    schemaName: change.schemaName,
-    description: change.description,
-    documentId: change.documentId,
-    versionInternalDocumentId: change.versionInternalDocumentId,
-    packageRef: change.packageRef,
   }
 }

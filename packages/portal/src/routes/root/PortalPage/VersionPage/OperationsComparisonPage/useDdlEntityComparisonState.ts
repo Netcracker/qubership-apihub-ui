@@ -10,7 +10,6 @@ import {
   findDdlChangeEntry,
   getDdlChangeEntityId,
   resolveDdlCompareEntityIds,
-  toDdlContractEntityFromChange,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl-changelog'
 import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { filterChangesBySeverity } from '@netcracker/qubership-apihub-ui-shared/utils/change-severities'
@@ -149,7 +148,7 @@ export function useDdlEntityComparisonState(
           return []
         }
         const changeData = change.ddlEntityData ?? change.previousDdlEntityData
-        return changeData ? [toDdlContractEntityFromChange(changeData)] : []
+        return changeData ? [changeData] : []
       }),
     [filteredDdlChanges, ddlEntityId],
   )

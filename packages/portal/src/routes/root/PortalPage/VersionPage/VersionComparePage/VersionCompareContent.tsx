@@ -30,7 +30,7 @@ import {
 } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
 import { CONTRACT_TYPE_DDL } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 import type { DdlEntityChangeEntry } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl-changelog'
-import { getDdlChangeEntityId, toDdlContractEntityFromChange } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl-changelog'
+import { getDdlChangeEntityId } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl-changelog'
 import type { OperationChangeBase } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
 import {
   useSeverityFiltersSearchParam,
@@ -392,7 +392,7 @@ function renderDdlComparisonRow(
         <EntityChangesSummary
           title={
             action !== ADD_ACTION_TYPE && previousDdlEntityData
-              ? <DdlTableTitleWithMeta table={toDdlContractEntityFromChange(previousDdlEntityData)} />
+              ? <DdlTableTitleWithMeta table={previousDdlEntityData} />
               : undefined
           }
           emptyPadding={action === ADD_ACTION_TYPE}
@@ -402,7 +402,7 @@ function renderDdlComparisonRow(
         <EntityChangesSummary
           title={
             action !== REMOVE_ACTION_TYPE && ddlEntityData
-              ? <DdlTableTitleWithMeta table={toDdlContractEntityFromChange(ddlEntityData)} />
+              ? <DdlTableTitleWithMeta table={ddlEntityData} />
               : undefined
           }
           changes={changeSummary}

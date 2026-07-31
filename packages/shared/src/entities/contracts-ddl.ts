@@ -14,6 +14,8 @@ import type { PackageRef, PackagesRefs } from './operations'
 import { toPackageRef } from './operations'
 import { EMPTY_CHANGE_SUMMARY } from './version-changelog'
 
+export { type DdlKind, DDL_KIND }
+
 export const DDL_ENTITY_KIND_TABLE = DDL_KIND.TABLE
 // Backend/OpenAPI wire value; api-processor DDL_KIND.VIEW not shipped yet (v1 is table-only).
 export const DDL_ENTITY_KIND_VIEW = 'view'
@@ -48,7 +50,6 @@ export type DdlContractEntity = Readonly<{
   name: string
   schemaName: string
   description?: string
-  documentId: string
   versionInternalDocumentId: string
   packageRef?: PackageRef
 }>
@@ -103,7 +104,6 @@ export function toDdlContractEntity(
     name: dto.name,
     schemaName: dto.schemaName,
     description: truncateDescription(dto.description),
-    documentId: dto.documentId,
     versionInternalDocumentId: dto.versionInternalDocumentId,
     packageRef: toPackageRef(dto.packageRef, packagesRefs),
   }
@@ -121,12 +121,6 @@ export function getDdlTableDisplayName(
   table: Readonly<Pick<DdlContractEntity, 'name' | 'ddlEntityId'>>,
 ): string {
   return table.name || table.ddlEntityId
-}
-
-export function getDdlTableSchemaName(
-  table: Readonly<Pick<DdlContractEntity, 'schemaName'>>,
-): string | undefined {
-  return table.schemaName
 }
 
 export function getDdlTableDescription(

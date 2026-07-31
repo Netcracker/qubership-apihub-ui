@@ -6,7 +6,7 @@ import { useParams } from 'react-router-dom'
 
 import { DdlTableTitleWithMeta } from '../../../components/Ddl/DdlTableTitleWithMeta'
 import { ExpandableItem } from '../../../components/ExpandableItem'
-import { getDdlChangeEntityId, toDdlContractEntityFromChange } from '../../../entities/contracts-ddl-changelog'
+import { getDdlChangeEntityId } from '../../../entities/contracts-ddl-changelog'
 import type { PackageKind } from '../../../entities/packages'
 import { DASHBOARD_KIND } from '../../../entities/packages'
 import {
@@ -66,7 +66,7 @@ export const DdlEntityChangeCell: FC<DdlEntityChangeCellProps> = memo<DdlEntityC
     <Box>
       <ExpandableItem expanded={isExpanded} showToggler={expandable} onToggle={getToggleExpandedHandler()}>
         <DdlTableTitleWithMeta
-          table={toDdlContractEntityFromChange(table)}
+          table={table}
           link={link}
         />
       </ExpandableItem>

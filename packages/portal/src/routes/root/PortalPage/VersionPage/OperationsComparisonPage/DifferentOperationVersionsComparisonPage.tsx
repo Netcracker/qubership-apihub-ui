@@ -27,7 +27,6 @@ import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/Pa
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { CONTRACT_TYPE_DDL, getRouteApiTypeTitle, toRouteApiType } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 import { getDdlTableDisplayName } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
-import { toDdlContractEntityFromChange } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl-changelog'
 import type { OperationData, OperationPair, OperationPairsGroupedByTag, OptionalOperationPair } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { OperationChangeBase } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
 import type {
@@ -323,12 +322,8 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
   }), [originOperation, changedOperation, isOriginOperationInitialLoading, isChangedOperationInitialLoading])
 
   const comparedDdlContractsPair = useMemo(() => ({
-    previousDdlContract: ddlComparisonState.currentChangeEntry?.previousDdlEntityData
-      ? toDdlContractEntityFromChange(ddlComparisonState.currentChangeEntry.previousDdlEntityData)
-      : undefined,
-    currentDdlContract: ddlComparisonState.currentChangeEntry?.ddlEntityData
-      ? toDdlContractEntityFromChange(ddlComparisonState.currentChangeEntry.ddlEntityData)
-      : undefined,
+    previousDdlContract: ddlComparisonState.currentChangeEntry?.previousDdlEntityData,
+    currentDdlContract: ddlComparisonState.currentChangeEntry?.ddlEntityData,
     isLoading: ddlComparisonState.isContentLoading,
   }), [
     ddlComparisonState.currentChangeEntry,
@@ -365,7 +360,7 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
     const changeData = ddlComparisonState.currentChangeEntry?.ddlEntityData ??
       ddlComparisonState.currentChangeEntry?.previousDdlEntityData
     const tableName = changeData
-      ? getDdlTableDisplayName(toDdlContractEntityFromChange(changeData))
+      ? getDdlTableDisplayName(changeData)
       : ''
     return (
       <Box display="flex" alignItems="center" mr={2}>
