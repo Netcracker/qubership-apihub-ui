@@ -6,10 +6,10 @@ import { McpEntityTitleWithMeta } from '@netcracker/qubership-apihub-ui-shared/c
 import type { FetchNextMetaList } from '@netcracker/qubership-apihub-ui-shared/components/MetaClickableListWithPreview'
 import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
 import {
-  getMcpEntityListKey,
   MCP_COLLECTION_EMPTY_MESSAGES,
-  type McpCollection,
-  type McpEntity,
+  getMcpContractEntityListKey,
+  type McpListCollection,
+  type McpContractEntity,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
@@ -19,7 +19,6 @@ import { usePackageKind } from '../../usePackageKind'
 import { useRefSearchParam } from '../../useRefSearchParam'
 import { useContractBrowseLinkHandlers } from '../useContractBrowseLinkHandlers'
 import { useMcpEndpointSearchParam } from '../useMcpEndpointSearchParam'
-import { useMcpEntitySearchParam } from '../useMcpEntitySearchParam'
 import { getMcpEntityLink } from '../useNavigateToOperation'
 import { ContractsEntityListTable } from './ContractsEntityListTable'
 
@@ -36,14 +35,14 @@ const DASHBOARD_COLUMNS_MODELS: ColumnModel[] = [
 ]
 
 type McpEntityListViewRow = {
-  entity: McpEntity
+  entity: McpContractEntity
 }
 
 export type McpEntityListViewProps = {
-  entities: ReadonlyArray<McpEntity>
+  entities: ReadonlyArray<McpContractEntity>
   packageKey: Key
   versionKey: Key
-  collection: McpCollection
+  collection: McpListCollection
   fetchNextPage?: FetchNextMetaList
   isNextPageFetching?: boolean
   hasNextPage?: boolean
@@ -61,7 +60,6 @@ export const McpEntityListView: FC<McpEntityListViewProps> = memo<McpEntityListV
   isLoading = false,
 }) => {
   const [mcpEndpoint] = useMcpEndpointSearchParam()
-  const [mcpEntity] = useMcpEntitySearchParam()
   const [refKey] = useRefSearchParam()
   const [packageKind] = usePackageKind()
   const isDashboard = packageKind === DASHBOARD_KIND
@@ -80,7 +78,7 @@ export const McpEntityListView: FC<McpEntityListViewProps> = memo<McpEntityListV
               versionKey: versionKey,
               mcpEntityId: entity.mcpEntityId,
               mcpEndpoint: mcpEndpoint ?? entity.mcpEndpoint,
-              mcpEntity: mcpEntity ?? collection,
+              mcpCollection: collection,
               ref: isDashboard ? entity.packageRef?.key ?? refKey : undefined,
             })}
             onLinkClick={onLinkClick}
@@ -106,7 +104,7 @@ export const McpEntityListView: FC<McpEntityListViewProps> = memo<McpEntityListV
     }
 
     return result
-  }, [collection, isDashboard, mcpEndpoint, mcpEntity, onLinkClick, packageKey, refKey, versionKey])
+  }, [collection, isDashboard, mcpEndpoint, onLinkClick, packageKey, refKey, versionKey])
 
   const data: McpEntityListViewRow[] = useMemo(
     () => entities.map(entity => ({ entity })),
@@ -114,7 +112,7 @@ export const McpEntityListView: FC<McpEntityListViewProps> = memo<McpEntityListV
   )
 
   const columnModels = isDashboard ? DASHBOARD_COLUMNS_MODELS : PACKAGE_COLUMNS_MODELS
-  const resolveRowId = useCallback((row: McpEntityListViewRow) => getMcpEntityListKey(row.entity), [])
+  const resolveRowId = useCallback((row: McpEntityListViewRow) => getMcpContractEntityListKey(row.entity), [])
 
   return (
     <ContractsEntityListTable

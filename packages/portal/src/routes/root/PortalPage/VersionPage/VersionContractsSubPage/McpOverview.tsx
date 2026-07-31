@@ -11,7 +11,7 @@ import { DocumentTitleWithVersion } from '@netcracker/qubership-apihub-ui-shared
 import {
   MCP_COLLECTION_INIT,
   MCP_EMPTY_SCOPE_MESSAGE,
-  type McpEntity,
+  type McpContractEntity,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 import type { Key, PackageKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
@@ -138,7 +138,7 @@ type McpServerInfo = Readonly<{
 }>
 
 function isInitEntityForScope(
-  entity: McpEntity | undefined,
+  entity: McpContractEntity | undefined,
   mcpEndpoint: string | undefined,
   refPackageKey: PackageKey | undefined,
 ): boolean {

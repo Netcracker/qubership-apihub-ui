@@ -8,10 +8,10 @@ import {
 } from '@netcracker/qubership-apihub-ui-shared/components/MetaClickableListWithPreview'
 import { NAVIGATION_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import {
-  getMcpEntityListKey,
   MCP_COLLECTION_EMPTY_MESSAGES,
-  type McpCollection,
-  type McpEntity,
+  getMcpContractEntityListKey,
+  type McpListCollection,
+  type McpContractEntity,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
@@ -23,19 +23,18 @@ import { useRefSearchParam } from '../../useRefSearchParam'
 import { useMcpEntityDetails } from '../api/useMcpEntityDetails'
 import { useContractBrowseLinkHandlers } from '../useContractBrowseLinkHandlers'
 import { useMcpEndpointSearchParam } from '../useMcpEndpointSearchParam'
-import { useMcpEntitySearchParam } from '../useMcpEntitySearchParam'
 import { getMcpEntityLink } from '../useNavigateToOperation'
 import { McpEntityPreview } from './McpEntityPreview'
 
 export type McpEntityListWithPreviewProps = {
-  entities: ReadonlyArray<McpEntity>
+  entities: ReadonlyArray<McpContractEntity>
   fetchNextPage?: FetchNextMetaList
   isNextPageFetching?: boolean
   hasNextPage?: boolean
   isListLoading: boolean
   packageKey: Key
   versionKey: Key
-  collection: McpCollection
+  collection: McpListCollection
   initialSize: number
   handleResize: ResizeCallback
   maxPreviewWidth: number
@@ -58,7 +57,6 @@ export const McpEntityListWithPreview: FC<McpEntityListWithPreviewProps> = memo<
     } = props
 
     const [mcpEndpoint] = useMcpEndpointSearchParam()
-    const [mcpEntity] = useMcpEntitySearchParam()
     const [refKey] = useRefSearchParam()
     const [kind] = usePackageKind()
     const isDashboard = kind === DASHBOARD_KIND
@@ -95,7 +93,7 @@ export const McpEntityListWithPreview: FC<McpEntityListWithPreviewProps> = memo<
     })
 
     const onRowClick = useCallback((itemKey: Key) => {
-      const entity = entities.find(candidate => getMcpEntityListKey(candidate) === itemKey)
+      const entity = entities.find(candidate => getMcpContractEntityListKey(candidate) === itemKey)
       if (!entity) {
         return
       }
@@ -105,20 +103,20 @@ export const McpEntityListWithPreview: FC<McpEntityListWithPreviewProps> = memo<
       })
     }, [entities, setSelectedPreviewOperation])
 
-    const prepareLinkFn = useCallback((entity: McpEntity) =>
+    const prepareLinkFn = useCallback((entity: McpContractEntity) =>
       getMcpEntityLink({
         packageKey: packageKey,
         versionKey: versionKey,
         mcpEntityId: entity.mcpEntityId,
         mcpEndpoint: mcpEndpoint ?? entity.mcpEndpoint,
-        mcpEntity: mcpEntity ?? collection,
+        mcpCollection: collection,
         ref: isDashboard ? entity.packageRef?.key ?? refKey : undefined,
-      }), [collection, isDashboard, mcpEndpoint, mcpEntity, packageKey, refKey, versionKey])
+      }), [collection, isDashboard, mcpEndpoint, packageKey, refKey, versionKey])
 
     const onClickLink = useContractBrowseLinkHandlers()
 
     const renderTitle = useCallback(
-      (entity: McpEntity, link?: Parameters<typeof McpEntityTitleWithMeta>[0]['link']) => (
+      (entity: McpContractEntity, link?: Parameters<typeof McpEntityTitleWithMeta>[0]['link']) => (
         <McpEntityTitleWithMeta
           entity={entity}
           link={link}
@@ -140,7 +138,7 @@ export const McpEntityListWithPreview: FC<McpEntityListWithPreviewProps> = memo<
     return (
       <MetaClickableListWithPreview
         items={entities}
-        getItemKey={getMcpEntityListKey}
+        getItemKey={getMcpContractEntityListKey}
         renderTitle={renderTitle}
         prepareLinkFn={prepareLinkFn}
         onRowClick={onRowClick}

@@ -19,7 +19,7 @@ import { type Dispatch, type SetStateAction, useCallback } from 'react'
 
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { CONTRACT_TYPE_DDL, CONTRACT_TYPE_MCP } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
-import { type McpCollection, MCP_COLLECTION_INIT } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
+import type { McpCollection } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 import { YAML_FILE_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/entities/file-format-view'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { DOC_OPERATION_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
@@ -40,8 +40,8 @@ import { getOperationsPath, useNavigation } from '../../../NavigationProvider'
 import { useTextSearchParam } from '../../useTextSearchParam'
 import { useDocumentSearchParam } from './useDocumentSearchParam'
 import { useFileViewMode } from './useFileViewMode'
+import { MCP_COLLECTION_SEARCH_PARAM } from './useMcpCollectionSearchParam'
 import { MCP_ENDPOINT_SEARCH_PARAM } from './useMcpEndpointSearchParam'
-import { MCP_ENTITY_SEARCH_PARAM } from './useMcpEntitySearchParam'
 import { useOperationSearchParam } from './useOperationSearchParam'
 import { useOperationViewMode } from './useOperationViewMode'
 import { useSidebarPlaygroundViewMode } from './useSidebarPlaygroundViewMode'
@@ -117,7 +117,7 @@ export function getMcpEntityLink(params: {
   versionKey: Key
   mcpEntityId: Key
   mcpEndpoint?: string
-  mcpEntity?: McpCollection
+  mcpCollection: McpCollection
   ref?: Key
 }): Partial<Path> {
   const {
@@ -125,7 +125,7 @@ export function getMcpEntityLink(params: {
     versionKey,
     mcpEntityId,
     mcpEndpoint,
-    mcpEntity = MCP_COLLECTION_INIT,
+    mcpCollection,
     ref,
   } = params
 
@@ -136,7 +136,7 @@ export function getMcpEntityLink(params: {
     operationKey: mcpEntityId,
     search: {
       [MCP_ENDPOINT_SEARCH_PARAM]: { value: mcpEndpoint ?? '' },
-      [MCP_ENTITY_SEARCH_PARAM]: { value: mcpEntity },
+      [MCP_COLLECTION_SEARCH_PARAM]: { value: mcpCollection },
       [REF_SEARCH_PARAM]: { value: ref ?? '' },
     },
   })

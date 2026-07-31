@@ -15,8 +15,8 @@ import {
   type McpContractsSummary,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 
+import { useMcpCollectionSearchParam } from './useMcpCollectionSearchParam'
 import { useMcpEndpointSearchParam } from './useMcpEndpointSearchParam'
-import { useMcpEntitySearchParam } from './useMcpEntitySearchParam'
 
 export type McpContractsSelectorsProps = Readonly<{
   endpointOptions: ReadonlyArray<string>
@@ -28,7 +28,7 @@ export const McpContractsSelectors: FC<McpContractsSelectorsProps> = memo<McpCon
   mcpSummary,
 }) => {
   const [mcpEndpoint, setMcpEndpoint] = useMcpEndpointSearchParam()
-  const [mcpEntity, setMcpEntity] = useMcpEntitySearchParam()
+  const [mcpCollection, setMcpCollection] = useMcpCollectionSearchParam()
 
   // Prefer URL value when it is still in options; otherwise first option (URL syncs in layout effect).
   const endpointValue = endpointOptions.find(endpoint => endpoint === mcpEndpoint) ??
@@ -51,7 +51,9 @@ export const McpContractsSelectors: FC<McpContractsSelectorsProps> = memo<McpCon
     return MCP_COLLECTIONS.filter(collection => collection === MCP_COLLECTION_INIT || entityCounts[collection] > 0)
   }, [entityCounts, hasMcpEndpoints])
 
-  const entityValue = visibleCollections.find(collection => collection === (mcpEntity ?? MCP_COLLECTION_INIT)) ??
+  const collectionValue = visibleCollections.find(collection =>
+    collection === (mcpCollection ?? MCP_COLLECTION_INIT),
+  ) ??
     visibleCollections[0] ?? ''
 
   const handleEndpointChange = (
@@ -60,10 +62,10 @@ export const McpContractsSelectors: FC<McpContractsSelectorsProps> = memo<McpCon
     setMcpEndpoint(event.target.value)
   }
 
-  const handleEntityChange = (
+  const handleCollectionChange = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent,
   ): void => {
-    setMcpEntity(event.target.value as McpCollection)
+    setMcpCollection(event.target.value as McpCollection)
   }
 
   return (
@@ -81,8 +83,8 @@ export const McpContractsSelectors: FC<McpContractsSelectorsProps> = memo<McpCon
       </FilledSelectField>
 
       <FilledSelectField
-        value={entityValue}
-        onChange={handleEntityChange}
+        value={collectionValue}
+        onChange={handleCollectionChange}
         data-testid="McpEntitySelector"
       >
         {visibleCollections.map(collection => (

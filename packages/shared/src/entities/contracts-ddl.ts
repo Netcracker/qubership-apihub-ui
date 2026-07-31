@@ -7,8 +7,9 @@ import {
 } from '@netcracker/qubership-apihub-api-processor'
 
 import { hasNoChangesInSummary } from '../utils/change-severities'
-import { truncateDescription } from '../utils/strings'
+import { toOptionalTrimmedString, truncateDescription } from '../utils/strings'
 import type { ChangesSummary } from './change-severities'
+import { getContractListKey } from './contracts'
 import type { PackageRef, PackagesRefs } from './operations'
 import { toPackageRef } from './operations'
 import { EMPTY_CHANGE_SUMMARY } from './version-changelog'
@@ -113,7 +114,7 @@ export function toDdlContractEntities(dto: DdlEntitiesDto): ReadonlyArray<DdlCon
 }
 
 export function getDdlTableListKey(table: Readonly<Pick<DdlContractEntity, 'ddlEntityId' | 'packageRef'>>): string {
-  return `${table.packageRef?.key ?? ''}:${table.ddlEntityId}`
+  return getContractListKey(table.packageRef, table.ddlEntityId)
 }
 
 export function getDdlTableDisplayName(
@@ -131,12 +132,7 @@ export function getDdlTableSchemaName(
 export function getDdlTableDescription(
   table: Readonly<Pick<DdlContractEntity, 'description'>>,
 ): string | undefined {
-  const { description } = table
-  if (typeof description !== 'string') {
-    return undefined
-  }
-  const trimmed = description.trim()
-  return trimmed === '' ? undefined : trimmed
+  return toOptionalTrimmedString(table.description)
 }
 
 export type DdlComparisonSummaryDto = Readonly<{

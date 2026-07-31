@@ -12,11 +12,12 @@ import { Toolbar } from '@netcracker/qubership-apihub-ui-shared/components/Toolb
 import { ToolbarTitle } from '@netcracker/qubership-apihub-ui-shared/components/ToolbarTitle'
 import { CONTRACT_TYPE_MCP } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 import {
-  getMcpEntityDisplayName,
+  getMcpContractEntityDisplayName,
   MCP_COLLECTION_EMPTY_MESSAGES,
-  MCP_COLLECTION_INIT,
   MCP_COLLECTION_LABELS,
-  type McpEntity,
+  MCP_COLLECTION_TOOLS,
+  parseMcpListCollectionParam,
+  type McpContractEntity,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { useNavigation } from '../../../../NavigationProvider'
@@ -28,8 +29,8 @@ import { useRefSearchParam } from '../../useRefSearchParam'
 import { useMcpEntities } from '../api/useMcpEntities'
 import { useMcpEntityDetails } from '../api/useMcpEntityDetails'
 import { useAutoFetchInfinitePages } from '../useAutoFetchInfinitePages'
+import { MCP_COLLECTION_SEARCH_PARAM, useMcpCollectionSearchParam } from '../useMcpCollectionSearchParam'
 import { MCP_ENDPOINT_SEARCH_PARAM, useMcpEndpointSearchParam } from '../useMcpEndpointSearchParam'
-import { MCP_ENTITY_SEARCH_PARAM, useMcpEntitySearchParam } from '../useMcpEntitySearchParam'
 import { getMcpEntityLink } from '../useNavigateToOperation'
 import { McpEntitySelector } from './McpEntitySelector'
 
@@ -41,26 +42,26 @@ export const McpEntityPage: FC = memo(() => {
   }>()
 
   const [mcpEndpoint] = useMcpEndpointSearchParam()
-  const [mcpEntityParam] = useMcpEntitySearchParam()
+  const [mcpCollectionParam] = useMcpCollectionSearchParam()
   const [refKey] = useRefSearchParam()
   const [packageKind] = usePackageKind()
   const isDashboard = packageKind === DASHBOARD_KIND
   const [detailsPackageKey, detailsVersionKey] = usePackageParamsWithRef()
-  const mcpCollection = mcpEntityParam ?? MCP_COLLECTION_INIT
+  const mcpListCollection = parseMcpListCollectionParam(mcpCollectionParam) ?? MCP_COLLECTION_TOOLS
 
   const [packageObject] = usePackage({ showParents: true })
 
   const { data: entityDetails, isInitialLoading } = useMcpEntityDetails({
     packageKey: detailsPackageKey,
     versionKey: detailsVersionKey,
-    collection: mcpCollection,
+    collection: mcpListCollection,
     mcpEntityId: mcpEntityId,
   })
 
   const [siblingEntities, isSiblingsLoading, fetchNextPage, isFetchingNextPage, hasNextPage] = useMcpEntities({
     packageKey: packageId,
     versionKey: versionId,
-    collection: mcpCollection,
+    collection: mcpListCollection,
     mcpEndpoint: mcpEndpoint ?? entityDetails?.mcpEndpoint,
     refPackageKey: refKey,
     limit: 100,
@@ -95,13 +96,13 @@ export const McpEntityPage: FC = memo(() => {
       apiType: CONTRACT_TYPE_MCP,
       search: {
         [MCP_ENDPOINT_SEARCH_PARAM]: { value: mcpEndpoint ?? entityDetails?.mcpEndpoint ?? '' },
-        [MCP_ENTITY_SEARCH_PARAM]: { value: mcpCollection },
+        [MCP_COLLECTION_SEARCH_PARAM]: { value: mcpListCollection },
       },
     })
   }, [
     backwardLocation,
     entityDetails?.mcpEndpoint,
-    mcpCollection,
+    mcpListCollection,
     mcpEndpoint,
     navigate,
     navigateToOperations,
@@ -109,25 +110,25 @@ export const McpEntityPage: FC = memo(() => {
     versionId,
   ])
 
-  const prepareLinkFn = useCallback((entity: McpEntity) =>
+  const prepareLinkFn = useCallback((entity: McpContractEntity) =>
     getMcpEntityLink({
       packageKey: packageId!,
       versionKey: versionId!,
       mcpEntityId: entity.mcpEntityId,
       mcpEndpoint: mcpEndpoint ?? entity.mcpEndpoint,
-      mcpEntity: mcpCollection,
+      mcpCollection: mcpListCollection,
       ref: isDashboard ? entity.packageRef?.key ?? refKey : undefined,
-    }), [isDashboard, mcpCollection, mcpEndpoint, packageId, refKey, versionId])
+    }), [isDashboard, mcpListCollection, mcpEndpoint, packageId, refKey, versionId])
 
   const title = useMemo(() => {
     if (!entityDetails) {
       return ''
     }
-    return getMcpEntityDisplayName(entityDetails)
+    return getMcpContractEntityDisplayName(entityDetails)
   }, [entityDetails])
 
-  const sectionTitle = MCP_COLLECTION_LABELS[mcpCollection]
-  const emptyMessage = MCP_COLLECTION_EMPTY_MESSAGES[mcpCollection]
+  const sectionTitle = MCP_COLLECTION_LABELS[mcpListCollection]
+  const emptyMessage = MCP_COLLECTION_EMPTY_MESSAGES[mcpListCollection]
 
   return (
     <PageLayout

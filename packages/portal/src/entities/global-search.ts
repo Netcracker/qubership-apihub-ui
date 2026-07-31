@@ -26,8 +26,9 @@ import {
   CONTRACT_TYPE_MCP,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 import type { DdlEntityKind } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
+import type { McpKind } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 import type { ApiKind, Operation } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import type { ApiAudience, McpKind } from '@netcracker/qubership-apihub-api-processor'
+import type { ApiAudience } from '@netcracker/qubership-apihub-api-processor'
 
 export type ApiContract = ApiType | ContractType
 

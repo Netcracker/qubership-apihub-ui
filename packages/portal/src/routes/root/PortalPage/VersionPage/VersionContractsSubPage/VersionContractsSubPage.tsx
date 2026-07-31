@@ -12,7 +12,7 @@ import {
   type ContractType,
   toRouteApiType,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
-import { MCP_COLLECTION_INIT } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
+import { MCP_COLLECTION_INIT, type McpListCollection } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { isEmpty, isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
@@ -75,14 +75,15 @@ export const VersionContractsSubPage: FC = memo(() => {
 
   const {
     mcpEndpoint,
-    mcpEntity,
+    mcpCollection: mcpCollectionParam,
     endpointOptions,
     mcpSummary,
     isEmptyMcpScope,
   } = useMcpContractsScope(isMcp)
 
-  const mcpCollection = mcpEntity ?? MCP_COLLECTION_INIT
+  const mcpCollection = mcpCollectionParam ?? MCP_COLLECTION_INIT
   const isMcpOverview = isMcp && mcpCollection === MCP_COLLECTION_INIT
+  const mcpListCollection = mcpCollection as McpListCollection
 
   useEffect(() => {
     if (isMcpOverview) {
@@ -214,7 +215,7 @@ export const VersionContractsSubPage: FC = memo(() => {
           entities={mcpEntities}
           packageKey={packageId!}
           versionKey={versionId!}
-          collection={mcpCollection}
+          collection={mcpListCollection}
           fetchNextPage={fetchNextMcpPage}
           isNextPageFetching={isFetchingNextMcpPage}
           hasNextPage={hasNextMcpPage}
@@ -269,7 +270,7 @@ export const VersionContractsSubPage: FC = memo(() => {
     isOperationsApiType,
     isOperationsLoading,
     mcpEntities,
-    mcpCollection,
+    mcpListCollection,
     mcpOverview,
     operations,
     packageId,
@@ -291,7 +292,7 @@ export const VersionContractsSubPage: FC = memo(() => {
           isNextPageFetching={isFetchingNextMcpPage}
           packageKey={packageId!}
           versionKey={versionId!}
-          collection={mcpCollection}
+          collection={mcpListCollection}
           initialSize={previewSize}
           handleResize={onResize}
           maxPreviewWidth={maxPreviewWidth}
@@ -353,7 +354,7 @@ export const VersionContractsSubPage: FC = memo(() => {
     isOperationsLoading,
     maxPreviewWidth,
     mcpEntities,
-    mcpCollection,
+    mcpListCollection,
     mcpOverview,
     onResize,
     operations,

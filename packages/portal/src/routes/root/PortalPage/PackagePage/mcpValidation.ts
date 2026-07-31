@@ -1,8 +1,10 @@
 import { unwrapJsonRpc } from '@netcracker/qubership-apihub-api-processor'
 
 import {
+  getMcpCollectionForDocumentType,
+  getMcpDocumentTypeForCollection,
   MCP_COLLECTION_LABELS,
-  MCP_DOCUMENT_SPEC_TYPE_TO_COLLECTION,
+  MCP_LIST_COLLECTIONS,
   type McpCollection,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 import { isObject } from '@netcracker/qubership-apihub-ui-shared/utils/objects'
@@ -27,14 +29,6 @@ export type McpValidationInput = Readonly<{
 
 const MCP_INIT_REQUIRED_TOOLTIP =
   'An Overview (init) artifact is required for this MCP endpoint. Publish is disabled until an Overview is added.'
-
-const CAPABILITY_TO_DOCUMENT_TYPE: ReadonlyArray<
-  readonly [capabilityKey: string, collectionLabel: string, documentType: McpDocumentType]
-> = [
-  ['tools', 'Tools', MCP_DOCUMENT_TYPE.MCP_TOOLS],
-  ['prompts', 'Prompts', MCP_DOCUMENT_TYPE.MCP_PROMPTS],
-  ['resources', 'Resources', MCP_DOCUMENT_TYPE.MCP_RESOURCES],
-]
 
 export function hasDuplicateMcpTypesInBatch(
   candidates: ReadonlyArray<McpUploadCandidate>,
@@ -139,7 +133,7 @@ function collectConflictingMcpCollections(
     if (!existingDocumentTypesOnEndpoint.has(documentType)) {
       continue
     }
-    const mcpCollection = MCP_DOCUMENT_SPEC_TYPE_TO_COLLECTION[documentType]
+    const mcpCollection = getMcpCollectionForDocumentType(documentType)
     if (seenMcpCollections.has(mcpCollection)) {
       continue
     }
@@ -220,16 +214,17 @@ function applyCapabilityWarningValidations(
     }
 
     const stagedTypes = documentTypesByEndpoint.get(meta.mcpEndpoint) ?? new Set<McpDocumentType>()
-    for (const [capKey, collectionLabel, documentType] of CAPABILITY_TO_DOCUMENT_TYPE) {
-      if (!capabilities[capKey]) {
+    for (const collection of MCP_LIST_COLLECTIONS) {
+      if (!capabilities[collection]) {
         continue
       }
+      const documentType = getMcpDocumentTypeForCollection(collection)
       if (stagedTypes.has(documentType)) {
         continue
       }
       validations.set(meta.mcpEndpoint, {
         mcpEndpoint: meta.mcpEndpoint,
-        warning: formatCapabilityWarningTooltip(collectionLabel),
+        warning: formatCapabilityWarningTooltip(MCP_COLLECTION_LABELS[collection]),
       })
       break
     }

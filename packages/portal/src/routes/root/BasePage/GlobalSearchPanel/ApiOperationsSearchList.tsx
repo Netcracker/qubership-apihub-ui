@@ -23,10 +23,7 @@ import {
   OperationPathMeta,
   useOperationTitleMeta,
 } from '@netcracker/qubership-apihub-ui-shared/components/Operations/OperationTitleWithMeta'
-import {
-  MCP_KIND_TO_COLLECTION,
-  MCP_KIND_TO_DOCUMENT_SPEC_TYPE,
-} from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
+import { getMcpKindDefinition } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 import { useIntersectionObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useIntersectionObserver'
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 
@@ -163,6 +160,7 @@ const McpContractSearchResultRow: FC<McpContractSearchResultRowProps> = memo<Mcp
     status,
   } = result
   const { versionKey } = getSplittedVersionKey(version)
+  const { mcpCollection, mcpDocumentType } = getMcpKindDefinition(kind)
 
   return (
     <SearchResultRowRoot data-testid="SearchResultRow">
@@ -172,9 +170,9 @@ const McpContractSearchResultRow: FC<McpContractSearchResultRowProps> = memo<Mcp
           versionKey: versionKey,
           mcpEntityId: entityId,
           mcpEndpoint: mcpEndpoint,
-          mcpEntity: MCP_KIND_TO_COLLECTION[kind],
+          mcpCollection: mcpCollection,
         })}
-        icon={MCP_KIND_TO_DOCUMENT_SPEC_TYPE[kind]}
+        icon={mcpDocumentType}
         breadCrumbsStatus={status}
         title={entityName ?? entityId}
         parents={[...parentPackages, name, versionKey]}

@@ -12,8 +12,8 @@ import {
 
 import { usePackageVersionContent } from '@apihub/routes/root/usePackageVersionContent'
 import { usePackageParamsWithRef } from '../usePackageParamsWithRef'
+import { useMcpCollectionSearchParam } from './useMcpCollectionSearchParam'
 import { useMcpEndpointSearchParam } from './useMcpEndpointSearchParam'
-import { useMcpEntitySearchParam } from './useMcpEntitySearchParam'
 
 type McpToolbarSnapshot = Readonly<{
   endpointOptions: ReadonlyArray<string>
@@ -22,7 +22,7 @@ type McpToolbarSnapshot = Readonly<{
 
 type UseMcpContractsScopeResult = Readonly<{
   mcpEndpoint: string | undefined
-  mcpEntity: McpCollection | undefined
+  mcpCollection: McpCollection | undefined
   endpointOptions: ReadonlyArray<string>
   mcpSummary: McpContractsSummary | undefined
   isEmptyMcpScope: boolean
@@ -30,11 +30,11 @@ type UseMcpContractsScopeResult = Readonly<{
 
 /**
  * MCP toolbar scope from contractsSummary.mcp (?ref=-aware):
- * keep last settled options while summary reloads; sync endpoint/entity before paint.
+ * keep last settled options while summary reloads; sync endpoint/collection before paint.
  */
 export function useMcpContractsScope(enabled: boolean): UseMcpContractsScopeResult {
   const [mcpEndpoint, setMcpEndpoint] = useMcpEndpointSearchParam()
-  const [mcpEntity, setMcpEntity] = useMcpEntitySearchParam()
+  const [mcpCollection, setMcpCollection] = useMcpCollectionSearchParam()
   const [summaryPackageKey, summaryVersionKey] = usePackageParamsWithRef()
 
   const { versionContent, isLoading: isSummaryLoading } = usePackageVersionContent({
@@ -80,8 +80,8 @@ export function useMcpContractsScope(enabled: boolean): UseMcpContractsScopeResu
       if (mcpEndpoint) {
         setMcpEndpoint(undefined)
       }
-      if (mcpEntity !== undefined && mcpEntity !== MCP_COLLECTION_INIT) {
-        setMcpEntity(MCP_COLLECTION_INIT)
+      if (mcpCollection !== undefined && mcpCollection !== MCP_COLLECTION_INIT) {
+        setMcpCollection(MCP_COLLECTION_INIT)
       }
       return
     }
@@ -93,35 +93,35 @@ export function useMcpContractsScope(enabled: boolean): UseMcpContractsScopeResu
       setMcpEndpoint(nextEndpoint)
     }
 
-    const nextEntity = resolveMcpEntity(mcpEntity, mcpSummary?.byEndpoint[nextEndpoint])
-    if (nextEntity !== (mcpEntity ?? MCP_COLLECTION_INIT)) {
-      setMcpEntity(nextEntity)
+    const nextCollection = resolveMcpCollection(mcpCollection, mcpSummary?.byEndpoint[nextEndpoint])
+    if (nextCollection !== (mcpCollection ?? MCP_COLLECTION_INIT)) {
+      setMcpCollection(nextCollection)
     }
   }, [
     enabled,
     endpointOptions,
     mcpEndpoint,
-    mcpEntity,
+    mcpCollection,
     mcpSummary,
     setMcpEndpoint,
-    setMcpEntity,
+    setMcpCollection,
     summaryScopeReady,
   ])
 
   return {
     mcpEndpoint: mcpEndpoint,
-    mcpEntity: mcpEntity,
+    mcpCollection: mcpCollection,
     endpointOptions: displayEndpointOptions,
     mcpSummary: displayMcpSummary,
     isEmptyMcpScope: summaryScopeReady && endpointOptions.length === 0,
   }
 }
 
-function resolveMcpEntity(
-  mcpEntity: McpCollection | undefined,
+function resolveMcpCollection(
+  mcpCollection: McpCollection | undefined,
   endpointSummary: McpEndpointSummary | undefined,
 ): McpCollection {
-  const current = mcpEntity ?? MCP_COLLECTION_INIT
+  const current = mcpCollection ?? MCP_COLLECTION_INIT
   if (current === MCP_COLLECTION_INIT) {
     return MCP_COLLECTION_INIT
   }

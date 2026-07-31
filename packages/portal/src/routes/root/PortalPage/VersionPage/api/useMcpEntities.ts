@@ -6,9 +6,9 @@ import type { FetchNextMetaList } from '@netcracker/qubership-apihub-ui-shared/c
 import type {
   McpCollection,
   McpEntitiesDto,
-  McpEntity,
+  McpContractEntity,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
-import { mcpCollectionToApiSegment, toMcpEntities } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
+import { mcpCollectionToApiSegment, toMcpContractEntities } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 import type { Key, PackageKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { HasNextPage, IsFetchingNextPage, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { API_V1, requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
@@ -30,7 +30,7 @@ type UseMcpEntitiesOptions = Readonly<{
 }>
 
 export function useMcpEntities(options: UseMcpEntitiesOptions): [
-  ReadonlyArray<McpEntity>,
+  ReadonlyArray<McpContractEntity>,
   IsLoading,
   FetchNextMetaList,
   IsFetchingNextPage,
@@ -55,7 +55,7 @@ export function useMcpEntities(options: UseMcpEntitiesOptions): [
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
-  } = useInfiniteQuery<ReadonlyArray<McpEntity>, Error>({
+  } = useInfiniteQuery<ReadonlyArray<McpContractEntity>, Error>({
     queryKey: [MCP_ENTITIES_QUERY_KEY, packageKey, fullVersion, collection, mcpEndpoint, textFilter, refPackageKey],
     queryFn: ({ pageParam = 0, signal }) =>
       getMcpEntities({
@@ -100,7 +100,7 @@ async function getMcpEntities(
     offset?: number
   },
   signal?: AbortSignal,
-): Promise<ReadonlyArray<McpEntity>> {
+): Promise<ReadonlyArray<McpContractEntity>> {
   const {
     packageKey,
     versionKey,
@@ -136,5 +136,5 @@ async function getMcpEntities(
     { basePath: API_V1 },
   )
 
-  return toMcpEntities(response)
+  return toMcpContractEntities(response)
 }

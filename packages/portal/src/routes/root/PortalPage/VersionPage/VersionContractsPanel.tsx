@@ -44,7 +44,7 @@ import { useSetSelectedPreviewOperation } from '../SelectedPreviewOperationProvi
 import { useCheckOperationFiltersApplied } from './useCheckOperationFiltersApplied'
 import { useEnsureValidRouteApiType } from './useEnsureValidRouteApiType'
 import { MCP_ENDPOINT_SEARCH_PARAM } from './useMcpEndpointSearchParam'
-import { MCP_ENTITY_SEARCH_PARAM } from './useMcpEntitySearchParam'
+import { MCP_COLLECTION_SEARCH_PARAM } from './useMcpCollectionSearchParam'
 import { useOperationsView } from './useOperationsView'
 import { useSetPathParam } from './useSetPathParam'
 import { useVersionTabApiTypes } from './useVersionTabApiTypes'
@@ -120,7 +120,7 @@ export const VersionContractsPanel: FC<VersionContractsProps> = memo<VersionCont
     if (routeApiType === CONTRACT_TYPE_MCP && nextApiType !== CONTRACT_TYPE_MCP) {
       setSearchParams({
         [MCP_ENDPOINT_SEARCH_PARAM]: '',
-        [MCP_ENTITY_SEARCH_PARAM]: '',
+        [MCP_COLLECTION_SEARCH_PARAM]: '',
       }, { replace: true })
     }
     setPathParam?.(nextApiType)
