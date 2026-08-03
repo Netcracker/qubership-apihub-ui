@@ -371,7 +371,7 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
           lineHeight="28px"
           data-testid="ToolbarTitle"
         >
-          {`${getRouteApiTypeTitle(CONTRACT_TYPE_DDL)}: ${tableName}`}
+          {`Compare ${getRouteApiTypeTitle(CONTRACT_TYPE_DDL)}: ${tableName}`}
         </Typography>
         <DdlTableSelector
           tables={ddlComparisonState.siblingTables}

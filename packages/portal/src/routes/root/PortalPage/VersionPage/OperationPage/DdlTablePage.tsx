@@ -14,7 +14,7 @@ import {
 } from '@netcracker/qubership-apihub-ui-shared/components/SpecViewToggler'
 import { Toolbar } from '@netcracker/qubership-apihub-ui-shared/components/Toolbar'
 import { ToolbarTitle } from '@netcracker/qubership-apihub-ui-shared/components/ToolbarTitle'
-import { CONTRACT_TYPE_DDL } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
+import { CONTRACT_TYPE_DDL, getRouteApiTypeTitle } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 import {
   type DdlContractEntity,
   getDdlTableDisplayName,
@@ -103,7 +103,7 @@ export const DdlTablePage: FC = memo(() => {
     if (!tableDetails) {
       return ''
     }
-    return getDdlTableDisplayName(tableDetails)
+    return `${getRouteApiTypeTitle(CONTRACT_TYPE_DDL)}: ${getDdlTableDisplayName(tableDetails)}`
   }, [tableDetails])
 
   return (

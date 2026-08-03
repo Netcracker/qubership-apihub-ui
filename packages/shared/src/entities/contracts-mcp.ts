@@ -1,4 +1,4 @@
-import { type McpKind, MCP_KIND } from '@netcracker/qubership-apihub-api-processor'
+import { MCP_KIND, type McpKind } from '@netcracker/qubership-apihub-api-processor'
 
 import { MCP_DOCUMENT_TYPE, type McpDocumentType } from '../utils/specs'
 import { toOptionalTrimmedString, truncateDescription } from '../utils/strings'
@@ -6,7 +6,7 @@ import { getContractListKey } from './contracts'
 import type { PackageRef, PackagesRefs } from './operations'
 import { toPackageRef } from './operations'
 
-export { type McpKind, MCP_KIND }
+export { MCP_KIND, type McpKind }
 
 /* Browse/API collection segments (wire values; also used in URL search params). */
 export const MCP_COLLECTION_INIT = 'init'
@@ -50,25 +50,29 @@ export const MCP_EMPTY_SCOPE_MESSAGE = 'No MCP'
 type McpKindDefinition = Readonly<{
   mcpDocumentType: McpDocumentType
   mcpCollection: McpCollection
+  mcpEntityTitle: string
 }>
 
-/* Single source for Kind ↔ document type ↔ collection. Use accessors below. */
 const MCP_KIND_DEFINITIONS = {
   [MCP_KIND.INIT]: {
     mcpDocumentType: MCP_DOCUMENT_TYPE.MCP_INIT,
     mcpCollection: MCP_COLLECTION_INIT,
+    mcpEntityTitle: 'MCP Overview',
   },
   [MCP_KIND.TOOL]: {
     mcpDocumentType: MCP_DOCUMENT_TYPE.MCP_TOOLS,
     mcpCollection: MCP_COLLECTION_TOOLS,
+    mcpEntityTitle: 'MCP Tool',
   },
   [MCP_KIND.PROMPT]: {
     mcpDocumentType: MCP_DOCUMENT_TYPE.MCP_PROMPTS,
     mcpCollection: MCP_COLLECTION_PROMPTS,
+    mcpEntityTitle: 'MCP Prompt',
   },
   [MCP_KIND.RESOURCE]: {
     mcpDocumentType: MCP_DOCUMENT_TYPE.MCP_RESOURCES,
     mcpCollection: MCP_COLLECTION_RESOURCES,
+    mcpEntityTitle: 'MCP Resource',
   },
 } as const satisfies Record<McpKind, McpKindDefinition>
 
@@ -234,6 +238,12 @@ export function getMcpContractEntityDisplayName(
   entity: Readonly<Pick<McpContractEntity, 'title' | 'mcpEntityId'>>,
 ): string {
   return entity.title || entity.mcpEntityId
+}
+
+export function getMcpContractEntityToolbarTitle(
+  entity: Readonly<Pick<McpContractEntity, 'title' | 'mcpEntityId' | 'kind'>>,
+): string {
+  return `${getMcpKindDefinition(entity.kind).mcpEntityTitle}: ${getMcpContractEntityDisplayName(entity)}`
 }
 
 export function getMcpContractEntityDescription(

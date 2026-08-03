@@ -12,12 +12,12 @@ import { Toolbar } from '@netcracker/qubership-apihub-ui-shared/components/Toolb
 import { ToolbarTitle } from '@netcracker/qubership-apihub-ui-shared/components/ToolbarTitle'
 import { CONTRACT_TYPE_MCP } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 import {
-  getMcpContractEntityDisplayName,
+  getMcpContractEntityToolbarTitle,
   MCP_COLLECTION_EMPTY_MESSAGES,
   MCP_COLLECTION_LABELS,
   MCP_COLLECTION_TOOLS,
-  parseMcpListCollectionParam,
   type McpContractEntity,
+  parseMcpListCollectionParam,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { useNavigation } from '../../../../NavigationProvider'
@@ -124,7 +124,7 @@ export const McpEntityPage: FC = memo(() => {
     if (!entityDetails) {
       return ''
     }
-    return getMcpContractEntityDisplayName(entityDetails)
+    return getMcpContractEntityToolbarTitle(entityDetails)
   }, [entityDetails])
 
   const sectionTitle = MCP_COLLECTION_LABELS[mcpListCollection]
