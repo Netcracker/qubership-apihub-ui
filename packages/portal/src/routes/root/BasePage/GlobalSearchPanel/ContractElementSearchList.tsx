@@ -24,16 +24,19 @@ import {
   useOperationTitleMeta,
 } from '@netcracker/qubership-apihub-ui-shared/components/Operations/OperationTitleWithMeta'
 import { getMcpKindDefinition } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { useIntersectionObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useIntersectionObserver'
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 
-import type {
-  ContractElementSearchResult,
-  DdlContractSearchResult,
-  McpContractSearchResult,
-  OperationSearchResult,
+import {
+  type ContractElementSearchResult,
+  DDL_LEVEL,
+  type DdlContractSearchResult,
+  MCP_LEVEL,
+  type McpContractSearchResult,
+  OPERATION_LEVEL,
+  type OperationSearchResult,
 } from '@apihub/entities/global-search'
-import { DDL_LEVEL, MCP_LEVEL, OPERATION_LEVEL } from '@apihub/entities/global-search'
 import { getOperationsPath } from '../../../NavigationProvider'
 import { getDdlTableLink, getMcpEntityLink } from '../../PortalPage/VersionPage/useNavigateToOperation'
 import type { FetchNextSearchResultList } from './global-search'
@@ -46,7 +49,7 @@ import {
   SearchResultRowSection,
 } from './SearchResultRowLayout'
 
-type ApiOperationsSearchListProps = {
+type ContractElementSearchListProps = {
   value: ContractElementSearchResult[]
   searchText: string
   fetchNextPage?: FetchNextSearchResultList
@@ -54,7 +57,7 @@ type ApiOperationsSearchListProps = {
   hasNextPage?: boolean
 }
 
-export const ApiOperationsSearchList: FC<ApiOperationsSearchListProps> = memo<ApiOperationsSearchListProps>((
+export const ContractElementSearchList: FC<ContractElementSearchListProps> = memo<ContractElementSearchListProps>((
   { value, searchText, isNextPageFetching, hasNextPage, fetchNextPage },
 ) => {
   const ref = useRef<HTMLDivElement>(null)
@@ -79,7 +82,7 @@ export const ApiOperationsSearchList: FC<ApiOperationsSearchListProps> = memo<Ap
   )
 })
 
-ApiOperationsSearchList.displayName = 'ApiOperationsSearchList'
+ContractElementSearchList.displayName = 'ContractElementSearchList'
 
 type ContractElementSearchResultRowProps = {
   item: ContractElementSearchResult
@@ -94,7 +97,7 @@ const ContractElementSearchResultRow: FC<ContractElementSearchResultRowProps> = 
 }) => {
   switch (item.level) {
     case OPERATION_LEVEL:
-      return <OperationSearchResultRow operation={item.result} searchText={searchText} />
+      return <OperationSearchResultRow result={item.result} searchText={searchText} />
     case MCP_LEVEL:
       return <McpContractSearchResultRow result={item.result} searchText={searchText} />
     case DDL_LEVEL:
@@ -105,33 +108,28 @@ const ContractElementSearchResultRow: FC<ContractElementSearchResultRowProps> = 
 ContractElementSearchResultRow.displayName = 'ContractElementSearchResultRow'
 
 type OperationSearchResultRowProps = {
-  operation: OperationSearchResult
+  result: OperationSearchResult
   searchText: string
 }
 
 const OperationSearchResultRow: FC<OperationSearchResultRowProps> = memo<OperationSearchResultRowProps>(({
-  operation,
+  result,
   searchText,
 }) => {
-  const { version, operationKey, packageKey, apiType, parentPackages, name } = operation
-  const { versionKey } = getSplittedVersionKey(version)
-  const { subtitle, type } = useOperationTitleMeta(operation)
+  const { version, operationKey, packageKey, apiType, parentPackages, name, title } = result
+  const { versionKey, parents } = getSearchResultParents(parentPackages, name, version)
+  const { subtitle, type } = useOperationTitleMeta(result)
 
   return (
     <SearchResultRowRoot data-testid="SearchResultRow">
       <ResultCommonHeader
-        url={getOperationsPath({
-          packageKey: packageKey,
-          versionKey: versionKey,
-          operationKey: operationKey,
-          apiType: apiType,
-        })}
-        title={operation.title}
-        parents={[...parentPackages, name, versionKey]}
+        url={getOperationsPath({ packageKey, versionKey, operationKey, apiType })}
+        title={title}
+        parents={parents}
         searchText={searchText}
       />
       <Marker mark={searchText}>
-        <OperationPathMeta subtitle={subtitle} type={type}/>
+        <OperationPathMeta subtitle={subtitle} type={type} />
       </Marker>
     </SearchResultRowRoot>
   )
@@ -159,7 +157,7 @@ const McpContractSearchResultRow: FC<McpContractSearchResultRowProps> = memo<Mcp
     mcpEndpoint,
     status,
   } = result
-  const { versionKey } = getSplittedVersionKey(version)
+  const { versionKey, parents } = getSearchResultParents(parentPackages, name, version)
   const { mcpCollection, mcpDocumentType } = getMcpKindDefinition(kind)
 
   return (
@@ -175,7 +173,7 @@ const McpContractSearchResultRow: FC<McpContractSearchResultRowProps> = memo<Mcp
         icon={mcpDocumentType}
         breadCrumbsStatus={status}
         title={entityName ?? entityId}
-        parents={[...parentPackages, name, versionKey]}
+        parents={parents}
         searchText={searchText}
       />
       <SearchResultMetaLine
@@ -210,7 +208,7 @@ const DdlContractSearchResultRow: FC<DdlContractSearchResultRowProps> = memo<Ddl
     schemaName,
     status,
   } = result
-  const { versionKey } = getSplittedVersionKey(version)
+  const { versionKey, parents } = getSearchResultParents(parentPackages, name, version)
 
   return (
     <SearchResultRowRoot data-testid="SearchResultRow">
@@ -222,7 +220,7 @@ const DdlContractSearchResultRow: FC<DdlContractSearchResultRowProps> = memo<Ddl
         })}
         breadCrumbsStatus={status}
         title={entityName ?? entityId}
-        parents={[...parentPackages, name, versionKey]}
+        parents={parents}
         searchText={searchText}
       />
       {schemaName && (
@@ -240,14 +238,25 @@ const DdlContractSearchResultRow: FC<DdlContractSearchResultRowProps> = memo<Ddl
 
 DdlContractSearchResultRow.displayName = 'DdlContractSearchResultRow'
 
+type SearchResultParents = {
+  versionKey: Key
+  parents: string[]
+}
+
+function getSearchResultParents(
+  parentPackages: string[],
+  name: string,
+  version: Key,
+): SearchResultParents {
+  const { versionKey } = getSplittedVersionKey(version)
+  const parents = [...parentPackages, name, versionKey]
+  return { versionKey, parents }
+}
+
 function getContractElementSearchResultKey(item: ContractElementSearchResult): string {
   const { level, result } = item
-  switch (level) {
-    case OPERATION_LEVEL:
-      return `${level}-${result.packageKey}-${result.operationKey}-${result.version}`
-    case MCP_LEVEL:
-      return `${level}-${result.packageKey}-${result.entityId}-${result.version}`
-    case DDL_LEVEL:
-      return `${level}-${result.packageKey}-${result.entityId}-${result.version}`
+  if (level === OPERATION_LEVEL) {
+    return `${level}-${result.packageKey}-${result.operationKey}-${result.version}`
   }
+  return `${level}-${result.packageKey}-${result.entityId}-${result.version}`
 }

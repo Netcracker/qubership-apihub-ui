@@ -33,7 +33,7 @@ import { SearchResultTabLabel } from './SearchResultTabLabel'
 import { useOperationsGlobalSearch } from './useOperationsGlobalSearch'
 import { useDocumentsGlobalSearch } from './useDocumentsGlobalSearch'
 import { usePackagesGlobalSearch } from './usePackagesGlobalSearch'
-import { ApiOperationsSearchList } from './ApiOperationsSearchList'
+import { ContractElementSearchList } from './ContractElementSearchList'
 import { DocumentSearchList } from './DocumentSearchList'
 import { PackageSearchList } from './PackageSearchList'
 import { SearchResultSkeleton } from './SearchResultSkeleton'
@@ -160,7 +160,7 @@ export const SearchResults: FC = memo(() => {
             isInitialOperationsLoading
               ? <SearchResultSkeleton/>
               : isNotEmpty(contractElements)
-                ? <ApiOperationsSearchList
+                ? <ContractElementSearchList
                   value={contractElements}
                   searchText={searchText}
                   fetchNextPage={fetchNextOperationsPage}
