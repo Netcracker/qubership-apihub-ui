@@ -26,6 +26,7 @@ export type UseDdlEntityChangesOptions = Readonly<{
   previousVersion?: VersionKey
   previousVersionPackageId?: Key
   previousVersionDdlEntityId?: Key
+  refPackageKey?: Key
   severity?: DiffType[]
   enabled?: boolean
 }>
@@ -40,6 +41,7 @@ export function useDdlEntityChanges(
     previousVersion,
     previousVersionPackageId,
     previousVersionDdlEntityId,
+    refPackageKey,
     severity,
     enabled = false,
   } = options
@@ -53,6 +55,7 @@ export function useDdlEntityChanges(
       previousVersion,
       previousVersionPackageId,
       previousVersionDdlEntityId,
+      refPackageKey,
       severity,
     ],
     enabled: enabled && !!packageKey && !!versionKey && !!ddlEntityId,
@@ -65,6 +68,7 @@ export function useDdlEntityChanges(
         previousVersion: previousVersion,
         previousVersionPackageId: previousVersionPackageId,
         previousVersionDdlEntityId: previousVersionDdlEntityId,
+        refPackageKey: refPackageKey,
         severity: severity,
       }, signal),
     select: toOperationChanges,
@@ -85,6 +89,7 @@ async function getDdlEntityChanges(
     previousVersion?: VersionKey
     previousVersionPackageId?: Key
     previousVersionDdlEntityId?: Key
+    refPackageKey?: Key
     severity?: DiffType[]
   },
   signal?: AbortSignal,
@@ -96,6 +101,7 @@ async function getDdlEntityChanges(
     previousVersion,
     previousVersionPackageId,
     previousVersionDdlEntityId,
+    refPackageKey,
     severity,
   } = options
 
@@ -109,6 +115,7 @@ async function getDdlEntityChanges(
     previousVersion: { value: previousVersion },
     previousVersionPackageId: { value: previousVersionPackageId },
     previousVersionDdlEntityId: { value: previousVersionDdlEntityId },
+    refPackageId: { value: refPackageKey },
     severity: { value: severityDto },
   })
 

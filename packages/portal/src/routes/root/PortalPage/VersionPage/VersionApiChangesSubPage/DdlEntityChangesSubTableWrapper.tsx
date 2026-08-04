@@ -16,6 +16,7 @@ export const DdlEntityChangesSubTableWrapper: FC<DdlSubTableComponentProps> = me
   columnCount,
 }) => {
   const { ddlEntityId, previousVersionDdlEntityId } = getDdlEntityChangesRequestIds(value.original.change)
+  const entity = value.original.change.ddlEntityData ?? value.original.change.previousDdlEntityData
 
   const { versionContent, isLoading: isVersionLoading } = usePackageVersionContent({ packageKey, versionKey })
 
@@ -26,6 +27,7 @@ export const DdlEntityChangesSubTableWrapper: FC<DdlSubTableComponentProps> = me
     previousVersion: versionContent?.previousVersion,
     previousVersionPackageId: versionContent?.previousVersionPackageId ?? packageKey,
     previousVersionDdlEntityId: previousVersionDdlEntityId,
+    refPackageKey: entity?.packageRef?.key,
     enabled: true,
   })
 
