@@ -70,7 +70,10 @@ export const DocumentSearchList: FC<DocumentSearchListProps> = memo<DocumentSear
         }) => {
           const { versionKey } = getSplittedVersionKey(version)
           return (
-            <SearchResultRowRoot data-testid="SearchResultRow">
+            <SearchResultRowRoot
+              key={`document-search-${packageKey}-${slug}-${version}`}
+              data-testid="SearchResultRow"
+            >
               <ResultCommonHeader
                 url={getDocumentPath({ packageKey: packageKey, versionKey: versionKey, documentKey: slug })}
                 icon={type}
