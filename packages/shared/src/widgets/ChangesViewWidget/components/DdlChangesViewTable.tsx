@@ -216,6 +216,7 @@ export const DdlChangesViewTable: FC<DdlChangesViewTableProps> = memo<DdlChanges
                   packageKey={packageKey}
                   versionKey={versionKey}
                   columnCount={columnCount}
+                  isDashboard={isDashboardType}
                 />
               )}
             </Fragment>
@@ -261,6 +262,7 @@ export type DdlSubTableComponentProps = {
   packageKey: Key | undefined
   versionKey: Key | undefined
   columnCount: number
+  isDashboard: boolean
 }
 
 const StyledTableContainer = styled(TableContainer)(({ theme }) => ({

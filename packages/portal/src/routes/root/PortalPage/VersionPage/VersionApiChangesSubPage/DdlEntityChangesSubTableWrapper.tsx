@@ -14,6 +14,7 @@ export const DdlEntityChangesSubTableWrapper: FC<DdlSubTableComponentProps> = me
   packageKey,
   versionKey,
   columnCount,
+  isDashboard,
 }) => {
   const { ddlEntityId, previousVersionDdlEntityId } = getDdlEntityChangesRequestIds(value.original.change)
   const entity = value.original.change.ddlEntityData ?? value.original.change.previousDdlEntityData
@@ -27,7 +28,7 @@ export const DdlEntityChangesSubTableWrapper: FC<DdlSubTableComponentProps> = me
     previousVersion: versionContent?.previousVersion,
     previousVersionPackageId: versionContent?.previousVersionPackageId ?? packageKey,
     previousVersionDdlEntityId: previousVersionDdlEntityId,
-    refPackageKey: entity?.packageRef?.key,
+    refPackageKey: isDashboard ? entity?.packageRef?.key : undefined,
     enabled: true,
   })
 
