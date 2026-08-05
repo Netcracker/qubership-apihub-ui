@@ -33,6 +33,7 @@ export const McpEntitySelector: FC<McpEntitySelectorProps> = memo<McpEntitySelec
       <Button
         sx={{ minWidth: 4, height: 20, p: 0, boxShadow: 'none', '&:hover': { boxShadow: 'none' } }}
         variant="text"
+        aria-label={`Open ${sectionTitle}`}
         onClick={({ currentTarget }) => setAnchor(currentTarget)}
         endIcon={<KeyboardArrowDownOutlinedIcon />}
       >

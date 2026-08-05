@@ -48,6 +48,7 @@ export const McpEndpointActions: FC<McpEndpointActionsProps> = memo(({
       <Tooltip title="Remove">
         <ActionIconButton
           className="hoverable"
+          aria-label="Remove"
           onClick={handleDelete}
           data-testid="RemoveButton"
         >
@@ -57,6 +58,7 @@ export const McpEndpointActions: FC<McpEndpointActionsProps> = memo(({
       <Tooltip title="Edit">
         <ActionIconButton
           className="hoverable"
+          aria-label="Edit"
           onClick={handleEdit}
           data-testid="EditButton"
         >

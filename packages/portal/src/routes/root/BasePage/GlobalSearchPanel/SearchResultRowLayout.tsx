@@ -1,4 +1,4 @@
-import { Box, Link, styled, Typography } from '@mui/material'
+import { Box, Link, styled, Typography, type TypographyProps } from '@mui/material'
 import { type FC, memo } from 'react'
 import { Marker } from 'react-mark.js'
 import { NavLink, type To } from 'react-router-dom'
@@ -111,7 +111,7 @@ const SearchResultMetaLabel = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.primary,
 }))
 
-const SearchResultPrimaryTitleText = styled(Typography)({
+const SearchResultPrimaryTitleText = styled((props: TypographyProps) => <Typography component="span" {...props} />)({
   overflow: 'hidden',
   whiteSpace: 'nowrap',
   textOverflow: 'ellipsis',

@@ -210,7 +210,10 @@ export const ConfigureFileTableTree: FC<ConfigureFileTableTreeProps> = memo(prop
     ) =>
       row.getCanExpand() && (
         <TreeRowLayout>
-          <ExpandIconButton onClick={row.getToggleExpandedHandler()}>
+          <ExpandIconButton
+            aria-label={row.getIsExpanded() ? 'Collapse' : 'Expand'}
+            onClick={row.getToggleExpandedHandler()}
+          >
             {row.getIsExpanded() ? <ExpandIcon /> : <CollapseIcon />}
           </ExpandIconButton>
           <TreeIconTextRow>
