@@ -186,13 +186,16 @@ function reducer(state: State, action: StateActions): State {
       )
 
       const nextMcpStagedFileMetaByName = new Map(mcpStagedFileMetaByName)
-      const nextFileTypesMap = new Map(fileTypesMap)
-      let nextFilesWithLabels = { ...filesWithLabels }
       for (const fileName of conflictingFileNames) {
         nextMcpStagedFileMetaByName.delete(fileName)
-        nextFileTypesMap.delete(fileName)
-        delete nextFilesWithLabels[fileName]
       }
+      const withoutConflicts = omitFilesFromMaps(
+        conflictingFileNames,
+        fileTypesMap,
+        filesWithLabels,
+      )
+      const nextFileTypesMap = withoutConflicts.fileTypesMap
+      let nextFilesWithLabels = withoutConflicts.filesWithLabels
 
       let nextReplacedFiles = replacedFiles.filter(file => !conflictingFileNames.has(file.name))
       const nextEndpoints = mcpEndpoints.includes(mcpEndpoint)
@@ -227,8 +230,8 @@ function reducer(state: State, action: StateActions): State {
       }
     }
     case DELETE_FILE_ACTION: {
-      fileTypesMap.delete(action.fileName)
-      delete filesWithLabels[action.fileName]
+      const { fileTypesMap: nextFileTypesMap, filesWithLabels: nextFilesWithLabels } =
+        omitFilesFromMaps([action.fileName], fileTypesMap, filesWithLabels)
       const nextMcpStagedFileMetaByName = new Map(mcpStagedFileMetaByName)
       const removedMeta = nextMcpStagedFileMetaByName.get(action.fileName)
       nextMcpStagedFileMetaByName.delete(action.fileName)
@@ -237,17 +240,23 @@ function reducer(state: State, action: StateActions): State {
         : mcpEndpoints
       return {
         ...state,
-        filesWithLabels: { ...filesWithLabels },
+        filesWithLabels: nextFilesWithLabels,
         replacedFiles: replacedFiles.filter(file => file.name !== action.fileName),
-        fileTypesMap: fileTypesMap,
+        fileTypesMap: nextFileTypesMap,
         mcpStagedFileMetaByName: nextMcpStagedFileMetaByName,
         mcpEndpoints: nextEndpoints,
       }
     }
     case EDIT_FILE_ACTION:
-      state.filesWithLabels[action.fileName].labels = action.labels
       return {
         ...state,
+        filesWithLabels: {
+          ...filesWithLabels,
+          [action.fileName]: {
+            ...filesWithLabels[action.fileName],
+            labels: action.labels,
+          },
+        },
       }
     case RESTORE_FILE_ACTION:
       return {
@@ -277,16 +286,13 @@ function reducer(state: State, action: StateActions): State {
       const fileNamesToDelete = [...mcpStagedFileMetaByName.entries()]
         .filter(([, meta]) => meta.mcpEndpoint === action.mcpEndpoint)
         .map(([fileName]) => fileName)
-
-      const nextMcpStagedFileMetaByName = new Map(mcpStagedFileMetaByName)
-      const nextFileTypesMap = new Map(fileTypesMap)
-      const nextFilesWithLabels = { ...filesWithLabels }
       const fileNamesToDeleteSet = new Set(fileNamesToDelete)
 
+      const { fileTypesMap: nextFileTypesMap, filesWithLabels: nextFilesWithLabels } =
+        omitFilesFromMaps(fileNamesToDelete, fileTypesMap, filesWithLabels)
+      const nextMcpStagedFileMetaByName = new Map(mcpStagedFileMetaByName)
       for (const fileName of fileNamesToDelete) {
         nextMcpStagedFileMetaByName.delete(fileName)
-        nextFileTypesMap.delete(fileName)
-        delete nextFilesWithLabels[fileName]
       }
 
       return {
@@ -511,4 +517,21 @@ export function useFileActions(): Actions {
 
 export function useFilesLoading(): IsLoading {
   return useContext(FilesLoadingContext)
+}
+
+function omitFilesFromMaps(
+  fileNames: Iterable<string>,
+  fileTypesMap: Map<string, SpecType>,
+  filesWithLabels: FileLabelsRecord,
+): Pick<State, 'fileTypesMap' | 'filesWithLabels'> {
+  const nextFileTypesMap = new Map(fileTypesMap)
+  const nextFilesWithLabels = { ...filesWithLabels }
+  for (const fileName of fileNames) {
+    nextFileTypesMap.delete(fileName)
+    delete nextFilesWithLabels[fileName]
+  }
+  return {
+    fileTypesMap: nextFileTypesMap,
+    filesWithLabels: nextFilesWithLabels,
+  }
 }
