@@ -85,7 +85,6 @@ export const OPERATION_COMPARE_VIEW_MODES = new Map<ApiType, ReadonlyArray<Opera
   [API_TYPE_ASYNCAPI, ASYNCAPI_OPERATION_COMPARE_VIEW_MODES],
 ])
 
-// TODO(DDL/doc-compare): add DOC_OPERATION_VIEW_MODE when documentation compare is implemented.
 export const DDL_COMPARE_VIEW_MODES: ReadonlyArray<OperationViewMode> = [
   DOC_OPERATION_VIEW_MODE,
   RAW_OPERATION_VIEW_MODE,
@@ -128,7 +127,6 @@ function getAsyncApiDefaultViewMode(): typeof DOC_OPERATION_VIEW_MODE | typeof R
   return DOC_OPERATION_VIEW_MODE
 }
 
-// TODO(DDL/doc-compare): return DOC_OPERATION_VIEW_MODE when doc compare is enabled in DDL_COMPARE_VIEW_MODES.
 function getDdlDefaultCompareViewMode(): typeof DOC_OPERATION_VIEW_MODE | typeof RAW_OPERATION_VIEW_MODE {
   return DOC_OPERATION_VIEW_MODE
 }
