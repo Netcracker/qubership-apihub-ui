@@ -13,7 +13,6 @@ import {
 
 export type UseMcpPublishValidationResult = Readonly<{
   endpointValidations: ReadonlyMap<string, McpEndpointValidation>
-  isValidating: boolean
   hasBlockingIssues: boolean
   publishDisabledHint: string | undefined
 }>
@@ -23,12 +22,16 @@ type McpValidationSources = Readonly<{
   filesWithLabels: FileLabelsRecord
 }>
 
+type AsyncEndpointValidations = Readonly<{
+  contentKey: string
+  validations: ReadonlyMap<string, McpEndpointValidation>
+}>
+
 export function useMcpPublishValidation(
   mcpStagedFileMetaByName: ReadonlyMap<string, McpStagedFileMeta>,
   filesWithLabels: FileLabelsRecord,
 ): UseMcpPublishValidationResult {
-  const [endpointValidations, setEndpointValidations] = useState<ReadonlyMap<string, McpEndpointValidation>>(new Map())
-  const [isValidating, setIsValidating] = useState(false)
+  const [asyncValidations, setAsyncValidations] = useState<AsyncEndpointValidations | undefined>(undefined)
 
   const sourcesRef = useRef<McpValidationSources>({ mcpStagedFileMetaByName, filesWithLabels })
   sourcesRef.current = { mcpStagedFileMetaByName, filesWithLabels }
@@ -39,31 +42,41 @@ export function useMcpPublishValidation(
     [mcpStagedFileMetaByName, filesWithLabels],
   )
 
+  // Missing-init is meta-only; keep it sync so Publish cannot race File.text().
+  const syncEndpointValidations = useMemo(() => {
+    if (mcpStagedFileMetaByName.size === 0) {
+      return new Map<string, McpEndpointValidation>()
+    }
+    return collectMcpEndpointValidations({
+      mcpStagedFileMetaByName: mcpStagedFileMetaByName,
+      initFileContents: new Map(),
+    })
+  }, [mcpStagedFileMetaByName])
+
   useEffect(() => {
     let cancelled = false
     const { mcpStagedFileMetaByName, filesWithLabels } = sourcesRef.current
 
     if (mcpStagedFileMetaByName.size === 0) {
-      setEndpointValidations(new Map())
-      setIsValidating(false)
+      setAsyncValidations({
+        contentKey: validationContentKey,
+        validations: new Map(),
+      })
       return
     }
 
-    setIsValidating(true)
     void readInitFileContents(mcpStagedFileMetaByName, filesWithLabels)
       .then(initFileContents => {
         if (cancelled) {
           return
         }
-        setEndpointValidations(collectMcpEndpointValidations({
-          mcpStagedFileMetaByName,
-          initFileContents,
-        }))
-      })
-      .finally(() => {
-        if (!cancelled) {
-          setIsValidating(false)
-        }
+        setAsyncValidations({
+          contentKey: validationContentKey,
+          validations: collectMcpEndpointValidations({
+            mcpStagedFileMetaByName,
+            initFileContents,
+          }),
+        })
       })
 
     return () => {
@@ -71,12 +84,15 @@ export function useMcpPublishValidation(
     }
   }, [validationContentKey])
 
-  return useMemo(() => ({
+  const endpointValidations = asyncValidations?.contentKey === validationContentKey
+    ? asyncValidations.validations
+    : syncEndpointValidations
+
+  return {
     endpointValidations: endpointValidations,
-    isValidating: isValidating,
     hasBlockingIssues: hasBlockingMcpValidations(endpointValidations),
     publishDisabledHint: getPublishDisabledHint(endpointValidations),
-  }), [endpointValidations, isValidating])
+  }
 }
 
 async function readInitFileContents(
