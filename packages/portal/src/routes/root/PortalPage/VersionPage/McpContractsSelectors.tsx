@@ -85,7 +85,7 @@ export const McpContractsSelectors: FC<McpContractsSelectorsProps> = memo<McpCon
       <FilledSelectField
         value={collectionValue}
         onChange={handleCollectionChange}
-        data-testid="McpEntitySelector"
+        data-testid="McpCollectionSelector"
       >
         {visibleCollections.map(collection => (
           <MenuItem key={collection} value={collection} data-testid={`MenuItem-${collection}`}>
