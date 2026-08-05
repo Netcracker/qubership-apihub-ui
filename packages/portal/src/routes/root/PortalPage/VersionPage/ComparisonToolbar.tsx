@@ -62,6 +62,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { getOverviewPath } from '../../../NavigationProvider'
 import { ComparedPackagesBreadcrumbs } from '../../ComparedPackagesBreadcrumbs'
 import { useIsPackageFromDashboard } from '../useIsPackageFromDashboard'
+import { useRefSearchParam } from '../useRefSearchParam'
 import { useChangesLoadingStatus } from './ChangesLoadingStatusProvider'
 import { useChangesSummaryFromContext } from './ChangesSummaryProvider'
 import { useBreadcrumbsData } from './ComparedPackagesBreadcrumbsProvider'
@@ -119,6 +120,7 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
   const previousVersionPackageId = packageSearchParam ?? mainPackageId
 
   const { isPackageFromDashboard } = useIsPackageFromDashboard(true)
+  const [refPackageId] = useRefSearchParam()
   const [severityFilter] = useSeverityFiltersSearchParam()
   const [selectedTag] = useTagSearchFilter()
   const [previousVersion] = useVersionSearchParam()
@@ -264,6 +266,7 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
           tag={selectedTag}
           previousVersion={previousVersion}
           previousVersionPackageId={previousVersionPackageId}
+          refPackageId={refPackageId}
           onDownloadAllChanges={onDownloadAllChanges}
         />
       }
