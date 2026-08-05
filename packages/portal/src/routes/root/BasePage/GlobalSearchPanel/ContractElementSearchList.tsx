@@ -155,7 +155,6 @@ const McpContractSearchResultRow: FC<McpContractSearchResultRowProps> = memo<Mcp
     entityName,
     kind,
     mcpEndpoint,
-    status,
   } = result
   const { versionKey, parents } = getSearchResultParents(parentPackages, name, version)
   const { mcpCollection, mcpDocumentType } = getMcpKindDefinition(kind)
@@ -171,7 +170,6 @@ const McpContractSearchResultRow: FC<McpContractSearchResultRowProps> = memo<Mcp
           mcpCollection: mcpCollection,
         })}
         icon={mcpDocumentType}
-        breadCrumbsStatus={status}
         title={entityName ?? entityId}
         parents={parents}
         searchText={searchText}
@@ -206,7 +204,6 @@ const DdlContractSearchResultRow: FC<DdlContractSearchResultRowProps> = memo<Ddl
     entityId,
     entityName,
     schemaName,
-    status,
   } = result
   const { versionKey, parents } = getSearchResultParents(parentPackages, name, version)
 
@@ -218,7 +215,6 @@ const DdlContractSearchResultRow: FC<DdlContractSearchResultRowProps> = memo<Ddl
           versionKey: versionKey,
           ddlEntityId: entityId,
         })}
-        breadCrumbsStatus={status}
         title={entityName ?? entityId}
         parents={parents}
         searchText={searchText}

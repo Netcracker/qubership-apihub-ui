@@ -20,7 +20,6 @@ import { Marker } from 'react-mark.js'
 import type { To } from 'react-router-dom'
 
 import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
-import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
 import { SpecLogo } from '@netcracker/qubership-apihub-ui-shared/components/SpecLogo'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
@@ -28,7 +27,11 @@ import type { SpecType } from '@netcracker/qubership-apihub-ui-shared/utils/spec
 
 import { GLOBAL_SEARCH_PANEL, useSidePanel } from '../PanelManager/SidePanelManager'
 import { RESULT_TITLE_WIDTH } from './globalSearchConstants'
-import { SearchResultPrimaryTitle, SearchResultRowSection, SearchResultSecondaryText } from './SearchResultRowLayout'
+import {
+  SearchResultBreadcrumbs,
+  SearchResultPrimaryTitle,
+  SearchResultRowSection,
+} from './SearchResultRowLayout'
 
 type ResultCommonHeaderProps = {
   url: To
@@ -57,11 +60,7 @@ export const ResultCommonHeader: FC<ResultCommonHeaderProps> = memo<ResultCommon
   return (
     <Box width="inherit">
       <SearchResultRowSection>
-        <OverflowTooltip title={breadcrumbs}>
-          <SearchResultSecondaryText noWrap data-testid="PathToSearchResultItem">
-            {breadcrumbs}
-          </SearchResultSecondaryText>
-        </OverflowTooltip>
+        <SearchResultBreadcrumbs breadcrumbs={breadcrumbs} />
         {breadCrumbsStatus && <CustomChip value={breadCrumbsStatus} data-testid="VersionStatusChip" />}
       </SearchResultRowSection>
 

@@ -16,13 +16,11 @@ type SearchResultBreadcrumbsProps = Readonly<{
 export const SearchResultBreadcrumbs: FC<SearchResultBreadcrumbsProps> = memo<SearchResultBreadcrumbsProps>(({
   breadcrumbs,
 }) => (
-  <SearchResultRowSection>
-    <OverflowTooltip title={breadcrumbs}>
-      <SearchResultSecondaryText noWrap data-testid="PathToSearchResultItem">
-        {breadcrumbs}
-      </SearchResultSecondaryText>
-    </OverflowTooltip>
-  </SearchResultRowSection>
+  <OverflowTooltip title={breadcrumbs}>
+    <SearchResultSecondaryText noWrap data-testid="PathToSearchResultItem">
+      {breadcrumbs}
+    </SearchResultSecondaryText>
+  </OverflowTooltip>
 ))
 
 SearchResultBreadcrumbs.displayName = 'SearchResultBreadcrumbs'
