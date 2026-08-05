@@ -162,6 +162,7 @@ export const DdlChangesViewTable: FC<DdlChangesViewTableProps> = memo<DdlChanges
     data: data,
     columns: columns,
     state: { expanded, columnVisibility },
+    getRowId: getDdlChangesViewRowId,
     getRowCanExpand: (row) => row.original.canExpand,
     onExpandedChange: setExpanded,
     onColumnVisibilityChange: setColumnVisibility,
@@ -233,6 +234,12 @@ export const DdlChangesViewTable: FC<DdlChangesViewTableProps> = memo<DdlChanges
 })
 
 DdlChangesViewTable.displayName = 'DdlChangesViewTable'
+
+function getDdlChangesViewRowId(row: DdlChangesViewTableData): Key {
+  return row.change.ddlEntityData?.ddlEntityId ??
+    row.change.previousDdlEntityData?.ddlEntityId ??
+    row.change.comparisonInternalDocumentId
+}
 
 type DdlRowSkeletonProps = {
   refObject?: RefObject<HTMLDivElement>
