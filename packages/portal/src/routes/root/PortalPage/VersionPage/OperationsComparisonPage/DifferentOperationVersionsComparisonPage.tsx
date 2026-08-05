@@ -147,7 +147,7 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
       ? originVersionKey
       : refComparisonSummary?.previousVersion,
     ddlEntityId: operationKey,
-    severityFilters: [...filters],
+    severityFilters: filters,
     changesSummaryReady: changesSummaryReady,
   })
 
