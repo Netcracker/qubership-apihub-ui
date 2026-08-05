@@ -77,6 +77,7 @@ import {
 } from '@netcracker/qubership-apihub-ui-shared/components/WarningApiProcessorVersion'
 import { useDdlChanges } from '../api/useDdlChanges'
 import { useFlatDdlChanges } from '../api/useFlatDdlChanges'
+import { useAutoFetchInfinitePages } from '../useAutoFetchInfinitePages'
 import { ComparedEntitySplitRow, EntityChangesSummary } from './ComparedEntitySplitRow'
 
 export function isRevisionCompare(originVersion: Key, changedVersion: Key): boolean {
@@ -172,15 +173,13 @@ export const VersionCompareContent: FC = memo(() => {
   const fetchNextPage = isDdlComparison ? fetchNextDdlPage : fetchNextOperationPage
   const isNextPageFetching = isDdlComparison ? isNextDdlPageFetching : isNextOperationPageFetching
   const hasNextPage = isDdlComparison ? hasNextDdlPage : hasNextOperationPage
-  const changelogData = isDdlComparison ? ddlChangelog : packageChangelog
 
-  useEffect(() => {
-    // Fetch next page
-    if (!isLoading && !isNextPageFetching && hasNextPage) {
-      fetchNextPage()
-    }
-    // eslint-disable-next-line
-  }, [changelogData])
+  useAutoFetchInfinitePages({
+    isLoading: isLoading,
+    isFetchingNextPage: isNextPageFetching,
+    hasNextPage: hasNextPage,
+    fetchNextPage: fetchNextPage,
+  })
 
   const changesLoadingStatus = useChangesLoadingStatus()
   const setChangesLoadingStatus = useSetChangesLoadingStatus()

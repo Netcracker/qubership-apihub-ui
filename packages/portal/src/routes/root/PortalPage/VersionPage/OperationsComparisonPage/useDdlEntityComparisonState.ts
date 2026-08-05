@@ -24,6 +24,7 @@ import {
 import { useDdlChanges } from '../api/useDdlChanges'
 import { useDdlTableDetails } from '../api/useDdlTableDetails'
 import { useFlatDdlChanges } from '../api/useFlatDdlChanges'
+import { useAutoFetchInfinitePages } from '../useAutoFetchInfinitePages'
 
 export type UseDdlEntityComparisonStateOptions = Readonly<{
   enabled: boolean
@@ -98,15 +99,13 @@ export function useDdlEntityComparisonState(
   const flatDdlChangelog = useFlatDdlChanges(ddlChangelog, isChangelogReady)
   const ddlChanges = flatDdlChangelog.entities
 
-  useEffect(() => {
-    if (!enabled) {
-      return
-    }
-    if (!areDdlChangesLoading && !isNextPageFetching && hasNextPage) {
-      fetchNextPage()
-    }
-    // eslint-disable-next-line
-  }, [ddlChangelog, enabled])
+  useAutoFetchInfinitePages({
+    enabled: enabled,
+    isLoading: areDdlChangesLoading,
+    isFetchingNextPage: isNextPageFetching,
+    hasNextPage: hasNextPage,
+    fetchNextPage: fetchNextPage,
+  })
 
   const filteredDdlChanges = useMemo(
     () => ddlChanges.filter(change => filterChangesBySeverity(severityFilters, change.changeSummary)),
