@@ -127,7 +127,21 @@ function reducer(state: State, action: StateActions): State {
         mcpEndpoints: action.mcpEndpoints,
         isInitialized: true,
       }
-    case ADD_FILES_ACTION:
+    case ADD_FILES_ACTION: {
+      // Non-MCP upload always clears MCP identity by basename; MCP re-assign is ASSIGN_MCP_BATCH only.
+      const nextMcpStagedFileMetaByName = new Map(mcpStagedFileMetaByName)
+      let nextEndpoints = mcpEndpoints
+      for (const file of action.files) {
+        const removedMeta = nextMcpStagedFileMetaByName.get(file.name)
+        if (removedMeta) {
+          nextMcpStagedFileMetaByName.delete(file.name)
+          nextEndpoints = pruneMcpEndpoint(
+            nextEndpoints,
+            nextMcpStagedFileMetaByName,
+            removedMeta.mcpEndpoint,
+          )
+        }
+      }
       return {
         ...state,
         filesWithLabels: {
@@ -144,7 +158,10 @@ function reducer(state: State, action: StateActions): State {
             'name',
           ),
         ],
+        mcpStagedFileMetaByName: nextMcpStagedFileMetaByName,
+        mcpEndpoints: nextEndpoints,
       }
+    }
     case ASSIGN_MCP_BATCH_ACTION: {
       if (action.assignments.length === 0) {
         return state
