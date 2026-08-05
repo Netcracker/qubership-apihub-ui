@@ -397,11 +397,16 @@ export const FilesProvider: FC<FilesProviderProps> = memo<FilesProviderProps>(({
       let knownEndpoints = [...mcpEndpointsRef.current]
       const [firstCandidate] = mcpCandidates
       const uploadDocumentTypes = mcpCandidates.map(candidate => candidate.documentType)
+      const lastSelectedEndpoint = lastSelectedMcpEndpointRef.current
+      const defaultEndpoint =
+        lastSelectedEndpoint !== undefined && knownEndpoints.includes(lastSelectedEndpoint)
+          ? lastSelectedEndpoint
+          : knownEndpoints[0]
       const mcpEndpoint = await promptMcpEndpoint({
         file: firstCandidate.file,
         documentType: firstCandidate.documentType,
         knownEndpoints: knownEndpoints,
-        defaultEndpoint: lastSelectedMcpEndpointRef.current ?? knownEndpoints[0],
+        defaultEndpoint: defaultEndpoint,
         uploadDocumentTypes: uploadDocumentTypes,
         stagedMcpFileMetaByName: mcpStagedFileMetaByNameRef.current,
       })
@@ -446,18 +451,26 @@ export const FilesProvider: FC<FilesProviderProps> = memo<FilesProviderProps>(({
       fileName: fileName,
     }), [])
 
-  const renameMcpEndpoint = useCallback((oldEndpoint: string, newEndpoint: string): void =>
+  const renameMcpEndpoint = useCallback((oldEndpoint: string, newEndpoint: string): void => {
     dispatch({
       type: RENAME_MCP_ENDPOINT_ACTION,
       oldEndpoint: oldEndpoint,
       newEndpoint: newEndpoint,
-    }), [])
+    })
+    if (lastSelectedMcpEndpointRef.current === oldEndpoint) {
+      lastSelectedMcpEndpointRef.current = newEndpoint
+    }
+  }, [])
 
-  const deleteMcpEndpoint = useCallback((mcpEndpoint: string): void =>
+  const deleteMcpEndpoint = useCallback((mcpEndpoint: string): void => {
     dispatch({
       type: DELETE_MCP_ENDPOINT_ACTION,
       mcpEndpoint: mcpEndpoint,
-    }), [])
+    })
+    if (lastSelectedMcpEndpointRef.current === mcpEndpoint) {
+      lastSelectedMcpEndpointRef.current = undefined
+    }
+  }, [])
 
   const actions: Actions = useMemo(
     () => ({
