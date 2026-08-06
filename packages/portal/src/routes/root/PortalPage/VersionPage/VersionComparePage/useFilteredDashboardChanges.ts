@@ -17,7 +17,7 @@
 import { useMemo } from 'react'
 
 import { calculateTotalChangeSummary } from '@netcracker/qubership-apihub-api-processor'
-import type { ChangeSeverity } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
+import type { ChangeSeverity, ChangesSummary } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
 import { CONTRACT_TYPE_DDL } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 import { hasDdlComparisonChanges } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
 import { EMPTY_CHANGE_SUMMARY } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
@@ -41,48 +41,55 @@ export function useFilteredDashboardChanges(
   return useMemo(
     () =>
       dashboardChanges
-        ?.filter((refChanges) => apiTypeFilter(refChanges, apiType))
-        ?.filter((refChanges) => changeSeverityFilter(refChanges, severityFilter)) ??
+        ?.filter(refChanges => matchesDashboardRefChanges(refChanges, severityFilter, apiType)) ??
         [],
     [dashboardChanges, apiType, severityFilter],
   )
 }
 
-function changeSeverityFilter(
-  { operationTypes, contractsChangesSummary }: RefComparisonSummary,
-  filters: ChangeSeverity[],
-): boolean {
-  const ddlChangesSummary = contractsChangesSummary?.ddl?.changesSummary
-  const matchOperationSeverities = operationTypes.some(operationType =>
-    filterChangesBySeverity(filters, operationType.changesSummary),
-  )
-  const matchDdlSeverities = !!ddlChangesSummary &&
-    filterChangesBySeverity(filters, ddlChangesSummary)
-  const matchSeverities = matchOperationSeverities || matchDdlSeverities
-
-  const operationSummaries = operationTypes.map(type => type.changesSummary ?? EMPTY_CHANGE_SUMMARY)
-  if (hasDdlComparisonChanges(contractsChangesSummary?.ddl) && ddlChangesSummary) {
-    operationSummaries.push(ddlChangesSummary)
-  }
-
-  const wholePackageChangesSummary = isNotEmpty(operationSummaries)
-    ? calculateTotalChangeSummary(operationSummaries)
-    : EMPTY_CHANGE_SUMMARY
-
-  return matchSeverities && !hasNoChangesInSummary(wholePackageChangesSummary)
-}
-
-function apiTypeFilter(
-  { operationTypes, contractsChangesSummary }: RefComparisonSummary,
+function matchesDashboardRefChanges(
+  refChanges: RefComparisonSummary,
+  severityFilter: ChangeSeverity[],
   apiType?: CompareSupportedApiType,
 ): boolean {
-  if (!apiType) {
-    return true
+  const scopedSummaries = getScopedChangeSummaries(refChanges, apiType)
+  if (!isNotEmpty(scopedSummaries)) {
+    return false
   }
+
+  const matchSeverities = scopedSummaries.some(summary => filterChangesBySeverity(severityFilter, summary))
+  const totalSummary = scopedSummaries.length === 1
+    ? scopedSummaries[0]
+    : calculateTotalChangeSummary(scopedSummaries)
+
+  return matchSeverities && !hasNoChangesInSummary(totalSummary)
+}
+
+function getScopedChangeSummaries(
+  { operationTypes, contractsChangesSummary }: RefComparisonSummary,
+  apiType?: CompareSupportedApiType,
+): ChangesSummary[] {
+  const ddl = contractsChangesSummary?.ddl
+  const ddlChangesSummary = ddl?.changesSummary
 
   if (apiType === CONTRACT_TYPE_DDL) {
-    return hasDdlComparisonChanges(contractsChangesSummary?.ddl)
+    if (!hasDdlComparisonChanges(ddl) || !ddlChangesSummary) {
+      return []
+    }
+    return [ddlChangesSummary]
   }
 
-  return !!operationTypes.find(operationType => operationType.apiType === apiType)
+  if (apiType) {
+    const operationType = operationTypes.find(type => type.apiType === apiType)
+    if (!operationType) {
+      return []
+    }
+    return [operationType.changesSummary ?? EMPTY_CHANGE_SUMMARY]
+  }
+
+  const summaries = operationTypes.map(type => type.changesSummary ?? EMPTY_CHANGE_SUMMARY)
+  if (hasDdlComparisonChanges(ddl) && ddlChangesSummary) {
+    summaries.push(ddlChangesSummary)
+  }
+  return summaries
 }
