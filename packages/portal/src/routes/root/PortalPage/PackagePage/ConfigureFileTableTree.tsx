@@ -69,6 +69,8 @@ const defaultMinWidth = COLUMNS_MODELS.reduce(
 
 type ConfigureFileTableTreeProps = Readonly<{
   filesMap: FileLabelsRecord
+  // Unfiltered record for MCP validation; filesMap may be search-filtered for display only.
+  filesWithLabels: FileLabelsRecord
   mcpStagedFileMetaByName: ReadonlyMap<string, McpStagedFileMeta>
   mcpEndpoints: ReadonlyArray<string>
   showPlaceholder?: boolean
@@ -82,6 +84,7 @@ type ConfigureFileTableTreeProps = Readonly<{
 export const ConfigureFileTableTree: FC<ConfigureFileTableTreeProps> = memo(props => {
   const {
     filesMap,
+    filesWithLabels,
     mcpStagedFileMetaByName,
     mcpEndpoints,
     showPlaceholder = false,
@@ -97,7 +100,7 @@ export const ConfigureFileTableTree: FC<ConfigureFileTableTreeProps> = memo(prop
     [filesMap, mcpStagedFileMetaByName],
   )
 
-  const { endpointValidations } = useMcpPublishValidation(mcpStagedFileMetaByName, filesMap)
+  const { endpointValidations } = useMcpPublishValidation(mcpStagedFileMetaByName, filesWithLabels)
 
   const flatFileRows: ConfigureFileTableData[] = useMemo(() => (
     Object.entries(flatFilesMap).map(([key, { file, labels }], index) => ({

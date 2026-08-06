@@ -99,6 +99,7 @@ interface State {
   filesWithLabels: FileLabelsRecord
   replacedFiles: File[]
   isInitialized: boolean
+  hasUnsavedChanges: boolean
   mcpStagedFileMetaByName: Map<string, McpStagedFileMeta>
   mcpEndpoints: string[]
 }
@@ -109,6 +110,7 @@ const INITIAL_STATE: State = {
   filesWithLabels: {},
   replacedFiles: [],
   isInitialized: false,
+  hasUnsavedChanges: false,
   mcpStagedFileMetaByName: new Map(),
   mcpEndpoints: [],
 }
@@ -126,6 +128,7 @@ function reducer(state: State, action: StateActions): State {
         mcpStagedFileMetaByName: action.mcpStagedFileMetaByName,
         mcpEndpoints: action.mcpEndpoints,
         isInitialized: true,
+        hasUnsavedChanges: false,
       }
     case ADD_FILES_ACTION: {
       // Non-MCP upload always clears MCP identity by basename; MCP re-assign is ASSIGN_MCP_BATCH only.
@@ -144,6 +147,7 @@ function reducer(state: State, action: StateActions): State {
       }
       return {
         ...state,
+        hasUnsavedChanges: true,
         filesWithLabels: {
           ...filesWithLabels,
           ...createFilesRecord(action.files, filesWithLabels),
@@ -222,6 +226,7 @@ function reducer(state: State, action: StateActions): State {
 
       return {
         ...state,
+        hasUnsavedChanges: true,
         mcpStagedFileMetaByName: nextMcpStagedFileMetaByName,
         mcpEndpoints: nextEndpoints,
         filesWithLabels: nextFilesWithLabels,
@@ -240,6 +245,7 @@ function reducer(state: State, action: StateActions): State {
         : mcpEndpoints
       return {
         ...state,
+        hasUnsavedChanges: true,
         filesWithLabels: nextFilesWithLabels,
         replacedFiles: replacedFiles.filter(file => file.name !== action.fileName),
         fileTypesMap: nextFileTypesMap,
@@ -250,6 +256,7 @@ function reducer(state: State, action: StateActions): State {
     case EDIT_FILE_ACTION:
       return {
         ...state,
+        hasUnsavedChanges: true,
         filesWithLabels: {
           ...filesWithLabels,
           [action.fileName]: {
@@ -259,6 +266,7 @@ function reducer(state: State, action: StateActions): State {
         },
       }
     case RESTORE_FILE_ACTION:
+      // Do not clear hasUnsavedChanges: restore undoes a replace but other edits may remain.
       return {
         ...state,
         replacedFiles: replacedFiles.filter(file => file.name !== action.fileName),
@@ -276,6 +284,7 @@ function reducer(state: State, action: StateActions): State {
       }
       return {
         ...state,
+        hasUnsavedChanges: true,
         mcpEndpoints: mcpEndpoints.map(endpoint =>
           (endpoint === oldEndpoint ? newEndpoint : endpoint),
         ),
@@ -297,6 +306,7 @@ function reducer(state: State, action: StateActions): State {
 
       return {
         ...state,
+        hasUnsavedChanges: true,
         filesWithLabels: nextFilesWithLabels,
         replacedFiles: replacedFiles.filter(file => !fileNamesToDeleteSet.has(file.name)),
         fileTypesMap: nextFileTypesMap,
