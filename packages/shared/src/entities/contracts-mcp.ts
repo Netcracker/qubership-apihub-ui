@@ -3,8 +3,7 @@ import { MCP_KIND, type McpKind } from '@netcracker/qubership-apihub-api-process
 import { MCP_DOCUMENT_TYPE, type McpDocumentType } from '../utils/specs'
 import { toOptionalTrimmedString, truncateDescription } from '../utils/strings'
 import { getContractListKey } from './contracts'
-import type { PackageRef, PackagesRefs } from './operations'
-import { toPackageRef } from './operations'
+import { type PackageRef, type PackagesRefs, toPackageRef } from './operations'
 
 export { MCP_KIND, type McpKind }
 

@@ -44,13 +44,13 @@ const McpRenameEndpointPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen
   const [isFocused, setIsFocused] = useState(false)
 
   const { control, handleSubmit, reset, formState: { isValid } } = useForm<McpRenameEndpointFormData>({
-    defaultValues: { mcpEndpoint: mcpEndpoint },
+    defaultValues: { mcpEndpoint },
     mode: 'onChange',
   })
 
   useEffect(() => {
     if (open) {
-      reset({ mcpEndpoint: mcpEndpoint })
+      reset({ mcpEndpoint })
       setIsFocused(false)
     }
   }, [open, mcpEndpoint, reset])

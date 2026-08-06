@@ -78,7 +78,7 @@ function buildSearchRequestBody(
   const apiContract = criteria.apiContract ?? criteria.apiType
   const apiType = apiContract && isApiType(apiContract) ? apiContract : criteria.apiType
 
-  return getOptionalBody({ ...common, apiType: apiType }) ?? {}
+  return getOptionalBody({ ...common, apiType }) ?? {}
 }
 
 function pickSearchCommonCriteria(criteria: SearchCriteria): SearchCommonCriteria {

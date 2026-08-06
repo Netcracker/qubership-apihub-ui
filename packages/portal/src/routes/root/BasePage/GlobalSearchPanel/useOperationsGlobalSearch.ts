@@ -23,20 +23,17 @@ import {
 } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 import type { HasNextPage, IsFetchingNextPage, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 
-import type {
-  ApiContract,
-  ContractElementSearchResult,
-  Level,
-  SearchCriteria,
-  SearchResults,
-} from '@apihub/entities/global-search'
 import {
+  type ApiContract,
+  type ContractElementSearchResult,
   DDL_LEVEL,
+  type Level,
   MCP_LEVEL,
   OPERATION_LEVEL,
+  type SearchCriteria,
+  type SearchResults,
 } from '@apihub/entities/global-search'
-import type { FetchNextSearchResultList } from './global-search'
-import { getSearchResult } from './global-search'
+import { getSearchResult, type FetchNextSearchResultList } from './global-search'
 import { SEARCH_RESULTS_PAGE_SIZE } from './globalSearchConstants'
 
 const GLOBAL_OPERATIONS_SEARCH_RESULT_QUERY_KEY = 'global-operations-search-result-query-key'
@@ -81,7 +78,7 @@ export function useOperationsGlobalSearch(options: {
 
   return [
     {
-      contractElements: contractElements,
+      contractElements,
     },
     isInitialLoading,
     fetchNextPage,

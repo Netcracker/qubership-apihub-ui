@@ -11,7 +11,7 @@ import {
   type McpEndpointValidation,
 } from '@apihub/routes/root/PortalPage/PackagePage/mcpValidation'
 
-export type UseMcpPublishValidationResult = Readonly<{
+type UseMcpPublishValidationResult = Readonly<{
   endpointValidations: ReadonlyMap<string, McpEndpointValidation>
   hasBlockingIssues: boolean
   publishDisabledHint: string | undefined

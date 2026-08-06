@@ -59,8 +59,8 @@ export function useMcpContractsScope(enabled: boolean): UseMcpContractsScopeResu
   })
   if (summaryScopeReady) {
     previousToolbarRef.current = {
-      endpointOptions: endpointOptions,
-      mcpSummary: mcpSummary,
+      endpointOptions,
+      mcpSummary,
     }
   }
 

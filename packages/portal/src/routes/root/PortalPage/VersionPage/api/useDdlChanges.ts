@@ -1,15 +1,14 @@
-import type { FetchNextPageOptions, InfiniteQueryObserverResult } from '@tanstack/react-query'
-import { useInfiniteQuery } from '@tanstack/react-query'
+import { type FetchNextPageOptions, type InfiniteQueryObserverResult, useInfiniteQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { generatePath } from 'react-router-dom'
 
 import type { DiffType } from '@netcracker/qubership-apihub-api-diff'
 
-import type {
-  DdlChangesPage,
-  DdlChangesPageDto,
+import {
+  type DdlChangesPage,
+  type DdlChangesPageDto,
+  toDdlChangesPage,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl-changelog'
-import { toDdlChangesPage } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl-changelog'
 import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { HasNextPage, IsFetchingNextPage, IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
@@ -24,7 +23,7 @@ export type FetchNextDdlChangesPage = (
   options?: FetchNextPageOptions,
 ) => Promise<InfiniteQueryObserverResult<DdlChangesPage, Error>>
 
-export type UseDdlChangesOptions = Readonly<{
+type UseDdlChangesOptions = Readonly<{
   packageKey?: Key
   versionKey?: VersionKey
   previousVersionKey?: VersionKey

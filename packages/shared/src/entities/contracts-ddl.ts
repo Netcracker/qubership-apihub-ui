@@ -10,8 +10,7 @@ import { hasNoChangesInSummary } from '../utils/change-severities'
 import { toOptionalTrimmedString, truncateDescription } from '../utils/strings'
 import type { ChangesSummary } from './change-severities'
 import { getContractListKey } from './contracts'
-import type { PackageRef, PackagesRefs } from './operations'
-import { toPackageRef } from './operations'
+import { type PackageRef, type PackagesRefs, toPackageRef } from './operations'
 import { EMPTY_CHANGE_SUMMARY } from './version-changelog'
 
 export { type DdlKind, DDL_KIND }

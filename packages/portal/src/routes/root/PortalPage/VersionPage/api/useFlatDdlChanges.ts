@@ -1,12 +1,12 @@
 import { useMemo } from 'react'
 
-import type {
-  DdlChangesPage,
-  DdlEntityChangeEntry,
+import {
+  type DdlChangesPage,
+  type DdlEntityChangeEntry,
+  EMPTY_DDL_CHANGES,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl-changelog'
-import { EMPTY_DDL_CHANGES } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl-changelog'
 
-export type FlatDdlChanges = Readonly<{
+type FlatDdlChanges = Readonly<{
   entities: ReadonlyArray<DdlEntityChangeEntry>
   previousVersion?: DdlChangesPage['previousVersion']
   previousVersionPackageKey?: DdlChangesPage['previousVersionPackageKey']

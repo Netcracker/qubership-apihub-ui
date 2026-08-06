@@ -5,11 +5,11 @@ import { generatePath } from 'react-router-dom'
 import type { DiffType } from '@netcracker/qubership-apihub-api-diff'
 
 import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type {
-  OperationChanges,
-  OperationChangesDto,
+import {
+  type OperationChanges,
+  type OperationChangesDto,
+  toOperationChanges,
 } from '@netcracker/qubership-apihub-ui-shared/entities/operation-changelog'
-import { toOperationChanges } from '@netcracker/qubership-apihub-ui-shared/entities/operation-changelog'
 import type { IsLoading, IsSuccess } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
 import { API_V1, requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
@@ -19,7 +19,7 @@ import { replaceStringDiffTypeForDTO } from '@netcracker/qubership-apihub-ui-sha
 
 export const DDL_ENTITY_CHANGES_QUERY_KEY = 'ddl-entity-changes-query-key'
 
-export type UseDdlEntityChangesOptions = Readonly<{
+type UseDdlEntityChangesOptions = Readonly<{
   packageKey?: Key
   versionKey?: VersionKey
   ddlEntityId?: Key

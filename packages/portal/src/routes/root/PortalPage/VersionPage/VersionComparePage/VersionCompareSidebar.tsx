@@ -34,20 +34,18 @@ export const VersionCompareSidebar: FC<VersionCompareSidebarProps> = memo<Versio
 
   return (
     <SidebarPanel
-      header={showTypeSelector ? <ApiTypeListSelector allowedApiTypes={apiTypes} /> : undefined}
+      header={showTypeSelector && <ApiTypeListSelector allowedApiTypes={apiTypes} />}
       headerFullWidth
       withDivider={showTypeSelector}
-      body={isApiType(apiType)
-        ? (
-          <SidebarWithTags
-            tags={filteredTags}
-            areTagsLoading={isLoading}
-            onSearch={setSearchValue}
-            selectedTag={selectedTag}
-            onSelectTag={setSelectedTag}
-          />
-        )
-        : null}
+      body={isApiType(apiType) && (
+        <SidebarWithTags
+          tags={filteredTags}
+          areTagsLoading={isLoading}
+          onSearch={setSearchValue}
+          selectedTag={selectedTag}
+          onSelectTag={setSelectedTag}
+        />
+      )}
     />
   )
 })

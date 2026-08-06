@@ -118,10 +118,10 @@ export async function buildInitFileState(
     : {}
 
   return {
-    fileTypesMap: fileTypesMap,
-    filesWithLabels: filesWithLabels,
-    mcpStagedFileMetaByName: mcpStagedFileMetaByName,
-    mcpEndpoints: mcpEndpoints,
+    fileTypesMap,
+    filesWithLabels,
+    mcpStagedFileMetaByName,
+    mcpEndpoints,
   }
 }
 

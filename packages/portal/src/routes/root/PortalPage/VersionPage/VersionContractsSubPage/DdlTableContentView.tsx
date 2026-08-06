@@ -56,8 +56,11 @@ import { DDL_DOCUMENT_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/
 
 import { useNormalizedDdlContract } from '@apihub/api-hooks/InternalDocuments/useNormalizedDdlContract'
 import { DIFF_META_KEY, DIFFS_AGGREGATED_META_KEY } from '@netcracker/qubership-apihub-api-diff'
-import { DdlTableDiffsViewer, DdlTableViewer } from '@netcracker/qubership-apihub-api-doc-viewer'
-import type { NavigationLinkBuilder } from '@netcracker/qubership-apihub-api-doc-viewer'
+import {
+  DdlTableDiffsViewer,
+  DdlTableViewer,
+  type NavigationLinkBuilder,
+} from '@netcracker/qubership-apihub-api-doc-viewer'
 import { calculateDdlEntityId } from '@netcracker/qubership-apihub-api-processor'
 import { usePackageKind } from '../../usePackageKind'
 import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'

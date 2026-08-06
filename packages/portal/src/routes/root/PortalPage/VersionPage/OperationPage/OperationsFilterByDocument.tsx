@@ -48,9 +48,9 @@ export const OperationsFilterByDocument: FC<OperationsFilterByDocumentProps> =
       onDocumentSelect,
     } = props
     const { documents, isLoading: isDocumentsLoading } = useDocuments({
-      packageKey: packageKey,
-      versionKey: versionKey,
-      apiType: apiType,
+      packageKey,
+      versionKey,
+      apiType,
     })
 
     const [selectedDocument, setSelectedDocument] = useState<Document>(EMPTY_DOC)

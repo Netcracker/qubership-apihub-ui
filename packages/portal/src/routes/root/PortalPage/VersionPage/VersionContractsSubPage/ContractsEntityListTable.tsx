@@ -179,7 +179,7 @@ const StyledTableContainer = styled(TableContainer)({
 const StyledTable = styled(Table, {
   shouldForwardProp: (prop) => prop !== 'minWidth',
 })<{ minWidth: number }>(({ minWidth }) => ({
-  minWidth: minWidth,
+  minWidth,
 }))
 
 const ResizableHeadCell = styled(TableCell)(({ theme }) => ({

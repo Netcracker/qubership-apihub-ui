@@ -1,19 +1,3 @@
-/**
- * Copyright 2024-2025 NetCracker Technology Corporation
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { type FC, memo, useRef } from 'react'
 import { Marker } from 'react-mark.js'
 
@@ -42,9 +26,9 @@ import {
   type OperationSearchResult,
 } from '@apihub/entities/global-search'
 import { getOperationsPath } from '../../../NavigationProvider'
-import { getDdlTableLink, getMcpEntityLink } from '../../PortalPage/VersionPage/useNavigateToOperation'
 import { MCP_COLLECTION_SEARCH_PARAM } from '../../PortalPage/VersionPage/useMcpCollectionSearchParam'
 import { MCP_ENDPOINT_SEARCH_PARAM } from '../../PortalPage/VersionPage/useMcpEndpointSearchParam'
+import { getDdlTableLink, getMcpEntityLink } from '../../PortalPage/VersionPage/useNavigateToOperation'
 import type { FetchNextSearchResultList } from './global-search'
 import { ResultCommonHeader } from './ResultCommonHeader'
 import {

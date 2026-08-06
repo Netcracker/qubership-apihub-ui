@@ -52,7 +52,7 @@ export const ASYNCAPI_OPERATION_VIEW_MODES: ReadonlyArray<OperationViewMode> = [
   RAW_OPERATION_VIEW_MODE,
 ]
 
-export const DDL_OPERATION_VIEW_MODES: ReadonlyArray<OperationViewMode> = [
+const DDL_OPERATION_VIEW_MODES: ReadonlyArray<OperationViewMode> = [
   DOC_OPERATION_VIEW_MODE,
   SIMPLE_OPERATION_VIEW_MODE,
   RAW_OPERATION_VIEW_MODE,
@@ -85,7 +85,7 @@ export const OPERATION_COMPARE_VIEW_MODES = new Map<ApiType, ReadonlyArray<Opera
   [API_TYPE_ASYNCAPI, ASYNCAPI_OPERATION_COMPARE_VIEW_MODES],
 ])
 
-export const DDL_COMPARE_VIEW_MODES: ReadonlyArray<OperationViewMode> = [
+const DDL_COMPARE_VIEW_MODES: ReadonlyArray<OperationViewMode> = [
   DOC_OPERATION_VIEW_MODE,
   RAW_OPERATION_VIEW_MODE,
 ]
