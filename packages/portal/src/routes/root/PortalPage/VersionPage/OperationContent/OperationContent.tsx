@@ -193,6 +193,23 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
       },
       [changedOperation, originOperation],
     )
+    /**
+     * The origin side's keys, kept separate from the changed side's above.
+     *
+     * The merged document is keyed by the changed side, so those are the right first guess - but
+     * an AsyncAPI generator embeds a hash of description text in its ids, so the same entity can
+     * be named differently in the two versions. Handing the viewer both lets it find the entity
+     * either way.
+     */
+    const previousOperationKeys = useMemo(
+      () => {
+        if (!isAsyncApiOperation(originOperation)) {
+          return undefined
+        }
+        return { operationKey: originOperation.asyncOperationId, messageKey: originOperation.messageId }
+      },
+      [originOperation],
+    )
     const [documentWithOriginOriginOperation] = usePublishedDocumentRaw({
       packageKey: originPackageKey,
       versionKey: originVersionKey,
@@ -370,6 +387,7 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
               operationName={operationName}
               // AsyncAPI specific
               messageId={messageId}
+              previousOperationKeys={previousOperationKeys}
             />
           )}
           {isRawViewMode && (
@@ -411,6 +429,7 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
                 operationName={operationName}
                 // AsyncAPI specific
                 messageId={messageId}
+                previousOperationKeys={previousOperationKeys}
               />
             )}
             {isRawViewMode && (

@@ -71,6 +71,25 @@ export type AsyncApiOperationDto = OperationMetadataDto & Readonly<{
   protocol: string
   asyncOperationId: Key
   messageId: Key
+  /**
+   * The channel's `address` - what a consumer binds to, as opposed to `channel` above, which is a
+   * display title. Optional because `ChannelObject.address` is `string | null`.
+   */
+  address?: string
+  /**
+   * The declaration path of the message's payload schema, e.g. `components/schemas/OrderEvent`.
+   * Used to pair operations across versions when their generated ids differ.
+   *
+   * **Compare for equality only - the format is not stable.** Nothing may parse it; in particular
+   * do not derive a display name from its last segment. If a schema name is ever wanted for
+   * display, add a separate field for it.
+   *
+   * Optional because an inline payload has no stable declaration path to anchor on.
+   *
+   * Declared by api-processor as `AsyncOperationMeta` - two independent declarations of one wire
+   * shape, so keep the two in step by hand.
+   */
+  payloadIdentity?: string
 }>
 
 export type DeprecatedItem = DeprecateItem
@@ -151,6 +170,10 @@ export interface AsyncApiOperation extends Operation {
   readonly protocol: string
   readonly asyncOperationId: Key
   readonly messageId: Key
+  /** See `AsyncApiOperationDto.address`. */
+  readonly address?: string
+  /** See `AsyncApiOperationDto.payloadIdentity` - compare for equality only, format not stable. */
+  readonly payloadIdentity?: string
 }
 
 export interface OperationData extends Operation {

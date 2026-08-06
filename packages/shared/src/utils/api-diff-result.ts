@@ -16,7 +16,11 @@
 
 import type { CompareResult, Diff } from '@netcracker/qubership-apihub-api-diff'
 import { apiDiff, COMPARE_MODE_OPERATION } from '@netcracker/qubership-apihub-api-diff'
-import { removeComponents } from '@netcracker/qubership-apihub-api-processor'
+import {
+  BEFORE_KEY_PROPERTY,
+  FIRST_REFERENCE_KEY_PROPERTY,
+  removeComponents,
+} from '@netcracker/qubership-apihub-api-processor'
 import { isObject } from 'lodash-es'
 import type { Dispatch, SetStateAction } from 'react'
 import type { OperationChange } from '../entities/operation-changelog'
@@ -64,6 +68,12 @@ export const getApiDiffResult = (options: DiffResultOptions): CompareResult | un
       mode: COMPARE_MODE_OPERATION,
       beforeSource: beforeData,
       afterSource: afterData,
+      // The AsyncAPI viewer reads both of these off the merged document: the first to identify a
+      // message by its reference name, the second to find a node whose generated id changed
+      // between versions. Passing them here is what makes those lookups possible - the viewer is
+      // already handed the matching symbols. Both are inert for REST and GraphQL.
+      firstReferenceKeyProperty: FIRST_REFERENCE_KEY_PROPERTY,
+      beforeKeyProperty: BEFORE_KEY_PROPERTY,
     },
   )
 

@@ -21,8 +21,9 @@ import type { OpenApiData } from '@apihub/entities/operation-structure'
 import { OPEN_API_SECTION_PARAMETERS, OPEN_API_SECTION_REQUESTS, OPEN_API_SECTION_RESPONSES } from '@apihub/entities/operation-structure'
 import { Box } from '@mui/material'
 import { DIFFS_AGGREGATED_META_KEY, DIFF_META_KEY } from '@netcracker/qubership-apihub-api-diff'
+import type { OperationKeys } from '@netcracker/qubership-apihub-api-doc-viewer'
 import { AsyncApiOperationViewer, AsyncApiOperationDiffsViewer, GraphQLOperationDiffViewer, SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from '@netcracker/qubership-apihub-api-doc-viewer'
-import { FIRST_REFERENCE_KEY_PROPERTY, GRAPHQL_API_TYPE } from '@netcracker/qubership-apihub-api-processor'
+import { BEFORE_KEY_PROPERTY, FIRST_REFERENCE_KEY_PROPERTY, GRAPHQL_API_TYPE } from '@netcracker/qubership-apihub-api-processor'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import type { VisitorNavigationDetails } from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView/oasToClassDiagramService'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
@@ -69,6 +70,8 @@ export type OperationViewProps = PropsWithChildren<{
   operationName?: string
   // AsyncAPI specific
   messageId?: string
+  // AsyncAPI specific: the origin side keys, when a generated id changed between versions
+  previousOperationKeys?: OperationKeys
 }>
 
 export const OperationView: FC<OperationViewProps> = memo<OperationViewProps>(props => {
@@ -88,6 +91,7 @@ export const OperationView: FC<OperationViewProps> = memo<OperationViewProps>(pr
     operationName,
     // AsyncAPI specific
     messageId,
+    previousOperationKeys,
   } = props
 
   const filters = useMemo(() => props.filters ?? [], [props.filters])
@@ -169,11 +173,12 @@ export const OperationView: FC<OperationViewProps> = memo<OperationViewProps>(pr
       mergedDocument,
       schemaViewMode,
       filters,
-      operationType,
-      operationName,
-      messageId,
+      { operationType, operationName, messageId, previousOperationKeys },
     )
-  ), [apiType, comparisonMode, filters, mergedDocument, messageId, operationName, operationType, schemaViewMode])
+  ), [
+    apiType, comparisonMode, filters, mergedDocument,
+    messageId, operationName, operationType, previousOperationKeys, schemaViewMode,
+  ])
 
   return (
     <Suspense fallback={<LoadingIndicator />}>
@@ -197,22 +202,36 @@ function isNavigateToModel(navigationDetails: VisitorNavigationDetails): boolean
   return joinedJsonPath(navigationDetails.declarationPath) !== joinedJsonPath(navigationDetails.scopeDeclarationPath)
 }
 
+/**
+ * Which entity the viewer should show. Collected into one object rather than trailing positional
+ * parameters - there were already five, and locating an AsyncAPI operation in a merged document
+ * now needs both versions' keys.
+ */
+type ApiTypeViewerKeys = {
+  operationType?: string // GraphQL (query, mutation, subscription) / AsyncAPI (send, receive)
+  operationName?: string // GraphQL (operation name) / AsyncAPI (asyncOperationId)
+  messageId?: string // AsyncAPI message id
+  /**
+   * AsyncAPI: the origin side's keys. The merged document is keyed by the changed side, so these
+   * are what finds the entity when a generated id differs between the two versions.
+   */
+  previousOperationKeys?: OperationKeys
+}
+
 type ApiTypeViewerCallback = (
-  ref?: MutableRefObject<HTMLDivElement | null>,
-  comparisonMode?: boolean,
-  mergedDocument?: unknown,
-  schemaViewMode?: SchemaViewMode,
-  filters?: ChangeSeverity[],
-  operationType?: string, // for GraphQL (query, mutation, subscription)/AsyncAPI (send, receive)
-  operationName?: string, // for GraphQL (operation name)/AsyncAPI (asyncOperationId)
-  messageId?: string // for AsyncAPI, message ID
+  ref: MutableRefObject<HTMLDivElement | null> | undefined,
+  comparisonMode: boolean | undefined,
+  mergedDocument: unknown,
+  schemaViewMode: SchemaViewMode | undefined,
+  filters: ChangeSeverity[] | undefined,
+  keys: ApiTypeViewerKeys,
 ) => ReactNode
 
 const API_TYPE_VIEWER_MAP: Record<ApiType, ApiTypeViewerCallback> = {
   [API_TYPE_REST]: (ref) => (
     <Box ref={ref} />
   ),
-  [API_TYPE_GRAPHQL]: (_, comparisonMode, mergedDocument, schemaViewMode, filters, operationType, operationName) => (
+  [API_TYPE_GRAPHQL]: (_, comparisonMode, mergedDocument, schemaViewMode, filters, { operationType, operationName }) => (
     //todo need separate it to operationView and operationDiffView
     !comparisonMode
       ? <GraphQlOperationViewer
@@ -231,7 +250,7 @@ const API_TYPE_VIEWER_MAP: Record<ApiType, ApiTypeViewerCallback> = {
         operationName={operationName}
       />
   ),
-  [API_TYPE_ASYNCAPI]: (_, comparisonMode, mergedDocument, schemaViewMode, filters, operationType, operationName, messageId) => (
+  [API_TYPE_ASYNCAPI]: (_, comparisonMode, mergedDocument, schemaViewMode, filters, { operationName, messageId, previousOperationKeys }) => (
     <Box
       key={`${operationName}-${messageId}`}
       lineHeight={1.5}
@@ -258,6 +277,8 @@ const API_TYPE_VIEWER_MAP: Record<ApiType, ApiTypeViewerCallback> = {
               ? { operationKey: operationName, messageKey: messageId }
               : undefined
           }
+          previousOperationKeys={previousOperationKeys}
+          beforeKeyProperty={BEFORE_KEY_PROPERTY}
           referenceNamePropertyKey={FIRST_REFERENCE_KEY_PROPERTY}
           diffMetaKeys={DIFFS_META_KEYS}
         />
