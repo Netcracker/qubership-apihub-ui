@@ -76,7 +76,7 @@ import { VERSION_SWAPPER_HEIGHT } from '../shared-styles'
 import { useDocumentSearchParam } from '../useDocumentSearchParam'
 import { useOperation } from '../useOperation'
 import { useOperationSearchParam } from '../useOperationSearchParam'
-import { DdlEntityComparisonContent } from './DdlEntityComparisonContent'
+import { DdlTableComparisonContent } from '../VersionContractsSubPage/DdlTableContentView'
 import { OperationsSidebarOnComparison } from './OperationsSidebarOnComparison'
 import { useDdlEntityComparisonState } from './useDdlEntityComparisonState'
 
@@ -425,12 +425,12 @@ export const DifferentOperationVersionsComparisonPage: FC = memo(() => {
                 body={
                   isDdlComparison
                     ? (
-                      <DdlEntityComparisonContent
-                        originTableDetailsData={ddlComparisonState.originTableDetailsData}
-                        changedTableDetailsData={ddlComparisonState.changedTableDetailsData}
-                        isEntityExist={ddlComparisonState.ddlChangeExists}
-                        isLoading={ddlComparisonState.isContentLoading}
+                      <DdlTableComparisonContent
                         displayMode={COMPARE_SAME_OPERATIONS_MODE}
+                        originRawContent={ddlComparisonState.originTableDetailsData}
+                        changedRawContent={ddlComparisonState.changedTableDetailsData}
+                        isLoading={ddlComparisonState.isContentLoading}
+                        isEntityExist={ddlComparisonState.ddlChangeExists}
                         paddingBottom={VERSION_SWAPPER_HEIGHT}
                       />
                     )

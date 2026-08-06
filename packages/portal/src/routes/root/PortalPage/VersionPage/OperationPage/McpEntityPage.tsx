@@ -20,6 +20,7 @@ import {
   parseMcpListCollectionParam,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { REF_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { useNavigation } from '../../../../NavigationProvider'
 import { PackageBreadcrumbs } from '../../../PackageBreadcrumbs'
 import { usePackage } from '../../../usePackage'
@@ -97,6 +98,7 @@ export const McpEntityPage: FC = memo(() => {
       search: {
         [MCP_ENDPOINT_SEARCH_PARAM]: { value: mcpEndpoint ?? entityDetails?.mcpEndpoint ?? '' },
         [MCP_COLLECTION_SEARCH_PARAM]: { value: mcpListCollection },
+        [REF_SEARCH_PARAM]: { value: refKey ?? '' },
       },
     })
   }, [
@@ -107,6 +109,7 @@ export const McpEntityPage: FC = memo(() => {
     navigate,
     navigateToOperations,
     packageId,
+    refKey,
     versionId,
   ])
 

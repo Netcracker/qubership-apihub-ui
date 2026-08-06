@@ -1,17 +1,14 @@
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { Box, IconButton, Skeleton, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
-import { type FC, memo, useCallback, useMemo, useState } from 'react'
+import { type FC, memo, useCallback, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import type { Key } from '@apihub/entities/keys'
 import { useBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
 import { DdlTableViewModeToggler } from '@netcracker/qubership-apihub-ui-shared/components/Ddl/DdlTableViewModeToggler'
 import { PageLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayout'
-import {
-  DOC_SPEC_VIEW_MODE,
-  type SpecViewMode,
-} from '@netcracker/qubership-apihub-ui-shared/components/SpecViewToggler'
+import { DOC_SPEC_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/components/SpecViewToggler'
 import { Toolbar } from '@netcracker/qubership-apihub-ui-shared/components/Toolbar'
 import { ToolbarTitle } from '@netcracker/qubership-apihub-ui-shared/components/ToolbarTitle'
 import { CONTRACT_TYPE_DDL, getRouteApiTypeTitle } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
@@ -20,6 +17,7 @@ import {
   getDdlTableDisplayName,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { REF_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { useNavigation } from '../../../../NavigationProvider'
 import { PackageBreadcrumbs } from '../../../PackageBreadcrumbs'
 import { usePackage } from '../../../usePackage'
@@ -28,6 +26,7 @@ import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
 import { useRefSearchParam } from '../../useRefSearchParam'
 import { useDdlTableDetails } from '../api/useDdlTableDetails'
 import { useDdlTables } from '../api/useDdlTables'
+import { useSpecViewMode } from '../DocumentPreviewPage/useSpecViewMode'
 import { useAutoFetchInfinitePages } from '../useAutoFetchInfinitePages'
 import { getDdlTableLink } from '../useNavigateToOperation'
 import { DdlTableContentView } from '../VersionContractsSubPage/DdlTableContentView'
@@ -77,7 +76,7 @@ export const DdlTablePage: FC = memo(() => {
   const { navigateToOperations } = useNavigation()
   const backwardLocation = useBackwardLocationContext()
 
-  const [viewMode, setViewMode] = useState<SpecViewMode>(DOC_SPEC_VIEW_MODE)
+  const [viewMode, setViewMode] = useSpecViewMode(DOC_SPEC_VIEW_MODE)
 
   const handleBackClick = useCallback(() => {
     if (backwardLocation.fromOperation) {
@@ -88,8 +87,11 @@ export const DdlTablePage: FC = memo(() => {
       packageKey: packageId!,
       versionKey: versionId!,
       apiType: CONTRACT_TYPE_DDL,
+      search: {
+        [REF_SEARCH_PARAM]: { value: refKey ?? '' },
+      },
     })
-  }, [backwardLocation, navigate, navigateToOperations, packageId, versionId])
+  }, [backwardLocation, navigate, navigateToOperations, packageId, refKey, versionId])
 
   const prepareLinkFn = useCallback((table: DdlContractEntity) =>
     getDdlTableLink({
@@ -97,7 +99,8 @@ export const DdlTablePage: FC = memo(() => {
       versionKey: versionId!,
       ddlEntityId: table.ddlEntityId,
       ref: isDashboard ? table.packageRef?.key ?? refKey : undefined,
-    }), [isDashboard, packageId, refKey, versionId])
+      mode: viewMode,
+    }), [isDashboard, packageId, refKey, versionId, viewMode])
 
   const title = useMemo(() => {
     if (!tableDetails) {

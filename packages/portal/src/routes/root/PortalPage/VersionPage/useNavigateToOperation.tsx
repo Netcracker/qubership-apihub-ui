@@ -17,6 +17,7 @@
 import type { Path } from '@remix-run/router'
 import { type Dispatch, type SetStateAction, useCallback } from 'react'
 
+import { DOC_SPEC_VIEW_MODE, type SpecViewMode } from '@netcracker/qubership-apihub-ui-shared/components/SpecViewToggler'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { CONTRACT_TYPE_DDL, CONTRACT_TYPE_MCP } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 import type { McpCollection } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
@@ -147,8 +148,9 @@ export function getDdlTableLink(params: {
   versionKey: Key
   ddlEntityId: Key
   ref?: Key
+  mode?: SpecViewMode
 }): Partial<Path> {
-  const { packageKey, versionKey, ddlEntityId, ref } = params
+  const { packageKey, versionKey, ddlEntityId, ref, mode } = params
 
   return getOperationsPath({
     packageKey: packageKey,
@@ -157,6 +159,7 @@ export function getDdlTableLink(params: {
     operationKey: ddlEntityId,
     search: {
       [REF_SEARCH_PARAM]: { value: ref ?? '' },
+      [MODE_SEARCH_PARAM]: { value: mode && mode !== DOC_SPEC_VIEW_MODE ? mode : '' },
     },
   })
 }

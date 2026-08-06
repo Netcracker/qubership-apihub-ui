@@ -3,20 +3,17 @@ import { styled } from '@mui/material/styles'
 import { type FC, memo, useCallback, useEffect, useMemo } from 'react'
 import { createPath, useParams } from 'react-router-dom'
 
+import type { DiffMetaKeys } from '@apihub/entities/diff-meta-keys'
 import {
   useApiDiffResult,
   useHasComparisonInternalDocument,
   useIsApiDiffResultLoading,
   useSetApiDiffResult,
 } from '@apihub/routes/root/ApiDiffResultProvider'
-import type { DiffMetaKeys } from '@apihub/entities/diff-meta-keys'
 import { useComparedDdlContractsPair } from '@apihub/routes/root/PortalPage/VersionPage/ComparedDdlContractsContext'
-import { OperationsSwapper } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationsSwapper'
-import {
-  isComparisonMode,
-  type OperationDisplayMode,
-} from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationView/OperationDisplayMode'
 import { useBreadcrumbsData } from '@apihub/routes/root/PortalPage/VersionPage/ComparedPackagesBreadcrumbsProvider'
+import { OperationsSwapper } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationsSwapper'
+import type { OperationDisplayMode } from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationView/OperationDisplayMode'
 import { useOperationViewMode } from '@apihub/routes/root/PortalPage/VersionPage/useOperationViewMode'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import {
@@ -43,25 +40,25 @@ import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { DEFAULT_VIEW_MODE_MAP_BY_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import {
+  DETAILED_SCHEMA_VIEW_MODE,
+  SIMPLE_SCHEMA_VIEW_MODE,
+} from '@netcracker/qubership-apihub-ui-shared/entities/schema-view-mode'
+import {
   useSeverityFiltersSearchParam,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/change-severities/useSeverityFiltersSearchParam'
 import {
   useIsDocOperationViewMode,
   useIsRawOperationViewMode,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/operations/useOperationMode'
-import {
-  DETAILED_SCHEMA_VIEW_MODE,
-  SIMPLE_SCHEMA_VIEW_MODE,
-} from '@netcracker/qubership-apihub-ui-shared/entities/schema-view-mode'
 import { theme } from '@netcracker/qubership-apihub-ui-shared/themes/theme'
 import { SQL_FILE_EXTENSION } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import { DDL_DOCUMENT_TYPE } from '@netcracker/qubership-apihub-ui-shared/utils/specs'
 
 import { useNormalizedDdlContract } from '@apihub/api-hooks/InternalDocuments/useNormalizedDdlContract'
+import { DIFF_META_KEY, DIFFS_AGGREGATED_META_KEY } from '@netcracker/qubership-apihub-api-diff'
 import { DdlTableDiffsViewer, DdlTableViewer } from '@netcracker/qubership-apihub-api-doc-viewer'
 import type { NavigationLinkBuilder } from '@netcracker/qubership-apihub-api-doc-viewer'
 import { calculateDdlEntityId } from '@netcracker/qubership-apihub-api-processor'
-import { DIFFS_AGGREGATED_META_KEY, DIFF_META_KEY } from '@netcracker/qubership-apihub-api-diff'
 import { usePackageKind } from '../../usePackageKind'
 import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
 import { useRefSearchParam } from '../../useRefSearchParam'
@@ -73,75 +70,18 @@ const DIFFS_META_KEYS: DiffMetaKeys = {
   aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY,
 }
 
-export type DdlTableContentViewProps = {
+export type DdlTableContentViewProps = Readonly<{
   data: DdlContractEntityDetails | undefined
   viewMode: SpecViewMode
   noHeading?: boolean
   entityPackageKey?: Key
   entityVersionKey?: Key
-  displayMode?: OperationDisplayMode
-  originRawContent?: string
-  changedRawContent?: string
-  isLoading?: boolean
-  isEntityExist?: boolean
-  paddingBottom?: string | number
-}
-
-export const DdlTableContentView: FC<DdlTableContentViewProps> = memo<DdlTableContentViewProps>((props) => {
-  const {
-    data,
-    viewMode,
-    noHeading = false,
-    entityPackageKey,
-    entityVersionKey,
-    displayMode,
-    originRawContent,
-    changedRawContent,
-    isLoading = false,
-    isEntityExist = true,
-    paddingBottom,
-  } = props
-
-  const comparisonMode = displayMode ? isComparisonMode(displayMode) : false
-
-  if (comparisonMode) {
-    return (
-      <ComparisonModeContent
-        data={data}
-        displayMode={displayMode!}
-        noHeading={noHeading}
-        originRawContent={originRawContent}
-        changedRawContent={changedRawContent}
-        isLoading={isLoading}
-        isEntityExist={isEntityExist}
-        paddingBottom={paddingBottom}
-      />
-    )
-  }
-
-  return (
-    <RegularModeContent
-      data={data}
-      viewMode={viewMode}
-      noHeading={noHeading}
-      entityPackageKey={entityPackageKey}
-      entityVersionKey={entityVersionKey}
-    />
-  )
-})
-
-type RegularModeContentProps = Readonly<{
-  data: DdlContractEntityDetails | undefined
-  viewMode: SpecViewMode
-  noHeading: boolean
-  entityPackageKey: Key | undefined
-  entityVersionKey: Key | undefined
 }>
 
-const RegularModeContent: FC<RegularModeContentProps> = memo<RegularModeContentProps>(({
+export const DdlTableContentView: FC<DdlTableContentViewProps> = memo<DdlTableContentViewProps>(({
   data,
   viewMode,
-  noHeading,
+  noHeading = false,
   entityPackageKey,
   entityVersionKey,
 }) => {
@@ -209,27 +149,27 @@ const RegularModeContent: FC<RegularModeContentProps> = memo<RegularModeContentP
   )
 })
 
-RegularModeContent.displayName = 'RegularModeContent'
+DdlTableContentView.displayName = 'DdlTableContentView'
 
-type ComparisonModeContentProps = Readonly<{
-  data: DdlContractEntityDetails | undefined
+export type DdlTableComparisonContentProps = Readonly<{
   displayMode: OperationDisplayMode
-  noHeading: boolean
-  originRawContent: string | undefined
-  changedRawContent: string | undefined
-  isLoading: boolean
-  isEntityExist: boolean
-  paddingBottom: string | number | undefined
+  noHeading?: boolean
+  originRawContent?: string
+  changedRawContent?: string
+  isLoading?: boolean
+  isEntityExist?: boolean
+  paddingBottom?: string | number
+  data?: DdlContractEntityDetails
 }>
 
-const ComparisonModeContent: FC<ComparisonModeContentProps> = memo<ComparisonModeContentProps>(({
+export const DdlTableComparisonContent: FC<DdlTableComparisonContentProps> = memo<DdlTableComparisonContentProps>(({
   data,
   displayMode,
-  noHeading,
+  noHeading = false,
   originRawContent,
   changedRawContent,
-  isLoading,
-  isEntityExist,
+  isLoading = false,
+  isEntityExist = true,
   paddingBottom,
 }) => {
   const breadcrumbsData = useBreadcrumbsData()
@@ -339,9 +279,7 @@ const ComparisonModeContent: FC<ComparisonModeContentProps> = memo<ComparisonMod
   )
 })
 
-ComparisonModeContent.displayName = 'ComparisonModeContent'
-
-DdlTableContentView.displayName = 'DdlTableContentView'
+DdlTableComparisonContent.displayName = 'DdlTableComparisonContent'
 
 type DdlTableNavigationEntity = Pick<DdlContractEntity, 'packageRef'>
 

@@ -12,9 +12,11 @@ import {
   resolveDdlCompareEntityIds,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl-changelog'
 import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import { filterChangesBySeverity } from '@netcracker/qubership-apihub-ui-shared/utils/change-severities'
 import {
   FILTERS_SEARCH_PARAM,
+  MODE_SEARCH_PARAM,
   optionalSearchParams,
   PACKAGE_SEARCH_PARAM,
   REF_SEARCH_PARAM,
@@ -76,6 +78,7 @@ export function useDdlEntityComparisonState(
   } = options
 
   const navigate = useNavigate()
+  const mode = useSearchParam(MODE_SEARCH_PARAM)
 
   const {
     data: ddlChangelog,
@@ -152,6 +155,18 @@ export function useDdlEntityComparisonState(
     [filteredDdlChanges, ddlEntityId],
   )
 
+  const compareSearchParams = useMemo(
+    () =>
+      optionalSearchParams({
+        [PACKAGE_SEARCH_PARAM]: { value: originPackageKey },
+        [VERSION_SEARCH_PARAM]: { value: originVersionKey },
+        [REF_SEARCH_PARAM]: { value: refPackageId },
+        [FILTERS_SEARCH_PARAM]: { value: severityFilters.join() },
+        [MODE_SEARCH_PARAM]: { value: mode ?? '' },
+      }),
+    [mode, originPackageKey, originVersionKey, refPackageId, severityFilters],
+  )
+
   const prepareCompareLinkFn = useCallback((table: DdlContractEntity) => {
     const changeEntry = findDdlChangeEntry(filteredDdlChanges, table.ddlEntityId)
     if (!changeEntry || !changedPackageKey || !changedVersionKey) {
@@ -159,26 +174,11 @@ export function useDdlEntityComparisonState(
     }
 
     const entityId = getDdlChangeEntityId(changeEntry)
-    const searchParams = optionalSearchParams({
-      [PACKAGE_SEARCH_PARAM]: { value: originPackageKey },
-      [VERSION_SEARCH_PARAM]: { value: originVersionKey },
-      [REF_SEARCH_PARAM]: { value: refPackageId },
-      [FILTERS_SEARCH_PARAM]: { value: severityFilters.join() },
-    })
-
     return {
       pathname: `/portal/packages/${changedPackageKey}/${changedVersionKey}/compare/${CONTRACT_TYPE_DDL}/${entityId}`,
-      search: `${searchParams}`,
+      search: `${compareSearchParams}`,
     }
-  }, [
-    changedPackageKey,
-    changedVersionKey,
-    filteredDdlChanges,
-    originPackageKey,
-    originVersionKey,
-    refPackageId,
-    severityFilters,
-  ])
+  }, [changedPackageKey, changedVersionKey, compareSearchParams, filteredDdlChanges])
 
   const firstChangeEntry = useMemo(
     () => (filteredDdlChanges.length ? filteredDdlChanges[0] : undefined),
@@ -198,20 +198,15 @@ export function useDdlEntityComparisonState(
     }
 
     const firstEntityId = getDdlChangeEntityId(firstChangeEntry)
-    const searchParams = optionalSearchParams({
-      [PACKAGE_SEARCH_PARAM]: { value: originPackageKey },
-      [VERSION_SEARCH_PARAM]: { value: originVersionKey },
-      [REF_SEARCH_PARAM]: { value: refPackageId },
-      [FILTERS_SEARCH_PARAM]: { value: severityFilters.join() },
-    })
     navigate({
       pathname:
         `/portal/packages/${changedPackageKey}/${changedVersionKey}/compare/${CONTRACT_TYPE_DDL}/${firstEntityId}`,
-      search: `${searchParams}`,
+      search: `${compareSearchParams}`,
     })
   }, [
     changedPackageKey,
     changedVersionKey,
+    compareSearchParams,
     ddlChangeExists,
     enabled,
     firstChangeEntry,
@@ -219,10 +214,6 @@ export function useDdlEntityComparisonState(
     isChangelogReady,
     isOriginTableLoading,
     navigate,
-    originPackageKey,
-    originVersionKey,
-    refPackageId,
-    severityFilters,
   ])
 
   const isContentLoading = !isChangelogReady ||
