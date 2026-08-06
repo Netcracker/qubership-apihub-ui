@@ -23,7 +23,11 @@ import {
   OperationPathMeta,
   useOperationTitleMeta,
 } from '@netcracker/qubership-apihub-ui-shared/components/Operations/OperationTitleWithMeta'
-import { getMcpKindDefinition } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
+import { CONTRACT_TYPE_MCP } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
+import {
+  getMcpKindDefinition,
+  MCP_COLLECTION_INIT,
+} from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { useIntersectionObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useIntersectionObserver'
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
@@ -39,6 +43,8 @@ import {
 } from '@apihub/entities/global-search'
 import { getOperationsPath } from '../../../NavigationProvider'
 import { getDdlTableLink, getMcpEntityLink } from '../../PortalPage/VersionPage/useNavigateToOperation'
+import { MCP_COLLECTION_SEARCH_PARAM } from '../../PortalPage/VersionPage/useMcpCollectionSearchParam'
+import { MCP_ENDPOINT_SEARCH_PARAM } from '../../PortalPage/VersionPage/useMcpEndpointSearchParam'
 import type { FetchNextSearchResultList } from './global-search'
 import { ResultCommonHeader } from './ResultCommonHeader'
 import {
@@ -158,17 +164,28 @@ const McpContractSearchResultRow: FC<McpContractSearchResultRowProps> = memo<Mcp
   } = result
   const { versionKey, parents } = getSearchResultParents(parentPackages, name, version)
   const { mcpCollection, mcpDocumentType } = getMcpKindDefinition(kind)
+  const url = mcpCollection === MCP_COLLECTION_INIT
+    ? getOperationsPath({
+      packageKey: packageKey,
+      versionKey: versionKey,
+      apiType: CONTRACT_TYPE_MCP,
+      search: {
+        [MCP_ENDPOINT_SEARCH_PARAM]: { value: mcpEndpoint },
+        [MCP_COLLECTION_SEARCH_PARAM]: { value: MCP_COLLECTION_INIT },
+      },
+    })
+    : getMcpEntityLink({
+      packageKey: packageKey,
+      versionKey: versionKey,
+      mcpEntityId: entityId,
+      mcpEndpoint: mcpEndpoint,
+      mcpCollection: mcpCollection,
+    })
 
   return (
     <SearchResultRowRoot data-testid="SearchResultRow">
       <ResultCommonHeader
-        url={getMcpEntityLink({
-          packageKey: packageKey,
-          versionKey: versionKey,
-          mcpEntityId: entityId,
-          mcpEndpoint: mcpEndpoint,
-          mcpCollection: mcpCollection,
-        })}
+        url={url}
         icon={mcpDocumentType}
         title={entityName ?? entityId}
         parents={parents}
