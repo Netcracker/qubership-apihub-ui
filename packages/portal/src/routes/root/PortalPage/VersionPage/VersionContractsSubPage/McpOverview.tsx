@@ -1,7 +1,7 @@
 import { Box } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import { isPlainObject } from 'lodash-es'
-import { type FC, memo, useRef } from 'react'
+import { type FC, memo } from 'react'
 
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
@@ -12,6 +12,7 @@ import {
   MCP_COLLECTION_INIT,
   MCP_EMPTY_SCOPE_MESSAGE,
   type McpContractEntity,
+  type McpContractEntityDetails,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 import type { Key, PackageKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
@@ -28,11 +29,6 @@ type McpOverviewProps = Readonly<{
   mcpEndpoint?: string
   refPackageKey?: PackageKey
   isEmptyMcpScope: boolean
-}>
-
-type CachedOverview = Readonly<{
-  data: Record<string, unknown>
-  endpoint?: string
 }>
 
 export const McpOverview: FC<McpOverviewProps> = memo<McpOverviewProps>(({
@@ -64,7 +60,7 @@ export const McpOverview: FC<McpOverviewProps> = memo<McpOverviewProps>(({
     kind === DASHBOARD_KIND ? scopedInitEntity?.packageRef?.key ?? refPackageKey : '',
   )
 
-  const { data: entityDetails } = useMcpEntityDetails({
+  const { data: entityDetails, isPreviousData } = useMcpEntityDetails({
     packageKey: detailsPackageKey,
     versionKey: detailsVersionKey,
     collection: MCP_COLLECTION_INIT,
@@ -72,15 +68,18 @@ export const McpOverview: FC<McpOverviewProps> = memo<McpOverviewProps>(({
     enabled: canLoadOverview && !!scopedInitEntity?.mcpEntityId,
   })
 
-  // keepPreviousData on details can still return the previous entity payload.
-  const overviewData = entityDetails?.mcpEntityId === scopedInitEntity?.mcpEntityId
+  // keepPreviousData anti-flicker only for the current query key; never render cross-scope cache.
+  const overviewData = isOverviewDetailsForScope(
+    entityDetails,
+    isPreviousData,
+    scopedInitEntity,
+    detailsPackageKey,
+    mcpEndpoint,
+  )
     ? entityDetails?.data
     : undefined
 
-  const displayedRef = useRef<CachedOverview | undefined>()
-
   if (isEmptyMcpScope) {
-    displayedRef.current = undefined
     return (
       <Placeholder
         invisible={false}
@@ -91,22 +90,12 @@ export const McpOverview: FC<McpOverviewProps> = memo<McpOverviewProps>(({
     )
   }
 
-  if (overviewData !== undefined) {
-    displayedRef.current = {
-      data: overviewData,
-      endpoint: mcpEndpoint,
-    }
-  }
-
-  const displayData = overviewData ?? displayedRef.current?.data
-  if (displayData === undefined) {
+  if (overviewData === undefined) {
     return <LoadingIndicator />
   }
 
-  const serverInfo = extractMcpServerInfo(displayData)
-  const displayTitle = serverInfo.name ??
-    (overviewData !== undefined ? mcpEndpoint : displayedRef.current?.endpoint) ??
-    'MCP Server'
+  const serverInfo = extractMcpServerInfo(overviewData)
+  const displayTitle = serverInfo.name ?? mcpEndpoint ?? 'MCP Server'
 
   return (
     <OverviewRoot>
@@ -119,7 +108,7 @@ export const McpOverview: FC<McpOverviewProps> = memo<McpOverviewProps>(({
         }
         body={
           <OverviewBody>
-            <McpOverviewDetails data={displayData} data-testid="McpOverview" />
+            <McpOverviewDetails data={overviewData} data-testid="McpOverview" />
           </OverviewBody>
         }
         overrideBodySx={{
@@ -146,6 +135,28 @@ function isInitEntityForScope(
     return false
   }
   if (refPackageKey && entity.packageRef?.key && entity.packageRef.key !== refPackageKey) {
+    return false
+  }
+  return true
+}
+
+function isOverviewDetailsForScope(
+  details: McpContractEntityDetails | undefined,
+  isPreviousData: boolean,
+  scopedInitEntity: McpContractEntity | undefined,
+  detailsPackageKey: Key | undefined,
+  mcpEndpoint: string | undefined,
+): boolean {
+  if (isPreviousData || !details || !scopedInitEntity || !detailsPackageKey || !mcpEndpoint) {
+    return false
+  }
+  if (details.mcpEntityId !== scopedInitEntity.mcpEntityId) {
+    return false
+  }
+  if (details.mcpEndpoint !== mcpEndpoint || details.mcpEndpoint !== scopedInitEntity.mcpEndpoint) {
+    return false
+  }
+  if (details.packageRef?.key !== undefined && details.packageRef.key !== detailsPackageKey) {
     return false
   }
   return true

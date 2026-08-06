@@ -20,6 +20,8 @@ type McpEntityDetailsQueryState = {
   data: McpContractEntityDetails | undefined
   isLoading: IsLoading
   isInitialLoading: IsInitialLoading
+  /** True while keepPreviousData is showing a prior query-key payload. */
+  isPreviousData: boolean
 }
 
 type UseMcpEntityDetailsOptions = Readonly<{
@@ -41,7 +43,7 @@ export function useMcpEntityDetails(options: UseMcpEntityDetailsOptions): McpEnt
 
   const { fullVersion } = useVersionWithRevision(versionKey, packageKey)
 
-  const { data, isLoading, isInitialLoading } = useQuery<
+  const { data, isLoading, isInitialLoading, isPreviousData } = useQuery<
     McpContractEntityDetailsDto,
     Error,
     McpContractEntityDetails
@@ -49,6 +51,7 @@ export function useMcpEntityDetails(options: UseMcpEntityDetailsOptions): McpEnt
     queryKey: [MCP_ENTITY_DETAILS_QUERY_KEY, packageKey, fullVersion, collection, mcpEntityId],
     queryFn: () => getMcpEntityDetails(packageKey!, fullVersion!, collection, mcpEntityId!),
     enabled: !!packageKey && !!fullVersion && !!mcpEntityId && enabled,
+    // Same-key refetch stays painted; callers must ignore isPreviousData across key changes.
     keepPreviousData: true,
     select: dto => ({ ...toMcpContractEntity(dto), data: dto.data }),
   })
@@ -57,7 +60,8 @@ export function useMcpEntityDetails(options: UseMcpEntityDetailsOptions): McpEnt
     data,
     isLoading,
     isInitialLoading,
-  }), [data, isInitialLoading, isLoading])
+    isPreviousData,
+  }), [data, isInitialLoading, isLoading, isPreviousData])
 }
 
 async function getMcpEntityDetails(
