@@ -23,6 +23,7 @@ import {
   REPLACE_ACTION_TYPE,
   RISKY_CHANGE_SEVERITY,
 } from '../../../entities/change-severities'
+import { getDdlTableListKey } from '../../../entities/contracts-ddl'
 import type { DdlChangesPage, DdlEntityChangeEntry } from '../../../entities/contracts-ddl-changelog'
 import type { Key } from '../../../entities/keys'
 import { DASHBOARD_KIND, type Package } from '../../../entities/packages'
@@ -236,9 +237,11 @@ export const DdlChangesViewTable: FC<DdlChangesViewTableProps> = memo<DdlChanges
 DdlChangesViewTable.displayName = 'DdlChangesViewTable'
 
 function getDdlChangesViewRowId(row: DdlChangesViewTableData): Key {
-  return row.change.ddlEntityData?.ddlEntityId ??
-    row.change.previousDdlEntityData?.ddlEntityId ??
-    row.change.comparisonInternalDocumentId
+  const entity = row.change.ddlEntityData ?? row.change.previousDdlEntityData
+  if (entity) {
+    return getDdlTableListKey(entity)
+  }
+  return row.change.comparisonInternalDocumentId
 }
 
 type DdlRowSkeletonProps = {
