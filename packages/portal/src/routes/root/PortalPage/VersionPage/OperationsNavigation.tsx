@@ -17,7 +17,7 @@
 import { memo, useCallback, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { type ApiType, isApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import {
   CONTRACT_TYPE_DDL,
   CONTRACT_TYPE_MCP,
@@ -66,7 +66,7 @@ export const OperationsNavigation = memo(() => {
     apiKind: selectedApiKind,
     apiAudience: selectedApiAudience,
     limit: 100,
-    enabled: !packageFilterOnly,
+    enabled: isApiType(routeApiType) && !packageFilterOnly,
   })
 
   const onFetchNextPage = useCallback(async (): Promise<void> => {
