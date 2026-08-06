@@ -8,7 +8,9 @@ import {
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import { useSetSearchParams } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSetSearchParams'
 
-export const MCP_COLLECTION_SEARCH_PARAM = 'mcpCollection'
+// Query key stays `mcpEntity`: the name is a poor fit for a collection selector,
+// but renaming it to `mcpCollection` breaks existing bookmarks and browser history.
+export const MCP_COLLECTION_SEARCH_PARAM = 'mcpEntity'
 
 type SetMcpCollection = (value: McpCollection | undefined) => void
 
