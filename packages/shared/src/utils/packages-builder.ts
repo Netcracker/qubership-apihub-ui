@@ -271,10 +271,23 @@ export type PublishDetailsDto = {
   message?: string
 }
 
+/**
+ * What the builder is given for an operation of a *previous* version, which it reads back from the
+ * API rather than computing.
+ *
+ * The AsyncAPI arm carries more than the display fields because the builder pairs AsyncAPI
+ * operations across versions on `action x address x payloadIdentity`, keyed by
+ * `asyncOperationId` / `messageId` - that is what lets a version survive an id whose generated
+ * suffix changed. Omit any of the five and the builder cannot characterise the previous operation,
+ * skips it, and reports every id flip as an operation removed plus one added.
+ */
 type OperationMetadata =
   Pick<RestOperationDto, 'tags' | 'method' | 'path'> |
   Pick<GraphQlOperationDto, 'tags' | 'method' | 'type'> |
-  Pick<AsyncApiOperationDto,'tags' | 'action' | 'protocol' | 'channel'>
+  Pick<AsyncApiOperationDto,
+    'tags' | 'action' | 'protocol' | 'channel' |
+    'asyncOperationId' | 'messageId' | 'address' | 'payloadIdentity'
+  >
 
 export function toVersionOperation(value: OperationDto): ResolvedOperation<OperationMetadata> {
   let metadata!: OperationMetadata
@@ -296,6 +309,13 @@ export function toVersionOperation(value: OperationDto): ResolvedOperation<Opera
       action: value.action,
       channel: value.channel,
       protocol: value.protocol,
+      asyncOperationId: value.asyncOperationId,
+      messageId: value.messageId,
+      // Both optional at the source - a channel may have no address, a message with an inline
+      // payload has no reusable schema declaration - and absence is meaningful: it tells the
+      // builder this operation has no stable anchor and must keep plain id-equality behaviour.
+      address: value.address,
+      payloadIdentity: value.payloadIdentity,
     }
   }
   return {
