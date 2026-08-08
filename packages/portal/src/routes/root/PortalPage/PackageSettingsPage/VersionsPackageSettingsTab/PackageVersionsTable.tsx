@@ -51,7 +51,7 @@ export const PackageVersionsTable: FC<PackageVersionsTableProps> = memo<PackageV
 
   const { versions, areVersionsLoading, fetchNextPage, isFetchingNextPage, hasNextPage } = usePackageVersions({
     packageKey: packageKey,
-    status: status,
+    status: status ? [status] : undefined,
     textFilter: searchValue,
   })
 

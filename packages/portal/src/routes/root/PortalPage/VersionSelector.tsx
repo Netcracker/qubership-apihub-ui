@@ -57,7 +57,7 @@ export const VersionSelector: FC = memo(() => {
   const [activeTab, setActiveTab] = useState<VersionTab>(RELEASE_TAB)
 
   const { versions, areVersionsLoading } = usePackageVersions({
-    status: VERSION_STATUS_MAP[activeTab],
+    status: [VERSION_STATUS_MAP[activeTab]],
     textFilter: searchValue,
     sortBy: VERSION_SORT_MAP[activeTab].sortBy,
     sortOrder: VERSION_SORT_MAP[activeTab].sortOrder,
