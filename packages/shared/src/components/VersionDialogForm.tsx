@@ -136,7 +136,7 @@ export type VersionDialogFormProps<T extends VersionFormData = VersionFormData> 
   hidePreviousVersionField?: boolean
   publishButtonDisabled?: boolean
   publishFieldsDisabled?: boolean
-  currentPackageKey?: string
+  currentPackageKey?: Key
 }
 
 export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogFormProps>((props) => {
@@ -224,7 +224,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
     packageKey: previousVersionsPackageKey,
     status: previousVersionStatuses,
     textFilter: previousVersionSearch,
-    enabled: !hidePreviousVersionField && !previousVersions && !!previousVersionsPackageKey,
+    enabled: !hidePreviousVersionField && previousVersions === undefined && !!previousVersionsPackageKey,
   })
 
   const normalizedPreviousVersions = useMemo(
@@ -237,24 +237,37 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
     [normalizedPreviousVersions],
   )
 
-  const [selectedPreviousVersionStatus, setSelectedPreviousVersionStatus] = useState<VersionStatus | undefined>()
+  const [rememberedPreviousVersionStatus, setRememberedPreviousVersionStatus] =
+    useState<{ version: Key; status: VersionStatus } | undefined>()
 
   useEffect(() => {
     if (!previousVersion || previousVersion === NO_PREVIOUS_RELEASE_VERSION_OPTION) {
-      setSelectedPreviousVersionStatus(undefined)
+      setRememberedPreviousVersionStatus(undefined)
       return
     }
     const knownStatus = previousVersionStatusMap.get(previousVersion)
     if (knownStatus) {
-      setSelectedPreviousVersionStatus(knownStatus)
+      setRememberedPreviousVersionStatus({ version: previousVersion, status: knownStatus })
+      return
     }
+    setRememberedPreviousVersionStatus(remembered => (
+      remembered?.version === previousVersion ? remembered : undefined
+    ))
   }, [previousVersion, previousVersionStatusMap])
 
+  /**
+   * Single source for the status chip, used by the dropdown, the closed field and the validation.
+   *
+   * Order matters: the fetched list is consulted first, so a status changed on the server wins over
+   * the remembered one. The fallback applies only to the version the status was remembered for.
+   */
   const getPreviousVersionOptionStatus = useCallback(
     (versionKey: Key): VersionStatus | undefined =>
       previousVersionStatusMap.get(versionKey) ??
-      (versionKey === previousVersion ? selectedPreviousVersionStatus : undefined),
-    [previousVersionStatusMap, previousVersion, selectedPreviousVersionStatus],
+      (versionKey === rememberedPreviousVersionStatus?.version
+        ? rememberedPreviousVersionStatus.status
+        : undefined),
+    [previousVersionStatusMap, rememberedPreviousVersionStatus],
   )
 
   const previousVersionOptions = useMemo(() => {
@@ -276,11 +289,12 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
     if (!previousVersion || previousVersion === NO_PREVIOUS_RELEASE_VERSION_OPTION) {
       return false
     }
-    if (!selectedPreviousVersionStatus) {
+    const previousStatus = getPreviousVersionOptionStatus(previousVersion)
+    if (!previousStatus) {
       return false
     }
-    return !isPreviousVersionStatusAllowed(status, selectedPreviousVersionStatus)
-  }, [previousVersion, selectedPreviousVersionStatus, status])
+    return !isPreviousVersionStatusAllowed(status, previousStatus)
+  }, [previousVersion, getPreviousVersionOptionStatus, status])
 
   const debouncedOnWorkspacesChange = useMemo(() => debounce(onWorkspacesChange, DEFAULT_DEBOUNCE), [onWorkspacesChange])
   const debouncedOnPackagesChange = useMemo(() => debounce(onPackagesChange, DEFAULT_DEBOUNCE), [onPackagesChange])
@@ -778,31 +792,34 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
                       data-testid={`Option-${versionKey}`}
                     />
                   )}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      required
-                      label={previousVersionLabels.fieldLabel}
-                      error={hasInvalidPreviousVersionStatus}
-                      helperText={hasInvalidPreviousVersionStatus
-                        ? RELEASE_PREVIOUS_VERSION_REQUIRED_MESSAGE
-                        : extraValidationMassage}
-                      InputProps={{
-                        ...params.InputProps,
-                        endAdornment: (
-                          <>
-                            {previousVersion && getPreviousVersionOptionStatus(previousVersion) && (
-                              <CustomChip
-                                sx={{ mr: 0.5, height: '18px' }}
-                                value={getPreviousVersionOptionStatus(previousVersion)!}
-                              />
-                            )}
-                            {params.InputProps.endAdornment}
-                          </>
-                        ),
-                      }}
-                    />
-                  )}
+                  renderInput={(params) => {
+                    const selectedStatus = previousVersion
+                      ? getPreviousVersionOptionStatus(previousVersion)
+                      : undefined
+
+                    return (
+                      <TextField
+                        {...params}
+                        required
+                        label={previousVersionLabels.fieldLabel}
+                        error={hasInvalidPreviousVersionStatus}
+                        helperText={hasInvalidPreviousVersionStatus
+                          ? RELEASE_PREVIOUS_VERSION_REQUIRED_MESSAGE
+                          : extraValidationMassage}
+                        InputProps={{
+                          ...params.InputProps,
+                          endAdornment: (
+                            <>
+                              {selectedStatus && (
+                                <CustomChip sx={{ mr: 0.5, height: '18px' }} value={selectedStatus}/>
+                              )}
+                              {params.InputProps.endAdornment}
+                            </>
+                          ),
+                        }}
+                      />
+                    )
+                  }}
                   onChange={(_, value) => {
                     setValue('previousVersion', value ?? NO_PREVIOUS_RELEASE_VERSION_OPTION)
                     setSelectedPreviousVersion?.(value ?? NO_PREVIOUS_RELEASE_VERSION_OPTION)
