@@ -21,6 +21,7 @@ import { usePreviousReleasePackageKey, usePreviousReleaseVersion } from './Previ
 export type DdlEntityChangeCellProps = {
   value: Row<DdlChangesViewTableData>
   mainPackageKind?: PackageKind
+  onLinkClick?: () => void
 }
 
 export const DdlEntityChangeCell: FC<DdlEntityChangeCellProps> = memo<DdlEntityChangeCellProps>(({
@@ -31,6 +32,7 @@ export const DdlEntityChangeCell: FC<DdlEntityChangeCellProps> = memo<DdlEntityC
     getToggleExpandedHandler,
   },
   mainPackageKind,
+  onLinkClick,
 }) => {
   const { packageId, versionId, apiType } = useParams()
 
@@ -68,6 +70,7 @@ export const DdlEntityChangeCell: FC<DdlEntityChangeCellProps> = memo<DdlEntityC
         <DdlTableTitleWithMeta
           table={table}
           link={link}
+          onLinkClick={onLinkClick}
         />
       </ExpandableItem>
     </Box>

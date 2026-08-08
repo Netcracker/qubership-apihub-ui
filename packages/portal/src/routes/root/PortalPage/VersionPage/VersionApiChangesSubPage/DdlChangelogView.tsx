@@ -23,6 +23,7 @@ import { useRefSearchParam } from '@apihub/routes/root/PortalPage/useRefSearchPa
 
 import { useDdlChanges } from '../api/useDdlChanges'
 import { useFlatDdlChanges } from '../api/useFlatDdlChanges'
+import { useOperationsComparisonBrowseLinkHandlers } from '../useOperationsComparisonBrowseLinkHandlers'
 import { useOrderedComparisonFiltersSummary } from '../useOrderedComparisonFiltersSummary'
 import { DdlEntityChangesSubTableWrapper } from './DdlEntityChangesSubTableWrapper'
 
@@ -41,6 +42,7 @@ export const DdlChangelogView: FC<DdlChangelogViewProps> = memo<DdlChangelogView
   const previousReleaseVersion = usePreviousReleaseVersion()
   const previousReleasePackageKey = usePreviousReleasePackageKey()
   const currentPackage = useCurrentPackage()
+  const onLinkClick = useOperationsComparisonBrowseLinkHandlers()
 
   const {
     data: ddlChangelog,
@@ -86,6 +88,7 @@ export const DdlChangelogView: FC<DdlChangelogViewProps> = memo<DdlChangelogView
         hasNextPage={hasNextPage}
         SubTableComponent={DdlEntityChangesSubTableWrapper}
         isLoading={isLoading}
+        onLinkClick={onLinkClick}
       />
     </Placeholder>
   )

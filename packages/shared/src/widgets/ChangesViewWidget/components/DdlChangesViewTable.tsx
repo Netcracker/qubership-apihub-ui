@@ -57,6 +57,7 @@ export type DdlChangesViewTableProps = {
   hasNextPage?: boolean
   SubTableComponent: FC<DdlSubTableComponentProps>
   isLoading: boolean
+  onLinkClick?: () => void
 }
 
 export const DdlChangesViewTable: FC<DdlChangesViewTableProps> = memo<DdlChangesViewTableProps>(({
@@ -69,6 +70,7 @@ export const DdlChangesViewTable: FC<DdlChangesViewTableProps> = memo<DdlChanges
   hasNextPage,
   SubTableComponent,
   isLoading,
+  onLinkClick,
 }) => {
   const isDashboardType = packageObject?.kind === DASHBOARD_KIND
 
@@ -100,7 +102,7 @@ export const DdlChangesViewTable: FC<DdlChangesViewTableProps> = memo<DdlChanges
         header: () => <CustomTableHeadCell title="Table" />,
         cell: ({ row }) => (
           <TextWithOverflowTooltip>
-            <DdlEntityChangeCell value={row} mainPackageKind={packageObject?.kind} />
+            <DdlEntityChangeCell value={row} mainPackageKind={packageObject?.kind} onLinkClick={onLinkClick} />
           </TextWithOverflowTooltip>
         ),
       },
@@ -134,7 +136,7 @@ export const DdlChangesViewTable: FC<DdlChangesViewTableProps> = memo<DdlChanges
     }
 
     return result
-  }, [isDashboardType, packageObject?.kind])
+  }, [isDashboardType, onLinkClick, packageObject?.kind])
 
   const data: DdlChangesViewTableData[] = useMemo(() =>
     value.map(change => {
