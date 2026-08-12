@@ -57,7 +57,7 @@ export const OperationChangesSubTableWrapper: FC<OperationChangesSubTableWrapper
       apiType: apiType,
       previousVersion: previousVersion,
       previousVersionPackageId: previousVersionPackageId,
-      enable: true,
+      enable: !!previousVersion,
     })
 
     const sortedChanges = useMemo(() => sortChanges(changes), [changes])
