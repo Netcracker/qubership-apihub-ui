@@ -204,7 +204,6 @@ export type SelectCreatedCustomServerDetail = {
 export type RulesetInfoPopupDetails = RulesetMetadata
 
 export type ShowPublicationErrorReportDetail = {
-  documentName: string
   downloadFilename: string
   errors: string
 }

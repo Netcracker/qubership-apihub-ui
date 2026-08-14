@@ -62,19 +62,16 @@ export function usePublishPackageVersion(): [PublishPackageVersion, IsLoading, I
     errorMessage: string | undefined,
     files: BuildConfigFile[] | undefined,
   ) => {
-    const fileId = files?.[0]?.fileId
-    if (fileId) {
-      const documentName = fileIdToDocumentName(fileId)
-      const downloadFilename = fileIdToErrorReportFilename(fileId)
+    const fileIdLength = files?.length
+    if (fileIdLength) {
       const packageName = currentPackage?.name ?? packageId ?? ''
       showErrorNotification({
         title: 'Publication error',
-        message: `The ${documentName} document in the ${packageName} package was published with errors.`,
+        message: `There was an error while publishing package ${packageName}`,
         button: {
           title: 'View details',
           onClick: () => showPublicationErrorReportDialog({
-            documentName,
-            downloadFilename,
+            downloadFilename: `Error report for the package ${packageName}`,
             errors: errorMessage ?? '',
           }),
         },
