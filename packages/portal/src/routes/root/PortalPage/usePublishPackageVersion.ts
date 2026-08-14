@@ -62,8 +62,8 @@ export function usePublishPackageVersion(): [PublishPackageVersion, IsLoading, I
     errorMessage: string | undefined,
     files: BuildConfigFile[] | undefined,
   ) => {
-    const fileIdLength = files?.length
-    if (fileIdLength) {
+    const filesListLength = files?.length
+    if (filesListLength) {
       const packageName = currentPackage?.name ?? packageId ?? ''
       showErrorNotification({
         title: 'Publication error',
