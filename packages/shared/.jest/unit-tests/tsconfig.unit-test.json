@@ -6,6 +6,11 @@
       "jest"
     ],
     "baseUrl": ".",
+    /* TypeScript 6 requires rootDir to be explicit alongside an inherited outDir (TS5011).
+      The include below spans the whole packages/ tree - this shared suite also runs
+      portal's unit tests - so rootDir has to cover it, or TypeScript infers the directory
+      of whichever test file it saw first and rejects every other one. */
+    "rootDir": "../../../",
     "paths": {
       "@netcracker/qubership-apihub-ui-shared/*": ["../../src/*"]
     }

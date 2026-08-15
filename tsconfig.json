@@ -1,5 +1,9 @@
 {
   "compilerOptions": {
+    /* TypeScript 6 defaults "types" to [] rather than every package under node_modules/@types. */
+    "types": ["node", "jest"],
+    /* TS 6 reports moduleResolution:node as deprecated (TS5107); it still functions through 6.x. */
+    "ignoreDeprecations": "6.0",
     "target": "ESNext",
     "lib": [
       "dom",
