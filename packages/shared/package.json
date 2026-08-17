@@ -26,6 +26,10 @@
   },
   "devDependencies": {
     "@storybook/preview-api": "7.5.1",
+    "cross-env": "7.0.3",
+    "eslint": "8.34.0",
+    "jest": "30.4.2",
+    "storybook": "7.5.1",
     "vite-plugin-dts": "1.7.1"
   },
   "dependencies": {

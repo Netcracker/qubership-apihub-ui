@@ -34,6 +34,7 @@
   "devDependencies": {
     "cross-env": "7.0.3",
     "eslint": "8.34.0",
+    "jest": "30.4.2",
     "nodemon": "2.0.20",
     "typescript": "6.0.3",
     "vite": "4.4.11"
