@@ -19,7 +19,23 @@
     "lint:fix": "npm run lint:check -- --fix"
   },
   "dependencies": {
+    "@mui/system": "5.18.0",
+    "@mui/types": "7.4.5",
+    "@netcracker/qubership-apihub-json-crawl": "bugfix-update-infrastructure",
+    "@remix-run/router": "1.11.0",
+    "@tanstack/query-core": "4.43.0",
+    "@tanstack/table-core": "8.8.0",
+    "body-parser": "2.2.2",
+    "lodash": "4.17.23",
     "openapi3-ts": "2.0.2",
-    "react-multi-date-picker": "4.1.1"
+    "react-multi-date-picker": "4.1.1",
+    "unified": "10.1.2"
+  },
+  "devDependencies": {
+    "cross-env": "7.0.3",
+    "eslint": "8.34.0",
+    "nodemon": "2.0.20",
+    "typescript": "6.0.3",
+    "vite": "4.4.11"
   }
 }

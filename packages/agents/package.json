@@ -18,6 +18,17 @@
     "lint:fix": "npm run lint:check -- --fix"
   },
   "dependencies": {
-    "@mui/x-date-pickers": "5.0.9"
+    "@mui/system": "5.18.0",
+    "@mui/x-date-pickers": "5.0.9",
+    "@remix-run/router": "1.11.0",
+    "@tanstack/query-core": "4.43.0",
+    "@tanstack/table-core": "8.8.0",
+    "body-parser": "2.2.2"
+  },
+  "devDependencies": {
+    "eslint": "8.34.0",
+    "nodemon": "2.0.20",
+    "typescript": "6.0.3",
+    "vite": "4.4.11"
   }
 }
