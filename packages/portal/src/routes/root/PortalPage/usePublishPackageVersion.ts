@@ -35,7 +35,6 @@ import {
 } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
 import { isTokenRefreshed, onMutationUnauthorized } from '@netcracker/qubership-apihub-ui-shared/utils/security'
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
-import { fileIdToDocumentName, fileIdToErrorReportFilename } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import { useMutation } from '@tanstack/react-query'
 import { useCallback } from 'react'
 import { useParams } from 'react-router-dom'
