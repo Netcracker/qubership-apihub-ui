@@ -3,7 +3,7 @@ import { type LinterApiType, LinterApiTypes } from '@apihub/entities/api-quality
 import type { Linter } from '@apihub/entities/api-quality/linters'
 import { getLinterById } from '@apihub/utils/api-quality/linters'
 import { Box, Button, type SelectChangeEvent } from '@mui/material'
-import { useEventBus } from '@netcracker/qubership-apihub-ui-portal/src/routes/EventBusProvider'
+import { useEventBus } from '@apihub/routes/EventBusProvider'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import { PlusIcon } from '@netcracker/qubership-apihub-ui-shared/icons/PlusIcon'
 import { type FC, memo, useCallback, useEffect, useMemo, useState } from 'react'

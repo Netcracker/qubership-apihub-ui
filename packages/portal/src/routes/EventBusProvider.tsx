@@ -19,7 +19,7 @@ import { SHOW_EXPORT_SETTINGS_DIALOG } from '@apihub/components/ExportSettingsDi
 import type { SearchCriteria } from '@apihub/entities/global-search'
 import type {
   OasSettingsExtension,
-} from '@netcracker/qubership-apihub-ui-portal/src/routes/root/PortalPage/PackageSettingsPage/ExportSettingsTab/package-export-config'
+} from '@apihub/routes/root/PortalPage/PackageSettingsPage/ExportSettingsTab/package-export-config'
 import { SHOW_ADD_SYSTEM_ADMINISTRATOR_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/AddSystemAdministratorDialog'
 import type { ShowDeleteRoleDetail } from '@netcracker/qubership-apihub-ui-shared/components/DeleteRoleDialog'
 import { SHOW_DELETE_ROLE_DIALOG } from '@netcracker/qubership-apihub-ui-shared/components/DeleteRoleDialog'

@@ -18,6 +18,9 @@ export default {
   },
   moduleNameMapper: {
     '^@netcracker/qubership-apihub-ui-shared/(.*)$': '<rootDir>/src/$1',
+    // portal's own intra-package alias, mirroring its tsconfig paths and vite config.
+    // This suite runs portal's tests (see roots above), so it has to resolve it too.
+    '^@apihub/(.*)$': '<rootDir>/../portal/src/$1',
     '^lodash-es/isPlainObject$': '<rootDir>/../../node_modules/lodash/isPlainObject.js',
   },
   modulePaths: ['<rootDir>/src', '<rootDir>/../portal/src'],
