@@ -1,0 +1,2 @@
+import{a,b as s,c as o}from"./transformToDto-CM-usKYO-8f166351.js";const A="all",e="bwc",r="no-bwc",i="experimental",N={[A]:"All",[e]:"BWC",[r]:"No BWC",[i]:"Experimental"},I="all",_={[a]:"Internal",[s]:"External",[o]:"Unknown",[I]:"All"};function l(n){return n.path!==void 0}function E(n){return n?n.type!==void 0:!1}function p(n){if(!n)return!1;const t=n;return t.action!==void 0&&t.channel!==void 0}export{N as A,E as a,p as b,_ as c,l as i};
+//# sourceMappingURL=operations-51a9a997.js.map
