@@ -19,7 +19,7 @@ import { memo } from 'react'
 import { Breadcrumbs, Link } from '@mui/material'
 import type { ReactJSXElement } from '@emotion/react/types/jsx-namespace'
 import { NavLink } from 'react-router-dom'
-import type { LinkedComparedBreadcrumbPathItem } from '@apihub/routes/root/PortalPage/VersionPage/breadcrumbs'
+import type { LinkedComparedBreadcrumbPathItem } from '@portal/routes/root/PortalPage/VersionPage/breadcrumbs'
 
 export type ComparedPackagesBreadcrumbsProps = {
   data?: LinkedComparedBreadcrumbPathItem[]

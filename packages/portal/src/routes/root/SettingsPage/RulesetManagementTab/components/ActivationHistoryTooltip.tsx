@@ -1,5 +1,5 @@
 import { List, ListItem, ListSubheader, Typography } from '@mui/material'
-import type { RulesetActivation } from '@apihub/entities/api-quality/rulesets'
+import type { RulesetActivation } from '@portal/entities/api-quality/rulesets'
 import { toDateFormat } from '@netcracker/qubership-apihub-ui-shared/utils/date'
 import { isEmpty } from 'lodash'
 import { type FC, memo, useMemo } from 'react'

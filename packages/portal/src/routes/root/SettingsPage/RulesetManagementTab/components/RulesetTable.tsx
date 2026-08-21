@@ -1,5 +1,5 @@
 import { Box, capitalize, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
-import { type Ruleset, RulesetStatuses } from '@apihub/entities/api-quality/rulesets'
+import { type Ruleset, RulesetStatuses } from '@portal/entities/api-quality/rulesets'
 import { CustomTableHeadCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomTableHeadCell'
 import { FormattedDate } from '@netcracker/qubership-apihub-ui-shared/components/FormattedDate'
 import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'

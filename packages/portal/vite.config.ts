@@ -103,11 +103,11 @@ export default defineConfig(({ mode }) => {
     },
     resolve: {
       alias: {
-        '@apihub/components': path.resolve(__dirname, './src/components/'),
-        '@apihub/entities': path.resolve(__dirname, './src/entities/'),
-        '@apihub/api-hooks': path.resolve(__dirname, './src/api-hooks/'),
-        '@apihub/routes': path.resolve(__dirname, './src/routes/'),
-        '@apihub/utils': path.resolve(__dirname, './src/utils/'),
+        '@portal/components': path.resolve(__dirname, './src/components/'),
+        '@portal/entities': path.resolve(__dirname, './src/entities/'),
+        '@portal/api-hooks': path.resolve(__dirname, './src/api-hooks/'),
+        '@portal/routes': path.resolve(__dirname, './src/routes/'),
+        '@portal/utils': path.resolve(__dirname, './src/utils/'),
         '@netcracker/qubership-apihub-ui-shared': path.resolve(__dirname, './../shared/src'),
         'buffer': require.resolve('buffer/'),
         '@asyncapi/parser': '@asyncapi/parser/browser', // Use browser-compatible version of AsyncAPI parser

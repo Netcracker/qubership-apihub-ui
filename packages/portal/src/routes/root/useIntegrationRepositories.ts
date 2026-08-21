@@ -15,7 +15,7 @@
  */
 
 import { useQuery } from '@tanstack/react-query'
-import type { IntegrationRepositories, IntegrationRepositoriesDto } from '@apihub/entities/integration-repository'
+import type { IntegrationRepositories, IntegrationRepositoriesDto } from '@portal/entities/integration-repository'
 import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { API_V1, requestJson } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 

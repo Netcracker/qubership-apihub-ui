@@ -1,6 +1,6 @@
 import { Box, Tooltip, Typography } from '@mui/material'
-import { useRulesetActivationHistory } from '@apihub/api-hooks/ApiQuality/useRulesetActivationHistory'
-import type { Ruleset } from '@apihub/entities/api-quality/rulesets'
+import { useRulesetActivationHistory } from '@portal/api-hooks/ApiQuality/useRulesetActivationHistory'
+import type { Ruleset } from '@portal/entities/api-quality/rulesets'
 import { InfoContextIcon } from '@netcracker/qubership-apihub-ui-shared/icons/InfoContextIcon'
 import { toDateFormat } from '@netcracker/qubership-apihub-ui-shared/utils/date'
 import { isEmpty } from 'lodash'

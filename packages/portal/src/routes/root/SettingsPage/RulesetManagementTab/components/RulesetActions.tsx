@@ -1,11 +1,11 @@
 import { Box } from '@mui/material'
 import {
   ValidationRulesetFileControls,
-} from '@apihub/components/ApiQuality/ValidationRulesetFileControls'
+} from '@portal/components/ApiQuality/ValidationRulesetFileControls'
 import {
   type RulesetDto,
   RulesetStatuses,
-} from '@apihub/entities/api-quality/rulesets'
+} from '@portal/entities/api-quality/rulesets'
 import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
 import {
   ConfirmationDialog,

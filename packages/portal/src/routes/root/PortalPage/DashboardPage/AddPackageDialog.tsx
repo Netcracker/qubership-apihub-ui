@@ -44,7 +44,7 @@ import type { Package } from '@netcracker/qubership-apihub-ui-shared/entities/pa
 import { DASHBOARD_KIND, PACKAGE_KIND, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import { SHOW_ADD_PACKAGE_DIALOG } from '@apihub/routes/EventBusProvider'
+import { SHOW_ADD_PACKAGE_DIALOG } from '@portal/routes/EventBusProvider'
 import type { PackageVersion } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
 import type { ReferenceKind } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
 import { toVersionReferences } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'

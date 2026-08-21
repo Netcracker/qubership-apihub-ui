@@ -96,9 +96,9 @@ export default defineConfig(({ mode }) => {
     },
     resolve: {
       alias: {
-        '@apihub/components': path.resolve(__dirname, './src/components/'), // TODO: Move to `@netcracker/qubership-apihub-ui-shared`
-        '@apihub/entities': path.resolve(__dirname, './src/entities/'),
-        '@apihub/utils': path.resolve(__dirname, './src/utils/'),
+        '@agents/components': path.resolve(__dirname, './src/components/'), // TODO: Move to `@netcracker/qubership-apihub-ui-shared`
+        '@agents/entities': path.resolve(__dirname, './src/entities/'),
+        '@agents/utils': path.resolve(__dirname, './src/utils/'),
         '@netcracker/qubership-apihub-ui-shared': path.resolve(__dirname, './../shared/src'),
         '@asyncapi/parser': '@asyncapi/parser/browser', // Use browser-compatible version of AsyncAPI parser
       },
