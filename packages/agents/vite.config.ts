@@ -78,17 +78,6 @@ export default defineConfig(({ mode }) => {
       include: [
         '@netcracker/qubership-apihub-api-processor',
       ],
-      // ddlapi must be pre-bundled rather than excluded. Its browser build reads the DDL source
-      // through `Buffer` (`Buffer.from(ddl, 'utf8')` in `prepareDdlExtractor`, and the whole span
-      // engine operates on that buffer) but references it as a bare global, because the bundle
-      // targets Node. `NodeGlobalsPolyfill` below supplies that global, and it only reaches
-      // packages that go through pre-bundling — excluding ddlapi left it without one, so publishing
-      // a DDL document failed with "Buffer is not defined" on the dev server only.
-      // See https://github.com/Netcracker/qubership-apihub/issues/743.
-      //
-      // Excluding it bought nothing in return: `optimizeDeps` applies to the dev server alone, so it
-      // has no say in how the production build chunks the WASM-inlined '/parser'. That is decided by
-      // rollup, where the parser stays in the lazily-loaded build-worker chunk either way.
       esbuildOptions: {
         plugins: [
           NodeModulesPolyfill(),
