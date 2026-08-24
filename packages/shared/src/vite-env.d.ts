@@ -39,7 +39,6 @@ declare module '@mui/material/styles' {
     draft: SimplePaletteColorOptions
     release: SimplePaletteColorOptions
     deprecated: SimplePaletteColorOptions
-    archived: SimplePaletteColorOptions
     get: SimplePaletteColorOptions
     post: SimplePaletteColorOptions
     put: SimplePaletteColorOptions
@@ -80,7 +79,6 @@ declare module '@mui/material/Chip' {
     draft: true
     release: true
     deprecated: true
-    archived: true
     get: true
     put: true
     post: true

@@ -56,10 +56,6 @@ export const CHIP_COLOR_OVERRIDES: Record<keyof ChipPropsColorOverrides, SimpleP
     main: '#D0FAD4',
     contrastText: '#026104',
   },
-  archived: {
-    main: '#F2F3F5',
-    contrastText: '#0C1E36',
-  },
   // OperationType
   deprecated: {
     main: '#EF9206',
