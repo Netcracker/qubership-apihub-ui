@@ -15,6 +15,7 @@
  */
 
 import { defineConfig } from 'vite'
+import tsconfigPaths from 'vite-tsconfig-paths'
 import react from '@vitejs/plugin-react'
 import monacoEditor from 'vite-plugin-monaco-editor'
 import path, { resolve } from 'path'
@@ -41,6 +42,7 @@ export default defineConfig(({ mode }) => {
   return {
     base: !isProxyMode ? '/agents' : '',
     plugins: [
+      tsconfigPaths(),
       react({ fastRefresh: false }),
       ...(analyzeBundle ? [bundleVisualizer()] : []),
       ignoreDotsOnDevServer(),
@@ -95,16 +97,20 @@ export default defineConfig(({ mode }) => {
       },
     },
     resolve: {
+      // Path aliases come from tsconfig.json via tsconfigPaths(); only substitutions
+      // that no tsconfig declares are listed here.
       alias: {
-        '@agents/components': path.resolve(__dirname, './src/components/'), // TODO: Move to `@netcracker/qubership-apihub-ui-shared`
-        '@agents/entities': path.resolve(__dirname, './src/entities/'),
-        '@agents/utils': path.resolve(__dirname, './src/utils/'),
-        '@netcracker/qubership-apihub-ui-shared': path.resolve(__dirname, './../shared/src'),
         '@asyncapi/parser': '@asyncapi/parser/browser', // Use browser-compatible version of AsyncAPI parser
       },
     },
     worker: {
       format: 'es',
+      // Worker bundles are a separate rollup pass with their own plugin list.
+      // resolve.alias is config-level and applies to them automatically; a resolver
+      // plugin is not, so it must be registered here too or aliased imports fail to
+      // resolve inside workers only - and nowhere else. Array form, not the function form:
+      // vite 4 expects an array here; the callback signature arrived in vite 5.1.
+      plugins: [tsconfigPaths()],
     },
     build: {
       emptyOutDir: true,
