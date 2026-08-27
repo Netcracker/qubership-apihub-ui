@@ -113,6 +113,7 @@ export const VersionsTable: FC<VersionsTableProps> = memo<VersionsTableProps>(({
                   key={`${version?.key}-${label}-chip`}
                   sx={{ mr: 1 }}
                   value={label}
+                  useCustomColor={false}
                   label={
                     <Box sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {label}

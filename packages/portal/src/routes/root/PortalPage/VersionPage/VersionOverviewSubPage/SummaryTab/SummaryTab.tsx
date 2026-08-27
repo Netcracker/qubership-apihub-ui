@@ -113,6 +113,7 @@ export const SummaryTab: FC = memo(() => {
               <CustomChip
                 sx={{ mr: 1, mt: 0.5 }}
                 key={`summary-tab-custom-chip-${label}`}
+                useCustomColor={false}
                 value={label}
                 label={
                   <OverflowTooltip title={label}>

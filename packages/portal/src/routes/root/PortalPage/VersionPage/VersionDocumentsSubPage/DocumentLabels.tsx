@@ -21,6 +21,7 @@ export const DocumentLabels: FC<DocumentLabelsProps> = memo<DocumentLabelsProps>
         <LabelChip
           key={label}
           value={label}
+          useCustomColor={false}
         />
       ))}
     </LabelsContainer>

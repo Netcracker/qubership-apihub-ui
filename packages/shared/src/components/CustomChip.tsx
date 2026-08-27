@@ -26,6 +26,7 @@ export type CustomChipProps = {
   label?: ReactNode | string
   component?: ElementType
   isExtraSmall?: boolean
+  useCustomColor?: boolean
 } & ChipProps
 
 export const CustomChip: FC<CustomChipProps> = memo<CustomChipProps>(({
@@ -33,10 +34,11 @@ export const CustomChip: FC<CustomChipProps> = memo<CustomChipProps>(({
   label,
   component = 'div',
   isExtraSmall = false,
+  useCustomColor = true,
   sx,
   ...props
 }) => {
-  const isCustomColor = useMemo(() => Object.keys(CHIP_COLOR_OVERRIDES).includes(value), [value])
+  const isCustomColor = useMemo(() => useCustomColor && Object.keys(CHIP_COLOR_OVERRIDES).includes(value), [useCustomColor, value])
 
   //to support many usages in UI
   const sxOverrides = useMemo(() => (isExtraSmall
