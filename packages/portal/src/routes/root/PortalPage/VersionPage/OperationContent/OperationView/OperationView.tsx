@@ -22,7 +22,7 @@ import { OPEN_API_SECTION_PARAMETERS, OPEN_API_SECTION_REQUESTS, OPEN_API_SECTIO
 import { Box } from '@mui/material'
 import { DIFF_META_KEY, DIFFS_AGGREGATED_META_KEY } from '@netcracker/qubership-apihub-api-diff'
 import { AsyncApiOperationDiffsViewer, AsyncApiOperationViewer, GraphQLOperationDiffViewer, SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from '@netcracker/qubership-apihub-api-doc-viewer'
-import { FIRST_REFERENCE_KEY_PROPERTY, REST_API_TYPE } from '@netcracker/qubership-apihub-api-processor'
+import { FIRST_REFERENCE_KEY_PROPERTY } from '@netcracker/qubership-apihub-api-processor'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import type { VisitorNavigationDetails } from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView/oasToClassDiagramService'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
@@ -119,7 +119,7 @@ export const OperationView: FC<OperationViewProps> = memo<OperationViewProps>(pr
   }, [navigationDetails, indexedModels])
 
   const resolvedOperationViewElement = useMemo(() => {
-    if (apiType !== REST_API_TYPE) {
+    if (apiType !== API_TYPE_REST) {
       return undefined
     }
 
