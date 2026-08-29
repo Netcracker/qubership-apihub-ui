@@ -26,6 +26,7 @@
     "body-parser": "2.2.2"
   },
   "devDependencies": {
+    "@netcracker/qubership-apihub-ui-shared": "*",
     "eslint": "8.34.0",
     "nodemon": "2.0.20",
     "typescript": "6.0.3",
