@@ -21,8 +21,10 @@ import { NavLink, useParams } from 'react-router-dom'
 
 import type {
   ChangeSummary,
+  GraphQLChangesMetadata,
   OperationChanges,
   OperationChangesMetadata,
+  RestChangesMetadata,
 } from '@netcracker/qubership-apihub-api-processor'
 import { useBackwardLocation } from '../../../useBackwardLocation'
 import { useChangesLoadingStatus, useSetChangesLoadingStatus } from '../ChangesLoadingStatusProvider'
@@ -33,10 +35,6 @@ import { useTagSearchFilter } from '../useTagSearchFilter'
 import { ComparisonSwapper } from '../ComparisonSwapper'
 import { useComparisonParams } from '../useComparisonParams'
 import { useNavigation } from '../../../../NavigationProvider'
-import type {
-  GraphQLChangesMetadata,
-  RestChangesMetadata,
-} from '@netcracker/qubership-apihub-api-processor/dist/cjs/src/types/internal/compare'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import {
   FILTERS_SEARCH_PARAM,

@@ -17,7 +17,7 @@
 import type { FC } from 'react'
 import { memo } from 'react'
 import { Breadcrumbs, Link } from '@mui/material'
-import type { ReactJSXElement } from '@emotion/react/types/jsx-namespace'
+import type { ReactElement } from 'react'
 import { NavLink } from 'react-router-dom'
 import type { LinkedComparedBreadcrumbPathItem } from '@portal/routes/root/PortalPage/VersionPage/breadcrumbs'
 
@@ -27,7 +27,7 @@ export type ComparedPackagesBreadcrumbsProps = {
 
 export const ComparedPackagesBreadcrumbs: FC<ComparedPackagesBreadcrumbsProps> =
   memo<ComparedPackagesBreadcrumbsProps>(({ data = [] }) => {
-    const links: ReactJSXElement[] = data.map(linkData => {
+    const links: ReactElement[] = data.map(linkData => {
       return (
         <Link
           key={linkData.key}

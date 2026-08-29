@@ -1,10 +1,8 @@
 {
   "compilerOptions": {
-    /* TS 6 reports moduleResolution:node as deprecated (TS5107); it still functions through 6.x. */
-    "ignoreDeprecations": "6.0",
     "composite": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true
   },
   "include": [
