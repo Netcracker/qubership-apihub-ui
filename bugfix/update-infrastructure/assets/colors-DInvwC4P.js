@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-BcKkbAw3.js";var t,n;function r(){return(r=e((()=>{t=`#353C4E`,n=`#626D82`})))()}export{n,r,t};
