@@ -6,7 +6,8 @@ import path, { resolve } from 'path'
 import NodeModulesPolyfill from '@esbuild-plugins/node-modules-polyfill'
 import NodeGlobalsPolyfill from '@esbuild-plugins/node-globals-polyfill'
 import copy from 'rollup-plugin-copy'
-import Unfonts from 'unplugin-fonts/vite'
+import ignoreDotsOnDevServer from 'vite-plugin-rewrite-all'
+import { VitePluginFonts } from 'vite-plugin-fonts'
 import { visualizer as bundleVisualizer } from 'rollup-plugin-visualizer'
 import inject from '@rollup/plugin-inject'
 import monacoWorkerHashPlugin from '../../vite-monaco-worker-hash'
@@ -32,6 +33,7 @@ export default defineConfig(({ mode }) => {
       tsconfigPaths(),
       react({ fastRefresh: false }),
       ...(analyzeBundle ? [bundleVisualizer()] : []),
+      ignoreDotsOnDevServer(),
       monacoEditor({
         languageWorkers: ['editorWorkerService', 'json'],
         customWorkers: [{
@@ -61,7 +63,7 @@ export default defineConfig(({ mode }) => {
         flatten: true,
         hook: 'writeBundle',
       }),
-      Unfonts({
+      VitePluginFonts({
         custom: {
           families: [{
             name: 'Inter',

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { Meta, StoryObj } from '@storybook/react'
 import { LabelsTableCell } from '../components/LabelsTableCell'
 
 const meta: Meta<typeof LabelsTableCell> = {

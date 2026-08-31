@@ -1,6 +1,3 @@
-// This file has been automatically migrated to valid ESM format by Storybook.
-import { fileURLToPath } from "node:url";
-import { createRequire } from "node:module";
 /**
  * Copyright 2024-2025 NetCracker Technology Corporation
  *
@@ -22,10 +19,6 @@ import type { StorybookConfig } from '@storybook/react-vite'
 import { dirname, join, resolve } from 'path'
 import { mergeConfig } from 'vite'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const require = createRequire(import.meta.url);
-
 /**
  * This function is used to resolve the absolute path of a package.
  * It is needed in projects that use Yarn PnP or are set up within a monorepo.
@@ -41,24 +34,23 @@ const config: StorybookConfig = {
     '../../{portal,agents}/src/**/*.mdx',
     '../../{portal,agents}/src/**/*.stories.@(js|jsx|ts|tsx)',
   ],
-
   addons: [
     getAbsolutePath('@storybook/addon-links'),
+    getAbsolutePath('@storybook/addon-essentials'),
     getAbsolutePath('@storybook/addon-onboarding'),
-    getAbsolutePath("@storybook/addon-docs")
+    getAbsolutePath('@storybook/addon-interactions'),
   ],
-
   staticDirs: [{ from: '../src/stories/assets', to: '/assets' }],
-
   framework: {
     name: getAbsolutePath('@storybook/react-vite'),
     options: {},
   },
-
+  docs: {
+    autodocs: 'tag',
+  },
   core: {
     disableTelemetry: true,
   },
-
   viteFinal: (config) => {
     return mergeConfig(config, {
       define: {
@@ -74,6 +66,6 @@ const config: StorybookConfig = {
         },
       },
     })
-  }
+  },
 }
 export default config

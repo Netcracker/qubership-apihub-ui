@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { Meta, StoryObj } from '@storybook/react'
 import { Box, CssBaseline, ThemeProvider } from '@mui/material'
 import { MarkdownViewer } from '../components/SpecificationDialog/MarkdownViewer'
 import { markdownSample } from './samples/markdown-sample'

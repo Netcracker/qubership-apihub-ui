@@ -15,7 +15,7 @@
  */
 
 // eslint-disable-next-line filenames/no-index
-import 'unfonts.css'
+import 'virtual:fonts.css'
 import { App } from './App'
 import { createRoot } from 'react-dom/client'
 

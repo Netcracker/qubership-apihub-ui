@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { Meta, StoryObj } from '@storybook/react'
 import { Box } from '@mui/material'
 import React from 'react'
 import { CustomTagsTree } from '../components/CustomTagsTree'

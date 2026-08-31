@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { Meta, StoryObj } from '@storybook/react'
 import React from 'react'
 import { SettingsEditableParameter } from './SettingsEditableParameter'
 import { Box, Chip, Skeleton, ThemeProvider, Typography } from '@mui/material'

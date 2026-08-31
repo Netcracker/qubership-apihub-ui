@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { Meta, StoryObj } from '@storybook/react'
 import { CustomChip } from '../components/CustomChip'
 
 const meta: Meta<typeof CustomChip> = {

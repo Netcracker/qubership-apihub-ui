@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { Meta, StoryObj } from '@storybook/react'
 import { ThemeProvider } from '@mui/material'
 import { theme } from '../themes/theme'
 import { IdpAuthTokenForm } from '../components/IdpAuthTokenForm'
