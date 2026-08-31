@@ -34,7 +34,7 @@
   "devDependencies": {
     "@netcracker/qubership-apihub-ui-shared": "*",
     "cross-env": "7.0.3",
-    "eslint": "8.34.0",
+    "eslint": "8.57.1",
     "jest": "30.4.2",
     "nodemon": "2.0.20",
     "typescript": "6.0.3",

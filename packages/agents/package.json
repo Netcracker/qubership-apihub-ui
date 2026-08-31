@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@netcracker/qubership-apihub-ui-shared": "*",
-    "eslint": "8.34.0",
+    "eslint": "8.57.1",
     "nodemon": "2.0.20",
     "typescript": "6.0.3",
     "vite": "^8.2.2",

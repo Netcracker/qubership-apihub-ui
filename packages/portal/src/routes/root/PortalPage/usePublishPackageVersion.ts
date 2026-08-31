@@ -67,6 +67,7 @@ export function usePublishPackageVersion(): [PublishPackageVersion, IsLoading, I
       const documentName = fileIdToDocumentName(fileId)
       const downloadFilename = fileIdToErrorReportFilename(fileId)
       const packageName = currentPackage?.name ?? packageId ?? ''
+      const errors = errorMessage ?? ''
       showErrorNotification({
         title: 'Publication error',
         message: `The ${documentName} document in the ${packageName} package was published with errors.`,
@@ -75,7 +76,7 @@ export function usePublishPackageVersion(): [PublishPackageVersion, IsLoading, I
           onClick: () => showPublicationErrorReportDialog({
             documentName,
             downloadFilename,
-            errors: errorMessage ?? '',
+            errors,
           }),
         },
       })

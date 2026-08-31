@@ -42,7 +42,6 @@ type Story = StoryObj<typeof meta>
 /** Two valid Mermaid diagrams (sequence + flowchart) embedded in a markdown document.
  *  Verifies that multiple diagrams on the same page all render as SVG. */
 export const WithMermaidDiagrams: Story = {
-  name: 'With Mermaid Diagrams',
   args: {
     value: mermaidSample,
   },
