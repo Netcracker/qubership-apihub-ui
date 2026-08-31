@@ -65,6 +65,7 @@ export function usePagedPackageVersions(options?: Partial<{
     queryFn: ({ pageParam = 0, signal }) =>
       getPackageVersionsList(packageKey!, status, textFilter, sortBy, sortOrder, limit, pageParam ?? page, signal),
     enabled: !!packageKey,
+     refetchOnMount: true,
   })
 
   return [
@@ -117,6 +118,7 @@ export function usePackageVersions(options?: Partial<{
       return lastPage.length === limit ? allPages.length + 1 : undefined
     },
     enabled: !!packageKey && enabled,
+    refetchOnMount: true,
   })
 
   const versions = useMemo(() => (data?.pages.flat() ?? []), [data?.pages])
