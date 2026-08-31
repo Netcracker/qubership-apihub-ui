@@ -112,7 +112,7 @@ export const Selector: FC<SelectorProps> = memo<SelectorProps>(({
                     >
                       <Box display="flex" width="100%" gap={2}>
                         <Box flex={1}>{option.value}</Box>
-                        {option.badge && <CustomChip value={option.badge}/>}
+                        {option.badge && <CustomChip value={option.badge} useCustomColor={false}/>}
                       </Box>
                     </MenuItem>
                   ))}

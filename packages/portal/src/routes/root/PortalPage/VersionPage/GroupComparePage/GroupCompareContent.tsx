@@ -69,7 +69,8 @@ import {
 } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
 import { format } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
 import { ChangeSeverityIndicator } from '@netcracker/qubership-apihub-ui-shared/components/ChangeSeverityIndicator'
-import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
+import { HttpMethodChip } from '@netcracker/qubership-apihub-ui-shared/components/Operations/HttpMethodChip'
+import type { MethodType } from '@netcracker/qubership-apihub-ui-shared/entities/method-types'
 import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
 import { Changes } from '@netcracker/qubership-apihub-ui-shared/components/Changes'
 import type { ComparedPackagesBreadcrumbsData } from '../breadcrumbs'
@@ -260,7 +261,7 @@ export const GroupCompareContent: FC<GroupCompareContentProps> = memo(({ groupCh
                           value={isPreviousMetaDataPresent ? {
                             title: previousMetadata.title,
                             operationId: previousOperationId,
-                            method: previousMetadata.method,
+                            method: previousMetadata.method as MethodType,
                             path: previousMetadata.path as string,
                           } : undefined}
                         />
@@ -278,7 +279,7 @@ export const GroupCompareContent: FC<GroupCompareContentProps> = memo(({ groupCh
                         value={isMetaDataPresent ? {
                           title: metadata.title,
                           operationId: operationId,
-                          method: metadata.method,
+                          method: metadata.method as MethodType,
                           path: metadata.path as string,
                         } : undefined}
                         changes={changeSummary}
@@ -300,7 +301,7 @@ type SpecProps = {
     operationId: string
     title: string
     path: string
-    method: string
+    method: MethodType
   }>
   changes?: ChangeSummary
 }
@@ -310,7 +311,7 @@ const Spec: FC<SpecProps> = memo<SpecProps>(({ value, changes }) => {
 
   const secondary = (
     <Box component="span" sx={{ display: 'flex', alignItems: 'center' }} data-testid="OperationPath">
-      {method && <CustomChip component="span" sx={{ mr: 1 }} value={method} variant={'outlined'} />}
+      {method && <HttpMethodChip component="span" sx={{ mr: 1 }} method={method} />}
       {path && (
         <OverflowTooltip title={path}>
           <Typography component="span" noWrap variant="inherit">{path}</Typography>

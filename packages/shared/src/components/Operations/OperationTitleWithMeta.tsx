@@ -22,19 +22,41 @@ import type { Path } from '@remix-run/router'
 import type { Operation } from '../../entities/operations'
 import { isAsyncApiOperation, isGraphQlOperation, isRestOperation } from '../../entities/operations'
 import { OverflowTooltip } from '../OverflowTooltip'
-import { CustomChip } from '../CustomChip'
 import { TextWithOverflowTooltip } from '../TextWithOverflowTooltip'
+import { AsyncApiActionChip } from './AsyncApiActionChip'
+import { DeprecatedBadge } from './DeprecatedBadge'
+import { GraphQlOperationTypeChip } from './GraphQlOperationTypeChip'
+import { HttpMethodChip } from './HttpMethodChip'
+import type { MethodType } from '../../entities/method-types'
+import type { GraphQlOperationType } from '../../entities/graphql-operation-types'
+import type { AsyncApiOperationType } from '../../entities/asyncapi-operation-types'
+
+export type OperationTypeMeta =
+  | Readonly<{ apiType: 'rest'; method: MethodType }>
+  | Readonly<{ apiType: 'graphql'; operationType: GraphQlOperationType }>
+  | Readonly<{ apiType: 'asyncapi'; action: AsyncApiOperationType }>
 
 type OperationTitleMeta = Readonly<{
   title: string
   subtitle: string
-  type: string
+  operationType: OperationTypeMeta
 }>
 
 type OperationPathMetaProps = Readonly<{
   subtitle: string
-  type: string
+  operationType: OperationTypeMeta
 }>
+
+const OperationTypeChip: FC<{ operationType: OperationTypeMeta }> = memo(({ operationType }) => {
+  switch (operationType.apiType) {
+    case 'rest':
+      return <HttpMethodChip method={operationType.method} data-testid="OperationPathChip"/>
+    case 'graphql':
+      return <GraphQlOperationTypeChip operationType={operationType.operationType} data-testid="OperationPathChip"/>
+    case 'asyncapi':
+      return <AsyncApiActionChip action={operationType.action} data-testid="OperationPathChip"/>
+  }
+})
 
 export function useOperationTitleMeta(operation: Operation): OperationTitleMeta {
   return useMemo(() => getOperationTitleMeta(operation), [operation])
@@ -42,10 +64,10 @@ export function useOperationTitleMeta(operation: Operation): OperationTitleMeta 
 
 export const OperationPathMeta: FC<OperationPathMetaProps> = memo<OperationPathMetaProps>(({
   subtitle,
-  type,
+  operationType,
 }) => (
   <Box display="flex" alignItems="center" gap={1} data-testid="OperationPath">
-    <CustomChip value={type} variant="outlined" data-testid="OperationPathChip"/>
+    <OperationTypeChip operationType={operationType}/>
     <TextWithOverflowTooltip tooltipText={subtitle} variant="subtitle2" data-testid="OperationPathSubtitle">
       {subtitle}
     </TextWithOverflowTooltip>
@@ -58,7 +80,7 @@ export type OperationTitleWithMetaProps = {
   operation: Operation
   link?: Partial<Path>
   onLinkClick?: () => void
-  badgeText?: string
+  deprecated?: boolean
   openLinkInNewTab?: boolean
   onlyTitle?: boolean
 }
@@ -69,12 +91,12 @@ export const OperationTitleWithMeta: FC<OperationTitleWithMetaProps> = memo<Oper
     operation,
     link,
     onLinkClick,
-    badgeText,
+    deprecated = false,
     openLinkInNewTab = false,
     onlyTitle = false,
   }) => {
 
-  const { title, subtitle, type } = useOperationTitleMeta(operation)
+  const { title, subtitle, operationType } = useOperationTitleMeta(operation)
 
   const titleNode = link
     ? <Typography noWrap variant="subtitle1">
@@ -104,15 +126,9 @@ export const OperationTitleWithMeta: FC<OperationTitleWithMetaProps> = memo<Oper
           {titleNode}
         </OverflowTooltip>
 
-        {badgeText &&
-          <CustomChip
-            value={badgeText.toLowerCase()}
-            label={badgeText}
-            isExtraSmall
-          />
-        }
+        {deprecated && <DeprecatedBadge/>}
       </Box>
-      {!onlyTitle && <OperationPathMeta subtitle={subtitle} type={type}/>}
+      {!onlyTitle && <OperationPathMeta subtitle={subtitle} operationType={operationType}/>}
     </Box>
   )
 })
@@ -122,21 +138,21 @@ function getOperationTitleMeta(operation: Operation): OperationTitleMeta {
     return {
       title: operation.title,
       subtitle: operation.path,
-      type: operation.method,
+      operationType: { apiType: 'rest', method: operation.method },
     }
   }
   if (isGraphQlOperation(operation)) {
     return {
       title: operation.title,
       subtitle: operation.method,
-      type: operation.type,
+      operationType: { apiType: 'graphql', operationType: operation.type },
     }
   }
   if (isAsyncApiOperation(operation)) {
     return {
       title: operation.title,
       subtitle: operation.channel,
-      type: operation.action,
+      operationType: { apiType: 'asyncapi', action: operation.action },
     }
   }
   throw new Error('Operation must be either a REST, GraphQL, or AsyncAPI operation')

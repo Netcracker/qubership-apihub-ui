@@ -21,6 +21,7 @@ import type { Operation } from '../entities/operations'
 import { isGraphQlOperation, isRestOperation } from '../entities/operations'
 import type { TestableProps } from './Testable'
 import { OptionItem } from './OptionItem'
+import { OperationChip } from './Operations/OperationChip'
 
 export type OperationOptionItemProps = {
   props: HTMLAttributes<HTMLLIElement>
@@ -32,19 +33,19 @@ export const OperationOptionItem: FC<OperationOptionItemProps> = memo<OperationO
   operation,
   'data-testid': dataTestId,
 }) => {
-  const [subtitle, chipValue] = useMemo(() => (
+  const subtitle = useMemo(() => (
     isRestOperation(operation)
-      ? [operation.path, operation.method]
+      ? operation.path
       : isGraphQlOperation(operation)
-        ? [operation.type, operation.method]
-        : ['unknown', 'unknown'] // Default, should not happen
+        ? operation.type
+        : 'unknown' // Default, should not happen
   ), [operation])
 
   return (
     <OptionItem
       title={operation.title}
       subtitle={subtitle}
-      chipValue={chipValue}
+      chip={<OperationChip operation={operation}/>}
       data-testid={dataTestId}
       props={props}
     />

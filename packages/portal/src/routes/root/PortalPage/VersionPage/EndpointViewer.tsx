@@ -20,7 +20,8 @@ import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDown
 import KeyboardArrowRightOutlinedIcon from '@mui/icons-material/KeyboardArrowRightOutlined'
 import type { To } from 'react-router-dom'
 import { NavLink } from 'react-router-dom'
-import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
+import { HttpMethodChip } from '@netcracker/qubership-apihub-ui-shared/components/Operations/HttpMethodChip'
+import type { MethodType } from '@netcracker/qubership-apihub-ui-shared/entities/method-types'
 import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
 
 export type ViewData = Partial<{
@@ -33,7 +34,7 @@ export type ViewData = Partial<{
 export type EndpointData = {
   title: string
   link: To
-  method?: string
+  method?: MethodType
   path?: string
   deprecated?: boolean
   onClickLink?: () => void
@@ -98,7 +99,7 @@ export const EndpointViewer: FC<EndpointViewerProps> = (props) => {
 
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         {method && (
-          <CustomChip sx={{ mr: 1 }} value={method} variant="outlined"/>
+          <HttpMethodChip sx={{ mr: 1 }} method={method}/>
         )}
         {path && (
           <OverflowTooltip title={path}>
