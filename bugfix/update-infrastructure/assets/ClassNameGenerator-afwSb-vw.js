@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-BcKkbAw3.js";var t,n,r;function i(){return(i=e((()=>{t=e=>e,n=()=>{let e=t;return{configure(t){e=t},generate(t){return e(t)},reset(){e=t}}},r=n()})))()}export{i as n,r as t};
