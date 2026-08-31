@@ -103,11 +103,31 @@ export default defineConfig(({ mode }) => {
     },
     resolve: {
       // Path aliases come from tsconfig.json via tsconfigPaths(); only substitutions
-      // that no tsconfig declares are listed here.
-      alias: {
-        'buffer': require.resolve('buffer/'),
-        '@asyncapi/parser': '@asyncapi/parser/browser', // Use browser-compatible version of AsyncAPI parser
-      },
+      // that no tsconfig declares are listed here. Array form rather than object form
+      // because the icons entry below matches on a pattern, which the object form
+      // cannot express.
+      alias: [
+        { find: 'buffer', replacement: require.resolve('buffer/') },
+        // Use browser-compatible version of AsyncAPI parser
+        { find: '@asyncapi/parser', replacement: '@asyncapi/parser/browser' },
+        {
+          /* @mui/icons-material has no "exports" map, so a deep import such as
+             '@mui/icons-material/InfoOutlined' resolves to the CommonJS file at the
+             package root rather than to esm/. Rolldown then applies Node-style CJS
+             interop to it - __toESM(mod, isNodeMode) - which forces `default` to the
+             whole exports object instead of honouring the module's own __esModule
+             marker. The imported icon therefore arrives as { default: icon }, and
+             `styled(InfoOutlinedIcon)` in ui-shared renders that object:
+
+               Minified React error #130 (element type is invalid, got: object)
+
+             Pointing the 133 deep icon imports at esm/ removes the CJS interop from
+             the path entirely rather than depending on how a bundler resolves it.
+             Anchored so an already-resolved 'esm/...' path is not rewritten again. */
+          find: /^@mui\/icons-material\/(?!esm\/)(.+)$/,
+          replacement: '@mui/icons-material/esm/$1',
+        },
+      ],
     },
     worker: {
       format: 'es',
