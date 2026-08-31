@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-BcKkbAw3.js";import{a as t,m as n,n as r,t as i}from"./createTheme-CRX-jDaJ.js";var a,o=e((()=>{r(),a=i()}));function s({props:e,name:t}){return n({props:e,name:t,defaultTheme:a})}var c=e((()=>{t(),o()}));export{o as i,s as n,a as r,c as t};

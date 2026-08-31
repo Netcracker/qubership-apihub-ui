@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-BcKkbAw3.js";import{J as t,Y as n,a as r,n as i,t as a,v as o}from"./createTheme-CRX-jDaJ.js";var s,c;function l(){return(l=e((()=>{r(),n(),i(),s=a(),c=o({defaultTheme:s,defaultClassName:`MuiBox-root`,generateClassName:t.generate})})))()}export{l as n,c as t};
