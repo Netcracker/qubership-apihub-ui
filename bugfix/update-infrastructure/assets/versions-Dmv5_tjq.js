@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-BcKkbAw3.js";function t(e,t=!0){if(!e)return{versionKey:``,revisionKey:``};let[n,r]=e.split(`@`);return{versionKey:t?n:e,revisionKey:r}}function n(e){return e.map(r)}function r(e){let{key:n,latestRevision:r}=e,{versionKey:i}=t(n,r);return{...e,key:i}}function i(){return(i=e((()=>{})))()}export{n,i as r,t};
