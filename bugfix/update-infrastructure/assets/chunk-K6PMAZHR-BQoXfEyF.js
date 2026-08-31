@@ -1,1 +1,0 @@
-import{n as e}from"./rolldown-runtime-BcKkbAw3.js";var t;function n(){return(n=e((()=>{t=`11.4.1`})))()}export{t as n,n as t};

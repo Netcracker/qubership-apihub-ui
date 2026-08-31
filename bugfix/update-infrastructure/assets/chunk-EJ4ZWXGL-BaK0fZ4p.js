@@ -1,1 +1,0 @@
-import{n as e}from"./rolldown-runtime-BcKkbAw3.js";import{S as t,T as n,W as r,Z as i,t as a}from"./src-CuMxYmxj.js";var o;function s(){return(s=e((()=>{i(),a(),o=n(e=>{let{securityLevel:n}=r(),i=t(`body`);if(n===`sandbox`){let n=t(`#i${e}`).node()?.contentDocument??document;i=t(n.body)}return i.select(`#${e}`)},`selectSvgElement`)})))()}export{o as n,s as t};

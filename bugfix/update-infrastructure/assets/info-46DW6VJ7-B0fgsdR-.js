@@ -1,1 +1,0 @@
-import{n as e}from"./rolldown-runtime-BcKkbAw3.js";import{d as t}from"./chunk-Y27MQZ3U-DeK365_M.js";import{n,r}from"./chunk-4YFB5VUC-9lIpdux6.js";function i(){return(i=e((()=>{r(),t()})))()}i();export{n as createInfoServices};

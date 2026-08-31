@@ -1,1 +1,0 @@
-import{n as e}from"./rolldown-runtime-BcKkbAw3.js";import{t}from"./react-5l_iQkTl.js";import{T as n,a as r}from"./createTheme-CRX-jDaJ.js";import{i,r as a}from"./useThemeProps-Cga3Mt2f.js";function o(){return n(a)}function s(){return(s=e((()=>{t(),r(),i()})))()}export{o as n,s as t};

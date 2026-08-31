@@ -1,1 +1,0 @@
-import{n as e}from"./rolldown-runtime-BcKkbAw3.js";import{T as t,Z as n}from"./src-CuMxYmxj.js";var r;function i(){return(i=e((()=>{n(),r=t(({flowchart:e})=>{let t=e?.subGraphTitleMargin?.top??0,n=e?.subGraphTitleMargin?.bottom??0;return{subGraphTitleTopMargin:t,subGraphTitleBottomMargin:n,subGraphTitleTotalMargin:t+n}},`getSubGraphTitleMargins`)})))()}export{i as n,r as t};

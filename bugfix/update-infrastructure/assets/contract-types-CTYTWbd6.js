@@ -1,1 +1,0 @@
-import{n as e}from"./rolldown-runtime-BcKkbAw3.js";import{f as t}from"./src-B3V7yA2g-C9s8M7AX.js";var n,r,i;function a(){return(a=e((()=>{t(),n=`mcp`,r=`ddl`,i={[n]:`MCP`,[r]:`DDL`}})))()}export{i as n,a as r,r as t};
