@@ -40,7 +40,7 @@ export const VERSION_STATUS_CHIP_COLORS: Record<VersionStatus, SemanticChipColor
 
 export type VersionStatusChipProps = {
   status: VersionStatus
-} & Omit<CustomChipProps, 'value' | 'useCustomColor' | 'color'>
+} & Omit<CustomChipProps, 'value' | 'color'>
 
 export const VersionStatusChip: FC<VersionStatusChipProps> = memo<VersionStatusChipProps>(({
   status,
@@ -52,7 +52,6 @@ export const VersionStatusChip: FC<VersionStatusChipProps> = memo<VersionStatusC
     {...props}
     variant={variant}
     value={status}
-    useCustomColor={false}
     sx={mergeChipSx(semanticChipSx(VERSION_STATUS_CHIP_COLORS[status], variant === 'outlined' ? 'outlined' : 'filled'), sx)}
   />
 ))

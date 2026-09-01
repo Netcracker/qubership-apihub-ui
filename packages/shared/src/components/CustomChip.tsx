@@ -17,16 +17,13 @@
 import type { ElementType, FC, ReactNode } from 'react'
 import React, { memo, useMemo } from 'react'
 import Chip from '@mui/material/Chip'
-import type { ChipProps, ChipPropsColorOverrides } from '@mui/material/Chip/Chip'
-import type { OverridableStringUnion } from '@mui/types'
-import { CHIP_COLOR_OVERRIDES } from '../themes/palette'
+import type { ChipProps } from '@mui/material/Chip/Chip'
 
 export type CustomChipProps = {
   value: string
   label?: ReactNode | string
   component?: ElementType
   isExtraSmall?: boolean
-  useCustomColor?: boolean
 } & ChipProps
 
 export const CustomChip: FC<CustomChipProps> = memo<CustomChipProps>(({
@@ -34,20 +31,15 @@ export const CustomChip: FC<CustomChipProps> = memo<CustomChipProps>(({
   label,
   component = 'div',
   isExtraSmall = false,
-  useCustomColor = true,
   sx,
   ...props
 }) => {
-  const isCustomColor = useMemo(() => useCustomColor && Object.keys(CHIP_COLOR_OVERRIDES).includes(value), [useCustomColor, value])
-
-  //to support many usages in UI
-  const sxOverrides = useMemo(() => (isExtraSmall
-      ? {
-        ...sx,
-        ...extraSmallStyles,
-      }
-      : sx
-  ), [isExtraSmall, sx])
+  const sxOverrides = useMemo(
+    () => (isExtraSmall
+      ? [...(Array.isArray(sx) ? sx : [sx]), extraSmallStyles]
+      : sx),
+    [isExtraSmall, sx],
+  )
 
   return (
     <Chip
@@ -56,12 +48,9 @@ export const CustomChip: FC<CustomChipProps> = memo<CustomChipProps>(({
       size="small"
       label={label ?? value}
       component={component}
-      color={isCustomColor ? value as ChipColor : 'default'}
     />
   )
 })
-
-type ChipColor = OverridableStringUnion<'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning', ChipPropsColorOverrides>
 
 const extraSmallStyles = {
   height: '14px',

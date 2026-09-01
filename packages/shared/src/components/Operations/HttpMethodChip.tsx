@@ -38,7 +38,7 @@ export const METHOD_CHIP_COLORS: Record<MethodType, string> = {
 
 export type HttpMethodChipProps = {
   method: MethodType
-} & Omit<CustomChipProps, 'value' | 'useCustomColor' | 'color'>
+} & Omit<CustomChipProps, 'value' | 'color'>
 
 export const HttpMethodChip: FC<HttpMethodChipProps> = memo<HttpMethodChipProps>(({
   method,
@@ -52,7 +52,6 @@ export const HttpMethodChip: FC<HttpMethodChipProps> = memo<HttpMethodChipProps>
       {...props}
       variant={variant}
       value={method}
-      useCustomColor={false}
       sx={mergeChipSx(semanticChipSx({ main: color, contrastText: color }, variant === 'filled' ? 'filled' : 'outlined'), sx)}
     />
   )

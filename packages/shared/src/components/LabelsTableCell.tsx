@@ -34,7 +34,6 @@ export const LabelsTableCell: FC<LabelsTableCellProps> = memo<LabelsTableCellPro
             key={index}
             sx={{ mr: 1 }}
             value={label}
-            useCustomColor={false}
           />,
         )}
       </Box>

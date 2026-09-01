@@ -39,7 +39,7 @@ export const PERSONAL_ACCESS_TOKEN_STATUS_CHIP_COLORS: Record<PersonalAccessToke
 
 export type PersonalAccessTokenStatusChipProps = {
   status: PersonalAccessTokenStatus
-} & Omit<CustomChipProps, 'value' | 'useCustomColor' | 'color'>
+} & Omit<CustomChipProps, 'value' | 'color'>
 
 export const PersonalAccessTokenStatusChip: FC<PersonalAccessTokenStatusChipProps> = memo<PersonalAccessTokenStatusChipProps>(({
   status,
@@ -51,7 +51,6 @@ export const PersonalAccessTokenStatusChip: FC<PersonalAccessTokenStatusChipProp
     {...props}
     variant={variant}
     value={status}
-    useCustomColor={false}
     sx={mergeChipSx(semanticChipSx(PERSONAL_ACCESS_TOKEN_STATUS_CHIP_COLORS[status], variant === 'outlined' ? 'outlined' : 'filled'), sx)}
   />
 ))

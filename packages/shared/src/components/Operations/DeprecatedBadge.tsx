@@ -28,7 +28,7 @@ export const DEPRECATED_BADGE_COLOR: SemanticChipColor = {
 
 export const DEPRECATED_BADGE_LABEL = 'Deprecated'
 
-export type DeprecatedBadgeProps = Omit<CustomChipProps, 'value' | 'useCustomColor' | 'color'>
+export type DeprecatedBadgeProps = Omit<CustomChipProps, 'value' | 'color'>
 
 export const DeprecatedBadge: FC<DeprecatedBadgeProps> = memo<DeprecatedBadgeProps>(({
   label = DEPRECATED_BADGE_LABEL,
@@ -41,7 +41,6 @@ export const DeprecatedBadge: FC<DeprecatedBadgeProps> = memo<DeprecatedBadgePro
     value={DEPRECATED_BADGE_LABEL.toLowerCase()}
     label={label}
     isExtraSmall={isExtraSmall}
-    useCustomColor={false}
     sx={mergeChipSx(semanticChipSx(DEPRECATED_BADGE_COLOR), sx)}
   />
 ))

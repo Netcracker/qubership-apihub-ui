@@ -24,7 +24,7 @@ import { isRestOperation } from '../../entities/operations'
 
 export type OperationChipProps = {
   operation: Operation
-} & Omit<CustomChipProps, 'value' | 'useCustomColor' | 'color'>
+} & Omit<CustomChipProps, 'value' | 'color'>
 
 export const OperationChip: FC<OperationChipProps> = memo<OperationChipProps>(({
   operation,
@@ -38,7 +38,6 @@ export const OperationChip: FC<OperationChipProps> = memo<OperationChipProps>(({
     <CustomChip
       {...props}
       value={(operation as { method?: string }).method ?? ''}
-      useCustomColor={false}
     />
   )
 })

@@ -26,7 +26,7 @@ export const DDL_SCHEMA_CHIP_COLOR: SemanticChipColor = {
   contrastText: '#0C1E36',
 }
 
-export type DdlSchemaChipProps = Omit<CustomChipProps, 'value' | 'useCustomColor' | 'color'>
+export type DdlSchemaChipProps = Omit<CustomChipProps, 'value' | 'color'>
 
 export const DdlSchemaChip: FC<DdlSchemaChipProps> = memo<DdlSchemaChipProps>(({
   sx,
@@ -35,7 +35,6 @@ export const DdlSchemaChip: FC<DdlSchemaChipProps> = memo<DdlSchemaChipProps>(({
   <CustomChip
     {...props}
     value="ddlSchema"
-    useCustomColor={false}
     sx={mergeChipSx(semanticChipSx(DDL_SCHEMA_CHIP_COLOR), sx)}
   />
 ))

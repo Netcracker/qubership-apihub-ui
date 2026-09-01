@@ -24,7 +24,7 @@ import { GRAPHQL_OPERATION_TYPE_COLOR_MAP } from '../../entities/graphql-operati
 
 export type GraphQlOperationTypeChipProps = {
   operationType: GraphQlOperationType
-} & Omit<CustomChipProps, 'value' | 'useCustomColor' | 'color'>
+} & Omit<CustomChipProps, 'value' | 'color'>
 
 export const GraphQlOperationTypeChip: FC<GraphQlOperationTypeChipProps> = memo<GraphQlOperationTypeChipProps>(({
   operationType,
@@ -38,7 +38,6 @@ export const GraphQlOperationTypeChip: FC<GraphQlOperationTypeChipProps> = memo<
       {...props}
       variant={variant}
       value={operationType}
-      useCustomColor={false}
       sx={mergeChipSx(semanticChipSx({ main: color, contrastText: color }, variant === 'filled' ? 'filled' : 'outlined'), sx)}
     />
   )

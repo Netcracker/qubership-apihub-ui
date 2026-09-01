@@ -24,7 +24,7 @@ import { ASYNCAPI_OPERATION_TYPE_COLOR_MAP } from '../../entities/asyncapi-opera
 
 export type AsyncApiActionChipProps = {
   action: AsyncApiOperationType
-} & Omit<CustomChipProps, 'value' | 'useCustomColor' | 'color'>
+} & Omit<CustomChipProps, 'value' | 'color'>
 
 export const AsyncApiActionChip: FC<AsyncApiActionChipProps> = memo<AsyncApiActionChipProps>(({
   action,
@@ -38,7 +38,6 @@ export const AsyncApiActionChip: FC<AsyncApiActionChipProps> = memo<AsyncApiActi
       {...props}
       variant={variant}
       value={action}
-      useCustomColor={false}
       sx={mergeChipSx(semanticChipSx({ main: color, contrastText: color }, variant === 'filled' ? 'filled' : 'outlined'), sx)}
     />
   )

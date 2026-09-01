@@ -39,7 +39,7 @@ export const RULESET_STATUS_CHIP_COLORS: Record<RulesetStatus, SemanticChipColor
   },
 }
 
-export type RulesetSpecTypeChipProps = Omit<CustomChipProps, 'value' | 'useCustomColor' | 'color'>
+export type RulesetSpecTypeChipProps = Omit<CustomChipProps, 'value' | 'color'>
 
 export const RulesetSpecTypeChip: FC<RulesetSpecTypeChipProps> = memo<RulesetSpecTypeChipProps>(({
   sx,
@@ -48,14 +48,13 @@ export const RulesetSpecTypeChip: FC<RulesetSpecTypeChipProps> = memo<RulesetSpe
   <CustomChip
     {...props}
     value="rulesetSpecType"
-    useCustomColor={false}
     sx={mergeChipSx(semanticChipSx(RULESET_SPEC_TYPE_CHIP_COLOR), sx)}
   />
 ))
 
 export type RulesetStatusChipProps = {
   status: RulesetStatus
-} & Omit<CustomChipProps, 'value' | 'useCustomColor' | 'color'>
+} & Omit<CustomChipProps, 'value' | 'color'>
 
 export const RulesetStatusChip: FC<RulesetStatusChipProps> = memo<RulesetStatusChipProps>(({
   status,
@@ -65,7 +64,6 @@ export const RulesetStatusChip: FC<RulesetStatusChipProps> = memo<RulesetStatusC
   <CustomChip
     {...props}
     value={status}
-    useCustomColor={false}
     sx={mergeChipSx(semanticChipSx(RULESET_STATUS_CHIP_COLORS[status]), sx)}
   />
 ))

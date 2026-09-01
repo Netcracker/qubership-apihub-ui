@@ -56,7 +56,6 @@ export const RateResults: FC<RateResultsProps> = memo<RateResultsProps>(({
           key={`rate-results-custom-chip-${label}`}
           sx={{ mr: 1 }}
           value={label}
-          useCustomColor={false}
         />
       ))}
     </>
