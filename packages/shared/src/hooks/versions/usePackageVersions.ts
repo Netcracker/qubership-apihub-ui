@@ -39,6 +39,8 @@ import { getPatchedBody } from '../../utils/request-bodies'
 
 const PACKAGE_VERSIONS_QUERY_KEY = 'package-versions-query-key'
 
+const PACKAGE_VERSIONS_STALE_TIME = 30_000
+
 type FetchNextVersionsList = (options?: FetchNextPageOptions) => Promise<InfiniteQueryObserverResult<PackageVersions, Error>>
 
 // TODO 13.07.23 // Is there any more optimal way to do paged/flatten result?
@@ -50,9 +52,8 @@ export function usePagedPackageVersions(options?: Partial<{
   sortOrder: SortOrder
   limit: number
   page: number
-  reloadQuery: boolean
 }>): [PagedPackageVersions, IsLoading, FetchNextVersionsList, boolean | undefined] {
-  const { status, textFilter, limit, page, reloadQuery = false, sortBy, sortOrder } = options ?? {}
+  const { status, textFilter, limit, page, sortBy, sortOrder } = options ?? {}
   const packageKey = options?.packageKey
 
   const {
@@ -61,11 +62,12 @@ export function usePagedPackageVersions(options?: Partial<{
     fetchNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery<PackageVersions, Error, PackageVersions>({
-    queryKey: [PACKAGE_VERSIONS_QUERY_KEY, packageKey, status, textFilter, sortBy, sortOrder, reloadQuery],
+    queryKey: [PACKAGE_VERSIONS_QUERY_KEY, packageKey, status, textFilter, sortBy, sortOrder],
     queryFn: ({ pageParam = 0, signal }) =>
       getPackageVersionsList(packageKey!, status, textFilter, sortBy, sortOrder, limit, pageParam ?? page, signal),
     enabled: !!packageKey,
-     refetchOnMount: true,
+    refetchOnMount: true,
+    staleTime: PACKAGE_VERSIONS_STALE_TIME,
   })
 
   return [
@@ -119,6 +121,7 @@ export function usePackageVersions(options?: Partial<{
     },
     enabled: !!packageKey && enabled,
     refetchOnMount: true,
+    staleTime: PACKAGE_VERSIONS_STALE_TIME,
   })
 
   const versions = useMemo(() => (data?.pages.flat() ?? []), [data?.pages])
@@ -220,7 +223,7 @@ export async function editPackageVersion(
 }
 
 export function usePackageVersionKeys(): [VersionKey[], IsLoading] {
-  const {versions: versionsData, areVersionsLoading} = usePackageVersions()
+  const { versions: versionsData, areVersionsLoading } = usePackageVersions()
   const versions = handleVersionsRevision(versionsData)
   return useMemo(
     () => [versions.map(({ key }) => key), areVersionsLoading],
