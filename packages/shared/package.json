@@ -25,6 +25,7 @@
     "jszip": "3.10.1"
   },
   "devDependencies": {
+    "@storybook/react": "10.5.10",
     "cross-env": "7.0.3",
     "eslint": "8.57.1",
     "jest": "30.4.2",

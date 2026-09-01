@@ -111,6 +111,7 @@
     "@types/express": "4.17.17",
     "@types/express-ws": "3.0.1",
     "@types/jest": "30.0.0",
+    "@types/node": "^24.2.1",
     "@types/object-hash": "3.0.6",
     "@types/react": "18.0.28",
     "@types/react-csv": "1.1.3",
