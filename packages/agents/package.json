@@ -18,19 +18,42 @@
     "lint:fix": "npm run lint:check -- --fix"
   },
   "dependencies": {
+    "@graphql-tools/merge": "^9.0.4",
+    "@mui/icons-material": "5.11.9",
+    "@mui/lab": "5.0.0-alpha.120",
+    "@mui/material": "5.11.10",
     "@mui/system": "5.18.0",
     "@mui/x-date-pickers": "5.0.9",
+    "@netcracker/qubership-apihub-api-processor": "bugfix-update-infrastructure",
     "@remix-run/router": "1.11.0",
     "@tanstack/query-core": "4.43.0",
+    "@tanstack/react-query": "^4.43.0",
+    "@tanstack/react-query-devtools": "^4.43.0",
+    "@tanstack/react-table": "8.8.0",
     "@tanstack/table-core": "8.8.0",
-    "body-parser": "2.2.2"
+    "body-parser": "2.2.2",
+    "comlink": "4.4.1",
+    "dayjs": "1.11.7",
+    "graphql": "^16.6.0",
+    "js-file-download": "0.4.12",
+    "react-hook-form": "7.39.7",
+    "react-router-dom": "6.18.0",
+    "react-use": "17.4.0",
+    "ts-event-bus": "4.1.1",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
+    "@esbuild-plugins/node-globals-polyfill": "0.2.3",
+    "@esbuild-plugins/node-modules-polyfill": "0.2.2",
     "@netcracker/qubership-apihub-ui-shared": "*",
+    "@vitejs/plugin-react": "^6.1.1",
     "eslint": "8.57.1",
     "nodemon": "2.0.20",
+    "rollup-plugin-visualizer": "5.9.0",
     "typescript": "6.0.3",
+    "unplugin-fonts": "^2.0.0",
     "vite": "^8.2.2",
+    "vite-plugin-monaco-editor": "1.1.0",
     "vite-tsconfig-paths": "^4.3.2"
   }
 }
