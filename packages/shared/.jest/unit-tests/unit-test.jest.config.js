@@ -46,8 +46,12 @@ export default {
     // place, so whichever wins the key collision is correct.
     ...pathsToModuleNameMapper(pathsOf('portal'), { prefix: '<rootDir>/../portal/' }),
     ...pathsToModuleNameMapper(pathsOf('agents'), { prefix: '<rootDir>/../agents/' }),
-    // Not an alias - a genuine substitution, so it stays hand-written.
-    '^lodash-es/isPlainObject$': '<rootDir>/../../node_modules/lodash/isPlainObject.js',
+    // Not an alias - a genuine substitution, so it stays hand-written. Named as a module
+    // rather than as a path: '<rootDir>/../../node_modules/lodash/isPlainObject.js' is
+    // correct only while node_modules sits two levels up from this package, which is not
+    // true under a workspace or an isolated linker. jest resolves the bare specifier the
+    // way the runtime would, and reports it loudly if it cannot.
+    '^lodash-es/isPlainObject$': 'lodash/isPlainObject',
   },
   modulePaths: ['<rootDir>/src', '<rootDir>/../portal/src'],
   reporters: [

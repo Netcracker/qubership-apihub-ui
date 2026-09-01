@@ -11,6 +11,25 @@ import { visualizer as bundleVisualizer } from 'rollup-plugin-visualizer'
 import inject from '@rollup/plugin-inject'
 import monacoWorkerHashPlugin from '../../vite-monaco-worker-hash'
 import createVersionJsonFilePlugin from '../../vite-create-version-json'
+import { createRequire } from 'module'
+
+// The three apispec-view assets copied below were addressed by the literal path
+// ../../node_modules/@netcracker/qubership-apihub-apispec-view/dist/... , which is
+// correct only while node_modules sits two levels up from this package. Resolve the
+// package entry point and take the directory beside it instead.
+//
+// Via the entry point rather than <pkg>/package.json: apispec-view publishes an
+// "exports" map listing only "." and "./styles.min.css", so both package.json and the
+// deep dist/ subpaths are unreachable by specifier. The entry resolves, and the files
+// sit next to it.
+const requireFromHere = createRequire(import.meta.url)
+// rollup-plugin-copy passes `src` to globby, and globby treats a backslash as an escape
+// character - so an absolute Windows path matches nothing, the build still exits 0, and
+// the three assets are silently absent from dist. Measured: 431 files instead of 434.
+// Posix separators throughout.
+const apispecViewDist = path.dirname(requireFromHere.resolve('@netcracker/qubership-apihub-apispec-view'))
+  .split(path.sep)
+  .join('/')
 
 // const proxyServer = 'https://qubership-apihub-2.localtest.me/'
 const proxyServer = 'http://host.docker.internal:8081'
@@ -46,15 +65,15 @@ export default defineConfig(({ mode }) => {
       copy({
         targets: [
           {
-            src: '../../node_modules/@netcracker/qubership-apihub-apispec-view/dist/index.js',
+            src: `${apispecViewDist}/index.js`,
             dest: 'dist/apispec-view/',
           },
           {
-            src: '../../node_modules/@netcracker/qubership-apihub-apispec-view/dist/index.css',
+            src: `${apispecViewDist}/index.css`,
             dest: 'dist/apispec-view/',
           },
           {
-            src: '../../node_modules/@netcracker/qubership-apihub-apispec-view/dist/index.js.LICENSE.txt',
+            src: `${apispecViewDist}/index.js.LICENSE.txt`,
             dest: 'dist/apispec-view/',
           },
         ],
