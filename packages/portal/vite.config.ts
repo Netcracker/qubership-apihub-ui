@@ -104,12 +104,6 @@ export default defineConfig(({ mode }) => {
       include: [
         '@netcracker/qubership-apihub-api-processor',
       ],
-      // Keep ddlapi out of esbuild pre-bundling so its self-contained '/parser'
-      // (WASM-inlined) stays in the build worker's lazily-loaded chunk rather than
-      // being eagerly pre-bundled. Reached only via api-processor/processor.
-      exclude: [
-        '@netcracker/qubership-apihub-ddlapi',
-      ],
       esbuildOptions: {
         plugins: [
           NodeModulesPolyfill(),
@@ -126,6 +120,7 @@ export default defineConfig(({ mode }) => {
       // because the icons entry below matches on a pattern, which the object form
       // cannot express.
       alias: [
+        { find: 'process', replacement: require.resolve('process/browser') },
         { find: 'buffer', replacement: require.resolve('buffer/') },
         // Use browser-compatible version of AsyncAPI parser
         { find: '@asyncapi/parser', replacement: '@asyncapi/parser/browser' },
@@ -165,7 +160,16 @@ export default defineConfig(({ mode }) => {
         input: {
           app: resolve(__dirname, 'index.html'),
         },
-        plugins: [inject({ Buffer: ['buffer', 'Buffer'] })],
+        // `optimizeDeps.esbuildOptions` above only covers the dev server's dependency pre-bundling,
+        // so the Node globals that browser-unaware dependencies expect have to be injected again
+        // for the production build.
+        //
+        // `process` is needed because adm-zip 0.6.0 reads `process?.versions?.node` at module scope
+        // (methods/inflater.js), and `methods/index.js` requires that file unconditionally. Optional
+        // chaining does not guard an undeclared binding, so merely importing adm-zip throws
+        // `ReferenceError: process is not defined`. It reaches the bundle through api-processor and
+        // lands in the lazily-loaded build-worker chunk, which is why only publishing broke.
+        plugins: [inject({ Buffer: ['buffer', 'Buffer'], process: 'process', exclude: ['**/*.cjs'] })],
       },
     },
     server: {
