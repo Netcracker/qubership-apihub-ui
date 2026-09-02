@@ -20,7 +20,9 @@ import type { CustomChipProps } from '../CustomChip'
 import { CustomChip } from '../CustomChip'
 import { HttpMethodChip } from './HttpMethodChip'
 import type { Operation } from '../../entities/operations'
-import { isRestOperation } from '../../entities/operations'
+import { isGraphQlOperation, isRestOperation } from '../../entities/operations'
+
+const UNKNOWN_OPERATION_CHIP_VALUE = 'unknown'
 
 export type OperationChipProps = {
   operation: Operation
@@ -28,16 +30,18 @@ export type OperationChipProps = {
 
 export const OperationChip: FC<OperationChipProps> = memo<OperationChipProps>(({
   operation,
+  variant = 'outlined',
   ...props
 }) => {
   if (isRestOperation(operation)) {
-    return <HttpMethodChip {...props} method={operation.method} />
+    return <HttpMethodChip {...props} variant={variant} method={operation.method}/>
   }
 
   return (
     <CustomChip
       {...props}
-      value={(operation as { method?: string }).method ?? ''}
+      variant={variant}
+      value={isGraphQlOperation(operation) ? operation.method : UNKNOWN_OPERATION_CHIP_VALUE}
     />
   )
 })

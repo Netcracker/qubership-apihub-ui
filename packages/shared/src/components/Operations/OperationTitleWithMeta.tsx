@@ -30,11 +30,12 @@ import { HttpMethodChip } from './HttpMethodChip'
 import type { MethodType } from '../../entities/method-types'
 import type { GraphQlOperationType } from '../../entities/graphql-operation-types'
 import type { AsyncApiOperationType } from '../../entities/asyncapi-operation-types'
+import { API_TYPE_ASYNCAPI, API_TYPE_GRAPHQL, API_TYPE_REST } from '../../entities/api-types'
 
 export type OperationTypeMeta =
-  | Readonly<{ apiType: 'rest'; method: MethodType }>
-  | Readonly<{ apiType: 'graphql'; operationType: GraphQlOperationType }>
-  | Readonly<{ apiType: 'asyncapi'; action: AsyncApiOperationType }>
+  | Readonly<{ apiType: typeof API_TYPE_REST; method: MethodType }>
+  | Readonly<{ apiType: typeof API_TYPE_GRAPHQL; operationType: GraphQlOperationType }>
+  | Readonly<{ apiType: typeof API_TYPE_ASYNCAPI; action: AsyncApiOperationType }>
 
 type OperationTitleMeta = Readonly<{
   title: string
@@ -49,11 +50,11 @@ type OperationPathMetaProps = Readonly<{
 
 const OperationTypeChip: FC<{ operationType: OperationTypeMeta }> = memo(({ operationType }) => {
   switch (operationType.apiType) {
-    case 'rest':
+    case API_TYPE_REST:
       return <HttpMethodChip method={operationType.method} data-testid="OperationPathChip"/>
-    case 'graphql':
+    case API_TYPE_GRAPHQL:
       return <GraphQlOperationTypeChip operationType={operationType.operationType} data-testid="OperationPathChip"/>
-    case 'asyncapi':
+    case API_TYPE_ASYNCAPI:
       return <AsyncApiActionChip action={operationType.action} data-testid="OperationPathChip"/>
   }
 })
@@ -138,21 +139,21 @@ function getOperationTitleMeta(operation: Operation): OperationTitleMeta {
     return {
       title: operation.title,
       subtitle: operation.path,
-      operationType: { apiType: 'rest', method: operation.method },
+      operationType: { apiType: API_TYPE_REST, method: operation.method },
     }
   }
   if (isGraphQlOperation(operation)) {
     return {
       title: operation.title,
       subtitle: operation.method,
-      operationType: { apiType: 'graphql', operationType: operation.type },
+      operationType: { apiType: API_TYPE_GRAPHQL, operationType: operation.type },
     }
   }
   if (isAsyncApiOperation(operation)) {
     return {
       title: operation.title,
       subtitle: operation.channel,
-      operationType: { apiType: 'asyncapi', action: operation.action },
+      operationType: { apiType: API_TYPE_ASYNCAPI, action: operation.action },
     }
   }
   throw new Error('Operation must be either a REST, GraphQL, or AsyncAPI operation')

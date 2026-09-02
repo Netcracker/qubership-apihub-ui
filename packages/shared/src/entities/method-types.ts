@@ -35,6 +35,10 @@ export const METHOD_TYPES: ReadonlySet<MethodType> = new Set([
   DELETE_METHOD_TYPE,
 ])
 
+export function isMethodType(method: string): method is MethodType {
+  return (METHOD_TYPES as ReadonlySet<string>).has(method)
+}
+
 export const METHOD_TYPE_COLOR_MAP: Record<MethodType, string> = {
   [GET_METHOD_TYPE]: '#6BCE70',
   [POST_METHOD_TYPE]: '#5CB9CC',
