@@ -42,7 +42,7 @@ export function isMethodType(method: string): method is MethodType {
 export const METHOD_TYPE_COLOR_MAP: Record<MethodType, string> = {
   [GET_METHOD_TYPE]: '#6BCE70',
   [POST_METHOD_TYPE]: '#5CB9CC',
-  [PUT_METHOD_TYPE]: '#D86DEA',
+  [PUT_METHOD_TYPE]: '#F49147',
   [PATCH_METHOD_TYPE]: '#FFB02E',
   [DELETE_METHOD_TYPE]: '#FF5260',
 }

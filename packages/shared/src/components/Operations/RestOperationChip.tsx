@@ -17,28 +17,16 @@
 import type { FC } from 'react'
 import { memo } from 'react'
 import type { CustomChipProps } from '../CustomChip'
-import { CustomChip } from '../CustomChip'
-import { mergeChipSx, semanticChipSx } from '../semantic-chip-styles'
-import type { MethodType } from '../../entities/method-types'
-import { METHOD_TYPE_COLOR_MAP } from '../../entities/method-types'
+import { HttpMethodChip } from './HttpMethodChip'
+import type { RestOperation } from '../../entities/operations'
 
-export type HttpMethodChipProps = {
-  method: MethodType
+export type RestOperationChipProps = {
+  operation: RestOperation
 } & Omit<CustomChipProps, 'value' | 'color'>
 
-export const HttpMethodChip: FC<HttpMethodChipProps> = memo<HttpMethodChipProps>(({
-  method,
-  variant = 'outlined',
-  sx,
+export const RestOperationChip: FC<RestOperationChipProps> = memo<RestOperationChipProps>(({
+  operation,
   ...props
-}) => {
-  const color = METHOD_TYPE_COLOR_MAP[method]
-  return (
-    <CustomChip
-      {...props}
-      variant={variant}
-      value={method}
-      sx={mergeChipSx(semanticChipSx({ main: color, contrastText: color }, variant === 'filled' ? 'filled' : 'outlined'), sx)}
-    />
-  )
-})
+}) => (
+  <HttpMethodChip {...props} method={operation.method}/>
+))
