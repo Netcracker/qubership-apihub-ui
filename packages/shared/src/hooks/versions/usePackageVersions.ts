@@ -63,8 +63,7 @@ export function usePagedPackageVersions(options?: Partial<{
     isFetchingNextPage,
   } = useInfiniteQuery<PackageVersions, Error, PackageVersions>({
     queryKey: [PACKAGE_VERSIONS_QUERY_KEY, packageKey, status, textFilter, sortBy, sortOrder],
-    queryFn: ({ pageParam = 0, signal }) =>
-      getPackageVersionsList(packageKey!, status, textFilter, sortBy, sortOrder, limit, pageParam ?? page, signal),
+    queryFn: ({ pageParam = 0, signal }) => getPackageVersionsList(packageKey!, status, textFilter, sortBy, sortOrder, limit, pageParam ?? page, signal),
     enabled: !!packageKey,
     refetchOnMount: true,
     staleTime: PACKAGE_VERSIONS_STALE_TIME,
