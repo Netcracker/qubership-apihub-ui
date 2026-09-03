@@ -24,9 +24,13 @@ export type SemanticChipColor = {
 }
 
 export function semanticChipSx(
-  { main, contrastText }: SemanticChipColor,
+  color: SemanticChipColor | undefined,
   variant: 'filled' | 'outlined' = 'filled',
 ): SystemStyleObject<Theme> {
+  if (!color?.main) {
+    return {}
+  }
+  const { main, contrastText } = color
   return variant === 'outlined'
     ? {
       color: main,
