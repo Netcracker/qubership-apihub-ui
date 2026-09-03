@@ -14,6 +14,7 @@
     "development:unlink": "npm unlink @netcracker/qubership-apihub-api-processor",
     "dev:agents": "npx lerna run dev:backend,dev:frontend --stream --scope=@netcracker/qubership-apihub-ui-agents",
     "dev:portal": "npx lerna run dev:backend,dev:frontend --stream --scope=@netcracker/qubership-apihub-ui-portal",
+    "msw:init": "npx msw init packages/portal/public --no-save",
     "lint:check": "eslint . --ext .ts,.tsx,.json --ignore-path .gitignore --max-warnings 0 --report-unused-disable-directives",
     "lint:fix": "npm run lint:check -- --fix",
     "update-lock-file": "update-lock-file @netcracker"
@@ -142,6 +143,7 @@
     "eslint-plugin-storybook": "0.6.15",
     "express": "5.2.1",
     "jest": "30.4.2",
+    "msw": "2.15.0",
     "nodemon": "2.0.20",
     "openapi-types": "^12.1.0",
     "process": "0.11.10",
