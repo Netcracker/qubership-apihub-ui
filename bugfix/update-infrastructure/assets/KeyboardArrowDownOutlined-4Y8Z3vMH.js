@@ -1,1 +1,0 @@
-import{n as e}from"./rolldown-runtime-BcKkbAw3.js";import{t}from"./jsx-runtime-Dw8SQ1Xa.js";import{n,t as r}from"./createSvgIcon-BXSVxfKP.js";var i,a;function o(){return(o=e((()=>{n(),i=t(),a=r((0,i.jsx)(`path`,{d:`M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z`}),`KeyboardArrowDownOutlined`)})))()}export{o as n,a as t};

@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-BcKkbAw3.js";import{c as t,l as n,s as r,u as i}from"./clsx.m-DvhsLdH4.js";function a(e){return n(`MuiListItemText`,e)}var o;function s(){return(s=e((()=>{t(),i(),o=r(`MuiListItemText`,[`root`,`multiline`,`dense`,`inset`,`primary`,`secondary`])})))()}export{s as n,o as r,a as t};

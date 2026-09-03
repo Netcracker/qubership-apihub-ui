@@ -1,1 +1,0 @@
-import{n as e}from"./rolldown-runtime-BcKkbAw3.js";import{a as t,c as n,f as r,i,n as a,o,r as s,s as c}from"./files-B2QTExZR.js";var l,u,d,f,p,m,h;function g(){return(g=e((()=>{r(),l=`yaml`,u=`json`,d=`markdown`,f=`text`,p=`graphql`,m=`proto`,h={[c]:l,[n]:l,[i]:u,".md":d,[s]:p,[t]:m,[o]:`sql`,[a]:`sql`}})))()}export{f as n,g as r,h as t};

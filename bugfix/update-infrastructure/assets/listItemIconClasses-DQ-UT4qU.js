@@ -1,1 +1,0 @@
-import{n as e}from"./rolldown-runtime-BcKkbAw3.js";import{c as t,l as n,s as r,u as i}from"./clsx.m-CaMu1q58.js";function a(e){return n(`MuiListItemIcon`,e)}var o;function s(){return(s=e((()=>{t(),i(),o=r(`MuiListItemIcon`,[`root`,`alignItemsFlexStart`])})))()}export{s as n,o as r,a as t};

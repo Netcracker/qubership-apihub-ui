@@ -1,0 +1,6 @@
+import{n as e}from"./rolldown-runtime-BcKkbAw3.js";import{t}from"./react---BZM-86.js";import{t as n}from"./jsx-runtime--WVWf14b.js";import{n as r,t as i}from"./Box-CzqjOcoU.js";import{n as a,t as o}from"./CustomTagsTree-RI2FWMPS.js";var s;function c(){return(c=e((()=>{s={"x-custom1":`X-Custom-1 Value`,"x-custom2":[`green`,12,null,`undefined`],"x-custom3":[{prop:1},{prop:`undefined`},`text text`],"x-custom4":null,"x-custom5":`undefined`,"x-custom6":{aaa3:!1},"x-custom7":{one1:{two1:{three1:`text1`},two2:{three1:`text1`,three2:{four1:{five1:`text1`},four2:123}},two3:`text1`}},"x-custom8":`test`}})))()}var l,u,d,f;function p(){return(p=e((()=>{r(),t(),a(),c(),l=n(),u={title:`Custom Tags Tree`,component:o,decorators:[e=>(0,l.jsx)(i,{sx:{ul:{"list-style-type":`none`,"padding-inline-start":0}},children:(0,l.jsx)(e,{})})]},d={name:`Default`,args:{tree:s}},d.parameters={...d.parameters,docs:{...d.parameters?.docs,source:{originalSource:`{
+  name: 'Default',
+  args: {
+    tree: tree
+  }
+}`,...d.parameters?.docs?.source}}},f=[`DefaultStory`]})))()}p();export{d as DefaultStory,f as __namedExportsOrder,u as default};
