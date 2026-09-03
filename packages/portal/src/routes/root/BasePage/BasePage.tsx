@@ -29,10 +29,10 @@ import { LogoIcon } from '@netcracker/qubership-apihub-ui-shared/icons/LogoIcon'
 import { RobotIcon } from '@netcracker/qubership-apihub-ui-shared/icons/RobotIcon'
 import { cutViewPortStyleCalculator } from '@netcracker/qubership-apihub-ui-shared/utils/themes'
 import { matchPathname } from '@netcracker/qubership-apihub-ui-shared/utils/urls'
-import { AiAssistantPanel } from '@netcracker/qubership-apihub-ui-portal/src/components/AiAssistant/AiAssistantPanel'
+import { AiAssistantPanel } from '@portal/components/AiAssistant/AiAssistantPanel'
 import {
   AiAssistantProvider,
-} from '@netcracker/qubership-apihub-ui-portal/src/components/AiAssistant/state/AiAssistantProvider'
+} from '@portal/components/AiAssistant/state/AiAssistantProvider'
 import * as packageJson from '../../../../package.json'
 import { PORTAL_PATH_PATTERNS } from '../../../routes'
 import { Notification, useShowErrorNotification } from '../BasePage/Notification'

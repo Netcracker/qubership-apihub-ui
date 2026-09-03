@@ -1,6 +1,6 @@
-import { RulesetStatuses, type RulesetMetadata } from '@apihub/entities/api-quality/rulesets'
-import { LINTER_API_TYPE_TITLE_MAP } from '@apihub/entities/api-quality/linter-api-types'
-import { useEventBus } from '@apihub/routes/EventBusProvider'
+import { RulesetStatuses, type RulesetMetadata } from '@portal/entities/api-quality/rulesets'
+import { LINTER_API_TYPE_TITLE_MAP } from '@portal/entities/api-quality/linter-api-types'
+import { useEventBus } from '@portal/routes/EventBusProvider'
 import { Box, Link, Skeleton } from '@mui/material'
 import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
 import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
@@ -8,8 +8,8 @@ import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/ali
 import capitalize from 'lodash-es/capitalize'
 import type { FC } from 'react'
 import { memo, useCallback } from 'react'
-import { useLinters } from '@apihub/api-hooks/ApiQuality/useLinters'
-import { getLinterName } from '@apihub/utils/api-quality/linters'
+import { useLinters } from '@portal/api-hooks/ApiQuality/useLinters'
+import { getLinterName } from '@portal/utils/api-quality/linters'
 
 type ValidationRulesetLinkProps = {
   data: RulesetMetadata | undefined

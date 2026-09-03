@@ -15,13 +15,13 @@
  */
 
 import { defineConfig } from 'vite'
+import tsconfigPaths from 'vite-tsconfig-paths'
 import react from '@vitejs/plugin-react'
 import monacoEditor from 'vite-plugin-monaco-editor'
 import path, { resolve } from 'path'
 import NodeModulesPolyfill from '@esbuild-plugins/node-modules-polyfill'
 import NodeGlobalsPolyfill from '@esbuild-plugins/node-globals-polyfill'
-import ignoreDotsOnDevServer from 'vite-plugin-rewrite-all'
-import { VitePluginFonts } from 'vite-plugin-fonts'
+import Unfonts from 'unplugin-fonts/vite'
 import { visualizer as bundleVisualizer } from 'rollup-plugin-visualizer'
 import inject from '@rollup/plugin-inject'
 import createVersionJsonFilePlugin from '../../vite-create-version-json'
@@ -42,9 +42,9 @@ export default defineConfig(({ mode }) => {
   return {
     base: !isProxyMode ? '/agents' : '',
     plugins: [
+      tsconfigPaths(),
       react({ fastRefresh: false }),
       ...(analyzeBundle ? [bundleVisualizer()] : []),
-      ignoreDotsOnDevServer(),
       monacoEditor({
         languageWorkers: ['editorWorkerService', 'json'],
         customWorkers: [{
@@ -55,7 +55,7 @@ export default defineConfig(({ mode }) => {
           entry: 'monaco-graphql/dist/graphql.worker',
         }],
       }),
-      VitePluginFonts({
+      Unfonts({
         custom: {
           families: [{
             name: 'Inter',
@@ -90,18 +90,42 @@ export default defineConfig(({ mode }) => {
       },
     },
     resolve: {
-      alias: {
-        '@apihub/components': path.resolve(__dirname, './src/components/'), // TODO: Move to `@netcracker/qubership-apihub-ui-shared`
-        '@apihub/entities': path.resolve(__dirname, './src/entities/'),
-        '@apihub/utils': path.resolve(__dirname, './src/utils/'),
-        '@netcracker/qubership-apihub-ui-shared': path.resolve(__dirname, './../shared/src'),
-        'buffer': require.resolve('buffer/'),
-        'process': require.resolve('process/browser'),
-        '@asyncapi/parser': '@asyncapi/parser/browser', // Use browser-compatible version of AsyncAPI parser
-      },
+      // Path aliases come from tsconfig.json via tsconfigPaths(); only substitutions
+      // that no tsconfig declares are listed here. Array form rather than object form
+      // because the icons entry below matches on a pattern, which the object form
+      // cannot express.
+      alias: [
+        { find: 'buffer', replacement: require.resolve('buffer/') },
+        { find: 'process', replacement: require.resolve('process/browser') },
+        // Use browser-compatible version of AsyncAPI parser
+        { find: '@asyncapi/parser', replacement: '@asyncapi/parser/browser' },
+        {
+          /* @mui/icons-material has no "exports" map, so a deep import such as
+             '@mui/icons-material/InfoOutlined' resolves to the CommonJS file at the
+             package root rather than to esm/. Rolldown then applies Node-style CJS
+             interop to it - __toESM(mod, isNodeMode) - which forces `default` to the
+             whole exports object instead of honouring the module's own __esModule
+             marker. The imported icon therefore arrives as { default: icon }, and
+             `styled(InfoOutlinedIcon)` in ui-shared renders that object:
+
+               Minified React error #130 (element type is invalid, got: object)
+
+             Pointing the deep icon imports at esm/ removes the CJS interop from the
+             path entirely rather than depending on how a bundler resolves it.
+             Anchored so an already-resolved 'esm/...' path is not rewritten again. */
+          find: /^@mui\/icons-material\/(?!esm\/)(.+)$/,
+          replacement: '@mui/icons-material/esm/$1',
+        },
+      ],
     },
     worker: {
       format: 'es',
+      // Worker bundles are a separate rollup pass with their own plugin list.
+      // resolve.alias is config-level and applies to them automatically; a resolver
+      // plugin is not, so it must be registered here too or aliased imports fail to
+      // resolve inside workers only - and nowhere else. Array form, not the function form:
+      // vite 4 expects an array here; the callback signature arrived in vite 5.1.
+      plugins: [tsconfigPaths()],
     },
     build: {
       emptyOutDir: true,
@@ -122,7 +146,7 @@ export default defineConfig(({ mode }) => {
         // chaining does not guard an undeclared binding, so merely importing adm-zip throws
         // `ReferenceError: process is not defined`. It reaches the bundle through api-processor and
         // lands in the lazily-loaded build-worker chunk, which is why only publishing broke.
-        plugins: [inject({ Buffer: ['buffer', 'Buffer'], process: 'process' })],
+        plugins: [inject({ Buffer: ['buffer', 'Buffer'], process: 'process', exclude: ['**/*.cjs'] })],
       },
     },
     server: {
