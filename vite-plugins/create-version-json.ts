@@ -6,10 +6,11 @@ export default function createVersionJsonFilePlugin(): Plugin {
   return {
     name: 'create-version-json-file',
     closeBundle: async function() {
-      const lernaPath = path.resolve(__dirname, 'lerna.json')
-      const lockPath = path.resolve(__dirname, 'package-lock.json')
-      const outputPathPortal = path.resolve(__dirname, 'packages/portal/dist/version.json')
-      const outputPathAgent = path.resolve(__dirname, 'packages/agents/dist/version.json')
+      const uiRoot = path.resolve(__dirname, '..')
+      const lernaPath = path.resolve(uiRoot, 'lerna.json')
+      const lockPath = path.resolve(uiRoot, 'package-lock.json')
+      const outputPathPortal = path.resolve(uiRoot, 'packages/portal/dist/version.json')
+      const outputPathAgent = path.resolve(uiRoot, 'packages/agents/dist/version.json')
 
       let lernaVersion = null
       let libraryVersion = null

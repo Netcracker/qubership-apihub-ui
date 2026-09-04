@@ -9,8 +9,9 @@ import ignoreDotsOnDevServer from 'vite-plugin-rewrite-all'
 import { VitePluginFonts } from 'vite-plugin-fonts'
 import { visualizer as bundleVisualizer } from 'rollup-plugin-visualizer'
 import inject from '@rollup/plugin-inject'
-import monacoWorkerHashPlugin from '../../vite-monaco-worker-hash'
-import createVersionJsonFilePlugin from '../../vite-create-version-json'
+import monacoWorkerHashPlugin from '../../vite-plugins/monaco-worker-hash'
+import createVersionJsonFilePlugin from '../../vite-plugins/create-version-json'
+import removeMswFromDistPlugin from '../../vite-plugins/remove-msw-from-dist'
 
 // const proxyServer = 'https://qubership-apihub-2.localtest.me/'
 const proxyServer = 'http://host.docker.internal:8081'
@@ -75,6 +76,7 @@ export default defineConfig(({ mode }) => {
         },
       }),
       createVersionJsonFilePlugin(),
+      removeMswFromDistPlugin(),
     ],
     optimizeDeps: {
       // npm link creates a symlink that points outside node_modules and by default such packages are not optimized.
