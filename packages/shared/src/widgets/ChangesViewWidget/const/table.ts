@@ -25,11 +25,16 @@ export type ChangesViewTableData = {
 
 export const CHANGES_COLUMN_ID = 'changes-column'
 
+const ENDPOINT_COLUMN_PERCENTAGE = 0.28
+const REMAINING_COLUMN_PERCENTAGE = (1 - ENDPOINT_COLUMN_PERCENTAGE) / 5
+
+const CHANGES_COLUMN_MIN_WIDTH = 218
+
 export const COLUMNS_MODELS: ColumnModel[] = [
-  { name: ENDPOINT_COLUMN_ID },
-  { name: TAGS_COLUMN_ID, width: 167 },
-  { name: PACKAGE_COLUMN_ID, width: 245 },
-  { name: CHANGES_COLUMN_ID, fixedWidth: 218 },
-  { name: API_KIND_COLUMN_ID, fixedWidth: 96 },
-  { name: API_AUDIENCE_COLUMN_ID, fixedWidth: 110 },
+  { name: ENDPOINT_COLUMN_ID, percentage: ENDPOINT_COLUMN_PERCENTAGE },
+  { name: TAGS_COLUMN_ID, percentage: REMAINING_COLUMN_PERCENTAGE },
+  { name: PACKAGE_COLUMN_ID, percentage: REMAINING_COLUMN_PERCENTAGE },
+  { name: CHANGES_COLUMN_ID, percentage: REMAINING_COLUMN_PERCENTAGE, minWidth: CHANGES_COLUMN_MIN_WIDTH },
+  { name: API_KIND_COLUMN_ID, percentage: REMAINING_COLUMN_PERCENTAGE },
+  { name: API_AUDIENCE_COLUMN_ID, percentage: REMAINING_COLUMN_PERCENTAGE },
 ]
