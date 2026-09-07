@@ -220,10 +220,9 @@ export type SearchCriteria = {
     endDate: string
   }
   apiContract?: ApiContract
-  apiType?: ApiType
 }
 
 export function toApiTypeFilter(criteria: SearchCriteria): ApiType | undefined {
-  const selected = criteria.apiContract ?? criteria.apiType
-  return selected && isApiType(selected) ? selected : undefined
+  const { apiContract } = criteria
+  return apiContract && isApiType(apiContract) ? apiContract : undefined
 }

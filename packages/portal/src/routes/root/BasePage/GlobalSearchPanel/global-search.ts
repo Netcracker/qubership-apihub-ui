@@ -67,8 +67,10 @@ function buildSearchRequestBody(
   criteria: SearchCriteria,
   level: Level,
 ): object {
-  const common = omit(criteria, ['apiContract', 'apiType'])
+  const common = omit(criteria, ['apiContract'])
 
+  // For mcp and ddl the level already *is* the contract type: those endpoints build a
+  // GlobalContractSearchQuery, which has no api_type field.
   if (level === MCP_LEVEL || level === DDL_LEVEL) {
     return getOptionalBody(common) ?? {}
   }
