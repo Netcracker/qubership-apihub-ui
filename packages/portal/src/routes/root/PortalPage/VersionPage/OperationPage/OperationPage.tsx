@@ -30,9 +30,7 @@ import type {
   VisitorNavigationDetails,
 } from '@netcracker/qubership-apihub-ui-shared/components/SchemaGraphView/oasToClassDiagramService'
 import { Toolbar } from '@netcracker/qubership-apihub-ui-shared/components/Toolbar'
-import {
-  WarningApiProcessorVersion,
-} from '@netcracker/qubership-apihub-ui-shared/components/WarningApiProcessorVersion'
+import { VersionErrorIndicator } from '@netcracker/qubership-apihub-ui-shared/components/VersionErrorIndicator/VersionErrorIndicator'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { API_TYPE_ASYNCAPI, API_TYPE_GRAPHQL, API_TYPE_REST, API_TYPE_TITLE_MAP } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { DEFAULT_VIEW_MODE_MAP_BY_API_TYPE, GRAPH_VIEW_MODE } from '@netcracker/qubership-apihub-ui-shared/entities/operation-view-mode'
@@ -216,7 +214,7 @@ export const OperationPage: FC = memo(() => {
                     isRelatedOperationsLoading={areOperationsLoading || isOperationLoading}
                     prepareLinkFn={prepareLinkFn}
                   />
-                  <WarningApiProcessorVersion versionKey={versionId} packageKey={packageId} />
+                  <VersionErrorIndicator versionKey={versionId} packageKey={packageId} />
                 </Box>
               }
               action={

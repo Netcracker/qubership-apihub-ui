@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import * as React from 'react'
-import { memo, useState } from 'react'
+import { type FC, type HTMLAttributes, memo } from 'react'
 import {
   Autocomplete,
   Box,
@@ -37,7 +35,8 @@ import { Swapper } from './Swapper'
 import { LatestRevisionMark } from './LatestRevisionMark'
 import type { Revision, Revisions } from '../entities/revisions'
 import { REVISION_DELIMITER } from '../entities/versions'
-import { WARNING_API_PROCESSOR_TEXT, WarningApiProcessorVersion } from './WarningApiProcessorVersion'
+import { VersionErrorFormMessage } from './VersionErrorIndicator/VersionErrorFormMessage'
+import { useVersionProblemDetails } from '../hooks/versions/useVersionProblemDetails'
 import { useParams } from 'react-router-dom'
 import { usePackageSearchParam } from '../hooks/routes/package/usePackageSearchParam'
 
@@ -78,10 +77,16 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
   const { packageId: changedPackageKey } = useParams()
   const [packageSearchParam] = usePackageSearchParam()
   const originPackageKey = packageSearchParam ?? changedPackageKey
-  const [warningApiProcessorStatePrevious, setWarningApiProcessorStatePrevious] = useState(false)
-  const [warningApiProcessorStateCurrent, setWarningApiProcessorStateCurrent] = useState(false)
   const previousRevision = useWatch({ control: control, name: 'originalRevision' })
   const currentRevisions = useWatch({ control: control, name: 'changedRevision' })
+  const previousRevisionProblem = useVersionProblemDetails({
+    packageKey: originPackageKey,
+    versionKey: previousRevision?.version,
+  })
+  const currentRevisionProblem = useVersionProblemDetails({
+    packageKey: originPackageKey,
+    versionKey: currentRevisions?.version,
+  })
 
   return (
     <DialogForm
@@ -109,9 +114,6 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
             <RevisionAutocomplete
               value={value}
               onChange={(value) => {
-                if (!value) {
-                  setWarningApiProcessorStatePrevious(false)
-                }
                 onChange(value)
               }}
               controllerName="originalRevision"
@@ -141,9 +143,6 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
             <RevisionAutocomplete
               value={value}
               onChange={(value) => {
-                if (!value) {
-                  setWarningApiProcessorStateCurrent(false)
-                }
                 onChange(value)
               }}
               controllerName="changedRevision"
@@ -156,25 +155,16 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
         />
       </DialogContent>
       <Box sx={{ maxWidth: '692px', padding: '0 24px' }}>
-        <WarningApiProcessorVersion
-          versionKey={previousRevision?.version}
-          packageKey={originPackageKey}
-          type={WARNING_API_PROCESSOR_TEXT}
-          hidden={warningApiProcessorStateCurrent}
-          data-testid="WarningApiProcessorVersionPrevios"
-          onWarningTextChange={(value) => setWarningApiProcessorStatePrevious(!!value)} />
-        <WarningApiProcessorVersion
-          data-testid="WarningApiProcessorVersionCurrent"
-          versionKey={currentRevisions?.version}
-          packageKey={originPackageKey}
-          type={WARNING_API_PROCESSOR_TEXT}
-          onWarningTextChange={(value) => setWarningApiProcessorStateCurrent(!!value)} />
+        <VersionErrorFormMessage
+          message={currentRevisionProblem.hasProblems ? undefined : previousRevisionProblem.formHelperText}
+        />
+        <VersionErrorFormMessage message={currentRevisionProblem.formHelperText} />
       </Box>
       <DialogActions>
         <LoadingButton
           variant="contained"
           type="submit"
-          disabled={warningApiProcessorStatePrevious || warningApiProcessorStateCurrent}
+          disabled={previousRevisionProblem.isBlocking || currentRevisionProblem.isBlocking}
           loading={isApiTypeFetching}
           data-testid="CompareButton"
         >
@@ -228,7 +218,7 @@ const RevisionAutocomplete: FC<RevisionAutocompleteProps> = memo<RevisionAutocom
 
 type AutocompleteOptionProps = {
   revision: Revision
-  props: React.HTMLAttributes<HTMLLIElement>
+  props: HTMLAttributes<HTMLLIElement>
 }
 
 const AutocompleteOption: FC<AutocompleteOptionProps> = memo<AutocompleteOptionProps>(({ revision, props }) => {

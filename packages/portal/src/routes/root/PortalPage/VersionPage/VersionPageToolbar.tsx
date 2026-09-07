@@ -25,6 +25,7 @@ import { CopyPackageVersionButton } from '@apihub/routes/root/PortalPage/Version
 import { getDefaultApiType } from '@apihub/utils/operation-types'
 import { Box, Button, Divider, Typography } from '@mui/material'
 import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
+import { VersionErrorIndicator } from '@netcracker/qubership-apihub-ui-shared/components/VersionErrorIndicator/VersionErrorIndicator'
 import { VersionStatusChip } from '@netcracker/qubership-apihub-ui-shared/components/VersionStatusChip'
 import { Toolbar } from '@netcracker/qubership-apihub-ui-shared/components/Toolbar'
 import { ToolbarTitle } from '@netcracker/qubership-apihub-ui-shared/components/ToolbarTitle'
@@ -54,7 +55,6 @@ import { VersionSelector } from '../VersionSelector'
 import { ComparisonSelectorButton } from './ComparisonSelectorButton'
 import { EditButton } from './EditButton'
 import { usePackageVersionApiTypes } from './usePackageVersionApiTypes'
-import { WarningApiProcessorVersion } from '@netcracker/qubership-apihub-ui-shared/components/WarningApiProcessorVersion'
 
 export const VersionPageToolbar: FC = memo(() => {
   const { packageId, versionId, apiType } = useParams()
@@ -149,7 +149,7 @@ export const VersionPageToolbar: FC = memo(() => {
             <VersionSelector />
             {versionContent &&
               <VersionStatusChip status={versionContent!.status} sx={{ height: 20 }} data-testid="VersionStatusChip"/>}
-            <WarningApiProcessorVersion packageKey={packageId} versionKey={versionId} />
+            <VersionErrorIndicator packageKey={packageId} versionKey={versionId} />
             <Divider orientation="vertical" sx={{ height: '20px', mt: '6px' }}/>
             {isDashboard && <CreateDashboardVersionButton
               variant="text"
