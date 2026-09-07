@@ -40,9 +40,7 @@ import {
 import { RawSpecDiffView } from '@netcracker/qubership-apihub-ui-shared/components/RawSpecDiffView'
 import { RawSpecView } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/RawSpecView'
 import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'
-import {
-  WarningApiProcessorVersion,
-} from '@netcracker/qubership-apihub-ui-shared/components/WarningApiProcessorVersion'
+import { VersionErrorIndicator } from '@netcracker/qubership-apihub-ui-shared/components/VersionErrorIndicator/VersionErrorIndicator'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import {
   API_TYPE_ASYNCAPI,
@@ -343,13 +341,13 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
             breadcrumbsData={breadcrumbsData}
             actions={isRawViewMode && rawViewActions}
             swapperBreadcrumbsBeforeComponent={
-              <WarningApiProcessorVersion
+              <VersionErrorIndicator
                 packageKey={originPackageKey}
                 versionKey={originVersionKey}
               />
             }
             swapperBreadcrumbsAfterComponent={
-              <WarningApiProcessorVersion
+              <VersionErrorIndicator
                 packageKey={changedPackageKey}
                 versionKey={changedVersionKey}
               />

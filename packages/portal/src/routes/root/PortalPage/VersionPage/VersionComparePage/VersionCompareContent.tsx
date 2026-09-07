@@ -72,9 +72,7 @@ import { ComparisonSwapper } from '../ComparisonSwapper'
 import { useVersionsComparisonGlobalParams } from '../VersionsComparisonGlobalParams'
 import { VERSION_SWAPPER_HEIGHT } from '../shared-styles'
 import { useTagSearchFilter } from '../useTagSearchFilter'
-import {
-  WarningApiProcessorVersion,
-} from '@netcracker/qubership-apihub-ui-shared/components/WarningApiProcessorVersion'
+import { VersionErrorIndicator } from '@netcracker/qubership-apihub-ui-shared/components/VersionErrorIndicator/VersionErrorIndicator'
 import { useDdlChanges } from '../api/useDdlChanges'
 import { useFlatDdlChanges } from '../api/useFlatDdlChanges'
 import { useAutoFetchInfinitePages } from '../useAutoFetchInfinitePages'
@@ -234,8 +232,8 @@ export const VersionCompareContent: FC = memo(() => {
         breadcrumbsData={breadcrumbsData}
         handleSwap={handleSwap}
         showCompareDialog={showCompareDialog}
-        customComponentBeforeSwapperBreadcrumbs={<WarningApiProcessorVersion packageKey={originPackageKey} versionKey={originVersionKey} />}
-        customComponentAfterSwapperBreadcrumbs={<WarningApiProcessorVersion packageKey={changedPackageKey} versionKey={changedVersionKey} />}
+        customComponentBeforeSwapperBreadcrumbs={<VersionErrorIndicator packageKey={originPackageKey} versionKey={originVersionKey} />}
+        customComponentAfterSwapperBreadcrumbs={<VersionErrorIndicator packageKey={changedPackageKey} versionKey={changedVersionKey} />}
       />
       <Placeholder
         invisible={hasFilteredChanges}

@@ -63,6 +63,7 @@ import { getSplittedVersionKey, handleVersionsRevision } from '../utils/versions
 import { ErrorTypography } from './Typography/ErrorTypography'
 import type { PackageVersions } from '../entities/versions'
 import { usePackageVersions } from '../hooks/versions/usePackageVersions'
+import { useVersionProblemDetails } from '../hooks/versions/useVersionProblemDetails'
 import { LabelsAutocomplete } from './LabelsAutocomplete'
 import type { Package, Packages } from '../entities/packages'
 import { OptionItem } from './OptionItem'
@@ -72,7 +73,7 @@ import { InfoContextIcon } from '../icons/InfoContextIcon'
 import { CSV_FILE_EXTENSION } from '../utils/files'
 import { FileUploadField } from './FileUploadField'
 import type { AutocompleteInputChangeReason } from '@mui/base/AutocompleteUnstyled/useAutocomplete'
-import { WARNING_API_PROCESSOR_TEXT, WarningApiProcessorVersion } from './WarningApiProcessorVersion'
+import { VersionErrorFormMessage } from './VersionErrorIndicator/VersionErrorFormMessage'
 import type { ApiType } from '../entities/api-types'
 import { API_TYPE_REST, API_TYPE_TITLE_MAP, API_TYPES } from '../entities/api-types'
 import { REST_API_TYPE } from '@netcracker/qubership-apihub-api-processor'
@@ -203,7 +204,13 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
   }, [onVersionsFilter, onSetTargetVersion])
   const onLabelsChange = useCallback((_: SyntheticEvent, value: string[]): void => onSetTargetLabels?.(value), [onSetTargetLabels])
   const onStatusChange = useCallback((_: SyntheticEvent, value: VersionStatus): void => onSetTargetStatus?.(value), [onSetTargetStatus])
-  const [warningApiProcessorState, setWarningApiProcessorState] = useState(false)
+  const previousVersionKey = previousVersion !== NO_PREVIOUS_RELEASE_VERSION_OPTION
+    ? previousVersion
+    : undefined
+  const { isBlocking: isPreviousVersionBlocking, formHelperText: previousVersionFormHelperText } = useVersionProblemDetails({
+    versionKey: previousVersionKey,
+    packageKey: targetPackage?.key || currentPackageKey,
+  })
 
   const previousVersionLabels = getPreviousVersionLabels(status)
   const getPreviousVersionOptionLabel = useCallback((value: Key): string => (
@@ -649,7 +656,6 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
                   setValue('package', value)
                   onSetTargetPackage?.(value)
                   previousVersion !== NO_PREVIOUS_RELEASE_VERSION_OPTION && setValue('previousVersion', NO_PREVIOUS_RELEASE_VERSION_OPTION)
-                  setWarningApiProcessorState(false)
                 }}
                 onClose={clearFilter(onPackagesFilter)}
                 data-testid="PackageAutocomplete"
@@ -832,10 +838,6 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
                   onChange={(_, value) => {
                     setValue('previousVersion', value ?? NO_PREVIOUS_RELEASE_VERSION_OPTION)
                     setSelectedPreviousVersion?.(value ?? NO_PREVIOUS_RELEASE_VERSION_OPTION)
-                    if (!value || value === NO_PREVIOUS_RELEASE_VERSION_OPTION) {
-                      setWarningApiProcessorState(false)
-                    }
-
                   }}
                   data-testid="PreviousReleaseVersionAutocomplete"
                 />
@@ -849,18 +851,14 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
             <ErrorTypography>{errors.version?.message}</ErrorTypography>
           </Box>
         )}
-        <WarningApiProcessorVersion
-          versionKey={NO_PREVIOUS_RELEASE_VERSION_OPTION !== previousVersion ? previousVersion : undefined}
-          packageKey={targetPackage?.key || currentPackageKey}
-          type={WARNING_API_PROCESSOR_TEXT}
-          onWarningTextChange={(value) => setWarningApiProcessorState(!!value)}/>
+        <VersionErrorFormMessage message={previousVersionFormHelperText} />
       </DialogContent>
       <DialogActions>
         <LoadingButton
           variant="contained"
           type="submit"
           loading={isPublishing}
-          disabled={isFileReading || publishButtonDisabled || publishFieldsDisabled || warningApiProcessorState || hasInvalidPreviousVersionStatus}
+          disabled={isFileReading || publishButtonDisabled || publishFieldsDisabled || isPreviousVersionBlocking || hasInvalidPreviousVersionStatus}
           data-testid={submitButtonTittle ? `${submitButtonTittle}Button` : 'PublishButton'}
         >
           {submitButtonTittle ?? 'Publish'}
