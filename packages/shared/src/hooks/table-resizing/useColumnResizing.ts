@@ -31,19 +31,30 @@ export const DEFAULT_CONTAINER_WIDTH = 800
 const DEFAULT_MIN_COLUMN_SIZE = 100
 let MIN_COLUMN_SIZE: number
 
-function reservedColumnWidth(model: ColumnModel, containerWidth: number): number | undefined {
+function pixelColumnWidth(model: ColumnModel): number {
+  return model.fixedWidth ?? model.width ?? 0
+}
+
+function minColumnSize(model: ColumnModel): number {
+  return model.minWidth ?? MIN_COLUMN_SIZE
+}
+
+function reservedColumnWidth(model: ColumnModel, availableWidth: number): number | undefined {
   if (model.fixedWidth !== undefined) {
     return model.fixedWidth
   }
   if (model.percentage !== undefined) {
-    return Math.max(Math.floor(containerWidth * model.percentage), model.minWidth ?? 0)
+    return Math.max(Math.floor(availableWidth * model.percentage), model.minWidth ?? 0)
   }
   return model.width
 }
 
 function useDefaultColumnsSizing(containerWidth: number, columnModels: ColumnModel[]): Record<string, number> {
   return useMemo(() => {
-    const reservedWidths = columnModels.map(model => reservedColumnWidth(model, containerWidth))
+    const pixelWidth = columnModels.reduce((result, current) => result + pixelColumnWidth(current), 0)
+    const availableWidth = Math.max(containerWidth - pixelWidth, 0)
+
+    const reservedWidths = columnModels.map(model => reservedColumnWidth(model, availableWidth))
     const flexibleColumnCount = reservedWidths.filter(width => width === undefined).length
     const reservedWidth = reservedWidths.reduce<number>((result, current) => result + (current ?? 0), 0)
     const columnWidth = flexibleColumnCount
@@ -85,9 +96,10 @@ function handleIncreaseColumn(
 ): Record<string, number> | null {
   const unselectedColumns = models.filter(model => model.name !== selectedColumn && !model.fixedWidth)
   //TODO research this case
-  const shrinkableColumns = unselectedColumns.filter(model => Math.floor(values[model.name] - (delta / unselectedColumns.length)) > MIN_COLUMN_SIZE)
-  const fixedColumnsWidth = models.reduce((result, current) => result + (reservedColumnWidth(current, containerWidth) ?? 0), 0)
-  const maxNotReached = values[selectedColumn] + delta < (containerWidth - MIN_COLUMN_SIZE * unselectedColumns.length - fixedColumnsWidth)
+  const shrinkableColumns = unselectedColumns.filter(model => Math.floor(values[model.name] - (delta / unselectedColumns.length)) > minColumnSize(model))
+  const fixedColumnsWidth = models.reduce((result, current) => result + pixelColumnWidth(current), 0)
+  const unselectedMinWidth = unselectedColumns.reduce((result, current) => result + minColumnSize(current), 0)
+  const maxNotReached = values[selectedColumn] + delta < (containerWidth - unselectedMinWidth - fixedColumnsWidth)
   if (shrinkableColumns.length && maxNotReached) {
     const negativeDelta = -delta / shrinkableColumns.length
     const shrinkableColumnsNames = new Set(shrinkableColumns.map(model => model.name))
@@ -103,7 +115,8 @@ function handleDecreaseColumn(
   values: Record<string, number>,
 ): Record<string, number> | null {
   const growColumns = models.filter(model => model.name !== selectedColumn && !model.fixedWidth)
-  const minNotReached = values[selectedColumn] + delta > MIN_COLUMN_SIZE
+  const selectedModel = models.find(model => model.name === selectedColumn)
+  const minNotReached = values[selectedColumn] + delta > (selectedModel ? minColumnSize(selectedModel) : MIN_COLUMN_SIZE)
   if (growColumns.length && minNotReached) {
     const negativeDelta = -delta / growColumns.length
     const growColumnsNames = new Set(growColumns.map(model => model.name))

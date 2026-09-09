@@ -56,7 +56,7 @@ import { insertIntoArrayByIndex } from '../../../utils/arrays'
 import { createComponents } from '../../../utils/components'
 import { DEFAULT_NUMBER_SKELETON_ROWS } from '../../../utils/constants'
 import type { ChangesViewTableData } from '../const/table'
-import { CHANGES_COLUMN_ID, COLUMNS_MODELS } from '../const/table'
+import { CHANGES_COLUMN_ID, DASHBOARD_COLUMNS_MODELS, PACKAGE_COLUMNS_MODELS } from '../const/table'
 
 export type FetchNextPage = (options?: FetchNextPageOptions) => Promise<InfiniteQueryObserverResult<VersionChangesData, Error>>
 
@@ -99,6 +99,7 @@ export const ChangesViewTable: FC<ChangeViewTableProps> = memo<ChangeViewTablePr
     onLinkClick,
   }) => {
   const isDashboardType = useMemo(() => packageObject?.kind === DASHBOARD_KIND, [packageObject?.kind])
+  const columnModels = isDashboardType ? DASHBOARD_COLUMNS_MODELS : PACKAGE_COLUMNS_MODELS
 
   const [containerWidth, setContainerWidth] = useState(DEFAULT_CONTAINER_WIDTH)
   const [columnSizingInfo, setColumnSizingInfo] = useState<ColumnSizingInfoState>()
@@ -109,7 +110,7 @@ export const ChangesViewTable: FC<ChangeViewTableProps> = memo<ChangeViewTablePr
 
   const actualColumnSizing = useColumnsSizing({
     containerWidth: containerWidth,
-    columnModels: COLUMNS_MODELS,
+    columnModels: columnModels,
     columnSizingInfo: columnSizingInfo,
     defaultMinColumnSize: 60,
   })
