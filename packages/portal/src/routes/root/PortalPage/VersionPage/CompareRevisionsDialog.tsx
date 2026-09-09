@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import type { FC } from 'react'
-import * as React from 'react'
-import { memo, useCallback, useEffect, useMemo } from 'react'
+import { type FC, memo, useCallback, useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 import { useLocation, useSearchParam } from 'react-use'
-import { usePackageVersionContent } from '../../usePackageVersionContent'
-import { useVersionWithRevision } from '../../useVersionWithRevision'
-import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import { SHOW_COMPARE_REVISIONS_DIALOG } from '@apihub/routes/EventBusProvider'
-import { REVISION_DELIMITER } from '@apihub/entities/versions'
-import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
+
+import {
+  type CompareRevisionsDialogData,
+  type CompareRevisionsDialogFormData,
+  CompareRevisionsDialogForm,
+} from '@netcracker/qubership-apihub-ui-shared/components/CompareRevisionsDialogForm'
+import { type PopupProps, PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
+import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import { REVISION_DELIMITER } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
 import {
   API_TYPE_SEARCH_PARAM,
   PACKAGE_SEARCH_PARAM,
@@ -34,16 +34,15 @@ import {
   VERSION_SEARCH_PARAM,
 } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
-import { getDefaultApiType } from '@apihub/utils/operation-types'
-import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import { useAllRevisions } from '@apihub/routes/root/PortalPage/VersionPage/usePagedRevisions'
-import type {
-  CompareRevisionsDialogData,
-  CompareRevisionsDialogFormData,
-} from '@netcracker/qubership-apihub-ui-shared/components/CompareRevisionsDialogForm'
-import { CompareRevisionsDialogForm } from '@netcracker/qubership-apihub-ui-shared/components/CompareRevisionsDialogForm'
+
+import { SHOW_COMPARE_REVISIONS_DIALOG } from '@apihub/routes/EventBusProvider'
+import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
 import { useNavigation } from '@apihub/routes/NavigationProvider'
+import { useAllRevisions } from '@apihub/routes/root/PortalPage/VersionPage/usePagedRevisions'
 import { useRefSearchParam } from '@apihub/routes/root/PortalPage/useRefSearchParam'
+import { getDefaultApiType } from '@apihub/utils/operation-types'
+import { usePackageVersionContent } from '../../usePackageVersionContent'
+import { useVersionWithRevision } from '../../useVersionWithRevision'
 
 export const CompareRevisionsDialog: FC = memo(() => {
   return (

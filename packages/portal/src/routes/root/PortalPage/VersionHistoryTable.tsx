@@ -21,14 +21,17 @@ import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-tabl
 import { Box, Link, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import { NavLink } from 'react-router-dom'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import type { PackageVersion, PackageVersions } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
+import {
+  type PackageVersion,
+  type PackageVersions,
+  REVISION_DELIMITER,
+} from '@netcracker/qubership-apihub-ui-shared/entities/versions'
 import type { ColumnModel } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
 import {
   DEFAULT_CONTAINER_WIDTH,
   useColumnsSizing,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
 import { CustomTableHeadCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomTableHeadCell'
-import { REVISION_DELIMITER } from '@apihub/entities/versions'
 import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import { format } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
