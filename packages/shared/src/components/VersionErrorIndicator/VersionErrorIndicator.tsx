@@ -10,7 +10,7 @@ import type { UseVersionProblemDetailsParams } from '../../hooks/versions/versio
 import { ErrorIcon } from '../../icons/ErrorIcon'
 import type { TestableProps } from '../Testable'
 
-type VersionErrorIndicatorProps = UseVersionProblemDetailsParams & TestableProps & {
+type VersionErrorIndicatorProps = Omit<UseVersionProblemDetailsParams, 'surface'> & TestableProps & {
   tooltip?: ReactNode
   tooltipPlacement?: TooltipProps['placement']
   fontSize?: SvgIconProps['fontSize']

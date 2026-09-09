@@ -44,6 +44,7 @@ import { VersionTitle } from './Titles/VersionTitle'
 import { Swapper } from './Swapper'
 import { VersionErrorFormMessage } from './VersionErrorIndicator/VersionErrorFormMessage'
 import { useVersionProblemDetails } from '../hooks/versions/useVersionProblemDetails'
+import { VERSION_PROBLEM_DIALOG_SURFACE } from '../hooks/versions/versionProblemDetails'
 
 //todo need retest (without nested value)
 export type CompareVersionsDialogFormData = {
@@ -118,13 +119,21 @@ export const CompareVersionsDialogForm: FC<CompareVersionsDialogFormProps> = mem
   const previousPackage = useWatch({ control: control, name: 'originalPackage' })
   const currentVersion = useWatch({ control: control, name: 'changedVersion' })
   const currentPackage = useWatch({ control: control, name: 'changedPackage' })
-  const previousVersionProblem = useVersionProblemDetails({
+  const {
+    isBlocking: isPreviousVersionBlocking,
+    formHelperText: previousVersionFormHelperText,
+  } = useVersionProblemDetails({
     packageKey: previousPackage?.key,
     versionKey: previousVersion?.key,
+    surface: VERSION_PROBLEM_DIALOG_SURFACE.COMPARE,
   })
-  const currentVersionProblem = useVersionProblemDetails({
+  const {
+    isBlocking: isCurrentVersionBlocking,
+    formHelperText: currentVersionFormHelperText,
+  } = useVersionProblemDetails({
     packageKey: packageMode ? currentPackage?.key : previousPackage?.key,
     versionKey: currentVersion?.key,
+    surface: VERSION_PROBLEM_DIALOG_SURFACE.COMPARE,
   })
 
   return (
@@ -339,9 +348,8 @@ export const CompareVersionsDialogForm: FC<CompareVersionsDialogFormProps> = mem
       </DialogContent>
       <Box sx={{ maxWidth: '692px', padding: '0 24px' }}>
         <VersionErrorFormMessage
-          message={currentVersionProblem.hasProblems ? undefined : previousVersionProblem.formHelperText}
+          message={currentVersionFormHelperText ?? previousVersionFormHelperText}
         />
-        <VersionErrorFormMessage message={currentVersionProblem.formHelperText} />
       </Box>
       <DialogActions>
 
@@ -349,7 +357,7 @@ export const CompareVersionsDialogForm: FC<CompareVersionsDialogFormProps> = mem
           variant="contained"
           type="submit"
           loading={isApiTypeFetching}
-          disabled={currentVersionProblem.isBlocking || previousVersionProblem.isBlocking}
+          disabled={isCurrentVersionBlocking || isPreviousVersionBlocking}
           data-testid="CompareButton"
         >
           Compare

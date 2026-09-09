@@ -59,6 +59,7 @@ import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/Di
 import { usePagedPackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
 import { VersionErrorFormMessage } from '@netcracker/qubership-apihub-ui-shared/components/VersionErrorIndicator/VersionErrorFormMessage'
 import { useVersionProblemDetails } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/useVersionProblemDetails'
+import { VERSION_PROBLEM_DIALOG_SURFACE } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/versionProblemDetails'
 
 const WORKSPACE_KEY = 'workspaceKey'
 const PACKAGE_KEY = 'packageKey'
@@ -108,9 +109,13 @@ const AddPackagePopup: FC<AddPackagePopupProps> = memo<AddPackagePopupProps>(({ 
   const [selectedWorkspace, setSelectedWorkspace] = useState<Package | null>(null)
   const [selectedPackage, setSelectedPackage] = useState<Package | null>(null)
   const [selectedVersion, setSelectedVersion] = useState<PackageVersion | null>(null)
-  const { isBlocking: isSelectedVersionBlocking, formHelperText: selectedVersionFormHelperText } = useVersionProblemDetails({
+  const {
+    isBlocking: isSelectedVersionBlocking,
+    formHelperText: selectedVersionFormHelperText,
+  } = useVersionProblemDetails({
     packageKey: selectedPackage?.key,
     versionKey: selectedVersion?.key,
+    surface: VERSION_PROBLEM_DIALOG_SURFACE.ADD_TO_DASHBOARD,
   })
 
   const [selectedPackageInput, setSelectedPackageInput] = useState('')

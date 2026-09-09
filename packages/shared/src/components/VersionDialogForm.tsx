@@ -64,6 +64,7 @@ import { ErrorTypography } from './Typography/ErrorTypography'
 import type { PackageVersions } from '../entities/versions'
 import { usePackageVersions } from '../hooks/versions/usePackageVersions'
 import { useVersionProblemDetails } from '../hooks/versions/useVersionProblemDetails'
+import { VERSION_PROBLEM_DIALOG_SURFACE } from '../hooks/versions/versionProblemDetails'
 import { LabelsAutocomplete } from './LabelsAutocomplete'
 import type { Package, Packages } from '../entities/packages'
 import { OptionItem } from './OptionItem'
@@ -207,9 +208,13 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
   const previousVersionKey = previousVersion !== NO_PREVIOUS_RELEASE_VERSION_OPTION
     ? previousVersion
     : undefined
-  const { isBlocking: isPreviousVersionBlocking, formHelperText: previousVersionFormHelperText } = useVersionProblemDetails({
+  const {
+    isBlocking: isPreviousVersionBlocking,
+    formHelperText: previousVersionFormHelperText,
+  } = useVersionProblemDetails({
     versionKey: previousVersionKey,
     packageKey: targetPackage?.key || currentPackageKey,
+    surface: VERSION_PROBLEM_DIALOG_SURFACE.PUBLISH_PREVIOUS,
   })
 
   const previousVersionLabels = getPreviousVersionLabels(status)

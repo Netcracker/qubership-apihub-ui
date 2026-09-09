@@ -37,6 +37,7 @@ import type { Revision, Revisions } from '../entities/revisions'
 import { REVISION_DELIMITER } from '../entities/versions'
 import { VersionErrorFormMessage } from './VersionErrorIndicator/VersionErrorFormMessage'
 import { useVersionProblemDetails } from '../hooks/versions/useVersionProblemDetails'
+import { VERSION_PROBLEM_DIALOG_SURFACE } from '../hooks/versions/versionProblemDetails'
 import { useParams } from 'react-router-dom'
 import { usePackageSearchParam } from '../hooks/routes/package/usePackageSearchParam'
 
@@ -79,13 +80,21 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
   const originPackageKey = packageSearchParam ?? changedPackageKey
   const previousRevision = useWatch({ control: control, name: 'originalRevision' })
   const currentRevisions = useWatch({ control: control, name: 'changedRevision' })
-  const previousRevisionProblem = useVersionProblemDetails({
+  const {
+    isBlocking: isPreviousRevisionBlocking,
+    formHelperText: previousRevisionFormHelperText,
+  } = useVersionProblemDetails({
     packageKey: originPackageKey,
     versionKey: previousRevision?.version,
+    surface: VERSION_PROBLEM_DIALOG_SURFACE.COMPARE,
   })
-  const currentRevisionProblem = useVersionProblemDetails({
+  const {
+    isBlocking: isCurrentRevisionBlocking,
+    formHelperText: currentRevisionFormHelperText,
+  } = useVersionProblemDetails({
     packageKey: originPackageKey,
     versionKey: currentRevisions?.version,
+    surface: VERSION_PROBLEM_DIALOG_SURFACE.COMPARE,
   })
 
   return (
@@ -152,15 +161,14 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
       </DialogContent>
       <Box sx={{ maxWidth: '692px', padding: '0 24px' }}>
         <VersionErrorFormMessage
-          message={currentRevisionProblem.hasProblems ? undefined : previousRevisionProblem.formHelperText}
+          message={currentRevisionFormHelperText ?? previousRevisionFormHelperText}
         />
-        <VersionErrorFormMessage message={currentRevisionProblem.formHelperText} />
       </Box>
       <DialogActions>
         <LoadingButton
           variant="contained"
           type="submit"
-          disabled={previousRevisionProblem.isBlocking || currentRevisionProblem.isBlocking}
+          disabled={isPreviousRevisionBlocking || isCurrentRevisionBlocking}
           loading={isApiTypeFetching}
           data-testid="CompareButton"
         >
