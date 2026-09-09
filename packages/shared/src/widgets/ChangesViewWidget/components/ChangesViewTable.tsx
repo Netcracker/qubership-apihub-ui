@@ -60,6 +60,8 @@ import { CHANGES_COLUMN_ID, DASHBOARD_COLUMNS_MODELS, PACKAGE_COLUMNS_MODELS } f
 
 export type FetchNextPage = (options?: FetchNextPageOptions) => Promise<InfiniteQueryObserverResult<VersionChangesData, Error>>
 
+const MIN_TABLE_WIDTH = 700
+
 export type SubTableComponentProps = {
   value: Row<ChangesViewTableData>
   packageKey: Key | undefined
@@ -114,6 +116,14 @@ export const ChangesViewTable: FC<ChangeViewTableProps> = memo<ChangeViewTablePr
     columnSizingInfo: columnSizingInfo,
     defaultMinColumnSize: 60,
   })
+
+  const tableMinWidth = useMemo(
+    () => Math.max(
+      Object.values(actualColumnSizing).reduce((result, current) => result + current, 0),
+      MIN_TABLE_WIDTH,
+    ),
+    [actualColumnSizing],
+  )
 
   const columns: ColumnDef<ChangesViewTableData>[] = useMemo(() => {
     const result: ColumnDef<ChangesViewTableData>[] = [
@@ -249,7 +259,7 @@ export const ChangesViewTable: FC<ChangeViewTableProps> = memo<ChangeViewTablePr
 
   return (
     <TableContainer ref={tableContainerRef} sx={{ mt: 1 }}>
-      <Table sx={{ minWidth: 700 }}>
+      <Table sx={{ minWidth: tableMinWidth }}>
         <TableHead>
           {getHeaderGroups().map(headerGroup => (
             <TableRow key={headerGroup.id}>
