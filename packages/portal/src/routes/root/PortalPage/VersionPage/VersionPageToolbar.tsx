@@ -147,9 +147,18 @@ export const VersionPageToolbar: FC = memo(() => {
               Version
             </Typography>
             <VersionSelector />
-            {versionContent &&
-              <VersionStatusChip status={versionContent!.status} sx={{ height: 20 }} data-testid="VersionStatusChip"/>}
-            <VersionErrorIndicator packageKey={packageId} versionKey={versionId} />
+            {versionContent && (
+              <>
+                <VersionStatusChip status={versionContent.status} sx={{ height: 20 }} data-testid="VersionStatusChip" />
+                <VersionErrorIndicator
+                  packageKey={packageId}
+                  versionKey={versionId}
+                  hasErrors={versionContent.hasErrors}
+                  changelogHasErrors={versionContent.changelogHasErrors}
+                  apiProcessorVersion={versionContent.apiProcessorVersion}
+                />
+              </>
+            )}
             <Divider orientation="vertical" sx={{ height: '20px', mt: '6px' }}/>
             {isDashboard && <CreateDashboardVersionButton
               variant="text"
