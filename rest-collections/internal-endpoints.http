@@ -3,6 +3,7 @@ POST {{APIHUB_HOST}}/api/internal/users/{{userId}}/systemRole
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
+
 {
   "role": "System administrator"
 }
