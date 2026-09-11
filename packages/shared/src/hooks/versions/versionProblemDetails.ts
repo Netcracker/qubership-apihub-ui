@@ -1,7 +1,6 @@
-import { compareVersions } from 'compare-versions'
-
 import type { PackageKey, VersionKey } from '../../entities/keys'
 import { DASHBOARD_KIND, PACKAGE_KIND, type PackageKind } from '../../entities/packages'
+import { getApiProcessorMismatchTooltip, PUBLICATION_ERROR_MESSAGES } from '../../utils/publicationErrorMessages'
 
 export const VERSION_PROBLEM_KIND = {
   PROCESSOR_MISMATCH: 'processor-mismatch',
@@ -19,6 +18,7 @@ export const VERSION_PROBLEM_DIALOG_SURFACE = {
   PUBLISH_PREVIOUS: 'publish-previous',
   COPY: 'copy',
   ADD_TO_DASHBOARD: 'add-to-dashboard',
+  EDIT_STATUS: 'edit-status',
 } as const
 
 export type VersionProblemDialogSurface =
@@ -59,29 +59,6 @@ type VersionProblemDialogView = {
   formHelperText?: string
 }
 
-export const VERSION_BUILD_ERRORS_TOOLTIP =
-  'Errors occurred while processing some documents in this version. Open the Documents tab to see the details'
-export const VERSION_COMPARISON_ERRORS_TOOLTIP =
-  'There were errors when calculating the comparison against the previous version, so the list of changes may be incomplete'
-export const VERSION_BUILD_AND_COMPARISON_ERRORS_TOOLTIP =
-  `${VERSION_BUILD_ERRORS_TOOLTIP}. There were also errors when calculating the comparison against the previous version, so the list of changes may be incomplete`
-export const DASHBOARD_BUILD_ERRORS_TOOLTIP =
-  'This dashboard includes package versions which were published with errors. Open Packages tab on Overview to see the details'
-export const DASHBOARD_COMPARISON_ERRORS_TOOLTIP =
-  'There were errors when calculating the comparison against the previous version for some of the packages in this dashboard, so the list of changes may be incomplete. Open Changelog tab to see the details'
-export const DASHBOARD_BUILD_AND_COMPARISON_ERRORS_TOOLTIP =
-  `${DASHBOARD_BUILD_ERRORS_TOOLTIP}. ${DASHBOARD_COMPARISON_ERRORS_TOOLTIP}`
-export const VERSION_DELETED_PACKAGE_REFERENCE_TOOLTIP = 'The included package version no longer exists'
-export const VERSION_DELETED_DASHBOARD_REFERENCE_TOOLTIP = 'The included dashboard version no longer exists'
-export const VERSION_PUBLISH_PREVIOUS_FORM_HELPER =
-  'The selected previous version has errors and cannot be used for comparison. Select another version'
-export const VERSION_COPY_FORM_HELPER =
-  'This version has errors and cannot be copied. Fix the errors and publish a new revision'
-export const VERSION_ADD_TO_DASHBOARD_FORM_HELPER =
-  'This version has errors and cannot be added to the dashboard. Select another version'
-export const REVISION_COMPARE_PREVIOUS_FORM_HELPER =
-  'The selected previous revision has errors and cannot be used for comparison. Select another revision'
-
 type VersionProblemCopySet = {
   build: string
   comparison: string
@@ -89,15 +66,15 @@ type VersionProblemCopySet = {
 }
 
 const PACKAGE_ERROR_COPY: VersionProblemCopySet = {
-  build: VERSION_BUILD_ERRORS_TOOLTIP,
-  comparison: VERSION_COMPARISON_ERRORS_TOOLTIP,
-  buildAndComparison: VERSION_BUILD_AND_COMPARISON_ERRORS_TOOLTIP,
+  build: PUBLICATION_ERROR_MESSAGES.packageVersion.version,
+  comparison: PUBLICATION_ERROR_MESSAGES.packageVersion.changelog,
+  buildAndComparison: PUBLICATION_ERROR_MESSAGES.packageVersion.versionChangelog,
 }
 
 const DASHBOARD_ERROR_COPY: VersionProblemCopySet = {
-  build: DASHBOARD_BUILD_ERRORS_TOOLTIP,
-  comparison: DASHBOARD_COMPARISON_ERRORS_TOOLTIP,
-  buildAndComparison: DASHBOARD_BUILD_AND_COMPARISON_ERRORS_TOOLTIP,
+  build: PUBLICATION_ERROR_MESSAGES.dashboardVersion.version,
+  comparison: PUBLICATION_ERROR_MESSAGES.dashboardVersion.changelog,
+  buildAndComparison: PUBLICATION_ERROR_MESSAGES.dashboardVersion.versionChangelog,
 }
 
 const NO_VERSION_PROBLEMS: VersionProblemCore = {
@@ -135,8 +112,8 @@ function resolveVersionProblemCore(
       hasProblems: true,
       activeProblemKind: VERSION_PROBLEM_KIND.DELETED_REFERENCE,
       tooltip: params.kind === PACKAGE_KIND
-        ? VERSION_DELETED_PACKAGE_REFERENCE_TOOLTIP
-        : VERSION_DELETED_DASHBOARD_REFERENCE_TOOLTIP,
+        ? PUBLICATION_ERROR_MESSAGES.reference.packageMissing
+        : PUBLICATION_ERROR_MESSAGES.reference.dashboardMissing,
     }
   }
 
@@ -161,8 +138,11 @@ function toVersionProblemDialogView(
     }
   }
 
-  if (activeProblemKind === VERSION_PROBLEM_KIND.BUILD_ERRORS) {
-    return resolveBuildErrorsDialogView(surface)
+  if (
+    activeProblemKind === VERSION_PROBLEM_KIND.BUILD_ERRORS ||
+    activeProblemKind === VERSION_PROBLEM_KIND.COMPARISON_ERRORS
+  ) {
+    return resolveUnsoundVersionDialogView(surface)
   }
 
   return NO_DIALOG_PROBLEM_VIEW
@@ -225,23 +205,14 @@ function resolveProcessorMismatch(
     return undefined
   }
 
-  const comparison = compareVersions(apiProcessorVersion, appApiProcessorVersion)
-  if (comparison === 0) {
-    return undefined
-  }
-
-  const tooltip = comparison > 0
-    ? `The data in the version '${versionKey}' may be incorrect, please contact the system administrators`
-    : `The data in the version '${versionKey}' may be incorrect, as the data has not been processed according to the latest system rules. Please republish the version and if this does not help, contact the system administrators`
-
   return {
     hasProblems: true,
     activeProblemKind: VERSION_PROBLEM_KIND.PROCESSOR_MISMATCH,
-    tooltip: tooltip,
+    tooltip: getApiProcessorMismatchTooltip(versionKey),
   }
 }
 
-function resolveBuildErrorsDialogView(
+function resolveUnsoundVersionDialogView(
   surface: VersionProblemDialogSurface,
 ): VersionProblemDialogView {
   switch (surface) {
@@ -251,22 +222,31 @@ function resolveBuildErrorsDialogView(
     case VERSION_PROBLEM_DIALOG_SURFACE.PUBLISH_PREVIOUS:
       return {
         isBlocking: true,
-        formHelperText: VERSION_PUBLISH_PREVIOUS_FORM_HELPER,
+        formHelperText: PUBLICATION_ERROR_MESSAGES.dialog.previousVersionUnsound,
       }
     case VERSION_PROBLEM_DIALOG_SURFACE.COMPARE_PREVIOUS_REVISION:
       return {
         isBlocking: true,
-        formHelperText: REVISION_COMPARE_PREVIOUS_FORM_HELPER,
+        formHelperText: PUBLICATION_ERROR_MESSAGES.dialog.previousRevisionUnsound,
       }
     case VERSION_PROBLEM_DIALOG_SURFACE.COPY:
       return {
         isBlocking: true,
-        formHelperText: VERSION_COPY_FORM_HELPER,
+        formHelperText: PUBLICATION_ERROR_MESSAGES.dialog.sourceVersionUnsound,
       }
     case VERSION_PROBLEM_DIALOG_SURFACE.ADD_TO_DASHBOARD:
       return {
         isBlocking: true,
-        formHelperText: VERSION_ADD_TO_DASHBOARD_FORM_HELPER,
+        formHelperText: PUBLICATION_ERROR_MESSAGES.dialog.dashboardAddUnsound,
       }
+    case VERSION_PROBLEM_DIALOG_SURFACE.EDIT_STATUS:
+      return {
+        isBlocking: true,
+        formHelperText: PUBLICATION_ERROR_MESSAGES.dialog.releasePromotionRefused,
+      }
+    default: {
+      const exhaustiveCheck: never = surface
+      return exhaustiveCheck
+    }
   }
 }
