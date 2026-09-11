@@ -1,6 +1,8 @@
 import { DASHBOARD_KIND, PACKAGE_KIND } from '../../entities/packages'
 import {
+  DASHBOARD_BUILD_ERRORS_TOOLTIP,
   resolveVersionProblemDetails,
+  REVISION_COMPARE_PREVIOUS_FORM_HELPER,
   VERSION_ADD_TO_DASHBOARD_FORM_HELPER,
   VERSION_BUILD_AND_COMPARISON_ERRORS_TOOLTIP,
   VERSION_BUILD_ERRORS_TOOLTIP,
@@ -21,7 +23,7 @@ describe('resolveVersionProblemDetails', () => {
     })
   })
 
-  it('treats processor mismatch as above other flags and does not block without a surface', () => {
+  it('prefers processor mismatch over other flags and does not block without a surface', () => {
     const result = resolveVersionProblemDetails({
       versionKey: '1.0.0',
       apiProcessorVersion: '1.0.0',
@@ -37,6 +39,7 @@ describe('resolveVersionProblemDetails', () => {
       activeProblemKind: VERSION_PROBLEM_KIND.PROCESSOR_MISMATCH,
     })
     expect(result.tooltip).toContain('1.0.0')
+    expect(result.tooltip?.endsWith('.')).toBe(false)
     expect(result.formHelperText).toBeUndefined()
   })
 
@@ -82,7 +85,7 @@ describe('resolveVersionProblemDetails', () => {
       VERSION_PROBLEM_KIND.BUILD_ERRORS,
       VERSION_BUILD_AND_COMPARISON_ERRORS_TOOLTIP,
     ],
-  ])('resolves %j to kind %s without blocking when surface is omitted', (params, activeProblemKind, tooltip) => {
+  ])('resolves package tooltips when surface is omitted', (params, activeProblemKind, tooltip) => {
     expect(resolveVersionProblemDetails(params)).toEqual({
       hasProblems: true,
       isBlocking: false,
@@ -90,10 +93,22 @@ describe('resolveVersionProblemDetails', () => {
       tooltip: tooltip,
     })
   })
+
+  it('uses dashboard tooltips when kind is dashboard', () => {
+    expect(resolveVersionProblemDetails({
+      hasErrors: true,
+      kind: DASHBOARD_KIND,
+    })).toEqual({
+      hasProblems: true,
+      isBlocking: false,
+      activeProblemKind: VERSION_PROBLEM_KIND.BUILD_ERRORS,
+      tooltip: DASHBOARD_BUILD_ERRORS_TOOLTIP,
+    })
+  })
 })
 
 describe('resolveVersionProblemDetails with surface', () => {
-  it('blocks processor mismatch on a dialog surface and reuses the tooltip as helper text', () => {
+  it('blocks processor mismatch and reuses the tooltip as helper text', () => {
     const result = resolveVersionProblemDetails({
       versionKey: '1.0.0',
       apiProcessorVersion: '1.0.0',
@@ -121,7 +136,7 @@ describe('resolveVersionProblemDetails with surface', () => {
     expect(result.formHelperText).toBeUndefined()
   })
 
-  it('does not block deleted references even when a surface is set', () => {
+  it('does not block deleted references when a surface is set', () => {
     expect(resolveVersionProblemDetails({
       deletedAt: '2024-01-01',
       kind: PACKAGE_KIND,
@@ -135,8 +150,12 @@ describe('resolveVersionProblemDetails with surface', () => {
   it.each(
     [
       [
-        VERSION_PROBLEM_DIALOG_SURFACE.PUBLISH_PREVIOUS,
+        VERSION_PROBLEM_DIALOG_SURFACE.COMPARE_PREVIOUS,
         VERSION_PUBLISH_PREVIOUS_FORM_HELPER,
+      ],
+      [
+        VERSION_PROBLEM_DIALOG_SURFACE.COMPARE_PREVIOUS_REVISION,
+        REVISION_COMPARE_PREVIOUS_FORM_HELPER,
       ],
       [
         VERSION_PROBLEM_DIALOG_SURFACE.COPY,
@@ -157,7 +176,7 @@ describe('resolveVersionProblemDetails with surface', () => {
     })
   })
 
-  it('does not show a form helper for comparison errors on a dialog surface', () => {
+  it('does not block comparison errors on a dialog surface', () => {
     expect(resolveVersionProblemDetails({
       changelogHasErrors: true,
       surface: VERSION_PROBLEM_DIALOG_SURFACE.PUBLISH_PREVIOUS,

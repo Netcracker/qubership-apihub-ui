@@ -153,6 +153,7 @@ export const VersionPageToolbar: FC = memo(() => {
                 <VersionErrorIndicator
                   packageKey={packageId}
                   versionKey={versionId}
+                  kind={currentPackage?.kind}
                   hasErrors={versionContent.hasErrors}
                   changelogHasErrors={versionContent.changelogHasErrors}
                   apiProcessorVersion={versionContent.apiProcessorVersion}

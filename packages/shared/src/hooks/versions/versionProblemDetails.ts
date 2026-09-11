@@ -1,8 +1,7 @@
 import { compareVersions } from 'compare-versions'
 
 import type { PackageKey, VersionKey } from '../../entities/keys'
-import { PACKAGE_KIND } from '../../entities/packages'
-import type { ReferenceKind } from '../../entities/version-references'
+import { DASHBOARD_KIND, PACKAGE_KIND, type PackageKind } from '../../entities/packages'
 
 export const VERSION_PROBLEM_KIND = {
   PROCESSOR_MISMATCH: 'processor-mismatch',
@@ -15,6 +14,8 @@ export type VersionProblemKind = typeof VERSION_PROBLEM_KIND[keyof typeof VERSIO
 
 export const VERSION_PROBLEM_DIALOG_SURFACE = {
   COMPARE: 'compare',
+  COMPARE_PREVIOUS: 'compare-previous',
+  COMPARE_PREVIOUS_REVISION: 'compare-previous-revision',
   PUBLISH_PREVIOUS: 'publish-previous',
   COPY: 'copy',
   ADD_TO_DASHBOARD: 'add-to-dashboard',
@@ -29,7 +30,7 @@ export type UseVersionProblemDetailsParams = {
   hasErrors?: boolean
   changelogHasErrors?: boolean
   deletedAt?: string
-  kind?: ReferenceKind
+  kind?: PackageKind
   apiProcessorVersion?: string
   surface?: VersionProblemDialogSurface
 }
@@ -59,18 +60,45 @@ type VersionProblemDialogView = {
 }
 
 export const VERSION_BUILD_ERRORS_TOOLTIP =
-  'This version has documents that failed to process. Open the Documents tab to see them.'
+  'Errors occurred while processing some documents in this version. Open the Documents tab to see the details'
 export const VERSION_COMPARISON_ERRORS_TOOLTIP =
-  'The comparison against the previous version could not be calculated reliably, so the list of changes may be incomplete. The documents of this version are not affected.'
+  'There were errors when calculating the comparison against the previous version, so the list of changes may be incomplete'
 export const VERSION_BUILD_AND_COMPARISON_ERRORS_TOOLTIP =
-  'This version has documents that failed to process and the comparison against the previous version could not be calculated reliably, so the list of changes may be incomplete. Open the Documents tab to see them.'
+  `${VERSION_BUILD_ERRORS_TOOLTIP}. There were also errors when calculating the comparison against the previous version, so the list of changes may be incomplete`
+export const DASHBOARD_BUILD_ERRORS_TOOLTIP =
+  'This dashboard includes package versions which were published with errors. Open Packages tab on Overview to see the details'
+export const DASHBOARD_COMPARISON_ERRORS_TOOLTIP =
+  'There were errors when calculating the comparison against the previous version for some of the packages in this dashboard, so the list of changes may be incomplete. Open Changelog tab to see the details'
+export const DASHBOARD_BUILD_AND_COMPARISON_ERRORS_TOOLTIP =
+  `${DASHBOARD_BUILD_ERRORS_TOOLTIP}. ${DASHBOARD_COMPARISON_ERRORS_TOOLTIP}`
 export const VERSION_DELETED_PACKAGE_REFERENCE_TOOLTIP = 'The included package version no longer exists'
 export const VERSION_DELETED_DASHBOARD_REFERENCE_TOOLTIP = 'The included dashboard version no longer exists'
 export const VERSION_PUBLISH_PREVIOUS_FORM_HELPER =
-  'The selected previous version contains documents that failed to process and cannot be used for comparison. Select another version.'
-export const VERSION_COPY_FORM_HELPER = 'This version contains documents that failed to process and cannot be copied.'
+  'The selected previous version has errors and cannot be used for comparison. Select another version'
+export const VERSION_COPY_FORM_HELPER =
+  'This version has errors and cannot be copied. Fix the errors and publish a new revision'
 export const VERSION_ADD_TO_DASHBOARD_FORM_HELPER =
-  'This version has errors and cannot be added to the dashboard. Select another version.'
+  'This version has errors and cannot be added to the dashboard. Select another version'
+export const REVISION_COMPARE_PREVIOUS_FORM_HELPER =
+  'The selected previous revision has errors and cannot be used for comparison. Select another revision'
+
+type VersionProblemCopySet = {
+  build: string
+  comparison: string
+  buildAndComparison: string
+}
+
+const PACKAGE_ERROR_COPY: VersionProblemCopySet = {
+  build: VERSION_BUILD_ERRORS_TOOLTIP,
+  comparison: VERSION_COMPARISON_ERRORS_TOOLTIP,
+  buildAndComparison: VERSION_BUILD_AND_COMPARISON_ERRORS_TOOLTIP,
+}
+
+const DASHBOARD_ERROR_COPY: VersionProblemCopySet = {
+  build: DASHBOARD_BUILD_ERRORS_TOOLTIP,
+  comparison: DASHBOARD_COMPARISON_ERRORS_TOOLTIP,
+  buildAndComparison: DASHBOARD_BUILD_AND_COMPARISON_ERRORS_TOOLTIP,
+}
 
 const NO_VERSION_PROBLEMS: VersionProblemCore = {
   hasProblems: false,
@@ -150,11 +178,13 @@ function resolveBuildAndComparisonProblems(
     return undefined
   }
 
+  const versionErrorCopySet = params.kind === DASHBOARD_KIND ? DASHBOARD_ERROR_COPY : PACKAGE_ERROR_COPY
+
   if (hasErrors && changelogHasErrors) {
     return {
       hasProblems: true,
       activeProblemKind: VERSION_PROBLEM_KIND.BUILD_ERRORS,
-      tooltip: VERSION_BUILD_AND_COMPARISON_ERRORS_TOOLTIP,
+      tooltip: versionErrorCopySet.buildAndComparison,
     }
   }
 
@@ -162,14 +192,14 @@ function resolveBuildAndComparisonProblems(
     return {
       hasProblems: true,
       activeProblemKind: VERSION_PROBLEM_KIND.BUILD_ERRORS,
-      tooltip: VERSION_BUILD_ERRORS_TOOLTIP,
+      tooltip: versionErrorCopySet.build,
     }
   }
 
   return {
     hasProblems: true,
     activeProblemKind: VERSION_PROBLEM_KIND.COMPARISON_ERRORS,
-    tooltip: VERSION_COMPARISON_ERRORS_TOOLTIP,
+    tooltip: versionErrorCopySet.comparison,
   }
 }
 
@@ -202,7 +232,7 @@ function resolveProcessorMismatch(
 
   const tooltip = comparison > 0
     ? `The data in the version '${versionKey}' may be incorrect, please contact the system administrators`
-    : `The data in the version '${versionKey}' may be incorrect, as the data has not been processed according to the latest system rules. Please republish the version and if this does not help, contact the system administrators.`
+    : `The data in the version '${versionKey}' may be incorrect, as the data has not been processed according to the latest system rules. Please republish the version and if this does not help, contact the system administrators`
 
   return {
     hasProblems: true,
@@ -217,10 +247,16 @@ function resolveBuildErrorsDialogView(
   switch (surface) {
     case VERSION_PROBLEM_DIALOG_SURFACE.COMPARE:
       return NO_DIALOG_PROBLEM_VIEW
+    case VERSION_PROBLEM_DIALOG_SURFACE.COMPARE_PREVIOUS:
     case VERSION_PROBLEM_DIALOG_SURFACE.PUBLISH_PREVIOUS:
       return {
         isBlocking: true,
         formHelperText: VERSION_PUBLISH_PREVIOUS_FORM_HELPER,
+      }
+    case VERSION_PROBLEM_DIALOG_SURFACE.COMPARE_PREVIOUS_REVISION:
+      return {
+        isBlocking: true,
+        formHelperText: REVISION_COMPARE_PREVIOUS_FORM_HELPER,
       }
     case VERSION_PROBLEM_DIALOG_SURFACE.COPY:
       return {
