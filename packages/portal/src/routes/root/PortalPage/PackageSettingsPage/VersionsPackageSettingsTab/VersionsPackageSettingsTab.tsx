@@ -77,6 +77,7 @@ export const VersionsPackageSettingsTab: FC<PackageSettingsTabProps> = memo<Pack
         body={
           <PackageVersionsTable
             packageKey={packageObject.key}
+            kind={packageObject.kind}
             permissions={packageObject.permissions}
             onDelete={onDeletePackageVersion}
             onEdit={onEditPackageVersion}

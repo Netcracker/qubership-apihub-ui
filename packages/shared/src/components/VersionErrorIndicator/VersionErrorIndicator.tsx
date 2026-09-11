@@ -81,6 +81,7 @@ const IndicatorRoot = styled(Box)({
   display: 'flex',
   alignItems: 'center',
   alignSelf: 'center',
+  flexShrink: 0,
 })
 
 const IndicatorTooltip = styled(({ className, ...props }: TooltipProps) => (

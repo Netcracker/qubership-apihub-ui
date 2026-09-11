@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { useCurrentPackage } from '@apihub/components/CurrentPackageProvider'
 import { useAsyncInvalidatePackageVersionContentByVersion } from '@apihub/routes/root/usePackageVersionContent'
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
@@ -71,6 +72,7 @@ export const VersionSelector: FC = memo(() => {
   const invalidatePackageVersionContent = useAsyncInvalidatePackageVersionContentByVersion()
 
   const [, setClientValidationStatus] = useApiQualityClientValidationStatus()
+  const currentPackage = useCurrentPackage()
 
   const onClickVersion = useCallback(async (version: PackageVersion | undefined) => {
     const { key, latestRevision } = version ?? {}
@@ -100,9 +102,11 @@ export const VersionSelector: FC = memo(() => {
           value={versions!}
           versionStatus={VERSION_STATUS_MAP[activeTab]}
           onClickVersion={onClickVersion}
-          isLoading={areVersionsLoading} />
+          isLoading={areVersionsLoading}
+          kind={currentPackage?.kind}
+        />
       </Placeholder>
-    </>, [versions, areVersionsLoading, searchValue, activeTab, onClickVersion])
+    </>, [activeTab, areVersionsLoading, currentPackage?.kind, onClickVersion, searchValue, versions])
 
   return (
     <Box display="flex" alignItems="center" gap={2} overflow="hidden" data-testid="VersionSelector">

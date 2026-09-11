@@ -1,5 +1,6 @@
 import { bypass, http, HttpResponse, passthrough } from 'msw'
 
+import type { RevisionDto, RevisionsDto } from '@netcracker/qubership-apihub-ui-shared/entities/revisions'
 import type { PackageVersionContentDto } from '@netcracker/qubership-apihub-ui-shared/entities/version-contents'
 import type { PackageVersionDto, PackageVersionsDto } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
 
@@ -128,6 +129,31 @@ export const versionHandlers = [
       : unmodifiedResponse
   }),
 
+  http.get('*/api/v3/packages/:packageKey/versions/:versionKey/revisions', async ({ request, params }) => {
+    const versionKey = params.versionKey as string | undefined
+
+    if (versionKey?.includes('errors-revisions')) {
+      const originalResponse = await fetch(bypass(request))
+      if (!originalResponse.ok) {
+        return originalResponse
+      }
+
+      const unmodifiedResponse = originalResponse.clone()
+      const realData: RevisionsDto = await originalResponse.json()
+      const template = realData.revisions?.[0]
+      if (!template) {
+        return unmodifiedResponse
+      }
+
+      return HttpResponse.json<RevisionsDto>({
+        ...realData,
+        revisions: toRevisionErrorFixtures(template),
+      })
+    }
+
+    return passthrough()
+  }),
+
   http.get('*/api/v3/packages/:packageKey/versions/:versionKey/references', async ({ request, params }) => {
     const versionKey = String(params.versionKey)
 
@@ -163,3 +189,40 @@ export const versionHandlers = [
     return passthrough()
   }),
 ]
+
+function toRevisionErrorFixtures(template: RevisionDto): RevisionDto[] {
+  const revisionErrorFixtures: ReadonlyArray<
+    Pick<RevisionDto, 'hasErrors' | 'changelogHasErrors' | 'apiProcessorVersion'>
+  > = [
+    { hasErrors: true, changelogHasErrors: false },
+    { hasErrors: false, changelogHasErrors: true },
+    { hasErrors: true, changelogHasErrors: true },
+    { apiProcessorVersion: '1.1.1' },
+    { hasErrors: true, apiProcessorVersion: '1.1.1' },
+  ]
+
+  const [versionName] = template.version.split('@')
+  const errorRevisions = revisionErrorFixtures.map((patch, index) => {
+    const revision = index + 1
+    return {
+      ...template,
+      ...patch,
+      revision: revision,
+      version: `${versionName}@${revision}`,
+      notLatestRevision: true,
+    }
+  })
+
+  const latestRevision = revisionErrorFixtures.length + 1
+  const latest: RevisionDto = {
+    ...template,
+    revision: latestRevision,
+    version: `${versionName}@${latestRevision}`,
+    notLatestRevision: false,
+    hasErrors: false,
+    changelogHasErrors: false,
+    apiProcessorVersion: undefined,
+  }
+
+  return [latest, ...errorRevisions.slice().reverse()]
+}

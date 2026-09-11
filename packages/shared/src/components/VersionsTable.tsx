@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { PackageKind } from '../entities/packages'
 import type { PackageVersion } from '../entities/versions'
 import type { FC } from 'react'
 import { memo, useEffect, useMemo, useRef, useState } from 'react'
@@ -30,6 +31,7 @@ import { flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from 
 import { useResizeObserver } from '../hooks/common/useResizeObserver'
 import type { ColumnDef } from '@tanstack/table-core'
 import { CustomTableHeadCell } from './CustomTableHeadCell'
+import { VersionErrorIndicator } from './VersionErrorIndicator/VersionErrorIndicator'
 import { getSplittedVersionKey } from '../utils/versions'
 import { TextWithOverflowTooltip } from './TextWithOverflowTooltip'
 import { FormattedDate } from './FormattedDate'
@@ -49,6 +51,7 @@ type VersionsTableProps = {
   versionStatus: VersionStatus
   onClickVersion: (version: PackageVersion | undefined) => void
   isLoading: boolean
+  kind?: PackageKind
 }
 
 export const VersionsTable: FC<VersionsTableProps> = memo<VersionsTableProps>(({
@@ -56,6 +59,7 @@ export const VersionsTable: FC<VersionsTableProps> = memo<VersionsTableProps>(({
   versionStatus,
   onClickVersion,
   isLoading,
+  kind,
 }) => {
   const [containerWidth, setContainerWidth] = useState(DEFAULT_CONTAINER_WIDTH)
   const [columnSizingInfo, setColumnSizingInfo] = useState<ColumnSizingInfoState>()
@@ -82,9 +86,20 @@ export const VersionsTable: FC<VersionsTableProps> = memo<VersionsTableProps>(({
       cell: ({ row: { original: { version } } }) => {
         const { versionKey } = getSplittedVersionKey(version?.key)
         return (
-          <TextWithOverflowTooltip tooltipText={versionKey}          >
-            <Link>{versionKey}</Link>
-          </TextWithOverflowTooltip>
+          <Box display="flex" alignItems="center" gap={1} overflow="hidden">
+            <TextWithOverflowTooltip tooltipText={versionKey} sx={{ minWidth: 0, flexShrink: 1 }}>
+              <Link>{versionKey}</Link>
+            </TextWithOverflowTooltip>
+            <VersionErrorIndicator
+              kind={kind}
+              versionKey={versionKey}
+              hasErrors={version?.hasErrors}
+              changelogHasErrors={version?.changelogHasErrors}
+              apiProcessorVersion={version?.apiProcessorVersion}
+              fontSize='extra-small'
+              data-testid="VersionRowErrorIndicator"
+            />
+          </Box>
         )
       },
     },
@@ -125,7 +140,7 @@ export const VersionsTable: FC<VersionsTableProps> = memo<VersionsTableProps>(({
         )
       },
     },
-  ], [versionStatus])
+  ], [kind, versionStatus])
 
   const data: TableData[] = useMemo(() => value.map(version => ({
     version: version,
