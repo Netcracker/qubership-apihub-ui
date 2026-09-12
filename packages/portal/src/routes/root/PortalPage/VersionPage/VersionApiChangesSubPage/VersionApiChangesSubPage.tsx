@@ -1,10 +1,12 @@
-import { Link } from '@mui/material'
 import { type FC, memo, useMemo, useState } from 'react'
 import { NavLink, useParams } from 'react-router-dom'
+import { Box, Link, styled } from '@mui/material'
 
 import { CATEGORY_OPERATION } from '@netcracker/qubership-apihub-ui-shared/components/ChangesTooltip'
 import { RichFiltersLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/RichFiltersLayout'
+import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
 import { PageTitle } from '@netcracker/qubership-apihub-ui-shared/components/Titles/PageTitle'
+import { VersionErrorIndicator } from '@netcracker/qubership-apihub-ui-shared/components/VersionErrorIndicator/VersionErrorIndicator'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { CHANGE_SEVERITIES } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
 import { CONTRACT_TYPE_DDL, type ContractType, toRouteApiType } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
@@ -27,6 +29,7 @@ import { isApiTypeSelectorShown } from '@apihub/utils/operation-types'
 import { VERSION_TAB_IDS } from '../VersionTabApiTypes/version-tab-allowed-api-types'
 import { getVersionPath } from '../../../../NavigationProvider'
 import { usePackage } from '../../../usePackage'
+import { usePackageVersionContent } from '../../../usePackageVersionContent'
 import { useVersionSearchParam } from '../../../useVersionSearchParam'
 import { useRefSearchParam } from '../../useRefSearchParam'
 import { ChangesSummaryProvider } from '../ChangesSummaryProvider'
@@ -70,6 +73,12 @@ export const VersionApiChangesSubPage: FC = memo(() => {
   const previousReleaseVersion = usePreviousReleaseVersion()
   const { versionKey: previousReleaseVersionKey } = getSplittedVersionKey(previousReleaseVersion)
 
+  const { versionContent: previousVersionContent } = usePackageVersionContent({
+    packageKey: packageId,
+    versionKey: previousReleaseVersion,
+    enabled: !!previousReleaseVersion,
+  })
+
   const [searchValue, setSearchValue] = useState('')
 
   const [packageObject] = usePackage({ showParents: true })
@@ -80,15 +89,49 @@ export const VersionApiChangesSubPage: FC = memo(() => {
 
   const { hideFiltersPanel, toggleHideFiltersPanel } = usePortalPageSettingsContext()
 
-  const versionElement = useMemo(() => (
-    <Link
-      component={NavLink}
-      to={getVersionPath({ packageKey: packageId!, versionKey: previousReleaseVersion! })}
-      data-testid="ComparedToLink"
-    >
-      {previousReleaseVersionKey}
-    </Link>
-  ), [packageId, previousReleaseVersion, previousReleaseVersionKey])
+  const versionElement = useMemo(() => {
+    if (!previousReleaseVersion || !packageId) {
+      return null
+    }
+
+    return (
+      <VersionLinkContainer>
+        <TextWithOverflowTooltip
+          tooltipText={previousReleaseVersionKey}
+          variant="inherit"
+          sx={{ minWidth: 0, flexShrink: 1 }}
+        >
+          <Link
+            component={NavLink}
+            to={getVersionPath({
+              packageKey: packageId,
+              versionKey: previousReleaseVersion,
+            })}
+            data-testid="ComparedToLink"
+          >
+            {previousReleaseVersionKey}
+          </Link>
+        </TextWithOverflowTooltip>
+        <VersionErrorIndicator
+          packageKey={packageId}
+          versionKey={previousReleaseVersionKey}
+          kind={packageObject?.kind}
+          hasErrors={previousVersionContent?.hasErrors}
+          changelogHasErrors={previousVersionContent?.changelogHasErrors}
+          apiProcessorVersion={previousVersionContent?.apiProcessorVersion}
+          data-testid="PreviousVersionErrorIndicator"
+        />
+      </VersionLinkContainer>
+    )
+  }, [
+    packageId,
+    packageObject?.kind,
+    previousReleaseVersion,
+    previousReleaseVersionKey,
+    previousVersionContent?.apiProcessorVersion,
+    previousVersionContent?.changelogHasErrors,
+    previousVersionContent?.hasErrors,
+  ])
 
   return (
     <ChangesSummaryProvider>
@@ -142,3 +185,10 @@ export const VersionApiChangesSubPage: FC = memo(() => {
 VersionApiChangesSubPage.displayName = 'VersionApiChangesSubPage'
 
 const API_CHANGES_TITLE = 'API changes compared to '
+
+const VersionLinkContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: theme.spacing(1),
+  minWidth: 0,
+}))

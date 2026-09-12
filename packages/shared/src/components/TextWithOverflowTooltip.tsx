@@ -30,6 +30,7 @@ export type TextWithTooltipProps = {
   typographyComponent?: ElementType
 } & PropsWithChildren & TestableProps
 
+// Note: with a Link child, ellipsis dots use body text colour, not link colour.
 export const TextWithOverflowTooltip: FC<TextWithTooltipProps> = ({
   variant = 'body2',
   children,
