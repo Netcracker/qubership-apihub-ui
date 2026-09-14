@@ -1,0 +1,2 @@
+function e(t){let r=0,n;for(n=0;n<t.length;n+=1)r=t.charCodeAt(n)+((r<<5)-r);let o="#";for(n=0;n<3;n+=1){const i=r>>n*8&255;o+=`00${i.toString(16)}`.slice(-2)}return o}function s(t){try{return JSON.stringify(typeof t=="string"?JSON.parse(t):t,void 0,2)}catch{return typeof t=="string"?t:t.toString()}}function c(t){return new Intl.ListFormat("en",{type:"disjunction"}).format(t)}export{c as a,e as s,s as t};
+//# sourceMappingURL=strings-8f296fda.js.map
