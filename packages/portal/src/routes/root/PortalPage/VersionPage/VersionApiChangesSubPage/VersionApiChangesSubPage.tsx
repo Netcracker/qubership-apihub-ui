@@ -6,7 +6,6 @@ import { CATEGORY_OPERATION } from '@netcracker/qubership-apihub-ui-shared/compo
 import { RichFiltersLayout } from '@netcracker/qubership-apihub-ui-shared/components/PageLayouts/RichFiltersLayout'
 import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
 import { PageTitle } from '@netcracker/qubership-apihub-ui-shared/components/Titles/PageTitle'
-import { VersionErrorIndicator } from '@netcracker/qubership-apihub-ui-shared/components/VersionErrorIndicator/VersionErrorIndicator'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import { CHANGE_SEVERITIES } from '@netcracker/qubership-apihub-ui-shared/entities/change-severities'
 import { CONTRACT_TYPE_DDL, type ContractType, toRouteApiType } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
@@ -29,7 +28,6 @@ import { isApiTypeSelectorShown } from '@apihub/utils/operation-types'
 import { VERSION_TAB_IDS } from '../VersionTabApiTypes/version-tab-allowed-api-types'
 import { getVersionPath } from '../../../../NavigationProvider'
 import { usePackage } from '../../../usePackage'
-import { usePackageVersionContent } from '../../../usePackageVersionContent'
 import { useVersionSearchParam } from '../../../useVersionSearchParam'
 import { useRefSearchParam } from '../../useRefSearchParam'
 import { ChangesSummaryProvider } from '../ChangesSummaryProvider'
@@ -43,6 +41,7 @@ import { useOperationGroupSearchFilter } from '../useOperationGroupSearchFilter'
 import { useSetPathParam } from '../useSetPathParam'
 import { useTagSearchFilter } from '../useTagSearchFilter'
 import { useVersionTabApiTypes } from '../useVersionTabApiTypes'
+import { VersionErrorIndicatorWithFetch } from '../VersionErrorIndicatorWithFetch'
 import { ApiChangesCard } from './ApiChangesCard'
 import { ApiChangesNavigation } from './ApiChangesNavigation'
 
@@ -72,12 +71,6 @@ export const VersionApiChangesSubPage: FC = memo(() => {
 
   const previousReleaseVersion = usePreviousReleaseVersion()
   const { versionKey: previousReleaseVersionKey } = getSplittedVersionKey(previousReleaseVersion)
-
-  const { versionContent: previousVersionContent } = usePackageVersionContent({
-    packageKey: packageId,
-    versionKey: previousReleaseVersion,
-    enabled: !!previousReleaseVersion,
-  })
 
   const [searchValue, setSearchValue] = useState('')
 
@@ -112,26 +105,15 @@ export const VersionApiChangesSubPage: FC = memo(() => {
             {previousReleaseVersionKey}
           </Link>
         </TextWithOverflowTooltip>
-        <VersionErrorIndicator
+        <VersionErrorIndicatorWithFetch
           packageKey={packageId}
-          versionKey={previousReleaseVersionKey}
+          versionKey={previousReleaseVersion}
           kind={packageObject?.kind}
-          hasErrors={previousVersionContent?.hasErrors}
-          changelogHasErrors={previousVersionContent?.changelogHasErrors}
-          apiProcessorVersion={previousVersionContent?.apiProcessorVersion}
           data-testid="PreviousVersionErrorIndicator"
         />
       </VersionLinkContainer>
     )
-  }, [
-    packageId,
-    packageObject?.kind,
-    previousReleaseVersion,
-    previousReleaseVersionKey,
-    previousVersionContent?.apiProcessorVersion,
-    previousVersionContent?.changelogHasErrors,
-    previousVersionContent?.hasErrors,
-  ])
+  }, [packageId, packageObject?.kind, previousReleaseVersion, previousReleaseVersionKey])
 
   return (
     <ChangesSummaryProvider>

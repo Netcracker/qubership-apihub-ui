@@ -40,7 +40,6 @@ import {
 import { RawSpecDiffView } from '@netcracker/qubership-apihub-ui-shared/components/RawSpecDiffView'
 import { RawSpecView } from '@netcracker/qubership-apihub-ui-shared/components/SpecificationDialog/RawSpecView'
 import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'
-import { VersionErrorIndicator } from '@netcracker/qubership-apihub-ui-shared/components/VersionErrorIndicator/VersionErrorIndicator'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import {
   API_TYPE_ASYNCAPI,
@@ -72,9 +71,10 @@ import {
 import type { FC, ReactNode } from 'react'
 import { memo, useCallback, useEffect, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
-import { useVersionsComparisonGlobalParams } from '../../..//PortalPage/VersionPage/VersionsComparisonGlobalParams'
+import { useVersionsComparisonGlobalParams } from '../../../PortalPage/VersionPage/VersionsComparisonGlobalParams'
 import { useOperationNavigationDetails } from '../../../OperationNavigationDataProvider'
 import { useSetChangesLoadingStatus } from '../ChangesLoadingStatusProvider'
+import { VersionErrorIndicatorWithFetch } from '../VersionErrorIndicatorWithFetch'
 import { useBreadcrumbsData } from '../ComparedPackagesBreadcrumbsProvider'
 import { useFileViewMode } from '../useFileViewMode'
 import { useOperationViewMode } from '../useOperationViewMode'
@@ -341,13 +341,13 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
             breadcrumbsData={breadcrumbsData}
             actions={isRawViewMode && rawViewActions}
             swapperBreadcrumbsBeforeComponent={
-              <VersionErrorIndicator
+              <VersionErrorIndicatorWithFetch
                 packageKey={originPackageKey}
                 versionKey={originVersionKey}
               />
             }
             swapperBreadcrumbsAfterComponent={
-              <VersionErrorIndicator
+              <VersionErrorIndicatorWithFetch
                 packageKey={changedPackageKey}
                 versionKey={changedVersionKey}
               />

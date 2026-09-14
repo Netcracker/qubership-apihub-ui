@@ -10,12 +10,15 @@ import type { UseVersionProblemDetailsParams } from '../../hooks/versions/versio
 import { ErrorIcon } from '../../icons/ErrorIcon'
 import type { TestableProps } from '../Testable'
 
-type VersionErrorIndicatorProps = Omit<UseVersionProblemDetailsParams, 'surface'> & TestableProps & {
-  tooltip?: ReactNode
-  tooltipPlacement?: TooltipProps['placement']
-  fontSize?: SvgIconProps['fontSize']
-  onClick?: (event: SyntheticEvent) => void
-}
+export type VersionErrorIndicatorProps =
+  & Omit<UseVersionProblemDetailsParams, 'surface' | 'packageKey'>
+  & TestableProps
+  & {
+    tooltip?: ReactNode
+    tooltipPlacement?: TooltipProps['placement']
+    fontSize?: SvgIconProps['fontSize']
+    onClick?: (event: SyntheticEvent) => void
+  }
 
 export const VersionErrorIndicator: FC<VersionErrorIndicatorProps> = memo<VersionErrorIndicatorProps>(({
   tooltip: customTooltip,

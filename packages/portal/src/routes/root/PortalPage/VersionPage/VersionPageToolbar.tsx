@@ -151,7 +151,6 @@ export const VersionPageToolbar: FC = memo(() => {
               <>
                 <VersionStatusChip status={versionContent.status} sx={{ height: 20 }} data-testid="VersionStatusChip" />
                 <VersionErrorIndicator
-                  packageKey={packageId}
                   versionKey={versionId}
                   kind={currentPackage?.kind}
                   hasErrors={versionContent.hasErrors}

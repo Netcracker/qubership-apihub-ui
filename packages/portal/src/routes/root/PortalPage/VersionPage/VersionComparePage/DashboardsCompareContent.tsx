@@ -28,7 +28,6 @@ import { VersionStatusChip } from '@netcracker/qubership-apihub-ui-shared/compon
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
 import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
 import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
-import { VersionErrorIndicator } from '@netcracker/qubership-apihub-ui-shared/components/VersionErrorIndicator/VersionErrorIndicator'
 import { API_TYPE_TITLE_MAP } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import {
   ACTION_TYPE_COLOR_MAP,
@@ -44,6 +43,7 @@ import {
 import { getComparisonApiTypesFromSummary, type VersionComparisonContractsSummary } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-changes-summary'
 import { hasDdlComparisonChanges } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
 import { calculateAction } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
+import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import type { DashboardComparisonSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
 import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 import {
@@ -72,6 +72,7 @@ import { useChangesLoadingStatus, useSetChangesLoadingStatus } from '../ChangesL
 import { useChangesSummaryFromContext } from '../ChangesSummaryProvider'
 import { useBreadcrumbsData } from '../ComparedPackagesBreadcrumbsProvider'
 import { ComparisonSwapper } from '../ComparisonSwapper'
+import { VersionErrorIndicatorWithFetch } from '../VersionErrorIndicatorWithFetch'
 import { VERSION_SWAPPER_HEIGHT } from '../shared-styles'
 import { useApiTypeSearchParam } from '../useApiTypeSearchParam'
 import { useVersionsComparisonGlobalParams } from '../VersionsComparisonGlobalParams'
@@ -146,8 +147,20 @@ export const DashboardsCompareContent: FC = memo(() => {
         breadcrumbsData={breadcrumbsData}
         handleSwap={handleSwap}
         showCompareDialog={showCompareDialog}
-        customComponentBeforeSwapperBreadcrumbs={<VersionErrorIndicator packageKey={originPackageKey} versionKey={originVersionKey} />}
-        customComponentAfterSwapperBreadcrumbs={<VersionErrorIndicator packageKey={changedPackageKey} versionKey={changedVersionKey} />}
+        customComponentBeforeSwapperBreadcrumbs={
+          <VersionErrorIndicatorWithFetch
+            packageKey={originPackageKey}
+            versionKey={originVersionKey}
+            kind={DASHBOARD_KIND}
+          />
+        }
+        customComponentAfterSwapperBreadcrumbs={
+          <VersionErrorIndicatorWithFetch
+            packageKey={changedPackageKey}
+            versionKey={changedVersionKey}
+            kind={DASHBOARD_KIND}
+          />
+        }
       />
       <Placeholder
         invisible={isNotEmpty(filteredDashboardChanges)}

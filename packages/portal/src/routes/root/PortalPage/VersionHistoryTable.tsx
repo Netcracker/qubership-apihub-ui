@@ -114,7 +114,6 @@ export const VersionHistoryTable: FC<VersionHistoryTableProps> = memo<VersionHis
               changelogHasErrors={changelogHasErrors}
               apiProcessorVersion={apiProcessorVersion}
               fontSize='extra-small'
-              data-testid="VersionRowErrorIndicator"
             />
           </Box>
         )
