@@ -19,6 +19,7 @@ import { memo, useCallback, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
 import {
+  AUTHENTICATION_REPORTS_PAGE,
   AUTOMATION_PAGE,
   SECURITY_REPORTS_PAGE,
   SERVICES_PAGE,
@@ -102,6 +103,7 @@ const MENU_ITEMS: SidebarMenu[] = [
   },
   {
     id: SECURITY_REPORTS_PAGE,
+    route: `${SECURITY_REPORTS_PAGE}/${AUTHENTICATION_REPORTS_PAGE}`,
     title: 'Security Reports',
     tooltip: 'Security Reports',
     icon: <LockOpenIcon/>,
