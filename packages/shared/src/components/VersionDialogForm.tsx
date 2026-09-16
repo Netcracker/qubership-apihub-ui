@@ -319,11 +319,14 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
     [getPreviousVersionOptionStatus],
   )
 
-  const renderPreviousVersionAdornment = useCallback((versionKey: Key): ReactElement | null => {
+  const renderPreviousVersionErrorIndicator = useCallback((versionKey: Key): ReactElement | null => {
     const versionItem = previousVersionMap.get(versionKey) ?? (
       rememberedPreviousVersion?.key === versionKey ? rememberedPreviousVersion : undefined
     )
-    const errorIndicator = versionItem && (
+    if (!versionItem) {
+      return null
+    }
+    return (
       <VersionErrorIndicator
         versionKey={versionKey}
         hasErrors={versionItem.hasErrors}
@@ -334,17 +337,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
         showTooltip={false}
       />
     )
-    const statusChip = renderPreviousVersionStatusChip(versionKey)
-    if (!errorIndicator && !statusChip) {
-      return null
-    }
-    return (
-      <Box display="flex" alignItems="center" gap={0.5}>
-        {errorIndicator}
-        {statusChip}
-      </Box>
-    )
-  }, [kind, previousVersionMap, rememberedPreviousVersion, renderPreviousVersionStatusChip])
+  }, [kind, previousVersionMap, rememberedPreviousVersion])
 
   const previousVersionOptions = useMemo(() => {
     const availableKeys = normalizedPreviousVersions.map(({ key }) => key)
@@ -869,7 +862,8 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
                       key={versionKey}
                       props={props}
                       title={getPreviousVersionOptionLabel(versionKey)}
-                      chip={renderPreviousVersionAdornment(versionKey)}
+                      indicator={renderPreviousVersionErrorIndicator(versionKey)}
+                      chip={renderPreviousVersionStatusChip(versionKey)}
                       data-testid={`Option-${versionKey}`}
                     />
                   )}

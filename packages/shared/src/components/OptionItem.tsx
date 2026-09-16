@@ -18,8 +18,8 @@ import type { FC, HTMLAttributes, ReactNode } from 'react'
 import * as React from 'react'
 import { memo } from 'react'
 import type { TooltipProps } from '@mui/material'
-import { Box, ListItem, Tooltip, Typography } from '@mui/material'
-import { OverflowTooltip } from './OverflowTooltip'
+import { Box, ListItem, Tooltip } from '@mui/material'
+import { TextWithOverflowTooltip } from './TextWithOverflowTooltip'
 import type { TestableProps } from './Testable'
 
 export type OptionItemProps = {
@@ -27,6 +27,7 @@ export type OptionItemProps = {
   title: string
   disabled?: boolean
   subtitle?: string
+  indicator?: ReactNode
   chip?: ReactNode
   tooltipProps?: Omit<TooltipProps, 'children'>
 } & TestableProps
@@ -36,6 +37,7 @@ export const OptionItem: FC<OptionItemProps> = memo<OptionItemProps>(({
   title,
   disabled,
   subtitle,
+  indicator,
   chip,
   tooltipProps: { title: tooltipTitle, ...rest } = {},
   'data-testid': dataTestId,
@@ -54,21 +56,26 @@ export const OptionItem: FC<OptionItemProps> = memo<OptionItemProps>(({
           sx={{ pointerEvents: disabled ? 'none' : 'auto' }}
           disabled={disabled}
         >
-          <Box width="100%" display="flex" alignItems="center">
-            <Box width="100%" maxWidth="300px">
-              <OverflowTooltip placement="right" title={title}>
-                <Typography variant="body2" noWrap>{title}</Typography>
-              </OverflowTooltip>
-              {subtitle && (
-                <OverflowTooltip placement="right" title={subtitle}>
-                  <Typography variant="body2" noWrap color="#626D82">{subtitle}</Typography>
-                </OverflowTooltip>
-              )}
+          <Box width="100%" display="flex" alignItems="center" gap={0.5}>
+            <Box display="flex" alignItems="center" minWidth={0} flex={1} gap={0.5} overflow="hidden">
+              <Box minWidth={0} flexShrink={1} overflow="hidden">
+                <TextWithOverflowTooltip placement="left" tooltipText={title} >
+                  {title}
+                </TextWithOverflowTooltip>
+                {subtitle && (
+                  <TextWithOverflowTooltip placement="left" tooltipText={subtitle} sx={{ color: '#626D82' }}>
+                    {subtitle}
+                  </TextWithOverflowTooltip>
+                )}
+              </Box>
+              {indicator}
             </Box>
-            {chip && <Box sx={{ marginLeft: 'auto' }}>{chip}</Box>}
+            {chip && <Box flexShrink={0}>{chip}</Box>}
           </Box>
         </ListItem>
       </Box>
     </Tooltip>
   )
 })
+
+OptionItem.displayName = 'OptionItem'

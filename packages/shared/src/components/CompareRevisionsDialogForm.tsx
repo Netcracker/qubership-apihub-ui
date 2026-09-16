@@ -21,7 +21,6 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  ListItem,
   TextField,
   Typography,
 } from '@mui/material'
@@ -30,6 +29,7 @@ import { Controller, useWatch } from 'react-hook-form'
 import { LoadingButton } from '@mui/lab'
 import { DialogForm } from './DialogForm'
 import { VersionStatusChip } from './VersionStatusChip'
+import { OptionItem } from './OptionItem'
 import { Swapper } from './Swapper'
 import { LatestRevisionMark } from './LatestRevisionMark'
 import type { Revision, Revisions } from '../entities/revisions'
@@ -272,16 +272,13 @@ type AutocompleteOptionProps = {
 
 const AutocompleteOption: FC<AutocompleteOptionProps> = memo<AutocompleteOptionProps>(({ revision, props }) => {
   return (
-    <ListItem
-      {...props}
+    <OptionItem
       key={revision.revision}
-    >
-      <Box width="100%" display="flex" justifyContent="space-between" alignItems="center">
-        <Box display="flex" gap="4px" alignItems="center">
-          {`${REVISION_DELIMITER}${revision.revision}`}
+      props={props}
+      title={`${REVISION_DELIMITER}${revision.revision}`}
+      indicator={
+        <>
           <LatestRevisionMark latest={revision.latestRevision}/>
-        </Box>
-        <Box display="flex" alignItems="center" gap={0.5}>
           <VersionErrorIndicator
             versionKey={revision.version}
             hasErrors={revision.hasErrors}
@@ -290,10 +287,10 @@ const AutocompleteOption: FC<AutocompleteOptionProps> = memo<AutocompleteOptionP
             fontSize="extra-small"
             showTooltip={false}
           />
-          <VersionStatusChip status={revision.status}/>
-        </Box>
-      </Box>
-    </ListItem>
+        </>
+      }
+      chip={<VersionStatusChip status={revision.status}/>}
+    />
   )
 })
 

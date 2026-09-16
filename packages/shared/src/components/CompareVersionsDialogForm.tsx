@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
-import type { FC, SyntheticEvent } from 'react'
+import type { FC, HTMLAttributes, SyntheticEvent } from 'react'
 import { memo, useState } from 'react'
 import {
   Autocomplete,
@@ -26,7 +25,6 @@ import {
   DialogContent,
   DialogTitle,
   ListItem,
-  ListItemText,
   TextField,
   Typography,
 } from '@mui/material'
@@ -34,14 +32,14 @@ import type { Control, UseFormSetValue } from 'react-hook-form'
 import { Controller, useWatch } from 'react-hook-form'
 import { LoadingButton } from '@mui/lab'
 import { DialogForm } from './DialogForm'
-import type { Package } from '../entities/packages'
+import type { Package, PackageKind } from '../entities/packages'
 import { DASHBOARD_KIND, PACKAGE_KIND } from '../entities/packages'
 import { DEFAULT_DEBOUNCE } from '../utils/constants'
 import type { PackageVersion } from '../entities/versions'
 import { disableAutocompleteSearch } from '../utils/mui'
 import { getSplittedVersionKey } from '../utils/versions'
 import { VersionStatusChip } from './VersionStatusChip'
-import { VersionTitle } from './Titles/VersionTitle'
+import { OptionItem } from './OptionItem'
 import { Swapper } from './Swapper'
 import { VersionErrorFormMessage } from './VersionErrorIndicator/VersionErrorFormMessage'
 import { VersionErrorIndicator } from './VersionErrorIndicator/VersionErrorIndicator'
@@ -235,34 +233,9 @@ export const CompareVersionsDialogForm: FC<CompareVersionsDialogFormProps> = mem
                 options={originalVersionOptions}
                 isOptionEqualToValue={(option, value) => option.key === value.key}
                 getOptionLabel={({ key }: PackageVersion) => key}
-                renderOption={(props, option: PackageVersion) => {
-                  const { key, status, latestRevision, hasErrors, changelogHasErrors, apiProcessorVersion } = option
-                  const { versionKey: optionVersionKey, revisionKey } = getSplittedVersionKey(key)
-                  return (
-                    <ListItem {...props} key={key}>
-                      <ListItemText>
-                        <VersionTitle
-                          version={optionVersionKey}
-                          revision={revisionKey}
-                          latestRevision={latestRevision}
-                          showTooltip={false}
-                        />
-                      </ListItemText>
-                      <Box display="flex" alignItems="center" gap={0.5}>
-                        <VersionErrorIndicator
-                          versionKey={optionVersionKey}
-                          hasErrors={hasErrors}
-                          changelogHasErrors={changelogHasErrors}
-                          apiProcessorVersion={apiProcessorVersion}
-                          kind={kind}
-                          fontSize="extra-small"
-                          showTooltip={false}
-                        />
-                        <VersionStatusChip status={status}/>
-                      </Box>
-                    </ListItem>
-                  )
-                }}
+                renderOption={(props, version) => (
+                  <VersionCompareOption props={props} version={version} kind={kind}/>
+                )}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -372,34 +345,9 @@ export const CompareVersionsDialogForm: FC<CompareVersionsDialogFormProps> = mem
                 options={changedVersionOptions}
                 isOptionEqualToValue={(option, value) => option.key === value.key}
                 getOptionLabel={({ key }: PackageVersion) => key}
-                renderOption={(props, option: PackageVersion) => {
-                  const { key, status, latestRevision, hasErrors, changelogHasErrors, apiProcessorVersion } = option
-                  const { versionKey: optionVersionKey, revisionKey } = getSplittedVersionKey(key)
-                  return (
-                    <ListItem {...props} key={key}>
-                      <ListItemText>
-                        <VersionTitle
-                          version={optionVersionKey}
-                          revision={revisionKey}
-                          latestRevision={latestRevision}
-                          showTooltip={false}
-                        />
-                      </ListItemText>
-                      <Box display="flex" alignItems="center" gap={0.5}>
-                        <VersionErrorIndicator
-                          versionKey={optionVersionKey}
-                          hasErrors={hasErrors}
-                          changelogHasErrors={changelogHasErrors}
-                          apiProcessorVersion={apiProcessorVersion}
-                          kind={kind}
-                          fontSize="extra-small"
-                          showTooltip={false}
-                        />
-                        <VersionStatusChip status={status}/>
-                      </Box>
-                    </ListItem>
-                  )
-                }}
+                renderOption={(props, version) => (
+                  <VersionCompareOption props={props} version={version} kind={kind}/>
+                )}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -469,6 +417,43 @@ export const CompareVersionsDialogForm: FC<CompareVersionsDialogFormProps> = mem
 })
 
 CompareVersionsDialogForm.displayName = 'CompareVersionsDialogForm'
+
+type VersionCompareOptionProps = {
+  props: HTMLAttributes<HTMLLIElement>
+  version: PackageVersion
+  kind: PackageKind
+}
+
+const VersionCompareOption: FC<VersionCompareOptionProps> = memo<VersionCompareOptionProps>(({
+  props,
+  version,
+  kind,
+}) => {
+  const { key, status, latestRevision, hasErrors, changelogHasErrors, apiProcessorVersion } = version
+  const { versionKey } = getSplittedVersionKey(key, latestRevision)
+
+  return (
+    <OptionItem
+      key={key}
+      props={props}
+      title={versionKey}
+      indicator={
+        <VersionErrorIndicator
+          versionKey={versionKey}
+          hasErrors={hasErrors}
+          changelogHasErrors={changelogHasErrors}
+          apiProcessorVersion={apiProcessorVersion}
+          kind={kind}
+          fontSize="extra-small"
+          showTooltip={false}
+        />
+      }
+      chip={<VersionStatusChip status={status}/>}
+    />
+  )
+})
+
+VersionCompareOption.displayName = 'VersionCompareOption'
 
 const DIALOG_CONTENT_STYLES = {
   display: 'grid',
