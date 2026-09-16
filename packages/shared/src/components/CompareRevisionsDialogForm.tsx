@@ -36,7 +36,7 @@ import type { Revision, Revisions } from '../entities/revisions'
 import { REVISION_DELIMITER } from '../entities/versions'
 import { VersionErrorFormMessage } from './VersionErrorIndicator/VersionErrorFormMessage'
 import { VersionErrorIndicator } from './VersionErrorIndicator/VersionErrorIndicator'
-import { DialogAutocomplete } from './Autocompletes/DialogAutocomplete'
+import { VersionSelectorAutocomplete } from './Autocompletes/VersionSelectorAutocomplete'
 import { useVersionProblemDetails } from '../hooks/versions/useVersionProblemDetails'
 import { VERSION_PROBLEM_DIALOG_SURFACE } from '../hooks/versions/versionProblemDetails'
 import { useParams } from 'react-router-dom'
@@ -228,8 +228,9 @@ const RevisionAutocomplete: FC<RevisionAutocompleteProps> = memo<RevisionAutocom
   'data-testid': dataTestId = 'RevisionAutocomplete',
 }) => {
   return (
-    <DialogAutocomplete
+    <VersionSelectorAutocomplete
       sx={{ gridArea: controllerName }}
+      inputIndicator={indicator}
       value={value ?? null}
       onChange={(_, newValue) => {
         onChange(newValue)
@@ -247,15 +248,6 @@ const RevisionAutocomplete: FC<RevisionAutocompleteProps> = memo<RevisionAutocom
           label="Revision"
           required
           error={error}
-          InputProps={{
-            ...params.InputProps,
-            endAdornment: (
-              <>
-                {params.InputProps.endAdornment}
-                {indicator}
-              </>
-            ),
-          }}
         />
       )}
       data-testid={dataTestId}

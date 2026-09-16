@@ -77,7 +77,7 @@ import { FileUploadField } from './FileUploadField'
 import type { AutocompleteInputChangeReason } from '@mui/base/AutocompleteUnstyled/useAutocomplete'
 import { VersionErrorFormMessage } from './VersionErrorIndicator/VersionErrorFormMessage'
 import { VersionErrorIndicator } from './VersionErrorIndicator/VersionErrorIndicator'
-import { DialogAutocomplete } from './Autocompletes/DialogAutocomplete'
+import { VersionSelectorAutocomplete } from './Autocompletes/VersionSelectorAutocomplete'
 import type { ApiType } from '../entities/api-types'
 import { API_TYPE_REST, API_TYPE_TITLE_MAP, API_TYPES } from '../entities/api-types'
 import { REST_API_TYPE } from '@netcracker/qubership-apihub-api-processor'
@@ -769,8 +769,9 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
           name="status"
           control={control}
           render={({ field: { value } }) => (
-            <DialogAutocomplete
+            <VersionSelectorAutocomplete
               disableClearable
+              inputIndicator={statusErrorIndicator}
               value={value ?? null}
               options={VERSION_STATUSES}
               getOptionDisabled={(option) => !packagePermissions.includes(VERSION_STATUS_MANAGE_PERMISSIONS[option])}
@@ -811,12 +812,6 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
                       },
                     },
                     startAdornment: status ? <VersionStatusChip sx={{ height: 16, mb: 1 }} status={status}/> : null,
-                    endAdornment: (
-                      <>
-                        {params.InputProps.endAdornment}
-                        {statusErrorIndicator}
-                      </>
-                    ),
                   }}
                 />
               )}
@@ -847,8 +842,22 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
               name="previousVersion"
               control={control}
               render={({ field }) => (
-                <DialogAutocomplete
+                <VersionSelectorAutocomplete
                   disabled={isPublishFieldsDisabled}
+                  inputChip={selectedStatus
+                    ? <VersionStatusChip sx={{ height: '18px' }} status={selectedStatus}/>
+                    : undefined}
+                  inputIndicator={selectedPreviousVersion
+                    ? (
+                      <VersionErrorIndicator
+                        versionKey={previousVersion}
+                        hasErrors={selectedPreviousVersion.hasErrors}
+                        changelogHasErrors={selectedPreviousVersion.changelogHasErrors}
+                        apiProcessorVersion={selectedPreviousVersion.apiProcessorVersion}
+                        kind={kind}
+                      />
+                    )
+                    : undefined}
                   value={field.value ?? null}
                   options={previousVersionOptions}
                   loading={arePreviousVersionsLoading}
@@ -876,26 +885,6 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
                       helperText={hasInvalidPreviousVersionStatus
                         ? RELEASE_PREVIOUS_VERSION_REQUIRED_MESSAGE
                         : extraValidationMassage}
-                      InputProps={{
-                        ...params.InputProps,
-                        endAdornment: (
-                          <>
-                            {selectedStatus && (
-                              <VersionStatusChip sx={{ height: '18px' }} status={selectedStatus}/>
-                            )}
-                            {params.InputProps.endAdornment}
-                            {selectedPreviousVersion && (
-                              <VersionErrorIndicator
-                                versionKey={previousVersion}
-                                hasErrors={selectedPreviousVersion.hasErrors}
-                                changelogHasErrors={selectedPreviousVersion.changelogHasErrors}
-                                apiProcessorVersion={selectedPreviousVersion.apiProcessorVersion}
-                                kind={kind}
-                              />
-                            )}
-                          </>
-                        ),
-                      }}
                     />
                   )}
                   onChange={(_, value) => {

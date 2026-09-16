@@ -59,6 +59,7 @@ export const VersionErrorIndicator: FC<VersionErrorIndicatorProps> = memo<Versio
 
   const wrappedContent = (
     <IndicatorRoot
+      clickable={!!onClick}
       tabIndex={onClick ? undefined : (showTooltip ? 0 : undefined)}
       aria-label={resolvedTooltip}
     >
@@ -82,12 +83,15 @@ export const VersionErrorIndicator: FC<VersionErrorIndicatorProps> = memo<Versio
 
 VersionErrorIndicator.displayName = 'VersionErrorIndicator'
 
-const IndicatorRoot = styled(Box)({
+const IndicatorRoot = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'clickable',
+})<{ clickable?: boolean }>(({ clickable }) => ({
   display: 'flex',
   alignItems: 'center',
   alignSelf: 'center',
   flexShrink: 0,
-})
+  ...(!clickable && { cursor: 'default', userSelect: 'none' }),
+}))
 
 const IndicatorTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
