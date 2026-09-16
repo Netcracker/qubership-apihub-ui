@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { type FC, memo } from 'react'
 
-import { RedWarningIcon } from '../../icons/WarningIcon'
+import { ErrorIcon } from '../../icons/ErrorIcon'
 import type { TestableProps } from '../Testable'
 
 type VersionErrorFormMessageProps = TestableProps & {
@@ -20,7 +20,7 @@ export const VersionErrorFormMessage: FC<VersionErrorFormMessageProps> = memo(({
 
   return (
     <FormMessageRoot>
-      <RedWarningIcon />
+      <ErrorIcon color="error" fontSize="small" />
       <FormMessageText variant="body2" data-testid={dataTestId}>
         {message}
       </FormMessageText>

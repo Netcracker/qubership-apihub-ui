@@ -132,10 +132,14 @@ function toVersionProblemDialogView(
   const { activeProblemKind, tooltip } = problem
 
   if (activeProblemKind === VERSION_PROBLEM_KIND.PROCESSOR_MISMATCH) {
-    return {
-      isBlocking: true,
-      formHelperText: tooltip,
+    if (surface === VERSION_PROBLEM_DIALOG_SURFACE.COMPARE) {
+      return {
+        isBlocking: true,
+        formHelperText: tooltip,
+      }
     }
+
+    return resolveUnsoundVersionDialogView(surface)
   }
 
   if (

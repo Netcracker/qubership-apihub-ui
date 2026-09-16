@@ -137,6 +137,10 @@ export type ShowEditPackageVersionDetail = {
   version: VersionKey
   status?: VersionStatus
   versionLabels?: string[]
+  hasErrors?: boolean
+  changelogHasErrors?: boolean
+  apiProcessorVersion?: string
+  kind?: PackageKind
 }
 
 export type CreateOperationGroupDetail = {

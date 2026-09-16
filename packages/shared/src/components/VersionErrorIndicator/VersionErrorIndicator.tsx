@@ -15,6 +15,7 @@ export type VersionErrorIndicatorProps =
   & TestableProps
   & {
     tooltip?: ReactNode
+    showTooltip?: boolean
     tooltipPlacement?: TooltipProps['placement']
     fontSize?: SvgIconProps['fontSize']
     onClick?: (event: SyntheticEvent) => void
@@ -22,6 +23,7 @@ export type VersionErrorIndicatorProps =
 
 export const VersionErrorIndicator: FC<VersionErrorIndicatorProps> = memo<VersionErrorIndicatorProps>(({
   tooltip: customTooltip,
+  showTooltip = true,
   tooltipPlacement = 'bottom',
   fontSize = 'small',
   onClick,
@@ -34,7 +36,7 @@ export const VersionErrorIndicator: FC<VersionErrorIndicatorProps> = memo<Versio
     return null
   }
 
-  const tooltipContent = customTooltip ?? resolvedTooltip
+  const tooltipContent = showTooltip ? (customTooltip ?? resolvedTooltip) : undefined
 
   const content = onClick
     ? (
@@ -57,7 +59,7 @@ export const VersionErrorIndicator: FC<VersionErrorIndicatorProps> = memo<Versio
 
   const wrappedContent = (
     <IndicatorRoot
-      tabIndex={onClick ? undefined : 0}
+      tabIndex={onClick ? undefined : (showTooltip ? 0 : undefined)}
       aria-label={resolvedTooltip}
     >
       {content}

@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { type FC, type HTMLAttributes, memo } from 'react'
+import { type FC, type HTMLAttributes, type ReactNode, memo } from 'react'
 import {
-  Autocomplete,
   Box,
   Button,
   DialogActions,
@@ -36,10 +35,13 @@ import { LatestRevisionMark } from './LatestRevisionMark'
 import type { Revision, Revisions } from '../entities/revisions'
 import { REVISION_DELIMITER } from '../entities/versions'
 import { VersionErrorFormMessage } from './VersionErrorIndicator/VersionErrorFormMessage'
+import { VersionErrorIndicator } from './VersionErrorIndicator/VersionErrorIndicator'
+import { DialogAutocomplete } from './Autocompletes/DialogAutocomplete'
 import { useVersionProblemDetails } from '../hooks/versions/useVersionProblemDetails'
 import { VERSION_PROBLEM_DIALOG_SURFACE } from '../hooks/versions/versionProblemDetails'
 import { useParams } from 'react-router-dom'
 import { usePackageSearchParam } from '../hooks/routes/package/usePackageSearchParam'
+import type { TestableProps } from './Testable'
 
 export type CompareRevisionsDialogFormData = {
   originalRevision: Revision | null
@@ -66,7 +68,6 @@ export type CompareRevisionsDialogFormProps = CompareRevisionsDialogData & {
 export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = memo(({
   open,
   setOpen,
-  setValue,
   control,
   onSubmit,
   onSwap,
@@ -86,7 +87,10 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
   } = useVersionProblemDetails({
     packageKey: originPackageKey,
     versionKey: previousRevision?.version,
-    surface: VERSION_PROBLEM_DIALOG_SURFACE.COMPARE,
+    hasErrors: previousRevision?.hasErrors,
+    changelogHasErrors: previousRevision?.changelogHasErrors,
+    apiProcessorVersion: previousRevision?.apiProcessorVersion,
+    surface: VERSION_PROBLEM_DIALOG_SURFACE.COMPARE_PREVIOUS_REVISION,
   })
   const {
     isBlocking: isCurrentRevisionBlocking,
@@ -94,6 +98,9 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
   } = useVersionProblemDetails({
     packageKey: originPackageKey,
     versionKey: currentRevisions?.version,
+    hasErrors: currentRevisions?.hasErrors,
+    changelogHasErrors: currentRevisions?.changelogHasErrors,
+    apiProcessorVersion: currentRevisions?.apiProcessorVersion,
     surface: VERSION_PROBLEM_DIALOG_SURFACE.COMPARE,
   })
 
@@ -126,8 +133,16 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
               controllerName="originalRevision"
               revisions={originalRevisions}
               isLoading={isRevisionsLoading}
-              setValue={() => setValue('originalRevision', null)}
-              dataTestId="PreviousRevisionAutocomplete"
+              error={isPreviousRevisionBlocking}
+              indicator={previousRevision && (
+                <VersionErrorIndicator
+                  versionKey={previousRevision.version}
+                  hasErrors={previousRevision.hasErrors}
+                  changelogHasErrors={previousRevision.changelogHasErrors}
+                  apiProcessorVersion={previousRevision.apiProcessorVersion}
+                />
+              )}
+              data-testid="PreviousRevisionAutocomplete"
             />
           )}
         />
@@ -153,8 +168,16 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
               controllerName="changedRevision"
               revisions={changedRevisions}
               isLoading={isRevisionsLoading}
-              setValue={() => setValue('changedRevision', null)}
-              dataTestId="CurrentRevisionAutocomplete"
+              error={isCurrentRevisionBlocking}
+              indicator={currentRevisions && (
+                <VersionErrorIndicator
+                  versionKey={currentRevisions.version}
+                  hasErrors={currentRevisions.hasErrors}
+                  changelogHasErrors={currentRevisions.changelogHasErrors}
+                  apiProcessorVersion={currentRevisions.apiProcessorVersion}
+                />
+              )}
+              data-testid="CurrentRevisionAutocomplete"
             />
           )}
         />
@@ -182,14 +205,16 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
   )
 })
 
-type RevisionAutocompleteProps = {
+CompareRevisionsDialogForm.displayName = 'CompareRevisionsDialogForm'
+
+type RevisionAutocompleteProps = TestableProps & {
   value: Revision | null
   onChange: (value: Revision | null) => void
   controllerName: string
   revisions: Revisions
   isLoading: boolean | undefined
-  setValue: () => void
-  dataTestId: string
+  error?: boolean
+  indicator?: ReactNode
 }
 
 const RevisionAutocomplete: FC<RevisionAutocompleteProps> = memo<RevisionAutocompleteProps>(({
@@ -198,27 +223,47 @@ const RevisionAutocomplete: FC<RevisionAutocompleteProps> = memo<RevisionAutocom
   controllerName,
   revisions,
   isLoading,
-  setValue,
-  dataTestId,
+  error = false,
+  indicator,
+  'data-testid': dataTestId = 'RevisionAutocomplete',
 }) => {
   return (
-    <Autocomplete
+    <DialogAutocomplete
       sx={{ gridArea: controllerName }}
       value={value ?? null}
-      loading={isLoading}
-      options={isLoading ? [] : revisions}
-      getOptionLabel={(revision) => `${REVISION_DELIMITER}${revision.revision}`}
-      isOptionEqualToValue={(option, value) => option.revision === value.revision}
-      renderOption={(props, revision) => <AutocompleteOption revision={revision} props={props}/>}
-      renderInput={(params) => <TextField {...params} required label="Revision"/>}
-      onChange={(_, value) => {
-        setValue()
-        onChange(value)
+      onChange={(_, newValue) => {
+        onChange(newValue)
       }}
+      options={isLoading ? [] : revisions}
+      loading={isLoading}
+      getOptionLabel={(option: Revision) => `${REVISION_DELIMITER}${option.revision}`}
+      isOptionEqualToValue={(option: Revision, val: Revision) => option.revision === val.revision}
+      renderOption={(props, option: Revision) => (
+        <AutocompleteOption key={option.revision} props={props} revision={option} />
+      )}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          label="Revision"
+          required
+          error={error}
+          InputProps={{
+            ...params.InputProps,
+            endAdornment: (
+              <>
+                {params.InputProps.endAdornment}
+                {indicator}
+              </>
+            ),
+          }}
+        />
+      )}
       data-testid={dataTestId}
     />
   )
 })
+
+RevisionAutocomplete.displayName = 'RevisionAutocomplete'
 
 type AutocompleteOptionProps = {
   revision: Revision
@@ -226,22 +271,33 @@ type AutocompleteOptionProps = {
 }
 
 const AutocompleteOption: FC<AutocompleteOptionProps> = memo<AutocompleteOptionProps>(({ revision, props }) => {
-
   return (
     <ListItem
       {...props}
       key={revision.revision}
     >
-      <Box width="100%" display="flex" justifyContent="space-between">
+      <Box width="100%" display="flex" justifyContent="space-between" alignItems="center">
         <Box display="flex" gap="4px" alignItems="center">
           {`${REVISION_DELIMITER}${revision.revision}`}
           <LatestRevisionMark latest={revision.latestRevision}/>
         </Box>
-        <VersionStatusChip status={revision.status}/>
+        <Box display="flex" alignItems="center" gap={0.5}>
+          <VersionErrorIndicator
+            versionKey={revision.version}
+            hasErrors={revision.hasErrors}
+            changelogHasErrors={revision.changelogHasErrors}
+            apiProcessorVersion={revision.apiProcessorVersion}
+            fontSize="extra-small"
+            showTooltip={false}
+          />
+          <VersionStatusChip status={revision.status}/>
+        </Box>
       </Box>
     </ListItem>
   )
 })
+
+AutocompleteOption.displayName = 'AutocompleteOption'
 
 const DIALOG_CONTENT_STYLES = {
   display: 'grid',
