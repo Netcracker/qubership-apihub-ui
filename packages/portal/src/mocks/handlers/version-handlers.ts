@@ -132,26 +132,55 @@ export const versionHandlers = [
   http.get('*/api/v3/packages/:packageKey/versions/:versionKey/revisions', async ({ request, params }) => {
     const versionKey = params.versionKey as string | undefined
 
-    if (versionKey?.includes('errors-revisions')) {
-      const originalResponse = await fetch(bypass(request))
-      if (!originalResponse.ok) {
-        return originalResponse
-      }
-
-      const unmodifiedResponse = originalResponse.clone()
-      const realData: RevisionsDto = await originalResponse.json()
-      const template = realData.revisions?.[0]
-      if (!template) {
-        return unmodifiedResponse
-      }
-
-      return HttpResponse.json<RevisionsDto>({
-        ...realData,
-        revisions: toRevisionErrorFixtures(template),
-      })
+    if (!versionKey?.includes('errors-revisions')) {
+      return passthrough()
     }
 
-    return passthrough()
+    const originalResponse = await fetch(bypass(request))
+    if (!originalResponse.ok) {
+      return originalResponse
+    }
+
+    const unmodifiedResponse = originalResponse.clone()
+    const realData: RevisionsDto = await originalResponse.json()
+    if (!realData.revisions?.length) {
+      return unmodifiedResponse
+    }
+
+    let modified = false
+    const revisions = realData.revisions.map((revision: RevisionDto): RevisionDto => {
+      // processor mismatch and build errors
+      if (revision.revision === 1) {
+        modified = true
+        return { ...revision, apiProcessorVersion: '1.1.1', hasErrors: true }
+      }
+      // api-processor version mismatch
+      if (revision.revision === 2) {
+        modified = true
+        return { ...revision, apiProcessorVersion: '1.1.1' }
+      }
+      // build errors and comparison errors
+      if (revision.revision === 3) {
+        modified = true
+        return { ...revision, hasErrors: true, changelogHasErrors: true }
+      }
+      // build errors only
+      if (revision.revision === 4) {
+        modified = true
+        return { ...revision, hasErrors: true, changelogHasErrors: false }
+      }
+      // comparison errors only
+      if (revision.revision === 5) {
+        modified = true
+        return { ...revision, hasErrors: false, changelogHasErrors: true }
+      }
+
+      return revision
+    })
+
+    return modified
+      ? HttpResponse.json<RevisionsDto>({ ...realData, revisions })
+      : unmodifiedResponse
   }),
 
   http.get('*/api/v3/packages/:packageKey/versions/:versionKey/references', async ({ request, params }) => {
@@ -189,40 +218,3 @@ export const versionHandlers = [
     return passthrough()
   }),
 ]
-
-function toRevisionErrorFixtures(template: RevisionDto): RevisionDto[] {
-  const revisionErrorFixtures: ReadonlyArray<
-    Pick<RevisionDto, 'hasErrors' | 'changelogHasErrors' | 'apiProcessorVersion'>
-  > = [
-    { hasErrors: true, changelogHasErrors: false },
-    { hasErrors: false, changelogHasErrors: true },
-    { hasErrors: true, changelogHasErrors: true },
-    { apiProcessorVersion: '1.1.1' },
-    { hasErrors: true, apiProcessorVersion: '1.1.1' },
-  ]
-
-  const [versionName] = template.version.split('@')
-  const errorRevisions = revisionErrorFixtures.map((patch, index) => {
-    const revision = index + 1
-    return {
-      ...template,
-      ...patch,
-      revision: revision,
-      version: `${versionName}@${revision}`,
-      notLatestRevision: true,
-    }
-  })
-
-  const latestRevision = revisionErrorFixtures.length + 1
-  const latest: RevisionDto = {
-    ...template,
-    revision: latestRevision,
-    version: `${versionName}@${latestRevision}`,
-    notLatestRevision: false,
-    hasErrors: false,
-    changelogHasErrors: false,
-    apiProcessorVersion: undefined,
-  }
-
-  return [latest, ...errorRevisions.slice().reverse()]
-}
