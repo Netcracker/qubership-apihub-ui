@@ -101,7 +101,7 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
     hasErrors: currentRevisions?.hasErrors,
     changelogHasErrors: currentRevisions?.changelogHasErrors,
     apiProcessorVersion: currentRevisions?.apiProcessorVersion,
-    surface: VERSION_PROBLEM_DIALOG_SURFACE.COMPARE,
+    surface: VERSION_PROBLEM_DIALOG_SURFACE.COMPARE_CURRENT_REVISION,
   })
 
   return (

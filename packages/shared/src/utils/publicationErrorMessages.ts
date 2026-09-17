@@ -25,6 +25,10 @@ export const PUBLICATION_ERROR_MESSAGES = {
       'The selected previous version has errors and cannot be used for comparison. Select another version.',
     previousRevisionUnsound:
       'The selected previous revision has errors and cannot be used for comparison. Select another revision.',
+    currentVersionUnsound:
+      'The selected current version has errors and cannot be used for comparison. Select another version.',
+    currentRevisionUnsound:
+      'The selected current revision has errors and cannot be used for comparison. Select another revision.',
     sourceVersionUnsound: 'This version has errors and cannot be copied. Fix the errors and publish a new revision.',
     dashboardAddUnsound: 'This version has errors and cannot be added to the dashboard. Select another version.',
     releasePromotionRefused: 'This version has errors and the status cannot be changed.',

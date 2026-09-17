@@ -79,7 +79,7 @@ const CopyPackageVersionPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpe
     changelogHasErrors: versionContent?.changelogHasErrors,
     apiProcessorVersion: versionContent?.apiProcessorVersion,
     kind: currentPackage?.kind,
-    surface: VERSION_PROBLEM_DIALOG_SURFACE.COPY,
+    surface: VERSION_PROBLEM_DIALOG_SURFACE.COPY_SOURCE_VERSION,
   })
   const [currentWorkspace] = useState(currentPackage?.parents?.[0] ?? null)
 

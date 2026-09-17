@@ -289,7 +289,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
     changelogHasErrors: selectedPreviousVersion?.changelogHasErrors,
     apiProcessorVersion: selectedPreviousVersion?.apiProcessorVersion,
     kind: kind,
-    surface: VERSION_PROBLEM_DIALOG_SURFACE.PUBLISH_PREVIOUS,
+    surface: VERSION_PROBLEM_DIALOG_SURFACE.PUBLISH_PREVIOUS_VERSION,
   })
 
   const formHelperMessage = formHelperText ?? previousVersionFormHelperText

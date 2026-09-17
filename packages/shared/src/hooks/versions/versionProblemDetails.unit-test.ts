@@ -1,4 +1,4 @@
-import { DASHBOARD_KIND, PACKAGE_KIND } from '../../entities/packages'
+import { DASHBOARD_KIND, PACKAGE_KIND, type PackageKind } from '../../entities/packages'
 import { getApiProcessorMismatchTooltip, PUBLICATION_ERROR_MESSAGES } from '../../utils/publicationErrorMessages'
 import {
   resolveVersionProblemDetails,
@@ -6,19 +6,22 @@ import {
   VERSION_PROBLEM_KIND,
 } from './versionProblemDetails'
 
+const MSG = PUBLICATION_ERROR_MESSAGES
+const SURFACE = VERSION_PROBLEM_DIALOG_SURFACE
+const AP = {
+  versionKey: '1.0.0',
+  apiProcessorVersion: '1.0.0',
+  appApiProcessorVersion: '2.0.0',
+} as const
+
 describe('resolveVersionProblemDetails', () => {
   it('returns no problems when no flags are set', () => {
-    expect(resolveVersionProblemDetails({})).toEqual({
-      hasProblems: false,
-      isBlocking: false,
-    })
+    expect(resolveVersionProblemDetails({})).toEqual({ hasProblems: false, isBlocking: false })
   })
 
-  it('prefers processor mismatch over other flags and does not block without a surface', () => {
+  it('prefers processor mismatch and does not block without a surface', () => {
     const result = resolveVersionProblemDetails({
-      versionKey: '1.0.0',
-      apiProcessorVersion: '1.0.0',
-      appApiProcessorVersion: '2.0.0',
+      ...AP,
       hasErrors: true,
       changelogHasErrors: true,
       deletedAt: '2024-01-01',
@@ -39,19 +42,18 @@ describe('resolveVersionProblemDetails', () => {
       hasErrors: true,
     })).toMatchObject({
       activeProblemKind: VERSION_PROBLEM_KIND.BUILD_ERRORS,
-      tooltip: PUBLICATION_ERROR_MESSAGES.packageVersion.version,
+      tooltip: MSG.packageVersion.version,
       isBlocking: false,
     })
   })
 
-  it.each([
-    [PACKAGE_KIND, PUBLICATION_ERROR_MESSAGES.reference.packageMissing] as const,
-    [DASHBOARD_KIND, PUBLICATION_ERROR_MESSAGES.reference.dashboardMissing] as const,
-  ])('uses deleted reference tooltip for kind=%s', (kind, tooltip) => {
-    expect(resolveVersionProblemDetails({
-      deletedAt: '2024-01-01',
-      kind: kind,
-    })).toEqual({
+  it.each(
+    [
+      [PACKAGE_KIND, MSG.reference.packageMissing],
+      [DASHBOARD_KIND, MSG.reference.dashboardMissing],
+    ] as const,
+  )('deleted reference tooltip for kind=%s', (kind, tooltip) => {
+    expect(resolveVersionProblemDetails({ deletedAt: '2024-01-01', kind: kind })).toEqual({
       hasProblems: true,
       isBlocking: false,
       activeProblemKind: VERSION_PROBLEM_KIND.DELETED_REFERENCE,
@@ -59,24 +61,30 @@ describe('resolveVersionProblemDetails', () => {
     })
   })
 
-  it.each([
+  it.each(
     [
-      { hasErrors: true },
-      VERSION_PROBLEM_KIND.BUILD_ERRORS,
-      PUBLICATION_ERROR_MESSAGES.packageVersion.version,
-    ],
-    [
-      { changelogHasErrors: true },
-      VERSION_PROBLEM_KIND.COMPARISON_ERRORS,
-      PUBLICATION_ERROR_MESSAGES.packageVersion.changelog,
-    ],
-    [
-      { hasErrors: true, changelogHasErrors: true },
-      VERSION_PROBLEM_KIND.BUILD_ERRORS,
-      PUBLICATION_ERROR_MESSAGES.packageVersion.versionChangelog,
-    ],
-  ])('resolves package tooltips when surface is omitted', (params, activeProblemKind, tooltip) => {
-    expect(resolveVersionProblemDetails(params)).toEqual({
+      [PACKAGE_KIND, { hasErrors: true }, MSG.packageVersion.version, VERSION_PROBLEM_KIND.BUILD_ERRORS],
+      [
+        PACKAGE_KIND,
+        { changelogHasErrors: true },
+        MSG.packageVersion.changelog,
+        VERSION_PROBLEM_KIND.COMPARISON_ERRORS,
+      ],
+      [
+        PACKAGE_KIND,
+        { hasErrors: true, changelogHasErrors: true },
+        MSG.packageVersion.versionChangelog,
+        VERSION_PROBLEM_KIND.BUILD_ERRORS,
+      ],
+      [
+        DASHBOARD_KIND,
+        { hasErrors: true, changelogHasErrors: true },
+        MSG.dashboardVersion.versionChangelog,
+        VERSION_PROBLEM_KIND.BUILD_ERRORS,
+      ],
+    ] as const,
+  )('version tooltips without surface (kind=%s)', (kind: PackageKind, params, tooltip, activeProblemKind) => {
+    expect(resolveVersionProblemDetails({ ...params, kind: kind })).toEqual({
       hasProblems: true,
       isBlocking: false,
       activeProblemKind: activeProblemKind,
@@ -84,110 +92,82 @@ describe('resolveVersionProblemDetails', () => {
     })
   })
 
-  it('uses the dashboard composite tooltip when both flags are set', () => {
-    expect(resolveVersionProblemDetails({
-      hasErrors: true,
-      changelogHasErrors: true,
-      kind: DASHBOARD_KIND,
-    })).toEqual({
-      hasProblems: true,
-      isBlocking: false,
-      activeProblemKind: VERSION_PROBLEM_KIND.BUILD_ERRORS,
-      tooltip: PUBLICATION_ERROR_MESSAGES.dashboardVersion.versionChangelog,
-    })
-  })
-})
-
-describe('resolveVersionProblemDetails with surface', () => {
-  it('blocks processor mismatch and reuses the tooltip as helper text', () => {
-    const result = resolveVersionProblemDetails({
-      versionKey: '1.0.0',
-      apiProcessorVersion: '1.0.0',
-      appApiProcessorVersion: '2.0.0',
-      surface: VERSION_PROBLEM_DIALOG_SURFACE.COMPARE,
-    })
-
-    expect(result).toMatchObject({
-      isBlocking: true,
-      activeProblemKind: VERSION_PROBLEM_KIND.PROCESSOR_MISMATCH,
-    })
-    expect(result.formHelperText).toBe(result.tooltip)
-  })
-
-  it('does not block build errors on the compare surface', () => {
-    const result = resolveVersionProblemDetails({
-      hasErrors: true,
-      surface: VERSION_PROBLEM_DIALOG_SURFACE.COMPARE,
-    })
-
-    expect(result).toMatchObject({
-      isBlocking: false,
-      activeProblemKind: VERSION_PROBLEM_KIND.BUILD_ERRORS,
-    })
-    expect(result.formHelperText).toBeUndefined()
-  })
-
-  it('does not block deleted references when a surface is set', () => {
-    expect(resolveVersionProblemDetails({
-      deletedAt: '2024-01-01',
-      kind: PACKAGE_KIND,
-      surface: VERSION_PROBLEM_DIALOG_SURFACE.ADD_TO_DASHBOARD,
-    })).toMatchObject({
-      isBlocking: false,
-      activeProblemKind: VERSION_PROBLEM_KIND.DELETED_REFERENCE,
-    })
-  })
-
   it.each(
     [
-      [
-        VERSION_PROBLEM_DIALOG_SURFACE.COMPARE_PREVIOUS,
-        PUBLICATION_ERROR_MESSAGES.dialog.previousVersionUnsound,
-      ],
-      [
-        VERSION_PROBLEM_DIALOG_SURFACE.COMPARE_PREVIOUS_REVISION,
-        PUBLICATION_ERROR_MESSAGES.dialog.previousRevisionUnsound,
-      ],
-      [
-        VERSION_PROBLEM_DIALOG_SURFACE.COPY,
-        PUBLICATION_ERROR_MESSAGES.dialog.sourceVersionUnsound,
-      ],
-      [
-        VERSION_PROBLEM_DIALOG_SURFACE.ADD_TO_DASHBOARD,
-        PUBLICATION_ERROR_MESSAGES.dialog.dashboardAddUnsound,
-      ],
+      [SURFACE.COMPARE_CURRENT_VERSION, AP, {
+        isBlocking: true,
+        formHelperText: MSG.dialog.currentVersionUnsound,
+        activeProblemKind: VERSION_PROBLEM_KIND.PROCESSOR_MISMATCH,
+      }],
+      [SURFACE.COMPARE_CURRENT_REVISION, AP, {
+        isBlocking: true,
+        formHelperText: MSG.dialog.currentRevisionUnsound,
+        activeProblemKind: VERSION_PROBLEM_KIND.PROCESSOR_MISMATCH,
+      }],
+      [SURFACE.COMPARE_PREVIOUS_VERSION, AP, {
+        isBlocking: true,
+        formHelperText: MSG.dialog.previousVersionUnsound,
+        activeProblemKind: VERSION_PROBLEM_KIND.PROCESSOR_MISMATCH,
+      }],
+      [SURFACE.COMPARE_CURRENT_VERSION, { hasErrors: true }, {
+        isBlocking: false,
+        activeProblemKind: VERSION_PROBLEM_KIND.BUILD_ERRORS,
+      }],
+      [SURFACE.COMPARE_CURRENT_REVISION, { hasErrors: true }, {
+        isBlocking: false,
+        activeProblemKind: VERSION_PROBLEM_KIND.BUILD_ERRORS,
+      }],
+      [SURFACE.COMPARE_PREVIOUS_VERSION, { hasErrors: true }, {
+        isBlocking: true,
+        formHelperText: MSG.dialog.previousVersionUnsound,
+        activeProblemKind: VERSION_PROBLEM_KIND.BUILD_ERRORS,
+      }],
+      [SURFACE.COMPARE_PREVIOUS_VERSION, { changelogHasErrors: true }, {
+        isBlocking: true,
+        formHelperText: MSG.dialog.previousVersionUnsound,
+        activeProblemKind: VERSION_PROBLEM_KIND.COMPARISON_ERRORS,
+      }],
+      [SURFACE.PUBLISH_PREVIOUS_VERSION, { changelogHasErrors: true }, {
+        isBlocking: true,
+        formHelperText: MSG.dialog.previousVersionUnsound,
+        activeProblemKind: VERSION_PROBLEM_KIND.COMPARISON_ERRORS,
+      }],
+      [SURFACE.COMPARE_PREVIOUS_REVISION, { hasErrors: true }, {
+        isBlocking: true,
+        formHelperText: MSG.dialog.previousRevisionUnsound,
+        activeProblemKind: VERSION_PROBLEM_KIND.BUILD_ERRORS,
+      }],
+      [SURFACE.COPY_SOURCE_VERSION, { hasErrors: true }, {
+        isBlocking: true,
+        formHelperText: MSG.dialog.sourceVersionUnsound,
+        activeProblemKind: VERSION_PROBLEM_KIND.BUILD_ERRORS,
+      }],
+      [SURFACE.ADD_TO_DASHBOARD, { hasErrors: true }, {
+        isBlocking: true,
+        formHelperText: MSG.dialog.dashboardAddUnsound,
+        activeProblemKind: VERSION_PROBLEM_KIND.BUILD_ERRORS,
+      }],
+      [SURFACE.EDIT_STATUS, { hasErrors: true }, {
+        isBlocking: true,
+        formHelperText: MSG.dialog.releasePromotionRefused,
+        activeProblemKind: VERSION_PROBLEM_KIND.BUILD_ERRORS,
+      }],
+      [SURFACE.EDIT_STATUS, { changelogHasErrors: true }, {
+        isBlocking: true,
+        formHelperText: MSG.dialog.releasePromotionRefused,
+        activeProblemKind: VERSION_PROBLEM_KIND.COMPARISON_ERRORS,
+      }],
+      [SURFACE.ADD_TO_DASHBOARD, { deletedAt: '2024-01-01', kind: PACKAGE_KIND }, {
+        isBlocking: false,
+        activeProblemKind: VERSION_PROBLEM_KIND.DELETED_REFERENCE,
+      }],
     ] as const,
-  )('blocks build errors on %s with surface-specific helper text', (surface, expectedMessage) => {
-    expect(resolveVersionProblemDetails({
-      hasErrors: true,
-      surface: surface,
-    })).toMatchObject({
-      isBlocking: true,
-      formHelperText: expectedMessage,
-    })
-  })
+  )('dialog surface %s', (surface, params, expected) => {
+    const result = resolveVersionProblemDetails({ ...params, surface: surface })
 
-  it('blocks dialog surface when version has comparison errors (unsound version)', () => {
-    expect(resolveVersionProblemDetails({
-      changelogHasErrors: true,
-      surface: VERSION_PROBLEM_DIALOG_SURFACE.PUBLISH_PREVIOUS,
-    })).toMatchObject({
-      isBlocking: true,
-      activeProblemKind: VERSION_PROBLEM_KIND.COMPARISON_ERRORS,
-      formHelperText: PUBLICATION_ERROR_MESSAGES.dialog.previousVersionUnsound,
-    })
-  })
-
-  it.each([
-    { hasErrors: true },
-    { changelogHasErrors: true },
-  ])('blocks edit-status when the version is unsound', (params) => {
-    expect(resolveVersionProblemDetails({
-      ...params,
-      surface: VERSION_PROBLEM_DIALOG_SURFACE.EDIT_STATUS,
-    })).toMatchObject({
-      isBlocking: true,
-      formHelperText: PUBLICATION_ERROR_MESSAGES.dialog.releasePromotionRefused,
-    })
+    expect(result).toMatchObject({ hasProblems: true, ...expected })
+    if (!('formHelperText' in expected)) {
+      expect(result.formHelperText).toBeUndefined()
+    }
   })
 })

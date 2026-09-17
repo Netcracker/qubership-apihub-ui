@@ -12,11 +12,12 @@ export const VERSION_PROBLEM_KIND = {
 export type VersionProblemKind = typeof VERSION_PROBLEM_KIND[keyof typeof VERSION_PROBLEM_KIND]
 
 export const VERSION_PROBLEM_DIALOG_SURFACE = {
-  COMPARE: 'compare',
-  COMPARE_PREVIOUS: 'compare-previous',
+  COMPARE_CURRENT_VERSION: 'compare-current-version',
+  COMPARE_PREVIOUS_VERSION: 'compare-previous-version',
+  COMPARE_CURRENT_REVISION: 'compare-current-revision',
   COMPARE_PREVIOUS_REVISION: 'compare-previous-revision',
-  PUBLISH_PREVIOUS: 'publish-previous',
-  COPY: 'copy',
+  PUBLISH_PREVIOUS_VERSION: 'publish-previous-version',
+  COPY_SOURCE_VERSION: 'copy-source-version',
   ADD_TO_DASHBOARD: 'add-to-dashboard',
   EDIT_STATUS: 'edit-status',
 } as const
@@ -129,17 +130,10 @@ function toVersionProblemDialogView(
   problem: VersionProblemCore,
   surface: VersionProblemDialogSurface,
 ): VersionProblemDialogView {
-  const { activeProblemKind, tooltip } = problem
+  const { activeProblemKind } = problem
 
   if (activeProblemKind === VERSION_PROBLEM_KIND.PROCESSOR_MISMATCH) {
-    if (surface === VERSION_PROBLEM_DIALOG_SURFACE.COMPARE) {
-      return {
-        isBlocking: true,
-        formHelperText: tooltip,
-      }
-    }
-
-    return resolveUnsoundVersionDialogView(surface)
+    return resolveProcessorMismatchDialogView(surface)
   }
 
   if (
@@ -150,6 +144,25 @@ function toVersionProblemDialogView(
   }
 
   return NO_DIALOG_PROBLEM_VIEW
+}
+
+function resolveProcessorMismatchDialogView(
+  surface: VersionProblemDialogSurface,
+): VersionProblemDialogView {
+  switch (surface) {
+    case VERSION_PROBLEM_DIALOG_SURFACE.COMPARE_CURRENT_VERSION:
+      return {
+        isBlocking: true,
+        formHelperText: PUBLICATION_ERROR_MESSAGES.dialog.currentVersionUnsound,
+      }
+    case VERSION_PROBLEM_DIALOG_SURFACE.COMPARE_CURRENT_REVISION:
+      return {
+        isBlocking: true,
+        formHelperText: PUBLICATION_ERROR_MESSAGES.dialog.currentRevisionUnsound,
+      }
+    default:
+      return resolveUnsoundVersionDialogView(surface)
+  }
 }
 
 function resolveBuildAndComparisonProblems(
@@ -220,10 +233,11 @@ function resolveUnsoundVersionDialogView(
   surface: VersionProblemDialogSurface,
 ): VersionProblemDialogView {
   switch (surface) {
-    case VERSION_PROBLEM_DIALOG_SURFACE.COMPARE:
+    case VERSION_PROBLEM_DIALOG_SURFACE.COMPARE_CURRENT_VERSION:
+    case VERSION_PROBLEM_DIALOG_SURFACE.COMPARE_CURRENT_REVISION:
       return NO_DIALOG_PROBLEM_VIEW
-    case VERSION_PROBLEM_DIALOG_SURFACE.COMPARE_PREVIOUS:
-    case VERSION_PROBLEM_DIALOG_SURFACE.PUBLISH_PREVIOUS:
+    case VERSION_PROBLEM_DIALOG_SURFACE.COMPARE_PREVIOUS_VERSION:
+    case VERSION_PROBLEM_DIALOG_SURFACE.PUBLISH_PREVIOUS_VERSION:
       return {
         isBlocking: true,
         formHelperText: PUBLICATION_ERROR_MESSAGES.dialog.previousVersionUnsound,
@@ -233,7 +247,7 @@ function resolveUnsoundVersionDialogView(
         isBlocking: true,
         formHelperText: PUBLICATION_ERROR_MESSAGES.dialog.previousRevisionUnsound,
       }
-    case VERSION_PROBLEM_DIALOG_SURFACE.COPY:
+    case VERSION_PROBLEM_DIALOG_SURFACE.COPY_SOURCE_VERSION:
       return {
         isBlocking: true,
         formHelperText: PUBLICATION_ERROR_MESSAGES.dialog.sourceVersionUnsound,

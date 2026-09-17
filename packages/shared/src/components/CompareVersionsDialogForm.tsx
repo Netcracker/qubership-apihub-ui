@@ -133,7 +133,7 @@ export const CompareVersionsDialogForm: FC<CompareVersionsDialogFormProps> = mem
     changelogHasErrors: previousVersion?.changelogHasErrors,
     apiProcessorVersion: previousVersion?.apiProcessorVersion,
     kind: kind,
-    surface: VERSION_PROBLEM_DIALOG_SURFACE.COMPARE_PREVIOUS,
+    surface: VERSION_PROBLEM_DIALOG_SURFACE.COMPARE_PREVIOUS_VERSION,
   })
   const {
     isBlocking: isCurrentVersionBlocking,
@@ -145,7 +145,7 @@ export const CompareVersionsDialogForm: FC<CompareVersionsDialogFormProps> = mem
     changelogHasErrors: currentVersion?.changelogHasErrors,
     apiProcessorVersion: currentVersion?.apiProcessorVersion,
     kind: kind,
-    surface: VERSION_PROBLEM_DIALOG_SURFACE.COMPARE,
+    surface: VERSION_PROBLEM_DIALOG_SURFACE.COMPARE_CURRENT_VERSION,
   })
 
   return (
