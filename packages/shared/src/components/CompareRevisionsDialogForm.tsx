@@ -84,6 +84,7 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
   const {
     isBlocking: isPreviousRevisionBlocking,
     formHelperText: previousRevisionFormHelperText,
+    hasProblems: previousRevisionHasProblems,
   } = useVersionProblemDetails({
     packageKey: originPackageKey,
     versionKey: previousRevision?.version,
@@ -95,6 +96,7 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
   const {
     isBlocking: isCurrentRevisionBlocking,
     formHelperText: currentRevisionFormHelperText,
+    hasProblems: currentRevisionHasProblems,
   } = useVersionProblemDetails({
     packageKey: originPackageKey,
     versionKey: currentRevisions?.version,
@@ -134,7 +136,7 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
               revisions={originalRevisions}
               isLoading={isRevisionsLoading}
               error={isPreviousRevisionBlocking}
-              indicator={previousRevision && (
+              indicator={previousRevisionHasProblems && previousRevision && (
                 <VersionErrorIndicator
                   versionKey={previousRevision.version}
                   hasErrors={previousRevision.hasErrors}
@@ -169,7 +171,7 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
               revisions={changedRevisions}
               isLoading={isRevisionsLoading}
               error={isCurrentRevisionBlocking}
-              indicator={currentRevisions && (
+              indicator={currentRevisionHasProblems && currentRevisions && (
                 <VersionErrorIndicator
                   versionKey={currentRevisions.version}
                   hasErrors={currentRevisions.hasErrors}
@@ -268,6 +270,7 @@ const AutocompleteOption: FC<AutocompleteOptionProps> = memo<AutocompleteOptionP
       key={revision.revision}
       props={props}
       title={`${REVISION_DELIMITER}${revision.revision}`}
+      overflowTooltipPlacement="left"
       indicator={
         <>
           <LatestRevisionMark latest={revision.latestRevision}/>

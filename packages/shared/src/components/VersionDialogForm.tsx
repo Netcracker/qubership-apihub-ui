@@ -282,6 +282,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
   const {
     isBlocking: isPreviousVersionBlocking,
     formHelperText: previousVersionFormHelperText,
+    hasProblems: previousVersionHasProblems,
   } = useVersionProblemDetails({
     packageKey: previousVersionsPackageKey || targetPackage?.key || currentPackageKey,
     versionKey: previousVersionKey,
@@ -847,17 +848,15 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
                   inputChip={selectedStatus
                     ? <VersionStatusChip sx={{ height: '18px' }} status={selectedStatus}/>
                     : undefined}
-                  inputIndicator={selectedPreviousVersion
-                    ? (
-                      <VersionErrorIndicator
-                        versionKey={previousVersion}
-                        hasErrors={selectedPreviousVersion.hasErrors}
-                        changelogHasErrors={selectedPreviousVersion.changelogHasErrors}
-                        apiProcessorVersion={selectedPreviousVersion.apiProcessorVersion}
-                        kind={kind}
-                      />
-                    )
-                    : undefined}
+                  inputIndicator={previousVersionHasProblems && selectedPreviousVersion && (
+                    <VersionErrorIndicator
+                      versionKey={previousVersion}
+                      hasErrors={selectedPreviousVersion.hasErrors}
+                      changelogHasErrors={selectedPreviousVersion.changelogHasErrors}
+                      apiProcessorVersion={selectedPreviousVersion.apiProcessorVersion}
+                      kind={kind}
+                    />
+                  )}
                   value={field.value ?? null}
                   options={previousVersionOptions}
                   loading={arePreviousVersionsLoading}
@@ -871,6 +870,7 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
                       key={versionKey}
                       props={props}
                       title={getPreviousVersionOptionLabel(versionKey)}
+                      overflowTooltipPlacement="left"
                       indicator={renderPreviousVersionErrorIndicator(versionKey)}
                       chip={renderPreviousVersionStatusChip(versionKey)}
                       data-testid={`Option-${versionKey}`}
