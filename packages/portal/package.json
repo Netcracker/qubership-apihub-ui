@@ -77,8 +77,6 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "@esbuild-plugins/node-globals-polyfill": "0.2.3",
-    "@esbuild-plugins/node-modules-polyfill": "0.2.2",
     "@netcracker/qubership-apihub-ui-shared": "*",
     "@rollup/plugin-inject": "5.0.5",
     "@storybook/react-vite": "10.5.10",
