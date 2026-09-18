@@ -19,8 +19,6 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 import react from '@vitejs/plugin-react'
 import monacoEditor from 'vite-plugin-monaco-editor'
 import path, { resolve } from 'path'
-import NodeModulesPolyfill from '@esbuild-plugins/node-modules-polyfill'
-import NodeGlobalsPolyfill from '@esbuild-plugins/node-globals-polyfill'
 import Unfonts from 'unplugin-fonts/vite'
 import { visualizer as bundleVisualizer } from 'rollup-plugin-visualizer'
 import inject from '@rollup/plugin-inject'
@@ -73,20 +71,23 @@ export default defineConfig(({ mode }) => {
     optimizeDeps: {
       // npm link creates a symlink that points outside node_modules and by default such packages are not optimized.
       // Using "include" here forces listed packages to be optimized.
-      // For example, without this setting, esbuildOptions are not being applied to the npm-linked
+      // For example, without this setting, rolldownOptions are not being applied to the npm-linked
       // @netcracker/qubership-apihub-api-processor during "npm run proxy", which leads to reference errors
       // like "process is not defined" and "Buffer is not defined".
       include: [
         '@netcracker/qubership-apihub-api-processor',
       ],
-      esbuildOptions: {
-        plugins: [
-          NodeModulesPolyfill(),
-          NodeGlobalsPolyfill({
-            buffer: true,
-            process: true,
-          }),
-        ],
+      // Vite 8 pre-bundles with Rolldown, not esbuild. It runs esbuild plugins only through a shim
+      // whose `initialOptions` throws "Not implemented" on any property but `platform` and `plugins`,
+      // so the former @esbuild-plugins polyfills made the dependency scan fail and Vite skipped
+      // pre-bundling altogether. Rolldown's own transform options do the same job: `inject` mirrors
+      // the production build's inject() below, and `define` keeps the `global` alias the esbuild
+      // polyfill used to add. `process` and `buffer` resolve through resolve.alias.
+      rolldownOptions: {
+        transform: {
+          define: { global: 'globalThis' },
+          inject: { Buffer: ['buffer', 'Buffer'], process: 'process' },
+        },
       },
     },
     resolve: {
@@ -137,7 +138,7 @@ export default defineConfig(({ mode }) => {
         input: {
           app: resolve(__dirname, 'index.html'),
         },
-        // Kept in step with the portal config: `optimizeDeps.esbuildOptions` above only covers the
+        // Kept in step with the portal config: `optimizeDeps.rolldownOptions` above only covers the
         // dev server's dependency pre-bundling, so the Node globals that browser-unaware
         // dependencies expect have to be injected again for the production build.
         //
