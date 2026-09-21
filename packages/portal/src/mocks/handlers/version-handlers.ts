@@ -1,5 +1,6 @@
 import { bypass, http, HttpResponse, passthrough } from 'msw'
 
+import type { McpContractsSummaryDto } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
 import type { RevisionDto, RevisionsDto } from '@netcracker/qubership-apihub-ui-shared/entities/revisions'
 import type { PackageVersionContentDto } from '@netcracker/qubership-apihub-ui-shared/entities/version-contents'
 import type { PackageVersionDto, PackageVersionsDto } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
@@ -75,6 +76,18 @@ export const versionHandlers = [
         hasErrors: false,
         changelogHasErrors: true,
       })
+    }
+
+    // api and contract type errors for selectors, tooltips, and comparison
+    if (versionKey.includes('errors-api-types')) {
+      const originalResponse = await fetch(bypass(request))
+      if (!originalResponse.ok) {
+        return originalResponse
+      }
+      const realData: PackageVersionContentDto = await originalResponse.json()
+      return HttpResponse.json<PackageVersionContentDto>(
+        patchApiTypeErrorsContent(realData, versionKey),
+      )
     }
 
     return passthrough()
@@ -218,3 +231,74 @@ export const versionHandlers = [
     return passthrough()
   }),
 ]
+
+function patchApiTypeErrorsContent(
+  realData: PackageVersionContentDto,
+  versionKey: string,
+): PackageVersionContentDto {
+  const isVersionA = versionKey.includes('-after')
+
+  const isTotalError = versionKey.includes('errors-api-types-total')
+  const isMixed = !isTotalError && !versionKey.includes('errors-api-types-partial')
+
+  return {
+    ...realData,
+    operationTypes: realData.operationTypes?.map(operationType => {
+      const isErrorType = isVersionA
+        ? (operationType.apiType === 'rest' || operationType.apiType === 'asyncapi')
+        : (operationType.apiType === 'graphql')
+
+      if (!isErrorType) {
+        return { ...operationType, hasErrors: false }
+      }
+
+      const hasZeroOperations = isTotalError || (isMixed && operationType.apiType === 'asyncapi')
+
+      return {
+        ...operationType,
+        hasErrors: true,
+        ...(hasZeroOperations && { operationsCount: 0 }),
+      }
+    }),
+    contractsSummary: realData.contractsSummary
+      ? {
+        ...realData.contractsSummary,
+        ...(realData.contractsSummary.ddl && {
+          ddl: {
+            ...realData.contractsSummary.ddl,
+            hasErrors: isVersionA,
+            ...(isVersionA && isTotalError && { tablesCount: 0 }),
+          },
+        }),
+        ...(realData.contractsSummary.mcp && {
+          mcp: patchMcpContractsSummaryDto(
+            realData.contractsSummary.mcp,
+            isVersionA,
+            isVersionA && (isTotalError || isMixed),
+          ),
+        }),
+      }
+      : undefined,
+  }
+}
+
+function patchMcpContractsSummaryDto(
+  mcp: McpContractsSummaryDto,
+  hasErrors: boolean,
+  resetEntityCounts: boolean,
+): McpContractsSummaryDto {
+  return Object.fromEntries(
+    Object.entries(mcp).map(([endpoint, summary]) => [
+      endpoint,
+      {
+        ...summary,
+        hasErrors,
+        ...(resetEntityCounts && {
+          toolsCount: 0,
+          promptsCount: 0,
+          resourcesCount: 0,
+        }),
+      },
+    ]),
+  )
+}
