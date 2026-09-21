@@ -1,8 +1,8 @@
 import type { SvgIconProps, TooltipProps } from '@mui/material'
 import { type FC, memo, useMemo } from 'react'
 
+import { VersionErrorIndicator } from '@netcracker/qubership-apihub-ui-shared/components/ErrorIndicators/VersionErrorIndicator'
 import type { TestableProps } from '@netcracker/qubership-apihub-ui-shared/components/Testable'
-import { VersionErrorIndicator } from '@netcracker/qubership-apihub-ui-shared/components/VersionErrorIndicator/VersionErrorIndicator'
 import type { PackageKey, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'

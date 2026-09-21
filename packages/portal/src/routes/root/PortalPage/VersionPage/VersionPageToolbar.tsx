@@ -25,7 +25,7 @@ import { CopyPackageVersionButton } from '@apihub/routes/root/PortalPage/Version
 import { getDefaultApiType } from '@apihub/utils/operation-types'
 import { Box, Button, Divider, Typography } from '@mui/material'
 import { ButtonWithHint } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/ButtonWithHint'
-import { VersionErrorIndicator } from '@netcracker/qubership-apihub-ui-shared/components/VersionErrorIndicator/VersionErrorIndicator'
+import { VersionErrorIndicator } from '@netcracker/qubership-apihub-ui-shared/components/ErrorIndicators/VersionErrorIndicator'
 import { VersionStatusChip } from '@netcracker/qubership-apihub-ui-shared/components/VersionStatusChip'
 import { Toolbar } from '@netcracker/qubership-apihub-ui-shared/components/Toolbar'
 import { ToolbarTitle } from '@netcracker/qubership-apihub-ui-shared/components/ToolbarTitle'

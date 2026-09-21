@@ -1,0 +1,45 @@
+import type { SvgIconProps } from '@mui/material/SvgIcon'
+import type { TooltipProps } from '@mui/material/Tooltip'
+import { type FC, memo, type ReactNode } from 'react'
+
+import { useVersionProblemDetails } from '../../hooks/versions/useVersionProblemDetails'
+import type { UseVersionProblemDetailsParams } from '../../hooks/versions/versionProblemDetails'
+import type { TestableProps } from '../Testable'
+import { ErrorIndicator } from './ErrorIndicator'
+
+export type VersionErrorIndicatorProps =
+  & TestableProps
+  & UseVersionProblemDetailsParams
+  & {
+    tooltip?: ReactNode
+    showTooltip?: boolean
+    tooltipPlacement?: TooltipProps['placement']
+    fontSize?: SvgIconProps['fontSize']
+    tabIndex?: number
+  }
+
+export const VersionErrorIndicator: FC<VersionErrorIndicatorProps> = memo<VersionErrorIndicatorProps>(({
+  tooltip: customTooltip,
+  showTooltip = true,
+  tooltipPlacement = 'bottom',
+  fontSize = 'small',
+  tabIndex,
+  'data-testid': dataTestId = 'VersionErrorIndicator',
+  ...problemParams
+}) => {
+  const { hasProblems, tooltip: resolvedTooltip } = useVersionProblemDetails(problemParams)
+
+  return (
+    <ErrorIndicator
+      hasProblems={hasProblems}
+      tooltip={customTooltip ?? resolvedTooltip}
+      showTooltip={showTooltip}
+      tooltipPlacement={tooltipPlacement}
+      fontSize={fontSize}
+      tabIndex={tabIndex}
+      data-testid={dataTestId}
+    />
+  )
+})
+
+VersionErrorIndicator.displayName = 'VersionErrorIndicator'

@@ -57,7 +57,7 @@ import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import { VersionStatusChip } from '@netcracker/qubership-apihub-ui-shared/components/VersionStatusChip'
 import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 import { usePagedPackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
-import { VersionErrorFormMessage } from '@netcracker/qubership-apihub-ui-shared/components/VersionErrorIndicator/VersionErrorFormMessage'
+import { VersionErrorFormMessage } from '@netcracker/qubership-apihub-ui-shared/components/ErrorIndicators/VersionErrorFormMessage'
 import { useVersionProblemDetails } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/useVersionProblemDetails'
 import { VERSION_PROBLEM_DIALOG_SURFACE } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/versionProblemDetails'
 

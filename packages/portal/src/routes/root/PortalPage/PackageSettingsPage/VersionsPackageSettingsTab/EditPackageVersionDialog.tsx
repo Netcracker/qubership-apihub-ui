@@ -27,7 +27,7 @@ import { useEditPackageVersion } from '@apihub/routes/root/usePackageVersions'
 import { RELEASE_VERSION_STATUS } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 import { useVersionProblemDetails } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/useVersionProblemDetails'
 import { VERSION_PROBLEM_DIALOG_SURFACE } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/versionProblemDetails'
-import { VersionErrorIndicator } from '@netcracker/qubership-apihub-ui-shared/components/VersionErrorIndicator/VersionErrorIndicator'
+import { VersionErrorIndicator } from '@netcracker/qubership-apihub-ui-shared/components/ErrorIndicators/VersionErrorIndicator'
 
 export const EditPackageVersionDialog: FC = memo(() => {
   return (

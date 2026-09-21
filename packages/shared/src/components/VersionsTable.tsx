@@ -31,7 +31,7 @@ import { flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from 
 import { useResizeObserver } from '../hooks/common/useResizeObserver'
 import type { ColumnDef } from '@tanstack/table-core'
 import { CustomTableHeadCell } from './CustomTableHeadCell'
-import { VersionErrorIndicator } from './VersionErrorIndicator/VersionErrorIndicator'
+import { VersionErrorIndicator } from './ErrorIndicators/VersionErrorIndicator'
 import { getSplittedVersionKey } from '../utils/versions'
 import { TextWithOverflowTooltip } from './TextWithOverflowTooltip'
 import { FormattedDate } from './FormattedDate'
