@@ -9,12 +9,24 @@ import type { ChangesSummary } from '../../entities/change-severities'
 import { CONTRACT_TYPE_DDL, CONTRACT_TYPE_MCP, CONTRACT_TYPE_TITLE_MAP } from '../../entities/contract-types'
 import type { OperationTypeSummary, VersionContractsSummary } from '../../entities/version-contents'
 import {
+  getPackageVersionApiTypeDocumentListTooltip,
   getPackageVersionApiTypeNoOperationsTooltip,
   getPackageVersionApiTypeSomeOperationsTooltip,
   getPackageVersionContractTypeNoEntitiesTooltip,
   getPackageVersionContractTypeSomeEntitiesTooltip,
 } from '../../utils/publicationErrorMessages'
-import { resolveApiTypeProblemDetails, resolveVersionApiTypeProblemsMap } from './apiTypeProblemDetails'
+import {
+  GRAPHQL_SPEC_TYPE,
+  MARKDOWN_SPEC_TYPE,
+  OPENAPI_3_0_SPEC_TYPE,
+  type SpecType,
+  UNKNOWN_SPEC_TYPE,
+} from '../../utils/specs'
+import {
+  resolveApiTypeProblemDetails,
+  resolveOverviewSummaryApiTypeProblemsMap,
+  resolveVersionApiTypeProblemsMap,
+} from './apiTypeProblemDetails'
 
 const EMPTY_CHANGES_SUMMARY: ChangesSummary = {
   breaking: 0,
@@ -26,6 +38,7 @@ const EMPTY_CHANGES_SUMMARY: ChangesSummary = {
 }
 
 const REST_TITLE = API_TYPE_TITLE_MAP[API_TYPE_REST]
+const GRAPHQL_TITLE = API_TYPE_TITLE_MAP[API_TYPE_GRAPHQL]
 const ASYNCAPI_TITLE = API_TYPE_TITLE_MAP[API_TYPE_ASYNCAPI]
 const DDL_TITLE = CONTRACT_TYPE_TITLE_MAP[CONTRACT_TYPE_DDL]
 const MCP_TITLE = CONTRACT_TYPE_TITLE_MAP[CONTRACT_TYPE_MCP]
@@ -36,6 +49,17 @@ describe('resolveApiTypeProblemDetails', () => {
       apiType: API_TYPE_GRAPHQL,
       operationType: operationType(API_TYPE_GRAPHQL, { hasErrors: false }),
     })).toEqual({ hasProblems: false })
+  })
+
+  test('returns document list tooltip when invalidDocumentNames is populated', () => {
+    expect(resolveApiTypeProblemDetails({
+      apiType: API_TYPE_REST,
+      operationType: operationType(API_TYPE_REST),
+      invalidDocumentNames: ['petstore.json', 'customer-api.yaml'],
+    })).toEqual({
+      hasProblems: true,
+      tooltip: getPackageVersionApiTypeDocumentListTooltip(['petstore.json', 'customer-api.yaml']),
+    })
   })
 
   test.each([
@@ -85,6 +109,17 @@ describe('resolveApiTypeProblemDetails', () => {
       tooltip: tooltip,
     })
   })
+
+  test('falls back to count-based tooltip when invalidDocumentNames is empty', () => {
+    expect(resolveApiTypeProblemDetails({
+      apiType: API_TYPE_REST,
+      operationType: operationType(API_TYPE_REST, { operationsCount: 0 }),
+      invalidDocumentNames: [],
+    })).toEqual({
+      hasProblems: true,
+      tooltip: getPackageVersionApiTypeNoOperationsTooltip(REST_TITLE),
+    })
+  })
 })
 
 describe('resolveVersionApiTypeProblemsMap', () => {
@@ -109,6 +144,73 @@ describe('resolveVersionApiTypeProblemsMap', () => {
       [CONTRACT_TYPE_DDL]: {
         hasProblems: true,
         tooltip: getPackageVersionContractTypeSomeEntitiesTooltip(DDL_TITLE),
+      },
+    })
+  })
+})
+
+describe('resolveOverviewSummaryApiTypeProblemsMap', () => {
+  test('returns empty map when no section errors exist', () => {
+    expect(resolveOverviewSummaryApiTypeProblemsMap({
+      operationTypes: {
+        [API_TYPE_REST]: operationType(API_TYPE_REST, { hasErrors: false }),
+      },
+      contractsSummary: {
+        ddl: {
+          tablesCount: 1,
+          hasErrors: false,
+        },
+      },
+      documents: [invalidDocument({ type: OPENAPI_3_0_SPEC_TYPE, title: 'Broken API' })],
+    })).toEqual({})
+  })
+
+  test('groups invalid documents by API and contract type', () => {
+    expect(resolveOverviewSummaryApiTypeProblemsMap({
+      operationTypes: {
+        [API_TYPE_REST]: operationType(API_TYPE_REST),
+        [API_TYPE_GRAPHQL]: operationType(API_TYPE_GRAPHQL),
+      },
+      documents: [
+        invalidDocument({ type: OPENAPI_3_0_SPEC_TYPE, title: 'REST Doc' }),
+        invalidDocument({ type: OPENAPI_3_0_SPEC_TYPE, filename: 'from-filename.json' }),
+        invalidDocument({ type: GRAPHQL_SPEC_TYPE, slug: 'from-slug' }),
+        invalidDocument({ type: UNKNOWN_SPEC_TYPE, title: 'Irrelevant Doc' }),
+      ],
+    })).toEqual({
+      [API_TYPE_REST]: {
+        hasProblems: true,
+        tooltip: getPackageVersionApiTypeDocumentListTooltip(['REST Doc', 'from-filename.json']),
+      },
+      [API_TYPE_GRAPHQL]: {
+        hasProblems: true,
+        tooltip: getPackageVersionApiTypeDocumentListTooltip(['from-slug']),
+      },
+    })
+  })
+
+  test('uses count-based fallback when section has errors but no matching invalid documents', () => {
+    expect(resolveOverviewSummaryApiTypeProblemsMap({
+      operationTypes: {
+        [API_TYPE_REST]: operationType(API_TYPE_REST, { operationsCount: 0 }),
+        [API_TYPE_GRAPHQL]: operationType(API_TYPE_GRAPHQL),
+      },
+      contractsSummary: ddlSummary(0),
+      documents: [
+        invalidDocument({ type: MARKDOWN_SPEC_TYPE, title: 'Readme' }),
+      ],
+    })).toEqual({
+      [API_TYPE_REST]: {
+        hasProblems: true,
+        tooltip: getPackageVersionApiTypeNoOperationsTooltip(REST_TITLE),
+      },
+      [API_TYPE_GRAPHQL]: {
+        hasProblems: true,
+        tooltip: getPackageVersionApiTypeSomeOperationsTooltip(GRAPHQL_TITLE),
+      },
+      [CONTRACT_TYPE_DDL]: {
+        hasProblems: true,
+        tooltip: getPackageVersionContractTypeNoEntitiesTooltip(DDL_TITLE),
       },
     })
   })
@@ -158,5 +260,21 @@ function mcpSummary(
         hasErrors: true,
       },
     },
+  }
+}
+
+type TestInvalidDocument = Readonly<{
+  type: SpecType
+  title?: string
+  filename?: string
+  slug?: string
+  hasErrors?: boolean
+}>
+
+function invalidDocument(overrides: Partial<TestInvalidDocument> = {}): TestInvalidDocument {
+  return {
+    type: OPENAPI_3_0_SPEC_TYPE,
+    hasErrors: true,
+    ...overrides,
   }
 }

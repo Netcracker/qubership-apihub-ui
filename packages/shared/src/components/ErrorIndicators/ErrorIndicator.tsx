@@ -85,5 +85,6 @@ const IndicatorTooltip = styled(({ className, ...props }: TooltipProps) => (
 ))({
   [`& .${tooltipClasses.tooltip}`]: {
     maxWidth: 668,
+    whiteSpace: 'pre-line',
   },
 })

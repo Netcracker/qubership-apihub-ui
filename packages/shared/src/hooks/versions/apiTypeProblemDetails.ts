@@ -7,27 +7,44 @@ import {
 } from '../../entities/contract-types'
 import type { OperationTypeSummary, VersionContractsSummary } from '../../entities/version-contents'
 import {
+  getPackageVersionApiTypeDocumentListTooltip,
   getPackageVersionApiTypeNoOperationsTooltip,
   getPackageVersionApiTypeSomeOperationsTooltip,
   getPackageVersionContractTypeNoEntitiesTooltip,
   getPackageVersionContractTypeSomeEntitiesTooltip,
 } from '../../utils/publicationErrorMessages'
+import { isSpecTypeForApiType, type SpecType } from '../../utils/specs'
 
 export type ApiTypeProblemDetails = Readonly<{
   hasProblems: boolean
   tooltip?: string
 }>
 
+type InvalidDocumentRef = Readonly<{
+  type: SpecType
+  title?: string
+  filename?: string
+  slug?: string
+  hasErrors?: boolean
+}>
+
 type ResolveApiTypeProblemDetailsParams = Readonly<{
   apiType: ApiType | ContractType
   operationType?: OperationTypeSummary
   contractsSummary?: VersionContractsSummary
+  invalidDocumentNames?: ReadonlyArray<string>
 }>
 
 type ResolveVersionApiTypeProblemsMapParams = Readonly<{
   allowedApiTypes?: ReadonlyArray<ApiType | ContractType>
   operationTypes?: Partial<Record<ApiType, OperationTypeSummary>>
   contractsSummary?: VersionContractsSummary
+}>
+
+type ResolveOverviewSummaryApiTypeProblemsMapParams = Readonly<{
+  operationTypes?: Partial<Record<ApiType, OperationTypeSummary>>
+  contractsSummary?: VersionContractsSummary
+  documents?: ReadonlyArray<InvalidDocumentRef>
 }>
 
 const NO_API_TYPE_PROBLEMS: ApiTypeProblemDetails = {
@@ -37,52 +54,52 @@ const NO_API_TYPE_PROBLEMS: ApiTypeProblemDetails = {
 export function resolveApiTypeProblemDetails(
   params: ResolveApiTypeProblemDetailsParams,
 ): ApiTypeProblemDetails {
-  const { apiType, operationType, contractsSummary } = params
+  const { apiType, operationType, contractsSummary, invalidDocumentNames } = params
 
-  if (isApiType(apiType)) {
-    if (operationType?.hasErrors) {
-      const displayTitle = getRouteApiTypeTitle(apiType)
-      const operationsCount = operationType.operationsCount ?? 0
-      return {
-        hasProblems: true,
-        tooltip: operationsCount === 0
-          ? getPackageVersionApiTypeNoOperationsTooltip(displayTitle)
-          : getPackageVersionApiTypeSomeOperationsTooltip(displayTitle),
-      }
-    }
+  if (!hasApiTypeErrors(apiType, operationType, contractsSummary)) {
     return NO_API_TYPE_PROBLEMS
   }
 
-  if (apiType === CONTRACT_TYPE_DDL) {
-    const ddlSummary = contractsSummary?.ddl
-    if (ddlSummary?.hasErrors) {
-      const displayTitle = getRouteApiTypeTitle(apiType)
-      const tablesCount = ddlSummary.tablesCount ?? 0
-      return {
-        hasProblems: true,
-        tooltip: tablesCount === 0
-          ? getPackageVersionContractTypeNoEntitiesTooltip(displayTitle)
-          : getPackageVersionContractTypeSomeEntitiesTooltip(displayTitle),
-      }
+  if (invalidDocumentNames && invalidDocumentNames.length > 0) {
+    return {
+      hasProblems: true,
+      tooltip: getPackageVersionApiTypeDocumentListTooltip([...invalidDocumentNames]),
     }
-    return NO_API_TYPE_PROBLEMS
+  }
+
+  const displayTitle = getRouteApiTypeTitle(apiType)
+
+  if (isApiType(apiType)) {
+    const operationsCount = operationType?.operationsCount ?? 0
+    return {
+      hasProblems: true,
+      tooltip: operationsCount === 0
+        ? getPackageVersionApiTypeNoOperationsTooltip(displayTitle)
+        : getPackageVersionApiTypeSomeOperationsTooltip(displayTitle),
+    }
+  }
+
+  if (apiType === CONTRACT_TYPE_DDL) {
+    const tablesCount = contractsSummary?.ddl?.tablesCount ?? 0
+    return {
+      hasProblems: true,
+      tooltip: tablesCount === 0
+        ? getPackageVersionContractTypeNoEntitiesTooltip(displayTitle)
+        : getPackageVersionContractTypeSomeEntitiesTooltip(displayTitle),
+    }
   }
 
   if (apiType === CONTRACT_TYPE_MCP) {
     const mcpTotals = contractsSummary?.mcp?.totals
-    if (mcpTotals?.hasErrors) {
-      const displayTitle = getRouteApiTypeTitle(apiType)
-      const entitiesCount = (mcpTotals.toolsCount ?? 0) +
-        (mcpTotals.promptsCount ?? 0) +
-        (mcpTotals.resourcesCount ?? 0)
-      return {
-        hasProblems: true,
-        tooltip: entitiesCount === 0
-          ? getPackageVersionContractTypeNoEntitiesTooltip(displayTitle)
-          : getPackageVersionContractTypeSomeEntitiesTooltip(displayTitle),
-      }
+    const totalEntities = (mcpTotals?.toolsCount ?? 0) +
+      (mcpTotals?.promptsCount ?? 0) +
+      (mcpTotals?.resourcesCount ?? 0)
+    return {
+      hasProblems: true,
+      tooltip: totalEntities === 0
+        ? getPackageVersionContractTypeNoEntitiesTooltip(displayTitle)
+        : getPackageVersionContractTypeSomeEntitiesTooltip(displayTitle),
     }
-    return NO_API_TYPE_PROBLEMS
   }
 
   return NO_API_TYPE_PROBLEMS
@@ -106,4 +123,67 @@ export function resolveVersionApiTypeProblemsMap(
   }
 
   return result
+}
+
+export function resolveOverviewSummaryApiTypeProblemsMap(
+  params: ResolveOverviewSummaryApiTypeProblemsMapParams,
+): Partial<Record<ApiType | ContractType, ApiTypeProblemDetails>> {
+  const { operationTypes, contractsSummary, documents = [] } = params
+  const result: Partial<Record<ApiType | ContractType, ApiTypeProblemDetails>> = {}
+  const invalidDocs = documents.filter(doc => doc.hasErrors)
+
+  for (const { apiType, operationType } of collectAffectedOverviewTypes(operationTypes, contractsSummary)) {
+    result[apiType] = resolveApiTypeProblemDetails({
+      apiType: apiType,
+      operationType: operationType,
+      contractsSummary: contractsSummary,
+      invalidDocumentNames: invalidDocs
+        .filter(doc => isSpecTypeForApiType(doc.type, apiType))
+        .map(doc => doc.title || doc.filename || doc.slug || 'Unknown document'),
+    })
+  }
+
+  return result
+}
+
+function collectAffectedOverviewTypes(
+  operationTypes: Partial<Record<ApiType, OperationTypeSummary>> | undefined,
+  contractsSummary: VersionContractsSummary | undefined,
+): ReadonlyArray<Readonly<{ apiType: ApiType | ContractType; operationType?: OperationTypeSummary }>> {
+  const affectedTypes: Array<{ apiType: ApiType | ContractType; operationType?: OperationTypeSummary }> = []
+
+  if (operationTypes) {
+    for (const [rawType, opSummary] of Object.entries(operationTypes)) {
+      if (isApiType(rawType) && opSummary?.hasErrors) {
+        affectedTypes.push({ apiType: rawType, operationType: opSummary })
+      }
+    }
+  }
+
+  if (contractsSummary?.ddl?.hasErrors) {
+    affectedTypes.push({ apiType: CONTRACT_TYPE_DDL })
+  }
+
+  if (contractsSummary?.mcp?.totals?.hasErrors) {
+    affectedTypes.push({ apiType: CONTRACT_TYPE_MCP })
+  }
+
+  return affectedTypes
+}
+
+function hasApiTypeErrors(
+  apiType: ApiType | ContractType,
+  operationType?: OperationTypeSummary,
+  contractsSummary?: VersionContractsSummary,
+): boolean {
+  if (isApiType(apiType)) {
+    return operationType?.hasErrors ?? false
+  }
+  if (apiType === CONTRACT_TYPE_DDL) {
+    return contractsSummary?.ddl?.hasErrors ?? false
+  }
+  if (apiType === CONTRACT_TYPE_MCP) {
+    return contractsSummary?.mcp?.totals?.hasErrors ?? false
+  }
+  return false
 }
