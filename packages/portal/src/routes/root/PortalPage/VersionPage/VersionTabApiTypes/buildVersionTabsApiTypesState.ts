@@ -1,6 +1,12 @@
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { ContractType } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type {
+  OperationTypeSummary,
+  VersionContractsSummary,
+} from '@netcracker/qubership-apihub-ui-shared/entities/version-contents'
+import type { ApiTypeProblemDetails } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/apiTypeProblemDetails'
+import { resolveVersionApiTypeProblemsMap } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/apiTypeProblemDetails'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 
 import {
@@ -18,6 +24,7 @@ export type VersionTabApiTypesState = {
   defaultApiType: ApiType | ContractType | undefined
   disabled: boolean
   tooltip?: string
+  apiTypeProblems: Partial<Record<ApiType | ContractType, ApiTypeProblemDetails>>
 }
 
 export type VersionTabsApiTypesState = {
@@ -32,6 +39,8 @@ export type BuildVersionTabsApiTypesStateInput = {
   previousVersion: Key | undefined
   linterEnabled: boolean
   apiQualityTooltip: string | undefined
+  operationTypes?: Record<ApiType, OperationTypeSummary>
+  contractsSummary?: VersionContractsSummary
 }
 
 const API_CHANGES_NO_PREVIOUS_VERSION_TOOLTIP = 'No API changes since there is no previous version'
@@ -67,15 +76,23 @@ export function buildVersionTabsApiTypesState(
       [VERSION_TAB_IDS.contracts]: toVersionTabApiTypesState(
         contractsAllowedApiTypes,
         isTabDisabledByEmptyApiTypes(contractsAllowedApiTypes, input.isLoading),
+        undefined,
+        input.operationTypes,
+        input.contractsSummary,
       ),
       [VERSION_TAB_IDS.apiChanges]: toVersionTabApiTypesState(
         apiChangesAllowedApiTypes,
         isTabDisabledByEmptyApiTypes(apiChangesAllowedApiTypes, input.isLoading) || hasNoPreviousVersion,
         hasNoPreviousVersion ? API_CHANGES_NO_PREVIOUS_VERSION_TOOLTIP : undefined,
+        input.operationTypes,
+        input.contractsSummary,
       ),
       [VERSION_TAB_IDS.deprecated]: toVersionTabApiTypesState(
         deprecatedAllowedApiTypes,
         isTabDisabledByEmptyApiTypes(deprecatedAllowedApiTypes, input.isLoading),
+        undefined,
+        input.operationTypes,
+        input.contractsSummary,
       ),
       [VERSION_TAB_IDS.apiQuality]: toVersionTabApiTypesState(
         apiQualityAllowedApiTypes,
@@ -83,6 +100,8 @@ export function buildVersionTabsApiTypesState(
           apiQualityDisabledByLinter ||
           hasApiQualityTooltip,
         input.apiQualityTooltip,
+        input.operationTypes,
+        input.contractsSummary,
       ),
     },
   }
@@ -92,12 +111,19 @@ function toVersionTabApiTypesState(
   allowedApiTypes: ReadonlyArray<TabAllowedApiType>,
   disabled: boolean,
   tooltip?: string,
+  operationTypes?: Record<ApiType, OperationTypeSummary>,
+  contractsSummary?: VersionContractsSummary,
 ): VersionTabApiTypesState {
   return {
     allowedApiTypes: allowedApiTypes,
     defaultApiType: getDefaultApiTypeFromTabApiTypes(allowedApiTypes),
     disabled: disabled,
     tooltip: tooltip,
+    apiTypeProblems: resolveVersionApiTypeProblemsMap({
+      allowedApiTypes: allowedApiTypes,
+      operationTypes: operationTypes,
+      contractsSummary: contractsSummary,
+    }),
   }
 }
 

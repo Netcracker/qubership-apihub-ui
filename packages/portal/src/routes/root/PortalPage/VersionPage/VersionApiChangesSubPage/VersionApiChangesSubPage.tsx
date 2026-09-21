@@ -63,7 +63,7 @@ export const VersionApiChangesSubPage: FC = memo(() => {
   const [operationGroup] = useOperationGroupSearchFilter()
   const setPathParam = useSetPathParam()
   const { tabs, isLoading } = useVersionTabApiTypes()
-  const { allowedApiTypes } = tabs[VERSION_TAB_IDS.apiChanges]
+  const { allowedApiTypes, apiTypeProblems } = tabs[VERSION_TAB_IDS.apiChanges]
 
   useEnsureValidRouteApiType(allowedApiTypes, isLoading)
 
@@ -125,6 +125,7 @@ export const VersionApiChangesSubPage: FC = memo(() => {
             onApiTypeChange={setPathParam}
             apiType={routeApiType}
             allowedApiTypes={allowedApiTypes}
+            apiTypeProblems={apiTypeProblems}
             withApiSelector={isApiTypeSelectorShown(allowedApiTypes)}
           />
         }

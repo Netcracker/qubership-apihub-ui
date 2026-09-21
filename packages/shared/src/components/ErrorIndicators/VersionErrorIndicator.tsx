@@ -1,22 +1,14 @@
-import type { SvgIconProps } from '@mui/material/SvgIcon'
-import type { TooltipProps } from '@mui/material/Tooltip'
-import { type FC, memo, type ReactNode } from 'react'
+import { type FC, memo } from 'react'
 
 import { useVersionProblemDetails } from '../../hooks/versions/useVersionProblemDetails'
 import type { UseVersionProblemDetailsParams } from '../../hooks/versions/versionProblemDetails'
 import type { TestableProps } from '../Testable'
-import { ErrorIndicator } from './ErrorIndicator'
+import { ErrorIndicator, type ErrorIndicatorViewProps } from './ErrorIndicator'
 
-export type VersionErrorIndicatorProps =
+type VersionErrorIndicatorProps =
   & TestableProps
   & UseVersionProblemDetailsParams
-  & {
-    tooltip?: ReactNode
-    showTooltip?: boolean
-    tooltipPlacement?: TooltipProps['placement']
-    fontSize?: SvgIconProps['fontSize']
-    tabIndex?: number
-  }
+  & ErrorIndicatorViewProps
 
 export const VersionErrorIndicator: FC<VersionErrorIndicatorProps> = memo<VersionErrorIndicatorProps>(({
   tooltip: customTooltip,

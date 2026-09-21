@@ -1,0 +1,162 @@
+import {
+  API_TYPE_ASYNCAPI,
+  API_TYPE_GRAPHQL,
+  API_TYPE_REST,
+  API_TYPE_TITLE_MAP,
+  type ApiType,
+} from '../../entities/api-types'
+import type { ChangesSummary } from '../../entities/change-severities'
+import { CONTRACT_TYPE_DDL, CONTRACT_TYPE_MCP, CONTRACT_TYPE_TITLE_MAP } from '../../entities/contract-types'
+import type { OperationTypeSummary, VersionContractsSummary } from '../../entities/version-contents'
+import {
+  getPackageVersionApiTypeNoOperationsTooltip,
+  getPackageVersionApiTypeSomeOperationsTooltip,
+  getPackageVersionContractTypeNoEntitiesTooltip,
+  getPackageVersionContractTypeSomeEntitiesTooltip,
+} from '../../utils/publicationErrorMessages'
+import { resolveApiTypeProblemDetails, resolveVersionApiTypeProblemsMap } from './apiTypeProblemDetails'
+
+const EMPTY_CHANGES_SUMMARY: ChangesSummary = {
+  breaking: 0,
+  risky: 0,
+  deprecated: 0,
+  'non-breaking': 0,
+  unclassified: 0,
+  annotation: 0,
+}
+
+const REST_TITLE = API_TYPE_TITLE_MAP[API_TYPE_REST]
+const ASYNCAPI_TITLE = API_TYPE_TITLE_MAP[API_TYPE_ASYNCAPI]
+const DDL_TITLE = CONTRACT_TYPE_TITLE_MAP[CONTRACT_TYPE_DDL]
+const MCP_TITLE = CONTRACT_TYPE_TITLE_MAP[CONTRACT_TYPE_MCP]
+
+describe('resolveApiTypeProblemDetails', () => {
+  test('returns no problems when hasErrors is absent', () => {
+    expect(resolveApiTypeProblemDetails({
+      apiType: API_TYPE_GRAPHQL,
+      operationType: operationType(API_TYPE_GRAPHQL, { hasErrors: false }),
+    })).toEqual({ hasProblems: false })
+  })
+
+  test.each([
+    {
+      name: 'API type with no operations',
+      apiType: API_TYPE_REST,
+      operationType: operationType(API_TYPE_REST, { operationsCount: 0 }),
+      tooltip: getPackageVersionApiTypeNoOperationsTooltip(REST_TITLE),
+    },
+    {
+      name: 'API type with partial operations',
+      apiType: API_TYPE_REST,
+      operationType: operationType(API_TYPE_REST),
+      tooltip: getPackageVersionApiTypeSomeOperationsTooltip(REST_TITLE),
+    },
+    {
+      name: 'DDL with no entities',
+      apiType: CONTRACT_TYPE_DDL,
+      contractsSummary: ddlSummary(0),
+      tooltip: getPackageVersionContractTypeNoEntitiesTooltip(DDL_TITLE),
+    },
+    {
+      name: 'DDL with partial entities',
+      apiType: CONTRACT_TYPE_DDL,
+      contractsSummary: ddlSummary(3),
+      tooltip: getPackageVersionContractTypeSomeEntitiesTooltip(DDL_TITLE),
+    },
+    {
+      name: 'MCP with no entities',
+      apiType: CONTRACT_TYPE_MCP,
+      contractsSummary: mcpSummary(0, 0, 0),
+      tooltip: getPackageVersionContractTypeNoEntitiesTooltip(MCP_TITLE),
+    },
+    {
+      name: 'MCP with partial entities',
+      apiType: CONTRACT_TYPE_MCP,
+      contractsSummary: mcpSummary(2, 0, 1),
+      tooltip: getPackageVersionContractTypeSomeEntitiesTooltip(MCP_TITLE),
+    },
+  ])('$name', ({ apiType, operationType, contractsSummary, tooltip }) => {
+    expect(resolveApiTypeProblemDetails({
+      apiType,
+      operationType,
+      contractsSummary,
+    })).toEqual({
+      hasProblems: true,
+      tooltip: tooltip,
+    })
+  })
+})
+
+describe('resolveVersionApiTypeProblemsMap', () => {
+  test('keeps only types with problems', () => {
+    expect(resolveVersionApiTypeProblemsMap({
+      allowedApiTypes: [API_TYPE_REST, API_TYPE_GRAPHQL, API_TYPE_ASYNCAPI, CONTRACT_TYPE_DDL],
+      operationTypes: {
+        [API_TYPE_REST]: operationType(API_TYPE_REST),
+        [API_TYPE_GRAPHQL]: operationType(API_TYPE_GRAPHQL, { hasErrors: false }),
+        [API_TYPE_ASYNCAPI]: operationType(API_TYPE_ASYNCAPI, { operationsCount: 0 }),
+      },
+      contractsSummary: ddlSummary(3),
+    })).toEqual({
+      [API_TYPE_REST]: {
+        hasProblems: true,
+        tooltip: getPackageVersionApiTypeSomeOperationsTooltip(REST_TITLE),
+      },
+      [API_TYPE_ASYNCAPI]: {
+        hasProblems: true,
+        tooltip: getPackageVersionApiTypeNoOperationsTooltip(ASYNCAPI_TITLE),
+      },
+      [CONTRACT_TYPE_DDL]: {
+        hasProblems: true,
+        tooltip: getPackageVersionContractTypeSomeEntitiesTooltip(DDL_TITLE),
+      },
+    })
+  })
+})
+
+function operationType(
+  apiType: ApiType,
+  overrides: Partial<OperationTypeSummary> = {},
+): OperationTypeSummary {
+  return {
+    apiType: apiType,
+    changesSummary: EMPTY_CHANGES_SUMMARY,
+    numberOfImpactedOperations: EMPTY_CHANGES_SUMMARY,
+    operationsCount: 1,
+    deprecatedCount: 0,
+    noBwcOperationsCount: 0,
+    internalAudienceOperationsCount: 0,
+    unknownAudienceOperationsCount: 0,
+    apiAudienceTransitions: [],
+    hasErrors: true,
+    ...overrides,
+  }
+}
+
+function ddlSummary(tablesCount: number): VersionContractsSummary {
+  return {
+    ddl: {
+      tablesCount: tablesCount,
+      hasErrors: true,
+    },
+  }
+}
+
+function mcpSummary(
+  toolsCount: number,
+  promptsCount: number,
+  resourcesCount: number,
+): VersionContractsSummary {
+  return {
+    mcp: {
+      byEndpoint: {},
+      totals: {
+        endpoints: 1,
+        toolsCount: toolsCount,
+        promptsCount: promptsCount,
+        resourcesCount: resourcesCount,
+        hasErrors: true,
+      },
+    },
+  }
+}

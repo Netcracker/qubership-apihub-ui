@@ -7,14 +7,17 @@ import { type FC, memo, type ReactNode } from 'react'
 import { ErrorIcon } from '../../icons/ErrorIcon'
 import type { TestableProps } from '../Testable'
 
-export type ErrorIndicatorProps = TestableProps & {
-  hasProblems?: boolean
+export type ErrorIndicatorViewProps = {
   tooltip?: ReactNode
   showTooltip?: boolean
   tooltipPlacement?: TooltipProps['placement']
   fontSize?: SvgIconProps['fontSize']
-  ariaLabel?: string
   tabIndex?: number
+}
+
+export type ErrorIndicatorProps = TestableProps & ErrorIndicatorViewProps & {
+  hasProblems?: boolean
+  ariaLabel?: string
 }
 
 export const ErrorIndicator: FC<ErrorIndicatorProps> = memo<ErrorIndicatorProps>(({

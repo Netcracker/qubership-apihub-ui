@@ -30,12 +30,16 @@ export const VersionTabApiTypesProvider: FC<PropsWithChildren> = memo<PropsWithC
         previousVersion: versionContent?.previousVersion,
         linterEnabled: linterEnabled,
         apiQualityTooltip: apiQualityTooltip,
+        operationTypes: versionContent?.operationTypes,
+        contractsSummary: versionContent?.contractsSummary,
       }),
     [
       apiQualityTooltip,
       apiTypes,
       isLoading,
       linterEnabled,
+      versionContent?.contractsSummary,
+      versionContent?.operationTypes,
       versionContent?.previousVersion,
     ],
   )

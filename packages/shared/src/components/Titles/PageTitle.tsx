@@ -20,6 +20,7 @@ import { Box, styled, Typography } from '@mui/material'
 import { ApiTypeSelector } from '../ApiTypeSelector'
 import type { ApiType } from '../../entities/api-types'
 import type { ContractType } from '../../entities/contract-types'
+import type { ApiTypeProblemDetails } from '../../hooks/versions/apiTypeProblemDetails'
 
 export type PageTitleProps = {
   title: string
@@ -27,6 +28,7 @@ export type PageTitleProps = {
   additionalSelectors?: ReactNode
   apiType?: ApiType | ContractType
   allowedApiTypes?: ReadonlyArray<ApiType | ContractType>
+  apiTypeProblems?: Partial<Record<ApiType | ContractType, ApiTypeProblemDetails>>
   withApiSelector?: boolean
   onApiTypeChange?: (apiType: ApiType | ContractType) => void
 }
@@ -38,6 +40,7 @@ export const PageTitle: FC<PageTitleProps> = memo<PageTitleProps>(({
   additionalSelectors,
   apiType,
   allowedApiTypes,
+  apiTypeProblems,
   withApiSelector = false,
   onApiTypeChange,
 }) => {
@@ -59,6 +62,7 @@ export const PageTitle: FC<PageTitleProps> = memo<PageTitleProps>(({
           <ApiTypeSelector
             apiType={apiType}
             allowedApiTypes={allowedApiTypes}
+            apiTypeProblems={apiTypeProblems}
             onChange={onApiTypeChange}
           />
         )}
