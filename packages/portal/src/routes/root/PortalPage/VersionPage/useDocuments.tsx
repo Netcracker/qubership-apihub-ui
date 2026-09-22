@@ -48,7 +48,7 @@ export function useDocuments(options: Partial<{
     fullVersion,
     isLoading: isVersionLoading,
     isInitialLoading: isVersionInitialLoading,
-  } = useVersionWithRevision(versionKey, packageKey)
+  } = useVersionWithRevision(versionKey, packageKey, enabled)
 
   const { data, isLoading, isInitialLoading } = useQuery<DocumentsDto, Error, Documents>({
     queryKey: [DOCUMENTS_QUERY_KEY, packageKey, fullVersion, apiType, enabled],
