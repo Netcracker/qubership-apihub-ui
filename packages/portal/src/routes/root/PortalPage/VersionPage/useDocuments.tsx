@@ -27,7 +27,7 @@ import {
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { DocumentsDto } from '@netcracker/qubership-apihub-ui-shared/entities/documents'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
-import { getResolvedVersionDocuments } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
+import { getAllResolvedVersionDocuments } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
 
 export const DOCUMENTS_QUERY_KEY = 'documents-query-key'
 
@@ -54,7 +54,7 @@ export function useDocuments(options: Partial<{
     queryKey: [DOCUMENTS_QUERY_KEY, packageKey, fullVersion, apiType, enabled],
     queryFn: ({ signal }) => {
       if (!apiType) {
-        return getResolvedVersionDocuments(packageKey!, fullVersion!, undefined, undefined, signal) as Promise<DocumentsDto>
+        return getAllResolvedVersionDocuments(packageKey!, fullVersion!, undefined, undefined, signal) as Promise<DocumentsDto>
       }
       return fetchDocumentsByApiType(packageKey!, fullVersion!, apiType, signal)
     },
@@ -76,7 +76,7 @@ async function fetchDocumentsByApiType(
   signal?: AbortSignal,
 ): Promise<DocumentsDto> {
   if (isContractType(apiType)) {
-    return getResolvedVersionDocuments(packageKey, versionKey, undefined, apiType, signal) as Promise<DocumentsDto>
+    return getAllResolvedVersionDocuments(packageKey, versionKey, undefined, apiType, signal) as Promise<DocumentsDto>
   }
-  return getResolvedVersionDocuments(packageKey, versionKey, apiType, undefined, signal) as Promise<DocumentsDto>
+  return getAllResolvedVersionDocuments(packageKey, versionKey, apiType, undefined, signal) as Promise<DocumentsDto>
 }
