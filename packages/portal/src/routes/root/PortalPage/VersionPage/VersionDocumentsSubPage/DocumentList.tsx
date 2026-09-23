@@ -1,7 +1,7 @@
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, ListSubheader } from '@mui/material'
-import { styled } from '@mui/material/styles'
-import { type FC, memo, useCallback, useMemo } from 'react'
+import { styled, type CSSObject, type Theme } from '@mui/material/styles'
+import { type FC, memo, useCallback, useMemo, type MouseEvent } from 'react'
 import { type To, useNavigate, useParams } from 'react-router-dom'
 
 import { DocumentErrorIndicator } from '@netcracker/qubership-apihub-ui-shared/components/ErrorIndicators/DocumentErrorIndicator'
@@ -9,6 +9,7 @@ import { NAVIGATION_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-
 import { SidebarSkeleton } from '@netcracker/qubership-apihub-ui-shared/components/SidebarSkeleton'
 import { SpecLogo } from '@netcracker/qubership-apihub-ui-shared/components/SpecLogo'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
+import { ICON_BUTTON_HOVER_BACKGROUND_COLOR } from '@netcracker/qubership-apihub-ui-shared/themes/colors'
 import { isEmpty, isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import { optionalSearchParams, REF_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 
@@ -49,6 +50,11 @@ export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({ do
     [documents, mcpEndpointByFileKey],
   )
 
+  const handleDocumentErrorIndicatorClick = useCallback((event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation()
+    // TODO: open Document Errors dialog — https://github.com/Netcracker/qubership-apihub/issues/807
+  }, [])
+
   const renderDocumentRow = useCallback((document: Document) => {
     const { key, type, title, version, slug, format, shareabilityStatus, hasErrors } = document
     const displayTitle = version ? `${title} ${version}` : title
@@ -61,14 +67,8 @@ export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({ do
         <ListItemButton
           sx={{
             flexDirection: 'unset',
-            backgroundColor: documentId === slug ? '#ECEDEF' : 'transparent',
             height: '36px',
             alignItems: 'center',
-            '&:hover': {
-              '& .MuiButtonBase-root': {
-                visibility: 'visible',
-              },
-            },
           }}
           selected={documentId === slug}
           onClick={() => {
@@ -83,7 +83,10 @@ export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({ do
             <SpecLogo value={type} />
           </ListItemIcon>
           <ListItemText primary={displayTitle} primaryTypographyProps={{ sx: { mt: 0.25 } }} />
-          <ListItemDocumentErrorIndicator hasErrors={hasErrors} />
+          <ListItemDocumentErrorIndicator
+            hasErrors={hasErrors}
+            onClick={handleDocumentErrorIndicatorClick}
+          />
           <ListItemShareabilityMarker value={shareabilityStatus} />
           <ListItemActionsButton
             slug={slug}
@@ -95,7 +98,7 @@ export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({ do
         </ListItemButton>
       </ListItem>
     )
-  }, [documentId, escapedVersionKey, navigateToSelectedDocument, packageKey, search])
+  }, [documentId, escapedVersionKey, handleDocumentErrorIndicatorClick, navigateToSelectedDocument, packageKey, search])
 
   if (isLoading) {
     return (
@@ -157,27 +160,34 @@ export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({ do
 
 DocumentList.displayName = 'DocumentList'
 
-const ListItemDocumentErrorIndicator = styled(DocumentErrorIndicator)({
-  marginLeft: 8,
-})
+const ListItemDocumentErrorIndicator = styled(DocumentErrorIndicator)(({ theme }) => ({
+  marginLeft: theme.spacing(1),
+  ...documentListRowIconButtonStyles(theme),
+}))
 
-const ListItemShareabilityMarker = styled(ShareabilityMarker)({ marginLeft: 8 })
+const ListItemShareabilityMarker = styled(ShareabilityMarker)(({ theme }) => ({
+  marginLeft: theme.spacing(1),
+}))
 
-const ListItemActionsButton = styled(DocumentActionsButton)({
-  visibility: 'visible',
-  backgroundColor: 'transparent',
-  '&:hover': {
-    backgroundColor: '#ECEDEF',
-  },
-  width: 24,
-  minWidth: 24,
-  height: 24,
-  paddingLeft: 10,
-  paddingRight: 10,
+const ListItemActionsButton = styled(DocumentActionsButton)(({ theme }) => ({
   marginLeft: 0,
-})
+  ...documentListRowIconButtonStyles(theme),
+}))
 
 const DocumentListSubheader = styled(ListSubheader)({
   fontSize: 12,
   lineHeight: '24px',
 })
+
+function documentListRowIconButtonStyles(theme: Theme): CSSObject {
+  return {
+    '&:hover': {
+      backgroundColor: ICON_BUTTON_HOVER_BACKGROUND_COLOR,
+    },
+    width: theme.spacing(3),
+    minWidth: theme.spacing(3),
+    height: theme.spacing(3),
+    paddingLeft: theme.spacing(1.25),
+    paddingRight: theme.spacing(1.25),
+  }
+}

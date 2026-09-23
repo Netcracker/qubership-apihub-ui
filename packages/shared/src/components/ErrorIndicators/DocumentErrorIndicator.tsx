@@ -1,11 +1,12 @@
-import { type FC, memo } from 'react'
+import { type FC, memo, type MouseEventHandler } from 'react'
 
 import { PUBLICATION_ERROR_MESSAGES } from '../../utils/publicationErrorMessages'
 import type { TestableProps } from '../Testable'
 import { ErrorIndicator, type ErrorIndicatorViewProps } from './ErrorIndicator'
 
-export type DocumentErrorIndicatorProps = TestableProps & ErrorIndicatorViewProps & {
+type DocumentErrorIndicatorProps = TestableProps & ErrorIndicatorViewProps & {
   hasErrors?: boolean
+  onClick?: MouseEventHandler<HTMLButtonElement>
 }
 
 export const DocumentErrorIndicator: FC<DocumentErrorIndicatorProps> = memo<DocumentErrorIndicatorProps>(({
@@ -16,6 +17,7 @@ export const DocumentErrorIndicator: FC<DocumentErrorIndicatorProps> = memo<Docu
   fontSize = 'small',
   tabIndex,
   className,
+  onClick,
   'data-testid': dataTestId = 'DocumentErrorIndicator',
 }) => {
   if (!hasErrors) {
@@ -31,6 +33,7 @@ export const DocumentErrorIndicator: FC<DocumentErrorIndicatorProps> = memo<Docu
       fontSize={fontSize}
       tabIndex={tabIndex}
       className={className}
+      onClick={onClick}
       data-testid={dataTestId}
     />
   )
