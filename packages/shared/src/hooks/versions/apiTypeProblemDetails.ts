@@ -12,6 +12,7 @@ import {
   getPackageVersionApiTypeSomeOperationsTooltip,
   getPackageVersionContractTypeNoEntitiesTooltip,
   getPackageVersionContractTypeSomeEntitiesTooltip,
+  PUBLICATION_ERROR_MESSAGES,
 } from '../../utils/publicationErrorMessages'
 import { isSpecTypeForApiType, type SpecType } from '../../utils/specs'
 
@@ -51,6 +52,48 @@ const NO_API_TYPE_PROBLEMS: ApiTypeProblemDetails = {
   hasProblems: false,
 }
 
+export function isApiTypeFullyInvalid(
+  apiType: ApiType | ContractType,
+  operationType?: OperationTypeSummary,
+  contractsSummary?: VersionContractsSummary,
+): boolean {
+  if (!hasApiTypeErrors(apiType, operationType, contractsSummary)) {
+    return false
+  }
+
+  if (isApiType(apiType)) {
+    return (operationType?.operationsCount ?? 0) === 0
+  }
+
+  if (apiType === CONTRACT_TYPE_DDL) {
+    return (contractsSummary?.ddl?.tablesCount ?? 0) === 0
+  }
+
+  if (apiType === CONTRACT_TYPE_MCP) {
+    const mcpTotals = contractsSummary?.mcp?.totals
+    const totalEntities = (mcpTotals?.toolsCount ?? 0) +
+      (mcpTotals?.promptsCount ?? 0) +
+      (mcpTotals?.resourcesCount ?? 0)
+    return totalEntities === 0
+  }
+
+  return false
+}
+
+export function resolveApiTypeEmptyMessage(
+  apiType: ApiType | ContractType,
+  operationType?: OperationTypeSummary,
+  contractsSummary?: VersionContractsSummary,
+): string | undefined {
+  if (!isApiTypeFullyInvalid(apiType, operationType, contractsSummary)) {
+    return undefined
+  }
+
+  return isApiType(apiType)
+    ? PUBLICATION_ERROR_MESSAGES.emptyState.noValidOperationsInApiType
+    : PUBLICATION_ERROR_MESSAGES.emptyState.noValidEntitiesInContractType
+}
+
 export function resolveApiTypeProblemDetails(
   params: ResolveApiTypeProblemDetailsParams,
 ): ApiTypeProblemDetails {
@@ -70,33 +113,18 @@ export function resolveApiTypeProblemDetails(
   const displayTitle = getRouteApiTypeTitle(apiType)
 
   if (isApiType(apiType)) {
-    const operationsCount = operationType?.operationsCount ?? 0
     return {
       hasProblems: true,
-      tooltip: operationsCount === 0
+      tooltip: isApiTypeFullyInvalid(apiType, operationType, contractsSummary)
         ? getPackageVersionApiTypeNoOperationsTooltip(displayTitle)
         : getPackageVersionApiTypeSomeOperationsTooltip(displayTitle),
     }
   }
 
-  if (apiType === CONTRACT_TYPE_DDL) {
-    const tablesCount = contractsSummary?.ddl?.tablesCount ?? 0
+  if (apiType === CONTRACT_TYPE_DDL || apiType === CONTRACT_TYPE_MCP) {
     return {
       hasProblems: true,
-      tooltip: tablesCount === 0
-        ? getPackageVersionContractTypeNoEntitiesTooltip(displayTitle)
-        : getPackageVersionContractTypeSomeEntitiesTooltip(displayTitle),
-    }
-  }
-
-  if (apiType === CONTRACT_TYPE_MCP) {
-    const mcpTotals = contractsSummary?.mcp?.totals
-    const totalEntities = (mcpTotals?.toolsCount ?? 0) +
-      (mcpTotals?.promptsCount ?? 0) +
-      (mcpTotals?.resourcesCount ?? 0)
-    return {
-      hasProblems: true,
-      tooltip: totalEntities === 0
+      tooltip: isApiTypeFullyInvalid(apiType, operationType, contractsSummary)
         ? getPackageVersionContractTypeNoEntitiesTooltip(displayTitle)
         : getPackageVersionContractTypeSomeEntitiesTooltip(displayTitle),
     }

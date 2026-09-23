@@ -14,6 +14,7 @@ import {
   getPackageVersionApiTypeSomeOperationsTooltip,
   getPackageVersionContractTypeNoEntitiesTooltip,
   getPackageVersionContractTypeSomeEntitiesTooltip,
+  PUBLICATION_ERROR_MESSAGES,
 } from '../../utils/publicationErrorMessages'
 import {
   GRAPHQL_SPEC_TYPE,
@@ -23,6 +24,8 @@ import {
   UNKNOWN_SPEC_TYPE,
 } from '../../utils/specs'
 import {
+  isApiTypeFullyInvalid,
+  resolveApiTypeEmptyMessage,
   resolveApiTypeProblemDetails,
   resolveOverviewSummaryApiTypeProblemsMap,
   resolveVersionApiTypeProblemsMap,
@@ -42,6 +45,77 @@ const GRAPHQL_TITLE = API_TYPE_TITLE_MAP[API_TYPE_GRAPHQL]
 const ASYNCAPI_TITLE = API_TYPE_TITLE_MAP[API_TYPE_ASYNCAPI]
 const DDL_TITLE = CONTRACT_TYPE_TITLE_MAP[CONTRACT_TYPE_DDL]
 const MCP_TITLE = CONTRACT_TYPE_TITLE_MAP[CONTRACT_TYPE_MCP]
+
+describe('isApiTypeFullyInvalid', () => {
+  test.each([
+    {
+      name: 'API type with errors and zero operations',
+      apiType: API_TYPE_REST,
+      operationType: operationType(API_TYPE_REST, { operationsCount: 0 }),
+      expected: true,
+    },
+    {
+      name: 'API type with errors and operations present',
+      apiType: API_TYPE_REST,
+      operationType: operationType(API_TYPE_REST),
+      expected: false,
+    },
+    {
+      name: 'API type without errors',
+      apiType: API_TYPE_REST,
+      operationType: operationType(API_TYPE_REST, { hasErrors: false, operationsCount: 0 }),
+      expected: false,
+    },
+    {
+      name: 'DDL with errors and zero tables',
+      apiType: CONTRACT_TYPE_DDL,
+      contractsSummary: ddlSummary(0),
+      expected: true,
+    },
+    {
+      name: 'DDL with errors and tables present',
+      apiType: CONTRACT_TYPE_DDL,
+      contractsSummary: ddlSummary(3),
+      expected: false,
+    },
+    {
+      name: 'MCP with errors and zero entities',
+      apiType: CONTRACT_TYPE_MCP,
+      contractsSummary: mcpSummary(0, 0, 0),
+      expected: true,
+    },
+    {
+      name: 'MCP with errors and entities present',
+      apiType: CONTRACT_TYPE_MCP,
+      contractsSummary: mcpSummary(2, 0, 1),
+      expected: false,
+    },
+  ])('$name', ({ apiType, operationType, contractsSummary, expected }) => {
+    expect(isApiTypeFullyInvalid(apiType, operationType, contractsSummary)).toBe(expected)
+  })
+})
+
+describe('resolveApiTypeEmptyMessage', () => {
+  test('maps fully invalid API and contract types to empty state messages', () => {
+    expect(resolveApiTypeEmptyMessage(
+      API_TYPE_REST,
+      operationType(API_TYPE_REST, { operationsCount: 0 }),
+    )).toBe(PUBLICATION_ERROR_MESSAGES.emptyState.noValidOperationsInApiType)
+
+    expect(resolveApiTypeEmptyMessage(
+      CONTRACT_TYPE_DDL,
+      undefined,
+      ddlSummary(0),
+    )).toBe(PUBLICATION_ERROR_MESSAGES.emptyState.noValidEntitiesInContractType)
+  })
+
+  test('returns undefined when the type is not fully invalid', () => {
+    expect(resolveApiTypeEmptyMessage(
+      API_TYPE_REST,
+      operationType(API_TYPE_REST),
+    )).toBeUndefined()
+  })
+})
 
 describe('resolveApiTypeProblemDetails', () => {
   test('returns no problems when hasErrors is absent', () => {
