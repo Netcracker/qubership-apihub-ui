@@ -93,6 +93,38 @@ export const versionHandlers = [
     return passthrough()
   }),
 
+  http.get('*/api/v2/packages/:packageKey/versions/:versionKey/:apiType/operations', ({ params }) => {
+    const versionKey = String(params.versionKey)
+    if (isApiTypesEmptyListVersion(versionKey)) {
+      return HttpResponse.json({ operations: [], packages: {} })
+    }
+    return passthrough()
+  }),
+
+  http.get('*/api/v2/packages/:packageKey/versions/:versionKey/:apiType/deprecated', ({ params }) => {
+    const versionKey = String(params.versionKey)
+    if (isApiTypesEmptyListVersion(versionKey)) {
+      return HttpResponse.json({ operations: [], packages: {} })
+    }
+    return passthrough()
+  }),
+
+  http.get('*/api/v1/packages/:packageKey/versions/:versionKey/ddl/entities', ({ params }) => {
+    const versionKey = String(params.versionKey)
+    if (isApiTypesEmptyListVersion(versionKey)) {
+      return HttpResponse.json({ entities: [], packages: {} })
+    }
+    return passthrough()
+  }),
+
+  http.get('*/api/v1/packages/:packageKey/versions/:versionKey/mcp/:apiEntity', ({ params }) => {
+    const versionKey = String(params.versionKey)
+    if (isApiTypesEmptyListVersion(versionKey)) {
+      return HttpResponse.json({ entities: [], packages: {} })
+    }
+    return passthrough()
+  }),
+
   http.get('*/api/v3/packages/:packageKey/versions', async ({ request }) => {
     const originalResponse = await fetch(bypass(request))
     if (!originalResponse.ok) {
@@ -280,6 +312,10 @@ function patchApiTypeErrorsContent(
       }
       : undefined,
   }
+}
+
+function isApiTypesEmptyListVersion(versionKey: string): boolean {
+  return versionKey.includes('errors-api-types-total')
 }
 
 function patchMcpContractsSummaryDto(
