@@ -116,6 +116,11 @@ export const SpecToolbar: FC = memo(() => {
   }
 
   const menuConfig = hasErrors ? getDocumentMenuConfig(hasErrors) : DOCUMENT_MENU_CONFIG_ON_PREVIEW_PAGE
+  const effectiveSpecViewMode = hasErrors ? RAW_SPEC_VIEW_MODE : specViewMode
+  const specViewModes: SpecViewMode[] = hasErrors
+    ? [RAW_SPEC_VIEW_MODE]
+    : [DOC_SPEC_VIEW_MODE, RAW_SPEC_VIEW_MODE]
+  const showSpecViewToggler = hasErrors || type !== UNKNOWN_SPEC_TYPE
 
   return (
     <Toolbar
@@ -135,43 +140,45 @@ export const SpecToolbar: FC = memo(() => {
         </Box>
       }
       action={
-        type !== UNKNOWN_SPEC_TYPE && <>
-          {specViewMode === DOC_SPEC_VIEW_MODE && (<>
-              {DOC_VIEW_COMPATIBLE_TYPES.includes(type ?? '') && (
-                <Toggler<SchemaViewMode>
-                  modes={SCHEMA_VIEW_MODES}
-                  mode={schemaViewMode}
-                  onChange={setSchemaViewMode}
-                />
-              )}
-            </>
-          )}
-          <Toggler<SpecViewMode>
-            mode={specViewMode}
-            modes={[
-              DOC_SPEC_VIEW_MODE,
-              RAW_SPEC_VIEW_MODE,
-            ]}
-            onChange={setSpecViewMode}
-          />
-          <MenuButton
-            variant="outlined"
-            title="Export"
-            icon={<KeyboardArrowDownOutlinedIcon/>}
-            data-testid="ExportDocumentMenuButton"
-          >
-            {menuConfig.map((menuItem) => (
-              menuItem.condition(isOpenApiSpecification, isSharingAvailable, isAsyncApiSpecification, isGraphQlSpecification) &&
-              <MenuItem
-                key={menuItem.id}
-                onClick={() => menuItem.action(actionParams)}
-                data-testid={menuItem['data-testid']}
-              >
-                {menuItem.label}
-              </MenuItem>
-            ))}
-          </MenuButton>
-        </>
+        (hasErrors || type !== UNKNOWN_SPEC_TYPE) && (
+          <>
+            {!hasErrors && specViewMode === DOC_SPEC_VIEW_MODE && (
+              <>
+                {DOC_VIEW_COMPATIBLE_TYPES.includes(type ?? '') && (
+                  <Toggler<SchemaViewMode>
+                    modes={SCHEMA_VIEW_MODES}
+                    mode={schemaViewMode}
+                    onChange={setSchemaViewMode}
+                  />
+                )}
+              </>
+            )}
+            {showSpecViewToggler && (
+              <Toggler<SpecViewMode>
+                mode={effectiveSpecViewMode}
+                modes={specViewModes}
+                onChange={setSpecViewMode}
+              />
+            )}
+            <MenuButton
+              variant="outlined"
+              title="Export"
+              icon={<KeyboardArrowDownOutlinedIcon/>}
+              data-testid="ExportDocumentMenuButton"
+            >
+              {menuConfig.map((menuItem) => (
+                menuItem.condition(isOpenApiSpecification, isSharingAvailable, isAsyncApiSpecification, isGraphQlSpecification) &&
+                <MenuItem
+                  key={menuItem.id}
+                  onClick={() => menuItem.action(actionParams)}
+                  data-testid={menuItem['data-testid']}
+                >
+                  {menuItem.label}
+                </MenuItem>
+              ))}
+            </MenuButton>
+          </>
+        )
       }
     />
   )
