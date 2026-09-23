@@ -117,6 +117,7 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
           docType={type}
           format={format}
           shareabilityStatus={shareabilityStatus}
+          hasErrors={document.hasErrors}
           customProps={MORE_ACTIONS_BUTTON_PROPS}
           startIcon={<MoreButtonIcon fontSize="small" />}
         />

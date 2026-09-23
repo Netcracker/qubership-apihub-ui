@@ -199,6 +199,7 @@ export type ExportSettingsPopupDetail = {
   groupName?: string
   specType?: SpecType
   shareabilityStatus?: ShareabilityStatus
+  hasErrors?: boolean
 }
 
 export type ShowDeleteCustomServerDetail = {

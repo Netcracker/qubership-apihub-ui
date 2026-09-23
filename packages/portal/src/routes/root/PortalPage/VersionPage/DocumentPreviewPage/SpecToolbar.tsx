@@ -47,9 +47,8 @@ import { PackageBreadcrumbs } from '../../../PackageBreadcrumbs'
 import { usePackage } from '../../../usePackage'
 import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
 import type { DocumentActionParams } from '../document-actions'
-import { DOCUMENT_MENU_CONFIG_ON_PREVIEW_PAGE, useCreateTemplate } from '../document-actions'
+import { DOCUMENT_MENU_CONFIG_ON_PREVIEW_PAGE, getDocumentMenuConfig, useCreateTemplate } from '../document-actions'
 import { useDocument } from '../useDocument'
-import { useDownloadPublishedDocument } from '../useDownloadPublishedDocument'
 import { useGetSharedKey } from '../VersionDocumentsSubPage/useGetSharedKey'
 import { useSchemaViewMode } from './useSchemaViewMode'
 import { useSpecViewMode } from './useSpecViewMode'
@@ -63,12 +62,7 @@ export const SpecToolbar: FC = memo(() => {
   const { packageId, versionId, documentId } = useParams()
   const [docPackageKey, docPackageVersionKey] = usePackageParamsWithRef()
   const [packageObject] = usePackage({ packageKey: packageId, showParents: true })
-  const [{ title, slug, type, format, shareabilityStatus }] = useDocument(docPackageKey, docPackageVersionKey, documentId)
-  const [downloadPublishedDocument] = useDownloadPublishedDocument({
-    slug: documentId!,
-    packageKey: docPackageKey,
-    versionKey: docPackageVersionKey,
-  })
+  const [{ title, slug, type, format, shareabilityStatus, hasErrors }] = useDocument(docPackageKey, docPackageVersionKey, documentId)
 
   const [specViewMode, setSpecViewMode] = useSpecViewMode()
   const [schemaViewMode = DETAILED_SCHEMA_VIEW_MODE, setSchemaViewMode] = useSchemaViewMode()
@@ -111,7 +105,6 @@ export const SpecToolbar: FC = memo(() => {
     protocol: protocol,
     host: host,
     navigateToDocumentPreview: null, // We already on the preview page
-    downloadPublishedDocument: downloadPublishedDocument,
     showExportSettingsDialog: showExportSettingsDialog,
     shareabilityStatus: shareabilityStatus,
     getSharedKey: getSharedKey,
@@ -119,7 +112,10 @@ export const SpecToolbar: FC = memo(() => {
     showNotification: showNotification,
     createTemplate: createTemplate,
     specType: type,
+    hasErrors: hasErrors,
   }
+
+  const menuConfig = hasErrors ? getDocumentMenuConfig(hasErrors) : DOCUMENT_MENU_CONFIG_ON_PREVIEW_PAGE
 
   return (
     <Toolbar
@@ -164,7 +160,7 @@ export const SpecToolbar: FC = memo(() => {
             icon={<KeyboardArrowDownOutlinedIcon/>}
             data-testid="ExportDocumentMenuButton"
           >
-            {DOCUMENT_MENU_CONFIG_ON_PREVIEW_PAGE.map((menuItem) => (
+            {menuConfig.map((menuItem) => (
               menuItem.condition(isOpenApiSpecification, isSharingAvailable, isAsyncApiSpecification, isGraphQlSpecification) &&
               <MenuItem
                 key={menuItem.id}

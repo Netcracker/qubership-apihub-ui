@@ -93,6 +93,7 @@ export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({ do
             docType={type}
             format={format}
             shareabilityStatus={shareabilityStatus}
+            hasErrors={hasErrors}
             icon={<MoreVertIcon sx={{ color: '#626D82' }} fontSize="small" />}
           />
         </ListItemButton>
