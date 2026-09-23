@@ -78,6 +78,18 @@ export const versionHandlers = [
       })
     }
 
+    if (versionKey.includes('errors-documents')) {
+      const originalResponse = await fetch(bypass(request))
+      if (!originalResponse.ok) {
+        return originalResponse
+      }
+      const realData: PackageVersionContentDto = await originalResponse.json()
+      return HttpResponse.json<PackageVersionContentDto>({
+        ...realData,
+        hasErrors: true,
+      })
+    }
+
     // api and contract type errors for selectors, tooltips, and comparison
     if (versionKey.includes('errors-api-types')) {
       const originalResponse = await fetch(bypass(request))

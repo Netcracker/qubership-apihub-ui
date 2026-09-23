@@ -4,6 +4,7 @@ import { styled } from '@mui/material/styles'
 import { type FC, memo, useCallback, useMemo } from 'react'
 import { type To, useNavigate, useParams } from 'react-router-dom'
 
+import { DocumentErrorIndicator } from '@netcracker/qubership-apihub-ui-shared/components/ErrorIndicators/DocumentErrorIndicator'
 import { NAVIGATION_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import { SidebarSkeleton } from '@netcracker/qubership-apihub-ui-shared/components/SidebarSkeleton'
 import { SpecLogo } from '@netcracker/qubership-apihub-ui-shared/components/SpecLogo'
@@ -49,7 +50,7 @@ export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({ do
   )
 
   const renderDocumentRow = useCallback((document: Document) => {
-    const { key, type, title, version, slug, format, shareabilityStatus } = document
+    const { key, type, title, version, slug, format, shareabilityStatus, hasErrors } = document
     const displayTitle = version ? `${title} ${version}` : title
 
     return (
@@ -82,6 +83,7 @@ export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({ do
             <SpecLogo value={type} />
           </ListItemIcon>
           <ListItemText primary={displayTitle} primaryTypographyProps={{ sx: { mt: 0.25 } }} />
+          <ListItemDocumentErrorIndicator hasErrors={hasErrors} />
           <ListItemShareabilityMarker value={shareabilityStatus} />
           <ListItemActionsButton
             slug={slug}
@@ -154,6 +156,10 @@ export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({ do
 })
 
 DocumentList.displayName = 'DocumentList'
+
+const ListItemDocumentErrorIndicator = styled(DocumentErrorIndicator)({
+  marginLeft: 8,
+})
 
 const ListItemShareabilityMarker = styled(ShareabilityMarker)({ marginLeft: 8 })
 

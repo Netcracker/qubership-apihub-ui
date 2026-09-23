@@ -13,6 +13,7 @@ export type ErrorIndicatorViewProps = {
   tooltipPlacement?: TooltipProps['placement']
   fontSize?: SvgIconProps['fontSize']
   tabIndex?: number
+  className?: string
 }
 
 export type ErrorIndicatorProps = TestableProps & ErrorIndicatorViewProps & {
@@ -28,6 +29,7 @@ export const ErrorIndicator: FC<ErrorIndicatorProps> = memo<ErrorIndicatorProps>
   fontSize = 'small',
   ariaLabel,
   tabIndex: propTabIndex,
+  className,
   'data-testid': dataTestId = 'ErrorIndicator',
 }) => {
   if (!hasProblems) {
@@ -40,6 +42,7 @@ export const ErrorIndicator: FC<ErrorIndicatorProps> = memo<ErrorIndicatorProps>
 
   const wrappedContent = (
     <IndicatorRoot
+      className={className}
       role="img"
       tabIndex={resolvedTabIndex}
       aria-label={resolvedAriaLabel}

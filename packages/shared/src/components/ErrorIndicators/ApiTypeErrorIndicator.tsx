@@ -15,6 +15,7 @@ export const ApiTypeErrorIndicator: FC<ApiTypeErrorIndicatorProps> = memo<ApiTyp
   tooltipPlacement = 'bottom',
   fontSize = 'small',
   tabIndex,
+  className,
   'data-testid': dataTestId = 'ApiTypeErrorIndicator',
 }) => {
   if (!problem?.hasProblems) {
@@ -29,6 +30,7 @@ export const ApiTypeErrorIndicator: FC<ApiTypeErrorIndicatorProps> = memo<ApiTyp
       tooltipPlacement={tooltipPlacement}
       fontSize={fontSize}
       tabIndex={tabIndex}
+      className={className}
       data-testid={dataTestId}
     />
   )
