@@ -12,8 +12,11 @@ import { isEmpty, isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/util
 import { optionalSearchParams, REF_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 
 import type { Document } from '@apihub/entities/documents'
+import { usePackageParamsWithRef } from '@apihub/routes/root/PortalPage/usePackageParamsWithRef'
 import { usePackageVersionConfig } from '@apihub/routes/root/PortalPage/usePackageVersionConfig'
+import { useVersionWithRevision } from '../../../useVersionWithRevision'
 import { DocumentActionsButton } from './DocumentActionsButton'
+import { DocumentErrorIndicatorButton } from './DocumentErrorsDialog/DocumentErrorIndicatorButton'
 import { buildMcpEndpointByFileKey, groupDocumentsForSidebar, isMcpSidebarGroup } from './documentGrouping'
 import { ShareabilityMarker } from './ShareabilityMarker'
 
@@ -38,6 +41,9 @@ export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({ do
     navigate(pathToNavigate)
   }, [navigate])
 
+  const [documentsPackageKey, documentsPackageVersion] = usePackageParamsWithRef()
+  const { fullVersion } = useVersionWithRevision(documentsPackageVersion, documentsPackageKey)
+
   const mcpEndpointByFileKey = useMemo(
     () => buildMcpEndpointByFileKey(versionConfig?.files),
     [versionConfig?.files],
@@ -49,7 +55,7 @@ export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({ do
   )
 
   const renderDocumentRow = useCallback((document: Document) => {
-    const { key, type, title, version, slug, format, shareabilityStatus } = document
+    const { key, type, title, version, slug, format, shareabilityStatus, hasErrors } = document
     const displayTitle = version ? `${title} ${version}` : title
 
     return (
@@ -82,6 +88,14 @@ export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({ do
             <SpecLogo value={type} />
           </ListItemIcon>
           <ListItemText primary={displayTitle} primaryTypographyProps={{ sx: { mt: 0.25 } }} />
+          {hasErrors && (
+            <DocumentErrorIndicatorButton
+              packageKey={documentsPackageKey}
+              versionKey={fullVersion}
+              documentId={slug}
+              documentTitle={title}
+            />
+          )}
           <ListItemShareabilityMarker value={shareabilityStatus} />
           <ListItemActionsButton
             slug={slug}
@@ -93,7 +107,15 @@ export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({ do
         </ListItemButton>
       </ListItem>
     )
-  }, [documentId, escapedVersionKey, navigateToSelectedDocument, packageKey, search])
+  }, [
+    documentId,
+    documentsPackageKey,
+    escapedVersionKey,
+    fullVersion,
+    navigateToSelectedDocument,
+    packageKey,
+    search,
+  ])
 
   if (isLoading) {
     return (

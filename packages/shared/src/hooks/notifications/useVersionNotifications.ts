@@ -25,6 +25,7 @@ export function useVersionNotifications(
     packageKey,
     versionKey,
     documentId,
+    emptyDocumentId,
     severity,
     category,
     limit,
@@ -34,6 +35,7 @@ export function useVersionNotifications(
 
   const query: VersionNotificationsQuery = {
     documentId,
+    emptyDocumentId,
     severity,
     category,
     limit,

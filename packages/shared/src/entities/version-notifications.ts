@@ -72,6 +72,7 @@ export type VersionNotifications = ReadonlyArray<VersionNotification>
 
 export type VersionNotificationsQuery = {
   documentId?: Key
+  emptyDocumentId?: boolean
   severity?: NotificationSeverity[]
   category?: NotificationCategory[]
   limit?: number

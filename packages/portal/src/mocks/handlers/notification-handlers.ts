@@ -89,7 +89,13 @@ function applyNotificationFilters(
   const severityFilters = splitCsvParam(searchParams.get('severity'))
   const categoryFilters = splitCsvParam(searchParams.get('category'))
 
-  return notifications.filter((notification) => {
+  const scoped = documentId
+    ? notifications
+      .filter(notification => notification.documentId)
+      .map(notification => ({ ...notification, documentId: documentId }))
+    : notifications
+
+  return scoped.filter((notification) => {
     if (documentId && notification.documentId !== documentId) {
       return false
     }
