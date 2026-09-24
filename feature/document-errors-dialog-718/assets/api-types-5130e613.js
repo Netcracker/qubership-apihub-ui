@@ -1,0 +1,2 @@
+import{R as a,G as E,A as I}from"./transformToDto-CQ2Udevi-62e49ed3.js";import{i as T}from"./arrays-b0979955.js";const s=a,t=E,_=I,o=[s,t,_],c={[s]:"REST API",[t]:"GraphQL API",[_]:"AsyncAPI"};function r(P){return T(P)?Object.fromEntries(P.map(A=>[A.apiType,A])):void 0}function Y(P){return o.some(A=>A===P)}export{_ as A,t as a,s as b,c,o as d,Y as i,r as t};
+//# sourceMappingURL=api-types-5130e613.js.map
