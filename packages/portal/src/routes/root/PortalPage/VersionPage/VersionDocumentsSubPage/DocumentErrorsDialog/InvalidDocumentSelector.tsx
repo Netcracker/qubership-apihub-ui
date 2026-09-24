@@ -23,6 +23,8 @@ const CHEVRON_STYLE = { color: DEFAULT_TEXT_COLOR } as const
 
 const EMPTY_ICON_STYLE = { width: 20, height: 20, color: DEFAULT_TEXT_COLOR } as const
 
+const DOCUMENT_NAME_STYLE = { fontWeight: 600 } as const
+
 export type InvalidDocumentSelectorProps = {
   options: Documents
   selected: DocumentSelection
@@ -70,9 +72,14 @@ export const InvalidDocumentSelector: FC<InvalidDocumentSelectorProps> = memo<In
           ? <DoNotDisturbAltOutlinedIcon sx={EMPTY_ICON_STYLE} />
           : <SpecLogo value={selectedDocument?.type} />
         }
-        <DocumentName variant="body2" data-testid="DocumentErrorsSubtitle">
+        <TextWithOverflowTooltip
+          tooltipText={title}
+          variant="body2"
+          sx={DOCUMENT_NAME_STYLE}
+          data-testid="DocumentErrorsSubtitle"
+        >
           {title}
-        </DocumentName>
+        </TextWithOverflowTooltip>
         <KeyboardArrowDownOutlinedIcon fontSize="small" sx={CHEVRON_STYLE} />
       </SelectorContent>
 
@@ -87,7 +94,6 @@ export const InvalidDocumentSelector: FC<InvalidDocumentSelectorProps> = memo<In
             <ListItem sx={{ p: 0 }}>
               <DocumentItemButton
                 selected={isEmptySelected}
-                isSelected={isEmptySelected}
                 onClick={event => handleSelect(event, EMPTY_DOCUMENT_OPTION)}
                 data-testid="DocumentErrorsEmptyDocumentButton"
               >
@@ -108,7 +114,6 @@ export const InvalidDocumentSelector: FC<InvalidDocumentSelectorProps> = memo<In
               <ListItem key={slug} sx={{ p: 0 }}>
                 <DocumentItemButton
                   selected={slug === selected}
-                  isSelected={slug === selected}
                   onClick={event => handleSelect(event, slug)}
                   data-testid="DocumentErrorsDocumentButton"
                 >
@@ -156,14 +161,14 @@ const SelectorContent = styled(Box)({
   minWidth: 0,
 })
 
-const DocumentItemButton = styled(ListItemButton, {
-  shouldForwardProp: prop => prop !== 'isSelected',
-})<{ isSelected: boolean }>(({ isSelected }) => ({
+const DocumentItemButton = styled(ListItemButton)({
   flexDirection: 'unset',
   alignItems: 'center',
   height: 36,
-  backgroundColor: isSelected ? '#ECEDEF' : 'transparent',
-}))
+  '&.Mui-selected': {
+    backgroundColor: '#ECEDEF',
+  },
+})
 
 const DocumentItemIcon = styled(ListItemIcon)({
   minWidth: 2,
@@ -182,10 +187,3 @@ const CaptionLabel = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.secondary,
   flexShrink: 0,
 }))
-
-const DocumentName = styled(Typography)({
-  fontWeight: 600,
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
-})

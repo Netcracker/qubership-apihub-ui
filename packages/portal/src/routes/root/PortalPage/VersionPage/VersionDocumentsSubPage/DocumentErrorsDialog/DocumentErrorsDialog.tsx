@@ -1,23 +1,8 @@
 import type { ShowDocumentErrorsDetail } from '@apihub/routes/EventBusProvider'
 import { SHOW_DOCUMENT_ERRORS_DIALOG } from '@apihub/routes/EventBusProvider'
 import { LoadingButton } from '@mui/lab'
-import {
-  Box,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  IconButton,
-  Skeleton,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Typography,
-} from '@mui/material'
+import { Box, Dialog, DialogContent, DialogTitle, Divider, IconButton, Skeleton, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
-import { CustomTableHeadCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomTableHeadCell'
 import { NAVIGATION_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
@@ -31,9 +16,9 @@ import { DownloadIconMui } from '@netcracker/qubership-apihub-ui-shared/icons/Do
 import { type FC, memo, useCallback, useMemo, useState } from 'react'
 
 import { useDocuments } from '../../useDocuments'
+import { DocumentErrorsTable } from './DocumentErrorsTable'
 import type { DocumentSelection } from './InvalidDocumentSelector'
 import { EMPTY_DOCUMENT_OPTION, InvalidDocumentSelector } from './InvalidDocumentSelector'
-import { NotificationSeverityMarker } from './NotificationSeverityMarker'
 import { useExportDocumentErrors } from './useExportDocumentErrors'
 
 export const DocumentErrorsDialog: FC = memo(() => {
@@ -54,10 +39,6 @@ const DIALOG_PAPER_STYLE = {
   height: 'calc(100% - 48px)',
   maxHeight: 'calc(100% - 48px)',
 } as const
-
-function toFirstLine(message: string): string {
-  return message.split('\n', 1)[0] ?? message
-}
 
 const DocumentErrorsPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, detail }) => {
   const {
@@ -197,65 +178,26 @@ const DocumentErrorsContent: FC<DocumentErrorsContentProps> = memo<DocumentError
     )
   }
 
-  if (!selected) {
-    return (
-      <Placeholder
-        invisible={false}
-        area={NAVIGATION_PLACEHOLDER_AREA}
-        message="No error details found"
-      />
-    )
-  }
-
   return (
-    <SplitLayout>
-      <TablePane>
-        <Table stickyHeader data-testid="DocumentErrorsTable">
-          <TableHead>
-            <TableRow>
-              <TypeHeadCell>
-                <CustomTableHeadCell title="Type" />
-              </TypeHeadCell>
-              <CategoryHeadCell>
-                <CustomTableHeadCell title="Category" />
-              </CategoryHeadCell>
-              <TableCell>
-                <CustomTableHeadCell title="Message" />
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {notifications.map(notification => (
-              <NotificationRow
-                key={notification.id}
-                hover
-                selected={notification.id === selected.id}
-                onClick={() => setSelectedId(notification.id)}
-                data-testid="DocumentErrorsTableRow"
-              >
-                <TableCell>
-                  <NotificationSeverityMarker severity={notification.severity} />
-                </TableCell>
-                <TableCell>
-                  <Typography variant="body2">
-                    {notification.category}
-                  </Typography>
-                </TableCell>
-                <MessageCell>
-                  <Typography variant="body2" noWrap>
-                    {toFirstLine(notification.message)}
-                  </Typography>
-                </MessageCell>
-              </NotificationRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TablePane>
+    <Placeholder
+      invisible={!!selected}
+      area={NAVIGATION_PLACEHOLDER_AREA}
+      message="No error details found"
+    >
+      <SplitLayout>
+        <TablePane>
+          <DocumentErrorsTable
+            data={notifications}
+            selectedId={selected?.id}
+            onSelectNotification={setSelectedId}
+          />
+        </TablePane>
 
-      <MessagePane data-testid="DocumentErrorsMessage">
-        <MessageText>{selected.message}</MessageText>
-      </MessagePane>
-    </SplitLayout>
+        <MessagePane data-testid="DocumentErrorsMessage">
+          <MessageText>{selected?.message}</MessageText>
+        </MessagePane>
+      </SplitLayout>
+    </Placeholder>
   )
 })
 
@@ -310,22 +252,6 @@ const TablePane = styled(Box)(({ theme }) => ({
   overflow: 'auto',
   borderRight: `1px solid ${theme.palette.divider}`,
 }))
-
-const TypeHeadCell = styled(TableCell)({
-  width: 64,
-})
-
-const CategoryHeadCell = styled(TableCell)({
-  width: 200,
-})
-
-const NotificationRow = styled(TableRow)({
-  cursor: 'pointer',
-})
-
-const MessageCell = styled(TableCell)({
-  maxWidth: 0,
-})
 
 const MessagePane = styled(Box)(({ theme }) => ({
   flex: 1,
