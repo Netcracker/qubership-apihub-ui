@@ -222,7 +222,6 @@ export type ShowPublicationErrorReportDetail = {
 export type ShowDocumentErrorsDetail = {
   packageKey: PackageKey
   versionKey: VersionKey
-  // document slug, matching the `slug` field of the version documents
   documentId: Key
   documentTitle: string
 }
