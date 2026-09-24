@@ -52,6 +52,7 @@ export const notificationHandlers = [
     const { searchParams } = new URL(request.url)
 
     const hasBuildErrors = versionKey.includes('errors-build') ||
+      versionKey.includes('errors-documents') ||
       versionKey.includes('errors-build-and-comparison') ||
       versionKey.includes('errors-processor-mismatch-and-build')
 

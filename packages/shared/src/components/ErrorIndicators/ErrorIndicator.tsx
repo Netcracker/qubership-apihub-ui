@@ -1,8 +1,9 @@
 import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
 import { styled } from '@mui/material/styles'
 import type { SvgIconProps } from '@mui/material/SvgIcon'
 import Tooltip, { tooltipClasses, type TooltipProps } from '@mui/material/Tooltip'
-import { type FC, memo, type ReactNode } from 'react'
+import { type FC, memo, type MouseEventHandler, type ReactNode } from 'react'
 
 import { ErrorIcon } from '../../icons/ErrorIcon'
 import type { TestableProps } from '../Testable'
@@ -13,11 +14,13 @@ export type ErrorIndicatorViewProps = {
   tooltipPlacement?: TooltipProps['placement']
   fontSize?: SvgIconProps['fontSize']
   tabIndex?: number
+  className?: string
 }
 
-export type ErrorIndicatorProps = TestableProps & ErrorIndicatorViewProps & {
+type ErrorIndicatorProps = TestableProps & ErrorIndicatorViewProps & {
   hasProblems?: boolean
   ariaLabel?: string
+  onClick?: MouseEventHandler<HTMLButtonElement>
 }
 
 export const ErrorIndicator: FC<ErrorIndicatorProps> = memo<ErrorIndicatorProps>(({
@@ -28,6 +31,8 @@ export const ErrorIndicator: FC<ErrorIndicatorProps> = memo<ErrorIndicatorProps>
   fontSize = 'small',
   ariaLabel,
   tabIndex: propTabIndex,
+  className,
+  onClick,
   'data-testid': dataTestId = 'ErrorIndicator',
 }) => {
   if (!hasProblems) {
@@ -36,21 +41,37 @@ export const ErrorIndicator: FC<ErrorIndicatorProps> = memo<ErrorIndicatorProps>
 
   const resolvedAriaLabel = ariaLabel ?? (typeof tooltip === 'string' ? tooltip : 'Publication error')
   const tooltipContent = showTooltip ? tooltip : undefined
-  const resolvedTabIndex = propTabIndex ?? (showTooltip && tooltipContent ? 0 : undefined)
+  const resolvedTabIndex = propTabIndex ?? (showTooltip && tooltipContent && !onClick ? 0 : undefined)
 
-  const wrappedContent = (
-    <IndicatorRoot
-      role="img"
-      tabIndex={resolvedTabIndex}
-      aria-label={resolvedAriaLabel}
-    >
-      <ErrorIcon
-        color="error"
-        fontSize={fontSize}
+  const wrappedContent = onClick
+    ? (
+      <IconButton
+        className={className}
+        onClick={onClick}
+        aria-label={resolvedAriaLabel}
         data-testid={dataTestId}
-      />
-    </IndicatorRoot>
-  )
+        size="small"
+      >
+        <ErrorIcon
+          color="error"
+          fontSize={fontSize}
+        />
+      </IconButton>
+    )
+    : (
+      <IndicatorRoot
+        className={className}
+        role="img"
+        tabIndex={resolvedTabIndex}
+        aria-label={resolvedAriaLabel}
+      >
+        <ErrorIcon
+          color="error"
+          fontSize={fontSize}
+          data-testid={dataTestId}
+        />
+      </IndicatorRoot>
+    )
 
   if (!tooltipContent) {
     return wrappedContent
@@ -76,8 +97,6 @@ const IndicatorRoot = styled(Box)({
   flexShrink: 0,
   cursor: 'default',
   userSelect: 'none',
-  lineHeight: 0,
-  verticalAlign: 'middle',
 })
 
 const IndicatorTooltip = styled(({ className, ...props }: TooltipProps) => (

@@ -16,6 +16,7 @@ export const VersionErrorIndicator: FC<VersionErrorIndicatorProps> = memo<Versio
   tooltipPlacement = 'bottom',
   fontSize = 'small',
   tabIndex,
+  className,
   'data-testid': dataTestId = 'VersionErrorIndicator',
   ...problemParams
 }) => {
@@ -29,6 +30,7 @@ export const VersionErrorIndicator: FC<VersionErrorIndicatorProps> = memo<Versio
       tooltipPlacement={tooltipPlacement}
       fontSize={fontSize}
       tabIndex={tabIndex}
+      className={className}
       data-testid={dataTestId}
     />
   )

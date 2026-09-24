@@ -97,6 +97,9 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
     )
   }
 
+  const isSpecWithSubPages = !hasErrors &&
+    (isOpenApiSpecType(type) || isGraphQlSpecType(type) || isAsyncApiSpecType(type))
+
   return (
     <TabHeader data-testid="DocumentToolbar">
       <TextSection data-testid="DocumentToolbarTitle">
@@ -115,7 +118,7 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
         </TitleSuffix>
       </TextSection>
       <ActionsSection>
-        {(isOpenApiSpecType(type) || isGraphQlSpecType(type) || isAsyncApiSpecType(type)) && (
+        {isSpecWithSubPages && (
           <>
             {selectedSubPage === OPERATIONS_SUB_PAGE && (
               <SearchInput
@@ -141,6 +144,7 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
           docType={type}
           format={format}
           shareabilityStatus={shareabilityStatus}
+          hasErrors={hasErrors}
           customProps={MORE_ACTIONS_BUTTON_PROPS}
           startIcon={<MoreButtonIcon fontSize="small" />}
         />
@@ -148,6 +152,8 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
     </TabHeader>
   )
 }
+
+DocumentsTabHeader.displayName = 'DocumentsTabHeader'
 
 const DocumentsSubPageSelector = memo(() => {
   const selectedSubPage = useSelectedSubPage()
@@ -167,6 +173,8 @@ const DocumentsSubPageSelector = memo(() => {
     </SubPageSelector>
   )
 })
+
+DocumentsSubPageSelector.displayName = 'DocumentsSubPageSelector'
 
 const LEFT_SECTION_MIN_WIDTH = 240
 

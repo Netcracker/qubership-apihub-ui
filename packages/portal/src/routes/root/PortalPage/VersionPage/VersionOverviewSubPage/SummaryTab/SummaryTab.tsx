@@ -130,9 +130,9 @@ export const SummaryTab: FC = memo(() => {
       return EMPTY_API_TYPE_PROBLEMS
     }
     return resolveOverviewSummaryApiTypeProblemsMap({
-      operationTypes: operationTypes,
-      contractsSummary: contractsSummary,
-      documents: documents,
+      operationTypes,
+      contractsSummary,
+      documents,
     })
   }, [hasAnySectionErrors, operationTypes, contractsSummary, documents])
 

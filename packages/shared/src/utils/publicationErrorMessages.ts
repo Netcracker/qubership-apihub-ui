@@ -45,6 +45,10 @@ export const PUBLICATION_ERROR_MESSAGES = {
     itemError: 'There were errors when processing the document. Click Document Errors button to see details.',
     menuDownload: 'Download document',
   },
+  emptyState: {
+    noValidOperationsInApiType: 'No valid operations in the API type',
+    noValidEntitiesInContractType: 'No valid entities in the contract type',
+  },
   snackbar: {
     draftPublishWithErrors: {
       title: 'Version published with errors',

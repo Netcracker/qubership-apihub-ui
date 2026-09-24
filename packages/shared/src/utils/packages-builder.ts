@@ -368,6 +368,8 @@ export async function getDocuments(
 export async function getResolvedVersionDocuments(
   packageKey: Key,
   versionKey: Key,
+  page: number,
+  limit: number,
   apiType?: ApiType,
   contractType?: ContractType,
   signal?: AbortSignal,
@@ -375,7 +377,12 @@ export async function getResolvedVersionDocuments(
   const packageId = encodeURIComponent(packageKey)
   const versionId = encodeURIComponent(versionKey)
 
-  const queryParams = optionalSearchParams({ apiType: { value: apiType }, contractType: { value: contractType } })
+  const queryParams = optionalSearchParams({
+    apiType: { value: apiType },
+    contractType: { value: contractType },
+    page: { value: page },
+    limit: { value: limit },
+  })
   const pathPattern = '/packages/:packageId/versions/:versionId/documents'
   return await requestJson<ResolvedVersionDocuments>(
     `${generatePath(pathPattern, { packageId, versionId })}?${queryParams}`,
@@ -386,4 +393,35 @@ export async function getResolvedVersionDocuments(
     },
     signal,
   )
+}
+
+export async function getAllResolvedVersionDocuments(
+  packageKey: Key,
+  versionKey: Key,
+  apiType?: ApiType,
+  contractType?: ContractType,
+  signal?: AbortSignal,
+): Promise<ResolvedVersionDocuments> {
+  const limit = 100
+  const result: ResolvedVersionDocuments = { documents: [], packages: {} }
+  let page = 0
+  let documentsCount = 0
+
+  while (page === 0 || documentsCount === limit) {
+    const { documents, packages } = await getResolvedVersionDocuments(
+      packageKey,
+      versionKey,
+      page,
+      limit,
+      apiType,
+      contractType,
+      signal,
+    )
+    result.documents = [...result.documents, ...documents]
+    result.packages = { ...result.packages, ...packages }
+    page += 1
+    documentsCount = documents.length
+  }
+
+  return result
 }
