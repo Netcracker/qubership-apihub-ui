@@ -1,6 +1,8 @@
 import { createContext, type FC, memo, type PropsWithChildren, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
+import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
+
 import { usePackageVersionContent } from '@apihub/routes/root/usePackageVersionContent'
 import { useApiQualityLinterEnabled, useApiQualityTabTooltip } from './ApiQualityValidationSummaryProvider'
 import { usePackageVersionApiTypes } from './usePackageVersionApiTypes'
@@ -22,12 +24,20 @@ export const VersionTabApiTypesProvider: FC<PropsWithChildren> = memo<PropsWithC
   const linterEnabled = useApiQualityLinterEnabled()
   const apiQualityTooltip = useApiQualityTabTooltip()
 
+  const versionKey = useMemo(() => {
+    if (!versionId || !versionContent) {
+      return undefined
+    }
+    return getSplittedVersionKey(versionId, versionContent.latestRevision).versionKey
+  }, [versionContent, versionId])
+
   const value = useMemo(
     () =>
       buildVersionTabsApiTypesState({
         publishedApiTypes: apiTypes,
         isLoading: isLoading,
         previousVersion: versionContent?.previousVersion,
+        versionKey: versionKey,
         linterEnabled: linterEnabled,
         apiQualityTooltip: apiQualityTooltip,
         operationTypes: versionContent?.operationTypes,
@@ -38,6 +48,7 @@ export const VersionTabApiTypesProvider: FC<PropsWithChildren> = memo<PropsWithC
       apiTypes,
       isLoading,
       linterEnabled,
+      versionKey,
       versionContent?.contractsSummary,
       versionContent?.operationTypes,
       versionContent?.previousVersion,

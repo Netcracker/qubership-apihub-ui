@@ -5,9 +5,10 @@ import { buildVersionTabsApiTypesState } from './buildVersionTabsApiTypesState'
 import { VERSION_TAB_IDS } from './version-tab-allowed-api-types'
 
 const DEFAULT_INPUT = {
-  publishedApiTypes: [API_TYPE_REST, CONTRACT_TYPE_MCP] as const,
+  publishedApiTypes: [API_TYPE_REST, CONTRACT_TYPE_MCP],
   isLoading: false,
-  previousVersion: 'previous-version' as const,
+  previousVersion: 'previous-version',
+  versionKey: '2024.1',
   linterEnabled: true,
   apiQualityTooltip: undefined,
 }

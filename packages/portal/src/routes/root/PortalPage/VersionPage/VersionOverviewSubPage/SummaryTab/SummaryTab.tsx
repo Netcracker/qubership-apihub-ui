@@ -126,15 +126,16 @@ export const SummaryTab: FC = memo(() => {
   })
 
   const overviewApiTypeProblems = useMemo(() => {
-    if (!hasAnySectionErrors) {
+    if (!hasAnySectionErrors || !splittedVersionKey) {
       return EMPTY_API_TYPE_PROBLEMS
     }
     return resolveOverviewSummaryApiTypeProblemsMap({
-      operationTypes,
-      contractsSummary,
-      documents,
+      operationTypes: operationTypes,
+      contractsSummary: contractsSummary,
+      documents: documents,
+      versionKey: splittedVersionKey,
     })
-  }, [hasAnySectionErrors, operationTypes, contractsSummary, documents])
+  }, [contractsSummary, documents, hasAnySectionErrors, operationTypes, splittedVersionKey])
 
   if (isLoading) {
     return (
