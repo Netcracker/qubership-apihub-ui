@@ -34,6 +34,7 @@ import { getDefaultApiType, isApiTypeSelectorShown } from '@apihub/utils/operati
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { Box, IconButton, Typography } from '@mui/material'
 import { ApiTypeSelector } from '@netcracker/qubership-apihub-ui-shared/components/ApiTypeSelector'
+import { ComparisonErrorIndicator } from '@netcracker/qubership-apihub-ui-shared/components/ErrorIndicators/ComparisonErrorIndicator'
 import type { ChangesTooltipCategory } from '@netcracker/qubership-apihub-ui-shared/components/ChangesTooltip'
 import { CATEGORY_OPERATION, CATEGORY_PACKAGE } from '@netcracker/qubership-apihub-ui-shared/components/ChangesTooltip'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
@@ -42,6 +43,7 @@ import { CHANGE_SEVERITIES, type ChangesSummary } from '@netcracker/qubership-ap
 import { CONTRACT_TYPE_DDL, getRouteApiTypeTitle, isApiContract } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 import { getDashboardComparisonApiTypes } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-changes-summary'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import { DASHBOARD_KIND, PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import {
   COMPARE_VIEW_MODES_BY_API_TYPE,
   type CompareViewModeApiType,
@@ -53,6 +55,7 @@ import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entitie
 import type { DdlEntityChangeEntry } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl-changelog'
 import type { VersionChanges } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
 import { isDashboardComparisonSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
+import { resolveComparisonHeaderProblemDetails } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/comparisonProblemDetails'
 import {
   useSeverityFiltersSearchParam,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/change-severities/useSeverityFiltersSearchParam'
@@ -223,6 +226,21 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
     enabled: isPackagesComparison || isDashboardsComparison,
   })
 
+  const isAdHocComparison = isPackagesComparison || isDashboardsComparison
+
+  const comparisonHeaderProblem = useMemo(
+    () => (isAdHocComparison
+      ? resolveComparisonHeaderProblemDetails({
+        comparisonHasErrors: changesSummary?.hasErrors ?? false,
+        kind: isDashboardsComparison ? DASHBOARD_KIND : PACKAGE_KIND,
+      })
+      : undefined),
+    [changesSummary, isAdHocComparison, isDashboardsComparison],
+  )
+
+  const showComparisonIndicator = comparisonHeaderProblem?.hasProblems ?? false
+  const showSelectorsContainer = showPackageSelector || showApiTypeSelector || showComparisonIndicator
+
   useEffect(() => {
     if (!isPackagesComparison) {
       return
@@ -269,8 +287,8 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
               {defaultTitle}
             </Typography>
           )}
-          {(showPackageSelector || showApiTypeSelector) && (
-            <Box display="flex" alignItems="center" gap={2}>
+          {showSelectorsContainer && (
+            <Box display="flex" alignItems="center" gap={1.5}>
               {showPackageSelector && <PackageSelector />}
               {showApiTypeSelector && (
                 <ApiTypeSelector
@@ -278,6 +296,11 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
                   allowedApiTypes={comparisonApiTypes}
                   apiTypeProblems={apiTypeProblems}
                   onChange={setApiTypeSearchParam}
+                />
+              )}
+              {showComparisonIndicator && (
+                <ComparisonErrorIndicator
+                  problem={comparisonHeaderProblem}
                 />
               )}
             </Box>
