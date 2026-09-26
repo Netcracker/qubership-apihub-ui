@@ -52,6 +52,7 @@ export const notificationHandlers = [
     const { searchParams } = new URL(request.url)
 
     const hasBuildErrors = versionKey.includes('errors-build') ||
+      versionKey.includes('errors-documents') ||
       versionKey.includes('errors-build-and-comparison') ||
       versionKey.includes('errors-processor-mismatch-and-build')
 
@@ -89,7 +90,13 @@ function applyNotificationFilters(
   const severityFilters = splitCsvParam(searchParams.get('severity'))
   const categoryFilters = splitCsvParam(searchParams.get('category'))
 
-  return notifications.filter((notification) => {
+  const scoped = documentId
+    ? notifications
+      .filter(notification => notification.documentId)
+      .map(notification => ({ ...notification, documentId: documentId }))
+    : notifications
+
+  return scoped.filter((notification) => {
     if (documentId && notification.documentId !== documentId) {
       return false
     }

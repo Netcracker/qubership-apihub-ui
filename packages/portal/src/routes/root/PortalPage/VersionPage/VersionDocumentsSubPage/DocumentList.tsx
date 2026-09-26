@@ -14,7 +14,10 @@ import { isEmpty, isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/util
 import { optionalSearchParams, REF_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 
 import type { Document } from '@apihub/entities/documents'
+import { useEventBus } from '@apihub/routes/EventBusProvider'
+import { usePackageParamsWithRef } from '@apihub/routes/root/PortalPage/usePackageParamsWithRef'
 import { usePackageVersionConfig } from '@apihub/routes/root/PortalPage/usePackageVersionConfig'
+import { useVersionWithRevision } from '../../../useVersionWithRevision'
 import { DocumentActionsButton } from './DocumentActionsButton'
 import { buildMcpEndpointByFileKey, groupDocumentsForSidebar, isMcpSidebarGroup } from './documentGrouping'
 import { ShareabilityMarker } from './ShareabilityMarker'
@@ -40,6 +43,10 @@ export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({ do
     navigate(pathToNavigate)
   }, [navigate])
 
+  const { showDocumentErrorsDialog } = useEventBus()
+  const [documentsPackageKey, documentsPackageVersion] = usePackageParamsWithRef()
+  const { fullVersion } = useVersionWithRevision(documentsPackageVersion, documentsPackageKey)
+
   const mcpEndpointByFileKey = useMemo(
     () => buildMcpEndpointByFileKey(versionConfig?.files),
     [versionConfig?.files],
@@ -50,10 +57,21 @@ export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({ do
     [documents, mcpEndpointByFileKey],
   )
 
-  const handleDocumentErrorIndicatorClick = useCallback((event: MouseEvent<HTMLButtonElement>) => {
+  const handleDocumentErrorIndicatorClick = useCallback((
+    event: MouseEvent<HTMLButtonElement>,
+    { slug, title }: Document,
+  ) => {
     event.stopPropagation()
-    // TODO: open Document Errors dialog — https://github.com/Netcracker/qubership-apihub/issues/807
-  }, [])
+    if (!documentsPackageKey || !fullVersion) {
+      return
+    }
+    showDocumentErrorsDialog({
+      packageKey: documentsPackageKey,
+      versionKey: fullVersion,
+      documentId: slug,
+      documentTitle: title,
+    })
+  }, [documentsPackageKey, fullVersion, showDocumentErrorsDialog])
 
   const renderDocumentRow = useCallback((document: Document) => {
     const { key, type, title, version, slug, format, shareabilityStatus, hasErrors } = document
@@ -85,7 +103,7 @@ export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({ do
           <ListItemText primary={displayTitle} primaryTypographyProps={{ sx: { mt: 0.25 } }} />
           <ListItemDocumentErrorIndicator
             hasErrors={hasErrors}
-            onClick={handleDocumentErrorIndicatorClick}
+            onClick={event => handleDocumentErrorIndicatorClick(event, document)}
           />
           <ListItemShareabilityMarker value={shareabilityStatus} />
           <ListItemActionsButton
@@ -99,7 +117,14 @@ export const DocumentList: FC<DocumentListProps> = memo<DocumentListProps>(({ do
         </ListItemButton>
       </ListItem>
     )
-  }, [documentId, escapedVersionKey, handleDocumentErrorIndicatorClick, navigateToSelectedDocument, packageKey, search])
+  }, [
+    documentId,
+    escapedVersionKey,
+    handleDocumentErrorIndicatorClick,
+    navigateToSelectedDocument,
+    packageKey,
+    search,
+  ])
 
   if (isLoading) {
     return (

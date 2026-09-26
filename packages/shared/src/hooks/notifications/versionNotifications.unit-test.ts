@@ -141,6 +141,20 @@ describe('notification query parameter serialization', () => {
     }))
   })
 
+  it('serializes emptyDocumentId and keeps it in the cache key', () => {
+    const params = toVersionNotificationsSearchParams({ emptyDocumentId: true })
+
+    expect(params.get('emptyDocumentId')).toBe('true')
+    expect(params.get('documentId')).toBeNull()
+
+    expect(toComparisonNotificationsSearchParams({ emptyDocumentId: true }).get('emptyDocumentId')).toBe('true')
+
+    expect(toVersionNotificationsSearchParams({ emptyDocumentId: false }).toString()).toBe('')
+
+    expect(toNotificationFiltersQueryKey({ emptyDocumentId: true }))
+      .not.toEqual(toNotificationFiltersQueryKey({ documentId: 'events-yaml' }))
+  })
+
   it('omits empty filters and includes comparison targets', () => {
     expect(toVersionNotificationsSearchParams({}).toString()).toBe('')
     expect(toVersionNotificationsSearchParams({ severity: [], category: [] }).toString()).toBe('')
