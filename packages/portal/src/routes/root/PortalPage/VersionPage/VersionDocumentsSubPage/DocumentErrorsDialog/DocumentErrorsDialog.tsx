@@ -18,7 +18,6 @@ import {
 } from '@netcracker/qubership-apihub-ui-shared/hooks/notifications/useVersionNotifications'
 import { CloseIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CloseIcon'
 import { ExportIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ExportIcon'
-import { DEFAULT_TEXT_COLOR } from '@netcracker/qubership-apihub-ui-shared/themes/colors'
 import type { HasNextPage, IsFetchingNextPage } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { type FC, memo, useCallback, useMemo, useState } from 'react'
 
@@ -46,8 +45,6 @@ const DIALOG_PAPER_STYLE = {
   height: 'calc(100% - 48px)',
   maxHeight: 'calc(100% - 48px)',
 } as const
-
-const TITLE_ICON_STYLE = { color: DEFAULT_TEXT_COLOR } as const
 
 const DocumentErrorsPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, detail }) => {
   const {
