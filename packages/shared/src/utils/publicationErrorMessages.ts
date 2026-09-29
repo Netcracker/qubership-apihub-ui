@@ -12,11 +12,11 @@ export const PUBLICATION_ERROR_MESSAGES = {
   },
   dashboardVersion: {
     version:
-      'This dashboard includes package versions which were published with errors. Open Packages tab on Overview to see the details.',
+      'This dashboard version includes package versions which were published with errors. Open Packages tab on Overview to see the details.',
     changelog:
-      'There were errors when calculating the comparison against the previous version for some of the packages in this dashboard, so the list of changes may be incomplete. Open Changelog tab to see the details.',
+      'There were errors when calculating the comparison against the previous version for some of the packages in this dashboard version, so the list of changes may be incomplete. Open Changelog tab to see the details.',
     versionChangelog:
-      'This dashboard includes package versions which were published with errors. Open Packages tab on Overview to see the details. There were also errors when calculating the comparison against the previous version for some of the packages in this dashboard, so the list of changes may be incomplete. Open Changelog tab to see the details.',
+      'This dashboard version includes package versions which were published with errors. Open Packages tab on Overview to see the details. There were also errors when calculating the comparison against the previous version for some of the packages in this dashboard version, so the list of changes may be incomplete. Open Changelog tab to see the details.',
     adHocComparison:
       'There were errors when calculating the comparison for some of the package version in this dashboard, so the list of changes may be incomplete.',
   },
@@ -46,8 +46,8 @@ export const PUBLICATION_ERROR_MESSAGES = {
     menuDownload: 'Download document',
   },
   emptyState: {
-    noValidOperationsInApiType: 'No valid operations in the API type',
-    noValidEntitiesInContractType: 'No valid entities in the contract type',
+    noValidOperationsInApiType: 'No valid operations were published for this API type.',
+    noValidEntitiesInContractType: 'No valid entities were published for this contract type.',
   },
   snackbar: {
     draftPublishWithErrors: {
@@ -69,20 +69,20 @@ export function getApiProcessorMismatchTooltip(versionKey?: VersionKey): string 
   return `The data in the version '${version}' may be incorrect, as the data has not been processed according to the latest system rules. Please republish the version and if this does not help, contact the system administrators.`
 }
 
-export function getPackageVersionApiTypeNoOperationsTooltip(apiType: string): string {
-  return `Errors occurred while processing ${apiType} documents in this version, no operations were published. Open the Documents tab to see the details.`
+export function getPackageVersionApiTypeNoOperationsTooltip(apiType: string, versionKey: VersionKey): string {
+  return `Errors occurred while processing ${apiType} documents in version '${versionKey}', no operations were published. Open the Documents tab to see the details.`
 }
 
-export function getPackageVersionApiTypeSomeOperationsTooltip(apiType: string): string {
-  return `Errors occurred while processing ${apiType} documents in this version. Some operations may be missing. Open the Documents tab to see the details.`
+export function getPackageVersionApiTypeSomeOperationsTooltip(apiType: string, versionKey: VersionKey): string {
+  return `Errors occurred while processing ${apiType} documents in version '${versionKey}'. Some operations may be missing. Open the Documents tab to see the details.`
 }
 
-export function getPackageVersionContractTypeNoEntitiesTooltip(contractType: string): string {
-  return `Errors occurred while processing ${contractType} documents in this version, no entities were published. Open the Documents tab to see the details.`
+export function getPackageVersionContractTypeNoEntitiesTooltip(contractType: string, versionKey: VersionKey): string {
+  return `Errors occurred while processing ${contractType} documents in version '${versionKey}', no entities were published. Open the Documents tab to see the details.`
 }
 
-export function getPackageVersionContractTypeSomeEntitiesTooltip(contractType: string): string {
-  return `Errors occurred while processing ${contractType} documents in this version. Some entities may be missing. Open the Documents tab to see the details.`
+export function getPackageVersionContractTypeSomeEntitiesTooltip(contractType: string, versionKey: VersionKey): string {
+  return `Errors occurred while processing ${contractType} documents in version '${versionKey}'. Some entities may be missing. Open the Documents tab to see the details.`
 }
 
 export function getPackageVersionApiTypeDocumentListTooltip(documentNames: string[]): string {

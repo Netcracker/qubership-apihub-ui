@@ -1,6 +1,6 @@
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { ContractType } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
-import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { Key, VersionKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type {
   OperationTypeSummary,
   VersionContractsSummary,
@@ -37,6 +37,7 @@ export type BuildVersionTabsApiTypesStateInput = {
   publishedApiTypes: PublishedApiTypes
   isLoading: IsLoading
   previousVersion: Key | undefined
+  versionKey?: VersionKey
   linterEnabled: boolean
   apiQualityTooltip: string | undefined
   operationTypes?: Record<ApiType, OperationTypeSummary>
@@ -79,6 +80,7 @@ export function buildVersionTabsApiTypesState(
         undefined,
         input.operationTypes,
         input.contractsSummary,
+        input.versionKey,
       ),
       [VERSION_TAB_IDS.apiChanges]: toVersionTabApiTypesState(
         apiChangesAllowedApiTypes,
@@ -86,6 +88,7 @@ export function buildVersionTabsApiTypesState(
         hasNoPreviousVersion ? API_CHANGES_NO_PREVIOUS_VERSION_TOOLTIP : undefined,
         input.operationTypes,
         input.contractsSummary,
+        input.versionKey,
       ),
       [VERSION_TAB_IDS.deprecated]: toVersionTabApiTypesState(
         deprecatedAllowedApiTypes,
@@ -93,6 +96,7 @@ export function buildVersionTabsApiTypesState(
         undefined,
         input.operationTypes,
         input.contractsSummary,
+        input.versionKey,
       ),
       [VERSION_TAB_IDS.apiQuality]: toVersionTabApiTypesState(
         apiQualityAllowedApiTypes,
@@ -102,6 +106,7 @@ export function buildVersionTabsApiTypesState(
         input.apiQualityTooltip,
         input.operationTypes,
         input.contractsSummary,
+        input.versionKey,
       ),
     },
   }
@@ -113,17 +118,21 @@ function toVersionTabApiTypesState(
   tooltip?: string,
   operationTypes?: Record<ApiType, OperationTypeSummary>,
   contractsSummary?: VersionContractsSummary,
+  versionKey?: VersionKey,
 ): VersionTabApiTypesState {
   return {
     allowedApiTypes: allowedApiTypes,
     defaultApiType: getDefaultApiTypeFromTabApiTypes(allowedApiTypes),
     disabled: disabled,
     tooltip: tooltip,
-    apiTypeProblems: resolveVersionApiTypeProblemsMap({
-      allowedApiTypes: allowedApiTypes,
-      operationTypes: operationTypes,
-      contractsSummary: contractsSummary,
-    }),
+    apiTypeProblems: versionKey
+      ? resolveVersionApiTypeProblemsMap({
+        allowedApiTypes: allowedApiTypes,
+        operationTypes: operationTypes,
+        contractsSummary: contractsSummary,
+        versionKey: versionKey,
+      })
+      : {},
   }
 }
 

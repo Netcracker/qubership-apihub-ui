@@ -8,6 +8,8 @@ import {
   resolveVersionApiTypeProblemsMap,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/apiTypeProblemDetails'
 
+import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
+
 import { usePackageVersionContent } from '@apihub/routes/root/usePackageVersionContent'
 
 type UseComparisonApiTypeProblemsParams = {
@@ -46,16 +48,22 @@ export function useComparisonApiTypeProblems(
   })
 
   return useMemo(() => {
+    if (!originVersionKey || !changedVersionKey) {
+      return {}
+    }
+
     const originProblems = resolveVersionApiTypeProblemsMap({
       allowedApiTypes: allowedApiTypes,
       operationTypes: originContent?.operationTypes,
       contractsSummary: originContent?.contractsSummary,
+      versionKey: getSplittedVersionKey(originVersionKey, originContent?.latestRevision).versionKey,
     })
 
     const changedProblems = resolveVersionApiTypeProblemsMap({
       allowedApiTypes: allowedApiTypes,
       operationTypes: changedContent?.operationTypes,
       contractsSummary: changedContent?.contractsSummary,
+      versionKey: getSplittedVersionKey(changedVersionKey, changedContent?.latestRevision).versionKey,
     })
 
     const merged: Partial<Record<ApiType | ContractType, ApiTypeProblemDetails>> = {}
@@ -72,5 +80,5 @@ export function useComparisonApiTypeProblems(
     }
 
     return merged
-  }, [allowedApiTypes, changedContent, originContent])
+  }, [allowedApiTypes, changedContent, changedVersionKey, originContent, originVersionKey])
 }

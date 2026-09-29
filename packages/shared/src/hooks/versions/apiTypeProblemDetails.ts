@@ -5,6 +5,7 @@ import {
   type ContractType,
   getRouteApiTypeTitle,
 } from '../../entities/contract-types'
+import type { VersionKey } from '../../entities/keys'
 import type { OperationTypeSummary, VersionContractsSummary } from '../../entities/version-contents'
 import {
   getPackageVersionApiTypeDocumentListTooltip,
@@ -34,18 +35,21 @@ type ResolveApiTypeProblemDetailsParams = Readonly<{
   operationType?: OperationTypeSummary
   contractsSummary?: VersionContractsSummary
   invalidDocumentNames?: ReadonlyArray<string>
+  versionKey: VersionKey
 }>
 
 type ResolveVersionApiTypeProblemsMapParams = Readonly<{
   allowedApiTypes?: ReadonlyArray<ApiType | ContractType>
   operationTypes?: Partial<Record<ApiType, OperationTypeSummary>>
   contractsSummary?: VersionContractsSummary
+  versionKey: VersionKey
 }>
 
 type ResolveOverviewSummaryApiTypeProblemsMapParams = Readonly<{
   operationTypes?: Partial<Record<ApiType, OperationTypeSummary>>
   contractsSummary?: VersionContractsSummary
   documents?: ReadonlyArray<InvalidDocumentRef>
+  versionKey: VersionKey
 }>
 
 const NO_API_TYPE_PROBLEMS: ApiTypeProblemDetails = {
@@ -97,7 +101,7 @@ export function resolveApiTypeEmptyMessage(
 export function resolveApiTypeProblemDetails(
   params: ResolveApiTypeProblemDetailsParams,
 ): ApiTypeProblemDetails {
-  const { apiType, operationType, contractsSummary, invalidDocumentNames } = params
+  const { apiType, operationType, contractsSummary, invalidDocumentNames, versionKey } = params
 
   if (!hasApiTypeErrors(apiType, operationType, contractsSummary)) {
     return NO_API_TYPE_PROBLEMS
@@ -116,8 +120,8 @@ export function resolveApiTypeProblemDetails(
     return {
       hasProblems: true,
       tooltip: isApiTypeFullyInvalid(apiType, operationType, contractsSummary)
-        ? getPackageVersionApiTypeNoOperationsTooltip(displayTitle)
-        : getPackageVersionApiTypeSomeOperationsTooltip(displayTitle),
+        ? getPackageVersionApiTypeNoOperationsTooltip(displayTitle, versionKey)
+        : getPackageVersionApiTypeSomeOperationsTooltip(displayTitle, versionKey),
     }
   }
 
@@ -125,8 +129,8 @@ export function resolveApiTypeProblemDetails(
     return {
       hasProblems: true,
       tooltip: isApiTypeFullyInvalid(apiType, operationType, contractsSummary)
-        ? getPackageVersionContractTypeNoEntitiesTooltip(displayTitle)
-        : getPackageVersionContractTypeSomeEntitiesTooltip(displayTitle),
+        ? getPackageVersionContractTypeNoEntitiesTooltip(displayTitle, versionKey)
+        : getPackageVersionContractTypeSomeEntitiesTooltip(displayTitle, versionKey),
     }
   }
 
@@ -144,6 +148,7 @@ export function resolveVersionApiTypeProblemsMap(
       apiType: apiType,
       operationType: isApiType(apiType) ? params.operationTypes?.[apiType] : undefined,
       contractsSummary: params.contractsSummary,
+      versionKey: params.versionKey,
     })
     if (problem.hasProblems) {
       result[apiType] = problem
@@ -156,7 +161,7 @@ export function resolveVersionApiTypeProblemsMap(
 export function resolveOverviewSummaryApiTypeProblemsMap(
   params: ResolveOverviewSummaryApiTypeProblemsMapParams,
 ): Partial<Record<ApiType | ContractType, ApiTypeProblemDetails>> {
-  const { operationTypes, contractsSummary, documents = [] } = params
+  const { operationTypes, contractsSummary, documents = [], versionKey } = params
   const result: Partial<Record<ApiType | ContractType, ApiTypeProblemDetails>> = {}
   const invalidDocs = documents.filter(doc => doc.hasErrors)
 
@@ -168,6 +173,7 @@ export function resolveOverviewSummaryApiTypeProblemsMap(
       invalidDocumentNames: invalidDocs
         .filter(doc => isSpecTypeForApiType(doc.type, apiType))
         .map(doc => doc.title || doc.filename || doc.slug || 'Unknown document'),
+      versionKey: versionKey,
     })
   }
 

@@ -40,6 +40,8 @@ const EMPTY_CHANGES_SUMMARY: ChangesSummary = {
   annotation: 0,
 }
 
+const VERSION_KEY = '2024.1'
+
 const REST_TITLE = API_TYPE_TITLE_MAP[API_TYPE_REST]
 const GRAPHQL_TITLE = API_TYPE_TITLE_MAP[API_TYPE_GRAPHQL]
 const ASYNCAPI_TITLE = API_TYPE_TITLE_MAP[API_TYPE_ASYNCAPI]
@@ -122,6 +124,7 @@ describe('resolveApiTypeProblemDetails', () => {
     expect(resolveApiTypeProblemDetails({
       apiType: API_TYPE_GRAPHQL,
       operationType: operationType(API_TYPE_GRAPHQL, { hasErrors: false }),
+      versionKey: VERSION_KEY,
     })).toEqual({ hasProblems: false })
   })
 
@@ -130,6 +133,7 @@ describe('resolveApiTypeProblemDetails', () => {
       apiType: API_TYPE_REST,
       operationType: operationType(API_TYPE_REST),
       invalidDocumentNames: ['petstore.json', 'customer-api.yaml'],
+      versionKey: VERSION_KEY,
     })).toEqual({
       hasProblems: true,
       tooltip: getPackageVersionApiTypeDocumentListTooltip(['petstore.json', 'customer-api.yaml']),
@@ -141,43 +145,44 @@ describe('resolveApiTypeProblemDetails', () => {
       name: 'API type with no operations',
       apiType: API_TYPE_REST,
       operationType: operationType(API_TYPE_REST, { operationsCount: 0 }),
-      tooltip: getPackageVersionApiTypeNoOperationsTooltip(REST_TITLE),
+      tooltip: getPackageVersionApiTypeNoOperationsTooltip(REST_TITLE, VERSION_KEY),
     },
     {
       name: 'API type with partial operations',
       apiType: API_TYPE_REST,
       operationType: operationType(API_TYPE_REST),
-      tooltip: getPackageVersionApiTypeSomeOperationsTooltip(REST_TITLE),
+      tooltip: getPackageVersionApiTypeSomeOperationsTooltip(REST_TITLE, VERSION_KEY),
     },
     {
       name: 'DDL with no entities',
       apiType: CONTRACT_TYPE_DDL,
       contractsSummary: ddlSummary(0),
-      tooltip: getPackageVersionContractTypeNoEntitiesTooltip(DDL_TITLE),
+      tooltip: getPackageVersionContractTypeNoEntitiesTooltip(DDL_TITLE, VERSION_KEY),
     },
     {
       name: 'DDL with partial entities',
       apiType: CONTRACT_TYPE_DDL,
       contractsSummary: ddlSummary(3),
-      tooltip: getPackageVersionContractTypeSomeEntitiesTooltip(DDL_TITLE),
+      tooltip: getPackageVersionContractTypeSomeEntitiesTooltip(DDL_TITLE, VERSION_KEY),
     },
     {
       name: 'MCP with no entities',
       apiType: CONTRACT_TYPE_MCP,
       contractsSummary: mcpSummary(0, 0, 0),
-      tooltip: getPackageVersionContractTypeNoEntitiesTooltip(MCP_TITLE),
+      tooltip: getPackageVersionContractTypeNoEntitiesTooltip(MCP_TITLE, VERSION_KEY),
     },
     {
       name: 'MCP with partial entities',
       apiType: CONTRACT_TYPE_MCP,
       contractsSummary: mcpSummary(2, 0, 1),
-      tooltip: getPackageVersionContractTypeSomeEntitiesTooltip(MCP_TITLE),
+      tooltip: getPackageVersionContractTypeSomeEntitiesTooltip(MCP_TITLE, VERSION_KEY),
     },
   ])('$name', ({ apiType, operationType, contractsSummary, tooltip }) => {
     expect(resolveApiTypeProblemDetails({
-      apiType,
-      operationType,
-      contractsSummary,
+      apiType: apiType,
+      operationType: operationType,
+      contractsSummary: contractsSummary,
+      versionKey: VERSION_KEY,
     })).toEqual({
       hasProblems: true,
       tooltip: tooltip,
@@ -189,9 +194,10 @@ describe('resolveApiTypeProblemDetails', () => {
       apiType: API_TYPE_REST,
       operationType: operationType(API_TYPE_REST, { operationsCount: 0 }),
       invalidDocumentNames: [],
+      versionKey: VERSION_KEY,
     })).toEqual({
       hasProblems: true,
-      tooltip: getPackageVersionApiTypeNoOperationsTooltip(REST_TITLE),
+      tooltip: getPackageVersionApiTypeNoOperationsTooltip(REST_TITLE, VERSION_KEY),
     })
   })
 })
@@ -206,18 +212,19 @@ describe('resolveVersionApiTypeProblemsMap', () => {
         [API_TYPE_ASYNCAPI]: operationType(API_TYPE_ASYNCAPI, { operationsCount: 0 }),
       },
       contractsSummary: ddlSummary(3),
+      versionKey: VERSION_KEY,
     })).toEqual({
       [API_TYPE_REST]: {
         hasProblems: true,
-        tooltip: getPackageVersionApiTypeSomeOperationsTooltip(REST_TITLE),
+        tooltip: getPackageVersionApiTypeSomeOperationsTooltip(REST_TITLE, VERSION_KEY),
       },
       [API_TYPE_ASYNCAPI]: {
         hasProblems: true,
-        tooltip: getPackageVersionApiTypeNoOperationsTooltip(ASYNCAPI_TITLE),
+        tooltip: getPackageVersionApiTypeNoOperationsTooltip(ASYNCAPI_TITLE, VERSION_KEY),
       },
       [CONTRACT_TYPE_DDL]: {
         hasProblems: true,
-        tooltip: getPackageVersionContractTypeSomeEntitiesTooltip(DDL_TITLE),
+        tooltip: getPackageVersionContractTypeSomeEntitiesTooltip(DDL_TITLE, VERSION_KEY),
       },
     })
   })
@@ -236,6 +243,7 @@ describe('resolveOverviewSummaryApiTypeProblemsMap', () => {
         },
       },
       documents: [invalidDocument({ type: OPENAPI_3_0_SPEC_TYPE, title: 'Broken API' })],
+      versionKey: VERSION_KEY,
     })).toEqual({})
   })
 
@@ -251,6 +259,7 @@ describe('resolveOverviewSummaryApiTypeProblemsMap', () => {
         invalidDocument({ type: GRAPHQL_SPEC_TYPE, slug: 'from-slug' }),
         invalidDocument({ type: UNKNOWN_SPEC_TYPE, title: 'Irrelevant Doc' }),
       ],
+      versionKey: VERSION_KEY,
     })).toEqual({
       [API_TYPE_REST]: {
         hasProblems: true,
@@ -273,18 +282,19 @@ describe('resolveOverviewSummaryApiTypeProblemsMap', () => {
       documents: [
         invalidDocument({ type: MARKDOWN_SPEC_TYPE, title: 'Readme' }),
       ],
+      versionKey: VERSION_KEY,
     })).toEqual({
       [API_TYPE_REST]: {
         hasProblems: true,
-        tooltip: getPackageVersionApiTypeNoOperationsTooltip(REST_TITLE),
+        tooltip: getPackageVersionApiTypeNoOperationsTooltip(REST_TITLE, VERSION_KEY),
       },
       [API_TYPE_GRAPHQL]: {
         hasProblems: true,
-        tooltip: getPackageVersionApiTypeSomeOperationsTooltip(GRAPHQL_TITLE),
+        tooltip: getPackageVersionApiTypeSomeOperationsTooltip(GRAPHQL_TITLE, VERSION_KEY),
       },
       [CONTRACT_TYPE_DDL]: {
         hasProblems: true,
-        tooltip: getPackageVersionContractTypeNoEntitiesTooltip(DDL_TITLE),
+        tooltip: getPackageVersionContractTypeNoEntitiesTooltip(DDL_TITLE, VERSION_KEY),
       },
     })
   })
