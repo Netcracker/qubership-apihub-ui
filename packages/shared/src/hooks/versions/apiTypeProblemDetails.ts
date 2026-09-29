@@ -61,10 +61,15 @@ export function isApiTypeFullyInvalid(
   operationType?: OperationTypeSummary,
   contractsSummary?: VersionContractsSummary,
 ): boolean {
-  if (!hasApiTypeErrors(apiType, operationType, contractsSummary)) {
-    return false
-  }
+  return hasApiTypeErrors(apiType, operationType, contractsSummary) &&
+    isApiTypeEmpty(apiType, operationType, contractsSummary)
+}
 
+export function isApiTypeEmpty(
+  apiType: ApiType | ContractType,
+  operationType?: OperationTypeSummary,
+  contractsSummary?: VersionContractsSummary,
+): boolean {
   if (isApiType(apiType)) {
     return (operationType?.operationsCount ?? 0) === 0
   }

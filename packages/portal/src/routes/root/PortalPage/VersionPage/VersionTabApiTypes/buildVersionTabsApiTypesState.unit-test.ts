@@ -79,4 +79,18 @@ describe('buildVersionTabsApiTypesState', () => {
     expect(state.tabs[VERSION_TAB_IDS.apiChanges].defaultApiType).toBe(CONTRACT_TYPE_DDL)
     expect(state.tabs[VERSION_TAB_IDS.deprecated].disabled).toBe(true)
   })
+
+  test('disables tabs when every api and contract type of a version with errors is empty', () => {
+    const state = buildVersionTabsApiTypesState({
+      ...DEFAULT_INPUT,
+      publishedApiTypes: [API_TYPE_REST, CONTRACT_TYPE_DDL],
+      hasErrors: true,
+      contractsSummary: { ddl: { tablesCount: 0, hasErrors: true } },
+    })
+
+    expect(state.tabs[VERSION_TAB_IDS.contracts].disabled).toBe(true)
+    expect(state.tabs[VERSION_TAB_IDS.apiChanges].disabled).toBe(true)
+    expect(state.tabs[VERSION_TAB_IDS.deprecated].disabled).toBe(true)
+    expect(state.tabs[VERSION_TAB_IDS.apiQuality].disabled).toBe(false)
+  })
 })

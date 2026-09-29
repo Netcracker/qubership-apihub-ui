@@ -42,6 +42,7 @@ export const VersionTabApiTypesProvider: FC<PropsWithChildren> = memo<PropsWithC
         apiQualityTooltip: apiQualityTooltip,
         operationTypes: versionContent?.operationTypes,
         contractsSummary: versionContent?.contractsSummary,
+        hasErrors: versionContent?.hasErrors,
       }),
     [
       apiQualityTooltip,
@@ -50,6 +51,7 @@ export const VersionTabApiTypesProvider: FC<PropsWithChildren> = memo<PropsWithC
       linterEnabled,
       versionKey,
       versionContent?.contractsSummary,
+      versionContent?.hasErrors,
       versionContent?.operationTypes,
       versionContent?.previousVersion,
     ],
