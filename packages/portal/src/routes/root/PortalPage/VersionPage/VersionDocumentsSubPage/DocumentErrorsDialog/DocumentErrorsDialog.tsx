@@ -10,15 +10,22 @@ import type {
   VersionNotification,
   VersionNotifications,
 } from '@netcracker/qubership-apihub-ui-shared/entities/version-notifications'
-import { useVersionNotifications } from '@netcracker/qubership-apihub-ui-shared/hooks/notifications/useVersionNotifications'
+import type {
+  FetchNextNotificationsPage,
+} from '@netcracker/qubership-apihub-ui-shared/hooks/notifications/notificationsQuery'
+import {
+  useInfiniteVersionNotifications,
+} from '@netcracker/qubership-apihub-ui-shared/hooks/notifications/useVersionNotifications'
 import { CloseIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CloseIcon'
-import { DownloadIconMui } from '@netcracker/qubership-apihub-ui-shared/icons/DownloadIconMui'
+import { ExportIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ExportIcon'
+import { DEFAULT_TEXT_COLOR } from '@netcracker/qubership-apihub-ui-shared/themes/colors'
+import type { HasNextPage, IsFetchingNextPage } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { type FC, memo, useCallback, useMemo, useState } from 'react'
 
 import { useDocuments } from '../../useDocuments'
 import { DocumentErrorsTable } from './DocumentErrorsTable'
-import type { DocumentSelection } from './InvalidDocumentSelector'
-import { EMPTY_DOCUMENT_OPTION, InvalidDocumentSelector } from './InvalidDocumentSelector'
+import type { DocumentSelection } from './DocumentSelector'
+import { DocumentSelector, EMPTY_DOCUMENT_OPTION } from './DocumentSelector'
 import { useExportDocumentErrors } from './useExportDocumentErrors'
 
 export const DocumentErrorsDialog: FC = memo(() => {
@@ -39,6 +46,8 @@ const DIALOG_PAPER_STYLE = {
   height: 'calc(100% - 48px)',
   maxHeight: 'calc(100% - 48px)',
 } as const
+
+const TITLE_ICON_STYLE = { color: DEFAULT_TEXT_COLOR } as const
 
 const DocumentErrorsPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, detail }) => {
   const {
@@ -65,12 +74,14 @@ const DocumentErrorsPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, d
     enabled: true,
   })
 
-  const invalidDocuments = useMemo(
-    () => documents.filter(({ hasErrors }) => hasErrors),
-    [documents],
-  )
-
-  const { notifications, isLoading, error } = useVersionNotifications({
+  const {
+    notifications,
+    isLoading,
+    error,
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
+  } = useInfiniteVersionNotifications({
     packageKey: packageKey,
     versionKey: versionKey,
     ...notificationsScope,
@@ -108,8 +119,8 @@ const DocumentErrorsPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, d
           </CloseIconButton>
         </TitleRow>
         <SubtitleRow>
-          <InvalidDocumentSelector
-            options={invalidDocuments}
+          <DocumentSelector
+            options={documents}
             selected={selected}
             fallbackTitle={documentTitle}
             onSelect={setPicked}
@@ -119,7 +130,7 @@ const DocumentErrorsPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, d
             size="small"
             variant="outlined"
             loading={isExporting}
-            startIcon={<DownloadIconMui fontSize="small" />}
+            startIcon={<ExportIcon fontSize="medium" />}
             onClick={handleExport}
           >
             Export
@@ -134,6 +145,9 @@ const DocumentErrorsPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, d
           notifications={notifications}
           isLoading={isLoading}
           error={error}
+          fetchNextPage={fetchNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+          hasNextPage={hasNextPage}
         />
       </StyledDialogContent>
     </Dialog>
@@ -146,12 +160,18 @@ type DocumentErrorsContentProps = {
   notifications: VersionNotifications
   isLoading: boolean
   error: Error | null
+  fetchNextPage: FetchNextNotificationsPage
+  isFetchingNextPage: IsFetchingNextPage
+  hasNextPage: HasNextPage
 }
 
 const DocumentErrorsContent: FC<DocumentErrorsContentProps> = memo<DocumentErrorsContentProps>(({
   notifications,
   isLoading,
   error,
+  fetchNextPage,
+  isFetchingNextPage,
+  hasNextPage,
 }) => {
   const [selectedId, setSelectedId] = useState<string>()
 
@@ -190,6 +210,9 @@ const DocumentErrorsContent: FC<DocumentErrorsContentProps> = memo<DocumentError
             data={notifications}
             selectedId={selected?.id}
             onSelectNotification={setSelectedId}
+            fetchNextPage={fetchNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+            hasNextPage={hasNextPage}
           />
         </TablePane>
 
@@ -207,7 +230,7 @@ const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(0.5),
-  padding: theme.spacing(1.5, 2.5),
+  padding: theme.spacing(1.5, 3),
 }))
 
 const TitleRow = styled(Box)({
@@ -257,11 +280,11 @@ const MessagePane = styled(Box)(({ theme }) => ({
   flex: 1,
   minWidth: 0,
   overflow: 'auto',
-  padding: theme.spacing(2, 2.5),
+  padding: theme.spacing(1.5, 3),
 }))
 
 const PaddedBox = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(2, 2.5),
+  padding: theme.spacing(1.5, 3),
 }))
 
 const MessageText = styled(Typography)({

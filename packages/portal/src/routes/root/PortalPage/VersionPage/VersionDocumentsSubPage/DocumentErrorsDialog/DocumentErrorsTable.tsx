@@ -1,7 +1,10 @@
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
+import { Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import { CustomTableHeadCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomTableHeadCell'
 import type { VersionNotification, VersionNotifications } from '@netcracker/qubership-apihub-ui-shared/entities/version-notifications'
+import { useIntersectionObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useIntersectionObserver'
+import type { FetchNextNotificationsPage } from '@netcracker/qubership-apihub-ui-shared/hooks/notifications/notificationsQuery'
+import type { HasNextPage, IsFetchingNextPage } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import { toFirstLine } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
 import type { ColumnDef } from '@tanstack/react-table'
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
@@ -69,15 +72,19 @@ export type DocumentErrorsTableProps = {
   data: VersionNotifications
   selectedId?: string
   onSelectNotification: (id: string) => void
+  fetchNextPage: FetchNextNotificationsPage
+  isFetchingNextPage: IsFetchingNextPage
+  hasNextPage: HasNextPage
 }
 
 export const DocumentErrorsTable: FC<DocumentErrorsTableProps> = memo<DocumentErrorsTableProps>(({
   data,
   selectedId,
   onSelectNotification,
+  fetchNextPage,
+  isFetchingNextPage,
+  hasNextPage,
 }) => {
-  const tableContainerRef = useRef<HTMLDivElement>(null)
-
   const notifications = useMemo(() => [...data], [data])
 
   const { getHeaderGroups, getRowModel } = useReactTable({
@@ -86,8 +93,11 @@ export const DocumentErrorsTable: FC<DocumentErrorsTableProps> = memo<DocumentEr
     getCoreRowModel: getCoreRowModel(),
   })
 
+  const ref = useRef<HTMLDivElement>(null)
+  useIntersectionObserver(ref, isFetchingNextPage, hasNextPage, fetchNextPage)
+
   return (
-    <TableContainer ref={tableContainerRef}>
+    <StyledTableContainer>
       <Table stickyHeader data-testid="DocumentErrorsTable">
         <TableHead>
           {getHeaderGroups().map(headerGroup => (
@@ -122,13 +132,24 @@ export const DocumentErrorsTable: FC<DocumentErrorsTableProps> = memo<DocumentEr
               ))}
             </NotificationRow>
           ))}
+          <TableRow>
+            {hasNextPage && COLUMNS.map(column => (
+              <TableCell ref={ref} key={column.id}>
+                <Skeleton variant="text" />
+              </TableCell>
+            ))}
+          </TableRow>
         </TableBody>
       </Table>
-    </TableContainer>
+    </StyledTableContainer>
   )
 })
 
 DocumentErrorsTable.displayName = 'DocumentErrorsTable'
+
+const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
+  padding: theme.spacing(1.5, 3),
+}))
 
 const NotificationRow = styled(TableRow)({
   cursor: 'pointer',

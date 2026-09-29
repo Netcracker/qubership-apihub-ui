@@ -3,6 +3,7 @@ import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDown
 import { Box, Button, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import { MenuButtonItems } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
+import { DocumentErrorIndicator } from '@netcracker/qubership-apihub-ui-shared/components/ErrorIndicators/DocumentErrorIndicator'
 import { SpecLogo } from '@netcracker/qubership-apihub-ui-shared/components/SpecLogo'
 import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
@@ -25,14 +26,14 @@ const EMPTY_ICON_STYLE = { width: 20, height: 20, color: DEFAULT_TEXT_COLOR } as
 
 const DOCUMENT_NAME_STYLE = { fontWeight: 600 } as const
 
-export type InvalidDocumentSelectorProps = {
+export type DocumentSelectorProps = {
   options: Documents
   selected: DocumentSelection
   fallbackTitle: string
   onSelect: (selected: DocumentSelection) => void
 }
 
-export const InvalidDocumentSelector: FC<InvalidDocumentSelectorProps> = memo<InvalidDocumentSelectorProps>(({
+export const DocumentSelector: FC<DocumentSelectorProps> = memo<DocumentSelectorProps>(({
   options,
   selected,
   fallbackTitle,
@@ -110,7 +111,7 @@ export const InvalidDocumentSelector: FC<InvalidDocumentSelectorProps> = memo<In
               </DocumentItemButton>
             </ListItem>
 
-            {options.map(({ slug, title: documentTitle, type }) => (
+            {options.map(({ slug, title: documentTitle, type, hasErrors }) => (
               <ListItem key={slug} sx={{ p: 0 }}>
                 <DocumentItemButton
                   selected={slug === selected}
@@ -127,6 +128,7 @@ export const InvalidDocumentSelector: FC<InvalidDocumentSelectorProps> = memo<In
                       </TextWithOverflowTooltip>
                     )}
                   />
+                  <MenuItemErrorIndicator hasErrors={hasErrors} />
                 </DocumentItemButton>
               </ListItem>
             ))}
@@ -137,7 +139,7 @@ export const InvalidDocumentSelector: FC<InvalidDocumentSelectorProps> = memo<In
   )
 })
 
-InvalidDocumentSelector.displayName = 'InvalidDocumentSelector'
+DocumentSelector.displayName = 'DocumentSelector'
 
 const SelectorButton = styled(Button)({
   justifyContent: 'flex-start',
@@ -175,6 +177,10 @@ const DocumentItemIcon = styled(ListItemIcon)({
   marginTop: 0,
   marginRight: 8,
 })
+
+const MenuItemErrorIndicator = styled(DocumentErrorIndicator)(({ theme }) => ({
+  marginLeft: theme.spacing(1),
+}))
 
 const MenuContent = styled(Box)({
   width: 300,
