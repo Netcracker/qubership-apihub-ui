@@ -39,6 +39,7 @@ import {
   ACCEPTABLE_VERSION_FILE_EXTENSIONS,
   createUnsupportedFilesMessage,
   partitionFilesByExtension,
+  toAllowedFormatsEnumeration,
 } from '@netcracker/qubership-apihub-ui-shared/utils/acceptable-files'
 
 const PREVIEWABLE_FILE_TYPES = Object.keys(specTypeViewers)
@@ -158,9 +159,16 @@ export const VersionConfigurationSubPage: FC = memo(() => {
         }}>
           Configure Package Version
           <Tooltip
-            title="Drag and drop files onto the page or click Browse Files button"
+            title={
+              <>
+                Drag and drop files onto the page or click Browse Files button
+                <br/>
+                <br/>
+                Allowed formats: {toAllowedFormatsEnumeration(ACCEPTABLE_VERSION_FILE_EXTENSIONS)}
+              </>
+            }
             PopperProps={{
-              sx: { '.MuiTooltip-tooltip': { maxWidth: 'unset' } },
+              sx: { '.MuiTooltip-tooltip': { maxWidth: '600px' } },
             }}
           >
             <InfoContextIcon/>

@@ -19,6 +19,7 @@ import {
   createUnsupportedFilesMessage,
   isAcceptableFileName,
   partitionFilesByExtension,
+  toAllowedFormatsEnumeration,
 } from './acceptable-files'
 
 describe('acceptable-files', () => {
@@ -31,6 +32,9 @@ describe('acceptable-files', () => {
       'schema.gql',
       'service.proto',
       'README.md',
+      'index.html',
+      'docs.zip',
+      'package.tgz',
       'OPENAPI.JSON',
       'my.api.v1.yaml',
     ])('accepts %s', (fileName) => {
@@ -44,12 +48,23 @@ describe('acceptable-files', () => {
       'page.jsp',
       'script.py',
       'image.svg',
-      'index.html',
+      'schema.graphqls',
+      'module.iml',
       'no-extension',
       'trailing-dot.',
       '.gitignore',
     ])('rejects %s', (fileName) => {
       expect(isAcceptableFileName(fileName, ACCEPTABLE_VERSION_FILE_EXTENSIONS)).toBe(false)
+    })
+  })
+
+  describe('null byte in file name', () => {
+    it('rejects shell.php%00.jpg', () => {
+      expect(isAcceptableFileName('shell.php%00.jpg', ACCEPTABLE_VERSION_FILE_EXTENSIONS)).toBe(false)
+    })
+
+    it('rejects a raw null byte in file name', () => {
+      expect(isAcceptableFileName('shell.php\0.jpg', ACCEPTABLE_VERSION_FILE_EXTENSIONS)).toBe(false)
     })
   })
 
@@ -63,6 +78,12 @@ describe('acceptable-files', () => {
 
       expect(accepted).toEqual([json, proto])
       expect(rejected).toEqual([exe])
+    })
+  })
+
+  describe('toAllowedFormatsEnumeration', () => {
+    it('lists formats without dots separated by comma', () => {
+      expect(toAllowedFormatsEnumeration(['.json', '.yaml', '.zip'])).toBe('json, yaml, zip')
     })
   })
 
