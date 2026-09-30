@@ -60,6 +60,11 @@ type VersionProblemDialogView = {
   formHelperText?: string
 }
 
+type VersionProblemDialogRule = {
+  formHelperText: string
+  blocksVersionErrors: boolean
+}
+
 type VersionProblemCopySet = {
   build: string
   comparison: string
@@ -84,6 +89,41 @@ const NO_VERSION_PROBLEMS: VersionProblemCore = {
 
 const NO_DIALOG_PROBLEM_VIEW: VersionProblemDialogView = {
   isBlocking: false,
+}
+
+const VERSION_PROBLEM_DIALOG_RULES: Record<VersionProblemDialogSurface, VersionProblemDialogRule> = {
+  [VERSION_PROBLEM_DIALOG_SURFACE.COMPARE_CURRENT_VERSION]: {
+    formHelperText: PUBLICATION_ERROR_MESSAGES.dialog.currentVersionUnsound,
+    blocksVersionErrors: false,
+  },
+  [VERSION_PROBLEM_DIALOG_SURFACE.COMPARE_CURRENT_REVISION]: {
+    formHelperText: PUBLICATION_ERROR_MESSAGES.dialog.currentRevisionUnsound,
+    blocksVersionErrors: false,
+  },
+  [VERSION_PROBLEM_DIALOG_SURFACE.ADD_TO_DASHBOARD]: {
+    formHelperText: PUBLICATION_ERROR_MESSAGES.dialog.dashboardAddUnsound,
+    blocksVersionErrors: false,
+  },
+  [VERSION_PROBLEM_DIALOG_SURFACE.COMPARE_PREVIOUS_VERSION]: {
+    formHelperText: PUBLICATION_ERROR_MESSAGES.dialog.previousVersionUnsound,
+    blocksVersionErrors: true,
+  },
+  [VERSION_PROBLEM_DIALOG_SURFACE.PUBLISH_PREVIOUS_VERSION]: {
+    formHelperText: PUBLICATION_ERROR_MESSAGES.dialog.previousVersionUnsound,
+    blocksVersionErrors: true,
+  },
+  [VERSION_PROBLEM_DIALOG_SURFACE.COMPARE_PREVIOUS_REVISION]: {
+    formHelperText: PUBLICATION_ERROR_MESSAGES.dialog.previousRevisionUnsound,
+    blocksVersionErrors: true,
+  },
+  [VERSION_PROBLEM_DIALOG_SURFACE.COPY_SOURCE_VERSION]: {
+    formHelperText: PUBLICATION_ERROR_MESSAGES.dialog.sourceVersionUnsound,
+    blocksVersionErrors: true,
+  },
+  [VERSION_PROBLEM_DIALOG_SURFACE.EDIT_STATUS]: {
+    formHelperText: PUBLICATION_ERROR_MESSAGES.dialog.releasePromotionRefused,
+    blocksVersionErrors: true,
+  },
 }
 
 export function resolveVersionProblemDetails(
@@ -127,41 +167,22 @@ function resolveVersionProblemCore(
 }
 
 function toVersionProblemDialogView(
-  problem: VersionProblemCore,
+  { activeProblemKind }: VersionProblemCore,
   surface: VersionProblemDialogSurface,
 ): VersionProblemDialogView {
-  const { activeProblemKind } = problem
-
-  if (activeProblemKind === VERSION_PROBLEM_KIND.PROCESSOR_MISMATCH) {
-    return resolveProcessorMismatchDialogView(surface)
-  }
-
-  if (
-    activeProblemKind === VERSION_PROBLEM_KIND.BUILD_ERRORS ||
+  const { formHelperText, blocksVersionErrors } = VERSION_PROBLEM_DIALOG_RULES[surface]
+  const hasVersionErrors = activeProblemKind === VERSION_PROBLEM_KIND.BUILD_ERRORS ||
     activeProblemKind === VERSION_PROBLEM_KIND.COMPARISON_ERRORS
-  ) {
-    return resolveUnsoundVersionDialogView(surface)
+  const isBlocking = activeProblemKind === VERSION_PROBLEM_KIND.PROCESSOR_MISMATCH ||
+    (blocksVersionErrors && hasVersionErrors)
+
+  if (!isBlocking) {
+    return NO_DIALOG_PROBLEM_VIEW
   }
 
-  return NO_DIALOG_PROBLEM_VIEW
-}
-
-function resolveProcessorMismatchDialogView(
-  surface: VersionProblemDialogSurface,
-): VersionProblemDialogView {
-  switch (surface) {
-    case VERSION_PROBLEM_DIALOG_SURFACE.COMPARE_CURRENT_VERSION:
-      return {
-        isBlocking: true,
-        formHelperText: PUBLICATION_ERROR_MESSAGES.dialog.currentVersionUnsound,
-      }
-    case VERSION_PROBLEM_DIALOG_SURFACE.COMPARE_CURRENT_REVISION:
-      return {
-        isBlocking: true,
-        formHelperText: PUBLICATION_ERROR_MESSAGES.dialog.currentRevisionUnsound,
-      }
-    default:
-      return resolveUnsoundVersionDialogView(surface)
+  return {
+    isBlocking: true,
+    formHelperText: formHelperText,
   }
 }
 
@@ -226,45 +247,5 @@ function resolveProcessorMismatch(
     hasProblems: true,
     activeProblemKind: VERSION_PROBLEM_KIND.PROCESSOR_MISMATCH,
     tooltip: getApiProcessorMismatchTooltip(versionKey),
-  }
-}
-
-function resolveUnsoundVersionDialogView(
-  surface: VersionProblemDialogSurface,
-): VersionProblemDialogView {
-  switch (surface) {
-    case VERSION_PROBLEM_DIALOG_SURFACE.COMPARE_CURRENT_VERSION:
-    case VERSION_PROBLEM_DIALOG_SURFACE.COMPARE_CURRENT_REVISION:
-      return NO_DIALOG_PROBLEM_VIEW
-    case VERSION_PROBLEM_DIALOG_SURFACE.COMPARE_PREVIOUS_VERSION:
-    case VERSION_PROBLEM_DIALOG_SURFACE.PUBLISH_PREVIOUS_VERSION:
-      return {
-        isBlocking: true,
-        formHelperText: PUBLICATION_ERROR_MESSAGES.dialog.previousVersionUnsound,
-      }
-    case VERSION_PROBLEM_DIALOG_SURFACE.COMPARE_PREVIOUS_REVISION:
-      return {
-        isBlocking: true,
-        formHelperText: PUBLICATION_ERROR_MESSAGES.dialog.previousRevisionUnsound,
-      }
-    case VERSION_PROBLEM_DIALOG_SURFACE.COPY_SOURCE_VERSION:
-      return {
-        isBlocking: true,
-        formHelperText: PUBLICATION_ERROR_MESSAGES.dialog.sourceVersionUnsound,
-      }
-    case VERSION_PROBLEM_DIALOG_SURFACE.ADD_TO_DASHBOARD:
-      return {
-        isBlocking: true,
-        formHelperText: PUBLICATION_ERROR_MESSAGES.dialog.dashboardAddUnsound,
-      }
-    case VERSION_PROBLEM_DIALOG_SURFACE.EDIT_STATUS:
-      return {
-        isBlocking: true,
-        formHelperText: PUBLICATION_ERROR_MESSAGES.dialog.releasePromotionRefused,
-      }
-    default: {
-      const exhaustiveCheck: never = surface
-      return exhaustiveCheck
-    }
   }
 }

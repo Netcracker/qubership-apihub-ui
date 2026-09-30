@@ -32,6 +32,7 @@ import { VersionStatusChip } from './VersionStatusChip'
 import { OptionItem } from './OptionItem'
 import { Swapper } from './Swapper'
 import { LatestRevisionMark } from './LatestRevisionMark'
+import type { PackageKind } from '../entities/packages'
 import type { Revision, Revisions } from '../entities/revisions'
 import { REVISION_DELIMITER } from '../entities/versions'
 import { VersionErrorFormMessage } from './ErrorIndicators/VersionErrorFormMessage'
@@ -62,6 +63,7 @@ export type CompareRevisionsDialogData = {
 export type CompareRevisionsDialogFormProps = CompareRevisionsDialogData & {
   open: boolean
   setOpen: (value: boolean) => void
+  kind?: PackageKind
 }
 
 // First Order Component //
@@ -75,6 +77,7 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
   originalRevisions,
   changedRevisions,
   isRevisionsLoading,
+  kind,
 }) => {
   const { packageId: changedPackageKey } = useParams()
   const [packageSearchParam] = usePackageSearchParam()
@@ -91,6 +94,7 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
     hasErrors: previousRevision?.hasErrors,
     changelogHasErrors: previousRevision?.changelogHasErrors,
     apiProcessorVersion: previousRevision?.apiProcessorVersion,
+    kind: kind,
     surface: VERSION_PROBLEM_DIALOG_SURFACE.COMPARE_PREVIOUS_REVISION,
   })
   const {
@@ -103,6 +107,7 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
     hasErrors: currentRevisions?.hasErrors,
     changelogHasErrors: currentRevisions?.changelogHasErrors,
     apiProcessorVersion: currentRevisions?.apiProcessorVersion,
+    kind: kind,
     surface: VERSION_PROBLEM_DIALOG_SURFACE.COMPARE_CURRENT_REVISION,
   })
 
@@ -142,6 +147,7 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
                   hasErrors={previousRevision.hasErrors}
                   changelogHasErrors={previousRevision.changelogHasErrors}
                   apiProcessorVersion={previousRevision.apiProcessorVersion}
+                  kind={kind}
                 />
               )}
               data-testid="PreviousRevisionAutocomplete"
@@ -177,6 +183,7 @@ export const CompareRevisionsDialogForm: FC<CompareRevisionsDialogFormProps> = m
                   hasErrors={currentRevisions.hasErrors}
                   changelogHasErrors={currentRevisions.changelogHasErrors}
                   apiProcessorVersion={currentRevisions.apiProcessorVersion}
+                  kind={kind}
                 />
               )}
               data-testid="CurrentRevisionAutocomplete"
@@ -267,7 +274,6 @@ type AutocompleteOptionProps = {
 const AutocompleteOption: FC<AutocompleteOptionProps> = memo<AutocompleteOptionProps>(({ revision, props }) => {
   return (
     <OptionItem
-      key={revision.revision}
       props={props}
       title={`${REVISION_DELIMITER}${revision.revision}`}
       overflowTooltipPlacement="left"

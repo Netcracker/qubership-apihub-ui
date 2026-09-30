@@ -109,6 +109,11 @@ describe('resolveVersionProblemDetails', () => {
         formHelperText: MSG.dialog.previousVersionUnsound,
         activeProblemKind: VERSION_PROBLEM_KIND.PROCESSOR_MISMATCH,
       }],
+      [SURFACE.ADD_TO_DASHBOARD, AP, {
+        isBlocking: true,
+        formHelperText: MSG.dialog.dashboardAddUnsound,
+        activeProblemKind: VERSION_PROBLEM_KIND.PROCESSOR_MISMATCH,
+      }],
       [SURFACE.COMPARE_CURRENT_VERSION, { hasErrors: true }, {
         isBlocking: false,
         activeProblemKind: VERSION_PROBLEM_KIND.BUILD_ERRORS,
@@ -143,8 +148,7 @@ describe('resolveVersionProblemDetails', () => {
         activeProblemKind: VERSION_PROBLEM_KIND.BUILD_ERRORS,
       }],
       [SURFACE.ADD_TO_DASHBOARD, { hasErrors: true }, {
-        isBlocking: true,
-        formHelperText: MSG.dialog.dashboardAddUnsound,
+        isBlocking: false,
         activeProblemKind: VERSION_PROBLEM_KIND.BUILD_ERRORS,
       }],
       [SURFACE.EDIT_STATUS, { hasErrors: true }, {

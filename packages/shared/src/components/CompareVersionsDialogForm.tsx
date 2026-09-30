@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import type { FC, HTMLAttributes, SyntheticEvent } from 'react'
-import { memo, useState } from 'react'
+import { type FC, memo, type SyntheticEvent, useState } from 'react'
 import {
   Autocomplete,
   Box,
@@ -32,19 +31,16 @@ import type { Control, UseFormSetValue } from 'react-hook-form'
 import { Controller, useWatch } from 'react-hook-form'
 import { LoadingButton } from '@mui/lab'
 import { DialogForm } from './DialogForm'
-import type { Package, PackageKind } from '../entities/packages'
-import { DASHBOARD_KIND, PACKAGE_KIND } from '../entities/packages'
+import { DASHBOARD_KIND, PACKAGE_KIND, type Package } from '../entities/packages'
 import { DEFAULT_DEBOUNCE } from '../utils/constants'
-import { REVISION_DELIMITER, type PackageVersion } from '../entities/versions'
-import { NON_LATEST_REVISION_TEXT_COLOR } from '../themes/colors'
+import type { PackageVersion } from '../entities/versions'
 import { disableAutocompleteSearch } from '../utils/mui'
 import { getSplittedVersionKey } from '../utils/versions'
-import { VersionStatusChip } from './VersionStatusChip'
-import { OptionItem } from './OptionItem'
 import { Swapper } from './Swapper'
 import { VersionErrorFormMessage } from './ErrorIndicators/VersionErrorFormMessage'
 import { VersionErrorIndicator } from './ErrorIndicators/VersionErrorIndicator'
 import { VersionSelectorAutocomplete } from './Autocompletes/VersionSelectorAutocomplete'
+import { VersionOptionItem } from './VersionOptionItem'
 import { useVersionProblemDetails } from '../hooks/versions/useVersionProblemDetails'
 import { VERSION_PROBLEM_DIALOG_SURFACE } from '../hooks/versions/versionProblemDetails'
 
@@ -246,7 +242,7 @@ export const CompareVersionsDialogForm: FC<CompareVersionsDialogFormProps> = mem
                 isOptionEqualToValue={(option, value) => option.key === value.key}
                 getOptionLabel={({ key }: PackageVersion) => key}
                 renderOption={(props, version) => (
-                  <VersionCompareOption props={props} version={version} kind={kind}/>
+                  <VersionOptionItem key={version.key} props={props} version={version}/>
                 )}
                 renderInput={(params) => (
                   <TextField
@@ -350,7 +346,7 @@ export const CompareVersionsDialogForm: FC<CompareVersionsDialogFormProps> = mem
                 isOptionEqualToValue={(option, value) => option.key === value.key}
                 getOptionLabel={({ key }: PackageVersion) => key}
                 renderOption={(props, version) => (
-                  <VersionCompareOption props={props} version={version} kind={kind}/>
+                  <VersionOptionItem key={version.key} props={props} version={version}/>
                 )}
                 renderInput={(params) => (
                   <TextField
@@ -404,58 +400,6 @@ export const CompareVersionsDialogForm: FC<CompareVersionsDialogFormProps> = mem
 })
 
 CompareVersionsDialogForm.displayName = 'CompareVersionsDialogForm'
-
-type VersionCompareOptionProps = {
-  props: HTMLAttributes<HTMLLIElement>
-  version: PackageVersion
-  kind: PackageKind
-}
-
-const VersionCompareOption: FC<VersionCompareOptionProps> = memo<VersionCompareOptionProps>(({
-  props,
-  version,
-  kind,
-}) => {
-  const { key, status, latestRevision, hasErrors, changelogHasErrors, apiProcessorVersion } = version
-  const { versionKey, revisionKey } = getSplittedVersionKey(key)
-  const showOldRevision = !latestRevision && revisionKey !== ''
-  const optionTitle = showOldRevision
-    ? `${versionKey}${REVISION_DELIMITER}${revisionKey}`
-    : versionKey
-
-  return (
-    <OptionItem
-      key={key}
-      props={props}
-      title={
-        <>
-          {versionKey}
-          {showOldRevision && (
-            <Typography component="span" variant="inherit" color={NON_LATEST_REVISION_TEXT_COLOR}>
-              {`${REVISION_DELIMITER}${revisionKey}`}
-            </Typography>
-          )}
-        </>
-      }
-      overflowTooltipText={optionTitle}
-      overflowTooltipPlacement="left"
-      indicator={
-        <VersionErrorIndicator
-          versionKey={versionKey}
-          hasErrors={hasErrors}
-          changelogHasErrors={changelogHasErrors}
-          apiProcessorVersion={apiProcessorVersion}
-          kind={kind}
-          fontSize="extra-small"
-          showTooltip={false}
-        />
-      }
-      chip={<VersionStatusChip status={status}/>}
-    />
-  )
-})
-
-VersionCompareOption.displayName = 'VersionCompareOption'
 
 const DIALOG_CONTENT_STYLES = {
   display: 'grid',

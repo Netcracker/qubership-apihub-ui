@@ -8,6 +8,8 @@ import { type FC, memo, type MouseEventHandler, type ReactNode } from 'react'
 import { ErrorIcon } from '../../icons/ErrorIcon'
 import type { TestableProps } from '../Testable'
 
+const ERROR_INDICATOR_ARIA_LABEL = 'Publication error'
+
 export type ErrorIndicatorViewProps = {
   tooltip?: ReactNode
   showTooltip?: boolean
@@ -39,7 +41,8 @@ export const ErrorIndicator: FC<ErrorIndicatorProps> = memo<ErrorIndicatorProps>
     return null
   }
 
-  const resolvedAriaLabel = ariaLabel ?? (typeof tooltip === 'string' ? tooltip : 'Publication error')
+  const resolvedAriaLabel = ariaLabel ??
+    (showTooltip && typeof tooltip === 'string' ? tooltip : ERROR_INDICATOR_ARIA_LABEL)
   const tooltipContent = showTooltip ? tooltip : undefined
   const resolvedTabIndex = propTabIndex ?? (showTooltip && tooltipContent && !onClick ? 0 : undefined)
 

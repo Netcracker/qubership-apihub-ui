@@ -39,6 +39,7 @@ import { SHOW_COMPARE_REVISIONS_DIALOG } from '@apihub/routes/EventBusProvider'
 import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
 import { useNavigation } from '@apihub/routes/NavigationProvider'
 import { useAllRevisions } from '@apihub/routes/root/PortalPage/VersionPage/usePagedRevisions'
+import { usePackageKind } from '@apihub/routes/root/PortalPage/usePackageKind'
 import { useRefSearchParam } from '@apihub/routes/root/PortalPage/useRefSearchParam'
 import { getDefaultApiType } from '@apihub/utils/operation-types'
 import { usePackageVersionContent } from '../../usePackageVersionContent'
@@ -54,6 +55,7 @@ export const CompareRevisionsDialog: FC = memo(() => {
 })
 
 const CompareRevisionsPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen }) => {
+  const [packageKind] = usePackageKind()
   const {
     control,
     setValue,
@@ -77,6 +79,7 @@ const CompareRevisionsPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen 
       isRevisionsLoading={isRevisionsLoading}
       originalRevisions={originalRevisions}
       changedRevisions={changedRevisions}
+      kind={packageKind}
     />
   )
 })

@@ -333,12 +333,11 @@ export const VersionDialogForm: FC<VersionDialogFormProps> = memo<VersionDialogF
         hasErrors={versionItem.hasErrors}
         changelogHasErrors={versionItem.changelogHasErrors}
         apiProcessorVersion={versionItem.apiProcessorVersion}
-        kind={kind}
         fontSize="extra-small"
         showTooltip={false}
       />
     )
-  }, [kind, previousVersionMap, rememberedPreviousVersion])
+  }, [previousVersionMap, rememberedPreviousVersion])
 
   const previousVersionOptions = useMemo(() => {
     const availableKeys = normalizedPreviousVersions.map(({ key }) => key)
