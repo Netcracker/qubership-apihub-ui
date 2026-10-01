@@ -127,7 +127,7 @@ const DocumentErrorsPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, d
             size="small"
             variant="outlined"
             loading={isExporting}
-            startIcon={<ExportIcon fontSize="medium" />}
+            startIcon={<ExportIcon />}
             onClick={handleExport}
           >
             Export

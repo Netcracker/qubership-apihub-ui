@@ -128,7 +128,7 @@ export const DocumentSelector: FC<DocumentSelectorProps> = memo<DocumentSelector
                       </TextWithOverflowTooltip>
                     )}
                   />
-                  <MenuItemErrorIndicator hasErrors={hasErrors} />
+                  <MenuItemErrorIndicator hasErrors={hasErrors} showTooltip={false} />
                 </DocumentItemButton>
               </ListItem>
             ))}

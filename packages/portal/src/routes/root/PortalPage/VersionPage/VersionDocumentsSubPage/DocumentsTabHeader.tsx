@@ -27,7 +27,6 @@ import { ShareabilityDropdown } from './ShareabilityDropdown'
 import { ShareabilityMarker } from './ShareabilityMarker'
 import { useDocumentShareabilityState } from './useDocumentShareabilityState'
 import { ErrorOutlineIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ErrorOutlineIcon'
-import { DEFAULT_TEXT_COLOR } from '@netcracker/qubership-apihub-ui-shared/themes/colors'
 
 export type DocumentsTabHeaderProps = {
   title: string
@@ -45,8 +44,6 @@ const MORE_ACTIONS_BUTTON_PROPS = {
   title: 'More',
   variant: 'outlined',
 } as const
-
-const TITLE_ICON_STYLE = { color: DEFAULT_TEXT_COLOR } as const
 
 export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
   const {
@@ -139,7 +136,7 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
             variant="outlined"
             onClick={handleShowErrorDetails}
             data-testid="ShowDocumentErrorsButton"
-            startIcon={ <ErrorOutlineIcon fontSize="medium" sx={TITLE_ICON_STYLE} />}
+            startIcon={<ErrorOutlineIcon />}
           >
             Error Details
           </Button>
