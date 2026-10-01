@@ -31,6 +31,7 @@ export type FileLabelsRecord = Record<string, { file: File; labels: string[] }>
 
 export type FileTableUploadProps = PropsWithChildren<{
   acceptableFileTypes?: readonly string[]
+  hint?: string
   uploadFilesMap: FileLabelsRecord
   onAddFiles: (files: File[]) => void
   getFileClickHandler: (file: File) => ((file: File) => void) | null
@@ -44,6 +45,7 @@ export type FileTableUploadProps = PropsWithChildren<{
 
 export const FileTableUpload: FC<FileTableUploadProps> = memo<FileTableUploadProps>(({
   acceptableFileTypes,
+  hint,
   uploadFilesMap,
   onAddFiles,
   getFileClickHandler,
@@ -177,6 +179,16 @@ export const FileTableUpload: FC<FileTableUploadProps> = memo<FileTableUploadPro
               </Button>
             }
           </Box>
+          {hint && (
+            <Typography
+              variant="body2"
+              color="#8F9EB4"
+              sx={{ mt: 1, maxWidth: '320px', textAlign: 'center' }}
+              data-testid="FileUploadHint"
+            >
+              {hint}
+            </Typography>
+          )}
         </Box>
       </Box>
       <Box sx={{ pointerEvents: 'none' }}>

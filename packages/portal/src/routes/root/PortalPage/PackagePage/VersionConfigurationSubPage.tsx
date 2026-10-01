@@ -197,6 +197,7 @@ export const VersionConfigurationSubPage: FC = memo(() => {
       body={
         <FileTableUpload
           acceptableFileTypes={ACCEPTABLE_VERSION_FILE_EXTENSIONS}
+          hint={`Allowed formats: ${toAllowedFormatsEnumeration(ACCEPTABLE_VERSION_FILE_EXTENSIONS)}`}
           uploadFilesMap={{ ...sortedFiles }}
           onAddFiles={handleAdd}
           getFileClickHandler={getFileClickHandler}
