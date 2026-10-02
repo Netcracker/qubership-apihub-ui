@@ -21,6 +21,7 @@ export const toNotificationFiltersQueryKey = (
   query: VersionNotificationsQuery,
 ): readonly unknown[] => [
   query.documentId,
+  query.emptyDocumentId,
   toCanonicalNotificationCsvParam(query.severity),
   toCanonicalNotificationCsvParam(query.category),
   query.limit,
@@ -32,6 +33,7 @@ function toSharedNotificationSearchParamRecord(
 ): Record<string, SearchParam> {
   return {
     documentId: { value: query?.documentId },
+    emptyDocumentId: { value: query?.emptyDocumentId },
     severity: {
       value: query?.severity,
       toStringValue: stringifyArrayParam,

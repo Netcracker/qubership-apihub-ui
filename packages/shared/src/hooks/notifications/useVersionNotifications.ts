@@ -3,8 +3,12 @@ import { type VersionNotificationsDto, type VersionNotificationsQuery } from '..
 import type { InvalidateQuery } from '../../utils/aliases'
 import { toNotificationFiltersQueryKey, toVersionNotificationsSearchParams } from './notificationQueryParams'
 import {
+  type InfiniteVersionNotificationsQueryState,
+  NOTIFICATIONS_PAGE_LIMIT,
   type NotificationsQueryScope,
+  PAGED_NOTIFICATIONS_QUERY_KEY_PART,
   requestNotificationsJson,
+  useInfiniteNotificationsQuery,
   useInvalidateNotificationsQuery,
   useNotificationsQuery,
   type VersionNotificationsQueryState,
@@ -16,7 +20,9 @@ export type UseVersionNotificationsOptions = VersionNotificationsQuery & Partial
   enabled?: boolean
 }
 
-export type { VersionNotificationsQueryState }
+export type UseInfiniteVersionNotificationsOptions = Omit<UseVersionNotificationsOptions, 'limit' | 'page'>
+
+export type { InfiniteVersionNotificationsQueryState, VersionNotificationsQueryState }
 
 export function useVersionNotifications(
   options: UseVersionNotificationsOptions,
@@ -25,6 +31,7 @@ export function useVersionNotifications(
     packageKey,
     versionKey,
     documentId,
+    emptyDocumentId,
     severity,
     category,
     limit,
@@ -34,6 +41,7 @@ export function useVersionNotifications(
 
   const query: VersionNotificationsQuery = {
     documentId,
+    emptyDocumentId,
     severity,
     category,
     limit,
@@ -49,6 +57,45 @@ export function useVersionNotifications(
     getVersionNotifications(packageKey!, versionKey!, query, signal)
 
   return useNotificationsQuery({
+    queryKey,
+    queryFn,
+    packageKey,
+    versionKey,
+    enabled,
+  })
+}
+
+export function useInfiniteVersionNotifications(
+  options: UseInfiniteVersionNotificationsOptions,
+): InfiniteVersionNotificationsQueryState {
+  const {
+    packageKey,
+    versionKey,
+    documentId,
+    emptyDocumentId,
+    severity,
+    category,
+    enabled = true,
+  } = options
+
+  const query: VersionNotificationsQuery = {
+    documentId: documentId,
+    emptyDocumentId: emptyDocumentId,
+    severity: severity,
+    category: category,
+    limit: NOTIFICATIONS_PAGE_LIMIT,
+  }
+  const queryKey = [
+    VERSION_NOTIFICATIONS_QUERY_KEY,
+    packageKey,
+    versionKey,
+    PAGED_NOTIFICATIONS_QUERY_KEY_PART,
+    ...toNotificationFiltersQueryKey(query),
+  ]
+  const queryFn = (page: number, signal?: AbortSignal): Promise<VersionNotificationsDto> =>
+    getVersionNotifications(packageKey!, versionKey!, { ...query, page }, signal)
+
+  return useInfiniteNotificationsQuery({
     queryKey,
     queryFn,
     packageKey,

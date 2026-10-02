@@ -1,10 +1,11 @@
 import MoreVertIcon from '@mui/icons-material/MoreVert'
-import { Box, Skeleton } from '@mui/material'
+import { Box, Button, Skeleton } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import { type Dispatch, type FC, memo, type SetStateAction, useCallback } from 'react'
 
 import type { Document } from '@apihub/entities/documents'
 import type { Key } from '@apihub/entities/keys'
+import { useEventBus } from '@apihub/routes/EventBusProvider'
 import {
   type DocumentsTabSubPageKey,
   OPERATIONS_SUB_PAGE,
@@ -25,6 +26,7 @@ import { useSelectedSubPage, useSetSelectedSubPage } from './SelectedSubPageProv
 import { ShareabilityDropdown } from './ShareabilityDropdown'
 import { ShareabilityMarker } from './ShareabilityMarker'
 import { useDocumentShareabilityState } from './useDocumentShareabilityState'
+import { ErrorOutlineIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ErrorOutlineIcon'
 
 export type DocumentsTabHeaderProps = {
   title: string
@@ -58,7 +60,9 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
 
   const selectedSubPage = useSelectedSubPage()
 
-  const { shareabilityStatus } = document
+  const { shareabilityStatus, hasErrors } = document
+
+  const { showDocumentErrorsDialog } = useEventBus()
 
   const {
     hasPermission: hasShareabilityPermission,
@@ -67,6 +71,18 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
     isShareabilityStatusLoading,
     handleChange: handleShareabilityChange,
   } = useDocumentShareabilityState(slug)
+
+  const handleShowErrorDetails = useCallback(() => {
+    if (!docPackageKey || !fullVersion) {
+      return
+    }
+    showDocumentErrorsDialog({
+      packageKey: docPackageKey,
+      versionKey: fullVersion,
+      documentId: slug,
+      documentTitle: title,
+    })
+  }, [docPackageKey, fullVersion, showDocumentErrorsDialog, slug, title])
 
   if (isLoading) {
     return (
@@ -82,7 +98,7 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
     )
   }
 
-  const isSpecWithSubPages = !document.hasErrors &&
+  const isSpecWithSubPages = !hasErrors &&
     (isOpenApiSpecType(type) || isGraphQlSpecType(type) || isAsyncApiSpecType(type))
 
   return (
@@ -115,12 +131,22 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
             <DocumentsSubPageSelector />
           </>
         )}
+        {hasErrors && (
+          <Button
+            variant="outlined"
+            onClick={handleShowErrorDetails}
+            data-testid="ShowDocumentErrorsButton"
+            startIcon={<ErrorOutlineIcon />}
+          >
+            Error Details
+          </Button>
+        )}
         <ActionsButton
           slug={slug}
           docType={type}
           format={format}
           shareabilityStatus={shareabilityStatus}
-          hasErrors={document.hasErrors}
+          hasErrors={hasErrors}
           customProps={MORE_ACTIONS_BUTTON_PROPS}
           startIcon={<MoreButtonIcon fontSize="small" />}
         />
