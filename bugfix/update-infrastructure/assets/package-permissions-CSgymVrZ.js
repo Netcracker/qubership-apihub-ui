@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-BcKkbAw3.js";var t,n,r,i,a;function o(){return(o=e((()=>{t=`read`,n=`create_and_update_package`,r=`manage_draft_version`,i=`manage_release_version`,a=`You do not have permission to edit the package`})))()}export{t as a,a as i,r as n,o,i as r,n as t};
