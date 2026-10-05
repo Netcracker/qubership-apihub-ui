@@ -15,7 +15,7 @@
  */
 
 import type { BuilderResolvers, FileId, FileSourceMap, VersionValidationLevel, VersionsComparison } from '@netcracker/qubership-apihub-api-processor'
-import { BUILD_TYPE, VERSION_STATUS, VERSION_VALIDATION_LEVEL } from '@netcracker/qubership-apihub-api-processor'
+import { BUILD_TYPE, NotificationsError, VERSION_STATUS, VERSION_VALIDATION_LEVEL } from '@netcracker/qubership-apihub-api-processor'
 import { PackageVersionBuilder } from '@netcracker/qubership-apihub-api-processor/processor'
 import {
   packageVersionResolver,
@@ -196,6 +196,9 @@ const worker: PackageVersionBuilderWorker = {
         builderId: builderId,
         abortController: null,
         errors: `${error}`,
+        notifications: error instanceof NotificationsError
+          ? { notifications: error.notifications, comparisonNotifications: error.comparisonNotifications }
+          : undefined,
       })
     }
 

@@ -19,6 +19,7 @@ import type {
   ApihubApiCompatibilityKind,
   BuildConfig,
   ContractType,
+  NotificationsError,
   ResolvedDeprecatedOperations,
   ResolvedGroupDocuments,
   ResolvedOperation,
@@ -156,6 +157,9 @@ export async function fetchVersionDocuments(
 
 export type ErrorMessage = string
 
+// what a failed build had reported before it failed, sent with the error status
+export type FailedBuildNotifications = Pick<NotificationsError, 'notifications' | 'comparisonNotifications'>
+
 export type SetPublicationDetailsOptions = {
   packageKey: Key
   publishKey: Key
@@ -164,6 +168,7 @@ export type SetPublicationDetailsOptions = {
   abortController: AbortController | null
   data?: Blob
   errors?: ErrorMessage
+  notifications?: FailedBuildNotifications
 }
 
 export async function setPublicationDetails(options: SetPublicationDetailsOptions): Promise<void> {
@@ -175,6 +180,7 @@ export async function setPublicationDetails(options: SetPublicationDetailsOption
     abortController,
     data,
     errors,
+    notifications,
   } = options
 
   const formData = new FormData()
@@ -182,6 +188,12 @@ export async function setPublicationDetails(options: SetPublicationDetailsOption
   formData.append('builderId', builderId)
   errors && formData.append('errors', errors)
   data && formData.append('data', data, 'package.zip')
+  // the backend reads this part only as a file, so it needs a file name
+  notifications && formData.append(
+    'notifications',
+    new Blob([JSON.stringify(notifications)], { type: 'application/json' }),
+    'failed-build-notifications.json',
+  )
 
   const signal = abortController?.signal
   const packageId = encodeURIComponent(packageKey)
