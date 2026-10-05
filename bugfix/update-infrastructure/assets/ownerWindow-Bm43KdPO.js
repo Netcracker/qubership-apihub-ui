@@ -1,1 +1,0 @@
-import{n as e}from"./rolldown-runtime-BcKkbAw3.js";import{n as t}from"./ownerDocument-BJIv_nnC.js";function n(e){return t(e).defaultView||window}function r(){return(r=e((()=>{})))()}export{n,r as t};
