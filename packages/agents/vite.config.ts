@@ -52,6 +52,15 @@ export default defineConfig(({ mode }) => {
           label: 'graphql',
           entry: 'monaco-graphql/dist/graphql.worker',
         }],
+        // The plugin's default distPath is join(root, outDir, base, 'monacoeditorwork'), and
+        // this app sets base to '/agents'. So the workers were emitted to
+        // dist/agents/monacoeditorwork while index.html asks for
+        // /agents/monacoeditorwork/... — one segment too deep, and the Dockerfile serves
+        // dist at /agents, so all four workers 404 in the deployed image.
+        //
+        // ui-portal is unaffected only because its base is '/', which makes the same join a
+        // no-op. Dropping base here gives both apps the same layout.
+        customDistPath: (root, buildOutDir) => path.join(root, buildOutDir, 'monacoeditorwork'),
       }),
       Unfonts({
         custom: {
