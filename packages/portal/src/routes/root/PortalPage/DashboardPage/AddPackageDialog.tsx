@@ -142,6 +142,8 @@ const AddPackagePopup: FC<AddPackagePopupProps> = memo<AddPackagePopupProps>(({ 
         kind: selectedPackage?.kind as ReferenceKind,
         version: selectedVersion?.key,
         status: selectedVersion?.status,
+        hasErrors: selectedVersion?.hasErrors,
+        changelogHasErrors: selectedVersion?.changelogHasErrors,
       },
       added: true,
     }])

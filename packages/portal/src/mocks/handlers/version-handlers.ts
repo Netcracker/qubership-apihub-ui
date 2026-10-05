@@ -1,9 +1,26 @@
+import mapValues from 'lodash-es/mapValues'
 import { bypass, http, HttpResponse, passthrough } from 'msw'
 
 import type { McpContractsSummaryDto } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-mcp'
+import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { RevisionDto, RevisionsDto } from '@netcracker/qubership-apihub-ui-shared/entities/revisions'
 import type { PackageVersionContentDto } from '@netcracker/qubership-apihub-ui-shared/entities/version-contents'
+import type {
+  PackageReferenceDto,
+  UnresolvedReferenceDto,
+  VersionReferencesDto,
+} from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
 import type { PackageVersionDto, PackageVersionsDto } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
+
+type MockVersionErrorFlags = {
+  hasErrors: boolean
+  changelogHasErrors: boolean
+}
+
+const MOCK_DELETION: Pick<PackageReferenceDto, 'deletedAt' | 'deletedBy'> = {
+  deletedAt: '2026-08-15T10:30:00Z',
+  deletedBy: 'System Mock',
+}
 
 export const versionHandlers = [
   http.get('*/api/v3/packages/:packageKey/versions/:versionKey', async ({ request, params }) => {
@@ -162,20 +179,10 @@ export const versionHandlers = [
         modified = true
         return { ...version, apiProcessorVersion: '1.1.1' }
       }
-      // build errors and comparison errors
-      if (version.version.includes('errors-build-and-comparison')) {
+      const errorFlags = getMockVersionErrorFlags(version.version)
+      if (errorFlags) {
         modified = true
-        return { ...version, hasErrors: true, changelogHasErrors: true }
-      }
-      // build errors only
-      if (version.version.includes('errors-build')) {
-        modified = true
-        return { ...version, hasErrors: true, changelogHasErrors: false }
-      }
-      // comparison errors only
-      if (version.version.includes('errors-comparison')) {
-        modified = true
-        return { ...version, hasErrors: false, changelogHasErrors: true }
+        return { ...version, ...errorFlags }
       }
 
       return version
@@ -242,37 +249,21 @@ export const versionHandlers = [
 
   http.get('*/api/v3/packages/:packageKey/versions/:versionKey/references', async ({ request, params }) => {
     const versionKey = String(params.versionKey)
-
-    // deleted package version reference in a dashboard
-    if (versionKey.includes('errors-deleted-reference')) {
-      const originalResponse = await fetch(bypass(request))
-      if (!originalResponse.ok) {
-        return originalResponse
-      }
-      const realData = await originalResponse.json()
-      return HttpResponse.json({
-        ...realData,
-        references: [
-          ...(realData.references ?? []),
-          { packageRef: 'test-package', parentPackageRef: '', excluded: false },
-        ],
-        packages: {
-          ...(realData.packages ?? {}),
-          'test-package': {
-            refId: 'test-package',
-            kind: 'package',
-            name: 'Test Package',
-            version: 'deleted',
-            status: 'draft',
-            deletedAt: '2026-08-15T10:30:00Z',
-            deletedBy: 'System Mock',
-            parentPackages: [],
-          },
-        },
-      })
+    const originalResponse = await fetch(bypass(request))
+    if (!originalResponse.ok) {
+      return originalResponse
     }
 
-    return passthrough()
+    const realData: VersionReferencesDto = await originalResponse.json()
+    const deletedRefs = getMockDeletedRefs(versionKey, realData.references ?? [])
+    return HttpResponse.json<VersionReferencesDto>({
+      ...realData,
+      packages: mapValues(realData.packages, (packageReference, refKey) => ({
+        ...packageReference,
+        ...getMockVersionErrorFlags(packageReference.version ?? ''),
+        ...(deletedRefs.includes(refKey) && MOCK_DELETION),
+      })),
+    })
   }),
 ]
 
@@ -324,6 +315,34 @@ function patchApiTypeErrorsContent(
       }
       : undefined,
   }
+}
+
+function getMockVersionErrorFlags(version: string): MockVersionErrorFlags | undefined {
+  // build errors and comparison errors
+  if (version.includes('errors-build-and-comparison')) {
+    return { hasErrors: true, changelogHasErrors: true }
+  }
+  // build errors only
+  if (version.includes('errors-build')) {
+    return { hasErrors: true, changelogHasErrors: false }
+  }
+  // comparison errors only
+  if (version.includes('errors-comparison')) {
+    return { hasErrors: false, changelogHasErrors: true }
+  }
+  return undefined
+}
+
+// Marks the first child of the first top-level reference and the second top-level reference as deleted.
+function getMockDeletedRefs(versionKey: string, references: ReadonlyArray<UnresolvedReferenceDto>): Key[] {
+  if (!versionKey.includes('errors-deleted-reference')) {
+    return []
+  }
+  const [firstReference, secondReference] = references.filter(({ parentPackageRef }) => !parentPackageRef)
+  const firstChildReference = firstReference &&
+    references.find(({ parentPackageRef }) => parentPackageRef === firstReference.packageRef)
+  return [firstChildReference?.packageRef, secondReference?.packageRef]
+    .filter((ref): ref is Key => ref !== undefined)
 }
 
 function isApiTypesEmptyListVersion(versionKey: string): boolean {

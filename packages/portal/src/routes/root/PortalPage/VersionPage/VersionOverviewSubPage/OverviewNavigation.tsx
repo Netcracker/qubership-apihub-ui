@@ -28,9 +28,10 @@ import {
   SUMMARY_PAGE,
 } from '../../../../../routes'
 import { usePackage } from '../../../usePackage'
-import { useDeletedReferences, useUpdateDeletedReferences } from '../../useDeletedReferences'
+import { useUpdateDeletedReferences } from '../../useDeletedReferences'
 import { OverviewNavigationItem } from './OverviewNavigationItem'
 import { getOverviewPath } from '../../../../NavigationProvider'
+import { hasReferenceProblems } from '../../PackagesAndDashboardsTree/referenceProblems'
 import { useActiveTabs } from '@netcracker/qubership-apihub-ui-shared/hooks/pathparams/useActiveTabs'
 import type { SidebarMenu } from '@netcracker/qubership-apihub-ui-shared/components/NavigationMenu'
 import type { PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
@@ -55,7 +56,7 @@ export const OverviewNavigation: FC = memo(() => {
     updateDeletedReferences({ versionReferences })
   }, [updateDeletedReferences, versionReferences])
 
-  const { data: deletedReferences } = useDeletedReferences(packageId!, versionId!)
+  const hasPackagesProblems = hasReferenceProblems(versionReferences)
 
   return (
     <List>
@@ -69,7 +70,7 @@ export const OverviewNavigation: FC = memo(() => {
             id={id}
             data-testid={dataTestId}
             sidebarItem={sidebarItem}
-            deletedReferences={deletedReferences}
+            hasReferenceProblems={hasPackagesProblems}
           />
         )
       })}
