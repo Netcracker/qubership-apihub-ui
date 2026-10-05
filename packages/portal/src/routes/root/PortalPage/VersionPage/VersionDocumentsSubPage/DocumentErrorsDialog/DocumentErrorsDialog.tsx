@@ -15,7 +15,7 @@ import type {
 } from '@netcracker/qubership-apihub-ui-shared/hooks/notifications/notificationsQuery'
 import {
   useInfiniteVersionNotifications,
-} from '@netcracker/qubership-apihub-ui-shared/hooks/notifications/useVersionNotifications'
+} from '@netcracker/qubership-apihub-ui-shared/hooks/notifications/useInfiniteVersionNotifications'
 import { CloseIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CloseIcon'
 import { ExportIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ExportIcon'
 import type { HasNextPage, IsFetchingNextPage } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
@@ -172,8 +172,8 @@ const DocumentErrorsContent: FC<DocumentErrorsContentProps> = memo<DocumentError
 }) => {
   const [selectedId, setSelectedId] = useState<string>()
 
-  const selected: VersionNotification | undefined =
-    notifications.find(({ id }) => id === selectedId) ?? notifications[0]
+  const selected: VersionNotification | undefined = notifications.find(({ id }) => id === selectedId) ??
+    notifications[0]
 
   if (isLoading) {
     return (

@@ -1,4 +1,4 @@
-import type { Key, PackageKey, VersionKey } from './keys'
+import type { Key } from './keys'
 
 export const NOTIFICATION_SEVERITY = {
   ERROR: 'error',
@@ -77,11 +77,6 @@ export type VersionNotificationsQuery = {
   category?: NotificationCategory[]
   limit?: number
   page?: number
-}
-
-export type ComparisonNotificationsQuery = VersionNotificationsQuery & {
-  previousVersion?: VersionKey
-  previousVersionPackageId?: PackageKey
 }
 
 export function toVersionNotifications(dto: VersionNotificationsDto | null | undefined): VersionNotifications {

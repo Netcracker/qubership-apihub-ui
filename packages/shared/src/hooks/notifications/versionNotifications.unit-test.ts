@@ -8,11 +8,7 @@ import {
   toVersionNotifications,
   type VersionNotificationsDto,
 } from '../../entities/version-notifications'
-import {
-  toComparisonNotificationsSearchParams,
-  toNotificationFiltersQueryKey,
-  toVersionNotificationsSearchParams,
-} from './notificationQueryParams'
+import { toNotificationFiltersQueryKey, toVersionNotificationsSearchParams } from './notificationQueryParams'
 
 describe('versionNotifications entities and mappers', () => {
   it('returns empty array when dto or notifications array is missing or empty', () => {
@@ -147,24 +143,14 @@ describe('notification query parameter serialization', () => {
     expect(params.get('emptyDocumentId')).toBe('true')
     expect(params.get('documentId')).toBeNull()
 
-    expect(toComparisonNotificationsSearchParams({ emptyDocumentId: true }).get('emptyDocumentId')).toBe('true')
-
     expect(toVersionNotificationsSearchParams({ emptyDocumentId: false }).toString()).toBe('')
 
     expect(toNotificationFiltersQueryKey({ emptyDocumentId: true }))
       .not.toEqual(toNotificationFiltersQueryKey({ documentId: 'events-yaml' }))
   })
 
-  it('omits empty filters and includes comparison targets', () => {
+  it('omits empty filters', () => {
     expect(toVersionNotificationsSearchParams({}).toString()).toBe('')
     expect(toVersionNotificationsSearchParams({ severity: [], category: [] }).toString()).toBe('')
-
-    const params = toComparisonNotificationsSearchParams({
-      previousVersion: '2024.1',
-      previousVersionPackageId: 'test-pkg',
-    })
-
-    expect(params.get('previousVersion')).toBe('2024.1')
-    expect(params.get('previousVersionPackageId')).toBe('test-pkg')
   })
 })

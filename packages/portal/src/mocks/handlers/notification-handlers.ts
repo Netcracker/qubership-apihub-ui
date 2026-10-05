@@ -33,19 +33,6 @@ const BUILD_ERROR_NOTIFICATIONS: ReadonlyArray<VersionNotificationDto> = [
   },
 ]
 
-const COMPARISON_ERROR_NOTIFICATIONS: ReadonlyArray<VersionNotificationDto> = [
-  {
-    category: NOTIFICATION_CATEGORY.VERSION_NOT_RESOLVED,
-    severity: NOTIFICATION_SEVERITY.ERROR,
-    message: 'Previous version of the package comparison could not be resolved from registry',
-  },
-  {
-    category: NOTIFICATION_CATEGORY.COMPARISON_SERIALIZATION,
-    severity: NOTIFICATION_SEVERITY.WARNING,
-    message: 'Comparison serialization encountered recursive schema references and was truncated',
-  },
-]
-
 export const notificationHandlers = [
   http.get('*/api/v2/packages/:packageKey/versions/:versionKey/notifications', async ({ request, params }) => {
     const versionKey = String(params.versionKey)
@@ -64,22 +51,6 @@ export const notificationHandlers = [
 
     return passthroughOrEmptyNotifications(request)
   }),
-
-  http.get('*/api/v2/packages/:packageKey/versions/:versionKey/changes/notifications', async ({ request, params }) => {
-    const versionKey = String(params.versionKey)
-    const { searchParams } = new URL(request.url)
-
-    const hasComparisonErrors = versionKey.includes('errors-comparison') ||
-      versionKey.includes('errors-build-and-comparison')
-
-    if (hasComparisonErrors) {
-      return HttpResponse.json<VersionNotificationsDto>({
-        notifications: applyNotificationFilters(COMPARISON_ERROR_NOTIFICATIONS, searchParams),
-      })
-    }
-
-    return passthroughOrEmptyNotifications(request)
-  }),
 ]
 
 function applyNotificationFilters(
@@ -87,6 +58,7 @@ function applyNotificationFilters(
   searchParams: URLSearchParams,
 ): VersionNotificationDto[] {
   const documentId = searchParams.get('documentId')
+  const emptyDocumentId = searchParams.get('emptyDocumentId') === 'true'
   const severityFilters = splitCsvParam(searchParams.get('severity'))
   const categoryFilters = splitCsvParam(searchParams.get('category'))
 
@@ -97,6 +69,9 @@ function applyNotificationFilters(
     : notifications
 
   return scoped.filter((notification) => {
+    if (emptyDocumentId && notification.documentId) {
+      return false
+    }
     if (documentId && notification.documentId !== documentId) {
       return false
     }

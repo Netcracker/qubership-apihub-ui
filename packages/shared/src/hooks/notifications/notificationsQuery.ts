@@ -3,8 +3,6 @@ import {
   type InfiniteQueryObserverResult,
   type QueryKey,
   useInfiniteQuery,
-  useQuery,
-  useQueryClient,
 } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { generatePath } from 'react-router-dom'
@@ -16,79 +14,28 @@ import {
   type VersionNotificationsDto,
 } from '../../entities/version-notifications'
 import { SPECIAL_VERSION_KEY } from '../../entities/versions'
-import type {
-  HasNextPage,
-  InvalidateQuery,
-  IsFetching,
-  IsFetchingNextPage,
-  IsInitialLoading,
-  IsLoading,
-} from '../../utils/aliases'
+import type { HasNextPage, IsFetching, IsFetchingNextPage, IsInitialLoading, IsLoading } from '../../utils/aliases'
 import { getPackageRedirectDetails } from '../../utils/redirects'
 import { API_V2, requestJson } from '../../utils/requests'
 
 type NotificationsPathPattern = `/${string}/:packageId/${string}/:versionId${'' | `/${string}`}`
 
-const EMPTY_NOTIFICATIONS: VersionNotifications = []
-
 export const NOTIFICATIONS_PAGE_LIMIT = 100
 
 const FIRST_NOTIFICATIONS_PAGE = 0
-
-export const PAGED_NOTIFICATIONS_QUERY_KEY_PART = 'paged'
 
 export type NotificationsQueryScope = {
   packageKey: PackageKey
   versionKey: VersionKey
 }
 
-export type UseNotificationsQueryOptions = {
-  queryKey: QueryKey
-  queryFn: (signal?: AbortSignal) => Promise<VersionNotificationsDto>
-  packageKey?: PackageKey
-  versionKey?: VersionKey
-  enabled?: boolean
-}
-
-export type VersionNotificationsQueryState = {
+type VersionNotificationsQueryState = {
   notifications: VersionNotifications
   isLoading: IsLoading
   isInitialLoading: IsInitialLoading
   isFetching: IsFetching
   error: Error | null
   refetch: () => void
-}
-
-export function useNotificationsQuery(
-  options: UseNotificationsQueryOptions,
-): VersionNotificationsQueryState {
-  const {
-    queryKey,
-    queryFn,
-    packageKey,
-    versionKey,
-    enabled = true,
-  } = options
-
-  const { data, isLoading, isInitialLoading, isFetching, error, refetch } = useQuery<
-    VersionNotificationsDto,
-    Error,
-    VersionNotifications
-  >({
-    queryKey: queryKey,
-    queryFn: ({ signal }) => queryFn(signal),
-    enabled: isNotificationsQueryEnabled(packageKey, versionKey, enabled),
-    select: toVersionNotifications,
-  })
-
-  return {
-    notifications: data ?? EMPTY_NOTIFICATIONS,
-    isLoading: isLoading,
-    isInitialLoading: isInitialLoading,
-    isFetching: isFetching,
-    error: error,
-    refetch: refetch,
-  }
 }
 
 export type FetchNextNotificationsPage = (
@@ -140,9 +87,10 @@ export function useInfiniteNotificationsQuery(
   })
 
   const notifications = useMemo(
-    () => toVersionNotifications({
-      notifications: data?.pages.flatMap(({ notifications }) => notifications ?? []),
-    }),
+    () =>
+      toVersionNotifications({
+        notifications: data?.pages.flatMap(({ notifications }) => notifications ?? []),
+      }),
     [data?.pages],
   )
 
@@ -156,17 +104,6 @@ export function useInfiniteNotificationsQuery(
     fetchNextPage: fetchNextPage,
     isFetchingNextPage: isFetchingNextPage,
     hasNextPage: hasNextPage,
-  }
-}
-
-export function useInvalidateNotificationsQuery(
-  queryKeyRoot: string,
-): InvalidateQuery<NotificationsQueryScope> {
-  const client = useQueryClient()
-  return ({ packageKey, versionKey }) => {
-    client.invalidateQueries({
-      queryKey: [queryKeyRoot, packageKey, versionKey],
-    })
   }
 }
 
