@@ -37,15 +37,21 @@ import { getVersionInfoOptions } from '../../utils/version-info'
 // pattern, so the rule was aimed at the spelling rather than at the boundary. It now covers
 // the traversal form too.
 //
-// The real values are not affected: they come from the version.json that
-// ui/vite-create-version-json.ts generates per app, fetched by the query below.
-// This constant is only what is shown before that resolves.
-const emptyVersion: VersionInfo = { frontendVersion: '0.0.0-unknown', apiProcessorVersion: '0.0.0-unknown' }
+// The real values come from the version.json that ui/vite-create-version-json.ts generates per
+// app, fetched by the query below. The fallback is what the hook returns before that resolves,
+// or when the fetch fails. Each app passes its own package.json version as the fallback:
+// BasePage shows the "APIHUB UI is out of date" dialog when its version differs from
+// frontendVersion, so a fallback that differs from the app's version shows that dialog on
+// every page load until version.json arrives.
+const UNKNOWN_VERSION = '0.0.0-unknown'
 
-export function useVersionInfo(appType: AppTypeApiHub = portal): VersionInfo {
+export function useVersionInfo(
+  appType: AppTypeApiHub = portal,
+  fallbackFrontendVersion: string = UNKNOWN_VERSION,
+): VersionInfo {
   const { data } = useQuery<VersionInfoDto, Error, VersionInfo>(
     getVersionInfoOptions(appType),
   )
 
-  return data ?? emptyVersion
+  return data ?? { frontendVersion: fallbackFrontendVersion, apiProcessorVersion: UNKNOWN_VERSION }
 }

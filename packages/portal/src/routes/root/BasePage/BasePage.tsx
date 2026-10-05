@@ -34,6 +34,7 @@ import {
   AiAssistantProvider,
 } from '@portal/components/AiAssistant/state/AiAssistantProvider'
 import * as packageJson from '../../../../package.json'
+import { portal } from '@netcracker/qubership-apihub-ui-shared/utils/version-info'
 import { PORTAL_PATH_PATTERNS } from '../../../routes'
 import { Notification, useShowErrorNotification } from '../BasePage/Notification'
 import { MainPageProvider } from '../MainPage/MainPageProvider'
@@ -47,7 +48,7 @@ export const BasePage: FC = memo(() => {
   const { notification: systemNotification, aiChatEnabled } = useSystemInfo()
   const showErrorNotification = useShowErrorNotification()
   const isSuperAdmin = useSuperAdminCheck()
-  const { frontendVersion, apiProcessorVersion } = useVersionInfo()
+  const { frontendVersion, apiProcessorVersion } = useVersionInfo(portal, packageJson.version)
   const agentEnabled = useAgentEnabled()
   const viewPortStyleCalculator = useCallback(
     (theme: Theme): SystemStyleObject<Theme> => {
