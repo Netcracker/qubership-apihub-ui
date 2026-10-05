@@ -24,7 +24,6 @@
     "@mui/material": "5.11.10",
     "@mui/system": "5.18.0",
     "@mui/x-date-pickers": "5.0.9",
-    "@netcracker/qubership-apihub-api-processor": "bugfix-update-infrastructure",
     "@remix-run/router": "1.11.0",
     "@tanstack/query-core": "^4.43.0",
     "@tanstack/react-query": "^4.43.0",
