@@ -44,10 +44,12 @@ export type VersionProblemDetails = {
   formHelperText?: string
 }
 
-type ResolveVersionProblemDetailsParams = UseVersionProblemDetailsParams & {
+export type VersionProblemProcessorContext = {
   appApiProcessorVersion?: string
   migrationInProgress?: boolean
 }
+
+type ResolveVersionProblemDetailsParams = UseVersionProblemDetailsParams & VersionProblemProcessorContext
 
 type VersionProblemCore = {
   hasProblems: boolean

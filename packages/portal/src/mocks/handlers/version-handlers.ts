@@ -12,10 +12,7 @@ import type {
 } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
 import type { PackageVersionDto, PackageVersionsDto } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
 
-type MockVersionErrorFlags = {
-  hasErrors: boolean
-  changelogHasErrors: boolean
-}
+import { getMockVersionFlags } from './mock-version-flags'
 
 const MOCK_DELETION: Pick<PackageReferenceDto, 'deletedAt' | 'deletedBy'> = {
   deletedAt: '2026-08-15T10:30:00Z',
@@ -169,20 +166,10 @@ export const versionHandlers = [
 
     let modified = false
     const versions = realData.versions.map((version: PackageVersionDto): PackageVersionDto => {
-      // processor mismatch and build errors
-      if (version.version.includes('errors-processor-mismatch-and-build')) {
+      const versionFlags = getMockVersionFlags(version.version)
+      if (versionFlags) {
         modified = true
-        return { ...version, apiProcessorVersion: '1.1.1', hasErrors: true }
-      }
-      // api-processor version mismatch
-      if (version.version.includes('errors-processor-mismatch')) {
-        modified = true
-        return { ...version, apiProcessorVersion: '1.1.1' }
-      }
-      const errorFlags = getMockVersionErrorFlags(version.version)
-      if (errorFlags) {
-        modified = true
-        return { ...version, ...errorFlags }
+        return { ...version, ...versionFlags }
       }
 
       return version
@@ -260,7 +247,7 @@ export const versionHandlers = [
       ...realData,
       packages: mapValues(realData.packages, (packageReference, refKey) => ({
         ...packageReference,
-        ...getMockVersionErrorFlags(packageReference.version ?? ''),
+        ...getMockVersionFlags(packageReference.version ?? ''),
         ...(deletedRefs.includes(refKey) && MOCK_DELETION),
       })),
     })
@@ -315,22 +302,6 @@ function patchApiTypeErrorsContent(
       }
       : undefined,
   }
-}
-
-function getMockVersionErrorFlags(version: string): MockVersionErrorFlags | undefined {
-  // build errors and comparison errors
-  if (version.includes('errors-build-and-comparison')) {
-    return { hasErrors: true, changelogHasErrors: true }
-  }
-  // build errors only
-  if (version.includes('errors-build')) {
-    return { hasErrors: true, changelogHasErrors: false }
-  }
-  // comparison errors only
-  if (version.includes('errors-comparison')) {
-    return { hasErrors: false, changelogHasErrors: true }
-  }
-  return undefined
 }
 
 // Marks the first child of the first top-level reference and the second top-level reference as deleted.

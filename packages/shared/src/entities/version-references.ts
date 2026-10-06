@@ -53,6 +53,7 @@ export type PackageReference = Partial<Readonly<{
   latestRevision: boolean
   hasErrors: boolean
   changelogHasErrors: boolean
+  apiProcessorVersion: string
 }>>
 
 export type PackageReferenceDto = Partial<Readonly<{
@@ -67,6 +68,7 @@ export type PackageReferenceDto = Partial<Readonly<{
   notLatestRevision: boolean
   hasErrors: boolean
   changelogHasErrors: boolean
+  apiProcessorVersion: string
 }>>
 
 export function toVersionReferences(value: VersionReferencesDto): VersionReferences {

@@ -36,6 +36,7 @@ import { useActiveTabs } from '@netcracker/qubership-apihub-ui-shared/hooks/path
 import type { SidebarMenu } from '@netcracker/qubership-apihub-ui-shared/components/NavigationMenu'
 import type { PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
+import { useVersionProblemProcessorContext } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/useVersionProblemProcessorContext'
 import { useVersionReferences } from '@apihub/routes/root/useVersionReferences'
 
 export const OverviewNavigation: FC = memo(() => {
@@ -51,12 +52,13 @@ export const OverviewNavigation: FC = memo(() => {
     enabled: true,
   })
   const [updateDeletedReferences] = useUpdateDeletedReferences()
+  const processorContext = useVersionProblemProcessorContext()
 
   useEffect(() => {
     updateDeletedReferences({ versionReferences })
   }, [updateDeletedReferences, versionReferences])
 
-  const hasPackagesProblems = hasReferenceProblems(versionReferences)
+  const hasPackagesProblems = hasReferenceProblems(versionReferences, processorContext)
 
   return (
     <List>

@@ -4,16 +4,25 @@ import type {
   UnresolvedReference,
   VersionReferences,
 } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
+import {
+  resolveVersionProblemDetails,
+  type VersionProblemProcessorContext,
+} from '@netcracker/qubership-apihub-ui-shared/hooks/versions/versionProblemDetails'
 
 /**
- * Reports a deleted reference at any depth, or errors of a top-level reference. The backend already sets
- * `hasErrors` of a dashboard when one of its non-excluded references has errors.
+ * Reports a deleted reference at any depth, or a problem of a top-level reference version: errors, changelog errors,
+ * or an outdated api-processor. The backend already sets `hasErrors` of a dashboard when one of its non-excluded
+ * references has errors or changelog errors.
  */
-export function hasReferenceProblems(versionReferences: VersionReferences): boolean {
+export function hasReferenceProblems(
+  versionReferences: VersionReferences,
+  processorContext: VersionProblemProcessorContext,
+): boolean {
   const { references = [], packages = {} } = versionReferences
   return hasDeletedReferences(versionReferences) || references.some(({ packageRef, parentPackageRef }) => {
     const packageReference = packageRef ? packages[packageRef] : undefined
-    return !parentPackageRef && packageReference !== undefined && hasVersionErrors(packageReference)
+    return !parentPackageRef && packageReference !== undefined &&
+      hasVersionProblems(packageReference, processorContext)
   })
 }
 
@@ -32,8 +41,21 @@ export function getDeletedDescendantRefs(versionReferences: VersionReferences): 
   return markedRefs
 }
 
-export function hasVersionErrors({ hasErrors, changelogHasErrors }: PackageReference): boolean {
-  return (hasErrors ?? false) || (changelogHasErrors ?? false)
+/**
+ * Reports errors, changelog errors, or an outdated api-processor of the referenced version. A deleted reference is
+ * left to `hasDeletedReferences`.
+ */
+export function hasVersionProblems(
+  { hasErrors, changelogHasErrors, apiProcessorVersion, kind }: PackageReference,
+  processorContext: VersionProblemProcessorContext,
+): boolean {
+  return resolveVersionProblemDetails({
+    ...processorContext,
+    hasErrors,
+    changelogHasErrors,
+    apiProcessorVersion,
+    kind,
+  }).hasProblems
 }
 
 function getDeletedReferences({ references = [], packages = {} }: VersionReferences): UnresolvedReference[] {

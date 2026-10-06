@@ -25,11 +25,12 @@ import { styled } from '@mui/material/styles'
 import { useParams } from 'react-router-dom'
 import { useDeletedReferences } from '../useDeletedReferences'
 import { useConflictedReferences } from '../useConflictedReferences'
-import { hasVersionErrors } from '../PackagesAndDashboardsTree/referenceProblems'
+import { hasVersionProblems } from '../PackagesAndDashboardsTree/referenceProblems'
 import { useDashboardReferences } from './DashboardReferencesProvider'
 import { isNotEmptyMap, isNotEmptySet } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import { DotIndicator } from '@netcracker/qubership-apihub-ui-shared/components/DotIndicator'
 import { PUBLICATION_ERROR_MESSAGES } from '@netcracker/qubership-apihub-ui-shared/utils/publicationErrorMessages'
+import { useVersionProblemProcessorContext } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/useVersionProblemProcessorContext'
 
 export const ConfigureDashboardNavigation: FC = memo(() => {
   const activeTab = useActiveTabConfigureDashboard()
@@ -39,10 +40,12 @@ export const ConfigureDashboardNavigation: FC = memo(() => {
   const { data: deletedReferences } = useDeletedReferences(packageId!, versionId!)
   const { data: conflictedReferences } = useConflictedReferences(packageId!, versionId!)
   const configuredReferences = useDashboardReferences()
+  const processorContext = useVersionProblemProcessorContext()
   // The deleted-references cache tracks deleted references at any depth. The backend sets hasErrors of a dashboard
   // when one of its non-excluded references has errors, so the configured rows cover the errors below them.
+  // It does not count an outdated api-processor, so a nested reference built by one shows only on its own row.
   const hasPackagesProblems = isNotEmptyMap(deletedReferences) ||
-    configuredReferences.some(({ packageReference }) => hasVersionErrors(packageReference))
+    configuredReferences.some(({ packageReference }) => hasVersionProblems(packageReference, processorContext))
 
   return (
     <List>

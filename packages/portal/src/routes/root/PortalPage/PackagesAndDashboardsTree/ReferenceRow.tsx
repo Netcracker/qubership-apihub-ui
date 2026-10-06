@@ -85,6 +85,7 @@ export const ReferenceRow: FC<ReferenceRowProps> = memo<ReferenceRowProps>((
       latestRevision,
       hasErrors,
       changelogHasErrors,
+      apiProcessorVersion,
     },
     versionReferences,
     deletedDescendantRefs,
@@ -258,6 +259,7 @@ export const ReferenceRow: FC<ReferenceRowProps> = memo<ReferenceRowProps>((
                 versionKey={versionKey}
                 hasErrors={hasErrors}
                 changelogHasErrors={changelogHasErrors}
+                apiProcessorVersion={apiProcessorVersion}
                 kind={kind}
                 fontSize="extra-small"
               />
