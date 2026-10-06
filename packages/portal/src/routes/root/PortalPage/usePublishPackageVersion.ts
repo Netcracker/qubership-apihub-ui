@@ -76,7 +76,7 @@ export function usePublishPackageVersion(): [PublishPackageVersion, IsLoading, I
           title: 'View details',
           onClick: () => showPublicationErrorReportDialog({
             downloadFilename: `Error report for the package ${packageName}`,
-            errors,
+            errors: errors,
           }),
         },
       })
