@@ -3,14 +3,14 @@ import { Box, Button, Skeleton } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import { type Dispatch, type FC, memo, type SetStateAction, useCallback } from 'react'
 
-import type { Document } from '@apihub/entities/documents'
-import type { Key } from '@apihub/entities/keys'
-import { useEventBus } from '@apihub/routes/EventBusProvider'
+import type { Document } from '@portal/entities/documents'
+import type { Key } from '@portal/entities/keys'
+import { useEventBus } from '@portal/routes/EventBusProvider'
 import {
   type DocumentsTabSubPageKey,
   OPERATIONS_SUB_PAGE,
   OVERVIEW_SUB_PAGE,
-} from '@apihub/routes/root/PortalPage/VersionPage/OpenApiViewer/OpenApiViewer'
+} from '@portal/routes/root/PortalPage/VersionPage/OpenApiViewer/OpenApiViewer'
 import { DocumentTitleWithVersion } from '@netcracker/qubership-apihub-ui-shared/components/Titles/DocumentTitleWithVersion'
 import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/SearchBar'
 import { Toggler } from '@netcracker/qubership-apihub-ui-shared/components/Toggler'

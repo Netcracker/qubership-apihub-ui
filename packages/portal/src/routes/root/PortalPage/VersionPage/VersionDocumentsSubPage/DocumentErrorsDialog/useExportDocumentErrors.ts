@@ -8,7 +8,7 @@ import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-share
 import { API_V2 } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { optionalSearchParams } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 
-import { portalRequestBlob } from '@apihub/utils/requests'
+import { portalRequestBlob } from '@portal/utils/requests'
 import { useShowErrorNotification } from '../../../../BasePage/Notification'
 
 export function useExportDocumentErrors(): [ExportDocumentErrorsFunction, IsLoading] {

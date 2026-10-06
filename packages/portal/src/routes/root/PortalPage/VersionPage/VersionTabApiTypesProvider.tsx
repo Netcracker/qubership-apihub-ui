@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 
-import { usePackageVersionContent } from '@apihub/routes/root/usePackageVersionContent'
+import { usePackageVersionContent } from '@portal/routes/root/usePackageVersionContent'
 import { useApiQualityLinterEnabled, useApiQualityTabTooltip } from './ApiQualityValidationSummaryProvider'
 import { usePackageVersionApiTypes } from './usePackageVersionApiTypes'
 import {

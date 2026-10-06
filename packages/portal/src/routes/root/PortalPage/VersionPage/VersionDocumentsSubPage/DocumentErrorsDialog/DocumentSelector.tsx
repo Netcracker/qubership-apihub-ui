@@ -10,7 +10,7 @@ import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { DEFAULT_TEXT_COLOR } from '@netcracker/qubership-apihub-ui-shared/themes/colors'
 import { type FC, memo, type MouseEvent, useCallback, useState } from 'react'
 
-import type { Documents } from '@apihub/entities/documents'
+import type { Documents } from '@portal/entities/documents'
 
 export const EMPTY_DOCUMENT_OPTION = '#empty-document'
 

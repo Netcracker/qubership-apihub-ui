@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-import { useBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
-import { isLinkedComparedBreadcrumbPathItem } from '@apihub/routes/root/PortalPage/VersionPage/breadcrumbs'
-import { ExportChangesMenu } from '@apihub/routes/root/PortalPage/VersionPage/ExportChangesMenu'
+import { useBackwardLocationContext } from '@portal/routes/BackwardLocationProvider'
+import { isLinkedComparedBreadcrumbPathItem } from '@portal/routes/root/PortalPage/VersionPage/breadcrumbs'
+import { ExportChangesMenu } from '@portal/routes/root/PortalPage/VersionPage/ExportChangesMenu'
 import {
   COMPARE_DASHBOARDS_MODE,
   COMPARE_DIFFERENT_OPERATIONS_MODE,
   COMPARE_PACKAGES_MODE,
   COMPARE_SAME_OPERATIONS_MODE,
-} from '@apihub/routes/root/PortalPage/VersionPage/OperationContent/OperationView/OperationDisplayMode'
-import { useApiTypeSearchParam } from '@apihub/routes/root/PortalPage/VersionPage/useApiTypeSearchParam'
-import { useComparisonApiTypeProblems } from '@apihub/routes/root/PortalPage/VersionPage/useComparisonApiTypeProblems'
-import { useComparisonParams } from '@apihub/routes/root/PortalPage/VersionPage/useComparisonParams'
-import { useDownloadChangesAsExcel } from '@apihub/routes/root/PortalPage/VersionPage/useDownloadChangesAsExcel'
-import { useDownloadDdlChangesAsExcel } from '@apihub/routes/root/PortalPage/VersionPage/useDownloadDdlChangesAsExcel'
-import { useTagSearchFilter } from '@apihub/routes/root/PortalPage/VersionPage/useTagSearchFilter'
-import { useVersionSearchParam } from '@apihub/routes/root/useVersionSearchParam'
-import { getDefaultApiType, isApiTypeSelectorShown } from '@apihub/utils/operation-types'
+} from '@portal/routes/root/PortalPage/VersionPage/OperationContent/OperationView/OperationDisplayMode'
+import { useApiTypeSearchParam } from '@portal/routes/root/PortalPage/VersionPage/useApiTypeSearchParam'
+import { useComparisonApiTypeProblems } from '@portal/routes/root/PortalPage/VersionPage/useComparisonApiTypeProblems'
+import { useComparisonParams } from '@portal/routes/root/PortalPage/VersionPage/useComparisonParams'
+import { useDownloadChangesAsExcel } from '@portal/routes/root/PortalPage/VersionPage/useDownloadChangesAsExcel'
+import { useDownloadDdlChangesAsExcel } from '@portal/routes/root/PortalPage/VersionPage/useDownloadDdlChangesAsExcel'
+import { useTagSearchFilter } from '@portal/routes/root/PortalPage/VersionPage/useTagSearchFilter'
+import { useVersionSearchParam } from '@portal/routes/root/useVersionSearchParam'
+import { getDefaultApiType, isApiTypeSelectorShown } from '@portal/utils/operation-types'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { Box, IconButton, Typography } from '@mui/material'
 import { ApiTypeSelector } from '@netcracker/qubership-apihub-ui-shared/components/ApiTypeSelector'

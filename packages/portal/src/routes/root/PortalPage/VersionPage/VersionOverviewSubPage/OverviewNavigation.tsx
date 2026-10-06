@@ -37,7 +37,7 @@ import type { SidebarMenu } from '@netcracker/qubership-apihub-ui-shared/compone
 import type { PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { useVersionProblemProcessorContext } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/useVersionProblemProcessorContext'
-import { useVersionReferences } from '@apihub/routes/root/useVersionReferences'
+import { useVersionReferences } from '@portal/routes/root/useVersionReferences'
 
 export const OverviewNavigation: FC = memo(() => {
   const { packageId, versionId } = useParams()

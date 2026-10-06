@@ -10,7 +10,7 @@ import {
 
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 
-import { usePackageVersionContent } from '@apihub/routes/root/usePackageVersionContent'
+import { usePackageVersionContent } from '@portal/routes/root/usePackageVersionContent'
 
 type UseComparisonApiTypeProblemsParams = {
   originPackageKey?: PackageKey

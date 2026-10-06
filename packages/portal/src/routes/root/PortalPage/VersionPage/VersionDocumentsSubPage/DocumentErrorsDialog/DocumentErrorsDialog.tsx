@@ -1,5 +1,5 @@
-import type { ShowDocumentErrorsDetail } from '@apihub/routes/EventBusProvider'
-import { SHOW_DOCUMENT_ERRORS_DIALOG } from '@apihub/routes/EventBusProvider'
+import type { ShowDocumentErrorsDetail } from '@portal/routes/EventBusProvider'
+import { SHOW_DOCUMENT_ERRORS_DIALOG } from '@portal/routes/EventBusProvider'
 import { LoadingButton } from '@mui/lab'
 import { Box, Dialog, DialogContent, DialogTitle, Divider, IconButton, Skeleton, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'

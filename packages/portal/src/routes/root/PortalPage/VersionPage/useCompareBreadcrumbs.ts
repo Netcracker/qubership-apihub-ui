@@ -21,8 +21,8 @@ import { useParams } from 'react-router-dom'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import { REVISION_DELIMITER } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
 
-import { type OperationOptions, useOperation } from '@apihub/routes/root/PortalPage/VersionPage/useOperation'
-import { usePackage } from '@apihub/routes/root/usePackage'
+import { type OperationOptions, useOperation } from '@portal/routes/root/PortalPage/VersionPage/useOperation'
+import { usePackage } from '@portal/routes/root/usePackage'
 import { useVersionWithRevision } from '../../useVersionWithRevision'
 import {
   COMPARISON_OBJECT_TYPE_OPERATION_IN_DASHBOARD_REVISION,

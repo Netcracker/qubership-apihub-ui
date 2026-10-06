@@ -3,8 +3,8 @@ import type { FC, MutableRefObject } from 'react'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import type { Key } from '@apihub/entities/keys'
-import { usePortalPageSettingsContext } from '@apihub/routes/PortalPageSettingsProvider'
+import type { Key } from '@portal/entities/keys'
+import { usePortalPageSettingsContext } from '@portal/routes/PortalPageSettingsProvider'
 import { type ApiType, isApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import {
   CONTRACT_TYPE_DDL,
@@ -20,7 +20,7 @@ import { isEmpty, isNotEmpty } from '@netcracker/qubership-apihub-ui-shared/util
 import { NAVIGATION_MAX_WIDTH } from '@netcracker/qubership-apihub-ui-shared/utils/page-layouts'
 import { isEmptyTag } from '@netcracker/qubership-apihub-ui-shared/utils/tags'
 
-import { usePackageVersionContent } from '@apihub/routes/root/usePackageVersionContent'
+import { usePackageVersionContent } from '@portal/routes/root/usePackageVersionContent'
 import { useSetSelectedPreviewOperation } from '../../SelectedPreviewOperationProvider'
 import { usePackageKind } from '../../usePackageKind'
 import { usePackageParamsWithRef } from '../../usePackageParamsWithRef'
