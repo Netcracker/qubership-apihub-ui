@@ -1,11 +1,10 @@
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type {
-  PackageReference,
   UnresolvedReference,
   VersionReferences,
 } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
 import {
-  resolveVersionProblemDetails,
+  hasVersionProblems,
   type VersionProblemProcessorContext,
 } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/versionProblemDetails'
 
@@ -39,23 +38,6 @@ export function getDeletedDescendantRefs(versionReferences: VersionReferences): 
     }
   })
   return markedRefs
-}
-
-/**
- * Reports errors, changelog errors, or an outdated api-processor of the referenced version. A deleted reference is
- * left to `hasDeletedReferences`.
- */
-export function hasVersionProblems(
-  { hasErrors, changelogHasErrors, apiProcessorVersion, kind }: PackageReference,
-  processorContext: VersionProblemProcessorContext,
-): boolean {
-  return resolveVersionProblemDetails({
-    ...processorContext,
-    hasErrors,
-    changelogHasErrors,
-    apiProcessorVersion,
-    kind,
-  }).hasProblems
 }
 
 function getDeletedReferences({ references = [], packages = {} }: VersionReferences): UnresolvedReference[] {

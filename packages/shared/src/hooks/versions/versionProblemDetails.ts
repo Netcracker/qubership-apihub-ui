@@ -1,5 +1,6 @@
 import type { PackageKey, VersionKey } from '../../entities/keys'
 import { DASHBOARD_KIND, PACKAGE_KIND, type PackageKind } from '../../entities/packages'
+import type { PackageReference } from '../../entities/version-references'
 import { getApiProcessorMismatchTooltip, PUBLICATION_ERROR_MESSAGES } from '../../utils/publicationErrorMessages'
 
 export const VERSION_PROBLEM_KIND = {
@@ -140,6 +141,23 @@ export function resolveVersionProblemDetails(
     ...problem,
     ...dialogView,
   }
+}
+
+/**
+ * Reports errors, changelog errors, or an outdated api-processor of the referenced version. A deleted reference is
+ * left to the caller.
+ */
+export function hasVersionProblems(
+  { hasErrors, changelogHasErrors, apiProcessorVersion, kind }: PackageReference,
+  processorContext: VersionProblemProcessorContext,
+): boolean {
+  return resolveVersionProblemDetails({
+    ...processorContext,
+    hasErrors,
+    changelogHasErrors,
+    apiProcessorVersion,
+    kind,
+  }).hasProblems
 }
 
 function resolveVersionProblemCore(

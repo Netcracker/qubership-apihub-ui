@@ -25,12 +25,12 @@ import { styled } from '@mui/material/styles'
 import { useParams } from 'react-router-dom'
 import { useDeletedReferences } from '../useDeletedReferences'
 import { useConflictedReferences } from '../useConflictedReferences'
-import { hasVersionProblems } from '../PackagesAndDashboardsTree/referenceProblems'
 import { useDashboardReferences } from './DashboardReferencesProvider'
 import { isNotEmptyMap, isNotEmptySet } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
 import { DotIndicator } from '@netcracker/qubership-apihub-ui-shared/components/DotIndicator'
 import { PUBLICATION_ERROR_MESSAGES } from '@netcracker/qubership-apihub-ui-shared/utils/publicationErrorMessages'
 import { useVersionProblemProcessorContext } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/useVersionProblemProcessorContext'
+import { hasVersionProblems } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/versionProblemDetails'
 
 export const ConfigureDashboardNavigation: FC = memo(() => {
   const activeTab = useActiveTabConfigureDashboard()

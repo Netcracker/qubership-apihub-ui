@@ -26,6 +26,7 @@ import { ChangeSeverityIndicator } from '@netcracker/qubership-apihub-ui-shared/
 import { Changes } from '@netcracker/qubership-apihub-ui-shared/components/Changes'
 import { VersionStatusChip } from '@netcracker/qubership-apihub-ui-shared/components/VersionStatusChip'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
+import { VersionErrorIndicator } from '@netcracker/qubership-apihub-ui-shared/components/ErrorIndicators/VersionErrorIndicator'
 import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
 import { CONTENT_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import { API_TYPE_TITLE_MAP } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
@@ -42,6 +43,7 @@ import {
 } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 import { getComparisonApiTypesFromSummary, type VersionComparisonContractsSummary } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-changes-summary'
 import { hasDdlComparisonChanges } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl'
+import type { PackageRef } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { calculateAction } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import type { DashboardComparisonSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
@@ -191,6 +193,8 @@ export const DashboardsCompareContent: FC = memo(() => {
                   contractsChangesSummary,
                   parentPackages = [],
                   latestRevision,
+                  packageRef,
+                  previousPackageRef,
                 } = refChangesSummary
 
                 const changeSummary = calculateRefChangeSummary(operationTypes, contractsChangesSummary)
@@ -261,6 +265,7 @@ export const DashboardsCompareContent: FC = memo(() => {
                             status: previousStatus,
                             path: path,
                           } : undefined}
+                          problemSource={previousPackageRef}
                         />
                       </Box>
                     </Grid>
@@ -280,6 +285,7 @@ export const DashboardsCompareContent: FC = memo(() => {
                           status: status,
                           path: path,
                         } : undefined}
+                        problemSource={packageRef}
                         operationTypes={operationTypes}
                         contractsChangesSummary={contractsChangesSummary}
                       />
@@ -305,12 +311,14 @@ type PackageProps = {
     path?: string
     status?: VersionStatus
   }
+  problemSource?: PackageRef
   operationTypes?: ReadonlyArray<OperationType>
   contractsChangesSummary?: VersionComparisonContractsSummary
 }
 
 const Package: FC<PackageProps> = memo<PackageProps>(({
   value,
+  problemSource,
   operationTypes,
   contractsChangesSummary,
 }) => {
@@ -323,6 +331,15 @@ const Package: FC<PackageProps> = memo<PackageProps>(({
       {title && <Typography component="span" noWrap variant="inherit"
         data-testid="PackageVersionTitle">{title} / {versionKey}</Typography>}
       {status && <VersionStatusChip sx={{ ml: 1 }} status={status} data-testid="PackageVersionStatus" />}
+      {problemSource && (
+        <RowVersionErrorIndicator
+          versionKey={versionKey}
+          hasErrors={problemSource.hasErrors}
+          changelogHasErrors={problemSource.changelogHasErrors}
+          apiProcessorVersion={problemSource.apiProcessorVersion}
+          tabIndex={-1}
+        />
+      )}
     </Box>
   )
   return (
@@ -370,6 +387,10 @@ const Package: FC<PackageProps> = memo<PackageProps>(({
 })
 
 Package.displayName = 'Package'
+
+const RowVersionErrorIndicator = styled(VersionErrorIndicator)(({ theme }) => ({
+  marginLeft: theme.spacing(1),
+}))
 
 const ApiTypeChangeLine = styled(Box)(({ theme }) => ({
   display: 'flex',

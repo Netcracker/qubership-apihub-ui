@@ -16,7 +16,7 @@
 
 import type { FC, HTMLAttributes, ReactNode } from 'react'
 import { memo } from 'react'
-import type { TooltipProps } from '@mui/material'
+import type { BoxProps, TooltipProps } from '@mui/material'
 import { Box, ListItem, Tooltip } from '@mui/material'
 import { TextWithOverflowTooltip } from './TextWithOverflowTooltip'
 import type { TestableProps } from './Testable'
@@ -29,6 +29,7 @@ export type OptionItemProps = {
   subtitle?: string
   indicator?: ReactNode
   chip?: ReactNode
+  chipAlignSelf?: BoxProps['alignSelf']
   overflowTooltipPlacement?: TooltipProps['placement']
   tooltipProps?: Omit<TooltipProps, 'children'>
 } & TestableProps
@@ -41,6 +42,7 @@ export const OptionItem: FC<OptionItemProps> = memo<OptionItemProps>(({
   subtitle,
   indicator,
   chip,
+  chipAlignSelf,
   overflowTooltipPlacement = 'right',
   tooltipProps: { title: tooltipTitle, ...rest } = {},
   'data-testid': dataTestId,
@@ -82,7 +84,7 @@ export const OptionItem: FC<OptionItemProps> = memo<OptionItemProps>(({
               </Box>
               {indicator}
             </Box>
-            {chip && <Box flexShrink={0}>{chip}</Box>}
+            {chip && <Box flexShrink={0} alignSelf={chipAlignSelf}>{chip}</Box>}
           </Box>
         </ListItem>
       </Box>
