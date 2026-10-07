@@ -19,7 +19,7 @@ import type {
   ApihubApiCompatibilityKind,
   BuildConfig,
   ContractType,
-  NotificationsError,
+  FailedBuildNotifications,
   ResolvedDeprecatedOperations,
   ResolvedGroupDocuments,
   ResolvedOperation,
@@ -28,6 +28,7 @@ import type {
 } from '@netcracker/qubership-apihub-api-processor'
 import { generatePath } from 'react-router-dom'
 import type { ApiType } from '../entities/api-types'
+import { appendFailedBuildNotifications } from './failed-build-notifications'
 import type {
   AsyncApiOperationDto,
   GraphQlOperationDto,
@@ -157,9 +158,6 @@ export async function fetchVersionDocuments(
 
 export type ErrorMessage = string
 
-// what a failed build had reported before it failed, sent with the error status
-export type FailedBuildNotifications = Pick<NotificationsError, 'notifications' | 'comparisonNotifications'>
-
 export type SetPublicationDetailsOptions = {
   packageKey: Key
   publishKey: Key
@@ -188,12 +186,7 @@ export async function setPublicationDetails(options: SetPublicationDetailsOption
   formData.append('builderId', builderId)
   errors && formData.append('errors', errors)
   data && formData.append('data', data, 'package.zip')
-  // the backend reads this part only as a file, so it needs a file name
-  notifications && formData.append(
-    'notifications',
-    new Blob([JSON.stringify(notifications)], { type: 'application/json' }),
-    'failed-build-notifications.json',
-  )
+  notifications && appendFailedBuildNotifications(formData, notifications)
 
   const signal = abortController?.signal
   const packageId = encodeURIComponent(packageKey)

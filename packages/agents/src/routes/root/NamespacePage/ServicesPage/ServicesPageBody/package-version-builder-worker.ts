@@ -31,6 +31,7 @@ import {
   versionOperationsResolver,
   versionReferencesResolver,
 } from '@netcracker/qubership-apihub-ui-shared/utils/builder-resolvers'
+import { toFailedPublicationDetails } from '@netcracker/qubership-apihub-ui-shared/utils/failed-build-notifications'
 import { NONE_PUBLISH_STATUS, RUNNING_PUBLISH_STATUS } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
 import { getSystemInfo } from '@netcracker/qubership-apihub-ui-shared/utils/system-info'
 import { expose } from 'comlink'
@@ -125,7 +126,7 @@ const worker: PackageVersionBuilderWorker = {
         status: status,
         abortController: null,
         builderId: builderId,
-        errors: `${error}`,
+        ...toFailedPublicationDetails(error),
       })
     }
 
