@@ -1,1 +1,0 @@
-import{n as e}from"./rolldown-runtime-BcKkbAw3.js";function t(e,t){var n;let{levels:r,indentLevel:i}=e;return((!r||r.length===0?i:r.at(-1)-((n=this.electricInput)!=null&&n.test(t)?1:0))||0)*(this.config?.indentUnit||0)}var n,r;function i(){return(i=e((()=>{n=Object.defineProperty,r=(e,t)=>n(e,`name`,{value:t,configurable:!0}),r(t,`indent`)})))()}export{t as n,i as t};
