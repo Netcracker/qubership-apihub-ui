@@ -43,6 +43,8 @@ export const PUBLICATION_ERROR_MESSAGES = {
   },
   document: {
     itemError: 'There were errors when processing the document. Click Document Errors button to see details.',
+    // The comparison pages have no Document Errors button, so their document filter shows the first sentence of itemError.
+    filterItemError: 'There were errors when processing the document.',
     menuDownload: 'Download document',
   },
   emptyState: {
