@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-BcKkbAw3.js";import{f as t}from"./transformToDto-DUB_evix-UvHolb-S.js";var n,r,i;function a(){return(a=e((()=>{t(),n=`mcp`,r=`ddl`,i={[n]:`MCP`,[r]:`DDL`}})))()}export{i as n,a as r,r as t};

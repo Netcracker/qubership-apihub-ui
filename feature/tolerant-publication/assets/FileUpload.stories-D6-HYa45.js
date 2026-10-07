@@ -1,0 +1,3 @@
+import{n as e}from"./rolldown-runtime-BcKkbAw3.js";import{t}from"./react---BZM-86.js";import{t as n}from"./jsx-runtime--WVWf14b.js";import{n as r,t as i}from"./Box-CzqjOcoU.js";import{n as a,t as o}from"./FileUpload-Dofamow8.js";var s,c,l,u,d;function f(){return(f=e((()=>{t(),a(),r(),s=n(),c={title:`File Upload`},l=e=>(0,s.jsx)(o,{...e,children:(0,s.jsx)(i,{children:`Drop files here`})}),u=l.bind({}),u.args={onDrop:e=>console.log(`files`,e)},u.storyName=`File Upload`,u.parameters={...u.parameters,docs:{...u.parameters?.docs,source:{originalSource:`args => <FileUpload {...args}>
+    <Box>Drop files here</Box>
+  </FileUpload>`,...u.parameters?.docs?.source}}},d=[`FileUploadStory`]})))()}f();export{u as FileUploadStory,d as __namedExportsOrder,c as default};
