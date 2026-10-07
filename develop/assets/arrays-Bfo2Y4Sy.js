@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-BcKkbAw3.js";function t(e){return e&&Array.isArray(e)?!e.length:!0}function n(e){return!!(e&&Array.isArray(e)&&e.length)}function r(e){return Object.keys(e).length>0}function i(){return(i=e((()=>{})))()}export{r as i,t as n,n as r,i as t};
