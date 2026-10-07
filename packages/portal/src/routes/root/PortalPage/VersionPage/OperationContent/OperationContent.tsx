@@ -127,7 +127,9 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
       apiType = DEFAULT_API_TYPE,
     } = useParams<{ packageId: string; apiType: ApiType }>()
     const {
+      originPackage,
       originPackageKey,
+      changedPackage,
       changedPackageKey,
       changedVersionKey,
       originVersionKey,
@@ -344,12 +346,14 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
               <VersionErrorIndicatorWithFetch
                 packageKey={originPackageKey}
                 versionKey={originVersionKey}
+                kind={originPackage?.kind}
               />
             }
             swapperBreadcrumbsAfterComponent={
               <VersionErrorIndicatorWithFetch
                 packageKey={changedPackageKey}
                 versionKey={changedVersionKey}
+                kind={changedPackage?.kind}
               />
             }
           />

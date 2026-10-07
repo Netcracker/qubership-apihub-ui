@@ -54,7 +54,10 @@ import {
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import type { DdlEntityChangeEntry } from '@netcracker/qubership-apihub-ui-shared/entities/contracts-ddl-changelog'
 import type { VersionChanges } from '@netcracker/qubership-apihub-ui-shared/entities/version-changelog'
-import { isDashboardComparisonSummary } from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
+import {
+  isDashboardComparisonSummary,
+  type VersionChangesSummary,
+} from '@netcracker/qubership-apihub-ui-shared/entities/version-changes-summary'
 import { resolveComparisonHeaderProblemDetails } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/comparisonProblemDetails'
 import {
   useSeverityFiltersSearchParam,
@@ -231,11 +234,11 @@ export const ComparisonToolbar: FC<ComparisonPageToolbarProps> = memo<Comparison
   const comparisonHeaderProblem = useMemo(
     () => (isAdHocComparison
       ? resolveComparisonHeaderProblemDetails({
-        comparisonHasErrors: changesSummary?.hasErrors ?? false,
+        comparisonHasErrors: getComparisonHasErrors(changesSummary, refPackageId),
         kind: isDashboardsComparison ? DASHBOARD_KIND : PACKAGE_KIND,
       })
       : undefined),
-    [changesSummary, isAdHocComparison, isDashboardsComparison],
+    [changesSummary, isAdHocComparison, isDashboardsComparison, refPackageId],
   )
 
   const showComparisonIndicator = comparisonHeaderProblem?.hasProblems ?? false
@@ -359,6 +362,16 @@ function getChangeSeverityCategory(
   if (isDashboardsComparison) return CATEGORY_PACKAGE
   if (isPackagesComparison) return CATEGORY_OPERATION
   return undefined
+}
+
+function getComparisonHasErrors(
+  changesSummary: VersionChangesSummary | undefined,
+  refPackageKey: Key | undefined,
+): boolean {
+  if (refPackageKey && changesSummary && isDashboardComparisonSummary(changesSummary)) {
+    return changesSummary.find(({ refKey }) => refKey === refPackageKey)?.hasErrors ?? false
+  }
+  return changesSummary?.hasErrors ?? false
 }
 
 const COMPARISON_PAGE_TOOLBAR_STYLES = {

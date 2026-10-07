@@ -99,8 +99,10 @@ export const VersionCompareContent: FC = memo(() => {
   const { isPackageFromDashboard } = useIsPackageFromDashboard()
 
   const {
+    originPackage,
     originPackageKey,
     originVersionKey,
+    changedPackage,
     changedPackageKey,
     changedVersionKey,
     apiType,
@@ -236,12 +238,14 @@ export const VersionCompareContent: FC = memo(() => {
           <VersionErrorIndicatorWithFetch
             packageKey={originPackageKey}
             versionKey={originVersionKey}
-           />
+            kind={originPackage?.kind}
+          />
         }
         customComponentAfterSwapperBreadcrumbs={
           <VersionErrorIndicatorWithFetch
             packageKey={changedPackageKey}
             versionKey={changedVersionKey}
+            kind={changedPackage?.kind}
           />
         }
       />
