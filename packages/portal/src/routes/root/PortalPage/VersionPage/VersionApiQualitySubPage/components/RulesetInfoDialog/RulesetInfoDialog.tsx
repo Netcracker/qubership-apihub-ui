@@ -1,16 +1,16 @@
-import { LINTER_API_TYPE_TITLE_MAP } from '@apihub/entities/api-quality/linter-api-types'
-import { RulesetStatuses, type Ruleset } from '@apihub/entities/api-quality/rulesets'
+import { LINTER_API_TYPE_TITLE_MAP } from '@portal/entities/api-quality/linter-api-types'
+import { type Ruleset } from '@portal/entities/api-quality/rulesets'
 import { Box, Dialog, DialogContent, DialogTitle, IconButton, Skeleton } from '@mui/material'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { useCallback, type FC } from 'react'
 
-import { useLinters } from '@apihub/api-hooks/ApiQuality/useLinters'
-import { useRulesetActivationHistory } from '@apihub/api-hooks/ApiQuality/useRulesetActivationHistory'
-import { useRulesetMetadata } from '@apihub/api-hooks/ApiQuality/useRulesetMetadata'
-import { getLinterName } from '@apihub/utils/api-quality/linters'
+import { useLinters } from '@portal/api-hooks/ApiQuality/useLinters'
+import { useRulesetActivationHistory } from '@portal/api-hooks/ApiQuality/useRulesetActivationHistory'
+import { useRulesetMetadata } from '@portal/api-hooks/ApiQuality/useRulesetMetadata'
+import { getLinterName } from '@portal/utils/api-quality/linters'
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
-import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
+import { RulesetSpecTypeChip, RulesetStatusChip } from '@portal/components/ApiQuality/RulesetChips'
 import { NAVIGATION_PLACEHOLDER_AREA, Placeholder } from '@netcracker/qubership-apihub-ui-shared/components/Placeholder'
 import capitalize from 'lodash-es/capitalize'
 import { RulesetFilePanel } from '../../RulesetFilePanel'
@@ -45,13 +45,12 @@ const RulesetInfoPopup: FC<PopupProps> = (props) => {
         </Box>
         {ruleset && (
           <Box display='flex' gap={1} mt={1} fontWeight={500}>
-            <CustomChip
-              value='rulesetSpecType'
+            <RulesetSpecTypeChip
               label={LINTER_API_TYPE_TITLE_MAP[ruleset.apiType]}
               data-testid="ValidationRulesetApiTypeChip"
             />
-            <CustomChip
-              value={ruleset.status === RulesetStatuses.ACTIVE ? 'rulesetActive' : 'rulesetInactive'}
+            <RulesetStatusChip
+              status={ruleset.status}
               label={capitalize(ruleset.status)}
               data-testid="ValidationRulesetStatusChip"
             />

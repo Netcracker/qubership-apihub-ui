@@ -27,13 +27,14 @@ import { getOperationsPath } from '../../../../NavigationProvider'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { DEFAULT_API_TYPE, isAsyncApiOperation } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
+import { useBackwardLocationContext, useSetBackwardLocationContext } from '@portal/routes/BackwardLocationProvider'
 import { ExpandableItem } from '@netcracker/qubership-apihub-ui-shared/components/ExpandableItem'
 import { DOCUMENT_SEARCH_PARAM, REF_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import { DASHBOARD_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
-import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
+import { AsyncApiActionChip } from '@netcracker/qubership-apihub-ui-shared/components/Operations/AsyncApiActionChip'
+import { DeprecatedBadge } from '@netcracker/qubership-apihub-ui-shared/components/Operations/DeprecatedBadge'
 import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
 
 export type AsyncApiTableCellProps = {
@@ -97,17 +98,13 @@ export const AsyncApiTableCell: FC<AsyncApiTableCellProps> = memo<AsyncApiTableC
             </OverflowTooltip>
 
             {deprecated && (
-              <CustomChip
-                value="deprecated"
-                label="Deprecated"
-                isExtraSmall
-              />
+              <DeprecatedBadge/>
             )}
           </Box>
 
           {/* Action badge and channel path */}
           <Box display="flex" alignItems="center" gap={1} mt={0.5} data-testid="OperationPath">
-            <CustomChip value={action.toLowerCase()} variant="outlined" />
+            <AsyncApiActionChip action={action} />
             <TextWithOverflowTooltip tooltipText={channel} variant="subtitle2">
               {channel}
             </TextWithOverflowTooltip>

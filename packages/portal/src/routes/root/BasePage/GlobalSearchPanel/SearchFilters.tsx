@@ -36,22 +36,22 @@ import {
 import type { Package } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { GROUP_KIND, PACKAGE_KIND, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { handleVersionsRevision } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
-import { useEventBus } from '@apihub/routes/EventBusProvider'
+import { useEventBus } from '@portal/routes/EventBusProvider'
 import { disableAutocompleteSearch } from '@netcracker/qubership-apihub-ui-shared/utils/mui'
 import { OptionItem } from '@netcracker/qubership-apihub-ui-shared/components/OptionItem'
-import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
+import { VersionStatusChip } from '@netcracker/qubership-apihub-ui-shared/components/VersionStatusChip'
 import { CalendarIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CalendarIcon'
 import {
   API_TYPE_REST,
   API_TYPES,
 } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
-import type { ApiContract } from '@apihub/entities/global-search'
+import type { ApiContract } from '@portal/entities/global-search'
 import {
   CONTRACT_TYPES,
   getRouteApiTypeTitle,
 } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 import { DEFAULT_DEBOUNCE } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
-import { usePackage } from '@apihub/routes/root/usePackage'
+import { usePackage } from '@portal/routes/root/usePackage'
 import { toISODateRange } from '@netcracker/qubership-apihub-ui-shared/utils/date'
 import {
   useSystemConfiguration,
@@ -412,8 +412,8 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
             key={option}
             data-testid={`${PUBLISH_STATUSES.get(option)}Option`}
           >
-            <CustomChip
-              value={option}
+            <VersionStatusChip
+              status={option}
               data-testid={`${PUBLISH_STATUSES.get(option)}Chip`}
             />
           </ListItem>}
@@ -441,9 +441,9 @@ export const SearchFilters: FC<SearchFilters> = memo(({ enabledFilters }) => {
                   },
                 },
                 startAdornment: status
-                  ? <CustomChip
+                  ? <VersionStatusChip
                     sx={{ height: 16, mb: 1 }}
-                    value={status}
+                    status={status}
                     data-testid={`${PUBLISH_STATUSES.get(status)}Chip`}/>
                   : null,
               }}

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryFn } from '@storybook/react'
+import type { Meta, StoryFn } from '@storybook/react-vite'
 import React from 'react'
 import Box from '@mui/material/Box'
 import { restDeprecatedOperations } from './samples/operations-samples'
@@ -53,6 +53,6 @@ const OperationTitleWithMetaFn: StoryFn<OperationTitleWithMetaProps> = (args) =>
 export const OperationTitleWithMetaStory = OperationTitleWithMetaFn.bind({})
 OperationTitleWithMetaStory.args = {
   operation: restDeprecatedOperations[1],
-  badgeText: 'Some barge text',
+  deprecated: true,
 }
 OperationTitleWithMetaStory.storyName = 'Operation Title With Meta'

@@ -26,7 +26,7 @@ import { getOperationsPath } from '../../../../NavigationProvider'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { OperationData } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
 import { DEFAULT_API_TYPE } from '@netcracker/qubership-apihub-ui-shared/entities/operations'
-import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
+import { useBackwardLocationContext, useSetBackwardLocationContext } from '@portal/routes/BackwardLocationProvider'
 import { ExpandableItem } from '@netcracker/qubership-apihub-ui-shared/components/ExpandableItem'
 import { OperationTitleWithMeta } from '@netcracker/qubership-apihub-ui-shared/components/Operations/OperationTitleWithMeta'
 import { DOCUMENT_SEARCH_PARAM, REF_SEARCH_PARAM } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
@@ -73,7 +73,7 @@ export const EndpointTableCell: FC<EndpointTableCellProps> = memo<EndpointTableC
           operation={operation}
           link={link}
           onLinkClick={onClickLink}
-          badgeText={operation.deprecated ? 'Deprecated' : undefined}
+          deprecated={operation.deprecated}
         />
       </ExpandableItem>
     </Box>

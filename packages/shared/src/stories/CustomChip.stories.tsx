@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { CustomChip } from '../components/CustomChip'
 
 const meta: Meta<typeof CustomChip> = {
@@ -34,9 +34,9 @@ export const DefaultStory: Story = {
   },
 }
 
-export const MethodType: Story = {
+export const OutlinedChip: Story = {
   args: {
-    value: 'post',
+    value: 'Some text',
     isExtraSmall: false,
     variant: 'outlined',
     onDelete: undefined,

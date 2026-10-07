@@ -49,12 +49,12 @@ import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/ut
 import { RELEASE_VERSION_STATUS } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
 import { BodyCard } from '@netcracker/qubership-apihub-ui-shared/components/BodyCard'
 import { LoadingIndicator } from '@netcracker/qubership-apihub-ui-shared/components/LoadingIndicator'
-import { TitledValue } from '@apihub/components/TitledValue'
+import { TitledValue } from '@portal/components/TitledValue'
 import { transformStringValue } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
 import type { Package } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { DASHBOARD_KIND, GROUP_KIND, PACKAGE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import type { PackageVersion } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
-import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
+import { VersionStatusChip } from '@netcracker/qubership-apihub-ui-shared/components/VersionStatusChip'
 import { filterChangedFormFields } from '@netcracker/qubership-apihub-ui-shared/utils/react-hook-form'
 
 export const GeneralPackageSettingsTabEditor: FC<PackageSettingsTabProps> = memo<PackageSettingsTabProps>(({
@@ -263,7 +263,7 @@ export const GeneralPackageSettingsTabEditor: FC<PackageSettingsTabProps> = memo
                           renderOption={(props, { key, status }) => (
                             <ListItem {...props}>
                               <ListItemText>{getSplittedVersionKey(key).versionKey}</ListItemText>
-                              <CustomChip value={status}/>
+                              <VersionStatusChip status={status}/>
                             </ListItem>
                           )}
                           renderInput={(params) => (

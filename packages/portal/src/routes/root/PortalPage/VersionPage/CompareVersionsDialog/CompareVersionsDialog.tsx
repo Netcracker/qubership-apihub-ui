@@ -19,8 +19,8 @@ import * as React from 'react'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
-import { useEffectOnce, useLocation } from 'react-use'
-import { useInvalidatePackageVersions, usePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
+import { useLocation } from 'react-use'
+import { usePackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
 import { usePackage } from '../../../usePackage'
 import { usePackages } from '../../../usePackages'
 import { usePackageVersionContent } from '../../../usePackageVersionContent'
@@ -29,18 +29,18 @@ import { useVersionCandidate } from './useVersionCandidate'
 import { useNavigation } from '../../../../NavigationProvider'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import { SHOW_COMPARE_VERSIONS_DIALOG } from '@apihub/routes/EventBusProvider'
+import { SHOW_COMPARE_VERSIONS_DIALOG } from '@portal/routes/EventBusProvider'
 import type { PackageKind } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { DASHBOARD_KIND, PACKAGE_KIND, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import { getSplittedVersionKey, handleVersionsRevision } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
-import { useBackwardLocationContext, useSetBackwardLocationContext } from '@apihub/routes/BackwardLocationProvider'
+import { useBackwardLocationContext, useSetBackwardLocationContext } from '@portal/routes/BackwardLocationProvider'
 import { useSearchParam } from '@netcracker/qubership-apihub-ui-shared/hooks/searchparams/useSearchParam'
 import {
   API_TYPE_SEARCH_PARAM,
   PACKAGE_SEARCH_PARAM,
   VERSION_SEARCH_PARAM,
 } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
-import { getDefaultApiType } from '@apihub/utils/operation-types'
+import { getDefaultApiType } from '@portal/utils/operation-types'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type {
   CompareVersionsDialogData,
@@ -130,10 +130,6 @@ function useDialogData(
   const { navigateToVersionsComparison } = useNavigation()
   const backwardLocation = useBackwardLocationContext()
   const setBackwardLocation = useSetBackwardLocationContext()
-
-  // TODO: Need to move it outside
-  const invalidatePackageVersions = useInvalidatePackageVersions()
-  useEffectOnce(() => invalidatePackageVersions())
 
   const { packageId: defaultPackageKey, versionId: defaultVersionKey } = useParams()
   const searchPackageKey = useSearchParam(PACKAGE_SEARCH_PARAM) ?? defaultPackageKey

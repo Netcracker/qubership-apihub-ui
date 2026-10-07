@@ -34,8 +34,7 @@ import { LoadingButton } from '@mui/lab'
 import { Controller, useForm } from 'react-hook-form'
 import { usePackages } from '../../usePackages'
 import { useEffectOnce } from 'react-use'
-import type { ControllerFieldState, ControllerRenderProps } from 'react-hook-form/dist/types/controller'
-import type { UseFormStateReturn } from 'react-hook-form/dist/types'
+import type { ControllerFieldState, ControllerRenderProps, UseFormStateReturn } from 'react-hook-form'
 import { useDashboardReferences, useSetDashboardReferences } from './DashboardReferencesProvider'
 import { getReferences } from '../../useVersionReferences'
 import { useHandleAddedReferences } from '../useHandleReferences'
@@ -44,7 +43,7 @@ import type { Package } from '@netcracker/qubership-apihub-ui-shared/entities/pa
 import { DASHBOARD_KIND, PACKAGE_KIND, WORKSPACE_KIND } from '@netcracker/qubership-apihub-ui-shared/entities/packages'
 import type { PopupProps } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
 import { PopupDelegate } from '@netcracker/qubership-apihub-ui-shared/components/PopupDelegate'
-import { SHOW_ADD_PACKAGE_DIALOG } from '@apihub/routes/EventBusProvider'
+import { SHOW_ADD_PACKAGE_DIALOG } from '@portal/routes/EventBusProvider'
 import type { PackageVersion } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
 import type { ReferenceKind } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
 import { toVersionReferences } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
@@ -54,7 +53,7 @@ import { DEFAULT_DEBOUNCE } from '@netcracker/qubership-apihub-ui-shared/utils/c
 import { OptionItem } from '@netcracker/qubership-apihub-ui-shared/components/OptionItem'
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import { isEmpty } from '@netcracker/qubership-apihub-ui-shared/utils/arrays'
-import { CustomChip } from '@netcracker/qubership-apihub-ui-shared/components/CustomChip'
+import { VersionStatusChip } from '@netcracker/qubership-apihub-ui-shared/components/VersionStatusChip'
 import { DialogForm } from '@netcracker/qubership-apihub-ui-shared/components/DialogForm'
 import { usePagedPackageVersions } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/usePackageVersions'
 import {
@@ -242,7 +241,7 @@ const AddPackagePopup: FC<AddPackagePopupProps> = memo<AddPackagePopupProps>(({ 
         renderOption={(props, { key, status }) => (
           <ListItem {...props}>
             <ListItemText>{getSplittedVersionKey(key).versionKey}</ListItemText>
-            <CustomChip value={status}/>
+            <VersionStatusChip status={status}/>
           </ListItem>
         )}
         isOptionEqualToValue={(option, value) => option.key === value?.key}
