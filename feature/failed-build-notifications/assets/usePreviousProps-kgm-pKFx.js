@@ -1,0 +1,1 @@
+import{n as e,s as t}from"./rolldown-runtime-BcKkbAw3.js";import{t as n}from"./react---BZM-86.js";var r,i;function a(){return(a=e((()=>{r=t(n()),i=e=>{let t=r.useRef({});return r.useEffect(()=>{t.current=e}),t.current}})))()}export{i as n,a as t};
