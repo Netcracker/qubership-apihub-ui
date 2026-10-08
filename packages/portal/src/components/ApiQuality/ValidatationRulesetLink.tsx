@@ -16,6 +16,9 @@ type ValidationRulesetLinkProps = {
   loading: IsLoading
 }
 
+// Keeps the linter name readable: when space runs out, the chips are clipped before the name is.
+const RULESET_TITLE_MIN_WIDTH = 72
+
 // First Order Component
 export const ValidationRulesetLink: FC<ValidationRulesetLinkProps> = memo<ValidationRulesetLinkProps>(props => {
   const { data, loading } = props
@@ -46,8 +49,16 @@ export const ValidationRulesetLink: FC<ValidationRulesetLinkProps> = memo<Valida
   const fullRulesetTitle = `${linterTitle} ${data.name}`
 
   return (
-    <Box display='flex' justifyContent='space-between' alignItems='center' gap={1} width='100%' minWidth={0}>
-      <Box display='flex' gap={1} minWidth={0} flexGrow={1}>
+    <Box
+      display='flex'
+      justifyContent='space-between'
+      alignItems='center'
+      gap={1}
+      width='100%'
+      minWidth={0}
+      overflow='hidden'
+    >
+      <Box display='flex' gap={1} minWidth={RULESET_TITLE_MIN_WIDTH} flexGrow={1}>
         <TextWithOverflowTooltip
           data-id='overflowtext'
           tooltipText={fullRulesetTitle}
