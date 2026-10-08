@@ -2,12 +2,13 @@ import { type RulesetMetadata } from '@portal/entities/api-quality/rulesets'
 import { LINTER_API_TYPE_TITLE_MAP } from '@portal/entities/api-quality/linter-api-types'
 import { useEventBus } from '@portal/routes/EventBusProvider'
 import { Box, Link, Skeleton } from '@mui/material'
+import type { Theme } from '@mui/material/styles'
 import { styled } from '@mui/material/styles'
 import { RulesetSpecTypeChip, RulesetStatusChip } from '@portal/components/ApiQuality/RulesetChips'
 import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import capitalize from 'lodash-es/capitalize'
-import type { FC } from 'react'
+import type { FC, ReactNode } from 'react'
 import { memo, useCallback } from 'react'
 import { useLinters } from '@portal/api-hooks/ApiQuality/useLinters'
 import { getLinterName } from '@portal/utils/api-quality/linters'
@@ -15,15 +16,23 @@ import { getLinterName } from '@portal/utils/api-quality/linters'
 type ValidationRulesetLinkProps = {
   data: RulesetMetadata | undefined
   loading: IsLoading
-  // When the link runs out of space, hides the chips one by one before it truncates the title.
+  // On overflow, hides the status chip, then the API type chip, then truncates the title.
   hideChipsOnOverflow?: boolean
+  // Shown after the last visible chip. Works only with `hideChipsOnOverflow`.
+  endAdornment?: ReactNode
 }
 
 const CHIP_HEIGHT = 24
+// A small MUI icon.
+const END_ADORNMENT_WIDTH = 20
+const FIRST_FLOAT_WIDTH = 1
+const CHIPS_MIN_WIDTH = FIRST_FLOAT_WIDTH + END_ADORNMENT_WIDTH
+// A space, about three characters of the ruleset name, and an ellipsis.
+const MIN_NAME_LENGTH = 5
 
 // First Order Component
 export const ValidationRulesetLink: FC<ValidationRulesetLinkProps> = memo<ValidationRulesetLinkProps>(props => {
-  const { data, loading, hideChipsOnOverflow = false } = props
+  const { data, loading, hideChipsOnOverflow = false, endAdornment } = props
 
   const { showRulesetInfoDialog } = useEventBus()
 
@@ -50,12 +59,37 @@ export const ValidationRulesetLink: FC<ValidationRulesetLinkProps> = memo<Valida
   const linterTitle = getLinterName(linterId, lintersList)
   const fullRulesetTitle = `${linterTitle} ${data.name}`
 
-  const ChipsContainer = hideChipsOnOverflow ? CollapsibleChips : Chips
-  const titleFlexGrow = hideChipsOnOverflow ? 0 : 1
+  // The grid fills the title column first and gives the chips what is left.
+  const layout = hideChipsOnOverflow
+    ? {
+      display: 'grid',
+      gridTemplateColumns:
+        `minmax(${linterTitle.length + MIN_NAME_LENGTH}ch, max-content) minmax(${CHIPS_MIN_WIDTH}px, 1fr)`,
+      columnGap: (theme: Theme) => `calc(${theme.spacing(1)} - ${FIRST_FLOAT_WIDTH}px)`,
+    }
+    : { display: 'flex', justifyContent: 'space-between' }
+
+  const apiTypeChip = (
+    <RulesetSpecTypeChip
+      key={`validation-ruleset-link-api-type-${data.apiType}`}
+      sx={{ m: 0 }}
+      label={LINTER_API_TYPE_TITLE_MAP[data.apiType]}
+      data-testid="ValidationRulesetApiTypeChip"
+    />
+  )
+  const statusChip = (
+    <RulesetStatusChip
+      key='validation-ruleset-link-status'
+      status={data.status}
+      sx={{ m: 0 }}
+      label={capitalize(data.status)}
+      data-testid="ValidationRulesetStatusChip"
+    />
+  )
 
   return (
-    <Box display='flex' justifyContent='space-between' alignItems='center' width='100%' minWidth={0}>
-      <Box display='flex' gap={1} minWidth={0} flexGrow={titleFlexGrow}>
+    <Box alignItems='center' width='100%' minWidth={0} sx={layout}>
+      <Box display='flex' gap={1} minWidth={0} flexGrow={1}>
         <TextWithOverflowTooltip
           data-id='overflowtext'
           tooltipText={fullRulesetTitle}
@@ -78,21 +112,20 @@ export const ValidationRulesetLink: FC<ValidationRulesetLinkProps> = memo<Valida
           </Link>
         </TextWithOverflowTooltip>
       </Box>
-      <ChipsContainer>
-        <RulesetSpecTypeChip
-          key={`validation-ruleset-link-api-type-${data.apiType}`}
-          sx={{ m: 0 }}
-          label={LINTER_API_TYPE_TITLE_MAP[data.apiType]}
-          data-testid="ValidationRulesetApiTypeChip"
-        />
-        <RulesetStatusChip
-          key='validation-ruleset-link-status'
-          status={data.status}
-          sx={{ m: 0 }}
-          label={capitalize(data.status)}
-          data-testid="ValidationRulesetStatusChip"
-        />
-      </ChipsContainer>
+      {hideChipsOnOverflow
+        ? (
+          <CollapsibleChips>
+            <ChipSlot>{apiTypeChip}</ChipSlot>
+            <ChipSlot>{statusChip}</ChipSlot>
+            <EndAdornment>{endAdornment}</EndAdornment>
+          </CollapsibleChips>
+        )
+        : (
+          <Chips>
+            {apiTypeChip}
+            {statusChip}
+          </Chips>
+        )}
     </Box>
   )
 })
@@ -104,24 +137,38 @@ const Chips = styled(Box)(({ theme }) => ({
   marginLeft: theme.spacing(1),
 }))
 
-// A chip that does not fit wraps to the next line, and the fixed height hides that line.
-// The zero width keeps the chips out of the link's intrinsic width, so they take only spare room.
-const CollapsibleChips = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  flexWrap: 'wrap',
-  justifyContent: 'flex-end',
-  alignContent: 'flex-start',
-  columnGap: theme.spacing(1),
-  flexGrow: 1,
-  width: 0,
-  minWidth: 0,
+// A floated chip that does not fit drops below the first row, where the fixed height hides it.
+// The inline end adornment follows the chips left in that row.
+const CollapsibleChips = styled(Box)({
+  boxSizing: 'content-box',
   maxWidth: 'max-content',
   height: CHIP_HEIGHT,
+  paddingRight: END_ADORNMENT_WIDTH,
   overflow: 'hidden',
-  // An empty first item lets the first chip wrap too: a flex line never wraps its only item.
-  // Its height keeps the first line as tall as a chip, so a wrapped chip always lands below the visible area.
+  // The button centers its text.
+  textAlign: 'left',
+  // A float alone in its row never drops, so an empty float goes first. It needs a width to count.
   '&::before': {
     content: '""',
+    float: 'left',
+    width: FIRST_FLOAT_WIDTH,
     height: CHIP_HEIGHT,
   },
+})
+
+const ChipSlot = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  float: 'left',
+  height: CHIP_HEIGHT,
+  marginRight: theme.spacing(1),
 }))
+
+// The negative margin puts the adornment into the container's padding, so it never wraps.
+const EndAdornment = styled(Box)({
+  display: 'inline-flex',
+  alignItems: 'center',
+  width: END_ADORNMENT_WIDTH,
+  height: CHIP_HEIGHT,
+  marginRight: -END_ADORNMENT_WIDTH,
+  verticalAlign: 'top',
+})
