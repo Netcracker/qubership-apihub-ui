@@ -15,8 +15,6 @@ type ValidationRulesetsDropdownProps = {
   loading: IsLoading
 }
 
-const DROPDOWN_WRAP_WIDTH = 320
-
 const DropdownLabel: FC = () => {
   return <Typography variant="body2" sx={{ whiteSpace: 'nowrap', flexShrink: 0 }}>Validated by:</Typography>
 }
@@ -74,7 +72,11 @@ const Dropdown: FC<ValidationRulesetsDropdownProps> = (props) => {
               <Typography variant="body2" fontWeight={500}>No linters selected</Typography>
             )}
             {selectedValues.size === 1 && (
-              <ValidationRulesetLink data={Array.from(selectedValues.values())[0]} loading={loading} />
+              <ValidationRulesetLink
+                data={Array.from(selectedValues.values())[0]}
+                loading={loading}
+                hideChipsOnOverflow
+              />
             )}
             {selectedValues.size > 1 && (
               <Typography variant="body2" fontWeight={500}>{selectedValues.size} linters</Typography>
@@ -124,7 +126,7 @@ const Dropdown: FC<ValidationRulesetsDropdownProps> = (props) => {
 
 export const ValidationRulesetsDropdown: FC<ValidationRulesetsDropdownProps> = memo<ValidationRulesetsDropdownProps>((props) => {
   return (
-    <Box display="flex" alignItems="center" gap={1} minWidth={0} flex={`1 1 ${DROPDOWN_WRAP_WIDTH}px`}>
+    <Box display="flex" alignItems="center" gap={1} minWidth={0} flex='1 1 auto'>
       <DropdownLabel />
       <Dropdown {...props} />
     </Box>

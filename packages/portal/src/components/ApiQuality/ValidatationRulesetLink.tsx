@@ -2,6 +2,7 @@ import { type RulesetMetadata } from '@portal/entities/api-quality/rulesets'
 import { LINTER_API_TYPE_TITLE_MAP } from '@portal/entities/api-quality/linter-api-types'
 import { useEventBus } from '@portal/routes/EventBusProvider'
 import { Box, Link, Skeleton } from '@mui/material'
+import { styled } from '@mui/material/styles'
 import { RulesetSpecTypeChip, RulesetStatusChip } from '@portal/components/ApiQuality/RulesetChips'
 import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
@@ -14,14 +15,15 @@ import { getLinterName } from '@portal/utils/api-quality/linters'
 type ValidationRulesetLinkProps = {
   data: RulesetMetadata | undefined
   loading: IsLoading
+  // When the link runs out of space, hides the chips one by one before it truncates the title.
+  hideChipsOnOverflow?: boolean
 }
 
-// Keeps the linter name readable: when space runs out, the chips are clipped before the name is.
-const RULESET_TITLE_MIN_WIDTH = 72
+const CHIP_HEIGHT = 24
 
 // First Order Component
 export const ValidationRulesetLink: FC<ValidationRulesetLinkProps> = memo<ValidationRulesetLinkProps>(props => {
-  const { data, loading } = props
+  const { data, loading, hideChipsOnOverflow = false } = props
 
   const { showRulesetInfoDialog } = useEventBus()
 
@@ -48,17 +50,12 @@ export const ValidationRulesetLink: FC<ValidationRulesetLinkProps> = memo<Valida
   const linterTitle = getLinterName(linterId, lintersList)
   const fullRulesetTitle = `${linterTitle} ${data.name}`
 
+  const ChipsContainer = hideChipsOnOverflow ? CollapsibleChips : Chips
+  const titleFlexGrow = hideChipsOnOverflow ? 0 : 1
+
   return (
-    <Box
-      display='flex'
-      justifyContent='space-between'
-      alignItems='center'
-      gap={1}
-      width='100%'
-      minWidth={0}
-      overflow='hidden'
-    >
-      <Box display='flex' gap={1} minWidth={RULESET_TITLE_MIN_WIDTH} flexGrow={1}>
+    <Box display='flex' justifyContent='space-between' alignItems='center' width='100%' minWidth={0}>
+      <Box display='flex' gap={1} minWidth={0} flexGrow={titleFlexGrow}>
         <TextWithOverflowTooltip
           data-id='overflowtext'
           tooltipText={fullRulesetTitle}
@@ -81,7 +78,7 @@ export const ValidationRulesetLink: FC<ValidationRulesetLinkProps> = memo<Valida
           </Link>
         </TextWithOverflowTooltip>
       </Box>
-      <Box display='flex' gap={1} flexShrink={0}>
+      <ChipsContainer>
         <RulesetSpecTypeChip
           key={`validation-ruleset-link-api-type-${data.apiType}`}
           sx={{ m: 0 }}
@@ -95,7 +92,36 @@ export const ValidationRulesetLink: FC<ValidationRulesetLinkProps> = memo<Valida
           label={capitalize(data.status)}
           data-testid="ValidationRulesetStatusChip"
         />
-      </Box>
+      </ChipsContainer>
     </Box>
   )
 })
+
+const Chips = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexShrink: 0,
+  gap: theme.spacing(1),
+  marginLeft: theme.spacing(1),
+}))
+
+// A chip that does not fit wraps to the next line, and the fixed height hides that line.
+// The zero width keeps the chips out of the link's intrinsic width, so they take only spare room.
+const CollapsibleChips = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexWrap: 'wrap',
+  justifyContent: 'flex-end',
+  alignContent: 'flex-start',
+  columnGap: theme.spacing(1),
+  flexGrow: 1,
+  width: 0,
+  minWidth: 0,
+  maxWidth: 'max-content',
+  height: CHIP_HEIGHT,
+  overflow: 'hidden',
+  // An empty first item lets the first chip wrap too: a flex line never wraps its only item.
+  // Its height keeps the first line as tall as a chip, so a wrapped chip always lands below the visible area.
+  '&::before': {
+    content: '""',
+    height: CHIP_HEIGHT,
+  },
+}))
