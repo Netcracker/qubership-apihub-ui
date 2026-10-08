@@ -21,8 +21,12 @@ import {
 } from '@netcracker/qubership-apihub-api-processor'
 import { transferHandlers } from 'comlink'
 
-import { appendFailedBuildNotifications, toFailedPublicationDetails } from './failed-build-notifications'
-import { serializeThrownValue } from './worker-errors'
+import {
+  appendFailedBuildNotifications,
+  serializeThrownValue,
+  toFailedPublicationDetails,
+} from './failed-build-notifications'
+import { WorkerUnauthorizedError } from './security'
 
 const PARSE_ERROR: NotificationMessage = {
   category: 'parse-file',
@@ -111,6 +115,52 @@ describe('appendFailedBuildNotifications', () => {
     expect(file.name).toBe('failed-build-notifications.json')
     expect(file.type).toBe('application/json')
     expect(JSON.parse(await file.text())).toStrictEqual(LISTS)
+  })
+})
+
+describe('serializeThrownValue', () => {
+  it('copies the message, name, and stack of an error', () => {
+    const error = new TypeError('boom')
+
+    expect(serializeThrownValue(error)).toStrictEqual({
+      isError: true,
+      value: {
+        message: 'boom',
+        name: 'TypeError',
+        stack: error.stack,
+        responseStatus: undefined,
+      },
+    })
+  })
+
+  it('adds both notification lists of a NotificationsError', () => {
+    const error = new NotificationsError(new Error('boom'), [PARSE_ERROR], [UNRESOLVED_VERSION])
+
+    expect(serializeThrownValue(error)).toMatchObject({
+      isError: true,
+      value: { message: 'boom', ...LISTS },
+    })
+  })
+
+  it.each([
+    ['a string', 'boom'],
+    ['an object', { message: 'boom' }],
+    ['undefined', undefined],
+  ])('passes %s through as a non-error', (_, value) => {
+    expect(serializeThrownValue(value)).toStrictEqual({ isError: false, value: value })
+  })
+
+  // the calling thread has no handler of its own, so comlink's default one must rebuild the error
+  it('lets the default comlink handler rebuild an unauthorized error', () => {
+    const serialized = serializeThrownValue(new WorkerUnauthorizedError())
+
+    expect(() => transferHandlers.get('throw')!.deserialize(serialized)).toThrow(
+      expect.objectContaining({
+        message: 'HTTP 401 Unauthorized',
+        name: 'WorkerUnauthorizedError',
+        responseStatus: 401,
+      }),
+    )
   })
 })
 

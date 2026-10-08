@@ -25,7 +25,10 @@ import {
   versionOperationsResolver,
   versionReferencesResolver,
 } from '@netcracker/qubership-apihub-ui-shared/utils/builder-resolvers'
-import { toFailedPublicationDetails } from '@netcracker/qubership-apihub-ui-shared/utils/failed-build-notifications'
+import {
+  serializeThrownValue,
+  toFailedPublicationDetails,
+} from '@netcracker/qubership-apihub-ui-shared/utils/failed-build-notifications'
 import { packToZip } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import type { PublishDetails, PublishStatus } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
 import {
@@ -37,7 +40,6 @@ import {
   startPackageVersionPublication,
 } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
 import { isInWebWorker } from '@netcracker/qubership-apihub-ui-shared/utils/security'
-import { serializeThrownValue } from '@netcracker/qubership-apihub-ui-shared/utils/worker-errors'
 import { expose, transferHandlers } from 'comlink'
 import { v4 as uuidv4 } from 'uuid'
 import type { BuilderOptions } from './package-version-builder'
