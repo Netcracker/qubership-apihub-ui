@@ -15,6 +15,8 @@ type ValidationRulesetsDropdownProps = {
   loading: IsLoading
 }
 
+const DROPDOWN_WRAP_WIDTH = 320
+
 const DropdownLabel: FC = () => {
   return <Typography variant="body2" sx={{ whiteSpace: 'nowrap', flexShrink: 0 }}>Validated by:</Typography>
 }
@@ -122,7 +124,7 @@ const Dropdown: FC<ValidationRulesetsDropdownProps> = (props) => {
 
 export const ValidationRulesetsDropdown: FC<ValidationRulesetsDropdownProps> = memo<ValidationRulesetsDropdownProps>((props) => {
   return (
-    <Box display="flex" alignItems="center" gap={1} minWidth={0}>
+    <Box display="flex" alignItems="center" gap={1} minWidth={0} flex={`1 1 ${DROPDOWN_WRAP_WIDTH}px`}>
       <DropdownLabel />
       <Dropdown {...props} />
     </Box>
