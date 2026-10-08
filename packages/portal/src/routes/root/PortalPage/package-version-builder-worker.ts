@@ -25,10 +25,7 @@ import {
   versionOperationsResolver,
   versionReferencesResolver,
 } from '@netcracker/qubership-apihub-ui-shared/utils/builder-resolvers'
-import {
-  getFailedBuildNotifications,
-  toFailedPublicationDetails,
-} from '@netcracker/qubership-apihub-ui-shared/utils/failed-build-notifications'
+import { toFailedPublicationDetails } from '@netcracker/qubership-apihub-ui-shared/utils/failed-build-notifications'
 import { packToZip } from '@netcracker/qubership-apihub-ui-shared/utils/files'
 import type { PublishDetails, PublishStatus } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
 import {
@@ -39,7 +36,8 @@ import {
   setPublicationDetails,
   startPackageVersionPublication,
 } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
-import { isInWebWorker, type WorkerUnauthorizedError } from '@netcracker/qubership-apihub-ui-shared/utils/security'
+import { isInWebWorker } from '@netcracker/qubership-apihub-ui-shared/utils/security'
+import { serializeThrownValue } from '@netcracker/qubership-apihub-ui-shared/utils/worker-errors'
 import { expose, transferHandlers } from 'comlink'
 import { v4 as uuidv4 } from 'uuid'
 import type { BuilderOptions } from './package-version-builder'
@@ -217,28 +215,7 @@ const defaultThrowHandler = transferHandlers.get('throw')!
 // This is necessary to handle custom errors from worker in the calling thread
 transferHandlers.set('throw', {
   canHandle: defaultThrowHandler.canHandle,
-  serialize: ({ value }) => {
-    let serialized
-    if (value instanceof Error) {
-      serialized = {
-        isError: true,
-        value: {
-          message: value.message,
-          name: value.name,
-          stack: value.stack,
-          responseStatus: (value as WorkerUnauthorizedError).responseStatus,
-          // the main thread sends these with the error status of a changelog build
-          ...getFailedBuildNotifications(value),
-        },
-      }
-    } else {
-      serialized = {
-        isError: false,
-        value: value,
-      }
-    }
-    return [serialized, []]
-  },
+  serialize: ({ value }) => [serializeThrownValue(value), []],
   // the calling thread deserializes with its own default handler, so this one never runs
   deserialize: defaultThrowHandler.deserialize,
 })

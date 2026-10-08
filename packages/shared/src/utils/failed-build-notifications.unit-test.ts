@@ -22,6 +22,7 @@ import {
 import { transferHandlers } from 'comlink'
 
 import { appendFailedBuildNotifications, toFailedPublicationDetails } from './failed-build-notifications'
+import { serializeThrownValue } from './worker-errors'
 
 const PARSE_ERROR: NotificationMessage = {
   category: 'parse-file',
@@ -51,18 +52,9 @@ describe('toFailedPublicationDetails', () => {
 
   // the main thread rebuilds a worker's error with comlink's own handler: a plain Error with the fields copied on
   it('takes both lists from an error that crossed comlink', () => {
-    // what the portal worker's `throw` handler serializes for a NotificationsError
-    const serialized = {
-      isError: true,
-      value: {
-        message: 'boom',
-        name: 'Error',
-        stack: '',
-        responseStatus: undefined,
-        notifications: [PARSE_ERROR],
-        comparisonNotifications: [UNRESOLVED_VERSION],
-      },
-    }
+    const serialized = serializeThrownValue(
+      new NotificationsError(new Error('boom'), [PARSE_ERROR], [UNRESOLVED_VERSION]),
+    )
 
     const error = catchThrown(() => transferHandlers.get('throw')!.deserialize(serialized))
 
@@ -81,12 +73,22 @@ describe('toFailedPublicationDetails', () => {
     })
   })
 
-  it('sends no lists when only one of them is present', () => {
-    const error = Object.assign(new Error('boom'), { notifications: [PARSE_ERROR] })
+  // the two lists go out as a pair: if either one is missing or malformed, neither is sent
+  it.each([
+    ['only notifications is present', { notifications: [PARSE_ERROR] }],
+    ['only comparisonNotifications is present', { comparisonNotifications: [UNRESOLVED_VERSION] }],
+    ['notifications is not an array', { notifications: 'broken', comparisonNotifications: [UNRESOLVED_VERSION] }],
+    ['comparisonNotifications is not an array', { notifications: [PARSE_ERROR], comparisonNotifications: 'broken' }],
+  ])('sends no lists when %s', (_, fields) => {
+    const error = Object.assign(new Error('boom'), fields)
 
-    expect(toFailedPublicationDetails(error).notifications).toBeUndefined()
+    expect(toFailedPublicationDetails(error)).toStrictEqual({
+      errors: 'Error: boom',
+      notifications: undefined,
+    })
   })
 
+  // a build can throw anything, not only an Error: such a value has no lists to read and is sent as its text form
   it.each([
     ['a string', 'boom', 'boom'],
     ['undefined', undefined, 'undefined'],
