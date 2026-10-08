@@ -16,6 +16,7 @@
 
 import type { FailedBuildNotifications } from '@netcracker/qubership-apihub-api-processor'
 
+import { isObject } from './objects'
 import type { ErrorMessage } from './packages-builder'
 
 type FailedPublicationDetails = {
@@ -47,10 +48,10 @@ export function appendFailedBuildNotifications(formData: FormData, notifications
 
 // a new object with the two lists only, so no other field of the error reaches the part
 export function getFailedBuildNotifications(error: unknown): FailedBuildNotifications | undefined {
-  if (typeof error !== 'object' || error === null) {
+  if (!isObject(error)) {
     return undefined
   }
-  const { notifications, comparisonNotifications } = error as Partial<FailedBuildNotifications>
+  const { notifications, comparisonNotifications } = error
   if (!Array.isArray(notifications) || !Array.isArray(comparisonNotifications)) {
     return undefined
   }
