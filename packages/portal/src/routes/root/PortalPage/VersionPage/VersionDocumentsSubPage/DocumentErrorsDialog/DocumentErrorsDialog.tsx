@@ -1,5 +1,3 @@
-import type { ShowDocumentErrorsDetail } from '@portal/routes/EventBusProvider'
-import { SHOW_DOCUMENT_ERRORS_DIALOG } from '@portal/routes/EventBusProvider'
 import { LoadingButton } from '@mui/lab'
 import { Box, Dialog, DialogContent, DialogTitle, Divider, IconButton, Skeleton, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
@@ -19,6 +17,8 @@ import {
 import { CloseIcon } from '@netcracker/qubership-apihub-ui-shared/icons/CloseIcon'
 import { ExportIcon } from '@netcracker/qubership-apihub-ui-shared/icons/ExportIcon'
 import type { HasNextPage, IsFetchingNextPage } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
+import type { ShowDocumentErrorsDetail } from '@portal/routes/EventBusProvider'
+import { SHOW_DOCUMENT_ERRORS_DIALOG } from '@portal/routes/EventBusProvider'
 import { type FC, memo, useCallback, useMemo, useState } from 'react'
 
 import { useDocuments } from '../../useDocuments'
@@ -105,7 +105,7 @@ const DocumentErrorsPopup: FC<PopupProps> = memo<PopupProps>(({ open, setOpen, d
       <StyledDialogTitle>
         <TitleRow>
           <Typography variant="h5" data-testid="DocumentErrorsTitle">
-            Document Errors
+            Document Notifications
           </Typography>
           <CloseIconButton
             data-testid="CloseDocumentErrorsButton"

@@ -138,7 +138,7 @@ export const DocumentsTabHeader: FC<DocumentsTabHeaderProps> = (props) => {
             data-testid="ShowDocumentErrorsButton"
             startIcon={<ErrorOutlineIcon />}
           >
-            Error Details
+            Document Errors
           </Button>
         )}
         <ActionsButton
