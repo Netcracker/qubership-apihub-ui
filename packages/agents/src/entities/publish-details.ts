@@ -22,6 +22,7 @@ import { generatePath } from 'react-router-dom'
 import { API_V2, API_V3, requestJson, requestVoid } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
 import type { SetPublicationDetailsOptions } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
+import { appendFailedBuildNotifications } from '@netcracker/qubership-apihub-ui-shared/utils/failed-build-notifications'
 
 export type PublishDetails = PublishDetailsDto
 
@@ -73,6 +74,7 @@ export async function setPublicationDetails(options: SetPublicationDetailsOption
     abortController,
     data,
     errors,
+    notifications,
   } = options
   const packageId = encodeURIComponent(packageKey)
   const publishId = encodeURIComponent(publishKey)
@@ -81,6 +83,7 @@ export async function setPublicationDetails(options: SetPublicationDetailsOption
   builderId && formData.append('builderId', builderId)
   errors && formData.append('errors', errors)
   data && formData.append('data', data, 'package.zip')
+  notifications && appendFailedBuildNotifications(formData, notifications)
 
   const signal = abortController?.signal
   const pathPattern = '/packages/:packageId/publish/:publishId/status'

@@ -19,6 +19,7 @@ import type {
   ApihubApiCompatibilityKind,
   BuildConfig,
   ContractType,
+  FailedBuildNotifications,
   ResolvedDeprecatedOperations,
   ResolvedGroupDocuments,
   ResolvedOperation,
@@ -27,6 +28,7 @@ import type {
 } from '@netcracker/qubership-apihub-api-processor'
 import { generatePath } from 'react-router-dom'
 import type { ApiType } from '../entities/api-types'
+import { appendFailedBuildNotifications } from './failed-build-notifications'
 import type {
   AsyncApiOperationDto,
   GraphQlOperationDto,
@@ -164,6 +166,7 @@ export type SetPublicationDetailsOptions = {
   abortController: AbortController | null
   data?: Blob
   errors?: ErrorMessage
+  notifications?: FailedBuildNotifications
 }
 
 export async function setPublicationDetails(options: SetPublicationDetailsOptions): Promise<void> {
@@ -175,6 +178,7 @@ export async function setPublicationDetails(options: SetPublicationDetailsOption
     abortController,
     data,
     errors,
+    notifications,
   } = options
 
   const formData = new FormData()
@@ -182,6 +186,7 @@ export async function setPublicationDetails(options: SetPublicationDetailsOption
   formData.append('builderId', builderId)
   errors && formData.append('errors', errors)
   data && formData.append('data', data, 'package.zip')
+  notifications && appendFailedBuildNotifications(formData, notifications)
 
   const signal = abortController?.signal
   const packageId = encodeURIComponent(packageKey)
