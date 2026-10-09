@@ -74,7 +74,6 @@ import { useParams } from 'react-router-dom'
 import { useVersionsComparisonGlobalParams } from '../../../PortalPage/VersionPage/VersionsComparisonGlobalParams'
 import { useOperationNavigationDetails } from '../../../OperationNavigationDataProvider'
 import { useSetChangesLoadingStatus } from '../ChangesLoadingStatusProvider'
-import { VersionErrorIndicatorWithFetch } from '../VersionErrorIndicatorWithFetch'
 import { useBreadcrumbsData } from '../ComparedPackagesBreadcrumbsProvider'
 import { useFileViewMode } from '../useFileViewMode'
 import { useOperationViewMode } from '../useOperationViewMode'
@@ -127,9 +126,7 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
       apiType = DEFAULT_API_TYPE,
     } = useParams<{ packageId: string; apiType: ApiType }>()
     const {
-      originPackage,
       originPackageKey,
-      changedPackage,
       changedPackageKey,
       changedVersionKey,
       originVersionKey,
@@ -342,20 +339,6 @@ export const OperationContent: FC<OperationContentProps> = wrapOperationContentE
             displayMode={displayMode}
             breadcrumbsData={breadcrumbsData}
             actions={isRawViewMode && rawViewActions}
-            swapperBreadcrumbsBeforeComponent={
-              <VersionErrorIndicatorWithFetch
-                packageKey={originPackageKey}
-                versionKey={originVersionKey}
-                kind={originPackage?.kind}
-              />
-            }
-            swapperBreadcrumbsAfterComponent={
-              <VersionErrorIndicatorWithFetch
-                packageKey={changedPackageKey}
-                versionKey={changedVersionKey}
-                kind={changedPackage?.kind}
-              />
-            }
           />
           {isDocViewMode && !!mergedDocument && (
             <OperationView

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { FC, ReactElement, ReactNode } from 'react'
+import type { FC, ReactNode } from 'react'
 import React, { memo, useCallback, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import { Box, IconButton } from '@mui/material'
@@ -29,6 +29,7 @@ import {
 import { useIsPackageFromDashboard } from '../../useIsPackageFromDashboard'
 import { useDocumentSearchParam } from '../useDocumentSearchParam'
 import { SwapperBreadcrumbs } from '../SwapperBreadcrumbs'
+import { VersionErrorIndicatorWithFetch } from '../VersionErrorIndicatorWithFetch'
 import { useVersionsComparisonGlobalParams } from '../VersionsComparisonGlobalParams'
 import { VERSION_SWAPPER_HEIGHT } from '../shared-styles'
 import { useSwapDisabledReason } from '../useSwapDisabledReason'
@@ -57,16 +58,12 @@ export type OperationsSwapperProps = {
   displayMode: OperationDisplayMode
   breadcrumbsData: ComparedPackagesBreadcrumbsData | null
   actions: ReactNode
-  swapperBreadcrumbsBeforeComponent?: ReactElement
-  swapperBreadcrumbsAfterComponent?: ReactElement
 }
 
 export const OperationsSwapper: FC<OperationsSwapperProps> = memo<OperationsSwapperProps>(({
   displayMode,
   breadcrumbsData,
   actions,
-  swapperBreadcrumbsBeforeComponent,
-  swapperBreadcrumbsAfterComponent,
 }) => {
   const { operationId: changedOperationKey, group, apiType } = useParams()
   const { operationKey: operationKeyParam } = useOperationLocation()
@@ -77,8 +74,10 @@ export const OperationsSwapper: FC<OperationsSwapperProps> = memo<OperationsSwap
   const previousGroup = useSearchParam(GROUP_SEARCH_PARAM)
 
   const {
+    changedPackage,
     changedPackageKey,
     changedVersionKey,
+    originPackage,
     originPackageKey,
     originVersionKey,
   } = useVersionsComparisonGlobalParams()
@@ -135,7 +134,13 @@ export const OperationsSwapper: FC<OperationsSwapperProps> = memo<OperationsSwap
         {<SwapperBreadcrumbs
           side="before"
           data={breadcrumbsData}
-          customComponentAfterContent={swapperBreadcrumbsBeforeComponent}
+          customComponentAfterContent={
+            <VersionErrorIndicatorWithFetch
+              packageKey={originPackageKey}
+              versionKey={originVersionKey}
+              kind={originPackage?.kind}
+            />
+          }
         />}
       </Box>
       <Box sx={OPERATION_SWAPPER_DELIMITER_STYLES}>
@@ -148,7 +153,13 @@ export const OperationsSwapper: FC<OperationsSwapperProps> = memo<OperationsSwap
           {<SwapperBreadcrumbs
             side="after"
             data={breadcrumbsData}
-            customComponentAfterContent={swapperBreadcrumbsAfterComponent}
+            customComponentAfterContent={
+              <VersionErrorIndicatorWithFetch
+                packageKey={changedPackageKey}
+                versionKey={changedVersionKey}
+                kind={changedPackage?.kind}
+              />
+            }
           />}
         </Box>
         <Box display="flex" flexDirection="row" gap={1} sx={OPERATION_ACTION_STYLES}>
