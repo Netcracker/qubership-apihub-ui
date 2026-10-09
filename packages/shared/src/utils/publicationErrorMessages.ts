@@ -33,6 +33,12 @@ export const PUBLICATION_ERROR_MESSAGES = {
     dashboardAddUnsound: 'This version has errors and cannot be added to the dashboard. Select another version.',
     releasePromotionRefused: 'This version has errors and the status cannot be changed.',
   },
+  comparison: {
+    swapVersionUnavailable:
+      'The current version has errors and cannot be used as the previous version for comparison. Swap is not available.',
+    swapRevisionUnavailable:
+      'The current revision has errors and cannot be used as the previous revision for comparison. Swap is not available.',
+  },
   reference: {
     childIssueDot:
       'One of the child package/dashboard version no longer exists. Expand this dashboard to see deleted package/dashboard version.',

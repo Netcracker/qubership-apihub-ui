@@ -31,6 +31,7 @@ import { useDocumentSearchParam } from '../useDocumentSearchParam'
 import { SwapperBreadcrumbs } from '../SwapperBreadcrumbs'
 import { useVersionsComparisonGlobalParams } from '../VersionsComparisonGlobalParams'
 import { VERSION_SWAPPER_HEIGHT } from '../shared-styles'
+import { useSwapDisabledReason } from '../useSwapDisabledReason'
 import { useNavigation } from '../../../../NavigationProvider'
 import {
   useSeverityFiltersSearchParam,
@@ -83,6 +84,7 @@ export const OperationsSwapper: FC<OperationsSwapperProps> = memo<OperationsSwap
   } = useVersionsComparisonGlobalParams()
 
   const { isPackageFromDashboard, refPackageKey } = useIsPackageFromDashboard()
+  const swapDisabledReason = useSwapDisabledReason()
 
   const { mode } = useOperationViewMode()
   const { showCompareOperationsDialog } = useEventBus()
@@ -138,7 +140,7 @@ export const OperationsSwapper: FC<OperationsSwapperProps> = memo<OperationsSwap
       </Box>
       <Box sx={OPERATION_SWAPPER_DELIMITER_STYLES}>
         <Box sx={OPERATION_SWAPPER_ARROW_STYLES}>
-          <Swapper onSwap={handleSwap}/>
+          <Swapper onSwap={handleSwap} disabledReason={swapDisabledReason}/>
         </Box>
       </Box>
       <Box sx={OPERATION_SECOND_SWAPPER_HEADER_STYLES} data-testid="RightSwapperHeader">

@@ -16,7 +16,7 @@
 
 import { useBackwardLocationContext, useSetBackwardLocationContext } from '@portal/routes/BackwardLocationProvider'
 import { useEventBus } from '@portal/routes/EventBusProvider'
-import { isRevisionCompare } from '@portal/routes/root/PortalPage/VersionPage/VersionComparePage/VersionCompareContent'
+import { isRevisionCompare } from '@portal/routes/root/PortalPage/VersionPage/isRevisionCompare'
 import { getDefaultApiType } from '@portal/utils/operation-types'
 import { Box, Card, CardContent, Grid, ListItem, ListItemText, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'

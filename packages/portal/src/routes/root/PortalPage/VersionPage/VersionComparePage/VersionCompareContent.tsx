@@ -52,7 +52,6 @@ import {
 } from '@netcracker/qubership-apihub-ui-shared/utils/search-params'
 import { format } from '@netcracker/qubership-apihub-ui-shared/utils/strings'
 import type { Key } from '@netcracker/qubership-apihub-ui-shared/utils/types'
-import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import {
   usePagedDetailedVersionChangelog,
 } from '@netcracker/qubership-apihub-ui-shared/widgets/ChangesViewWidget/api/useCommonPagedVersionChangelog'
@@ -76,20 +75,8 @@ import { VersionErrorIndicatorWithFetch } from '../VersionErrorIndicatorWithFetc
 import { useDdlChanges } from '../api/useDdlChanges'
 import { useFlatDdlChanges } from '../api/useFlatDdlChanges'
 import { useAutoFetchInfinitePages } from '../useAutoFetchInfinitePages'
+import { isRevisionCompare } from '../isRevisionCompare'
 import { ComparedEntitySplitRow, EntityChangesSummary } from './ComparedEntitySplitRow'
-
-export function isRevisionCompare(originVersion: Key, changedVersion: Key): boolean {
-  const {
-    versionKey: originVersionKey,
-    revisionKey: originRevisionKey,
-  } = getSplittedVersionKey(originVersion)
-  const {
-    versionKey: changedVersionKey,
-    revisionKey: changedRevisionKey,
-  } = getSplittedVersionKey(changedVersion)
-
-  return originVersionKey === changedVersionKey && originRevisionKey !== changedRevisionKey
-}
 
 export const VersionCompareContent: FC = memo(() => {
   const location = useBackwardLocation()
