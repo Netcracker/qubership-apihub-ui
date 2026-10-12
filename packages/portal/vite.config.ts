@@ -156,7 +156,6 @@ export default defineConfig(({ mode }) => {
       plugins: [tsconfigPaths()],
     },
     build: {
-      target: 'es2022',
       emptyOutDir: true,
       // Skip gzip-compressing every chunk just to print its size: costly in memory and time on a large bundle.
       reportCompressedSize: analyzeBundle,

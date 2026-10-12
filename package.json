@@ -14,7 +14,7 @@
     "development:unlink": "npm unlink @netcracker/qubership-apihub-api-processor",
     "dev:agents": "npx lerna run dev:backend,dev:frontend --stream --scope=@netcracker/qubership-apihub-ui-agents",
     "dev:portal": "npx lerna run dev:backend,dev:frontend --stream --scope=@netcracker/qubership-apihub-ui-portal",
-    "msw:init": "npx msw init packages/portal/public --no-save",
+    "msw:init": "npx msw init packages/portal/public --no-save && npx msw init packages/agents/public --no-save",
     "lint:check": "eslint . --ext .ts,.tsx,.json --ignore-path .gitignore --max-warnings 0 --report-unused-disable-directives",
     "lint:fix": "npm run lint:check -- --fix",
     "update-lock-file": "update-lock-file @netcracker"

@@ -1,10 +1,10 @@
-type MockVersionFlags = {
+export type MockVersionFlags = {
   hasErrors?: boolean
   changelogHasErrors?: boolean
   apiProcessorVersion?: string
 }
 
-// Differs from the api-processor version of the portal, so the version gets the outdated api-processor tooltip.
+// Differs from the api-processor version of the app, so the version gets the outdated api-processor tooltip.
 const MOCK_OUTDATED_API_PROCESSOR_VERSION = '1.1.1'
 
 // Returns only the flags that the version name sets, so the real values of the other flags stay in the response.

@@ -11,8 +11,7 @@ import type {
   VersionReferencesDto,
 } from '@netcracker/qubership-apihub-ui-shared/entities/version-references'
 import type { PackageVersionDto, PackageVersionsDto } from '@netcracker/qubership-apihub-ui-shared/entities/versions'
-
-import { getMockVersionFlags } from './mock-version-flags'
+import { getMockVersionFlags } from '@netcracker/qubership-apihub-ui-shared/mocks/mock-version-flags'
 
 const MOCK_DELETION: Pick<PackageReferenceDto, 'deletedAt' | 'deletedBy'> = {
   deletedAt: '2026-08-15T10:30:00Z',

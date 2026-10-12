@@ -23,6 +23,7 @@ import Unfonts from 'unplugin-fonts/vite'
 import { visualizer as bundleVisualizer } from 'rollup-plugin-visualizer'
 import inject from '@rollup/plugin-inject'
 import createVersionJsonFilePlugin from '../../vite-plugins/create-version-json'
+import removeMswFromDistPlugin from '../../vite-plugins/remove-msw-from-dist'
 
 const proxyServer = 'http://host.docker.internal:8081'
 const devServer = 'http://localhost:3003'
@@ -76,6 +77,7 @@ export default defineConfig(({ mode }) => {
         },
       }),
       createVersionJsonFilePlugin(),
+      removeMswFromDistPlugin(),
     ],
     optimizeDeps: {
       // npm link creates a symlink that points outside node_modules and by default such packages are not optimized.
