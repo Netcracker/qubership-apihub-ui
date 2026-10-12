@@ -63,6 +63,9 @@ const inputIndicatorAutocompleteSx = {
   '&.MuiAutocomplete-hasPopupIcon.MuiAutocomplete-hasClearIcon .MuiAutocomplete-inputRoot': {
     paddingRight: `${65 + INPUT_INDICATOR_EXTRA_PADDING}px`,
   },
+  '&.MuiAutocomplete-hasClearIcon:not(.MuiAutocomplete-hasPopupIcon) .MuiAutocomplete-inputRoot': {
+    paddingRight: `${39 + INPUT_INDICATOR_EXTRA_PADDING}px`,
+  },
 }
 
 function augmentRenderInputParams(
@@ -102,8 +105,13 @@ function appendIndicatorToAutocompleteEndAdornment(
   autocompleteEndAdornment: ReactNode,
   indicator?: ReactNode,
 ): ReactNode {
-  if (!indicator || !isValidElement(autocompleteEndAdornment)) {
+  if (!indicator) {
     return autocompleteEndAdornment
+  }
+  // MUI renders no end adornment for a free-solo field without the clear button, such as a disabled one,
+  // so the indicator becomes the end adornment of the input.
+  if (!isValidElement(autocompleteEndAdornment)) {
+    return indicator
   }
 
   return cloneElement(autocompleteEndAdornment, undefined, [
