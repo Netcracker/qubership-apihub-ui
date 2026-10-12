@@ -25,6 +25,7 @@ import inject from '@rollup/plugin-inject'
 import createVersionJsonFilePlugin from '../../vite-plugins/create-version-json'
 import removeMswFromDistPlugin from '../../vite-plugins/remove-msw-from-dist'
 
+// const proxyServer = 'https://qubership-apihub.localtest.me'
 const proxyServer = 'http://host.docker.internal:8081'
 const devServer = 'http://localhost:3003'
 
@@ -164,7 +165,17 @@ export default defineConfig(({ mode }) => {
     server: {
       open: '/login',
       proxy: {
-        '/api': { // /apihub-nc/api also proxied as it meets a substring inclusion condition
+        '/api': {
+          target: isProxyMode ? `${proxyServer}` : devServer,
+          changeOrigin: true,
+          secure: false,
+        },
+        '/agents-backend': {
+          target: isProxyMode ? `${proxyServer}` : devServer,
+          changeOrigin: true,
+          secure: false,
+        },
+        '/apihub-nc': {
           target: isProxyMode ? `${proxyServer}` : devServer,
           changeOrigin: true,
           secure: false,
