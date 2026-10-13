@@ -1,1 +1,0 @@
-import{n as e}from"./rolldown-runtime-BcKkbAw3.js";function t(e){return e&&e.ownerDocument||document}function n(){return(n=e((()=>{})))()}export{t as n,n as t};
