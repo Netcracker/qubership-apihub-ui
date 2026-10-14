@@ -4,6 +4,7 @@ import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDown
 import KeyboardArrowUpOutlinedIcon from '@mui/icons-material/KeyboardArrowUpOutlined'
 import { Box, Button, List, ListItemButton, Skeleton, Typography } from '@mui/material'
 import { MenuButtonItems } from '@netcracker/qubership-apihub-ui-shared/components/Buttons/MenuButton'
+import { DEFAULT_TEXT_COLOR } from '@netcracker/qubership-apihub-ui-shared/themes/colors'
 import type { IsLoading } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
 import type { FC } from 'react'
 import { memo, useCallback, useEffect, useState } from 'react'
@@ -49,8 +50,8 @@ const Dropdown: FC<ValidationRulesetsDropdownProps> = (props) => {
   }
 
   const arrowIcon = anchor
-    ? <KeyboardArrowUpOutlinedIcon htmlColor='#353C4E' fontSize='small' />
-    : <KeyboardArrowDownOutlinedIcon htmlColor='#353C4E' fontSize='small' />
+    ? <KeyboardArrowUpOutlinedIcon htmlColor={DEFAULT_TEXT_COLOR} fontSize='small' />
+    : <KeyboardArrowDownOutlinedIcon htmlColor={DEFAULT_TEXT_COLOR} fontSize='small' />
 
   return (
     <Box flex='1 1 auto' maxWidth='400px' minWidth={0}>
@@ -110,7 +111,7 @@ const Dropdown: FC<ValidationRulesetsDropdownProps> = (props) => {
                     minWidth: 0,
                   }}
                 >
-                  <Check htmlColor={isSelected ? '#353C4E' : 'transparent'} fontSize='small' />
+                  <Check htmlColor={isSelected ? DEFAULT_TEXT_COLOR : 'transparent'} fontSize='small' />
                   <ValidationRulesetLink
                     data={option}
                     loading={loading}

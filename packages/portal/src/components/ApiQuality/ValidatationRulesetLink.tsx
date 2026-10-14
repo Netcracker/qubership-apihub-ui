@@ -2,7 +2,7 @@ import { type RulesetMetadata } from '@portal/entities/api-quality/rulesets'
 import { LINTER_API_TYPE_TITLE_MAP } from '@portal/entities/api-quality/linter-api-types'
 import { useEventBus } from '@portal/routes/EventBusProvider'
 import { Box, Link, Skeleton } from '@mui/material'
-import type { Theme } from '@mui/material/styles'
+import type { SxProps, Theme } from '@mui/material/styles'
 import { styled } from '@mui/material/styles'
 import { RulesetSpecTypeChip, RulesetStatusChip } from '@portal/components/ApiQuality/RulesetChips'
 import { TextWithOverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/TextWithOverflowTooltip'
@@ -29,6 +29,18 @@ const FIRST_FLOAT_WIDTH = 1
 const CHIPS_MIN_WIDTH = FIRST_FLOAT_WIDTH + END_ADORNMENT_WIDTH
 // A space, about three characters of the ruleset name, and an ellipsis.
 const MIN_NAME_LENGTH = 5
+
+const FIXED_CHIPS_LAYOUT: SxProps<Theme> = { display: 'flex', justifyContent: 'space-between' }
+
+// The grid fills the title column first and gives the chips what is left.
+function getCollapsibleChipsLayout(linterTitle: string): SxProps<Theme> {
+  return {
+    display: 'grid',
+    gridTemplateColumns:
+      `minmax(${linterTitle.length + MIN_NAME_LENGTH}ch, max-content) minmax(${CHIPS_MIN_WIDTH}px, 1fr)`,
+    columnGap: theme => `calc(${theme.spacing(1)} - ${FIRST_FLOAT_WIDTH}px)`,
+  }
+}
 
 // First Order Component
 export const ValidationRulesetLink: FC<ValidationRulesetLinkProps> = memo<ValidationRulesetLinkProps>(props => {
@@ -59,16 +71,6 @@ export const ValidationRulesetLink: FC<ValidationRulesetLinkProps> = memo<Valida
   const linterTitle = getLinterName(linterId, lintersList)
   const fullRulesetTitle = `${linterTitle} ${data.name}`
 
-  // The grid fills the title column first and gives the chips what is left.
-  const layout = hideChipsOnOverflow
-    ? {
-      display: 'grid',
-      gridTemplateColumns:
-        `minmax(${linterTitle.length + MIN_NAME_LENGTH}ch, max-content) minmax(${CHIPS_MIN_WIDTH}px, 1fr)`,
-      columnGap: (theme: Theme) => `calc(${theme.spacing(1)} - ${FIRST_FLOAT_WIDTH}px)`,
-    }
-    : { display: 'flex', justifyContent: 'space-between' }
-
   const apiTypeChip = (
     <RulesetSpecTypeChip
       key={`validation-ruleset-link-api-type-${data.apiType}`}
@@ -88,7 +90,12 @@ export const ValidationRulesetLink: FC<ValidationRulesetLinkProps> = memo<Valida
   )
 
   return (
-    <Box alignItems='center' width='100%' minWidth={0} sx={layout}>
+    <Box
+      alignItems='center'
+      width='100%'
+      minWidth={0}
+      sx={hideChipsOnOverflow ? getCollapsibleChipsLayout(linterTitle) : FIXED_CHIPS_LAYOUT}
+    >
       <Box display='flex' gap={1} minWidth={0} flexGrow={1}>
         <TextWithOverflowTooltip
           data-id='overflowtext'
