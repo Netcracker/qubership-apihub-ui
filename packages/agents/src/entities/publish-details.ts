@@ -14,22 +14,16 @@
  * limitations under the License.
  */
 
-import type { PublishStatus } from './statuses'
-import { NONE_PUBLISH_STATUS } from './statuses'
 import type { PackageKey, PublishKey } from './keys'
 
 import { generatePath } from 'react-router-dom'
 import { API_V2, API_V3, requestJson, requestVoid } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 import { getPackageRedirectDetails } from '@netcracker/qubership-apihub-ui-shared/utils/redirects'
-import type { SetPublicationDetailsOptions } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
-
-export type PublishDetails = PublishDetailsDto
-
-export type PublishDetailsDto = {
-  publishId: PublishKey
-  status: PublishStatus
-  message?: string
-}
+import {
+  NONE_PUBLISH_STATUS,
+  type PublishDetails,
+  type SetPublicationDetailsOptions,
+} from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
 
 export const EMPTY_PUBLISH_DETAILS: PublishDetails = {
   publishId: '',

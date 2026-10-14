@@ -263,14 +263,14 @@ export type PublishStatus =
   | typeof COMPLETE_PUBLISH_STATUS
   | typeof ERROR_PUBLISH_STATUS
 
-export type PublishDetails = PublishDetailsDto & {
-  hasErrors?: boolean
-}
+export type PublishDetails = PublishDetailsDto
 
 export type PublishDetailsDto = {
   publishId: string
   status: PublishStatus
   message?: string
+  hasErrors?: boolean
+  changelogHasErrors?: boolean
 }
 
 type OperationMetadata =
