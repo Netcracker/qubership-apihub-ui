@@ -40,6 +40,7 @@ import { getPackageRedirectDetails } from './redirects'
 import { API_V1, API_V2, API_V3, requestBlob, requestJson, requestVoid } from './requests'
 import { optionalSearchParams } from './search-params'
 import type { Key } from './types'
+import type { PublishKey } from '../entities/keys'
 import type { DocumentsDto } from '../entities/documents'
 
 export async function getPackageVersionContent(
@@ -266,7 +267,7 @@ export type PublishStatus =
 export type PublishDetails = PublishDetailsDto
 
 export type PublishDetailsDto = {
-  publishId: string
+  publishId: PublishKey
   status: PublishStatus
   message?: string
   hasErrors?: boolean

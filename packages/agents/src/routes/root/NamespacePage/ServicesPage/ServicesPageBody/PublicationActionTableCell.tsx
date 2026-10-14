@@ -46,8 +46,6 @@ export const PublicationActionTableCell: FC<PublicationActionTableCellProps> = m
   }
 
   if (status === ERROR_PUBLISH_STATUS && message) {
-    const errors: string = message
-
     return (
       <ErrorDetailsButton
         data-testid="ViewDetailsButton"
@@ -57,7 +55,7 @@ export const PublicationActionTableCell: FC<PublicationActionTableCellProps> = m
         onClick={() =>
           showPublicationErrorReportDialog({
             downloadFilename: `${serviceConfig.serviceId}-publication-errors.txt`,
-            errors: errors,
+            errors: message,
           })}
       >
         Error Details

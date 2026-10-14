@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
-import type { FC, ReactNode } from 'react'
+import { type FC, memo, type ReactNode } from 'react'
 
 import { VersionErrorIndicator } from '@netcracker/qubership-apihub-ui-shared/components/ErrorIndicators/VersionErrorIndicator'
 import {
@@ -30,7 +30,7 @@ type PublishStatusContentProps = {
   description: PublishStatusDescription
 }
 
-export const PublishStatusTableCell: FC<PublishStatusTableCellProps> = ({
+export const PublishStatusTableCell: FC<PublishStatusTableCellProps> = memo<PublishStatusTableCellProps>(({
   publishDetails: { status, hasErrors, changelogHasErrors },
 }) => {
   if (status === NONE_PUBLISH_STATUS || status === RUNNING_PUBLISH_STATUS) {
@@ -58,7 +58,7 @@ export const PublishStatusTableCell: FC<PublishStatusTableCellProps> = ({
       description={PUBLISH_STATUS_TO_STATUS_DESCRIPTION_MAP[status]}
     />
   )
-}
+})
 
 PublishStatusTableCell.displayName = 'PublishStatusTableCell'
 
@@ -73,8 +73,8 @@ const PublishStatusContent: FC<PublishStatusContentProps> = ({ marker, descripti
 
 PublishStatusContent.displayName = 'PublishStatusContent'
 
-const StatusCell = styled(Box)({
+const StatusCell = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
-  gap: 8,
-})
+  gap: theme.spacing(1),
+}))
