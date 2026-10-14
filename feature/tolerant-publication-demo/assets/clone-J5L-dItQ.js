@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-BcKkbAw3.js";import{A as t,k as n}from"./reduce-uhS_5uHu.js";function r(e){return n(e,i)}var i;function a(){return(a=e((()=>{t(),i=4})))()}export{a as n,r as t};
