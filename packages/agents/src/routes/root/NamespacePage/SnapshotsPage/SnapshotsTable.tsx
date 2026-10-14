@@ -41,6 +41,7 @@ import {
   BACKWARD_INCOMPATIBLE_MESSAGE,
   BASELINE_VERSION_NOT_FOUND_MESSAGE,
 } from '../ServicesPage/ServicesPageBody/validationMessages'
+import { ComparisonIncompleteStatus } from '../ServicesPage/ServicesPageBody/ComparisonIncompleteStatus'
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
 import { FormattedDate } from '@netcracker/qubership-apihub-ui-shared/components/FormattedDate'
@@ -125,6 +126,10 @@ export const SnapshotsTable: FC = memo(() => {
                 <Typography noWrap variant="inherit">{BASELINE_VERSION_NOT_FOUND_MESSAGE}</Typography>
               </Box>
             )
+          }
+
+          if (servicePublishInfo.changelogHasErrors) {
+            return <ComparisonIncompleteStatus/>
           }
 
           if (bwcErrors !== undefined) {

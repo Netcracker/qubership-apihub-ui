@@ -146,6 +146,7 @@ export const ValidationResultsStepTable: FC<ValidationResultsStepTableProps> = m
       viewChangesUrl,
       baselineFound,
       baselineVersionFound,
+      changelogHasErrors,
       apiTypes,
     } = snapshotPublicationInfo.services.find(({ key }) => key === service.key)!
     const [apiType = DEFAULT_API_TYPE] = apiTypes ?? []
@@ -157,6 +158,7 @@ export const ValidationResultsStepTable: FC<ValidationResultsStepTableProps> = m
       children: service.specs?.map(spec => ({ spec })),
       baselineFound: baselineFound,
       baselineVersionFound: baselineVersionFound,
+      changelogHasErrors: changelogHasErrors,
       apiType: apiType,
     })
   }), [snapshotPublicationInfo.services, value])
@@ -249,6 +251,7 @@ type TableData = Partial<{
   children: TableData[]
   baselineFound: boolean
   baselineVersionFound: boolean
+  changelogHasErrors: boolean
   apiType: ApiType
 }>
 

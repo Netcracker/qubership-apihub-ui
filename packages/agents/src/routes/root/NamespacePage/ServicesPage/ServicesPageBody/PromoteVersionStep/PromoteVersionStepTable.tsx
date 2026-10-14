@@ -216,6 +216,7 @@ export const PromoteVersionStepTable: FC<PromoteVersionStepTableProps> = memo<Pr
       viewBaselineUrl,
       baselineFound,
       baselineVersionFound,
+      changelogHasErrors,
     } = snapshotPublicationInfo.services.find(({ key }) => key === service.key)!
     const serviceConfig = config?.serviceConfigs.find(({ serviceId }) => serviceId === service.key)
     return ({
@@ -228,6 +229,7 @@ export const PromoteVersionStepTable: FC<PromoteVersionStepTableProps> = memo<Pr
       viewBaselineUrl: viewBaselineUrl,
       baselineFound: baselineFound,
       baselineVersionFound: baselineVersionFound,
+      changelogHasErrors: changelogHasErrors,
       builderId: config?.builderId,
     })
   }), [allPublishDetails, config?.builderId, config?.serviceConfigs, snapshotPublicationInfo.services, services])
@@ -348,6 +350,7 @@ type TableData = Partial<{
   children: TableData[]
   baselineFound: boolean
   baselineVersionFound: boolean
+  changelogHasErrors: boolean
   builderId?: string
 }>
 
