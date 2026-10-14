@@ -33,7 +33,7 @@
     "@mui/private-theming": "5.11.9",
     "@netcracker/qubership-apihub-api-diff": "dev",
     "@netcracker/qubership-apihub-api-doc-viewer": "bugfix-button-focus-outline",
-    "@netcracker/qubership-apihub-api-processor": "feature-tolerant-publication",
+    "@netcracker/qubership-apihub-api-processor": "feature-tolerant-publication-demo",
     "@netcracker/qubership-apihub-api-unifier": "dev",
     "@netcracker/qubership-apihub-api-visitor": "dev",
     "@netcracker/qubership-apihub-apispec-view": "bugfix-button-focus-outline",
