@@ -54,7 +54,7 @@ import { useAllPublicationDetails } from '../useAllPublicationDetails'
 import { PublishStatusTableCell } from '../PublishStatusTableCell'
 import { PublicationActionTableCell } from '../PublicationActionTableCell'
 import { useServices } from '../../../useServices'
-import type { ServiceKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { PackageKey, ServiceKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { ColumnModel } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
 import {
   DEFAULT_CONTAINER_WIDTH,
@@ -71,7 +71,7 @@ import { ColumnDelimiter } from '@netcracker/qubership-apihub-ui-shared/componen
 import type { Service } from '@agents/entities/services'
 import type { ServiceConfig } from '@agents/entities/publish-config'
 import { EMPTY_PUBLISH_DETAILS } from '@agents/entities/publish-details'
-import type { PublishDetails } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
+import { COMPLETE_PUBLISH_STATUS, type PublishDetails } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
 import type { Spec } from '@netcracker/qubership-apihub-ui-shared/entities/specs'
 import { useResizeObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useResizeObserver'
 
@@ -180,14 +180,18 @@ export const CreateSnapshotStepTable: FC<CreateSnapshotStepTableProps> = memo<Cr
   const data: TableData[] = useMemo(() => services.map(service => {
     const servicePublishInfo = snapshotPublicationInfo.services.find(({ key }) => key === service.key)
     const serviceConfig = config?.serviceConfigs.find(({ serviceId }) => serviceId === service.key)
+    const publishDetails = allPublishDetails.find(({ publishId }) => publishId === serviceConfig?.publishId) ??
+      EMPTY_PUBLISH_DETAILS
 
     return ({
       service: service,
       serviceConfig: serviceConfig,
-      publishDetails: allPublishDetails.find(({ publishId }) => publishId === serviceConfig?.publishId) ?? EMPTY_PUBLISH_DETAILS,
+      publishDetails: publishDetails,
       children: service.specs?.map(spec => ({ spec })),
       viewSnapshotUrl: servicePublishInfo?.viewSnapshotUrl,
       builderId: config?.builderId,
+      snapshotHasErrors: publishDetails.status === COMPLETE_PUBLISH_STATUS && (publishDetails.hasErrors ?? false),
+      snapshotPackageKey: serviceConfig?.packageId,
     })
   }), [allPublishDetails, config?.builderId, config?.serviceConfigs, snapshotPublicationInfo.services, services])
 
@@ -303,6 +307,8 @@ type TableData = Partial<{
   viewSnapshotUrl: string
   builderId: string
   children: TableData[]
+  snapshotHasErrors: boolean
+  snapshotPackageKey: PackageKey
 }>
 
 type CreateSnapshotDetailsTableCellProps = {

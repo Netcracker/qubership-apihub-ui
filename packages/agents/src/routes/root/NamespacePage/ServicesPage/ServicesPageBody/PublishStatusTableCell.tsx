@@ -1,6 +1,4 @@
-import { Box, Typography } from '@mui/material'
-import { styled } from '@mui/material/styles'
-import { type FC, memo, type ReactNode } from 'react'
+import { type FC, memo } from 'react'
 
 import { VersionErrorIndicator } from '@netcracker/qubership-apihub-ui-shared/components/ErrorIndicators/VersionErrorIndicator'
 import {
@@ -18,16 +16,11 @@ import {
   COMPLETE_WITH_ERRORS_PUBLISH_STATUS_DESCRIPTION,
   PUBLISH_STATUS_TO_STATUS_DESCRIPTION_MAP,
   PUBLISH_STATUS_TO_STATUS_MARKER_VARIANT_MAP,
-  type PublishStatusDescription,
 } from '../../constants'
+import { StatusContent } from './StatusContent'
 
 type PublishStatusTableCellProps = {
   publishDetails: PublishDetails
-}
-
-type PublishStatusContentProps = {
-  marker: ReactNode
-  description: PublishStatusDescription
 }
 
 export const PublishStatusTableCell: FC<PublishStatusTableCellProps> = memo<PublishStatusTableCellProps>(({
@@ -39,7 +32,7 @@ export const PublishStatusTableCell: FC<PublishStatusTableCellProps> = memo<Publ
 
   if (status === COMPLETE_PUBLISH_STATUS && hasErrors) {
     return (
-      <PublishStatusContent
+      <StatusContent
         marker={
           <VersionErrorIndicator
             hasErrors={hasErrors}
@@ -47,34 +40,17 @@ export const PublishStatusTableCell: FC<PublishStatusTableCellProps> = memo<Publ
             fontSize="extra-small"
           />
         }
-        description={COMPLETE_WITH_ERRORS_PUBLISH_STATUS_DESCRIPTION}
+        text={COMPLETE_WITH_ERRORS_PUBLISH_STATUS_DESCRIPTION}
       />
     )
   }
 
   return (
-    <PublishStatusContent
+    <StatusContent
       marker={<StatusMarker value={PUBLISH_STATUS_TO_STATUS_MARKER_VARIANT_MAP[status]} />}
-      description={PUBLISH_STATUS_TO_STATUS_DESCRIPTION_MAP[status]}
+      text={PUBLISH_STATUS_TO_STATUS_DESCRIPTION_MAP[status]}
     />
   )
 })
 
 PublishStatusTableCell.displayName = 'PublishStatusTableCell'
-
-const PublishStatusContent: FC<PublishStatusContentProps> = ({ marker, description }) => (
-  <StatusCell>
-    {marker}
-    <Typography noWrap variant="inherit">
-      {description}
-    </Typography>
-  </StatusCell>
-)
-
-PublishStatusContent.displayName = 'PublishStatusContent'
-
-const StatusCell = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  gap: theme.spacing(1),
-}))

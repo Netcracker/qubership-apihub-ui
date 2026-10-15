@@ -48,6 +48,7 @@ import { createComponents } from '@netcracker/qubership-apihub-ui-shared/utils/c
 import { DEFAULT_NUMBER_SKELETON_ROWS } from '@netcracker/qubership-apihub-ui-shared/utils/constants'
 import { useResizeObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useResizeObserver'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
+import type { PackageKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 
 export type ValidationResultsStepTableProps = {
   value: ReadonlyArray<Service>
@@ -148,6 +149,8 @@ export const ValidationResultsStepTable: FC<ValidationResultsStepTableProps> = m
       baselineVersionFound,
       changelogHasErrors,
       apiTypes,
+      hasErrors,
+      packageKey,
     } = snapshotPublicationInfo.services.find(({ key }) => key === service.key)!
     const [apiType = DEFAULT_API_TYPE] = apiTypes ?? []
     return ({
@@ -160,6 +163,8 @@ export const ValidationResultsStepTable: FC<ValidationResultsStepTableProps> = m
       baselineVersionFound: baselineVersionFound,
       changelogHasErrors: changelogHasErrors,
       apiType: apiType,
+      snapshotHasErrors: hasErrors,
+      snapshotPackageKey: packageKey,
     })
   }), [snapshotPublicationInfo.services, value])
 
@@ -253,6 +258,8 @@ type TableData = Partial<{
   baselineVersionFound: boolean
   changelogHasErrors: boolean
   apiType: ApiType
+  snapshotHasErrors: boolean
+  snapshotPackageKey: PackageKey
 }>
 
 const TableSkeleton: FC = memo(() => {

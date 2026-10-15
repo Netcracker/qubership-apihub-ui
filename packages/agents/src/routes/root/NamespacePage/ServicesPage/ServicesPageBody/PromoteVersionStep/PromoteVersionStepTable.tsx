@@ -55,7 +55,7 @@ import { useAllPublicationDetails } from '../useAllPublicationDetails'
 import { PublishStatusTableCell } from '../PublishStatusTableCell'
 import { PublicationActionTableCell } from '../PublicationActionTableCell'
 import type { VersionStatus } from '@netcracker/qubership-apihub-ui-shared/entities/version-status'
-import type { ServiceKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
+import type { PackageKey, ServiceKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
 import type { ColumnModel } from '@netcracker/qubership-apihub-ui-shared/hooks/table-resizing/useColumnResizing'
 import {
   DEFAULT_CONTAINER_WIDTH,
@@ -217,6 +217,8 @@ export const PromoteVersionStepTable: FC<PromoteVersionStepTableProps> = memo<Pr
       baselineFound,
       baselineVersionFound,
       changelogHasErrors,
+      hasErrors,
+      packageKey,
     } = snapshotPublicationInfo.services.find(({ key }) => key === service.key)!
     const serviceConfig = config?.serviceConfigs.find(({ serviceId }) => serviceId === service.key)
     return ({
@@ -231,6 +233,8 @@ export const PromoteVersionStepTable: FC<PromoteVersionStepTableProps> = memo<Pr
       baselineVersionFound: baselineVersionFound,
       changelogHasErrors: changelogHasErrors,
       builderId: config?.builderId,
+      snapshotHasErrors: hasErrors,
+      snapshotPackageKey: packageKey,
     })
   }), [allPublishDetails, config?.builderId, config?.serviceConfigs, snapshotPublicationInfo.services, services])
 
@@ -352,6 +356,8 @@ type TableData = Partial<{
   baselineVersionFound: boolean
   changelogHasErrors: boolean
   builderId?: string
+  snapshotHasErrors: boolean
+  snapshotPackageKey: PackageKey
 }>
 
 type PromoteVersionDetailsTableCellProps = {

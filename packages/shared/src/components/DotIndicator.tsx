@@ -10,7 +10,7 @@ type DotIndicatorColor = 'error' | 'warning'
 
 type DotIndicatorProps = TestableProps & {
   color: DotIndicatorColor
-  tooltip: string
+  tooltip?: string
   tabIndex?: number
   className?: string
 }
@@ -28,6 +28,14 @@ export const DotIndicator: FC<DotIndicatorProps> = memo<DotIndicatorProps>(({
   'data-testid': dataTestId = 'DotIndicator',
 }) => {
   const Icon = DOT_INDICATOR_ICONS[color]
+
+  if (!tooltip) {
+    return (
+      <DotRoot className={className} aria-hidden data-testid={dataTestId}>
+        <Icon />
+      </DotRoot>
+    )
+  }
 
   return (
     <Tooltip title={tooltip} placement="right" disableInteractive>
