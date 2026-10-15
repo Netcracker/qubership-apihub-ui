@@ -29,6 +29,7 @@ import {
   TableHead,
   TableRow,
   Typography,
+  styled,
 } from '@mui/material'
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
 import KeyboardArrowRightOutlinedIcon from '@mui/icons-material/KeyboardArrowRightOutlined'
@@ -44,6 +45,7 @@ import {
 import { ComparisonIncompleteStatus } from '../ServicesPage/ServicesPageBody/ComparisonIncompleteStatus'
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
+import { VersionErrorIndicator } from '@netcracker/qubership-apihub-ui-shared/components/ErrorIndicators/VersionErrorIndicator'
 import { FormattedDate } from '@netcracker/qubership-apihub-ui-shared/components/FormattedDate'
 import {
   ERROR_STATUS_MARKER_VARIANT,
@@ -92,9 +94,18 @@ export const SnapshotsTable: FC = memo(() => {
 
         if (servicePublishInfo) {
           return (
-            <OverflowTooltip sx={{ pl: 5, height: 19 }} title={servicePublishInfo.key}>
-              <Typography noWrap variant="inherit">{servicePublishInfo.key}</Typography>
-            </OverflowTooltip>
+            <ServiceName>
+              <OverflowTooltip title={servicePublishInfo.key}>
+                <Typography noWrap variant="inherit">{servicePublishInfo.key}</Typography>
+              </OverflowTooltip>
+              {servicePublishInfo.hasErrors && (
+                <VersionErrorIndicator
+                  hasErrors={servicePublishInfo.hasErrors}
+                  changelogHasErrors={servicePublishInfo.changelogHasErrors}
+                  fontSize="extra-small"
+                />
+              )}
+            </ServiceName>
           )
         }
 
@@ -250,3 +261,11 @@ export type SnapshotsTableData = Partial<{
   changeSummary: ChangesSummary
   viewChangesUrl: string
 }>
+
+const ServiceName = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: theme.spacing(1),
+  paddingLeft: theme.spacing(5),
+  height: 19,
+}))
