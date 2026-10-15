@@ -57,6 +57,10 @@ export const PUBLICATION_ERROR_MESSAGES = {
     noValidOperationsInApiType: 'No valid operations were published for this API type.',
     noValidEntitiesInContractType: 'No valid entities were published for this contract type.',
   },
+  agent: {
+    promoteReleaseRefused:
+      'At least one selected service has errors in its snapshot version and cannot be promoted in release status. A service with errors can be promoted only in draft status.',
+  },
   snackbar: {
     draftPublishWithErrors: {
       title: 'Version published with errors',
