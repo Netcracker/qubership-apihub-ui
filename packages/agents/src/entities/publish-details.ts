@@ -24,6 +24,7 @@ import {
   type PublishDetails,
   type SetPublicationDetailsOptions,
 } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
+import { appendFailedBuildNotifications } from '@netcracker/qubership-apihub-ui-shared/utils/failed-build-notifications'
 
 export const EMPTY_PUBLISH_DETAILS: PublishDetails = {
   publishId: '',
@@ -67,6 +68,7 @@ export async function setPublicationDetails(options: SetPublicationDetailsOption
     abortController,
     data,
     errors,
+    notifications,
   } = options
   const packageId = encodeURIComponent(packageKey)
   const publishId = encodeURIComponent(publishKey)
@@ -75,6 +77,7 @@ export async function setPublicationDetails(options: SetPublicationDetailsOption
   builderId && formData.append('builderId', builderId)
   errors && formData.append('errors', errors)
   data && formData.append('data', data, 'package.zip')
+  notifications && appendFailedBuildNotifications(formData, notifications)
 
   const signal = abortController?.signal
   const pathPattern = '/packages/:packageId/publish/:publishId/status'
