@@ -27,7 +27,10 @@ export const DocumentErrorIndicator: FC<DocumentErrorIndicatorProps> = memo<Docu
   return (
     <ErrorIndicator
       hasProblems={hasErrors}
-      tooltip={tooltip ?? PUBLICATION_ERROR_MESSAGES.document.itemError}
+      tooltip={tooltip ??
+        (onClick
+          ? PUBLICATION_ERROR_MESSAGES.document.itemErrorClickable
+          : PUBLICATION_ERROR_MESSAGES.document.itemError)}
       showTooltip={showTooltip}
       tooltipPlacement={tooltipPlacement}
       fontSize={fontSize}

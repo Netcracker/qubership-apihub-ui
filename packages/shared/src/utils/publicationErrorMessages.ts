@@ -48,9 +48,9 @@ export const PUBLICATION_ERROR_MESSAGES = {
       'Some included packages or dashboards have errors or no longer exist. Open this tab to see the details.',
   },
   document: {
-    itemError: 'There were errors when processing the document. Click Document Errors button to see details.',
-    // The comparison pages have no Document Errors button, so their document filter shows the first sentence of itemError.
-    filterItemError: 'There were errors when processing the document.',
+    // DocumentErrorIndicator shows itemErrorClickable on an icon that opens the Document Notifications dialog.
+    itemErrorClickable: 'There were errors when processing the document. Click the Error icon to see details.',
+    itemError: 'There were errors when processing the document.',
     menuDownload: 'Download document',
   },
   emptyState: {
@@ -58,6 +58,11 @@ export const PUBLICATION_ERROR_MESSAGES = {
     noValidEntitiesInContractType: 'No valid entities were published for this contract type.',
   },
   agent: {
+    // The agent has no Documents tab, so these leave out the hint to open it that packageVersion.version and
+    // versionChangelog give.
+    version: 'Errors occurred while processing some documents in this version.',
+    versionChangelog:
+      'Errors occurred while processing some documents in this version. There were also errors when calculating the comparison against the previous version, so the list of changes may be incomplete.',
     promoteReleaseRefused:
       'At least one selected service has errors in its snapshot version and cannot be promoted in release status. A service with errors can be promoted only in draft status.',
   },

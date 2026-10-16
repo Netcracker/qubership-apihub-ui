@@ -47,6 +47,7 @@ import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/Sea
 import { VersionSelectorAutocomplete } from '@netcracker/qubership-apihub-ui-shared/components/Autocompletes/VersionSelectorAutocomplete'
 import { VersionErrorFormMessage } from '@netcracker/qubership-apihub-ui-shared/components/ErrorIndicators/VersionErrorFormMessage'
 import { VersionErrorIndicator } from '@netcracker/qubership-apihub-ui-shared/components/ErrorIndicators/VersionErrorIndicator'
+import { agent } from '@netcracker/qubership-apihub-ui-shared/utils/version-info'
 import { ErrorIndicator } from '@netcracker/qubership-apihub-ui-shared/components/ErrorIndicators/ErrorIndicator'
 import { PUBLICATION_ERROR_MESSAGES } from '@netcracker/qubership-apihub-ui-shared/utils/publicationErrorMessages'
 import { useVersionProblemDetails } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/useVersionProblemDetails'
@@ -185,6 +186,7 @@ export const PromoteVersionStep: FC = memo(() => {
               options={baselineOptions.versionKeys}
               inputIndicator={previousVersionHasProblems && previousVersionFlags && (
                 <VersionErrorIndicator
+                  app={agent}
                   versionKey={previousVersion}
                   hasErrors={previousVersionFlags.hasErrors}
                   changelogHasErrors={previousVersionFlags.changelogHasErrors}

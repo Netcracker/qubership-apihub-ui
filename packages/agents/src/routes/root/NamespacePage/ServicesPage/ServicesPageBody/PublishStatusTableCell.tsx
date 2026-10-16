@@ -11,6 +11,7 @@ import {
   type PublishDetails,
   RUNNING_PUBLISH_STATUS,
 } from '@netcracker/qubership-apihub-ui-shared/utils/packages-builder'
+import { agent } from '@netcracker/qubership-apihub-ui-shared/utils/version-info'
 
 import {
   COMPLETE_WITH_ERRORS_PUBLISH_STATUS_DESCRIPTION,
@@ -35,6 +36,7 @@ export const PublishStatusTableCell: FC<PublishStatusTableCellProps> = memo<Publ
       <StatusContent
         marker={
           <VersionErrorIndicator
+            app={agent}
             hasErrors={hasErrors}
             changelogHasErrors={changelogHasErrors}
             fontSize="extra-small"

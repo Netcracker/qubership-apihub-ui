@@ -2,6 +2,7 @@ import type { PackageKey, VersionKey } from '../../entities/keys'
 import { DASHBOARD_KIND, PACKAGE_KIND, type PackageKind } from '../../entities/packages'
 import type { PackageReference } from '../../entities/version-references'
 import { getApiProcessorMismatchTooltip, PUBLICATION_ERROR_MESSAGES } from '../../utils/publicationErrorMessages'
+import { Apps, type AppTypeApiHub } from '../../utils/version-info'
 
 export const VERSION_PROBLEM_KIND = {
   PROCESSOR_MISMATCH: 'processor-mismatch',
@@ -35,6 +36,8 @@ export type UseVersionProblemDetailsParams = {
   kind?: PackageKind
   apiProcessorVersion?: string
   surface?: VersionProblemDialogSurface
+  /** Selects the tooltip messages of the app that shows the version; defaults to the portal. */
+  app?: AppTypeApiHub
 }
 
 export type VersionProblemDetails = {
@@ -68,19 +71,25 @@ type VersionProblemDialogRule = {
   blocksVersionErrors: boolean
 }
 
-type VersionProblemCopySet = {
+type VersionProblemMessageSet = {
   build: string
   comparison: string
   buildAndComparison: string
 }
 
-const PACKAGE_ERROR_COPY: VersionProblemCopySet = {
+const PACKAGE_ERROR_MESSAGES: VersionProblemMessageSet = {
   build: PUBLICATION_ERROR_MESSAGES.packageVersion.version,
   comparison: PUBLICATION_ERROR_MESSAGES.packageVersion.changelog,
   buildAndComparison: PUBLICATION_ERROR_MESSAGES.packageVersion.versionChangelog,
 }
 
-const DASHBOARD_ERROR_COPY: VersionProblemCopySet = {
+const AGENT_PACKAGE_ERROR_MESSAGES: VersionProblemMessageSet = {
+  build: PUBLICATION_ERROR_MESSAGES.agent.version,
+  comparison: PUBLICATION_ERROR_MESSAGES.packageVersion.changelog,
+  buildAndComparison: PUBLICATION_ERROR_MESSAGES.agent.versionChangelog,
+}
+
+const DASHBOARD_ERROR_MESSAGES: VersionProblemMessageSet = {
   build: PUBLICATION_ERROR_MESSAGES.dashboardVersion.version,
   comparison: PUBLICATION_ERROR_MESSAGES.dashboardVersion.changelog,
   buildAndComparison: PUBLICATION_ERROR_MESSAGES.dashboardVersion.versionChangelog,
@@ -216,13 +225,13 @@ function resolveBuildAndComparisonProblems(
     return undefined
   }
 
-  const versionErrorCopySet = params.kind === DASHBOARD_KIND ? DASHBOARD_ERROR_COPY : PACKAGE_ERROR_COPY
+  const versionErrorMessageSet = resolveVersionErrorMessageSet(params)
 
   if (hasErrors && changelogHasErrors) {
     return {
       hasProblems: true,
       activeProblemKind: VERSION_PROBLEM_KIND.BUILD_ERRORS,
-      tooltip: versionErrorCopySet.buildAndComparison,
+      tooltip: versionErrorMessageSet.buildAndComparison,
     }
   }
 
@@ -230,15 +239,22 @@ function resolveBuildAndComparisonProblems(
     return {
       hasProblems: true,
       activeProblemKind: VERSION_PROBLEM_KIND.BUILD_ERRORS,
-      tooltip: versionErrorCopySet.build,
+      tooltip: versionErrorMessageSet.build,
     }
   }
 
   return {
     hasProblems: true,
     activeProblemKind: VERSION_PROBLEM_KIND.COMPARISON_ERRORS,
-    tooltip: versionErrorCopySet.comparison,
+    tooltip: versionErrorMessageSet.comparison,
   }
+}
+
+function resolveVersionErrorMessageSet({ kind, app }: ResolveVersionProblemDetailsParams): VersionProblemMessageSet {
+  if (kind === DASHBOARD_KIND) {
+    return DASHBOARD_ERROR_MESSAGES
+  }
+  return app === Apps.agent ? AGENT_PACKAGE_ERROR_MESSAGES : PACKAGE_ERROR_MESSAGES
 }
 
 function resolveProcessorMismatch(

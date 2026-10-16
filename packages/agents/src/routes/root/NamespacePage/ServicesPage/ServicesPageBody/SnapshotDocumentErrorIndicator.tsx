@@ -2,7 +2,6 @@ import type { FC } from 'react'
 
 import { DocumentErrorIndicator } from '@netcracker/qubership-apihub-ui-shared/components/ErrorIndicators/DocumentErrorIndicator'
 import type { PackageKey, SpecKey } from '@netcracker/qubership-apihub-ui-shared/entities/keys'
-import { PUBLICATION_ERROR_MESSAGES } from '@netcracker/qubership-apihub-ui-shared/utils/publicationErrorMessages'
 
 import { toSnapshotVersionKey } from '@agents/entities/snapshots'
 import { useCreateSnapshotPublicationOptions } from '../ServicesPageProvider/ServicesPublicationOptionsProvider'
@@ -31,7 +30,6 @@ export const SnapshotDocumentErrorIndicator: FC<SnapshotDocumentErrorIndicatorPr
   return (
     <DocumentErrorIndicator
       hasErrors={documentErrorFileKeys.has(specKey)}
-      tooltip={PUBLICATION_ERROR_MESSAGES.document.filterItemError}
       fontSize="extra-small"
     />
   )

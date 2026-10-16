@@ -48,6 +48,7 @@ import { RadioCustom } from '@netcracker/qubership-apihub-ui-shared/components/R
 import { VersionSelectorAutocomplete } from '@netcracker/qubership-apihub-ui-shared/components/Autocompletes/VersionSelectorAutocomplete'
 import { VersionErrorFormMessage } from '@netcracker/qubership-apihub-ui-shared/components/ErrorIndicators/VersionErrorFormMessage'
 import { VersionErrorIndicator } from '@netcracker/qubership-apihub-ui-shared/components/ErrorIndicators/VersionErrorIndicator'
+import { agent } from '@netcracker/qubership-apihub-ui-shared/utils/version-info'
 import { OptionItem } from '@netcracker/qubership-apihub-ui-shared/components/OptionItem'
 import { useVersionProblemDetails } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/useVersionProblemDetails'
 import { VERSION_PROBLEM_DIALOG_SURFACE } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/versionProblemDetails'
@@ -177,6 +178,7 @@ export const AutomationPage: FC = memo(() => {
                     options={previousVersionOptions.versionKeys}
                     inputIndicator={previousVersionHasProblems && previousVersionFlags && (
                       <VersionErrorIndicator
+                        app={agent}
                         versionKey={previousVersionKey ?? undefined}
                         hasErrors={previousVersionFlags.hasErrors}
                         changelogHasErrors={previousVersionFlags.changelogHasErrors}
@@ -192,6 +194,7 @@ export const AutomationPage: FC = memo(() => {
                           title={versionKey}
                           indicator={flags && (
                             <VersionErrorIndicator
+                              app={agent}
                               versionKey={versionKey}
                               hasErrors={flags.hasErrors}
                               changelogHasErrors={flags.changelogHasErrors}

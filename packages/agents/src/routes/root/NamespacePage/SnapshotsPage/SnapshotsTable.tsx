@@ -46,6 +46,7 @@ import { ComparisonIncompleteStatus } from '../ServicesPage/ServicesPageBody/Com
 import { getSplittedVersionKey } from '@netcracker/qubership-apihub-ui-shared/utils/versions'
 import { OverflowTooltip } from '@netcracker/qubership-apihub-ui-shared/components/OverflowTooltip'
 import { VersionErrorIndicator } from '@netcracker/qubership-apihub-ui-shared/components/ErrorIndicators/VersionErrorIndicator'
+import { agent } from '@netcracker/qubership-apihub-ui-shared/utils/version-info'
 import { FormattedDate } from '@netcracker/qubership-apihub-ui-shared/components/FormattedDate'
 import {
   ERROR_STATUS_MARKER_VARIANT,
@@ -100,6 +101,7 @@ export const SnapshotsTable: FC = memo(() => {
               </OverflowTooltip>
               {servicePublishInfo.hasErrors && (
                 <VersionErrorIndicator
+                  app={agent}
                   hasErrors={servicePublishInfo.hasErrors}
                   changelogHasErrors={servicePublishInfo.changelogHasErrors}
                   fontSize="extra-small"

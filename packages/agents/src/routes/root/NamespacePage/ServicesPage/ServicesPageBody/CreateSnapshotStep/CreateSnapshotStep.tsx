@@ -32,6 +32,7 @@ import { SearchBar } from '@netcracker/qubership-apihub-ui-shared/components/Sea
 import { VersionSelectorAutocomplete } from '@netcracker/qubership-apihub-ui-shared/components/Autocompletes/VersionSelectorAutocomplete'
 import { VersionErrorFormMessage } from '@netcracker/qubership-apihub-ui-shared/components/ErrorIndicators/VersionErrorFormMessage'
 import { VersionErrorIndicator } from '@netcracker/qubership-apihub-ui-shared/components/ErrorIndicators/VersionErrorIndicator'
+import { agent } from '@netcracker/qubership-apihub-ui-shared/utils/version-info'
 import { OptionItem } from '@netcracker/qubership-apihub-ui-shared/components/OptionItem'
 import { useVersionProblemDetails } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/useVersionProblemDetails'
 import { VERSION_PROBLEM_DIALOG_SURFACE } from '@netcracker/qubership-apihub-ui-shared/hooks/versions/versionProblemDetails'
@@ -145,6 +146,7 @@ export const CreateSnapshotStep: FC = memo(() => {
               options={baselineOptions.versionKeys}
               inputIndicator={baselineHasProblems && baselineFlags && (
                 <VersionErrorIndicator
+                  app={agent}
                   versionKey={baseline}
                   hasErrors={baselineFlags.hasErrors}
                   changelogHasErrors={baselineFlags.changelogHasErrors}
@@ -160,6 +162,7 @@ export const CreateSnapshotStep: FC = memo(() => {
                     title={versionKey}
                     indicator={flags && (
                       <VersionErrorIndicator
+                        app={agent}
                         versionKey={versionKey}
                         hasErrors={flags.hasErrors}
                         changelogHasErrors={flags.changelogHasErrors}

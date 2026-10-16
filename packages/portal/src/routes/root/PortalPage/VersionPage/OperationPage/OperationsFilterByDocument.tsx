@@ -24,7 +24,6 @@ import { EMPTY_DOC } from '@portal/entities/documents'
 import { VersionSelectorAutocomplete } from '@netcracker/qubership-apihub-ui-shared/components/Autocompletes/VersionSelectorAutocomplete'
 import { DocumentErrorIndicator } from '@netcracker/qubership-apihub-ui-shared/components/ErrorIndicators/DocumentErrorIndicator'
 import { OptionItem } from '@netcracker/qubership-apihub-ui-shared/components/OptionItem'
-import { PUBLICATION_ERROR_MESSAGES } from '@netcracker/qubership-apihub-ui-shared/utils/publicationErrorMessages'
 import type { ApiType } from '@netcracker/qubership-apihub-ui-shared/entities/api-types'
 import type { ContractType } from '@netcracker/qubership-apihub-ui-shared/entities/contract-types'
 
@@ -78,7 +77,7 @@ export const OperationsFilterByDocument: FC<OperationsFilterByDocumentProps> =
           value={selectedDocument}
           sx={inputPaddingSx}
           inputIndicator={selectedDocument.hasErrors && (
-            <DocumentErrorIndicator hasErrors tooltip={PUBLICATION_ERROR_MESSAGES.document.filterItemError}/>
+            <DocumentErrorIndicator hasErrors/>
           )}
           renderOption={(props, { key, title, hasErrors }: Document) => (
             <OptionItem
