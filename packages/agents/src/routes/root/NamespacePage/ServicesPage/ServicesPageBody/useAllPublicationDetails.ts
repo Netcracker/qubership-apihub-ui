@@ -31,6 +31,7 @@ import type { PublishConfig } from '@agents/entities/publish-config'
 import { STATUS_REFETCH_INTERVAL } from '@netcracker/qubership-apihub-ui-shared/utils/requests'
 
 const ALL_PUBLISH_DETAILS_QUERY_KEY = 'all-publish-details-query-key'
+const BUILD_CREATION_TIMEOUT = 15 * 60 * 1000 // fifteen minutes
 
 export function useAllPublicationDetails(options?: Partial<{
   config: PublishConfig
@@ -41,16 +42,32 @@ export function useAllPublicationDetails(options?: Partial<{
   const invalidateSnapshotPublishInfo = useInvalidateSnapshotPublicationInfo()
   const invalidateSnapshots = useInvalidateSnapshots()
 
+  const startedAt = useMemo(() => config && Date.now(), [config])
+
   const { data } = useQuery<PublishDetailsDto[], Error, PublishDetails[]>({
     queryKey: [ALL_PUBLISH_DETAILS_QUERY_KEY, config],
-    queryFn: () => {
+    queryFn: async () => {
       const publishIds = [...config!.serviceConfigs.map(({ publishId }) => publishId)]
 
       const snapshotPublishId = config!.snapshotConfig?.publishId
 
       snapshotPublishId && publishIds.push(snapshotPublishId)
 
-      return getPublishDetails(snapshots.packageKey, publishIds)
+      // Agents-backend returns publish ids before it creates the builds, so apihub
+      // omits the builds that do not exist yet, or answers 404 when none exists
+      const found = await getPublishDetails(snapshots.packageKey, publishIds).catch((error: unknown) => {
+        // A 404 rejects with no reason; any other error keeps its previous handling
+        if (error === undefined) {
+          return []
+        }
+        throw error
+      })
+      const foundById = new Map(found.map(details => [details.publishId, details]))
+      const isTimedOut = Date.now() - startedAt! > BUILD_CREATION_TIMEOUT
+      return publishIds.map(publishId => foundById.get(publishId) ?? {
+        publishId,
+        status: isTimedOut ? ERROR_PUBLISH_STATUS : RUNNING_PUBLISH_STATUS,
+      })
     },
     refetchInterval: data => {
       if (data?.find(publishDetails => publishDetails.status === RUNNING_PUBLISH_STATUS || publishDetails.status === NONE_PUBLISH_STATUS)) {
@@ -99,6 +116,10 @@ export function useAllPublishDetailsStatus(options?: Partial<{
   }
   if (isFailed) {
     return ERROR_PUBLISH_STATUS
+  }
+  // A build queued for a server builder, such as the dashboard, is still in progress
+  if (config && allPublishDetails.some(({ status }) => status === NONE_PUBLISH_STATUS)) {
+    return RUNNING_PUBLISH_STATUS
   }
 
   return NONE_PUBLISH_STATUS
