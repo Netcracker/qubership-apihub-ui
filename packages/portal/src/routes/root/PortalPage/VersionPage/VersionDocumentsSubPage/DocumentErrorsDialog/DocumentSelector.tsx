@@ -71,8 +71,7 @@ export const DocumentSelector: FC<DocumentSelectorProps> = memo<DocumentSelector
         </CaptionLabel>
         {isEmptySelected
           ? <DoNotDisturbAltOutlinedIcon sx={EMPTY_ICON_STYLE} />
-          : <SpecLogo value={selectedDocument?.type} />
-        }
+          : <SpecLogo value={selectedDocument?.type} />}
         <TextWithOverflowTooltip
           tooltipText={title}
           variant="body2"
@@ -102,11 +101,11 @@ export const DocumentSelector: FC<DocumentSelectorProps> = memo<DocumentSelector
                   <DoNotDisturbAltOutlinedIcon sx={EMPTY_ICON_STYLE} />
                 </DocumentItemIcon>
                 <ListItemText
-                  primary={(
+                  primary={
                     <Typography variant="body2">
                       {EMPTY_OPTION_TITLE}
                     </Typography>
-                  )}
+                  }
                 />
               </DocumentItemButton>
             </ListItem>
@@ -122,11 +121,11 @@ export const DocumentSelector: FC<DocumentSelectorProps> = memo<DocumentSelector
                     <SpecLogo value={type} />
                   </DocumentItemIcon>
                   <ListItemText
-                    primary={(
+                    primary={
                       <TextWithOverflowTooltip tooltipText={documentTitle} variant="body2">
                         {documentTitle}
                       </TextWithOverflowTooltip>
-                    )}
+                    }
                   />
                   <MenuItemErrorIndicator hasErrors={hasErrors} showTooltip={false} />
                 </DocumentItemButton>

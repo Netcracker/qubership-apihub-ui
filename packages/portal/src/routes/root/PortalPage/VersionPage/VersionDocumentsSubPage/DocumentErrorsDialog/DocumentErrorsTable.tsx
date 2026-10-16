@@ -1,7 +1,10 @@
 import { Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import { CustomTableHeadCell } from '@netcracker/qubership-apihub-ui-shared/components/CustomTableHeadCell'
-import type { VersionNotification, VersionNotifications } from '@netcracker/qubership-apihub-ui-shared/entities/version-notifications'
+import type {
+  VersionNotification,
+  VersionNotifications,
+} from '@netcracker/qubership-apihub-ui-shared/entities/version-notifications'
 import { useIntersectionObserver } from '@netcracker/qubership-apihub-ui-shared/hooks/common/useIntersectionObserver'
 import type { FetchNextNotificationsPage } from '@netcracker/qubership-apihub-ui-shared/hooks/notifications/notificationsQuery'
 import type { HasNextPage, IsFetchingNextPage } from '@netcracker/qubership-apihub-ui-shared/utils/aliases'
@@ -44,9 +47,7 @@ const COLUMNS: ColumnDef<VersionNotification>[] = [
   {
     id: TABLE_COLUMN_ID_TYPE,
     header: () => <CustomTableHeadCell title={TABLE_COLUMN_ID_LABELS[TABLE_COLUMN_ID_TYPE]} />,
-    cell: ({ row: { original: { severity } } }) => (
-      <NotificationSeverityMarker severity={severity} />
-    ),
+    cell: ({ row: { original: { severity } } }) => <NotificationSeverityMarker severity={severity} />,
   },
   {
     id: TABLE_COLUMN_ID_CATEGORY,

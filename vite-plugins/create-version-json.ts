@@ -1,6 +1,6 @@
 import fs from 'fs'
-import path from 'path'
 import { createRequire } from 'module'
+import path from 'path'
 import type { Plugin } from 'vite'
 
 const requireFromHere = createRequire(import.meta.url)
