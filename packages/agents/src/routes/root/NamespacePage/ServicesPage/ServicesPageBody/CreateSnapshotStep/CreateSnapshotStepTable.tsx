@@ -46,7 +46,6 @@ import {
 import { useServicePublishDetails } from './useServicePublishDetails'
 import { ServiceOrDocumentationTableCell } from '../ServiceOrDocumentationTableCell'
 import { BaselinePackageTableCell } from '../BaselinePackageTableCell'
-import { useSnapshotPublicationInfo } from '../../../useSnapshotPublicationInfo'
 import { useConfigureServiceSelection } from '../useConfigureServiceSelection'
 import { ServiceLabelsTableCell } from '../ServiceLabelsTableCell'
 import { serviceFilter } from '../utils'
@@ -107,7 +106,6 @@ export const CreateSnapshotStepTable: FC<CreateSnapshotStepTableProps> = memo<Cr
 
   const { createSnapshotPublicationOptions: { config } } = useCreateSnapshotPublicationOptions()
   const [allPublishDetails] = useAllPublicationDetails({ config })
-  const { snapshotPublicationInfo } = useSnapshotPublicationInfo()
   const columns: ColumnDef<TableData>[] = useMemo(() => [
     {
       // activates global filtering in react-table
@@ -160,7 +158,6 @@ export const CreateSnapshotStepTable: FC<CreateSnapshotStepTableProps> = memo<Cr
       cell: ({
         row: {
           original: {
-            viewSnapshotUrl,
             serviceConfig,
             publishDetails = EMPTY_PUBLISH_DETAILS,
           },
@@ -169,7 +166,6 @@ export const CreateSnapshotStepTable: FC<CreateSnapshotStepTableProps> = memo<Cr
         <PublicationActionTableCell
           serviceConfig={serviceConfig}
           publishDetails={publishDetails}
-          currentVersionUrl={viewSnapshotUrl}
           versionLinkLabel="View Snapshot"
           data-testid="ViewSnapshotButton"
         />
@@ -178,7 +174,6 @@ export const CreateSnapshotStepTable: FC<CreateSnapshotStepTableProps> = memo<Cr
   ], [selectable])
 
   const data: TableData[] = useMemo(() => services.map(service => {
-    const servicePublishInfo = snapshotPublicationInfo.services.find(({ key }) => key === service.key)
     const serviceConfig = config?.serviceConfigs.find(({ serviceId }) => serviceId === service.key)
     const publishDetails = allPublishDetails.find(({ publishId }) => publishId === serviceConfig?.publishId) ??
       EMPTY_PUBLISH_DETAILS
@@ -188,12 +183,11 @@ export const CreateSnapshotStepTable: FC<CreateSnapshotStepTableProps> = memo<Cr
       serviceConfig: serviceConfig,
       publishDetails: publishDetails,
       children: service.specs?.map(spec => ({ spec })),
-      viewSnapshotUrl: servicePublishInfo?.viewSnapshotUrl,
       builderId: config?.builderId,
       snapshotHasErrors: publishDetails.status === COMPLETE_PUBLISH_STATUS && (publishDetails.hasErrors ?? false),
       snapshotPackageKey: serviceConfig?.packageId,
     })
-  }), [allPublishDetails, config?.builderId, config?.serviceConfigs, snapshotPublicationInfo.services, services])
+  }), [allPublishDetails, config?.builderId, config?.serviceConfigs, services])
 
   const globalFilter = useMemo(() => ({
     searchValue,
@@ -304,7 +298,6 @@ type TableData = Partial<{
   serviceConfig: ServiceConfig
   publishDetails: PublishDetails
   spec: Spec
-  viewSnapshotUrl: string
   builderId: string
   children: TableData[]
   snapshotHasErrors: boolean

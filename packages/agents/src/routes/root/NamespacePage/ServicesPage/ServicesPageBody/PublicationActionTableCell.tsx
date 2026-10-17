@@ -18,8 +18,6 @@ type PublicationActionTableCellProps = TestableProps & {
   // Undefined for a service that is not part of the current publication run
   serviceConfig: ServiceConfig | undefined
   publishDetails: PublishDetails
-  // The version the service already has, linked while the service is not part of the run
-  currentVersionUrl: string | undefined
   versionLinkLabel: string
 }
 
@@ -31,14 +29,13 @@ type VersionLinkProps = TestableProps & {
 export const PublicationActionTableCell: FC<PublicationActionTableCellProps> = memo<PublicationActionTableCellProps>(({
   serviceConfig,
   publishDetails: { status, message },
-  currentVersionUrl,
   versionLinkLabel,
   'data-testid': dataTestId,
 }) => {
   const { showPublicationErrorReportDialog } = useEventBus()
 
   if (!serviceConfig) {
-    return <VersionLink url={currentVersionUrl} label={versionLinkLabel} data-testid={dataTestId} />
+    return null
   }
 
   if (status === COMPLETE_PUBLISH_STATUS) {

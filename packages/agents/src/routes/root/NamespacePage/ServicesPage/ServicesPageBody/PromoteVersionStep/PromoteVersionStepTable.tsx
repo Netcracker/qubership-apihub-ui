@@ -193,7 +193,6 @@ export const PromoteVersionStepTable: FC<PromoteVersionStepTableProps> = memo<Pr
       cell: ({
         row: {
           original: {
-            viewBaselineUrl,
             serviceConfig,
             publishDetails = EMPTY_PUBLISH_DETAILS,
           },
@@ -202,7 +201,6 @@ export const PromoteVersionStepTable: FC<PromoteVersionStepTableProps> = memo<Pr
         <PublicationActionTableCell
           serviceConfig={serviceConfig}
           publishDetails={publishDetails}
-          currentVersionUrl={viewBaselineUrl}
           versionLinkLabel="View Version"
           data-testid="PromotedVersionButton"
         />
@@ -213,7 +211,6 @@ export const PromoteVersionStepTable: FC<PromoteVersionStepTableProps> = memo<Pr
   const data: TableData[] = useMemo(() => services.filter(service => !!snapshotPublicationInfo.services.find(({ key }) => key === service.key && !!service.baseline)).map(service => {
     const {
       changeSummary,
-      viewBaselineUrl,
       baselineFound,
       baselineVersionFound,
       changelogHasErrors,
@@ -228,7 +225,6 @@ export const PromoteVersionStepTable: FC<PromoteVersionStepTableProps> = memo<Pr
       bwcErrors: (baselineFound && baselineVersionFound) ? changeSummary?.breaking : undefined,
       changeSummary: changeSummary,
       children: service.specs?.map(spec => ({ spec })),
-      viewBaselineUrl: viewBaselineUrl,
       baselineFound: baselineFound,
       baselineVersionFound: baselineVersionFound,
       changelogHasErrors: changelogHasErrors,
@@ -350,7 +346,6 @@ type TableData = Partial<{
   spec: Spec
   bwcErrors: number
   changeSummary: ChangesSummary
-  viewBaselineUrl: string
   children: TableData[]
   baselineFound: boolean
   baselineVersionFound: boolean
