@@ -1,1 +1,0 @@
-import{n as e}from"./rolldown-runtime-BcKkbAw3.js";var t,n,r;function i(){return(i=e((()=>{t=`Ungrouped`,n=`#B4BFCF`,r=`#626D82`})))()}export{i,r as n,t as r,n as t};
