@@ -55,3 +55,13 @@ export function useVersionInfo(
 
   return data ?? { frontendVersion: fallbackFrontendVersion, apiProcessorVersion: UNKNOWN_VERSION }
 }
+
+// Returns `undefined` until version.json loads, or when the fetch fails. A version comparison has to skip that case,
+// while `useVersionInfo` reports `UNKNOWN_VERSION`, which differs from every real version.
+export function useAppApiProcessorVersion(appType: AppTypeApiHub = portal): string | undefined {
+  const { data } = useQuery<VersionInfoDto, Error, VersionInfo>(
+    getVersionInfoOptions(appType),
+  )
+
+  return data?.apiProcessorVersion
+}

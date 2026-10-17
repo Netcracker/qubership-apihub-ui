@@ -1,9 +1,9 @@
 import { useSystemInfo } from '../../features/system-info/api/useSystemInfo'
-import { useVersionInfo } from '../frontend-version/useVersionInfo'
+import { useAppApiProcessorVersion } from '../frontend-version/useVersionInfo'
 import type { VersionProblemProcessorContext } from './versionProblemDetails'
 
 export function useVersionProblemProcessorContext(): VersionProblemProcessorContext {
-  const { apiProcessorVersion } = useVersionInfo()
+  const apiProcessorVersion = useAppApiProcessorVersion()
   const { migrationInProgress } = useSystemInfo()
 
   return {

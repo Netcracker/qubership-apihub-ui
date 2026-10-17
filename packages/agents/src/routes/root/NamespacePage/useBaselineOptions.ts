@@ -19,7 +19,7 @@ import { useMemo } from 'react'
 import { NO_PREVIOUS_VERSION_OPTION } from '@agents/entities/snapshots'
 import type { ServiceKey } from '@agents/entities/keys'
 import { type BaselineOptions, toBaselineOptions } from './baselineOptions'
-import { useVersionInfo } from '@netcracker/qubership-apihub-ui-shared/hooks/frontend-version/useVersionInfo'
+import { useAppApiProcessorVersion } from '@netcracker/qubership-apihub-ui-shared/hooks/frontend-version/useVersionInfo'
 import { agent } from '@netcracker/qubership-apihub-ui-shared/utils/version-info'
 
 type UseBaselineOptionsParams = {
@@ -32,7 +32,7 @@ export function useBaselineOptions({
   withDefaultOption = false,
 }: UseBaselineOptionsParams = {}): BaselineOptions {
   const [{ services }] = useServices()
-  const { apiProcessorVersion: appApiProcessorVersion } = useVersionInfo(agent)
+  const appApiProcessorVersion = useAppApiProcessorVersion(agent)
 
   return useMemo(() => {
     const options = toBaselineOptions(services, selectedServiceKeys, appApiProcessorVersion)

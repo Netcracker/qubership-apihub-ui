@@ -15,15 +15,17 @@ export type BaselineOptions = Readonly<{
 }>
 
 /**
- * Lists the baseline versions of all services, in the order they first appear, and combines the error flags and
- * the outdated api-processor of each version. The flags come from the baseline packages of the selected services,
- * because the snapshot uses the version as the previous version of each selected service. When `selectedServiceKeys`
- * is `undefined`, they come from every service with specs, the only services a snapshot can include.
+ * Lists the baseline versions of all services, in the order they first appear, and combines the flags of each
+ * version: the error flags, and its api-processor version when it differs from `appApiProcessorVersion`. The flags
+ * come from the baseline packages of the selected services, because the snapshot uses the version as the previous
+ * version of each selected service. When `selectedServiceKeys` is `undefined`, they come from every service with
+ * specs, the only services a snapshot can include. When `appApiProcessorVersion` is `undefined`, no api-processor
+ * version is compared.
  */
 export function toBaselineOptions(
   services: ReadonlyArray<Service>,
   selectedServiceKeys: ReadonlyArray<ServiceKey> | undefined,
-  appApiProcessorVersion: string,
+  appApiProcessorVersion: string | undefined,
 ): BaselineOptions {
   const selected = selectedServiceKeys && new Set(selectedServiceKeys)
   const versionKeys = new Set<VersionKey>()
@@ -48,18 +50,26 @@ export function toBaselineOptions(
 function mergeVersionFlags(
   flagsByVersionKey: Map<VersionKey, BaselineVersionFlags>,
   { versionKey, hasErrors, changelogHasErrors, apiProcessorVersion }: BaselineVersion,
-  appApiProcessorVersion: string,
+  appApiProcessorVersion: string | undefined,
 ): void {
-  const outdatedApiProcessorVersion = apiProcessorVersion && apiProcessorVersion !== appApiProcessorVersion
-    ? apiProcessorVersion
-    : undefined
-  if (!hasErrors && !changelogHasErrors && !outdatedApiProcessorVersion) {
+  const mismatchedApiProcessorVersion = getMismatchedApiProcessorVersion(apiProcessorVersion, appApiProcessorVersion)
+  if (!hasErrors && !changelogHasErrors && !mismatchedApiProcessorVersion) {
     return
   }
   const merged = flagsByVersionKey.get(versionKey)
   flagsByVersionKey.set(versionKey, {
     hasErrors: hasErrors || (merged?.hasErrors ?? false),
     changelogHasErrors: changelogHasErrors || (merged?.changelogHasErrors ?? false),
-    apiProcessorVersion: merged?.apiProcessorVersion ?? outdatedApiProcessorVersion,
+    apiProcessorVersion: merged?.apiProcessorVersion ?? mismatchedApiProcessorVersion,
   })
+}
+
+function getMismatchedApiProcessorVersion(
+  apiProcessorVersion: string | undefined,
+  appApiProcessorVersion: string | undefined,
+): string | undefined {
+  if (!apiProcessorVersion || !appApiProcessorVersion || apiProcessorVersion === appApiProcessorVersion) {
+    return undefined
+  }
+  return apiProcessorVersion
 }
