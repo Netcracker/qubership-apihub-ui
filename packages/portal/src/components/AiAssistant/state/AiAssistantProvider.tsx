@@ -1,4 +1,4 @@
-import { type FC, memo, type PropsWithChildren, useCallback, useMemo, useState } from 'react'
+import { type FC, memo, type PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react'
 
 import {
   AI_ASSISTANT_PANEL,
@@ -17,7 +17,18 @@ import {
   StreamingTurnStatusContext,
 } from './panelContext'
 
-export const AiAssistantProvider: FC<PropsWithChildren> = memo<PropsWithChildren>(({ children }) => {
+type AiAssistantProviderProps = PropsWithChildren<{
+  /**
+   * Whether the AI chat is turned on. The provider stays mounted when it is off,
+   * so any work the provider starts must check this flag first.
+   */
+  enabled: boolean
+}>
+
+export const AiAssistantProvider: FC<AiAssistantProviderProps> = memo<AiAssistantProviderProps>(({
+  enabled,
+  children,
+}) => {
   const { open, openPanel, closePanel } = useSidePanel(AI_ASSISTANT_PANEL)
   const [screen, setScreen] = useState<PanelScreen>(PANEL_SCREEN_CHAT)
   const [activeChatId, setActiveChatId] = useState<ChatId | null>(null)
@@ -55,6 +66,13 @@ export const AiAssistantProvider: FC<PropsWithChildren> = memo<PropsWithChildren
     reset()
     resetActiveChat()
   }, [abort, reset, resetActiveChat])
+
+  // Stops the running turn, as the Stop button does, when the AI chat is turned off.
+  useEffect(() => {
+    if (!enabled) {
+      abort()
+    }
+  }, [enabled, abort])
 
   const panelContextValue = useMemo<PanelContextValue>(() => ({
     open,

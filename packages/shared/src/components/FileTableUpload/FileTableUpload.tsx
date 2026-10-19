@@ -63,11 +63,12 @@ export const FileTableUpload: FC<FileTableUploadProps> = memo<FileTableUploadPro
     event.preventDefault()
   }
 
+  // While files load, the handlers still cancel the default action, so the browser does not open a dropped file.
   const dragEvents = useMemo(
     () => ({
       onDragEnter: (event: DragEvent<HTMLElement>): void => {
         handleCommonDragEvent(event)
-        setIsDragOver(true)
+        setIsDragOver(!isLoading)
       },
       onDragLeave: (event: DragEvent<HTMLElement>): void => {
         handleCommonDragEvent(event)
@@ -75,15 +76,21 @@ export const FileTableUpload: FC<FileTableUploadProps> = memo<FileTableUploadPro
       },
       onDragOver: (event: DragEvent<HTMLElement>): void => {
         handleCommonDragEvent(event)
+        if (isLoading) {
+          event.dataTransfer.dropEffect = 'none'
+        }
       },
       onDrop: (event: DragEvent<HTMLElement>): void => {
         handleCommonDragEvent(event)
         setIsDragOver(false)
+        if (isLoading) {
+          return
+        }
         const { dataTransfer: { files } } = event
         onAddFiles(transformFileListToFileArray(files))
       },
     }),
-    [onAddFiles],
+    [isLoading, onAddFiles],
   )
 
   const onFileInputChange = useCallback(({ target: { files } }: ChangeEvent<HTMLInputElement>) => {
@@ -112,7 +119,9 @@ export const FileTableUpload: FC<FileTableUploadProps> = memo<FileTableUploadPro
     [showTable, customFilesTable, isLoading, showPlaceholder, uploadFilesMap, getFileClickHandler, getFileActions, getFileLeftIcon, getFileRightIcon],
   )
 
-  if (!isDragOver && showTable) {
+  const showDropArea = !showTable || (isDragOver && !isLoading)
+
+  if (!showDropArea) {
     return (
       <Box
         {...dragEvents}
@@ -145,6 +154,7 @@ export const FileTableUpload: FC<FileTableUploadProps> = memo<FileTableUploadPro
         accept={acceptableFileTypes?.toString()}
         onChange={onFileInputChange}
         sx={{ display: 'none' }}
+        data-testid="FileUploadInput"
       />
       <Box
         sx={{
