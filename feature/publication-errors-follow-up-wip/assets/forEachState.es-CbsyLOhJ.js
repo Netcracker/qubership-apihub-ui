@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-BcKkbAw3.js";function t(e,t){let n=[],r=e;for(;r!=null&&r.kind;)n.push(r),r=r.prevState;for(let e=n.length-1;e>=0;e--)t(n[e])}var n,r;function i(){return(i=e((()=>{n=Object.defineProperty,r=(e,t)=>n(e,`name`,{value:t,configurable:!0}),r(t,`forEachState`)})))()}export{t as n,i as t};
