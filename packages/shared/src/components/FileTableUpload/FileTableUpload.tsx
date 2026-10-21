@@ -63,12 +63,11 @@ export const FileTableUpload: FC<FileTableUploadProps> = memo<FileTableUploadPro
     event.preventDefault()
   }
 
-  // While files load, the handlers still cancel the default action, so the browser does not open a dropped file.
   const dragEvents = useMemo(
     () => ({
       onDragEnter: (event: DragEvent<HTMLElement>): void => {
         handleCommonDragEvent(event)
-        setIsDragOver(!isLoading)
+        setIsDragOver(true)
       },
       onDragLeave: (event: DragEvent<HTMLElement>): void => {
         handleCommonDragEvent(event)
@@ -76,9 +75,6 @@ export const FileTableUpload: FC<FileTableUploadProps> = memo<FileTableUploadPro
       },
       onDragOver: (event: DragEvent<HTMLElement>): void => {
         handleCommonDragEvent(event)
-        if (isLoading) {
-          event.dataTransfer.dropEffect = 'none'
-        }
       },
       onDrop: (event: DragEvent<HTMLElement>): void => {
         handleCommonDragEvent(event)
@@ -119,9 +115,7 @@ export const FileTableUpload: FC<FileTableUploadProps> = memo<FileTableUploadPro
     [showTable, customFilesTable, isLoading, showPlaceholder, uploadFilesMap, getFileClickHandler, getFileActions, getFileLeftIcon, getFileRightIcon],
   )
 
-  const showDropArea = !showTable || (isDragOver && !isLoading)
-
-  if (!showDropArea) {
+  if (isLoading || (!isDragOver && showTable)) {
     return (
       <Box
         {...dragEvents}
@@ -154,7 +148,6 @@ export const FileTableUpload: FC<FileTableUploadProps> = memo<FileTableUploadPro
         accept={acceptableFileTypes?.toString()}
         onChange={onFileInputChange}
         sx={{ display: 'none' }}
-        data-testid="FileUploadInput"
       />
       <Box
         sx={{
