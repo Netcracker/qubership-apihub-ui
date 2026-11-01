@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-BcKkbAw3.js";import{t}from"./react---BZM-86.js";function n(e,t,n,i){let a=(0,r.useCallback)(e=>{let[r]=e;r.isIntersecting&&n&&!t&&i?.()},[n,t,i]);(0,r.useEffect)(()=>{let t=new IntersectionObserver(a);return t&&e.current&&t.observe(e.current),()=>{t&&t.disconnect()}},[a,e])}var r;function i(){return(i=e((()=>{r=t()})))()}export{n,i as t};

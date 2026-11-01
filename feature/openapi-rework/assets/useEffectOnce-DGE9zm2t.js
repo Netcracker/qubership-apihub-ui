@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-BcKkbAw3.js";import{t}from"./react---BZM-86.js";var n,r;function i(){return(i=e((()=>{n=t(),r=function(e){(0,n.useEffect)(e,[])}})))()}export{r as n,i as t};

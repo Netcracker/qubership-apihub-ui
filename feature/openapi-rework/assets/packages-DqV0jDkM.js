@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-BcKkbAw3.js";var t,n,r,i,a;function o(){return(o=e((()=>{t=`group`,n=`package`,r=`workspace`,i=`dashboard`,a={key:``,kind:n,alias:``,name:``}})))()}export{r as a,n as i,a as n,o,t as r,i as t};
