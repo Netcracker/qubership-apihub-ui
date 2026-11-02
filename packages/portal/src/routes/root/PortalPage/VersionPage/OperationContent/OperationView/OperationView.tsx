@@ -170,7 +170,11 @@ type ApiTypeViewerCallback = (options: ApiTypeViewerOptions) => ReactNode
 
 const API_TYPE_VIEWER_MAP: Record<ApiType, ApiTypeViewerCallback> = {
   [API_TYPE_REST]: ({ comparisonMode, mergedDocument, schemaViewMode, noHeading, filters, openApiOperationKeys }) => (
-    <Box lineHeight={1.5} height="100%" px={4}>
+    <Box
+      lineHeight={1.5}
+      px={2}
+      height="100%"
+    >
       {!comparisonMode ? (
         <OpenApiOperationViewer
           source={mergedDocument}
@@ -214,7 +218,7 @@ const API_TYPE_VIEWER_MAP: Record<ApiType, ApiTypeViewerCallback> = {
       key={`${operationName}-${messageId}`}
       lineHeight={1.5}
       height='100%'
-      px={4}
+      px={2}
     >
       {!comparisonMode ? (
         <AsyncApiOperationViewer
